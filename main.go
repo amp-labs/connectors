@@ -1,7 +1,8 @@
 package connectors
 
 import (
-	"fmt"
+	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/salesforce"
 )
 
 type API string
@@ -10,37 +11,14 @@ const (
 	Salesforce API = "salesforce"
 )
 
-// ReadConfig defines what API to read from, and what we are reading.
-type ReadConfig struct {
-	API API
-	ObjectName string
-	Fields [] string
-	AccessToken string
-	// WorkspaceID is the ID of the workspace, subdomain, etc. that we are reading from.
-	WorkspaceID string
-}
+// We re-export the following types so that they can be used by consumers of this library.
+type ReadConfig = common.ReadConfig
+type Result = common.Result
+type ErrorWithStatus = common.ErrorWithStatus
 
-type Result struct {
-	// Rows is the number of total rows in the result.
-	Rows int
-	// Data is a list of maps, where each map represents a record that we read.
-	Data [] map [string] interface {}
-}
-
-type ErrorWithStatus struct {
-	// StatusCode is the HTTP status.
-	StatusCode int
-	// A human-readable error message.
-	Message string
-}
-
-func (r ErrorWithStatus) Error() string {
-	return fmt.Sprintf("status %d: message %v", r.StatusCode, r.Message)
-}
-
-func Read(config ReadConfig) (Result, error)	{
-	if config.API == Salesforce {
-		return salesforceRead(config)
+func Read(api API, config ReadConfig) (Result, error)	{
+	if api == Salesforce {
+		return salesforce.Read(config)
 	}
 
 	return Result{}, ErrorWithStatus{
