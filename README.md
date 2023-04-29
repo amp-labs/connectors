@@ -10,8 +10,7 @@ import (
 )
 
 func main() {
-	result, err := connectors.Read(connectors.ReadConfig{
-		API: connectors.Salesforce,
+	result, err := connectors.Read(connectors.Salesforce, connectors.ReadConfig{
 		ObjectName: "Contact",
 		Fields: [] string { "FirstName", "LastName", "Email" },
 		AccessToken: "ACCESS_TOKEN",
@@ -20,7 +19,5 @@ func main() {
 	if err == nil {
 		fmt.Printf("Result is %v", result)
 	}
-  
 }
-
 ```
