@@ -15,13 +15,19 @@ const (
 type ReadConfig = common.ReadConfig
 type Result = common.Result
 type ErrorWithStatus = common.ErrorWithStatus
+type GetCallConfig = common.GetCallConfig
+type GenericResult = common.GenericResult
 
-func Read(api API, config ReadConfig) (Result, error)	{
+type Connector interface {
+	MakeGetCall(config GetCallConfig) (*GenericResult, error)
+}
+
+func NewConnector(api API, workspaceRef string, accessToken string) (Connector, error) {
 	if api == Salesforce {
-		return salesforce.Read(config)
+		return salesforce.NewConnector(workspaceRef, accessToken)
 	}
 
-	return Result{}, ErrorWithStatus{
+	return nil, ErrorWithStatus{
 		StatusCode: 400,
 		Message: "API not supported",
 	}

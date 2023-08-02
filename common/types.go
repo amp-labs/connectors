@@ -13,6 +13,14 @@ type ReadConfig struct {
 	AccessToken string
 }
 
+type GetCallConfig struct {
+	Endpoint string
+}
+
+type GenericResult struct {
+	Data map [string] interface {}
+}
+
 type Result struct {
 	// Rows is the number of total rows in the result.
 	Rows int
