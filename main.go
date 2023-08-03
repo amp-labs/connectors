@@ -13,16 +13,21 @@ const (
 
 // We re-export the following types so that they can be used by consumers of this library.
 type ReadConfig = common.ReadConfig
-type Result = common.Result
+type ReadResult = common.ReadResult
 type ErrorWithStatus = common.ErrorWithStatus
+type GetCallConfig = common.GetCallConfig
+type GenericResult = common.GenericResult
 
-func Read(api API, config ReadConfig) (Result, error)	{
-	if api == Salesforce {
-		return salesforce.Read(config)
-	}
+type Connector interface {
+	MakeGetCall(config GetCallConfig) (*GenericResult, *ErrorWithStatus)
+	Read(config ReadConfig) (*ReadResult, *ErrorWithStatus)
+}
 
-	return Result{}, ErrorWithStatus{
-		StatusCode: 400,
-		Message: "API not supported",
+func NewConnector(api API, workspaceRef string, accessToken string) Connector {
+	switch api {
+	case Salesforce:
+		return salesforce.NewConnector(workspaceRef, accessToken)
+	default:
+		return nil
 	}
 }

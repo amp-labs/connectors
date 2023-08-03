@@ -10,11 +10,11 @@ import (
 )
 
 func main() {
-	result, err := connectors.Read(connectors.Salesforce, connectors.ReadConfig{
+  salesforce := connectors.NewConnector(connectors.Salesforce, "SALESFORCE_SUBDOMAIN", "ACCESS_TOKEN")
+
+	result, err := salesforce.Read(connectors.ReadConfig{
 		ObjectName: "Contact",
 		Fields: [] string { "FirstName", "LastName", "Email" },
-		AccessToken: "ACCESS_TOKEN",
-		WorkspaceID: "SALESFORCE_SUBDOMAIN",
 	})
 	if err == nil {
 		fmt.Printf("Result is %v", result)
