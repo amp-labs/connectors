@@ -10,7 +10,6 @@ import (
 )
 
 func main() {
-
   salesforce := connectors.NewConnector(connectors.Salesforce, "SALESFORCE_SUBDOMAIN", "ACCESS_TOKEN")
 
 	result, err := salesforce.Read(connectors.ReadConfig{

@@ -25,9 +25,9 @@ type Connector interface {
 
 func NewConnector(api API, workspaceRef string, accessToken string) Connector {
 	switch api {
-		case Salesforce:
-			return salesforce.NewConnector(workspaceRef, accessToken)
-		default:
-			return nil
+	case Salesforce:
+		return salesforce.NewConnector(workspaceRef, accessToken)
+	default:
+		return nil
 	}
 }

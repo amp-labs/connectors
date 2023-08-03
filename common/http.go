@@ -31,7 +31,7 @@ func DoHttpGetCall(c *http.Client, baseUrl string, endpoint string, token string
 	if err != nil {
 		return nil, &ErrorWithStatus{
 			Mode:    NonApiError,
-			Message: fmt.Sprintf("error adding authorization header: %v", err),
+			Message: fmt.Sprintf("error sending request: %v", err),
 		}
 	}
 
