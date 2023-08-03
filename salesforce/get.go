@@ -1,9 +1,10 @@
 package salesforce
 
 import (
-	"net/http"
 	"fmt"
 	"io"
+	"net/http"
+	"encoding/json"
 
 	"github.com/amp-labs/connectors/common"
 )
@@ -14,26 +15,32 @@ func makeURL(baseURL string, path string) string {
 }
 
 func (s SalesforceConnector) MakeGetCall(c common.GetCallConfig) (*common.GenericResult, error) {
-	  request, error := http.NewRequest("GET", makeURL(s.BaseURL, c.Endpoint), nil)
+	req, error := http.NewRequest("GET", makeURL(s.BaseURL, c.Endpoint), nil)
 
-    if error != nil {
-        fmt.Println(error)
-    }
-    response, error := s.Client.Do(request)
+	if error != nil {
+		return nil, error
+	}
+	req.Header.Add("Authorization", "OAuth "+s.AccessToken)
+	response, error := s.Client.Do(req)
 
-    if error != nil {
-        fmt.Println(error)
-    }
-		defer response.Body.Close()	
+	if error != nil {
+		return nil, error
+	}
 
-    responseBody, error := io.ReadAll(response.Body)
+	responseBody, error := io.ReadAll(response.Body)
 
-    if error != nil {
-        fmt.Println(error)
-    }
+	if error != nil {
+		return nil, error
+	}
 
-    fmt.Println("Status: ", response.Status)
-    fmt.Println("Response body: ", string(responseBody))
+	fmt.Println("Status: ", response.Status)
 
-		return &common.GenericResult{Data: nil}, nil
+	d := make(map[string]interface{})
+	err := json.Unmarshal(responseBody, &d)
+	if err != nil {
+		return nil, error
+	}
+	fmt.Printf("Response body: %v\n\n", d["childRelationships"])
+	defer response.Body.Close()
+	return &common.GenericResult{Data: d}, nil
 }

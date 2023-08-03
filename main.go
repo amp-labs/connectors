@@ -22,13 +22,9 @@ type Connector interface {
 	MakeGetCall(config GetCallConfig) (*GenericResult, error)
 }
 
-func NewConnector(api API, workspaceRef string, accessToken string) (Connector, error) {
+func NewConnector(api API, workspaceRef string, accessToken string) Connector {
 	if api == Salesforce {
 		return salesforce.NewConnector(workspaceRef, accessToken)
 	}
-
-	return nil, ErrorWithStatus{
-		StatusCode: 400,
-		Message: "API not supported",
-	}
+	return nil
 }
