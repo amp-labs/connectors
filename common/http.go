@@ -8,8 +8,8 @@ import (
 	"net/url"
 )
 
-func DoHttpGetCall(c *http.Client, baseUrl string, endpoint string, token string) (result map[string]interface{}, e *ErrorWithStatus) {
-	url, err := url.JoinPath(baseUrl, endpoint)
+func DoHttpGetCall(c *http.Client, baseURL string, endpoint string, token string) (result map[string]interface{}, e *ErrorWithStatus) {
+	url, err := url.JoinPath(baseURL, endpoint)
 	if err != nil {
 		return nil, &ErrorWithStatus{
 			Mode:    NonApiError,

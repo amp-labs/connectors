@@ -12,12 +12,12 @@ import (
 func main() {
   salesforce := connectors.NewConnector(connectors.Salesforce, "SALESFORCE_SUBDOMAIN", "ACCESS_TOKEN")
 
-	result, err := salesforce.Read(connectors.ReadConfig{
-		ObjectName: "Contact",
-		Fields: [] string { "FirstName", "LastName", "Email" },
-	})
-	if err == nil {
-		fmt.Printf("Result is %v", result)
-	}
+  result, err := salesforce.Read(connectors.ReadConfig{
+    ObjectName: "Contact",
+    Fields: [] string { "FirstName", "LastName", "Email" },
+  })
+  if err == nil {
+    fmt.Printf("Result is %v", result)
+  }
 }
 ```
