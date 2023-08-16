@@ -1,25 +1,50 @@
 package salesforce
 
 import (
-	"strings"
+	"context"
+	"errors"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/jdvr/go-again"
+	"github.com/spyzhov/ajson"
 )
 
-func parseErrorMode(message string) common.ErrorMode {
-	if strings.Contains(message, "INVALID_SESSION_ID") {
-		return common.AccessTokenInvalid
-	}
-	return common.OtherError
-}
+func (s *Connector) get(ctx context.Context, url string) (*ajson.Node, error) {
+	var token string
 
-func (s SalesforceConnector) MakeGetCall(c common.GetCallConfig) (*common.GenericResult, *common.ErrorWithStatus) {
-	d, err := common.DoHttpGetCall(s.Client, s.BaseURL, c.Endpoint, s.AccessToken)
-	if err != nil {
-		if err.Mode == "" {
-			err.Mode = parseErrorMode(err.Message)
+	return again.Retry[*ajson.Node](ctx, func(ctx context.Context) (*ajson.Node, error) {
+		var err error
+
+		if token == "" {
+			token, err = s.AccessToken()
+			if err != nil {
+				return nil, again.NewPermanentError(err)
+			}
 		}
-		return nil, err
-	}
-	return &common.GenericResult{Data: d}, nil
+
+		authHdr := common.Header{
+			Key:   "Authorization",
+			Value: "Bearer " + token,
+		}
+
+		d, err := common.GetJson(ctx, s.Client, url, authHdr)
+		if err != nil {
+			if errors.Is(err, common.ApiDisabled) {
+				// Not retryable, so return a permanent error
+				return nil, again.NewPermanentError(err)
+			} else if errors.Is(err, common.AccessTokenInvalid) {
+				// Clear token so that it gets refreshed, then try again.
+				token = ""
+				return nil, err
+			} else if errors.Is(err, common.RetryableError) {
+				// Retryable error
+				return nil, err
+			} else {
+				// Anything else is a permanent error
+				return nil, again.NewPermanentError(err)
+			}
+		}
+
+		return d, nil
+	})
 }

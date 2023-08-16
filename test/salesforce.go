@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -23,18 +24,17 @@ func main() {
 	if len(os.Args) > 2 {
 		instance = os.Args[2]
 	}
-	salesforce := connectors.NewConnector(connectors.Salesforce, instance, token)
-	data, err := salesforce.MakeGetCall(connectors.GetCallConfig{
-		Endpoint: "sobjects/Account/describe",
+	salesforce := connectors.New(connectors.Salesforce, instance, func() (string, error) {
+		return token, nil
+	})
+	res, err := salesforce.Read(context.Background(), connectors.ReadParams{
+		ObjectName: "Account",
+		Fields:     []string{"Id", "Name", "BillingCity"},
 	})
 	if err != nil {
-		fmt.Printf("Error making GET call: %v", err)
-		return
+		panic(err)
 	}
-	if j, err := json.MarshalIndent(data, "", "  "); err == nil {
-		fmt.Println("Successfully made GET call, response:")
-		fmt.Println(string(j))
-	} else {
-		fmt.Printf("Error parsing data: %v", err)
-	}
+
+	js, _ := json.MarshalIndent(res, "", "  ")
+	fmt.Println(string(js))
 }
