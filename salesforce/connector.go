@@ -6,19 +6,21 @@ import (
 )
 
 const (
-	apiVersion = "v52.0"
+	apiVersion = "v58.0"
 )
 
-type SalesforceConnector struct {
+type Connector struct {
+	Domain      string
 	BaseURL     string
 	Client      *http.Client
-	AccessToken string
+	AccessToken func() (string, error)
 }
 
-func NewConnector(workspaceRef string, accessToken string) *SalesforceConnector {
-	return &SalesforceConnector{
+func NewConnector(workspaceRef string, getToken func() (string, error)) *Connector {
+	return &Connector{
 		BaseURL:     fmt.Sprintf("https://%s.my.salesforce.com/services/data/%s", workspaceRef, apiVersion),
-		Client:      &http.Client{},
-		AccessToken: accessToken,
+		Domain:      fmt.Sprintf("%s.my.salesforce.com", workspaceRef),
+		Client:      http.DefaultClient,
+		AccessToken: getToken,
 	}
 }

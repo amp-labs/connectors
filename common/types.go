@@ -1,64 +1,77 @@
 package common
 
 import (
+	"errors"
 	"fmt"
+	"time"
 )
 
-// We map common errors to modes with known resolution strategies.
-type ErrorMode string
+var (
+	// AccessTokenInvalid is a token which isn't valid.
+	AccessTokenInvalid = errors.New("access token invalid")
 
-const (
-	// Token expired or invalid. Refresh the token and retry.
-	AccessTokenInvalid ErrorMode = "ACCESS_TOKEN_INVALID"
-	// Customer didn't enable this API on their SaaS instance.
-	ApiDisabled ErrorMode = "API_DISABLED"
-	// Temporary error. Can retry.
-	RetryableError ErrorMode = "RETRYABLE_ERROR"
-	// Other API-related errors.
-	OtherError ErrorMode = "OTHER_API_ERROR"
-	// Non-API errors, the request didn't make it to the API server.
-	NonApiError ErrorMode = "NON_API_ERROR"
+	// ApiDisabled means a customer didn't enable this API on their SaaS instance.
+	ApiDisabled = errors.New("API disabled")
+
+	// RetryableError represents a temporary error. Can retry.
+	RetryableError = errors.New("retryable error")
+
+	// CallerError represents non-retryable errors caused by bad input from the caller.
+	CallerError = errors.New("caller error")
+
+	// ServerError represents non-retryable errors caused by something on the server.
+	ServerError = errors.New("server error")
 )
 
-// ReadConfig defines how we are reading data from a SaaS API.
-type ReadConfig struct {
+// ReadParams defines how we are reading data from a SaaS API.
+type ReadParams struct {
 	// The name of the object we are reading, e.g. "Account"
 	ObjectName string
 	// The fields we are reading from the object, e.g. ["Id", "Name", "BillingCity"]
 	Fields []string
-}
-
-// GetCallConfig defines the parameters for a generic GET call to a SaaS API.
-type GetCallConfig struct {
-	// The endpoint to call, e.g. "sobjects/Account/describe"
-	Endpoint string
+	// NextPage is an opaque token that can be used to get the next page of results.
+	NextPage string
+	// Since is a timestamp that can be used to get only records that have changed since that time.
+	Since time.Time
 }
 
 // Result from reading data.
 type ReadResult struct {
 	// Rows is the number of total rows in the result.
 	Rows int
-	// Data is a list of maps, where each map represents a record that we read.
+	// Data is a list of JSON nodes, where each node represents a record that we read.
 	Data []map[string]interface{}
+	// NextPage is an opaque token that can be used to get the next page of results.
+	NextPage string
+	// Done is true if there are no more pages to read.
+	Done bool
 }
 
-// Result from a generic API call.
-type GenericResult struct {
-	Data map[string]interface{}
+func NewErrorWithStatus(status int, err error) error {
+	if status < 1 || status > 599 {
+		return err
+	}
+	return &ErrorWithStatus{
+		HttpStatus: status,
+		err:        err,
+	}
 }
 
 type ErrorWithStatus struct {
-	// The error mode that we've mapped this error to.
-	Mode ErrorMode
 	// HttpStatus is the original HTTP status.
 	HttpStatus int
-	// A human-readable error message.
-	Message string
+
+	// The underlying error
+	err error
 }
 
 func (r ErrorWithStatus) Error() string {
 	if r.HttpStatus > 0 {
-		return fmt.Sprintf("[%v] Status %d: %v", r.Mode, r.HttpStatus, r.Message)
+		return fmt.Sprintf("HTTP status %d: %v", r.HttpStatus, r.err)
 	}
-	return fmt.Sprintf("[%v] %v", r.Mode, r.Message)
+	return fmt.Sprintf("%v", r.err)
+}
+
+func (r ErrorWithStatus) Unwrap() error {
+	return r.err
 }
