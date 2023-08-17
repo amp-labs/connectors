@@ -64,19 +64,7 @@ func NewFromProviderName(name string, workspaceRef string, //nolint:ireturn
 ) (Connector, error) {
 	switch name {
 	case salesforce.Name:
-		return New(Salesforce, workspaceRef, func(ctx context.Context) (string, error) {
-			tok, err := getToken(ctx)
-			if err != nil {
-				return "", err
-			}
-
-			token, ok := tok.(string)
-			if !ok {
-				return "", fmt.Errorf("invalid token type: %T", tok) //nolint:goerr113
-			}
-
-			return token, nil
-		}), nil
+		return New(Salesforce, workspaceRef, wrapStringTokenProvider(getToken)), nil
 	default:
 		return nil, fmt.Errorf("%w: %s", ErrUnknownConnector, name)
 	}
@@ -85,5 +73,21 @@ func NewFromProviderName(name string, workspaceRef string, //nolint:ireturn
 func Providers() []string {
 	return []string{
 		salesforce.Name,
+	}
+}
+
+func wrapStringTokenProvider(f func(ctx context.Context) (any, error)) func(ctx context.Context) (string, error) {
+	return func(ctx context.Context) (string, error) {
+		tok, err := f(ctx)
+		if err != nil {
+			return "", err
+		}
+
+		token, ok := tok.(string)
+		if !ok {
+			return "", fmt.Errorf("invalid token type: %T", tok) //nolint:goerr113
+		}
+
+		return token, nil
 	}
 }
