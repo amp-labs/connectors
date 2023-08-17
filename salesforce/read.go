@@ -11,25 +11,32 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
+// Read reads data from Salesforce. By default it will read all rows (backfill). However, if Since is set,
+// it will read only rows that have been updated since the specified time.
 func (s *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
 	var data *ajson.Node
 	var err error
 
+	// Make sure we have at least one field
 	if len(config.Fields) == 0 {
 		return nil, errors.New("no fields specified")
 	}
 
+	// Get the field set in SOQL format
+	fields := getFieldSet(config.Fields)
+
 	if len(config.NextPage) > 0 {
+		// If NextPage is set, then we're reading the next page of results. All that matters is the URL, the fields are ignored.
 		data, err = s.get(ctx, fmt.Sprintf("https://%s%s", s.Domain, config.NextPage))
 	} else if config.Since.IsZero() {
-		fields := strings.Join(config.Fields, ",")
+		// If Since is not set, then we're doing a backfill. We read all rows (in pages)
 		soql := fmt.Sprintf("SELECT %s FROM %s", fields, config.ObjectName)
 
 		qp := url.Values{}
 		qp.Add("q", soql)
 		data, err = s.get(ctx, s.BaseURL+"/query/?"+qp.Encode())
 	} else {
-		fields := strings.Join(config.Fields, ",")
+		// If Since is set, then we're reading only rows that have been updated since the specified time.
 		soql := fmt.Sprintf("SELECT %s FROM %s WHERE SystemModstamp > %s", fields, config.ObjectName, config.Since.Format("2006-01-02T15:04:05Z"))
 
 		qp := url.Values{}
@@ -69,6 +76,17 @@ func (s *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	}, nil
 }
 
+// getFieldSet returns the field set in SOQL format.
+func getFieldSet(fields []string) string {
+	for _, field := range fields {
+		if field == "*" {
+			return "FIELDS(ALL)"
+		}
+	}
+	return strings.Join(fields, ",")
+}
+
+// getRecords returns the records from the response.
 func getRecords(node *ajson.Node) ([]map[string]interface{}, error) {
 	records, err := node.GetKey("records")
 	if err != nil {
@@ -103,6 +121,7 @@ func getRecords(node *ajson.Node) ([]map[string]interface{}, error) {
 	return out, nil
 }
 
+// getNextRecordsUrl returns the URL for the next page of results.
 func getNextRecordsUrl(node *ajson.Node) (string, error) {
 	var nextPage string
 	if node.HasKey("nextRecordsUrl") {
@@ -120,6 +139,7 @@ func getNextRecordsUrl(node *ajson.Node) (string, error) {
 	return nextPage, nil
 }
 
+// getDone returns true if there are no more pages to read.
 func getDone(node *ajson.Node) (bool, error) {
 	var done bool
 	if node.HasKey("done") {
@@ -137,7 +157,8 @@ func getDone(node *ajson.Node) (bool, error) {
 	return done, nil
 }
 
-func getTotalSize(node *ajson.Node) (int, error) {
+// getTotalSize returns the total number of records that match the query.
+func getTotalSize(node *ajson.Node) (int64, error) {
 	node, err := node.GetKey("totalSize")
 	if err != nil {
 		return 0, err
@@ -147,5 +168,5 @@ func getTotalSize(node *ajson.Node) (int, error) {
 		return 0, errors.New("totalSize isn't numeric")
 	}
 
-	return int(node.MustNumeric()), nil
+	return int64(node.MustNumeric()), nil
 }
