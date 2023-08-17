@@ -19,16 +19,14 @@ type Connector interface {
 // API is a function that returns a Connector. It's used as a factory.
 type API[Conn Connector, Token any] func(workspaceRef string, getToken common.TokenProvider[Token]) Conn
 
-var (
-	// Salesforce is an API that returns a new Salesforce Connector.
-	Salesforce API[*salesforce.Connector, string] = salesforce.NewConnector
-)
+// Salesforce is an API that returns a new Salesforce Connector.
+var Salesforce API[*salesforce.Connector, string] = salesforce.NewConnector //nolint:gochecknoglobals
 
 // We re-export the following types so that they can be used by consumers of this library.
 type (
 	ReadParams      = common.ReadParams
 	ReadResult      = common.ReadResult
-	ErrorWithStatus = common.ErrorWithStatus
+	ErrorWithStatus = common.HTTPStatusError
 )
 
 // We re-export the following errors so that they can be handled by consumers of this library.
@@ -50,6 +48,8 @@ var (
 )
 
 // New returns a new Connector.
-func New[Conn Connector, Token any](api API[Conn, Token], workspaceRef string, getToken func(ctx context.Context) (Token, error)) Connector {
+func New[Conn Connector, Token any](api API[Conn, Token], workspaceRef string, //nolint:ireturn
+	getToken func(ctx context.Context) (Token, error),
+) Connector {
 	return api(workspaceRef, getToken)
 }

@@ -32,25 +32,26 @@ func (s *Connector) get(ctx context.Context, url string) (*ajson.Node, error) {
 		}
 
 		// Make the request
-		d, err := common.GetJson(ctx, s.Client, url, authHdr)
+		node, err := common.GetJSON(ctx, s.Client, url, authHdr)
 		if err != nil {
-			if errors.Is(err, common.ErrApiDisabled) {
+			switch {
+			case errors.Is(err, common.ErrApiDisabled):
 				// Not retryable, so return a permanent error
 				return nil, again.NewPermanentError(err)
-			} else if errors.Is(err, common.ErrAccessToken) {
+			case errors.Is(err, common.ErrAccessToken):
 				// Clear token so that it gets refreshed, then try again.
 				token = ""
+
 				return nil, err
-			} else if errors.Is(err, common.ErrRetryable) {
-				// Retryable error
+			case errors.Is(err, common.ErrRetryable):
 				return nil, err
-			} else {
+			default:
 				// Anything else is a permanent error
 				return nil, again.NewPermanentError(err)
 			}
 		}
 
 		// Success
-		return d, nil
+		return node, nil
 	})
 }

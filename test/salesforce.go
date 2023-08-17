@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"flag"
-	"fmt"
 	"log/slog"
 	"os"
 	"os/exec"
@@ -16,14 +15,21 @@ import (
 	"github.com/amp-labs/connectors"
 )
 
-// To run this test, first generate a Salesforce Access token (https://ampersand.slab.com/posts/salesforce-api-guide-go1d9wnj#h0ciq-generate-an-access-token)
+// To run this test, make sure you have the sfdx CLI installed, and are logged in to a Salesforce instance.
 
-// Then add the token as a command line argument, e.g.
-// go run test/salesforce.go '00DDp000000JQ4L!ASAAQCGoGPDpV2QkjXE.wANweSuGADZpWuh6FyY9eWUrmK6Gl4pEXG6e9qc3.KU9vqlyx_FRjlBdE6iWtbPH.yOuUbxGILpl'
+// Then add your username as a command line argument, e.g.
+// go run test/salesforce.go -login myusername@mydomain
 
-// You can optionally add a second argument to specify the a Salesforce instance, or leave empty to use the Ampersand's dev instance.
+// You can optionally add an `instance` argument to specify a Salesforce instance,
+// or leave empty to use the Ampersand's dev instance.
+
+const TimeoutSeconds = 30
 
 func main() {
+	os.Exit(mainFn())
+}
+
+func mainFn() int {
 	login := flag.String("login", "", "Salesforce login")
 	instance := flag.String("instance", "ampersand-dev-ed.develop", "Salesforce instance")
 	flag.Parse()
@@ -36,16 +42,17 @@ func main() {
 
 	if len(*login) == 0 {
 		slog.Error("No login provided")
-		os.Exit(1)
+
+		return 1
 	}
 
-	// Create a new Salesforce connector, with a static token provider.
+	// Create a new Salesforce connector, with a token provider that uses the sfdx CLI to fetch an access token.
 	salesforce := connectors.New(connectors.Salesforce, *instance, func(ctx context.Context) (string, error) {
-		return getToken(login)
+		return getToken(ctx, *login)
 	})
 
 	// Create a context with a timeout
-	ctx, done := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, done := context.WithTimeout(context.Background(), TimeoutSeconds*time.Second)
 	defer done()
 
 	// Read some data from Salesforce
@@ -55,17 +62,29 @@ func main() {
 	})
 	if err != nil {
 		slog.Error("Error reading from Salesforce", "error", err)
-		os.Exit(1)
+
+		return 1
 	}
 
 	// Print the results
-	js, _ := json.MarshalIndent(res, "", "  ")
-	fmt.Println(string(js))
+	jsonStr, err := json.MarshalIndent(res, "", "  ")
+	if err != nil {
+		slog.Error("Error marshalling JSON", "error", err)
+
+		return 1
+	}
+
+	_, _ = os.Stdout.Write(jsonStr)
+	_, _ = os.Stdout.WriteString("\n")
+
+	return 0
 }
 
+var ErrTokenMissing = errors.New("no access token found")
+
 // lol, don't do this in production.
-func getToken(login *string) (string, error) {
-	cmd := exec.Command("sfdx", "org", "display", "--target-org", *login)
+func getToken(ctx context.Context, login string) (string, error) {
+	cmd := exec.CommandContext(ctx, "sfdx", "org", "display", "--target-org", login)
 	cmd.Stdin = bytes.NewReader([]byte{})
 
 	slog.Info("Fetching salesforce access token...")
@@ -74,7 +93,7 @@ func getToken(login *string) (string, error) {
 	if err != nil {
 		ee := new(exec.ExitError)
 		if errors.As(err, &ee) {
-			return "", errors.New(string(ee.Stderr))
+			return "", errors.New(string(ee.Stderr)) //nolint:goerr113
 		} else {
 			return "", err
 		}
@@ -93,5 +112,5 @@ func getToken(login *string) (string, error) {
 		}
 	}
 
-	return "", errors.New("no access token found")
+	return "", ErrTokenMissing
 }

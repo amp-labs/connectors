@@ -1,0 +1,59 @@
+run:
+  timeout: 5m
+output:
+  format: github-actions
+linters:
+  enable-all: true
+  disable:
+    # Disabled because we use inits all over the place
+    - gochecknoinits
+    # Abandoned, replaced by unused
+    - varcheck
+    # Abandoned, replaced by unused
+    - structcheck
+    # Abandoned, replaced by unused
+    - deadcode
+    # Author archived it, and suggests to not use it in real-world applications
+    - interfacer
+    # Abandoned, replaced by revive
+    - nosnakecase
+    # Abandoned, replaced by revive
+    - golint
+    # Abandoned, replaced by exhaustruct
+    - exhaustivestruct
+    # Deprecated by owner
+    - ifshort
+    # Archived by owner, replaced by govet
+    - maligned
+    # Deprecated by owner, replaced with exportloopref
+    - scopelint
+    # Highly annoying. We'd need to whitelist all packages we import, which is a lot of work and adds very little value.
+    - depguard
+    # Annoying and unhelpful. Assumes uninitialized (zero-valued) fields are always a bug, which is plain wrong.
+    - exhaustruct
+    # Marks [TODO, FIXME, BUG] comments as errors. We use these, so this is not helpful - unless we decide this is a good policy.
+    - godox
+    # We're not doing black-box testing, so enabling this would be counterproductive. We might want to discuss this though, it's a good practice.
+    - testpackage
+    # Annoying and not useful. Disabling otherwise we have to have comment everywhere
+    - wrapcheck
+    # Buggy, it complains about unused nolint rules, when those nolint rules are actually used (and removing them cause other lint errors)
+    - nolintlint
+linters-settings:
+  # See https://golangci-lint.run/usage/linters#revive
+  revive:
+    rules:
+      # Use var-naming, but add a special rule to accept "Id" rather than forcing "ID"
+      - name: var-naming
+        disabled: false
+        arguments:
+          - [ "ID", "API" ]
+  # See https://staticcheck.io/docs/configuration/options/#checks
+  stylecheck:
+    checks: ["all", "-ST1003"]
+
+issues:
+  exclude-rules:
+    - text: "don't use ALL_CAPS in Go names"
+      linters:
+        - revive
