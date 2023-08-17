@@ -40,12 +40,12 @@ func main() {
 	}
 
 	// Create a new Salesforce connector, with a static token provider.
-	salesforce := connectors.New(connectors.Salesforce, *instance, func() (string, error) {
+	salesforce := connectors.New(connectors.Salesforce, *instance, func(ctx context.Context) (string, error) {
 		return getToken(login)
 	})
 
 	// Create a context with a timeout
-	ctx, done := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, done := context.WithTimeout(context.Background(), 30*time.Second)
 	defer done()
 
 	// Read some data from Salesforce
@@ -58,6 +58,7 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Print the results
 	js, _ := json.MarshalIndent(res, "", "  ")
 	fmt.Println(string(js))
 }

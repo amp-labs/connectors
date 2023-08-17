@@ -1,6 +1,7 @@
 package salesforce
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
@@ -16,7 +17,7 @@ type Connector struct {
 	Domain      string
 	BaseURL     string
 	Client      *http.Client
-	AccessToken func() (string, error)
+	AccessToken func(ctx context.Context) (string, error)
 }
 
 // NewConnector returns a new Salesforce connector.
