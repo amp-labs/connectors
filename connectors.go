@@ -49,6 +49,7 @@ var (
 	// ErrServer represents non-retryable errors caused by something on the server.
 	ErrServer = common.ErrServer
 
+	// ErrUnknownConnector represents an unknown connector name.
 	ErrUnknownConnector = errors.New("unknown connector")
 )
 
