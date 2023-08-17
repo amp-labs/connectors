@@ -7,20 +7,20 @@ import (
 )
 
 var (
-	// AccessTokenInvalid is a token which isn't valid.
-	AccessTokenInvalid = errors.New("access token invalid")
+	// ErrAccessToken is a token which isn't valid.
+	ErrAccessToken = errors.New("access token invalid")
 
-	// ApiDisabled means a customer didn't enable this API on their SaaS instance.
-	ApiDisabled = errors.New("API disabled")
+	// ErrApiDisabled means a customer didn't enable this API on their SaaS instance.
+	ErrApiDisabled = errors.New("API disabled")
 
-	// RetryableError represents a temporary error. Can retry.
-	RetryableError = errors.New("retryable error")
+	// ErrRetryable represents a temporary error. Can retry.
+	ErrRetryable = errors.New("retryable error")
 
-	// CallerError represents non-retryable errors caused by bad input from the caller.
-	CallerError = errors.New("caller error")
+	// ErrCaller represents non-retryable errors caused by bad input from the caller.
+	ErrCaller = errors.New("caller error")
 
-	// ServerError represents non-retryable errors caused by something on the server.
-	ServerError = errors.New("server error")
+	// ErrServer represents non-retryable errors caused by something on the server.
+	ErrServer = errors.New("server error")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.
@@ -38,7 +38,7 @@ type ReadParams struct {
 // Result from reading data.
 type ReadResult struct {
 	// Rows is the number of total rows in the result.
-	Rows int
+	Rows int64
 	// Data is a list of JSON nodes, where each node represents a record that we read.
 	Data []map[string]interface{}
 	// NextPage is an opaque token that can be used to get the next page of results.
@@ -47,6 +47,11 @@ type ReadResult struct {
 	Done bool
 }
 
+// TokenProvider is a function that returns a token. The precise type of the
+// token is up to the API.
+type TokenProvider[Token any] func() (Token, error)
+
+// NewErrorWithStatus creates a new error with the given HTTP status.
 func NewErrorWithStatus(status int, err error) error {
 	if status < 1 || status > 599 {
 		return err

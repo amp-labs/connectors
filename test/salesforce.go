@@ -29,7 +29,7 @@ func main() {
 	})
 	res, err := salesforce.Read(context.Background(), connectors.ReadParams{
 		ObjectName: "Account",
-		Fields:     []string{"Id", "Name", "BillingCity"},
+		Fields:     []string{"Id", "Name", "BillingCity", "SystemModstamp"},
 	})
 	if err != nil {
 		panic(err)
