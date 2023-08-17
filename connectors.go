@@ -2,7 +2,9 @@ package connectors
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"io"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/salesforce"
@@ -11,6 +13,7 @@ import (
 // Connector is an interface that all connectors must implement.
 type Connector interface {
 	fmt.Stringer
+	io.Closer
 
 	Name() string
 	Read(ctx context.Context, params ReadParams) (*ReadResult, error)
@@ -45,6 +48,8 @@ var (
 
 	// ErrServer represents non-retryable errors caused by something on the server.
 	ErrServer = common.ErrServer
+
+	ErrUnknownConnector = errors.New("unknown connector")
 )
 
 // New returns a new Connector.
@@ -52,4 +57,33 @@ func New[Conn Connector, Token any](api API[Conn, Token], workspaceRef string, /
 	getToken func(ctx context.Context) (Token, error),
 ) Connector {
 	return api(workspaceRef, getToken)
+}
+
+func NewFromProviderName(name string, workspaceRef string, //nolint:ireturn
+	getToken func(ctx context.Context) (any, error),
+) (Connector, error) {
+	switch name {
+	case salesforce.Name:
+		return New(Salesforce, workspaceRef, func(ctx context.Context) (string, error) {
+			tok, err := getToken(ctx)
+			if err != nil {
+				return "", err
+			}
+
+			token, ok := tok.(string)
+			if !ok {
+				return "", fmt.Errorf("invalid token type: %T", tok) //nolint:goerr113
+			}
+
+			return token, nil
+		}), nil
+	default:
+		return nil, fmt.Errorf("%w: %s", ErrUnknownConnector, name)
+	}
+}
+
+func Providers() []string {
+	return []string{
+		salesforce.Name,
+	}
 }

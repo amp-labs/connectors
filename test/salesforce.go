@@ -50,6 +50,9 @@ func mainFn() int {
 	salesforce := connectors.New(connectors.Salesforce, *instance, func(ctx context.Context) (string, error) {
 		return getToken(ctx, *login)
 	})
+	defer func() {
+		_ = salesforce.Close()
+	}()
 
 	// Create a context with a timeout
 	ctx, done := context.WithTimeout(context.Background(), TimeoutSeconds*time.Second)
