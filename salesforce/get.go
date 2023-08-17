@@ -19,7 +19,7 @@ func (s *Connector) get(ctx context.Context, url string) (*ajson.Node, error) {
 
 		// Refresh token if necessary
 		if token == "" {
-			token, err = s.AccessToken()
+			token, err = s.AccessToken(ctx)
 			if err != nil {
 				return nil, again.NewPermanentError(err)
 			}

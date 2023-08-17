@@ -1,6 +1,7 @@
 package common
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"time"
@@ -49,7 +50,7 @@ type ReadResult struct {
 
 // TokenProvider is a function that returns a token. The precise type of the
 // token is up to the API.
-type TokenProvider[Token any] func() (Token, error)
+type TokenProvider[Token any] func(ctx context.Context) (Token, error)
 
 // NewErrorWithStatus creates a new error with the given HTTP status.
 func NewErrorWithStatus(status int, err error) error {

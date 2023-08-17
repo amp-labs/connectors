@@ -50,6 +50,6 @@ var (
 )
 
 // New returns a new Connector.
-func New[Conn Connector, Token any](api API[Conn, Token], workspaceRef string, getToken func() (Token, error)) Connector {
+func New[Conn Connector, Token any](api API[Conn, Token], workspaceRef string, getToken func(ctx context.Context) (Token, error)) Connector {
 	return api(workspaceRef, getToken)
 }
