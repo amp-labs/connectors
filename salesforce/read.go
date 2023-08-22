@@ -2,7 +2,6 @@ package salesforce
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/url"
 	"strings"
@@ -11,11 +10,9 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-var ErrNoFields = errors.New("no fields specified")
-
 // Read reads data from Salesforce. By default it will read all rows (backfill). However, if Since is set,
 // it will read only rows that have been updated since the specified time.
-func (s *Connector) Read(ctx context.Context,
+func (c *Connector) Read(ctx context.Context,
 	config common.ReadParams,
 ) (*common.ReadResult, error) {
 	var (
@@ -31,18 +28,20 @@ func (s *Connector) Read(ctx context.Context,
 	// Get the field set in SOQL format
 	fields := getFieldSet(config.Fields)
 
+	// TODO: Does this capture delete events?
+
 	switch {
 	case len(config.NextPage) > 0:
 		// If NextPage is set, then we're reading the next page of results.
 		// All that matters is the URL, the fields are ignored.
-		data, err = s.get(ctx, fmt.Sprintf("https://%s%s", s.Domain, config.NextPage))
+		data, err = c.get(ctx, fmt.Sprintf("https://%s%s", c.Domain, config.NextPage))
 	case config.Since.IsZero():
 		// If Since is not set, then we're doing a backfill. We read all rows (in pages)
 		soql := fmt.Sprintf("SELECT %s FROM %s", fields, config.ObjectName)
 
 		qp := url.Values{}
 		qp.Add("q", soql)
-		data, err = s.get(ctx, s.BaseURL+"/query/?"+qp.Encode())
+		data, err = c.get(ctx, c.BaseURL+"/query/?"+qp.Encode())
 	default:
 		// If Since is set, then we're reading only rows that have been updated since the specified time.
 		soql := fmt.Sprintf("SELECT %s FROM %s WHERE SystemModstamp > %s",
@@ -50,7 +49,7 @@ func (s *Connector) Read(ctx context.Context,
 
 		qp := url.Values{}
 		qp.Add("q", soql)
-		data, err = s.get(ctx, s.BaseURL+"/query/?"+qp.Encode())
+		data, err = c.get(ctx, c.BaseURL+"/query/?"+qp.Encode())
 	}
 
 	if err != nil {
@@ -84,7 +83,7 @@ func parseResult(data *ajson.Node) (*common.ReadResult, error) {
 	return &common.ReadResult{
 		Rows:     totalSize,
 		Data:     records,
-		NextPage: nextPage,
+		NextPage: common.NextPageToken(nextPage),
 		Done:     done,
 	}, nil
 }
@@ -99,11 +98,6 @@ func getFieldSet(fields []string) string {
 
 	return strings.Join(fields, ",")
 }
-
-var (
-	ErrNotArray  = errors.New("records is not an array")
-	ErrNotObject = errors.New("record isn't an object")
-)
 
 // getRecords returns the records from the response.
 func getRecords(node *ajson.Node) ([]map[string]interface{}, error) {
@@ -141,8 +135,6 @@ func getRecords(node *ajson.Node) ([]map[string]interface{}, error) {
 	return out, nil
 }
 
-var ErrNotString = errors.New("nextRecordsUrl isn't a string")
-
 // getNextRecordsURL returns the URL for the next page of results.
 func getNextRecordsURL(node *ajson.Node) (string, error) {
 	var nextPage string
@@ -163,8 +155,6 @@ func getNextRecordsURL(node *ajson.Node) (string, error) {
 	return nextPage, nil
 }
 
-var ErrNotBool = errors.New("done isn't a boolean")
-
 // getDone returns true if there are no more pages to read.
 func getDone(node *ajson.Node) (bool, error) {
 	var done bool
@@ -184,8 +174,6 @@ func getDone(node *ajson.Node) (bool, error) {
 
 	return done, nil
 }
-
-var ErrNotNumeric = errors.New("totalSize isn't numeric")
 
 // getTotalSize returns the total number of records that match the query.
 func getTotalSize(node *ajson.Node) (int64, error) {

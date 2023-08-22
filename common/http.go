@@ -2,7 +2,6 @@ package common
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"io"
 	"log/slog"
@@ -18,15 +17,21 @@ type Header struct {
 	Value string
 }
 
-// ErrNotJSON is returned when a response is not JSON.
-var ErrNotJSON = errors.New("response is not JSON")
+type HTTPClient interface {
+	Do(req *http.Request) (*http.Response, error)
+	CloseIdleConnections()
+}
+
+type ErrorHook func(rsp *http.Response, body []byte) error
 
 // GetJSON makes a GET request to the given URL and returns the response body as a JSON object.
 // If the response is not a 2xx, an error is returned. If the response is a 401, the caller should
 // refresh the access token and retry the request.
-func GetJSON(ctx context.Context, client *http.Client, url string, headers ...Header) (*ajson.Node, error) {
+func GetJSON(ctx context.Context, client HTTPClient, url string,
+	errorHook ErrorHook, headers ...Header,
+) (*ajson.Node, error) {
 	// Make the request, get the response body
-	res, body, err := httpGet(ctx, client, url, headers) //nolint:bodyclose
+	res, body, err := httpGet(ctx, client, url, errorHook, headers) //nolint:bodyclose
 	if err != nil {
 		return nil, err
 	}
@@ -53,11 +58,11 @@ func GetJSON(ctx context.Context, client *http.Client, url string, headers ...He
 	return jsonBody, nil
 }
 
-func httpGet(ctx context.Context, client *http.Client, url string, headers []Header) (*http.Response, []byte, error) {
+func makeJSONRequest(ctx context.Context, url string, headers []Header) (*http.Request, error) {
 	// Create a new GET request
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
-		return nil, nil, fmt.Errorf("error creating request: %w", err)
+		return nil, fmt.Errorf("error creating request: %w", err)
 	}
 
 	// Request JSON
@@ -66,6 +71,17 @@ func httpGet(ctx context.Context, client *http.Client, url string, headers []Hea
 	// Apply any custom headers
 	for _, hdr := range headers {
 		req.Header.Add(hdr.Key, hdr.Value)
+	}
+
+	return req, nil
+}
+
+func httpGet(ctx context.Context, client HTTPClient, url string,
+	errorHook ErrorHook, headers []Header,
+) (*http.Response, []byte, error) {
+	req, err := makeJSONRequest(ctx, url, headers)
+	if err != nil {
+		return nil, nil, err
 	}
 
 	// Send the request
@@ -91,13 +107,17 @@ func httpGet(ctx context.Context, client *http.Client, url string, headers []Hea
 
 	// Check the response status code
 	if res.StatusCode < 200 || res.StatusCode > 299 {
-		return nil, nil, interpretError(res, body)
+		if errorHook != nil {
+			return nil, nil, errorHook(res, body)
+		}
+
+		return nil, nil, InterpretError(res, body)
 	}
 
 	return res, body, nil
 }
 
-func interpretError(res *http.Response, body []byte) error {
+func InterpretError(res *http.Response, body []byte) error {
 	switch res.StatusCode {
 	case http.StatusUnauthorized:
 		// Access token invalid, refresh token and retry

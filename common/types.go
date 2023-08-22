@@ -1,7 +1,6 @@
 package common
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"time"
@@ -25,6 +24,9 @@ var (
 
 	// ErrUnknown represents an unknown status code response.
 	ErrUnknown = errors.New("unknown error")
+
+	// ErrNotJSON is returned when a response is not JSON.
+	ErrNotJSON = errors.New("response is not JSON")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.
@@ -39,6 +41,8 @@ type ReadParams struct {
 	Since time.Time
 }
 
+type NextPageToken string
+
 // Result from reading data.
 type ReadResult struct {
 	// Rows is the number of total rows in the result.
@@ -46,14 +50,10 @@ type ReadResult struct {
 	// Data is a list of JSON nodes, where each node represents a record that we read.
 	Data []map[string]interface{} `json:"data"`
 	// NextPage is an opaque token that can be used to get the next page of results.
-	NextPage string `json:"nextPage,omitempty"`
+	NextPage NextPageToken `json:"nextPage,omitempty"`
 	// Done is true if there are no more pages to read.
 	Done bool `json:"done,omitempty"`
 }
-
-// TokenProvider is a function that returns a token. The precise type of the
-// token is up to the API.
-type TokenProvider[Token any] func(ctx context.Context) (Token, error)
 
 // NewHTTPStatusError creates a new error with the given HTTP status.
 func NewHTTPStatusError(status int, err error) error {
