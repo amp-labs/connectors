@@ -1,7 +1,7 @@
 package salesforce
 
-func (s *Connector) Close() error {
-	s.Client.CloseIdleConnections()
+func (c *Connector) Close() error {
+	c.client.CloseIdleConnections()
 
 	return nil
 }

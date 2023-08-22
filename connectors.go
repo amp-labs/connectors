@@ -10,6 +10,8 @@ import (
 	"github.com/amp-labs/connectors/salesforce"
 )
 
+// TODO: Make a transport type that can be used to configure the http.Client.
+
 // Connector is an interface that all connectors must implement.
 type Connector interface {
 	fmt.Stringer
@@ -17,19 +19,22 @@ type Connector interface {
 
 	Name() string
 	Read(ctx context.Context, params ReadParams) (*ReadResult, error)
+
+	HTTPClient() HTTPClient
 }
 
 // API is a function that returns a Connector. It's used as a factory.
-type API[Conn Connector, Token any] func(workspaceRef string, getToken common.TokenProvider[Token]) Conn
+type API[Conn Connector, Option any] func(opts ...Option) (Conn, error)
 
 // Salesforce is an API that returns a new Salesforce Connector.
-var Salesforce API[*salesforce.Connector, string] = salesforce.NewConnector //nolint:gochecknoglobals
+var Salesforce API[*salesforce.Connector, salesforce.Option] = salesforce.NewConnector //nolint:gochecknoglobals
 
 // We re-export the following types so that they can be used by consumers of this library.
 type (
 	ReadParams      = common.ReadParams
 	ReadResult      = common.ReadResult
 	ErrorWithStatus = common.HTTPStatusError
+	HTTPClient      = common.HTTPClient
 )
 
 // We re-export the following errors so that they can be handled by consumers of this library.
@@ -54,41 +59,14 @@ var (
 )
 
 // New returns a new Connector.
-func New[Conn Connector, Token any](api API[Conn, Token], workspaceRef string, //nolint:ireturn
-	getToken func(ctx context.Context) (Token, error),
-) Connector {
-	return api(workspaceRef, getToken)
-}
-
-func NewFromProviderName(name string, workspaceRef string, //nolint:ireturn
-	getToken func(ctx context.Context) (any, error),
+func New[Conn Connector, Option any](api API[Conn, Option], //nolint:ireturn
+	opts ...Option,
 ) (Connector, error) {
-	switch name {
-	case salesforce.Name:
-		return New(Salesforce, workspaceRef, wrapStringTokenProvider(getToken)), nil
-	default:
-		return nil, fmt.Errorf("%w: %s", ErrUnknownConnector, name)
-	}
+	return api(opts...)
 }
 
 func Providers() []string {
 	return []string{
 		salesforce.Name,
-	}
-}
-
-func wrapStringTokenProvider(f func(ctx context.Context) (any, error)) func(ctx context.Context) (string, error) {
-	return func(ctx context.Context) (string, error) {
-		tok, err := f(ctx)
-		if err != nil {
-			return "", err
-		}
-
-		token, ok := tok.(string)
-		if !ok {
-			return "", fmt.Errorf("invalid token type: %T", tok) //nolint:goerr113
-		}
-
-		return token, nil
 	}
 }
