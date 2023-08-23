@@ -28,21 +28,19 @@ func (c *Connector) Read(ctx context.Context,
 	// Get the field set in SOQL format
 	fields := getFieldSet(config.Fields)
 
-	// TODO: Does this capture delete events?
-
 	switch {
 	case len(config.NextPage) > 0:
 		// If NextPage is set, then we're reading the next page of results.
 		// All that matters is the URL, the fields are ignored.
 		data, err = c.get(ctx, fmt.Sprintf("https://%s%s", c.Domain, config.NextPage))
-	case config.Since.IsZero():
+	case config.Since.IsZero() && !config.IncludeDeleted:
 		// If Since is not set, then we're doing a backfill. We read all rows (in pages)
 		soql := fmt.Sprintf("SELECT %s FROM %s", fields, config.ObjectName)
 
 		qp := url.Values{}
 		qp.Add("q", soql)
 		data, err = c.get(ctx, c.BaseURL+"/query/?"+qp.Encode())
-	default:
+	case !config.Since.IsZero() && !config.IncludeDeleted:
 		// If Since is set, then we're reading only rows that have been updated since the specified time.
 		soql := fmt.Sprintf("SELECT %s FROM %s WHERE SystemModstamp > %s",
 			fields, config.ObjectName, config.Since.Format("2006-01-02T15:04:05Z"))
@@ -50,6 +48,23 @@ func (c *Connector) Read(ctx context.Context,
 		qp := url.Values{}
 		qp.Add("q", soql)
 		data, err = c.get(ctx, c.BaseURL+"/query/?"+qp.Encode())
+	case config.Since.IsZero() && config.IncludeDeleted:
+		// If Since is not set, then we're doing a backfill. We read all rows (in pages)
+		soql := fmt.Sprintf("SELECT %s FROM %s ALL ROWS", fields, config.ObjectName)
+
+		qp := url.Values{}
+		qp.Add("q", soql)
+		data, err = c.get(ctx, c.BaseURL+"/query/?"+qp.Encode())
+	case !config.Since.IsZero() && config.IncludeDeleted:
+		// If Since is set, then we're reading only rows that have been updated since the specified time.
+		soql := fmt.Sprintf("SELECT %s FROM %s WHERE SystemModstamp > %s ALL ROWS",
+			fields, config.ObjectName, config.Since.Format("2006-01-02T15:04:05Z"))
+
+		qp := url.Values{}
+		qp.Add("q", soql)
+		data, err = c.get(ctx, c.BaseURL+"/query/?"+qp.Encode())
+	default:
+		return nil, ErrUnhandledCase
 	}
 
 	if err != nil {

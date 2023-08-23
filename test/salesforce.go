@@ -3,13 +3,10 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"flag"
 	"fmt"
 	"log/slog"
 	"os"
-	"path/filepath"
-	"strings"
 	"time"
 
 	"github.com/amp-labs/connectors"
@@ -31,19 +28,6 @@ func main() {
 	os.Exit(mainFn())
 }
 
-type sfdxLogin struct {
-	AccessToken                     string `json:"accessToken"`
-	InstanceURL                     string `json:"instanceUrl"`
-	OrgId                           string `json:"orgId"`
-	Username                        string `json:"username"`
-	LoginURL                        string `json:"loginUrl"`
-	RefreshToken                    string `json:"refreshToken"`
-	ClientId                        string `json:"clientId"`
-	IsDevHub                        bool   `json:"isDevHub"`
-	InstanceApiVersion              string `json:"instanceApiVersion"`
-	InstanceApiVersionLastRetrieved string `json:"instanceApiVersionLastRetrieved"`
-}
-
 func mainFn() int {
 	instance := flag.String("instance", "ampersand-dev-ed.develop", "Salesforce instance")
 	flag.Parse()
@@ -54,32 +38,29 @@ func mainFn() int {
 	logger := slog.New(handler)
 	slog.SetDefault(logger)
 
-	creds, err := readLoginCreds()
-	if err != nil {
-		slog.Error("Error reading login credentials", "error", err)
-
-		return 1
-	}
-
 	cfg := &oauth2.Config{
-		ClientID:     creds.ClientId,
-		ClientSecret: "",
+		ClientID:     "<client id>",
+		ClientSecret: "<client secret>",
 		Endpoint: oauth2.Endpoint{
-			AuthURL:   "https://login.salesforce.com/services/oauth2/authorize",
-			TokenURL:  "https://login.salesforce.com/services/oauth2/token",
+			AuthURL:   fmt.Sprintf("https://%s.my.salesforce.com/services/oauth2/authorize", *instance),
+			TokenURL:  fmt.Sprintf("https://%s.my.salesforce.com/services/oauth2/token", *instance),
 			AuthStyle: oauth2.AuthStyleInParams,
 		},
 	}
 
 	tok := &oauth2.Token{
-		AccessToken:  creds.AccessToken,
-		RefreshToken: creds.RefreshToken,
+		AccessToken:  "<access token>",
+		RefreshToken: "<refresh token>",
 		TokenType:    "bearer",
-		Expiry:       time.Now().Add(-1 * time.Hour),
+		Expiry:       time.Now().Add(-1 * time.Hour), // just pretend it's expired already, whatever, it'll fetch a new one.
 	}
 
+	ctx := context.Background()
+
 	// Create a new Salesforce connector, with a token provider that uses the sfdx CLI to fetch an access token.
-	sfc, err := connectors.New(connectors.Salesforce, salesforce.WithConfig(cfg), salesforce.WithToken(tok),
+	sfc, err := connectors.Salesforce.New(ctx,
+		salesforce.WithOAuthConfig(cfg),
+		salesforce.WithOAuthToken(tok),
 		salesforce.WithWorkspace(*instance))
 	if err != nil {
 		slog.Error("Error creating Salesforce connector", "error", err)
@@ -91,7 +72,7 @@ func mainFn() int {
 		_ = sfc.Close()
 	}()
 
-	if err := testConnector(sfc); err != nil {
+	if err := testConnector(ctx, sfc); err != nil {
 		slog.Error("Error testing", "connector", sfc, "error", err)
 
 		return 1
@@ -100,15 +81,16 @@ func mainFn() int {
 	return 0
 }
 
-func testConnector(conn connectors.Connector) error {
+func testConnector(ctx context.Context, conn connectors.Connector) error {
 	// Create a context with a timeout
-	ctx, done := context.WithTimeout(context.Background(), TimeoutSeconds*time.Second)
+	ctx, done := context.WithTimeout(ctx, TimeoutSeconds*time.Second)
 	defer done()
 
 	// Read some data from Salesforce
 	res, err := conn.Read(ctx, connectors.ReadParams{
-		ObjectName: "Account",
-		Fields:     []string{"Id", "Name", "BillingCity"},
+		ObjectName:     "Account",
+		Fields:         []string{"Id", "Name", "BillingCity", "IsDeleted"},
+		IncludeDeleted: true,
 	})
 	if err != nil {
 		return fmt.Errorf("error reading from Salesforce: %w", err)
@@ -124,94 +106,4 @@ func testConnector(conn connectors.Connector) error {
 	_, _ = os.Stdout.WriteString("\n")
 
 	return nil
-}
-
-/*
-// lol, don't do this in production.
-func getToken(ctx context.Context, login string) (string, error) {
-	cmd := exec.CommandContext(ctx, "sfdx", "org", "display", "--target-org", login)
-	cmd.Stdin = bytes.NewReader([]byte{})
-
-	slog.Info("Fetching salesforce access token...")
-
-	out, err := cmd.Output()
-	if err != nil {
-		ee := new(exec.ExitError)
-		if errors.As(err, &ee) {
-			return "", errors.New(string(ee.Stderr)) //nolint:goerr113
-		} else {
-			return "", err
-		}
-	}
-
-	lines := strings.Split(string(out), "\n")
-	for _, line := range lines {
-		line = strings.TrimSpace(line)
-		if strings.HasPrefix(line, "Access Token") {
-			line = strings.TrimPrefix(line, "Access Token")
-			line = strings.TrimSpace(line)
-
-			slog.Info("Salesforce access token fetched", "token", line)
-
-			return line, nil
-		}
-	}
-
-	return "", ErrTokenMissing
-}
-*/
-
-func readLoginCreds() (*sfdxLogin, error) {
-	file, err := findLoginFile()
-	if err != nil {
-		return nil, err
-	}
-
-	login, err := os.Open(file)
-	if err != nil {
-		return nil, err
-	}
-
-	defer func() {
-		_ = login.Close()
-	}()
-
-	var creds sfdxLogin
-	if err := json.NewDecoder(login).Decode(&creds); err != nil {
-		return nil, err
-	}
-
-	return &creds, nil
-}
-
-var ErrNoLoginFile = errors.New("no login file found")
-
-func findLoginFile() (string, error) {
-	home, err := os.UserHomeDir()
-	if err != nil {
-		return "", err
-	}
-
-	dir := filepath.Join(home, ".sfdx")
-
-	ents, err := os.ReadDir(dir)
-	if err != nil {
-		return "", err
-	}
-
-	for _, ent := range ents {
-		if ent.IsDir() {
-			continue
-		}
-
-		if ent.Name() == "alias.json" {
-			continue
-		}
-
-		if strings.HasSuffix(ent.Name(), ".json") {
-			return filepath.Join(dir, ent.Name()), nil
-		}
-	}
-
-	return "", ErrNoLoginFile
 }

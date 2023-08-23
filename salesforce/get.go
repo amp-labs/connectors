@@ -16,7 +16,7 @@ func (c *Connector) get(ctx context.Context, url string) (*ajson.Node, error) {
 	// Retry will retry the function until it returns a nil error, or a permanent (non-retryable) error.
 	return again.Retry[*ajson.Node](ctx, func(ctx context.Context) (*ajson.Node, error) {
 		// Make the request
-		node, err := common.GetJSON(ctx, c.client, url, c.interpretError)
+		node, err := common.GetJSON(ctx, c.Client, url, c.interpretError)
 		if err != nil {
 			switch {
 			case errors.Is(err, common.ErrApiDisabled):
