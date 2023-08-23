@@ -53,6 +53,7 @@ func makeSOQL(config common.ReadParams) (string, error) {
 
 	hasWhere := false
 	soql := fmt.Sprintf("SELECT %s FROM %s", fields, config.ObjectName)
+
 	if !config.Since.IsZero() {
 		soql += fmt.Sprintf(" WHERE SystemModstamp > %s", config.Since.Format("2006-01-02T15:04:05Z"))
 		hasWhere = true
@@ -64,6 +65,7 @@ func makeSOQL(config common.ReadParams) (string, error) {
 		} else {
 			soql += " AND"
 		}
+
 		soql += " IsDeleted = true"
 	}
 
