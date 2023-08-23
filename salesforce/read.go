@@ -12,59 +12,27 @@ import (
 
 // Read reads data from Salesforce. By default it will read all rows (backfill). However, if Since is set,
 // it will read only rows that have been updated since the specified time.
-func (c *Connector) Read(ctx context.Context,
-	config common.ReadParams,
-) (*common.ReadResult, error) {
+func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
 	var (
 		data *ajson.Node
 		err  error
 	)
-
-	// Make sure we have at least one field
-	if len(config.Fields) == 0 {
-		return nil, ErrNoFields
-	}
-
-	// Get the field set in SOQL format
-	fields := getFieldSet(config.Fields)
 
 	switch {
 	case len(config.NextPage) > 0:
 		// If NextPage is set, then we're reading the next page of results.
 		// All that matters is the URL, the fields are ignored.
 		data, err = c.get(ctx, fmt.Sprintf("https://%s%s", c.Domain, config.NextPage))
-	case config.Since.IsZero() && !config.IncludeDeleted:
-		// If Since is not set, then we're doing a backfill. We read all rows (in pages)
-		soql := fmt.Sprintf("SELECT %s FROM %s", fields, config.ObjectName)
-
-		qp := url.Values{}
-		qp.Add("q", soql)
-		data, err = c.get(ctx, c.BaseURL+"/query/?"+qp.Encode())
-	case !config.Since.IsZero() && !config.IncludeDeleted:
-		// If Since is set, then we're reading only rows that have been updated since the specified time.
-		soql := fmt.Sprintf("SELECT %s FROM %s WHERE SystemModstamp > %s",
-			fields, config.ObjectName, config.Since.Format("2006-01-02T15:04:05Z"))
-
-		qp := url.Values{}
-		qp.Add("q", soql)
-		data, err = c.get(ctx, c.BaseURL+"/query/?"+qp.Encode())
-	case config.Since.IsZero() && config.IncludeDeleted:
-		// If Since is not set, then we're doing a backfill. We read all rows (in pages)
-		soql := fmt.Sprintf("SELECT %s FROM %s ALL ROWS", fields, config.ObjectName)
-
-		qp := url.Values{}
-		qp.Add("q", soql)
-		data, err = c.get(ctx, c.BaseURL+"/query/?"+qp.Encode())
-	case !config.Since.IsZero() && config.IncludeDeleted:
-		// If Since is set, then we're reading only rows that have been updated since the specified time.
-		soql := fmt.Sprintf("SELECT %s FROM %s WHERE SystemModstamp > %s ALL ROWS",
-			fields, config.ObjectName, config.Since.Format("2006-01-02T15:04:05Z"))
-
-		qp := url.Values{}
-		qp.Add("q", soql)
-		data, err = c.get(ctx, c.BaseURL+"/query/?"+qp.Encode())
 	default:
-		return nil, ErrUnhandledCase
+		// If Since is not set, then we're doing a backfill. We read all rows (in pages)
+		soql, soqlErr := makeSOQL(config)
+		if soqlErr != nil {
+			return nil, soqlErr
+		}
+
+		qp := url.Values{}
+		qp.Add("q", soql)
+		data, err = c.get(ctx, c.BaseURL+"/query/?"+qp.Encode())
 	}
 
 	if err != nil {
@@ -72,6 +40,27 @@ func (c *Connector) Read(ctx context.Context,
 	}
 
 	return parseResult(data)
+}
+
+func makeSOQL(config common.ReadParams) (string, error) {
+	// Make sure we have at least one field
+	if len(config.Fields) == 0 {
+		return "", ErrNoFields
+	}
+
+	// Get the field set in SOQL format
+	fields := getFieldSet(config.Fields)
+
+	soql := fmt.Sprintf("SELECT %s FROM %s", fields, config.ObjectName)
+	if !config.Since.IsZero() {
+		soql += fmt.Sprintf(" WHERE SystemModstamp > %s", config.Since.Format("2006-01-02T15:04:05Z"))
+	}
+
+	if config.IncludeDeleted {
+		soql += " ALL ROWS"
+	}
+
+	return soql, nil
 }
 
 func parseResult(data *ajson.Node) (*common.ReadResult, error) {
