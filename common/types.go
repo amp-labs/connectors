@@ -39,8 +39,8 @@ type ReadParams struct {
 	NextPage string
 	// Since is a timestamp that can be used to get only records that have changed since that time.
 	Since time.Time
-	// IncludeDeleted is true if we want to read deleted records as well as active ones.
-	IncludeDeleted bool
+	// Deleted is true if we want to read deleted records instead of active records.
+	Deleted bool
 }
 
 type NextPageToken string
