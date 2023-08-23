@@ -1,6 +1,7 @@
 package salesforce
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/amp-labs/connectors/common"
@@ -14,15 +15,15 @@ const (
 type Connector struct {
 	Domain  string
 	BaseURL string
-	client  common.HTTPClient
+	Client  common.HTTPClient
 }
 
 func (c *Connector) HTTPClient() common.HTTPClient { //nolint:ireturn
-	return c.client
+	return c.Client
 }
 
 // NewConnector returns a new Salesforce connector.
-func NewConnector(opts ...Option) (*Connector, error) {
+func NewConnector(ctx context.Context, opts ...Option) (*Connector, error) {
 	params := &sfParams{}
 	for _, opt := range opts {
 		opt(params)
@@ -38,6 +39,6 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	return &Connector{
 		BaseURL: fmt.Sprintf("https://%s.my.salesforce.com/services/data/%s", params.workspaceRef, apiVersion),
 		Domain:  fmt.Sprintf("%s.my.salesforce.com", params.workspaceRef),
-		client:  wrapClient(newHTTPClient(params)),
+		Client:  newHTTPClient(ctx, params),
 	}, nil
 }

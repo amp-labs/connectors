@@ -3,25 +3,24 @@ package salesforce
 import (
 	"net/http"
 
-	"github.com/amp-labs/connectors/common"
 	"golang.org/x/oauth2"
 )
 
 type Option func(params *sfParams)
 
-func WithClient(client common.HTTPClient) Option {
+func WithClient(client *http.Client) Option {
 	return func(params *sfParams) {
 		params.client = client
 	}
 }
 
-func WithToken(token *oauth2.Token) Option {
+func WithOAuthToken(token *oauth2.Token) Option {
 	return func(params *sfParams) {
 		params.token = token
 	}
 }
 
-func WithConfig(config *oauth2.Config) Option {
+func WithOAuthConfig(config *oauth2.Config) Option {
 	return func(params *sfParams) {
 		params.config = config
 	}
@@ -40,7 +39,7 @@ func WithWorkspace(workspaceRef string) Option {
 }
 
 type sfParams struct {
-	client       common.HTTPClient
+	client       *http.Client
 	workspaceRef string
 	token        *oauth2.Token
 	config       *oauth2.Config

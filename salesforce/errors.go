@@ -12,4 +12,5 @@ var (
 	ErrMissingRefreshToken = errors.New("missing refresh token")
 	ErrMissingWorkspaceRef = errors.New("missing salesforce workspace ref")
 	ErrMissingOauthConfig  = errors.New("missing oauth config")
+	ErrUnhandledCase       = errors.New("unhandled configuration case")
 )
