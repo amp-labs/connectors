@@ -88,9 +88,8 @@ func testConnector(ctx context.Context, conn connectors.Connector) error {
 
 	// Read some data from Salesforce
 	res, err := conn.Read(ctx, connectors.ReadParams{
-		ObjectName:     "Account",
-		Fields:         []string{"Id", "Name", "BillingCity", "IsDeleted"},
-		IncludeDeleted: true,
+		ObjectName: "Account",
+		Fields:     []string{"Id", "Name", "BillingCity", "IsDeleted"},
 	})
 	if err != nil {
 		return fmt.Errorf("error reading from Salesforce: %w", err)
