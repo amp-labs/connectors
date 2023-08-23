@@ -14,10 +14,11 @@ import (
 	"golang.org/x/oauth2"
 )
 
-// To run this test, make sure you have the sfdx CLI installed, and are logged in to a Salesforce instance.
+// To run this test, first generate a Salesforce Access token
+// (https://ampersand.slab.com/posts/salesforce-api-guide-go1d9wnj#h0ciq-generate-an-access-token)
 
-// Then add your username as a command line argument, e.g.
-// go run test/salesforce.go -login myusername@mydomain
+// Then set the appropriate oauth fields below, and then run.
+// go run test/salesforce.go
 
 // You can optionally add an `instance` argument to specify a Salesforce instance,
 // or leave empty to use the Ampersand's dev instance.
