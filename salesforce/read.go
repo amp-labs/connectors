@@ -51,13 +51,20 @@ func makeSOQL(config common.ReadParams) (string, error) {
 	// Get the field set in SOQL format
 	fields := getFieldSet(config.Fields)
 
+	hasWhere := false
 	soql := fmt.Sprintf("SELECT %s FROM %s", fields, config.ObjectName)
 	if !config.Since.IsZero() {
 		soql += fmt.Sprintf(" WHERE SystemModstamp > %s", config.Since.Format("2006-01-02T15:04:05Z"))
+		hasWhere = true
 	}
 
-	if config.IncludeDeleted {
-		soql += " ALL ROWS"
+	if config.Deleted {
+		if !hasWhere {
+			soql += " WHERE"
+		} else {
+			soql += " AND"
+		}
+		soql += " IsDeleted = true"
 	}
 
 	return soql, nil
