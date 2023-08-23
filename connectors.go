@@ -86,7 +86,7 @@ func APINames() []string {
 // New returns a new Connector. The signature is generic to facilitate more flexible caller setup
 // (e.g. constructing a new connector based on parsing a config file, whose exact params
 // aren't known until runtime). However, if you can use the API.New form, it's preferred,
-// since you get type safety and more intuitive argument names.
+// since you get type safety and more readable code.
 func New(ctx context.Context, apiName string, opts map[string]any) (Connector, error) { //nolint:ireturn
 	if strings.EqualFold(apiName, salesforce.Name) {
 		return newSalesforce(ctx, opts)
@@ -95,58 +95,53 @@ func New(ctx context.Context, apiName string, opts map[string]any) (Connector, e
 	return nil, fmt.Errorf("%w: %s", ErrUnknownConnector, apiName)
 }
 
-func newSalesforce(ctx context.Context, opts map[string]any) (Connector, error) {
+func newSalesforce(ctx context.Context, opts map[string]any) (Connector, error) { //nolint:ireturn
 	var options []salesforce.Option
 
-	c, ok := opts["client"]
-	if ok {
-		cl, ok := c.(*http.Client)
-		if !ok {
-			return nil, fmt.Errorf("invalid client type: %T (expected *http.Client)", c)
-		}
-
-		options = append(options, salesforce.WithClient(cl))
+	c, valid := getParam[*http.Client](opts, "client")
+	if valid {
+		options = append(options, salesforce.WithClient(c))
 	}
 
-	w, ok := opts["workspace"]
-	if ok {
-		wr, ok := w.(string)
-		if !ok {
-			return nil, fmt.Errorf("invalid workspace type: %T (expected string)", w)
-		}
-
-		options = append(options, salesforce.WithWorkspace(wr))
+	w, valid := getParam[string](opts, "workspace")
+	if valid {
+		options = append(options, salesforce.WithWorkspace(w))
 	}
 
-	ot, ok := opts["oauth_token"]
-	if ok {
-		otk, ok := ot.(*oauth2.Token)
-		if !ok {
-			return nil, fmt.Errorf("invalid oauth_token type: %T (expected *oauth2.Token)", ot)
-		}
-
-		options = append(options, salesforce.WithOAuthToken(otk))
+	ot, valid := getParam[*oauth2.Token](opts, "oauth_token")
+	if valid {
+		options = append(options, salesforce.WithOAuthToken(ot))
 	}
 
-	oc, ok := opts["oauth_config"]
-	if ok {
-		ocf, ok := oc.(*oauth2.Config)
-		if !ok {
-			return nil, fmt.Errorf("invalid oauth_config type: %T (expected *oauth2.Config)", oc)
-		}
-
-		options = append(options, salesforce.WithOAuthConfig(ocf))
+	oc, valid := getParam[*oauth2.Config](opts, "oauth_config")
+	if valid {
+		options = append(options, salesforce.WithOAuthConfig(oc))
 	}
 
-	ts, ok := opts["token_source"]
-	if ok {
-		tsk, ok := ts.(oauth2.TokenSource)
-		if !ok {
-			return nil, fmt.Errorf("invalid token_source type: %T (expected oauth2.TokenSource)", ts)
-		}
-
-		options = append(options, salesforce.WithTokenSource(tsk))
+	ts, valid := getParam[oauth2.TokenSource](opts, "token_source")
+	if valid {
+		options = append(options, salesforce.WithTokenSource(ts))
 	}
 
 	return Salesforce.New(ctx, options...)
+}
+
+func getParam[A any](opts map[string]any, key string) (A, bool) { //nolint:ireturn
+	var zero A
+
+	if opts == nil {
+		return zero, false
+	}
+
+	val, present := opts[key]
+	if !present {
+		return zero, false
+	}
+
+	a, ok := val.(A)
+	if !ok {
+		return zero, false
+	}
+
+	return a, true
 }
