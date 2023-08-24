@@ -30,7 +30,7 @@ func main() {
 }
 
 func mainFn() int {
-	instance := flag.String("instance", "ampersand-dev-ed.develop", "Salesforce instance")
+	subdomain := flag.String("subdomain", "ampersand-dev-ed.develop", "Salesforce subdomain")
 	flag.Parse()
 
 	handler := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
@@ -43,8 +43,8 @@ func mainFn() int {
 		ClientID:     "<client id>",
 		ClientSecret: "<client secret>",
 		Endpoint: oauth2.Endpoint{
-			AuthURL:   fmt.Sprintf("https://%s.my.salesforce.com/services/oauth2/authorize", *instance),
-			TokenURL:  fmt.Sprintf("https://%s.my.salesforce.com/services/oauth2/token", *instance),
+			AuthURL:   fmt.Sprintf("https://%s.my.salesforce.com/services/oauth2/authorize", *subdomain),
+			TokenURL:  fmt.Sprintf("https://%s.my.salesforce.com/services/oauth2/token", *subdomain),
 			AuthStyle: oauth2.AuthStyleInParams,
 		},
 	}
@@ -62,7 +62,7 @@ func mainFn() int {
 	sfc, err := connectors.Salesforce.New(ctx,
 		salesforce.WithOAuthConfig(cfg),
 		salesforce.WithOAuthToken(tok),
-		salesforce.WithWorkspace(*instance))
+		salesforce.WithSubdomain(*subdomain))
 	if err != nil {
 		slog.Error("Error creating Salesforce connector", "error", err)
 

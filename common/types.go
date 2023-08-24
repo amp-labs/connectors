@@ -13,6 +13,9 @@ var (
 	// ErrApiDisabled means a customer didn't enable this API on their SaaS instance.
 	ErrApiDisabled = errors.New("API disabled")
 
+	// ErrForbidden means the user doesn't have access to this resource.
+	ErrForbidden = errors.New("forbidden")
+
 	// ErrRetryable represents a temporary error. Can retry.
 	ErrRetryable = errors.New("retryable error")
 
@@ -32,15 +35,15 @@ var (
 // ReadParams defines how we are reading data from a SaaS API.
 type ReadParams struct {
 	// The name of the object we are reading, e.g. "Account"
-	ObjectName string
+	ObjectName string // required
 	// The fields we are reading from the object, e.g. ["Id", "Name", "BillingCity"]
-	Fields []string
+	Fields []string // required, at least one field needed
 	// NextPage is an opaque token that can be used to get the next page of results.
-	NextPage string
+	NextPage string // optional, only set this if you want to read the next page of results
 	// Since is a timestamp that can be used to get only records that have changed since that time.
-	Since time.Time
+	Since time.Time // optional, omit this to fetch all records
 	// Deleted is true if we want to read deleted records instead of active records.
-	Deleted bool
+	Deleted bool // optional, defaults to false
 }
 
 type NextPageToken string

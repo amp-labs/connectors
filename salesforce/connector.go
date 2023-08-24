@@ -37,8 +37,8 @@ func NewConnector(ctx context.Context, opts ...Option) (*Connector, error) {
 	}
 
 	return &Connector{
-		BaseURL: fmt.Sprintf("https://%s.my.salesforce.com/services/data/%s", params.workspaceRef, apiVersion),
-		Domain:  fmt.Sprintf("%s.my.salesforce.com", params.workspaceRef),
+		BaseURL: fmt.Sprintf("https://%s.my.salesforce.com/services/data/%s", params.subdomain, apiVersion),
+		Domain:  fmt.Sprintf("%s.my.salesforce.com", params.subdomain),
 		Client:  newHTTPClient(ctx, params),
 	}, nil
 }

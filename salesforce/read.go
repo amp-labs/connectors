@@ -18,13 +18,11 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		err  error
 	)
 
-	switch {
-	case len(config.NextPage) > 0:
+	if len(config.NextPage) > 0 {
 		// If NextPage is set, then we're reading the next page of results.
 		// All that matters is the URL, the fields are ignored.
 		data, err = c.get(ctx, fmt.Sprintf("https://%s%s", c.Domain, config.NextPage))
-	default:
-		// If Since is not set, then we're doing a backfill. We read all rows (in pages)
+	} else {
 		soql, soqlErr := makeSOQL(config)
 		if soqlErr != nil {
 			return nil, soqlErr
@@ -42,6 +40,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	return parseResult(data)
 }
 
+// makeSOQL returns the SOQL query for the desired read operation.
 func makeSOQL(config common.ReadParams) (string, error) {
 	// Make sure we have at least one field
 	if len(config.Fields) == 0 {
@@ -54,6 +53,7 @@ func makeSOQL(config common.ReadParams) (string, error) {
 	hasWhere := false
 	soql := fmt.Sprintf("SELECT %s FROM %s", fields, config.ObjectName)
 
+	// If Since is not set, then we're doing a backfill. We read all rows (in pages)
 	if !config.Since.IsZero() {
 		soql += fmt.Sprintf(" WHERE SystemModstamp > %s", config.Since.Format("2006-01-02T15:04:05Z"))
 		hasWhere = true
@@ -72,6 +72,7 @@ func makeSOQL(config common.ReadParams) (string, error) {
 	return soql, nil
 }
 
+// parseResult parses the response from the Salesforce API. A 2xx return type is assumed.
 func parseResult(data *ajson.Node) (*common.ReadResult, error) {
 	totalSize, err := getTotalSize(data)
 	if err != nil {

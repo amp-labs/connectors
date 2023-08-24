@@ -39,6 +39,8 @@ linters:
     - wrapcheck
     # Buggy, it complains about unused nolint rules, when those nolint rules are actually used (and removing them cause other lint errors)
     - nolintlint
+    # Named returns are helpful if there are multiple return values of the same type, and acts as self-documentation of the function.
+    - nonamedreturns
 linters-settings:
   # See https://golangci-lint.run/usage/linters#revive
   revive:
@@ -51,6 +53,10 @@ linters-settings:
   # See https://staticcheck.io/docs/configuration/options/#checks
   stylecheck:
     checks: ["all", "-ST1003"]
+  varnamelen:
+    # The longest distance, in source lines, that is being considered a "small scope" where it is ok to use short variable names.
+    # The default is 5, which is quite strict.
+    max-distance: 10
 
 issues:
   exclude-rules:
