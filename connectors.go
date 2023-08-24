@@ -21,14 +21,14 @@ type Connector interface {
 }
 
 // API is a function that returns a Connector. It's used as a factory.
-type API[Conn Connector, Option any] func(ctx context.Context, opts ...Option) (Conn, error)
+type API[Conn Connector, Option any] func(opts ...Option) (Conn, error)
 
-func (a API[Conn, Option]) New(ctx context.Context, opts ...Option) (Connector, error) { //nolint:ireturn
+func (a API[Conn, Option]) New(opts ...Option) (Connector, error) { //nolint:ireturn
 	if a == nil {
 		return nil, ErrUnknownConnector
 	}
 
-	return a(getContext(ctx), opts...)
+	return a(opts...)
 }
 
 // Salesforce is an API that returns a new Salesforce Connector.
@@ -62,15 +62,6 @@ var (
 	ErrUnknownConnector = errors.New("unknown connector")
 )
 
-// getContext returns a context, or a background context if the given context is nil.
-func getContext(ctx context.Context) context.Context {
-	if ctx == nil {
-		return context.Background()
-	} else {
-		return ctx
-	}
-}
-
 // APINames returns a list of supported connector names.
 func APINames() []string {
 	return []string{
@@ -82,21 +73,21 @@ func APINames() []string {
 // (e.g. constructing a new connector based on parsing a config file, whose exact params
 // aren't known until runtime). However, if you can use the API.New form, it's preferred,
 // since you get type safety and more readable code.
-func New(ctx context.Context, apiName string, opts map[string]any) (Connector, error) { //nolint:ireturn
+func New(apiName string, opts map[string]any) (Connector, error) { //nolint:ireturn
 	if strings.EqualFold(apiName, salesforce.Name) {
-		return newSalesforce(ctx, opts)
+		return newSalesforce(opts)
 	}
 
 	return nil, fmt.Errorf("%w: %s", ErrUnknownConnector, apiName)
 }
 
 // newSalesforce returns a new Salesforce Connector, by unwrapping the options and passing them to the Salesforce API.
-func newSalesforce(ctx context.Context, opts map[string]any) (Connector, error) { //nolint:ireturn
+func newSalesforce(opts map[string]any) (Connector, error) { //nolint:ireturn
 	var options []salesforce.Option
 
-	c, valid := getParam[*common.JSONHTTPClient](opts, "client")
+	c, valid := getParam[common.AuthenticatedHTTPClient](opts, "client")
 	if valid {
-		options = append(options, salesforce.WithClient(c))
+		options = append(options, salesforce.WithAuthenticatedClient(c))
 	}
 
 	w, valid := getParam[string](opts, "workspace")
@@ -104,7 +95,7 @@ func newSalesforce(ctx context.Context, opts map[string]any) (Connector, error) 
 		options = append(options, salesforce.WithSubdomain(w))
 	}
 
-	return Salesforce.New(ctx, options...)
+	return Salesforce.New(options...)
 }
 
 // getParam returns the value of the given key, if present, safely cast to an assumed type.

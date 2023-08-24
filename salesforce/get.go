@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"log/slog"
-	"net/http"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/jdvr/go-again"
@@ -41,8 +40,4 @@ func (c *Connector) get(ctx context.Context, url string) (*ajson.Node, error) {
 		// Success
 		return node, nil
 	})
-}
-
-func (c *Connector) interpretError(rsp *http.Response, body []byte) error {
-	return common.InterpretError(rsp, body)
 }

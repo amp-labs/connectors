@@ -1,7 +1,6 @@
 package salesforce
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/amp-labs/connectors/common"
@@ -19,7 +18,19 @@ type Connector struct {
 }
 
 // NewConnector returns a new Salesforce connector.
-func NewConnector(ctx context.Context, opts ...Option) (*Connector, error) {
+func NewConnector(opts ...Option) (conn *Connector, outErr error) {
+	defer func() {
+		if re := recover(); re != nil {
+			tmp, ok := re.(error)
+			if !ok {
+				panic(re)
+			}
+
+			outErr = tmp
+			conn = nil
+		}
+	}()
+
 	params := &sfParams{}
 	for _, opt := range opts {
 		opt(params)
