@@ -54,7 +54,7 @@ func main() {
   }
 
   // Make a request to Salesforce
-  result, err := client.Read(connectors.ReadConfig{
+  result, err := client.Read(context.Background(), connectors.ReadConfig{
     ObjectName: "Contact",
     Fields: []string{"FirstName", "LastName", "Email"},
   })
