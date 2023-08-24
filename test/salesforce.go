@@ -6,11 +6,11 @@ import (
 	"flag"
 	"fmt"
 	"log/slog"
+	"net/http"
 	"os"
 	"time"
 
 	"github.com/amp-labs/connectors"
-	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/salesforce"
 	"golang.org/x/oauth2"
 )
@@ -58,16 +58,10 @@ func mainFn() int {
 	}
 
 	ctx := context.Background()
-	client, err := common.NewOAuthHTTPClient(ctx, common.WithOAuthConfig(cfg), common.WithOAuthToken(tok))
-	if err != nil {
-		slog.Error("Error creating OAuth client", "error", err)
-
-		return 1
-	}
 
 	// Create a new Salesforce connector, with a token provider that uses the sfdx CLI to fetch an access token.
-	sfc, err := connectors.Salesforce.New(ctx,
-		salesforce.WithClient(client),
+	sfc, err := connectors.Salesforce.New(
+		salesforce.WithClient(ctx, http.DefaultClient, cfg, tok),
 		salesforce.WithSubdomain(*subdomain))
 	if err != nil {
 		slog.Error("Error creating Salesforce connector", "error", err)
