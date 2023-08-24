@@ -58,7 +58,7 @@ type ReadParams struct {
 // will expire after some period of time. So long-term storage of this token is not recommended.
 type NextPageToken string
 
-// ReadResult is what's returned from reading data via the Read call
+// ReadResult is what's returned from reading data via the Read call.
 type ReadResult struct {
 	// Rows is the number of total rows in the result.
 	Rows int64 `json:"rows"`

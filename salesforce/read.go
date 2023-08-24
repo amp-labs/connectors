@@ -20,17 +20,32 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 
 	if len(config.NextPage) > 0 {
 		// If NextPage is set, then we're reading the next page of results.
-		// All that matters is the URL, the fields are ignored.
-		data, err = c.get(ctx, fmt.Sprintf("https://%s%s", c.Domain, config.NextPage))
+		// All that matters is the NextPage URL, the fields are ignored.
+		location, joinErr := url.JoinPath(fmt.Sprintf("https://%s", c.Domain), config.NextPage)
+		if joinErr != nil {
+			return nil, joinErr
+		}
+
+		data, err = c.get(ctx, location)
 	} else {
+		// If NextPage is not set, then we're reading the first page of results.
+		// We need to construct the SOQL query and then make the request.
+
 		soql, soqlErr := makeSOQL(config)
 		if soqlErr != nil {
 			return nil, soqlErr
 		}
 
+		// Encode the SOQL query as a URL parameter
 		qp := url.Values{}
 		qp.Add("q", soql)
-		data, err = c.get(ctx, c.BaseURL+"/query/?"+qp.Encode())
+
+		location, joinErr := url.JoinPath(c.BaseURL, "/query/")
+		if joinErr != nil {
+			return nil, joinErr
+		}
+
+		data, err = c.get(ctx, location+"?"+qp.Encode())
 	}
 
 	if err != nil {

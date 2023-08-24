@@ -23,8 +23,8 @@ type Connector interface {
 	// times to read all the data. The caller is responsible for paging, by
 	// passing the NextPage value correctly, and by terminating the loop when
 	// Done is true. The caller is also responsible for handling errors.
-	// Authentication errors are handled internally, but all other errors are
-	// returned to the caller.
+	// Authentication corner cases are handled internally, but all other errors
+	// are returned to the caller.
 	Read(ctx context.Context, params ReadParams) (*ReadResult, error)
 }
 
