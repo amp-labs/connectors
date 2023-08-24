@@ -10,6 +10,6 @@ var (
 	ErrNotBool             = errors.New("done isn't a boolean")
 	ErrNotNumeric          = errors.New("totalSize isn't numeric")
 	ErrMissingRefreshToken = errors.New("missing refresh token")
-	ErrMissingWorkspaceRef = errors.New("missing salesforce workspace ref")
+	ErrMissingWorkspaceRef = errors.New("missing Salesforce workspace name")
 	ErrMissingOauthConfig  = errors.New("missing oauth config")
 )
