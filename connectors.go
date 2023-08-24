@@ -95,6 +95,7 @@ func New(ctx context.Context, apiName string, opts map[string]any) (Connector, e
 	return nil, fmt.Errorf("%w: %s", ErrUnknownConnector, apiName)
 }
 
+// newSalesforce returns a new Salesforce Connector, by unwrapping the options and passing them to the Salesforce API.
 func newSalesforce(ctx context.Context, opts map[string]any) (Connector, error) { //nolint:ireturn
 	var options []salesforce.Option
 
@@ -105,7 +106,7 @@ func newSalesforce(ctx context.Context, opts map[string]any) (Connector, error) 
 
 	w, valid := getParam[string](opts, "workspace")
 	if valid {
-		options = append(options, salesforce.WithWorkspace(w))
+		options = append(options, salesforce.WithSubdomain(w))
 	}
 
 	ot, valid := getParam[*oauth2.Token](opts, "oauth_token")

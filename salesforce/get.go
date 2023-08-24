@@ -22,6 +22,9 @@ func (c *Connector) get(ctx context.Context, url string) (*ajson.Node, error) {
 			case errors.Is(err, common.ErrApiDisabled):
 				// Not retryable, so return a permanent error
 				return nil, again.NewPermanentError(err)
+			case errors.Is(err, common.ErrForbidden):
+				// Not retryable, so return a permanent error
+				return nil, again.NewPermanentError(err)
 			case errors.Is(err, common.ErrAccessToken):
 				// Retryable, so just log and retry
 				slog.Warn("Access token invalid, retrying", "error", err)
