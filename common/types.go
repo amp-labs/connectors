@@ -30,6 +30,10 @@ var (
 
 	// ErrNotJSON is returned when a response is not JSON.
 	ErrNotJSON = errors.New("response is not JSON")
+
+	ErrMissingOauthConfig = errors.New("missing OAuth config")
+
+	ErrMissingRefreshToken = errors.New("missing refresh token")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.
