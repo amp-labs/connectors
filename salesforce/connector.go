@@ -15,11 +15,7 @@ const (
 type Connector struct {
 	Domain  string
 	BaseURL string
-	Client  common.HTTPClient
-}
-
-func (c *Connector) HTTPClient() common.HTTPClient { //nolint:ireturn
-	return c.Client
+	Client  *common.JSONHTTPClient
 }
 
 // NewConnector returns a new Salesforce connector.
@@ -39,6 +35,6 @@ func NewConnector(ctx context.Context, opts ...Option) (*Connector, error) {
 	return &Connector{
 		BaseURL: fmt.Sprintf("https://%s.my.salesforce.com/services/data/%s", params.subdomain, apiVersion),
 		Domain:  fmt.Sprintf("%s.my.salesforce.com", params.subdomain),
-		Client:  newHTTPClient(ctx, params),
+		Client:  params.client,
 	}, nil
 }

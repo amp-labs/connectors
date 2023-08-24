@@ -5,12 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"net/http"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/salesforce"
-	"golang.org/x/oauth2"
 )
 
 // Connector is an interface that all connectors must implement.
@@ -20,8 +18,6 @@ type Connector interface {
 
 	Name() string
 	Read(ctx context.Context, params ReadParams) (*ReadResult, error)
-
-	HTTPClient() HTTPClient
 }
 
 // API is a function that returns a Connector. It's used as a factory.
@@ -43,7 +39,6 @@ type (
 	ReadParams      = common.ReadParams
 	ReadResult      = common.ReadResult
 	ErrorWithStatus = common.HTTPStatusError
-	HTTPClient      = common.HTTPClient
 )
 
 // We re-export the following errors so that they can be handled by consumers of this library.
@@ -99,7 +94,7 @@ func New(ctx context.Context, apiName string, opts map[string]any) (Connector, e
 func newSalesforce(ctx context.Context, opts map[string]any) (Connector, error) { //nolint:ireturn
 	var options []salesforce.Option
 
-	c, valid := getParam[*http.Client](opts, "client")
+	c, valid := getParam[*common.JSONHTTPClient](opts, "client")
 	if valid {
 		options = append(options, salesforce.WithClient(c))
 	}
@@ -109,24 +104,12 @@ func newSalesforce(ctx context.Context, opts map[string]any) (Connector, error) 
 		options = append(options, salesforce.WithSubdomain(w))
 	}
 
-	ot, valid := getParam[*oauth2.Token](opts, "oauth_token")
-	if valid {
-		options = append(options, salesforce.WithOAuthToken(ot))
-	}
-
-	oc, valid := getParam[*oauth2.Config](opts, "oauth_config")
-	if valid {
-		options = append(options, salesforce.WithOAuthConfig(oc))
-	}
-
-	ts, valid := getParam[oauth2.TokenSource](opts, "token_source")
-	if valid {
-		options = append(options, salesforce.WithTokenSource(ts))
-	}
-
 	return Salesforce.New(ctx, options...)
 }
 
+// getParam returns the value of the given key, if present, safely cast to an assumed type.
+// If the key is not present, or the value is not of the assumed type, it returns the
+// zero value of the desired type, and false. In case of success, it returns the value and true.
 func getParam[A any](opts map[string]any, key string) (A, bool) { //nolint:ireturn
 	var zero A
 
