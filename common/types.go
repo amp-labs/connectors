@@ -31,8 +31,10 @@ var (
 	// ErrNotJSON is returned when a response is not JSON.
 	ErrNotJSON = errors.New("response is not JSON")
 
+	// ErrMissingOauthConfig is returned when the OAuth config is missing.
 	ErrMissingOauthConfig = errors.New("missing OAuth config")
 
+	// ErrMissingRefreshToken is returned when the refresh token is missing.
 	ErrMissingRefreshToken = errors.New("missing refresh token")
 )
 
@@ -50,9 +52,13 @@ type ReadParams struct {
 	Deleted bool // optional, defaults to false
 }
 
+// NextPageToken is an opaque token that can be used to get the next page of results.
+// Callers are encouraged to treat this as an opaque string, and not attempt to parse it.
+// And although each provider will be different, callers should expect that this token
+// will expire after some period of time. So long-term storage of this token is not recommended.
 type NextPageToken string
 
-// Result from reading data.
+// ReadResult is what's returned from reading data via the Read call
 type ReadResult struct {
 	// Rows is the number of total rows in the result.
 	Rows int64 `json:"rows"`
@@ -76,6 +82,7 @@ func NewHTTPStatusError(status int, err error) error {
 	}
 }
 
+// HTTPStatusError is an error that contains an HTTP status code.
 type HTTPStatusError struct {
 	// HTTPStatus is the original HTTP status.
 	HTTPStatus int
