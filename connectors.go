@@ -16,13 +16,22 @@ type Connector interface {
 	fmt.Stringer
 	io.Closer
 
+	// Name returns the name of the connector.
 	Name() string
+
+	// Read reads a page of data from the connector. This can be called multiple
+	// times to read all the data. The caller is responsible for paging, by
+	// passing the NextPage value correctly, and by terminating the loop when
+	// Done is true. The caller is also responsible for handling errors.
+	// Authentication errors are handled internally, but all other errors are
+	// returned to the caller.
 	Read(ctx context.Context, params ReadParams) (*ReadResult, error)
 }
 
 // API is a function that returns a Connector. It's used as a factory.
 type API[Conn Connector, Option any] func(opts ...Option) (Conn, error)
 
+// New returns a new Connector. It's a convenience wrapper around the API.
 func (a API[Conn, Option]) New(opts ...Option) (Connector, error) { //nolint:ireturn
 	if a == nil {
 		return nil, ErrUnknownConnector
