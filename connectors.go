@@ -26,6 +26,11 @@ type Connector interface {
 	// Authentication corner cases are handled internally, but all other errors
 	// are returned to the caller.
 	Read(ctx context.Context, params ReadParams) (*ReadResult, error)
+
+	// JSONHTTPClient returns the underlying JSON HTTP client. This is useful for
+	// testing, or for calling methods that aren't exposed by the Connector
+	// interface directly. Authentication and token refreshes will be handled automatically.
+	JSONHTTPClient() *common.JSONHTTPClient
 }
 
 // API is a function that returns a Connector. It's used as a factory.
