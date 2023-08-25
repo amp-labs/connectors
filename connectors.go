@@ -29,7 +29,7 @@ type Connector interface {
 
 	// JSONHTTPClient returns the underlying JSON HTTP client. This is useful for
 	// testing, or for calling methods that aren't exposed by the Connector
-	// interface directly. Authentication will be handled automatically.
+	// interface directly. Authentication and token refreshes will be handled automatically.
 	JSONHTTPClient() *common.JSONHTTPClient
 }
 
