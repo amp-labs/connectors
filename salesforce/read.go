@@ -30,7 +30,6 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	} else {
 		// If NextPage is not set, then we're reading the first page of results.
 		// We need to construct the SOQL query and then make the request.
-
 		soql, soqlErr := makeSOQL(config)
 		if soqlErr != nil {
 			return nil, soqlErr
