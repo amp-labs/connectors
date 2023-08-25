@@ -58,13 +58,29 @@ func (j *JSONHTTPClient) Get(ctx context.Context, url string, headers ...Header)
 func (j *JSONHTTPClient) Post(ctx context.Context,
 	url string, reqBody any, headers ...Header,
 ) (*ajson.Node, error) {
+	fullURL, err := j.getURL(url)
+	if err != nil {
+		return nil, err
+	}
 	// Make the request, get the response body
-	res, body, err := j.httpPost(ctx, url, headers, reqBody) //nolint:bodyclose
+	res, body, err := j.httpPost(ctx, fullURL, headers, reqBody) //nolint:bodyclose
 	if err != nil {
 		return nil, err
 	}
 
 	return parseJSONResponse(res, body)
+}
+
+func (j *JSONHTTPClient) getURL(u string) (string, error) {
+	if strings.HasPrefix(u, "http://") || strings.HasPrefix(u, "https://") {
+		return u, nil
+	}
+
+	if len(j.Base) == 0 {
+		return "", fmt.Errorf("%w (input is %q)", ErrEmptyBaseURL, u)
+	}
+
+	return url.JoinPath(j.Base, u)
 }
 
 func parseJSONResponse(res *http.Response, body []byte) (*ajson.Node, error) {
@@ -88,18 +104,6 @@ func parseJSONResponse(res *http.Response, body []byte) (*ajson.Node, error) {
 	}
 
 	return jsonBody, nil
-}
-
-func (j *JSONHTTPClient) getURL(u string) (string, error) {
-	if strings.HasPrefix(u, "http://") || strings.HasPrefix(u, "https://") {
-		return u, nil
-	}
-
-	if len(j.Base) == 0 {
-		return "", fmt.Errorf("%w (input is %q)", ErrEmptyBaseURL, u)
-	}
-
-	return url.JoinPath(j.Base, u)
 }
 
 func (j *JSONHTTPClient) httpGet(ctx context.Context, url string,
@@ -168,18 +172,18 @@ func makeJSONGetRequest(ctx context.Context, url string, headers []Header) (*htt
 }
 
 func makeJSONPostRequest(ctx context.Context, url string, headers []Header, body any) (*http.Request, error) {
-	j, err := json.Marshal(body)
+	jBody, err := json.Marshal(body)
 	if err != nil {
 		return nil, fmt.Errorf("request body is not valid JSON, body is %v:\n%w", body, err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(j))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(jBody))
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
 
 	headers = append(headers, Header{Key: "Content-Type", Value: "application/json"})
-	req.ContentLength = int64(len(j))
+	req.ContentLength = int64(len(jBody))
 
 	return addAcceptJSONHeaders(req, headers)
 }
