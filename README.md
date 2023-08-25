@@ -23,6 +23,9 @@ const (
   OAuthClentSecret = "<client secret>"
   OAuthAccessToken = "<access token>"
   OAuthRefreshToken = "<refresh token>"
+  // If you don't know the expiry time, then set this to `time.Now().Add(-1 * time.Hour)`
+  // so the token will get refreshed right away.
+  AccessTokenExpiry = "<expiry time>"
 )
 
 func main() {
@@ -42,7 +45,7 @@ func main() {
     AccessToken:  OAuthAccessToken,
     RefreshToken: OAuthRefreshToken,
     TokenType:    "bearer",
-    Expiry:       time.Now().Add(-1 * time.Hour), // assume it's expired already, will re-fetch.
+    Expiry:       AccessTokenExpiry,
   }
 
   // Create the Salesforce client
