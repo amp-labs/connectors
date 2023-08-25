@@ -23,10 +23,12 @@ const (
   OAuthClentSecret = "<client secret>"
   OAuthAccessToken = "<access token>"
   OAuthRefreshToken = "<refresh token>"
-  // If you don't know the expiry time, then set this to `time.Now().Add(-1 * time.Hour)`
-  // so the token will get refreshed right away.
-  AccessTokenExpiry = "<expiry time>"
+
 )
+
+// Replace with when the access token will expire,
+// or leave as-is to have the token be refreshed right away.
+var AccessTokenExpiry = time.Now().Add(-1 * time.Hour)
 
 func main() {
   // Set up the OAuth2 config
