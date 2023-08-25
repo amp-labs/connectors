@@ -9,6 +9,8 @@ import (
 	"log/slog"
 	"mime"
 	"net/http"
+	"net/url"
+	"strings"
 
 	"github.com/spyzhov/ajson"
 )
@@ -17,26 +19,30 @@ import (
 // All non-2xx responses will be passed to the error handler. If the error handler
 // returns nil, then the error is ignored and the caller is responsible for handling
 // the error. If the error handler returns an error, then that error is returned
-// to the caller, as-is. Both the response as well as the response body are passed
+// to the caller, as-is. Both the response and the response body are passed
 // to the error handler as arguments.
 type ErrorHandler func(rsp *http.Response, body []byte) error
 
 // JSONHTTPClient is an HTTP client which makes certain assumptions, such as
 // that the response body is JSON. It also handles OAuth access token refreshes.
 type JSONHTTPClient struct {
-	Client       AuthenticatedHTTPClient
-	ErrorHandler ErrorHandler
+	Base         string                  // optional base URL. If not set, then all URLs must be absolute.
+	Client       AuthenticatedHTTPClient // underlying HTTP client. Required.
+	ErrorHandler ErrorHandler            // optional error handler. If not set, then the default error handler is used.
 }
 
 // Get makes a GET request to the given URL and returns the response body as a JSON object.
 // If the response is not a 2xx, an error is returned. If the response is a 401, the caller should
 // refresh the access token and retry the request. If errorHandler is nil, then the default error
 // handler is used. If not, the caller can inject their own error handling logic.
-func (j *JSONHTTPClient) Get(ctx context.Context,
-	url string, headers ...Header,
-) (*ajson.Node, error) {
+func (j *JSONHTTPClient) Get(ctx context.Context, url string, headers ...Header) (*ajson.Node, error) {
+	fullURL, err := j.getURL(url)
+	if err != nil {
+		return nil, err
+	}
+
 	// Make the request, get the response body
-	res, body, err := j.httpGet(ctx, url, headers) //nolint:bodyclose
+	res, body, err := j.httpGet(ctx, fullURL, headers) //nolint:bodyclose
 	if err != nil {
 		return nil, err
 	}
@@ -82,6 +88,18 @@ func parseJSONResponse(res *http.Response, body []byte) (*ajson.Node, error) {
 	}
 
 	return jsonBody, nil
+}
+
+func (j *JSONHTTPClient) getURL(u string) (string, error) {
+	if strings.HasPrefix(u, "http://") || strings.HasPrefix(u, "https://") {
+		return u, nil
+	}
+
+	if len(j.Base) == 0 {
+		return "", fmt.Errorf("%w (input is %q)", ErrEmptyBaseURL, u)
+	}
+
+	return url.JoinPath(j.Base, u)
 }
 
 func (j *JSONHTTPClient) httpGet(ctx context.Context, url string,
