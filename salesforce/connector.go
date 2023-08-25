@@ -39,13 +39,19 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	var err error
 	params, err = params.prepare()
 
+	params.client.Base = fmt.Sprintf("https://%s.my.salesforce.com", params.subdomain)
+
 	if err != nil {
 		return nil, err
 	}
 
-	return &Connector{
+	conn = &Connector{
 		BaseURL: fmt.Sprintf("https://%s.my.salesforce.com/services/data/%s", params.subdomain, apiVersion),
 		Domain:  fmt.Sprintf("%s.my.salesforce.com", params.subdomain),
 		Client:  params.client,
-	}, nil
+	}
+
+	conn.Client.ErrorHandler = conn.interpretError
+
+	return conn, nil
 }

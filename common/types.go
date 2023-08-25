@@ -36,6 +36,9 @@ var (
 
 	// ErrMissingRefreshToken is returned when the refresh token is missing.
 	ErrMissingRefreshToken = errors.New("missing refresh token")
+
+	// ErrEmptyBaseURL is returned when the URL is relative, and the base URL is empty.
+	ErrEmptyBaseURL = errors.New("empty base URL")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.

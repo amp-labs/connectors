@@ -1,6 +1,11 @@
 package salesforce
 
-import "errors"
+import (
+	"errors"
+	"net/http"
+
+	"github.com/amp-labs/connectors/common"
+)
 
 var (
 	ErrNotArray         = errors.New("records is not an array")
@@ -12,3 +17,9 @@ var (
 	ErrMissingSubdomain = errors.New("missing Salesforce workspace name")
 	ErrMissingClient    = errors.New("JSON http client not set")
 )
+
+func (c *Connector) interpretError(res *http.Response, body []byte) error {
+	// TODO: handle salesforce errors in a more robust way. For now, we just
+	// handle the basic HTTP status codes and nothing else.
+	return common.InterpretError(res, body)
+}
