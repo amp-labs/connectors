@@ -2,23 +2,50 @@ package salesforce
 
 import (
 	"fmt"
-	"net/http"
+
+	"github.com/amp-labs/connectors/common"
 )
 
 const (
-	apiVersion = "v52.0"
+	apiVersion = "v58.0"
 )
 
-type SalesforceConnector struct {
-	BaseURL     string
-	Client      *http.Client
-	AccessToken string
+// Connector is a Salesforce connector.
+type Connector struct {
+	Domain  string
+	BaseURL string
+	Client  *common.JSONHTTPClient
 }
 
-func NewConnector(workspaceRef string, accessToken string) *SalesforceConnector {
-	return &SalesforceConnector{
-		BaseURL:     fmt.Sprintf("https://%s.my.salesforce.com/services/data/%s", workspaceRef, apiVersion),
-		Client:      &http.Client{},
-		AccessToken: accessToken,
+// NewConnector returns a new Salesforce connector.
+func NewConnector(opts ...Option) (conn *Connector, outErr error) {
+	defer func() {
+		if re := recover(); re != nil {
+			tmp, ok := re.(error)
+			if !ok {
+				panic(re)
+			}
+
+			outErr = tmp
+			conn = nil
+		}
+	}()
+
+	params := &sfParams{}
+	for _, opt := range opts {
+		opt(params)
 	}
+
+	var err error
+	params, err = params.prepare()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &Connector{
+		BaseURL: fmt.Sprintf("https://%s.my.salesforce.com/services/data/%s", params.subdomain, apiVersion),
+		Domain:  fmt.Sprintf("%s.my.salesforce.com", params.subdomain),
+		Client:  params.client,
+	}, nil
 }
