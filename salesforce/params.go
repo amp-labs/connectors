@@ -22,7 +22,7 @@ func WithClient(ctx context.Context, client *http.Client, config *oauth2.Config,
 			panic(err) // caught in NewConnector
 		}
 
-		WithAuthenticatedClient(oauthClient)
+		WithAuthenticatedClient(oauthClient)(params)
 	}
 }
 
