@@ -161,6 +161,7 @@ func makeJSONPostRequest(ctx context.Context, url string, headers []Header, body
 	}
 
 	headers = append(headers, Header{Key: "Content-Type", Value: "application/json"})
+	req.ContentLength = int64(len(j))
 
 	return addAcceptJSONHeaders(req, headers)
 }
