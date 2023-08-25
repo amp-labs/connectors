@@ -1,60 +1,39 @@
 package common
 
 import (
-	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
-	"net/url"
 )
 
-func DoHttpGetCall(c *http.Client, baseURL string, endpoint string, token string) (result map[string]interface{}, e *ErrorWithStatus) {
-	url, err := url.JoinPath(baseURL, endpoint)
-	if err != nil {
-		return nil, &ErrorWithStatus{
-			Mode:    NonApiError,
-			Message: fmt.Sprintf("error constructing URL: %v", err),
-		}
+// Header is a key/value pair that can be added to a request.
+type Header struct {
+	Key   string
+	Value string
+}
+
+// InterpretError interprets the given HTTP response (in a fairly straightforward
+// way) and returns an error that can be handled by the caller.
+func InterpretError(res *http.Response, body []byte) error {
+	switch res.StatusCode {
+	case http.StatusUnauthorized:
+		// Access token invalid, refresh token and retry
+		return NewHTTPStatusError(res.StatusCode, fmt.Errorf("%w: %s", ErrAccessToken, string(body)))
+	case http.StatusForbidden:
+		// Forbidden, not retryable
+		return NewHTTPStatusError(res.StatusCode, fmt.Errorf("%w: %s", ErrForbidden, string(body)))
+	case http.StatusNotFound:
+		// Semantics are debatable (temporarily missing vs. permanently gone), but for now treat this as a retryable error
+		return NewHTTPStatusError(res.StatusCode, fmt.Errorf("%w: entity not found (%s)", ErrRetryable, string(body)))
+	case http.StatusTooManyRequests:
+		// Too many requests, sleep and then retry
+		return NewHTTPStatusError(res.StatusCode, fmt.Errorf("%w: %s", ErrRetryable, string(body)))
 	}
 
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return nil, &ErrorWithStatus{
-			Mode:    NonApiError,
-			Message: fmt.Sprintf("error creating request: %v", err),
-		}
+	if res.StatusCode >= 400 && res.StatusCode < 500 {
+		return NewHTTPStatusError(res.StatusCode, fmt.Errorf("%w: %s", ErrCaller, string(body)))
+	} else if res.StatusCode >= 500 && res.StatusCode < 600 {
+		return NewHTTPStatusError(res.StatusCode, fmt.Errorf("%w: %s", ErrServer, string(body)))
 	}
 
-	req.Header.Add("Authorization", "OAuth "+token)
-	res, err := c.Do(req)
-
-	if err != nil {
-		return nil, &ErrorWithStatus{
-			Mode:    NonApiError,
-			Message: fmt.Sprintf("error sending request: %v", err),
-		}
-	}
-
-	body, err := io.ReadAll(res.Body)
-	defer res.Body.Close()
-
-	if err != nil {
-		return nil, &ErrorWithStatus{
-			Mode:    NonApiError,
-			Message: fmt.Sprintf("error reading response body: %v", err),
-		}
-	}
-
-	if res.StatusCode != 200 {
-		return nil, &ErrorWithStatus{
-			HttpStatus: res.StatusCode,
-			Message:    fmt.Sprintf("original message from API server: %v", string(body)),
-		}
-	}
-
-	d := make(map[string]interface{})
-	if err := json.Unmarshal(body, &d); err != nil {
-		return nil, &ErrorWithStatus{Message: fmt.Sprintf("failed to unmarshall response body into JSON: %v", err)}
-	}
-	return d, nil
+	return NewHTTPStatusError(res.StatusCode, fmt.Errorf("%w: %s", ErrUnknown, string(body)))
 }
