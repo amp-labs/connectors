@@ -1,7 +1,9 @@
 package salesforce
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
@@ -18,8 +20,52 @@ var (
 	ErrMissingClient    = errors.New("JSON http client not set")
 )
 
+type jsonError struct {
+	Message   string `json:"message"`
+	ErrorCode string `json:"errorCode"`
+}
+
 func (c *Connector) interpretError(res *http.Response, body []byte) error {
-	// TODO: handle salesforce errors in a more robust way. For now, we just
-	// handle the basic HTTP status codes and nothing else.
+	if res.Header.Get("Content-Type") == "application/json" {
+		return c.interpretJSONError(res, body)
+	}
+
+	return common.InterpretError(res, body)
+}
+
+func (c *Connector) interpretJSONError(res *http.Response, body []byte) error {
+	errs := []jsonError{}
+	if err := json.Unmarshal(body, &errs); err != nil {
+		return fmt.Errorf("json.Unmarshal failed: %w", err)
+	}
+
+	createError := func(e error, sfErr jsonError) error {
+		if len(sfErr.Message) > 0 {
+			return fmt.Errorf("%w: %s", e, sfErr.Message)
+		}
+
+		return e
+	}
+
+	for _, sfErr := range errs {
+		switch sfErr.ErrorCode {
+		case "INVALID_SESSION_ID":
+			return createError(common.ErrInvalidSessionId, sfErr)
+		case "INSUFFICIENT_ACCESS_OR_READONLY":
+			return createError(common.ErrForbidden, sfErr)
+		case "API_DISABLED_FOR_ORG":
+			return createError(common.ErrApiDisabled, sfErr)
+		case "UNABLE_TO_LOCK_ROW":
+			return createError(common.ErrUnableToLockRow, sfErr)
+		case "INVALID_GRANT":
+			return createError(common.ErrInvalidGrant, sfErr)
+		case "REQUEST_LIMIT_EXCEEDED":
+			return createError(common.ErrLimitExceeded, sfErr)
+		default:
+			continue
+		}
+	}
+
+	// No known errors, just do the normal error handling logic
 	return common.InterpretError(res, body)
 }
