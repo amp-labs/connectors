@@ -33,18 +33,18 @@ func (c *Connector) interpretError(res *http.Response, body []byte) error {
 	return common.InterpretError(res, body)
 }
 
+func createError(baseErr error, sfErr jsonError) error {
+	if len(sfErr.Message) > 0 {
+		return fmt.Errorf("%w: %s", baseErr, sfErr.Message)
+	}
+
+	return baseErr
+}
+
 func (c *Connector) interpretJSONError(res *http.Response, body []byte) error {
 	errs := []jsonError{}
 	if err := json.Unmarshal(body, &errs); err != nil {
 		return fmt.Errorf("json.Unmarshal failed: %w", err)
-	}
-
-	createError := func(e error, sfErr jsonError) error {
-		if len(sfErr.Message) > 0 {
-			return fmt.Errorf("%w: %s", e, sfErr.Message)
-		}
-
-		return e
 	}
 
 	for _, sfErr := range errs {
