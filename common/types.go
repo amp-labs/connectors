@@ -16,6 +16,18 @@ var (
 	// ErrForbidden means the user doesn't have access to this resource.
 	ErrForbidden = errors.New("forbidden")
 
+	// ErrInvalidSessionId means the session ID is invalid.
+	ErrInvalidSessionId = errors.New("invalid session id")
+
+	// ErrUnableToLockRow means the resource couldn't be locked.
+	ErrUnableToLockRow = errors.New("unable to lock row")
+
+	// ErrInvalidGrant means the OAuth grant is invalid.
+	ErrInvalidGrant = errors.New("invalid grant")
+
+	// ErrLimitExceeded means a quota limit was exceeded.
+	ErrLimitExceeded = errors.New("request limit exceeded")
+
 	// ErrRetryable represents a temporary error. Can retry.
 	ErrRetryable = errors.New("retryable error")
 
