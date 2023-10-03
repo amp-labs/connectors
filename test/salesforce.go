@@ -31,7 +31,7 @@ func main() {
 }
 
 func mainFn() int {
-	subdomain := flag.String("subdomain", "ampersand-dev-ed.develop", "Salesforce subdomain")
+	subdomain := flag.String("subdomain", "boxit2-dev-ed", "Salesforce subdomain")
 	flag.Parse()
 
 	handler := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
@@ -41,8 +41,8 @@ func mainFn() int {
 	slog.SetDefault(logger)
 
 	cfg := &oauth2.Config{
-		ClientID:     "<client id>",
-		ClientSecret: "<client secret>",
+		ClientID:     "",
+		ClientSecret: "",
 		Endpoint: oauth2.Endpoint{
 			AuthURL:   fmt.Sprintf("https://%s.my.salesforce.com/services/oauth2/authorize", *subdomain),
 			TokenURL:  fmt.Sprintf("https://%s.my.salesforce.com/services/oauth2/token", *subdomain),
@@ -51,8 +51,8 @@ func mainFn() int {
 	}
 
 	tok := &oauth2.Token{
-		AccessToken:  "<access token>",
-		RefreshToken: "<refresh token>",
+		AccessToken:  "",
+		RefreshToken: "",
 		TokenType:    "bearer",
 		Expiry:       time.Now().Add(-1 * time.Hour), // just pretend it's expired already, whatever, it'll fetch a new one.
 	}
@@ -98,6 +98,27 @@ func testConnector(ctx context.Context, conn connectors.Connector) error {
 
 	// Print the results
 	jsonStr, err := json.MarshalIndent(res, "", "  ")
+	if err != nil {
+		return fmt.Errorf("error marshalling JSON: %w", err)
+	}
+
+	_, _ = os.Stdout.Write(jsonStr)
+	_, _ = os.Stdout.WriteString("\n")
+
+	writeRes, err := conn.Write(ctx, connectors.WriteParams{
+		ObjectName: "Account",
+		ObjectData: map[string]interface{}{
+			"Name":          "OKADA TEST ACCOUNT",
+			"AccountNumber": 456,
+		},
+		ObjectId: "0014x0000294jQ6AAI",
+	})
+	if err != nil {
+		return fmt.Errorf("error writing to Salesforce: %w", err)
+	}
+
+	// Print the results
+	jsonStr, err = json.MarshalIndent(writeRes, "", "  ")
 	if err != nil {
 		return fmt.Errorf("error marshalling JSON: %w", err)
 	}
