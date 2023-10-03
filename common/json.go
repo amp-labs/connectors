@@ -100,6 +100,11 @@ func parseJSONResponse(res *http.Response, body []byte) (*ajson.Node, error) {
 	// Unmarshall the response body into JSON
 	jsonBody, err := ajson.Unmarshal(body)
 	if err != nil {
+
+		// ajson errs when trying to unmarshal empty body, even if the req was successful so we swallow error
+		if res.StatusCode == http.StatusNoContent {
+			return nil, nil
+		}
 		return nil, NewHTTPStatusError(res.StatusCode, fmt.Errorf("failed to unmarshall response body into JSON: %w", err))
 	}
 
