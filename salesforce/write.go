@@ -61,17 +61,14 @@ func parseWriteResult(data *ajson.Node) (*common.WriteResult, error) {
 		return nil, err
 	}
 	return &common.WriteResult{
-		RespData: map[string]interface{}{
-			"id":      createdObjectId,
-			"errors":  errors,
-			"success": success,
-		},
+		ObjectId: createdObjectId,
+		Errors:   errors,
+		Success:  success,
 	}, nil
 }
 
 // getErrors returns the errors from the response.
-// OKADA TODO: are errors always strings
-func getErrors(node *ajson.Node) ([]string, error) {
+func getErrors(node *ajson.Node) ([]any, error) {
 	errors, err := node.GetKey("errors")
 	if err != nil {
 		return nil, err
@@ -83,7 +80,7 @@ func getErrors(node *ajson.Node) ([]string, error) {
 
 	arr := errors.MustArray()
 
-	out := make([]string, 0, len(arr))
+	out := make([]any, 0, len(arr))
 
 	for _, v := range arr {
 		if !v.IsString() {
