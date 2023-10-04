@@ -41,8 +41,8 @@ func mainFn() int {
 	slog.SetDefault(logger)
 
 	cfg := &oauth2.Config{
-		ClientID:     "",
-		ClientSecret: "",
+		ClientID:     "3MVG9kBt168mda__AsLfwj2vUtrPMp39Nvj9amL1F7wMQhoDK7FgznCLTvYMIYLcDidAVGom5YCeiVbbFkE3X",
+		ClientSecret: "E1B56598590E8189149988F042160B28AA7771F9EDC3DDB2650263382BD9EDEB",
 		Endpoint: oauth2.Endpoint{
 			AuthURL:   fmt.Sprintf("https://%s.my.salesforce.com/services/oauth2/authorize", *subdomain),
 			TokenURL:  fmt.Sprintf("https://%s.my.salesforce.com/services/oauth2/token", *subdomain),
@@ -51,8 +51,8 @@ func mainFn() int {
 	}
 
 	tok := &oauth2.Token{
-		AccessToken:  "",
-		RefreshToken: "",
+		AccessToken:  "00D4x000006ll1H!AQMAQFsLsN.FGi6010dYa3SLi6S2dljLTGOHg_5Q83i3qAF18HWlHbzOyvqMbIg4mzW_GkAZKgsw0Xt6ysBhKDs5us58NaJ9",
+		RefreshToken: "5Aep861Bky2w54txC2OK9jDRPrEZfc98zscX2XARXYBQSBJb61Ksw3TagOU9iKqqJmZs293Eqwszajmegv9XD3I",
 		TokenType:    "bearer",
 		Expiry:       time.Now().Add(-1 * time.Hour), // just pretend it's expired already, whatever, it'll fetch a new one.
 	}
@@ -105,20 +105,65 @@ func testConnector(ctx context.Context, conn connectors.Connector) error {
 	_, _ = os.Stdout.Write(jsonStr)
 	_, _ = os.Stdout.WriteString("\n")
 
+	// IMPORTANT: every time this test is run, it will create a new Account
+	// in SFDC instance. Will need to delete those out at later date.
+	writtenObjId, err := testSalesforceValidCreate(ctx, conn)
+	if err != nil {
+		return fmt.Errorf("error creating record in Salesforce: %w", err)
+	}
+	// IMPORTANT: will fail if specific objectId does not already exist in instance
+	if err := testSalesforceValidUpdate(ctx, conn, writtenObjId); err != nil {
+		return fmt.Errorf("error updating record in Salesforce: %w", err)
+	}
+
+	return nil
+}
+
+// Create a valid record in Salesforce
+func testSalesforceValidCreate(ctx context.Context, conn connectors.Connector) (string, error) {
+
+	writeRes, err := conn.Write(ctx, connectors.WriteParams{
+		ObjectName: "Account",
+		ObjectData: map[string]interface{}{
+			"Name":          "TEST ACCOUNT - [TO DELETE]",
+			"AccountNumber": 123,
+		},
+	})
+	if err != nil {
+		return "", fmt.Errorf("error writing to Salesforce: %w", err)
+	}
+
+	// Print the results
+	jsonStr, err := json.MarshalIndent(writeRes, "", "  ")
+	if err != nil {
+		return "", fmt.Errorf("error marshalling JSON: %w", err)
+	}
+
+	_, _ = os.Stdout.Write(jsonStr)
+	_, _ = os.Stdout.WriteString("\n")
+
+	return writeRes.ObjectId, nil
+}
+
+// Update existing record in Salesforce
+func testSalesforceValidUpdate(ctx context.Context, conn connectors.Connector, writtenObjId string) error {
 	writeRes, err := conn.Write(ctx, connectors.WriteParams{
 		ObjectName: "Account",
 		ObjectData: map[string]interface{}{
 			"Name":          "OKADA TEST ACCOUNT",
 			"AccountNumber": 456,
 		},
-		ObjectId: "0014x0000294jQ6AAI",
+		ObjectId: writtenObjId,
 	})
 	if err != nil {
 		return fmt.Errorf("error writing to Salesforce: %w", err)
 	}
+	if !writeRes.Success {
+		return fmt.Errorf("write to %s failed when it should have succeeded", writtenObjId)
+	}
 
 	// Print the results
-	jsonStr, err = json.MarshalIndent(writeRes, "", "  ")
+	jsonStr, err := json.MarshalIndent(writeRes, "", "  ")
 	if err != nil {
 		return fmt.Errorf("error marshalling JSON: %w", err)
 	}
