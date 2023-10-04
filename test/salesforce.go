@@ -12,6 +12,8 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/salesforce"
+	"github.com/joho/godotenv"
+
 	"golang.org/x/oauth2"
 )
 
@@ -31,6 +33,11 @@ func main() {
 }
 
 func mainFn() int {
+	if err := godotenv.Load(); err != nil {
+		slog.Error("Error Error loading .env file", "error", err)
+		return 1
+	}
+
 	subdomain := flag.String("subdomain", "boxit2-dev-ed", "Salesforce subdomain")
 	flag.Parse()
 
@@ -40,9 +47,14 @@ func mainFn() int {
 	logger := slog.New(handler)
 	slog.SetDefault(logger)
 
+	clientId := os.Getenv("SALESFORCE_CLIENT_ID")
+	clientSecret := os.Getenv("SALESFORCE_CLIENT_SECRET")
+	accessToken := os.Getenv("SALESFORCE_ACCESS_TOKEN")
+	refreshToken := os.Getenv("SALESFORCE_REFRESH_TOKEN")
+
 	cfg := &oauth2.Config{
-		ClientID:     "3MVG9kBt168mda__AsLfwj2vUtrPMp39Nvj9amL1F7wMQhoDK7FgznCLTvYMIYLcDidAVGom5YCeiVbbFkE3X",
-		ClientSecret: "E1B56598590E8189149988F042160B28AA7771F9EDC3DDB2650263382BD9EDEB",
+		ClientID:     clientId,
+		ClientSecret: clientSecret,
 		Endpoint: oauth2.Endpoint{
 			AuthURL:   fmt.Sprintf("https://%s.my.salesforce.com/services/oauth2/authorize", *subdomain),
 			TokenURL:  fmt.Sprintf("https://%s.my.salesforce.com/services/oauth2/token", *subdomain),
@@ -51,8 +63,8 @@ func mainFn() int {
 	}
 
 	tok := &oauth2.Token{
-		AccessToken:  "00D4x000006ll1H!AQMAQFsLsN.FGi6010dYa3SLi6S2dljLTGOHg_5Q83i3qAF18HWlHbzOyvqMbIg4mzW_GkAZKgsw0Xt6ysBhKDs5us58NaJ9",
-		RefreshToken: "5Aep861Bky2w54txC2OK9jDRPrEZfc98zscX2XARXYBQSBJb61Ksw3TagOU9iKqqJmZs293Eqwszajmegv9XD3I",
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
 		TokenType:    "bearer",
 		Expiry:       time.Now().Add(-1 * time.Hour), // just pretend it's expired already, whatever, it'll fetch a new one.
 	}
