@@ -43,7 +43,9 @@ func parseWriteResult(data *ajson.Node) (*common.WriteResult, error) {
 
 	// in case we got a 204 and empty array => unmarshal into nil ajson node
 	if data == nil {
-		return nil, nil
+		return &common.WriteResult{
+			Success: true,
+		}, nil
 	}
 
 	createdObjectId, err := getCreatedObjectId(data)
