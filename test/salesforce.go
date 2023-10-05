@@ -38,7 +38,13 @@ func mainFn() int {
 		return 1
 	}
 
-	subdomain := flag.String("subdomain", "boxit2-dev-ed", "Salesforce subdomain")
+	salesforceSubdomain := os.Getenv("SALESFORCE_SUBDOMAIN")
+	clientId := os.Getenv("SALESFORCE_CLIENT_ID")
+	clientSecret := os.Getenv("SALESFORCE_CLIENT_SECRET")
+	accessToken := os.Getenv("SALESFORCE_ACCESS_TOKEN")
+	refreshToken := os.Getenv("SALESFORCE_REFRESH_TOKEN")
+
+	subdomain := flag.String("subdomain", salesforceSubdomain, "Salesforce subdomain")
 	flag.Parse()
 
 	handler := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
@@ -46,11 +52,6 @@ func mainFn() int {
 	})
 	logger := slog.New(handler)
 	slog.SetDefault(logger)
-
-	clientId := os.Getenv("SALESFORCE_CLIENT_ID")
-	clientSecret := os.Getenv("SALESFORCE_CLIENT_SECRET")
-	accessToken := os.Getenv("SALESFORCE_ACCESS_TOKEN")
-	refreshToken := os.Getenv("SALESFORCE_REFRESH_TOKEN")
 
 	cfg := &oauth2.Config{
 		ClientID:     clientId,
