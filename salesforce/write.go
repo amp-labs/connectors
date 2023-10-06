@@ -62,6 +62,9 @@ func parseWriteResult(data *ajson.Node) (*common.WriteResult, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	// Salesforce does not return record data upon successful write so we do not populate
+	// the corresponding result field
 	return &common.WriteResult{
 		ObjectId: createdObjectId,
 		Errors:   errors,
