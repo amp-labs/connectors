@@ -17,14 +17,8 @@ import (
 	"golang.org/x/oauth2"
 )
 
-// To run this test, first generate a Salesforce Access token
-// (https://ampersand.slab.com/posts/salesforce-api-guide-go1d9wnj#h0ciq-generate-an-access-token)
-
-// Then set the appropriate oauth fields below, and then run.
+// Set the appropriate environment variables in a .env file, then run:
 // go run test/salesforce.go
-
-// You can optionally add an `instance` argument to specify a Salesforce instance,
-// or leave empty to use the Ampersand's dev instance.
 
 const TimeoutSeconds = 30
 
