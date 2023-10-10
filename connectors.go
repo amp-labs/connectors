@@ -27,6 +27,8 @@ type Connector interface {
 	// are returned to the caller.
 	Read(ctx context.Context, params ReadParams) (*ReadResult, error)
 
+	Write(ctx context.Context, params WriteParams) (*WriteResult, error)
+
 	// JSONHTTPClient returns the underlying JSON HTTP client. This is useful for
 	// testing, or for calling methods that aren't exposed by the Connector
 	// interface directly. Authentication and token refreshes will be handled automatically.
@@ -51,7 +53,9 @@ var Salesforce API[*salesforce.Connector, salesforce.Option] = salesforce.NewCon
 // We re-export the following types so that they can be used by consumers of this library.
 type (
 	ReadParams      = common.ReadParams
+	WriteParams     = common.WriteParams
 	ReadResult      = common.ReadResult
+	WriteResult     = common.WriteResult
 	ErrorWithStatus = common.HTTPStatusError
 )
 
