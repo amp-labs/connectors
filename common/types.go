@@ -67,6 +67,19 @@ type ReadParams struct {
 	Deleted bool // optional, defaults to false
 }
 
+// WriteParams defines how we are writing data to a SaaS API.
+type WriteParams struct {
+	// The name of the object we are writing, e.g. "Account"
+	ObjectName string // required
+
+	// The external ID of the object instance we are updating. Provided in the case of UPDATE, but not CREATE.
+	ObjectId string // optional
+
+	// ObjectData is a JSON node representing the record of data we want to insert in the case of CREATE
+	// or fields of data we want to modify in case of an update
+	ObjectData map[string]interface{}
+}
+
 // NextPageToken is an opaque token that can be used to get the next page of results.
 // Callers are encouraged to treat this as an opaque string, and not attempt to parse it.
 // And although each provider will be different, callers should expect that this token
@@ -83,6 +96,18 @@ type ReadResult struct {
 	NextPage NextPageToken `json:"nextPage,omitempty"`
 	// Done is true if there are no more pages to read.
 	Done bool `json:"done,omitempty"`
+}
+
+// WriteResult is what's returned from writing data via the Write call.
+type WriteResult struct {
+	// ObjectId is the ID of the written record.
+	ObjectId string `json:"objectid,omitempty"`
+	// Errors is list of error objects returned by the API.
+	Errors []interface{} `json:"errors"`
+	// Success is true if write succeeded.
+	Success bool `json:"success,omitempty"`
+	// Data is a JSON node containing data about the properties that were updated.
+	Data map[string]interface{} `json:"data"` //optional
 }
 
 // NewHTTPStatusError creates a new error with the given HTTP status.
