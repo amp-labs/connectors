@@ -70,7 +70,7 @@ func (j *JSONHTTPClient) Post(ctx context.Context,
 
 	// empty response body should not be parsed as JSON since it will cause ajson to err
 	if len(body) == 0 {
-		return nil, nil
+		return nil, nil //nolint:nilnil
 	}
 
 	return parseJSONResponse(res, body)
@@ -105,7 +105,6 @@ func parseJSONResponse(res *http.Response, body []byte) (*ajson.Node, error) {
 	// Unmarshall the response body into JSON
 	jsonBody, err := ajson.Unmarshal(body)
 	if err != nil {
-
 		return nil, NewHTTPStatusError(res.StatusCode, fmt.Errorf("failed to unmarshall response body into JSON: %w", err))
 	}
 
