@@ -13,7 +13,6 @@ import (
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/salesforce"
 	"github.com/joho/godotenv"
-
 	"golang.org/x/oauth2"
 )
 
@@ -26,9 +25,10 @@ func main() {
 	os.Exit(mainFn())
 }
 
-func mainFn() int {
+func mainFn() int { //nolint:funlen
 	if err := godotenv.Load(); err != nil {
 		slog.Error("Error loading .env file", "error", err)
+
 		return 1
 	}
 
@@ -126,14 +126,15 @@ func testConnector(ctx context.Context, conn connectors.Connector) error {
 	return nil
 }
 
-// Create a valid record in Salesforce
-func testSalesforceValidCreate(ctx context.Context, conn connectors.Connector) (string, error) {
+const accountNumber = 123
 
+// testSalesforceValidCreate will create a valid record in Salesforce.
+func testSalesforceValidCreate(ctx context.Context, conn connectors.Connector) (string, error) {
 	writeRes, err := conn.Write(ctx, connectors.WriteParams{
 		ObjectName: "Account",
 		ObjectData: map[string]interface{}{
 			"Name":          "TEST ACCOUNT - [TO DELETE]",
-			"AccountNumber": 123,
+			"AccountNumber": accountNumber,
 		},
 	})
 	if err != nil {
@@ -152,21 +153,24 @@ func testSalesforceValidCreate(ctx context.Context, conn connectors.Connector) (
 	return writeRes.ObjectId, nil
 }
 
-// Update existing record in Salesforce
+const accountNumber2 = 456
+
+// testSalesforceValidUpdate will update existing record in Salesforce.
 func testSalesforceValidUpdate(ctx context.Context, conn connectors.Connector, writtenObjId string) error {
 	writeRes, err := conn.Write(ctx, connectors.WriteParams{
 		ObjectName: "Account",
 		ObjectData: map[string]interface{}{
 			"Name":          "OKADA TEST ACCOUNT",
-			"AccountNumber": 456,
+			"AccountNumber": accountNumber2,
 		},
 		ObjectId: writtenObjId,
 	})
 	if err != nil {
 		return fmt.Errorf("error writing to Salesforce: %w", err)
 	}
+
 	if !writeRes.Success {
-		return fmt.Errorf("write to %s failed when it should have succeeded", writtenObjId)
+		return fmt.Errorf("write to %s failed when it should have succeeded", writtenObjId) //nolint:goerr113
 	}
 
 	// Print the results

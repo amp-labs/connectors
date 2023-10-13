@@ -107,7 +107,7 @@ type WriteResult struct {
 	// Success is true if write succeeded.
 	Success bool `json:"success,omitempty"`
 	// Data is a JSON node containing data about the properties that were updated.
-	Data map[string]interface{} `json:"data"` //optional
+	Data map[string]interface{} `json:"data"` // optional
 }
 
 // NewHTTPStatusError creates a new error with the given HTTP status.

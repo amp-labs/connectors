@@ -9,7 +9,7 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-// Writes data to Salesforce
+// Write will write data to Salesforce.
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
 	var (
 		data *ajson.Node
@@ -29,8 +29,8 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		// Salesforce allows for PATCH method override
 		location += "?_HttpMethod=PATCH"
 	}
-	data, err = c.post(ctx, location, config.ObjectData)
 
+	data, err = c.post(ctx, location, config.ObjectData)
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +40,6 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 
 // parseWriteResult parses the response from writing to Salesforce API. A 2xx return type is assumed.
 func parseWriteResult(data *ajson.Node) (*common.WriteResult, error) {
-
 	// in case we got a 204 and empty array => unmarshal into nil ajson node
 	if data == nil {
 		return &common.WriteResult{
@@ -106,7 +105,6 @@ func getErrors(node *ajson.Node) ([]any, error) {
 	}
 
 	return out, nil
-
 }
 
 func getCreatedObjectId(node *ajson.Node) (string, error) {
@@ -114,8 +112,8 @@ func getCreatedObjectId(node *ajson.Node) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return idNode.MustString(), nil
 
+	return idNode.MustString(), nil
 }
 
 func getSuccess(node *ajson.Node) (bool, error) {
@@ -129,5 +127,4 @@ func getSuccess(node *ajson.Node) (bool, error) {
 	}
 
 	return successNode.MustBool(), nil
-
 }
