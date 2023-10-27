@@ -51,6 +51,12 @@ var (
 
 	// ErrEmptyBaseURL is returned when the URL is relative, and the base URL is empty.
 	ErrEmptyBaseURL = errors.New("empty base URL")
+
+	// ErrConnectionTimeout is returned when the connection or response times out.
+	ErrConnectionTimeout = errors.New("connection timeout")
+
+	// ErrNotImplemented is returned when a method is not implemented.
+	ErrNotImplemented = errors.New("not implemented")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.

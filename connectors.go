@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/hubspot"
 	"github.com/amp-labs/connectors/salesforce"
 )
 
@@ -50,6 +51,9 @@ func (a API[Conn, Option]) New(opts ...Option) (Connector, error) { //nolint:ire
 // Salesforce is an API that returns a new Salesforce Connector.
 var Salesforce API[*salesforce.Connector, salesforce.Option] = salesforce.NewConnector //nolint:gochecknoglobals
 
+// Hubspot is an API that returns a new Hubspot Connector.
+var Hubspot API[*hubspot.Connector, hubspot.Option] = hubspot.NewConnector //nolint:gochecknoglobals
+
 // We re-export the following types so that they can be used by consumers of this library.
 type (
 	ReadParams      = common.ReadParams
@@ -84,6 +88,7 @@ var (
 func APINames() []string {
 	return []string{
 		salesforce.Name,
+		hubspot.Name,
 	}
 }
 
@@ -94,6 +99,10 @@ func APINames() []string {
 func New(apiName string, opts map[string]any) (Connector, error) { //nolint:ireturn
 	if strings.EqualFold(apiName, salesforce.Name) {
 		return newSalesforce(opts)
+	}
+
+	if strings.EqualFold(apiName, hubspot.Name) {
+		return newHubspot(opts)
 	}
 
 	return nil, fmt.Errorf("%w: %s", ErrUnknownConnector, apiName)
@@ -114,6 +123,23 @@ func newSalesforce(opts map[string]any) (Connector, error) { //nolint:ireturn
 	}
 
 	return Salesforce.New(options...)
+}
+
+// newHubspot returns a new Hubspot Connector, by unwrapping the options and passing them to the Hubspot API.
+func newHubspot(opts map[string]any) (Connector, error) { //nolint:ireturn
+	var options []hubspot.Option
+
+	c, valid := getParam[common.AuthenticatedHTTPClient](opts, "client")
+	if valid {
+		options = append(options, hubspot.WithAuthenticatedClient(c))
+	}
+
+	w, valid := getParam[hubspot.APIModule](opts, "module")
+	if valid {
+		options = append(options, hubspot.WithModule(w))
+	}
+
+	return Hubspot.New(options...)
 }
 
 // getParam returns the value of the given key, if present, safely cast to an assumed type.
