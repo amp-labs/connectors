@@ -142,7 +142,7 @@ func (r HTTPStatusError) Error() string {
 		return fmt.Sprintf("HTTP status %d: %v", r.HTTPStatus, r.err)
 	}
 
-	return fmt.Sprintf("%v", r.err)
+	return r.err.Error()
 }
 
 func (r HTTPStatusError) Unwrap() error {
