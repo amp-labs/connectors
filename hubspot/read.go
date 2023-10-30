@@ -9,13 +9,20 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-// Read reads data from Hubspot. By default, it will read all rows (backfill). However, if Since is set,
-// it will read only rows that have been updated since the specified time.
+// Read reads data from Hubspot. If Since is set, it will use the
+// search endpoint to filter records.
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
 	var (
 		data *ajson.Node
 		err  error
 	)
+
+	// If filtering is required, then we have to use the search endpoint.
+	if requiresFiltering(config) {
+		return c.search(ctx, config)
+	}
+
+	// Object endpoints have a link
 
 	if len(config.NextPage) > 0 {
 		// If NextPage is set, then we're reading the next page of results.
@@ -24,18 +31,18 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	} else {
 		// If NextPage is not set, then we're reading the first page of results.
 		// We need to construct the SOQL query and then make the request.
-		data, err = c.get(ctx, c.BaseURL+"/"+config.ObjectName+"?"+makeQuery(config))
+		data, err = c.get(ctx, c.BaseURL+"/"+config.ObjectName+"?"+makeQueryValues(config))
 	}
 
 	if err != nil {
 		return nil, err
 	}
 
-	return parseResult(data)
+	return parseResult(data, getNextRecordsURL)
 }
 
-// makeQuery returns the query for the desired read operation.
-func makeQuery(config common.ReadParams) string {
+// makeQueryValues returns the query for the desired read operation.
+func makeQueryValues(config common.ReadParams) string {
 	queryValues := url.Values{}
 
 	if len(config.Fields) != 0 {
@@ -50,7 +57,7 @@ func makeQuery(config common.ReadParams) string {
 }
 
 // parseResult parses the response from the Hubspot API. A 2xx return type is assumed.
-func parseResult(data *ajson.Node) (*common.ReadResult, error) {
+func parseResult(data *ajson.Node, paginationFunc func(*ajson.Node) (string, error)) (*common.ReadResult, error) {
 	totalSize, err := getTotalSize(data)
 	if err != nil {
 		return nil, err
@@ -61,7 +68,7 @@ func parseResult(data *ajson.Node) (*common.ReadResult, error) {
 		return nil, err
 	}
 
-	nextPage, err := getNextRecordsURL(data)
+	nextPage, err := paginationFunc(data)
 	if err != nil {
 		return nil, err
 	}
@@ -110,43 +117,6 @@ func getRecords(node *ajson.Node) ([]map[string]interface{}, error) {
 	}
 
 	return out, nil
-}
-
-// getNextRecordsURL returns the URL for the next page of results.
-func getNextRecordsURL(node *ajson.Node) (string, error) {
-	// No paging key signifies that there are no more results.
-	if !node.HasKey("paging") {
-		return "", nil
-	}
-
-	paging, err := node.GetKey("paging")
-	if err != nil {
-		return "", err
-	}
-
-	if !paging.IsObject() {
-		return "", ErrNotObject
-	}
-
-	next, err := paging.GetKey("next")
-	if err != nil {
-		return "", err
-	}
-
-	if !next.IsObject() {
-		return "", ErrNotObject
-	}
-
-	link, err := next.GetKey("link")
-	if err != nil {
-		return "", err
-	}
-
-	if !link.IsString() {
-		return "", ErrNotString
-	}
-
-	return link.MustString(), nil
 }
 
 // getTotalSize returns the total number of records that match the query.

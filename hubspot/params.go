@@ -63,3 +63,7 @@ func (p *hubspotParams) prepare() (out *hubspotParams, err error) {
 
 	return p, nil
 }
+
+func requiresFiltering(config common.ReadParams) bool {
+	return !config.Since.IsZero()
+}
