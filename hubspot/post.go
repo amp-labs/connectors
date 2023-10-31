@@ -15,7 +15,7 @@ func (c *Connector) post(ctx context.Context, url string, body any) (*ajson.Node
 	if err != nil {
 		switch {
 		case errors.Is(err, common.ErrAccessToken):
-			// Retryable, so just log and retry
+			// TODO: Retry
 			slog.Warn("Access token invalid, retrying", "error", err)
 
 			// TODO: Retry

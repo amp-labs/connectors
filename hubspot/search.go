@@ -38,11 +38,11 @@ func (c *Connector) search(ctx context.Context, config common.ReadParams) (*comm
 }
 
 // makeFilterBody is specifically implemented for the Since filter currently.
-func makeFilterBody(config common.ReadParams) map[string]interface{} {
-	filterBody := map[string]interface{}{
-		"filterGroups": []map[string]interface{}{
+func makeFilterBody(config common.ReadParams) map[string]any {
+	filterBody := map[string]any{
+		"filterGroups": []map[string]any{
 			{
-				"filters": []map[string]interface{}{
+				"filters": []map[string]any{
 					{
 						"propertyName": "lastmodifieddate",
 						"operator":     "GT",
