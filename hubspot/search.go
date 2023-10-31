@@ -51,6 +51,7 @@ func makeFilterBody(config common.ReadParams) map[string]any {
 				},
 			},
 		},
+		"limit": DefaultPageSize,
 	}
 
 	if len(config.NextPage) > 0 {

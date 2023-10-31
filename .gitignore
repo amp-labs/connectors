@@ -114,3 +114,6 @@ fabric.properties
 # Go workspace file
 go.work
 
+.idea/**/*.xml
+.idea/**/*.iml
+.idea/.gitignore
