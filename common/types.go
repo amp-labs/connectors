@@ -51,6 +51,9 @@ var (
 
 	// ErrEmptyBaseURL is returned when the URL is relative, and the base URL is empty.
 	ErrEmptyBaseURL = errors.New("empty base URL")
+
+	// ErrNotImplemented is returned when a method is not implemented.
+	ErrNotImplemented = errors.New("not implemented")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.
@@ -136,7 +139,7 @@ func (r HTTPStatusError) Error() string {
 		return fmt.Sprintf("HTTP status %d: %v", r.HTTPStatus, r.err)
 	}
 
-	return fmt.Sprintf("%v", r.err)
+	return r.err.Error()
 }
 
 func (r HTTPStatusError) Unwrap() error {
