@@ -53,6 +53,8 @@ func makeQueryValues(config common.ReadParams) string {
 		queryValues.Add("archived", "true")
 	}
 
+	queryValues.Add("limit", DefaultPageSize)
+
 	return queryValues.Encode()
 }
 
