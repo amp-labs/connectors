@@ -9,6 +9,11 @@ import (
 	"golang.org/x/oauth2"
 )
 
+const (
+	// DefaultPageSize is the default page size for paginated requests.
+	DefaultPageSize = "100"
+)
+
 // Option is a function which mutates the hubspot connector configuration.
 type Option func(params *hubspotParams)
 
