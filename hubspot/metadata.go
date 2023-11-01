@@ -11,7 +11,7 @@ import (
 )
 
 // ListObjectMetadata returns object metadata for each object name provided.
-func (c *Connector) ListObjectMetadata(
+func (c *Connector) ListObjectMetadata( // nolint:cyclop,funlen
 	ctx context.Context,
 	objectNames []string,
 ) (*common.ListObjectMetadataResult, error) {
@@ -33,15 +33,20 @@ func (c *Connector) ListObjectMetadata(
 			if err != nil {
 				select {
 				case errChannel <- err:
+					// Send error to errChannel and cancel context if an error occurs
 					cancel()
+
+				// Do nothing if context is already cancelled
 				case <-ctx.Done():
 				}
 
 				return
 			}
 
+			// Send object metadata to metadataChannel
 			select {
 			case metadataChannel <- *objectMetadata:
+			// Do nothing if context is already cancelled
 			case <-ctx.Done():
 			}
 		}(objectName)
@@ -52,10 +57,11 @@ func (c *Connector) ListObjectMetadata(
 
 	for range objectNames {
 		select {
+		// Add object metadata to objectsMap
 		case objectMetadata := <-metadataChannel:
 			objectsMap[objectMetadata.DisplayName] = objectMetadata
 		case err := <-errChannel:
-			// Drain to ensure all goroutines can exit
+			// Cancel context and drain metadataChannel if an error occurs
 			for range objectNames {
 				select {
 				case <-metadataChannel:
