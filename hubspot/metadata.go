@@ -63,6 +63,7 @@ type describeObjectResult struct {
 	Label string `json:"label"`
 }
 
+// describeObject returns object metadata for the given object name.
 func (c *Connector) describeObject(ctx context.Context, objectName string) (*common.ObjectMetadata, error) {
 	data, err := c.get(ctx, c.BaseURL+"/properties/"+objectName)
 	if err != nil {
@@ -87,6 +88,7 @@ func (c *Connector) describeObject(ctx context.Context, objectName string) (*com
 	}, nil
 }
 
+// makeFieldsMap returns a map of field name to field label.
 func makeFieldsMap(data *describeObjectResponse) map[string]string {
 	fieldsMap := make(map[string]string)
 
