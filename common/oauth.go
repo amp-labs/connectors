@@ -3,6 +3,7 @@ package common
 import (
 	"context"
 	"net/http"
+	"sync"
 
 	"golang.org/x/oauth2"
 )
@@ -40,6 +41,7 @@ type oauthClientParams struct {
 	token       *oauth2.Token
 	config      *oauth2.Config
 	tokenSource oauth2.TokenSource
+	updateToken func(tok *oauth2.Token) error
 }
 
 type OAuthOption func(params *oauthClientParams)
@@ -64,6 +66,15 @@ func WithOAuthToken(token *oauth2.Token) OAuthOption {
 func WithOAuthConfig(config *oauth2.Config) OAuthOption {
 	return func(params *oauthClientParams) {
 		params.config = config
+	}
+}
+
+// WithTokenUpdate sets the function to call whenever the oauth token is updated.
+// This is useful for persisting the refreshed tokens somewhere, so that it can be
+// used later. It's optional.
+func WithTokenUpdate(update func(tok *oauth2.Token) error) OAuthOption {
+	return func(params *oauthClientParams) {
+		params.updateToken = update
 	}
 }
 
@@ -99,11 +110,62 @@ func newOAuthClient(ctx context.Context, params *oauthClientParams) Authenticate
 	// This is how the key refresher accepts a custom http client
 	ctx = context.WithValue(ctx, oauth2.HTTPClient, params.client)
 
+	tokenSource := getTokenSource(ctx, params)
+	if params.updateToken != nil {
+		tokenSource = &writeBackTokenSource{
+			update:      params.updateToken,
+			lastKnown:   params.token,
+			tokenSource: tokenSource,
+		}
+	}
+
 	// Returns a new client which automatically refreshes the access token
 	// whenever the current one expires.
+	return oauth2.NewClient(ctx, tokenSource)
+}
+
+func getTokenSource(ctx context.Context, params *oauthClientParams) oauth2.TokenSource { //nolint:ireturn
 	if params.tokenSource != nil {
-		return oauth2.NewClient(ctx, params.tokenSource)
-	} else {
-		return oauth2.NewClient(ctx, params.config.TokenSource(ctx, params.token))
+		return params.tokenSource
 	}
+
+	return params.config.TokenSource(ctx, params.token)
+}
+
+type writeBackTokenSource struct {
+	mut         sync.Mutex
+	update      func(tok *oauth2.Token) error
+	lastKnown   *oauth2.Token
+	tokenSource oauth2.TokenSource
+}
+
+func (w *writeBackTokenSource) Token() (*oauth2.Token, error) {
+	w.mut.Lock()
+	defer w.mut.Unlock()
+
+	tok, err := w.tokenSource.Token()
+	if err != nil {
+		return nil, err
+	}
+
+	if w.HasChanged(tok) {
+		if err := w.update(tok); err != nil {
+			return nil, err
+		}
+
+		w.lastKnown = tok
+	}
+
+	return tok, nil
+}
+
+func (w *writeBackTokenSource) HasChanged(tok *oauth2.Token) bool {
+	if w.lastKnown == nil {
+		return true
+	}
+
+	return w.lastKnown.AccessToken == tok.AccessToken &&
+		w.lastKnown.RefreshToken == tok.RefreshToken &&
+		w.lastKnown.TokenType == tok.TokenType &&
+		w.lastKnown.Expiry.Equal(tok.Expiry)
 }
