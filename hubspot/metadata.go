@@ -22,7 +22,7 @@ func (c *Connector) ListObjectMetadata(
 
 	// Use goroutines to fetch metadata for each object in parallel
 	metadataChannel := make(chan common.ObjectMetadata, len(objectNames))
-	errChannel := make(chan error)
+	errChannel := make(chan error, len(objectNames))
 
 	for _, objectName := range objectNames {
 		go func(object string) {
