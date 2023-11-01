@@ -30,6 +30,8 @@ type Connector interface {
 
 	Write(ctx context.Context, params WriteParams) (*WriteResult, error)
 
+	ListObjectMetadata(ctx context.Context, objectNames []string) (*ListObjectMetadataResponse, error)
+
 	// JSONHTTPClient returns the underlying JSON HTTP client. This is useful for
 	// testing, or for calling methods that aren't exposed by the Connector
 	// interface directly. Authentication and token refreshes will be handled automatically.
@@ -56,10 +58,12 @@ var Hubspot API[*hubspot.Connector, hubspot.Option] = hubspot.NewConnector //nol
 
 // We re-export the following types so that they can be used by consumers of this library.
 type (
-	ReadParams      = common.ReadParams
-	WriteParams     = common.WriteParams
-	ReadResult      = common.ReadResult
-	WriteResult     = common.WriteResult
+	ReadParams                 = common.ReadParams
+	WriteParams                = common.WriteParams
+	ReadResult                 = common.ReadResult
+	WriteResult                = common.WriteResult
+	ListObjectMetadataResponse = common.ListObjectMetadataResponse
+
 	ErrorWithStatus = common.HTTPStatusError
 )
 

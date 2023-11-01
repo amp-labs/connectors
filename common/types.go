@@ -145,3 +145,11 @@ func (r HTTPStatusError) Error() string {
 func (r HTTPStatusError) Unwrap() error {
 	return r.err
 }
+
+type ObjectMetadata struct {
+	DisplayName string
+	// FieldsMap is a map of field names to field display names
+	FieldsMap map[string]string
+}
+
+type ListObjectMetadataResponse map[string]ObjectMetadata
