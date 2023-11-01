@@ -12,24 +12,27 @@ import (
 )
 
 // ListObjectMetadata returns object metadata for each object name provided.
-func (c *Connector) ListObjectMetadata(ctx context.Context, objectNames []string) (*common.ListObjectMetadataResponse, error) {
+func (c *Connector) ListObjectMetadata(
+	ctx context.Context,
+	objectNames []string,
+) (*common.ListObjectMetadataResponse, error) {
 	// Ensure that objectNames is not empty
 	if len(objectNames) == 0 {
-		return nil, fmt.Errorf("no objects provided")
+		return nil, common.ErrMissingObjects
 	}
 
 	requests := make([]compositeRequestItem, len(objectNames))
 
 	// Construct describe requests for each object name
 	for idx, objectName := range objectNames {
-		describeObjectUrl, err := url.JoinPath(fmt.Sprintf("/services/data/%s/sobjects/%s/describe", apiVersion, objectName))
+		describeObjectURL, err := url.JoinPath(fmt.Sprintf("/services/data/%s/sobjects/%s/describe", apiVersion, objectName))
 		if err != nil {
 			return nil, err
 		}
 
 		requests[idx] = compositeRequestItem{
 			Method:      "GET",
-			URL:         describeObjectUrl,
+			URL:         describeObjectURL,
 			ReferenceId: objectName,
 		}
 	}
@@ -42,7 +45,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context, objectNames []string
 
 	// Make the request
 	result, err := c.post(
-		context.Background(),
+		ctx,
 		compositeRequestEndpoint,
 		compositeRequest{
 			CompositeRequest: requests,

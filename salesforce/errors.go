@@ -18,7 +18,7 @@ var (
 	ErrNotNumeric         = errors.New("totalSize isn't numeric")
 	ErrMissingSubdomain   = errors.New("missing Salesforce workspace name")
 	ErrMissingClient      = errors.New("JSON http client not set")
-	ErrCannotReadMetadata = errors.New("cannot read object metadata, it is possible you don't have the correct permissions set")
+	ErrCannotReadMetadata = errors.New("cannot read object metadata, it is possible you don't have the correct permissions set") // nolint:lll
 )
 
 type jsonError struct {

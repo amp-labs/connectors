@@ -11,10 +11,13 @@ import (
 )
 
 // ListObjectMetadata returns object metadata for each object name provided.
-func (c *Connector) ListObjectMetadata(ctx context.Context, objectNames []string) (*common.ListObjectMetadataResponse, error) {
+func (c *Connector) ListObjectMetadata(
+	ctx context.Context,
+	objectNames []string,
+) (*common.ListObjectMetadataResponse, error) {
 	// Ensure that objectNames is not empty
 	if len(objectNames) == 0 {
-		return nil, fmt.Errorf("no objects provided")
+		return nil, common.ErrMissingObjects
 	}
 
 	metadataChannel := make(chan common.ObjectMetadata)
@@ -31,8 +34,10 @@ func (c *Connector) ListObjectMetadata(ctx context.Context, objectNames []string
 	}
 
 	objectsMap := make(common.ListObjectMetadataResponse)
+
 	for range objectNames {
 		objectMetadata := <-metadataChannel
+
 		objectsMap[objectMetadata.DisplayName] = objectMetadata
 	}
 

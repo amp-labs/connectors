@@ -15,5 +15,5 @@ var ModuleCRM = APIModule{ // nolint: gochecknoglobals
 }
 
 func (a APIModule) String() string {
-	return fmt.Sprintf("%s/%s/%s", a.Label, a.Version)
+	return fmt.Sprintf("%s/%s", a.Label, a.Version)
 }

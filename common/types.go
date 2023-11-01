@@ -54,6 +54,9 @@ var (
 
 	// ErrNotImplemented is returned when a method is not implemented.
 	ErrNotImplemented = errors.New("not implemented")
+
+	// ErrMissingObjects is returned when no objects are provided in the request.
+	ErrMissingObjects = errors.New("no objects provided")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.
