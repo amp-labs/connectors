@@ -22,19 +22,27 @@ func (c *Connector) ListObjectMetadata(
 
 	// Use goroutines to fetch metadata for each object in parallel
 	metadataChannel := make(chan common.ObjectMetadata, len(objectNames))
-	errChannel := make(chan error, len(objectNames))
+	errChannel := make(chan error, 1)
+
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
 
 	for _, objectName := range objectNames {
 		go func(object string) {
 			objectMetadata, err := c.describeObject(ctx, object)
 			if err != nil {
+				select {
+				case errChannel <- err:
+					cancel()
+				case <-ctx.Done():
+				}
+
 				return
 			}
 
 			select {
 			case metadataChannel <- *objectMetadata:
 			case <-ctx.Done():
-				errChannel <- ctx.Err()
 			}
 		}(objectName)
 	}
@@ -47,6 +55,14 @@ func (c *Connector) ListObjectMetadata(
 		case objectMetadata := <-metadataChannel:
 			objectsMap[objectMetadata.DisplayName] = objectMetadata
 		case err := <-errChannel:
+			// Drain to ensure all goroutines can exit
+			for range objectNames {
+				select {
+				case <-metadataChannel:
+				default:
+				}
+			}
+
 			return nil, err
 		}
 	}
