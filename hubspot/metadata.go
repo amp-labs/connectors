@@ -14,13 +14,15 @@ import (
 func (c *Connector) ListObjectMetadata(
 	ctx context.Context,
 	objectNames []string,
-) (*common.ListObjectMetadataResponse, error) {
+) (*common.ListObjectMetadataResult, error) {
 	// Ensure that objectNames is not empty
 	if len(objectNames) == 0 {
 		return nil, common.ErrMissingObjects
 	}
 
-	metadataChannel := make(chan common.ObjectMetadata)
+	// Use goroutines to fetch metadata for each object in parallel
+	metadataChannel := make(chan common.ObjectMetadata, len(objectNames))
+	errChannel := make(chan error)
 
 	for _, objectName := range objectNames {
 		go func(object string) {
@@ -29,16 +31,24 @@ func (c *Connector) ListObjectMetadata(
 				return
 			}
 
-			metadataChannel <- *objectMetadata
+			select {
+			case metadataChannel <- *objectMetadata:
+			case <-ctx.Done():
+				errChannel <- ctx.Err()
+			}
 		}(objectName)
 	}
 
-	objectsMap := make(common.ListObjectMetadataResponse)
+	// Collect metadata for each object
+	objectsMap := make(common.ListObjectMetadataResult)
 
 	for range objectNames {
-		objectMetadata := <-metadataChannel
-
-		objectsMap[objectMetadata.DisplayName] = objectMetadata
+		select {
+		case objectMetadata := <-metadataChannel:
+			objectsMap[objectMetadata.DisplayName] = objectMetadata
+		case err := <-errChannel:
+			return nil, err
+		}
 	}
 
 	return &objectsMap, nil

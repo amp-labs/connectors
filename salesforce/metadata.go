@@ -15,7 +15,7 @@ import (
 func (c *Connector) ListObjectMetadata(
 	ctx context.Context,
 	objectNames []string,
-) (*common.ListObjectMetadataResponse, error) {
+) (*common.ListObjectMetadataResult, error) {
 	// Ensure that objectNames is not empty
 	if len(objectNames) == 0 {
 		return nil, common.ErrMissingObjects
@@ -62,8 +62,8 @@ func (c *Connector) ListObjectMetadata(
 }
 
 // constructResponseMap constructs a map of object names to object metadata from the composite response.
-func constructResponseMap(result *ajson.Node) (*common.ListObjectMetadataResponse, error) {
-	objectsMap := make(common.ListObjectMetadataResponse)
+func constructResponseMap(result *ajson.Node) (*common.ListObjectMetadataResult, error) {
+	objectsMap := make(common.ListObjectMetadataResult)
 
 	rawResponse, err := ajson.Marshal(result)
 	if err != nil {
