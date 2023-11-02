@@ -3,6 +3,7 @@ package common
 import (
 	"context"
 	"net/http"
+	"sync"
 
 	"golang.org/x/oauth2"
 )
@@ -36,10 +37,11 @@ func NewOAuthHTTPClient(ctx context.Context, opts ...OAuthOption) (Authenticated
 
 // oauthClientParams is the internal configuration for the oauth http client.
 type oauthClientParams struct {
-	client      *http.Client
-	token       *oauth2.Token
-	config      *oauth2.Config
-	tokenSource oauth2.TokenSource
+	client       *http.Client
+	token        *oauth2.Token
+	config       *oauth2.Config
+	tokenSource  oauth2.TokenSource
+	tokenUpdated func(oldToken, newToken *oauth2.Token) error
 }
 
 type OAuthOption func(params *oauthClientParams)
@@ -64,6 +66,15 @@ func WithOAuthToken(token *oauth2.Token) OAuthOption {
 func WithOAuthConfig(config *oauth2.Config) OAuthOption {
 	return func(params *oauthClientParams) {
 		params.config = config
+	}
+}
+
+// WithTokenUpdated sets the function to call whenever the oauth token is updated.
+// This is useful for persisting the refreshed tokens somewhere, so that it can be
+// used later. It's optional.
+func WithTokenUpdated(onTokenUpdated func(oldToken, newToken *oauth2.Token) error) OAuthOption {
+	return func(params *oauthClientParams) {
+		params.tokenUpdated = onTokenUpdated
 	}
 }
 
@@ -99,11 +110,62 @@ func newOAuthClient(ctx context.Context, params *oauthClientParams) Authenticate
 	// This is how the key refresher accepts a custom http client
 	ctx = context.WithValue(ctx, oauth2.HTTPClient, params.client)
 
+	tokenSource := getTokenSource(ctx, params)
+	if params.tokenUpdated != nil {
+		tokenSource = &observableTokenSource{
+			tokenUpdated: params.tokenUpdated,
+			lastKnown:    params.token,
+			tokenSource:  tokenSource,
+		}
+	}
+
 	// Returns a new client which automatically refreshes the access token
 	// whenever the current one expires.
+	return oauth2.NewClient(ctx, tokenSource)
+}
+
+func getTokenSource(ctx context.Context, params *oauthClientParams) oauth2.TokenSource { //nolint:ireturn
 	if params.tokenSource != nil {
-		return oauth2.NewClient(ctx, params.tokenSource)
-	} else {
-		return oauth2.NewClient(ctx, params.config.TokenSource(ctx, params.token))
+		return params.tokenSource
 	}
+
+	return params.config.TokenSource(ctx, params.token)
+}
+
+type observableTokenSource struct {
+	mut          sync.Mutex
+	tokenUpdated func(oldToken, newToken *oauth2.Token) error
+	lastKnown    *oauth2.Token
+	tokenSource  oauth2.TokenSource
+}
+
+func (w *observableTokenSource) Token() (*oauth2.Token, error) {
+	w.mut.Lock()
+	defer w.mut.Unlock()
+
+	tok, err := w.tokenSource.Token()
+	if err != nil {
+		return nil, err
+	}
+
+	if w.HasChanged(tok) {
+		if err := w.tokenUpdated(w.lastKnown, tok); err != nil {
+			return nil, err
+		}
+
+		w.lastKnown = tok
+	}
+
+	return tok, nil
+}
+
+func (w *observableTokenSource) HasChanged(tok *oauth2.Token) bool {
+	if w.lastKnown == nil {
+		return true
+	}
+
+	return w.lastKnown.AccessToken == tok.AccessToken &&
+		w.lastKnown.RefreshToken == tok.RefreshToken &&
+		w.lastKnown.TokenType == tok.TokenType &&
+		w.lastKnown.Expiry.Equal(tok.Expiry)
 }
