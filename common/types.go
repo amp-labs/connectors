@@ -152,6 +152,7 @@ func (r HTTPStatusError) Unwrap() error {
 type ListObjectMetadataResult map[string]ObjectMetadata
 
 type ObjectMetadata struct {
+	// Provider's display name for the object
 	DisplayName string
 
 	// FieldsMap is a map of field names to field display names
