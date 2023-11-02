@@ -14,7 +14,7 @@ import (
 func (c *Connector) ListObjectMetadata( // nolint:cyclop,funlen
 	ctx context.Context,
 	objectNames []string,
-) (*common.ListObjectMetadataResult, error) {
+) (common.ListObjectMetadataResult, error) {
 	// Ensure that objectNames is not empty
 	if len(objectNames) == 0 {
 		return nil, common.ErrMissingObjects
@@ -73,7 +73,7 @@ func (c *Connector) ListObjectMetadata( // nolint:cyclop,funlen
 		}
 	}
 
-	return &objectsMap, nil
+	return objectsMap, nil
 }
 
 type describeObjectResponse struct {
