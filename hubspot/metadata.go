@@ -94,14 +94,14 @@ func (c *Connector) describeObject(ctx context.Context, objectName string) (*com
 
 	rawResponse, err := ajson.Marshal(data)
 	if err != nil {
-		return nil, fmt.Errorf("error marshalling composite response into byte array: %w", err)
+		return nil, fmt.Errorf("error marshalling object metadata response into byte array: %w", err)
 	}
 
 	resp := &describeObjectResponse{}
 
 	err = json.Unmarshal(rawResponse, resp)
 	if err != nil {
-		return nil, fmt.Errorf("error unmarshalling composite response into JSON: %w", err)
+		return nil, fmt.Errorf("error unmarshalling object metadata response into JSON: %w", err)
 	}
 
 	return &common.ObjectMetadata{
