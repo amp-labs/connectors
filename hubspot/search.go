@@ -27,7 +27,7 @@ func (c *Connector) search(ctx context.Context, config common.ReadParams) (*comm
 	// in the filter body. As always, we attach the query values in the request.
 	data, err = c.post(
 		ctx,
-		c.BaseURL+"/"+config.ObjectName+"/search"+"?"+makeQueryValues(config),
+		c.BaseURL+"/objects/"+config.ObjectName+"/search"+"?"+makeQueryValues(config),
 		makeFilterBody(config),
 	)
 	if err != nil {
