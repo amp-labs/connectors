@@ -37,11 +37,11 @@ func NewOAuthHTTPClient(ctx context.Context, opts ...OAuthOption) (Authenticated
 
 // oauthClientParams is the internal configuration for the oauth http client.
 type oauthClientParams struct {
-	client      *http.Client
-	token       *oauth2.Token
-	config      *oauth2.Config
-	tokenSource oauth2.TokenSource
-	updateToken func(tok *oauth2.Token) error
+	client       *http.Client
+	token        *oauth2.Token
+	config       *oauth2.Config
+	tokenSource  oauth2.TokenSource
+	tokenUpdated func(oldToken, newToken *oauth2.Token) error
 }
 
 type OAuthOption func(params *oauthClientParams)
@@ -69,12 +69,12 @@ func WithOAuthConfig(config *oauth2.Config) OAuthOption {
 	}
 }
 
-// WithTokenUpdate sets the function to call whenever the oauth token is updated.
+// WithTokenUpdated sets the function to call whenever the oauth token is updated.
 // This is useful for persisting the refreshed tokens somewhere, so that it can be
 // used later. It's optional.
-func WithTokenUpdate(update func(tok *oauth2.Token) error) OAuthOption {
+func WithTokenUpdated(onTokenUpdated func(oldToken, newToken *oauth2.Token) error) OAuthOption {
 	return func(params *oauthClientParams) {
-		params.updateToken = update
+		params.tokenUpdated = onTokenUpdated
 	}
 }
 
@@ -111,11 +111,11 @@ func newOAuthClient(ctx context.Context, params *oauthClientParams) Authenticate
 	ctx = context.WithValue(ctx, oauth2.HTTPClient, params.client)
 
 	tokenSource := getTokenSource(ctx, params)
-	if params.updateToken != nil {
-		tokenSource = &writeBackTokenSource{
-			update:      params.updateToken,
-			lastKnown:   params.token,
-			tokenSource: tokenSource,
+	if params.tokenUpdated != nil {
+		tokenSource = &observableTokenSource{
+			tokenUpdated: params.tokenUpdated,
+			lastKnown:    params.token,
+			tokenSource:  tokenSource,
 		}
 	}
 
@@ -132,14 +132,14 @@ func getTokenSource(ctx context.Context, params *oauthClientParams) oauth2.Token
 	return params.config.TokenSource(ctx, params.token)
 }
 
-type writeBackTokenSource struct {
-	mut         sync.Mutex
-	update      func(tok *oauth2.Token) error
-	lastKnown   *oauth2.Token
-	tokenSource oauth2.TokenSource
+type observableTokenSource struct {
+	mut          sync.Mutex
+	tokenUpdated func(oldToken, newToken *oauth2.Token) error
+	lastKnown    *oauth2.Token
+	tokenSource  oauth2.TokenSource
 }
 
-func (w *writeBackTokenSource) Token() (*oauth2.Token, error) {
+func (w *observableTokenSource) Token() (*oauth2.Token, error) {
 	w.mut.Lock()
 	defer w.mut.Unlock()
 
@@ -149,7 +149,7 @@ func (w *writeBackTokenSource) Token() (*oauth2.Token, error) {
 	}
 
 	if w.HasChanged(tok) {
-		if err := w.update(tok); err != nil {
+		if err := w.tokenUpdated(w.lastKnown, tok); err != nil {
 			return nil, err
 		}
 
@@ -159,7 +159,7 @@ func (w *writeBackTokenSource) Token() (*oauth2.Token, error) {
 	return tok, nil
 }
 
-func (w *writeBackTokenSource) HasChanged(tok *oauth2.Token) bool {
+func (w *observableTokenSource) HasChanged(tok *oauth2.Token) bool {
 	if w.lastKnown == nil {
 		return true
 	}
