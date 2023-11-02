@@ -31,7 +31,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	} else {
 		// If NextPage is not set, then we're reading the first page of results.
 		// We need to construct the SOQL query and then make the request.
-		data, err = c.get(ctx, c.BaseURL+"/"+config.ObjectName+"?"+makeQueryValues(config))
+		data, err = c.get(ctx, c.BaseURL+"/objects/"+config.ObjectName+"?"+makeQueryValues(config))
 	}
 
 	if err != nil {

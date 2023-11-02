@@ -54,6 +54,9 @@ var (
 
 	// ErrNotImplemented is returned when a method is not implemented.
 	ErrNotImplemented = errors.New("not implemented")
+
+	// ErrMissingObjects is returned when no objects are provided in the request.
+	ErrMissingObjects = errors.New("no objects provided")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.
@@ -144,4 +147,14 @@ func (r HTTPStatusError) Error() string {
 
 func (r HTTPStatusError) Unwrap() error {
 	return r.err
+}
+
+type ListObjectMetadataResult map[string]ObjectMetadata
+
+type ObjectMetadata struct {
+	// Provider's display name for the object
+	DisplayName string
+
+	// FieldsMap is a map of field names to field display names
+	FieldsMap map[string]string
 }
