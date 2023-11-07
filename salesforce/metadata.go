@@ -88,8 +88,9 @@ func constructResponseMap(result *ajson.Node) (*common.ListObjectMetadataResult,
 			// If one of the sub-requests of the composite request fails, then subRes.Body will look like:
 			// "[{\"errorCode\":\"NOT_FOUND\",\"message\":\"The requested resource does not exist\"}]"
 			// which will fail the json.Unmarshall
-
-			objectsMap.Errors[strings.ToLower(subRes.ReferenceId)] = fmt.Errorf("%w: %s", ErrCannotReadMetadata, string(subRes.Body))
+			objectsMap.Errors[strings.ToLower(subRes.ReferenceId)] = fmt.Errorf(
+				"%w: %s", ErrCannotReadMetadata, string(subRes.Body),
+			)
 		} else {
 			objectsMap.Result[strings.ToLower(result.Name)] = common.ObjectMetadata{
 				DisplayName: result.Label,
