@@ -8,11 +8,15 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
+struct SearchParams {
+	 // FilterGroups, SortBy, etc.
+}
+
 // search uses the POST /search endpoint to filter object records and return the result.
 // This is used when Since is set. Otherwise, the Read endpoint is used.
 // This endpoint paginates using paging.next.after which is to be used as an offset.
 // Read more @ https://developers.hubspot.com/docs/api/crm/search
-func (c *Connector) search(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
+func (c *Connector) Search(ctx context.Context, config SearchParams) (*common.ReadResult, error) {
 	var (
 		data *ajson.Node
 		err  error

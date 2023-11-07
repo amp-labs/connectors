@@ -19,7 +19,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 
 	// If filtering is required, then we have to use the search endpoint.
 	if requiresFiltering(config) {
-		return c.search(ctx, config)
+		return c.Search(ctx, config)
 	}
 
 	// Object endpoints have a link
