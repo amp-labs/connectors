@@ -10,19 +10,29 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
+type ObjectMetadataResult struct {
+	ObjectName string
+	Response   common.ObjectMetadata
+}
+
+type ObjectMetadataError struct {
+	ObjectName string
+	Error      error
+}
+
 // ListObjectMetadata returns object metadata for each object name provided.
 func (c *Connector) ListObjectMetadata( // nolint:cyclop,funlen
 	ctx context.Context,
 	objectNames []string,
-) (common.ListObjectMetadataResult, error) {
+) (*common.ListObjectMetadataResult, error) {
 	// Ensure that objectNames is not empty
 	if len(objectNames) == 0 {
 		return nil, common.ErrMissingObjects
 	}
 
 	// Use goroutines to fetch metadata for each object in parallel
-	metadataChannel := make(chan common.ObjectMetadata, len(objectNames))
-	errChannel := make(chan error, 1)
+	metadataChannel := make(chan *ObjectMetadataResult, len(objectNames))
+	errChannel := make(chan *ObjectMetadataError, len(objectNames))
 
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
@@ -31,45 +41,34 @@ func (c *Connector) ListObjectMetadata( // nolint:cyclop,funlen
 		go func(object string) {
 			objectMetadata, err := c.describeObject(ctx, object)
 			if err != nil {
-				select {
-				case errChannel <- err:
-					// Send error to errChannel and cancel context if an error occurs
-					cancel()
-
-				// Do nothing if context is already cancelled
-				case <-ctx.Done():
+				errChannel <- &ObjectMetadataError{
+					ObjectName: object,
+					Error:      err,
 				}
 
 				return
 			}
 
 			// Send object metadata to metadataChannel
-			select {
-			case metadataChannel <- *objectMetadata:
-			// Do nothing if context is already cancelled
-			case <-ctx.Done():
+			metadataChannel <- &ObjectMetadataResult{
+				ObjectName: object,
+				Response:   *objectMetadata,
 			}
 		}(objectName)
 	}
 
 	// Collect metadata for each object
-	objectsMap := make(common.ListObjectMetadataResult)
+	objectsMap := &common.ListObjectMetadataResult{}
+	objectsMap.Result = make(map[string]common.ObjectMetadata)
+	objectsMap.Errors = make(map[string]error)
 
 	for range objectNames {
 		select {
 		// Add object metadata to objectsMap
-		case objectMetadata := <-metadataChannel:
-			objectsMap[objectMetadata.DisplayName] = objectMetadata
-		case err := <-errChannel:
-			// Cancel context and drain metadataChannel if an error occurs
-			for range objectNames {
-				select {
-				case <-metadataChannel:
-				default:
-				}
-			}
-
-			return nil, err
+		case objectMetadataResult := <-metadataChannel:
+			objectsMap.Result[objectMetadataResult.ObjectName] = objectMetadataResult.Response
+		case objectMetadataError := <-errChannel:
+			objectsMap.Errors[objectMetadataError.ObjectName] = objectMetadataError.Error
 		}
 	}
 
