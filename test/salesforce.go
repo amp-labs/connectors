@@ -67,7 +67,7 @@ func mainFn() int { //nolint:funlen
 	ctx := context.Background()
 
 	// Create a new Salesforce connector, with a token provider that uses the sfdx CLI to fetch an access token.
-	sfc, err := connectors.Salesforce.New(
+	sfc, err := connectors.Salesforce(
 		salesforce.WithClient(ctx, http.DefaultClient, cfg, tok),
 		salesforce.WithSubdomain(*subdomain))
 	if err != nil {
