@@ -51,7 +51,7 @@ func main() {
   }
 
   // Create the Salesforce client
-  client, err := connectors.Salesforce.New(
+  client, err := connectors.Salesforce(
     salesforce.WithClient(context.Background(), http.DefaultClient, cfg, tok),
     salesforce.WithSubdomain(Subdomain))
   if err != nil {
@@ -67,4 +67,29 @@ func main() {
     fmt.Printf("Result is %v", result)
   }
 }
+```
+## Ways to initialize a Connector
+
+There are 3 ways to initialize a Connector:
+
+1. Initializing a provider-specific Connector (returns a concrete type). This method of initialization will allow you to use methods that only exist for that provider.
+
+```go
+client, err := connectors.Salesforce(
+    salesforce.WithClient(context.Background(), http.DefaultClient, cfg, tok),
+    salesforce.WithSubdomain(Subdomain))
+```
+
+2. Initializing a generic Connector (returns an interface). This method of initialization will only allow you to use methods that are common to all providers. This is helpful if you would like your code to be provider-agnostic.
+
+```go
+client, err := connectors.Salesforce.New(
+    salesforce.WithClient(context.Background(), http.DefaultClient, cfg, tok),
+    salesforce.WithSubdomain(Subdomain))
+```
+
+3. With string parameter for API name (this is useful if you are parsing the API name from a config file, but should be avoided otherwise because it is not typesafe). This returns a generic Connector (returns an interface).
+
+```go
+client, err := connectors.New("salesforce", map[string]any{"workspace": "salesforce-instance-name"})
 ```
