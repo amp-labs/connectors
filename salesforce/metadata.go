@@ -15,7 +15,7 @@ import (
 func (c *Connector) ListObjectMetadata(
 	ctx context.Context,
 	objectNames []string,
-) (common.ListObjectMetadataResult, error) {
+) (*common.ListObjectMetadataResult, error) {
 	// Ensure that objectNames is not empty
 	if len(objectNames) == 0 {
 		return nil, common.ErrMissingObjects
@@ -62,8 +62,10 @@ func (c *Connector) ListObjectMetadata(
 }
 
 // constructResponseMap constructs a map of object names to object metadata from the composite response.
-func constructResponseMap(result *ajson.Node) (common.ListObjectMetadataResult, error) {
-	objectsMap := make(common.ListObjectMetadataResult)
+func constructResponseMap(result *ajson.Node) (*common.ListObjectMetadataResult, error) {
+	objectsMap := &common.ListObjectMetadataResult{}
+	objectsMap.Result = make(map[string]common.ObjectMetadata)
+	objectsMap.Errors = make(map[string]error)
 
 	rawResponse, err := ajson.Marshal(result)
 	if err != nil {
@@ -86,15 +88,15 @@ func constructResponseMap(result *ajson.Node) (common.ListObjectMetadataResult, 
 			// If one of the sub-requests of the composite request fails, then subRes.Body will look like:
 			// "[{\"errorCode\":\"NOT_FOUND\",\"message\":\"The requested resource does not exist\"}]"
 			// which will fail the json.Unmarshall
-			return nil, fmt.Errorf("%w: object name: %v, original error: %s", ErrCannotReadMetadata,
-				subRes.ReferenceId,
-				string(subRes.Body))
-		}
-
-		objectsMap[strings.ToLower(result.Name)] = common.ObjectMetadata{
-			DisplayName: result.Label,
-			// Map that satisfies type constraint
-			FieldsMap: makeFieldsMap(result.Fields),
+			objectsMap.Errors[strings.ToLower(subRes.ReferenceId)] = fmt.Errorf(
+				"%w: %s", ErrCannotReadMetadata, string(subRes.Body),
+			)
+		} else {
+			objectsMap.Result[strings.ToLower(result.Name)] = common.ObjectMetadata{
+				DisplayName: result.Label,
+				// Map that satisfies type constraint
+				FieldsMap: makeFieldsMap(result.Fields),
+			}
 		}
 	}
 

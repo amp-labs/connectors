@@ -149,7 +149,13 @@ func (r HTTPStatusError) Unwrap() error {
 	return r.err
 }
 
-type ListObjectMetadataResult map[string]ObjectMetadata
+type ListObjectMetadataResult struct {
+	// Result is a map of object names to object metadata
+	Result map[string]ObjectMetadata
+
+	// Errors is a map of object names to errors
+	Errors map[string]error
+}
 
 type ObjectMetadata struct {
 	// Provider's display name for the object
