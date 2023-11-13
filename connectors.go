@@ -30,7 +30,7 @@ type Connector interface {
 
 	Write(ctx context.Context, params WriteParams) (*WriteResult, error)
 
-	ListObjectMetadata(ctx context.Context, objectNames []string) (ListObjectMetadataResult, error)
+	ListObjectMetadata(ctx context.Context, objectNames []string) (*ListObjectMetadataResult, error)
 
 	// JSONHTTPClient returns the underlying JSON HTTP client. This is useful for
 	// testing, or for calling methods that aren't exposed by the Connector
