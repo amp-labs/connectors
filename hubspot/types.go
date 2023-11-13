@@ -1,11 +1,5 @@
 package hubspot
 
-import (
-	"errors"
-)
-
-var ErrFilteringNotSupported = errors.New("filtering is not supported in this endpoint")
-
 type SearchParams struct {
 	// The name of the object we are reading, e.g. "Account"
 	ObjectName string // required
@@ -15,6 +9,8 @@ type SearchParams struct {
 	SortBy []SortBy // optional
 	// FilterBy is the filter to apply to the search
 	FilterGroups []FilterGroup // optional
+	// Fields is the list of fields to return in the result.
+	Fields []string // optional
 }
 
 type SortBy struct {

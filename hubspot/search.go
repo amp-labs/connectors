@@ -8,7 +8,8 @@ import (
 )
 
 // Search uses the POST /search endpoint to filter object records and return the result.
-// This is used when Since is set. Otherwise, the Read endpoint is used.
+// This endpoint has a limit of 10,000 records. If the result has more than 10,000 records,
+// the caller should employ sorting to paginate through the result on the client side.
 // This endpoint paginates using paging.next.after which is to be used as an offset.
 // Read more @ https://developers.hubspot.com/docs/api/crm/search
 func (c *Connector) Search(ctx context.Context, config SearchParams) (*common.ReadResult, error) {
@@ -40,6 +41,10 @@ func makeFilterBody(config SearchParams) map[string]any {
 
 	if config.SortBy != nil {
 		filterBody["sorts"] = config.SortBy
+	}
+
+	if config.Fields != nil {
+		filterBody["properties"] = config.Fields
 	}
 
 	return filterBody

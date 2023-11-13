@@ -4,13 +4,18 @@ import (
 	"context"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/spyzhov/ajson"
 )
 
 // Read reads data from Hubspot. If Since is set, it will use the
-// search endpoint to filter records.
+// Search endpoint instead to filter records, but it will be
+// limited to a maximum of 10,000 records. This is a limit of the
+// search endpoint. If Since is not set, it will use the read endpoint.
+// In case Deleted objects won’t appear in any search results.
+// Deleted objects can only be read by using this endpoint.
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
 	var (
 		data *ajson.Node
@@ -19,7 +24,14 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 
 	// If filtering is required, then we have to use the search endpoint.
 	if requiresFiltering(config) {
-		return nil, ErrFilteringNotSupported
+		searchParams := SearchParams{
+			ObjectName:   config.ObjectName,
+			FilterGroups: buildLastModifiedFilterGroup(config.Since),
+			NextPage:     config.NextPage,
+			Fields:       config.Fields,
+		}
+
+		return c.Search(ctx, searchParams)
 	}
 
 	// Object endpoints have a link
@@ -133,4 +145,18 @@ func getTotalSize(node *ajson.Node) (int64, error) {
 	}
 
 	return int64(node.Size()), nil
+}
+
+func buildLastModifiedFilterGroup(since time.Time) []FilterGroup {
+	return []FilterGroup{
+		{
+			Filters: []Filter{
+				{
+					FieldName: "lastmodifieddate",
+					Operator:  FilterOperatorTypeGTE,
+					Value:     since.Format(time.RFC3339),
+				},
+			},
+		},
+	}
 }
