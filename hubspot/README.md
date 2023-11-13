@@ -16,7 +16,7 @@ client.Read(context.Background(), &common.ReadParams{
 })
 ```
 
-If you try to use the 'Since' field in the `ReadParams`, it will cause an error. You should use the `Search` method instead.
+If the 'Since' field in the `ReadParams` is set, the connector will use the search endpoint to filter records using the `lastmodifieddate` property. However, this result set is limited to a maximum of 10,000 records. This limit is applicable to any call made via the `Search` endpoint. Read more @ https://developers.hubspot.com/docs/api/crm/search#limitations.
 
 ## Search
 Search is used to find records of a given type that match a given query. For example, if you want to find all contacts with the name "John", you would use the `Search` method with the `contacts` object.
