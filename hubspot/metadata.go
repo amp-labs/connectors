@@ -10,12 +10,12 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-type ObjectMetadataResult struct {
+type objectMetadataResult struct {
 	ObjectName string
 	Response   common.ObjectMetadata
 }
 
-type ObjectMetadataError struct {
+type objectMetadataError struct {
 	ObjectName string
 	Error      error
 }
@@ -31,8 +31,8 @@ func (c *Connector) ListObjectMetadata( // nolint:cyclop,funlen
 	}
 
 	// Use goroutines to fetch metadata for each object in parallel
-	metadataChannel := make(chan *ObjectMetadataResult, len(objectNames))
-	errChannel := make(chan *ObjectMetadataError, len(objectNames))
+	metadataChannel := make(chan *objectMetadataResult, len(objectNames))
+	errChannel := make(chan *objectMetadataError, len(objectNames))
 
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
@@ -41,7 +41,7 @@ func (c *Connector) ListObjectMetadata( // nolint:cyclop,funlen
 		go func(object string) {
 			objectMetadata, err := c.describeObject(ctx, object)
 			if err != nil {
-				errChannel <- &ObjectMetadataError{
+				errChannel <- &objectMetadataError{
 					ObjectName: object,
 					Error:      err,
 				}
@@ -50,7 +50,7 @@ func (c *Connector) ListObjectMetadata( // nolint:cyclop,funlen
 			}
 
 			// Send object metadata to metadataChannel
-			metadataChannel <- &ObjectMetadataResult{
+			metadataChannel <- &objectMetadataResult{
 				ObjectName: object,
 				Response:   *objectMetadata,
 			}
