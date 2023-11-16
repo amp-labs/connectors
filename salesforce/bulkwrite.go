@@ -26,17 +26,17 @@ func (c *Connector) BulkWrite(ctx context.Context, config common.BulkWriteParams
 		return nil, fmt.Errorf("createJob failed: %w", err)
 	}
 
-	jobData, err := ParseNodeToMap(res)
+	jobCreateRes, err := ParseNodeToMap(res)
 	if err != nil {
 		return nil, fmt.Errorf("parseNodeToMap failed: %w", errors.Join(err, common.ErrParseError))
 	}
 
-	state, ok := jobData["state"].(string) //nolint:varnamelen
+	state, ok := jobCreateRes["state"].(string) //nolint:varnamelen
 	if !ok {
 		return nil, fmt.Errorf(
 			"%w. expected salesforce job state to be string in response, got %T",
 			ErrInvalidType,
-			jobData["state"],
+			jobCreateRes["state"],
 		)
 	}
 
@@ -44,9 +44,9 @@ func (c *Connector) BulkWrite(ctx context.Context, config common.BulkWriteParams
 		return nil, fmt.Errorf("%w: expected job state to be open, got %s", ErrInvalidJobState, state)
 	}
 
-	jobId, ok := jobData["id"] //nolint:varnamelen
+	jobId, ok := jobCreateRes["id"] //nolint:varnamelen
 	if !ok {
-		return nil, fmt.Errorf("%w for key %s in %v", ErrKeyNotFound, "id", jobData)
+		return nil, fmt.Errorf("%w for key %s in %v", ErrKeyNotFound, "id", jobCreateRes)
 	}
 
 	jobIdString, ok := jobId.(string) //nolint:varnamelen
@@ -75,7 +75,7 @@ func (c *Connector) BulkWrite(ctx context.Context, config common.BulkWriteParams
 		)
 	}
 
-	state, ok := data["state"].(string) //nolint:varnamelen
+	completeState, ok := data["state"].(string) //nolint:varnamelen
 	if !ok {
 		return nil, fmt.Errorf(
 			"%w. expected salesforce job state to be string in response, got %T",
@@ -86,7 +86,7 @@ func (c *Connector) BulkWrite(ctx context.Context, config common.BulkWriteParams
 
 	return &common.BulkWriteResult{
 		JobId: id,
-		State: state,
+		State: completeState,
 	}, nil
 }
 
