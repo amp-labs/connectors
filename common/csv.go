@@ -60,9 +60,6 @@ func makeTextCSVPutRequest(ctx context.Context, url string, headers []Header, bo
 }
 
 func addHeaders(req *http.Request, headers []Header) (*http.Request, error) {
-	// Request JSON
-	req.Header.Add("Accept", "csv/text")
-
 	// Apply any custom headers
 	for _, hdr := range headers {
 		req.Header.Add(hdr.Key, hdr.Value)
