@@ -23,7 +23,7 @@ func (c *Connector) BulkWrite(ctx context.Context, config common.BulkWriteParams
 		return nil, fmt.Errorf("createJob failed: %w", err)
 	}
 
-	jobData, err := parseNodeToMap(res)
+	jobData, err := ParseNodeToMap(res)
 	if err != nil {
 		return nil, fmt.Errorf("parseNodeToMap failed: %w", errors.Join(err, common.ErrParseError))
 	}
@@ -109,7 +109,7 @@ func (c *Connector) uploadCSV(ctx context.Context, jobId string, config common.B
 		return nil, err
 	}
 
-	return c.put(ctx, location, file)
+	return c.putCSV(ctx, location, file)
 }
 
 func (c *Connector) completeUpload(ctx context.Context, jobId string) (map[string]interface{}, error) {
@@ -127,7 +127,7 @@ func (c *Connector) completeUpload(ctx context.Context, jobId string) (map[strin
 		return nil, fmt.Errorf("patch failed: %w", errors.Join(err, common.ErrRequestFailed))
 	}
 
-	return parseNodeToMap(res)
+	return ParseNodeToMap(res)
 }
 
 func (c *Connector) GetJobResult(ctx context.Context, jobId string) ([]byte, error) {
@@ -175,7 +175,7 @@ func (c *Connector) FailedResults(ctx context.Context, jobId string) ([]byte, er
 	return c.getCSV(ctx, location)
 }
 
-func parseNodeToMap(node *ajson.Node) (map[string]interface{}, error) {
+func ParseNodeToMap(node *ajson.Node) (map[string]interface{}, error) {
 	parsed := map[string]interface{}{}
 
 	for _, key := range node.Keys() {

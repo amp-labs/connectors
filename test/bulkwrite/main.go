@@ -12,6 +12,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/salesforce"
+
 	"golang.org/x/oauth2"
 )
 
@@ -96,5 +97,33 @@ func main() { //nolint:funlen
 		return
 	}
 
-	slog.Info("Done writing", "result", res)
+	bulkRes, err := json.MarshalIndent(res, "", "    ")
+	if err != nil {
+		slog.Error("Error marshalling bulk result", "error", err)
+	}
+
+	fmt.Println("Upload complete.")
+	fmt.Println(string(bulkRes))
+
+	time.Sleep(5 * time.Second)
+
+	body, err := sfc.GetJobInfo(ctx, res.JobId)
+	if err != nil {
+		slog.Error("Error getting job result", "error", err)
+
+		return
+	}
+
+	parsed, err := salesforce.ParseNodeToMap(body)
+	if err != nil {
+		slog.Error("Error parsing job result", "error", err)
+	}
+
+	jsonData, err := json.MarshalIndent(parsed, "", "    ")
+	if err != nil {
+		slog.Error("Error marshalling job result", "error", err)
+	}
+	fmt.Println("Write Result")
+	fmt.Println(string(jsonData))
+
 }

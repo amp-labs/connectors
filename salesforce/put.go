@@ -8,7 +8,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 )
 
-func (c *Connector) put(ctx context.Context, url string, body []byte) ([]byte, error) {
+func (c *Connector) putCSV(ctx context.Context, url string, body []byte) ([]byte, error) {
 	resBody, err := c.Client.PutCSV(ctx, url, body)
 	if err != nil {
 		switch {
