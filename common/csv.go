@@ -13,10 +13,12 @@ func (c *HTTPClient) PutCSV(ctx context.Context, url string, reqBody []byte, hea
 		return nil, err
 	}
 
-	_, body, err := c.httpPutCSV(ctx, fullURL, headers, reqBody)
+	res, body, err := c.httpPutCSV(ctx, fullURL, headers, reqBody)
 	if err != nil {
 		return nil, err
 	}
+
+	defer res.Body.Close()
 
 	return body, nil
 }
@@ -28,11 +30,12 @@ func (c *HTTPClient) GetCSV(ctx context.Context, url string, headers ...Header) 
 	}
 
 	// Make the request, get the response body
-	_, body, err := c.httpGet(ctx, fullURL, headers) //nolint:bodyclose
+	res, body, err := c.httpGet(ctx, fullURL, headers) //nolint:bodyclose
 	if err != nil {
-		fmt.Println("error in httpGet", err)
-		return nil, err
+		return nil, fmt.Errorf("error in httpGet: %w", err)
 	}
+
+	defer res.Body.Close()
 
 	return body, nil
 }
@@ -56,6 +59,7 @@ func makeTextCSVPutRequest(ctx context.Context, url string, headers []Header, bo
 
 	headers = append(headers, Header{Key: "Content-Type", Value: "text/csv"})
 	req.ContentLength = int64(len(body))
+
 	return addAcceptCSVHeaders(req, headers)
 }
 

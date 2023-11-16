@@ -30,5 +30,6 @@ func (c *Connector) put(ctx context.Context, url string, body []byte) ([]byte, e
 			return nil, err
 		}
 	}
+
 	return resBody, nil
 }

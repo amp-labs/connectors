@@ -57,6 +57,18 @@ var (
 
 	// ErrMissingObjects is returned when no objects are provided in the request.
 	ErrMissingObjects = errors.New("no objects provided")
+
+	// ErrInvalidPathJoin is returned when the path join is invalid.
+	ErrInvalidPathJoin = errors.New("invalid path join")
+
+	// ErrReadFile is returned when the path is invalid.
+	ErrReadFile = errors.New("failed to read file")
+
+	// ErrRequestFailed is returned when the request failed.
+	ErrRequestFailed = errors.New("request failed")
+
+	// ErrParseError is returned data parsing failed.
+	ErrParseError = errors.New("parse error")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.

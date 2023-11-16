@@ -1,5 +1,7 @@
 run:
   timeout: 5m
+  skip-dirs:
+    - "playground"
 output:
   format: github-actions
 linters:
@@ -49,7 +51,7 @@ linters-settings:
       - name: var-naming
         disabled: false
         arguments:
-          - [ "ID", "API" ]
+          - ["ID", "API"]
   # See https://staticcheck.io/docs/configuration/options/#checks
   stylecheck:
     checks: ["all", "-ST1003"]

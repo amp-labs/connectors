@@ -15,10 +15,11 @@ import (
 	"golang.org/x/oauth2"
 )
 
-func main() {
+func main() { //nolint:funlen
 	file, err := os.Open("../../creds.json")
 	if err != nil {
 		slog.Error("Error opening creds.json", "error", err)
+
 		return
 	}
 
@@ -27,6 +28,7 @@ func main() {
 	byteValue, err := io.ReadAll(file)
 	if err != nil {
 		slog.Error("Error reading creds.json", "error", err)
+
 		return
 	}
 
@@ -34,6 +36,7 @@ func main() {
 
 	if err := json.Unmarshal(byteValue, &credsMap); err != nil {
 		slog.Error("Error marshalling creds.json", "error", err)
+
 		return
 	}
 
@@ -87,11 +90,11 @@ func main() {
 		ExternalId: "external_id__c",
 		FilePath:   "../../playground/bulkapi/touchpoints.csv",
 	})
-
 	if err != nil {
 		slog.Error("Error bulk writing", "error", err)
+
 		return
 	}
-	slog.Info("Done writing", "result", res)
 
+	slog.Info("Done writing", "result", res)
 }
