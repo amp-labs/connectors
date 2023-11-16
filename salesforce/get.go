@@ -24,11 +24,9 @@ func (c *Connector) getCSV(ctx context.Context, url string) ([]byte, error) {
 		Key:   "Accept",
 		Value: "text/csv",
 	})
-
 	if err != nil {
 		return nil, c.HandleError(err)
 	}
 
 	return body, nil
-
 }
