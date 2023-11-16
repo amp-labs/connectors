@@ -60,7 +60,7 @@ func makeTextCSVPutRequest(ctx context.Context, url string, headers []Header, bo
 	headers = append(headers, Header{Key: "Content-Type", Value: "text/csv"})
 	req.ContentLength = int64(len(body))
 
-	return addAcceptCSVHeaders(req, headers)
+	return req, nil
 }
 
 func addAcceptCSVHeaders(req *http.Request, headers []Header) (*http.Request, error) {

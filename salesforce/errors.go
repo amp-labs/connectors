@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
@@ -69,4 +70,25 @@ func (c *Connector) interpretJSONError(res *http.Response, body []byte) error {
 
 	// No known errors, just do the normal error handling logic
 	return common.InterpretError(res, body)
+}
+
+func (c *Connector) HandleError(err error) error {
+	switch {
+	case errors.Is(err, common.ErrAccessToken):
+		// Retryable, so just log and retry
+		slog.Warn("Access token invalid, retrying", "error", err)
+
+		// TODO: Retry
+		return err
+	case errors.Is(err, common.ErrRetryable):
+		// TODO: Retry
+		return err
+	case errors.Is(err, common.ErrApiDisabled):
+		fallthrough
+	case errors.Is(err, common.ErrForbidden):
+		fallthrough
+	default:
+		// Anything else is a permanent error
+		return err
+	}
 }
