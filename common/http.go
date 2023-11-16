@@ -3,6 +3,8 @@ package common
 import (
 	"fmt"
 	"net/http"
+	"net/url"
+	"strings"
 )
 
 // Header is a key/value pair that can be added to a request.
@@ -36,4 +38,36 @@ func InterpretError(res *http.Response, body []byte) error {
 	}
 
 	return NewHTTPStatusError(res.StatusCode, fmt.Errorf("%w: %s", ErrUnknown, string(body)))
+}
+
+func getURL(baseURL string, urlString string) (string, error) {
+	if strings.HasPrefix(urlString, "http://") || strings.HasPrefix(urlString, "https://") {
+		return urlString, nil
+	}
+
+	if len(baseURL) == 0 {
+		return "", fmt.Errorf("%w (input is %q)", ErrEmptyBaseURL, urlString)
+	}
+
+	return url.JoinPath(baseURL, urlString)
+}
+
+// ErrorHandler allows the caller to inject their own HTTP error handling logic.
+// All non-2xx responses will be passed to the error handler. If the error handler
+// returns nil, then the error is ignored and the caller is responsible for handling
+// the error. If the error handler returns an error, then that error is returned
+// to the caller, as-is. Both the response and the response body are passed
+// to the error handler as arguments.
+type ErrorHandler func(rsp *http.Response, body []byte) error
+
+// HTTPClient is an HTTP client which makes certain assumptions, such as
+// that the response body is JSON. It also handles OAuth access token refreshes.
+type HTTPClient struct {
+	Base         string                  // optional base URL. If not set, then all URLs must be absolute.
+	Client       AuthenticatedHTTPClient // underlying HTTP client. Required.
+	ErrorHandler ErrorHandler            // optional error handler. If not set, then the default error handler is used.
+}
+
+func (c *HTTPClient) getURL(url string) (string, error) {
+	return getURL(c.Base, url)
 }

@@ -34,7 +34,7 @@ func WithClient(ctx context.Context, client *http.Client, config *oauth2.Config,
 // WithAuthenticatedClient sets the http client to use for the connector. Its usage is optional.
 func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
 	return func(params *sfParams) {
-		params.client = &common.JSONHTTPClient{
+		params.client = &common.HTTPClient{
 			Client:       client,
 			ErrorHandler: common.InterpretError,
 		}
@@ -50,8 +50,8 @@ func WithSubdomain(workspaceRef string) Option {
 
 // sfParams is the internal configuration for the salesforce connector.
 type sfParams struct {
-	client    *common.JSONHTTPClient // required
-	subdomain string                 // required
+	client    *common.HTTPClient // required
+	subdomain string             // required
 }
 
 // prepare finalizes and validates the connector configuration, and returns an error if it's invalid.

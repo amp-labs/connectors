@@ -10,7 +10,7 @@ import (
 type Connector struct {
 	Module  string
 	BaseURL string
-	Client  *common.JSONHTTPClient
+	Client  *common.HTTPClient
 }
 
 // NewConnector returns a new Hubspot connector.

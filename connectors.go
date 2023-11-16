@@ -32,10 +32,10 @@ type Connector interface {
 
 	ListObjectMetadata(ctx context.Context, objectNames []string) (*ListObjectMetadataResult, error)
 
-	// JSONHTTPClient returns the underlying JSON HTTP client. This is useful for
+	// HTTPClient returns the underlying JSON HTTP client. This is useful for
 	// testing, or for calling methods that aren't exposed by the Connector
 	// interface directly. Authentication and token refreshes will be handled automatically.
-	JSONHTTPClient() *common.JSONHTTPClient
+	HTTPClient() *common.HTTPClient
 }
 
 // API is a function that returns a Connector. It's used as a factory.
@@ -63,8 +63,8 @@ type (
 	ReadResult               = common.ReadResult
 	WriteResult              = common.WriteResult
 	ListObjectMetadataResult = common.ListObjectMetadataResult
-
-	ErrorWithStatus = common.HTTPStatusError
+	BulkWriteParams          = common.BulkWriteParams
+	ErrorWithStatus          = common.HTTPStatusError
 )
 
 // We re-export the following errors so that they can be handled by consumers of this library.
