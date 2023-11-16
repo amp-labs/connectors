@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/spyzhov/ajson"
@@ -15,9 +16,11 @@ var (
 	ErrKeyNotFound     = errors.New("key not found")
 	ErrUnknownNodeType = errors.New("unknown node type")
 	ErrInvalidType     = errors.New("invalid type")
+	ErrInvalidJobState = errors.New("invalid job state")
 )
 
 func (c *Connector) BulkWrite(ctx context.Context, config common.BulkWriteParams) (*common.BulkWriteResult, error) {
+	// cretes batch upload job, returns json with id and other info
 	res, err := c.createJob(ctx, config)
 	if err != nil {
 		return nil, fmt.Errorf("createJob failed: %w", err)
@@ -26,6 +29,19 @@ func (c *Connector) BulkWrite(ctx context.Context, config common.BulkWriteParams
 	jobData, err := ParseNodeToMap(res)
 	if err != nil {
 		return nil, fmt.Errorf("parseNodeToMap failed: %w", errors.Join(err, common.ErrParseError))
+	}
+
+	state, ok := jobData["state"].(string) //nolint:varnamelen
+	if !ok {
+		return nil, fmt.Errorf(
+			"%w. expected salesforce job state to be string in response, got %T",
+			ErrInvalidType,
+			jobData["state"],
+		)
+	}
+
+	if strings.ToLower(state) != "open" {
+		return nil, fmt.Errorf("%w: expected job state to be open, got %s", ErrInvalidJobState, state)
 	}
 
 	jobId, ok := jobData["id"] //nolint:varnamelen
@@ -38,11 +54,13 @@ func (c *Connector) BulkWrite(ctx context.Context, config common.BulkWriteParams
 		return nil, fmt.Errorf("%w. expected id to be string, gott %T", ErrInvalidType, jobId)
 	}
 
+	// upload csv and there is no response body other than status code
 	_, err = c.uploadCSV(ctx, jobIdString, config)
 	if err != nil {
 		return nil, fmt.Errorf("uploadCSV failed: %w", err)
 	}
 
+	//
 	data, err := c.completeUpload(ctx, jobIdString)
 	if err != nil {
 		return nil, fmt.Errorf("completeUpload failed: %w", err)
