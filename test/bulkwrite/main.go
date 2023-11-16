@@ -12,7 +12,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/salesforce"
-
 	"golang.org/x/oauth2"
 )
 
@@ -123,7 +122,7 @@ func main() { //nolint:funlen
 	if err != nil {
 		slog.Error("Error marshalling job result", "error", err)
 	}
+
 	fmt.Println("Write Result")
 	fmt.Println(string(jsonData))
-
 }

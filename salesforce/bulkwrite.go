@@ -19,7 +19,10 @@ var (
 	ErrInvalidJobState = errors.New("invalid job state")
 )
 
-func (c *Connector) BulkWrite(ctx context.Context, config common.BulkWriteParams) (*common.BulkWriteResult, error) {
+func (c *Connector) BulkWrite( //nolint:funlen,cyclop
+	ctx context.Context,
+	config common.BulkWriteParams,
+) (*common.BulkWriteResult, error) {
 	// cretes batch upload job, returns json with id and other info
 	res, err := c.createJob(ctx, config)
 	if err != nil {

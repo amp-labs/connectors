@@ -2,6 +2,7 @@ run:
   timeout: 5m
   skip-dirs:
     - "playground"
+    - "test/bulkwrite"
 output:
   format: github-actions
 linters:
