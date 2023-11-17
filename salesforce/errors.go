@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log/slog"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
@@ -76,8 +75,6 @@ func (c *Connector) HandleError(err error) error {
 	switch {
 	case errors.Is(err, common.ErrAccessToken):
 		// Retryable, so just log and retry
-		slog.Warn("Access token invalid, retrying", "error", err)
-
 		// TODO: Retry
 		return err
 	case errors.Is(err, common.ErrRetryable):

@@ -2,6 +2,7 @@ package salesforce
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/url"
@@ -24,13 +25,6 @@ type BulkWriteParams struct {
 	FilePath string // required
 }
 
-var (
-	ErrKeyNotFound     = errors.New("key not found")
-	ErrUnknownNodeType = errors.New("unknown node type when parsing JSON")
-	ErrInvalidType     = errors.New("invalid type")
-	ErrInvalidJobState = errors.New("invalid job state")
-)
-
 // BulkWriteResult is what's returned from writing data via the BulkWrite call.
 type BulkWriteResult struct {
 	// State is the state of the bulk job process
@@ -38,6 +32,37 @@ type BulkWriteResult struct {
 	// JobId is the ID of the bulk job process
 	JobId string `json:"jobId"`
 }
+
+type GetJobInfoResult struct {
+	Id                     string  `json:"id"`
+	Object                 string  `json:"object"`
+	CreatedById            string  `json:"createdById"`
+	ExternalIdFieldName    string  `json:"externalIdFieldName"`
+	State                  string  `json:"state"`
+	Operation              string  `json:"operation"`
+	ColumnDelimiter        string  `json:"columnDelimiter"`
+	LineEnding             string  `json:"lineEnding"`
+	NumberRecordsFailed    float64 `json:"numberRecordsFailed"`
+	NumberRecordsProcessed float64 `json:"numberRecordsProcessed"`
+
+	ApexProcessingTime      float64 `json:"apexProcessingTime"`
+	ApiActiveProcessingTime float64 `json:"apiActiveProcessingTime"`
+	ApiVersion              float64 `json:"apiVersion"`
+	ConcurrencyMode         string  `json:"concurrencyMode"`
+	ContentType             string  `json:"contentType"`
+	CreatedDate             string  `json:"createdDate"`
+	JobType                 string  `json:"jobType"`
+	Retries                 float64 `json:"retries"`
+	SystemModstamp          string  `json:"systemModstamp"`
+	TotalProcessingTime     float64 `json:"totalProcessingTime"`
+}
+
+var (
+	ErrKeyNotFound     = errors.New("key not found")
+	ErrUnknownNodeType = errors.New("unknown node type when parsing JSON")
+	ErrInvalidType     = errors.New("invalid type")
+	ErrInvalidJobState = errors.New("invalid job state")
+)
 
 func (c *Connector) BulkWrite( //nolint:funlen,cyclop
 	ctx context.Context,
@@ -49,17 +74,19 @@ func (c *Connector) BulkWrite( //nolint:funlen,cyclop
 		return nil, fmt.Errorf("createJob failed: %w", err)
 	}
 
-	jobCreateRes, err := ParseAjsonNodeToMap(res)
+	resObject, err := res.GetObject()
 	if err != nil {
 		return nil, fmt.Errorf("parsing result of createJob failed: %w", errors.Join(err, common.ErrParseError))
 	}
 
-	state, ok := jobCreateRes["state"].(string) //nolint:varnamelen
-	if !ok {
+	state, err := resObject["state"].GetString()
+	if err != nil {
+		unpacked, _ := resObject["state"].Unpack()
+
 		return nil, fmt.Errorf(
 			"%w: expected salesforce job state to be string in response, got %T",
 			ErrInvalidType,
-			jobCreateRes["state"],
+			unpacked,
 		)
 	}
 
@@ -67,47 +94,56 @@ func (c *Connector) BulkWrite( //nolint:funlen,cyclop
 		return nil, fmt.Errorf("%w: expected job state to be open, got %s", ErrInvalidJobState, state)
 	}
 
-	jobId, ok := jobCreateRes["id"] //nolint:varnamelen
-	if !ok {
-		return nil, fmt.Errorf("%w for key %s in job create result: %v", ErrKeyNotFound, "id", jobCreateRes)
-	}
+	jobId, err := resObject["id"].GetString()
+	if err != nil {
+		unpacked, _ := resObject["id"].Unpack()
 
-	jobIdString, ok := jobId.(string) //nolint:varnamelen
-	if !ok {
-		return nil, fmt.Errorf("%w. expected id to be string, got %T", ErrInvalidType, jobId)
+		return nil, fmt.Errorf(
+			"%w: expected salesforce job id to be string in response, got %T",
+			ErrInvalidType,
+			unpacked)
 	}
 
 	// upload csv and there is no response body other than status code
-	_, err = c.uploadCSV(ctx, jobIdString, config)
+	_, err = c.uploadCSV(ctx, jobId, config)
 	if err != nil {
 		return nil, fmt.Errorf("uploadCSV failed: %w", err)
 	}
 
-	data, err := c.completeUpload(ctx, jobIdString)
+	data, err := c.completeUpload(ctx, jobId)
 	if err != nil {
 		return nil, fmt.Errorf("completeUpload failed: %w", err)
 	}
 
-	id, ok := data["id"].(string) //nolint:varnamelen
-	if !ok {
+	dataObject, err := data.GetObject()
+	if err != nil {
+		return nil, fmt.Errorf("parsing result of completeUpload failed: %w", errors.Join(err, common.ErrParseError))
+	}
+
+	updatedJobId, err := dataObject["id"].GetString()
+	if err != nil {
+		unpacked, _ := dataObject["id"].Unpack()
+
 		return nil, fmt.Errorf(
 			"%w. expected salesforce job id to be string in response, got %T",
 			ErrInvalidType,
-			data["id"],
+			unpacked,
 		)
 	}
 
-	completeState, ok := data["state"].(string) //nolint:varnamelen
-	if !ok {
+	completeState, err := dataObject["state"].GetString() //nolint:varnamelen
+	if err != nil {
+		unpacked, _ := resObject["state"].Unpack()
+
 		return nil, fmt.Errorf(
 			"%w. expected salesforce job state to be string in response, got %T",
 			ErrInvalidType,
-			data["state"],
+			unpacked,
 		)
 	}
 
 	return &BulkWriteResult{
-		JobId: id,
+		JobId: updatedJobId,
 		State: completeState,
 	}, nil
 }
@@ -152,7 +188,7 @@ func (c *Connector) uploadCSV(ctx context.Context, jobId string, config BulkWrit
 	return c.putCSV(ctx, location, file)
 }
 
-func (c *Connector) completeUpload(ctx context.Context, jobId string) (map[string]interface{}, error) {
+func (c *Connector) completeUpload(ctx context.Context, jobId string) (*ajson.Node, error) {
 	updateLoadCompleteBody := map[string]interface{}{
 		"state": "UploadComplete",
 	}
@@ -162,66 +198,7 @@ func (c *Connector) completeUpload(ctx context.Context, jobId string) (map[strin
 		return nil, err
 	}
 
-	res, err := c.patch(ctx, location, updateLoadCompleteBody)
-	if err != nil {
-		return nil, fmt.Errorf("patch failed: %w", errors.Join(err, common.ErrRequestFailed))
-	}
-
-	return ParseAjsonNodeToMap(res)
-}
-
-func ParseAjsonNodeToMap(node *ajson.Node) (map[string]interface{}, error) {
-	parsed := map[string]interface{}{}
-
-	for _, key := range node.Keys() {
-		data, err := node.GetKey(key)
-		if err != nil {
-			return nil, fmt.Errorf("%w: %s", ErrKeyNotFound, key)
-		}
-
-		switch data.Type() {
-		case ajson.Null:
-			parsed[key] = data.MustNull()
-		case ajson.Numeric:
-			parsed[key] = data.MustNumeric()
-		case ajson.String:
-			parsed[key] = data.MustString()
-		case ajson.Bool:
-			parsed[key] = data.MustBool()
-		case ajson.Array:
-			parsed[key] = data.MustArray()
-		case ajson.Object:
-			parsed[key] = data.MustObject()
-		default:
-			return nil, fmt.Errorf("%w: %d", ErrUnknownNodeType, data.Type())
-		}
-	}
-
-	return parsed, nil
-}
-
-type GetJobInfoResult struct {
-	Id                     string  `json:"id"`
-	Object                 string  `json:"object"`
-	CreatedById            string  `json:"createdById"`
-	ExternalIdFieldName    string  `json:"externalIdFieldName"`
-	State                  string  `json:"state"`
-	Operation              string  `json:"operation"`
-	ColumnDelimiter        string  `json:"columnDelimiter"`
-	LineEnding             string  `json:"lineEnding"`
-	NumberRecordsFailed    float64 `json:"numberRecordsFailed"`
-	NumberRecordsProcessed float64 `json:"numberRecordsProcessed"`
-
-	ApexProcessingTime      float64 `json:"apexProcessingTime"`
-	ApiActiveProcessingTime float64 `json:"apiActiveProcessingTime"`
-	ApiVersion              float64 `json:"apiVersion"`
-	ConcurrencyMode         string  `json:"concurrencyMode"`
-	ContentType             string  `json:"contentType"`
-	CreatedDate             string  `json:"createdDate"`
-	JobType                 string  `json:"jobType"`
-	Retries                 float64 `json:"retries"`
-	SystemModstamp          string  `json:"systemModstamp"`
-	TotalProcessingTime     float64 `json:"totalProcessingTime"`
+	return c.patch(ctx, location, updateLoadCompleteBody)
 }
 
 func (c *Connector) GetJobInfo(ctx context.Context, jobId string) (*GetJobInfoResult, error) {
@@ -235,34 +212,17 @@ func (c *Connector) GetJobInfo(ctx context.Context, jobId string) (*GetJobInfoRe
 		return nil, fmt.Errorf("getGetInfo failed: %w", errors.Join(err, common.ErrRequestFailed))
 	}
 
-	dataMap, err := ParseAjsonNodeToMap(node)
+	data, err := ajson.Marshal(node)
 	if err != nil {
-		return nil, fmt.Errorf("parsing result of getGetInfo failed: %w", errors.Join(err, common.ErrParseError))
+		return nil, fmt.Errorf("marshalling result of getGetInfo failed: %w", errors.Join(err, common.ErrParseError))
 	}
 
-	// Below is omitting type assertion because we are already checking for type in ParseAjsonNodeToMap
-	return &GetJobInfoResult{
-		Id:                      dataMap["id"].(string),                       //nolint:forcetypeassert
-		Object:                  dataMap["object"].(string),                   //nolint:forcetypeassert
-		CreatedById:             dataMap["createdById"].(string),              //nolint:forcetypeassert
-		ExternalIdFieldName:     dataMap["externalIdFieldName"].(string),      //nolint:forcetypeassert
-		State:                   dataMap["state"].(string),                    //nolint:forcetypeassert
-		Operation:               dataMap["operation"].(string),                //nolint:forcetypeassert
-		ColumnDelimiter:         dataMap["columnDelimiter"].(string),          //nolint:forcetypeassert
-		LineEnding:              dataMap["lineEnding"].(string),               //nolint:forcetypeassert
-		NumberRecordsFailed:     dataMap["numberRecordsFailed"].(float64),     //nolint:forcetypeassert
-		NumberRecordsProcessed:  dataMap["numberRecordsProcessed"].(float64),  //nolint:forcetypeassert
-		ApexProcessingTime:      dataMap["apexProcessingTime"].(float64),      //nolint:forcetypeassert
-		ApiActiveProcessingTime: dataMap["apiActiveProcessingTime"].(float64), //nolint:forcetypeassert
-		ApiVersion:              dataMap["apiVersion"].(float64),              //nolint:forcetypeassert
-		ConcurrencyMode:         dataMap["concurrencyMode"].(string),          //nolint:forcetypeassert
-		ContentType:             dataMap["contentType"].(string),              //nolint:forcetypeassert
-		CreatedDate:             dataMap["createdDate"].(string),              //nolint:forcetypeassert
-		JobType:                 dataMap["jobType"].(string),                  //nolint:forcetypeassert
-		Retries:                 dataMap["retries"].(float64),                 //nolint:forcetypeassert
-		SystemModstamp:          dataMap["systemModstamp"].(string),           //nolint:forcetypeassert
-		TotalProcessingTime:     dataMap["totalProcessingTime"].(float64),     //nolint:forcetypeassert
-	}, nil
+	var info *GetJobInfoResult
+	if err := json.Unmarshal(data, &info); err != nil {
+		return nil, fmt.Errorf("unmarshalling result of getGetInfo failed: %w", errors.Join(err, common.ErrParseError))
+	}
+
+	return info, nil
 }
 
 /*
