@@ -51,11 +51,3 @@ func getURL(baseURL string, urlString string) (string, error) {
 
 	return url.JoinPath(baseURL, urlString)
 }
-
-// ErrorHandler allows the caller to inject their own HTTP error handling logic.
-// All non-2xx responses will be passed to the error handler. If the error handler
-// returns nil, then the error is ignored and the caller is responsible for handling
-// the error. If the error handler returns an error, then that error is returned
-// to the caller, as-is. Both the response and the response body are passed
-// to the error handler as arguments.
-type ErrorHandler func(rsp *http.Response, body []byte) error

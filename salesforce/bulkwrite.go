@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"net/url"
 	"os"
 	"strings"
@@ -78,41 +77,39 @@ func (c *Connector) BulkWrite( //nolint:funlen,cyclop
 		return nil, fmt.Errorf("%w. expected id to be string, got %T", ErrInvalidType, jobId)
 	}
 
-	log.Println("jobIdString", jobIdString)
-	// // upload csv and there is no response body other than status code
-	// _, err = c.uploadCSV(ctx, jobIdString, config)
-	// if err != nil {
-	// 	return nil, fmt.Errorf("uploadCSV failed: %w", err)
-	// }
+	// upload csv and there is no response body other than status code
+	_, err = c.uploadCSV(ctx, jobIdString, config)
+	if err != nil {
+		return nil, fmt.Errorf("uploadCSV failed: %w", err)
+	}
 
-	// data, err := c.completeUpload(ctx, jobIdString)
-	// if err != nil {
-	// 	return nil, fmt.Errorf("completeUpload failed: %w", err)
-	// }
+	data, err := c.completeUpload(ctx, jobIdString)
+	if err != nil {
+		return nil, fmt.Errorf("completeUpload failed: %w", err)
+	}
 
-	// id, ok := data["id"].(string) //nolint:varnamelen
-	// if !ok {
-	// 	return nil, fmt.Errorf(
-	// 		"%w. expected salesforce job id to be string in response, got %T",
-	// 		ErrInvalidType,
-	// 		data["id"],
-	// 	)
-	// }
+	id, ok := data["id"].(string) //nolint:varnamelen
+	if !ok {
+		return nil, fmt.Errorf(
+			"%w. expected salesforce job id to be string in response, got %T",
+			ErrInvalidType,
+			data["id"],
+		)
+	}
 
-	// completeState, ok := data["state"].(string) //nolint:varnamelen
-	// if !ok {
-	// 	return nil, fmt.Errorf(
-	// 		"%w. expected salesforce job state to be string in response, got %T",
-	// 		ErrInvalidType,
-	// 		data["state"],
-	// 	)
-	// }
+	completeState, ok := data["state"].(string) //nolint:varnamelen
+	if !ok {
+		return nil, fmt.Errorf(
+			"%w. expected salesforce job state to be string in response, got %T",
+			ErrInvalidType,
+			data["state"],
+		)
+	}
 
-	// return &BulkWriteResult{
-	// 	JobId: id,
-	// 	State: completeState,
-	// }, nil
-	return nil, nil
+	return &BulkWriteResult{
+		JobId: id,
+		State: completeState,
+	}, nil
 }
 
 func joinURLPath(baseURL string, paths ...string) (string, error) {
@@ -173,51 +170,6 @@ func (c *Connector) completeUpload(ctx context.Context, jobId string) (map[strin
 	return ParseAjsonNodeToMap(res)
 }
 
-func (c *Connector) GetJobResult(ctx context.Context, jobId string) ([]byte, error) {
-	location, err := joinURLPath(c.BaseURL, fmt.Sprintf("jobs/ingest/%s/successfulResults", jobId))
-	if err != nil {
-		return nil, err
-	}
-
-	return c.getCSV(ctx, location)
-}
-
-func (c *Connector) GetUnprocessedResults(ctx context.Context, jobId string) ([]byte, error) {
-	location, err := joinURLPath(c.BaseURL, fmt.Sprintf("jobs/ingest/%s/unprocessedrecords", jobId))
-	if err != nil {
-		return nil, err
-	}
-
-	return c.getCSV(ctx, location)
-}
-
-func (c *Connector) GetAllJobs(ctx context.Context) (*ajson.Node, error) {
-	location, err := joinURLPath(c.BaseURL, "jobs/ingest")
-	if err != nil {
-		return nil, err
-	}
-
-	return c.get(ctx, location)
-}
-
-func (c *Connector) GetJobInfo(ctx context.Context, jobId string) (*ajson.Node, error) {
-	location, err := joinURLPath(c.BaseURL, "jobs/ingest", jobId)
-	if err != nil {
-		return nil, err
-	}
-
-	return c.get(ctx, location)
-}
-
-func (c *Connector) GetFailedResults(ctx context.Context, jobId string) ([]byte, error) {
-	location, err := joinURLPath(c.BaseURL, fmt.Sprintf("jobs/ingest/%s/failedResults", jobId))
-	if err != nil {
-		return nil, err
-	}
-
-	return c.getCSV(ctx, location)
-}
-
 func ParseAjsonNodeToMap(node *ajson.Node) (map[string]interface{}, error) {
 	parsed := map[string]interface{}{}
 
@@ -247,3 +199,54 @@ func ParseAjsonNodeToMap(node *ajson.Node) (map[string]interface{}, error) {
 
 	return parsed, nil
 }
+
+func (c *Connector) GetJobInfo(ctx context.Context, jobId string) (*ajson.Node, error) {
+	location, err := joinURLPath(c.BaseURL, "jobs/ingest", jobId)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.get(ctx, location)
+}
+
+func (c *Connector) GetAllJobs(ctx context.Context) (*ajson.Node, error) {
+	location, err := joinURLPath(c.BaseURL, "jobs/ingest")
+	if err != nil {
+		return nil, err
+	}
+
+	return c.get(ctx, location)
+}
+
+/*
+// Below are methods that will help us get results, but need CSVHTTPClient to be implemented
+// Below code will work once CSVHTTPClient is implemented
+// TODO: implement CSVHTTPClient
+
+func (c *Connector) GetJobResult(ctx context.Context, jobId string) ([]byte, error) {
+	location, err := joinURLPath(c.BaseURL, fmt.Sprintf("jobs/ingest/%s/successfulResults", jobId))
+	if err != nil {
+		return nil, err
+	}
+
+	return c.getCSV(ctx, location)
+}
+
+func (c *Connector) GetUnprocessedResults(ctx context.Context, jobId string) ([]byte, error) {
+	location, err := joinURLPath(c.BaseURL, fmt.Sprintf("jobs/ingest/%s/unprocessedrecords", jobId))
+	if err != nil {
+		return nil, err
+	}
+
+	return c.getCSV(ctx, location)
+}
+
+func (c *Connector) GetFailedResults(ctx context.Context, jobId string) ([]byte, error) {
+	location, err := joinURLPath(c.BaseURL, fmt.Sprintf("jobs/ingest/%s/failedResults", jobId))
+	if err != nil {
+		return nil, err
+	}
+
+	return c.getCSV(ctx, location)
+}
+*/

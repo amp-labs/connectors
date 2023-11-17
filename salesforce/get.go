@@ -3,7 +3,6 @@ package salesforce
 import (
 	"context"
 
-	"github.com/amp-labs/connectors/common"
 	"github.com/spyzhov/ajson"
 )
 
@@ -18,15 +17,15 @@ func (c *Connector) get(ctx context.Context, url string) (*ajson.Node, error) {
 	return node, nil
 }
 
-// get reads data from Salesforce. It handles retries and access token refreshes.
-func (c *Connector) getCSV(ctx context.Context, url string) ([]byte, error) {
-	body, err := c.Client.GetCSV(ctx, url, common.Header{
-		Key:   "Accept",
-		Value: "text/csv",
-	})
-	if err != nil {
-		return nil, c.HandleError(err)
-	}
+// // get reads data from Salesforce. It handles retries and access token refreshes.
+// func (c *Connector) getCSV(ctx context.Context, url string) ([]byte, error) {
+// 	body, err := c.JSONClient.GetCSV(ctx, url, common.Header{
+// 		Key:   "Accept",
+// 		Value: "text/csv",
+// 	})
+// 	if err != nil {
+// 		return nil, c.HandleError(err)
+// 	}
 
-	return body, nil
-}
+// 	return body, nil
+// }

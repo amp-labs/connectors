@@ -1,8 +1,6 @@
 package salesforce
 
-import (
-	"context"
-)
+import "context"
 
 func (c *Connector) putCSV(ctx context.Context, url string, body []byte) ([]byte, error) {
 	resBody, err := c.Client.PutCSV(ctx, url, body)
