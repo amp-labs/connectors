@@ -106,19 +106,14 @@ func main() { //nolint:funlen
 
 	time.Sleep(5 * time.Second)
 
-	body, err := sfc.GetJobInfo(ctx, res.JobId)
+	jobInfo, err := sfc.GetJobInfo(ctx, res.JobId)
 	if err != nil {
 		slog.Error("Error getting job result", "error", err)
 
 		return
 	}
 
-	parsed, err := salesforce.ParseAjsonNodeToMap(body)
-	if err != nil {
-		slog.Error("Error parsing job result", "error", err)
-	}
-
-	jsonData, err := json.MarshalIndent(parsed, "", "    ")
+	jsonData, err := json.MarshalIndent(jobInfo, "", "    ")
 	if err != nil {
 		slog.Error("Error marshalling job result", "error", err)
 	}

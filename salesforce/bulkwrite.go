@@ -200,22 +200,69 @@ func ParseAjsonNodeToMap(node *ajson.Node) (map[string]interface{}, error) {
 	return parsed, nil
 }
 
-func (c *Connector) GetJobInfo(ctx context.Context, jobId string) (*ajson.Node, error) {
+type GetJobInfoResult struct {
+	Id                     string  `json:"id"`
+	Object                 string  `json:"object"`
+	CreatedById            string  `json:"createdById"`
+	ExternalIdFieldName    string  `json:"externalIdFieldName"`
+	State                  string  `json:"state"`
+	Operation              string  `json:"operation"`
+	ColumnDelimiter        string  `json:"columnDelimiter"`
+	LineEnding             string  `json:"lineEnding"`
+	NumberRecordsFailed    float64 `json:"numberRecordsFailed"`
+	NumberRecordsProcessed float64 `json:"numberRecordsProcessed"`
+
+	ApexProcessingTime      float64 `json:"apexProcessingTime"`
+	ApiActiveProcessingTime float64 `json:"apiActiveProcessingTime"`
+	ApiVersion              float64 `json:"apiVersion"`
+	ConcurrencyMode         string  `json:"concurrencyMode"`
+	ContentType             string  `json:"contentType"`
+	CreatedDate             string  `json:"createdDate"`
+	JobType                 string  `json:"jobType"`
+	Retries                 float64 `json:"retries"`
+	SystemModstamp          string  `json:"systemModstamp"`
+	TotalProcessingTime     float64 `json:"totalProcessingTime"`
+}
+
+func (c *Connector) GetJobInfo(ctx context.Context, jobId string) (*GetJobInfoResult, error) {
 	location, err := joinURLPath(c.BaseURL, "jobs/ingest", jobId)
 	if err != nil {
 		return nil, err
 	}
 
-	return c.get(ctx, location)
-}
-
-func (c *Connector) GetAllJobs(ctx context.Context) (*ajson.Node, error) {
-	location, err := joinURLPath(c.BaseURL, "jobs/ingest")
+	node, err := c.get(ctx, location)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("getGetInfo failed: %w", errors.Join(err, common.ErrRequestFailed))
 	}
 
-	return c.get(ctx, location)
+	dataMap, err := ParseAjsonNodeToMap(node)
+	if err != nil {
+		return nil, fmt.Errorf("parsing result of getGetInfo failed: %w", errors.Join(err, common.ErrParseError))
+	}
+
+	// Below is omitting type assertion because we are already checking for type in ParseAjsonNodeToMap
+	return &GetJobInfoResult{
+		Id:                      dataMap["id"].(string),                       //nolint:forcetypeassert
+		Object:                  dataMap["object"].(string),                   //nolint:forcetypeassert
+		CreatedById:             dataMap["createdById"].(string),              //nolint:forcetypeassert
+		ExternalIdFieldName:     dataMap["externalIdFieldName"].(string),      //nolint:forcetypeassert
+		State:                   dataMap["state"].(string),                    //nolint:forcetypeassert
+		Operation:               dataMap["operation"].(string),                //nolint:forcetypeassert
+		ColumnDelimiter:         dataMap["columnDelimiter"].(string),          //nolint:forcetypeassert
+		LineEnding:              dataMap["lineEnding"].(string),               //nolint:forcetypeassert
+		NumberRecordsFailed:     dataMap["numberRecordsFailed"].(float64),     //nolint:forcetypeassert
+		NumberRecordsProcessed:  dataMap["numberRecordsProcessed"].(float64),  //nolint:forcetypeassert
+		ApexProcessingTime:      dataMap["apexProcessingTime"].(float64),      //nolint:forcetypeassert
+		ApiActiveProcessingTime: dataMap["apiActiveProcessingTime"].(float64), //nolint:forcetypeassert
+		ApiVersion:              dataMap["apiVersion"].(float64),              //nolint:forcetypeassert
+		ConcurrencyMode:         dataMap["concurrencyMode"].(string),          //nolint:forcetypeassert
+		ContentType:             dataMap["contentType"].(string),              //nolint:forcetypeassert
+		CreatedDate:             dataMap["createdDate"].(string),              //nolint:forcetypeassert
+		JobType:                 dataMap["jobType"].(string),                  //nolint:forcetypeassert
+		Retries:                 dataMap["retries"].(float64),                 //nolint:forcetypeassert
+		SystemModstamp:          dataMap["systemModstamp"].(string),           //nolint:forcetypeassert
+		TotalProcessingTime:     dataMap["totalProcessingTime"].(float64),     //nolint:forcetypeassert
+	}, nil
 }
 
 /*
