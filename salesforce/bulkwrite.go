@@ -12,17 +12,37 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
+// BulkWriteParams defines how we are writing data to a SaaS API.
+type BulkWriteParams struct {
+	// The name of the object we are writing, e.g. "Account"
+	ObjectName string // required
+
+	// The external ID of the object instance we are updating. Provided in the case of UPDATE, but not CREATE.
+	ExternalId string // required
+
+	// The path to the CSV file we are writing
+	FilePath string // required
+}
+
 var (
 	ErrKeyNotFound     = errors.New("key not found")
-	ErrUnknownNodeType = errors.New("unknown node type")
+	ErrUnknownNodeType = errors.New("unknown node type when parsing JSON")
 	ErrInvalidType     = errors.New("invalid type")
 	ErrInvalidJobState = errors.New("invalid job state")
 )
 
+// BulkWriteResult is what's returned from writing data via the BulkWrite call.
+type BulkWriteResult struct {
+	// State is the state of the bulk job process
+	State string `json:"state"`
+	// JobId is the ID of the bulk job process
+	JobId string `json:"jobId"`
+}
+
 func (c *Connector) BulkWrite( //nolint:funlen,cyclop
 	ctx context.Context,
-	config common.BulkWriteParams,
-) (*common.BulkWriteResult, error) {
+	config BulkWriteParams,
+) (*BulkWriteResult, error) {
 	// cretes batch upload job, returns json with id and other info
 	res, err := c.createJob(ctx, config)
 	if err != nil {
@@ -31,13 +51,13 @@ func (c *Connector) BulkWrite( //nolint:funlen,cyclop
 
 	jobCreateRes, err := ParseNodeToMap(res)
 	if err != nil {
-		return nil, fmt.Errorf("parseNodeToMap failed: %w", errors.Join(err, common.ErrParseError))
+		return nil, fmt.Errorf("parsing result of createJob failed: %w", errors.Join(err, common.ErrParseError))
 	}
 
 	state, ok := jobCreateRes["state"].(string) //nolint:varnamelen
 	if !ok {
 		return nil, fmt.Errorf(
-			"%w. expected salesforce job state to be string in response, got %T",
+			"%w: expected salesforce job state to be string in response, got %T",
 			ErrInvalidType,
 			jobCreateRes["state"],
 		)
@@ -49,12 +69,12 @@ func (c *Connector) BulkWrite( //nolint:funlen,cyclop
 
 	jobId, ok := jobCreateRes["id"] //nolint:varnamelen
 	if !ok {
-		return nil, fmt.Errorf("%w for key %s in %v", ErrKeyNotFound, "id", jobCreateRes)
+		return nil, fmt.Errorf("%w for key %s in job create result: %v", ErrKeyNotFound, "id", jobCreateRes)
 	}
 
 	jobIdString, ok := jobId.(string) //nolint:varnamelen
 	if !ok {
-		return nil, fmt.Errorf("%w. expected id to be string, gott %T", ErrInvalidType, jobId)
+		return nil, fmt.Errorf("%w. expected id to be string, got %T", ErrInvalidType, jobId)
 	}
 
 	// upload csv and there is no response body other than status code
@@ -63,7 +83,6 @@ func (c *Connector) BulkWrite( //nolint:funlen,cyclop
 		return nil, fmt.Errorf("uploadCSV failed: %w", err)
 	}
 
-	//
 	data, err := c.completeUpload(ctx, jobIdString)
 	if err != nil {
 		return nil, fmt.Errorf("completeUpload failed: %w", err)
@@ -87,7 +106,7 @@ func (c *Connector) BulkWrite( //nolint:funlen,cyclop
 		)
 	}
 
-	return &common.BulkWriteResult{
+	return &BulkWriteResult{
 		JobId: id,
 		State: completeState,
 	}, nil
@@ -102,7 +121,7 @@ func joinURLPath(baseURL string, paths ...string) (string, error) {
 	return location, nil
 }
 
-func (c *Connector) createJob(ctx context.Context, config common.BulkWriteParams) (*ajson.Node, error) {
+func (c *Connector) createJob(ctx context.Context, config BulkWriteParams) (*ajson.Node, error) {
 	location, err := joinURLPath(c.BaseURL, "jobs/ingest")
 	if err != nil {
 		return nil, err
@@ -119,7 +138,7 @@ func (c *Connector) createJob(ctx context.Context, config common.BulkWriteParams
 	return c.post(ctx, location, body)
 }
 
-func (c *Connector) uploadCSV(ctx context.Context, jobId string, config common.BulkWriteParams) ([]byte, error) {
+func (c *Connector) uploadCSV(ctx context.Context, jobId string, config BulkWriteParams) ([]byte, error) {
 	file, err := os.ReadFile(config.FilePath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to upload CSV for %s: %w", config.FilePath, errors.Join(err, common.ErrReadFile))
@@ -187,7 +206,7 @@ func (c *Connector) GetJobInfo(ctx context.Context, jobId string) (*ajson.Node, 
 	return c.get(ctx, location)
 }
 
-func (c *Connector) FailedResults(ctx context.Context, jobId string) ([]byte, error) {
+func (c *Connector) GetFailedResults(ctx context.Context, jobId string) ([]byte, error) {
 	location, err := joinURLPath(c.BaseURL, fmt.Sprintf("jobs/ingest/%s/failedResults", jobId))
 	if err != nil {
 		return nil, err
@@ -196,7 +215,7 @@ func (c *Connector) FailedResults(ctx context.Context, jobId string) ([]byte, er
 	return c.getCSV(ctx, location)
 }
 
-func ParseNodeToMap(node *ajson.Node) (map[string]interface{}, error) {
+func ParseAjsonNodeToMap(node *ajson.Node) (map[string]interface{}, error) {
 	parsed := map[string]interface{}{}
 
 	for _, key := range node.Keys() {

@@ -85,7 +85,7 @@ func main() { //nolint:funlen
 		_ = sfc.Close()
 	}()
 
-	res, err := sfc.BulkWrite(ctx, connectors.BulkWriteParams{
+	res, err := sfc.BulkWrite(ctx, salesforce.BulkWriteParams{
 		ObjectName: "Touchpoint__c",
 		ExternalId: "external_id__c",
 		FilePath:   "../../playground/bulkapi/touchpoints.csv",

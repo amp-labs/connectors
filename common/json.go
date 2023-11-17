@@ -13,18 +13,30 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
+// JSONHTTPClient is an HTTP client which makes certain assumptions, such as
+// that the response body is JSON. It also handles OAuth access token refreshes.
+type JSONHTTPClient struct {
+	Base         string                  // optional base URL. If not set, then all URLs must be absolute.
+	Client       AuthenticatedHTTPClient // underlying HTTP client. Required.
+	ErrorHandler ErrorHandler            // optional error handler. If not set, then the default error handler is used.
+}
+
+func (j *JSONHTTPClient) getURL(url string) (string, error) {
+	return getURL(j.Base, url)
+}
+
 // Get makes a GET request to the given URL and returns the response body as a JSON object.
 // If the response is not a 2xx, an error is returned. If the response is a 401, the caller should
 // refresh the access token and retry the request. If errorHandler is nil, then the default error
-// handler is used. If not, the caller can inject their own error handling logic.
-func (c *HTTPClient) Get(ctx context.Context, url string, headers ...Header) (*ajson.Node, error) {
-	fullURL, err := c.getURL(url)
+// handler is used. If not, the caller can inject their own error handling logij.
+func (j *JSONHTTPClient) Get(ctx context.Context, url string, headers ...Header) (*ajson.Node, error) {
+	fullURL, err := j.getURL(url)
 	if err != nil {
 		return nil, err
 	}
 
 	// Make the request, get the response body
-	res, body, err := c.httpGet(ctx, fullURL, headers) //nolint:bodyclose
+	res, body, err := j.httpGet(ctx, fullURL, headers) //nolint:bodyclose
 	if err != nil {
 		return nil, err
 	}
@@ -36,16 +48,16 @@ func (c *HTTPClient) Get(ctx context.Context, url string, headers ...Header) (*a
 // ReqBody must be JSON-serializable. If it is not, an error is returned.
 // If the response is not a 2xx, an error is returned. If the response is a 401, the caller should
 // refresh the access token and retry the request. If errorHandler is nil, then the default error
-// handler is used. If not, the caller can inject their own error handling logic.
-func (c *HTTPClient) Post(ctx context.Context,
+// handler is used. If not, the caller can inject their own error handling logij.
+func (j *JSONHTTPClient) Post(ctx context.Context,
 	url string, reqBody any, headers ...Header,
 ) (*ajson.Node, error) {
-	fullURL, err := c.getURL(url)
+	fullURL, err := j.getURL(url)
 	if err != nil {
 		return nil, err
 	}
 	// Make the request, get the response body
-	res, body, err := c.httpPost(ctx, fullURL, headers, reqBody) //nolint:bodyclose
+	res, body, err := j.httpPost(ctx, fullURL, headers, reqBody) //nolint:bodyclose
 	if err != nil {
 		return nil, err
 	}
@@ -58,15 +70,15 @@ func (c *HTTPClient) Post(ctx context.Context,
 	return parseJSONResponse(res, body)
 }
 
-func (c *HTTPClient) Patch(ctx context.Context,
+func (j *JSONHTTPClient) Patch(ctx context.Context,
 	url string, reqBody any, headers ...Header,
 ) (*ajson.Node, error) {
-	fullURL, err := c.getURL(url)
+	fullURL, err := j.getURL(url)
 	if err != nil {
 		return nil, err
 	}
 	// Make the request, get the response body
-	res, body, err := c.httpPatch(ctx, fullURL, headers, reqBody) //nolint:bodyclose
+	res, body, err := j.httpPatch(ctx, fullURL, headers, reqBody) //nolint:bodyclose
 	if err != nil {
 		return nil, err
 	}
@@ -102,7 +114,7 @@ func parseJSONResponse(res *http.Response, body []byte) (*ajson.Node, error) {
 	return jsonBody, nil
 }
 
-func (c *HTTPClient) httpGet(ctx context.Context, url string,
+func (j *JSONHTTPClient) httpGet(ctx context.Context, url string,
 	headers []Header,
 ) (*http.Response, []byte, error) {
 	req, err := makeJSONGetRequest(ctx, url, headers)
@@ -110,10 +122,10 @@ func (c *HTTPClient) httpGet(ctx context.Context, url string,
 		return nil, nil, err
 	}
 
-	return c.sendRequest(req)
+	return j.sendRequest(req)
 }
 
-func (c *HTTPClient) httpPost(ctx context.Context, url string,
+func (j *JSONHTTPClient) httpPost(ctx context.Context, url string,
 	headers []Header, body any,
 ) (*http.Response, []byte, error) {
 	req, err := makeJSONPostRequest(ctx, url, headers, body)
@@ -121,10 +133,10 @@ func (c *HTTPClient) httpPost(ctx context.Context, url string,
 		return nil, nil, err
 	}
 
-	return c.sendRequest(req)
+	return j.sendRequest(req)
 }
 
-func (c *HTTPClient) httpPatch(ctx context.Context, url string,
+func (j *JSONHTTPClient) httpPatch(ctx context.Context, url string,
 	headers []Header, body any,
 ) (*http.Response, []byte, error) {
 	req, err := makeJSONPatchRequest(ctx, url, headers, body)
@@ -132,12 +144,12 @@ func (c *HTTPClient) httpPatch(ctx context.Context, url string,
 		return nil, nil, err
 	}
 
-	return c.sendRequest(req)
+	return j.sendRequest(req)
 }
 
-func (c *HTTPClient) sendRequest(req *http.Request) (*http.Response, []byte, error) {
+func (j *JSONHTTPClient) sendRequest(req *http.Request) (*http.Response, []byte, error) {
 	// Send the request
-	res, err := c.Client.Do(req)
+	res, err := j.Client.Do(req)
 	if err != nil {
 		return nil, nil, fmt.Errorf("error sending request: %w", err)
 	}
@@ -159,8 +171,8 @@ func (c *HTTPClient) sendRequest(req *http.Request) (*http.Response, []byte, err
 
 	// Check the response status code
 	if res.StatusCode < 200 || res.StatusCode > 299 {
-		if c.ErrorHandler != nil {
-			return nil, nil, c.ErrorHandler(res, body)
+		if j.ErrorHandler != nil {
+			return nil, nil, j.ErrorHandler(res, body)
 		}
 
 		return nil, nil, InterpretError(res, body)

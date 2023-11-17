@@ -3,6 +3,6 @@ package hubspot
 import "github.com/amp-labs/connectors/common"
 
 // HTTPClient returns the underlying JSON HTTP client.
-func (c *Connector) HTTPClient() *common.HTTPClient {
+func (c *Connector) JSONHTTPClient() *common.JSONHTTPClient {
 	return c.Client
 }

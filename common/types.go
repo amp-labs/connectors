@@ -98,18 +98,6 @@ type WriteParams struct {
 	ObjectData map[string]interface{}
 }
 
-// BulkWriteParams defines how we are writing data to a SaaS API.
-type BulkWriteParams struct {
-	// The name of the object we are writing, e.g. "Account"
-	ObjectName string // required
-
-	// The external ID of the object instance we are updating. Provided in the case of UPDATE, but not CREATE.
-	ExternalId string // required
-
-	// The path to the CSV file we are writing
-	FilePath string // required
-}
-
 // NextPageToken is an opaque token that can be used to get the next page of results.
 // Callers are encouraged to treat this as an opaque string, and not attempt to parse it.
 // And although each provider will be different, callers should expect that this token
@@ -126,14 +114,6 @@ type ReadResult struct {
 	NextPage NextPageToken `json:"nextPage,omitempty"`
 	// Done is true if there are no more pages to read.
 	Done bool `json:"done,omitempty"`
-}
-
-// BulkWriteResult is what's returned from writing data via the BulkWrite call.
-type BulkWriteResult struct {
-	// State is the state of the bulk job process
-	State string `json:"state"`
-	// JobId is the ID of the bulk job process
-	JobId string `json:"jobId"`
 }
 
 // WriteResult is what's returned from writing data via the Write call.

@@ -59,15 +59,3 @@ func getURL(baseURL string, urlString string) (string, error) {
 // to the caller, as-is. Both the response and the response body are passed
 // to the error handler as arguments.
 type ErrorHandler func(rsp *http.Response, body []byte) error
-
-// HTTPClient is an HTTP client which makes certain assumptions, such as
-// that the response body is JSON. It also handles OAuth access token refreshes.
-type HTTPClient struct {
-	Base         string                  // optional base URL. If not set, then all URLs must be absolute.
-	Client       AuthenticatedHTTPClient // underlying HTTP client. Required.
-	ErrorHandler ErrorHandler            // optional error handler. If not set, then the default error handler is used.
-}
-
-func (c *HTTPClient) getURL(url string) (string, error) {
-	return getURL(c.Base, url)
-}

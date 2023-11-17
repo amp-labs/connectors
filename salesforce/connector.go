@@ -14,7 +14,7 @@ const (
 type Connector struct {
 	Domain  string
 	BaseURL string
-	Client  *common.HTTPClient
+	Client  *common.JSONHTTPClient
 }
 
 // NewConnector returns a new Salesforce connector.

@@ -40,7 +40,7 @@ func WithClient(ctx context.Context, client *http.Client, config *oauth2.Config,
 // WithAuthenticatedClient sets the http client to use for the connector. Its usage is optional.
 func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
 	return func(params *hubspotParams) {
-		params.client = &common.HTTPClient{
+		params.client = &common.JSONHTTPClient{
 			Client:       client,
 			ErrorHandler: common.InterpretError,
 		}
@@ -57,8 +57,8 @@ func WithModule(module APIModule) Option {
 
 // hubspotParams is the internal configuration for the hubspot connector.
 type hubspotParams struct {
-	client *common.HTTPClient // required
-	module string             // required
+	client *common.JSONHTTPClient // required
+	module string                 // required
 }
 
 // prepare finalizes and validates the connector configuration, and returns an error if it's invalid.

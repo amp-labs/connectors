@@ -35,7 +35,7 @@ type Connector interface {
 	// HTTPClient returns the underlying JSON HTTP client. This is useful for
 	// testing, or for calling methods that aren't exposed by the Connector
 	// interface directly. Authentication and token refreshes will be handled automatically.
-	HTTPClient() *common.HTTPClient
+	JSONHTTPClient() *common.JSONHTTPClient
 }
 
 // API is a function that returns a Connector. It's used as a factory.
@@ -63,7 +63,6 @@ type (
 	ReadResult               = common.ReadResult
 	WriteResult              = common.WriteResult
 	ListObjectMetadataResult = common.ListObjectMetadataResult
-	BulkWriteParams          = common.BulkWriteParams
 	ErrorWithStatus          = common.HTTPStatusError
 )
 
