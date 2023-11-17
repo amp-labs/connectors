@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"net/url"
 	"os"
 	"strings"
@@ -49,7 +50,7 @@ func (c *Connector) BulkWrite( //nolint:funlen,cyclop
 		return nil, fmt.Errorf("createJob failed: %w", err)
 	}
 
-	jobCreateRes, err := ParseNodeToMap(res)
+	jobCreateRes, err := ParseAjsonNodeToMap(res)
 	if err != nil {
 		return nil, fmt.Errorf("parsing result of createJob failed: %w", errors.Join(err, common.ErrParseError))
 	}
@@ -77,39 +78,41 @@ func (c *Connector) BulkWrite( //nolint:funlen,cyclop
 		return nil, fmt.Errorf("%w. expected id to be string, got %T", ErrInvalidType, jobId)
 	}
 
-	// upload csv and there is no response body other than status code
-	_, err = c.uploadCSV(ctx, jobIdString, config)
-	if err != nil {
-		return nil, fmt.Errorf("uploadCSV failed: %w", err)
-	}
+	log.Println("jobIdString", jobIdString)
+	// // upload csv and there is no response body other than status code
+	// _, err = c.uploadCSV(ctx, jobIdString, config)
+	// if err != nil {
+	// 	return nil, fmt.Errorf("uploadCSV failed: %w", err)
+	// }
 
-	data, err := c.completeUpload(ctx, jobIdString)
-	if err != nil {
-		return nil, fmt.Errorf("completeUpload failed: %w", err)
-	}
+	// data, err := c.completeUpload(ctx, jobIdString)
+	// if err != nil {
+	// 	return nil, fmt.Errorf("completeUpload failed: %w", err)
+	// }
 
-	id, ok := data["id"].(string) //nolint:varnamelen
-	if !ok {
-		return nil, fmt.Errorf(
-			"%w. expected salesforce job id to be string in response, got %T",
-			ErrInvalidType,
-			data["id"],
-		)
-	}
+	// id, ok := data["id"].(string) //nolint:varnamelen
+	// if !ok {
+	// 	return nil, fmt.Errorf(
+	// 		"%w. expected salesforce job id to be string in response, got %T",
+	// 		ErrInvalidType,
+	// 		data["id"],
+	// 	)
+	// }
 
-	completeState, ok := data["state"].(string) //nolint:varnamelen
-	if !ok {
-		return nil, fmt.Errorf(
-			"%w. expected salesforce job state to be string in response, got %T",
-			ErrInvalidType,
-			data["state"],
-		)
-	}
+	// completeState, ok := data["state"].(string) //nolint:varnamelen
+	// if !ok {
+	// 	return nil, fmt.Errorf(
+	// 		"%w. expected salesforce job state to be string in response, got %T",
+	// 		ErrInvalidType,
+	// 		data["state"],
+	// 	)
+	// }
 
-	return &BulkWriteResult{
-		JobId: id,
-		State: completeState,
-	}, nil
+	// return &BulkWriteResult{
+	// 	JobId: id,
+	// 	State: completeState,
+	// }, nil
+	return nil, nil
 }
 
 func joinURLPath(baseURL string, paths ...string) (string, error) {
@@ -167,7 +170,7 @@ func (c *Connector) completeUpload(ctx context.Context, jobId string) (map[strin
 		return nil, fmt.Errorf("patch failed: %w", errors.Join(err, common.ErrRequestFailed))
 	}
 
-	return ParseNodeToMap(res)
+	return ParseAjsonNodeToMap(res)
 }
 
 func (c *Connector) GetJobResult(ctx context.Context, jobId string) ([]byte, error) {

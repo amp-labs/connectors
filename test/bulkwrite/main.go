@@ -113,7 +113,7 @@ func main() { //nolint:funlen
 		return
 	}
 
-	parsed, err := salesforce.ParseNodeToMap(body)
+	parsed, err := salesforce.ParseAjsonNodeToMap(body)
 	if err != nil {
 		slog.Error("Error parsing job result", "error", err)
 	}
