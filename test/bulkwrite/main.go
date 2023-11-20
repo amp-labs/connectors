@@ -16,16 +16,16 @@ import (
 )
 
 func main() { //nolint:funlen
-	file, err := os.Open("../../creds.json")
+	cred, err := os.Open("../../creds.json")
 	if err != nil {
 		slog.Error("Error opening creds.json", "error", err)
 
 		return
 	}
 
-	defer file.Close()
+	defer cred.Close()
 
-	byteValue, err := io.ReadAll(file)
+	byteValue, err := io.ReadAll(cred)
 	if err != nil {
 		slog.Error("Error reading creds.json", "error", err)
 
@@ -85,10 +85,18 @@ func main() { //nolint:funlen
 		_ = sfc.Close()
 	}()
 
+	file, err := os.ReadFile("../../playground/bulkapi/touchpoints.csv")
+	if err != nil {
+		slog.Error("Error opening touchpoints.csv", "error", err)
+
+		return
+	}
+
 	res, err := sfc.BulkWrite(ctx, salesforce.BulkWriteParams{
-		ObjectName: "Touchpoint__c",
-		ExternalId: "external_id__c",
-		FilePath:   "../../playground/bulkapi/touchpoints.csv",
+		ObjectName:      "Touchpoint__c",
+		ExternalIdField: "external_id__c",
+		CSVData:         file,
+		Mode:            "upsert",
 	})
 	if err != nil {
 		slog.Error("Error bulk writing", "error", err)

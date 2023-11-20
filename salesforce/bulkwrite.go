@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
-	"os"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
@@ -18,12 +17,23 @@ type BulkWriteParams struct {
 	// The name of the object we are writing, e.g. "Account"
 	ObjectName string // required
 
-	// The external ID of the object instance we are updating. Provided in the case of UPDATE, but not CREATE.
-	ExternalId string // required
+	// The name of a field on the object which is an External ID. Provided in the case of upserts, not inserts
+	ExternalIdField string // required
 
 	// The path to the CSV file we are writing
-	FilePath string // required
+	CSVData []byte // required
+
+	// SF operation mode
+	Mode BulkWriteMode
 }
+
+type BulkWriteMode string
+
+const (
+	Insert BulkWriteMode = "insert"
+	Upsert BulkWriteMode = "upsert"
+	Update BulkWriteMode = "update"
+)
 
 // BulkWriteResult is what's returned from writing data via the BulkWrite call.
 type BulkWriteResult struct {
@@ -62,12 +72,25 @@ var (
 	ErrUnknownNodeType = errors.New("unknown node type when parsing JSON")
 	ErrInvalidType     = errors.New("invalid type")
 	ErrInvalidJobState = errors.New("invalid job state")
+	ErrUnsupportedMode = errors.New("unsupported mode")
 )
 
 func (c *Connector) BulkWrite( //nolint:funlen,cyclop
 	ctx context.Context,
 	config BulkWriteParams,
 ) (*BulkWriteResult, error) {
+	// Only support upsert for now
+	switch config.Mode {
+	case Upsert:
+		break
+	case Insert:
+		return nil, fmt.Errorf("%w: %s", ErrUnsupportedMode, "insert")
+	case Update:
+		return nil, fmt.Errorf("%w: %s", ErrUnsupportedMode, "Update")
+	default:
+		return nil, fmt.Errorf("%w: %s", ErrUnsupportedMode, config.Mode)
+	}
+
 	// cretes batch upload job, returns json with id and other info
 	res, err := c.createJob(ctx, config)
 	if err != nil {
@@ -125,7 +148,7 @@ func (c *Connector) BulkWrite( //nolint:funlen,cyclop
 		unpacked, _ := dataObject["id"].Unpack()
 
 		return nil, fmt.Errorf(
-			"%w. expected salesforce job id to be string in response, got %T",
+			"%w: expected salesforce job id to be string in response, got %T",
 			ErrInvalidType,
 			unpacked,
 		)
@@ -136,7 +159,7 @@ func (c *Connector) BulkWrite( //nolint:funlen,cyclop
 		unpacked, _ := resObject["state"].Unpack()
 
 		return nil, fmt.Errorf(
-			"%w. expected salesforce job state to be string in response, got %T",
+			"%w: expected salesforce job state to be string in response, got %T",
 			ErrInvalidType,
 			unpacked,
 		)
@@ -165,7 +188,7 @@ func (c *Connector) createJob(ctx context.Context, config BulkWriteParams) (*ajs
 
 	body := map[string]interface{}{
 		"object":              config.ObjectName,
-		"externalIdFieldName": config.ExternalId,
+		"externalIdFieldName": config.ExternalIdField,
 		"contentType":         "CSV",
 		"operation":           "upsert",
 		"lineEnding":          "LF",
@@ -175,17 +198,12 @@ func (c *Connector) createJob(ctx context.Context, config BulkWriteParams) (*ajs
 }
 
 func (c *Connector) uploadCSV(ctx context.Context, jobId string, config BulkWriteParams) ([]byte, error) {
-	file, err := os.ReadFile(config.FilePath)
-	if err != nil {
-		return nil, fmt.Errorf("failed to upload CSV for %s: %w", config.FilePath, errors.Join(err, common.ErrReadFile))
-	}
-
 	location, err := joinURLPath(c.BaseURL, fmt.Sprintf("jobs/ingest/%s/batches", jobId))
 	if err != nil {
 		return nil, err
 	}
 
-	return c.putCSV(ctx, location, file)
+	return c.putCSV(ctx, location, config.CSVData)
 }
 
 func (c *Connector) completeUpload(ctx context.Context, jobId string) (*ajson.Node, error) {
