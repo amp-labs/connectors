@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/url"
 	"strings"
 
@@ -21,7 +22,7 @@ type BulkWriteParams struct {
 	ExternalIdField string // required
 
 	// The path to the CSV file we are writing
-	CSVData []byte // required
+	CSVData io.Reader // required
 
 	// SF operation mode
 	Mode BulkWriteMode
@@ -68,11 +69,12 @@ type GetJobInfoResult struct {
 }
 
 var (
-	ErrKeyNotFound     = errors.New("key not found")
-	ErrUnknownNodeType = errors.New("unknown node type when parsing JSON")
-	ErrInvalidType     = errors.New("invalid type")
-	ErrInvalidJobState = errors.New("invalid job state")
-	ErrUnsupportedMode = errors.New("unsupported mode")
+	ErrKeyNotFound      = errors.New("key not found")
+	ErrUnknownNodeType  = errors.New("unknown node type when parsing JSON")
+	ErrInvalidType      = errors.New("invalid type")
+	ErrInvalidJobState  = errors.New("invalid job state")
+	ErrUnsupportedMode  = errors.New("unsupported mode")
+	ErrReadToByteFailed = errors.New("failed to read data to bytes")
 )
 
 func (c *Connector) BulkWrite( //nolint:funlen,cyclop
@@ -203,7 +205,15 @@ func (c *Connector) uploadCSV(ctx context.Context, jobId string, config BulkWrit
 		return nil, err
 	}
 
-	return c.putCSV(ctx, location, config.CSVData)
+	data, err := io.ReadAll(config.CSVData)
+	if err != nil {
+		return nil, fmt.Errorf(
+			"failed to upload CSV to salesforce: %w",
+			errors.Join(ErrReadToByteFailed, err),
+		)
+	}
+
+	return c.putCSV(ctx, location, data)
 }
 
 func (c *Connector) completeUpload(ctx context.Context, jobId string) (*ajson.Node, error) {

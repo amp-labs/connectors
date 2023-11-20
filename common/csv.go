@@ -7,6 +7,12 @@ import (
 	"net/http"
 )
 
+/*
+  // TODO: Below is patch work to have CSV file type to be supported
+  // Currently done on JSONHTTPClient, but might need be reimplmented on CSVHTTPClient
+  // Research and see if there is a better way to do this
+*/
+
 func (j *JSONHTTPClient) PutCSV(ctx context.Context, url string, reqBody []byte, headers ...Header) ([]byte, error) {
 	fullURL, err := j.getURL(url)
 	if err != nil {
