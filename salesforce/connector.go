@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	apiVersion = "v58.0"
+	apiVersion = "v59.0"
 )
 
 // Connector is a Salesforce connector.

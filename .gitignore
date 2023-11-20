@@ -117,3 +117,8 @@ go.work
 .idea/**/*.xml
 .idea/**/*.iml
 .idea/.gitignore
+
+playground/
+
+creds.json
+
