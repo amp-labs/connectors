@@ -3,6 +3,8 @@ package common
 import (
 	"fmt"
 	"net/http"
+	"net/url"
+	"strings"
 )
 
 // Header is a key/value pair that can be added to a request.
@@ -36,4 +38,16 @@ func InterpretError(res *http.Response, body []byte) error {
 	}
 
 	return NewHTTPStatusError(res.StatusCode, fmt.Errorf("%w: %s", ErrUnknown, string(body)))
+}
+
+func getURL(baseURL string, urlString string) (string, error) {
+	if strings.HasPrefix(urlString, "http://") || strings.HasPrefix(urlString, "https://") {
+		return urlString, nil
+	}
+
+	if len(baseURL) == 0 {
+		return "", fmt.Errorf("%w (input is %q)", ErrEmptyBaseURL, urlString)
+	}
+
+	return url.JoinPath(baseURL, urlString)
 }

@@ -9,8 +9,6 @@ import (
 	"log/slog"
 	"mime"
 	"net/http"
-	"net/url"
-	"strings"
 
 	"github.com/spyzhov/ajson"
 )
@@ -29,6 +27,10 @@ type JSONHTTPClient struct {
 	Base         string                  // optional base URL. If not set, then all URLs must be absolute.
 	Client       AuthenticatedHTTPClient // underlying HTTP client. Required.
 	ErrorHandler ErrorHandler            // optional error handler. If not set, then the default error handler is used.
+}
+
+func (j *JSONHTTPClient) getURL(url string) (string, error) {
+	return getURL(j.Base, url)
 }
 
 // Get makes a GET request to the given URL and returns the response body as a JSON object.
@@ -76,16 +78,25 @@ func (j *JSONHTTPClient) Post(ctx context.Context,
 	return parseJSONResponse(res, body)
 }
 
-func (j *JSONHTTPClient) getURL(u string) (string, error) {
-	if strings.HasPrefix(u, "http://") || strings.HasPrefix(u, "https://") {
-		return u, nil
+func (j *JSONHTTPClient) Patch(ctx context.Context,
+	url string, reqBody any, headers ...Header,
+) (*ajson.Node, error) {
+	fullURL, err := j.getURL(url)
+	if err != nil {
+		return nil, err
+	}
+	// Make the request, get the response body
+	res, body, err := j.httpPatch(ctx, fullURL, headers, reqBody) //nolint:bodyclose
+	if err != nil {
+		return nil, err
 	}
 
-	if len(j.Base) == 0 {
-		return "", fmt.Errorf("%w (input is %q)", ErrEmptyBaseURL, u)
+	// empty response body should not be parsed as JSON since it will cause ajson to err
+	if len(body) == 0 {
+		return nil, nil //nolint:nilnil
 	}
 
-	return url.JoinPath(j.Base, u)
+	return parseJSONResponse(res, body)
 }
 
 func parseJSONResponse(res *http.Response, body []byte) (*ajson.Node, error) {
@@ -126,6 +137,17 @@ func (j *JSONHTTPClient) httpPost(ctx context.Context, url string,
 	headers []Header, body any,
 ) (*http.Response, []byte, error) {
 	req, err := makeJSONPostRequest(ctx, url, headers, body)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return j.sendRequest(req)
+}
+
+func (j *JSONHTTPClient) httpPatch(ctx context.Context, url string,
+	headers []Header, body any,
+) (*http.Response, []byte, error) {
+	req, err := makeJSONPatchRequest(ctx, url, headers, body)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -183,6 +205,23 @@ func makeJSONPostRequest(ctx context.Context, url string, headers []Header, body
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(jBody))
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %w", err)
+	}
+
+	headers = append(headers, Header{Key: "Content-Type", Value: "application/json"})
+	req.ContentLength = int64(len(jBody))
+
+	return addAcceptJSONHeaders(req, headers)
+}
+
+func makeJSONPatchRequest(ctx context.Context, url string, headers []Header, body any) (*http.Request, error) {
+	jBody, err := json.Marshal(body)
+	if err != nil {
+		return nil, fmt.Errorf("request body is not valid JSON, body is %v:\n%w", body, err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPatch, url, bytes.NewBuffer(jBody))
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
