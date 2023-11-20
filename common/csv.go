@@ -8,8 +8,8 @@ import (
 )
 
 /*
-  // TODO: Below is patch work to have CSV file type to be supported
-  // Currently done on JSONHTTPClient, but might need be reimplmented on CSVHTTPClient
+  // TODO: Below is work around to have CSV file type to be supported
+// Currently done on JSONHTTPClient, but we might need a separate CSVHTTPClient instead
   // Research and see if there is a better way to do this
 */
 
@@ -59,6 +59,7 @@ func addHeaders(req *http.Request, headers []Header) (*http.Request, error) {
 	return req, nil
 }
 
+// TODO: to be migrated to CSVHTTPClient once implemented
 // func (j *JSONHTTPClient) GetCSV(ctx context.Context, url string, headers ...Header) ([]byte, error) {
 // 	fullURL, err := j.getURL(url)
 // 	if err != nil {

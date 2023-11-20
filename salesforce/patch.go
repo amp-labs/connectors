@@ -6,7 +6,7 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-// post writes data to Salesforce. It handles retries and access token refreshes.
+// Patch writes data to Salesforce. It handles retries and access token refreshes.
 func (c *Connector) patch(ctx context.Context, url string, body any) (*ajson.Node, error) {
 	node, err := c.Client.Patch(ctx, url, body)
 	if err != nil {
