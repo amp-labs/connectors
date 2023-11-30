@@ -85,7 +85,7 @@ func main() { //nolint:funlen
 		_ = sfc.Close()
 	}()
 
-	file, err := os.Open("../../playground/bulkapi/touchpoints.csv")
+	file, err := os.Open("./touchpoints_20231130.csv")
 	if err != nil {
 		slog.Error("Error opening touchpoints.csv", "error", err)
 
