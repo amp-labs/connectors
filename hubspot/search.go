@@ -29,7 +29,7 @@ func (c *Connector) Search(ctx context.Context, config SearchParams) (*common.Re
 		getTotalSize,
 		getRecords,
 		getNextRecordsAfter,
-		getStructuredData,
+		getMarshaledData,
 		config.Fields,
 	)
 }

@@ -118,7 +118,6 @@ type ReadResult struct {
 
 // ReadResultRow is a single row of data returned from a Read call, which contains
 // the requested fields, as well as the raw JSON response from the provider.
-// https://ampersand.slab.com/posts/read-action-result-format-3pzumqrr
 type ReadResultRow struct {
 	// Fields is a map of requested provider field names to values.
 	// All field names are in lowercase (eg: accountid, name, billingcityid)

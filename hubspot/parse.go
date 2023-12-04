@@ -128,8 +128,8 @@ func getTotalSize(node *ajson.Node) (int64, error) {
 	return int64(node.Size()), nil
 }
 
-// getStructuredData accepts a list of records and returns a list of structured data ([]ReadResultRow).
-func getStructuredData(records []map[string]interface{}, fields []string) ([]common.ReadResultRow, error) {
+// getMarshaledData accepts a list of records and returns a list of structured data ([]ReadResultRow).
+func getMarshaledData(records []map[string]interface{}, fields []string) ([]common.ReadResultRow, error) {
 	data := make([]common.ReadResultRow, len(records))
 
 	for i, record := range records {
@@ -139,7 +139,7 @@ func getStructuredData(records []map[string]interface{}, fields []string) ([]com
 		}
 
 		data[i] = common.ReadResultRow{
-			Fields: common.ExtractFieldsFromRaw(fields, recordProperties),
+			Fields: common.ExtractLowercaseFieldsFromRaw(fields, recordProperties),
 			Raw:    record,
 		}
 	}
