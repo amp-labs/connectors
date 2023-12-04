@@ -121,6 +121,7 @@ type ReadResult struct {
 // https://ampersand.slab.com/posts/read-action-result-format-3pzumqrr
 type ReadResultRow struct {
 	// Fields is a map of requested provider field names to values.
+	// All field names are in lowercase (eg: accountid, name, billingcityid)
 	Fields map[string]interface{} `json:"fields"`
 	// Raw is the raw JSON response from the provider.
 	Raw map[string]interface{} `json:"raw"`
