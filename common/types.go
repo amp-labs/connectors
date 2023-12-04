@@ -108,12 +108,22 @@ type NextPageToken string
 type ReadResult struct {
 	// Rows is the number of total rows in the result.
 	Rows int64 `json:"rows"`
-	// Data is a list of JSON nodes, where each node represents a record that we read.
-	Data []map[string]interface{} `json:"data"`
+	// Data is an array where each element represents a ReadResultRow.
+	Data []ReadResultRow `json:"data"`
 	// NextPage is an opaque token that can be used to get the next page of results.
 	NextPage NextPageToken `json:"nextPage,omitempty"`
 	// Done is true if there are no more pages to read.
 	Done bool `json:"done,omitempty"`
+}
+
+// ReadResultRow is a single row of data returned from a Read call, which contains
+// the requested fields, as well as the raw JSON response from the provider.
+type ReadResultRow struct {
+	// Fields is a map of requested provider field names to values.
+	// All field names are in lowercase (eg: accountid, name, billingcityid)
+	Fields map[string]interface{} `json:"fields"`
+	// Raw is the raw JSON response from the provider.
+	Raw map[string]interface{} `json:"raw"`
 }
 
 // WriteResult is what's returned from writing data via the Write call.
