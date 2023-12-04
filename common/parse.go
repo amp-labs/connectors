@@ -1,6 +1,8 @@
 package common
 
 import (
+	"strings"
+
 	"github.com/spyzhov/ajson"
 )
 
@@ -53,9 +55,18 @@ func ParseResult(
 func ExtractFieldsFromRaw(fields []string, record map[string]interface{}) map[string]interface{} {
 	out := make(map[string]interface{}, len(fields))
 
+	// Modify all record keys to lowercase
+	lowercaseRecord := make(map[string]interface{}, len(record))
+	for key, value := range record {
+		lowercaseRecord[strings.ToLower(key)] = value
+	}
+
 	for _, field := range fields {
-		if value, ok := record[field]; ok {
-			out[field] = value
+		// Lowercase the field name to make lookup case-insensitive.
+		lowercasedField := strings.ToLower(field)
+
+		if value, ok := lowercaseRecord[lowercasedField]; ok {
+			out[lowercasedField] = value
 		}
 	}
 
