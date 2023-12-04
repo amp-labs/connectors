@@ -11,6 +11,7 @@ type SearchParams struct {
 	FilterGroups []FilterGroup // optional
 	// Fields is the list of fields to return in the result.
 	Fields []string // optional
+	// Archived results do not appear in search results.
 }
 
 type SortBy struct {

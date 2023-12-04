@@ -51,7 +51,14 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	return parseResult(data)
+	return common.ParseResult(
+		data,
+		getTotalSize,
+		getRecords,
+		getNextRecordsURL,
+		getStructuredData,
+		config.Fields,
+	)
 }
 
 // makeSOQL returns the SOQL query for the desired read operation.
@@ -86,36 +93,6 @@ func makeSOQL(config common.ReadParams) (string, error) {
 	return soql, nil
 }
 
-// parseResult parses the response from the Salesforce API. A 2xx return type is assumed.
-func parseResult(data *ajson.Node) (*common.ReadResult, error) {
-	totalSize, err := getTotalSize(data)
-	if err != nil {
-		return nil, err
-	}
-
-	records, err := getRecords(data)
-	if err != nil {
-		return nil, err
-	}
-
-	nextPage, err := getNextRecordsURL(data)
-	if err != nil {
-		return nil, err
-	}
-
-	done, err := getDone(data)
-	if err != nil {
-		return nil, err
-	}
-
-	return &common.ReadResult{
-		Rows:     totalSize,
-		Data:     records,
-		NextPage: common.NextPageToken(nextPage),
-		Done:     done,
-	}, nil
-}
-
 // getFieldSet returns the field set in SOQL format.
 func getFieldSet(fields []string) string {
 	for _, field := range fields {
@@ -125,94 +102,4 @@ func getFieldSet(fields []string) string {
 	}
 
 	return strings.Join(fields, ",")
-}
-
-// getRecords returns the records from the response.
-func getRecords(node *ajson.Node) ([]map[string]interface{}, error) {
-	records, err := node.GetKey("records")
-	if err != nil {
-		return nil, err
-	}
-
-	if !records.IsArray() {
-		return nil, ErrNotArray
-	}
-
-	arr := records.MustArray()
-
-	out := make([]map[string]interface{}, 0, len(arr))
-
-	for _, v := range arr {
-		if !v.IsObject() {
-			return nil, ErrNotObject
-		}
-
-		data, err := v.Unpack()
-		if err != nil {
-			return nil, err
-		}
-
-		m, ok := data.(map[string]interface{})
-		if !ok {
-			return nil, ErrNotObject
-		}
-
-		out = append(out, m)
-	}
-
-	return out, nil
-}
-
-// getNextRecordsURL returns the URL for the next page of results.
-func getNextRecordsURL(node *ajson.Node) (string, error) {
-	var nextPage string
-
-	if node.HasKey("nextRecordsUrl") {
-		next, err := node.GetKey("nextRecordsUrl")
-		if err != nil {
-			return "", err
-		}
-
-		if !next.IsString() {
-			return "", ErrNotString
-		}
-
-		nextPage = next.MustString()
-	}
-
-	return nextPage, nil
-}
-
-// getDone returns true if there are no more pages to read.
-func getDone(node *ajson.Node) (bool, error) {
-	var done bool
-
-	if node.HasKey("done") {
-		doneNode, err := node.GetKey("done")
-		if err != nil {
-			return false, err
-		}
-
-		if !doneNode.IsBool() {
-			return false, ErrNotBool
-		}
-
-		done = doneNode.MustBool()
-	}
-
-	return done, nil
-}
-
-// getTotalSize returns the total number of records that match the query.
-func getTotalSize(node *ajson.Node) (int64, error) {
-	node, err := node.GetKey("totalSize")
-	if err != nil {
-		return 0, err
-	}
-
-	if !node.IsNumeric() {
-		return 0, ErrNotNumeric
-	}
-
-	return int64(node.MustNumeric()), nil
 }

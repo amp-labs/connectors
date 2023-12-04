@@ -109,11 +109,20 @@ type ReadResult struct {
 	// Rows is the number of total rows in the result.
 	Rows int64 `json:"rows"`
 	// Data is a list of JSON nodes, where each node represents a record that we read.
-	Data []map[string]interface{} `json:"data"`
+	Data []ReadResultRow `json:"data"`
 	// NextPage is an opaque token that can be used to get the next page of results.
 	NextPage NextPageToken `json:"nextPage,omitempty"`
 	// Done is true if there are no more pages to read.
 	Done bool `json:"done,omitempty"`
+}
+
+// ReadResultRow is a single row of data contained in ReadResult.Data.
+// https://ampersand.slab.com/posts/read-action-result-format-3pzumqrr
+type ReadResultRow struct {
+	// Fields is a map of requested provider field names to values.
+	Fields map[string]interface{} `json:"fields"`
+	// Raw is the raw JSON response from the provider.
+	Raw map[string]interface{} `json:"raw"`
 }
 
 // WriteResult is what's returned from writing data via the Write call.

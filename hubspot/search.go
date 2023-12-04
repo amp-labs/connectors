@@ -2,6 +2,7 @@ package hubspot
 
 import (
 	"context"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/spyzhov/ajson"
@@ -23,7 +24,14 @@ func (c *Connector) Search(ctx context.Context, config SearchParams) (*common.Re
 		return nil, err
 	}
 
-	return parseResult(data, getNextRecordsAfter)
+	return common.ParseResult(
+		data,
+		getTotalSize,
+		getRecords,
+		getNextRecordsAfter,
+		getStructuredData,
+		config.Fields,
+	)
 }
 
 func makeFilterBody(config SearchParams) map[string]any {
@@ -48,4 +56,18 @@ func makeFilterBody(config SearchParams) map[string]any {
 	}
 
 	return filterBody
+}
+
+func buildLastModifiedFilterGroup(since time.Time) []FilterGroup {
+	return []FilterGroup{
+		{
+			Filters: []Filter{
+				{
+					FieldName: "lastmodifieddate",
+					Operator:  FilterOperatorTypeGTE,
+					Value:     since.Format(time.RFC3339),
+				},
+			},
+		},
+	}
 }

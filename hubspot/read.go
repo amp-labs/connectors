@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/url"
 	"strings"
-	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/spyzhov/ajson"
@@ -34,8 +33,6 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return c.Search(ctx, searchParams)
 	}
 
-	// Object endpoints have a link
-
 	if len(config.NextPage) > 0 {
 		// If NextPage is set, then we're reading the next page of results.
 		// All that matters is the NextPage URL, the fields are ignored.
@@ -50,7 +47,14 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	return parseResult(data, getNextRecordsURL)
+	return common.ParseResult(
+		data,
+		getTotalSize,
+		getRecords,
+		getNextRecordsURL,
+		getStructuredData,
+		config.Fields,
+	)
 }
 
 // makeQueryValues returns the query for the desired read operation.
@@ -68,95 +72,4 @@ func makeQueryValues(config common.ReadParams) string {
 	queryValues.Add("limit", DefaultPageSize)
 
 	return queryValues.Encode()
-}
-
-// parseResult parses the response from the Hubspot API. A 2xx return type is assumed.
-func parseResult(data *ajson.Node, paginationFunc func(*ajson.Node) (string, error)) (*common.ReadResult, error) {
-	totalSize, err := getTotalSize(data)
-	if err != nil {
-		return nil, err
-	}
-
-	records, err := getRecords(data)
-	if err != nil {
-		return nil, err
-	}
-
-	nextPage, err := paginationFunc(data)
-	if err != nil {
-		return nil, err
-	}
-
-	done := nextPage == ""
-
-	return &common.ReadResult{
-		Rows:     totalSize,
-		Data:     records,
-		NextPage: common.NextPageToken(nextPage),
-		Done:     done,
-	}, nil
-}
-
-// getRecords returns the records from the response.
-func getRecords(node *ajson.Node) ([]map[string]interface{}, error) {
-	records, err := node.GetKey("results")
-	if err != nil {
-		return nil, err
-	}
-
-	if !records.IsArray() {
-		return nil, ErrNotArray
-	}
-
-	arr := records.MustArray()
-
-	out := make([]map[string]interface{}, 0, len(arr))
-
-	for _, v := range arr {
-		if !v.IsObject() {
-			return nil, ErrNotObject
-		}
-
-		data, err := v.Unpack()
-		if err != nil {
-			return nil, err
-		}
-
-		m, ok := data.(map[string]interface{})
-		if !ok {
-			return nil, ErrNotObject
-		}
-
-		out = append(out, m)
-	}
-
-	return out, nil
-}
-
-// getTotalSize returns the total number of records that match the query.
-func getTotalSize(node *ajson.Node) (int64, error) {
-	node, err := node.GetKey("results")
-	if err != nil {
-		return 0, err
-	}
-
-	if !node.IsArray() {
-		return 0, ErrNotArray
-	}
-
-	return int64(node.Size()), nil
-}
-
-func buildLastModifiedFilterGroup(since time.Time) []FilterGroup {
-	return []FilterGroup{
-		{
-			Filters: []Filter{
-				{
-					FieldName: "lastmodifieddate",
-					Operator:  FilterOperatorTypeGTE,
-					Value:     since.Format(time.RFC3339),
-				},
-			},
-		},
-	}
 }
