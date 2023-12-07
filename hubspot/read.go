@@ -26,6 +26,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		searchParams := SearchParams{
 			ObjectName:   config.ObjectName,
 			FilterGroups: buildLastModifiedFilterGroup(config.Since),
+			SortBy:       buildDefaultSort(),
 			NextPage:     config.NextPage,
 			Fields:       config.Fields,
 		}

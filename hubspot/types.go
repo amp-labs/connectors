@@ -53,3 +53,11 @@ const (
 	FilterPropertyContainsToken    FilterOperatorType = "CONTAINS_TOKEN"
 	FilterPropertyNotContainsToken FilterOperatorType = "NOT_CONTAINS_TOKEN"
 )
+
+// ObjectField is used to define fields that exist on a hubspot object.
+type ObjectField string
+
+const (
+	ObjectFieldHsObjectId       ObjectField = "hs_object_id"
+	ObjectFieldLastModifiedDate ObjectField = "lastmodifieddate"
+)
