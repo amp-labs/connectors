@@ -22,6 +22,9 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	)
 
 	// If filtering is required, then we have to use the search endpoint.
+	// The Search endpoint has a 10K record limit. In case this limit is reached,
+	// the sorting allows the caller to continue in another call by offsetting
+	// until the ID of the last record that was successfully fetched.
 	if requiresFiltering(config) {
 		searchParams := SearchParams{
 			ObjectName:   config.ObjectName,
