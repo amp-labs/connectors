@@ -73,11 +73,11 @@ func buildLastModifiedFilterGroup(since time.Time) []FilterGroup {
 	}
 }
 
-func buildDefaultSort() []SortBy {
+func buildSort(field ObjectField, dir SortDirection) []SortBy {
 	return []SortBy{
 		{
-			PropertyName: string(ObjectFieldHsObjectId),
-			Direction:    SortDirectionAsc,
+			PropertyName: string(field),
+			Direction:    dir,
 		},
 	}
 }
