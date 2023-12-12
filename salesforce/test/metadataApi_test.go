@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/amp-labs/connectors/salesforce"
+	"github.com/stretchr/testify/require"
 )
 
 func TestXMLData(testing *testing.T) {
@@ -60,6 +61,47 @@ func TestXMLData(testing *testing.T) {
 	xmlStr = xmlData.ToXML()
 	if xmlStr != `<test test="test"/>` {
 		testing.Errorf("XMLData.ToXML() = %s; want <test test=\"test\"/>", xmlStr)
+	}
+}
+
+func TestXMLJSON(testing *testing.T) {
+	rawJson := []byte(`{
+		"xmlName": "metadata",
+		"attributes": [
+			{
+				"key": "xsi:type",
+				"value": "CustomField"
+			}
+		],
+		"children": [
+			{
+				"xmlName": "fullName",
+				"attributes": null,
+				"children": [
+					"TestObject13__c.Comments__c"
+				],
+				"selfClosing": false
+			},
+			{
+				"xmlName": "label",
+				"attributes": null,
+				"children": [
+					"Comments"
+				],
+				"selfClosing": false
+			}
+		],
+		"selfClosing": false
+	}`)
+
+	xmlData := &salesforce.XMLData{}
+	err := xmlData.UnmarshalJSON(rawJson)
+
+	require.NoError(testing, err)
+
+	xmlStr := xmlData.ToXML()
+	if xmlStr != `<metadata xsi:type="CustomField"><fullName>TestObject13__c.Comments__c</fullName><label>Comments</label></metadata>` {
+		testing.Errorf("XMLData.ToXML() = %s; want <metadata xsi:type=\"CustomField\"><fullName>TestObject13__c.Comments__c</fullName><label>Comments</label></metadata>", xmlStr)
 	}
 
 }

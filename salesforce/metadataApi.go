@@ -183,8 +183,6 @@ func (c *Connector) CreateMetadata(ctx context.Context, operation *XMLData, acce
 		}
 	}()
 
-	fmt.Println(string(body))
-	fmt.Println(res.StatusCode)
 	if res.StatusCode < 200 || res.StatusCode > 299 {
 		return "", fmt.Errorf("%w: %s", ErrCreateMetadata, string(body))
 	}
