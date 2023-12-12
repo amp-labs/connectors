@@ -60,7 +60,6 @@ func main() {
 		salesforce.WithClient(ctx, http.DefaultClient, cfg, tok, salesforce.GetTokenUpdater(tok)),
 		salesforce.WithSubdomain(salesforceSubdomain),
 	)
-
 	if err != nil {
 		slog.Error("Error creating Salesforce connector", "error", err)
 
@@ -206,7 +205,6 @@ func getCreateObjectOperationDefinition() *salesforce.XMLData {
 }
 
 func getCreateFieldOperation() *salesforce.XMLData {
-
 	metadata := &salesforce.XMLData{
 		XMLName:    "metadata",
 		Attributes: []*salesforce.XMLAttributes{{Key: "xsi:type", Value: "CustomField"}},
@@ -301,5 +299,4 @@ func getCreateFieldOperation() *salesforce.XMLData {
 	fmt.Println(string(jsonData))
 
 	return operation
-
 }

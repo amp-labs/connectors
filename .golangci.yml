@@ -3,6 +3,7 @@ run:
   skip-dirs:
     - "playground"
     - "test/bulkwrite"
+    - "test/metadata"
 output:
   format: github-actions
 linters:

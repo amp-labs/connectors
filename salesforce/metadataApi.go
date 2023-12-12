@@ -15,21 +15,14 @@ import (
 	"golang.org/x/oauth2"
 )
 
-const versionPrefix = "v"
-const openParenthesis = "<"
-const closeParenthesis = ">"
-const closeWithSlashParenthesis = "/>"
+const (
+	versionPrefix             = "v"
+	openParenthesis           = "<"
+	closeParenthesis          = ">"
+	closeWithSlashParenthesis = "/>"
+)
 
-func GetTokenUpdater(tok *oauth2.Token) common.OAuthOption {
-	// Whenever a token is updated, we want to persist the new access+refresh token
-	return common.WithTokenUpdated(func(oldToken, newToken *oauth2.Token) error {
-		tok.AccessToken = newToken.AccessToken
-		tok.RefreshToken = newToken.RefreshToken
-		tok.TokenType = newToken.TokenType
-		tok.Expiry = newToken.Expiry
-		return nil
-	})
-}
+var ErrCreateMetadata = fmt.Errorf("error in CreateMetadata")
 
 type XMLSchema interface {
 	ToXML() string
@@ -57,6 +50,7 @@ type XMLData struct {
 	HasEndingTag bool             `json:"hasEndingTag"`
 }
 
+//nolint:cyclop
 func (x *XMLData) UnmarshalJSON(b []byte) error {
 	data := make(map[string]json.RawMessage)
 	if err := json.Unmarshal(b, &data); err != nil {
@@ -79,6 +73,7 @@ func (x *XMLData) UnmarshalJSON(b []byte) error {
 	for _, child := range children {
 		if childValue, ok := child.(string); ok {
 			x.Children = append(x.Children, XMLString(childValue))
+
 			continue
 		}
 
@@ -94,9 +89,9 @@ func (x *XMLData) UnmarshalJSON(b []byte) error {
 			}
 
 			x.Children = append(x.Children, childXML)
+
 			continue
 		}
-
 	}
 
 	if err := json.Unmarshal(data["hasEndingTag"], &x.HasEndingTag); err != nil {
@@ -104,12 +99,12 @@ func (x *XMLData) UnmarshalJSON(b []byte) error {
 	}
 
 	return nil
-
 }
 
 func (x *XMLData) ToXML() string {
 	start := x.startTag()
 	end := x.endTag()
+
 	chilren := []string{}
 	for _, child := range x.Children {
 		chilren = append(chilren, child.ToXML())
@@ -123,12 +118,15 @@ func (x *XMLData) startTag() string {
 	for i, attr := range x.Attributes {
 		attributes[i] = attr.ToXML()
 	}
+
 	attrStr := strings.Join(attributes, " ")
 
-	close := closeParenthesis
+	var close string //nolint:predeclared
 
 	if !x.HasEndingTag {
 		close = closeWithSlashParenthesis
+	} else {
+		close = closeParenthesis
 	}
 
 	if attrStr == "" {
@@ -136,18 +134,17 @@ func (x *XMLData) startTag() string {
 	}
 
 	return fmt.Sprintf("%s%s %s%s", openParenthesis, x.XMLName, attrStr, close)
-
 }
 
 func (x *XMLData) endTag() string {
 	if !x.HasEndingTag {
 		return ""
 	}
+
 	return fmt.Sprintf("</%s>", x.XMLName)
 }
 
 func (c *Connector) CreateMetadata(ctx context.Context, operation *XMLData, accessToken string) (string, error) {
-
 	data := preparePayload(operation, accessToken)
 
 	endPointURL, err := url.JoinPath(c.Client.Base, "services/Soap/m/"+removePrefix(c.APIVersion(), versionPrefix))
@@ -174,6 +171,9 @@ func (c *Connector) CreateMetadata(ctx context.Context, operation *XMLData, acce
 	}
 
 	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return "", err
+	}
 
 	defer func() {
 		if res != nil && res.Body != nil {
@@ -183,48 +183,58 @@ func (c *Connector) CreateMetadata(ctx context.Context, operation *XMLData, acce
 		}
 	}()
 
-	fmt.Println("body", string(body))
-	fmt.Println("stastus", res.StatusCode)
-
 	if res.StatusCode < 200 || res.StatusCode > 299 {
-		return "", fmt.Errorf("error in CreateMetadata: %s", string(body))
+		return "", fmt.Errorf("%w: %s", ErrCreateMetadata, string(body))
 	}
 
 	return string(body), nil
 }
 
 func removePrefix(s string, prefix string) string {
-
 	if !strings.HasPrefix(s, prefix) {
 		return s
 	}
+
 	return s[len(prefix):]
 }
 
 func addSOAPAPIHeaders(req *http.Request) {
-
 	req.Header.Add("Content-Type", "text/xml")
 	req.Header.Set("SOAPAction", "''")
-
 }
 
 func getEnvelope(header string, body string) string {
-	return fmt.Sprintf(`<?xml version="1.0" encoding="UTF-8"?>
-	<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">%s%s</soapenv:Envelope>`, header, body)
+	return fmt.Sprintf(
+		`<?xml version="1.0" encoding="UTF-8"?>
+		<soapenv:Envelope
+			xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+			xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+			%s
+			%s
+		</soapenv:Envelope>`,
+		header,
+		body,
+	)
 }
 
 func getHeader(headers []string) string {
-	return fmt.Sprintf(`<soapenv:Header xmlns="http://soap.sforce.com/2006/04/metadata">
+	return fmt.Sprintf(
+		`<soapenv:Header xmlns="http://soap.sforce.com/2006/04/metadata">
 			%s
 		</soapenv:Header>`, strings.Join(headers, ""))
 }
 
 func getSessionHeader(token string) string {
-	return fmt.Sprintf(`<SessionHeader><sessionId>%s</sessionId></SessionHeader>`, token)
+	return fmt.Sprintf(
+		`<SessionHeader>
+		<sessionId>%s</sessionId>
+	</SessionHeader>`, token)
 }
 
 func getBody(items []string) string {
-	return fmt.Sprintf(`<soapenv:Body xmlns="http://soap.sforce.com/2006/04/metadata">
+	return fmt.Sprintf(
+		`<soapenv:Body xmlns="http://soap.sforce.com/2006/04/metadata">
 			%s
 		</soapenv:Body>`, strings.Join(items, ""))
 }
@@ -234,13 +244,23 @@ func formObjectDefiniotion(objDef *XMLData) string {
 }
 
 func preparePayload(objDef *XMLData, accessToken string) string {
-
 	// TODO transform objDef to xml and return
-
 	metadata := formObjectDefiniotion(objDef)
 	header := getHeader([]string{getSessionHeader(accessToken)})
 	body := getBody([]string{metadata})
 	data := getEnvelope(header, body)
 
 	return data
+}
+
+func GetTokenUpdater(tok *oauth2.Token) common.OAuthOption {
+	// Whenever a token is updated, we want to persist the new access+refresh token
+	return common.WithTokenUpdated(func(oldToken, newToken *oauth2.Token) error {
+		tok.AccessToken = newToken.AccessToken
+		tok.RefreshToken = newToken.RefreshToken
+		tok.TokenType = newToken.TokenType
+		tok.Expiry = newToken.Expiry
+
+		return nil
+	})
 }
