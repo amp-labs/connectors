@@ -44,10 +44,10 @@ func (x XMLString) ToXML() string {
 }
 
 type XMLData struct {
-	XMLName      string           `json:"xmlName"`
-	Attributes   []*XMLAttributes `json:"attributes"`
-	Children     []XMLSchema      `json:"children"`
-	HasEndingTag bool             `json:"hasEndingTag"`
+	XMLName     string           `json:"xmlName"`
+	Attributes  []*XMLAttributes `json:"attributes"`
+	Children    []XMLSchema      `json:"children"`
+	SelfClosing bool             `json:"selfClosing"`
 }
 
 //nolint:cyclop
@@ -94,7 +94,7 @@ func (x *XMLData) UnmarshalJSON(b []byte) error {
 		}
 	}
 
-	if err := json.Unmarshal(data["hasEndingTag"], &x.HasEndingTag); err != nil {
+	if err := json.Unmarshal(data["selfClosing"], &x.SelfClosing); err != nil {
 		return err
 	}
 
@@ -103,6 +103,10 @@ func (x *XMLData) UnmarshalJSON(b []byte) error {
 
 func (x *XMLData) ToXML() string {
 	start := x.startTag()
+	if x.SelfClosing {
+		return start
+	}
+
 	end := x.endTag()
 
 	chilren := []string{}
@@ -123,7 +127,7 @@ func (x *XMLData) startTag() string {
 
 	var close string //nolint:predeclared
 
-	if !x.HasEndingTag {
+	if x.SelfClosing {
 		close = closeWithSlashParenthesis
 	} else {
 		close = closeParenthesis
@@ -137,10 +141,6 @@ func (x *XMLData) startTag() string {
 }
 
 func (x *XMLData) endTag() string {
-	if !x.HasEndingTag {
-		return ""
-	}
-
 	return fmt.Sprintf("</%s>", x.XMLName)
 }
 

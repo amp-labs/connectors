@@ -13,7 +13,7 @@
             "children": [
                 "TestObject13__c"
             ],
-            "hasEndingTag": true
+            "selfClosing": false
         },
         {
             "xmlName": "label",
@@ -21,7 +21,7 @@
             "children": [
                 "Test Object 13"
             ],
-            "hasEndingTag": true
+            "selfClosing": false
         },
         {
             "xmlName": "pluralLabel",
@@ -29,7 +29,7 @@
             "children": [
                 "Test Objects 13"
             ],
-            "hasEndingTag": true
+            "selfClosing": false
         },
         {
             "xmlName": "nameField",
@@ -41,7 +41,7 @@
                     "children": [
                         "Text"
                     ],
-                    "hasEndingTag": true
+                    "selfClosing": false
                 },
                 {
                     "xmlName": "label",
@@ -49,10 +49,10 @@
                     "children": [
                         "Test Object Name"
                     ],
-                    "hasEndingTag": true
+                    "selfClosing": false
                 }
             ],
-            "hasEndingTag": true
+            "selfClosing": false
         },
         {
             "xmlName": "deploymentStatus",
@@ -60,7 +60,7 @@
             "children": [
                 "Deployed"
             ],
-            "hasEndingTag": true
+            "selfClosing": false
         },
         {
             "xmlName": "sharingModel",
@@ -68,8 +68,8 @@
             "children": [
                 "ReadWrite"
             ],
-            "hasEndingTag": true
+            "selfClosing": false
         }
     ],
-    "hasEndingTag": true
+    "selfClosing": false
 }

@@ -121,9 +121,9 @@ func main() {
 	}
 
 	operation := &salesforce.XMLData{
-		XMLName:      "createMetadata",
-		Children:     []salesforce.XMLSchema{objectOperation, fieldOperation},
-		HasEndingTag: true,
+		XMLName:     "createMetadata",
+		Children:    []salesforce.XMLSchema{objectOperation, fieldOperation},
+		SelfClosing: false,
 	}
 
 	res2, err := sfc.CreateMetadata(context.Background(), operation, accessToken)
@@ -136,63 +136,63 @@ func main() {
 
 func getCreateObjectOperationDefinition() *salesforce.XMLData {
 	fieldType := &salesforce.XMLData{
-		XMLName:      "type",
-		Children:     []salesforce.XMLSchema{salesforce.XMLString("Text")},
-		HasEndingTag: true,
+		XMLName:     "type",
+		Children:    []salesforce.XMLSchema{salesforce.XMLString("Text")},
+		SelfClosing: false,
 	}
 	nameFieldLabel := &salesforce.XMLData{
-		XMLName:      "label",
-		Children:     []salesforce.XMLSchema{salesforce.XMLString("Test Object Name")},
-		HasEndingTag: true,
+		XMLName:     "label",
+		Children:    []salesforce.XMLSchema{salesforce.XMLString("Test Object Name")},
+		SelfClosing: false,
 	}
 
 	nameField := &salesforce.XMLData{
-		XMLName:      "nameField",
-		Children:     []salesforce.XMLSchema{fieldType, nameFieldLabel},
-		HasEndingTag: true,
+		XMLName:     "nameField",
+		Children:    []salesforce.XMLSchema{fieldType, nameFieldLabel},
+		SelfClosing: false,
 	}
 
 	deploymentStatus := &salesforce.XMLData{
-		XMLName:      "deploymentStatus",
-		Children:     []salesforce.XMLSchema{salesforce.XMLString("Deployed")},
-		HasEndingTag: true,
+		XMLName:     "deploymentStatus",
+		Children:    []salesforce.XMLSchema{salesforce.XMLString("Deployed")},
+		SelfClosing: false,
 	}
 
 	sharingModel := &salesforce.XMLData{
-		XMLName:      "sharingModel",
-		Children:     []salesforce.XMLSchema{salesforce.XMLString("ReadWrite")},
-		HasEndingTag: true,
+		XMLName:     "sharingModel",
+		Children:    []salesforce.XMLSchema{salesforce.XMLString("ReadWrite")},
+		SelfClosing: false,
 	}
 
 	fullName := &salesforce.XMLData{
-		XMLName:      "fullName",
-		Children:     []salesforce.XMLSchema{salesforce.XMLString("TestObject13__c")},
-		HasEndingTag: true,
+		XMLName:     "fullName",
+		Children:    []salesforce.XMLSchema{salesforce.XMLString("TestObject13__c")},
+		SelfClosing: false,
 	}
 
 	ObjecLabel := &salesforce.XMLData{
-		XMLName:      "label",
-		Children:     []salesforce.XMLSchema{salesforce.XMLString("Test Object 13")},
-		HasEndingTag: true,
+		XMLName:     "label",
+		Children:    []salesforce.XMLSchema{salesforce.XMLString("Test Object 13")},
+		SelfClosing: false,
 	}
 
 	pluralLabel := &salesforce.XMLData{
-		XMLName:      "pluralLabel",
-		Children:     []salesforce.XMLSchema{salesforce.XMLString("Test Objects 13")},
-		HasEndingTag: true,
+		XMLName:     "pluralLabel",
+		Children:    []salesforce.XMLSchema{salesforce.XMLString("Test Objects 13")},
+		SelfClosing: false,
 	}
 
 	metadata := &salesforce.XMLData{
-		XMLName:      "metadata",
-		Attributes:   []*salesforce.XMLAttributes{{Key: "xsi:type", Value: "CustomObject"}},
-		Children:     []salesforce.XMLSchema{fullName, ObjecLabel, pluralLabel, nameField, deploymentStatus, sharingModel},
-		HasEndingTag: true,
+		XMLName:     "metadata",
+		Attributes:  []*salesforce.XMLAttributes{{Key: "xsi:type", Value: "CustomObject"}},
+		Children:    []salesforce.XMLSchema{fullName, ObjecLabel, pluralLabel, nameField, deploymentStatus, sharingModel},
+		SelfClosing: false,
 	}
 
 	operation := &salesforce.XMLData{
-		XMLName:      "createMetadata",
-		Children:     []salesforce.XMLSchema{metadata},
-		HasEndingTag: true,
+		XMLName:     "createMetadata",
+		Children:    []salesforce.XMLSchema{metadata},
+		SelfClosing: false,
 	}
 
 	fmt.Println(operation.ToXML())
@@ -217,79 +217,79 @@ func getCreateFieldOperation() *salesforce.XMLData {
 				Children: []salesforce.XMLSchema{
 					salesforce.XMLString("TestObject13__c.Comments__c"),
 				},
-				HasEndingTag: true,
+				SelfClosing: false,
 			},
 			&salesforce.XMLData{
 				XMLName: "label",
 				Children: []salesforce.XMLSchema{
 					salesforce.XMLString("Comments"),
 				},
-				HasEndingTag: true,
+				SelfClosing: false,
 			},
 			&salesforce.XMLData{
 				XMLName: "type",
 				Children: []salesforce.XMLSchema{
 					salesforce.XMLString("LongTextArea"),
 				},
-				HasEndingTag: true,
+				SelfClosing: false,
 			},
 			&salesforce.XMLData{
 				XMLName: "length",
 				Children: []salesforce.XMLSchema{
 					salesforce.XMLString("500"),
 				},
-				HasEndingTag: true,
+				SelfClosing: false,
 			},
 			&salesforce.XMLData{
 				XMLName: "inlineHelpText",
 				Children: []salesforce.XMLSchema{
 					salesforce.XMLString("This field contains help text for this object"),
 				},
-				HasEndingTag: true,
+				SelfClosing: false,
 			},
 			&salesforce.XMLData{
 				XMLName: "description",
 				Children: []salesforce.XMLSchema{
 					salesforce.XMLString("Add your comments about this object here"),
 				},
-				HasEndingTag: true,
+				SelfClosing: false,
 			},
 			&salesforce.XMLData{
 				XMLName: "visibleLines",
 				Children: []salesforce.XMLSchema{
 					salesforce.XMLString("30"),
 				},
-				HasEndingTag: true,
+				SelfClosing: false,
 			},
 			&salesforce.XMLData{
 				XMLName: "required",
 				Children: []salesforce.XMLSchema{
 					salesforce.XMLString("false"),
 				},
-				HasEndingTag: true,
+				SelfClosing: false,
 			},
 			&salesforce.XMLData{
 				XMLName: "trackFeedHistory",
 				Children: []salesforce.XMLSchema{
 					salesforce.XMLString("false"),
 				},
-				HasEndingTag: true,
+				SelfClosing: false,
 			},
 			&salesforce.XMLData{
 				XMLName: "trackHistory",
 				Children: []salesforce.XMLSchema{
 					salesforce.XMLString("false"),
 				},
-				HasEndingTag: true,
+				SelfClosing: false,
 			},
 		},
-		HasEndingTag: true,
+		SelfClosing: false,
 	}
 
 	operation := &salesforce.XMLData{
-		XMLName:      "createMetadata",
-		Children:     []salesforce.XMLSchema{metadata},
-		HasEndingTag: true,
+		XMLName:     "createMetadata",
+		Children:    []salesforce.XMLSchema{metadata},
+		SelfClosing: false,
 	}
 
 	fmt.Println(operation.ToXML())

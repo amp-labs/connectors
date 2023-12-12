@@ -13,7 +13,7 @@
             "children": [
                 "TestObject13__c.Comments__c"
             ],
-            "hasEndingTag": true
+            "selfClosing": false
         },
         {
             "xmlName": "label",
@@ -21,7 +21,7 @@
             "children": [
                 "Comments"
             ],
-            "hasEndingTag": true
+            "selfClosing": false
         },
         {
             "xmlName": "type",
@@ -29,7 +29,7 @@
             "children": [
                 "LongTextArea"
             ],
-            "hasEndingTag": true
+            "selfClosing": false
         },
         {
             "xmlName": "length",
@@ -37,7 +37,7 @@
             "children": [
                 "500"
             ],
-            "hasEndingTag": true
+            "selfClosing": false
         },
         {
             "xmlName": "inlineHelpText",
@@ -45,7 +45,7 @@
             "children": [
                 "This field contains help text for this object"
             ],
-            "hasEndingTag": true
+            "selfClosing": false
         },
         {
             "xmlName": "description",
@@ -53,7 +53,7 @@
             "children": [
                 "Add your comments about this object here"
             ],
-            "hasEndingTag": true
+            "selfClosing": false
         },
         {
             "xmlName": "visibleLines",
@@ -61,7 +61,7 @@
             "children": [
                 "30"
             ],
-            "hasEndingTag": true
+            "selfClosing": false
         },
         {
             "xmlName": "required",
@@ -69,7 +69,7 @@
             "children": [
                 "false"
             ],
-            "hasEndingTag": true
+            "selfClosing": false
         },
         {
             "xmlName": "trackFeedHistory",
@@ -77,7 +77,7 @@
             "children": [
                 "false"
             ],
-            "hasEndingTag": true
+            "selfClosing": false
         },
         {
             "xmlName": "trackHistory",
@@ -85,8 +85,8 @@
             "children": [
                 "false"
             ],
-            "hasEndingTag": true
+            "selfClosing": false
         }
     ],
-    "hasEndingTag": true
+    "selfClosing": false
 }
