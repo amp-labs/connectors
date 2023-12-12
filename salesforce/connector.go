@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/amp-labs/connectors/common"
-	"golang.org/x/oauth2"
 )
 
 const (
@@ -16,7 +15,6 @@ type Connector struct {
 	Domain  string
 	BaseURL string
 	Client  *common.JSONHTTPClient
-	Token   *oauth2.Token
 }
 
 func (c *Connector) APIVersion() string {

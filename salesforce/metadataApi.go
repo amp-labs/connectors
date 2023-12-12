@@ -244,7 +244,6 @@ func formObjectDefiniotion(objDef *XMLData) string {
 }
 
 func preparePayload(objDef *XMLData, accessToken string) string {
-	// TODO transform objDef to xml and return
 	metadata := formObjectDefiniotion(objDef)
 	header := getHeader([]string{getSessionHeader(accessToken)})
 	body := getBody([]string{metadata})

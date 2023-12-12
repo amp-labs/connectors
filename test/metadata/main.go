@@ -50,12 +50,11 @@ func main() {
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 		TokenType:    "bearer",
-		Expiry:       time.Now().Add(-1 * time.Hour), // just pretend it's expired already, whatever, it'll fetch a new one.
+		Expiry:       time.Now().Add(-1 * time.Hour),
 	}
 
 	ctx := context.Background()
 
-	// Create a new Salesforce connector, with a token provider that uses the sfdx CLI to fetch an access token.
 	sfc, err := connectors.Salesforce(
 		salesforce.WithClient(ctx, http.DefaultClient, cfg, tok, salesforce.GetTokenUpdater(tok)),
 		salesforce.WithSubdomain(salesforceSubdomain),
@@ -69,8 +68,6 @@ func main() {
 	defer func() {
 		_ = sfc.Close()
 	}()
-
-	fmt.Println("token--------:", tok.AccessToken)
 
 	// operation := getOperationDefinition()
 
