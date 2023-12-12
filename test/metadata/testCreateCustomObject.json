@@ -1,0 +1,82 @@
+{
+    "xmlName": "createMetadata",
+    "attributes": null,
+    "children": [
+        {
+            "xmlName": "metadata",
+            "attributes": [
+                {
+                    "key": "xsi:type",
+                    "value": "CustomObject"
+                }
+            ],
+            "children": [
+                {
+                    "xmlName": "fullName",
+                    "attributes": null,
+                    "children": [
+                        "TestObject13__c"
+                    ],
+                    "hasEndingTag": true
+                },
+                {
+                    "xmlName": "label",
+                    "attributes": null,
+                    "children": [
+                        "Test Object 13"
+                    ],
+                    "hasEndingTag": true
+                },
+                {
+                    "xmlName": "pluralLabel",
+                    "attributes": null,
+                    "children": [
+                        "Test Objects 13"
+                    ],
+                    "hasEndingTag": true
+                },
+                {
+                    "xmlName": "nameField",
+                    "attributes": null,
+                    "children": [
+                        {
+                            "xmlName": "type",
+                            "attributes": null,
+                            "children": [
+                                "Text"
+                            ],
+                            "hasEndingTag": true
+                        },
+                        {
+                            "xmlName": "label",
+                            "attributes": null,
+                            "children": [
+                                "Test Object Name"
+                            ],
+                            "hasEndingTag": true
+                        }
+                    ],
+                    "hasEndingTag": true
+                },
+                {
+                    "xmlName": "deploymentStatus",
+                    "attributes": null,
+                    "children": [
+                        "Deployed"
+                    ],
+                    "hasEndingTag": true
+                },
+                {
+                    "xmlName": "sharingModel",
+                    "attributes": null,
+                    "children": [
+                        "ReadWrite"
+                    ],
+                    "hasEndingTag": true
+                }
+            ],
+            "hasEndingTag": true
+        }
+    ],
+    "hasEndingTag": true
+}
