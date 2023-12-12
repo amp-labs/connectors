@@ -57,7 +57,7 @@ func main() {
 
 	// Create a new Salesforce connector, with a token provider that uses the sfdx CLI to fetch an access token.
 	sfc, err := connectors.Salesforce(
-		salesforce.WithClient(ctx, http.DefaultClient, cfg, tok),
+		salesforce.WithClient(ctx, http.DefaultClient, cfg, tok, salesforce.GetTokenUpdater(tok)),
 		salesforce.WithSubdomain(salesforceSubdomain),
 	)
 
@@ -70,6 +70,8 @@ func main() {
 	defer func() {
 		_ = sfc.Close()
 	}()
+
+	fmt.Println("token--------:", tok.AccessToken)
 
 	// operation := getOperationDefinition()
 
@@ -95,7 +97,7 @@ func main() {
 
 	// fmt.Println(operation.ToXML())
 
-	res, err := sfc.CreateMetadata(context.Background(), objectOperation, accessToken)
+	res, err := sfc.CreateMetadata(context.Background(), objectOperation, tok.AccessToken)
 	if err != nil {
 		slog.Debug("err", "err", err)
 	}
