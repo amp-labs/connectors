@@ -8,6 +8,7 @@ import (
 )
 
 func TestXMLData(testing *testing.T) {
+	testing.Parallel()
 
 	// Test XMLData.ToXML() with SelfClosing = false
 	xmlData := &salesforce.XMLData{
@@ -65,7 +66,9 @@ func TestXMLData(testing *testing.T) {
 }
 
 func TestXMLJSON(testing *testing.T) {
-	rawJson := []byte(`{
+	testing.Parallel()
+
+	rawJSON := []byte(`{
 		"xmlName": "metadata",
 		"attributes": [
 			{
@@ -95,13 +98,14 @@ func TestXMLJSON(testing *testing.T) {
 	}`)
 
 	xmlData := &salesforce.XMLData{}
-	err := xmlData.UnmarshalJSON(rawJson)
+	err := xmlData.UnmarshalJSON(rawJSON)
 
 	require.NoError(testing, err)
 
 	xmlStr := xmlData.ToXML()
+	//nolint:lll
 	if xmlStr != `<metadata xsi:type="CustomField"><fullName>TestObject13__c.Comments__c</fullName><label>Comments</label></metadata>` {
+		//nolint:lll
 		testing.Errorf("XMLData.ToXML() = %s; want <metadata xsi:type=\"CustomField\"><fullName>TestObject13__c.Comments__c</fullName><label>Comments</label></metadata>", xmlStr)
 	}
-
 }
