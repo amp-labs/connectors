@@ -183,6 +183,8 @@ func (c *Connector) CreateMetadata(ctx context.Context, operation *XMLData, acce
 		}
 	}()
 
+	fmt.Println(string(body))
+	fmt.Println(res.StatusCode)
 	if res.StatusCode < 200 || res.StatusCode > 299 {
 		return "", fmt.Errorf("%w: %s", ErrCreateMetadata, string(body))
 	}
@@ -221,6 +223,9 @@ func getEnvelope(header string, body string) string {
 func getHeader(headers []string) string {
 	return fmt.Sprintf(
 		`<soapenv:Header xmlns="http://soap.sforce.com/2006/04/metadata">
+			<AllOrNoneHeader>
+				<allOrNone>true</allOrNone>
+			</AllOrNoneHeader>
 			%s
 		</soapenv:Header>`, strings.Join(headers, ""))
 }
@@ -239,12 +244,12 @@ func getBody(items []string) string {
 		</soapenv:Body>`, strings.Join(items, ""))
 }
 
-func formObjectDefiniotion(objDef *XMLData) string {
-	return objDef.ToXML()
+func formOperationXML(oper *XMLData) string {
+	return oper.ToXML()
 }
 
-func preparePayload(objDef *XMLData, accessToken string) string {
-	metadata := formObjectDefiniotion(objDef)
+func preparePayload(oper *XMLData, accessToken string) string {
+	metadata := formOperationXML(oper)
 	header := getHeader([]string{getSessionHeader(accessToken)})
 	body := getBody([]string{metadata})
 	data := getEnvelope(header, body)

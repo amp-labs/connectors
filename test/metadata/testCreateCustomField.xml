@@ -1,17 +1,16 @@
-<createMetadata>
-	<metadata xsi:type="CustomField">
-		<fullName>TestObject13__c.Comments__c</fullName>
-		<label>Comments</label>
-		<type>LongTextArea</type>
-		<length>500</length>
-		<inlineHelpText>This field contains help text for this object</inlineHelpText>
-		<description>Add your comments about this object here</description>
-		<visibleLines>30</visibleLines>
-		<required>false</required>
-		<trackFeedHistory>false</trackFeedHistory>
-		<trackHistory>false</trackHistory>
-	</metadata>
-</createMetadata>
+<metadata xsi:type="CustomField">
+	<fullName>TestObject13__c.Comments__c</fullName>
+	<label>Comments</label>
+	<type>LongTextArea</type>
+	<length>500</length>
+	<inlineHelpText>This field contains help text for this object</inlineHelpText>
+	<description>Add your comments about this object here</description>
+	<visibleLines>30</visibleLines>
+	<required>false</required>
+	<trackFeedHistory>false</trackFeedHistory>
+	<trackHistory>false</trackHistory>
+</metadata>
+
 
 <!-- Sample Response
     <?xml version="1.0" encoding="UTF-8"?>

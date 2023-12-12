@@ -93,12 +93,12 @@ func main() {
 
 	// fmt.Println(operation.ToXML())
 
-	res, err := sfc.CreateMetadata(context.Background(), objectOperation, tok.AccessToken)
-	if err != nil {
-		slog.Debug("err", "err", err)
-	}
+	// res, err := sfc.CreateMetadata(context.Background(), objectOperation, tok.AccessToken)
+	// if err != nil {
+	// 	slog.Debug("err", "err", err)
+	// }
 
-	fmt.Println("Object Operation Result: ", res)
+	// fmt.Println("Object Operation Result: ", res)
 
 	createFieldData, err := os.ReadFile("./metadata/testCreateCustomField.json")
 	if err != nil {
@@ -120,7 +120,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	res2, err := sfc.CreateMetadata(context.Background(), fieldOperation, accessToken)
+	operation := &salesforce.XMLData{
+		XMLName:      "createMetadata",
+		Children:     []salesforce.XMLSchema{objectOperation, fieldOperation},
+		HasEndingTag: true,
+	}
+
+	res2, err := sfc.CreateMetadata(context.Background(), operation, accessToken)
 	if err != nil {
 		slog.Debug("err", "err", err)
 	}

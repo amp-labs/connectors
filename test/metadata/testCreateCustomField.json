@@ -1,96 +1,89 @@
 {
-    "xmlName": "createMetadata",
-    "attributes": null,
+    "xmlName": "metadata",
+    "attributes": [
+        {
+            "key": "xsi:type",
+            "value": "CustomField"
+        }
+    ],
     "children": [
         {
-            "xmlName": "metadata",
-            "attributes": [
-                {
-                    "key": "xsi:type",
-                    "value": "CustomField"
-                }
-            ],
+            "xmlName": "fullName",
+            "attributes": null,
             "children": [
-                {
-                    "xmlName": "fullName",
-                    "attributes": null,
-                    "children": [
-                        "TestObject13__c.Comments__c"
-                    ],
-                    "hasEndingTag": true
-                },
-                {
-                    "xmlName": "label",
-                    "attributes": null,
-                    "children": [
-                        "Comments"
-                    ],
-                    "hasEndingTag": true
-                },
-                {
-                    "xmlName": "type",
-                    "attributes": null,
-                    "children": [
-                        "LongTextArea"
-                    ],
-                    "hasEndingTag": true
-                },
-                {
-                    "xmlName": "length",
-                    "attributes": null,
-                    "children": [
-                        "500"
-                    ],
-                    "hasEndingTag": true
-                },
-                {
-                    "xmlName": "inlineHelpText",
-                    "attributes": null,
-                    "children": [
-                        "This field contains help text for this object"
-                    ],
-                    "hasEndingTag": true
-                },
-                {
-                    "xmlName": "description",
-                    "attributes": null,
-                    "children": [
-                        "Add your comments about this object here"
-                    ],
-                    "hasEndingTag": true
-                },
-                {
-                    "xmlName": "visibleLines",
-                    "attributes": null,
-                    "children": [
-                        "30"
-                    ],
-                    "hasEndingTag": true
-                },
-                {
-                    "xmlName": "required",
-                    "attributes": null,
-                    "children": [
-                        "false"
-                    ],
-                    "hasEndingTag": true
-                },
-                {
-                    "xmlName": "trackFeedHistory",
-                    "attributes": null,
-                    "children": [
-                        "false"
-                    ],
-                    "hasEndingTag": true
-                },
-                {
-                    "xmlName": "trackHistory",
-                    "attributes": null,
-                    "children": [
-                        "false"
-                    ],
-                    "hasEndingTag": true
-                }
+                "TestObject13__c.Comments__c"
+            ],
+            "hasEndingTag": true
+        },
+        {
+            "xmlName": "label",
+            "attributes": null,
+            "children": [
+                "Comments"
+            ],
+            "hasEndingTag": true
+        },
+        {
+            "xmlName": "type",
+            "attributes": null,
+            "children": [
+                "LongTextArea"
+            ],
+            "hasEndingTag": true
+        },
+        {
+            "xmlName": "length",
+            "attributes": null,
+            "children": [
+                "500"
+            ],
+            "hasEndingTag": true
+        },
+        {
+            "xmlName": "inlineHelpText",
+            "attributes": null,
+            "children": [
+                "This field contains help text for this object"
+            ],
+            "hasEndingTag": true
+        },
+        {
+            "xmlName": "description",
+            "attributes": null,
+            "children": [
+                "Add your comments about this object here"
+            ],
+            "hasEndingTag": true
+        },
+        {
+            "xmlName": "visibleLines",
+            "attributes": null,
+            "children": [
+                "30"
+            ],
+            "hasEndingTag": true
+        },
+        {
+            "xmlName": "required",
+            "attributes": null,
+            "children": [
+                "false"
+            ],
+            "hasEndingTag": true
+        },
+        {
+            "xmlName": "trackFeedHistory",
+            "attributes": null,
+            "children": [
+                "false"
+            ],
+            "hasEndingTag": true
+        },
+        {
+            "xmlName": "trackHistory",
+            "attributes": null,
+            "children": [
+                "false"
             ],
             "hasEndingTag": true
         }

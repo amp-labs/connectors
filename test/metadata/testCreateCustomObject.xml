@@ -1,16 +1,14 @@
-<createMetadata>
-	<metadata xsi:type="CustomObject">
-		<fullName>TestObject13__c</fullName>
-		<label>Test Object 13</label>
-		<pluralLabel>Test Objects 13</pluralLabel>
-		<nameField>
-			<type>Text</type>
-			<label>Test Object Name</label>
-		</nameField>
-		<deploymentStatus>Deployed</deploymentStatus>
-		<sharingModel>ReadWrite</sharingModel>
-	</metadata>
-</createMetadata>
+<metadata xsi:type="CustomObject">
+	<fullName>TestObject13__c</fullName>
+	<label>Test Object 13</label>
+	<pluralLabel>Test Objects 13</pluralLabel>
+	<nameField>
+		<type>Text</type>
+		<label>Test Object Name</label>
+	</nameField>
+	<deploymentStatus>Deployed</deploymentStatus>
+	<sharingModel>ReadWrite</sharingModel>
+</metadata>
 
 <!-- Sample Response
 
@@ -29,4 +27,3 @@
     </soapenv:Envelope>
 
  -->
- 
