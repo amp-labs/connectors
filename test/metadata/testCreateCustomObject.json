@@ -11,7 +11,7 @@
             "xmlName": "fullName",
             "attributes": null,
             "children": [
-                "TestObject13__c"
+                "TestObject15__c"
             ],
             "selfClosing": false
         },
@@ -19,7 +19,7 @@
             "xmlName": "label",
             "attributes": null,
             "children": [
-                "Test Object 13"
+                "Test Object 15"
             ],
             "selfClosing": false
         },
@@ -27,7 +27,7 @@
             "xmlName": "pluralLabel",
             "attributes": null,
             "children": [
-                "Test Objects 13"
+                "Test Objects 15"
             ],
             "selfClosing": false
         },

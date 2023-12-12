@@ -115,7 +115,7 @@ func main() {
 
 	var fieldOperation *salesforce.XMLData
 
-	if err := json.Unmarshal(createObjectData, &fieldOperation); err != nil {
+	if err := json.Unmarshal(createFieldData, &fieldOperation); err != nil {
 		slog.Error("Error marshalling testOperation.json", "error", err)
 		os.Exit(1)
 	}
