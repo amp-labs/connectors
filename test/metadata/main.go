@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors"
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/salesforce"
 	"golang.org/x/oauth2"
 )
@@ -56,7 +57,9 @@ func main() {
 	ctx := context.Background()
 
 	sfc, err := connectors.Salesforce(
-		salesforce.WithClient(ctx, http.DefaultClient, cfg, tok, salesforce.GetTokenUpdater(tok)),
+		salesforce.WithClient(ctx, http.DefaultClient, cfg, tok,
+			salesforce.GetTokenUpdater(tok), // this is necessary to update token
+		),
 		salesforce.WithSubdomain(salesforceSubdomain),
 	)
 	if err != nil {
@@ -69,8 +72,6 @@ func main() {
 		_ = sfc.Close()
 	}()
 
-	// operation := getOperationDefinition()
-
 	createObjectData, err := os.ReadFile("./metadata/testCreateCustomObject.json")
 	if err != nil {
 		slog.Error("Error opening testOperation.json", "error", err)
@@ -82,23 +83,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Println(string(createObjectData))
-
-	var objectOperation *salesforce.XMLData
+	var objectOperation *common.XMLData
 
 	if err := json.Unmarshal(createObjectData, &objectOperation); err != nil {
 		slog.Error("Error marshalling testOperation.json", "error", err)
 		os.Exit(1)
 	}
-
-	// fmt.Println(operation.ToXML())
-
-	// res, err := sfc.CreateMetadata(context.Background(), objectOperation, tok.AccessToken)
-	// if err != nil {
-	// 	slog.Debug("err", "err", err)
-	// }
-
-	// fmt.Println("Object Operation Result: ", res)
 
 	createFieldData, err := os.ReadFile("./metadata/testCreateCustomField.json")
 	if err != nil {
@@ -111,174 +101,163 @@ func main() {
 		os.Exit(1)
 	}
 
-	// fmt.Println(string(createFieldData))
-
-	var fieldOperation *salesforce.XMLData
+	var fieldOperation *common.XMLData
 
 	if err := json.Unmarshal(createFieldData, &fieldOperation); err != nil {
 		slog.Error("Error marshalling testOperation.json", "error", err)
 		os.Exit(1)
 	}
 
-	operation := &salesforce.XMLData{
+	operation := &common.XMLData{
 		XMLName:     "createMetadata",
-		Children:    []salesforce.XMLSchema{objectOperation, fieldOperation},
+		Children:    []common.XMLSchema{objectOperation, fieldOperation},
 		SelfClosing: false,
 	}
 
-	res2, err := sfc.CreateMetadata(context.Background(), operation, accessToken)
+	res, err := sfc.CreateMetadata(context.Background(), operation, tok)
 	if err != nil {
 		slog.Debug("err", "err", err)
 	}
 
-	fmt.Println("Field Operation Result", res2)
+	fmt.Println("Field Operation Result", res)
 }
 
-func getCreateObjectOperationDefinition() *salesforce.XMLData {
-	fieldType := &salesforce.XMLData{
+func getCreateObjectOperationDefinition() *common.XMLData {
+	fieldType := &common.XMLData{
 		XMLName:     "type",
-		Children:    []salesforce.XMLSchema{salesforce.XMLString("Text")},
+		Children:    []common.XMLSchema{common.XMLString("Text")},
 		SelfClosing: false,
 	}
-	nameFieldLabel := &salesforce.XMLData{
+	nameFieldLabel := &common.XMLData{
 		XMLName:     "label",
-		Children:    []salesforce.XMLSchema{salesforce.XMLString("Test Object Name")},
+		Children:    []common.XMLSchema{common.XMLString("Test Object Name")},
 		SelfClosing: false,
 	}
 
-	nameField := &salesforce.XMLData{
+	nameField := &common.XMLData{
 		XMLName:     "nameField",
-		Children:    []salesforce.XMLSchema{fieldType, nameFieldLabel},
+		Children:    []common.XMLSchema{fieldType, nameFieldLabel},
 		SelfClosing: false,
 	}
 
-	deploymentStatus := &salesforce.XMLData{
+	deploymentStatus := &common.XMLData{
 		XMLName:     "deploymentStatus",
-		Children:    []salesforce.XMLSchema{salesforce.XMLString("Deployed")},
+		Children:    []common.XMLSchema{common.XMLString("Deployed")},
 		SelfClosing: false,
 	}
 
-	sharingModel := &salesforce.XMLData{
+	sharingModel := &common.XMLData{
 		XMLName:     "sharingModel",
-		Children:    []salesforce.XMLSchema{salesforce.XMLString("ReadWrite")},
+		Children:    []common.XMLSchema{common.XMLString("ReadWrite")},
 		SelfClosing: false,
 	}
 
-	fullName := &salesforce.XMLData{
+	fullName := &common.XMLData{
 		XMLName:     "fullName",
-		Children:    []salesforce.XMLSchema{salesforce.XMLString("TestObject13__c")},
+		Children:    []common.XMLSchema{common.XMLString("TestObject13__c")},
 		SelfClosing: false,
 	}
 
-	ObjecLabel := &salesforce.XMLData{
+	ObjecLabel := &common.XMLData{
 		XMLName:     "label",
-		Children:    []salesforce.XMLSchema{salesforce.XMLString("Test Object 13")},
+		Children:    []common.XMLSchema{common.XMLString("Test Object 13")},
 		SelfClosing: false,
 	}
 
-	pluralLabel := &salesforce.XMLData{
+	pluralLabel := &common.XMLData{
 		XMLName:     "pluralLabel",
-		Children:    []salesforce.XMLSchema{salesforce.XMLString("Test Objects 13")},
+		Children:    []common.XMLSchema{common.XMLString("Test Objects 13")},
 		SelfClosing: false,
 	}
 
-	metadata := &salesforce.XMLData{
+	metadata := &common.XMLData{
 		XMLName:     "metadata",
-		Attributes:  []*salesforce.XMLAttributes{{Key: "xsi:type", Value: "CustomObject"}},
-		Children:    []salesforce.XMLSchema{fullName, ObjecLabel, pluralLabel, nameField, deploymentStatus, sharingModel},
+		Attributes:  []*common.XMLAttributes{{Key: "xsi:type", Value: "CustomObject"}},
+		Children:    []common.XMLSchema{fullName, ObjecLabel, pluralLabel, nameField, deploymentStatus, sharingModel},
 		SelfClosing: false,
 	}
 
-	operation := &salesforce.XMLData{
+	operation := &common.XMLData{
 		XMLName:     "createMetadata",
-		Children:    []salesforce.XMLSchema{metadata},
+		Children:    []common.XMLSchema{metadata},
 		SelfClosing: false,
 	}
-
-	fmt.Println(operation.ToXML())
-
-	jsonData, err := json.MarshalIndent(operation, "", "  ")
-	if err != nil {
-		slog.Error("Error marshalling operation", "error", err)
-	}
-
-	fmt.Println(string(jsonData))
 
 	return operation
 }
 
-func getCreateFieldOperation() *salesforce.XMLData {
-	metadata := &salesforce.XMLData{
+func getCreateFieldOperation() *common.XMLData {
+	metadata := &common.XMLData{
 		XMLName:    "metadata",
-		Attributes: []*salesforce.XMLAttributes{{Key: "xsi:type", Value: "CustomField"}},
-		Children: []salesforce.XMLSchema{
-			&salesforce.XMLData{
+		Attributes: []*common.XMLAttributes{{Key: "xsi:type", Value: "CustomField"}},
+		Children: []common.XMLSchema{
+			&common.XMLData{
 				XMLName: "fullName",
-				Children: []salesforce.XMLSchema{
-					salesforce.XMLString("TestObject13__c.Comments__c"),
+				Children: []common.XMLSchema{
+					common.XMLString("TestObject13__c.Comments__c"),
 				},
 				SelfClosing: false,
 			},
-			&salesforce.XMLData{
+			&common.XMLData{
 				XMLName: "label",
-				Children: []salesforce.XMLSchema{
-					salesforce.XMLString("Comments"),
+				Children: []common.XMLSchema{
+					common.XMLString("Comments"),
 				},
 				SelfClosing: false,
 			},
-			&salesforce.XMLData{
+			&common.XMLData{
 				XMLName: "type",
-				Children: []salesforce.XMLSchema{
-					salesforce.XMLString("LongTextArea"),
+				Children: []common.XMLSchema{
+					common.XMLString("LongTextArea"),
 				},
 				SelfClosing: false,
 			},
-			&salesforce.XMLData{
+			&common.XMLData{
 				XMLName: "length",
-				Children: []salesforce.XMLSchema{
-					salesforce.XMLString("500"),
+				Children: []common.XMLSchema{
+					common.XMLString("500"),
 				},
 				SelfClosing: false,
 			},
-			&salesforce.XMLData{
+			&common.XMLData{
 				XMLName: "inlineHelpText",
-				Children: []salesforce.XMLSchema{
-					salesforce.XMLString("This field contains help text for this object"),
+				Children: []common.XMLSchema{
+					common.XMLString("This field contains help text for this object"),
 				},
 				SelfClosing: false,
 			},
-			&salesforce.XMLData{
+			&common.XMLData{
 				XMLName: "description",
-				Children: []salesforce.XMLSchema{
-					salesforce.XMLString("Add your comments about this object here"),
+				Children: []common.XMLSchema{
+					common.XMLString("Add your comments about this object here"),
 				},
 				SelfClosing: false,
 			},
-			&salesforce.XMLData{
+			&common.XMLData{
 				XMLName: "visibleLines",
-				Children: []salesforce.XMLSchema{
-					salesforce.XMLString("30"),
+				Children: []common.XMLSchema{
+					common.XMLString("30"),
 				},
 				SelfClosing: false,
 			},
-			&salesforce.XMLData{
+			&common.XMLData{
 				XMLName: "required",
-				Children: []salesforce.XMLSchema{
-					salesforce.XMLString("false"),
+				Children: []common.XMLSchema{
+					common.XMLString("false"),
 				},
 				SelfClosing: false,
 			},
-			&salesforce.XMLData{
+			&common.XMLData{
 				XMLName: "trackFeedHistory",
-				Children: []salesforce.XMLSchema{
-					salesforce.XMLString("false"),
+				Children: []common.XMLSchema{
+					common.XMLString("false"),
 				},
 				SelfClosing: false,
 			},
-			&salesforce.XMLData{
+			&common.XMLData{
 				XMLName: "trackHistory",
-				Children: []salesforce.XMLSchema{
-					salesforce.XMLString("false"),
+				Children: []common.XMLSchema{
+					common.XMLString("false"),
 				},
 				SelfClosing: false,
 			},
@@ -286,20 +265,11 @@ func getCreateFieldOperation() *salesforce.XMLData {
 		SelfClosing: false,
 	}
 
-	operation := &salesforce.XMLData{
+	operation := &common.XMLData{
 		XMLName:     "createMetadata",
-		Children:    []salesforce.XMLSchema{metadata},
+		Children:    []common.XMLSchema{metadata},
 		SelfClosing: false,
 	}
-
-	fmt.Println(operation.ToXML())
-
-	jsonData, err := json.MarshalIndent(operation, "", "  ")
-	if err != nil {
-		slog.Error("Error marshalling operation", "error", err)
-	}
-
-	fmt.Println(string(jsonData))
 
 	return operation
 }

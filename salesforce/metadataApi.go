@@ -3,7 +3,7 @@ package salesforce
 import (
 	"bytes"
 	"context"
-	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log/slog"
@@ -15,164 +15,83 @@ import (
 	"golang.org/x/oauth2"
 )
 
-const (
-	versionPrefix             = "v"
-	openParenthesis           = "<"
-	closeParenthesis          = ">"
-	closeWithSlashParenthesis = "/>"
+var (
+	ErrCreateMetadata  = fmt.Errorf("error in CreateMetadata")
+	ErrCreatingRequest = fmt.Errorf("error in creating request")
 )
 
-var ErrCreateMetadata = fmt.Errorf("error in CreateMetadata")
-
-type XMLSchema interface {
-	ToXML() string
-}
-
-type XMLAttributes struct {
-	Key   string `json:"key"`
-	Value string `json:"value"`
-}
-
-func (x *XMLAttributes) ToXML() string {
-	return fmt.Sprintf(`%s="%s"`, x.Key, x.Value)
-}
-
-type XMLString string
-
-func (x XMLString) ToXML() string {
-	return string(x)
-}
-
-type XMLData struct {
-	XMLName     string           `json:"xmlName"`
-	Attributes  []*XMLAttributes `json:"attributes"`
-	Children    []XMLSchema      `json:"children"`
-	SelfClosing bool             `json:"selfClosing"`
-}
-
-//nolint:cyclop
-func (x *XMLData) UnmarshalJSON(b []byte) error {
-	data := make(map[string]json.RawMessage)
-	if err := json.Unmarshal(b, &data); err != nil {
-		return err
-	}
-
-	if err := json.Unmarshal(data["xmlName"], &x.XMLName); err != nil {
-		return err
-	}
-
-	if err := json.Unmarshal(data["attributes"], &x.Attributes); err != nil {
-		return err
-	}
-
-	children := []interface{}{}
-	if err := json.Unmarshal(data["children"], &children); err != nil {
-		return err
-	}
-
-	for _, child := range children {
-		if childValue, ok := child.(string); ok {
-			x.Children = append(x.Children, XMLString(childValue))
-
-			continue
-		}
-
-		if childValue, ok := child.(map[string]interface{}); ok {
-			childData, err := json.Marshal(childValue)
-			if err != nil {
-				return err
-			}
-
-			childXML := &XMLData{}
-			if err := json.Unmarshal(childData, childXML); err != nil {
-				return err
-			}
-
-			x.Children = append(x.Children, childXML)
-
-			continue
-		}
-	}
-
-	if err := json.Unmarshal(data["selfClosing"], &x.SelfClosing); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (x *XMLData) ToXML() string {
-	start := x.startTag()
-	if x.SelfClosing {
-		return start
-	}
-
-	end := x.endTag()
-
-	chilren := []string{}
-	for _, child := range x.Children {
-		chilren = append(chilren, child.ToXML())
-	}
-
-	return fmt.Sprintf("%s%s%s", start, strings.Join(chilren, ""), end)
-}
-
-func (x *XMLData) startTag() string {
-	attributes := make([]string, len(x.Attributes))
-	for i, attr := range x.Attributes {
-		attributes[i] = attr.ToXML()
-	}
-
-	attrStr := strings.Join(attributes, " ")
-
-	var close string //nolint:predeclared
-
-	if x.SelfClosing {
-		close = closeWithSlashParenthesis
-	} else {
-		close = closeParenthesis
-	}
-
-	if attrStr == "" {
-		return fmt.Sprintf("%s%s%s", openParenthesis, x.XMLName, close)
-	}
-
-	return fmt.Sprintf("%s%s %s%s", openParenthesis, x.XMLName, attrStr, close)
-}
-
-func (x *XMLData) endTag() string {
-	return fmt.Sprintf("</%s>", x.XMLName)
-}
-
-func (c *Connector) CreateMetadata(ctx context.Context, operation *XMLData, accessToken string) (string, error) {
-	data := preparePayload(operation, accessToken)
-
-	endPointURL, err := url.JoinPath(c.Client.Base, "services/Soap/m/"+removePrefix(c.APIVersion(), versionPrefix))
+func (c *Connector) CreateMetadata(
+	ctx context.Context,
+	metaDefinition *common.XMLData,
+	tok *oauth2.Token,
+) (string, error) {
+	req, err := c.prepareXMLRequest(ctx, metaDefinition, tok)
 	if err != nil {
 		return "", err
 	}
 
-	client := c.Client.Client
+	res, body, err := c.makeRequest(req) //nolint:bodyclose
+	// below is a workaround to refresh token if it is expired
+	// normally oauth2 library should handle this
+	// but SOAP API does not take token in header
+	// but takes it in body
+	// So in case of 500 error and INVALID_SESSION_ID in body
+	// we know it is session expired, and automatically refresh the token
+	// tok object will be updated with new token automatically after failing first call
+	// we simply make another call with updated token.
+	if res.StatusCode == 500 && strings.Contains(string(body), "INVALID_SESSION_ID") {
+		req, err := c.prepareXMLRequest(ctx, metaDefinition, tok)
+		if err != nil {
+			return "", errors.Join(ErrCreateMetadata, err)
+		}
+
+		res, body, err = c.makeRequest(req)
+		if err != nil {
+			return string(body), fmt.Errorf("%w: %s", ErrCreateMetadata, string(body))
+		}
+	}
+
+	if res.StatusCode < 200 || res.StatusCode > 299 {
+		return "", fmt.Errorf("%w: %s", ErrCreateMetadata, string(body))
+	}
+
+	return string(body), nil
+}
+
+func (c *Connector) prepareXMLRequest(
+	ctx context.Context,
+	operation *common.XMLData,
+	tok *oauth2.Token,
+) (*http.Request, error) {
+	data := preparePayload(operation, tok.AccessToken)
+
+	endPointURL, err := url.JoinPath(c.Client.Base, "services/Soap/m/"+c.APIVersionSOAP())
+	if err != nil {
+		return nil, errors.Join(ErrCreatingRequest, err)
+	}
 
 	byteData := []byte(data)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, endPointURL, bytes.NewBuffer(byteData))
 	if err != nil {
-		return "", err
+		return nil, errors.Join(ErrCreatingRequest, err)
 	}
 
+	addSOAPHeaders(req)
 	req.ContentLength = int64(len(byteData))
 
-	addSOAPAPIHeaders(req)
+	return req, nil
+}
 
-	res, err := client.Do(req)
+func (c *Connector) makeRequest(req *http.Request) (*http.Response, []byte, error) {
+	res, err := c.Client.Client.Do(req)
 	if err != nil {
-		return "", err
+		return res, nil, err
 	}
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		return "", err
+		return res, nil, err
 	}
 
 	defer func() {
@@ -183,11 +102,7 @@ func (c *Connector) CreateMetadata(ctx context.Context, operation *XMLData, acce
 		}
 	}()
 
-	if res.StatusCode < 200 || res.StatusCode > 299 {
-		return "", fmt.Errorf("%w: %s", ErrCreateMetadata, string(body))
-	}
-
-	return string(body), nil
+	return res, body, nil
 }
 
 func removePrefix(s string, prefix string) string {
@@ -198,8 +113,11 @@ func removePrefix(s string, prefix string) string {
 	return s[len(prefix):]
 }
 
-func addSOAPAPIHeaders(req *http.Request) {
+func addSOAPHeaders(req *http.Request) {
 	req.Header.Add("Content-Type", "text/xml")
+	// SOAP API definition specifies taht SOAPAction header should be empty string
+	// but if we set to "", API will error
+	// so we use "''" instead as workaround
 	req.Header.Set("SOAPAction", "''")
 }
 
@@ -242,11 +160,11 @@ func getBody(items []string) string {
 		</soapenv:Body>`, strings.Join(items, ""))
 }
 
-func formOperationXML(oper *XMLData) string {
+func formOperationXML(oper *common.XMLData) string {
 	return oper.ToXML()
 }
 
-func preparePayload(oper *XMLData, accessToken string) string {
+func preparePayload(oper *common.XMLData, accessToken string) string {
 	metadata := formOperationXML(oper)
 	header := getHeader([]string{getSessionHeader(accessToken)})
 	body := getBody([]string{metadata})
@@ -258,6 +176,10 @@ func preparePayload(oper *XMLData, accessToken string) string {
 func GetTokenUpdater(tok *oauth2.Token) common.OAuthOption {
 	// Whenever a token is updated, we want to persist the new access+refresh token
 	return common.WithTokenUpdated(func(oldToken, newToken *oauth2.Token) error {
+		// this triggeres first API call to metadata API
+		// since metadata API doesn't take access token in header
+		// we need to update the token manually
+		// then make the call again
 		tok.AccessToken = newToken.AccessToken
 		tok.RefreshToken = newToken.RefreshToken
 		tok.TokenType = newToken.TokenType
