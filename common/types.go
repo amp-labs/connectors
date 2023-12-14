@@ -131,11 +131,11 @@ type WriteResult struct {
 	// ObjectId is the ID of the written record.
 	ObjectId string `json:"objectid,omitempty"`
 	// Errors is list of error objects returned by the API.
-	Errors []interface{} `json:"errors"`
+	Errors []interface{} `json:"errors,omitempty"`
 	// Success is true if write succeeded.
 	Success bool `json:"success,omitempty"`
 	// Data is a JSON node containing data about the properties that were updated.
-	Data map[string]interface{} `json:"data"` // optional
+	Data map[string]interface{} `json:"data,omitempty"` // optional
 }
 
 // NewHTTPStatusError creates a new error with the given HTTP status.
