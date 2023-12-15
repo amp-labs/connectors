@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"mime"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
@@ -51,7 +52,12 @@ type ErrLinks struct {
 }
 
 func (c *Connector) interpretError(res *http.Response, body []byte) error {
-	if res.Header.Get("Content-Type") == "application/json;charset=utf-8" {
+	mediaType, _, err := mime.ParseMediaType(res.Header.Get("Content-Type"))
+	if err != nil {
+		return fmt.Errorf("mime.ParseMediaType failed: %w", err)
+	}
+
+	if mediaType == "application/json" {
 		return c.interpretJSONError(res, body)
 	}
 
