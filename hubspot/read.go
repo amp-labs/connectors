@@ -28,8 +28,8 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	if requiresFiltering(config) {
 		searchParams := SearchParams{
 			ObjectName:   config.ObjectName,
-			FilterGroups: buildLastModifiedFilterGroup(config.Since),
-			SortBy:       buildSort(ObjectFieldHsObjectId, SortDirectionAsc),
+			FilterGroups: BuildLastModifiedFilterGroup(config.Since),
+			SortBy:       BuildSort(ObjectFieldHsObjectId, SortDirectionAsc),
 			NextPage:     config.NextPage,
 			Fields:       config.Fields,
 		}

@@ -35,6 +35,29 @@ func (c *Connector) Search(ctx context.Context, config SearchParams) (*common.Re
 	)
 }
 
+func BuildLastModifiedFilterGroup(since time.Time) []FilterGroup {
+	return []FilterGroup{
+		{
+			Filters: []Filter{
+				{
+					FieldName: string(ObjectFieldLastModifiedDate),
+					Operator:  FilterOperatorTypeGTE,
+					Value:     since.Format(time.RFC3339),
+				},
+			},
+		},
+	}
+}
+
+func BuildSort(field ObjectField, dir SortDirection) []SortBy {
+	return []SortBy{
+		{
+			PropertyName: string(field),
+			Direction:    dir,
+		},
+	}
+}
+
 func makeFilterBody(config SearchParams) map[string]any {
 	filterBody := map[string]any{
 		"limit": DefaultPageSize,
@@ -57,27 +80,4 @@ func makeFilterBody(config SearchParams) map[string]any {
 	}
 
 	return filterBody
-}
-
-func buildLastModifiedFilterGroup(since time.Time) []FilterGroup {
-	return []FilterGroup{
-		{
-			Filters: []Filter{
-				{
-					FieldName: string(ObjectFieldLastModifiedDate),
-					Operator:  FilterOperatorTypeGTE,
-					Value:     since.Format(time.RFC3339),
-				},
-			},
-		},
-	}
-}
-
-func buildSort(field ObjectField, dir SortDirection) []SortBy {
-	return []SortBy{
-		{
-			PropertyName: string(field),
-			Direction:    dir,
-		},
-	}
 }
