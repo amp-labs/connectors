@@ -27,11 +27,21 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	// until the ID of the last record that was successfully fetched.
 	if requiresFiltering(config) {
 		searchParams := SearchParams{
-			ObjectName:   config.ObjectName,
-			FilterGroups: BuildLastModifiedFilterGroup(config.Since),
-			SortBy:       BuildSort(ObjectFieldHsObjectId, SortDirectionAsc),
-			NextPage:     config.NextPage,
-			Fields:       config.Fields,
+			ObjectName: config.ObjectName,
+			FilterGroups: []FilterGroup{
+				{
+					Filters: []Filter{
+						BuildLastModifiedFilterGroup(config.Since),
+						// Add more filters to AND them together
+					},
+					// Add more filter groups to OR them together
+				},
+			},
+			SortBy: []SortBy{
+				BuildSort(ObjectFieldHsObjectId, SortDirectionAsc),
+			},
+			NextPage: config.NextPage,
+			Fields:   config.Fields,
 		}
 
 		return c.Search(ctx, searchParams)

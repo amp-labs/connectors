@@ -36,42 +36,28 @@ func (c *Connector) Search(ctx context.Context, config SearchParams) (*common.Re
 }
 
 // BuildLastModifiedFilterGroup filters records modified since the given time.
-func BuildLastModifiedFilterGroup(since time.Time) []FilterGroup {
-	return []FilterGroup{
-		{
-			Filters: []Filter{
-				{
-					FieldName: string(ObjectFieldLastModifiedDate),
-					Operator:  FilterOperatorTypeGTE,
-					Value:     since.Format(time.RFC3339),
-				},
-			},
-		},
+func BuildLastModifiedFilterGroup(since time.Time) Filter {
+	return Filter{
+		FieldName: string(ObjectFieldLastModifiedDate),
+		Operator:  FilterOperatorTypeGTE,
+		Value:     since.Format(time.RFC3339),
 	}
 }
 
 // BuildIdFilterGroup filters records greater than the given id.
-func BuildIdFilterGroup(id []string) []FilterGroup {
-	return []FilterGroup{
-		{
-			Filters: []Filter{
-				{
-					FieldName: string(ObjectFieldHsObjectId),
-					Operator:  FilterOperatorTypeGT,
-					Value:     id,
-				},
-			},
-		},
+func BuildIdFilterGroup(id string) Filter {
+	return Filter{
+		FieldName: string(ObjectFieldHsObjectId),
+		Operator:  FilterOperatorTypeGT,
+		Value:     id,
 	}
 }
 
 // BuildSort builds a sort by clause for the given field and direction.
-func BuildSort(field ObjectField, dir SortDirection) []SortBy {
-	return []SortBy{
-		{
-			PropertyName: string(field),
-			Direction:    dir,
-		},
+func BuildSort(field ObjectField, dir SortDirection) SortBy {
+	return SortBy{
+		PropertyName: string(field),
+		Direction:    dir,
 	}
 }
 
