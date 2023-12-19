@@ -16,8 +16,9 @@ import (
 )
 
 var (
-	ErrCreateMetadata  = fmt.Errorf("error in CreateMetadata")
-	ErrCreatingRequest = fmt.Errorf("error in creating request")
+	ErrCreateMetadata  = errors.New("error in CreateMetadata")
+	ErrCreatingRequest = errors.New("error in creating request")
+	ErrBadRequest      = errors.New("bad request")
 )
 
 func (c *Connector) CreateMetadata(
@@ -25,6 +26,10 @@ func (c *Connector) CreateMetadata(
 	metaDefinition *common.XMLData,
 	tok *oauth2.Token,
 ) (string, error) {
+	if err := metaDefinition.Validate(); err != nil {
+		return "", errors.Join(ErrBadRequest, err)
+	}
+
 	req, err := c.prepareXMLRequest(ctx, metaDefinition, tok)
 	if err != nil {
 		return "", err
@@ -44,11 +49,12 @@ func (c *Connector) CreateMetadata(
 		if err != nil {
 			return "", errors.Join(ErrCreateMetadata, err)
 		}
-
+		//nolint:bodyclose
 		res, body, err = c.makeRequest(req)
-		if err != nil {
-			return string(body), fmt.Errorf("%w: %s", ErrCreateMetadata, string(body))
-		}
+	}
+
+	if err != nil {
+		return "", fmt.Errorf("%w: %s", errors.Join(ErrCreateMetadata, err), string(body))
 	}
 
 	if res.StatusCode < 200 || res.StatusCode > 299 {
@@ -105,17 +111,9 @@ func (c *Connector) makeRequest(req *http.Request) (*http.Response, []byte, erro
 	return res, body, nil
 }
 
-func removePrefix(s string, prefix string) string {
-	if !strings.HasPrefix(s, prefix) {
-		return s
-	}
-
-	return s[len(prefix):]
-}
-
 func addSOAPHeaders(req *http.Request) {
 	req.Header.Add("Content-Type", "text/xml")
-	// SOAP API definition specifies taht SOAPAction header should be empty string
+	// SOAP API definition specifies that SOAPAction header should be empty string
 	// but if we set to "", API will error
 	// so we use "''" instead as workaround
 	req.Header.Set("SOAPAction", "''")
@@ -161,7 +159,7 @@ func getBody(items []string) string {
 }
 
 func formOperationXML(oper *common.XMLData) string {
-	return oper.ToXML()
+	return oper.String()
 }
 
 func preparePayload(oper *common.XMLData, accessToken string) string {
