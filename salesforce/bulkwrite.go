@@ -2,7 +2,6 @@ package salesforce
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -10,7 +9,6 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/spyzhov/ajson"
 )
 
 // BulkWriteParams defines how we are writing data to a SaaS API.
@@ -99,7 +97,7 @@ func (c *Connector) BulkWrite( //nolint:funlen,cyclop
 		return nil, fmt.Errorf("createJob failed: %w", err)
 	}
 
-	resObject, err := res.GetObject()
+	resObject, err := res.Body.GetObject()
 	if err != nil {
 		return nil, fmt.Errorf("parsing result of createJob failed: %w", errors.Join(err, common.ErrParseError))
 	}
@@ -140,7 +138,7 @@ func (c *Connector) BulkWrite( //nolint:funlen,cyclop
 		return nil, fmt.Errorf("completeUpload failed: %w", err)
 	}
 
-	dataObject, err := data.GetObject()
+	dataObject, err := data.Body.GetObject()
 	if err != nil {
 		return nil, fmt.Errorf("parsing result of completeUpload failed: %w", errors.Join(err, common.ErrParseError))
 	}
@@ -182,7 +180,7 @@ func joinURLPath(baseURL string, paths ...string) (string, error) {
 	return location, nil
 }
 
-func (c *Connector) createJob(ctx context.Context, config BulkWriteParams) (*ajson.Node, error) {
+func (c *Connector) createJob(ctx context.Context, config BulkWriteParams) (*common.JSONHTTPResponse, error) {
 	location, err := joinURLPath(c.BaseURL, "jobs/ingest")
 	if err != nil {
 		return nil, err
@@ -216,7 +214,7 @@ func (c *Connector) uploadCSV(ctx context.Context, jobId string, config BulkWrit
 	return c.putCSV(ctx, location, data)
 }
 
-func (c *Connector) completeUpload(ctx context.Context, jobId string) (*ajson.Node, error) {
+func (c *Connector) completeUpload(ctx context.Context, jobId string) (*common.JSONHTTPResponse, error) {
 	updateLoadCompleteBody := map[string]interface{}{
 		"state": "UploadComplete",
 	}
@@ -235,18 +233,13 @@ func (c *Connector) GetJobInfo(ctx context.Context, jobId string) (*GetJobInfoRe
 		return nil, err
 	}
 
-	node, err := c.get(ctx, location)
+	rsp, err := c.get(ctx, location)
 	if err != nil {
 		return nil, fmt.Errorf("getGetInfo failed: %w", errors.Join(err, common.ErrRequestFailed))
 	}
 
-	data, err := ajson.Marshal(node)
+	info, err := common.UnmarshalJSON[GetJobInfoResult](rsp)
 	if err != nil {
-		return nil, fmt.Errorf("marshalling result of getGetInfo failed: %w", errors.Join(err, common.ErrParseError))
-	}
-
-	var info *GetJobInfoResult
-	if err := json.Unmarshal(data, &info); err != nil {
 		return nil, fmt.Errorf("unmarshalling result of getGetInfo failed: %w", errors.Join(err, common.ErrParseError))
 	}
 

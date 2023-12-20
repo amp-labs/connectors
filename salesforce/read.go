@@ -7,15 +7,14 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/spyzhov/ajson"
 )
 
 // Read reads data from Salesforce. By default it will read all rows (backfill). However, if Since is set,
 // it will read only rows that have been updated since the specified time.
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
 	var (
-		data *ajson.Node
-		err  error
+		rsp *common.JSONHTTPResponse
+		err error
 	)
 
 	if len(config.NextPage) > 0 {
@@ -26,7 +25,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 			return nil, joinErr
 		}
 
-		data, err = c.get(ctx, location)
+		rsp, err = c.get(ctx, location)
 	} else {
 		// If NextPage is not set, then we're reading the first page of results.
 		// We need to construct the SOQL query and then make the request.
@@ -44,7 +43,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 			return nil, joinErr
 		}
 
-		data, err = c.get(ctx, location+"?"+qp.Encode())
+		rsp, err = c.get(ctx, location+"?"+qp.Encode())
 	}
 
 	if err != nil {
@@ -52,7 +51,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	}
 
 	return common.ParseResult(
-		data,
+		rsp,
 		getTotalSize,
 		getRecords,
 		getNextRecordsURL,
