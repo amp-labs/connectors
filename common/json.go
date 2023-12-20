@@ -30,11 +30,20 @@ type JSONHTTPClient struct {
 }
 
 type JSONHTTPResponse struct {
+	// bodyBytes is the raw response body. It's not JSON-unmarshalled.
+	// We keep it around so that we can unmarshal it into a struct later,
+	// if needed (via the UnmarshalJSON function).
 	bodyBytes []byte
 
-	Code    int
+	// Code is the HTTP status code of the response.
+	Code int
+
+	// Headers are the HTTP headers of the response.
 	Headers http.Header
-	Body    *ajson.Node
+
+	// Body is the JSON-unmarshalled response body. Aside from the fact
+	// that it's JSON-unmarshalled, it's identical to bodyBytes.
+	Body *ajson.Node
 }
 
 func UnmarshalJSON[T any](rsp *JSONHTTPResponse) (*T, error) {
