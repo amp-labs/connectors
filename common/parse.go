@@ -14,24 +14,24 @@ import (
 // The marshalFunc is used to structure the data into an array of ReadResultRows.
 // The fields are used to populate ReadResultRow.Fields.
 func ParseResult(
-	data *ajson.Node,
+	resp *JSONHTTPResponse,
 	sizeFunc func(*ajson.Node) (int64, error),
 	recordsFunc func(*ajson.Node) ([]map[string]any, error),
 	nextPageFunc func(*ajson.Node) (string, error),
 	marshalFunc func([]map[string]any, []string) ([]ReadResultRow, error),
 	fields []string,
 ) (*ReadResult, error) {
-	totalSize, err := sizeFunc(data)
+	totalSize, err := sizeFunc(resp.Body)
 	if err != nil {
 		return nil, err
 	}
 
-	records, err := recordsFunc(data)
+	records, err := recordsFunc(resp.Body)
 	if err != nil {
 		return nil, err
 	}
 
-	nextPage, err := nextPageFunc(data)
+	nextPage, err := nextPageFunc(resp.Body)
 	if err != nil {
 		return nil, err
 	}

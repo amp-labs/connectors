@@ -29,6 +29,24 @@ type JSONHTTPClient struct {
 	ErrorHandler ErrorHandler            // optional error handler. If not set, then the default error handler is used.
 }
 
+type JSONHTTPResponse struct {
+	bodyBytes []byte
+
+	Code    int
+	Headers http.Header
+	Body    *ajson.Node
+}
+
+func UnmarshalJSON[T any](rsp *JSONHTTPResponse) (*T, error) {
+	var data T
+
+	if err := json.Unmarshal(rsp.bodyBytes, &data); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal response body into JSON: %w", err)
+	}
+
+	return &data, nil
+}
+
 func (j *JSONHTTPClient) getURL(url string) (string, error) {
 	return getURL(j.Base, url)
 }
@@ -37,7 +55,7 @@ func (j *JSONHTTPClient) getURL(url string) (string, error) {
 // If the response is not a 2xx, an error is returned. If the response is a 401, the caller should
 // refresh the access token and retry the request. If errorHandler is nil, then the default error
 // handler is used. If not, the caller can inject their own error handling logic.
-func (j *JSONHTTPClient) Get(ctx context.Context, url string, headers ...Header) (*ajson.Node, error) {
+func (j *JSONHTTPClient) Get(ctx context.Context, url string, headers ...Header) (*JSONHTTPResponse, error) {
 	fullURL, err := j.getURL(url)
 	if err != nil {
 		return nil, err
@@ -59,7 +77,7 @@ func (j *JSONHTTPClient) Get(ctx context.Context, url string, headers ...Header)
 // handler is used. If not, the caller can inject their own error handling logic.
 func (j *JSONHTTPClient) Post(ctx context.Context,
 	url string, reqBody any, headers ...Header,
-) (*ajson.Node, error) {
+) (*JSONHTTPResponse, error) {
 	fullURL, err := j.getURL(url)
 	if err != nil {
 		return nil, err
@@ -80,7 +98,7 @@ func (j *JSONHTTPClient) Post(ctx context.Context,
 
 func (j *JSONHTTPClient) Patch(ctx context.Context,
 	url string, reqBody any, headers ...Header,
-) (*ajson.Node, error) {
+) (*JSONHTTPResponse, error) {
 	fullURL, err := j.getURL(url)
 	if err != nil {
 		return nil, err
@@ -99,7 +117,7 @@ func (j *JSONHTTPClient) Patch(ctx context.Context,
 	return parseJSONResponse(res, body)
 }
 
-func parseJSONResponse(res *http.Response, body []byte) (*ajson.Node, error) {
+func parseJSONResponse(res *http.Response, body []byte) (*JSONHTTPResponse, error) {
 	// Ensure the response is JSON
 	ct := res.Header.Get("Content-Type")
 	if len(ct) > 0 {
@@ -119,7 +137,12 @@ func parseJSONResponse(res *http.Response, body []byte) (*ajson.Node, error) {
 		return nil, NewHTTPStatusError(res.StatusCode, fmt.Errorf("failed to unmarshall response body into JSON: %w", err))
 	}
 
-	return jsonBody, nil
+	return &JSONHTTPResponse{
+		bodyBytes: body,
+		Code:      res.StatusCode,
+		Headers:   res.Header,
+		Body:      jsonBody,
+	}, nil
 }
 
 func (j *JSONHTTPClient) httpGet(ctx context.Context, url string,

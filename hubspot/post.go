@@ -6,12 +6,11 @@ import (
 	"log/slog"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/spyzhov/ajson"
 )
 
 // post writes data to Hubspot. It handles retries and access token refreshes.
-func (c *Connector) post(ctx context.Context, url string, body any) (*ajson.Node, error) {
-	node, err := c.Client.Post(ctx, url, body)
+func (c *Connector) post(ctx context.Context, url string, body any) (*common.JSONHTTPResponse, error) {
+	rsp, err := c.Client.Post(ctx, url, body)
 	if err != nil {
 		switch {
 		case errors.Is(err, common.ErrAccessToken):
@@ -34,5 +33,5 @@ func (c *Connector) post(ctx context.Context, url string, body any) (*ajson.Node
 	}
 
 	// Success
-	return node, nil
+	return rsp, nil
 }

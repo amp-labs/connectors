@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/spyzhov/ajson"
 )
 
 // ListObjectMetadata returns object metadata for each object name provided.
@@ -62,21 +61,14 @@ func (c *Connector) ListObjectMetadata(
 }
 
 // constructResponseMap constructs a map of object names to object metadata from the composite response.
-func constructResponseMap(result *ajson.Node) (*common.ListObjectMetadataResult, error) {
+func constructResponseMap(result *common.JSONHTTPResponse) (*common.ListObjectMetadataResult, error) {
 	objectsMap := &common.ListObjectMetadataResult{}
 	objectsMap.Result = make(map[string]common.ObjectMetadata)
 	objectsMap.Errors = make(map[string]error)
 
-	rawResponse, err := ajson.Marshal(result)
+	resp, err := common.UnmarshalJSON[compositeResponse](result)
 	if err != nil {
-		return nil, fmt.Errorf("error marshalling composite response into byte array: %w", err)
-	}
-
-	resp := &compositeResponse{}
-
-	err = json.Unmarshal(rawResponse, resp)
-	if err != nil {
-		return nil, fmt.Errorf("error unmarshalling composite response into JSON: %w", err)
+		return nil, fmt.Errorf("error unmarshalling response from JSON: %w", err)
 	}
 
 	// Construct map of object names to object metadata

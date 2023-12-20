@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/spyzhov/ajson"
 )
 
 // Read reads data from Hubspot. If Since is set, it will use the
@@ -17,8 +16,8 @@ import (
 // Deleted objects can only be read by using this endpoint.
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
 	var (
-		data *ajson.Node
-		err  error
+		rsp *common.JSONHTTPResponse
+		err error
 	)
 
 	// If filtering is required, then we have to use the search endpoint.
@@ -50,11 +49,11 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	if len(config.NextPage) > 0 {
 		// If NextPage is set, then we're reading the next page of results.
 		// All that matters is the NextPage URL, the fields are ignored.
-		data, err = c.get(ctx, config.NextPage)
+		rsp, err = c.get(ctx, config.NextPage)
 	} else {
 		// If NextPage is not set, then we're reading the first page of results.
 		// We need to construct the SOQL query and then make the request.
-		data, err = c.get(ctx, c.BaseURL+"/objects/"+config.ObjectName+"?"+makeQueryValues(config))
+		rsp, err = c.get(ctx, c.BaseURL+"/objects/"+config.ObjectName+"?"+makeQueryValues(config))
 	}
 
 	if err != nil {
@@ -62,7 +61,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	}
 
 	return common.ParseResult(
-		data,
+		rsp,
 		getTotalSize,
 		getRecords,
 		getNextRecordsURL,

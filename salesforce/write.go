@@ -12,8 +12,8 @@ import (
 // Write will write data to Salesforce.
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
 	var (
-		data *ajson.Node
-		err  error
+		rsp *common.JSONHTTPResponse
+		err error
 	)
 
 	location, joinErr := url.JoinPath(fmt.Sprintf("%s/sobjects", c.BaseURL), config.ObjectName)
@@ -30,34 +30,34 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		location += "?_HttpMethod=PATCH"
 	}
 
-	data, err = c.post(ctx, location, config.ObjectData)
+	rsp, err = c.post(ctx, location, config.ObjectData)
 	if err != nil {
 		return nil, err
 	}
 
-	return parseWriteResult(data)
+	return parseWriteResult(rsp)
 }
 
 // parseWriteResult parses the response from writing to Salesforce API. A 2xx return type is assumed.
-func parseWriteResult(data *ajson.Node) (*common.WriteResult, error) {
+func parseWriteResult(rsp *common.JSONHTTPResponse) (*common.WriteResult, error) {
 	// in case we got a 204 and empty array => unmarshal into nil ajson node
-	if data == nil {
+	if rsp == nil || rsp.Body == nil {
 		return &common.WriteResult{
 			Success: true,
 		}, nil
 	}
 
-	createdObjectId, err := getCreatedObjectId(data)
+	createdObjectId, err := getCreatedObjectId(rsp.Body)
 	if err != nil {
 		return nil, err
 	}
 
-	errors, err := getErrors(data)
+	errors, err := getErrors(rsp.Body)
 	if err != nil {
 		return nil, err
 	}
 
-	success, err := getSuccess(data)
+	success, err := getSuccess(rsp.Body)
 	if err != nil {
 		return nil, err
 	}
