@@ -3,11 +3,11 @@ package salesforce
 import (
 	"context"
 
-	"github.com/spyzhov/ajson"
+	"github.com/amp-labs/connectors/common"
 )
 
 // get reads data from Salesforce. It handles retries and access token refreshes.
-func (c *Connector) get(ctx context.Context, url string) (*ajson.Node, error) {
+func (c *Connector) get(ctx context.Context, url string) (*common.JSONHTTPResponse, error) {
 	node, err := c.Client.Get(ctx, url)
 	if err != nil {
 		return nil, c.HandleError(err)

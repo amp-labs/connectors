@@ -86,12 +86,12 @@ type describeObjectResult struct {
 
 // describeObject returns object metadata for the given object name.
 func (c *Connector) describeObject(ctx context.Context, objectName string) (*common.ObjectMetadata, error) {
-	data, err := c.get(ctx, c.BaseURL+"/properties/"+objectName)
+	rsp, err := c.get(ctx, c.BaseURL+"/properties/"+objectName)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching HubSpot fields: %w", err)
 	}
 
-	rawResponse, err := ajson.Marshal(data)
+	rawResponse, err := ajson.Marshal(rsp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("error marshalling object metadata response into byte array: %w", err)
 	}

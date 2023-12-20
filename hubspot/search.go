@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/spyzhov/ajson"
 )
 
 // Search uses the POST /search endpoint to filter object records and return the result.
@@ -16,17 +15,17 @@ import (
 // Read more @ https://developers.hubspot.com/docs/api/crm/search
 func (c *Connector) Search(ctx context.Context, config SearchParams) (*common.ReadResult, error) {
 	var (
-		data *ajson.Node
-		err  error
+		rsp *common.JSONHTTPResponse
+		err error
 	)
 
-	data, err = c.post(ctx, c.BaseURL+"/objects/"+config.ObjectName+"/search", makeFilterBody(config))
+	rsp, err = c.post(ctx, c.BaseURL+"/objects/"+config.ObjectName+"/search", makeFilterBody(config))
 	if err != nil {
 		return nil, err
 	}
 
 	return common.ParseResult(
-		data,
+		rsp,
 		getTotalSize,
 		getRecords,
 		getNextRecordsAfter,
