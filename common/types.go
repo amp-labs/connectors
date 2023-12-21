@@ -69,6 +69,9 @@ var (
 
 	// ErrParseError is returned data parsing failed.
 	ErrParseError = errors.New("parse error")
+
+	// ErrBadRequest is returned when we get a 400 response from the provider.
+	ErrBadRequest = errors.New("bad request")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.
