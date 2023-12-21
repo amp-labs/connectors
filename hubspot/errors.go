@@ -11,12 +11,11 @@ import (
 )
 
 var (
-	ErrMissingAPIModule    = errors.New("missing Hubspot API module")
-	ErrMissingClient       = errors.New("JSON http client not set")
-	ErrNotArray            = errors.New("results is not an array")
-	ErrNotObject           = errors.New("result is not an object")
-	ErrNotString           = errors.New("link is not a string")
-	ErrSearchLimitExceeded = errors.New("search endpoint limit exceeded")
+	ErrMissingAPIModule = errors.New("missing Hubspot API module")
+	ErrMissingClient    = errors.New("JSON http client not set")
+	ErrNotArray         = errors.New("results is not an array")
+	ErrNotObject        = errors.New("result is not an object")
+	ErrNotString        = errors.New("link is not a string")
 )
 
 type HubspotError struct {
@@ -83,7 +82,7 @@ func (c *Connector) interpretJSONError(res *http.Response, body []byte) error {
 	switch res.StatusCode {
 	// Hubspot sends us a 400 when the search endpoint returns over 10K records.
 	case http.StatusBadRequest:
-		return createError(ErrSearchLimitExceeded, apiError)
+		return createError(common.ErrBadRequest, apiError)
 	case http.StatusUnauthorized:
 		return createError(common.ErrAccessToken, apiError)
 	case http.StatusForbidden:

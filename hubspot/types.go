@@ -59,5 +59,5 @@ type ObjectField string
 
 const (
 	ObjectFieldHsObjectId       ObjectField = "hs_object_id"
-	ObjectFieldLastModifiedDate ObjectField = "lastmodifieddate"
+	ObjectFieldLastModifiedDate ObjectField = "hs_lastmodifieddate"
 )
