@@ -90,23 +90,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	createFieldData, err := os.ReadFile("./metadata/testCreateCustomField.json")
-	if err != nil {
-		slog.Error("Error opening testOperation.json", "error", err)
-		os.Exit(1)
-	}
-
-	if string(createFieldData) == "" {
-		slog.Error("Error opening testOperation.json", "error", err)
-		os.Exit(1)
-	}
-
-	var fieldOperation *common.XMLData
-
-	if err := json.Unmarshal(createFieldData, &fieldOperation); err != nil {
-		slog.Error("Error marshalling testOperation.json", "error", err)
-		os.Exit(1)
-	}
+	fieldOperation := getCreateFieldOperation()
 
 	operation := &common.XMLData{
 		XMLName:     "createMetadata",
@@ -114,76 +98,12 @@ func main() {
 		SelfClosing: false,
 	}
 
-	res, err := sfc.CreateMetadata(context.Background(), operation, tok)
+	res, err := sfc.CreateMetadata(ctx, operation, tok)
 	if err != nil {
 		slog.Debug("err", "err", err)
 	}
 
 	fmt.Println("Field Operation Result", res)
-}
-
-func getCreateObjectOperationDefinition() *common.XMLData {
-	fieldType := &common.XMLData{
-		XMLName:     "type",
-		Children:    []common.XMLSchema{common.XMLString("Text")},
-		SelfClosing: false,
-	}
-	nameFieldLabel := &common.XMLData{
-		XMLName:     "label",
-		Children:    []common.XMLSchema{common.XMLString("Test Object Name")},
-		SelfClosing: false,
-	}
-
-	nameField := &common.XMLData{
-		XMLName:     "nameField",
-		Children:    []common.XMLSchema{fieldType, nameFieldLabel},
-		SelfClosing: false,
-	}
-
-	deploymentStatus := &common.XMLData{
-		XMLName:     "deploymentStatus",
-		Children:    []common.XMLSchema{common.XMLString("Deployed")},
-		SelfClosing: false,
-	}
-
-	sharingModel := &common.XMLData{
-		XMLName:     "sharingModel",
-		Children:    []common.XMLSchema{common.XMLString("ReadWrite")},
-		SelfClosing: false,
-	}
-
-	fullName := &common.XMLData{
-		XMLName:     "fullName",
-		Children:    []common.XMLSchema{common.XMLString("TestObject13__c")},
-		SelfClosing: false,
-	}
-
-	ObjecLabel := &common.XMLData{
-		XMLName:     "label",
-		Children:    []common.XMLSchema{common.XMLString("Test Object 13")},
-		SelfClosing: false,
-	}
-
-	pluralLabel := &common.XMLData{
-		XMLName:     "pluralLabel",
-		Children:    []common.XMLSchema{common.XMLString("Test Objects 13")},
-		SelfClosing: false,
-	}
-
-	metadata := &common.XMLData{
-		XMLName:     "metadata",
-		Attributes:  []*common.XMLAttributes{{Key: "xsi:type", Value: "CustomObject"}},
-		Children:    []common.XMLSchema{fullName, ObjecLabel, pluralLabel, nameField, deploymentStatus, sharingModel},
-		SelfClosing: false,
-	}
-
-	operation := &common.XMLData{
-		XMLName:     "createMetadata",
-		Children:    []common.XMLSchema{metadata},
-		SelfClosing: false,
-	}
-
-	return operation
 }
 
 func getCreateFieldOperation() *common.XMLData {
@@ -265,11 +185,5 @@ func getCreateFieldOperation() *common.XMLData {
 		SelfClosing: false,
 	}
 
-	operation := &common.XMLData{
-		XMLName:     "createMetadata",
-		Children:    []common.XMLSchema{metadata},
-		SelfClosing: false,
-	}
-
-	return operation
+	return metadata
 }
