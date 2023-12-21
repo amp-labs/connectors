@@ -128,12 +128,12 @@ type ReadResultRow struct {
 
 // WriteResult is what's returned from writing data via the Write call.
 type WriteResult struct {
-	// ObjectId is the ID of the written record.
-	ObjectId string `json:"objectid,omitempty"`
-	// Errors is list of error objects returned by the API.
-	Errors []interface{} `json:"errors,omitempty"`
 	// Success is true if write succeeded.
-	Success bool `json:"success,omitempty"`
+	Success bool `json:"success"`
+	// ObjectId is the ID of the written record.
+	ObjectId string `json:"objectid,omitempty"` // optional
+	// Errors is list of error objects returned by the API.
+	Errors []interface{} `json:"errors,omitempty"` // optional
 	// Data is a JSON node containing data about the properties that were updated.
 	Data map[string]interface{} `json:"data,omitempty"` // optional
 }
