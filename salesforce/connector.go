@@ -7,7 +7,8 @@ import (
 )
 
 const (
-	apiVersion = "v59.0"
+	apiVersion    = "59.0"
+	versionPrefix = "v"
 )
 
 // Connector is a Salesforce connector.
@@ -15,6 +16,14 @@ type Connector struct {
 	Domain  string
 	BaseURL string
 	Client  *common.JSONHTTPClient
+}
+
+func (c *Connector) APIVersion() string {
+	return versionPrefix + apiVersion
+}
+
+func (c *Connector) APIVersionSOAP() string {
+	return apiVersion
 }
 
 // NewConnector returns a new Salesforce connector.
