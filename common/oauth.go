@@ -164,8 +164,8 @@ func (w *observableTokenSource) HasChanged(tok *oauth2.Token) bool {
 		return true
 	}
 
-	return w.lastKnown.AccessToken == tok.AccessToken &&
-		w.lastKnown.RefreshToken == tok.RefreshToken &&
-		w.lastKnown.TokenType == tok.TokenType &&
+	return w.lastKnown.AccessToken == tok.AccessToken ||
+		w.lastKnown.RefreshToken == tok.RefreshToken ||
+		w.lastKnown.TokenType == tok.TokenType ||
 		w.lastKnown.Expiry.Equal(tok.Expiry)
 }
