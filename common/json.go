@@ -91,12 +91,12 @@ func (j *JSONHTTPClient) Post(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+
 	// Make the request, get the response body
 	res, body, err := j.httpPost(ctx, fullURL, headers, reqBody) //nolint:bodyclose
 	if err != nil {
 		return nil, err
 	}
-
 	// empty response body should not be parsed as JSON since it will cause ajson to err
 	if len(body) == 0 {
 		return nil, nil //nolint:nilnil
@@ -157,7 +157,7 @@ func parseJSONResponse(res *http.Response, body []byte) (*JSONHTTPResponse, erro
 func (j *JSONHTTPClient) httpGet(ctx context.Context, url string,
 	headers []Header,
 ) (*http.Response, []byte, error) {
-	req, err := makeJSONGetRequest(ctx, url, headers)
+	req, err := MakeJSONGetRequest(ctx, url, headers)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -221,7 +221,7 @@ func (j *JSONHTTPClient) sendRequest(req *http.Request) (*http.Response, []byte,
 	return res, body, nil
 }
 
-func makeJSONGetRequest(ctx context.Context, url string, headers []Header) (*http.Request, error) {
+func MakeJSONGetRequest(ctx context.Context, url string, headers []Header) (*http.Request, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %w", err)
