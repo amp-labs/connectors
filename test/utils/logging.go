@@ -5,6 +5,7 @@ import (
 	"os"
 )
 
+// SetupLogging sets up logging for the test suite.
 func SetupLogging() {
 	handler := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
 		Level: slog.LevelDebug,

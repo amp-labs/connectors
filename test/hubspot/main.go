@@ -17,6 +17,7 @@ import (
 	"golang.org/x/oauth2"
 )
 
+// Contact is a basic Hubspot contact.
 type Contact struct {
 	Email     string `json:"email"`
 	Phone     string `json:"phone"`
@@ -27,14 +28,18 @@ type Contact struct {
 }
 
 func main() {
+	// Handle Ctrl-C gracefully.
 	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer done()
 
+	// Set up slog logging.
 	utils.SetupLogging()
 
+	// Get the Hubspot connector.
 	hsConn := getConnector(ctx)
 	defer utils.Close(hsConn)
 
+	// Write an artificial contact to Hubspot.
 	result, err := hsConn.Write(ctx, common.WriteParams{
 		ObjectName: "contacts",
 		ObjectId:   "",
@@ -53,9 +58,11 @@ func main() {
 		utils.Fail("error writing to hubspot", "error", err)
 	}
 
+	// Dump the result.
 	utils.DumpJSON(result, os.Stdout)
 }
 
+// getConnector returns a Hubspot connector.
 func getConnector(ctx context.Context) *hubspot.Connector {
 	creds, err := utils.Credentials()
 	if err != nil {
@@ -74,6 +81,7 @@ func getConnector(ctx context.Context) *hubspot.Connector {
 	return conn
 }
 
+// getOAuthInfo returns the OAuth2 config and token from the creds.json file.
 func getOAuthInfo(creds *ajson.Node) (*oauth2.Config, *oauth2.Token) {
 	config := creds.MustObject()
 

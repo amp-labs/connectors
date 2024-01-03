@@ -1,12 +1,12 @@
 package utils
 
 import (
-	"io"
 	"os"
 
 	"github.com/spyzhov/ajson"
 )
 
+// Credentials returns the credentials from the creds.json file.
 func Credentials() (*ajson.Node, error) {
 	fileName := "creds.json"
 
@@ -14,16 +14,7 @@ func Credentials() (*ajson.Node, error) {
 		fileName = fn
 	}
 
-	cred, err := os.Open(fileName)
-	if err != nil {
-		return nil, err
-	}
-
-	defer func() {
-		_ = cred.Close()
-	}()
-
-	byteValue, err := io.ReadAll(cred)
+	byteValue, err := os.ReadFile(fileName)
 	if err != nil {
 		return nil, err
 	}
