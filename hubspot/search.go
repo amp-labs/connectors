@@ -38,6 +38,8 @@ func (c *Connector) Search(ctx context.Context, config SearchParams) (*common.Re
 // If the time is zero, it returns an empty filter. For contacts, it uses the
 // lastmodifieddate field. For other objects, it uses the hs_lastmodifieddate.
 // Read more: https://community.hubspot.com/t5/APIs-Integrations/CRM-V3-API-Search-issue-with-Contacts-when-using-Filters/m-p/324617
+//
+//nolint:lll
 func BuildLastModifiedFilterGroup(params *common.ReadParams) Filter {
 	if params.Since.IsZero() {
 		return Filter{}

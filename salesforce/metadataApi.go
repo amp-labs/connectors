@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/subchen/go-xmldom"
 	"golang.org/x/oauth2"
 )
 
@@ -23,14 +24,10 @@ var (
 
 func (c *Connector) CreateMetadata(
 	ctx context.Context,
-	metaDefinition *common.XMLData,
+	metadata *xmldom.Node,
 	tok *oauth2.Token,
 ) (string, error) {
-	if err := metaDefinition.Validate(); err != nil {
-		return "", errors.Join(ErrBadRequest, err)
-	}
-
-	req, err := c.prepareXMLRequest(ctx, metaDefinition, tok)
+	req, err := c.prepareXMLRequest(ctx, metadata, tok)
 	if err != nil {
 		return "", err
 	}
@@ -45,7 +42,7 @@ func (c *Connector) CreateMetadata(
 	// tok object will be updated with new token automatically after failing first call
 	// we simply make another call with updated token.
 	if res.StatusCode == 500 && strings.Contains(string(body), "INVALID_SESSION_ID") {
-		req, err := c.prepareXMLRequest(ctx, metaDefinition, tok)
+		req, err := c.prepareXMLRequest(ctx, metadata, tok)
 		if err != nil {
 			return "", errors.Join(ErrCreateMetadata, err)
 		}
@@ -66,10 +63,10 @@ func (c *Connector) CreateMetadata(
 
 func (c *Connector) prepareXMLRequest(
 	ctx context.Context,
-	operation *common.XMLData,
+	metadata *xmldom.Node,
 	tok *oauth2.Token,
 ) (*http.Request, error) {
-	data := preparePayload(operation, tok.AccessToken)
+	data := preparePayload(metadata, tok.AccessToken)
 
 	endPointURL, err := url.JoinPath(c.Client.Base, "services/Soap/m/"+APIVersionSOAP())
 	if err != nil {
@@ -119,56 +116,90 @@ func addSOAPHeaders(req *http.Request) {
 	req.Header.Set("SOAPAction", "''")
 }
 
-func getEnvelope(header string, body string) string {
-	return fmt.Sprintf(
-		`<?xml version="1.0" encoding="UTF-8"?>
-		<soapenv:Envelope
-			xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
-			xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-			%s
-			%s
-		</soapenv:Envelope>`,
-		header,
-		body,
-	)
+func getEnvelope(header *xmldom.Node, body *xmldom.Node) *xmldom.Document {
+	envelop := xmldom.NewDocument("soapenv:Envelope")
+	envelop.Root.SetAttributeValue("xmlns:soapenv", "http://schemas.xmlsoap.org/soap/envelope/")
+	envelop.Root.SetAttributeValue("xmlns:xsd", "http://www.w3.org/2001/XMLSchema")
+	envelop.Root.SetAttributeValue("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
+	envelop.Root.Children = []*xmldom.Node{header, body}
+
+	return envelop
 }
 
-func getHeader(headers []string) string {
-	return fmt.Sprintf(
-		`<soapenv:Header xmlns="http://soap.sforce.com/2006/04/metadata">
-			<AllOrNoneHeader>
-				<allOrNone>true</allOrNone>
-			</AllOrNoneHeader>
-			%s
-		</soapenv:Header>`, strings.Join(headers, ""))
+func getHeader(headers ...*xmldom.Node) *xmldom.Node {
+	header := &xmldom.Node{
+		Name:     "soapenv:Header",
+		Children: headers,
+	}
+	header.SetAttributeValue("xmlns", "http://soap.sforce.com/2006/04/metadata")
+
+	return header
 }
 
-func getSessionHeader(token string) string {
-	return fmt.Sprintf(
-		`<SessionHeader>
-		<sessionId>%s</sessionId>
-	</SessionHeader>`, token)
+func getSessionHeader(token string) *xmldom.Node {
+	sessionId := &xmldom.Node{
+		Name: "sessionId",
+		Text: token,
+	}
+	header := &xmldom.Node{
+		Name: "SessionHeader",
+		Children: []*xmldom.Node{
+			sessionId,
+		},
+	}
+
+	return header
 }
 
-func getBody(items []string) string {
-	return fmt.Sprintf(
-		`<soapenv:Body xmlns="http://soap.sforce.com/2006/04/metadata">
-			%s
-		</soapenv:Body>`, strings.Join(items, ""))
+func getBody(items ...*xmldom.Node) *xmldom.Node {
+	body := &xmldom.Node{
+		Name: "soapenv:Body",
+		Attributes: []*xmldom.Attribute{
+			{
+				Name:  "xmlns",
+				Value: "http://soap.sforce.com/2006/04/metadata",
+			},
+		},
+		Children: items,
+	}
+
+	return body
 }
 
-func formOperationXML(oper *common.XMLData) string {
-	return oper.String()
+func preparePayload(metadata *xmldom.Node, accessToken string) string {
+	sessionHeader := getSessionHeader(accessToken)
+	allOrNonHeader := getAllOrNoneHeader(true)
+	header := getHeader(allOrNonHeader, sessionHeader)
+	body := getBody(metadata)
+	envelop := getEnvelope(header, body)
+
+	return envelop.XML()
 }
 
-func preparePayload(oper *common.XMLData, accessToken string) string {
-	metadata := formOperationXML(oper)
-	header := getHeader([]string{getSessionHeader(accessToken)})
-	body := getBody([]string{metadata})
-	data := getEnvelope(header, body)
+type BoolString string
 
-	return data
+const (
+	True  string = "true"
+	False string = "false"
+)
+
+func getAllOrNoneHeader(allOrNon bool) *xmldom.Node {
+	allOrNonText := False
+	if allOrNon {
+		allOrNonText = True
+	}
+
+	header := &xmldom.Node{
+		Name: "AllOrNoneHeader",
+		Children: []*xmldom.Node{
+			{
+				Name: "allOrNone",
+				Text: allOrNonText,
+			},
+		},
+	}
+
+	return header
 }
 
 func GetTokenUpdater(tok *oauth2.Token) common.OAuthOption {
