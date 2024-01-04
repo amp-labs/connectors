@@ -7,8 +7,8 @@ import (
 )
 
 // Credentials returns the credentials from the creds.json file.
-func Credentials() (*ajson.Node, error) {
-	fileName := "creds.json"
+func Credentials(defaultFileName string) (*ajson.Node, error) {
+	fileName := defaultFileName
 
 	if fn, ok := os.LookupEnv("CREDENTIALS_FILE"); ok {
 		fileName = fn
