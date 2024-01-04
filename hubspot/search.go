@@ -35,11 +35,24 @@ func (c *Connector) Search(ctx context.Context, config SearchParams) (*common.Re
 }
 
 // BuildLastModifiedFilterGroup filters records modified since the given time.
-func BuildLastModifiedFilterGroup(since time.Time) Filter {
+// If the time is zero, it returns an empty filter. For contacts, it uses the
+// lastmodifieddate field. For other objects, it uses the hs_lastmodifieddate.
+// Read more: https://community.hubspot.com/t5/APIs-Integrations/CRM-V3-API-Search-issue-with-Contacts-when-using-Filters/m-p/324617
+func BuildLastModifiedFilterGroup(params *common.ReadParams) Filter {
+	if params.Since.IsZero() {
+		return Filter{}
+	}
+
+	// Use the lastmodifieddate field for contacts, and hs_lastmodifieddate for other objects.
+	lastModifiedField := ObjectFieldHsLastModifiedDate
+	if params.ObjectName == string(ObjectTypeContact) {
+		lastModifiedField = ObjectFieldLastModifiedDate
+	}
+
 	return Filter{
-		FieldName: string(ObjectFieldLastModifiedDate),
+		FieldName: string(lastModifiedField),
 		Operator:  FilterOperatorTypeGTE,
-		Value:     since.Format(time.RFC3339),
+		Value:     params.Since.Format(time.RFC3339),
 	}
 }
 

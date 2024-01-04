@@ -146,3 +146,21 @@ func getMarshaledData(records []map[string]interface{}, fields []string) ([]comm
 
 	return data, nil
 }
+
+// GetLastResultId returns the last row's id from a result.
+func GetLastResultId(result *common.ReadResult) string {
+	numRecords := len(result.Data)
+	if numRecords == 0 {
+		return ""
+	}
+
+	// Get the last row and get the hs_object_id field's value
+	lastRow := result.Data[numRecords-1]
+
+	lastRowId, ok := lastRow.Fields[string(ObjectFieldHsObjectId)].(string)
+	if !ok {
+		return ""
+	}
+
+	return lastRowId
+}
