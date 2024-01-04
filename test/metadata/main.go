@@ -12,30 +12,23 @@ import (
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/salesforce"
+	"github.com/amp-labs/connectors/test"
 	"golang.org/x/oauth2"
 )
 
 func main() {
-	creds, err := os.ReadFile("../creds.json")
+	creds, err := test.GetCreds("../creds.json")
 	if err != nil {
-		slog.Error("Error opening creds.json", "error", err)
-		return
+		slog.Error("Error getting creds", "error", err)
+		os.Exit(1)
 	}
 
-	var credsMap map[string]interface{}
+	clientId := creds.ClientId
+	clientSecret := creds.ClientSecret
+	accessToken := creds.AccessToken
+	refreshToken := creds.RefreshToken
 
-	if err := json.Unmarshal(creds, &credsMap); err != nil {
-		slog.Error("Error marshalling creds.json", "error", err)
-		return
-	}
-
-	providerApp := credsMap["providerApp"].(map[string]interface{})
-	clientId := providerApp["clientId"].(string)
-	clientSecret := providerApp["clientSecret"].(string)
-	accessToken := credsMap["AccessToken"].(map[string]interface{})["Token"].(string)
-	refreshToken := credsMap["RefreshToken"].(map[string]interface{})["Token"].(string)
-
-	salesforceSubdomain := credsMap["providerWorkspaceRef"].(string)
+	salesforceSubdomain := creds.Subdomain
 
 	cfg := &oauth2.Config{
 		ClientID:     clientId,

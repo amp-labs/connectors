@@ -18,11 +18,11 @@ type Connector struct {
 	Client  *common.JSONHTTPClient
 }
 
-func (c *Connector) APIVersion() string {
+func APIVersion() string {
 	return versionPrefix + apiVersion
 }
 
-func (c *Connector) APIVersionSOAP() string {
+func APIVersionSOAP() string {
 	return apiVersion
 }
 
@@ -55,7 +55,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	}
 
 	conn = &Connector{
-		BaseURL: fmt.Sprintf("https://%s.my.salesforce.com/services/data/%s", params.subdomain, apiVersion),
+		BaseURL: fmt.Sprintf("https://%s.my.salesforce.com/services/data/%s", params.subdomain, APIVersion()),
 		Domain:  fmt.Sprintf("%s.my.salesforce.com", params.subdomain),
 		Client:  params.client,
 	}
