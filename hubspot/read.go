@@ -30,7 +30,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 			FilterGroups: []FilterGroup{
 				{
 					Filters: []Filter{
-						BuildLastModifiedFilterGroup(config.Since),
+						BuildLastModifiedFilterGroup(&config),
 						// Add more filters to AND them together
 					},
 					// Add more filter groups to OR them together
