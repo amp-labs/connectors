@@ -49,7 +49,7 @@ func (c *Connector) CreateMetadata(
 		if err != nil {
 			return "", errors.Join(ErrCreateMetadata, err)
 		}
-		//nolint:bodyclose
+		//nolint:bodyclose,ineffassign,staticcheck,wastedassign
 		res, body, err = c.makeRequest(req)
 	}
 
@@ -71,7 +71,7 @@ func (c *Connector) prepareXMLRequest(
 ) (*http.Request, error) {
 	data := preparePayload(operation, tok.AccessToken)
 
-	endPointURL, err := url.JoinPath(c.Client.Base, "services/Soap/m/"+c.APIVersionSOAP())
+	endPointURL, err := url.JoinPath(c.Client.Base, "services/Soap/m/"+APIVersionSOAP())
 	if err != nil {
 		return nil, errors.Join(ErrCreatingRequest, err)
 	}

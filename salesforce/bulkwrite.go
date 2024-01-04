@@ -2,13 +2,39 @@ package salesforce
 
 import (
 	"context"
+	"encoding/csv"
 	"errors"
 	"fmt"
 	"io"
+	"net/http"
 	"net/url"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
+)
+
+const (
+	Insert BulkWriteMode = "insert"
+	Upsert BulkWriteMode = "upsert"
+	Update BulkWriteMode = "update"
+
+	JobStateAborted        = "Aborted"
+	JobStateFailed         = "Failed"
+	JobStateComplete       = "JobComplete"
+	JobStateInProgress     = "InProgress"
+	JobStateUploadComplete = "UploadComplete"
+
+	sfIdFieldName    = "sf__Id"
+	sfErrorFieldName = "sf__Error"
+)
+
+var (
+	ErrKeyNotFound      = errors.New("key not found")
+	ErrUnknownNodeType  = errors.New("unknown node type when parsing JSON")
+	ErrInvalidType      = errors.New("invalid type")
+	ErrInvalidJobState  = errors.New("invalid job state")
+	ErrUnsupportedMode  = errors.New("unsupported mode")
+	ErrReadToByteFailed = errors.New("failed to read data to bytes")
 )
 
 // BulkWriteParams defines how we are writing data to a SaaS API.
@@ -22,17 +48,11 @@ type BulkWriteParams struct {
 	// The path to the CSV file we are writing
 	CSVData io.Reader // required
 
-	// SF operation mode
+	// Salesforce operation mode
 	Mode BulkWriteMode
 }
 
 type BulkWriteMode string
-
-const (
-	Insert BulkWriteMode = "insert"
-	Upsert BulkWriteMode = "upsert"
-	Update BulkWriteMode = "update"
-)
 
 // BulkWriteResult is what's returned from writing data via the BulkWrite call.
 type BulkWriteResult struct {
@@ -66,14 +86,20 @@ type GetJobInfoResult struct {
 	TotalProcessingTime     float64 `json:"totalProcessingTime"`
 }
 
-var (
-	ErrKeyNotFound      = errors.New("key not found")
-	ErrUnknownNodeType  = errors.New("unknown node type when parsing JSON")
-	ErrInvalidType      = errors.New("invalid type")
-	ErrInvalidJobState  = errors.New("invalid job state")
-	ErrUnsupportedMode  = errors.New("unsupported mode")
-	ErrReadToByteFailed = errors.New("failed to read data to bytes")
-)
+type FailInfo struct {
+	FailureType   string              `json:"failureType"`
+	FailedUpdates map[string][]string `json:"failedUpdates,omitempty"`
+	FailedCreates map[string][]string `json:"failedCreates,omitempty"`
+	Reason        string              `json:"reason,omitempty"`
+}
+
+type JobResults struct {
+	JobId          string            `json:"jobId"`
+	State          string            `json:"state"`
+	FailureDetails *FailInfo         `json:"failureDetails,omitempty"`
+	JobInfo        *GetJobInfoResult `json:"jobInfo,omitempty"`
+	Message        string            `json:"message,omitempty"`
+}
 
 func (c *Connector) BulkWrite( //nolint:funlen,cyclop
 	ctx context.Context,
@@ -99,7 +125,10 @@ func (c *Connector) BulkWrite( //nolint:funlen,cyclop
 
 	resObject, err := res.Body.GetObject()
 	if err != nil {
-		return nil, fmt.Errorf("parsing result of createJob failed: %w", errors.Join(err, common.ErrParseError))
+		return nil, fmt.Errorf(
+			"parsing result of createJob failed: %w",
+			errors.Join(err, common.ErrParseError),
+		)
 	}
 
 	state, err := resObject["state"].GetString()
@@ -216,7 +245,7 @@ func (c *Connector) uploadCSV(ctx context.Context, jobId string, config BulkWrit
 
 func (c *Connector) completeUpload(ctx context.Context, jobId string) (*common.JSONHTTPResponse, error) {
 	updateLoadCompleteBody := map[string]interface{}{
-		"state": "UploadComplete",
+		"state": JobStateUploadComplete,
 	}
 
 	location, err := joinURLPath(c.BaseURL, fmt.Sprintf("jobs/ingest/%s", jobId))
@@ -246,35 +275,159 @@ func (c *Connector) GetJobInfo(ctx context.Context, jobId string) (*GetJobInfoRe
 	return info, nil
 }
 
-/*
-// Below are methods that will help us get results, but need CSVHTTPClient to be implemented
-// Below code will work once CSVHTTPClient is implemented
-// TODO: implement CSVHTTPClient
-
-func (c *Connector) GetJobResult(ctx context.Context, jobId string) ([]byte, error) {
-	location, err := joinURLPath(c.BaseURL, fmt.Sprintf("jobs/ingest/%s/successfulResults", jobId))
+func (c *Connector) GetJobResults(ctx context.Context, jobId string) (*JobResults, error) {
+	jobInfo, err := c.GetJobInfo(ctx, jobId)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get job information: %w", err)
 	}
 
-	return c.getCSV(ctx, location)
-}
-
-func (c *Connector) GetUnprocessedResults(ctx context.Context, jobId string) ([]byte, error) {
-	location, err := joinURLPath(c.BaseURL, fmt.Sprintf("jobs/ingest/%s/unprocessedrecords", jobId))
-	if err != nil {
-		return nil, err
+	if jobInfo.State != JobStateComplete {
+		// Take care of failed, aborted, in progress, and upload complete cases
+		// We don't need to query Salesforce for these cases
+		return c.getIncompleteJobResults(jobInfo), err
 	}
 
-	return c.getCSV(ctx, location)
+	if jobInfo.State == JobStateComplete && jobInfo.NumberRecordsFailed == 0 {
+		// Complete success case, no need to query Salesforce
+		return &JobResults{
+			JobId:   jobInfo.Id,
+			State:   jobInfo.State,
+			JobInfo: jobInfo,
+		}, nil
+	}
+
+	return c.getPartialFailureDetails(ctx, jobInfo)
 }
 
-func (c *Connector) GetFailedResults(ctx context.Context, jobId string) ([]byte, error) {
+func (c *Connector) getJobResults(ctx context.Context, jobId string) (*http.Response, error) {
 	location, err := joinURLPath(c.BaseURL, fmt.Sprintf("jobs/ingest/%s/failedResults", jobId))
 	if err != nil {
 		return nil, err
 	}
 
-	return c.getCSV(ctx, location)
+	req, err := common.MakeJSONGetRequest(ctx, location, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create get request: %w", err)
+	}
+
+	return c.Client.Client.Do(req)
 }
-*/
+
+//nolint:funlen
+func (c *Connector) getPartialFailureDetails(ctx context.Context, jobInfo *GetJobInfoResult) (*JobResults, error) {
+	// Query Salesforce to get partial failure details
+	res, err := c.getJobResults(ctx, jobInfo.Id)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get job results: %w", err)
+	}
+	defer res.Body.Close()
+	// if partially failed, we need to get the error message for each record
+	reader := csv.NewReader(res.Body)
+
+	failInfo := &FailInfo{
+		FailureType:   "Partial",
+		FailedUpdates: make(map[string][]string),
+		FailedCreates: make(map[string][]string),
+	}
+
+	var sfIdColIdx, sfErrorColIdx, externalIdColIdx int
+
+	rowIdx := 0
+
+	for {
+		record, err := reader.Read()
+		if err != nil {
+			// end of file
+			if errors.Is(err, io.EOF) {
+				break
+			}
+
+			return nil, err
+		}
+
+		// Get column index of sf__Id, sf__Error, and externalIdFieldName in header row
+		// Salesforce API responses may not be consistent with the order of columns, so we need to get the index
+		if rowIdx == 0 {
+			indiceMap, err := getColumnIndice(record, []string{sfIdFieldName, sfErrorFieldName, jobInfo.ExternalIdFieldName})
+			if err != nil {
+				return nil, err
+			}
+
+			sfIdColIdx = indiceMap[sfIdFieldName]
+			sfErrorColIdx = indiceMap[sfErrorFieldName]
+			externalIdColIdx = indiceMap[jobInfo.ExternalIdFieldName]
+			rowIdx++
+
+			continue
+		}
+
+		sfId := record[sfIdColIdx]
+		failureMap := failInfo.FailedUpdates
+		errMsg := record[sfErrorColIdx]
+		externalId := record[externalIdColIdx]
+
+		if sfId == "" {
+			// If sf__Id is empty, it means the record is not updated, so it's a create failure
+			failureMap = failInfo.FailedCreates
+		}
+
+		if failureMap == nil {
+			failureMap[errMsg] = []string{}
+		}
+
+		failureMap[errMsg] = append(failureMap[errMsg], externalId)
+	}
+
+	return &JobResults{
+		FailureDetails: failInfo,
+		JobId:          jobInfo.Id,
+		State:          jobInfo.State,
+		JobInfo:        jobInfo,
+		Message:        "Some records are not processed successfully. Please refer to the 'failureDetails' for more details.",
+	}, nil
+}
+
+func getColumnIndice(record []string, columnNames []string) (map[string]int, error) {
+	indices := make(map[string]int)
+
+	for _, columnName := range columnNames {
+		found := false
+
+		for j, value := range record {
+			if strings.EqualFold(value, columnName) {
+				indices[columnName] = j
+				found = true
+
+				break
+			}
+		}
+
+		if !found {
+			return nil, fmt.Errorf("%w: '%s'", ErrKeyNotFound, columnName)
+		}
+	}
+
+	return indices, nil
+}
+
+func (c *Connector) getIncompleteJobResults(jobInfo *GetJobInfoResult) *JobResults {
+	jobResult := &JobResults{
+		JobId:   jobInfo.Id,
+		State:   jobInfo.State,
+		JobInfo: jobInfo,
+	}
+
+	switch {
+	case jobInfo.State == JobStateInProgress || jobInfo.State == JobStateUploadComplete:
+		jobResult.Message = "Job is still in progress. Please try again later."
+	case jobInfo.State == JobStateAborted:
+		jobResult.Message = "Job aborted. Please refer to the JobInfo for more details."
+	case jobInfo.State == JobStateFailed:
+		//nolint:lll
+		jobResult.Message = "No records processed successfully. This is likely due the CSV being empty or issues with CSV column names."
+	default:
+		jobResult.Message = "Job is in an unknown state."
+	}
+
+	return jobResult
+}

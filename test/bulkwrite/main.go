@@ -4,47 +4,37 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"log/slog"
 	"net/http"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/salesforce"
+	"github.com/amp-labs/connectors/test"
 	"golang.org/x/oauth2"
 )
 
+const (
+	testLineBreak = "\n=============================================\n"
+)
+
 func main() { //nolint:funlen
-	cred, err := os.Open("../../creds.json")
+	fmt.Println("Testing Bulkwrite...")
+
+	creds, err := test.GetCreds("../../creds.json")
 	if err != nil {
-		slog.Error("Error opening creds.json", "error", err)
-
-		return
+		slog.Error("Error getting creds", "error", err)
+		os.Exit(1)
 	}
 
-	defer cred.Close()
+	clientId := creds.ClientId
+	clientSecret := creds.ClientSecret
+	accessToken := creds.AccessToken
+	refreshToken := creds.RefreshToken
 
-	byteValue, err := io.ReadAll(cred)
-	if err != nil {
-		slog.Error("Error reading creds.json", "error", err)
-
-		return
-	}
-
-	var credsMap map[string]string
-
-	if err := json.Unmarshal(byteValue, &credsMap); err != nil {
-		slog.Error("Error marshalling creds.json", "error", err)
-
-		return
-	}
-
-	clientId := credsMap["CLIENT_ID"]
-	clientSecret := credsMap["CLIENT_SECRET"]
-	accessToken := credsMap["ACCESS_TOKEN"]
-	refreshToken := credsMap["REFRESH_TOKEN"]
-	salesforceSubdomain := credsMap["SALESFORCE_SUBDOMAIN"]
+	salesforceSubdomain := creds.Subdomain
 
 	handler := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
 		Level: slog.LevelDebug,
@@ -85,11 +75,35 @@ func main() { //nolint:funlen
 		_ = sfc.Close()
 	}()
 
-	file, err := os.Open("./touchpoints_20231130.csv")
-	if err != nil {
-		slog.Error("Error opening touchpoints.csv", "error", err)
+	logs := make([]string, len(testList))
 
-		return
+	var wg sync.WaitGroup
+	for i, test := range testList {
+		wg.Add(1)
+
+		go func(test testRunner, idx int) {
+			defer wg.Done()
+
+			log, err := test.fn(ctx, sfc, test.filePath)
+			if err != nil {
+				logs[idx] = testLineBreak + test.testTitle + testLineBreak + "\n" + err.Error()
+			} else {
+				logs[idx] = testLineBreak + test.testTitle + testLineBreak + "\n" + log
+			}
+		}(test, i)
+	}
+
+	wg.Wait()
+
+	for _, log := range logs {
+		fmt.Println(log)
+	}
+}
+
+func testBulkWrite(ctx context.Context, sfc *salesforce.Connector, filePath string) (string, error) {
+	file, err := os.Open(filePath)
+	if err != nil {
+		return "", fmt.Errorf("error opening '%s': %w", filePath, err)
 	}
 
 	res, err := sfc.BulkWrite(ctx, salesforce.BulkWriteParams{
@@ -99,33 +113,106 @@ func main() { //nolint:funlen
 		Mode:            "upsert",
 	})
 	if err != nil {
-		slog.Error("Error bulk writing", "error", err)
-
-		return
+		return "", fmt.Errorf("error bulk writing: %w", err)
 	}
 
 	bulkRes, err := json.MarshalIndent(res, "", "    ")
 	if err != nil {
-		slog.Error("Error marshalling bulk result", "error", err)
+		return "", fmt.Errorf("error marshalling bulk result: %w", err)
 	}
 
-	fmt.Println("Upload complete.")
-	fmt.Println(string(bulkRes))
+	log := ""
+	log += "Upload complete.\n"
+	log += string(bulkRes) + "\n"
 
 	time.Sleep(5 * time.Second)
 
 	jobInfo, err := sfc.GetJobInfo(ctx, res.JobId)
 	if err != nil {
-		slog.Error("Error getting job result", "error", err)
-
-		return
+		return "", fmt.Errorf("error getting job info: %w", err)
 	}
 
 	jsonData, err := json.MarshalIndent(jobInfo, "", "    ")
 	if err != nil {
-		slog.Error("Error marshalling job result", "error", err)
+		return "", fmt.Errorf("error marshalling job info: %w", err)
 	}
 
-	fmt.Println("Write Result")
-	fmt.Println(string(jsonData))
+	log += "Write Result\n"
+	log += string(jsonData) + "\n"
+
+	return log, nil
+}
+
+var testList = []testRunner{
+	{
+		filePath:  "./touchpoints_20231130.csv",
+		testTitle: "Testing Bulkwrite",
+		fn:        testBulkWrite,
+	},
+	{
+		filePath:  "./touchpoints_20231130.csv",
+		testTitle: "Testing SuccessResults",
+		fn:        testGetJobResultsForFile,
+	},
+	{
+		filePath:  "./touchpoints_partial_failure_20231228.csv",
+		testTitle: "Testing Partial Failure",
+		fn:        testGetJobResultsForFile,
+	},
+	{
+		filePath:  "./touchpoints_complete_failure_20231228.csv",
+		testTitle: "Testing Complete Failure",
+		fn:        testGetJobResultsForFile,
+	},
+}
+
+type testRunner struct {
+	filePath  string
+	testTitle string
+	fn        func(ctx context.Context, sfc *salesforce.Connector, filePath string) (string, error)
+}
+
+func testGetJobResultsForFile(ctx context.Context, sfc *salesforce.Connector, fileName string) (string, error) {
+	file, err := os.Open(fileName)
+	if err != nil {
+		return "", fmt.Errorf("error opening file: %w", err)
+	}
+
+	res, err := sfc.BulkWrite(ctx, salesforce.BulkWriteParams{
+		ObjectName:      "Touchpoint__c",
+		ExternalIdField: "external_id__c",
+		CSVData:         file,
+		Mode:            "upsert",
+	})
+	if err != nil {
+		return "", fmt.Errorf("error bulk writing: %w", err)
+	}
+
+	bulkRes, err := json.MarshalIndent(res, "", "    ")
+	if err != nil {
+		return "", fmt.Errorf("error marshalling bulk result: %w", err)
+	}
+
+	log := ""
+
+	log += "Upload complete.\n"
+	log += string(bulkRes) + "\n"
+
+	time.Sleep(10 * time.Second)
+
+	jobResults, err := sfc.GetJobResults(ctx, res.JobId)
+	if err != nil {
+		return "", fmt.Errorf("error getting job result: %w", err)
+	}
+
+	jsonData, err := json.MarshalIndent(jobResults, "", "    ")
+	if err != nil {
+		slog.Error("Error marshalling job result", "error", err)
+		return "", fmt.Errorf("error marshalling job result: %w", err)
+	}
+
+	log += "Write Result\n"
+	log += string(jsonData) + "\n"
+
+	return log, nil
 }
