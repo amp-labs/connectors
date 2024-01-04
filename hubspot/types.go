@@ -58,6 +58,13 @@ const (
 type ObjectField string
 
 const (
-	ObjectFieldHsObjectId       ObjectField = "hs_object_id"
-	ObjectFieldLastModifiedDate ObjectField = "hs_lastmodifieddate"
+	ObjectFieldHsObjectId         ObjectField = "hs_object_id"
+	ObjectFieldHsLastModifiedDate ObjectField = "hs_lastmodifieddate"
+	ObjectFieldLastModifiedDate   ObjectField = "lastmodifieddate"
+)
+
+type ObjectType string
+
+const (
+	ObjectTypeContact ObjectType = "contacts"
 )
