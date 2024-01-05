@@ -31,7 +31,10 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		write = c.Client.Post
 	}
 
-	json, err := write(ctx, url, config.ObjectData)
+	data := make(map[string]interface{})
+	data["properties"] = config.ObjectData
+
+	json, err := write(ctx, url, data)
 	if err != nil {
 		return nil, err
 	}
