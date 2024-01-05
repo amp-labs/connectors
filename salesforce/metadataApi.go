@@ -42,7 +42,7 @@ func (c *Connector) CreateMetadata(
 	// tok object will be updated with new token automatically after failing first call
 	// we simply make another call with updated token.
 	if res.StatusCode == 500 && strings.Contains(string(body), "INVALID_SESSION_ID") {
-		req, err := c.prepareXMLRequest(ctx, metadata, tok)
+		req, err = c.prepareXMLRequest(ctx, metadata, tok)
 		if err != nil {
 			return "", errors.Join(ErrCreateMetadata, err)
 		}

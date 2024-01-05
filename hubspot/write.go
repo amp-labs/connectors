@@ -31,7 +31,13 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		write = c.Client.Post
 	}
 
-	json, err := write(ctx, url, config.ObjectData)
+	// Hubspot requires everything to be wrapped in a "properties" object.
+	// We do this automatically in the write method so that the user doesn't
+	// have to worry about it.
+	data := make(map[string]interface{})
+	data["properties"] = config.ObjectData
+
+	json, err := write(ctx, url, data)
 	if err != nil {
 		return nil, err
 	}
