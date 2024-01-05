@@ -98,7 +98,7 @@ type WriteParams struct {
 
 	// ObjectData is a JSON node representing the record of data we want to insert in the case of CREATE
 	// or fields of data we want to modify in case of an update
-	ObjectData map[string]interface{}
+	ObjectData any // required
 }
 
 // NextPageToken is an opaque token that can be used to get the next page of results.

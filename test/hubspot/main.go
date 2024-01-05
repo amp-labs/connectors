@@ -56,15 +56,13 @@ func main() {
 	result, err := hsConn.Write(ctx, common.WriteParams{
 		ObjectName: "contacts",
 		ObjectId:   "",
-		ObjectData: map[string]interface{}{
-			"properties": &Contact{
-				Email:     gofakeit.Email(),
-				Phone:     gofakeit.Phone(),
-				Company:   gofakeit.Company(),
-				Website:   gofakeit.URL(),
-				Lastname:  gofakeit.LastName(),
-				Firstname: gofakeit.FirstName(),
-			},
+		ObjectData: &Contact{
+			Email:     gofakeit.Email(),
+			Phone:     gofakeit.Phone(),
+			Company:   gofakeit.Company(),
+			Website:   gofakeit.URL(),
+			Lastname:  gofakeit.LastName(),
+			Firstname: gofakeit.FirstName(),
 		},
 	})
 	if err != nil {
