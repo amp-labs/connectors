@@ -74,11 +74,6 @@ func (h *HTTPClient) Post(ctx context.Context,
 	if err != nil {
 		return nil, nil, err
 	}
-	// empty response body should not be parsed as JSON since it will cause ajson to err
-	// TODO: Check
-	if len(body) == 0 {
-		return nil, nil, nil //nolint:nilnil
-	}
 
 	return res, body, nil
 }
@@ -98,11 +93,6 @@ func (h *HTTPClient) Patch(ctx context.Context,
 	res, body, err := h.httpPatch(ctx, fullURL, headers, reqBody) //nolint:bodyclose
 	if err != nil {
 		return nil, nil, err
-	}
-
-	// empty response body should not be parsed as JSON since it will cause ajson to err
-	if len(body) == 0 {
-		return nil, nil, nil //nolint:nilnil
 	}
 
 	return res, body, nil
@@ -238,4 +228,14 @@ func getURL(baseURL string, urlString string) (string, error) {
 	}
 
 	return url.JoinPath(baseURL, urlString)
+}
+
+// addHeaders adds the given headers to the request.
+func addHeaders(req *http.Request, headers []Header) (*http.Request, error) {
+	// Apply any custom headers
+	for _, hdr := range headers {
+		req.Header.Add(hdr.Key, hdr.Value)
+	}
+
+	return req, nil
 }

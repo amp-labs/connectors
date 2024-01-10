@@ -60,6 +60,11 @@ func (j *JSONHTTPClient) Post(ctx context.Context,
 		return nil, err
 	}
 
+	// empty response body should not be parsed as JSON since it will cause ajson to err
+	if len(body) == 0 {
+		return nil, nil //nolint:nilnil
+	}
+
 	return parseJSONResponse(res, body)
 }
 
@@ -69,6 +74,11 @@ func (j *JSONHTTPClient) Patch(ctx context.Context,
 	res, body, err := j.HTTPClient.Patch(ctx, url, reqBody, addAcceptJSONHeader(headers)) //nolint:bodyclose
 	if err != nil {
 		return nil, err
+	}
+
+	// empty response body should not be parsed as JSON since it will cause ajson to err
+	if len(body) == 0 {
+		return nil, nil //nolint:nilnil
 	}
 
 	return parseJSONResponse(res, body)

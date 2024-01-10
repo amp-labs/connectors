@@ -50,16 +50,6 @@ func makeTextCSVPutRequest(ctx context.Context, url string, headers []Header, bo
 	return addHeaders(req, headers)
 }
 
-// TODO: Move this out.
-func addHeaders(req *http.Request, headers []Header) (*http.Request, error) {
-	// Apply any custom headers
-	for _, hdr := range headers {
-		req.Header.Add(hdr.Key, hdr.Value)
-	}
-
-	return req, nil
-}
-
 // TODO: to be migrated to CSVHTTPClient once implemented
 // func (j *JSONHTTPClient) GetCSV(ctx context.Context, url string, headers ...Header) ([]byte, error) {
 // 	fullURL, err := j.getURL(url)
