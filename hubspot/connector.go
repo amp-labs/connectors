@@ -35,19 +35,19 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	var err error
 	params, err = params.prepare()
 
-	params.client.Base = fmt.Sprintf("https://api.hubapi.com/%s", params.module)
+	params.client.HTTPClient.Base = fmt.Sprintf("https://api.hubapi.com/%s", params.module)
 
 	if err != nil {
 		return nil, err
 	}
 
 	conn = &Connector{
-		BaseURL: params.client.Base,
+		BaseURL: params.client.HTTPClient.Base,
 		Module:  params.module,
 		Client:  params.client,
 	}
 
-	conn.Client.ErrorHandler = conn.interpretError
+	conn.Client.HTTPClient.ErrorHandler = conn.interpretError
 
 	return conn, nil
 }
