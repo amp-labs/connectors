@@ -17,7 +17,7 @@ func InterpretError(res *http.Response, body []byte) error {
 		return NewHTTPStatusError(res.StatusCode, fmt.Errorf("%w: %s", ErrForbidden, string(body)))
 	case http.StatusNotFound:
 		// Semantics are debatable (temporarily missing vs. permanently gone), but for now treat this as a retryable error
-		return NewHTTPStatusError(res.StatusCode, fmt.Errorf("%w: entity not found (%s)", ErrRetryable, string(body)))
+		return NewHTTPStatusError(res.StatusCode, fmt.Errorf("%w: %s", ErrRetryable, string(body)))
 	case http.StatusTooManyRequests:
 		// Too many requests, retryable
 		return NewHTTPStatusError(res.StatusCode, fmt.Errorf("%w: %s", ErrRetryable, string(body)))
