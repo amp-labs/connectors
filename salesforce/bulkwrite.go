@@ -310,7 +310,9 @@ func (c *Connector) getJobResults(ctx context.Context, jobId string) (*http.Resp
 		return nil, fmt.Errorf("failed to create get request: %w", err)
 	}
 
-	return c.Client.Client.Do(req)
+	// Get the connector's JSONHTTPClient, which is a special HTTPClient that handles JSON responses,
+	// and use it's underlying http.Client to make the request.
+	return c.Client.HTTPClient.Client.Do(req)
 }
 
 //nolint:funlen

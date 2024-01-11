@@ -35,8 +35,10 @@ func WithClient(ctx context.Context, client *http.Client, config *oauth2.Config,
 func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
 	return func(params *sfParams) {
 		params.client = &common.JSONHTTPClient{
-			Client:       client,
-			ErrorHandler: common.InterpretError,
+			HTTPClient: &common.HTTPClient{
+				Client:       client,
+				ErrorHandler: common.InterpretError,
+			},
 		}
 	}
 }
