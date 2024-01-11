@@ -48,7 +48,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	var err error
 	params, err = params.prepare()
 
-	params.client.Base = fmt.Sprintf("https://%s.my.salesforce.com", params.subdomain)
+	params.client.HTTPClient.Base = fmt.Sprintf("https://%s.my.salesforce.com", params.subdomain)
 
 	if err != nil {
 		return nil, err
@@ -60,7 +60,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		Client:  params.client,
 	}
 
-	conn.Client.ErrorHandler = conn.interpretError
+	conn.Client.HTTPClient.ErrorHandler = conn.interpretError
 
 	return conn, nil
 }

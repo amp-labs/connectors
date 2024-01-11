@@ -68,7 +68,7 @@ func (c *Connector) prepareXMLRequest(
 ) (*http.Request, error) {
 	data := preparePayload(metadata, tok.AccessToken)
 
-	endPointURL, err := url.JoinPath(c.Client.Base, "services/Soap/m/"+APIVersionSOAP())
+	endPointURL, err := url.JoinPath(c.Client.HTTPClient.Base, "services/Soap/m/"+APIVersionSOAP())
 	if err != nil {
 		return nil, errors.Join(ErrCreatingRequest, err)
 	}
@@ -87,7 +87,7 @@ func (c *Connector) prepareXMLRequest(
 }
 
 func (c *Connector) makeRequest(req *http.Request) (*http.Response, []byte, error) {
-	res, err := c.Client.Client.Do(req)
+	res, err := c.Client.HTTPClient.Client.Do(req)
 	if err != nil {
 		return res, nil, err
 	}

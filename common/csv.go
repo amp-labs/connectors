@@ -14,7 +14,7 @@ import (
 */
 
 func (j *JSONHTTPClient) PutCSV(ctx context.Context, url string, reqBody []byte, headers ...Header) ([]byte, error) {
-	fullURL, err := j.getURL(url)
+	fullURL, err := j.HTTPClient.getURL(url)
 	if err != nil {
 		return nil, err
 	}
@@ -35,7 +35,7 @@ func (j *JSONHTTPClient) httpPutCSV(ctx context.Context, url string,
 		return nil, nil, err
 	}
 
-	return j.sendRequest(req)
+	return j.HTTPClient.sendRequest(req)
 }
 
 func makeTextCSVPutRequest(ctx context.Context, url string, headers []Header, body []byte) (*http.Request, error) {
@@ -48,15 +48,6 @@ func makeTextCSVPutRequest(ctx context.Context, url string, headers []Header, bo
 	req.ContentLength = int64(len(body))
 
 	return addHeaders(req, headers)
-}
-
-func addHeaders(req *http.Request, headers []Header) (*http.Request, error) {
-	// Apply any custom headers
-	for _, hdr := range headers {
-		req.Header.Add(hdr.Key, hdr.Value)
-	}
-
-	return req, nil
 }
 
 // TODO: to be migrated to CSVHTTPClient once implemented
