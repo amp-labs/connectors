@@ -213,7 +213,6 @@ func makePostRequest(ctx context.Context, url string, headers []Header, body any
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
 
-	headers = append(headers, Header{Key: "Content-Type", Value: "application/json"})
 	req.ContentLength = int64(len(jBody))
 
 	return addContentTypeIfNotPresent(addHeaders(req, headers)), nil
@@ -232,7 +231,6 @@ func makePatchRequest(ctx context.Context, url string, headers []Header, body an
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
 
-	headers = append(headers, Header{Key: "Content-Type", Value: "application/json"})
 	req.ContentLength = int64(len(jBody))
 
 	return addContentTypeIfNotPresent(addHeaders(req, headers)), nil
@@ -251,7 +249,6 @@ func makePutRequest(ctx context.Context, url string, headers []Header, body any)
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
 
-	headers = append(headers, Header{Key: "Content-Type", Value: "application/json"})
 	req.ContentLength = int64(len(jBody))
 
 	return addContentTypeIfNotPresent(addHeaders(req, headers)), nil
