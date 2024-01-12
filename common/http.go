@@ -272,7 +272,7 @@ func (h *HTTPClient) sendRequest(req *http.Request) (*http.Response, []byte, err
 	// Send the request
 	res, err := h.Client.Do(req)
 	if err != nil {
-		return nil, nil, fmt.Errorf("error sending request: %w", err)
+		return nil, nil, err
 	}
 
 	// Read the response body
