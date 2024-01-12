@@ -98,6 +98,38 @@ func (h *HTTPClient) Patch(ctx context.Context,
 	return res, body, nil
 }
 
+func (h *HTTPClient) Put(ctx context.Context,
+	url string, reqBody any, headers []Header,
+) (*http.Response, []byte, error) {
+	fullURL, err := h.getURL(url)
+	if err != nil {
+		return nil, nil, err
+	}
+	// Make the request, get the response body
+	res, body, err := h.httpPut(ctx, fullURL, headers, reqBody) //nolint:bodyclose
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return res, body, nil
+}
+
+func (h *HTTPClient) Delete(ctx context.Context,
+	url string, headers []Header,
+) (*http.Response, []byte, error) {
+	fullURL, err := h.getURL(url)
+	if err != nil {
+		return nil, nil, err
+	}
+	// Make the request, get the response body
+	res, body, err := h.httpDelete(ctx, fullURL, headers) //nolint:bodyclose
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return res, body, nil
+}
+
 // httpGet makes a GET request to the given URL and returns the response & response body.
 func (h *HTTPClient) httpGet(ctx context.Context,
 	url string, headers []Header,
@@ -127,6 +159,30 @@ func (h *HTTPClient) httpPatch(ctx context.Context,
 	url string, headers []Header, body any,
 ) (*http.Response, []byte, error) {
 	req, err := makePatchRequest(ctx, url, headers, body)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return h.sendRequest(req)
+}
+
+// httpPut makes a PUT request to the given URL and returns the response & response body.
+func (h *HTTPClient) httpPut(ctx context.Context,
+	url string, headers []Header, body any,
+) (*http.Response, []byte, error) {
+	req, err := makePutRequest(ctx, url, headers, body)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return h.sendRequest(req)
+}
+
+// httpDelete makes a DELETE request to the given URL and returns the response & response body.
+func (h *HTTPClient) httpDelete(ctx context.Context,
+	url string, headers []Header,
+) (*http.Response, []byte, error) {
+	req, err := makeDeleteRequest(ctx, url, headers)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -178,6 +234,35 @@ func makePatchRequest(ctx context.Context, url string, headers []Header, body an
 
 	headers = append(headers, Header{Key: "Content-Type", Value: "application/json"})
 	req.ContentLength = int64(len(jBody))
+
+	return addHeaders(req, headers)
+}
+
+// makePutRequest creates a PUT request with the given headers and body, and adds the
+// Content-Type header. It then returns the request.
+func makePutRequest(ctx context.Context, url string, headers []Header, body any) (*http.Request, error) {
+	jBody, err := json.Marshal(body)
+	if err != nil {
+		return nil, fmt.Errorf("request body is not valid JSON, body is %v:\n%w", body, err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, url, bytes.NewBuffer(jBody))
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %w", err)
+	}
+
+	headers = append(headers, Header{Key: "Content-Type", Value: "application/json"})
+	req.ContentLength = int64(len(jBody))
+
+	return addHeaders(req, headers)
+}
+
+// makeDeleteRequest creates a DELETE request with the given headers. It then returns the request.
+func makeDeleteRequest(ctx context.Context, url string, headers []Header) (*http.Request, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, url, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %w", err)
+	}
 
 	return addHeaders(req, headers)
 }
