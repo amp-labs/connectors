@@ -13,7 +13,7 @@ import (
 
 // Connector is an interface that all connectors must implement.
 type Connector interface {
-	SimpleConnector
+	BasicConnector
 
 	// Read reads a page of data from the connector. This can be called multiple
 	// times to read all the data. The caller is responsible for paging, by
