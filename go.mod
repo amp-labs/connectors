@@ -3,7 +3,7 @@ module github.com/amp-labs/connectors
 go 1.21
 
 require (
-	github.com/brianvoe/gofakeit/v6 v6.26.4
+	github.com/brianvoe/gofakeit/v6 v6.27.0
 	github.com/go-playground/validator v9.31.0+incompatible
 	github.com/spyzhov/ajson v0.9.0
 	github.com/stretchr/testify v1.8.4
