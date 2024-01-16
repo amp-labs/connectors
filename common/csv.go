@@ -47,7 +47,7 @@ func makeTextCSVPutRequest(ctx context.Context, url string, headers []Header, bo
 	headers = append(headers, Header{Key: "Content-Type", Value: "text/csv"})
 	req.ContentLength = int64(len(body))
 
-	return addHeaders(req, headers)
+	return addHeaders(req, headers), nil
 }
 
 // TODO: to be migrated to CSVHTTPClient once implemented

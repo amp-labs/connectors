@@ -197,7 +197,7 @@ func makeGetRequest(ctx context.Context, url string, headers []Header) (*http.Re
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
 
-	return addHeaders(req, headers)
+	return addHeaders(req, headers), nil
 }
 
 // makePostRequest creates a POST request with the given headers and body, and adds the
@@ -213,10 +213,9 @@ func makePostRequest(ctx context.Context, url string, headers []Header, body any
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
 
-	headers = append(headers, Header{Key: "Content-Type", Value: "application/json"})
 	req.ContentLength = int64(len(jBody))
 
-	return addHeaders(req, headers)
+	return addJSONContentTypeIfNotPresent(addHeaders(req, headers)), nil
 }
 
 // makePatchRequest creates a PATCH request with the given headers and body, and adds the
@@ -232,10 +231,9 @@ func makePatchRequest(ctx context.Context, url string, headers []Header, body an
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
 
-	headers = append(headers, Header{Key: "Content-Type", Value: "application/json"})
 	req.ContentLength = int64(len(jBody))
 
-	return addHeaders(req, headers)
+	return addJSONContentTypeIfNotPresent(addHeaders(req, headers)), nil
 }
 
 // makePutRequest creates a PUT request with the given headers and body, and adds the
@@ -251,10 +249,9 @@ func makePutRequest(ctx context.Context, url string, headers []Header, body any)
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
 
-	headers = append(headers, Header{Key: "Content-Type", Value: "application/json"})
 	req.ContentLength = int64(len(jBody))
 
-	return addHeaders(req, headers)
+	return addJSONContentTypeIfNotPresent(addHeaders(req, headers)), nil
 }
 
 // makeDeleteRequest creates a DELETE request with the given headers. It then returns the request.
@@ -264,7 +261,7 @@ func makeDeleteRequest(ctx context.Context, url string, headers []Header) (*http
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
 
-	return addHeaders(req, headers)
+	return addHeaders(req, headers), nil
 }
 
 // sendRequest sends the given request and returns the response & response body.
@@ -316,11 +313,20 @@ func getURL(baseURL string, urlString string) (string, error) {
 }
 
 // addHeaders adds the given headers to the request.
-func addHeaders(req *http.Request, headers []Header) (*http.Request, error) {
+func addHeaders(req *http.Request, headers []Header) *http.Request {
 	// Apply any custom headers
 	for _, hdr := range headers {
 		req.Header.Add(hdr.Key, hdr.Value)
 	}
 
-	return req, nil
+	return req
+}
+
+// addJSONContentTypeIfNotPresent adds the Content-Type header if it is not already present.
+func addJSONContentTypeIfNotPresent(req *http.Request) *http.Request {
+	if req.Header.Get("Content-Type") == "" {
+		req.Header.Add("Content-Type", "application/json")
+	}
+
+	return req
 }
