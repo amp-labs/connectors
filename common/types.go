@@ -94,11 +94,11 @@ type WriteParams struct {
 	ObjectName string // required
 
 	// The external ID of the object instance we are updating. Provided in the case of UPDATE, but not CREATE.
-	ObjectId string // optional
+	RecordId string // optional
 
-	// ObjectData is a JSON node representing the record of data we want to insert in the case of CREATE
+	// RecordData is a JSON node representing the record of data we want to insert in the case of CREATE
 	// or fields of data we want to modify in case of an update
-	ObjectData any // required
+	RecordData any // required
 }
 
 // NextPageToken is an opaque token that can be used to get the next page of results.
@@ -133,9 +133,9 @@ type ReadResultRow struct {
 type WriteResult struct {
 	// Success is true if write succeeded.
 	Success bool `json:"success"`
-	// ObjectId is the ID of the written record.
-	ObjectId string `json:"objectid,omitempty"` // optional
-	// Errors is list of error objects returned by the API.
+	// RecordId is the ID of the written record.
+	RecordId string `json:"recordId,omitempty"` // optional
+	// Errors is list of error record returned by the API.
 	Errors []interface{} `json:"errors,omitempty"` // optional
 	// Data is a JSON node containing data about the properties that were updated.
 	Data map[string]interface{} `json:"data,omitempty"` // optional

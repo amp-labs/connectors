@@ -21,8 +21,8 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, joinErr
 	}
 
-	if config.ObjectId != "" {
-		location, joinErr = url.JoinPath(location, config.ObjectId)
+	if config.RecordId != "" {
+		location, joinErr = url.JoinPath(location, config.RecordId)
 		if joinErr != nil {
 			return nil, joinErr
 		}
@@ -30,7 +30,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		location += "?_HttpMethod=PATCH"
 	}
 
-	rsp, err = c.post(ctx, location, config.ObjectData)
+	rsp, err = c.post(ctx, location, config.RecordData)
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +47,7 @@ func parseWriteResult(rsp *common.JSONHTTPResponse) (*common.WriteResult, error)
 		}, nil
 	}
 
-	createdObjectId, err := getCreatedObjectId(rsp.Body)
+	createdRecordId, err := getCreatedRecordId(rsp.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +65,7 @@ func parseWriteResult(rsp *common.JSONHTTPResponse) (*common.WriteResult, error)
 	// Salesforce does not return record data upon successful write so we do not populate
 	// the corresponding result field
 	return &common.WriteResult{
-		ObjectId: createdObjectId,
+		RecordId: createdRecordId,
 		Errors:   errors,
 		Success:  success,
 	}, nil
@@ -107,7 +107,7 @@ func getErrors(node *ajson.Node) ([]any, error) {
 	return out, nil
 }
 
-func getCreatedObjectId(node *ajson.Node) (string, error) {
+func getCreatedRecordId(node *ajson.Node) (string, error) {
 	idNode, err := node.GetKey("id")
 	if err != nil {
 		return "", err
