@@ -24,7 +24,9 @@ func (c *Connector) ListObjectMetadata(
 
 	// Construct describe requests for each object name
 	for idx, objectName := range objectNames {
-		describeObjectURL, err := url.JoinPath(fmt.Sprintf("/services/data/%s/sobjects/%s/describe", APIVersion(), objectName))
+		describeObjectURL, err := url.JoinPath(
+			fmt.Sprintf("/services/data/%s/sobjects/%s/describe", APIVersion(), objectName),
+		)
 		if err != nil {
 			return nil, err
 		}
