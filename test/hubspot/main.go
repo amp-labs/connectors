@@ -55,8 +55,8 @@ func main() {
 	// Write an artificial contact to Hubspot.
 	result, err := hsConn.Write(ctx, common.WriteParams{
 		ObjectName: "contacts",
-		ObjectId:   "",
-		ObjectData: &Contact{
+		RecordId:   "",
+		RecordData: &Contact{
 			Email:     gofakeit.Email(),
 			Phone:     gofakeit.Phone(),
 			Company:   gofakeit.Company(),

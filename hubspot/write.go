@@ -24,9 +24,9 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 
 	url := fmt.Sprintf("%s/objects/%s", c.BaseURL, config.ObjectName)
 
-	if config.ObjectId != "" {
+	if config.RecordId != "" {
 		write = c.Client.Patch
-		url = fmt.Sprintf("%s/%s", url, config.ObjectId)
+		url = fmt.Sprintf("%s/%s", url, config.RecordId)
 	} else {
 		write = c.Client.Post
 	}
@@ -35,7 +35,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 	// We do this automatically in the write method so that the user doesn't
 	// have to worry about it.
 	data := make(map[string]interface{})
-	data["properties"] = config.ObjectData
+	data["properties"] = config.RecordData
 
 	json, err := write(ctx, url, data)
 	if err != nil {
@@ -48,7 +48,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 	}
 
 	return &common.WriteResult{
-		ObjectId: rsp.ID,
+		RecordId: rsp.ID,
 		Success:  true,
 		Data:     rsp.Properties,
 	}, nil
