@@ -14,6 +14,11 @@ var ModuleCRM = APIModule{ // nolint: gochecknoglobals
 	Version: "v3",
 }
 
+var NoModule = APIModule{ // nolint: gochecknoglobals
+	Label:   "",
+	Version: "",
+}
+
 func (a APIModule) String() string {
 	return fmt.Sprintf("%s/%s", a.Label, a.Version)
 }
