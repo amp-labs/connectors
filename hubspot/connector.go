@@ -1,7 +1,7 @@
 package hubspot
 
 import (
-	"strings"
+	"path"
 
 	"github.com/amp-labs/connectors/common"
 )
@@ -35,7 +35,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	var err error
 	params, err = params.prepare()
 
-	params.client.HTTPClient.Base = strings.Join([]string{"https://api.hubapi.com", params.module}, "/")
+	params.client.HTTPClient.Base = path.Join([]string{"https://api.hubapi.com", params.module}...)
 
 	if err != nil {
 		return nil, err

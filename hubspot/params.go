@@ -3,7 +3,7 @@ package hubspot
 import (
 	"context"
 	"net/http"
-	"strings"
+	"path"
 
 	"github.com/amp-labs/connectors/common"
 	"golang.org/x/oauth2"
@@ -52,8 +52,8 @@ func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
 // WithModule sets the hubspot API module to use for the connector. It's required.
 func WithModule(module APIModule) Option {
 	return func(params *hubspotParams) {
-		path := []string{module.Label, module.Version}
-		params.module = strings.Join(path, "/")
+		elems := []string{module.Label, module.Version}
+		params.module = path.Join(elems...)
 	}
 }
 
