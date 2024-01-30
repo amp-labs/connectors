@@ -20,8 +20,9 @@ func (c *Connector) Search(ctx context.Context, config SearchParams) (*common.Re
 		err error
 	)
 
-	relativeUrl := strings.Join([]string{"objects", config.ObjectName, "search"}, "/")
-	rsp, err = c.post(ctx, c.getUrl(relativeUrl), makeFilterBody(config))
+	relativeURL := strings.Join([]string{"objects", config.ObjectName, "search"}, "/")
+
+	rsp, err = c.post(ctx, c.getURL(relativeURL), makeFilterBody(config))
 	if err != nil {
 		return nil, err
 	}

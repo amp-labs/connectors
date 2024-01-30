@@ -9,13 +9,13 @@ type APIModule struct {
 	Version string // e.g. "v3"
 }
 
-// ModuleCRM is the module used for accessing standard CRM objects
+// ModuleCRM is the module used for accessing standard CRM objects.
 var ModuleCRM = APIModule{ // nolint: gochecknoglobals
 	Label:   "crm",
 	Version: "v3",
 }
 
-// ModuleEmpty is Used for proxying requests through
+// ModuleEmpty is Used for proxying requests through.
 var ModuleEmpty = APIModule{ // nolint: gochecknoglobals
 	Label:   "",
 	Version: "",

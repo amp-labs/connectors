@@ -86,9 +86,9 @@ type describeObjectResult struct {
 
 // describeObject returns object metadata for the given object name.
 func (c *Connector) describeObject(ctx context.Context, objectName string) (*common.ObjectMetadata, error) {
-	relativeUrl := strings.Join([]string{"properties", objectName}, "/")
+	relativeURL := strings.Join([]string{"properties", objectName}, "/")
 
-	rsp, err := c.get(ctx, c.getUrl(relativeUrl))
+	rsp, err := c.get(ctx, c.getURL(relativeURL))
 	if err != nil {
 		return nil, fmt.Errorf("error fetching HubSpot fields: %w", err)
 	}

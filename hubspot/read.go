@@ -53,8 +53,8 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	} else {
 		// If NextPage is not set, then we're reading the first page of results.
 		// We need to construct the query and then make the request.
-		relativeUrl := strings.Join([]string{"objects", config.ObjectName, "?" + makeQueryValues(config)}, "/")
-		rsp, err = c.get(ctx, c.getUrl(relativeUrl))
+		relativeURL := strings.Join([]string{"objects", config.ObjectName, "?" + makeQueryValues(config)}, "/")
+		rsp, err = c.get(ctx, c.getURL(relativeURL))
 	}
 
 	if err != nil {

@@ -68,7 +68,7 @@ func (p *hubspotParams) prepare() (out *hubspotParams, err error) {
 	if p.client == nil {
 		return nil, ErrMissingClient
 	}
-	
+
 	return p, nil
 }
 
