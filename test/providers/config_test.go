@@ -3,18 +3,20 @@ package providers
 import (
 	"errors"
 	"testing"
+
+	"github.com/amp-labs/connectors/providers"
 )
 
 func TestReadConfig(t *testing.T) {
 	// Define test cases
 	testCases := []struct {
-		provider      Provider
+		provider      providers.Provider
 		substitutions map[string]string
 		expected      map[string]string
 		expectedErr   error
 	}{
 		{
-			provider: Salesforce,
+			provider: providers.Salesforce,
 			substitutions: map[string]string{
 				"subdomain": "example",
 			},
@@ -28,7 +30,7 @@ func TestReadConfig(t *testing.T) {
 			expectedErr: nil,
 		},
 		{
-			provider: Hubspot,
+			provider: providers.Hubspot,
 			substitutions: map[string]string{
 				"nonexistentvar": "test",
 			},
@@ -41,7 +43,7 @@ func TestReadConfig(t *testing.T) {
 			expectedErr: nil,
 		},
 		{
-			provider: LinkedIn,
+			provider: providers.LinkedIn,
 			substitutions: map[string]string{
 				"nonexistentvar": "xyz",
 			},
@@ -55,18 +57,18 @@ func TestReadConfig(t *testing.T) {
 			expectedErr: nil,
 		},
 		{
-			provider: Provider("nonexistent"),
+			provider: providers.Provider("nonexistent"),
 			substitutions: map[string]string{
 				"subdomain": "test",
 			},
 			expected:    nil,
-			expectedErr: ErrProviderConfigNotFound,
+			expectedErr: providers.ErrProviderConfigNotFound,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(string(tc.provider), func(t *testing.T) {
-			config, err := ReadConfig(tc.provider, tc.substitutions)
+			config, err := providers.ReadConfig(tc.provider, tc.substitutions)
 
 			if !errors.Is(err, tc.expectedErr) {
 				t.Errorf("Expected error: %v, but got: %v", tc.expectedErr, err)

@@ -2,7 +2,10 @@ package providers
 
 import (
 	"errors"
+	"fmt"
 	"os"
+	"path/filepath"
+	"runtime"
 	"strings"
 	"text/template"
 
@@ -11,7 +14,7 @@ import (
 
 const (
 	// configFileLoc is the name of the config file.
-	configFileLoc = "providers.yaml"
+	configFileRelativeLoc = "providers.yaml"
 )
 
 var (
@@ -68,7 +71,20 @@ func substitute(input string, substitutions *map[string]string) (string, error) 
 
 // read reads the entire configuration from the config file.
 func read() (*Config, error) {
-	data, err := os.ReadFile(configFileLoc)
+	// Figure out the cwd of the caller
+	_, filename, _, ok := runtime.Caller(0)
+	if !ok {
+		return nil, fmt.Errorf("unable to get caller info")
+	}
+
+	// Get the absolute directory of the config file
+	configDir := filepath.Dir(filename)
+
+	// Construct the absolute path to the providers.yaml file
+	yamlPath := filepath.Join(configDir, configFileRelativeLoc)
+
+	// Read the file
+	data, err := os.ReadFile(yamlPath)
 	if err != nil {
 		return nil, err
 	}
