@@ -1,0 +1,28 @@
+# This file contains the configuration for supported providers.
+
+# All provider blocks have two kinds of fields:
+# 1) Connector specific, which define properties specific to the go connector itself (e.g. connector_type)
+# 2) Provider specific, which define configuration related to the actual provider API (e.g. provider_base_url)
+# Each field is prefixed accordingly as a convenience and convention.
+
+# This YAML file allows for {{.variables}} (note the period) in the configuration, which can be replaced at runtime
+# by the connector. This syntax (and more) comes from the https://pkg.go.dev/text/template package.
+
+providers:
+  salesforce:
+    connector_type: full
+    connector_version: 1.0.0
+    provider_auth_type: oauth2
+    provider_base_url: https://{{.subdomain}}.salesforce.com
+
+  hubspot:
+    connector_type: full
+    connector_version: 1.0.0
+    provider_auth_type: oauth2
+    provider_base_url: https://api.hubapi.com
+
+  linkedin:
+    connector_type: basic
+    connector_version: 0.1.0
+    provider_auth_type: oauth2
+    provider_base_url: https://api.linkedin.com
