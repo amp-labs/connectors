@@ -52,8 +52,9 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		rsp, err = c.get(ctx, config.NextPage)
 	} else {
 		// If NextPage is not set, then we're reading the first page of results.
-		// We need to construct the SOQL query and then make the request.
-		rsp, err = c.get(ctx, c.BaseURL+"/objects/"+config.ObjectName+"?"+makeQueryValues(config))
+		// We need to construct the query and then make the request.
+		relativeUrl := strings.Join([]string{"objects", config.ObjectName, "?" + makeQueryValues(config)}, "/")
+		rsp, err = c.get(ctx, c.getUrl(relativeUrl))
 	}
 
 	if err != nil {

@@ -3,6 +3,7 @@ package hubspot
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 )
@@ -22,7 +23,8 @@ type writeMethod func(context.Context, string, any, ...common.Header) (*common.J
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
 	var write writeMethod
 
-	url := fmt.Sprintf("%s/objects/%s", c.BaseURL, config.ObjectName)
+	relativeUrl := strings.Join([]string{"objects", config.ObjectName}, "/")
+	url := c.getUrl(relativeUrl)
 
 	if config.RecordId != "" {
 		write = c.Client.Patch
@@ -30,6 +32,8 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 	} else {
 		write = c.Client.Post
 	}
+
+	fmt.Println("url", url)
 
 	// Hubspot requires everything to be wrapped in a "properties" object.
 	// We do this automatically in the write method so that the user doesn't
