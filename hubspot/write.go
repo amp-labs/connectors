@@ -3,6 +3,7 @@ package hubspot
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 )
@@ -22,7 +23,8 @@ type writeMethod func(context.Context, string, any, ...common.Header) (*common.J
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
 	var write writeMethod
 
-	url := fmt.Sprintf("%s/objects/%s", c.BaseURL, config.ObjectName)
+	relativeURL := strings.Join([]string{"objects", config.ObjectName}, "/")
+	url := c.getURL(relativeURL)
 
 	if config.RecordId != "" {
 		write = c.Client.Patch
