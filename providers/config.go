@@ -3,11 +3,11 @@ package providers
 import (
 	"errors"
 	"fmt"
+	"html/template"
 	"os"
 	"path/filepath"
 	"runtime"
 	"strings"
-	"text/template"
 
 	"gopkg.in/yaml.v3"
 )

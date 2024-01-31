@@ -6,7 +6,7 @@
 # Each field is prefixed accordingly as a convenience and convention.
 
 # This YAML file allows for {{.variables}} (note the period) in the configuration, which can be replaced at runtime
-# by the connector. This syntax (and more) comes from the https://pkg.go.dev/text/template package.
+# by the connector. This syntax (and more) comes from the https://pkg.go.dev/html/template package.
 
 providers:
   salesforce:
