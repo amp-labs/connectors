@@ -15,7 +15,7 @@ var ModuleCRM = APIModule{ // nolint: gochecknoglobals
 	Version: "v3",
 }
 
-// ModuleEmpty is Used for proxying requests through.
+// ModuleEmpty is used for proxying requests through.
 var ModuleEmpty = APIModule{ // nolint: gochecknoglobals
 	Label:   "",
 	Version: "",
