@@ -1,8 +1,6 @@
 package hubspot
 
 import (
-	"fmt"
-
 	"github.com/amp-labs/connectors/common"
 )
 
@@ -35,7 +33,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	var err error
 	params, err = params.prepare()
 
-	params.client.HTTPClient.Base = fmt.Sprintf("https://api.hubapi.com/%s", params.module)
+	params.client.HTTPClient.Base = "https://api.hubapi.com"
 
 	if err != nil {
 		return nil, err

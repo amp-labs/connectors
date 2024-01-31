@@ -69,10 +69,6 @@ func (p *hubspotParams) prepare() (out *hubspotParams, err error) {
 		return nil, ErrMissingClient
 	}
 
-	if len(p.module) == 0 {
-		return nil, ErrMissingAPIModule
-	}
-
 	return p, nil
 }
 
