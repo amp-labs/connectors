@@ -18,7 +18,7 @@ const (
 )
 
 var (
-	ErrProviderConfigNotFound = errors.New("provider config not found")
+	ErrProviderConfigNotFound = errors.New("provider config file not found")
 )
 
 // Config is the entire configuration for all providers.
