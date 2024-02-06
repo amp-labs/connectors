@@ -89,6 +89,7 @@ type NamedCredential struct {
 	MasterLabel         string                `json:"masterLabel"             validate:"required"`
 	ExternalCredentials []*ExternalCredential `json:"externalCredentials"     validate:"required"`
 	CalloutOptions      *CalloutOptions       `json:"calloutOptions"          validate:"required"`
+	CalloutStatus       string                `json:"calloutStatus,omitempty" validate:"required"`
 	CalloutURL          string                `json:"calloutUrl"              validate:"required"`
 	Type                string                `json:"type"                    validate:"required"`
 
@@ -100,22 +101,12 @@ type NamedCredential struct {
 	URL                string        `json:"url,omitempty"`
 }
 
-type NamedCredentialParameters struct {
-	ExternalCredential string `json:"externalCredential"`
-	ParameterName      string `json:"parameterName"`
-	ParameterType      string `json:"parameterType"`
-	ParameterValue     string `json:"parameterValue"`
-}
-
 type NamedCredentialMetadata struct {
-	Endpoint                    string                       `json:"endpoint"`
-	GenerateAuthorizationHeader bool                         `json:"generateAuthorizationHeader"`
-	Label                       string                       `json:"label"`
-	PrincipalType               string                       `json:"principalType"`
-	Protocol                    string                       `json:"protocol"`
-	AwsService                  string                       `json:"awsService,omitempty"`
-	AwsRegion                   string                       `json:"awsRegion,omitempty"`
-	NamedCredentialParameters   []*NamedCredentialParameters `json:"namedCredentialParameters,omitempty"`
+	Endpoint                    string `json:"endpoint"`
+	GenerateAuthorizationHeader bool   `json:"generateAuthorizationHeader"`
+	Label                       string `json:"label"`
+	PrincipalType               string `json:"principalType"`
+	Protocol                    string `json:"protocol"`
 }
 
 type NamedCredentialLegacy struct {
@@ -237,8 +228,6 @@ func (c *Connector) RunEventRelay(ctx context.Context, configId string) (*EventR
 	return config, nil
 }
 
-// nolint: lll
-// https://developer.salesforce.com/docs/atlas.en-us.chatterapi.meta/chatterapi/connect_responses_organization.htm?q=organization
 func (c *Connector) getOrganization(ctx context.Context) (map[string]*ajson.Node, error) {
 	location, err := joinURLPath(c.BaseURL, "connect/organization")
 	if err != nil {
