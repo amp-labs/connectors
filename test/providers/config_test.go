@@ -11,14 +11,17 @@ func TestReadConfig(t *testing.T) {
 	// Define test cases
 	testCases := []struct {
 		provider      providers.Provider
+		description   string
 		substitutions map[string]string
 		expected      map[string]string
 		expectedErr   error
 	}{
 		{
-			provider: providers.Salesforce,
+			provider:    providers.Salesforce,
+			description: "Salesforce provider config with valid & invalid substitutions",
 			substitutions: map[string]string{
 				"subdomain": "example",
+				"version":   "-1.0",
 			},
 			expected: map[string]string{
 				"connector_type":     "full",
@@ -30,7 +33,8 @@ func TestReadConfig(t *testing.T) {
 			expectedErr: nil,
 		},
 		{
-			provider: providers.Hubspot,
+			provider:    providers.Hubspot,
+			description: "Valid hubspot provider config with non-existent substitutions",
 			substitutions: map[string]string{
 				"nonexistentvar": "test",
 			},
@@ -43,7 +47,8 @@ func TestReadConfig(t *testing.T) {
 			expectedErr: nil,
 		},
 		{
-			provider: providers.LinkedIn,
+			provider:    providers.LinkedIn,
+			description: "Valid LinkedIn provider config with non-existent substitutions",
 			substitutions: map[string]string{
 				"nonexistentvar": "xyz",
 			},
@@ -57,7 +62,8 @@ func TestReadConfig(t *testing.T) {
 			expectedErr: nil,
 		},
 		{
-			provider: providers.Provider("nonexistent"),
+			provider:    providers.Provider("nonexistent"),
+			description: "Non-existent provider config",
 			substitutions: map[string]string{
 				"subdomain": "test",
 			},
@@ -69,6 +75,7 @@ func TestReadConfig(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(string(tc.provider), func(t *testing.T) {
 			config, err := providers.ReadConfig(tc.provider, tc.substitutions)
+			t.Logf("Test case: %s", tc.description)
 
 			if !errors.Is(err, tc.expectedErr) {
 				t.Errorf("Expected error: %v, but got: %v", tc.expectedErr, err)
