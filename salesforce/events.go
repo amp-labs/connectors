@@ -9,6 +9,15 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
+// nolint: revive
+const (
+	AllowedManagedPackageNamespaces NamedCredentialParameterType = "AllowedManagedPackageNamespaces"
+	ClientCertificate               NamedCredentialParameterType = "ClientCertificate"
+	HttpHeader                      NamedCredentialParameterType = "HttpHeader"
+	OutboundNetworkConnection       NamedCredentialParameterType = "OutboundNetworkConnection"
+	Url                             NamedCredentialParameterType = "Url"
+)
+
 type SFAPIResponseBody struct {
 	Id       string        `json:"id"`
 	Success  bool          `json:"success"`
@@ -17,10 +26,11 @@ type SFAPIResponseBody struct {
 	Warnings []interface{} `json:"warnings"`
 }
 
+// nolint:tagliatelle
 type EventChannel struct {
-	Id       string                `json:"Id,omitempty"` // nolint:tagliatelle
-	FullName string                `json:"FullName"`     // nolint:tagliatelle
-	Metadata *EventChannelMetadata `json:"Metadata"`     // nolint:tagliatelle
+	Id       string                `json:"Id,omitempty"`
+	FullName string                `json:"FullName"`
+	Metadata *EventChannelMetadata `json:"Metadata"`
 }
 
 type EventChannelMetadata struct {
@@ -28,13 +38,14 @@ type EventChannelMetadata struct {
 	Label       string `json:"label"`
 }
 
+// nolint:tagliatelle
 type EventRelayConfig struct {
-	Id                      string                    `json:"Id,omitempty"`                      // nolint:tagliatelle
-	FullName                string                    `json:"FullName,omitempty"`                // nolint:tagliatelle
-	Metadata                *EventRelayConfigMetadata `json:"Metadata,omitempty"`                // nolint:tagliatelle
-	DeveloperName           string                    `json:"DeveloperName,omitempty"`           // nolint:tagliatelle
-	DestinationResourceName string                    `json:"DestinationResourceName,omitempty"` // nolint:tagliatelle
-	EventChannel            string                    `json:"EventChannel,omitempty"`            // nolint:tagliatelle
+	Id                      string                    `json:"Id,omitempty"`
+	FullName                string                    `json:"FullName,omitempty"`
+	Metadata                *EventRelayConfigMetadata `json:"Metadata,omitempty"`
+	DeveloperName           string                    `json:"DeveloperName,omitempty"`
+	DestinationResourceName string                    `json:"DestinationResourceName,omitempty"`
+	EventChannel            string                    `json:"EventChannel,omitempty"`
 }
 
 type EventRelayConfigMetadata struct {
@@ -43,10 +54,11 @@ type EventRelayConfigMetadata struct {
 	State                   string `json:"state,omitempty"`
 }
 
+// nolint:tagliatelle
 type EventChannelMember struct {
-	Id       string                      `json:"Id,omitempty"` // nolint:tagliatelle
-	FullName string                      `json:"FullName"`     // nolint:tagliatelle
-	Metadata *EventChannelMemberMetadata `json:"Metadata"`     // nolint:tagliatelle
+	Id       string                      `json:"Id,omitempty"`
+	FullName string                      `json:"FullName"`
+	Metadata *EventChannelMemberMetadata `json:"Metadata"`
 }
 
 type EventChannelMemberMetadata struct {
@@ -54,28 +66,15 @@ type EventChannelMemberMetadata struct {
 	SelectedEntity string `json:"selectedEntity,omitempty"`
 }
 
-type ExternalCredentialParameters struct {
-	ParameterName  string `json:"parameterName"`
-	ParameterType  string `json:"parameterType"`
-	ParameterValue string `json:"parameterValue"`
-}
+type NamedCredentialParameterType string
 
-// nolint: lll
-// https://developer.salesforce.com/docs/atlas.en-us.chatterapi.meta/chatterapi/connect_responses_external_credential.htm
-type ExternalCredential struct {
-	DeveloperName          string                          `json:"developerName"                    validate:"required"`
-	MasterLabel            string                          `json:"masterLabel,omitempty"            validate:"required"`
-	AuthenticationProtocol string                          `json:"authenticationProtocol,omitempty" validate:"required"`
-	Parameters             []*ExternalCredentialParameters `json:"parameters,omitempty"             validate:"required"`
-
-	Id                            string             `json:"id,omitempty"`
-	AuthenticationProtocolVariant string             `json:"authenticationProtocolVariant,omitempty"`
-	AuthenticationStatus          string             `json:"authenticationStatus,omitempty"`
-	CreatedByNamespace            string             `json:"createdByNamespacePrefix,omitempty"`
-	CustomHeaders                 []interface{}      `json:"customHeaders,omitempty"`
-	Principals                    []interface{}      `json:"principals,omitempty"`
-	RelatedNamedCredentials       []*NamedCredential `json:"relatedNamedCredentials,omitempty"`
-	URL                           string             `json:"url,omitempty"`
+// nolint: tagliatelle
+type ToolingApiBaseParams struct {
+	DeveloperName   string `json:"DeveloperName,omitempty"`
+	Language        string `json:"Language,omitempty"`
+	ManageableState string `json:"ManageableState,omitempty"`
+	MasterLabel     string `json:"MasterLabel,omitempty"`
+	NamespacePrefix string `json:"NamespacePrefix,omitempty"`
 }
 
 type CalloutOptions struct {
@@ -84,59 +83,70 @@ type CalloutOptions struct {
 	GenerateAuthorizationHeader bool `json:"generateAuthorizationHeader"`
 }
 
-type NamedCredential struct {
-	DeveloperName       string                `json:"developerName"           validate:"required"`
-	MasterLabel         string                `json:"masterLabel"             validate:"required"`
-	ExternalCredentials []*ExternalCredential `json:"externalCredentials"     validate:"required"`
-	CalloutOptions      *CalloutOptions       `json:"calloutOptions"          validate:"required"`
-	CalloutStatus       string                `json:"calloutStatus,omitempty" validate:"required"`
-	CalloutURL          string                `json:"calloutUrl"              validate:"required"`
-	Type                string                `json:"type"                    validate:"required"`
-
-	Id                 string        `json:"id,omitempty"`
-	CreatedByNamespace string        `json:"createdByNamespacePrefix,omitempty"`
-	CustomHeaders      []interface{} `json:"customHeaders,omitempty"`
-	NetworkConnection  interface{}   `json:"networkConnection,omitempty"`
-	Parameters         []interface{} `json:"parameters,omitempty"`
-	URL                string        `json:"url,omitempty"`
+type NamedCredentialParameter struct {
+	Certificate               string `json:"certificate"`
+	Description               string `json:"description"`
+	ExternalCredential        string `json:"externalCredential"`
+	OutboundNetworkConnection string `json:"outboundNetworkConnection"`
+	ParameterName             string `json:"parameterName"`
+	ParameterType             string `json:"parameterType"`
+	ParameterValue            string `json:"parameterValue"`
+	SequenceNumber            int    `json:"sequenceNumber"`
 }
 
+// nolint: lll
 type NamedCredentialMetadata struct {
-	Endpoint                    string `json:"endpoint"`
-	GenerateAuthorizationHeader bool   `json:"generateAuthorizationHeader"`
-	Label                       string `json:"label"`
-	PrincipalType               string `json:"principalType"`
-	Protocol                    string `json:"protocol"`
+	AllowMergeFieldsInBody      bool                        `json:"allowMergeFieldsInBody,omitempty"`
+	AllowMergeFieldsInHeader    bool                        `json:"allowMergeFieldsInHeader,omitempty"`
+	GenerateAuthorizationHeader bool                        `json:"generateAuthorizationHeader,omitempty"`
+	FullName                    string                      `json:"fullName,omitempty"                    validate:"required"`
+	Label                       string                      `json:"label,omitempty"`
+	NamedCredentialParameters   []*NamedCredentialParameter `json:"namedCredentialParameters,omitempty"`
+	NamedCredentialType         string                      `json:"namedCredentialType,omitempty"`
+
+	// Below are deprecated fields, but still in use in SF
+	AuthProvider             string `json:"authProvider,omitempty"`
+	AuthTokenEndpointUrl     string `json:"authTokenEndpointUrl,omitempty"` // nolint: revive
+	AwsAccessKey             string `json:"awsAccessKey,omitempty"`
+	AwsAccessSecret          string `json:"awsAccessSecret,omitempty"`
+	AwsRegion                string `json:"awsRegion,omitempty"`
+	AwsService               string `json:"awsService,omitempty"`
+	Certificate              string `json:"certificate,omitempty"`
+	Endpoint                 string `json:"endpoint,omitempty"`
+	JwtAudience              string `json:"jwtAudience,omitempty"`
+	JwtFormulaSubject        string `json:"jwtFormulaSubject,omitempty"`
+	JwtIssuer                string `json:"jwtIssuer,omitempty"`
+	JwtSigningCertificate    string `json:"jwtSigningCertificate,omitempty"`
+	JwtTextSubject           string `json:"jwtTextSubject,omitempty"`
+	JwtValidityPeriodSeconds int    `json:"jwtValidityPeriodSeconds,omitempty"`
+	OauthRefreshToken        string `json:"oauthRefreshToken,omitempty"`
+	OauthScope               string `json:"oauthScope,omitempty"`
+	OauthToken               string `json:"oauthToken,omitempty"`
+	Password                 string `json:"password,omitempty"`
+	PrincipalType            string `json:"principalType,omitempty"`
+	Protocol                 string `json:"protocol,omitempty"`
+	Username                 string `json:"username,omitempty"`
 }
 
-type NamedCredentialLegacy struct {
-	Id       string                   `json:"Id,omitempty"` // nolint:tagliatelle
-	FullName string                   `json:"FullName"`     // nolint:tagliatelle
-	Metadata *NamedCredentialMetadata `json:"Metadata"`     // nolint:tagliatelle
+// nolint:tagliatelle
+type NamedCredential struct {
+	FullName string                   `json:"FullName"`
+	Metadata *NamedCredentialMetadata `json:"Metadata"`
+
+	// below exist in response, but not in request
+	Id string `json:"Id,omitempty"`
 }
 
-func (n *NamedCredentialLegacy) GetRemoteResource() string {
+func (n *NamedCredential) DestinationResourceName() string {
 	return fmt.Sprint("callout:", n.FullName)
 }
 
+// nolint: lll
+// https://developer.salesforce.com/docs/atlas.en-us.api_tooling.meta/api_tooling/tooling_api_objects_platformeventchannel.htm
 func (c *Connector) CreateEventChannel(ctx context.Context, channel *EventChannel) (*EventChannel, error) {
-	location, err := joinURLPath(c.BaseURL, "tooling/sobjects/PlatformEventChannel")
+	res, err := c.postToSFAPI(ctx, channel, "tooling/sobjects/PlatformEventChannel", "PlatformEventChannel")
 	if err != nil {
 		return nil, err
-	}
-
-	resp, err := c.post(ctx, location, channel)
-	if err != nil {
-		return nil, err
-	}
-
-	res, err := common.UnmarshalJSON[SFAPIResponseBody](resp)
-	if err != nil {
-		return nil, err
-	}
-
-	if res.Warnings != nil && len(res.Warnings) > 0 {
-		slog.Warn("CreateEventChannelMember", "warnings", res.Warnings)
 	}
 
 	channel.Id = res.Id
@@ -144,27 +154,15 @@ func (c *Connector) CreateEventChannel(ctx context.Context, channel *EventChanne
 	return channel, nil
 }
 
+// nolint: lll
+// https://developer.salesforce.com/docs/atlas.en-us.api_tooling.meta/api_tooling/tooling_api_objects_platformeventchannelmember.htm
 func (c *Connector) CreateEventChannelMember(
 	ctx context.Context,
 	member *EventChannelMember,
 ) (*EventChannelMember, error) {
-	location, err := joinURLPath(c.BaseURL, "tooling/sobjects/PlatformEventChannelMember")
+	res, err := c.postToSFAPI(ctx, member, "tooling/sobjects/PlatformEventChannelMember", "EventChannelMember")
 	if err != nil {
 		return nil, err
-	}
-
-	resp, err := c.post(ctx, location, member)
-	if err != nil {
-		return nil, err
-	}
-
-	res, err := common.UnmarshalJSON[SFAPIResponseBody](resp)
-	if err != nil {
-		return nil, err
-	}
-
-	if res.Warnings != nil && len(res.Warnings) > 0 {
-		slog.Warn("CreateEventChannelMember", "warnings", res.Warnings)
 	}
 
 	member.Id = res.Id
@@ -178,17 +176,7 @@ func (c *Connector) CreateEventRelayConfig(
 	ctx context.Context,
 	cfg *EventRelayConfig,
 ) (*EventRelayConfig, error) {
-	location, err := joinURLPath(c.BaseURL, "tooling/sobjects/EventRelayConfig")
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := c.post(ctx, location, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	res, err := common.UnmarshalJSON[SFAPIResponseBody](resp)
+	res, err := c.postToSFAPI(ctx, cfg, "/tooling/sobjects/EventRelayConfig", "EventRelayConfig")
 	if err != nil {
 		return nil, err
 	}
@@ -200,41 +188,33 @@ func (c *Connector) CreateEventRelayConfig(
 
 // nolint: lll
 // https://developer.salesforce.com/docs/atlas.en-us.api_tooling.meta/api_tooling/tooling_api_objects_eventrelayconfig.htm?q=EventRelayConfig
-func (c *Connector) RunEventRelay(ctx context.Context, configId string) (*EventRelayConfig, error) {
-	location, err := joinURLPath(c.BaseURL, "tooling/sobjects/EventRelayConfig", configId)
+func (c *Connector) RunEventRelay(ctx context.Context, cfg *EventRelayConfig) error {
+	location, err := joinURLPath("tooling/sobjects/EventRelayConfig", cfg.Id)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	config := &EventRelayConfig{
-		Id: configId,
+		FullName: cfg.FullName,
 		Metadata: &EventRelayConfigMetadata{
 			State: "RUN",
 		},
 	}
 
-	resp, err := c.patch(ctx, location, config)
+	_, err = c.patch(ctx, location, config) // patch returns no content with 204. If it fails, it will return an error.
 	if err != nil {
-		return nil, err
+		slog.Error("Run EventRelayConfig", "error", err)
+
+		return err
 	}
 
-	res, err := common.UnmarshalJSON[SFAPIResponseBody](resp)
-	if err != nil {
-		return nil, err
-	}
-
-	config.Id = res.Id
-
-	return config, nil
+	return nil
 }
 
+// nolint: lll
+// https://developer.salesforce.com/docs/atlas.en-us.chatterapi.meta/chatterapi/connect_responses_organization.htm?q=organization
 func (c *Connector) getOrganization(ctx context.Context) (map[string]*ajson.Node, error) {
-	location, err := joinURLPath(c.BaseURL, "connect/organization")
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := c.get(ctx, location)
+	resp, err := c.get(ctx, "connect/organization")
 	if err != nil {
 		return nil, err
 	}
@@ -251,82 +231,14 @@ func (c *Connector) GetOrganizationId(ctx context.Context) (string, error) {
 	return org["orgId"].MustString(), nil
 }
 
-func (c *Connector) GetRemoteResouece(ctx context.Context, channelId string) (string, error) {
-	orgId, err := c.GetOrganizationId(ctx)
-	if err != nil {
-		return "", err
-	}
-
-	return fmt.Sprintf("aws.partner/salesforce.com/%s/%s", orgId, channelId), nil
-}
-
-// nolint: lll
-// https://developer.salesforce.com/docs/atlas.en-us.chatterapi.meta/chatterapi/connect_resources_named_credentials_external_credentials.htm
-func (c *Connector) CreateExternalCredential(
-	ctx context.Context,
-	creds *ExternalCredential,
-) (*ExternalCredential, error) {
-	location, err := joinURLPath(c.BaseURL, "named-credentials/external-credentials")
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := c.post(ctx, location, creds)
-	if err != nil {
-		return nil, err
-	}
-
-	res, err := common.UnmarshalJSON[SFAPIResponseBody](resp)
-	if err != nil {
-		return nil, err
-	}
-
-	creds.Id = res.Id
-
-	return creds, nil
-}
-
-func (n *NamedCredential) GetRemoteResource() string {
-	return fmt.Sprint("callout:", n.DeveloperName)
-}
-
-// nolint: lll
-// https://developer.salesforce.com/docs/atlas.en-us.chatterapi.meta/chatterapi/connect_resources_setup_named_credentials.htm
-func (c *Connector) CreateNamedCredential(ctx context.Context, creds *NamedCredential) (*NamedCredential, error) {
-	location, err := joinURLPath(c.BaseURL, "named-credentials/named-credential-setup")
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := c.post(ctx, location, creds)
-	if err != nil {
-		return nil, err
-	}
-
-	res, err := common.UnmarshalJSON[SFAPIResponseBody](resp)
-	if err != nil {
-		return nil, err
-	}
-
-	creds.Id = res.Id
-
-	return creds, nil
+func GetRemoteResource(orgId, channelId string) string {
+	return fmt.Sprintf("aws.partner/salesforce.com/%s/%s", orgId, channelId)
 }
 
 // nolint: lll
 // https://developer.salesforce.com/docs/atlas.en-us.api_tooling.meta/api_tooling/tooling_api_objects_namedcredential.htm
-func (c *Connector) CreateNamedCredentialLegacy(ctx context.Context, creds *NamedCredentialLegacy) (*NamedCredentialLegacy, error) {
-	location, err := joinURLPath(c.BaseURL, "tooling/sobjects/NamedCredential")
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := c.post(ctx, location, creds)
-	if err != nil {
-		return nil, err
-	}
-
-	res, err := common.UnmarshalJSON[SFAPIResponseBody](resp)
+func (c *Connector) CreateNamedCredential(ctx context.Context, creds *NamedCredential) (*NamedCredential, error) {
+	res, err := c.postToSFAPI(ctx, creds, "/tooling/sobjects/NamedCredential", "NamedCredential")
 	if err != nil {
 		return nil, err
 	}
@@ -337,5 +249,26 @@ func (c *Connector) CreateNamedCredentialLegacy(ctx context.Context, creds *Name
 }
 
 type Credential interface {
-	GetRemoteResource() string
+	DestinationResourceName() string
+}
+
+func (c *Connector) postToSFAPI(ctx context.Context, body any, path string, entity string) (*SFAPIResponseBody, error) {
+	location, err := joinURLPath(c.BaseURL, path)
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println("location: ", location)
+
+	resp, err := c.post(ctx, location, body)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := common.UnmarshalJSON[SFAPIResponseBody](resp)
+	if res.Warnings != nil && len(res.Warnings) > 0 {
+		slog.Warn(entity, "warnings", res.Warnings)
+	}
+
+	return res, err
 }
