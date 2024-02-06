@@ -5,6 +5,9 @@ type Catalog struct {
 	Providers map[Provider]ProviderConfig `yaml:"providers"`
 }
 
+// ProviderConfig is the configuration for a specific provider.  We use reflection to substitute any variables
+// in the configuration. The substitution is only done on string fields. If you want to use pointers in the struct,
+// you might have to update the code to handle it.
 type ProviderConfig struct {
 	Support ConnectorSupport `yaml:"support"`
 	Auth    Auth             `yaml:"auth"`
