@@ -1,28 +1,47 @@
 # This file contains the configuration for supported providers.
 
-# All provider blocks have two kinds of fields:
-# 1) Connector specific, which define properties specific to the go connector itself (e.g. connector_type)
-# 2) Provider specific, which define configuration related to the actual provider API (e.g. provider_base_url)
-# Each field is prefixed accordingly as a convenience and convention.
-
 # This YAML file allows for {{.variables}} (note the period) in the configuration, which can be replaced at runtime
 # by the connector. This syntax (and more) comes from the https://pkg.go.dev/html/template package.
 
+# The types.go file has the yaml tags for the struct fields, which are used to unmarshal the yaml into the struct.
+# For example, the `base_url` field is unmarshaled into the `BaseURL` field in the struct as per the `yaml:"base_url"` tag.
+
+# Use camelCase for field names.
+
 providers:
   salesforce:
-    connector_type: full
-    connector_version: 1.0.0
-    provider_auth_type: oauth2
-    provider_base_url: https://{{.subdomain}}.salesforce.com
+    baseUrl: https://{{.subdomain}}.salesforce.com
+    auth:
+      type: oauth2
+      authUrl: https://{{.subdomain}}.my.salesforce.com/services/oauth2/authorize
+      tokenUrl: https://{{.subdomain}}.my.salesforce.com/services/oauth2/token
+    support:
+      bulkWrite: true
+      proxy: true
+      read: true
+      subscribe: false
+      write: true
 
   hubspot:
-    connector_type: full
-    connector_version: 1.0.0
-    provider_auth_type: oauth2
-    provider_base_url: https://api.hubapi.com
+    baseUrl: https://api.hubapi.com
+    auth:
+      type: oauth2
+      authUrl: https://app.hubspot.com/oauth/authorize
+      tokenUrl: https://api.hubapi.com/oauth/v1/token
+    support:
+      bulkWrite: false
+      proxy: true
+      read: true
+      subscribe: false
+      write: true
 
   linkedin:
-    connector_type: basic
-    connector_version: 0.1.0
-    provider_auth_type: oauth2
-    provider_base_url: https://api.linkedin.com
+    baseUrl: https://api.linkedin.com
+    auth:
+      type: oauth2
+    support:
+      bulkWrite: false
+      proxy: false
+      read: false
+      subscribe: false
+      write: false

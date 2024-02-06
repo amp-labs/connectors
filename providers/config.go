@@ -2,10 +2,10 @@ package providers
 
 import (
 	"errors"
-	"fmt"
 	"html/template"
 	"os"
 	"path/filepath"
+	"reflect"
 	"runtime"
 	"strings"
 
@@ -19,18 +19,12 @@ const (
 
 var (
 	ErrProviderConfigNotFound = errors.New("provider config file not found")
+	ErrUnableToGetCallerInfo  = errors.New("unable to get caller info")
 )
 
-// Config is the entire configuration for all providers.
-type Config struct {
-	Providers map[Provider]map[string]string `yaml:"providers"`
-}
-
-// ReadConfig reads the configuration from the config file for
-// a specific provider. It also performs string substitution
-// on the values in the config that are surrounded by {{}}.
-// The provider YAML has more details on how it works.
-func ReadConfig(provider Provider, substitutions map[string]string) (map[string]string, error) {
+// ReadConfig reads the configuration from the config file for a specific provider. It also performs string substitution
+// on the values in the config that are surrounded by {{}}. The provider YAML has more details on how it works.
+func ReadConfig(provider Provider, substitutions *map[string]string) (*ProviderConfig, error) {
 	config, err := read()
 	if err != nil {
 		return nil, err
@@ -42,14 +36,41 @@ func ReadConfig(provider Provider, substitutions map[string]string) (map[string]
 	}
 
 	// Apply substitutions to the provider configuration values which contain variables in the form of {{var}}.
-	for providerConfigKey, providerConfigValue := range providerConfig {
-		providerConfig[providerConfigKey], err = substitute(providerConfigValue, &substitutions)
-		if err != nil {
-			return nil, err
+	err = substituteStruct(&providerConfig, substitutions)
+	if err != nil {
+		return nil, err
+	}
+
+	return &providerConfig, nil
+}
+
+// substituteStruct performs string substitution on the fields of the input struct
+// using the substitutions map.
+func substituteStruct(input interface{}, substitutions *map[string]string) (err error) {
+	configStruct := reflect.ValueOf(input).Elem()
+	for i := 0; i < configStruct.NumField(); i++ {
+		field := configStruct.Field(i)
+
+		// If the field is a string, perform substitution on it.
+		if field.Kind() == reflect.String {
+			substitutedVal, err := substitute(field.String(), substitutions)
+			if err != nil {
+				return err
+			}
+
+			field.SetString(substitutedVal)
+		}
+
+		// If the field is a struct, perform substitution on its fields.
+		if field.Kind() == reflect.Struct {
+			err := substituteStruct(field.Addr().Interface(), substitutions)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
-	return providerConfig, nil
+	return nil
 }
 
 // substitute performs string substitution on the input string
@@ -61,6 +82,7 @@ func substitute(input string, substitutions *map[string]string) (string, error) 
 	}
 
 	var result strings.Builder
+
 	err = tmpl.Execute(&result, substitutions)
 	if err != nil {
 		return "", err
@@ -70,11 +92,11 @@ func substitute(input string, substitutions *map[string]string) (string, error) 
 }
 
 // read reads the entire configuration from the config file.
-func read() (*Config, error) {
+func read() (*Catalog, error) {
 	// Figure out the cwd of the caller
 	_, filename, _, ok := runtime.Caller(0)
 	if !ok {
-		return nil, fmt.Errorf("unable to get caller info")
+		return nil, ErrUnableToGetCallerInfo
 	}
 
 	// Get the absolute directory of the config file
@@ -89,7 +111,7 @@ func read() (*Config, error) {
 		return nil, err
 	}
 
-	config := &Config{}
+	config := &Catalog{}
 
 	err = yaml.Unmarshal(data, config)
 	if err != nil {

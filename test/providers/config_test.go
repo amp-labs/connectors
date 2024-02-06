@@ -13,7 +13,7 @@ func TestReadConfig(t *testing.T) {
 		provider      providers.Provider
 		description   string
 		substitutions map[string]string
-		expected      map[string]string
+		expected      *providers.ProviderConfig
 		expectedErr   error
 	}{
 		{
@@ -23,12 +23,20 @@ func TestReadConfig(t *testing.T) {
 				"subdomain": "example",
 				"version":   "-1.0",
 			},
-			expected: map[string]string{
-				"connector_type":     "full",
-				"connector_version":  "1.0.0",
-				"provider_auth_type": "oauth2",
-				"provider_base_url":  "https://example.salesforce.com",
-				"provider_version":   "v59.0",
+			expected: &providers.ProviderConfig{
+				Support: providers.ConnectorSupport{
+					Read:      true,
+					Write:     true,
+					BulkWrite: true,
+					Subscribe: false,
+					Proxy:     true,
+				},
+				Auth: providers.Auth{
+					Type:     providers.AuthTypeOAuth2,
+					AuthURL:  "https://example.my.salesforce.com/services/oauth2/authorize",
+					TokenURL: "https://example.my.salesforce.com/services/oauth2/token",
+				},
+				BaseURL: "https://example.salesforce.com",
 			},
 			expectedErr: nil,
 		},
@@ -38,11 +46,20 @@ func TestReadConfig(t *testing.T) {
 			substitutions: map[string]string{
 				"nonexistentvar": "test",
 			},
-			expected: map[string]string{
-				"connector_type":     "full",
-				"connector_version":  "1.0.0",
-				"provider_auth_type": "oauth2",
-				"provider_base_url":  "https://api.hubapi.com",
+			expected: &providers.ProviderConfig{
+				Support: providers.ConnectorSupport{
+					Read:      true,
+					Write:     true,
+					BulkWrite: false,
+					Subscribe: false,
+					Proxy:     true,
+				},
+				Auth: providers.Auth{
+					Type:     providers.AuthTypeOAuth2,
+					AuthURL:  "https://app.hubspot.com/oauth/authorize",
+					TokenURL: "https://api.hubapi.com/oauth/v1/token",
+				},
+				BaseURL: "https://api.hubapi.com",
 			},
 			expectedErr: nil,
 		},
@@ -52,12 +69,18 @@ func TestReadConfig(t *testing.T) {
 			substitutions: map[string]string{
 				"nonexistentvar": "xyz",
 			},
-			expected: map[string]string{
-				"connector_type":     "basic",
-				"connector_version":  "0.1.0",
-				"provider_auth_type": "oauth2",
-				"provider_base_url":  "https://api.linkedin.com",
-				"provider_version":   "2",
+			expected: &providers.ProviderConfig{
+				Support: providers.ConnectorSupport{
+					Read:      false,
+					Write:     false,
+					BulkWrite: false,
+					Subscribe: false,
+					Proxy:     false,
+				},
+				Auth: providers.Auth{
+					Type: providers.AuthTypeOAuth2,
+				},
+				BaseURL: "https://api.linkedin.com",
 			},
 			expectedErr: nil,
 		},
@@ -74,7 +97,7 @@ func TestReadConfig(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(string(tc.provider), func(t *testing.T) {
-			config, err := providers.ReadConfig(tc.provider, tc.substitutions)
+			config, err := providers.ReadConfig(tc.provider, &tc.substitutions)
 			t.Logf("Test case: %s", tc.description)
 
 			if !errors.Is(err, tc.expectedErr) {
@@ -82,10 +105,16 @@ func TestReadConfig(t *testing.T) {
 			}
 
 			if tc.expectedErr == nil && config != nil {
-				for key, value := range config {
-					if expected, ok := tc.expected[key]; ok && value != expected {
-						t.Errorf("Mismatch for key: %s, expected: %s, got: %s", key, expected, value)
-					}
+				if config.Support != tc.expected.Support {
+					t.Errorf("Expected support: %v, but got: %v", tc.expected.Support, config.Support)
+				}
+
+				if config.Auth != tc.expected.Auth {
+					t.Errorf("Expected auth: %v, but got: %v", tc.expected.Auth, config.Auth)
+				}
+
+				if config.BaseURL != tc.expected.BaseURL {
+					t.Errorf("Expected base URL: %s, but got: %s", tc.expected.BaseURL, config.BaseURL)
 				}
 			}
 		})
