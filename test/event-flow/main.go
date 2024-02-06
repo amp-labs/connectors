@@ -223,7 +223,7 @@ func TestCredentials(sfc *salesforce.Connector, ctx context.Context, uniqueStrin
 	printWithField("External credential created", "body", newExtCreds)
 
 	namedCred := &salesforce.NamedCredential{
-		DeveloperName: "TestNamedCredential" + uniqueString,
+		DeveloperName: "testNOAUTH",
 		MasterLabel:   "TestNamedCredential" + uniqueString,
 		ExternalCredentials: []*salesforce.ExternalCredential{
 			{
@@ -235,8 +235,8 @@ func TestCredentials(sfc *salesforce.Connector, ctx context.Context, uniqueStrin
 			GenerateAuthorizationHeader: true,
 			AllowMergeFieldsInBody:      false,
 		},
-		CalloutURL: "arn:aws:us-east-2:381491976069",
 		Type:       "SecuredEndpoint",
+		CalloutURL: "https://eventbridge.us-east-2.amazonaws.com",
 	}
 
 	newNamedCred, err := sfc.CreateNamedCredential(ctx, namedCred)
@@ -419,6 +419,28 @@ func TestCredentialsLegacy(sfc *salesforce.Connector, ctx context.Context, uniqu
 			Protocol:                    "NoAuthentication",
 			GenerateAuthorizationHeader: true,
 			Label:                       "TestNamedCredentialLegacy" + uniqueString,
+			NamedCredentialParameters: []*salesforce.NamedCredentialParameters{
+				{
+					ParameterName:  "AwsService",
+					ParameterType:  "AuthParameter",
+					ParameterValue: "eventbridge",
+				}, {
+
+					ParameterName:  "AwsRegion",
+					ParameterType:  "AuthParameter",
+					ParameterValue: "US-EAST-2",
+				},
+				{
+					ParameterName:  "AwsAccountId",
+					ParameterType:  "AuthParameter",
+					ParameterValue: "381491976069",
+				},
+				{
+					ParameterName:      "DefaultAuth",
+					ParameterType:      "Authentication",
+					ExternalCredential: "TestSV4Credential1706918379381",
+				},
+			},
 		},
 	}
 
