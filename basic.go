@@ -14,9 +14,6 @@ type BasicConnector interface {
 	fmt.Stringer
 	io.Closer
 
-	// Name returns the name of the connector.
-	Name() string
-
 	// HTTPClient returns the underlying HTTP client. This is useful for proxy requests.
 	HTTPClient() *common.HTTPClient
 
