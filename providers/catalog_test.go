@@ -5,7 +5,9 @@ import (
 	"testing"
 )
 
-func TestReadConfig(t *testing.T) {
+func TestReadConfig(t *testing.T) { //nolint:funlen
+	t.Parallel()
+
 	// Define test cases
 	testCases := []struct {
 		provider      Provider
@@ -93,7 +95,11 @@ func TestReadConfig(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
+		tc := tc // nolint:varnamelen
+
 		t.Run(string(tc.provider), func(t *testing.T) {
+			t.Parallel()
+
 			config, err := ReadConfig(tc.provider, &tc.substitutions)
 			t.Logf("Test case: %s", tc.description)
 
