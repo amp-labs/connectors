@@ -8,6 +8,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/hubspot"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/salesforce"
 )
 
@@ -83,24 +84,16 @@ var (
 	ErrUnknownConnector = errors.New("unknown connector")
 )
 
-// APINames returns a list of supported connector names.
-func APINames() []string {
-	return []string{
-		salesforce.Name,
-		hubspot.Name,
-	}
-}
-
 // New returns a new Connector. The signature is generic to facilitate more flexible caller setup
 // (e.g. constructing a new connector based on parsing a config file, whose exact params
 // aren't known until runtime). However, if you can use the API.New form, it's preferred,
 // since you get type safety and more readable code.
 func New(apiName string, opts map[string]any) (Connector, error) { //nolint:ireturn
-	if strings.EqualFold(apiName, salesforce.Name) {
+	if strings.EqualFold(apiName, providers.Salesforce.String()) {
 		return newSalesforce(opts)
 	}
 
-	if strings.EqualFold(apiName, hubspot.Name) {
+	if strings.EqualFold(apiName, providers.Hubspot.String()) {
 		return newHubspot(opts)
 	}
 
