@@ -7,7 +7,7 @@ type Provider string
 const (
 	Salesforce Provider = "salesforce"
 	Hubspot    Provider = "hubspot"
-	LinkedIn   Provider = "linkedin"
+	LinkedIn   Provider = "linkedIn"
 )
 
 // String returns the string representation of the provider.

@@ -11,8 +11,8 @@
 providers:
   salesforce:
     baseUrl: https://{{.subdomain}}.salesforce.com
-    auth:
-      type: oauth2
+    authType: oauth2
+    authOpts:
       authUrl: https://{{.subdomain}}.my.salesforce.com/services/oauth2/authorize
       tokenUrl: https://{{.subdomain}}.my.salesforce.com/services/oauth2/token
     support:
@@ -24,8 +24,8 @@ providers:
 
   hubspot:
     baseUrl: https://api.hubapi.com
-    auth:
-      type: oauth2
+    authType: oauth2
+    authOpts:
       authUrl: https://app.hubspot.com/oauth/authorize
       tokenUrl: https://api.hubapi.com/oauth/v1/token
     support:
@@ -35,10 +35,9 @@ providers:
       subscribe: false
       write: true
 
-  linkedin:
+  linkedIn:
     baseUrl: https://api.linkedin.com
-    auth:
-      type: oauth2
+    authType: oauth2
     support:
       bulkWrite: false
       proxy: false

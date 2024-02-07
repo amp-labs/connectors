@@ -9,9 +9,10 @@ type Catalog struct {
 // in the configuration. The substitution is only done on string fields. If you want to use pointers in the struct,
 // you might have to update the code to handle it.
 type ProviderConfig struct {
-	Support ConnectorSupport `yaml:"support"`
-	Auth    Auth             `yaml:"auth"`
-	BaseURL string           `yaml:"baseUrl"`
+	Support  ConnectorSupport `yaml:"support"`
+	AuthType AuthType         `yaml:"authType"`
+	AuthOpts AuthOpts         `yaml:"authOpts"`
+	BaseURL  string           `yaml:"baseUrl"`
 }
 
 type ConnectorSupport struct {
@@ -22,10 +23,9 @@ type ConnectorSupport struct {
 	Proxy     bool `yaml:"proxy"`
 }
 
-type Auth struct {
-	Type     AuthType `yaml:"type"`
-	AuthURL  string   `yaml:"authUrl"`
-	TokenURL string   `yaml:"tokenUrl"`
+type AuthOpts struct {
+	AuthURL  string `yaml:"authUrl"`
+	TokenURL string `yaml:"tokenUrl"`
 }
 
 type AuthType string

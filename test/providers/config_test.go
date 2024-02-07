@@ -31,8 +31,8 @@ func TestReadConfig(t *testing.T) {
 					Subscribe: false,
 					Proxy:     true,
 				},
-				Auth: providers.Auth{
-					Type:     providers.AuthTypeOAuth2,
+				AuthType: providers.AuthTypeOAuth2,
+				AuthOpts: providers.AuthOpts{
 					AuthURL:  "https://example.my.salesforce.com/services/oauth2/authorize",
 					TokenURL: "https://example.my.salesforce.com/services/oauth2/token",
 				},
@@ -54,8 +54,8 @@ func TestReadConfig(t *testing.T) {
 					Subscribe: false,
 					Proxy:     true,
 				},
-				Auth: providers.Auth{
-					Type:     providers.AuthTypeOAuth2,
+				AuthType: providers.AuthTypeOAuth2,
+				AuthOpts: providers.AuthOpts{
 					AuthURL:  "https://app.hubspot.com/oauth/authorize",
 					TokenURL: "https://api.hubapi.com/oauth/v1/token",
 				},
@@ -77,10 +77,9 @@ func TestReadConfig(t *testing.T) {
 					Subscribe: false,
 					Proxy:     false,
 				},
-				Auth: providers.Auth{
-					Type: providers.AuthTypeOAuth2,
-				},
-				BaseURL: "https://api.linkedin.com",
+				AuthType: providers.AuthTypeOAuth2,
+				AuthOpts: providers.AuthOpts{},
+				BaseURL:  "https://api.linkedin.com",
 			},
 			expectedErr: nil,
 		},
@@ -109,8 +108,12 @@ func TestReadConfig(t *testing.T) {
 					t.Errorf("Expected support: %v, but got: %v", tc.expected.Support, config.Support)
 				}
 
-				if config.Auth != tc.expected.Auth {
-					t.Errorf("Expected auth: %v, but got: %v", tc.expected.Auth, config.Auth)
+				if config.AuthType != tc.expected.AuthType {
+					t.Errorf("Expected auth: %v, but got: %v", tc.expected.AuthType, config.AuthType)
+				}
+
+				if config.AuthOpts != tc.expected.AuthOpts {
+					t.Errorf("Expected auth options: %v, but got: %v", tc.expected.AuthOpts, config.AuthOpts)
 				}
 
 				if config.BaseURL != tc.expected.BaseURL {
