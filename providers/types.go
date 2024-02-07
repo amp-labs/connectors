@@ -2,17 +2,17 @@ package providers
 
 // Catalog is the top-level structure of the configuration file.
 type Catalog struct {
-	Providers map[Provider]ProviderConfig `yaml:"providers"`
+	Providers map[Provider]ProviderInfo `yaml:"providers"`
 }
 
-// ProviderConfig is the configuration for a specific provider.  We use reflection to substitute any variables
+// ProviderInfo is the configuration for a specific provider.  We use reflection to substitute any variables
 // in the configuration. The substitution is only done on string fields. If you want to use pointers in the struct,
 // you might have to update the code to handle it.
-type ProviderConfig struct {
-	Support  ConnectorSupport `yaml:"support"`
-	AuthType AuthType         `yaml:"authType"`
-	AuthOpts AuthOpts         `yaml:"authOpts"`
-	BaseURL  string           `yaml:"baseUrl"`
+type ProviderInfo struct {
+	Support   ConnectorSupport `yaml:"support"`
+	AuthType  AuthType         `yaml:"authType"`
+	OauthOpts OauthOpts        `yaml:"oauthOpts"`
+	BaseURL   string           `yaml:"baseUrl"`
 }
 
 type ConnectorSupport struct {
@@ -23,7 +23,7 @@ type ConnectorSupport struct {
 	Proxy     bool `yaml:"proxy"`
 }
 
-type AuthOpts struct {
+type OauthOpts struct {
 	AuthURL  string `yaml:"authUrl"`
 	TokenURL string `yaml:"tokenUrl"`
 }

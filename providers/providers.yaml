@@ -12,7 +12,7 @@ providers:
   salesforce:
     baseUrl: https://{{.subdomain}}.salesforce.com
     authType: oauth2
-    authOpts:
+    oauthOpts:
       authUrl: https://{{.subdomain}}.my.salesforce.com/services/oauth2/authorize
       tokenUrl: https://{{.subdomain}}.my.salesforce.com/services/oauth2/token
     support:
@@ -25,7 +25,7 @@ providers:
   hubspot:
     baseUrl: https://api.hubapi.com
     authType: oauth2
-    authOpts:
+    oauthOpts:
       authUrl: https://app.hubspot.com/oauth/authorize
       tokenUrl: https://api.hubapi.com/oauth/v1/token
     support:

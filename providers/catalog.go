@@ -13,26 +13,26 @@ import (
 )
 
 const (
-	// configFileLoc is the name of the config file.
-	configFileRelativeLoc = "providers.yaml"
+	// catalogFileRelativeLoc is the name of the providers.yaml catalog.
+	catalogFileRelativeLoc = "providers.yaml"
 )
 
 var (
-	ErrProviderConfigNotFound = errors.New("provider config file not found")
-	ErrUnableToGetCallerInfo  = errors.New("unable to get caller info")
+	ErrProviderCatalogNotFound = errors.New("provider catalog file not found")
+	ErrUnableToGetCallerCWD    = errors.New("unable to get caller's current working directory")
 )
 
 // ReadConfig reads the configuration from the config file for a specific provider. It also performs string substitution
 // on the values in the config that are surrounded by {{}}. The provider YAML has more details on how it works.
-func ReadConfig(provider Provider, substitutions *map[string]string) (*ProviderConfig, error) {
-	config, err := read()
+func ReadConfig(provider Provider, substitutions *map[string]string) (*ProviderInfo, error) {
+	config, err := GetCatalog()
 	if err != nil {
 		return nil, err
 	}
 
 	providerConfig, ok := config.Providers[provider]
 	if !ok {
-		return nil, ErrProviderConfigNotFound
+		return nil, ErrProviderCatalogNotFound
 	}
 
 	// Apply substitutions to the provider configuration values which contain variables in the form of {{var}}.
@@ -42,6 +42,36 @@ func ReadConfig(provider Provider, substitutions *map[string]string) (*ProviderC
 	}
 
 	return &providerConfig, nil
+}
+
+// GetCatalog reads the entire provider catalog.
+func GetCatalog() (*Catalog, error) {
+	// Figure out the cwd of the caller
+	_, filename, _, ok := runtime.Caller(0)
+	if !ok {
+		return nil, ErrUnableToGetCallerCWD
+	}
+
+	// Get the absolute directory of the catalog file
+	catalogDir := filepath.Dir(filename)
+
+	// Construct the absolute path to the providers.yaml file
+	yamlPath := filepath.Join(catalogDir, catalogFileRelativeLoc)
+
+	// Read the file
+	data, err := os.ReadFile(yamlPath)
+	if err != nil {
+		return nil, err
+	}
+
+	catalog := &Catalog{}
+
+	err = yaml.Unmarshal(data, catalog)
+	if err != nil {
+		return nil, err
+	}
+
+	return catalog, nil
 }
 
 // substituteStruct performs string substitution on the fields of the input struct
@@ -89,34 +119,4 @@ func substitute(input string, substitutions *map[string]string) (string, error) 
 	}
 
 	return result.String(), nil
-}
-
-// read reads the entire configuration from the config file.
-func read() (*Catalog, error) {
-	// Figure out the cwd of the caller
-	_, filename, _, ok := runtime.Caller(0)
-	if !ok {
-		return nil, ErrUnableToGetCallerInfo
-	}
-
-	// Get the absolute directory of the config file
-	configDir := filepath.Dir(filename)
-
-	// Construct the absolute path to the providers.yaml file
-	yamlPath := filepath.Join(configDir, configFileRelativeLoc)
-
-	// Read the file
-	data, err := os.ReadFile(yamlPath)
-	if err != nil {
-		return nil, err
-	}
-
-	config := &Catalog{}
-
-	err = yaml.Unmarshal(data, config)
-	if err != nil {
-		return nil, err
-	}
-
-	return config, nil
 }

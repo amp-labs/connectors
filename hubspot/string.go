@@ -6,8 +6,3 @@ import "fmt"
 func (c *Connector) String() string {
 	return fmt.Sprintf("%s.Connector[%s]", c.Provider(), c.Module)
 }
-
-// Name returns the name of the connector.
-func (c *Connector) Name() string {
-	return c.Provider().String()
-}

@@ -3,36 +3,34 @@ package providers
 import (
 	"errors"
 	"testing"
-
-	"github.com/amp-labs/connectors/providers"
 )
 
 func TestReadConfig(t *testing.T) {
 	// Define test cases
 	testCases := []struct {
-		provider      providers.Provider
+		provider      Provider
 		description   string
 		substitutions map[string]string
-		expected      *providers.ProviderConfig
+		expected      *ProviderInfo
 		expectedErr   error
 	}{
 		{
-			provider:    providers.Salesforce,
+			provider:    Salesforce,
 			description: "Salesforce provider config with valid & invalid substitutions",
 			substitutions: map[string]string{
 				"subdomain": "example",
 				"version":   "-1.0",
 			},
-			expected: &providers.ProviderConfig{
-				Support: providers.ConnectorSupport{
+			expected: &ProviderInfo{
+				Support: ConnectorSupport{
 					Read:      true,
 					Write:     true,
 					BulkWrite: true,
 					Subscribe: false,
 					Proxy:     true,
 				},
-				AuthType: providers.AuthTypeOAuth2,
-				AuthOpts: providers.AuthOpts{
+				AuthType: AuthTypeOAuth2,
+				OauthOpts: OauthOpts{
 					AuthURL:  "https://example.my.salesforce.com/services/oauth2/authorize",
 					TokenURL: "https://example.my.salesforce.com/services/oauth2/token",
 				},
@@ -41,21 +39,21 @@ func TestReadConfig(t *testing.T) {
 			expectedErr: nil,
 		},
 		{
-			provider:    providers.Hubspot,
+			provider:    Hubspot,
 			description: "Valid hubspot provider config with non-existent substitutions",
 			substitutions: map[string]string{
 				"nonexistentvar": "test",
 			},
-			expected: &providers.ProviderConfig{
-				Support: providers.ConnectorSupport{
+			expected: &ProviderInfo{
+				Support: ConnectorSupport{
 					Read:      true,
 					Write:     true,
 					BulkWrite: false,
 					Subscribe: false,
 					Proxy:     true,
 				},
-				AuthType: providers.AuthTypeOAuth2,
-				AuthOpts: providers.AuthOpts{
+				AuthType: AuthTypeOAuth2,
+				OauthOpts: OauthOpts{
 					AuthURL:  "https://app.hubspot.com/oauth/authorize",
 					TokenURL: "https://api.hubapi.com/oauth/v1/token",
 				},
@@ -64,39 +62,39 @@ func TestReadConfig(t *testing.T) {
 			expectedErr: nil,
 		},
 		{
-			provider:    providers.LinkedIn,
+			provider:    LinkedIn,
 			description: "Valid LinkedIn provider config with non-existent substitutions",
 			substitutions: map[string]string{
 				"nonexistentvar": "xyz",
 			},
-			expected: &providers.ProviderConfig{
-				Support: providers.ConnectorSupport{
+			expected: &ProviderInfo{
+				Support: ConnectorSupport{
 					Read:      false,
 					Write:     false,
 					BulkWrite: false,
 					Subscribe: false,
 					Proxy:     false,
 				},
-				AuthType: providers.AuthTypeOAuth2,
-				AuthOpts: providers.AuthOpts{},
-				BaseURL:  "https://api.linkedin.com",
+				AuthType:  AuthTypeOAuth2,
+				OauthOpts: OauthOpts{},
+				BaseURL:   "https://api.linkedin.com",
 			},
 			expectedErr: nil,
 		},
 		{
-			provider:    providers.Provider("nonexistent"),
+			provider:    Provider("nonexistent"),
 			description: "Non-existent provider config",
 			substitutions: map[string]string{
 				"subdomain": "test",
 			},
 			expected:    nil,
-			expectedErr: providers.ErrProviderConfigNotFound,
+			expectedErr: ErrProviderCatalogNotFound,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(string(tc.provider), func(t *testing.T) {
-			config, err := providers.ReadConfig(tc.provider, &tc.substitutions)
+			config, err := ReadConfig(tc.provider, &tc.substitutions)
 			t.Logf("Test case: %s", tc.description)
 
 			if !errors.Is(err, tc.expectedErr) {
@@ -112,8 +110,8 @@ func TestReadConfig(t *testing.T) {
 					t.Errorf("Expected auth: %v, but got: %v", tc.expected.AuthType, config.AuthType)
 				}
 
-				if config.AuthOpts != tc.expected.AuthOpts {
-					t.Errorf("Expected auth options: %v, but got: %v", tc.expected.AuthOpts, config.AuthOpts)
+				if config.OauthOpts != tc.expected.OauthOpts {
+					t.Errorf("Expected auth options: %v, but got: %v", tc.expected.OauthOpts, config.OauthOpts)
 				}
 
 				if config.BaseURL != tc.expected.BaseURL {
