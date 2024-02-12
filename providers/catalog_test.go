@@ -79,7 +79,7 @@ func TestReadConfig(t *testing.T) { //nolint:funlen
 				},
 				AuthType:  AuthTypeOAuth2,
 				OauthOpts: OauthOpts{},
-				BaseURL:   "https://api.linkedin.com",
+				BaseURL:   "https://api.linkedin.com/v2",
 			},
 			expectedErr: nil,
 		},
@@ -101,27 +101,26 @@ func TestReadConfig(t *testing.T) { //nolint:funlen
 			t.Parallel()
 
 			config, err := ReadConfig(tc.provider, &tc.substitutions)
-			t.Logf("Test case: %s", tc.description)
 
 			if !errors.Is(err, tc.expectedErr) {
-				t.Errorf("Expected error: %v, but got: %v", tc.expectedErr, err)
+				t.Errorf("[%s] Expected error: %v, but got: %v", tc.description, tc.expectedErr, err)
 			}
 
 			if tc.expectedErr == nil && config != nil {
 				if config.Support != tc.expected.Support {
-					t.Errorf("Expected support: %v, but got: %v", tc.expected.Support, config.Support)
+					t.Errorf("[%s] Expected support: %v, but got: %v", tc.description, tc.expected.Support, config.Support)
 				}
 
 				if config.AuthType != tc.expected.AuthType {
-					t.Errorf("Expected auth: %v, but got: %v", tc.expected.AuthType, config.AuthType)
+					t.Errorf("[%s] Expected auth: %v, but got: %v", tc.description, tc.expected.AuthType, config.AuthType)
 				}
 
 				if config.OauthOpts != tc.expected.OauthOpts {
-					t.Errorf("Expected auth options: %v, but got: %v", tc.expected.OauthOpts, config.OauthOpts)
+					t.Errorf("[%s] Expected auth options: %v, but got: %v", tc.description, tc.expected.OauthOpts, config.OauthOpts)
 				}
 
 				if config.BaseURL != tc.expected.BaseURL {
-					t.Errorf("Expected base URL: %s, but got: %s", tc.expected.BaseURL, config.BaseURL)
+					t.Errorf("[%s] Expected base URL: %s, but got: %s", tc.description, tc.expected.BaseURL, config.BaseURL)
 				}
 			}
 		})

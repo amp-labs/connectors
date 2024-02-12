@@ -9,6 +9,7 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/go-playground/validator"
 	"gopkg.in/yaml.v3"
 )
 
@@ -33,6 +34,12 @@ func ReadConfig(provider Provider, substitutions *map[string]string) (*ProviderI
 	providerConfig, ok := config.Providers[provider]
 	if !ok {
 		return nil, ErrProviderCatalogNotFound
+	}
+
+	// Validate the provider configuration
+	v := validator.New()
+	if err := v.Struct(&providerConfig); err != nil {
+		return nil, err
 	}
 
 	// Apply substitutions to the provider configuration values which contain variables in the form of {{var}}.
