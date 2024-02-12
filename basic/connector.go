@@ -5,14 +5,14 @@ import (
 	"github.com/amp-labs/connectors/providers"
 )
 
-// Connector is a Hubspot connector.
+// Connector is a Basic connector.
 type Connector struct {
 	ProviderInfo *providers.ProviderInfo
 	Client       *common.JSONHTTPClient
 	provider     providers.Provider
 }
 
-// NewConnector returns a new Hubspot connector.
+// NewConnector returns a new Basic connector.
 func NewConnector(
 	provider providers.Provider,
 	opts ...Option,
