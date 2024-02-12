@@ -38,17 +38,6 @@ func WithCatalogSubstitutions(substitutions map[string]string) Option {
 	}
 }
 
-func WithProvider(provider providers.Provider) Option {
-	// TODO: Remove this once hubspot & salesforce also use providers.yaml
-	return func(params *basicParams) {
-		if provider == providers.Salesforce || provider == providers.Hubspot {
-			return
-		}
-
-		params.provider = provider
-	}
-}
-
 // WithClient sets the http client to use for the connector.
 func WithClient(ctx context.Context, client *http.Client, config *oauth2.Config, token *oauth2.Token,
 	opts ...common.OAuthOption,

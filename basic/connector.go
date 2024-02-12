@@ -20,13 +20,16 @@ var (
 
 // Connector is a Hubspot connector.
 type Connector struct {
-	ProviderInfo *providers.ProviderInfo `json:"providerInfo" mapstructure:"ProviderInfo"`
-	Client       *common.JSONHTTPClient  `json:"client" mapstructure:"Client"`
+	ProviderInfo *providers.ProviderInfo
+	Client       *common.JSONHTTPClient
 	provider     providers.Provider
 }
 
 // NewConnector returns a new Hubspot connector.
-func NewConnector(opts ...Option) (conn *Connector, outErr error) {
+func NewConnector(
+	provider providers.Provider,
+	opts ...Option,
+) (conn *Connector, outErr error) {
 	defer func() {
 		if re := recover(); re != nil {
 			tmp, ok := re.(error)
@@ -39,17 +42,23 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		}
 	}()
 
+	// Set up basic params
 	params := &basicParams{}
+	params.provider = provider
+
+	// Apply options & verify
 	for _, opt := range opts {
 		opt(params)
 	}
 
 	var err error
+
 	params, err = params.prepare()
 	if err != nil {
 		return nil, err
 	}
 
+	// Create connector
 	conn = &Connector{
 		provider: params.provider,
 		Client:   params.client,
@@ -61,6 +70,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		return nil, err
 	}
 
+	// Set provider info & http client options
 	conn.ProviderInfo = providerInfo
 	conn.Client.HTTPClient.ErrorHandler = conn.interpretError
 
