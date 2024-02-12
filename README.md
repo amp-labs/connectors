@@ -68,6 +68,11 @@ func main() {
   }
 }
 ```
+
+## Provider catalog
+
+The provider catalog is a YAML file that contains information about all SaaS providers that Ampersand supports. It contains information such as the base URL, and the operations that the provider supports. This is currently stored in the `providers/providers.yaml` file.
+
 ## Ways to initialize a Connector
 
 There are 3 ways to initialize a Connector:
@@ -98,6 +103,11 @@ client, err := connectors.New("salesforce", map[string]any{"workspace": "salesfo
 
 Basic connectors allow you to proxy through requests to a SaaS provider via Ampersand. 
 
+#### Adding a new provider
+
+To add a new basic connector that allows proxying through the ampersand platform, you need to add a new entry to the `providers.yaml` file. The entry should have some required fields which are tagged with `validate: required` in the `providers/types.go` file.
+
+
 ### Initialization
 
 **Note**: If your provider requires variables to be replaced in the catalog (providers.yaml), use the `WithCatalogSubstitutions` option to replace placeholders with actual values. 
@@ -107,7 +117,7 @@ For example, a provider may use `{{workspace}}` in an option (maybe in the base 
 
 ```go
 conn, err := basic.NewConnector(
-    basic.WithProvider(providers.SomeProvider),
+    providers.SomeProvider,
     basic.WithClient(context.Background(), http.DefaultClient, cfg, tok),
     
     // WithCatalogSubstitutions allows you to replace placeholders in the catalog (providers.yaml) with actual values.
