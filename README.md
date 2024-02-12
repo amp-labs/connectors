@@ -93,3 +93,21 @@ client, err := connectors.Salesforce.New(
 ```go
 client, err := connectors.New("salesforce", map[string]any{"workspace": "salesforce-instance-name"})
 ```
+
+## Basic connectors
+
+Basic connectors allow you to proxy through requests to a SaaS provider via Ampersand. 
+
+### Initialization
+
+```go
+conn, err := basic.NewConnector(
+    basic.WithProvider(providers.LinkedIn),
+    basic.WithClient(context.Background(), http.DefaultClient, cfg, tok),
+    
+	// Optional: WithCatalogSubstitutions allows you to replace placeholders in the catalog (providers.yaml) with actual values.
+    basic.WithCatalogSubstitutions(map[string]string{
+		"{workspace}": "linkedin-instance-name"
+	}),
+)
+```
