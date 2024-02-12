@@ -2,11 +2,20 @@ package basic
 
 import (
 	"context"
+	"errors"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers"
 	"golang.org/x/oauth2"
+)
+
+var (
+	// ErrMissingClient is returned when a connector is created without a client.
+	ErrMissingClient = errors.New("missing client")
+
+	// ErrMissingProvider is returned when a connector is created without a provider.
+	ErrMissingProvider = errors.New("missing provider")
 )
 
 type Option func(*basicParams)

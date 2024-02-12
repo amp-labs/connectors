@@ -1,21 +1,8 @@
 package basic
 
 import (
-	"errors"
-
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers"
-)
-
-var (
-	// ErrMissingClient is returned when a connector is created without a client.
-	ErrMissingClient = errors.New("missing client")
-
-	// ErrMissingBaseURL is returned when a connector is created without a base URL.
-	ErrMissingBaseURL = errors.New("missing base URL")
-
-	// ErrMissingProvider is returned when a connector is created without a provider.
-	ErrMissingProvider = errors.New("missing provider")
 )
 
 // Connector is a Hubspot connector.
