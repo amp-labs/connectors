@@ -1,0 +1,9 @@
+{
+    "refreshToken": "refreshToken",
+    "providers": [
+        {
+            "name": "provider",
+            "number": 3
+        }
+    ]
+}
