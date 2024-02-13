@@ -36,7 +36,7 @@ providers:
       write: true
 
   linkedIn:
-    baseUrl: https://api.linkedin.com
+    baseUrl: https://api.linkedin.com/v2
     authType: oauth2
     support:
       bulkWrite: false
