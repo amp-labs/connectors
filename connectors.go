@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
@@ -11,6 +12,19 @@ import (
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/salesforce"
 )
+
+// BasicConnector is an interface that can be used to implement a connector with
+// basic configuration about the provider.
+type BasicConnector interface {
+	fmt.Stringer
+	io.Closer
+
+	// HTTPClient returns the underlying HTTP client. This is useful for proxy requests.
+	HTTPClient() *common.HTTPClient
+
+	// Provider returns the connector provider.
+	Provider() providers.Provider
+}
 
 // Connector is an interface that all connectors must implement.
 type Connector interface {
