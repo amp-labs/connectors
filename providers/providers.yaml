@@ -10,24 +10,27 @@
 
 providers:
   salesforce:
-    baseUrl: https://{{.subdomain}}.salesforce.com
+    baseUrl: "https://{{.subdomain}}.salesforce.com"
     authType: oauth2
     oauthOpts:
-      authUrl: https://{{.subdomain}}.my.salesforce.com/services/oauth2/authorize
-      tokenUrl: https://{{.subdomain}}.my.salesforce.com/services/oauth2/token
+      authUrl: "https://{{.subdomain}}.my.salesforce.com/services/oauth2/authorize"
+      tokenUrl: "https://{{.subdomain}}.my.salesforce.com/services/oauth2/token"
     support:
       bulkWrite: true
       proxy: true
       read: true
       subscribe: false
       write: true
+    providerOptions:
+      restApiUrl: "https://{{.subdomain}}.my.salesforce.com/services/data/v59.0"
+      domain: "{{.subdomain}}.my.salesforce.com"
 
   hubspot:
-    baseUrl: https://api.hubapi.com
+    baseUrl: "https://api.hubapi.com"
     authType: oauth2
     oauthOpts:
-      authUrl: https://app.hubspot.com/oauth/authorize
-      tokenUrl: https://api.hubapi.com/oauth/v1/token
+      authUrl: "https://app.hubspot.com/oauth/authorize"
+      tokenUrl: "https://api.hubapi.com/oauth/v1/token"
     support:
       bulkWrite: false
       proxy: true
@@ -36,7 +39,7 @@ providers:
       write: true
 
   linkedIn:
-    baseUrl: https://api.linkedin.com/v2
+    baseUrl: "https://api.linkedin.com/v2"
     authType: oauth2
     support:
       bulkWrite: false

@@ -2,6 +2,7 @@ package hubspot
 
 import (
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers"
 )
 
 // Connector is a Hubspot connector.
@@ -32,13 +33,17 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 
 	var err error
 	params, err = params.prepare()
-
-	params.client.HTTPClient.Base = "https://api.hubapi.com"
-
 	if err != nil {
 		return nil, err
 	}
 
+	// Read provider info & replace catalog variables with given substitutions, if any
+	providerInfo, err := providers.ReadConfig(providers.Hubspot, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	params.client.HTTPClient.Base = providerInfo.BaseURL
 	conn = &Connector{
 		BaseURL: params.client.HTTPClient.Base,
 		Module:  params.module,

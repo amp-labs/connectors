@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/hubspot"
@@ -102,16 +101,15 @@ var (
 // (e.g. constructing a new connector based on parsing a config file, whose exact params
 // aren't known until runtime). However, if you can use the API.New form, it's preferred,
 // since you get type safety and more readable code.
-func New(apiName string, opts map[string]any) (Connector, error) { //nolint:ireturn
-	if strings.EqualFold(apiName, providers.Salesforce.String()) {
+func New(provider providers.Provider, opts map[string]any) (Connector, error) { //nolint:ireturn
+	switch provider {
+	case providers.Salesforce:
 		return newSalesforce(opts)
-	}
-
-	if strings.EqualFold(apiName, providers.Hubspot.String()) {
+	case providers.Hubspot:
 		return newHubspot(opts)
+	default:
+		return nil, fmt.Errorf("%w: %s", ErrUnknownConnector, provider)
 	}
-
-	return nil, fmt.Errorf("%w: %s", ErrUnknownConnector, apiName)
 }
 
 // newSalesforce returns a new Salesforce Connector, by unwrapping the options and passing them to the Salesforce API.

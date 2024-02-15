@@ -105,6 +105,21 @@ func substituteStruct(input interface{}, substitutions *map[string]string) (err 
 				return err
 			}
 		}
+
+		// If the field is a map, perform substitution on its values.
+		if field.Kind() == reflect.Map {
+			for _, key := range field.MapKeys() {
+				val := field.MapIndex(key)
+				if val.Kind() == reflect.String {
+					substitutedVal, err := substitute(val.String(), substitutions)
+					if err != nil {
+						return err
+					}
+
+					field.SetMapIndex(key, reflect.ValueOf(substitutedVal))
+				}
+			}
+		}
 	}
 
 	return nil

@@ -37,6 +37,10 @@ func TestReadConfig(t *testing.T) { //nolint:funlen
 					TokenURL: "https://example.my.salesforce.com/services/oauth2/token",
 				},
 				BaseURL: "https://example.salesforce.com",
+				ProviderOptions: map[string]string{
+					"restApiUrl": "https://example.my.salesforce.com/services/data/v59.0",
+					"domain":     "example.my.salesforce.com",
+				},
 			},
 			expectedErr: nil,
 		},
@@ -121,6 +125,12 @@ func TestReadConfig(t *testing.T) { //nolint:funlen
 
 				if config.BaseURL != tc.expected.BaseURL {
 					t.Errorf("[%s] Expected base URL: %s, but got: %s", tc.description, tc.expected.BaseURL, config.BaseURL)
+				}
+
+				for k, v := range config.ProviderOptions {
+					if tc.expected.ProviderOptions[k] != v {
+						t.Errorf("[%s] Expected provider option %s: %s, but got: %s", tc.description, k, tc.expected.ProviderOptions[k], v)
+					}
 				}
 			}
 		})
