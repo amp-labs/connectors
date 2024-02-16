@@ -22,7 +22,9 @@ providers:
       subscribe: false
       write: true
     providerOptions:
+      # The REST API URL for Salesforce - this can be used for standard object interactions
       restApiUrl: "https://{{.workspace}}.my.salesforce.com/services/data/v59.0"
+      # The domain for the Salesforce instance - used for pagination [todo: refactor to baseUrl]
       domain: "{{.workspace}}.my.salesforce.com"
 
   hubspot:
@@ -39,7 +41,7 @@ providers:
       write: true
 
   linkedIn:
-    baseUrl: "https://api.linkedin.com/v2"
+    baseUrl: "https://api.linkedin.com"
     authType: oauth2
     support:
       bulkWrite: false
