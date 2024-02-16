@@ -41,5 +41,6 @@ func (i *ProviderInfo) GetOption(key string) (string, bool) {
 	}
 
 	val, ok := i.ProviderOptions[key]
+
 	return val, ok
 }

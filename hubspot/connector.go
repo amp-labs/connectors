@@ -32,6 +32,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	}
 
 	var err error
+
 	params, err = params.prepare()
 	if err != nil {
 		return nil, err
