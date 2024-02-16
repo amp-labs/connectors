@@ -83,7 +83,7 @@ func TestReadConfig(t *testing.T) { //nolint:funlen
 				},
 				AuthType:  AuthTypeOAuth2,
 				OauthOpts: OauthOpts{},
-				BaseURL:   "https://api.linkedin.com/v2",
+				BaseURL:   "https://api.linkedin.com",
 			},
 			expectedErr: nil,
 		},
