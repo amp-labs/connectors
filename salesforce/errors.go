@@ -16,7 +16,7 @@ var (
 	ErrNotString          = errors.New("nextRecordsUrl isn't a string")
 	ErrNotBool            = errors.New("done isn't a boolean")
 	ErrNotNumeric         = errors.New("totalSize isn't numeric")
-	ErrMissingSubdomain   = errors.New("missing Salesforce workspace name")
+	ErrMissingWorkspace   = errors.New("missing Salesforce workspace name")
 	ErrMissingClient      = errors.New("JSON http client not set")
 	ErrCannotReadMetadata = errors.New("cannot read object metadata, it is possible you don't have the correct permissions set") // nolint:lll
 )

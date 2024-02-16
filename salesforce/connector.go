@@ -60,7 +60,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 
 	// Read provider info & replace catalog variables with given substitutions, if any
 	providerInfo, err := providers.ReadConfig(providers.Salesforce, &map[string]string{
-		"subdomain": params.subdomain,
+		"workspace": params.workspace,
 	})
 	if err != nil {
 		return nil, err

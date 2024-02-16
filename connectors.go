@@ -123,7 +123,7 @@ func newSalesforce(opts map[string]any) (Connector, error) { //nolint:ireturn
 
 	w, valid := getParam[string](opts, "workspace")
 	if valid {
-		options = append(options, salesforce.WithSubdomain(w))
+		options = append(options, salesforce.WithWorkspace(w))
 	}
 
 	return Salesforce.New(options...)

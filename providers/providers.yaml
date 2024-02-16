@@ -10,11 +10,11 @@
 
 providers:
   salesforce:
-    baseUrl: "https://{{.subdomain}}.salesforce.com"
+    baseUrl: "https://{{.workspace}}.salesforce.com"
     authType: oauth2
     oauthOpts:
-      authUrl: "https://{{.subdomain}}.my.salesforce.com/services/oauth2/authorize"
-      tokenUrl: "https://{{.subdomain}}.my.salesforce.com/services/oauth2/token"
+      authUrl: "https://{{.workspace}}.my.salesforce.com/services/oauth2/authorize"
+      tokenUrl: "https://{{.workspace}}.my.salesforce.com/services/oauth2/token"
     support:
       bulkWrite: true
       proxy: true
@@ -22,8 +22,8 @@ providers:
       subscribe: false
       write: true
     providerOptions:
-      restApiUrl: "https://{{.subdomain}}.my.salesforce.com/services/data/v59.0"
-      domain: "{{.subdomain}}.my.salesforce.com"
+      restApiUrl: "https://{{.workspace}}.my.salesforce.com/services/data/v59.0"
+      domain: "{{.workspace}}.my.salesforce.com"
 
   hubspot:
     baseUrl: "https://api.hubapi.com"
