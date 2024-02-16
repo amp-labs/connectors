@@ -18,7 +18,7 @@ import (
 
 const (
   // Replace these with your own values.
-  Subdomain = "<subdomain>"
+  Workspace = "<workspace>"
   OAuthClientId = "<client id>"
   OAuthClentSecret = "<client secret>"
   OAuthAccessToken = "<access token>"
@@ -36,8 +36,8 @@ func main() {
     ClientID:     OAuthClientId,
     ClientSecret: OAuthClentSecret,
     Endpoint: oauth2.Endpoint{
-      AuthURL:   fmt.Sprintf("https://%s.my.salesforce.com/services/oauth2/authorize", Subdomain),
-      TokenURL:  fmt.Sprintf("https://%s.my.salesforce.com/services/oauth2/token", Subdomain),
+      AuthURL:   fmt.Sprintf("https://%s.my.salesforce.com/services/oauth2/authorize", Workspace),
+      TokenURL:  fmt.Sprintf("https://%s.my.salesforce.com/services/oauth2/token", Workspace),
       AuthStyle: oauth2.AuthStyleInParams,
     },
   }
@@ -53,7 +53,7 @@ func main() {
   // Create the Salesforce client
   client, err := connectors.Salesforce(
     salesforce.WithClient(context.Background(), http.DefaultClient, cfg, tok),
-    salesforce.WithSubdomain(Subdomain))
+    salesforce.WithWorkspace(Workspace))
   if err != nil {
     panic(err)
   }
@@ -82,7 +82,7 @@ There are 3 ways to initialize a Connector:
 ```go
 client, err := connectors.Salesforce(
     salesforce.WithClient(context.Background(), http.DefaultClient, cfg, tok),
-    salesforce.WithSubdomain(Subdomain))
+    salesforce.WithWorkspace(Workspace))
 ```
 
 2. Initializing a generic Connector (returns an interface). This method of initialization will only allow you to use methods that are common to all providers. This is helpful if you would like your code to be provider-agnostic.
@@ -90,7 +90,7 @@ client, err := connectors.Salesforce(
 ```go
 client, err := connectors.Salesforce.New(
     salesforce.WithClient(context.Background(), http.DefaultClient, cfg, tok),
-    salesforce.WithSubdomain(Subdomain))
+    salesforce.WithWorkspace(Workspace))
 ```
 
 3. With string parameter for API name (this is useful if you are parsing the API name from a config file, but should be avoided otherwise because it is not typesafe). This returns a generic Connector (returns an interface).

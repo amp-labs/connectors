@@ -43,17 +43,17 @@ func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
 	}
 }
 
-// WithSubdomain sets the salesforce subdomain to use for the connector. It's required.
-func WithSubdomain(workspaceRef string) Option {
+// WithWorkspace sets the salesforce workspace to use for the connector. It's required.
+func WithWorkspace(workspaceRef string) Option {
 	return func(params *sfParams) {
-		params.subdomain = workspaceRef
+		params.workspace = workspaceRef
 	}
 }
 
 // sfParams is the internal configuration for the salesforce connector.
 type sfParams struct {
 	client    *common.JSONHTTPClient // required
-	subdomain string                 // required
+	workspace string                 // required
 }
 
 // prepare finalizes and validates the connector configuration, and returns an error if it's invalid.
@@ -62,8 +62,8 @@ func (p *sfParams) prepare() (out *sfParams, err error) {
 		return nil, ErrMissingClient
 	}
 
-	if len(p.subdomain) == 0 {
-		return nil, ErrMissingSubdomain
+	if len(p.workspace) == 0 {
+		return nil, ErrMissingWorkspace
 	}
 
 	return p, nil

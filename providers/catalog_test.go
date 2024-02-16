@@ -20,7 +20,7 @@ func TestReadConfig(t *testing.T) { //nolint:funlen
 			provider:    Salesforce,
 			description: "Salesforce provider config with valid & invalid substitutions",
 			substitutions: map[string]string{
-				"subdomain": "example",
+				"workspace": "example",
 				"version":   "-1.0",
 			},
 			expected: &ProviderInfo{
@@ -37,6 +37,10 @@ func TestReadConfig(t *testing.T) { //nolint:funlen
 					TokenURL: "https://example.my.salesforce.com/services/oauth2/token",
 				},
 				BaseURL: "https://example.salesforce.com",
+				ProviderOpts: map[string]string{
+					"restApiUrl": "https://example.my.salesforce.com/services/data/v59.0",
+					"domain":     "example.my.salesforce.com",
+				},
 			},
 			expectedErr: nil,
 		},
@@ -79,7 +83,7 @@ func TestReadConfig(t *testing.T) { //nolint:funlen
 				},
 				AuthType:  AuthTypeOAuth2,
 				OauthOpts: OauthOpts{},
-				BaseURL:   "https://api.linkedin.com/v2",
+				BaseURL:   "https://api.linkedin.com",
 			},
 			expectedErr: nil,
 		},
@@ -87,7 +91,7 @@ func TestReadConfig(t *testing.T) { //nolint:funlen
 			provider:    Provider("nonexistent"),
 			description: "Non-existent provider config",
 			substitutions: map[string]string{
-				"subdomain": "test",
+				"workspace": "test",
 			},
 			expected:    nil,
 			expectedErr: ErrProviderCatalogNotFound,
@@ -121,6 +125,12 @@ func TestReadConfig(t *testing.T) { //nolint:funlen
 
 				if config.BaseURL != tc.expected.BaseURL {
 					t.Errorf("[%s] Expected base URL: %s, but got: %s", tc.description, tc.expected.BaseURL, config.BaseURL)
+				}
+
+				for k, v := range config.ProviderOpts {
+					if tc.expected.ProviderOpts[k] != v {
+						t.Errorf("[%s] Expected provider option %s: %s, but got: %s", tc.description, k, tc.expected.ProviderOpts[k], v)
+					}
 				}
 			}
 		})
