@@ -34,7 +34,7 @@ func main() { //nolint:funlen
 	accessToken := creds.AccessToken
 	refreshToken := creds.RefreshToken
 
-	salesforceSubdomain := creds.Subdomain
+	salesforceWorkspace := creds.Workspace
 
 	handler := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
 		Level: slog.LevelDebug,
@@ -46,8 +46,8 @@ func main() { //nolint:funlen
 		ClientID:     clientId,
 		ClientSecret: clientSecret,
 		Endpoint: oauth2.Endpoint{
-			AuthURL:   fmt.Sprintf("https://%s.my.salesforce.com/services/oauth2/authorize", salesforceSubdomain),
-			TokenURL:  fmt.Sprintf("https://%s.my.salesforce.com/services/oauth2/token", salesforceSubdomain),
+			AuthURL:   fmt.Sprintf("https://%s.my.salesforce.com/services/oauth2/authorize", salesforceWorkspace),
+			TokenURL:  fmt.Sprintf("https://%s.my.salesforce.com/services/oauth2/token", salesforceWorkspace),
 			AuthStyle: oauth2.AuthStyleInParams,
 		},
 	}
@@ -64,7 +64,7 @@ func main() { //nolint:funlen
 	// Create a new Salesforce connector, with a token provider that uses the sfdx CLI to fetch an access token.
 	sfc, err := connectors.Salesforce(
 		salesforce.WithClient(ctx, http.DefaultClient, cfg, tok),
-		salesforce.WithSubdomain(salesforceSubdomain))
+		salesforce.WithWorkspace(salesforceWorkspace))
 	if err != nil {
 		slog.Error("Error creating Salesforce connector", "error", err)
 

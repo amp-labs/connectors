@@ -12,7 +12,7 @@ type Creds struct {
 	ClientSecret string `json:"clientSecret"`
 	AccessToken  string `json:"accessToken"`
 	RefreshToken string `json:"refreshToken"`
-	Subdomain    string `json:"subdomain"`
+	Workspace    string `json:"workspace"`
 	Provider     string `json:"provider"`
 }
 
@@ -52,7 +52,7 @@ func GetCreds(path string) (*Creds, error) {
 		return nil, err
 	}
 
-	subdomain, err := credsMap.JSONPath("$.providerWorkspaceRef")
+	workspace, err := credsMap.JSONPath("$.providerWorkspaceRef")
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +67,7 @@ func GetCreds(path string) (*Creds, error) {
 		ClientSecret: clientSecret[0].MustString(),
 		AccessToken:  accessToken[0].MustString(),
 		RefreshToken: refreshToken[0].MustString(),
-		Subdomain:    subdomain[0].MustString(),
+		Workspace:    workspace[0].MustString(),
 		Provider:     provider[0].MustString(),
 	}
 

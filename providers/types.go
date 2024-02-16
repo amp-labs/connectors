@@ -9,10 +9,11 @@ type Catalog struct {
 // in the configuration. The substitution is only done on string fields. If you want to use pointers in the struct,
 // you might have to update the code to handle it.
 type ProviderInfo struct {
-	Support   ConnectorSupport `validate:"required" yaml:"support"`
-	AuthType  AuthType         `validate:"required" yaml:"authType"`
-	BaseURL   string           `validate:"required" yaml:"baseUrl"`
-	OauthOpts OauthOpts        `yaml:"oauthOpts"`
+	Support      ConnectorSupport  `validate:"required" yaml:"support"`
+	AuthType     AuthType          `validate:"required" yaml:"authType"`
+	BaseURL      string            `validate:"required" yaml:"baseUrl"`
+	OauthOpts    OauthOpts         `yaml:"oauthOpts"`
+	ProviderOpts map[string]string `yaml:"providerOptions,omitempty"`
 }
 
 type ConnectorSupport struct {
@@ -33,3 +34,13 @@ type AuthType string
 const (
 	AuthTypeOAuth2 AuthType = "oauth2"
 )
+
+func (i *ProviderInfo) GetOption(key string) (string, bool) {
+	if i.ProviderOpts == nil {
+		return "", false
+	}
+
+	val, ok := i.ProviderOpts[key]
+
+	return val, ok
+}
