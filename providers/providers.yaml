@@ -43,6 +43,9 @@ providers:
   linkedIn:
     baseUrl: "https://api.linkedin.com"
     authType: oauth2
+    oauthOpts:
+      authUrl: "https://www.linkedin.com/oauth/v2/authorization"
+      tokenUrl: "https://www.linkedin.com/oauth/v2/accessToken"
     support:
       bulkWrite: false
       proxy: false
