@@ -4,7 +4,7 @@ package providers
 // Contains critical provider configuration
 // ================================================================================
 
-var Catalog = CatalogType{
+var Catalog = CatalogType{ // nolint:gochecknoglobals
 	// Salesforce configuration
 	Salesforce: {
 		AuthType: AuthTypeOAuth2,
