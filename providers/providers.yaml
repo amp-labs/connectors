@@ -10,7 +10,7 @@
 
 providers:
   salesforce:
-    baseUrl: "https://{{.workspace}}.salesforce.com"
+    baseUrl: "https://{{.workspace}}.my.salesforce.com"
     authType: oauth2
     oauthOpts:
       authUrl: "https://{{.workspace}}.my.salesforce.com/services/oauth2/authorize"
