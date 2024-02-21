@@ -24,7 +24,7 @@ func TestReadConfig(t *testing.T) { //nolint:funlen
 				"version":   "-1.0",
 			},
 			expected: &ProviderInfo{
-				Support: ConnectorSupport{
+				Support: Support{
 					Read:      true,
 					Write:     true,
 					BulkWrite: true,
@@ -51,7 +51,7 @@ func TestReadConfig(t *testing.T) { //nolint:funlen
 				"nonexistentvar": "test",
 			},
 			expected: &ProviderInfo{
-				Support: ConnectorSupport{
+				Support: Support{
 					Read:      true,
 					Write:     true,
 					BulkWrite: false,
@@ -74,7 +74,7 @@ func TestReadConfig(t *testing.T) { //nolint:funlen
 				"nonexistentvar": "xyz",
 			},
 			expected: &ProviderInfo{
-				Support: ConnectorSupport{
+				Support: Support{
 					Read:      false,
 					Write:     false,
 					BulkWrite: false,
