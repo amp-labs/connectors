@@ -36,7 +36,7 @@ func TestReadConfig(t *testing.T) { //nolint:funlen
 					AuthURL:  "https://example.my.salesforce.com/services/oauth2/authorize",
 					TokenURL: "https://example.my.salesforce.com/services/oauth2/token",
 				},
-				BaseURL: "https://example.salesforce.com",
+				BaseURL: "https://example.my.salesforce.com",
 				ProviderOpts: map[string]string{
 					"restApiUrl": "https://example.my.salesforce.com/services/data/v59.0",
 					"domain":     "example.my.salesforce.com",
