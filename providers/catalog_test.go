@@ -104,7 +104,7 @@ func TestReadConfig(t *testing.T) { // nolint
 	for _, tc := range testCases {
 		tc := tc // nolint:varnamelen
 
-		t.Run(string(tc.provider), func(t *testing.T) {
+		t.Run(tc.provider, func(t *testing.T) {
 			t.Parallel()
 
 			config, err := ReadConfig(tc.provider, &tc.substitutions)

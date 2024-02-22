@@ -102,5 +102,6 @@ func (i *ProviderInfo) GetOption(key string) (string, bool) {
 	}
 
 	val, ok := i.ProviderOpts[key]
+
 	return val, ok
 }
