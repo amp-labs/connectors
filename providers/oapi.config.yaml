@@ -1,0 +1,6 @@
+package: providers
+generate:
+  # Only generate Go types for the schemas, not server stubs.
+  models: true
+output-options:
+  skip-prune: true
