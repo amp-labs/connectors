@@ -258,8 +258,6 @@ func (c *Connector) postToSFAPI(ctx context.Context, body any, path string, enti
 		return nil, err
 	}
 
-	fmt.Println("location: ", location)
-
 	resp, err := c.post(ctx, location, body)
 	if err != nil {
 		return nil, err
