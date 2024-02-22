@@ -95,3 +95,12 @@ func substitute(input string, substitutions *map[string]string) (string, error) 
 
 	return result.String(), nil
 }
+
+func (i *ProviderInfo) GetOption(key string) (string, bool) {
+	if i.ProviderOpts == nil {
+		return "", false
+	}
+
+	val, ok := i.ProviderOpts[key]
+	return val, ok
+}

@@ -1,13 +1,23 @@
 package providers
 
 // ================================================================================
-// Contains critical provider configuration
+// Provider list
+// ================================================================================
+
+const (
+	Salesforce Provider = "salesforce"
+	Hubspot    Provider = "hubspot"
+	LinkedIn   Provider = "linkedIn"
+)
+
+// ================================================================================
+// Contains critical provider configuration (using types from types.gen.go)
 // ================================================================================
 
 var Catalog = CatalogType{ // nolint:gochecknoglobals
 	// Salesforce configuration
 	Salesforce: {
-		AuthType: AuthTypeOAuth2,
+		AuthType: Oauth2,
 		BaseURL:  "https://{{.workspace}}.my.salesforce.com",
 		OauthOpts: OauthOpts{
 			AuthURL:  "https://{{.workspace}}.my.salesforce.com/services/oauth2/authorize",
@@ -20,7 +30,7 @@ var Catalog = CatalogType{ // nolint:gochecknoglobals
 			Subscribe: false,
 			Write:     true,
 		},
-		ProviderOpts: map[string]string{
+		ProviderOpts: ProviderOpts{
 			"restApiUrl": "https://{{.workspace}}.my.salesforce.com/services/data/v59.0",
 			"domain":     "{{.workspace}}.my.salesforce.com",
 		},
@@ -28,7 +38,7 @@ var Catalog = CatalogType{ // nolint:gochecknoglobals
 
 	// Hubspot configuration
 	Hubspot: {
-		AuthType: AuthTypeOAuth2,
+		AuthType: Oauth2,
 		BaseURL:  "https://api.hubapi.com",
 		OauthOpts: OauthOpts{
 			AuthURL:  "https://app.hubspot.com/oauth/authorize",
@@ -45,7 +55,7 @@ var Catalog = CatalogType{ // nolint:gochecknoglobals
 
 	// LinkedIn configuration
 	LinkedIn: {
-		AuthType: AuthTypeOAuth2,
+		AuthType: Oauth2,
 		BaseURL:  "https://api.linkedin.com",
 		OauthOpts: OauthOpts{
 			AuthURL:  "https://www.linkedin.com/oauth/v2/authorization",

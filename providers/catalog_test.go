@@ -28,13 +28,13 @@ var testCases = []struct { // nolint
 				Subscribe: false,
 				Proxy:     true,
 			},
-			AuthType: AuthTypeOAuth2,
+			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
 				AuthURL:  "https://example.my.salesforce.com/services/oauth2/authorize",
 				TokenURL: "https://example.my.salesforce.com/services/oauth2/token",
 			},
 			BaseURL: "https://example.my.salesforce.com",
-			ProviderOpts: map[string]string{
+			ProviderOpts: ProviderOpts{
 				"restApiUrl": "https://example.my.salesforce.com/services/data/v59.0",
 				"domain":     "example.my.salesforce.com",
 			},
@@ -55,7 +55,7 @@ var testCases = []struct { // nolint
 				Subscribe: false,
 				Proxy:     true,
 			},
-			AuthType: AuthTypeOAuth2,
+			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
 				AuthURL:  "https://app.hubspot.com/oauth/authorize",
 				TokenURL: "https://api.hubapi.com/oauth/v1/token",
@@ -78,7 +78,7 @@ var testCases = []struct { // nolint
 				Subscribe: false,
 				Proxy:     false,
 			},
-			AuthType: AuthTypeOAuth2,
+			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
 				AuthURL:  "https://www.linkedin.com/oauth/v2/authorization",
 				TokenURL: "https://www.linkedin.com/oauth/v2/accessToken",
@@ -88,7 +88,7 @@ var testCases = []struct { // nolint
 		expectedErr: nil,
 	},
 	{
-		provider:    Provider("nonexistent"),
+		provider:    "nonexistent",
 		description: "Non-existent provider config",
 		substitutions: map[string]string{
 			"workspace": "test",
@@ -130,9 +130,16 @@ func TestReadConfig(t *testing.T) { // nolint
 					t.Errorf("[%s] Expected base URL: %s, but got: %s", tc.description, tc.expected.BaseURL, config.BaseURL)
 				}
 
-				for k, v := range config.ProviderOpts {
-					if tc.expected.ProviderOpts[k] != v {
-						t.Errorf("[%s] Expected provider option %s: %s, but got: %s", tc.description, k, tc.expected.ProviderOpts[k], v)
+				if config.ProviderOpts != nil {
+					for k, v := range config.ProviderOpts {
+						candidateValue, ok := tc.expected.GetOption(k)
+						if !ok {
+							t.Errorf("[%s] Unexpected option: %s", tc.description, k)
+						}
+
+						if v != candidateValue {
+							t.Errorf("[%s] Expected option %s: %s, but got: %s", tc.description, k, candidateValue, v)
+						}
 					}
 				}
 			}

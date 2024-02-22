@@ -1,0 +1,80 @@
+# This file contains the schema for the provider catalog and helps generate
+# the Go types for the schema. The schema is used to create a provider catalog.
+openapi: 3.0.0
+
+info:
+  version: 1.0.0
+  title: Provider catalog
+
+components:
+  schemas:
+    AuthType:
+      type: string
+      enum: [oauth2]
+
+    Support:
+      type: object
+      required:
+        - bulkWrite
+        - proxy
+        - read
+        - subscribe
+        - write
+      properties:
+        bulkWrite:
+          type: boolean
+        proxy:
+          type: boolean
+        read:
+          type: boolean
+        subscribe:
+          type: boolean
+        write:
+          type: boolean
+
+    OauthOpts:
+      type: object
+      required:
+          - authURL
+          - tokenURL
+      properties:
+        authURL:
+          type: string
+          example: https://login.salesforce.com/services/oauth2/authorize
+        tokenURL:
+          type: string
+          example: https://login.salesforce.com/services/oauth2/token
+
+    ProviderOpts:
+        type: object
+        additionalProperties:
+          type: string
+
+    Provider:
+      type: string
+      example: salesforce
+
+    ProviderInfo:
+      type: object
+      required:
+        - baseURL
+        - authType
+        - support
+        - oauthOpts
+        - providerOpts
+      properties:
+        authType:
+          $ref: '#/components/schemas/AuthType'
+        baseURL:
+          type: string
+        oauthOpts:
+            $ref: '#/components/schemas/OauthOpts'
+        support:
+            $ref: '#/components/schemas/Support'
+        providerOpts:
+            $ref: '#/components/schemas/ProviderOpts'
+
+    CatalogType:
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/ProviderInfo'
