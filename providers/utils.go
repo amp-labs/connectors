@@ -11,8 +11,8 @@ import (
 
 var ErrProviderCatalogNotFound = errors.New("provider or provider catalog not found")
 
-// ReadConfig reads the configuration from the config file for a specific provider. It also performs string substitution
-// on the values in the config that are surrounded by {{}}. The provider YAML has more details on how it works.
+// ReadConfig reads the configuration from the catalog for specific provider. It also performs string substitution
+// on the values in the config that are surrounded by {{}}.
 func ReadConfig(provider Provider, substitutions *map[string]string) (*ProviderInfo, error) {
 	providerConfig, ok := Catalog[provider]
 	if !ok {
