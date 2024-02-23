@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -13,6 +14,7 @@ import (
 
 	"github.com/amp-labs/connectors/basic"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/utils"
 	"golang.org/x/oauth2"
 )
 
@@ -20,51 +22,103 @@ import (
 // Example usage
 // ================================
 
-//	go run proxy.go -provider salesforce \
-//    --client-id=************** \
-//    --client-secret=**************
-//    --substitutions=workspace=demo
+// Create a creds.json file with the following content:
+//
+//	{
+//		"clientId": "**************",
+//		"clientSecret": "**************",
+//		"scopes": "crm.contacts.read,crm.contacts.write", (optional)
+//		"provider": "salesforce",
+//		"substitutions": { (optional)
+//		    "workspace": "some-subdomain"
+//		},
+//		"accessToken": "**************",
+//		"refreshToken": "**************"
+//	}
 
-// go run proxy.go -provider hubspot \
-//    --client-id=************** \
-//    --client-secret=**************
-//    --substitutions=workspace=demo
-//    --scopes=crm.objects.contacts.read,crm.objects.contacts.write
-
-// go run proxy.go -provider linkedIn \
-//    --client-id=************** \
-//    --client-secret=**************
-//    --scopes=openid,profile,email
-
-// ==============================
-// Configuration
-// ==============================
+// Remember to run the script in the same directory as the script.
+// go run proxy.go
 
 var (
-	defaultTokenPath = ".amp-provider-token.json"
-	defaultPort      = 4444
+	DefaultCredsFile = "creds.json"
+	DefaultPort      = 4444
 )
 
 // ==============================
 // Main (no changes needed)
 // ==============================
 
-func main() {
-	provider, clientId, clientSecret, scopes, substitutions, tokenPath, port := parseFlags()
-	validateRequiredFlags(provider, clientId, clientSecret)
-	startProxy(provider, scopes, clientId, clientSecret, substitutions, tokenPath, port)
+var registry = utils.NewCredentialsRegistry()
+
+var readers = []utils.Reader{
+	&utils.JSONReader{
+		FilePath: DefaultCredsFile,
+		JSONPath: "$['clientId']",
+		CredKey:  "ClientId",
+	},
+	&utils.JSONReader{
+		FilePath: DefaultCredsFile,
+		JSONPath: "$['clientSecret']",
+		CredKey:  "ClientSecret",
+	},
+	&utils.JSONReader{
+		FilePath: DefaultCredsFile,
+		JSONPath: "$['scopes']",
+		CredKey:  "Scopes",
+	},
+	&utils.JSONReader{
+		FilePath: DefaultCredsFile,
+		JSONPath: "$['provider']",
+		CredKey:  "Provider",
+	},
+	&utils.JSONReader{
+		FilePath: DefaultCredsFile,
+		JSONPath: "$['substitutions']",
+		CredKey:  "Substitutions",
+	},
+	&utils.JSONReader{
+		FilePath: DefaultCredsFile,
+		JSONPath: "$['accessToken']",
+		CredKey:  "AccessToken",
+	},
+	&utils.JSONReader{
+		FilePath: DefaultCredsFile,
+		JSONPath: "$['refreshToken']",
+		CredKey:  "RefreshToken",
+	},
 }
 
-func parseFlags() (provider, clientId, clientSecret, scopes, substitutions, tokenPath string, port int) {
-	flag.StringVar(&provider, "provider", "", "[required] the name of the provider")
-	flag.StringVar(&clientId, "client-id", "", "[required] provider app client id")
-	flag.StringVar(&clientSecret, "client-secret", "", "[required] provider app client secret")
-	flag.StringVar(&scopes, "scopes", "", "[optional] the scopes to request (comma separated)")
-	flag.StringVar(&tokenPath, "token-path", defaultTokenPath, "[optional] path to the token file")
-	flag.IntVar(&port, "port", defaultPort, "[optional] the port to start the proxy on")
-	flag.StringVar(&substitutions, "substitutions", "", "the substitutions to use (comma separated as key=value)")
-	flag.Parse()
-	return
+func main() {
+	err := registry.AddReaders(readers...)
+	if err != nil {
+		panic(err)
+	}
+
+	provider := registry.MustString("Provider")
+	clientId := registry.MustString("ClientId")
+	clientSecret := registry.MustString("ClientSecret")
+	accessToken := registry.MustString("AccessToken")
+	refreshToken := registry.MustString("RefreshToken")
+
+	scopes, err := registry.GetString("Scopes")
+	if err != nil {
+		slog.Warn("no scopes attached, ensure that the provider doesn't require scopes")
+	}
+
+	oauthScopes := strings.Split(scopes, ",")
+
+	substitutions, err := registry.GetMap("Substitutions")
+	if err != nil {
+		slog.Warn("no substitutions, ensure that the provider info doesn't have any {{variables}}")
+	}
+
+	// Cast the substitutions to a map[string]string
+	substitutionsMap := make(map[string]string)
+	for key, val := range substitutions {
+		substitutionsMap[key] = val.MustString()
+	}
+	validateRequiredFlags(provider, clientId, clientSecret)
+	startProxy(provider, oauthScopes, clientId, clientSecret, substitutionsMap, DefaultPort, accessToken, refreshToken)
 }
 
 func validateRequiredFlags(provider, clientId, clientSecret string) {
@@ -75,8 +129,8 @@ func validateRequiredFlags(provider, clientId, clientSecret string) {
 	}
 }
 
-func startProxy(provider, scopes, clientId, clientSecret, substitutions, tokenPath string, port int) {
-	proxy := buildProxy(provider, scopes, clientId, clientSecret, substitutions, tokenPath)
+func startProxy(provider string, scopes []string, clientId, clientSecret string, substitutions map[string]string, port int, accessToken, refreshToken string) {
+	proxy := buildProxy(provider, scopes, clientId, clientSecret, substitutions, accessToken, refreshToken)
 	http.Handle("/", proxy)
 
 	fmt.Printf("\nProxy server listening on :%d\n", port)
@@ -85,11 +139,10 @@ func startProxy(provider, scopes, clientId, clientSecret, substitutions, tokenPa
 	}
 }
 
-func buildProxy(provider, scopes, clientId, clientSecret, substitutions, tokenPath string) *Proxy {
+func buildProxy(provider string, scopes []string, clientId, clientSecret string, substitutions map[string]string, accessToken, refreshToken string) *Proxy {
 	providerInfo := getProviderConfig(provider, substitutions)
-	token := readToken(tokenPath)
 	cfg := configureOAuth(clientId, clientSecret, scopes, providerInfo)
-	httpClient := setupHttpClient(cfg, token, provider, providerInfo)
+	httpClient := setupHttpClient(cfg, accessToken, refreshToken, provider, providerInfo)
 
 	target, err := url.Parse(providerInfo.BaseURL)
 	if err != nil {
@@ -99,14 +152,8 @@ func buildProxy(provider, scopes, clientId, clientSecret, substitutions, tokenPa
 	return newProxy(target, httpClient)
 }
 
-func getProviderConfig(provider, substitutions string) *providers.ProviderInfo {
-	var sMap map[string]string
-
-	if substitutions != "" {
-		sMap = convertSubstitutions(substitutions)
-	}
-
-	config, err := providers.ReadConfig(providers.Provider(provider), &sMap)
+func getProviderConfig(provider string, substitutions map[string]string) *providers.ProviderInfo {
+	config, err := providers.ReadConfig(provider, &substitutions)
 	if err != nil {
 		panic(err)
 	}
@@ -127,16 +174,11 @@ func readToken(tokenPath string) *oauth2.Token {
 	return &token
 }
 
-func configureOAuth(clientId, clientSecret, scopes string, providerInfo *providers.ProviderInfo) *oauth2.Config {
-	scopesSlice := strings.Split(scopes, ",")
-	if scopes == "" {
-		scopesSlice = nil
-	}
-
+func configureOAuth(clientId, clientSecret string, scopes []string, providerInfo *providers.ProviderInfo) *oauth2.Config {
 	return &oauth2.Config{
 		ClientID:     clientId,
 		ClientSecret: clientSecret,
-		Scopes:       scopesSlice,
+		Scopes:       scopes,
 		Endpoint: oauth2.Endpoint{
 			AuthURL:   providerInfo.OauthOpts.AuthURL,
 			TokenURL:  providerInfo.OauthOpts.TokenURL,
@@ -146,11 +188,11 @@ func configureOAuth(clientId, clientSecret, scopes string, providerInfo *provide
 }
 
 // This helps with refreshing tokens automatically.
-func setupHttpClient(cfg *oauth2.Config, token *oauth2.Token, provider string, providerInfo *providers.ProviderInfo) *http.Client {
+func setupHttpClient(cfg *oauth2.Config, accessToken, refreshToken string, provider string, providerInfo *providers.ProviderInfo) *http.Client {
 	ctx := context.Background()
 	conn, err := basic.NewConnector(
 		providers.Provider(provider),
-		basic.WithClient(ctx, http.DefaultClient, cfg, token),
+		basic.WithClient(ctx, http.DefaultClient, cfg, &oauth2.Token{AccessToken: accessToken, RefreshToken: refreshToken}),
 	)
 	if err != nil {
 		panic(err)

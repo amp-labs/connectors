@@ -28,6 +28,10 @@ type Reader interface {
 	Key() (string, error)
 }
 
+type Writer interface {
+	Set(key string, value any)
+}
+
 type EnvReaderParam struct {
 	EnvName string `json:"envVar" validate:"required"`
 }
@@ -247,6 +251,15 @@ func (c CredentialsRegistry) GetUint(key string) (uint, error) {
 	}
 
 	return getFromReader[uint](reader)
+}
+
+func (c CredentialsRegistry) GetMap(key string) (map[string]*ajson.Node, error) {
+	reader, ok := c[key]
+	if !ok {
+		return nil, fmt.Errorf("%w: %s", ErrReaderNotFound, key)
+	}
+
+	return getFromReader[map[string]*ajson.Node](reader)
 }
 
 func (c CredentialsRegistry) MustString(credKey string) string {

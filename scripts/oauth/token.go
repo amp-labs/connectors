@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/utils"
 	"golang.org/x/oauth2"
 )
 
@@ -23,39 +24,65 @@ import (
 // Example usage
 // ================================
 
-//	go run token.go -provider salesforce \
-//	  --client-id=************** \
-//	  --client-secret=************** \
-//	  --substitutions=workspace=example
+// Create a creds.json file with the following content:
+//
+//	{
+//		"clientId": "**************",
+//		"clientSecret": "**************",
+//		"scopes": "crm.contacts.read,crm.contacts.write", (optional)
+//		"provider": "salesforce",
+//		"substitutions": { (optional)
+//		    "workspace": "some-subdomain"
+//		},
+//		"accessToken": "",
+//		"refreshToken": ""
+//	}
 
-// go run token.go -provider hubspot \
-//	  --client-id=************** \
-//	  --client-secret=************** \
-// 	  --scopes=crm.objects.contacts.read,crm.objects.companies.read
-
-// go run token.go -provider linkedIn \
-//      --client-id=************** \
-//      --client-secret=**************
-//      --scopes=openid,profile,email
-
-// ===============================
-// Variables required for testing
-// ===============================
+// Remember to run the script in the same directory as the script.
+// go run token.go
 
 const (
-	// TokenPath is the path to the token file, and it is relative to the current working directory.
-	TokenPath = ".amp-provider-token.json"
-
+	DefaultCredsFile    = "creds.json"
 	DefaultServerPort   = 8080
 	DefaultCallbackPath = "/callbacks/v1/oauth"
 
-	WaitBeforeExitSeconds    = 3
+	WaitBeforeExitSeconds    = 1
 	ReadHeaderTimeoutSeconds = 3
 )
 
-// ===============================
-// End of variables required for testing
-// ===============================
+// ================================
+// No changes required below
+// ================================
+
+var registry = utils.NewCredentialsRegistry()
+
+var readers = []utils.Reader{
+	&utils.JSONReader{
+		FilePath: DefaultCredsFile,
+		JSONPath: "$['clientId']",
+		CredKey:  "ClientId",
+	},
+	&utils.JSONReader{
+		FilePath: DefaultCredsFile,
+		JSONPath: "$['clientSecret']",
+		CredKey:  "ClientSecret",
+	},
+	&utils.JSONReader{
+		FilePath: DefaultCredsFile,
+		JSONPath: "$['scopes']",
+		CredKey:  "Scopes",
+	},
+	&utils.JSONReader{
+		FilePath: DefaultCredsFile,
+		JSONPath: "$['provider']",
+		CredKey:  "Provider",
+	},
+	&utils.JSONReader{
+		FilePath: DefaultCredsFile,
+		JSONPath: "$['substitutions']",
+		CredKey:  "Substitutions",
+	},
+}
 
 // OAuthApp is a simple OAuth app that can be used to get an OAuth token.
 type OAuthApp struct {
@@ -102,8 +129,6 @@ func (a *OAuthApp) processCallback(writer http.ResponseWriter, request *http.Req
 			slog.Error("Error base64-decoding state", "error", err)
 			http.Error(writer, err.Error(), http.StatusBadRequest)
 
-			removeTokenFile()
-
 			return
 		}
 
@@ -120,8 +145,6 @@ func (a *OAuthApp) processCallback(writer http.ResponseWriter, request *http.Req
 		slog.Error("Error exchanging code for token", "error", err)
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 
-		removeTokenFile()
-
 		return
 	}
 
@@ -131,8 +154,6 @@ func (a *OAuthApp) processCallback(writer http.ResponseWriter, request *http.Req
 		slog.Error("Error marshalling token", "error", err)
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 
-		removeTokenFile()
-
 		return
 	}
 
@@ -140,24 +161,12 @@ func (a *OAuthApp) processCallback(writer http.ResponseWriter, request *http.Req
 	writer.Header().Set("Content-Length", strconv.FormatInt(int64(len(jsonBody)), 10))
 	writer.WriteHeader(http.StatusOK)
 
-	err = createTokenFile(tok)
-	if err != nil {
-		slog.Error("Error writing token to file", "error", err)
-		http.Error(writer, err.Error(), http.StatusInternalServerError)
-
-		removeTokenFile()
-
-		return
-	}
-
 	// All done
-	if _, err = writer.Write([]byte("Successfully created token file (" + TokenPath + ")")); err != nil {
+	if _, err = writer.Write(jsonBody); err != nil {
 		slog.Error("Error writing token", "error", err)
 
-		removeTokenFile()
+		os.Exit(1)
 	}
-
-	slog.Info("token written to file", "path", TokenPath)
 
 	go func() {
 		time.Sleep(WaitBeforeExitSeconds * time.Second)
@@ -208,68 +217,57 @@ func openBrowser(url string) {
 	}
 }
 
-func convertSubstitutions(sub string) map[string]string {
-	if len(sub) == 0 {
-		return nil
-	}
-
-	parts := strings.Split(sub, ",")
-
-	substitutions := make(map[string]string)
-
-	for _, part := range parts {
-		parts := strings.Split(part, "=")
-		if len(parts) != 2 {
-			continue
-		}
-
-		substitutions[parts[0]] = parts[1]
-	}
-
-	return substitutions
-}
-
 // setup parses the CLI flags and initializes the OAuth app.
 func setup() *OAuthApp {
 	// Define the CLI flags.
 	port := flag.Int("port", DefaultServerPort, "port to listen on")
-	client := flag.String("client-id", "", "an OAuth client id")
-	secret := flag.String("client-secret", "", "an OAuth client secret")
-	provider := flag.String("provider", "", "the type of OAuth provider")
-	scopes := flag.String("scopes", "", "the scopes to request (comma separated)")
 	callback := flag.String("callback", DefaultCallbackPath, "the full OAuth callback path (arbitrary)")
-	substitutions := flag.String("substitutions", "", "the substitutions to use (comma separated as key=value)")
 	flag.Parse()
 
-	// Make sure the required flags are set
-	sanityCheckFlags(client, secret, provider)
+	err := registry.AddReaders(readers...)
+	if err != nil {
+		return nil
+	}
 
 	// Determine the OAuth redirect URL.
 	redirect := fmt.Sprintf("http://localhost:%d%s", *port, *callback)
 
-	// Optionally set the OAuth options based on the flags. Most users won't care about this.
-	var opts []oauth2.AuthCodeOption
-
 	// Get the OAuth scopes from the flag.
-	oauthScopes := getScopes(*provider, scopes)
+	provider := registry.MustString("Provider")
+	clientId := registry.MustString("ClientId")
+	clientSecret := registry.MustString("ClientSecret")
+
+	scopes, err := registry.GetString("Scopes")
+	if err != nil {
+		slog.Warn("no scopes attached, ensure that the provider doesn't require scopes")
+	}
+
+	oauthScopes := strings.Split(scopes, ",")
 
 	// Create the OAuth app.
 	app := &OAuthApp{
 		Callback: *callback,
 		Port:     *port,
-		Options:  opts,
 		Config: &oauth2.Config{
-			ClientID:     *client,
-			ClientSecret: *secret,
+			ClientID:     clientId,
+			ClientSecret: clientSecret,
 			RedirectURL:  redirect,
 			Scopes:       oauthScopes,
 		},
 	}
 
-	// Convert substitutions to a map
-	substitutionsMap := convertSubstitutions(*substitutions)
+	substitutions, err := registry.GetMap("Substitutions")
+	if err != nil {
+		slog.Warn("no substitutions, ensure that the provider info doesn't have any {{variables}}")
+	}
 
-	providerInfo, err := providers.ReadConfig(providers.Provider(*provider), &substitutionsMap)
+	// Cast the substitutions to a map[string]string
+	substitutionsMap := make(map[string]string)
+	for key, val := range substitutions {
+		substitutionsMap[key] = val.MustString()
+	}
+
+	providerInfo, err := providers.ReadConfig(provider, &substitutionsMap)
 	if err != nil {
 		slog.Error("failed to read provider config", "error", err)
 
@@ -286,52 +284,6 @@ func setup() *OAuthApp {
 	return app
 }
 
-func sanityCheckFlags(client *string, secret *string, provider *string) {
-	if *client == "" {
-		_, _ = fmt.Fprintf(os.Stderr, "Missing required flag: -client-id\n")
-
-		flag.Usage()
-
-		os.Exit(1)
-	}
-
-	if *secret == "" {
-		_, _ = fmt.Fprintf(os.Stderr, "Missing required flag: -client-secret\n")
-
-		flag.Usage()
-
-		os.Exit(1)
-	}
-
-	if *provider == "" {
-		_, _ = fmt.Fprintf(os.Stderr, "Missing required flag: -provider\n")
-
-		flag.Usage()
-
-		os.Exit(1)
-	}
-}
-
-func getScopes(provider string, scopesFlag *string) []string {
-	var scopes []string
-
-	parts := strings.Split(*scopesFlag, ",")
-
-	for _, part := range parts {
-		v := strings.TrimSpace(part)
-		if len(v) > 0 {
-			scopes = append(scopes, v)
-		}
-	}
-
-	if len(scopes) == 0 && provider == "hubspot" {
-		slog.Error("no scopes provided for hubspot")
-		os.Exit(1)
-	}
-
-	return scopes
-}
-
 func main() {
 	// Parse flags and set up the OAuth app.
 	app := setup()
@@ -343,29 +295,5 @@ func main() {
 		time.Sleep(WaitBeforeExitSeconds * time.Second)
 
 		os.Exit(1)
-	}
-}
-
-func createTokenFile(token *oauth2.Token) error {
-	file, err := json.MarshalIndent(token, "", "  ")
-	if err != nil {
-		return err
-	}
-
-	err = os.WriteFile(TokenPath, file, 0600)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// removeTokenFile removes the token file if it exists.
-func removeTokenFile() {
-	if _, err := os.Stat(TokenPath); err == nil {
-		// File exists, remove it
-		if err := os.Remove(TokenPath); err != nil {
-			slog.Error("Error removing token file", "error", err)
-		}
 	}
 }
