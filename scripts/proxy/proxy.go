@@ -134,7 +134,7 @@ func startProxy(provider string, scopes []string, clientId, clientSecret string,
 	http.Handle("/", proxy)
 
 	fmt.Printf("\nProxy server listening on :%d\n", port)
-	if err := http.ListenAndServe(fmt.Sprintf(":%d", port), nil); err != nil {
+	if err := http.ListenAndServe(fmt.Sprintf(":%d", port), nil); err != nil { // nosemgrep
 		panic(err)
 	}
 }

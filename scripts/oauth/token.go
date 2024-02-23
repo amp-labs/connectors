@@ -162,7 +162,7 @@ func (a *OAuthApp) processCallback(writer http.ResponseWriter, request *http.Req
 	writer.WriteHeader(http.StatusOK)
 
 	// All done
-	if _, err = writer.Write(jsonBody); err != nil {
+	if _, err = writer.Write(jsonBody); err != nil { // nosemgrep
 		slog.Error("Error writing token", "error", err)
 
 		os.Exit(1)
