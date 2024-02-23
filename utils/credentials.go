@@ -28,10 +28,6 @@ type Reader interface {
 	Key() (string, error)
 }
 
-type Writer interface {
-	Set(key string, value any)
-}
-
 type EnvReaderParam struct {
 	EnvName string `json:"envVar" validate:"required"`
 }
