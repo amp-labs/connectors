@@ -52,7 +52,7 @@ func NewConnector(
 	}
 
 	// Read provider info & replace catalog variables with given substitutions, if any
-	providerInfo, err := providers.ReadConfig(conn.provider, &params.substitutions)
+	providerInfo, err := providers.ReadInfo(conn.provider, &params.substitutions)
 	if err != nil {
 		return nil, err
 	}

@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	providerOptionRestApiUrl = "restApiUrl"
+	providerOptionRestApiURL = "restApiUrl"
 	providerOptionDomain     = "domain"
 )
 
@@ -59,21 +59,21 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	}
 
 	// Read provider info & replace catalog variables with given substitutions, if any
-	providerInfo, err := providers.ReadConfig(providers.Salesforce, &map[string]string{
+	providerInfo, err := providers.ReadInfo(providers.Salesforce, &map[string]string{
 		"workspace": params.workspace,
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	restApi, ok := providerInfo.GetOption(providerOptionRestApiUrl)
+	restApi, ok := providerInfo.GetOption(providerOptionRestApiURL)
 	if !ok {
-		return nil, fmt.Errorf("missing restApiUrl option in provider info")
+		return nil, fmt.Errorf("restApiUrl not set: %w", providers.ErrProviderOptionNotFound)
 	}
 
 	domain, ok := providerInfo.GetOption(providerOptionDomain)
 	if !ok {
-		return nil, fmt.Errorf("missing domain option in provider info")
+		return nil, fmt.Errorf("domain not set: %w", providers.ErrProviderOptionNotFound)
 	}
 
 	conn = &Connector{
