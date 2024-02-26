@@ -12,48 +12,32 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/salesforce"
-	"github.com/amp-labs/connectors/test"
-	"golang.org/x/oauth2"
+	testUtils "github.com/amp-labs/connectors/test/utils"
+	"github.com/amp-labs/connectors/utils"
 )
 
 func main() {
-	// assumed that the creds.json file is in the root of the project
-	creds, err := test.GetCreds("./creds.json")
-	if err != nil {
-		slog.Error("Error getting creds", "error", err)
-		os.Exit(1)
-	}
-
-	clientId := creds.ClientId
-	clientSecret := creds.ClientSecret
-	accessToken := creds.AccessToken
-	refreshToken := creds.RefreshToken
-
-	salesforceWorkspace := creds.Workspace
-
 	handler := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
 		Level: slog.LevelDebug,
 	})
+
 	logger := slog.New(handler)
 	slog.SetDefault(logger)
 
-	cfg := &oauth2.Config{
-		ClientID:     clientId,
-		ClientSecret: clientSecret,
-		Endpoint: oauth2.Endpoint{
-			AuthURL:   fmt.Sprintf("https://%s.my.salesforce.com/services/oauth2/authorize", salesforceWorkspace),
-			TokenURL:  fmt.Sprintf("https://%s.my.salesforce.com/services/oauth2/token", salesforceWorkspace),
-			AuthStyle: oauth2.AuthStyleInParams,
-		},
+	// assumes that this code is being run from the root of the project
+	// go run test/salesforce/bulkwrite/main.go
+	filePath := os.Getenv("SALESFORCE_CRED_FILE_PATH")
+	if filePath == "" {
+		filePath = "./salesforce-creds.json"
 	}
 
-	tok := &oauth2.Token{
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
-		TokenType:    "bearer",
-		Expiry:       time.Now().Add(-1 * time.Hour), // just pretend it's expired already, whatever, it'll fetch a new one.
-	}
+	ampConnectionSchemaReader := testUtils.AmpersandConnectionSchemaReaders(filePath)
+	credentialsRegistry := utils.NewCredentialsRegistry()
+	credentialsRegistry.AddReaders(ampConnectionSchemaReader...)
+	salesforceWorkspace := credentialsRegistry.MustString("Workspace")
 
+	cfg := utils.SalesforceOAuthConfigFromRegistry(credentialsRegistry)
+	tok := utils.SalesforceOauthTokenFromRegistry(credentialsRegistry)
 	ctx := context.Background()
 
 	// Create a new Salesforce connector, with a token provider that uses the sfdx CLI to fetch an access token.

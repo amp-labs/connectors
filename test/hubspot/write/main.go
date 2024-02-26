@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors/common"
+	hsTest "github.com/amp-labs/connectors/test/hubspot"
 	"github.com/amp-labs/connectors/test/utils"
 	"github.com/brianvoe/gofakeit/v6"
 )
@@ -50,8 +51,13 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
+	filePath := os.Getenv("HUBSPOT_CRED_FILE_PATH")
+	if filePath == "" {
+		filePath = "./hubspot-creds.json"
+	}
+
 	// Get the Hubspot connector.
-	hsConn := utils.GetHubspotConnector(ctx, "creds.json")
+	hsConn := hsTest.GetHubspotConnector(ctx, filePath)
 	defer utils.Close(hsConn)
 
 	// Write an artificial contact to Hubspot.
