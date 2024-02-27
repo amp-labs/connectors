@@ -1,6 +1,8 @@
 package providers
 
 import (
+	"bytes"
+	"encoding/gob"
 	"errors"
 	"html/template"
 	"reflect"
@@ -9,29 +11,58 @@ import (
 	"github.com/go-playground/validator"
 )
 
-var ErrProviderCatalogNotFound = errors.New("provider or provider catalog not found")
+var (
+	ErrProviderCatalogNotFound = errors.New("provider or provider catalog not found")
+	ErrProviderOptionNotFound  = errors.New("provider option not found")
+)
 
-// ReadConfig reads the configuration from the catalog for specific provider. It also performs string substitution
-// on the values in the config that are surrounded by {{}}.
-func ReadConfig(provider Provider, substitutions *map[string]string) (*ProviderInfo, error) {
-	providerConfig, ok := Catalog[provider]
-	if !ok {
-		return nil, ErrProviderCatalogNotFound
-	}
-
-	// Validate the provider configuration
-	v := validator.New()
-	if err := v.Struct(&providerConfig); err != nil {
-		return nil, err
-	}
-
-	// Apply substitutions to the provider configuration values which contain variables in the form of {{var}}.
-	err := substituteStruct(&providerConfig, substitutions)
+func ReadCatalog() (CatalogType, error) {
+	catalog, err := clone[CatalogType](catalog)
 	if err != nil {
 		return nil, err
 	}
 
-	return &providerConfig, nil
+	// Validate the provider configuration
+	v := validator.New()
+	for _, providerInfo := range catalog {
+		if err := v.Struct(providerInfo); err != nil {
+			return nil, err
+		}
+	}
+
+	return catalog, nil
+}
+
+// ReadInfo reads the information from the catalog for specific provider. It also performs string substitution
+// on the values in the config that are surrounded by {{}}.
+func ReadInfo(provider Provider, substitutions *map[string]string) (*ProviderInfo, error) {
+	pInfo, ok := catalog[provider]
+	if !ok {
+		return nil, ErrProviderCatalogNotFound
+	}
+
+	// Clone before modifying
+	providerInfo, err := clone[ProviderInfo](pInfo)
+	if err != nil {
+		return nil, err
+	}
+
+	// Validate the provider configuration
+	v := validator.New()
+	if err := v.Struct(providerInfo); err != nil {
+		return nil, err
+	}
+
+	if substitutions == nil {
+		substitutions = &map[string]string{}
+	}
+
+	// Apply substitutions to the provider configuration values which contain variables in the form of {{var}}.
+	if err := substituteStruct(&providerInfo, substitutions); err != nil {
+		return nil, err
+	}
+
+	return &providerInfo, nil
 }
 
 // substituteStruct performs string substitution on the fields of the input struct
@@ -104,4 +135,22 @@ func (i *ProviderInfo) GetOption(key string) (string, bool) {
 	val, ok := i.ProviderOpts[key]
 
 	return val, ok
+}
+
+// clone uses gob to deep copy objects.
+func clone[T any](input T) (T, error) { // nolint:ireturn
+	var buf bytes.Buffer
+	enc := gob.NewEncoder(&buf)
+	dec := gob.NewDecoder(&buf)
+
+	if err := enc.Encode(input); err != nil {
+		return input, err
+	}
+
+	var clone T
+	if err := dec.Decode(&clone); err != nil {
+		return input, err
+	}
+
+	return clone, nil
 }

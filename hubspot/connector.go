@@ -39,7 +39,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	}
 
 	// Read provider info & replace catalog variables with given substitutions, if any
-	providerInfo, err := providers.ReadConfig(providers.Hubspot, nil)
+	providerInfo, err := providers.ReadInfo(providers.Hubspot, nil)
 	if err != nil {
 		return nil, err
 	}

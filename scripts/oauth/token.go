@@ -1,3 +1,4 @@
+// nolint
 package main
 
 import (
@@ -267,7 +268,7 @@ func setup() *OAuthApp {
 		substitutionsMap[key] = val.MustString()
 	}
 
-	providerInfo, err := providers.ReadConfig(provider, &substitutionsMap)
+	providerInfo, err := providers.ReadInfo(provider, &substitutionsMap)
 	if err != nil {
 		slog.Error("failed to read provider config", "error", err)
 

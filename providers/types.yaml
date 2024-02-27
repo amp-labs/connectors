@@ -17,9 +17,13 @@ components:
     AuthType:
       type: string
       enum: [oauth2]
+      x-oapi-codegen-extra-tags:
+        validate: required
 
     Support:
       type: object
+      x-oapi-codegen-extra-tags:
+        validate: required
       required:
         - bulkWrite
         - proxy
@@ -40,16 +44,30 @@ components:
 
     OauthOpts:
       type: object
+      x-oapi-codegen-extra-tags:
+        validate: required
       required:
           - authURL
           - tokenURL
+          - explicitScopesRequired
+          - explicitWorkspaceRequired
       properties:
         authURL:
           type: string
           example: https://login.salesforce.com/services/oauth2/authorize
+          x-oapi-codegen-extra-tags:
+            validate: required
         tokenURL:
           type: string
           example: https://login.salesforce.com/services/oauth2/token
+          x-oapi-codegen-extra-tags:
+            validate: required
+        explicitScopesRequired:
+          type: boolean
+          example: true
+        explicitWorkspaceRequired:
+          type: boolean
+          example: true
 
     ProviderOpts:
         type: object
@@ -73,12 +91,14 @@ components:
           $ref: '#/components/schemas/AuthType'
         baseURL:
           type: string
+          x-oapi-codegen-extra-tags:
+            validate: required
         oauthOpts:
-            $ref: '#/components/schemas/OauthOpts'
+          $ref: '#/components/schemas/OauthOpts'
         support:
-            $ref: '#/components/schemas/Support'
+          $ref: '#/components/schemas/Support'
         providerOpts:
-            $ref: '#/components/schemas/ProviderOpts'
+          $ref: '#/components/schemas/ProviderOpts'
 
     CatalogType:
       type: object
