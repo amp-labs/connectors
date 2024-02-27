@@ -16,8 +16,10 @@ type CatalogType map[string]ProviderInfo
 
 // OauthOpts defines model for OauthOpts.
 type OauthOpts struct {
-	AuthURL  string `json:"authURL"`
-	TokenURL string `json:"tokenURL"`
+	AuthURL                   string `json:"authURL" validate:"required"`
+	ExplicitScopesRequired    bool   `json:"explicitScopesRequired"`
+	ExplicitWorkspaceRequired bool   `json:"explicitWorkspaceRequired"`
+	TokenURL                  string `json:"tokenURL" validate:"required"`
 }
 
 // Provider defines model for Provider.
@@ -25,11 +27,11 @@ type Provider = string
 
 // ProviderInfo defines model for ProviderInfo.
 type ProviderInfo struct {
-	AuthType     AuthType     `json:"authType"`
-	BaseURL      string       `json:"baseURL"`
-	OauthOpts    OauthOpts    `json:"oauthOpts"`
+	AuthType     AuthType     `json:"authType" validate:"required"`
+	BaseURL      string       `json:"baseURL" validate:"required"`
+	OauthOpts    OauthOpts    `json:"oauthOpts" validate:"required"`
 	ProviderOpts ProviderOpts `json:"providerOpts"`
-	Support      Support      `json:"support"`
+	Support      Support      `json:"support" validate:"required"`
 }
 
 // ProviderOpts defines model for ProviderOpts.

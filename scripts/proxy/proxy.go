@@ -1,8 +1,8 @@
+// nolint
 package main
 
 import (
 	"context"
-	"encoding/json"
 	"flag"
 	"fmt"
 	"log/slog"
@@ -117,6 +117,7 @@ func main() {
 	for key, val := range substitutions {
 		substitutionsMap[key] = val.MustString()
 	}
+
 	validateRequiredFlags(provider, clientId, clientSecret)
 	startProxy(provider, oauthScopes, clientId, clientSecret, substitutionsMap, DefaultPort, accessToken, refreshToken)
 }
@@ -134,6 +135,7 @@ func startProxy(provider string, scopes []string, clientId, clientSecret string,
 	http.Handle("/", proxy)
 
 	fmt.Printf("\nProxy server listening on :%d\n", port)
+
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", port), nil); err != nil { // nosemgrep
 		panic(err)
 	}
@@ -153,25 +155,12 @@ func buildProxy(provider string, scopes []string, clientId, clientSecret string,
 }
 
 func getProviderConfig(provider string, substitutions map[string]string) *providers.ProviderInfo {
-	config, err := providers.ReadConfig(provider, &substitutions)
+	config, err := providers.ReadInfo(provider, &substitutions)
 	if err != nil {
 		panic(err)
 	}
 
 	return config
-}
-
-func readToken(tokenPath string) *oauth2.Token {
-	data, err := os.ReadFile(tokenPath)
-	if err != nil {
-		panic(err)
-	}
-
-	var token oauth2.Token
-	if err := json.Unmarshal(data, &token); err != nil {
-		panic(err)
-	}
-	return &token
 }
 
 func configureOAuth(clientId, clientSecret string, scopes []string, providerInfo *providers.ProviderInfo) *oauth2.Config {
@@ -190,8 +179,9 @@ func configureOAuth(clientId, clientSecret string, scopes []string, providerInfo
 // This helps with refreshing tokens automatically.
 func setupHttpClient(cfg *oauth2.Config, accessToken, refreshToken string, provider string, providerInfo *providers.ProviderInfo) *http.Client {
 	ctx := context.Background()
+
 	conn, err := basic.NewConnector(
-		providers.Provider(provider),
+		provider,
 		basic.WithClient(ctx, http.DefaultClient, cfg, &oauth2.Token{AccessToken: accessToken, RefreshToken: refreshToken}),
 	)
 	if err != nil {
@@ -236,25 +226,4 @@ type customTransport struct {
 
 func (t *customTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	return t.httpClient.Do(req)
-}
-
-func convertSubstitutions(sub string) map[string]string {
-	if len(sub) == 0 {
-		return nil
-	}
-
-	parts := strings.Split(sub, ",")
-
-	substitutions := make(map[string]string)
-
-	for _, part := range parts {
-		parts := strings.Split(part, "=")
-		if len(parts) != 2 {
-			continue
-		}
-
-		substitutions[parts[0]] = parts[1]
-	}
-
-	return substitutions
 }

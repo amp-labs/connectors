@@ -30,8 +30,10 @@ var testCases = []struct { // nolint
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
-				AuthURL:  "https://example.my.salesforce.com/services/oauth2/authorize",
-				TokenURL: "https://example.my.salesforce.com/services/oauth2/token",
+				AuthURL:                   "https://example.my.salesforce.com/services/oauth2/authorize",
+				TokenURL:                  "https://example.my.salesforce.com/services/oauth2/token",
+				ExplicitWorkspaceRequired: true,
+				ExplicitScopesRequired:    false,
 			},
 			BaseURL: "https://example.my.salesforce.com",
 			ProviderOpts: ProviderOpts{
@@ -57,8 +59,10 @@ var testCases = []struct { // nolint
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
-				AuthURL:  "https://app.hubspot.com/oauth/authorize",
-				TokenURL: "https://api.hubapi.com/oauth/v1/token",
+				AuthURL:                   "https://app.hubspot.com/oauth/authorize",
+				TokenURL:                  "https://api.hubapi.com/oauth/v1/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
 			},
 			BaseURL: "https://api.hubapi.com",
 		},
@@ -80,8 +84,10 @@ var testCases = []struct { // nolint
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
-				AuthURL:  "https://www.linkedin.com/oauth/v2/authorization",
-				TokenURL: "https://www.linkedin.com/oauth/v2/accessToken",
+				AuthURL:                   "https://www.linkedin.com/oauth/v2/authorization",
+				TokenURL:                  "https://www.linkedin.com/oauth/v2/accessToken",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
 			},
 			BaseURL: "https://api.linkedin.com",
 		},
@@ -98,7 +104,7 @@ var testCases = []struct { // nolint
 	},
 }
 
-func TestReadConfig(t *testing.T) { // nolint
+func TestReadInfo(t *testing.T) { // nolint
 	t.Parallel()
 
 	for _, tc := range testCases {
@@ -107,7 +113,7 @@ func TestReadConfig(t *testing.T) { // nolint
 		t.Run(tc.provider, func(t *testing.T) {
 			t.Parallel()
 
-			config, err := ReadConfig(tc.provider, &tc.substitutions)
+			config, err := ReadInfo(tc.provider, &tc.substitutions)
 
 			if !errors.Is(err, tc.expectedErr) {
 				t.Errorf("[%s] Expected error: %v, but got: %v", tc.description, tc.expectedErr, err)

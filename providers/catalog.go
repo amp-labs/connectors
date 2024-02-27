@@ -14,14 +14,16 @@ const (
 // Contains critical provider configuration (using types from types.gen.go)
 // ================================================================================
 
-var Catalog = CatalogType{ // nolint:gochecknoglobals
+var catalog = CatalogType{ // nolint:gochecknoglobals
 	// Salesforce configuration
 	Salesforce: {
 		AuthType: Oauth2,
 		BaseURL:  "https://{{.workspace}}.my.salesforce.com",
 		OauthOpts: OauthOpts{
-			AuthURL:  "https://{{.workspace}}.my.salesforce.com/services/oauth2/authorize",
-			TokenURL: "https://{{.workspace}}.my.salesforce.com/services/oauth2/token",
+			AuthURL:                   "https://{{.workspace}}.my.salesforce.com/services/oauth2/authorize",
+			TokenURL:                  "https://{{.workspace}}.my.salesforce.com/services/oauth2/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: true,
 		},
 		Support: Support{
 			BulkWrite: true,
@@ -41,8 +43,10 @@ var Catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://api.hubapi.com",
 		OauthOpts: OauthOpts{
-			AuthURL:  "https://app.hubspot.com/oauth/authorize",
-			TokenURL: "https://api.hubapi.com/oauth/v1/token",
+			AuthURL:                   "https://app.hubspot.com/oauth/authorize",
+			TokenURL:                  "https://api.hubapi.com/oauth/v1/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
 			BulkWrite: false,
@@ -58,8 +62,10 @@ var Catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://api.linkedin.com",
 		OauthOpts: OauthOpts{
-			AuthURL:  "https://www.linkedin.com/oauth/v2/authorization",
-			TokenURL: "https://www.linkedin.com/oauth/v2/accessToken",
+			AuthURL:                   "https://www.linkedin.com/oauth/v2/authorization",
+			TokenURL:                  "https://www.linkedin.com/oauth/v2/accessToken",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
 			BulkWrite: false,
