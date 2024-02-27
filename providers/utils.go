@@ -23,7 +23,7 @@ func ReadCatalog() (CatalogType, error) {
 	}
 
 	// Validate the provider configuration
-	var v = validator.New()
+	v := validator.New()
 	for _, providerInfo := range catalog {
 		if err := v.Struct(providerInfo); err != nil {
 			return nil, err
