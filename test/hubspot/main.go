@@ -2,9 +2,11 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils"
@@ -71,4 +73,19 @@ func main() {
 
 	// Dump the result.
 	utils.DumpJSON(result, os.Stdout)
+	fmt.Println("Wrote contact")
+
+	res, err := hsConn.Read(ctx, common.ReadParams{
+		ObjectName: "contacts",
+		Fields:     []string{"email", "phone", "company", "website", "lastname", "firstname"},
+		NextPage:   "",
+		Since:      time.Now().Add(-5 * time.Minute),
+	})
+	if err != nil {
+		utils.Fail("error reading from hubspot", "error", err)
+	}
+
+	fmt.Println("Reading contacts..")
+	// Dump the result.
+	utils.DumpJSON(res, os.Stdout)
 }
