@@ -8,6 +8,7 @@ const (
 	Salesforce Provider = "salesforce"
 	Hubspot    Provider = "hubspot"
 	LinkedIn   Provider = "linkedIn"
+	Salesloft  Provider = "salesloft"
 )
 
 // ================================================================================
@@ -65,6 +66,25 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			AuthURL:                   "https://www.linkedin.com/oauth/v2/authorization",
 			TokenURL:                  "https://www.linkedin.com/oauth/v2/accessToken",
 			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// SalesLoft configuration
+	Salesloft: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.salesloft.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://accounts.salesloft.com/oauth/authorize",
+			TokenURL:                  "https://accounts.salesloft.com/oauth/token",
+			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
