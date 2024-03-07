@@ -102,6 +102,31 @@ var testCases = []struct { // nolint
 		expected:    nil,
 		expectedErr: ErrProviderCatalogNotFound,
 	},
+	{
+		provider:    SalesLoft,
+		description: "Valid SalesLoft provider config with non-existent substitutions",
+		substitutions: map[string]string{
+			"nonexistentvar": "abc",
+		},
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:      false,
+				Write:     false,
+				BulkWrite: false,
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://accounts.salesloft.com/oauth/authorize",
+				TokenURL:                  "https://accounts.salesloft.com/oauth/token",
+				ExplicitScopesRequired:    false,
+				ExplicitWorkspaceRequired: false,
+			},
+			BaseURL: "https://api.salesloft.com",
+		},
+		expectedErr: nil,
+	},
 }
 
 func TestReadInfo(t *testing.T) { // nolint
