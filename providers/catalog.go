@@ -9,6 +9,7 @@ const (
 	Hubspot    Provider = "hubspot"
 	LinkedIn   Provider = "linkedIn"
 	Salesloft  Provider = "salesloft"
+	Attio      Provider = "attio"
 )
 
 // ================================================================================
@@ -93,6 +94,25 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
+		},
+	},
+
+	// Attio configuration
+	Attio: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.attio.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://auth.attio.com/oauth/authorize",
+			TokenURL:                  "https://auth.attio.com/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: true,
+			Proxy:     true,
+			Read:      true,
+			Subscribe: false,
+			Write:     true,
 		},
 	},
 }

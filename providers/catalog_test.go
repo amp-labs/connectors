@@ -127,6 +127,31 @@ var testCases = []struct { // nolint
 		},
 		expectedErr: nil,
 	},
+	{
+		provider:    Attio,
+		description: "Valid Attio provider config with non-existent substitutions",
+		substitutions: map[string]string{
+			"nonexistentvar": "abc",
+		},
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:      true,
+				Write:     true,
+				BulkWrite: true,
+				Subscribe: false,
+				Proxy:     true,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://auth.attio.com/oauth/authorize",
+				TokenURL:                  "https://auth.attio.com/oauth/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+			},
+			BaseURL: "https://api.attio.com",
+		},
+		expectedErr: nil,
+	},
 }
 
 func TestReadInfo(t *testing.T) { // nolint
