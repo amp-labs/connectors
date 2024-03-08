@@ -407,4 +407,23 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Write:     false,
 		},
 	},
+
+	// SalesLoft configuration
+	Salesloft: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.salesloft.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://accounts.salesloft.com/oauth/authorize",
+			TokenURL:                  "https://accounts.salesloft.com/oauth/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
 }
