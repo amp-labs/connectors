@@ -100,10 +100,10 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	// Attio configuration
 	Attio: {
 		AuthType: Oauth2,
-		BaseURL:  "https://api.attio.com",
+		BaseURL:  "https://app.attio.com",
 		OauthOpts: OauthOpts{
-			AuthURL:                   "https://auth.attio.com/oauth/authorize",
-			TokenURL:                  "https://auth.attio.com/oauth/token",
+			AuthURL:                   "https://app.attio.com/authorize",
+			TokenURL:                  "https://app.attio.com/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 		},

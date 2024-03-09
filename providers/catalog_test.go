@@ -143,8 +143,8 @@ var testCases = []struct { // nolint
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
-				AuthURL:                   "https://auth.attio.com/oauth/authorize",
-				TokenURL:                  "https://auth.attio.com/oauth/token",
+				AuthURL:                   "https://auth.attio.com/authorize",
+				TokenURL:                  "https://auth.attio.com/token",
 				ExplicitScopesRequired:    true,
 				ExplicitWorkspaceRequired: false,
 			},
