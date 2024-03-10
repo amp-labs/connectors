@@ -426,4 +426,23 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Write:     false,
 		},
 	},
+
+	// Outreach configuration
+	Outreach: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.outreach.io",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://api.outreach.io/oauth/authorize",
+			TokenURL:                  "https://api.outreach.io/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
 }
