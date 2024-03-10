@@ -9,6 +9,7 @@ const (
 	Hubspot    Provider = "hubspot"
 	LinkedIn   Provider = "linkedIn"
 	Salesloft  Provider = "salesloft"
+	Outreach   Provider = "outreach"
 )
 
 // ================================================================================
@@ -85,6 +86,25 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			AuthURL:                   "https://accounts.salesloft.com/oauth/authorize",
 			TokenURL:                  "https://accounts.salesloft.com/oauth/token",
 			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Outreach configuration
+	Outreach: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.outreach.io",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://api.outreach.io/oauth/authorize",
+			TokenURL:                  "https://api.outreach.io/oauth/token",
+			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
