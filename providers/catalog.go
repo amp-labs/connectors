@@ -10,6 +10,7 @@ const (
 	LinkedIn   Provider = "linkedIn"
 	Salesloft  Provider = "salesloft"
 	Outreach   Provider = "outreach"
+	Keap       Provider = "keap"
 )
 
 // ================================================================================
@@ -105,6 +106,26 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			AuthURL:                   "https://api.outreach.io/oauth/authorize",
 			TokenURL:                  "https://api.outreach.io/oauth/token",
 			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	Keap: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.infusionsoft.com/crm/rest/v1",
+
+		OauthOpts: OauthOpts{
+
+			AuthURL:                   "https://accounts.infusionsoft.com/app/oauth/authorize",
+			TokenURL:                  "https://api.infusionsoft.com/token",
+			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{

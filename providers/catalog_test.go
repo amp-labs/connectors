@@ -149,6 +149,30 @@ var testCases = []struct { // nolint
 		},
 		expectedErr: nil,
 	},
+
+	{
+		provider:    Keap,
+		description: "Valid Keap provider config with no substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:  false,
+				Write: false,
+
+				BulkWrite: false,
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://accounts.infusionsoft.com/app/oauth/authorize",
+				TokenURL:                  "https://api.infusionsoft.com/token",
+				ExplicitScopesRequired:    false,
+				ExplicitWorkspaceRequired: false,
+			},
+			BaseURL: "https://api.infusionsoft.com/crm/rest/v1",
+		},
+		expectedErr: nil,
+	},
 }
 
 func TestReadInfo(t *testing.T) { // nolint
