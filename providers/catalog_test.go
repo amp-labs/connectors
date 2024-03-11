@@ -94,6 +94,31 @@ var testCases = []struct { // nolint
 		expectedErr: nil,
 	},
 	{
+		provider:    Zendesk,
+		description: "Zendesk provider config with valid & invalid substitutions",
+		substitutions: map[string]string{
+			"nonexistentvar": "test",
+		},
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:      false,
+				Write:     false,
+				BulkWrite: false,
+				Subscribe: false,
+				Proxy:     true,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://d3v-ampersand.zendesk.com/oauth/authorizations/new",
+				TokenURL:                  "https://d3v-ampersand.zendesk.com/oauth/token",
+				ExplicitWorkspaceRequired: true,
+				ExplicitScopesRequired:    false,
+			},
+			BaseURL: "https://d3v-ampersand.zendesk.com",
+		},
+		expectedErr: nil,
+	},
+	{
 		provider:    "nonexistent",
 		description: "Non-existent provider config",
 		substitutions: map[string]string{

@@ -8,6 +8,7 @@ const (
 	Salesforce Provider = "salesforce"
 	Hubspot    Provider = "hubspot"
 	LinkedIn   Provider = "linkedIn"
+	Zendesk    Provider = "zendesk"
 )
 
 // ================================================================================
@@ -73,6 +74,29 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
+		},
+	},
+
+	// Zendesk configuration
+	Zendesk: {
+		AuthType: Oauth2,
+		BaseURL:  "https://{{.workspace}}.zendesk.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://{{.workspace}}.zendesk.com/oauth/authorizations/new",
+			TokenURL:                  "https://{{.workspace}}.zendesk.com/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: true,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     true,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+		ProviderOpts: ProviderOpts{
+			"restApiUrl": "https://{{.workspace}}.my.salesforce.com/services/data/v59.0",
+			"domain":     "{{.workspace}}.my.salesforce.com",
 		},
 	},
 }
