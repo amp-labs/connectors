@@ -11,6 +11,7 @@ const (
 	Salesloft  Provider = "salesloft"
 	Outreach   Provider = "outreach"
 	Keap       Provider = "keap"
+	Close      Provider = "close"
 )
 
 // ================================================================================
@@ -126,6 +127,27 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			AuthURL:                   "https://accounts.infusionsoft.com/app/oauth/authorize",
 			TokenURL:                  "https://api.infusionsoft.com/token",
 			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	//Close configuration
+	Close: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.close.com",
+
+		OauthOpts: OauthOpts{
+
+			AuthURL:                   "https://app.close.com/oauth2/authorize",
+			TokenURL:                  "https://api.close.com/oauth2/token/",
+			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{

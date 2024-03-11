@@ -173,6 +173,30 @@ var testCases = []struct { // nolint
 		},
 		expectedErr: nil,
 	},
+
+	{
+		provider:    Close,
+		description: "Valid Close provider config with no substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:  false,
+				Write: false,
+
+				BulkWrite: false,
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://app.close.com/oauth2/authorize",
+				TokenURL:                  "https://api.close.com/oauth2/token/",
+				ExplicitScopesRequired:    false,
+				ExplicitWorkspaceRequired: false,
+			},
+			BaseURL: "https://api.close.com",
+		},
+		expectedErr: nil,
+	},
 }
 
 func TestReadInfo(t *testing.T) { // nolint
