@@ -11,6 +11,7 @@ const (
 	Salesloft  Provider = "salesloft"
 	Outreach   Provider = "outreach"
 	Keap       Provider = "keap"
+	Asana      Provider = "asana"
 )
 
 // ================================================================================
@@ -125,6 +126,25 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 
 			AuthURL:                   "https://accounts.infusionsoft.com/app/oauth/authorize",
 			TokenURL:                  "https://api.infusionsoft.com/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Asana configuration
+	Asana: {
+		AuthType: Oauth2,
+		BaseURL:  "https://app.asana.com/api",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://app.asana.com/-/oauth_authorize",
+			TokenURL:                  "https://app.asana.com/-/oauth_token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
 		},
