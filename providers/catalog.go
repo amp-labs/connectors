@@ -119,7 +119,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 
 	Keap: {
 		AuthType: Oauth2,
-		BaseURL:  "https://api.infusionsoft.com/crm/rest/v1",
+		BaseURL:  "https://api.infusionsoft.com",
 
 		OauthOpts: OauthOpts{
 

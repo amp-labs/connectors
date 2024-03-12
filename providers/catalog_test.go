@@ -169,7 +169,7 @@ var testCases = []struct { // nolint
 				ExplicitScopesRequired:    false,
 				ExplicitWorkspaceRequired: false,
 			},
-			BaseURL: "https://api.infusionsoft.com/crm/rest/v1",
+			BaseURL: "https://api.infusionsoft.com",
 		},
 		expectedErr: nil,
 	},
