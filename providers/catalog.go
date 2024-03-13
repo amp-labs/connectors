@@ -10,6 +10,7 @@ const (
 	LinkedIn   Provider = "linkedIn"
 	Salesloft  Provider = "salesloft"
 	Outreach   Provider = "outreach"
+	Close      Provider = "close"
 	Keap       Provider = "keap"
 	Asana      Provider = "asana"
 )
@@ -106,6 +107,26 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		OauthOpts: OauthOpts{
 			AuthURL:                   "https://api.outreach.io/oauth/authorize",
 			TokenURL:                  "https://api.outreach.io/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Close configuration
+	Close: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.close.com/api",
+		OauthOpts: OauthOpts{
+
+			AuthURL:                   "https://app.close.com/oauth2/authorize",
+			TokenURL:                  "https://api.close.com/oauth2/token/",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 		},
