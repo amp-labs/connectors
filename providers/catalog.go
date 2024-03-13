@@ -12,6 +12,7 @@ const (
 	Outreach   Provider = "outreach"
 	Keap       Provider = "keap"
 	Asana      Provider = "asana"
+	DocuSign   Provider = "docuSign"
 )
 
 // ================================================================================
@@ -156,4 +157,15 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Write:     false,
 		},
 	},
+		// DocuSign configuration
+	DocuSign: {
+		AuthType: Oauth2,
+			BaseURL:  "https://demo.docusign.net",
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://account-d.docusign.com/oauth/auth",
+				TokenURL:                  "https://account-d.docusign.com/oauth/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+			},
+		},
 }
