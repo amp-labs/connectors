@@ -12,6 +12,7 @@ const (
 	Outreach   Provider = "outreach"
 	Keap       Provider = "keap"
 	Asana      Provider = "asana"
+	Dropbox    Provider = "dropbox"
 )
 
 // ================================================================================
@@ -156,4 +157,23 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Write:     false,
 		},
 	},
+	
+	// Dropbox configuration
+    Dropbox: {
+        AuthType: Oauth2,
+        BaseURL:  "https://api.dropboxapi.com/2/",
+        OauthOpts: OauthOpts{
+            AuthURL:                   "https://www.dropbox.com/oauth2/authorize",
+            TokenURL:                  "https://api.dropboxapi.com/oauth2/token",
+            ExplicitScopesRequired:    false,
+            ExplicitWorkspaceRequired: false,
+        },
+        Support: Support{
+            BulkWrite: false,
+            Proxy:     false,
+            Read:      false,
+            Subscribe: false,
+            Write:     false,
+        },
+    },
 }
