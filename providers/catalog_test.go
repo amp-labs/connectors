@@ -232,7 +232,7 @@ var testCases = []struct { // nolint
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
-				AuthURL:                   "https://api.notion.com/v1/oauth/token",
+				AuthURL:                   "https://api.notion.com/v1/oauth/authorize",
 				TokenURL:                  "https://api.notion.com/v1/oauth/token",
 				ExplicitScopesRequired:    false,
 				ExplicitWorkspaceRequired: false,

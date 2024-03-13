@@ -184,7 +184,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://api.notion.com",
 		OauthOpts: OauthOpts{
-			AuthURL:                   "https://api.notion.com/v1/oauth/token",
+			AuthURL:                   "https://api.notion.com/v1/oauth/authorize",
 			TokenURL:                  "https://api.notion.com/v1/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
