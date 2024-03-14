@@ -179,25 +179,25 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Write:     false,
 		},
 	},
-	
+
 	// Dropbox configuration
-    Dropbox: {
-        AuthType: Oauth2,
-        BaseURL:  "https://api.dropboxapi.com/2/",
-        OauthOpts: OauthOpts{
-            AuthURL:                   "https://www.dropbox.com/oauth2/authorize",
-            TokenURL:                  "https://api.dropboxapi.com/oauth2/token",
-            ExplicitScopesRequired:    false,
-            ExplicitWorkspaceRequired: false,
-        },
-        Support: Support{
-            BulkWrite: false,
-            Proxy:     false,
-            Read:      false,
-            Subscribe: false,
-            Write:     false,
-        },
-    },
+	Dropbox: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.dropboxapi.com/2/",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://www.dropbox.com/oauth2/authorize",
+			TokenURL:                  "https://api.dropboxapi.com/oauth2/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
 
 	// Notion configuration
 	Notion: {
@@ -211,7 +211,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 		Support: Support{
 			BulkWrite: false,
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
