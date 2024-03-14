@@ -13,6 +13,7 @@ const (
 	Close      Provider = "close"
 	Keap       Provider = "keap"
 	Asana      Provider = "asana"
+	Notion     Provider = "notion"
 )
 
 // ================================================================================
@@ -166,6 +167,25 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		OauthOpts: OauthOpts{
 			AuthURL:                   "https://app.asana.com/-/oauth_authorize",
 			TokenURL:                  "https://app.asana.com/-/oauth_token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Notion configuration
+	Notion: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.notion.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://api.notion.com/v1/oauth/authorize",
+			TokenURL:                  "https://api.notion.com/v1/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
 		},
