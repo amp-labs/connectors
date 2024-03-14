@@ -10,9 +10,11 @@ const (
 	LinkedIn   Provider = "linkedIn"
 	Salesloft  Provider = "salesloft"
 	Outreach   Provider = "outreach"
+	Close      Provider = "close"
 	Keap       Provider = "keap"
 	Asana      Provider = "asana"
 	Dropbox    Provider = "dropbox"
+	Notion     Provider = "notion"
 )
 
 // ================================================================================
@@ -119,6 +121,26 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
+	// Close configuration
+	Close: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.close.com/api",
+		OauthOpts: OauthOpts{
+
+			AuthURL:                   "https://app.close.com/oauth2/authorize",
+			TokenURL:                  "https://api.close.com/oauth2/token/",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
 	Keap: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.infusionsoft.com",
@@ -176,4 +198,23 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
             Write:     false,
         },
     },
+
+	// Notion configuration
+	Notion: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.notion.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://api.notion.com/v1/oauth/authorize",
+			TokenURL:                  "https://api.notion.com/v1/oauth/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
 }
