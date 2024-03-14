@@ -220,6 +220,23 @@ var testCases = []struct { // nolint
 		expectedErr: nil,
 	},
 	{
+		provider: Dropbox,
+		expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://www.dropbox.com/oauth2/authorize",
+				TokenURL:                  "https://api.dropboxapi.com/oauth2/token",
+				ExplicitScopesRequired:    false,
+				ExplicitWorkspaceRequired: false,
+			},
+			Support: Support{
+				BulkWrite: false,
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+			BaseURL:  "https://api.dropboxapi.com/2/",
 		provider:    Notion,
 		description: "Valid Notion provider config with no substitutions",
 		expected: &ProviderInfo{
