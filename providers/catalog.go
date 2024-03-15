@@ -127,7 +127,6 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://api.close.com/api",
 		OauthOpts: OauthOpts{
-
 			AuthURL:                   "https://app.close.com/oauth2/authorize",
 			TokenURL:                  "https://api.close.com/oauth2/token",
 			ExplicitScopesRequired:    false,
@@ -147,7 +146,6 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://api.infusionsoft.com",
 
 		OauthOpts: OauthOpts{
-
 			AuthURL:                   "https://accounts.infusionsoft.com/app/oauth/authorize",
 			TokenURL:                  "https://api.infusionsoft.com/token",
 			ExplicitScopesRequired:    false,
