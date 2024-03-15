@@ -10,6 +10,8 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/proxy"
 	"github.com/amp-labs/connectors/salesforce"
 	"github.com/amp-labs/connectors/test"
 	"github.com/subchen/go-xmldom"
@@ -49,21 +51,20 @@ func main() {
 
 	ctx := context.Background()
 
-	sfc, err := connectors.Salesforce(
-		salesforce.WithClient(ctx, http.DefaultClient, cfg, tok,
-			salesforce.GetTokenUpdater(tok), // this is necessary to update token
-		),
-		salesforce.WithWorkspace(salesforceWorkspace),
+	proxyConn, err := connectors.NewProxyConnector(
+		providers.Salesforce,
+		proxy.WithClient(ctx, http.DefaultClient, cfg, tok),
+		proxy.WithCatalogSubstitutions(map[string]string{
+			salesforce.PlaceholderWorkspace: salesforceWorkspace,
+		}),
 	)
+
+	sfc, err := salesforce.NewConnector(salesforce.WithProxyConnector(proxyConn))
 	if err != nil {
 		slog.Error("Error creating Salesforce connector", "error", err)
 
 		return
 	}
-
-	defer func() {
-		_ = sfc.Close()
-	}()
 
 	example, err := xmldom.ParseXML(`<createMetadata><metadata xsi:type="CustomObject"><fullName>TestObject15__c</fullName><label>Test Object 15</label><pluralLabel>Test Objects 15</pluralLabel><nameField><type>Text</type><label>Test Object Name</label></nameField><deploymentStatus>Deployed</deploymentStatus><sharingModel>ReadWrite</sharingModel></metadata><metadata xsi:type="CustomField"><fullName>TestObject13__c.Comments__c</fullName><label>Comments</label><type>LongTextArea</type><length>500</length><inlineHelpText>This field contains help text for this object</inlineHelpText><description>Add your comments about this object here</description><visibleLines>30</visibleLines><required>false</required><trackFeedHistory>false</trackFeedHistory><trackHistory>false</trackHistory></metadata></createMetadata>`)
 

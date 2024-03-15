@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers"
 )
 
 // ListObjectMetadata returns object metadata for each object name provided.
@@ -22,10 +23,15 @@ func (c *Connector) ListObjectMetadata(
 
 	requests := make([]compositeRequestItem, len(objectNames))
 
+	apiVersion, ok := c.ProviderInfo().GetOption(ProviderOptionApiVersion)
+	if !ok {
+		return nil, fmt.Errorf("%s: %w", ProviderOptionApiVersion, providers.ErrProviderOptionNotFound)
+	}
+
 	// Construct describe requests for each object name
 	for idx, objectName := range objectNames {
 		describeObjectURL, err := url.JoinPath(
-			fmt.Sprintf("/services/data/%s/sobjects/%s/describe", APIVersion(), objectName),
+			fmt.Sprintf("/services/data/v%s/sobjects/%s/describe", apiVersion, objectName),
 		)
 		if err != nil {
 			return nil, err
@@ -38,8 +44,13 @@ func (c *Connector) ListObjectMetadata(
 		}
 	}
 
+	restApi, ok := c.ProviderInfo().GetOption(ProviderOptionRestApiURL)
+	if !ok {
+		return nil, fmt.Errorf("%s: %w", ProviderOptionRestApiURL, providers.ErrProviderOptionNotFound)
+	}
+
 	// Construct endpoint for the request
-	compositeRequestEndpoint, err := url.JoinPath(c.BaseURL, "composite")
+	compositeRequestEndpoint, err := url.JoinPath(restApi, "composite")
 	if err != nil {
 		return nil, err
 	}

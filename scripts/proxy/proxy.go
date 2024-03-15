@@ -12,8 +12,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/amp-labs/connectors/basic"
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/proxy"
 	"github.com/amp-labs/connectors/utils"
 	"golang.org/x/oauth2"
 )
@@ -180,9 +181,9 @@ func configureOAuth(clientId, clientSecret string, scopes []string, providerInfo
 func setupHttpClient(cfg *oauth2.Config, accessToken, refreshToken string, provider string, providerInfo *providers.ProviderInfo) *http.Client {
 	ctx := context.Background()
 
-	conn, err := basic.NewConnector(
+	conn, err := connectors.NewProxyConnector(
 		provider,
-		basic.WithClient(ctx, http.DefaultClient, cfg, &oauth2.Token{AccessToken: accessToken, RefreshToken: refreshToken}),
+		proxy.WithClient(ctx, http.DefaultClient, cfg, &oauth2.Token{AccessToken: accessToken, RefreshToken: refreshToken}),
 	)
 	if err != nil {
 		panic(err)

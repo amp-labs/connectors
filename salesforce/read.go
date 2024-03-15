@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers"
 )
 
 // Read reads data from Salesforce. By default it will read all rows (backfill). However, if Since is set,
@@ -20,7 +21,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	if len(config.NextPage) > 0 {
 		// If NextPage is set, then we're reading the next page of results.
 		// All that matters is the NextPage URL, the fields are ignored.
-		location, joinErr := url.JoinPath(fmt.Sprintf("https://%s", c.Domain), config.NextPage)
+		location, joinErr := url.JoinPath(c.ProviderInfo().BaseURL, config.NextPage)
 		if joinErr != nil {
 			return nil, joinErr
 		}
@@ -38,7 +39,12 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		qp := url.Values{}
 		qp.Add("q", soql)
 
-		location, joinErr := url.JoinPath(c.BaseURL, "/query/")
+		restApiURL, ok := c.ProviderInfo().GetOption(ProviderOptionRestApiURL)
+		if !ok {
+			return nil, fmt.Errorf("%s: %w", ProviderOptionRestApiURL, providers.ErrProviderOptionNotFound)
+		}
+
+		location, joinErr := url.JoinPath(restApiURL, "/query/")
 		if joinErr != nil {
 			return nil, joinErr
 		}

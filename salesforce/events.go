@@ -6,6 +6,7 @@ import (
 	"log/slog"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/spyzhov/ajson"
 )
 
@@ -253,7 +254,12 @@ type Credential interface {
 }
 
 func (c *Connector) postToSFAPI(ctx context.Context, body any, path string, entity string) (*SFAPIResponseBody, error) {
-	location, err := joinURLPath(c.BaseURL, path)
+	restApi, ok := c.ProviderInfo().GetOption(ProviderOptionRestApiURL)
+	if !ok {
+		return nil, fmt.Errorf("%s: %w", ProviderOptionRestApiURL, providers.ErrProviderOptionNotFound)
+	}
+
+	location, err := joinURLPath(restApi, path)
 	if err != nil {
 		return nil, err
 	}

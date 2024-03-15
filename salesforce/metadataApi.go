@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/subchen/go-xmldom"
 	"golang.org/x/oauth2"
 )
@@ -68,7 +69,12 @@ func (c *Connector) prepareXMLRequest(
 ) (*http.Request, error) {
 	data := preparePayload(metadata, tok.AccessToken)
 
-	endPointURL, err := url.JoinPath(c.Client.HTTPClient.Base, "services/Soap/m/"+APIVersionSOAP())
+	apiVersion, ok := c.ProviderInfo().GetOption(ProviderOptionApiVersion)
+	if !ok {
+		return nil, fmt.Errorf("%s: %w", ProviderOptionApiVersion, providers.ErrProviderOptionNotFound)
+	}
+
+	endPointURL, err := url.JoinPath(c.ProviderInfo().BaseURL, "services/Soap/m/"+apiVersion)
 	if err != nil {
 		return nil, errors.Join(ErrCreatingRequest, err)
 	}

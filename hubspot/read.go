@@ -87,3 +87,7 @@ func makeQueryValues(config common.ReadParams) string {
 
 	return queryValues.Encode()
 }
+
+func requiresFiltering(config common.ReadParams) bool {
+	return !config.Since.IsZero()
+}

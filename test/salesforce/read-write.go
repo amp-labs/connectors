@@ -11,6 +11,8 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors"
+	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/proxy"
 	"github.com/amp-labs/connectors/salesforce"
 	"github.com/joho/godotenv"
 	"golang.org/x/oauth2"
@@ -67,18 +69,20 @@ func mainFn() int { //nolint:funlen
 	ctx := context.Background()
 
 	// Create a new Salesforce connector, with a token provider that uses the sfdx CLI to fetch an access token.
-	sfc, err := connectors.Salesforce(
-		salesforce.WithClient(ctx, http.DefaultClient, cfg, tok),
-		salesforce.WithWorkspace(*workspace))
+	proxyConn, err := connectors.NewProxyConnector(
+		providers.Salesforce,
+		proxy.WithClient(ctx, http.DefaultClient, cfg, tok),
+		proxy.WithCatalogSubstitutions(map[string]string{
+			salesforce.PlaceholderWorkspace: *workspace,
+		}),
+	)
+
+	sfc, err := salesforce.NewConnector(salesforce.WithProxyConnector(proxyConn))
 	if err != nil {
 		slog.Error("Error creating Salesforce connector", "error", err)
 
 		return 1
 	}
-
-	defer func() {
-		_ = sfc.Close()
-	}()
 
 	if err := testConnector(ctx, sfc); err != nil {
 		slog.Error("Error testing", "connector", sfc, "error", err)
@@ -86,10 +90,25 @@ func mainFn() int { //nolint:funlen
 		return 1
 	}
 
+	// IMPORTANT: every time this test is run, it will create a new Account
+	// in SFDC instance. Will need to delete those out at later date.
+	writtenRecordId, err := testSalesforceValidCreate(ctx, sfc)
+	if err != nil {
+		slog.Error("Error creating record in Salesforce", "error", err)
+
+		return 1
+	}
+	// IMPORTANT: will fail if specific recordId does not already exist in instance
+	if err := testSalesforceValidUpdate(ctx, sfc, writtenRecordId); err != nil {
+		slog.Error("Error updating record in Salesforce", "error", err)
+
+		return 1
+	}
+
 	return 0
 }
 
-func testConnector(ctx context.Context, conn connectors.Connector) error {
+func testConnector(ctx context.Context, conn connectors.ReadConnector) error {
 	// Create a context with a timeout
 	ctx, done := context.WithTimeout(ctx, TimeoutSeconds*time.Second)
 	defer done()
@@ -112,24 +131,13 @@ func testConnector(ctx context.Context, conn connectors.Connector) error {
 	_, _ = os.Stdout.Write(jsonStr)
 	_, _ = os.Stdout.WriteString("\n")
 
-	// IMPORTANT: every time this test is run, it will create a new Account
-	// in SFDC instance. Will need to delete those out at later date.
-	writtenRecordId, err := testSalesforceValidCreate(ctx, conn)
-	if err != nil {
-		return fmt.Errorf("error creating record in Salesforce: %w", err)
-	}
-	// IMPORTANT: will fail if specific recordId does not already exist in instance
-	if err := testSalesforceValidUpdate(ctx, conn, writtenRecordId); err != nil {
-		return fmt.Errorf("error updating record in Salesforce: %w", err)
-	}
-
 	return nil
 }
 
 const accountNumber = 123
 
 // testSalesforceValidCreate will create a valid record in Salesforce.
-func testSalesforceValidCreate(ctx context.Context, conn connectors.Connector) (string, error) {
+func testSalesforceValidCreate(ctx context.Context, conn connectors.WriteConnector) (string, error) {
 	writeRes, err := conn.Write(ctx, connectors.WriteParams{
 		ObjectName: "Account",
 		RecordData: map[string]interface{}{
@@ -156,7 +164,7 @@ func testSalesforceValidCreate(ctx context.Context, conn connectors.Connector) (
 const accountNumber2 = 456
 
 // testSalesforceValidUpdate will update existing record in Salesforce.
-func testSalesforceValidUpdate(ctx context.Context, conn connectors.Connector, writtenRecordId string) error {
+func testSalesforceValidUpdate(ctx context.Context, conn connectors.WriteConnector, writtenRecordId string) error {
 	writeRes, err := conn.Write(ctx, connectors.WriteParams{
 		ObjectName: "Account",
 		RecordData: map[string]interface{}{

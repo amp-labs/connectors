@@ -11,6 +11,8 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors"
+	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/proxy"
 	"github.com/amp-labs/connectors/salesforce"
 	"github.com/amp-labs/connectors/test"
 	"golang.org/x/oauth2"
@@ -61,19 +63,28 @@ func main() { //nolint:funlen
 
 	ctx := context.Background()
 
+	proxyConn, err := connectors.NewProxyConnector(
+		providers.Salesforce,
+		proxy.WithClient(ctx, http.DefaultClient, cfg, tok),
+		proxy.WithCatalogSubstitutions(map[string]string{
+			salesforce.PlaceholderWorkspace: salesforceWorkspace,
+		}),
+	)
+	if err != nil {
+		slog.Error("Error creating proxy connector", "error", err)
+
+		return
+	}
+
 	// Create a new Salesforce connector, with a token provider that uses the sfdx CLI to fetch an access token.
-	sfc, err := connectors.Salesforce(
-		salesforce.WithClient(ctx, http.DefaultClient, cfg, tok),
-		salesforce.WithWorkspace(salesforceWorkspace))
+	sfc, err := salesforce.NewConnector(
+		salesforce.WithProxyConnector(proxyConn),
+	)
 	if err != nil {
 		slog.Error("Error creating Salesforce connector", "error", err)
 
 		return
 	}
-
-	defer func() {
-		_ = sfc.Close()
-	}()
 
 	logs := make([]string, len(testList))
 

@@ -4,30 +4,36 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/hubspot"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/proxy"
 	"github.com/amp-labs/connectors/salesforce"
 )
 
-// BasicConnector is an interface that can be used to implement a connector with
-// basic configuration about the provider.
-type BasicConnector interface {
+// ProxyConnector is an interface that can be used to implement a connector with
+// that allows proxying requests through to a provider.
+type ProxyConnector interface {
 	fmt.Stringer
-	io.Closer
 
-	// HTTPClient returns the underlying HTTP client. This is useful for proxy requests.
-	HTTPClient() *common.HTTPClient
-
-	// Provider returns the connector provider.
+	// Provider returns the connector's provider.
 	Provider() providers.Provider
+
+	// ProviderInfo returns the connector's provider.
+	ProviderInfo() *providers.ProviderInfo
+
+	// JSONClient returns the connector's JSON client.
+	JSONClient() *common.JSONHTTPClient
+
+	// HTTPClient returns the connector's HTTP client.
+	HTTPClient() *common.HTTPClient
 }
 
-// Connector is an interface that all connectors must implement.
-type Connector interface {
-	BasicConnector
+// ReadConnector is an interface that can be used to implement a connector that
+// can read data from a provider.
+type ReadConnector interface {
+	ProxyConnector
 
 	// Read reads a page of data from the connector. This can be called multiple
 	// times to read all the data. The caller is responsible for paging, by
@@ -37,33 +43,16 @@ type Connector interface {
 	// are returned to the caller.
 	Read(ctx context.Context, params ReadParams) (*ReadResult, error)
 
-	Write(ctx context.Context, params WriteParams) (*WriteResult, error)
-
 	ListObjectMetadata(ctx context.Context, objectNames []string) (*ListObjectMetadataResult, error)
-
-	// JSONHTTPClient returns the underlying JSON HTTP client. This is useful for
-	// testing, or for calling methods that aren't exposed by the Connector
-	// interface directly. Authentication and token refreshes will be handled automatically.
-	JSONHTTPClient() *common.JSONHTTPClient
 }
 
-// API is a function that returns a Connector. It's used as a factory.
-type API[Conn Connector, Option any] func(opts ...Option) (Conn, error)
+// WriteConnector is an interface that can be used to implement a connector
+// that can write data to a provider.
+type WriteConnector interface {
+	ProxyConnector
 
-// New returns a new Connector. It's a convenience wrapper around the API.
-func (a API[Conn, Option]) New(opts ...Option) (Connector, error) { //nolint:ireturn
-	if a == nil {
-		return nil, ErrUnknownConnector
-	}
-
-	return a(opts...)
+	Write(ctx context.Context, params WriteParams) (*WriteResult, error)
 }
-
-// Salesforce is an API that returns a new Salesforce Connector.
-var Salesforce API[*salesforce.Connector, salesforce.Option] = salesforce.NewConnector //nolint:gochecknoglobals
-
-// Hubspot is an API that returns a new Hubspot Connector.
-var Hubspot API[*hubspot.Connector, hubspot.Option] = hubspot.NewConnector //nolint:gochecknoglobals
 
 // We re-export the following types so that they can be used by consumers of this library.
 type (
@@ -97,74 +86,66 @@ var (
 	ErrUnknownConnector = errors.New("unknown connector")
 )
 
-// New returns a new Connector. The signature is generic to facilitate more flexible caller setup
-// (e.g. constructing a new connector based on parsing a config file, whose exact params
-// aren't known until runtime). However, if you can use the API.New form, it's preferred,
-// since you get type safety and more readable code.
-func New(provider providers.Provider, opts map[string]any) (Connector, error) { //nolint:ireturn
+// NewProxyConnector returns a new proxy connector for the given provider with the given build options.
+func NewProxyConnector(
+	provider providers.Provider,
+	opts ...proxy.Option,
+) (*proxy.Connector, error) {
+	return proxy.NewConnector(provider, opts...)
+}
+
+// NewReadConnector returns a new read connector for the given provider with the given build options.
+func NewReadConnector(
+	provider providers.Provider,
+	opts ...proxy.Option,
+) (ReadConnector, error) { // nolint:ireturn
+	var (
+		conn   ReadConnector
+		outErr error
+	)
+
+	proxyConn, err := NewProxyConnector(provider, opts...)
+	if err != nil {
+		return nil, err
+	}
+
 	switch provider {
-	case providers.Salesforce:
-		return newSalesforce(opts)
 	case providers.Hubspot:
-		return newHubspot(opts)
+		conn, outErr = hubspot.NewConnector(hubspot.WithProxyConnector(proxyConn))
+	case providers.Salesforce:
+		conn, outErr = salesforce.NewConnector(salesforce.WithProxyConnector(proxyConn))
 	default:
-		return nil, fmt.Errorf("%w: %s", ErrUnknownConnector, provider)
+		conn = nil
+		outErr = ErrUnknownConnector
 	}
+
+	return conn, outErr
 }
 
-// newSalesforce returns a new Salesforce Connector, by unwrapping the options and passing them to the Salesforce API.
-func newSalesforce(opts map[string]any) (Connector, error) { //nolint:ireturn
-	var options []salesforce.Option
+// NewWriteConnector returns a new write connector for the given provider with the given build options.
+func NewWriteConnector(
+	provider providers.Provider,
+	opts ...proxy.Option,
+) (WriteConnector, error) { // nolint:ireturn
+	var (
+		conn   WriteConnector
+		outErr error
+	)
 
-	c, valid := getParam[common.AuthenticatedHTTPClient](opts, "client")
-	if valid {
-		options = append(options, salesforce.WithAuthenticatedClient(c))
+	proxyConn, err := NewProxyConnector(provider, opts...)
+	if err != nil {
+		return nil, err
 	}
 
-	w, valid := getParam[string](opts, "workspace")
-	if valid {
-		options = append(options, salesforce.WithWorkspace(w))
+	switch provider {
+	case providers.Hubspot:
+		conn, outErr = hubspot.NewConnector(hubspot.WithProxyConnector(proxyConn))
+	case providers.Salesforce:
+		conn, outErr = salesforce.NewConnector(salesforce.WithProxyConnector(proxyConn))
+	default:
+		conn = nil
+		outErr = ErrUnknownConnector
 	}
 
-	return Salesforce.New(options...)
-}
-
-// newHubspot returns a new Hubspot Connector, by unwrapping the options and passing them to the Hubspot API.
-func newHubspot(opts map[string]any) (Connector, error) { //nolint:ireturn
-	var options []hubspot.Option
-
-	c, valid := getParam[common.AuthenticatedHTTPClient](opts, "client")
-	if valid {
-		options = append(options, hubspot.WithAuthenticatedClient(c))
-	}
-
-	w, valid := getParam[hubspot.APIModule](opts, "module")
-	if valid {
-		options = append(options, hubspot.WithModule(w))
-	}
-
-	return Hubspot.New(options...)
-}
-
-// getParam returns the value of the given key, if present, safely cast to an assumed type.
-// If the key is not present, or the value is not of the assumed type, it returns the
-// zero value of the desired type, and false. In case of success, it returns the value and true.
-func getParam[A any](opts map[string]any, key string) (A, bool) { //nolint:ireturn
-	var zero A
-
-	if opts == nil {
-		return zero, false
-	}
-
-	val, present := opts[key]
-	if !present {
-		return zero, false
-	}
-
-	a, ok := val.(A)
-	if !ok {
-		return zero, false
-	}
-
-	return a, true
+	return conn, outErr
 }

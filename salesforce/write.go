@@ -6,6 +6,7 @@ import (
 	"net/url"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/spyzhov/ajson"
 )
 
@@ -16,7 +17,12 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		err error
 	)
 
-	location, joinErr := url.JoinPath(fmt.Sprintf("%s/sobjects", c.BaseURL), config.ObjectName)
+	restApiURL, ok := c.ProviderInfo().GetOption(ProviderOptionRestApiURL)
+	if !ok {
+		return nil, fmt.Errorf("%s: %w", ProviderOptionRestApiURL, providers.ErrProviderOptionNotFound)
+	}
+
+	location, joinErr := url.JoinPath(fmt.Sprintf("%s/sobjects", restApiURL), config.ObjectName)
 	if joinErr != nil {
 		return nil, joinErr
 	}

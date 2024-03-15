@@ -49,7 +49,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 		ProviderOpts: ProviderOpts{
 			"restApiUrl": "https://{{.workspace}}.my.salesforce.com/services/data/v59.0",
-			"domain":     "{{.workspace}}.my.salesforce.com",
+			"apiVersion": "59.0",
 		},
 	},
 
@@ -69,6 +69,9 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Read:      true,
 			Subscribe: false,
 			Write:     true,
+		},
+		ProviderOpts: ProviderOpts{
+			"module": "{{.module}}",
 		},
 	},
 

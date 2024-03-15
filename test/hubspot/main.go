@@ -52,7 +52,6 @@ func main() {
 
 	// Get the Hubspot connector.
 	hsConn := utils.GetHubspotConnector(ctx, "creds.json")
-	defer utils.Close(hsConn)
 
 	// Write an artificial contact to Hubspot.
 	result, err := hsConn.Write(ctx, common.WriteParams{

@@ -7,6 +7,8 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/hubspot"
+	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/proxy"
 	"github.com/spyzhov/ajson"
 	"golang.org/x/oauth2"
 )
@@ -20,9 +22,18 @@ func GetHubspotConnector(ctx context.Context, defaultFileName string) *hubspot.C
 
 	cfg, tok := GetOAuthInfo(creds)
 
-	conn, err := connectors.Hubspot(
-		hubspot.WithClient(ctx, http.DefaultClient, cfg, tok),
-		hubspot.WithModule(hubspot.ModuleCRM))
+	proxyConn, err := connectors.NewProxyConnector(
+		providers.Hubspot,
+		proxy.WithClient(ctx, http.DefaultClient, cfg, tok),
+		proxy.WithCatalogSubstitutions(map[string]string{
+			hubspot.PlaceholderModule: "crm/v3",
+		}),
+	)
+	if err != nil {
+		Fail("error creating proxy connector", "error", err)
+	}
+
+	conn, err := hubspot.NewConnector(hubspot.WithProxyConnector(proxyConn))
 	if err != nil {
 		Fail("error creating hubspot connector", "error", err)
 	}

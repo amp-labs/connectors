@@ -5,6 +5,8 @@ import (
 	"net/http"
 )
 
+var ErrNoProxyConnectorFound = fmt.Errorf("no proxy connector found")
+
 // InterpretError interprets the given HTTP response (in a fairly straightforward
 // way) and returns an error that can be handled by the caller.
 func InterpretError(res *http.Response, body []byte) error {

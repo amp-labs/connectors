@@ -43,7 +43,7 @@ var testCases = []struct { // nolint
 			BaseURL: "https://example.my.salesforce.com",
 			ProviderOpts: ProviderOpts{
 				"restApiUrl": "https://example.my.salesforce.com/services/data/v59.0",
-				"domain":     "example.my.salesforce.com",
+				"apiVersion": "59.0",
 			},
 		},
 		expectedErr: nil,
@@ -53,6 +53,7 @@ var testCases = []struct { // nolint
 		description: "Valid hubspot provider config with non-existent substitutions",
 		substitutions: map[string]string{
 			"nonexistentvar": "test",
+			"module":         "crm/v3",
 		},
 		expected: &ProviderInfo{
 			Support: Support{
@@ -70,6 +71,9 @@ var testCases = []struct { // nolint
 				ExplicitWorkspaceRequired: false,
 			},
 			BaseURL: "https://api.hubapi.com",
+			ProviderOpts: ProviderOpts{
+				"module": "crm/v3",
+			},
 		},
 		expectedErr: nil,
 	},

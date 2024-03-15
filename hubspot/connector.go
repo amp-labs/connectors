@@ -2,56 +2,38 @@ package hubspot
 
 import (
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/proxy"
 )
 
-// Connector is a Hubspot connector.
+// Option is a function which mutates the hubspot connector configuration.
+type Option func(params *Connector)
+
+// Connector is a Hubspot connector that wraps around a proxy connector
+// and extends it with Hubspot-specific functionality (read, write, etc).
 type Connector struct {
-	Module  string
-	BaseURL string
-	Client  *common.JSONHTTPClient
+	*proxy.Connector
 }
 
-// NewConnector returns a new Hubspot connector.
+// NewConnector returns a new hubspot connector.
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	defer func() {
-		if re := recover(); re != nil {
-			tmp, ok := re.(error)
-			if !ok {
-				panic(re)
-			}
+	conn = &Connector{}
 
-			outErr = tmp
-			conn = nil
-		}
-	}()
-
-	params := &hubspotParams{}
 	for _, opt := range opts {
-		opt(params)
+		opt(conn)
 	}
 
-	var err error
+	if conn.Connector == nil {
+		conn = nil
+		outErr = common.ErrNoProxyConnectorFound
 
-	params, err = params.prepare()
-	if err != nil {
-		return nil, err
+		return
 	}
 
-	// Read provider info & replace catalog variables with given substitutions, if any
-	providerInfo, err := providers.ReadInfo(providers.Hubspot, nil)
-	if err != nil {
-		return nil, err
+	return
+}
+
+func WithProxyConnector(conn *proxy.Connector) Option {
+	return func(connector *Connector) {
+		connector.Connector = conn
 	}
-
-	params.client.HTTPClient.Base = providerInfo.BaseURL
-	conn = &Connector{
-		BaseURL: params.client.HTTPClient.Base,
-		Module:  params.module,
-		Client:  params.client,
-	}
-
-	conn.Client.HTTPClient.ErrorHandler = conn.interpretError
-
-	return conn, nil
 }

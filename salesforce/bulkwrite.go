@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers"
 )
 
 const (
@@ -210,7 +211,12 @@ func joinURLPath(baseURL string, paths ...string) (string, error) {
 }
 
 func (c *Connector) createJob(ctx context.Context, config BulkWriteParams) (*common.JSONHTTPResponse, error) {
-	location, err := joinURLPath(c.BaseURL, "jobs/ingest")
+	restApi, ok := c.ProviderInfo().GetOption(ProviderOptionRestApiURL)
+	if !ok {
+		return nil, fmt.Errorf("%s: %w", ProviderOptionRestApiURL, providers.ErrProviderOptionNotFound)
+	}
+
+	location, err := joinURLPath(restApi, "jobs/ingest")
 	if err != nil {
 		return nil, err
 	}
@@ -227,7 +233,12 @@ func (c *Connector) createJob(ctx context.Context, config BulkWriteParams) (*com
 }
 
 func (c *Connector) uploadCSV(ctx context.Context, jobId string, config BulkWriteParams) ([]byte, error) {
-	location, err := joinURLPath(c.BaseURL, fmt.Sprintf("jobs/ingest/%s/batches", jobId))
+	restApi, ok := c.ProviderInfo().GetOption(ProviderOptionRestApiURL)
+	if !ok {
+		return nil, fmt.Errorf("%s: %w", ProviderOptionRestApiURL, providers.ErrProviderOptionNotFound)
+	}
+
+	location, err := joinURLPath(restApi, fmt.Sprintf("jobs/ingest/%s/batches", jobId))
 	if err != nil {
 		return nil, err
 	}
@@ -248,7 +259,12 @@ func (c *Connector) completeUpload(ctx context.Context, jobId string) (*common.J
 		"state": JobStateUploadComplete,
 	}
 
-	location, err := joinURLPath(c.BaseURL, fmt.Sprintf("jobs/ingest/%s", jobId))
+	restApi, ok := c.ProviderInfo().GetOption(ProviderOptionRestApiURL)
+	if !ok {
+		return nil, fmt.Errorf("%s: %w", ProviderOptionRestApiURL, providers.ErrProviderOptionNotFound)
+	}
+
+	location, err := joinURLPath(restApi, fmt.Sprintf("jobs/ingest/%s", jobId))
 	if err != nil {
 		return nil, err
 	}
@@ -257,7 +273,12 @@ func (c *Connector) completeUpload(ctx context.Context, jobId string) (*common.J
 }
 
 func (c *Connector) GetJobInfo(ctx context.Context, jobId string) (*GetJobInfoResult, error) {
-	location, err := joinURLPath(c.BaseURL, "jobs/ingest", jobId)
+	restApi, ok := c.ProviderInfo().GetOption(ProviderOptionRestApiURL)
+	if !ok {
+		return nil, fmt.Errorf("%s: %w", ProviderOptionRestApiURL, providers.ErrProviderOptionNotFound)
+	}
+
+	location, err := joinURLPath(restApi, "jobs/ingest", jobId)
 	if err != nil {
 		return nil, err
 	}
@@ -300,7 +321,12 @@ func (c *Connector) GetJobResults(ctx context.Context, jobId string) (*JobResult
 }
 
 func (c *Connector) getJobResults(ctx context.Context, jobId string) (*http.Response, error) {
-	location, err := joinURLPath(c.BaseURL, fmt.Sprintf("jobs/ingest/%s/failedResults", jobId))
+	restApi, ok := c.ProviderInfo().GetOption(ProviderOptionRestApiURL)
+	if !ok {
+		return nil, fmt.Errorf("%s: %w", ProviderOptionRestApiURL, providers.ErrProviderOptionNotFound)
+	}
+
+	location, err := joinURLPath(restApi, fmt.Sprintf("jobs/ingest/%s/failedResults", jobId))
 	if err != nil {
 		return nil, err
 	}
