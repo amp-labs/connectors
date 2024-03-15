@@ -10,6 +10,7 @@ const (
 	LinkedIn   Provider = "linkedIn"
 	Salesloft  Provider = "salesloft"
 	Outreach   Provider = "outreach"
+	Attio      Provider = "attio"
 	Close      Provider = "close"
 	Keap       Provider = "keap"
 	Asana      Provider = "asana"
@@ -109,6 +110,25 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		OauthOpts: OauthOpts{
 			AuthURL:                   "https://api.outreach.io/oauth/authorize",
 			TokenURL:                  "https://api.outreach.io/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Attio configuration
+	Attio: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.attio.com/api",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://app.attio.com/authorize",
+			TokenURL:                  "https://app.attio.com/oauth/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 		},
