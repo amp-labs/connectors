@@ -128,8 +128,8 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		OauthOpts: OauthOpts{
 
 			AuthURL:                   "https://app.close.com/oauth2/authorize",
-			TokenURL:                  "https://api.close.com/oauth2/token/",
-			ExplicitScopesRequired:    true,
+			TokenURL:                  "https://api.close.com/oauth2/token",
+			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
