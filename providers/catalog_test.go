@@ -275,7 +275,7 @@ var testCases = []struct { // nolint
 				Write:     false,
 				BulkWrite: false,
 				Subscribe: false,
-				Proxy:     false,
+				Proxy:     true,
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
@@ -285,6 +285,31 @@ var testCases = []struct { // nolint
 				ExplicitWorkspaceRequired: false,
 			},
 			BaseURL: "https://api.notion.com",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    Gong,
+		description: "Gong provider config with valid substitutions",
+		substitutions: map[string]string{
+			"workspace": "testing",
+		},
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:      false,
+				Write:     false,
+				BulkWrite: false,
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://app.gong.io/oauth2/authorize",
+				TokenURL:                  "https://app.gong.io/oauth2/generate-customer-token",
+				ExplicitWorkspaceRequired: false,
+				ExplicitScopesRequired:    true,
+			},
+			BaseURL: "https://testing.api.gong.io",
 		},
 		expectedErr: nil,
 	},
