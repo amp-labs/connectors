@@ -249,7 +249,7 @@ var testCases = []struct { // nolint
 				Write:     false,
 				BulkWrite: false,
 				Subscribe: false,
-				Proxy:     false,
+				Proxy:     true,
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
