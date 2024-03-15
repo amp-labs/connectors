@@ -151,6 +151,32 @@ var testCases = []struct { // nolint
 	},
 
 	{
+		provider:    Attio,
+		description: "Valid Attio provider config with non-existent substitutions",
+		substitutions: map[string]string{
+			"nonexistentvar": "abc",
+		},
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:      false,
+				Write:     false,
+				BulkWrite: false,
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://app.attio.com/authorize",
+				TokenURL:                  "https://app.attio.com/oauth/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+			},
+			BaseURL: "https://api.attio.com/api",
+		},
+		expectedErr: nil,
+	},
+
+	{
 		provider:    Close,
 		description: "Valid Close provider config with no substitutions",
 		expected: &ProviderInfo{
