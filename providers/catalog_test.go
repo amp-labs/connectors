@@ -165,7 +165,7 @@ var testCases = []struct { // nolint
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
 				AuthURL:                   "https://app.close.com/oauth2/authorize",
-				TokenURL:                  "https://api.close.com/oauth2/token/",
+				TokenURL:                  "https://api.close.com/oauth2/token",
 				ExplicitScopesRequired:    false,
 				ExplicitWorkspaceRequired: false,
 			},
@@ -236,7 +236,11 @@ var testCases = []struct { // nolint
 				Subscribe: false,
 				Write:     false,
 			},
-			BaseURL:  "https://api.dropboxapi.com/2/",
+			BaseURL: "https://api.dropboxapi.com/2/",
+		},
+		expectedErr: nil,
+	},
+	{
 		provider:    Notion,
 		description: "Valid Notion provider config with no substitutions",
 		expected: &ProviderInfo{
