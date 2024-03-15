@@ -15,6 +15,7 @@ const (
 	Asana      Provider = "asana"
 	Dropbox    Provider = "dropbox"
 	Notion     Provider = "notion"
+	Gong       Provider = "gong"
 )
 
 // ================================================================================
@@ -83,7 +84,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
-	// SalesLoft configuration
+	// Salesloft configuration
 	Salesloft: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.salesloft.com",
@@ -212,6 +213,25 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		Support: Support{
 			BulkWrite: false,
 			Proxy:     true,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Gong configuration
+	Gong: {
+		AuthType: Oauth2,
+		BaseURL:  "https://{{.workspace}}.api.gong.io",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://app.gong.io/oauth2/authorize",
+			TokenURL:                  "https://app.gong.io/oauth2/generate-customer-token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
