@@ -42,6 +42,22 @@ components:
         write:
           type: boolean
 
+    TokenMetadataFields:
+      type: object
+      properties:
+        workspaceRefField:
+          type: string
+          example: account-id
+          x-go-type-skip-optional-pointer: true
+        consumerRefField:
+          type: string
+          example: user-id
+          x-go-type-skip-optional-pointer: true
+        scopesField:
+          type: string
+          example: scopes
+          x-go-type-skip-optional-pointer: true
+
     OauthOpts:
       type: object
       x-oapi-codegen-extra-tags:
@@ -51,6 +67,7 @@ components:
           - tokenURL
           - explicitScopesRequired
           - explicitWorkspaceRequired
+          - tokenMetadataFields
       properties:
         authURL:
           type: string
@@ -68,6 +85,8 @@ components:
         explicitWorkspaceRequired:
           type: boolean
           example: true
+        tokenMetadataFields:
+          $ref: '#/components/schemas/TokenMetadataFields'
 
     ProviderOpts:
         type: object
