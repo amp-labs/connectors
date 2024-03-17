@@ -17,6 +17,7 @@ const (
 	Asana      Provider = "asana"
 	Dropbox    Provider = "dropbox"
 	Notion     Provider = "notion"
+	Pipedrive  Provider = "pipedrive"
 )
 
 // ================================================================================
@@ -130,6 +131,25 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		OauthOpts: OauthOpts{
 			AuthURL:                   "https://login.sellsy.com/oauth2/authorization",
 			TokenURL:                  "https://login.sellsy.com/oauth2/access-tokens",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Pipedrive configuration
+	Pipedrive: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.pipedrive.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://oauth.pipedrive.com/oauth/authorize",
+			TokenURL:                  "https://oauth.pipedrive.com/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
 		},
