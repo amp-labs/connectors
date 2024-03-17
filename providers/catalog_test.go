@@ -181,6 +181,28 @@ var testCases = []struct { // nolint
 	},
 
 	{
+		provider: Pipedrive,
+		expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://oauth.pipedrive.com/oauth/authorize",
+				TokenURL:                  "https://oauth.pipedrive.com/oauth/token",
+				ExplicitScopesRequired:    false,
+				ExplicitWorkspaceRequired: false,
+			},
+			Support: Support{
+				BulkWrite: false,
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+			BaseURL: "https://api.pipedrive.com",
+		},
+		expectedErr: nil,
+	},
+
+	{
 		provider:    Attio,
 		description: "Valid Attio provider config with non-existent substitutions",
 		substitutions: map[string]string{
