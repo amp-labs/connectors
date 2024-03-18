@@ -10,13 +10,16 @@ const (
 	LinkedIn   Provider = "linkedIn"
 	Salesloft  Provider = "salesloft"
 	Outreach   Provider = "outreach"
+	Sellsy     Provider = "sellsy"
+	Attio      Provider = "attio"
 	Close      Provider = "close"
 	Keap       Provider = "keap"
 	Asana      Provider = "asana"
 	Dropbox    Provider = "dropbox"
 	Notion     Provider = "notion"
-	DocuSignDeveloper Provider = "docuSignDeveloper"
+	Gong       Provider = "gong"
     DocuSign          Provider = "docuSign"
+	DocuSignDeveloper Provider = "docuSignDeveloper"
 )
 
 // ================================================================================
@@ -33,6 +36,11 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://{{.workspace}}.my.salesforce.com/services/oauth2/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: true,
+			TokenMetadataFields: TokenMetadataFields{
+				ConsumerRefField:  "id",
+				WorkspaceRefField: "instance_url",
+				ScopesField:       "scope",
+			},
 		},
 		Support: Support{
 			BulkWrite: true,
@@ -75,6 +83,9 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://www.linkedin.com/oauth/v2/accessToken",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
 		},
 		Support: Support{
 			BulkWrite: false,
@@ -85,7 +96,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
-	// SalesLoft configuration
+	// Salesloft configuration
 	Salesloft: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.salesloft.com",
@@ -123,12 +134,49 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
+	// Sellsy configuration
+	Sellsy: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.sellsy.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://login.sellsy.com/oauth2/authorization",
+			TokenURL:                  "https://login.sellsy.com/oauth2/access-tokens",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Attio configuration
+	Attio: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.attio.com/api",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://app.attio.com/authorize",
+			TokenURL:                  "https://app.attio.com/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
 	// Close configuration
 	Close: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.close.com/api",
 		OauthOpts: OauthOpts{
-
 			AuthURL:                   "https://app.close.com/oauth2/authorize",
 			TokenURL:                  "https://api.close.com/oauth2/token",
 			ExplicitScopesRequired:    false,
@@ -148,7 +196,6 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://api.infusionsoft.com",
 
 		OauthOpts: OauthOpts{
-
 			AuthURL:                   "https://accounts.infusionsoft.com/app/oauth/authorize",
 			TokenURL:                  "https://api.infusionsoft.com/token",
 			ExplicitScopesRequired:    false,
@@ -210,10 +257,33 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://api.notion.com/v1/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ConsumerRefField:  "owner.user.id",
+				WorkspaceRefField: "workspace_id",
+			},
 		},
 		Support: Support{
 			BulkWrite: false,
 			Proxy:     true,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Gong configuration
+	Gong: {
+		AuthType: Oauth2,
+		BaseURL:  "https://{{.workspace}}.api.gong.io",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://app.gong.io/oauth2/authorize",
+			TokenURL:                  "https://app.gong.io/oauth2/generate-customer-token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
