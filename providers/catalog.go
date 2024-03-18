@@ -221,15 +221,15 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	},
 
 	// DocuSign configuration
-    DocuSign: {
-        AuthType: Oauth2,
-        BaseURL:  "https://{{.workspace}}.docusign.net",
-        OauthOpts: OauthOpts{
-            AuthURL:                   "https://account.docusign.com/oauth/auth",
-            TokenURL:                  "https://account.docusign.com/oauth/token",
-            ExplicitScopesRequired:    true,
-            ExplicitWorkspaceRequired: false,
-        },
+	DocuSign: {
+		AuthType: Oauth2,
+		BaseURL:  "https://{{.workspace}}.docusign.net",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://account.docusign.com/oauth/auth",
+			TokenURL:                  "https://account.docusign.com/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+		},
 		Support: Support{
 			BulkWrite: false,
 			Proxy:     false,
@@ -237,18 +237,18 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Subscribe: false,
 			Write:     false,
 		},
-    },
+	},
 
 	// DocuSign Developer configuration
-    DocuSignDeveloper: {
-        AuthType: Oauth2,
-        BaseURL:  "https://demo.docusign.net",
-        OauthOpts: OauthOpts{
-            AuthURL:                   "https://account-d.docusign.com/oauth/auth",
-            TokenURL:                  "https://account-d.docusign.com/oauth/token",
-            ExplicitScopesRequired:    true,
-            ExplicitWorkspaceRequired: false,
-        },
+	DocuSignDeveloper: {
+		AuthType: Oauth2,
+		BaseURL:  "https://demo.docusign.net",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://account-d.docusign.com/oauth/auth",
+			TokenURL:                  "https://account-d.docusign.com/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+		},
 		Support: Support{
 			BulkWrite: false,
 			Proxy:     false,
@@ -256,6 +256,6 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Subscribe: false,
 			Write:     false,
 		},
-    },
+	},
 
 }
