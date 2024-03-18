@@ -248,7 +248,7 @@ func (c *Connector) completeUpload(ctx context.Context, jobId string) (*common.J
 		"state": JobStateUploadComplete,
 	}
 
-	location, err := joinURLPath(c.BaseURL, fmt.Sprintf("jobs/ingest/%s", jobId))
+	location, err := joinURLPath(c.BaseURL, "jobs/ingest/"+jobId)
 	if err != nil {
 		return nil, err
 	}

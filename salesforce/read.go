@@ -20,7 +20,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	if len(config.NextPage) > 0 {
 		// If NextPage is set, then we're reading the next page of results.
 		// All that matters is the NextPage URL, the fields are ignored.
-		location, joinErr := url.JoinPath(fmt.Sprintf("https://%s", c.Domain), config.NextPage)
+		location, joinErr := url.JoinPath("https://"+c.Domain, config.NextPage)
 		if joinErr != nil {
 			return nil, joinErr
 		}
@@ -75,7 +75,7 @@ func makeSOQL(config common.ReadParams) (string, error) {
 
 	// If Since is not set, then we're doing a backfill. We read all rows (in pages)
 	if !config.Since.IsZero() {
-		soql += fmt.Sprintf(" WHERE SystemModstamp > %s", config.Since.Format("2006-01-02T15:04:05Z"))
+		soql += " WHERE SystemModstamp > " + config.Since.Format("2006-01-02T15:04:05Z")
 		hasWhere = true
 	}
 

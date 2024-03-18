@@ -2,7 +2,6 @@ package salesforce
 
 import (
 	"context"
-	"fmt"
 	"net/url"
 
 	"github.com/amp-labs/connectors/common"
@@ -16,7 +15,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		err error
 	)
 
-	location, joinErr := url.JoinPath(fmt.Sprintf("%s/sobjects", c.BaseURL), config.ObjectName)
+	location, joinErr := url.JoinPath(c.BaseURL+"/sobjects", config.ObjectName)
 	if joinErr != nil {
 		return nil, joinErr
 	}
