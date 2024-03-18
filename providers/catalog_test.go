@@ -34,6 +34,11 @@ var testCases = []struct { // nolint
 				TokenURL:                  "https://example.my.salesforce.com/services/oauth2/token",
 				ExplicitWorkspaceRequired: true,
 				ExplicitScopesRequired:    false,
+				TokenMetadataFields: TokenMetadataFields{
+					ConsumerRefField:  "id",
+					WorkspaceRefField: "instance_url",
+					ScopesField:       "scope",
+				},
 			},
 			BaseURL: "https://example.my.salesforce.com",
 			ProviderOpts: ProviderOpts{
@@ -88,6 +93,9 @@ var testCases = []struct { // nolint
 				TokenURL:                  "https://www.linkedin.com/oauth/v2/accessToken",
 				ExplicitScopesRequired:    true,
 				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
 			},
 			BaseURL: "https://api.linkedin.com",
 		},
@@ -305,6 +313,10 @@ var testCases = []struct { // nolint
 				TokenURL:                  "https://api.notion.com/v1/oauth/token",
 				ExplicitScopesRequired:    false,
 				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					WorkspaceRefField: "workspace_id",
+					ConsumerRefField:  "owner.user.id",
+				},
 			},
 			BaseURL: "https://api.notion.com",
 		},

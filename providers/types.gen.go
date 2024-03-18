@@ -16,10 +16,11 @@ type CatalogType map[string]ProviderInfo
 
 // OauthOpts defines model for OauthOpts.
 type OauthOpts struct {
-	AuthURL                   string `json:"authURL" validate:"required"`
-	ExplicitScopesRequired    bool   `json:"explicitScopesRequired"`
-	ExplicitWorkspaceRequired bool   `json:"explicitWorkspaceRequired"`
-	TokenURL                  string `json:"tokenURL" validate:"required"`
+	AuthURL                   string              `json:"authURL" validate:"required"`
+	ExplicitScopesRequired    bool                `json:"explicitScopesRequired"`
+	ExplicitWorkspaceRequired bool                `json:"explicitWorkspaceRequired"`
+	TokenMetadataFields       TokenMetadataFields `json:"tokenMetadataFields"`
+	TokenURL                  string              `json:"tokenURL" validate:"required"`
 }
 
 // Provider defines model for Provider.
@@ -44,4 +45,11 @@ type Support struct {
 	Read      bool `json:"read"`
 	Subscribe bool `json:"subscribe"`
 	Write     bool `json:"write"`
+}
+
+// TokenMetadataFields defines model for TokenMetadataFields.
+type TokenMetadataFields struct {
+	ConsumerRefField  string `json:"consumerRefField,omitempty"`
+	ScopesField       string `json:"scopesField,omitempty"`
+	WorkspaceRefField string `json:"workspaceRefField,omitempty"`
 }

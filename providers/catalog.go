@@ -34,6 +34,11 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://{{.workspace}}.my.salesforce.com/services/oauth2/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: true,
+			TokenMetadataFields: TokenMetadataFields{
+				ConsumerRefField:  "id",
+				WorkspaceRefField: "instance_url",
+				ScopesField:       "scope",
+			},
 		},
 		Support: Support{
 			BulkWrite: true,
@@ -76,6 +81,9 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://www.linkedin.com/oauth/v2/accessToken",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
 		},
 		Support: Support{
 			BulkWrite: false,
@@ -247,6 +255,10 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://api.notion.com/v1/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ConsumerRefField:  "owner.user.id",
+				WorkspaceRefField: "workspace_id",
+			},
 		},
 		Support: Support{
 			BulkWrite: false,
