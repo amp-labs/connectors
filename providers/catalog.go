@@ -10,6 +10,7 @@ const (
 	LinkedIn   Provider = "linkedIn"
 	Salesloft  Provider = "salesloft"
 	Outreach   Provider = "outreach"
+	Pipedrive  Provider = "pipedrive"
 	Sellsy     Provider = "sellsy"
 	Attio      Provider = "attio"
 	Close      Provider = "close"
@@ -121,6 +122,25 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			AuthURL:                   "https://api.outreach.io/oauth/authorize",
 			TokenURL:                  "https://api.outreach.io/oauth/token",
 			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Pipedrive configuration
+	Pipedrive: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.pipedrive.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://oauth.pipedrive.com/oauth/authorize",
+			TokenURL:                  "https://oauth.pipedrive.com/oauth/token",
+			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
