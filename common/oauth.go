@@ -26,8 +26,8 @@ func NewOAuthHTTPClient(ctx context.Context, opts ...OAuthOption) (Authenticated
 	}
 
 	var err error
-	params, err = params.prepare()
 
+	params, err = params.prepare()
 	if err != nil {
 		return nil, err
 	}
