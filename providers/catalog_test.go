@@ -34,6 +34,11 @@ var testCases = []struct { // nolint
 				TokenURL:                  "https://example.my.salesforce.com/services/oauth2/token",
 				ExplicitWorkspaceRequired: true,
 				ExplicitScopesRequired:    false,
+				TokenMetadataFields: TokenMetadataFields{
+					ConsumerRefField:  "id",
+					WorkspaceRefField: "instance_url",
+					ScopesField:       "scope",
+				},
 			},
 			BaseURL: "https://example.my.salesforce.com",
 			ProviderOpts: ProviderOpts{
@@ -88,6 +93,9 @@ var testCases = []struct { // nolint
 				TokenURL:                  "https://www.linkedin.com/oauth/v2/accessToken",
 				ExplicitScopesRequired:    true,
 				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
 			},
 			BaseURL: "https://api.linkedin.com",
 		},
@@ -146,6 +154,54 @@ var testCases = []struct { // nolint
 				ExplicitWorkspaceRequired: false,
 			},
 			BaseURL: "https://api.outreach.io",
+		},
+		expectedErr: nil,
+	},
+
+	{
+		provider: Sellsy,
+		expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://login.sellsy.com/oauth2/authorization",
+				TokenURL:                  "https://login.sellsy.com/oauth2/access-tokens",
+				ExplicitScopesRequired:    false,
+				ExplicitWorkspaceRequired: false,
+			},
+			Support: Support{
+				BulkWrite: false,
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+			BaseURL: "https://api.sellsy.com",
+		},
+		expectedErr: nil,
+	},
+
+	{
+		provider:    Attio,
+		description: "Valid Attio provider config with non-existent substitutions",
+		substitutions: map[string]string{
+			"nonexistentvar": "abc",
+		},
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:      false,
+				Write:     false,
+				BulkWrite: false,
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://app.attio.com/authorize",
+				TokenURL:                  "https://app.attio.com/oauth/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+			},
+			BaseURL: "https://api.attio.com/api",
 		},
 		expectedErr: nil,
 	},
@@ -249,7 +305,7 @@ var testCases = []struct { // nolint
 				Write:     false,
 				BulkWrite: false,
 				Subscribe: false,
-				Proxy:     false,
+				Proxy:     true,
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
@@ -257,13 +313,43 @@ var testCases = []struct { // nolint
 				TokenURL:                  "https://api.notion.com/v1/oauth/token",
 				ExplicitScopesRequired:    false,
 				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					WorkspaceRefField: "workspace_id",
+					ConsumerRefField:  "owner.user.id",
+				},
 			},
 			BaseURL: "https://api.notion.com",
 		},
 		expectedErr: nil,
 	},
 	{
+		provider:    Gong,
+		description: "Gong provider config with valid substitutions",
+		substitutions: map[string]string{
+			"workspace": "testing",
+		},
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:      false,
+				Write:     false,
+				BulkWrite: false,
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://app.gong.io/oauth2/authorize",
+				TokenURL:                  "https://app.gong.io/oauth2/generate-customer-token",
+				ExplicitWorkspaceRequired: false,
+				ExplicitScopesRequired:    true,
+			},
+			BaseURL: "https://testing.api.gong.io",
+		},
+		expectedErr: nil,
+	},
+	{
 		provider: Zoom,
+		description: "Zoom provider config with no substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
 				Read:      false,
