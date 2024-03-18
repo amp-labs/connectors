@@ -10,6 +10,7 @@ const (
 	LinkedIn   Provider = "linkedIn"
 	Salesloft  Provider = "salesloft"
 	Outreach   Provider = "outreach"
+	Sellsy     Provider = "sellsy"
 	Attio      Provider = "attio"
 	Close      Provider = "close"
 	Keap       Provider = "keap"
@@ -112,6 +113,25 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			AuthURL:                   "https://api.outreach.io/oauth/authorize",
 			TokenURL:                  "https://api.outreach.io/oauth/token",
 			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Sellsy configuration
+	Sellsy: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.sellsy.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://login.sellsy.com/oauth2/authorization",
+			TokenURL:                  "https://login.sellsy.com/oauth2/access-tokens",
+			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
