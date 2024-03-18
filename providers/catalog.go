@@ -15,6 +15,7 @@ const (
 	Asana      Provider = "asana"
 	Dropbox    Provider = "dropbox"
 	Notion     Provider = "notion"
+	Zoom       Provider = "zoom"
 )
 
 // ================================================================================
@@ -217,4 +218,23 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Write:     false,
 		},
 	},
+	
+	// Zoom configuration
+    Zoom: {
+        AuthType: Oauth2,
+        BaseURL:  "https://api.zoom.us",
+        OauthOpts: OauthOpts{
+            AuthURL:                   "https://zoom.us/oauth/authorize",
+            TokenURL:                  "https://zoom.us/oauth/token",
+            ExplicitScopesRequired:    true,
+            ExplicitWorkspaceRequired: false,
+        },
+        Support: Support{
+            BulkWrite: false,
+            Proxy:     false,
+            Read:      false,
+            Subscribe: false,
+            Write:     false,
+        },
+    },
 }
