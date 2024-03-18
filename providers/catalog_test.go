@@ -151,6 +151,28 @@ var testCases = []struct { // nolint
 	},
 
 	{
+		provider: Sellsy,
+		expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://login.sellsy.com/oauth2/authorization",
+				TokenURL:                  "https://login.sellsy.com/oauth2/access-tokens",
+				ExplicitScopesRequired:    false,
+				ExplicitWorkspaceRequired: false,
+			},
+			Support: Support{
+				BulkWrite: false,
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+			BaseURL: "https://api.sellsy.com",
+		},
+		expectedErr: nil,
+	},
+
+	{
 		provider:    Attio,
 		description: "Valid Attio provider config with non-existent substitutions",
 		substitutions: map[string]string{
