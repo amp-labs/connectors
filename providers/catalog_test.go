@@ -262,27 +262,27 @@ var testCases = []struct { // nolint
 		},
 		expectedErr: nil,
 	},
-    {
-        provider: Zoom,
-        expected: &ProviderInfo{
-            Support: Support{
-                Read:      false,
-                Write:     false,
-                BulkWrite: false,
-                Subscribe: false,
-                Proxy:     false,
-            },
-            AuthType: Oauth2,
-            OauthOpts: OauthOpts{
-                AuthURL:                   "https://zoom.us/oauth/authorize",
-                TokenURL:                  "https://zoom.us/oauth/token",
-                ExplicitScopesRequired:    true,
-                ExplicitWorkspaceRequired: false,
-            },
-            BaseURL: "https://api.zoom.us",
-        },
-        expectedErr: nil,
-    },
+	{
+		provider: Zoom,
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:      false,
+				Write:     false,
+				BulkWrite: false,
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://zoom.us/oauth/authorize",
+				TokenURL:                  "https://zoom.us/oauth/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+			},
+			BaseURL: "https://api.zoom.us",
+		},
+		expectedErr: nil,
+	},
 }
 
 func TestReadInfo(t *testing.T) { // nolint

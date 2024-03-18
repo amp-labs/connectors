@@ -220,21 +220,21 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	},
 	
 	// Zoom configuration
-    Zoom: {
-        AuthType: Oauth2,
-        BaseURL:  "https://api.zoom.us",
-        OauthOpts: OauthOpts{
-            AuthURL:                   "https://zoom.us/oauth/authorize",
-            TokenURL:                  "https://zoom.us/oauth/token",
-            ExplicitScopesRequired:    true,
-            ExplicitWorkspaceRequired: false,
-        },
-        Support: Support{
-            BulkWrite: false,
-            Proxy:     false,
-            Read:      false,
-            Subscribe: false,
-            Write:     false,
-        },
-    },
+	Zoom: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.zoom.us",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://zoom.us/oauth/authorize",
+			TokenURL:                  "https://zoom.us/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
 }
