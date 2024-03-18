@@ -165,7 +165,7 @@ var testCases = []struct { // nolint
 			OauthOpts: OauthOpts{
 				AuthURL:                   "https://oauth.pipedrive.com/oauth/authorize",
 				TokenURL:                  "https://oauth.pipedrive.com/oauth/token",
-				ExplicitScopesRequired:    false,
+				ExplicitScopesRequired:    true,
 				ExplicitWorkspaceRequired: false,
 			},
 			Support: Support{
