@@ -151,6 +151,30 @@ var testCases = []struct { // nolint
 	},
 
 	{
+		provider:    Close,
+		description: "Valid Close provider config with no substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:  false,
+				Write: false,
+
+				BulkWrite: false,
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://app.close.com/oauth2/authorize",
+				TokenURL:                  "https://api.close.com/oauth2/token",
+				ExplicitScopesRequired:    false,
+				ExplicitWorkspaceRequired: false,
+			},
+			BaseURL: "https://api.close.com/api",
+		},
+		expectedErr: nil,
+	},
+
+	{
 		provider:    Keap,
 		description: "Valid Keap provider config with no substitutions",
 		expected: &ProviderInfo{
@@ -192,6 +216,49 @@ var testCases = []struct { // nolint
 				ExplicitWorkspaceRequired: false,
 			},
 			BaseURL: "https://app.asana.com/api",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider: Dropbox,
+		expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://www.dropbox.com/oauth2/authorize",
+				TokenURL:                  "https://api.dropboxapi.com/oauth2/token",
+				ExplicitScopesRequired:    false,
+				ExplicitWorkspaceRequired: false,
+			},
+			Support: Support{
+				BulkWrite: false,
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+			BaseURL: "https://api.dropboxapi.com/2/",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    Notion,
+		description: "Valid Notion provider config with no substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:      false,
+				Write:     false,
+				BulkWrite: false,
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://api.notion.com/v1/oauth/authorize",
+				TokenURL:                  "https://api.notion.com/v1/oauth/token",
+				ExplicitScopesRequired:    false,
+				ExplicitWorkspaceRequired: false,
+			},
+			BaseURL: "https://api.notion.com",
 		},
 		expectedErr: nil,
 	},

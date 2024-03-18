@@ -10,8 +10,11 @@ const (
 	LinkedIn   Provider = "linkedIn"
 	Salesloft  Provider = "salesloft"
 	Outreach   Provider = "outreach"
+	Close      Provider = "close"
 	Keap       Provider = "keap"
 	Asana      Provider = "asana"
+	Dropbox    Provider = "dropbox"
+	Notion     Provider = "notion"
 	DocuSign   Provider = "docuSign"
 )
 
@@ -119,6 +122,26 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
+	// Close configuration
+	Close: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.close.com/api",
+		OauthOpts: OauthOpts{
+
+			AuthURL:                   "https://app.close.com/oauth2/authorize",
+			TokenURL:                  "https://api.close.com/oauth2/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
 	Keap: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.infusionsoft.com",
@@ -157,15 +180,55 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Write:     false,
 		},
 	},
-		// DocuSign configuration
+
+	// Dropbox configuration
+	Dropbox: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.dropboxapi.com/2/",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://www.dropbox.com/oauth2/authorize",
+			TokenURL:                  "https://api.dropboxapi.com/oauth2/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Notion configuration
+	Notion: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.notion.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://api.notion.com/v1/oauth/authorize",
+			TokenURL:                  "https://api.notion.com/v1/oauth/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     true,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// DocuSign configuration
 	DocuSign: {
 		AuthType: Oauth2,
-			BaseURL:  "https://demo.docusign.net",
-			OauthOpts: OauthOpts{
-				AuthURL:                   "https://account-d.docusign.com/oauth/auth",
-				TokenURL:                  "https://account-d.docusign.com/oauth/token",
-				ExplicitScopesRequired:    true,
-				ExplicitWorkspaceRequired: false,
-			},
+		BaseURL:  "https://demo.docusign.net",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://account-d.docusign.com/oauth/auth",
+			TokenURL:                  "https://account-d.docusign.com/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
 		},
+	},
+
 }
