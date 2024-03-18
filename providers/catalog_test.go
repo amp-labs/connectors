@@ -203,6 +203,29 @@ var testCases = []struct { // nolint
 	},
 
 	{
+		provider:    Copper,
+		description: "Valid Copper provider config with no substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:      false,
+				Write:     false,
+				BulkWrite: false,
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://app.copper.com/oauth/authorize",
+				TokenURL:                  "https://app.copper.com/oauth/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+			},
+			BaseURL: "https://api.copper.com/developer_api/v1",
+		},
+		expectedErr: nil,
+	},
+
+	{
 		provider:    Attio,
 		description: "Valid Attio provider config with non-existent substitutions",
 		substitutions: map[string]string{

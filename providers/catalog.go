@@ -19,6 +19,7 @@ const (
 	Notion     Provider = "notion"
 	Gong       Provider = "gong"
 	Pipedrive  Provider = "pipedrive"
+	Copper     Provider = "copper"
 )
 
 // ================================================================================
@@ -160,6 +161,25 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			AuthURL:                   "https://oauth.pipedrive.com/oauth/authorize",
 			TokenURL:                  "https://oauth.pipedrive.com/oauth/token",
 			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Copper configuration
+	Copper: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.copper.com/developer_api/v1",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://app.copper.com/oauth/authorize",
+			TokenURL:                  "https://app.copper.com/oauth/token",
+			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
