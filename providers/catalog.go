@@ -11,6 +11,7 @@ const (
 	Salesloft         Provider = "salesloft"
 	Outreach          Provider = "outreach"
 	Pipedrive         Provider = "pipedrive"
+	Copper            Provider = "copper"
 	Sellsy            Provider = "sellsy"
 	Attio             Provider = "attio"
 	Close             Provider = "close"
@@ -144,6 +145,25 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		OauthOpts: OauthOpts{
 			AuthURL:                   "https://oauth.pipedrive.com/oauth/authorize",
 			TokenURL:                  "https://oauth.pipedrive.com/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Copper configuration
+	Copper: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.copper.com/developer_api/v1",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://app.copper.com/oauth/authorize",
+			TokenURL:                  "https://app.copper.com/oauth/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 		},
