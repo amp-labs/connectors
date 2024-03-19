@@ -1,6 +1,7 @@
 package hubspot
 
 import (
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/proxy"
 )
@@ -32,8 +33,13 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	return
 }
 
-func WithProxyConnector(conn *proxy.Connector) Option {
+func WithProxyConnector(conn connectors.ProxyConnector) Option {
 	return func(connector *Connector) {
-		connector.Connector = conn
+		proxyConn, ok := conn.(*proxy.Connector)
+		if !ok {
+			return
+		}
+
+		connector.Connector = proxyConn
 	}
 }
