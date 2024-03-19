@@ -23,6 +23,7 @@ const (
 	Intercom          Provider = "intercom"
 	DocuSign          Provider = "docuSign"
 	DocuSignDeveloper Provider = "docuSignDeveloper"
+	Calendly          Provider = "calendly"
 )
 
 // ================================================================================
@@ -377,6 +378,25 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			AuthURL:                   "https://account-d.docusign.com/oauth/auth",
 			TokenURL:                  "https://account-d.docusign.com/oauth/token",
 			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Calendly configuration
+	Calendly: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.calendly.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://auth.calendly.com/oauth/authorize",
+			TokenURL:                  "https://auth.calendly.com/oauth/token",
+			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
