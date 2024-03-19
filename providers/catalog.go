@@ -401,7 +401,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 		Support: Support{
 			BulkWrite: false,
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
