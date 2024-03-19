@@ -28,7 +28,7 @@ type Contact struct {
 	Running instructions
 
 	Step 1: prepare "hubspot-creds.json" file
-	
+
 	Create a file called "hubspot-creds.json" in the root of the project with the following contents
 
 		e.g. {
