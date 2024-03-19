@@ -44,7 +44,7 @@ func JSONFileReaders(filePath string) []utils.Reader {
 	return schema
 }
 
-func EnvVarSchemaReaders(prefix string) []utils.Reader {
+func EnvVarsReaders(prefix string) []utils.Reader {
 	return []utils.Reader{
 		&utils.EnvReader{
 			EnvName: fmt.Sprintf("%sACCESS_TOKEN", prefix),

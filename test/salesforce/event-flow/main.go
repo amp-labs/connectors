@@ -31,7 +31,7 @@ func main() {
 		filePath = "./salesforce-creds.json"
 	}
 
-	ampConnectionSchemaReader := testUtils.AmpersandConnectionSchemaReaders(filePath)
+	ampConnectionSchemaReader := testUtils.JSONFileReaders(filePath)
 	credentialsRegistry := utils.NewCredentialsRegistry()
 	credentialsRegistry.AddReaders(ampConnectionSchemaReader...)
 	salesforceWorkspace := credentialsRegistry.MustString("Workspace")

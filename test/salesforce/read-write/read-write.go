@@ -42,7 +42,7 @@ func mainFn() int { //nolint:funlen
 	salesforceEnvVarPrefix := "SALESFORCE_"
 	credentialsRegistry := utils.NewCredentialsRegistry()
 
-	envSchema := testUtils.EnvVarSchemaReaders(salesforceEnvVarPrefix)
+	envSchema := testUtils.EnvVarsReaders(salesforceEnvVarPrefix)
 	credentialsRegistry.AddReaders(
 		envSchema...,
 	)

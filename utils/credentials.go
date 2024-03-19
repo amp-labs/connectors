@@ -41,6 +41,8 @@ func SalesforceOauthTokenFromRegistry(registry CredentialsRegistry) *oauth2.Toke
 	tok := &oauth2.Token{
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
+		TokenType:    "bearer",
+		Expiry:       time.Now().Add(-1 * time.Hour),
 	}
 
 	return tok
