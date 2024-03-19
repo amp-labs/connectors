@@ -350,12 +350,19 @@ var testCases = []struct { // nolint
 	{
 		provider: DocuSign,
 		expected: &ProviderInfo{
+			Support: Support{
+				Read:      false,
+				Write:     false,
+				BulkWrite: false,
+				Subscribe: false,
+				Proxy:     false,
+			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
 				AuthURL:                   "https://account.docusign.com/oauth/auth",
 				TokenURL:                  "https://account.docusign.com/oauth/token",
 				ExplicitScopesRequired:    true,
-				ExplicitWorkspaceRequired: false,
+				ExplicitWorkspaceRequired: true,
 			},
 			BaseURL: "https://{{.workspace}}.docusign.net",
 		},
@@ -364,6 +371,13 @@ var testCases = []struct { // nolint
 	{
 		provider: DocuSignDeveloper,
 		expected: &ProviderInfo{
+			Support: Support{
+				Read:      false,
+				Write:     false,
+				BulkWrite: false,
+				Subscribe: false,
+				Proxy:     false,
+			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
 				AuthURL:                   "https://account-d.docusign.com/oauth/auth",

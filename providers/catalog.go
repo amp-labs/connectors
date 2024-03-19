@@ -18,7 +18,7 @@ const (
 	Dropbox    Provider = "dropbox"
 	Notion     Provider = "notion"
 	Gong       Provider = "gong"
-    DocuSign          Provider = "docuSign"
+	DocuSign          Provider = "docuSign"
 	DocuSignDeveloper Provider = "docuSignDeveloper"
 )
 
@@ -298,7 +298,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			AuthURL:                   "https://account.docusign.com/oauth/auth",
 			TokenURL:                  "https://account.docusign.com/oauth/token",
 			ExplicitScopesRequired:    true,
-			ExplicitWorkspaceRequired: false,
+			ExplicitWorkspaceRequired: true,
 		},
 		Support: Support{
 			BulkWrite: false,
