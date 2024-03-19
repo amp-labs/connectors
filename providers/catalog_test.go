@@ -370,7 +370,7 @@ var testCases = []struct { // nolint
 		expectedErr: nil,
 	},
 	{
-		provider: Zoom,
+		provider:    Zoom,
 		description: "Zoom provider config with no substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
@@ -388,6 +388,28 @@ var testCases = []struct { // nolint
 				ExplicitWorkspaceRequired: false,
 			},
 			BaseURL: "https://api.zoom.us",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    Intercom,
+		description: "Valid Intercom provider config with no substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:      false,
+				Write:     false,
+				BulkWrite: false,
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://app.intercom.com/oauth",
+				TokenURL:                  "https://api.intercom.io/auth/eagle/token",
+				ExplicitWorkspaceRequired: false,
+				ExplicitScopesRequired:    false,
+			},
+			BaseURL: "https://api.intercom.io",
 		},
 		expectedErr: nil,
 	},
