@@ -40,7 +40,7 @@ func main() { //nolint:funlen
 	ampConnectionSchemaReader := testUtils.JSONFileReaders(filePath)
 	credentialsRegistry := utils.NewCredentialsRegistry()
 	credentialsRegistry.AddReaders(ampConnectionSchemaReader...)
-	salesforceWorkspace := credentialsRegistry.MustString("Workspace")
+	salesforceWorkspace := credentialsRegistry.MustString(utils.WorkspaceRef)
 
 	cfg := utils.SalesforceOAuthConfigFromRegistry(credentialsRegistry)
 	tok := utils.SalesforceOauthTokenFromRegistry(credentialsRegistry)
