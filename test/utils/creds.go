@@ -6,7 +6,8 @@ import (
 	"github.com/amp-labs/connectors/utils"
 )
 
-func AmpersandConnectionSchemaReaders(filePath string) []utils.Reader {
+// preset values from JSON file from schema equal to response from reference: https://docs.withampersand.com/reference/getconnection
+func JSONFileReaders(filePath string) []utils.Reader {
 	schema := []utils.Reader{
 		&utils.JSONReader{
 			FilePath: filePath,
