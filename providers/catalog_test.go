@@ -159,6 +159,28 @@ var testCases = []struct { // nolint
 	},
 
 	{
+		provider: Pipedrive,
+		expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://oauth.pipedrive.com/oauth/authorize",
+				TokenURL:                  "https://oauth.pipedrive.com/oauth/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+			},
+			Support: Support{
+				BulkWrite: false,
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+			BaseURL: "https://api.pipedrive.com",
+		},
+		expectedErr: nil,
+	},
+
+	{
 		provider: Sellsy,
 		expected: &ProviderInfo{
 			AuthType: Oauth2,
@@ -344,6 +366,50 @@ var testCases = []struct { // nolint
 				ExplicitScopesRequired:    true,
 			},
 			BaseURL: "https://testing.api.gong.io",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    Zoom,
+		description: "Zoom provider config with no substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:      false,
+				Write:     false,
+				BulkWrite: false,
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://zoom.us/oauth/authorize",
+				TokenURL:                  "https://zoom.us/oauth/token",
+				ExplicitScopesRequired:    false,
+				ExplicitWorkspaceRequired: false,
+			},
+			BaseURL: "https://api.zoom.us",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    Intercom,
+		description: "Valid Intercom provider config with no substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:      false,
+				Write:     false,
+				BulkWrite: false,
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://app.intercom.com/oauth",
+				TokenURL:                  "https://api.intercom.io/auth/eagle/token",
+				ExplicitWorkspaceRequired: false,
+				ExplicitScopesRequired:    false,
+			},
+			BaseURL: "https://api.intercom.io",
 		},
 		expectedErr: nil,
 	},

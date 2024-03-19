@@ -10,6 +10,7 @@ const (
 	LinkedIn          Provider = "linkedIn"
 	Salesloft         Provider = "salesloft"
 	Outreach          Provider = "outreach"
+	Pipedrive         Provider = "pipedrive"
 	Sellsy            Provider = "sellsy"
 	Attio             Provider = "attio"
 	Close             Provider = "close"
@@ -18,6 +19,8 @@ const (
 	Dropbox           Provider = "dropbox"
 	Notion            Provider = "notion"
 	Gong              Provider = "gong"
+	Zoom              Provider = "zoom"
+	Intercom          Provider = "intercom"
 	DocuSign          Provider = "docuSign"
 	DocuSignDeveloper Provider = "docuSignDeveloper"
 )
@@ -122,6 +125,25 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		OauthOpts: OauthOpts{
 			AuthURL:                   "https://api.outreach.io/oauth/authorize",
 			TokenURL:                  "https://api.outreach.io/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Pipedrive configuration
+	Pipedrive: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.pipedrive.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://oauth.pipedrive.com/oauth/authorize",
+			TokenURL:                  "https://oauth.pipedrive.com/oauth/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 		},
@@ -290,6 +312,44 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
+	// Zoom configuration
+	Zoom: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.zoom.us",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://zoom.us/oauth/authorize",
+			TokenURL:                  "https://zoom.us/oauth/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Intercom configuration
+	Intercom: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.intercom.io",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://app.intercom.com/oauth",
+			TokenURL:                  "https://api.intercom.io/auth/eagle/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
 	// DocuSign configuration
 	DocuSign: {
 		AuthType: Oauth2,
@@ -327,5 +387,4 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Write:     false,
 		},
 	},
-
 }
