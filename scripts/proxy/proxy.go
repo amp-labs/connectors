@@ -171,7 +171,7 @@ func configureOAuth(clientId, clientSecret string, scopes []string, providerInfo
 		Endpoint: oauth2.Endpoint{
 			AuthURL:   providerInfo.OauthOpts.AuthURL,
 			TokenURL:  providerInfo.OauthOpts.TokenURL,
-			AuthStyle: oauth2.AuthStyleInParams,
+			AuthStyle: oauth2.AuthStyleAutoDetect,
 		},
 	}
 }
