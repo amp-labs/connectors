@@ -19,6 +19,7 @@ const (
 	Dropbox    Provider = "dropbox"
 	Notion     Provider = "notion"
 	Gong       Provider = "gong"
+	Zoom       Provider = "zoom"
 )
 
 // ================================================================================
@@ -297,6 +298,25 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			AuthURL:                   "https://app.gong.io/oauth2/authorize",
 			TokenURL:                  "https://app.gong.io/oauth2/generate-customer-token",
 			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Zoom configuration
+	Zoom: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.zoom.us",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://zoom.us/oauth/authorize",
+			TokenURL:                  "https://zoom.us/oauth/token",
+			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
