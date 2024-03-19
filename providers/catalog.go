@@ -5,22 +5,24 @@ package providers
 // ================================================================================
 
 const (
-	Salesforce Provider = "salesforce"
-	Hubspot    Provider = "hubspot"
-	LinkedIn   Provider = "linkedIn"
-	Salesloft  Provider = "salesloft"
-	Outreach   Provider = "outreach"
-	Pipedrive  Provider = "pipedrive"
-	Sellsy     Provider = "sellsy"
-	Attio      Provider = "attio"
-	Close      Provider = "close"
-	Keap       Provider = "keap"
-	Asana      Provider = "asana"
-	Dropbox    Provider = "dropbox"
-	Notion     Provider = "notion"
-	Gong       Provider = "gong"
-	Zoom       Provider = "zoom"
-	Intercom   Provider = "intercom"
+	Salesforce        Provider = "salesforce"
+	Hubspot           Provider = "hubspot"
+	LinkedIn          Provider = "linkedIn"
+	Salesloft         Provider = "salesloft"
+	Outreach          Provider = "outreach"
+	Pipedrive         Provider = "pipedrive"
+	Sellsy            Provider = "sellsy"
+	Attio             Provider = "attio"
+	Close             Provider = "close"
+	Keap              Provider = "keap"
+	Asana             Provider = "asana"
+	Dropbox           Provider = "dropbox"
+	Notion            Provider = "notion"
+	Gong              Provider = "gong"
+	Zoom              Provider = "zoom"
+	Intercom          Provider = "intercom"
+	DocuSign          Provider = "docuSign"
+	DocuSignDeveloper Provider = "docuSignDeveloper"
 )
 
 // ================================================================================
@@ -337,6 +339,44 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			AuthURL:                   "https://app.intercom.com/oauth",
 			TokenURL:                  "https://api.intercom.io/auth/eagle/token",
 			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// DocuSign configuration
+	DocuSign: {
+		AuthType: Oauth2,
+		BaseURL:  "https://{{.workspace}}.docusign.net",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://account.docusign.com/oauth/auth",
+			TokenURL:                  "https://account.docusign.com/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: true,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// DocuSign Developer configuration
+	DocuSignDeveloper: {
+		AuthType: Oauth2,
+		BaseURL:  "https://demo.docusign.net",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://account-d.docusign.com/oauth/auth",
+			TokenURL:                  "https://account-d.docusign.com/oauth/token",
+			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
