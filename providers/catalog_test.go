@@ -362,7 +362,7 @@ var testCases = []struct { // nolint
 			OauthOpts: OauthOpts{
 				AuthURL:                   "https://zoom.us/oauth/authorize",
 				TokenURL:                  "https://zoom.us/oauth/token",
-				ExplicitScopesRequired:    true,
+				ExplicitScopesRequired:    false,
 				ExplicitWorkspaceRequired: false,
 			},
 			BaseURL: "https://api.zoom.us",

@@ -296,7 +296,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		OauthOpts: OauthOpts{
 			AuthURL:                   "https://zoom.us/oauth/authorize",
 			TokenURL:                  "https://zoom.us/oauth/token",
-			ExplicitScopesRequired:    true,
+			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
