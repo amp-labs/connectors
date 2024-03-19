@@ -20,6 +20,7 @@ const (
 	Notion     Provider = "notion"
 	Gong       Provider = "gong"
 	Zoom       Provider = "zoom"
+	Intercom   Provider = "intercom"
 )
 
 // ================================================================================
@@ -316,6 +317,25 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		OauthOpts: OauthOpts{
 			AuthURL:                   "https://zoom.us/oauth/authorize",
 			TokenURL:                  "https://zoom.us/oauth/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Intercom configuration
+	Intercom: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.intercom.io",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://app.intercom.com/oauth",
+			TokenURL:                  "https://api.intercom.io/auth/eagle/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
 		},
