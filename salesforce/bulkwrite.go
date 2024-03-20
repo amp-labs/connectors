@@ -73,6 +73,7 @@ type GetJobInfoResult struct {
 	LineEnding             string  `json:"lineEnding"`
 	NumberRecordsFailed    float64 `json:"numberRecordsFailed"`
 	NumberRecordsProcessed float64 `json:"numberRecordsProcessed"`
+	ErrorMessage           string  `json:"errorMessage,omitempty"`
 
 	ApexProcessingTime      float64 `json:"apexProcessingTime"`
 	ApiActiveProcessingTime float64 `json:"apiActiveProcessingTime"`
