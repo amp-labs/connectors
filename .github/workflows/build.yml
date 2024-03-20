@@ -1,6 +1,6 @@
 name: Build and test
 run-name: ${{ github.actor }} is running go build / go test
-on: [push]
+on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest

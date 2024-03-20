@@ -1,6 +1,6 @@
 name: Linter
 run-name: ${{ github.actor }} is running the linter
-on: [push]
+on: [push, pull_request]
 jobs:
   lint:
     runs-on: ubuntu-latest
