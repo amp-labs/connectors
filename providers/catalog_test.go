@@ -415,6 +415,9 @@ var testCases = []struct { // nolint
 	},
 	{
 		provider: DocuSign,
+		substitutions: map[string]string{
+			"workspace": "example",
+		},
 		expected: &ProviderInfo{
 			Support: Support{
 				Read:      false,
@@ -430,7 +433,7 @@ var testCases = []struct { // nolint
 				ExplicitScopesRequired:    true,
 				ExplicitWorkspaceRequired: true,
 			},
-			BaseURL: "https://{{.workspace}}.docusign.net",
+			BaseURL: "https://example.docusign.net",
 		},
 		expectedErr: nil,
 	},
