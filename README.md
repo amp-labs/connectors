@@ -69,9 +69,9 @@ func main() {
 }
 ```
 
-## Provider catalog
+## Supported connectors
 
-The provider catalog is a YAML file that contains information about all SaaS providers that Ampersand supports. It contains information such as the base URL, and the operations that the provider supports. This is currently stored in the `providers/providers.yaml` file.
+Browse [the catalog file](https://github.com/amp-labs/connectors/blob/main/providers/catalog.go) to see a list of all the connectors that Ampersand supports, and which features are supported for connector.
 
 ## Ways to initialize a Connector
 
