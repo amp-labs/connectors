@@ -6,7 +6,7 @@ import (
 	"errors"
 	"reflect"
 	"strings"
-	"text/template"
+	"text/template" // nosemgrep: go.lang.security.audit.xss.import-text-template.import-text-template
 
 	"github.com/go-playground/validator"
 )
