@@ -39,6 +39,10 @@ var testPreset = []Reader{
 		JSONPath: "$['providers'][0]['number']",
 		CredKey:  "ProviderNumber",
 	},
+	&ValueReader{
+		Val:     "myValue",
+		CredKey: "MyValue",
+	},
 }
 
 func TestCredentialOptions(t *testing.T) {
@@ -77,4 +81,19 @@ func TestCredentialOptions(t *testing.T) {
 	useToken, err := opts.GetBool("UseToken")
 	require.NoError(t, err)
 	require.True(t, useToken)
+
+	myValue, err := opts.GetString("MyValue")
+	require.NoError(t, err)
+	require.Equal(t, "myValue", myValue)
+
+	require.Error(t,
+		opts.AddReader(
+			&ValueReader{},
+		),
+	)
+	require.Error(t,
+		opts.AddReaders(
+			[]Reader{&ValueReader{}}...,
+		),
+	)
 }

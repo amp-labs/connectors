@@ -120,6 +120,5 @@ go.work
 
 playground/
 
-creds.json
-.DS_Store
+*creds.json
 **/.DS_Store

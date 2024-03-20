@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"flag"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -12,8 +11,9 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/salesforce"
+	testUtils "github.com/amp-labs/connectors/test/utils"
+	"github.com/amp-labs/connectors/utils"
 	"github.com/joho/godotenv"
-	"golang.org/x/oauth2"
 )
 
 // Set the appropriate environment variables in a .env file, then run:
@@ -26,50 +26,36 @@ func main() {
 }
 
 func mainFn() int { //nolint:funlen
+	handler := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
+		Level: slog.LevelDebug,
+	})
+
+	logger := slog.New(handler)
+	slog.SetDefault(logger)
+
 	if err := godotenv.Load(); err != nil {
 		slog.Error("Error loading .env file", "error", err)
 
 		return 1
 	}
 
-	salesforceWorkspace := os.Getenv("SALESFORCE_WORKSPACE")
-	clientId := os.Getenv("SALESFORCE_CLIENT_ID")
-	clientSecret := os.Getenv("SALESFORCE_CLIENT_SECRET")
-	accessToken := os.Getenv("SALESFORCE_ACCESS_TOKEN")
-	refreshToken := os.Getenv("SALESFORCE_REFRESH_TOKEN")
+	salesforceEnvVarPrefix := "SALESFORCE_"
+	credentialsRegistry := utils.NewCredentialsRegistry()
 
-	workspace := flag.String("workspace", salesforceWorkspace, "Salesforce workspace")
-	flag.Parse()
+	envSchema := testUtils.EnvVarsReaders(salesforceEnvVarPrefix)
+	credentialsRegistry.AddReaders(
+		envSchema...,
+	)
 
-	handler := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
-		Level: slog.LevelDebug,
-	})
-	logger := slog.New(handler)
-	slog.SetDefault(logger)
+	salesforceWorkspace := credentialsRegistry.MustString(utils.WorkspaceRef)
 
-	cfg := &oauth2.Config{
-		ClientID:     clientId,
-		ClientSecret: clientSecret,
-		Endpoint: oauth2.Endpoint{
-			AuthURL:   fmt.Sprintf("https://%s.my.salesforce.com/services/oauth2/authorize", *workspace),
-			TokenURL:  fmt.Sprintf("https://%s.my.salesforce.com/services/oauth2/token", *workspace),
-			AuthStyle: oauth2.AuthStyleInParams,
-		},
-	}
-
-	tok := &oauth2.Token{
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
-		TokenType:    "bearer",
-		Expiry:       time.Now().Add(-1 * time.Hour), // just pretend it's expired already, whatever, it'll fetch a new one.
-	}
-
+	cfg := utils.SalesforceOAuthConfigFromRegistry(credentialsRegistry)
+	tok := utils.SalesforceOauthTokenFromRegistry(credentialsRegistry)
 	ctx := context.Background()
 
-	// Create a new Salesforce connector, with a token provider that uses the sfdx CLI to fetch an access token.
 	sfc, err := connectors.Salesforce(
 		salesforce.WithClient(ctx, http.DefaultClient, cfg, tok),
-		salesforce.WithWorkspace(*workspace))
+		salesforce.WithWorkspace(salesforceWorkspace))
 	if err != nil {
 		slog.Error("Error creating Salesforce connector", "error", err)
 
