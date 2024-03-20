@@ -22,3 +22,7 @@ fix/sort:
 # Alias for fix
 .PHONY: format
 format: fix
+
+.PHONY: test
+test:
+	go test -v ./...
