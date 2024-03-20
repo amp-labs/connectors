@@ -8,7 +8,6 @@ import (
 	"os"
 
 	"github.com/amp-labs/connectors"
-	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/salesforce"
 	testUtils "github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/utils"
@@ -40,8 +39,11 @@ func main() {
 	ctx := context.Background()
 
 	sfc, err := connectors.Salesforce(
-		salesforce.WithClient(ctx, http.DefaultClient, cfg, tok),
-		salesforce.WithWorkspace(salesforceWorkspace))
+		salesforce.WithClient(ctx, http.DefaultClient, cfg, tok,
+			salesforce.GetTokenUpdater(tok), // this is necessary to update token
+		),
+		salesforce.WithWorkspace(salesforceWorkspace),
+	)
 	if err != nil {
 		slog.Error("Error creating Salesforce connector", "error", err)
 
@@ -53,6 +55,7 @@ func main() {
 	}()
 
 	example, err := xmldom.ParseXML(`<createMetadata><metadata xsi:type="CustomObject"><fullName>TestObject15__c</fullName><label>Test Object 15</label><pluralLabel>Test Objects 15</pluralLabel><nameField><type>Text</type><label>Test Object Name</label></nameField><deploymentStatus>Deployed</deploymentStatus><sharingModel>ReadWrite</sharingModel></metadata><metadata xsi:type="CustomField"><fullName>TestObject13__c.Comments__c</fullName><label>Comments</label><type>LongTextArea</type><length>500</length><inlineHelpText>This field contains help text for this object</inlineHelpText><description>Add your comments about this object here</description><visibleLines>30</visibleLines><required>false</required><trackFeedHistory>false</trackFeedHistory><trackHistory>false</trackHistory></metadata></createMetadata>`)
+
 	if err != nil {
 		slog.Error("err parsing", "error", err)
 		os.Exit(1)
@@ -80,86 +83,4 @@ func main() {
 	}
 
 	fmt.Println("Field Operation Result", res)
-}
-
-func getCreateFieldOperation() *common.XMLData {
-	metadata := &common.XMLData{
-		XMLName:    "metadata",
-		Attributes: []*common.XMLAttributes{{Key: "xsi:type", Value: "CustomField"}},
-		Children: []common.XMLSchema{
-			&common.XMLData{
-				XMLName: "fullName",
-				Children: []common.XMLSchema{
-					common.XMLString("TestObject13__c.Comments__c"),
-				},
-				SelfClosing: false,
-			},
-			&common.XMLData{
-				XMLName: "label",
-				Children: []common.XMLSchema{
-					common.XMLString("Comments"),
-				},
-				SelfClosing: false,
-			},
-			&common.XMLData{
-				XMLName: "type",
-				Children: []common.XMLSchema{
-					common.XMLString("LongTextArea"),
-				},
-				SelfClosing: false,
-			},
-			&common.XMLData{
-				XMLName: "length",
-				Children: []common.XMLSchema{
-					common.XMLString("500"),
-				},
-				SelfClosing: false,
-			},
-			&common.XMLData{
-				XMLName: "inlineHelpText",
-				Children: []common.XMLSchema{
-					common.XMLString("This field contains help text for this object"),
-				},
-				SelfClosing: false,
-			},
-			&common.XMLData{
-				XMLName: "description",
-				Children: []common.XMLSchema{
-					common.XMLString("Add your comments about this object here"),
-				},
-				SelfClosing: false,
-			},
-			&common.XMLData{
-				XMLName: "visibleLines",
-				Children: []common.XMLSchema{
-					common.XMLString("30"),
-				},
-				SelfClosing: false,
-			},
-			&common.XMLData{
-				XMLName: "required",
-				Children: []common.XMLSchema{
-					common.XMLString("false"),
-				},
-				SelfClosing: false,
-			},
-			&common.XMLData{
-				XMLName: "trackFeedHistory",
-				Children: []common.XMLSchema{
-					common.XMLString("false"),
-				},
-				SelfClosing: false,
-			},
-			&common.XMLData{
-				XMLName: "trackHistory",
-				Children: []common.XMLSchema{
-					common.XMLString("false"),
-				},
-				SelfClosing: false,
-			},
-		},
-		SelfClosing: false,
-	}
-
-	return metadata
 }

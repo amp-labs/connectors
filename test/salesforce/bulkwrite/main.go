@@ -12,8 +12,8 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/salesforce"
-	"github.com/amp-labs/connectors/test"
-	"golang.org/x/oauth2"
+	testUtils "github.com/amp-labs/connectors/test/utils"
+	"github.com/amp-labs/connectors/utils"
 )
 
 const (
@@ -23,45 +23,29 @@ const (
 func main() { //nolint:funlen
 	fmt.Println("Testing Bulkwrite...")
 
-	creds, err := test.GetCreds("../../creds.json")
-	if err != nil {
-		slog.Error("Error getting creds", "error", err)
-		os.Exit(1)
-	}
-
-	clientId := creds.ClientId
-	clientSecret := creds.ClientSecret
-	accessToken := creds.AccessToken
-	refreshToken := creds.RefreshToken
-
-	salesforceWorkspace := creds.Workspace
-
 	handler := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
 		Level: slog.LevelDebug,
 	})
+
 	logger := slog.New(handler)
 	slog.SetDefault(logger)
 
-	cfg := &oauth2.Config{
-		ClientID:     clientId,
-		ClientSecret: clientSecret,
-		Endpoint: oauth2.Endpoint{
-			AuthURL:   fmt.Sprintf("https://%s.my.salesforce.com/services/oauth2/authorize", salesforceWorkspace),
-			TokenURL:  fmt.Sprintf("https://%s.my.salesforce.com/services/oauth2/token", salesforceWorkspace),
-			AuthStyle: oauth2.AuthStyleInParams,
-		},
+	// assumes that this code is being run from the root of the project
+	// go run test/salesforce/bulkwrite/main.go
+	filePath := os.Getenv("SALESFORCE_CRED_FILE_PATH")
+	if filePath == "" {
+		filePath = "./salesforce-creds.json"
 	}
 
-	tok := &oauth2.Token{
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
-		TokenType:    "bearer",
-		Expiry:       time.Now().Add(-1 * time.Hour), // just pretend it's expired already, whatever, it'll fetch a new one.
-	}
+	ampConnectionSchemaReader := testUtils.JSONFileReaders(filePath)
+	credentialsRegistry := utils.NewCredentialsRegistry()
+	credentialsRegistry.AddReaders(ampConnectionSchemaReader...)
+	salesforceWorkspace := credentialsRegistry.MustString(utils.WorkspaceRef)
 
+	cfg := utils.SalesforceOAuthConfigFromRegistry(credentialsRegistry)
+	tok := utils.SalesforceOauthTokenFromRegistry(credentialsRegistry)
 	ctx := context.Background()
 
-	// Create a new Salesforce connector, with a token provider that uses the sfdx CLI to fetch an access token.
 	sfc, err := connectors.Salesforce(
 		salesforce.WithClient(ctx, http.DefaultClient, cfg, tok),
 		salesforce.WithWorkspace(salesforceWorkspace))
@@ -145,22 +129,22 @@ func testBulkWrite(ctx context.Context, sfc *salesforce.Connector, filePath stri
 
 var testList = []testRunner{
 	{
-		filePath:  "./touchpoints_20231130.csv",
+		filePath:  "./test/salesforce/bulkwrite/touchpoints_20231130.csv",
 		testTitle: "Testing Bulkwrite",
 		fn:        testBulkWrite,
 	},
 	{
-		filePath:  "./touchpoints_20231130.csv",
+		filePath:  "./test/salesforce/bulkwrite/touchpoints_20231130.csv",
 		testTitle: "Testing SuccessResults",
 		fn:        testGetJobResultsForFile,
 	},
 	{
-		filePath:  "./touchpoints_partial_failure_20231228.csv",
+		filePath:  "./test/salesforce/bulkwrite/touchpoints_partial_failure_20231228.csv",
 		testTitle: "Testing Partial Failure",
 		fn:        testGetJobResultsForFile,
 	},
 	{
-		filePath:  "./touchpoints_complete_failure_20231228.csv",
+		filePath:  "./test/salesforce/bulkwrite/touchpoints_complete_failure_20231228.csv",
 		testTitle: "Testing Complete Failure",
 		fn:        testGetJobResultsForFile,
 	},
