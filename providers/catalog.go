@@ -160,7 +160,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	// Copper configuration
 	Copper: {
 		AuthType: Oauth2,
-		BaseURL:  "https://api.copper.com/developer_api/v1",
+		BaseURL:  "https://api.copper.com/developer_api",
 		OauthOpts: OauthOpts{
 			AuthURL:                   "https://app.copper.com/oauth/authorize",
 			TokenURL:                  "https://app.copper.com/oauth/token",

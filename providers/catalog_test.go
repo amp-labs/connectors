@@ -198,7 +198,7 @@ var testCases = []struct { // nolint
 				ExplicitScopesRequired:    true,
 				ExplicitWorkspaceRequired: false,
 			},
-			BaseURL: "https://api.copper.com/developer_api/v1",
+			BaseURL: "https://api.copper.com/developer_api",
 		},
 		expectedErr: nil,
 	},
