@@ -230,10 +230,10 @@ var testCases = []struct { // nolint
 		description: "Valid ZohoCRM provider config with no substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
-				Subscribe: false,
+				Read:      true,
+				Write:     true,
+				BulkWrite: true,
+				Subscribe: true,
 				Proxy:     false,
 			},
 			AuthType: Oauth2,
