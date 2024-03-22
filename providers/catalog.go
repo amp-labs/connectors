@@ -5,27 +5,28 @@ package providers
 // ================================================================================
 
 const (
-	Salesforce        Provider = "salesforce"
-	Hubspot           Provider = "hubspot"
-	LinkedIn          Provider = "linkedIn"
-	Salesloft         Provider = "salesloft"
-	Outreach          Provider = "outreach"
-	Pipedrive         Provider = "pipedrive"
-	Copper            Provider = "copper"
-	ZohoCRM           Provider = "zohoCRM"
-	Sellsy            Provider = "sellsy"
-	Attio             Provider = "attio"
-	Close             Provider = "close"
-	Keap              Provider = "keap"
-	Asana             Provider = "asana"
-	Dropbox           Provider = "dropbox"
-	Notion            Provider = "notion"
-	Gong              Provider = "gong"
-	Zoom              Provider = "zoom"
-	Intercom          Provider = "intercom"
-	DocuSign          Provider = "docuSign"
-	DocuSignDeveloper Provider = "docuSignDeveloper"
-	Calendly          Provider = "calendly"
+	Salesforce                 Provider = "salesforce"
+	Hubspot                    Provider = "hubspot"
+	LinkedIn                   Provider = "linkedIn"
+	Salesloft                  Provider = "salesloft"
+	Outreach                   Provider = "outreach"
+	Pipedrive                  Provider = "pipedrive"
+	Copper                     Provider = "copper"
+	ZohoCRM                    Provider = "zohoCRM"
+	Sellsy                     Provider = "sellsy"
+	Attio                      Provider = "attio"
+	Close                      Provider = "close"
+	Keap                       Provider = "keap"
+	Asana                      Provider = "asana"
+	Dropbox                    Provider = "dropbox"
+	Notion                     Provider = "notion"
+	Gong                       Provider = "gong"
+	Zoom                       Provider = "zoom"
+	Intercom                   Provider = "intercom"
+	DocuSign                   Provider = "docuSign"
+	DocuSignDeveloper          Provider = "docuSignDeveloper"
+	Calendly                   Provider = "calendly"
+	Dynamics365BusinessCentral Provider = "dynamics365BusinessCentral"
 )
 
 // ================================================================================
@@ -438,6 +439,25 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://auth.calendly.com/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Dynamics 365 Business Central configuration
+	Dynamics365BusinessCentral: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.businesscentral.dynamics.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://login.microsoftonline.com/{{.workspace}}/oauth2/v2.0/authorize",
+			TokenURL:                  "https://login.microsoftonline.com/{{.workspace}}/oauth2/v2.0/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: true,
 		},
 		Support: Support{
 			BulkWrite: false,

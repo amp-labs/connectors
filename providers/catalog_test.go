@@ -526,6 +526,28 @@ var testCases = []struct { // nolint
 		},
 		expectedErr: nil,
 	},
+	{
+		provider:    Dynamics365BusinessCentral,
+		description: "Dynamics 365 Business Central provider config with substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:      false,
+				Write:     false,
+				BulkWrite: false,
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://login.microsoftonline.com/{{.workspace}}/oauth2/v2.0/authorize",
+				TokenURL:                  "https://login.microsoftonline.com/{{.workspace}}/oauth2/v2.0/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: true,
+			},
+			BaseURL: "https://api.businesscentral.dynamics.com",
+		},
+		expectedErr: nil,
+	},
 }
 
 func TestReadInfo(t *testing.T) { // nolint
