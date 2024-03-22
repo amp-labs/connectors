@@ -26,6 +26,7 @@ const (
 	DocuSign          Provider = "docuSign"
 	DocuSignDeveloper Provider = "docuSignDeveloper"
 	Calendly          Provider = "calendly"
+	AWeber            Provider = "aweber"
 )
 
 // ================================================================================
@@ -437,6 +438,25 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			AuthURL:                   "https://auth.calendly.com/oauth/authorize",
 			TokenURL:                  "https://auth.calendly.com/oauth/token",
 			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// AWeber configuration
+	AWeber: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.aweber.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://auth.aweber.com/oauth2/authorize",
+			TokenURL:                  "https://auth.aweber.com/oauth2/token",
+			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
