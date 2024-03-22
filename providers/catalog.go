@@ -5,28 +5,28 @@ package providers
 // ================================================================================
 
 const (
-	Salesforce                 Provider = "salesforce"
-	Hubspot                    Provider = "hubspot"
-	LinkedIn                   Provider = "linkedIn"
-	Salesloft                  Provider = "salesloft"
-	Outreach                   Provider = "outreach"
-	Pipedrive                  Provider = "pipedrive"
-	Copper                     Provider = "copper"
-	ZohoCRM                    Provider = "zohoCRM"
-	Sellsy                     Provider = "sellsy"
-	Attio                      Provider = "attio"
-	Close                      Provider = "close"
-	Keap                       Provider = "keap"
-	Asana                      Provider = "asana"
-	Dropbox                    Provider = "dropbox"
-	Notion                     Provider = "notion"
-	Gong                       Provider = "gong"
-	Zoom                       Provider = "zoom"
-	Intercom                   Provider = "intercom"
-	DocuSign                   Provider = "docuSign"
-	DocuSignDeveloper          Provider = "docuSignDeveloper"
-	Calendly                   Provider = "calendly"
-	Dynamics365BusinessCentral Provider = "dynamics365BusinessCentral"
+	Salesforce                          Provider = "salesforce"
+	Hubspot                             Provider = "hubspot"
+	LinkedIn                            Provider = "linkedIn"
+	Salesloft                           Provider = "salesloft"
+	Outreach                            Provider = "outreach"
+	Pipedrive                           Provider = "pipedrive"
+	Copper                              Provider = "copper"
+	ZohoCRM                             Provider = "zohoCRM"
+	Sellsy                              Provider = "sellsy"
+	Attio                               Provider = "attio"
+	Close                               Provider = "close"
+	Keap                                Provider = "keap"
+	Asana                               Provider = "asana"
+	Dropbox                             Provider = "dropbox"
+	Notion                              Provider = "notion"
+	Gong                                Provider = "gong"
+	Zoom                                Provider = "zoom"
+	Intercom                            Provider = "intercom"
+	DocuSign                            Provider = "docuSign"
+	DocuSignDeveloper                   Provider = "docuSignDeveloper"
+	Calendly                            Provider = "calendly"
+	MicrosoftDynamics365BusinessCentral Provider = "microsoftDynamics365BusinessCentral"
 )
 
 // ================================================================================
@@ -449,8 +449,8 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
-	// Dynamics 365 Business Central configuration
-	Dynamics365BusinessCentral: {
+	// Microsoft Dynamics 365 Business Central configuration
+	MicrosoftDynamics365BusinessCentral: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.businesscentral.dynamics.com",
 		OauthOpts: OauthOpts{

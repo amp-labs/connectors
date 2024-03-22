@@ -527,7 +527,7 @@ var testCases = []struct { // nolint
 		expectedErr: nil,
 	},
 	{
-		provider:    Dynamics365BusinessCentral,
+		provider:    MicrosoftDynamics365BusinessCentral,
 		description: "Dynamics 365 Business Central provider config with substitutions",
 		substitutions: map[string]string{
 			"workspace": "tenantID",
