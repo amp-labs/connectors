@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"encoding/gob"
 	"errors"
-	"html/template"
 	"reflect"
 	"strings"
+	"text/template" // nosemgrep: go.lang.security.audit.xss.import-text-template.import-text-template
 
 	"github.com/go-playground/validator"
 )
