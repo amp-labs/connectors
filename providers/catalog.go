@@ -12,6 +12,7 @@ const (
 	Outreach          Provider = "outreach"
 	Pipedrive         Provider = "pipedrive"
 	Copper            Provider = "copper"
+	ZohoCRM           Provider = "zohoCRM"
 	Sellsy            Provider = "sellsy"
 	Attio             Provider = "attio"
 	Close             Provider = "close"
@@ -165,6 +166,25 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		OauthOpts: OauthOpts{
 			AuthURL:                   "https://app.copper.com/oauth/authorize",
 			TokenURL:                  "https://app.copper.com/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// ZohoCRM configuration
+	ZohoCRM: {
+		AuthType: Oauth2,
+		BaseURL:  "https://www.zohoapis.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://accounts.zoho.com/oauth/v2/auth",
+			TokenURL:                  "https://accounts.zoho.com/oauth/v2/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 		},
