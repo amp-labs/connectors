@@ -204,6 +204,29 @@ var testCases = []struct { // nolint
 	},
 
 	{
+		provider:    ZohoCRM,
+		description: "Valid ZohoCRM provider config with no substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:      false,
+				Write:     false,
+				BulkWrite: false,
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://accounts.zoho.com/oauth/v2/auth",
+				TokenURL:                  "https://accounts.zoho.com/oauth/v2/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+			},
+			BaseURL: "https://www.zohoapis.com",
+		},
+		expectedErr: nil,
+	},
+
+	{
 		provider: Sellsy,
 		expected: &ProviderInfo{
 			AuthType: Oauth2,
