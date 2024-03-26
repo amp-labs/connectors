@@ -449,8 +449,8 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Write:     false,
 		},
 	},
-  
-  // GetResponse configuration
+
+	// GetResponse configuration
 	GetResponse: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.getresponse.com",
@@ -468,8 +468,8 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Write:     false,
 		},
 	},
-  
-  // AWeber configuration
+
+	// AWeber configuration
 	AWeber: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.aweber.com",

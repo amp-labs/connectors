@@ -548,7 +548,7 @@ var testCases = []struct { // nolint
 		},
 		expectedErr: nil,
 	},
-  {
+	{
 		provider:    AWeber,
 		description: "Valid AWeber provider config with no substitutions",
 		expected: &ProviderInfo{
