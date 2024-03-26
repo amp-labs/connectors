@@ -83,6 +83,11 @@ var readers = []utils.Reader{
 		JSONPath: "$['substitutions']",
 		CredKey:  "Substitutions",
 	},
+	&utils.JSONReader{
+		FilePath: DefaultCredsFile,
+		JSONPath: "$['state']",
+		CredKey:  "State",
+	},
 }
 
 // OAuthApp is a simple OAuth app that can be used to get an OAuth token.
@@ -237,6 +242,7 @@ func setup() *OAuthApp {
 	provider := registry.MustString("Provider")
 	clientId := registry.MustString("ClientId")
 	clientSecret := registry.MustString("ClientSecret")
+	state := registry.MustString("State")
 
 	scopes, err := registry.GetString("Scopes")
 	if err != nil {
@@ -256,7 +262,9 @@ func setup() *OAuthApp {
 			Scopes:       oauthScopes,
 		},
 	}
-
+	if state != "" {
+		app.State = state
+	}
 	substitutions, err := registry.GetMap("Substitutions")
 	if err != nil {
 		slog.Warn("no substitutions, ensure that the provider info doesn't have any {{variables}}")

@@ -26,6 +26,7 @@ const (
 	DocuSign          Provider = "docuSign"
 	DocuSignDeveloper Provider = "docuSignDeveloper"
 	Calendly          Provider = "calendly"
+	GetResponse       Provider = "getResponse"
 )
 
 // ================================================================================
@@ -436,6 +437,25 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		OauthOpts: OauthOpts{
 			AuthURL:                   "https://auth.calendly.com/oauth/authorize",
 			TokenURL:                  "https://auth.calendly.com/oauth/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// GetResponse configuration
+	GetResponse: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.getresponse.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://app.getresponse.com/oauth2_authorize.html",
+			TokenURL:                  "https://api.getresponse.com/v3/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
 		},
