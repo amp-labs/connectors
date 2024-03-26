@@ -374,10 +374,6 @@ func (c *Connector) getPartialFailureDetails(ctx context.Context, jobInfo *GetJo
 			failureMap = failInfo.FailedCreates
 		}
 
-		if failureMap == nil {
-			failureMap[errMsg] = []string{}
-		}
-
 		failureMap[errMsg] = append(failureMap[errMsg], externalId)
 	}
 

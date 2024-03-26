@@ -527,6 +527,50 @@ var testCases = []struct { // nolint
 		expectedErr: nil,
 	},
 	{
+		provider:    GetResponse,
+		description: "GetResponse provider config with no substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:      false,
+				Write:     false,
+				BulkWrite: false,
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://app.getresponse.com/oauth2_authorize.html",
+				TokenURL:                  "https://api.getresponse.com/v3/token",
+				ExplicitScopesRequired:    false,
+				ExplicitWorkspaceRequired: false,
+			},
+			BaseURL: "https://api.getresponse.com",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    AWeber,
+		description: "Valid AWeber provider config with no substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:      false,
+				Write:     false,
+				BulkWrite: false,
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://auth.aweber.com/oauth2/authorize",
+				TokenURL:                  "https://auth.aweber.com/oauth2/token",
+				ExplicitWorkspaceRequired: false,
+				ExplicitScopesRequired:    true,
+			},
+			BaseURL: "https://api.aweber.com",
+		},
+		expectedErr: nil,
+	},
+	{
 		provider:    MicrosoftDynamics365BusinessCentral,
 		description: "Dynamics 365 Business Central provider config with substitutions",
 		substitutions: map[string]string{
@@ -546,6 +590,9 @@ var testCases = []struct { // nolint
 				TokenURL:                  "https://login.microsoftonline.com/tenantID/oauth2/v2.0/token",
 				ExplicitScopesRequired:    true,
 				ExplicitWorkspaceRequired: true,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
 			},
 			BaseURL: "https://api.businesscentral.dynamics.com",
 		},
