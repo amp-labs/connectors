@@ -548,7 +548,7 @@ var testCases = []struct { // nolint
 		},
 		expectedErr: nil,
 	},
-  {
+	{
 		provider:    AWeber,
 		description: "Valid AWeber provider config with no substitutions",
 		expected: &ProviderInfo{
@@ -567,6 +567,31 @@ var testCases = []struct { // nolint
 				ExplicitScopesRequired:    true,
 			},
 			BaseURL: "https://api.aweber.com",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    MicrosoftDynamics365Sales,
+		description: "MS Dynamics 365 Sales provider config with valid substitutions",
+		substitutions: map[string]string{
+			"workspace": "testing",
+		},
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:      false,
+				Write:     false,
+				BulkWrite: false,
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+				TokenURL:                  "https://login.microsoftonline.com/common/oauth2/v2.0/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: true,
+			},
+			BaseURL: "https://testing.api.crm.dynamics.com",
 		},
 		expectedErr: nil,
 	},

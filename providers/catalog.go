@@ -5,29 +5,30 @@ package providers
 // ================================================================================
 
 const (
-	Salesforce        Provider = "salesforce"
-	Hubspot           Provider = "hubspot"
-	LinkedIn          Provider = "linkedIn"
-	Salesloft         Provider = "salesloft"
-	Outreach          Provider = "outreach"
-	Pipedrive         Provider = "pipedrive"
-	Copper            Provider = "copper"
-	ZohoCRM           Provider = "zohoCRM"
-	Sellsy            Provider = "sellsy"
-	Attio             Provider = "attio"
-	Close             Provider = "close"
-	Keap              Provider = "keap"
-	Asana             Provider = "asana"
-	Dropbox           Provider = "dropbox"
-	Notion            Provider = "notion"
-	Gong              Provider = "gong"
-	Zoom              Provider = "zoom"
-	Intercom          Provider = "intercom"
-	DocuSign          Provider = "docuSign"
-	DocuSignDeveloper Provider = "docuSignDeveloper"
-	Calendly          Provider = "calendly"
-	AWeber            Provider = "aWeber"
-	GetResponse       Provider = "getResponse"
+	Salesforce                Provider = "salesforce"
+	Hubspot                   Provider = "hubspot"
+	LinkedIn                  Provider = "linkedIn"
+	Salesloft                 Provider = "salesloft"
+	Outreach                  Provider = "outreach"
+	Pipedrive                 Provider = "pipedrive"
+	Copper                    Provider = "copper"
+	ZohoCRM                   Provider = "zohoCRM"
+	Sellsy                    Provider = "sellsy"
+	Attio                     Provider = "attio"
+	Close                     Provider = "close"
+	Keap                      Provider = "keap"
+	Asana                     Provider = "asana"
+	Dropbox                   Provider = "dropbox"
+	Notion                    Provider = "notion"
+	Gong                      Provider = "gong"
+	Zoom                      Provider = "zoom"
+	Intercom                  Provider = "intercom"
+	DocuSign                  Provider = "docuSign"
+	DocuSignDeveloper         Provider = "docuSignDeveloper"
+	Calendly                  Provider = "calendly"
+	AWeber                    Provider = "aWeber"
+	GetResponse               Provider = "getResponse"
+	MicrosoftDynamics365Sales Provider = "microsoftDynamics365Sales"
 )
 
 // ================================================================================
@@ -449,8 +450,8 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Write:     false,
 		},
 	},
-  
-  // GetResponse configuration
+
+	// GetResponse configuration
 	GetResponse: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.getresponse.com",
@@ -468,8 +469,8 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Write:     false,
 		},
 	},
-  
-  // AWeber configuration
+
+	// AWeber configuration
 	AWeber: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.aweber.com",
@@ -478,6 +479,25 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://auth.aweber.com/oauth2/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// MS Sales configuration
+	MicrosoftDynamics365Sales: {
+		AuthType: Oauth2,
+		BaseURL:  "https://{{.workspace}}.api.crm.dynamics.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+			TokenURL:                  "https://login.microsoftonline.com/common/oauth2/v2.0/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: true,
 		},
 		Support: Support{
 			BulkWrite: false,
