@@ -26,7 +26,8 @@ const (
 	DocuSign          Provider = "docuSign"
 	DocuSignDeveloper Provider = "docuSignDeveloper"
 	Calendly          Provider = "calendly"
-	AWeber            Provider = "aweber"
+	AWeber            Provider = "aWeber"
+	GetResponse       Provider = "getResponse"
 )
 
 // ================================================================================
@@ -448,8 +449,27 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Write:     false,
 		},
 	},
-
-	// AWeber configuration
+  
+  // GetResponse configuration
+	GetResponse: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.getresponse.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://app.getresponse.com/oauth2_authorize.html",
+			TokenURL:                  "https://api.getresponse.com/v3/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+  
+  // AWeber configuration
 	AWeber: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.aweber.com",
