@@ -28,6 +28,7 @@ const (
 	Calendly          Provider = "calendly"
 	AWeber            Provider = "aWeber"
 	GetResponse       Provider = "getResponse"
+	ConstantContact   Provider = "constantContact"
 )
 
 // ================================================================================
@@ -449,8 +450,8 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Write:     false,
 		},
 	},
-  
-  // GetResponse configuration
+
+	// GetResponse configuration
 	GetResponse: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.getresponse.com",
@@ -468,14 +469,33 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Write:     false,
 		},
 	},
-  
-  // AWeber configuration
+
+	// AWeber configuration
 	AWeber: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.aweber.com",
 		OauthOpts: OauthOpts{
 			AuthURL:                   "https://auth.aweber.com/oauth2/authorize",
 			TokenURL:                  "https://auth.aweber.com/oauth2/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// ConstantContact configuration
+	ConstantContact: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.cc.email",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://authz.constantcontact.com/oauth2/default/v1/authorize",
+			TokenURL:                  "https://authz.constantcontact.com/oauth2/default/v1/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 		},
