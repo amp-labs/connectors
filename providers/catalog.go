@@ -29,6 +29,7 @@ const (
 	AWeber                              Provider = "aWeber"
 	GetResponse                         Provider = "getResponse"
 	ConstantContact                     Provider = "constantContact"
+	MicrosoftDynamics365Sales           Provider = "microsoftDynamics365Sales"
 	MicrosoftDynamics365BusinessCentral Provider = "microsoftDynamics365BusinessCentral"
 )
 
@@ -480,6 +481,25 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://auth.aweber.com/oauth2/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// MS Sales configuration
+	MicrosoftDynamics365Sales: {
+		AuthType: Oauth2,
+		BaseURL:  "https://{{.workspace}}.api.crm.dynamics.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+			TokenURL:                  "https://login.microsoftonline.com/common/oauth2/v2.0/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: true,
 		},
 		Support: Support{
 			BulkWrite: false,
