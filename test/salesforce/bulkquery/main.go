@@ -95,6 +95,7 @@ func getResultInLoop(ctx context.Context, sfc *salesforce.Connector, jobId strin
 		done = isJobDone(jobRes)
 	}
 	fmt.Println(".")
+
 	return jobRes, nil
 }
 
