@@ -28,6 +28,7 @@ const (
 	Calendly                            Provider = "calendly"
 	AWeber                              Provider = "aWeber"
 	GetResponse                         Provider = "getResponse"
+	ConstantContact                     Provider = "constantContact"
 	MicrosoftDynamics365BusinessCentral Provider = "microsoftDynamics365BusinessCentral"
 )
 
@@ -477,6 +478,25 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		OauthOpts: OauthOpts{
 			AuthURL:                   "https://auth.aweber.com/oauth2/authorize",
 			TokenURL:                  "https://auth.aweber.com/oauth2/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// ConstantContact configuration
+	ConstantContact: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.cc.email",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://authz.constantcontact.com/oauth2/default/v1/authorize",
+			TokenURL:                  "https://authz.constantcontact.com/oauth2/default/v1/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 		},

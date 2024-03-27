@@ -571,6 +571,28 @@ var testCases = []struct { // nolint
 		expectedErr: nil,
 	},
 	{
+		provider:    ConstantContact,
+		description: "Valid ConstantContact provider config with no substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:      false,
+				Write:     false,
+				BulkWrite: false,
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://authz.constantcontact.com/oauth2/default/v1/authorize",
+				TokenURL:                  "https://authz.constantcontact.com/oauth2/default/v1/token",
+				ExplicitWorkspaceRequired: false,
+				ExplicitScopesRequired:    true,
+			},
+			BaseURL: "https://api.cc.email",
+		},
+		expectedErr: nil,
+	},
+	{
 		provider:    MicrosoftDynamics365BusinessCentral,
 		description: "Dynamics 365 Business Central provider config with substitutions",
 		substitutions: map[string]string{
