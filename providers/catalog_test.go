@@ -576,7 +576,7 @@ var testCases = []struct { // nolint
 		substitutions: map[string]string{
 			"workspace": "testing",
 		},
-    expected: &ProviderInfo{
+    	expected: &ProviderInfo{
 			Support: Support{
 				Read:      false,
 				Write:     false,
@@ -592,10 +592,10 @@ var testCases = []struct { // nolint
 				ExplicitWorkspaceRequired: true,
 			},
 			BaseURL: "https://testing.api.crm.dynamics.com",
-    },
+    	},
 		expectedErr: nil,
 	},
-  {
+  	{
 		provider:    ConstantContact,
 		description: "Valid ConstantContact provider config with no substitutions",
 		expected: &ProviderInfo{
