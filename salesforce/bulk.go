@@ -72,25 +72,26 @@ type GetJobInfoResult struct {
 	Id                     string  `json:"id"`
 	Object                 string  `json:"object"`
 	CreatedById            string  `json:"createdById"`
-	ExternalIdFieldName    string  `json:"externalIdFieldName"`
+	ExternalIdFieldName    string  `json:"externalIdFieldName,omitempty"`
 	State                  string  `json:"state"`
 	Operation              string  `json:"operation"`
 	ColumnDelimiter        string  `json:"columnDelimiter"`
 	LineEnding             string  `json:"lineEnding"`
 	NumberRecordsFailed    float64 `json:"numberRecordsFailed"`
 	NumberRecordsProcessed float64 `json:"numberRecordsProcessed"`
-	ErrorMessage           string  `json:"errorMessage,omitempty"`
+	ErrorMessage           string  `json:"errorMessage"`
 
-	ApexProcessingTime      float64 `json:"apexProcessingTime"`
-	ApiActiveProcessingTime float64 `json:"apiActiveProcessingTime"`
-	ApiVersion              float64 `json:"apiVersion"`
-	ConcurrencyMode         string  `json:"concurrencyMode"`
-	ContentType             string  `json:"contentType"`
-	CreatedDate             string  `json:"createdDate"`
-	JobType                 string  `json:"jobType"`
-	Retries                 float64 `json:"retries"`
-	SystemModstamp          string  `json:"systemModstamp"`
-	TotalProcessingTime     float64 `json:"totalProcessingTime"`
+	ApexProcessingTime      float64 `json:"apexProcessingTime,omitempty"`
+	ApiActiveProcessingTime float64 `json:"apiActiveProcessingTime,omitempty"`
+	ApiVersion              float64 `json:"apiVersion,omitempty"`
+	ConcurrencyMode         string  `json:"concurrencyMode,omitempty"`
+	ContentType             string  `json:"contentType,omitempty"`
+	CreatedDate             string  `json:"createdDate,omitempty"`
+	JobType                 string  `json:"jobType,omitempty"`
+	Retries                 float64 `json:"retries,omitempty"`
+	SystemModstamp          string  `json:"systemModstamp,omitempty"`
+	TotalProcessingTime     float64 `json:"totalProcessingTime,omitempty"`
+	IsPkChunkingSupported   bool    `json:"isPkChunkingSupported,omitempty"`
 }
 
 type FailInfo struct {
@@ -495,4 +496,71 @@ func (c *Connector) BulkOperation(
 		JobId: updatedJobId,
 		State: completeState,
 	}, nil
+}
+
+func (c *Connector) BulkQuery(
+	ctx context.Context,
+	query string,
+) (*GetJobInfoResult, error) {
+	location, err := joinURLPath(c.BaseURL, "jobs/query")
+	if err != nil {
+		return nil, err
+	}
+
+	jobBody := map[string]any{
+		"operation": "query",
+		"query":     query,
+	}
+
+	res, err := c.post(ctx, location, jobBody)
+	if err != nil {
+		return nil, fmt.Errorf("bulk query failed: %w", err)
+	}
+
+	return common.UnmarshalJSON[GetJobInfoResult](res)
+}
+
+func (c *Connector) GetBulkQueryInfo(
+	ctx context.Context,
+	jobId string,
+) (*GetJobInfoResult, error) {
+	location, err := joinURLPath(c.BaseURL, "jobs/query", jobId)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := c.get(ctx, location)
+	if err != nil {
+		return nil, fmt.Errorf(
+			"failed to get bulk query info for job '%s': %w",
+			jobId,
+			errors.Join(err, common.ErrRequestFailed),
+		)
+	}
+
+	return common.UnmarshalJSON[GetJobInfoResult](res)
+}
+
+func (c *Connector) GetBulkQueryResults(
+	ctx context.Context,
+	jobId string,
+) (*http.Response, error) {
+	location, err := joinURLPath(c.BaseURL, fmt.Sprintf("jobs/query/%s/results", jobId))
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := common.MakeJSONGetRequest(ctx, location, []common.Header{
+		{
+			Key:   "Accept",
+			Value: "text/csv",
+		},
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get results for bulk query %s: %w", jobId, err)
+	}
+
+	// Get the connector's JSONHTTPClient, which is a special HTTPClient that handles JSON responses,
+	// and use it's underlying http.Client to make the request.
+	return c.Client.HTTPClient.Client.Do(req)
 }
