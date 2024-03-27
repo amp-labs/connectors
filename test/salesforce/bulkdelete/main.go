@@ -47,7 +47,7 @@ func main() {
 		return
 	}
 
-	deleteRes, err := sfc.BulkDelete(ctx, salesforce.BulkJobParams{
+	deleteRes, err := sfc.BulkDelete(ctx, salesforce.BulkOperationParams{
 		ObjectName: "Touchpoint__c",
 		CSVData:    bytes.NewReader(objectCSVToDelete),
 	})

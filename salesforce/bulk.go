@@ -38,8 +38,8 @@ var (
 	ErrUnsupportedOperation = errors.New("unsupported operation")
 )
 
-// BulkWriteParams defines how we are writing data to a SaaS API.
-type BulkJobParams struct {
+// BulkOperationParams defines how we are writing data to a SaaS API.
+type BulkOperationParams struct {
 	// The name of the object we are writing, e.g. "Account"
 	ObjectName string // required
 
@@ -53,14 +53,14 @@ type BulkJobParams struct {
 	Mode BulkWriteMode
 }
 
-type BulkWriteParams BulkJobParams
+type BulkWriteParams BulkOperationParams
 
 type BulkWriteMode string
 
 // BulkWriteResult is what's returned from writing data via the BulkWrite call.
 type BulkWriteResult BulkOperationResult
 
-// BulkWriteResult is what's returned from writing data via the BulkJob call.
+// BulkOperation is what's returned from writing data via the BulkOperation call.
 type BulkOperationResult struct {
 	// State is the state of the bulk job process
 	State string `json:"state"`
@@ -132,7 +132,7 @@ func (c *Connector) BulkWrite( //nolint:funlen,cyclop
 		"lineEnding":          "LF",
 	}
 
-	result, err := c.BulkJob(ctx, BulkJobParams(config), jobBody)
+	result, err := c.BulkOperation(ctx, BulkOperationParams(config), jobBody)
 	if err != nil {
 		return nil, fmt.Errorf("bulk write failed: %w", err)
 	}
@@ -400,19 +400,19 @@ func (c *Connector) getIncompleteJobResults(jobInfo *GetJobInfoResult) *JobResul
 	return jobResult
 }
 
-func (c *Connector) BulkDelete(ctx context.Context, params BulkJobParams) (*BulkOperationResult, error) {
+func (c *Connector) BulkDelete(ctx context.Context, params BulkOperationParams) (*BulkOperationResult, error) {
 	jobBody := map[string]any{
 		"operation": "delete",
 		"object":    params.ObjectName,
 	}
 
-	return c.BulkJob(ctx, params, jobBody)
+	return c.BulkOperation(ctx, params, jobBody)
 }
 
 //nolint:funlen,cyclop
-func (c *Connector) BulkJob(
+func (c *Connector) BulkOperation(
 	ctx context.Context,
-	params BulkJobParams,
+	params BulkOperationParams,
 	jobBody map[string]any,
 ) (*BulkOperationResult, error) {
 	res, err := c.createJob(ctx, jobBody)
