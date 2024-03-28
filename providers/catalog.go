@@ -31,6 +31,7 @@ const (
 	ConstantContact                     Provider = "constantContact"
 	MicrosoftDynamics365Sales           Provider = "microsoftDynamics365Sales"
 	MicrosoftDynamics365BusinessCentral Provider = "microsoftDynamics365BusinessCentral"
+	ZendeskChat                         Provider = "zendeskChat"
 )
 
 // ================================================================================
@@ -541,6 +542,24 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
 			},
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	ZendeskChat: {
+		AuthType: Oauth2,
+		BaseURL:  "https://www.zopim.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://www.zopim.com/oauth2/authorizations/new",
+			TokenURL:                  "https://www.zopim.com/oauth2/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
 			BulkWrite: false,
