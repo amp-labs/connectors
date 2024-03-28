@@ -31,6 +31,7 @@ const (
 	ConstantContact                     Provider = "constantContact"
 	MicrosoftDynamics365Sales           Provider = "microsoftDynamics365Sales"
 	MicrosoftDynamics365BusinessCentral Provider = "microsoftDynamics365BusinessCentral"
+	ZendeskSupport                      Provider = "zendeskSupport"
 )
 
 // ================================================================================
@@ -541,6 +542,25 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
 			},
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Zendesk Support configuration
+	ZendeskSupport: {
+		AuthType: Oauth2,
+		BaseURL:  "https://{{.workspace}}.zendesk.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://{{.workspace}}.zendesk.com/oauth/authorizations/new",
+			TokenURL:                  "https://{{.workspace}}.zendesk.com/oauth/tokens",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: true,
 		},
 		Support: Support{
 			BulkWrite: false,
