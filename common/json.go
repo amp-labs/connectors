@@ -127,7 +127,7 @@ func UnmarshalJSON[T any](rsp *JSONHTTPResponse) (*T, error) {
 // MakeJSONGetRequest creates a GET request with the given headers and adds the
 // Accept: application/json header. It then returns the request.
 func MakeJSONGetRequest(ctx context.Context, url string, headers []Header) (*http.Request, error) {
-	return makeGetRequest(ctx, url, addAcceptJSONHeader(headers))
+	return MakeGetRequest(ctx, url, addAcceptJSONHeader(headers))
 }
 
 // addAcceptJSONHeader adds the Accept: application/json header to the given headers.
