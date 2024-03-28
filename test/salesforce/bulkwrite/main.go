@@ -71,7 +71,7 @@ func testBulkWrite(ctx context.Context, sfc *salesforce.Connector, filePath stri
 		return "", fmt.Errorf("error opening '%s': %w", filePath, err)
 	}
 
-	res, err := sfc.BulkWrite(ctx, salesforce.BulkWriteParams{
+	res, err := sfc.BulkWrite(ctx, salesforce.BulkOperationParams{
 		ObjectName:      "Touchpoint__c",
 		ExternalIdField: "external_id__c",
 		CSVData:         file,
@@ -143,7 +143,7 @@ func testGetJobResultsForFile(ctx context.Context, sfc *salesforce.Connector, fi
 		return "", fmt.Errorf("error opening file: %w", err)
 	}
 
-	res, err := sfc.BulkWrite(ctx, salesforce.BulkWriteParams{
+	res, err := sfc.BulkWrite(ctx, salesforce.BulkOperationParams{
 		ObjectName:      "Touchpoint__c",
 		ExternalIdField: "external_id__c",
 		CSVData:         file,

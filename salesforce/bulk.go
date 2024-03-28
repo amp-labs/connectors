@@ -53,12 +53,7 @@ type BulkOperationParams struct {
 	Mode BulkWriteMode
 }
 
-type BulkWriteParams BulkOperationParams
-
 type BulkWriteMode string
-
-// BulkWriteResult is what's returned from writing data via the BulkWrite call.
-type BulkWriteResult BulkOperationResult
 
 // BulkOperation is what's returned from writing data via the BulkOperation call.
 type BulkOperationResult struct {
@@ -110,8 +105,8 @@ type JobResults struct {
 
 func (c *Connector) BulkWrite( //nolint:funlen,cyclop
 	ctx context.Context,
-	config BulkWriteParams,
-) (*BulkWriteResult, error) {
+	config BulkOperationParams,
+) (*BulkOperationResult, error) {
 	// Only support upsert for now
 	switch config.Mode {
 	case Upsert:
@@ -132,12 +127,12 @@ func (c *Connector) BulkWrite( //nolint:funlen,cyclop
 		"lineEnding":          "LF",
 	}
 
-	result, err := c.BulkOperation(ctx, BulkOperationParams(config), jobBody)
+	result, err := c.bulkOperation(ctx, BulkOperationParams(config), jobBody)
 	if err != nil {
 		return nil, fmt.Errorf("bulk write failed: %w", err)
 	}
 
-	return (*BulkWriteResult)(result), nil
+	return (*BulkOperationResult)(result), nil
 }
 
 func joinURLPath(baseURL string, paths ...string) (string, error) {
@@ -406,11 +401,11 @@ func (c *Connector) BulkDelete(ctx context.Context, params BulkOperationParams) 
 		"object":    params.ObjectName,
 	}
 
-	return c.BulkOperation(ctx, params, jobBody)
+	return c.bulkOperation(ctx, params, jobBody)
 }
 
 //nolint:funlen,cyclop
-func (c *Connector) BulkOperation(
+func (c *Connector) bulkOperation(
 	ctx context.Context,
 	params BulkOperationParams,
 	jobBody map[string]any,

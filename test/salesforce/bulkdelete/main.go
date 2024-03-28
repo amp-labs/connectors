@@ -38,9 +38,9 @@ func main() {
 		_ = sfc.Close()
 	}()
 
-	// Prepare objects and write to Salesforce to be deleted
-	// Get csv data of ids of objects to delete
-	// done in memory
+	// We first create objects in Salesforce,
+	// and then we generate an in-memory CSV of the Salesforce IDs of the newly created objects,
+	// so that we can bulk-delete them."
 	objectCSVToDelete, err := prepareObjectsToDelete(ctx, sfc)
 	if err != nil {
 		slog.Error("Error creating file to delete", "error", err)
@@ -141,8 +141,8 @@ func prepareObjectsToDelete(ctx context.Context, sfc *salesforce.Connector) ([]b
 		}
 	}()
 
-	// Write the file to Salesforce
-	writeRes, err := sfc.BulkWrite(ctx, salesforce.BulkWriteParams{
+	// Write the records to Salesforce, so that we can delete them later.
+	writeRes, err := sfc.BulkWrite(ctx, salesforce.BulkOperationParams{
 		ObjectName:      "Touchpoint__c",
 		ExternalIdField: "external_id__c",
 		CSVData:         fileToWrite,
@@ -160,7 +160,7 @@ func prepareObjectsToDelete(ctx context.Context, sfc *salesforce.Connector) ([]b
 		return nil, fmt.Errorf("error getting bulk write job results: %w", err)
 	}
 
-	slog.Info("Preparation finished")
+	slog.Info("Records created, now deleting them.")
 
 	return getIdsFromJobToDelete(ctx, sfc, writeRes.JobId)
 }
@@ -190,7 +190,7 @@ func getIdsFromJobToDelete(ctx context.Context, sfc *salesforce.Connector, jobId
 		return nil, fmt.Errorf("error parsing CSV: %w", err)
 	}
 
-	// remove all columns except the id	column
+	// remove all columns except the id column
 	csvRecords, err := filterIds(headers, rows)
 	if err != nil {
 		return nil, fmt.Errorf("error filtering ids: %w", err)
