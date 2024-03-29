@@ -181,6 +181,28 @@ var testCases = []struct { // nolint
 	},
 
 	{
+		provider: Capsule,
+		expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://api.capsulecrm.com/oauth/authorise",
+				TokenURL:                  "https://api.capsulecrm.com/oauth/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+			},
+			Support: Support{
+				BulkWrite: false,
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+			BaseURL: "https://api.capsulecrm.com/api",
+		},
+		expectedErr: nil,
+	},
+
+	{
 		provider:    Copper,
 		description: "Valid Copper provider config with no substitutions",
 		expected: &ProviderInfo{
