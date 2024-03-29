@@ -5,29 +5,33 @@ package providers
 // ================================================================================
 
 const (
-	Salesforce        Provider = "salesforce"
-	Hubspot           Provider = "hubspot"
-	LinkedIn          Provider = "linkedIn"
-	Salesloft         Provider = "salesloft"
-	Outreach          Provider = "outreach"
-	Pipedrive         Provider = "pipedrive"
-	Capsule           Provider = "capsule"
-	Copper            Provider = "copper"
-	ZohoCRM           Provider = "zohoCRM"
-	Sellsy            Provider = "sellsy"
-	Attio             Provider = "attio"
-	Close             Provider = "close"
-	Keap              Provider = "keap"
-	Asana             Provider = "asana"
-	Dropbox           Provider = "dropbox"
-	Notion            Provider = "notion"
-	Gong              Provider = "gong"
-	Zoom              Provider = "zoom"
-	Intercom          Provider = "intercom"
-	DocuSign          Provider = "docuSign"
-	DocuSignDeveloper Provider = "docuSignDeveloper"
-	Calendly          Provider = "calendly"
-	GetResponse       Provider = "getResponse"
+	Salesforce                          Provider = "salesforce"
+	Hubspot                             Provider = "hubspot"
+	LinkedIn                            Provider = "linkedIn"
+	Salesloft                           Provider = "salesloft"
+	Outreach                            Provider = "outreach"
+	Pipedrive                           Provider = "pipedrive"
+	Copper                              Provider = "copper"
+	ZohoCRM                             Provider = "zohoCRM"
+	Sellsy                              Provider = "sellsy"
+	Attio                               Provider = "attio"
+	Close                               Provider = "close"
+	Keap                                Provider = "keap"
+	Asana                               Provider = "asana"
+	Dropbox                             Provider = "dropbox"
+	Notion                              Provider = "notion"
+	Gong                                Provider = "gong"
+	Zoom                                Provider = "zoom"
+	Intercom                            Provider = "intercom"
+  Capsule                             Provider = "capsule"
+	DocuSign                            Provider = "docuSign"
+	DocuSignDeveloper                   Provider = "docuSignDeveloper"
+	Calendly                            Provider = "calendly"
+	AWeber                              Provider = "aWeber"
+	GetResponse                         Provider = "getResponse"
+	ConstantContact                     Provider = "constantContact"
+	MicrosoftDynamics365Sales           Provider = "microsoftDynamics365Sales"
+	MicrosoftDynamics365BusinessCentral Provider = "microsoftDynamics365BusinessCentral"
 )
 
 // ================================================================================
@@ -478,6 +482,85 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://api.getresponse.com/v3/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// AWeber configuration
+	AWeber: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.aweber.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://auth.aweber.com/oauth2/authorize",
+			TokenURL:                  "https://auth.aweber.com/oauth2/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// MS Sales configuration
+	MicrosoftDynamics365Sales: {
+		AuthType: Oauth2,
+		BaseURL:  "https://{{.workspace}}.api.crm.dynamics.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+			TokenURL:                  "https://login.microsoftonline.com/common/oauth2/v2.0/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: true,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// ConstantContact configuration
+	ConstantContact: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.cc.email",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://authz.constantcontact.com/oauth2/default/v1/authorize",
+			TokenURL:                  "https://authz.constantcontact.com/oauth2/default/v1/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Microsoft Dynamics 365 Business Central configuration
+	MicrosoftDynamics365BusinessCentral: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.businesscentral.dynamics.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://login.microsoftonline.com/{{.workspace}}/oauth2/v2.0/authorize",
+			TokenURL:                  "https://login.microsoftonline.com/{{.workspace}}/oauth2/v2.0/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: true,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
 		},
 		Support: Support{
 			BulkWrite: false,

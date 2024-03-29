@@ -570,6 +570,103 @@ var testCases = []struct { // nolint
 		},
 		expectedErr: nil,
 	},
+	{
+		provider:    AWeber,
+		description: "Valid AWeber provider config with no substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:      false,
+				Write:     false,
+				BulkWrite: false,
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://auth.aweber.com/oauth2/authorize",
+				TokenURL:                  "https://auth.aweber.com/oauth2/token",
+				ExplicitWorkspaceRequired: false,
+				ExplicitScopesRequired:    true,
+			},
+			BaseURL: "https://api.aweber.com",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    MicrosoftDynamics365Sales,
+		description: "MS Dynamics 365 Sales provider config with valid substitutions",
+		substitutions: map[string]string{
+			"workspace": "testing",
+		},
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:      false,
+				Write:     false,
+				BulkWrite: false,
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+				TokenURL:                  "https://login.microsoftonline.com/common/oauth2/v2.0/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: true,
+			},
+			BaseURL: "https://testing.api.crm.dynamics.com",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    ConstantContact,
+		description: "Valid ConstantContact provider config with no substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:      false,
+				Write:     false,
+				BulkWrite: false,
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://authz.constantcontact.com/oauth2/default/v1/authorize",
+				TokenURL:                  "https://authz.constantcontact.com/oauth2/default/v1/token",
+				ExplicitWorkspaceRequired: false,
+				ExplicitScopesRequired:    true,
+			},
+			BaseURL: "https://api.cc.email",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    MicrosoftDynamics365BusinessCentral,
+		description: "Dynamics 365 Business Central provider config with substitutions",
+		substitutions: map[string]string{
+			"workspace": "tenantID",
+		},
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:      false,
+				Write:     false,
+				BulkWrite: false,
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://login.microsoftonline.com/tenantID/oauth2/v2.0/authorize",
+				TokenURL:                  "https://login.microsoftonline.com/tenantID/oauth2/v2.0/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: true,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
+			},
+			BaseURL: "https://api.businesscentral.dynamics.com",
+		},
+		expectedErr: nil,
+	},
 }
 
 func TestReadInfo(t *testing.T) { // nolint

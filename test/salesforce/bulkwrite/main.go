@@ -5,15 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
-	"net/http"
 	"os"
 	"sync"
 	"time"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/salesforce"
 	testUtils "github.com/amp-labs/connectors/test/utils"
-	"github.com/amp-labs/connectors/utils"
 )
 
 const (
@@ -30,25 +27,9 @@ func main() { //nolint:funlen
 	logger := slog.New(handler)
 	slog.SetDefault(logger)
 
-	// assumes that this code is being run from the root of the project
-	// go run test/salesforce/bulkwrite/main.go
-	filePath := os.Getenv("SALESFORCE_CRED_FILE_PATH")
-	if filePath == "" {
-		filePath = "./salesforce-creds.json"
-	}
-
-	ampConnectionSchemaReader := testUtils.JSONFileReaders(filePath)
-	credentialsRegistry := utils.NewCredentialsRegistry()
-	credentialsRegistry.AddReaders(ampConnectionSchemaReader...)
-	salesforceWorkspace := credentialsRegistry.MustString(utils.WorkspaceRef)
-
-	cfg := utils.SalesforceOAuthConfigFromRegistry(credentialsRegistry)
-	tok := utils.SalesforceOauthTokenFromRegistry(credentialsRegistry)
 	ctx := context.Background()
 
-	sfc, err := connectors.Salesforce(
-		salesforce.WithClient(ctx, http.DefaultClient, cfg, tok),
-		salesforce.WithWorkspace(salesforceWorkspace))
+	sfc, err := testUtils.Connector(ctx)
 	if err != nil {
 		slog.Error("Error creating Salesforce connector", "error", err)
 
@@ -90,7 +71,7 @@ func testBulkWrite(ctx context.Context, sfc *salesforce.Connector, filePath stri
 		return "", fmt.Errorf("error opening '%s': %w", filePath, err)
 	}
 
-	res, err := sfc.BulkWrite(ctx, salesforce.BulkWriteParams{
+	res, err := sfc.BulkWrite(ctx, salesforce.BulkOperationParams{
 		ObjectName:      "Touchpoint__c",
 		ExternalIdField: "external_id__c",
 		CSVData:         file,
@@ -162,7 +143,7 @@ func testGetJobResultsForFile(ctx context.Context, sfc *salesforce.Connector, fi
 		return "", fmt.Errorf("error opening file: %w", err)
 	}
 
-	res, err := sfc.BulkWrite(ctx, salesforce.BulkWriteParams{
+	res, err := sfc.BulkWrite(ctx, salesforce.BulkOperationParams{
 		ObjectName:      "Touchpoint__c",
 		ExternalIdField: "external_id__c",
 		CSVData:         file,

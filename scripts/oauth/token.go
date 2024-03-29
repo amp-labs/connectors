@@ -265,6 +265,7 @@ func setup() *OAuthApp {
 	if state != "" {
 		app.State = state
 	}
+
 	substitutions, err := registry.GetMap("Substitutions")
 	if err != nil {
 		slog.Warn("no substitutions, ensure that the provider info doesn't have any {{variables}}")
