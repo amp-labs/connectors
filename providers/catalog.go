@@ -23,6 +23,7 @@ const (
 	Gong                                Provider = "gong"
 	Zoom                                Provider = "zoom"
 	Intercom                            Provider = "intercom"
+  	Capsule                             Provider = "capsule"
 	DocuSign                            Provider = "docuSign"
 	DocuSignDeveloper                   Provider = "docuSignDeveloper"
 	Calendly                            Provider = "calendly"
@@ -152,6 +153,25 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		OauthOpts: OauthOpts{
 			AuthURL:                   "https://oauth.pipedrive.com/oauth/authorize",
 			TokenURL:                  "https://oauth.pipedrive.com/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Capsule configuration
+	Capsule: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.capsulecrm.com/api",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://api.capsulecrm.com/oauth/authorise",
+			TokenURL:                  "https://api.capsulecrm.com/oauth/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 		},
