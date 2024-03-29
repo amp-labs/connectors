@@ -14,10 +14,10 @@ import (
 )
 
 const (
-	Insert BulkWriteMode = "insert"
-	Upsert BulkWriteMode = "upsert"
-	Update BulkWriteMode = "update"
-	Delete BulkWriteMode = "delete"
+	Insert BulkOperationMode = "insert"
+	Upsert BulkOperationMode = "upsert"
+	Update BulkOperationMode = "update"
+	Delete BulkOperationMode = "delete"
 
 	JobStateAborted        = "Aborted"
 	JobStateFailed         = "Failed"
@@ -51,10 +51,10 @@ type BulkOperationParams struct {
 	CSVData io.Reader // required
 
 	// Salesforce operation mode
-	Mode BulkWriteMode
+	Mode BulkOperationMode
 }
 
-type BulkWriteMode string
+type BulkOperationMode string
 
 // BulkOperation is what's returned from writing data via the BulkOperation call.
 type BulkOperationResult struct {
