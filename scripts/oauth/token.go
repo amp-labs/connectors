@@ -242,6 +242,7 @@ func setup() *OAuthApp {
 	provider := registry.MustString("Provider")
 	clientId := registry.MustString("ClientId")
 	clientSecret := registry.MustString("ClientSecret")
+
 	state, err := registry.GetString("State")
 	if err != nil {
 		slog.Warn("no state attached, ensure that the provider doesn't require state")

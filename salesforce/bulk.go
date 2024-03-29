@@ -110,7 +110,7 @@ func (c *Connector) BulkWrite( //nolint:funlen,cyclop
 	config BulkOperationParams,
 ) (*BulkOperationResult, error) {
 	// Only support upsert for now
-	switch config.Mode {
+	switch config.Mode { //nolint:exhaustive
 	case Upsert:
 		break
 	case Insert:
@@ -129,12 +129,12 @@ func (c *Connector) BulkWrite( //nolint:funlen,cyclop
 		"lineEnding":          "LF",
 	}
 
-	result, err := c.bulkOperation(ctx, BulkOperationParams(config), jobBody)
+	result, err := c.bulkOperation(ctx, config, jobBody)
 	if err != nil {
 		return nil, fmt.Errorf("bulk write failed: %w", err)
 	}
 
-	return (*BulkOperationResult)(result), nil
+	return result, nil
 }
 
 func joinURLPath(baseURL string, paths ...string) (string, error) {
