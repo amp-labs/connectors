@@ -667,6 +667,31 @@ var testCases = []struct { // nolint
 		},
 		expectedErr: nil,
 	},
+	{
+		provider:    Gainsight,
+		description: "Gainsight config with substitutions",
+		substitutions: map[string]string{
+			"workspace": "company",
+		},
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:      false,
+				Write:     false,
+				BulkWrite: false,
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://company.gainsightcloud.com/v1/authorize",
+				TokenURL:                  "https://company.gainsightcloud.com/v1/users/oauth/token",
+				ExplicitScopesRequired:    false,
+				ExplicitWorkspaceRequired: true,
+			},
+			BaseURL: "https://company.gainsightcloud.com",
+		},
+		expectedErr: nil,
+	},
 }
 
 func TestReadInfo(t *testing.T) { // nolint

@@ -32,6 +32,7 @@ const (
 	ConstantContact                     Provider = "constantContact"
 	MicrosoftDynamics365Sales           Provider = "microsoftDynamics365Sales"
 	MicrosoftDynamics365BusinessCentral Provider = "microsoftDynamics365BusinessCentral"
+	Gainsight                           Provider = "gainsight"
 )
 
 // ================================================================================
@@ -561,6 +562,25 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
 			},
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Gainsight configuration
+	Gainsight: {
+		AuthType: Oauth2,
+		BaseURL:  "https://{{.workspace}}.gainsightcloud.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://{{.workspace}}.gainsightcloud.com/v1/authorize",
+			TokenURL:                  "https://{{.workspace}}.gainsightcloud.com/v1/users/oauth/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: true,
 		},
 		Support: Support{
 			BulkWrite: false,
