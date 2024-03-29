@@ -17,6 +17,7 @@ const (
 	Insert BulkWriteMode = "insert"
 	Upsert BulkWriteMode = "upsert"
 	Update BulkWriteMode = "update"
+	Delete BulkWriteMode = "delete"
 
 	JobStateAborted        = "Aborted"
 	JobStateFailed         = "Failed"
