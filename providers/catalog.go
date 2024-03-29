@@ -23,7 +23,7 @@ const (
 	Gong                                Provider = "gong"
 	Zoom                                Provider = "zoom"
 	Intercom                            Provider = "intercom"
-  Capsule                             Provider = "capsule"
+  	Capsule                             Provider = "capsule"
 	DocuSign                            Provider = "docuSign"
 	DocuSignDeveloper                   Provider = "docuSignDeveloper"
 	Calendly                            Provider = "calendly"
