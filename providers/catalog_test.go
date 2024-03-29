@@ -130,6 +130,9 @@ var testCases = []struct { // nolint
 				TokenURL:                  "https://accounts.salesloft.com/oauth/token",
 				ExplicitScopesRequired:    false,
 				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
 			},
 			BaseURL: "https://api.salesloft.com",
 		},
@@ -152,6 +155,9 @@ var testCases = []struct { // nolint
 				TokenURL:                  "https://api.outreach.io/oauth/token",
 				ExplicitScopesRequired:    true,
 				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
 			},
 			BaseURL: "https://api.outreach.io",
 		},
@@ -360,6 +366,9 @@ var testCases = []struct { // nolint
 				TokenURL:                  "https://app.asana.com/-/oauth_token",
 				ExplicitScopesRequired:    false,
 				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ConsumerRefField: "data.id",
+				},
 			},
 			BaseURL: "https://app.asana.com/api",
 		},
@@ -432,6 +441,9 @@ var testCases = []struct { // nolint
 				TokenURL:                  "https://app.gong.io/oauth2/generate-customer-token",
 				ExplicitWorkspaceRequired: false,
 				ExplicitScopesRequired:    true,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
 			},
 			BaseURL: "https://testing.api.gong.io",
 		},
@@ -689,6 +701,31 @@ var testCases = []struct { // nolint
 				ExplicitWorkspaceRequired: true,
 			},
 			BaseURL: "https://company.gainsightcloud.com",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    Mailchimp,
+		description: "Mailchimp provider config with valid datacenter substitutions",
+		substitutions: map[string]string{
+			"workspace": "us22",
+		},
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:      false,
+				Write:     false,
+				BulkWrite: false,
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://login.mailchimp.com/oauth2/authorize",
+				TokenURL:                  "https://login.mailchimp.com/oauth2/token",
+				ExplicitScopesRequired:    false,
+				ExplicitWorkspaceRequired: true,
+			},
+			BaseURL: "https://us22.api.mailchimp.com",
 		},
 		expectedErr: nil,
 	},

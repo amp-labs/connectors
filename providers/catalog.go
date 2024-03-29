@@ -23,7 +23,7 @@ const (
 	Gong                                Provider = "gong"
 	Zoom                                Provider = "zoom"
 	Intercom                            Provider = "intercom"
-  	Capsule                             Provider = "capsule"
+	Capsule                             Provider = "capsule"
 	DocuSign                            Provider = "docuSign"
 	DocuSignDeveloper                   Provider = "docuSignDeveloper"
 	Calendly                            Provider = "calendly"
@@ -33,6 +33,7 @@ const (
 	MicrosoftDynamics365Sales           Provider = "microsoftDynamics365Sales"
 	MicrosoftDynamics365BusinessCentral Provider = "microsoftDynamics365BusinessCentral"
 	Gainsight                           Provider = "gainsight"
+	Mailchimp                           Provider = "mailchimp"
 )
 
 // ================================================================================
@@ -118,6 +119,9 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://accounts.salesloft.com/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
 		},
 		Support: Support{
 			BulkWrite: false,
@@ -137,6 +141,9 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://api.outreach.io/oauth/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
 		},
 		Support: Support{
 			BulkWrite: false,
@@ -308,6 +315,9 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://app.asana.com/-/oauth_token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ConsumerRefField: "data.id",
+			},
 		},
 		Support: Support{
 			BulkWrite: false,
@@ -369,6 +379,9 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://app.gong.io/oauth2/generate-customer-token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
 		},
 		Support: Support{
 			BulkWrite: false,
@@ -579,6 +592,24 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		OauthOpts: OauthOpts{
 			AuthURL:                   "https://{{.workspace}}.gainsightcloud.com/v1/authorize",
 			TokenURL:                  "https://{{.workspace}}.gainsightcloud.com/v1/users/oauth/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: true,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+	// Mailchimp configuration
+	Mailchimp: {
+		AuthType: Oauth2,
+		BaseURL:  "https://{{.workspace}}.api.mailchimp.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://login.mailchimp.com/oauth2/authorize",
+			TokenURL:                  "https://login.mailchimp.com/oauth2/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: true,
 		},
