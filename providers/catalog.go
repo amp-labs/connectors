@@ -10,6 +10,7 @@ const (
 	LinkedIn          Provider = "linkedIn"
 	Salesloft         Provider = "salesloft"
 	Outreach          Provider = "outreach"
+	MicrosoftDynamics Provider = "microsoftDynamics"
 	Pipedrive         Provider = "pipedrive"
 	Capsule           Provider = "capsule"
 	Copper            Provider = "copper"
@@ -139,6 +140,25 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
+		},
+	},
+
+	// Microsoft Dynamics configuration
+	MicrosoftDynamics: {
+		AuthType: Oauth2,
+		BaseURL:  "https://{{.workspace}}.dynamics.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://login.microsoftonline.com/common/oauth2/authorize",
+			TokenURL:                  "https://login.microsoftonline.com/common/oauth2/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: true,
+			Proxy:     true,
+			Read:      true,
+			Subscribe: false,
+			Write:     true,
 		},
 	},
 

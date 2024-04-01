@@ -158,6 +158,35 @@ var testCases = []struct { // nolint
 		expectedErr: nil,
 	},
 
+	// Microsoft Dynamics
+	{
+		provider:    MicrosoftDynamics,
+		description: "Valid Microsoft Dynamics provider config with no substitutions",
+		substitutions: map[string]string{
+			"workspace": "orga7ba46fc.crm4",
+		},
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:  true,
+				Write: true,
+
+				BulkWrite: true,
+				Subscribe: false,
+				Proxy:     true,
+			},
+
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://login.microsoftonline.com/common/oauth2/authorize",
+				TokenURL:                  "https://login.microsoftonline.com/common/oauth2/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+			},
+			BaseURL: "https://{{.workspace}}.dynamics.com",
+		},
+		expectedErr: nil,
+	},
+
 	{
 		provider: Pipedrive,
 		expected: &ProviderInfo{
