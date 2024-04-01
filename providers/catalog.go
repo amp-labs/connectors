@@ -34,6 +34,7 @@ const (
 	MicrosoftDynamics365BusinessCentral Provider = "microsoftDynamics365BusinessCentral"
 	Gainsight                           Provider = "gainsight"
 	GoogleCalendar                      Provider = "googleCalendar"
+	GoogleDrive                         Provider = "googleDrive"
 )
 
 // ================================================================================
@@ -595,6 +596,27 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	GoogleCalendar: {
 		AuthType: Oauth2,
 		BaseURL:  "https://www.googleapis.com/calendar",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://accounts.google.com/o/oauth2/v2/auth",
+			TokenURL:                  "https://oauth2.googleapis.com/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	GoogleDrive: {
+		AuthType: Oauth2,
+		BaseURL:  "https://www.googleapis.com",
 		OauthOpts: OauthOpts{
 			AuthURL:                   "https://accounts.google.com/o/oauth2/v2/auth",
 			TokenURL:                  "https://oauth2.googleapis.com/token",
