@@ -23,7 +23,7 @@ const (
 	Gong                                Provider = "gong"
 	Zoom                                Provider = "zoom"
 	Intercom                            Provider = "intercom"
-  	Capsule                             Provider = "capsule"
+	Capsule                             Provider = "capsule"
 	DocuSign                            Provider = "docuSign"
 	DocuSignDeveloper                   Provider = "docuSignDeveloper"
 	Calendly                            Provider = "calendly"
@@ -33,6 +33,7 @@ const (
 	MicrosoftDynamics365Sales           Provider = "microsoftDynamics365Sales"
 	MicrosoftDynamics365BusinessCentral Provider = "microsoftDynamics365BusinessCentral"
 	Gainsight                           Provider = "gainsight"
+	Box                                 Provider = "box"
 )
 
 // ================================================================================
@@ -581,6 +582,25 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://{{.workspace}}.gainsightcloud.com/v1/users/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: true,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Box configuration
+	Box: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.box.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://account.box.com/api/oauth2/authorize",
+			TokenURL:                  "https://api.box.com/oauth2/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
 			BulkWrite: false,
