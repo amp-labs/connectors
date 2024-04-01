@@ -5,34 +5,30 @@ package providers
 // ================================================================================
 
 const (
-	Salesforce                          Provider = "salesforce"
-	Hubspot                             Provider = "hubspot"
-	LinkedIn                            Provider = "linkedIn"
-	Salesloft                           Provider = "salesloft"
-	Outreach                            Provider = "outreach"
-	Pipedrive                           Provider = "pipedrive"
-	Copper                              Provider = "copper"
-	ZohoCRM                             Provider = "zohoCRM"
-	Sellsy                              Provider = "sellsy"
-	Attio                               Provider = "attio"
-	Close                               Provider = "close"
-	Keap                                Provider = "keap"
-	Asana                               Provider = "asana"
-	Dropbox                             Provider = "dropbox"
-	Notion                              Provider = "notion"
-	Gong                                Provider = "gong"
-	Zoom                                Provider = "zoom"
-	Intercom                            Provider = "intercom"
-  	Capsule                             Provider = "capsule"
-	DocuSign                            Provider = "docuSign"
-	DocuSignDeveloper                   Provider = "docuSignDeveloper"
-	Calendly                            Provider = "calendly"
-	AWeber                              Provider = "aWeber"
-	GetResponse                         Provider = "getResponse"
-	ConstantContact                     Provider = "constantContact"
-	MicrosoftDynamics365Sales           Provider = "microsoftDynamics365Sales"
-	MicrosoftDynamics365BusinessCentral Provider = "microsoftDynamics365BusinessCentral"
-	Gainsight                           Provider = "gainsight"
+	Salesforce        Provider = "salesforce"
+	Hubspot           Provider = "hubspot"
+	LinkedIn          Provider = "linkedIn"
+	Salesloft         Provider = "salesloft"
+	Outreach          Provider = "outreach"
+	MicrosoftDynamics Provider = "microsoftDynamics"
+	Pipedrive         Provider = "pipedrive"
+	Capsule           Provider = "capsule"
+	Copper            Provider = "copper"
+	ZohoCRM           Provider = "zohoCRM"
+	Sellsy            Provider = "sellsy"
+	Attio             Provider = "attio"
+	Close             Provider = "close"
+	Keap              Provider = "keap"
+	Asana             Provider = "asana"
+	Dropbox           Provider = "dropbox"
+	Notion            Provider = "notion"
+	Gong              Provider = "gong"
+	Zoom              Provider = "zoom"
+	Intercom          Provider = "intercom"
+	DocuSign          Provider = "docuSign"
+	DocuSignDeveloper Provider = "docuSignDeveloper"
+	Calendly          Provider = "calendly"
+	GetResponse       Provider = "getResponse"
 )
 
 // ================================================================================
@@ -144,6 +140,25 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
+		},
+	},
+
+	// Microsoft Dynamics configuration
+	MicrosoftDynamics: {
+		AuthType: Oauth2,
+		BaseURL:  "https://{{.workspace}}.dynamics.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://login.microsoftonline.com/common/oauth2/authorize",
+			TokenURL:                  "https://login.microsoftonline.com/common/oauth2/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: true,
+			Proxy:     true,
+			Read:      true,
+			Subscribe: false,
+			Write:     true,
 		},
 	},
 
