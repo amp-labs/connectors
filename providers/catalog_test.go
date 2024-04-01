@@ -717,6 +717,31 @@ var testCases = []struct { // nolint
 		},
 		expectedErr: nil,
 	},
+	{
+		provider:    ZendeskChat,
+		description: "Valid ZendeskChat provider config with substitutions",
+		substitutions: map[string]string{
+			"workspace": "test",
+		},
+		expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://www.zopim.com/oauth2/authorizations/new?subdomain=test",
+				TokenURL:                  "https://www.zopim.com/oauth2/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: true,
+			},
+			Support: Support{
+				BulkWrite: false,
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+			BaseURL: "https://www.zopim.com",
+		},
+		expectedErr: nil,
+	},
 }
 
 func TestReadInfo(t *testing.T) { // nolint

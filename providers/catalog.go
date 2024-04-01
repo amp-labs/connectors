@@ -34,6 +34,7 @@ const (
 	MicrosoftDynamics365BusinessCentral Provider = "microsoftDynamics365BusinessCentral"
 	Gainsight                           Provider = "gainsight"
 	GoogleCalendar                      Provider = "googleCalendar"
+	ZendeskChat                         Provider = "zendeskChat"
 )
 
 // ================================================================================
@@ -603,6 +604,24 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
 			},
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	ZendeskChat: {
+		AuthType: Oauth2,
+		BaseURL:  "https://www.zopim.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://www.zopim.com/oauth2/authorizations/new?subdomain={{.workspace}}",
+			TokenURL:                  "https://www.zopim.com/oauth2/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: true,
 		},
 		Support: Support{
 			BulkWrite: false,
