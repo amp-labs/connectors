@@ -34,6 +34,7 @@ const (
 	MicrosoftDynamics365BusinessCentral Provider = "microsoftDynamics365BusinessCentral"
 	Gainsight                           Provider = "gainsight"
 	GoogleCalendar                      Provider = "googleCalendar"
+	PandaDoc                            Provider = "pandaDoc"
 )
 
 // ================================================================================
@@ -598,6 +599,27 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		OauthOpts: OauthOpts{
 			AuthURL:                   "https://accounts.google.com/o/oauth2/v2/auth",
 			TokenURL:                  "https://oauth2.googleapis.com/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	PandaDoc: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.pandadoc.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://app.pandadoc.com/oauth2/authorize",
+			TokenURL:                  "https://api.pandadoc.com/oauth2/access_token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 			TokenMetadataFields: TokenMetadataFields{

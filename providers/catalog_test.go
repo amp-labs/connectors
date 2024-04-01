@@ -717,6 +717,31 @@ var testCases = []struct { // nolint
 		},
 		expectedErr: nil,
 	},
+	{
+		provider:    PandaDoc,
+		description: "PandaDoc provider config with substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:      false,
+				Write:     false,
+				BulkWrite: false,
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://app.pandadoc.com/oauth2/authorize",
+				TokenURL:                  "https://api.pandadoc.com/oauth2/access_token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
+			},
+			BaseURL: "https://api.pandadoc.com",
+		},
+		expectedErr: nil,
+	},
 }
 
 func TestReadInfo(t *testing.T) { // nolint
