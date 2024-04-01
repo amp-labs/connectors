@@ -110,14 +110,7 @@ func (c *Connector) BulkWrite( //nolint:funlen,cyclop
 	config BulkOperationParams,
 ) (*BulkOperationResult, error) {
 	// Only support upsert for now
-	switch config.Mode { //nolint:exhaustive
-	case Upsert:
-		break
-	case Insert:
-		return nil, fmt.Errorf("%w: %s", ErrUnsupportedMode, "insert")
-	case Update:
-		return nil, fmt.Errorf("%w: %s", ErrUnsupportedMode, "Update")
-	default:
+	if config.Mode != Upsert {
 		return nil, fmt.Errorf("%w: %s", ErrUnsupportedMode, config.Mode)
 	}
 
