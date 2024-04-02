@@ -23,7 +23,7 @@ const (
 	Gong                                Provider = "gong"
 	Zoom                                Provider = "zoom"
 	Intercom                            Provider = "intercom"
-  	Capsule                             Provider = "capsule"
+	Capsule                             Provider = "capsule"
 	DocuSign                            Provider = "docuSign"
 	DocuSignDeveloper                   Provider = "docuSignDeveloper"
 	Calendly                            Provider = "calendly"
@@ -33,6 +33,7 @@ const (
 	MicrosoftDynamics365Sales           Provider = "microsoftDynamics365Sales"
 	MicrosoftDynamics365BusinessCentral Provider = "microsoftDynamics365BusinessCentral"
 	Gainsight                           Provider = "gainsight"
+	GoogleCalendar                      Provider = "googleCalendar"
 )
 
 // ================================================================================
@@ -581,6 +582,27 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://{{.workspace}}.gainsightcloud.com/v1/users/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: true,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	GoogleCalendar: {
+		AuthType: Oauth2,
+		BaseURL:  "https://www.googleapis.com/calendar",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://accounts.google.com/o/oauth2/v2/auth",
+			TokenURL:                  "https://oauth2.googleapis.com/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
 		},
 		Support: Support{
 			BulkWrite: false,
