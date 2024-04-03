@@ -34,6 +34,9 @@ const (
 	MicrosoftDynamics365BusinessCentral Provider = "microsoftDynamics365BusinessCentral"
 	Gainsight                           Provider = "gainsight"
 	Box                                 Provider = "box"
+	GoogleCalendar                      Provider = "googleCalendar"
+	ZendeskSupport                      Provider = "zendeskSupport"
+	ZendeskChat                         Provider = "zendeskChat"
 )
 
 // ================================================================================
@@ -601,6 +604,64 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://api.box.com/oauth2/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
+    },
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+  
+	GoogleCalendar: {
+		AuthType: Oauth2,
+		BaseURL:  "https://www.googleapis.com/calendar",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://accounts.google.com/o/oauth2/v2/auth",
+			TokenURL:                  "https://oauth2.googleapis.com/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Zendesk Support configuration
+	ZendeskSupport: {
+		AuthType: Oauth2,
+		BaseURL:  "https://{{.workspace}}.zendesk.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://{{.workspace}}.zendesk.com/oauth/authorizations/new",
+			TokenURL:                  "https://{{.workspace}}.zendesk.com/oauth/tokens",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: true,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+  
+	ZendeskChat: {
+		AuthType: Oauth2,
+		BaseURL:  "https://www.zopim.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://www.zopim.com/oauth2/authorizations/new?subdomain={{.workspace}}",
+			TokenURL:                  "https://www.zopim.com/oauth2/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: true,
 		},
 		Support: Support{
 			BulkWrite: false,

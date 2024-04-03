@@ -695,6 +695,56 @@ var testCases = []struct { // nolint
 	{
 		provider:    Box,
 		description: "Box config with no substitutions",
+    expected: &ProviderInfo{
+			Support: Support{
+				Read:      false,
+				Write:     false,
+				BulkWrite: false,
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+        AuthURL:                   "https://account.box.com/api/oauth2/authorize",
+				TokenURL:                  "https://api.box.com/oauth2/token",
+				ExplicitScopesRequired:    false,
+				ExplicitWorkspaceRequired: false,
+			},
+			BaseURL: "https://api.box.com",
+    },
+    expectedErr: nil,
+  },
+  {
+		provider:    GoogleCalendar,
+		description: "Google Calendar provider config with no substitutions",
+    expected: &ProviderInfo{
+			Support: Support{
+				Read:      false,
+				Write:     false,
+				BulkWrite: false,
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://accounts.google.com/o/oauth2/v2/auth",
+				TokenURL:                  "https://oauth2.googleapis.com/token",
+				ExplicitWorkspaceRequired: false,
+				ExplicitScopesRequired:    true,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
+			},
+			BaseURL: "https://www.googleapis.com/calendar",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    ZendeskSupport,
+		description: "Zendesk Support provider config with valid substitutions",
+		substitutions: map[string]string{
+			"workspace": "testing",
+		},
 		expected: &ProviderInfo{
 			Support: Support{
 				Read:      false,
@@ -705,12 +755,37 @@ var testCases = []struct { // nolint
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
-				AuthURL:                   "https://account.box.com/api/oauth2/authorize",
-				TokenURL:                  "https://api.box.com/oauth2/token",
-				ExplicitScopesRequired:    false,
-				ExplicitWorkspaceRequired: false,
+				AuthURL:                   "https://testing.zendesk.com/oauth/authorizations/new",
+				TokenURL:                  "https://testing.zendesk.com/oauth/tokens",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: true,
 			},
-			BaseURL: "https://api.box.com",
+			BaseURL: "https://testing.zendesk.com",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    ZendeskChat,
+		description: "Valid ZendeskChat provider config with substitutions",
+		substitutions: map[string]string{
+			"workspace": "test",
+		},
+		expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://www.zopim.com/oauth2/authorizations/new?subdomain=test",
+				TokenURL:                  "https://www.zopim.com/oauth2/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: true,
+			},
+			Support: Support{
+				BulkWrite: false,
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+			BaseURL: "https://www.zopim.com",
 		},
 		expectedErr: nil,
 	},
