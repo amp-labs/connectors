@@ -49,6 +49,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://{{.workspace}}.my.salesforce.com",
 		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://{{.workspace}}.my.salesforce.com/services/oauth2/authorize",
 			TokenURL:                  "https://{{.workspace}}.my.salesforce.com/services/oauth2/token",
 			ExplicitScopesRequired:    false,
@@ -77,6 +78,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://api.hubapi.com",
 		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://app.hubspot.com/oauth/authorize",
 			TokenURL:                  "https://api.hubapi.com/oauth/v1/token",
 			ExplicitScopesRequired:    true,
@@ -96,6 +98,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://api.linkedin.com",
 		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://www.linkedin.com/oauth/v2/authorization",
 			TokenURL:                  "https://www.linkedin.com/oauth/v2/accessToken",
 			ExplicitScopesRequired:    true,

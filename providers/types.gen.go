@@ -8,6 +8,13 @@ const (
 	Oauth2 AuthType = "oauth2"
 )
 
+// Defines values for OauthOptsGrantType.
+const (
+	AuthorizationCode OauthOptsGrantType = "authorizationCode"
+	ClientCredentials OauthOptsGrantType = "clientCredentials"
+	PKCE              OauthOptsGrantType = "PKCE"
+)
+
 // AuthType defines model for AuthType.
 type AuthType string
 
@@ -19,9 +26,13 @@ type OauthOpts struct {
 	AuthURL                   string              `json:"authURL" validate:"required"`
 	ExplicitScopesRequired    bool                `json:"explicitScopesRequired"`
 	ExplicitWorkspaceRequired bool                `json:"explicitWorkspaceRequired"`
+	GrantType                 OauthOptsGrantType  `json:"grantType"`
 	TokenMetadataFields       TokenMetadataFields `json:"tokenMetadataFields"`
 	TokenURL                  string              `json:"tokenURL" validate:"required"`
 }
+
+// OauthOptsGrantType defines model for OauthOpts.GrantType.
+type OauthOptsGrantType string
 
 // Provider defines model for Provider.
 type Provider = string
