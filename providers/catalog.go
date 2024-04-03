@@ -35,6 +35,7 @@ const (
 	Gainsight                           Provider = "gainsight"
 	GoogleCalendar                      Provider = "googleCalendar"
 	ZendeskSupport                      Provider = "zendeskSupport"
+	ZendeskChat                         Provider = "zendeskChat"
 )
 
 // ================================================================================
@@ -621,6 +622,23 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		OauthOpts: OauthOpts{
 			AuthURL:                   "https://{{.workspace}}.zendesk.com/oauth/authorizations/new",
 			TokenURL:                  "https://{{.workspace}}.zendesk.com/oauth/tokens",
+      ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: true,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+	ZendeskChat: {
+		AuthType: Oauth2,
+		BaseURL:  "https://www.zopim.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://www.zopim.com/oauth2/authorizations/new?subdomain={{.workspace}}",
+			TokenURL:                  "https://www.zopim.com/oauth2/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: true,
 		},
