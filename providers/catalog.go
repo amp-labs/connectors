@@ -604,7 +604,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://api.box.com/oauth2/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
-    },
+		},
 		Support: Support{
 			BulkWrite: false,
 			Proxy:     false,
@@ -613,7 +613,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Write:     false,
 		},
 	},
-  
+
 	GoogleCalendar: {
 		AuthType: Oauth2,
 		BaseURL:  "https://www.googleapis.com/calendar",
@@ -653,7 +653,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Write:     false,
 		},
 	},
-  
+
 	ZendeskChat: {
 		AuthType: Oauth2,
 		BaseURL:  "https://www.zopim.com",
