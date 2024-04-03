@@ -22,9 +22,13 @@ var testCases = []struct { // nolint
 		},
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      true,
-				Write:     true,
-				BulkWrite: true,
+				Read:  true,
+				Write: true,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: true,
+				},
 				Subscribe: false,
 				Proxy:     true,
 			},
@@ -56,9 +60,13 @@ var testCases = []struct { // nolint
 		},
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      true,
-				Write:     true,
-				BulkWrite: false,
+				Read:  true,
+				Write: true,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+				},
 				Subscribe: false,
 				Proxy:     true,
 			},
@@ -81,9 +89,13 @@ var testCases = []struct { // nolint
 		},
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -118,9 +130,13 @@ var testCases = []struct { // nolint
 		},
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -140,9 +156,13 @@ var testCases = []struct { // nolint
 		description: "Valid Outreach provider config with no substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -169,7 +189,11 @@ var testCases = []struct { // nolint
 				ExplicitWorkspaceRequired: false,
 			},
 			Support: Support{
-				BulkWrite: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+				},
 				Proxy:     false,
 				Read:      false,
 				Subscribe: false,
@@ -191,7 +215,11 @@ var testCases = []struct { // nolint
 				ExplicitWorkspaceRequired: false,
 			},
 			Support: Support{
-				BulkWrite: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+				},
 				Proxy:     false,
 				Read:      false,
 				Subscribe: false,
@@ -207,9 +235,13 @@ var testCases = []struct { // nolint
 		description: "Valid Copper provider config with no substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -230,9 +262,13 @@ var testCases = []struct { // nolint
 		description: "Valid ZohoCRM provider config with no substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -259,7 +295,11 @@ var testCases = []struct { // nolint
 				ExplicitWorkspaceRequired: false,
 			},
 			Support: Support{
-				BulkWrite: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+				},
 				Proxy:     false,
 				Read:      false,
 				Subscribe: false,
@@ -278,9 +318,13 @@ var testCases = []struct { // nolint
 		},
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -304,7 +348,11 @@ var testCases = []struct { // nolint
 				Read:  false,
 				Write: false,
 
-				BulkWrite: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -328,7 +376,11 @@ var testCases = []struct { // nolint
 				Read:  false,
 				Write: false,
 
-				BulkWrite: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -348,9 +400,13 @@ var testCases = []struct { // nolint
 		description: "Valid Asana provider config with no substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -376,7 +432,11 @@ var testCases = []struct { // nolint
 				ExplicitWorkspaceRequired: false,
 			},
 			Support: Support{
-				BulkWrite: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+				},
 				Proxy:     false,
 				Read:      false,
 				Subscribe: false,
@@ -391,9 +451,13 @@ var testCases = []struct { // nolint
 		description: "Valid Notion provider config with no substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+				},
 				Subscribe: false,
 				Proxy:     true,
 			},
@@ -420,9 +484,13 @@ var testCases = []struct { // nolint
 		},
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -442,9 +510,13 @@ var testCases = []struct { // nolint
 		description: "Zoom provider config with no substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -464,9 +536,13 @@ var testCases = []struct { // nolint
 		description: "Valid Intercom provider config with no substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -488,9 +564,13 @@ var testCases = []struct { // nolint
 		},
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -509,9 +589,13 @@ var testCases = []struct { // nolint
 		provider: DocuSignDeveloper,
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -531,9 +615,13 @@ var testCases = []struct { // nolint
 		description: "Calendly provider config with no substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -553,9 +641,13 @@ var testCases = []struct { // nolint
 		description: "GetResponse provider config with no substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -575,9 +667,13 @@ var testCases = []struct { // nolint
 		description: "Valid AWeber provider config with no substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -600,9 +696,13 @@ var testCases = []struct { // nolint
 		},
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -622,9 +722,13 @@ var testCases = []struct { // nolint
 		description: "Valid ConstantContact provider config with no substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -647,9 +751,13 @@ var testCases = []struct { // nolint
 		},
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -675,9 +783,13 @@ var testCases = []struct { // nolint
 		},
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -697,9 +809,13 @@ var testCases = []struct { // nolint
 		description: "Box config with no substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -719,9 +835,13 @@ var testCases = []struct { // nolint
 		description: "Google Calendar provider config with no substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -747,9 +867,13 @@ var testCases = []struct { // nolint
 		},
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -779,7 +903,11 @@ var testCases = []struct { // nolint
 				ExplicitWorkspaceRequired: true,
 			},
 			Support: Support{
-				BulkWrite: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+				},
 				Proxy:     false,
 				Read:      false,
 				Subscribe: false,
