@@ -718,6 +718,31 @@ var testCases = []struct { // nolint
 		expectedErr: nil,
 	},
 	{
+		provider:    ZendeskSupport,
+		description: "Zendesk Support provider config with valid substitutions",
+		substitutions: map[string]string{
+			"workspace": "testing",
+		},
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:      false,
+				Write:     false,
+				BulkWrite: false,
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://testing.zendesk.com/oauth/authorizations/new",
+				TokenURL:                  "https://testing.zendesk.com/oauth/tokens",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: true,
+			},
+			BaseURL: "https://testing.zendesk.com",
+		},
+		expectedErr: nil,
+	},
+	{
 		provider:    ZendeskChat,
 		description: "Valid ZendeskChat provider config with substitutions",
 		substitutions: map[string]string{
