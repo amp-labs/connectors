@@ -622,7 +622,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		OauthOpts: OauthOpts{
 			AuthURL:                   "https://{{.workspace}}.zendesk.com/oauth/authorizations/new",
 			TokenURL:                  "https://{{.workspace}}.zendesk.com/oauth/tokens",
-      ExplicitScopesRequired:    true,
+			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: true,
 		},
 		Support: Support{

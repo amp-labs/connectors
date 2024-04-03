@@ -739,10 +739,10 @@ var testCases = []struct { // nolint
 				ExplicitWorkspaceRequired: true,
 			},
 			BaseURL: "https://testing.zendesk.com",
-    },
+		},
 		expectedErr: nil,
 	},
-  {
+	{
 		provider:    ZendeskChat,
 		description: "Valid ZendeskChat provider config with substitutions",
 		substitutions: map[string]string{
