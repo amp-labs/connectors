@@ -49,12 +49,15 @@ components:
         - insert
         - update
         - upsert
+        - delete
       properties:
         insert:
           type: boolean
         update:
           type: boolean
         upsert:
+          type: boolean
+        delete:
           type: boolean
     TokenMetadataFields:
       type: object

@@ -13,6 +13,7 @@ type AuthType string
 
 // BulkWriteSupport defines model for BulkWriteSupport.
 type BulkWriteSupport struct {
+	Delete bool `json:"delete"`
 	Insert bool `json:"insert"`
 	Update bool `json:"update"`
 	Upsert bool `json:"upsert"`
