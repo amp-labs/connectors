@@ -693,6 +693,28 @@ var testCases = []struct { // nolint
 		expectedErr: nil,
 	},
 	{
+		provider:    Box,
+		description: "Box config with no substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:      false,
+				Write:     false,
+				BulkWrite: false,
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://account.box.com/api/oauth2/authorize",
+				TokenURL:                  "https://api.box.com/oauth2/token",
+				ExplicitScopesRequired:    false,
+				ExplicitWorkspaceRequired: false,
+			},
+			BaseURL: "https://api.box.com",
+		},
+		expectedErr: nil,
+	},
+	{
 		provider:    GoogleCalendar,
 		description: "Google Calendar provider config with no substitutions",
 		expected: &ProviderInfo{

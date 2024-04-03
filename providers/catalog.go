@@ -33,6 +33,7 @@ const (
 	MicrosoftDynamics365Sales           Provider = "microsoftDynamics365Sales"
 	MicrosoftDynamics365BusinessCentral Provider = "microsoftDynamics365BusinessCentral"
 	Gainsight                           Provider = "gainsight"
+	Box                                 Provider = "box"
 	GoogleCalendar                      Provider = "googleCalendar"
 	ZendeskSupport                      Provider = "zendeskSupport"
 	ZendeskChat                         Provider = "zendeskChat"
@@ -594,6 +595,25 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
+	// Box configuration
+	Box: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.box.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://account.box.com/api/oauth2/authorize",
+			TokenURL:                  "https://api.box.com/oauth2/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
 	GoogleCalendar: {
 		AuthType: Oauth2,
 		BaseURL:  "https://www.googleapis.com/calendar",
@@ -633,6 +653,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Write:     false,
 		},
 	},
+
 	ZendeskChat: {
 		AuthType: Oauth2,
 		BaseURL:  "https://www.zopim.com",
