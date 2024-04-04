@@ -63,12 +63,16 @@ components:
       x-oapi-codegen-extra-tags:
         validate: required
       required:
+          - grantType
           - authURL
           - tokenURL
           - explicitScopesRequired
           - explicitWorkspaceRequired
           - tokenMetadataFields
       properties:
+        grantType:
+          type: string
+          enum: [authorizationCode, clientCredentials, PKCE]
         authURL:
           type: string
           example: https://login.salesforce.com/services/oauth2/authorize
