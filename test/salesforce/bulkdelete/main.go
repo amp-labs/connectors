@@ -51,7 +51,6 @@ func main() {
 		ObjectName: "Touchpoint__c",
 		CSVData:    bytes.NewReader(objectCSVToDelete),
 	})
-
 	if err != nil {
 		slog.Error("Error bulk deleting", "error", err)
 		return
