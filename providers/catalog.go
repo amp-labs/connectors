@@ -10,6 +10,7 @@ const (
 	LinkedIn                            Provider = "linkedIn"
 	Salesloft                           Provider = "salesloft"
 	Outreach                            Provider = "outreach"
+	MicrosoftDynamicsCustomerService    Provider = "microsoftDynamicsCustomerService"
 	Pipedrive                           Provider = "pipedrive"
 	Copper                              Provider = "copper"
 	ZohoCRM                             Provider = "zohoCRM"
@@ -174,6 +175,30 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	//Microsoft Dynamics Customer Service configuration
+	MicrosoftDynamicsCustomerService: {
+		AuthType: Oauth2,
+		BaseURL:  "https://{{.workspace}}.api.crm.dynamics.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://login.microsoftonline.com/common/oauth2/authorize",
+			TokenURL:                  "https://login.microsoftonline.com/common/oauth2/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: true,
+			TokenMetadataFields: TokenMetadataFields{
+				ConsumerRefField:  "id",
+				WorkspaceRefField: "instance_url",
+				ScopesField:       "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: false,
 			Proxy:     false,
 			Read:      false,
 			Subscribe: false,

@@ -186,6 +186,38 @@ var testCases = []struct { // nolint
 		expectedErr: nil,
 	},
 
+	// MicrosoftDynamicsCustomerService
+	{
+		provider:    MicrosoftDynamicsCustomerService,
+		description: "Valid MicrosoftDynamicsCustomerService provider config with no substitutions",
+		substitutions: map[string]string{
+			"workspace": "testing",
+		},
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:      false,
+				Write:     false,
+				BulkWrite: false,
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://login.microsoftonline.com/common/oauth2/authorize",
+				TokenURL:                  "https://login.microsoftonline.com/common/oauth2/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: true,
+				TokenMetadataFields: TokenMetadataFields{
+					ConsumerRefField:  "id",
+					WorkspaceRefField: "instance_url",
+					ScopesField:       "scope",
+				},
+			},
+			BaseURL: "https://testing.api.crm.dynamics.com",
+		},
+		expectedErr: nil,
+	},
+
 	{
 		provider: Pipedrive,
 		expected: &ProviderInfo{
