@@ -652,6 +652,7 @@ var testCases = []struct { // nolint
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
 				AuthURL:                   "https://auth.calendly.com/oauth/authorize",
 				TokenURL:                  "https://auth.calendly.com/oauth/token",
 				ExplicitScopesRequired:    false,
@@ -736,6 +737,7 @@ var testCases = []struct { // nolint
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
 				AuthURL:                   "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
 				TokenURL:                  "https://login.microsoftonline.com/common/oauth2/v2.0/token",
 				ExplicitScopesRequired:    true,
@@ -863,36 +865,6 @@ var testCases = []struct { // nolint
 		expectedErr: nil,
 	},
 	{
-		provider:    GoogleCalendar,
-		description: "Google Calendar provider config with no substitutions",
-		expected: &ProviderInfo{
-			Support: Support{
-				Read:  false,
-				Write: false,
-				BulkWrite: BulkWriteSupport{
-					Insert: false,
-					Update: false,
-					Upsert: false,
-					Delete: false,
-				},
-				Subscribe: false,
-				Proxy:     false,
-			},
-			AuthType: Oauth2,
-			OauthOpts: OauthOpts{
-				AuthURL:                   "https://accounts.google.com/o/oauth2/v2/auth",
-				TokenURL:                  "https://oauth2.googleapis.com/token",
-				ExplicitWorkspaceRequired: false,
-				ExplicitScopesRequired:    true,
-				TokenMetadataFields: TokenMetadataFields{
-					ScopesField: "scope",
-				},
-			},
-			BaseURL: "https://www.googleapis.com/calendar",
-		},
-		expectedErr: nil,
-	},
-	{
 		provider:    ZendeskSupport,
 		description: "Zendesk Support provider config with valid substitutions",
 		substitutions: map[string]string{
@@ -913,6 +885,7 @@ var testCases = []struct { // nolint
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
 				AuthURL:                   "https://testing.zendesk.com/oauth/authorizations/new",
 				TokenURL:                  "https://testing.zendesk.com/oauth/tokens",
 				ExplicitScopesRequired:    true,
@@ -931,6 +904,7 @@ var testCases = []struct { // nolint
 		expected: &ProviderInfo{
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
 				AuthURL:                   "https://www.zopim.com/oauth2/authorizations/new?subdomain=test",
 				TokenURL:                  "https://www.zopim.com/oauth2/token",
 				ExplicitScopesRequired:    true,
@@ -976,6 +950,37 @@ var testCases = []struct { // nolint
 				Write:     false,
 			},
 			BaseURL: "https://public-api.wordpress.com",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    Gmail,
+		description: "Gmail provider config with no substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
+				AuthURL:                   "https://accounts.google.com/o/oauth2/v2/auth",
+				TokenURL:                  "https://oauth2.googleapis.com/token",
+				ExplicitWorkspaceRequired: false,
+				ExplicitScopesRequired:    true,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
+			},
+			BaseURL: "https://gmail.googleapis.com/gmail",
 		},
 		expectedErr: nil,
 	},
