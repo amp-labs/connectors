@@ -847,7 +847,12 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
-			BulkWrite: false,
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
 			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
