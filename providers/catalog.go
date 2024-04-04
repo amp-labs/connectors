@@ -37,6 +37,7 @@ const (
 	GoogleCalendar                      Provider = "googleCalendar"
 	ZendeskSupport                      Provider = "zendeskSupport"
 	ZendeskChat                         Provider = "zendeskChat"
+	WordPress                           Provider = "wordPress"
 )
 
 // ================================================================================
@@ -665,6 +666,25 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://www.zopim.com/oauth2/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: true,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// WordPress Support configuration
+	WordPress: {
+		AuthType: Oauth2,
+		BaseURL:  "https://public-api.wordpress.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://public-api.wordpress.com/oauth2/authorize",
+			TokenURL:                  "https://public-api.wordpress.com/oauth2/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
 			BulkWrite: false,
