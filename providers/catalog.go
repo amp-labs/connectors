@@ -38,6 +38,7 @@ const (
 	ZendeskSupport                      Provider = "zendeskSupport"
 	ZendeskChat                         Provider = "zendeskChat"
 	WordPress                           Provider = "wordPress"
+	IroncladEU                          Provider = "ironcladEU"
 )
 
 // ================================================================================
@@ -685,6 +686,29 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://public-api.wordpress.com/oauth2/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: false,
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// IroncladEU Support Configuration
+	IroncladEU: {
+		AuthType: Oauth2,
+		BaseURL:  "https://eu1.ironcladapp.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://eu1.ironcladapp.com/oauth/authorize",
+			TokenURL:                  "https://eu1.ironcladapp.com/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			GrantType:                 AuthorizationCode,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
 		},
 		Support: Support{
 			BulkWrite: false,
