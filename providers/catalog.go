@@ -895,6 +895,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://api.slack.com",
 		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://slack.com/oauth/v2/authorize",
 			TokenURL:                  "https://slack.com/api/oauth.v2.access",
 			ExplicitScopesRequired:    true,

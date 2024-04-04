@@ -1023,6 +1023,7 @@ var testCases = []struct { // nolint
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
 				AuthURL:                   "https://slack.com/oauth/v2/authorize",
 				TokenURL:                  "https://slack.com/api/oauth.v2.access",
 				ExplicitScopesRequired:    true,
