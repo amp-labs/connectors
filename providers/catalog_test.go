@@ -30,6 +30,7 @@ var testCases = []struct { // nolint
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
 				AuthURL:                   "https://example.my.salesforce.com/services/oauth2/authorize",
 				TokenURL:                  "https://example.my.salesforce.com/services/oauth2/token",
 				ExplicitWorkspaceRequired: true,
@@ -64,6 +65,7 @@ var testCases = []struct { // nolint
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
 				AuthURL:                   "https://app.hubspot.com/oauth/authorize",
 				TokenURL:                  "https://api.hubapi.com/oauth/v1/token",
 				ExplicitScopesRequired:    true,
@@ -89,6 +91,7 @@ var testCases = []struct { // nolint
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
 				AuthURL:                   "https://www.linkedin.com/oauth/v2/authorization",
 				TokenURL:                  "https://www.linkedin.com/oauth/v2/accessToken",
 				ExplicitScopesRequired:    true,
