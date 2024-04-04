@@ -815,8 +815,8 @@ var testCases = []struct { // nolint
 		expectedErr: nil,
 	},
 	{
-		provider:    IroncladEU,
-		description: "IroncladEU config with no substitutions",
+		provider:    IroncladDemo,
+		description: "IroncladDemo config with no substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
 				Read:      false,
@@ -827,8 +827,8 @@ var testCases = []struct { // nolint
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
-				AuthURL:                   "https://eu1.ironcladapp.com/oauth/authorize",
-				TokenURL:                  "https://eu1.ironcladapp.com/oauth/token",
+				AuthURL:                   "https://demo.ironcladapp.com/oauth/authorize",
+				TokenURL:                  "https://demo.ironcladapp.com/oauth/token",
 				ExplicitScopesRequired:    true,
 				ExplicitWorkspaceRequired: false,
 				GrantType:                 AuthorizationCode,
@@ -836,7 +836,7 @@ var testCases = []struct { // nolint
 					ScopesField: "scope",
 				},
 			},
-			BaseURL: "https://eu1.ironcladapp.com",
+			BaseURL: "https://demo.ironcladapp.com",
 		},
 		expectedErr: nil,
 	},
