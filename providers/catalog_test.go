@@ -984,9 +984,14 @@ var testCases = []struct { // nolint
 		description: "IroncladEU config with no substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Read:      false,
 				Write:     false,
-				BulkWrite: false,
 				Subscribe: false,
 				Proxy:     false,
 			},
