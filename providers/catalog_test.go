@@ -22,14 +22,20 @@ var testCases = []struct { // nolint
 		},
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      true,
-				Write:     true,
-				BulkWrite: true,
+				Read:  true,
+				Write: true,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: true,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     true,
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
 				AuthURL:                   "https://example.my.salesforce.com/services/oauth2/authorize",
 				TokenURL:                  "https://example.my.salesforce.com/services/oauth2/token",
 				ExplicitWorkspaceRequired: true,
@@ -56,14 +62,20 @@ var testCases = []struct { // nolint
 		},
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      true,
-				Write:     true,
-				BulkWrite: false,
+				Read:  true,
+				Write: true,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     true,
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
 				AuthURL:                   "https://app.hubspot.com/oauth/authorize",
 				TokenURL:                  "https://api.hubapi.com/oauth/v1/token",
 				ExplicitScopesRequired:    true,
@@ -81,14 +93,20 @@ var testCases = []struct { // nolint
 		},
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
 				AuthURL:                   "https://www.linkedin.com/oauth/v2/authorization",
 				TokenURL:                  "https://www.linkedin.com/oauth/v2/accessToken",
 				ExplicitScopesRequired:    true,
@@ -118,9 +136,14 @@ var testCases = []struct { // nolint
 		},
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -140,9 +163,14 @@ var testCases = []struct { // nolint
 		description: "Valid Outreach provider config with no substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -169,7 +197,12 @@ var testCases = []struct { // nolint
 				ExplicitWorkspaceRequired: false,
 			},
 			Support: Support{
-				BulkWrite: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Proxy:     false,
 				Read:      false,
 				Subscribe: false,
@@ -191,7 +224,12 @@ var testCases = []struct { // nolint
 				ExplicitWorkspaceRequired: false,
 			},
 			Support: Support{
-				BulkWrite: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Proxy:     false,
 				Read:      false,
 				Subscribe: false,
@@ -207,9 +245,14 @@ var testCases = []struct { // nolint
 		description: "Valid Copper provider config with no substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -230,9 +273,14 @@ var testCases = []struct { // nolint
 		description: "Valid ZohoCRM provider config with no substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -259,7 +307,12 @@ var testCases = []struct { // nolint
 				ExplicitWorkspaceRequired: false,
 			},
 			Support: Support{
-				BulkWrite: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Proxy:     false,
 				Read:      false,
 				Subscribe: false,
@@ -278,9 +331,14 @@ var testCases = []struct { // nolint
 		},
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -304,7 +362,12 @@ var testCases = []struct { // nolint
 				Read:  false,
 				Write: false,
 
-				BulkWrite: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -328,7 +391,12 @@ var testCases = []struct { // nolint
 				Read:  false,
 				Write: false,
 
-				BulkWrite: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -348,9 +416,14 @@ var testCases = []struct { // nolint
 		description: "Valid Asana provider config with no substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -376,7 +449,12 @@ var testCases = []struct { // nolint
 				ExplicitWorkspaceRequired: false,
 			},
 			Support: Support{
-				BulkWrite: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Proxy:     false,
 				Read:      false,
 				Subscribe: false,
@@ -391,9 +469,14 @@ var testCases = []struct { // nolint
 		description: "Valid Notion provider config with no substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     true,
 			},
@@ -420,9 +503,14 @@ var testCases = []struct { // nolint
 		},
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -442,9 +530,14 @@ var testCases = []struct { // nolint
 		description: "Zoom provider config with no substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -464,9 +557,14 @@ var testCases = []struct { // nolint
 		description: "Valid Intercom provider config with no substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -488,9 +586,14 @@ var testCases = []struct { // nolint
 		},
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -509,9 +612,14 @@ var testCases = []struct { // nolint
 		provider: DocuSignDeveloper,
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -531,9 +639,14 @@ var testCases = []struct { // nolint
 		description: "Calendly provider config with no substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -553,9 +666,14 @@ var testCases = []struct { // nolint
 		description: "GetResponse provider config with no substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -575,9 +693,14 @@ var testCases = []struct { // nolint
 		description: "Valid AWeber provider config with no substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -600,9 +723,14 @@ var testCases = []struct { // nolint
 		},
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -622,9 +750,14 @@ var testCases = []struct { // nolint
 		description: "Valid ConstantContact provider config with no substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -647,9 +780,14 @@ var testCases = []struct { // nolint
 		},
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -675,9 +813,14 @@ var testCases = []struct { // nolint
 		},
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -697,14 +840,20 @@ var testCases = []struct { // nolint
 		description: "Box config with no substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
 				AuthURL:                   "https://account.box.com/api/oauth2/authorize",
 				TokenURL:                  "https://api.box.com/oauth2/token",
 				ExplicitScopesRequired:    false,
@@ -719,9 +868,14 @@ var testCases = []struct { // nolint
 		description: "Google Calendar provider config with no substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -747,9 +901,14 @@ var testCases = []struct { // nolint
 		},
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -779,13 +938,76 @@ var testCases = []struct { // nolint
 				ExplicitWorkspaceRequired: true,
 			},
 			Support: Support{
-				BulkWrite: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Proxy:     false,
 				Read:      false,
 				Subscribe: false,
 				Write:     false,
 			},
 			BaseURL: "https://www.zopim.com",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    WordPress,
+		description: "Valid WordPress provider config with no substitutions",
+		expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://public-api.wordpress.com/oauth2/authorize",
+				TokenURL:                  "https://public-api.wordpress.com/oauth2/token",
+				ExplicitScopesRequired:    false,
+				ExplicitWorkspaceRequired: false,
+			},
+			Support: Support{
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+			BaseURL: "https://public-api.wordpress.com",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    Airtable,
+		description: "Valid Airtable provider config with no substitutions",
+		expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				GrantType:                 PKCE,
+				AuthURL:                   "https://airtable.com/oauth2/v1/authorize",
+				TokenURL:                  "https://airtable.com/oauth2/v1/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
+			},
+			Support: Support{
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+			BaseURL: "https://api.airtable.com",
 		},
 		expectedErr: nil,
 	},

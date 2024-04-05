@@ -32,7 +32,7 @@ components:
         - write
       properties:
         bulkWrite:
-          type: boolean
+          $ref: '#/components/schemas/BulkWriteSupport'
         proxy:
           type: boolean
         read:
@@ -41,7 +41,24 @@ components:
           type: boolean
         write:
           type: boolean
-
+    BulkWriteSupport:
+      type: object
+      x-oapi-codegen-extra-tags:
+        validate: required
+      required:
+        - insert
+        - update
+        - upsert
+        - delete
+      properties:
+        insert:
+          type: boolean
+        update:
+          type: boolean
+        upsert:
+          type: boolean
+        delete:
+          type: boolean
     TokenMetadataFields:
       type: object
       properties:
@@ -63,12 +80,16 @@ components:
       x-oapi-codegen-extra-tags:
         validate: required
       required:
+          - grantType
           - authURL
           - tokenURL
           - explicitScopesRequired
           - explicitWorkspaceRequired
           - tokenMetadataFields
       properties:
+        grantType:
+          type: string
+          enum: [authorizationCode, clientCredentials, PKCE]
         authURL:
           type: string
           example: https://login.salesforce.com/services/oauth2/authorize

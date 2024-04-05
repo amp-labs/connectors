@@ -37,6 +37,8 @@ const (
 	GoogleCalendar                      Provider = "googleCalendar"
 	ZendeskSupport                      Provider = "zendeskSupport"
 	ZendeskChat                         Provider = "zendeskChat"
+	WordPress                           Provider = "wordPress"
+	Airtable                            Provider = "airtable"
 )
 
 // ================================================================================
@@ -49,6 +51,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://{{.workspace}}.my.salesforce.com",
 		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://{{.workspace}}.my.salesforce.com/services/oauth2/authorize",
 			TokenURL:                  "https://{{.workspace}}.my.salesforce.com/services/oauth2/token",
 			ExplicitScopesRequired:    false,
@@ -60,7 +63,12 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			},
 		},
 		Support: Support{
-			BulkWrite: true,
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: true,
+				Delete: false,
+			},
 			Proxy:     true,
 			Read:      true,
 			Subscribe: false,
@@ -77,13 +85,19 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://api.hubapi.com",
 		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://app.hubspot.com/oauth/authorize",
 			TokenURL:                  "https://api.hubapi.com/oauth/v1/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
-			BulkWrite: false,
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
 			Proxy:     true,
 			Read:      true,
 			Subscribe: false,
@@ -96,6 +110,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://api.linkedin.com",
 		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://www.linkedin.com/oauth/v2/authorization",
 			TokenURL:                  "https://www.linkedin.com/oauth/v2/accessToken",
 			ExplicitScopesRequired:    true,
@@ -105,7 +120,12 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			},
 		},
 		Support: Support{
-			BulkWrite: false,
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
 			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
@@ -124,7 +144,12 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
-			BulkWrite: false,
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
 			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
@@ -143,7 +168,12 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
-			BulkWrite: false,
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
 			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
@@ -162,7 +192,12 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
-			BulkWrite: false,
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
 			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
@@ -181,7 +216,12 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
-			BulkWrite: false,
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
 			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
@@ -200,7 +240,12 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
-			BulkWrite: false,
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
 			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
@@ -219,7 +264,12 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
-			BulkWrite: false,
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
 			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
@@ -238,7 +288,12 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
-			BulkWrite: false,
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
 			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
@@ -257,7 +312,12 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
-			BulkWrite: false,
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
 			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
@@ -276,7 +336,12 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
-			BulkWrite: false,
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
 			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
@@ -295,7 +360,12 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
-			BulkWrite: false,
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
 			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
@@ -314,7 +384,12 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
-			BulkWrite: false,
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
 			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
@@ -333,7 +408,12 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
-			BulkWrite: false,
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
 			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
@@ -356,7 +436,12 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			},
 		},
 		Support: Support{
-			BulkWrite: false,
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
 			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
@@ -375,7 +460,12 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
-			BulkWrite: false,
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
 			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
@@ -394,7 +484,12 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
-			BulkWrite: false,
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
 			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
@@ -413,7 +508,12 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
-			BulkWrite: false,
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
 			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
@@ -432,7 +532,12 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			ExplicitWorkspaceRequired: true,
 		},
 		Support: Support{
-			BulkWrite: false,
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
 			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
@@ -451,7 +556,12 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
-			BulkWrite: false,
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
 			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
@@ -470,7 +580,12 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
-			BulkWrite: false,
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
 			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
@@ -489,7 +604,12 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
-			BulkWrite: false,
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
 			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
@@ -508,7 +628,12 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
-			BulkWrite: false,
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
 			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
@@ -527,7 +652,12 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			ExplicitWorkspaceRequired: true,
 		},
 		Support: Support{
-			BulkWrite: false,
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
 			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
@@ -546,7 +676,12 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
-			BulkWrite: false,
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
 			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
@@ -568,7 +703,12 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			},
 		},
 		Support: Support{
-			BulkWrite: false,
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
 			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
@@ -587,7 +727,12 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			ExplicitWorkspaceRequired: true,
 		},
 		Support: Support{
-			BulkWrite: false,
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
 			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
@@ -600,13 +745,19 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://api.box.com",
 		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://account.box.com/api/oauth2/authorize",
 			TokenURL:                  "https://api.box.com/oauth2/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
-			BulkWrite: false,
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
 			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
@@ -627,7 +778,12 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			},
 		},
 		Support: Support{
-			BulkWrite: false,
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
 			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
@@ -646,7 +802,12 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			ExplicitWorkspaceRequired: true,
 		},
 		Support: Support{
-			BulkWrite: false,
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
 			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
@@ -664,7 +825,64 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			ExplicitWorkspaceRequired: true,
 		},
 		Support: Support{
-			BulkWrite: false,
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// WordPress Support configuration
+	WordPress: {
+		AuthType: Oauth2,
+		BaseURL:  "https://public-api.wordpress.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://public-api.wordpress.com/oauth2/authorize",
+			TokenURL:                  "https://public-api.wordpress.com/oauth2/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Airtable Support Configuration
+	Airtable: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.airtable.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 PKCE,
+			AuthURL:                   "https://airtable.com/oauth2/v1/authorize",
+			TokenURL:                  "https://airtable.com/oauth2/v1/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
 			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
