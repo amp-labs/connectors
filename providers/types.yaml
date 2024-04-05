@@ -118,6 +118,11 @@ components:
       type: string
       example: salesforce
 
+    ProviderGroup:
+      type: array
+      items:
+        $ref: '#/components/schemas/Provider'
+
     ProviderInfo:
       type: object
       required:
@@ -129,6 +134,8 @@ components:
       properties:
         authType:
           $ref: '#/components/schemas/AuthType'
+        group:
+          $ref: '#/components/schemas/ProviderGroup'
         baseURL:
           type: string
           x-oapi-codegen-extra-tags:

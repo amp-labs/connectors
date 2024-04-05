@@ -38,6 +38,20 @@ func ReadCatalog() (CatalogType, error) {
 func ReadInfo(provider Provider, substitutions *map[string]string) (*ProviderInfo, error) {
 	pInfo, ok := catalog[provider]
 	if !ok {
+		// It might be a part of a group
+		for _, info := range catalog {
+			if info.Group == nil {
+				continue
+			}
+
+			for _, p := range *info.Group {
+				if p == provider {
+					pInfo = info
+					break
+				}
+			}
+		}
+
 		return nil, ErrProviderCatalogNotFound
 	}
 

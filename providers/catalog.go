@@ -34,11 +34,16 @@ const (
 	MicrosoftDynamics365BusinessCentral Provider = "microsoftDynamics365BusinessCentral"
 	Gainsight                           Provider = "gainsight"
 	Box                                 Provider = "box"
-	GoogleCalendar                      Provider = "googleCalendar"
 	ZendeskSupport                      Provider = "zendeskSupport"
 	ZendeskChat                         Provider = "zendeskChat"
 	WordPress                           Provider = "wordPress"
 	Airtable                            Provider = "airtable"
+
+	Google         Provider = "google"
+	GoogleSheets   Provider = "googleSheets"
+	GoogleDrive    Provider = "googleDrive"
+	GoogleCalendar Provider = "googleCalendar"
+	GoogleDocs     Provider = "googleDocs"
 )
 
 // ================================================================================
@@ -764,32 +769,6 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
-	GoogleCalendar: {
-		AuthType: Oauth2,
-		BaseURL:  "https://www.googleapis.com/calendar",
-		OauthOpts: OauthOpts{
-			AuthURL:                   "https://accounts.google.com/o/oauth2/v2/auth",
-			TokenURL:                  "https://oauth2.googleapis.com/token",
-			ExplicitScopesRequired:    true,
-			ExplicitWorkspaceRequired: false,
-			TokenMetadataFields: TokenMetadataFields{
-				ScopesField: "scope",
-			},
-		},
-		Support: Support{
-			BulkWrite: BulkWriteSupport{
-				Insert: false,
-				Update: false,
-				Upsert: false,
-				Delete: false,
-			},
-			Proxy:     false,
-			Read:      false,
-			Subscribe: false,
-			Write:     false,
-		},
-	},
-
 	// Zendesk Support configuration
 	ZendeskSupport: {
 		AuthType: Oauth2,
@@ -869,6 +848,38 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			GrantType:                 PKCE,
 			AuthURL:                   "https://airtable.com/oauth2/v1/authorize",
 			TokenURL:                  "https://airtable.com/oauth2/v1/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Google base configuration
+	Google: ProviderInfo{
+		Group: &ProviderGroup{
+			GoogleDrive,
+			GoogleCalendar,
+			GoogleSheets,
+		},
+		AuthType: Oauth2,
+		BaseURL:  "https://www.googleapis.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://accounts.google.com/o/oauth2/v2/auth",
+			TokenURL:                  "https://oauth2.googleapis.com/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 			TokenMetadataFields: TokenMetadataFields{
