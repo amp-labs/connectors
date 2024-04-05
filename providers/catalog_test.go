@@ -1015,9 +1015,14 @@ var testCases = []struct { // nolint
 		description: "Valid Slack provider config with non-existent substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
