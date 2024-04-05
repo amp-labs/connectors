@@ -14,9 +14,10 @@ import (
 )
 
 const (
-	Insert BulkWriteMode = "insert"
-	Upsert BulkWriteMode = "upsert"
-	Update BulkWriteMode = "update"
+	Insert BulkOperationMode = "insert"
+	Upsert BulkOperationMode = "upsert"
+	Update BulkOperationMode = "update"
+	Delete BulkOperationMode = "delete"
 
 	JobStateAborted        = "Aborted"
 	JobStateFailed         = "Failed"
@@ -50,10 +51,10 @@ type BulkOperationParams struct {
 	CSVData io.Reader // required
 
 	// Salesforce operation mode
-	Mode BulkWriteMode
+	Mode BulkOperationMode
 }
 
-type BulkWriteMode string
+type BulkOperationMode string
 
 // BulkOperation is what's returned from writing data via the BulkOperation call.
 type BulkOperationResult struct {
@@ -109,14 +110,7 @@ func (c *Connector) BulkWrite( //nolint:funlen,cyclop
 	config BulkOperationParams,
 ) (*BulkOperationResult, error) {
 	// Only support upsert for now
-	switch config.Mode {
-	case Upsert:
-		break
-	case Insert:
-		return nil, fmt.Errorf("%w: %s", ErrUnsupportedMode, "insert")
-	case Update:
-		return nil, fmt.Errorf("%w: %s", ErrUnsupportedMode, "Update")
-	default:
+	if config.Mode != Upsert {
 		return nil, fmt.Errorf("%w: %s", ErrUnsupportedMode, config.Mode)
 	}
 
@@ -128,12 +122,12 @@ func (c *Connector) BulkWrite( //nolint:funlen,cyclop
 		"lineEnding":          "LF",
 	}
 
-	result, err := c.bulkOperation(ctx, BulkOperationParams(config), jobBody)
+	result, err := c.bulkOperation(ctx, config, jobBody)
 	if err != nil {
 		return nil, fmt.Errorf("bulk write failed: %w", err)
 	}
 
-	return (*BulkOperationResult)(result), nil
+	return result, nil
 }
 
 func joinURLPath(baseURL string, paths ...string) (string, error) {
