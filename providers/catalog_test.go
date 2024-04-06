@@ -195,9 +195,14 @@ var testCases = []struct { // nolint
 		},
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
