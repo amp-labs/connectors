@@ -338,6 +338,7 @@ var testCases = []struct { // nolint
 		expected: &ProviderInfo{
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
+				GrantType:                 PKCE,
 				AuthURL:                   "https://login.sellsy.com/oauth2/authorization",
 				TokenURL:                  "https://login.sellsy.com/oauth2/access-tokens",
 				ExplicitScopesRequired:    false,
