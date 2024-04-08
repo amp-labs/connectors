@@ -39,7 +39,7 @@ type JSONHTTPResponse struct {
 // refresh the access token and retry the request. If errorHandler is nil, then the default error
 // handler is used. If not, the caller can inject their own error handling logic.
 func (j *JSONHTTPClient) Get(ctx context.Context, url string, headers ...Header) (*JSONHTTPResponse, error) {
-	res, body, err := j.HTTPClient.Get(ctx, url, addAcceptJSONHeader(headers)) //nolint:bodyclose
+	res, body, err := j.HTTPClient.Get(ctx, url, addAcceptJSONHeader(ctx, headers)) //nolint:bodyclose
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +55,7 @@ func (j *JSONHTTPClient) Get(ctx context.Context, url string, headers ...Header)
 func (j *JSONHTTPClient) Post(ctx context.Context,
 	url string, reqBody any, headers ...Header,
 ) (*JSONHTTPResponse, error) {
-	res, body, err := j.HTTPClient.Post(ctx, url, reqBody, addAcceptJSONHeader(headers)) //nolint:bodyclose
+	res, body, err := j.HTTPClient.Post(ctx, url, reqBody, addAcceptJSONHeader(ctx, headers)) //nolint:bodyclose
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +71,7 @@ func (j *JSONHTTPClient) Post(ctx context.Context,
 func (j *JSONHTTPClient) Patch(ctx context.Context,
 	url string, reqBody any, headers ...Header,
 ) (*JSONHTTPResponse, error) {
-	res, body, err := j.HTTPClient.Patch(ctx, url, reqBody, addAcceptJSONHeader(headers)) //nolint:bodyclose
+	res, body, err := j.HTTPClient.Patch(ctx, url, reqBody, addAcceptJSONHeader(ctx, headers)) //nolint:bodyclose
 	if err != nil {
 		return nil, err
 	}
@@ -94,7 +94,7 @@ func parseJSONResponse(res *http.Response, body []byte) (*JSONHTTPResponse, erro
 			return nil, fmt.Errorf("failed to parse content type: %w", err)
 		}
 
-		if mimeType != "application/json" {
+		if mimeType != "application/json" && mimeType != "application/vnd.api+json" {
 			return nil, fmt.Errorf("%w: expected content type to be application/json, got %s", ErrNotJSON, mimeType)
 		}
 	}
@@ -127,13 +127,18 @@ func UnmarshalJSON[T any](rsp *JSONHTTPResponse) (*T, error) {
 // MakeJSONGetRequest creates a GET request with the given headers and adds the
 // Accept: application/json header. It then returns the request.
 func MakeJSONGetRequest(ctx context.Context, url string, headers []Header) (*http.Request, error) {
-	return MakeGetRequest(ctx, url, addAcceptJSONHeader(headers))
+	return MakeGetRequest(ctx, url, addAcceptJSONHeader(ctx, headers))
 }
 
 // addAcceptJSONHeader adds the Accept: application/json header to the given headers.
-func addAcceptJSONHeader(headers []Header) []Header {
+func addAcceptJSONHeader(ctx context.Context, headers []Header) []Header {
 	if headers == nil {
 		headers = make([]Header, 0)
+	}
+
+	// We could retrieve the Media Type from the ProviderGroup
+	if ctx.Value("Content-Type") == "application/vnd.api+json" {
+		return append(headers, Header{Key: "Accept", Value: "application/vnd.api+json"})
 	}
 
 	return append(headers, Header{Key: "Accept", Value: "application/json"})

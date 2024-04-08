@@ -8,6 +8,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/hubspot"
+	"github.com/amp-labs/connectors/outreach"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/salesforce"
 )
@@ -64,6 +65,9 @@ var Salesforce API[*salesforce.Connector, salesforce.Option] = salesforce.NewCon
 
 // Hubspot is an API that returns a new Hubspot Connector.
 var Hubspot API[*hubspot.Connector, hubspot.Option] = hubspot.NewConnector //nolint:gochecknoglobals
+
+// Outreach is an API that returns a new Outreach Connector.
+var Outreach API[*outreach.Connector, outreach.Option] = outreach.NewConnector
 
 // We re-export the following types so that they can be used by consumers of this library.
 type (
@@ -144,6 +148,18 @@ func newHubspot(opts map[string]any) (Connector, error) { //nolint:ireturn
 	}
 
 	return Hubspot.New(options...)
+}
+
+// newHubspot returns a new Hubspot Connector, by unwrapping the options and passing them to the Hubspot API.
+func newOutreach(opts map[string]any) (Connector, error) { //nolint:ireturn
+	var options []outreach.Option
+
+	c, valid := getParam[common.AuthenticatedHTTPClient](opts, "client")
+	if valid {
+		options = append(options, outreach.WithAuthenticatedClient(c))
+	}
+
+	return Outreach.New(options...)
 }
 
 // getParam returns the value of the given key, if present, safely cast to an assumed type.
