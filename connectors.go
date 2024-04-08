@@ -11,6 +11,7 @@ import (
 	"github.com/amp-labs/connectors/hubspot"
 	"github.com/amp-labs/connectors/microsoftdynamicscrm"
 	"github.com/amp-labs/connectors/mock"
+	"github.com/amp-labs/connectors/outreach"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/salesforce"
 )
@@ -85,6 +86,9 @@ var MSDynamicsSales API[*microsoftdynamicscrm.Connector, microsoftdynamicscrm.Op
 // Mock is an API that returns a new Mock Connector.
 var Mock API[*mock.Connector, mock.Option] = mock.NewConnector //nolint:gochecknoglobals
 
+// Outreach is an API that returns a new Outreach Connector.
+var Outreach API[*outreach.Connector, outreach.Option] = outreach.NewConnector //nolint:gochecknoglobals
+
 // We re-export the following types so that they can be used by consumers of this library.
 type (
 	ReadParams               = common.ReadParams
@@ -129,6 +133,8 @@ func New(provider providers.Provider, opts map[string]any) (Connector, error) { 
 		return newSalesforce(opts)
 	case providers.Hubspot:
 		return newHubspot(opts)
+	case providers.Outreach:
+		return newOutreach(opts)
 	default:
 		return nil, fmt.Errorf("%w: %s", ErrUnknownConnector, provider)
 	}
@@ -199,6 +205,18 @@ func newHubspot(opts map[string]any) (Connector, error) { //nolint:ireturn
 	}
 
 	return Hubspot.New(options...)
+}
+
+// newHubspot returns a new Hubspot Connector, by unwrapping the options and passing them to the Hubspot API.
+func newOutreach(opts map[string]any) (Connector, error) { //nolint:ireturn
+	var options []outreach.Option
+
+	c, valid := getParam[common.AuthenticatedHTTPClient](opts, "client")
+	if valid {
+		options = append(options, outreach.WithAuthenticatedClient(c))
+	}
+
+	return Outreach.New(options...)
 }
 
 // getParam returns the value of the given key, if present, safely cast to an assumed type.
