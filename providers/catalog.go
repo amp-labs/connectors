@@ -893,7 +893,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	// Slack configuration
 	Slack: {
 		AuthType: Oauth2,
-		BaseURL:  "https://slack.com",
+		BaseURL:  "https://slack.com/api",
 		OauthOpts: OauthOpts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://slack.com/oauth/v2/authorize",

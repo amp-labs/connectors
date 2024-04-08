@@ -1038,7 +1038,7 @@ var testCases = []struct { // nolint
 					WorkspaceRefField: "workspace_name",
 				},
 			},
-			BaseURL: "https://slack.com",
+			BaseURL: "https://slack.com/api",
 		},
 		expectedErr: nil,
 	},
