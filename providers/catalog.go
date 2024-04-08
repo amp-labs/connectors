@@ -39,6 +39,7 @@ const (
 	ZendeskChat                         Provider = "zendeskChat"
 	WordPress                           Provider = "wordPress"
 	Airtable                            Provider = "airtable"
+	Webflow                             Provider = "webflow"
 )
 
 // ================================================================================
@@ -869,6 +870,34 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			GrantType:                 PKCE,
 			AuthURL:                   "https://airtable.com/oauth2/v1/authorize",
 			TokenURL:                  "https://airtable.com/oauth2/v1/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Webflow Support Configuration
+	Webflow: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.webflow.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://webflow.com/oauth/authorize?",
+			TokenURL:                  "https://api.webflow.com/oauth/access_token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 			TokenMetadataFields: TokenMetadataFields{
