@@ -67,6 +67,7 @@ func main() {
 
 	config := common.ReadParams{
 		ObjectName: "users",
+		// NextPage:   "https://api.outreach.io/api/v2/users?page%5Blimit%5D=1\u0026page%5Boffset%5D=2",
 	}
 	result, err := Outreach.Read(context.TODO(), config)
 	if err != nil {

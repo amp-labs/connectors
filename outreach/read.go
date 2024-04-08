@@ -36,6 +36,9 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 			return nil, err
 		}
 
+		// Testing pagination
+		// fullURL = fullURL + "?page[limit]=1"
+
 		res, err = c.get(ctx, fullURL)
 		if err != nil {
 			return nil, err

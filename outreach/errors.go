@@ -17,10 +17,8 @@ func (c *Connector) HandleError(err error) error {
 	switch {
 	case errors.Is(err, common.ErrAccessToken):
 		// Retryable, so just log and retry
-		// TODO: Retry
 		return err
 	case errors.Is(err, common.ErrRetryable):
-		// TODO: Retry
 		return err
 	case errors.Is(err, common.ErrApiDisabled):
 		fallthrough

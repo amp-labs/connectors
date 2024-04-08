@@ -16,18 +16,19 @@ func getNextRecordsURL(node *ajson.Node) (string, error) {
 			return "", err
 		}
 
-		next, err := links.GetKey("next")
-		if err != nil {
-			return "", err
-		}
+		if links.HasKey("next") {
+			next, err := links.GetKey("next")
+			if err != nil {
+				return "", err
+			}
 
-		if !next.IsString() {
-			return "", ErrNotString
-		}
+			if !next.IsString() {
+				return "", ErrNotString
+			}
 
-		nextPage = next.MustString()
+			nextPage = next.MustString()
+		}
 	}
-
 	return nextPage, nil
 }
 
