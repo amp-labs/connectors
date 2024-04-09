@@ -1010,6 +1010,38 @@ var testCases = []struct { // nolint
 		},
 		expectedErr: nil,
 	},
+	{
+		provider:    Slack,
+		description: "Valid Slack provider config with non-existent substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
+				AuthURL:                   "https://slack.com/oauth/v2/authorize",
+				TokenURL:                  "https://slack.com/api/oauth.v2.access",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: true,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField:       "scope",
+					WorkspaceRefField: "workspace_name",
+				},
+			},
+			BaseURL: "https://slack.com/api",
+		},
+		expectedErr: nil,
+	},
 }
 
 func TestReadInfo(t *testing.T) { // nolint

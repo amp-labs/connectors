@@ -39,6 +39,7 @@ const (
 	ZendeskChat                         Provider = "zendeskChat"
 	WordPress                           Provider = "wordPress"
 	Airtable                            Provider = "airtable"
+	Slack                               Provider = "slack"
 )
 
 // ================================================================================
@@ -873,6 +874,35 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			ExplicitWorkspaceRequired: false,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Slack configuration
+	Slack: {
+		AuthType: Oauth2,
+		BaseURL:  "https://slack.com/api",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://slack.com/oauth/v2/authorize",
+			TokenURL:                  "https://slack.com/api/oauth.v2.access",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: true,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField:       "scope",
+				WorkspaceRefField: "workspace_name",
 			},
 		},
 		Support: Support{
