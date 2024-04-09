@@ -40,6 +40,7 @@ const (
 	WordPress                           Provider = "wordPress"
 	Airtable                            Provider = "airtable"
 	Slack                               Provider = "slack"
+	HelpScoutMailbox                    Provider = "helpScoutMailbox"
 )
 
 // ================================================================================
@@ -904,6 +905,30 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				ScopesField:       "scope",
 				WorkspaceRefField: "workspace_name",
 			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+	// HelpScoutMailbox Support Configuration
+	HelpScoutMailbox: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.helpscout.net",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://secure.helpscout.net/authentication/authorizeClientApplication",
+			TokenURL:                  "https://api.helpscout.net/v2/oauth2/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{

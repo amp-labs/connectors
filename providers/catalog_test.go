@@ -1042,6 +1042,34 @@ var testCases = []struct { // nolint
 		},
 		expectedErr: nil,
 	},
+	{
+		provider:    HelpScoutMailbox,
+		description: "Valid HelpScoutMailbox provider config with no substitutions",
+		expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
+				AuthURL:                   "https://secure.helpscout.net/authentication/authorizeClientApplication",
+				TokenURL:                  "https://api.helpscout.net/v2/oauth2/token",
+				ExplicitScopesRequired:    false,
+				ExplicitWorkspaceRequired: false,
+			},
+			Support: Support{
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+			BaseURL: "https://api.helpscout.net",
+		},
+		expectedErr: nil,
+	},
 }
 
 func TestReadInfo(t *testing.T) { // nolint
