@@ -111,6 +111,8 @@ func New(provider providers.Provider, opts map[string]any) (Connector, error) { 
 		return newSalesforce(opts)
 	case providers.Hubspot:
 		return newHubspot(opts)
+	case providers.Outreach:
+		return newOutreach(opts)
 	default:
 		return nil, fmt.Errorf("%w: %s", ErrUnknownConnector, provider)
 	}
@@ -150,7 +152,7 @@ func newHubspot(opts map[string]any) (Connector, error) { //nolint:ireturn
 	return Hubspot.New(options...)
 }
 
-// newHubspot returns a new Hubspot Connector, by unwrapping the options and passing them to the Hubspot API.
+// newOutreach returns a new Outreach Connector, by unwrapping the options and passing them to the Outreach API.
 func newOutreach(opts map[string]any) (Connector, error) { //nolint:ireturn
 	var options []outreach.Option
 
