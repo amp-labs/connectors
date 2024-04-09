@@ -7,11 +7,6 @@ import (
 	"github.com/amp-labs/connectors/common"
 )
 
-var (
-	apiJSONSpecificationContentType contextKey = "Content-Type"
-	// apiJSONSpecificationAccept      contextKey = "Accept"
-)
-
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
 	var (
 		res *common.JSONHTTPResponse
@@ -27,10 +22,6 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		}
 
 	} else {
-		// Grouping Providers may help to decouple this injection
-		// else it will be needed in every method
-		ctx = context.WithValue(ctx, apiJSONSpecificationContentType, "application/vnd.api+json")
-
 		fullURL, err := url.JoinPath(c.BaseURL, config.ObjectName)
 		if err != nil {
 			return nil, err
