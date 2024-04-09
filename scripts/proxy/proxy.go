@@ -151,6 +151,7 @@ func parseAccessTokenExpiry(expiryStr, timeFormat string) time.Time {
 		"RFC3339":     time.RFC3339,
 		"RFC3339Nano": time.RFC3339Nano,
 		"Kitchen":     time.Kitchen,
+		"DateOnly":    time.DateOnly,
 	}
 
 	format, found := formatEnums[timeFormat]
@@ -202,7 +203,8 @@ func buildProxy(provider string, scopes []string, clientId, clientSecret string,
 func getProviderConfig(provider string, substitutions map[string]string) *providers.ProviderInfo {
 	config, err := providers.ReadInfo(provider, &substitutions)
 	if err != nil {
-		panic(err)
+
+		panic(fmt.Errorf("%w: %s", err, provider))
 	}
 
 	return config
