@@ -203,7 +203,6 @@ func buildProxy(provider string, scopes []string, clientId, clientSecret string,
 func getProviderConfig(provider string, substitutions map[string]string) *providers.ProviderInfo {
 	config, err := providers.ReadInfo(provider, &substitutions)
 	if err != nil {
-
 		panic(fmt.Errorf("%w: %s", err, provider))
 	}
 
