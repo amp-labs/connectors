@@ -13,6 +13,7 @@ const (
 	Pipedrive                           Provider = "pipedrive"
 	Copper                              Provider = "copper"
 	ZohoCRM                             Provider = "zohoCRM"
+	Klaviyo                             Provider = "klaviyo"
 	Sellsy                              Provider = "sellsy"
 	Attio                               Provider = "attio"
 	Close                               Provider = "close"
@@ -275,6 +276,34 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
+		},
+	},
+
+	// Klaviyo configuration
+	Klaviyo: {
+		AuthType: Oauth2,
+		BaseURL:  "https://a.klaviyo.com/api",
+		OauthOpts: OauthOpts{
+			GrantType:                 PKCE,
+			AuthURL:                   "https://www.klaviyo.com/oauth/authorize",
+			TokenURL:                  "https://a.klaviyo.com/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: true,
+				Update: true,
+				Upsert: true,
+				Delete: true,
+			},
+			Proxy:     true,
+			Read:      true,
+			Subscribe: false,
+			Write:     true,
 		},
 	},
 
