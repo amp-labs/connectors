@@ -67,7 +67,7 @@ var Salesforce API[*salesforce.Connector, salesforce.Option] = salesforce.NewCon
 var Hubspot API[*hubspot.Connector, hubspot.Option] = hubspot.NewConnector //nolint:gochecknoglobals
 
 // Outreach is an API that returns a new Outreach Connector.
-var Outreach API[*outreach.Connector, outreach.Option] = outreach.NewConnector
+var Outreach API[*outreach.Connector, outreach.Option] = outreach.NewConnector //nolint:gochecknoglobals
 
 // We re-export the following types so that they can be used by consumers of this library.
 type (

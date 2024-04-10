@@ -20,7 +20,6 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		if err != nil {
 			return nil, err
 		}
-
 	} else {
 		fullURL, err := url.JoinPath(c.BaseURL, config.ObjectName)
 		if err != nil {

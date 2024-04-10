@@ -6,7 +6,7 @@ import (
 )
 
 // getNextRecords returns the "next" url for the next page of results,
-// If available, else returns an empty string
+// If available, else returns an empty string.
 func getNextRecordsURL(node *ajson.Node) (string, error) {
 	var nextPage string
 
@@ -16,19 +16,12 @@ func getNextRecordsURL(node *ajson.Node) (string, error) {
 			return "", err
 		}
 
-		if links.HasKey("next") {
-			next, err := links.GetKey("next")
-			if err != nil {
-				return "", err
-			}
-
-			if !next.IsString() {
-				return "", ErrNotString
-			}
-
-			nextPage = next.MustString()
+		nextPage, err = checkURL(links)
+		if err != nil {
+			return "", err
 		}
 	}
+
 	return nextPage, nil
 }
 
@@ -44,6 +37,24 @@ func parsePagingNext(node *ajson.Node) (*ajson.Node, error) {
 	}
 
 	return links, nil
+}
+
+// checkURL is a helper function that returns the url of the  next page.
+func checkURL(node *ajson.Node) (string, error) {
+	if !node.HasKey("next") {
+		return "", nil
+	}
+
+	next, err := node.GetKey("next")
+	if err != nil {
+		return "", err
+	}
+
+	if !next.IsString() {
+		return "", ErrNotString
+	}
+
+	return next.String(), nil
 }
 
 // getRecords returns the records from the response.

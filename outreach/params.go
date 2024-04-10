@@ -14,9 +14,14 @@ type outreachParams struct {
 
 type Option func(params *outreachParams)
 
-func WithClient(ctx context.Context, client *http.Client, config *oauth2.Config, token *oauth2.Token) Option {
+func WithClient(ctx context.Context, client *http.Client, config *oauth2.Config, token *oauth2.Token,
+) Option {
 	return func(params *outreachParams) {
-		oauthclient, err := common.NewOAuthHTTPClient(ctx, common.WithClient(client), common.WithOAuthConfig(config), common.WithOAuthToken(token))
+		oauthclient, err := common.NewOAuthHTTPClient(
+			ctx, common.WithClient(client),
+			common.WithOAuthConfig(config),
+			common.WithOAuthToken(token),
+		)
 		if err != nil {
 			panic(err)
 		}

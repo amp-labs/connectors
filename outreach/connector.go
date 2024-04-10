@@ -9,7 +9,7 @@ import (
 
 const (
 	// we need to change the BaseURL
-	// for this to be v2
+	// for this to be v2.
 	apiVersion = "api/v2"
 )
 
@@ -31,7 +31,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		}
 	}()
 
-	var params = &outreachParams{}
+	params := &outreachParams{}
 	for _, opt := range opts {
 		opt(params)
 	}
