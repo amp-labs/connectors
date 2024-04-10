@@ -40,6 +40,7 @@ const (
 	WordPress                           Provider = "wordPress"
 	Airtable                            Provider = "airtable"
 	Slack                               Provider = "slack"
+	Jira                                Provider = "jira"
 )
 
 // ================================================================================
@@ -902,8 +903,33 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			ExplicitWorkspaceRequired: true,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField:       "scope",
+
 				WorkspaceRefField: "workspace_name",
 			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+	// Jira configuration
+	Jira: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.atlassian.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://auth.atlassian.com/authorize",
+			TokenURL:                  "https://auth.atlassian.com/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{

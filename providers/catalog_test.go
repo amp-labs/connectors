@@ -1042,6 +1042,34 @@ var testCases = []struct { // nolint
 		},
 		expectedErr: nil,
 	},
+	{
+		provider:    Jira,
+		description: "Valid Jira provider config with non-existent substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
+				AuthURL:                   "https://auth.atlassian.com/authorize",
+				TokenURL:                  "https://auth.atlassian.com/oauth/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+			},
+			BaseURL: "https://api.atlassian.com",
+		},
+		expectedErr: nil,
+	},
 }
 
 func TestReadInfo(t *testing.T) { // nolint
