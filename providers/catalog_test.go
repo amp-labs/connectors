@@ -1043,8 +1043,8 @@ var testCases = []struct { // nolint
 		expectedErr: nil,
 	},
 	{
-		provider:    Jira,
-		description: "Valid Jira provider config with non-existent substitutions",
+		provider:    Atlassian,
+		description: "Valid Atlassian provider config with non-existent substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
 				Read:  false,
