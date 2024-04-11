@@ -1036,9 +1036,7 @@ var testCases = []struct { // nolint
 				Subscribe: false,
 				Write:     false,
 			},
-			BaseURL: "https://api.helpscout.net",
 		},
-		expectedErr: nil,
 	},
 	{
 		provider:    Atlassian,
