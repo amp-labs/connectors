@@ -40,6 +40,7 @@ const (
 	WordPress                           Provider = "wordPress"
 	Airtable                            Provider = "airtable"
 	Slack                               Provider = "slack"
+	HelpScoutMailbox                    Provider = "helpScoutMailbox"
 	Atlassian                           Provider = "atlassian"
 )
 
@@ -402,7 +403,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	// Dropbox configuration
 	Dropbox: {
 		AuthType: Oauth2,
-		BaseURL:  "https://api.dropboxapi.com/2/",
+		BaseURL:  "https://api.dropboxapi.com",
 		OauthOpts: OauthOpts{
 			AuthURL:                   "https://www.dropbox.com/oauth2/authorize",
 			TokenURL:                  "https://api.dropboxapi.com/oauth2/token",
@@ -766,32 +767,6 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
-	GoogleCalendar: {
-		AuthType: Oauth2,
-		BaseURL:  "https://www.googleapis.com/calendar",
-		OauthOpts: OauthOpts{
-			AuthURL:                   "https://accounts.google.com/o/oauth2/v2/auth",
-			TokenURL:                  "https://oauth2.googleapis.com/token",
-			ExplicitScopesRequired:    true,
-			ExplicitWorkspaceRequired: false,
-			TokenMetadataFields: TokenMetadataFields{
-				ScopesField: "scope",
-			},
-		},
-		Support: Support{
-			BulkWrite: BulkWriteSupport{
-				Insert: false,
-				Update: false,
-				Upsert: false,
-				Delete: false,
-			},
-			Proxy:     false,
-			Read:      false,
-			Subscribe: false,
-			Write:     false,
-		},
-	},
-
 	// Zendesk Support configuration
 	ZendeskSupport: {
 		AuthType: Oauth2,
@@ -920,6 +895,31 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Write:     false,
 		},
 	},
+	// HelpScoutMailbox Support Configuration
+	HelpScoutMailbox: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.helpscout.net",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://secure.helpscout.net/authentication/authorizeClientApplication",
+			TokenURL:                  "https://api.helpscout.net/v2/oauth2/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
 	// Atlassian configuration
 	Atlassian: {
 		AuthType: Oauth2,
