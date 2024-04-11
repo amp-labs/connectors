@@ -153,6 +153,9 @@ var testCases = []struct { // nolint
 				TokenURL:                  "https://accounts.salesloft.com/oauth/token",
 				ExplicitScopesRequired:    false,
 				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
 			},
 			BaseURL: "https://api.salesloft.com",
 		},
@@ -180,6 +183,9 @@ var testCases = []struct { // nolint
 				TokenURL:                  "https://api.outreach.io/oauth/token",
 				ExplicitScopesRequired:    true,
 				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
 			},
 			BaseURL: "https://api.outreach.io",
 		},
@@ -433,6 +439,9 @@ var testCases = []struct { // nolint
 				TokenURL:                  "https://app.asana.com/-/oauth_token",
 				ExplicitScopesRequired:    false,
 				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ConsumerRefField: "data.id",
+				},
 			},
 			BaseURL: "https://app.asana.com/api",
 		},
@@ -520,6 +529,10 @@ var testCases = []struct { // nolint
 				TokenURL:                  "https://app.gong.io/oauth2/generate-customer-token",
 				ExplicitWorkspaceRequired: false,
 				ExplicitScopesRequired:    true,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField:      "scope",
+					ConsumerRefField: "client_id",
+				},
 			},
 			BaseURL: "https://testing.api.gong.io",
 		},
@@ -1037,6 +1050,37 @@ var testCases = []struct { // nolint
 				Write:     false,
 			},
 			BaseURL: "https://api.helpscout.net",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    Timely,
+		description: "Valid Timely provider config with no substitutions",
+		expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
+				AuthURL:                   "https://api.timelyapp.com/1.1/oauth/authorize",
+				TokenURL:                  "https://api.timelyapp.com/1.1/oauth/token",
+				ExplicitScopesRequired:    false,
+				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
+			},
+			Support: Support{
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Subscribe: false,
+				Proxy:     false,
+			},
+			BaseURL: "https://api.timelyapp.com",
 		},
 		expectedErr: nil,
 	},
