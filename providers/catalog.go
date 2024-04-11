@@ -11,6 +11,7 @@ const (
 	LinkedIn                            Provider = "linkedIn"
 	Salesloft                           Provider = "salesloft"
 	Outreach                            Provider = "outreach"
+	AdobeSign                           Provider = "adobeSign"
 	Pipedrive                           Provider = "pipedrive"
 	Copper                              Provider = "copper"
 	ZohoCRM                             Provider = "zohoCRM"
@@ -199,6 +200,34 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 		ProviderOpts: ProviderOpts{
 			"restAPIURL": "https://api.outreach.io/api/v2",
+		},
+	},
+
+	// Adobe Sign configuration
+	AdobeSign: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.{{.workspace}}.adobesign.com/",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://secure.{{.workspace}}.adobesign.com/public/oauth/v2",
+			TokenURL:                  "https://api.{{.workspace}}.echosign.com/oauth/v2/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ConsumerRefField:  "api_access_point",
+				WorkspaceRefField: "web_access_point",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: true,
+				Update: true,
+				Upsert: true,
+				Delete: true,
+			},
+			Proxy:     false,
+			Read:      true,
+			Subscribe: false,
+			Write:     true,
 		},
 	},
 
