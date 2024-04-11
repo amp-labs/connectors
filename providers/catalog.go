@@ -199,15 +199,15 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
-				Insert: true,
-				Update: true,
-				Upsert: true,
-				Delete: true,
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
 			},
 			Proxy:     false,
-			Read:      true,
+			Read:      false,
 			Subscribe: false,
-			Write:     true,
+			Write:     false,
 		},
 	},
 
