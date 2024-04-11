@@ -8,6 +8,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/hubspot"
+	"github.com/amp-labs/connectors/msdsales"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/salesforce"
 )
@@ -75,6 +76,9 @@ var Salesforce API[*salesforce.Connector, salesforce.Option] = salesforce.NewCon
 
 // Hubspot is an API that returns a new Hubspot Connector.
 var Hubspot API[*hubspot.Connector, hubspot.Option] = hubspot.NewConnector //nolint:gochecknoglobals
+
+// MSDynamicsSales is an API that returns a new MS Dynamics 365 Sales Connector.
+var MSDynamicsSales API[*msdsales.Connector, msdsales.Option] = msdsales.NewConnector //nolint:gochecknoglobals
 
 // We re-export the following types so that they can be used by consumers of this library.
 type (

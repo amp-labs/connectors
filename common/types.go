@@ -82,6 +82,8 @@ type ReadParams struct {
 	Fields []string // required, at least one field needed
 	// NextPage is an opaque token that can be used to get the next page of results.
 	NextPage string // optional, only set this if you want to read the next page of results
+	// PageSize number of elements per page
+	PageSize int64 // optional, desired page size
 	// Since is a timestamp that can be used to get only records that have changed since that time.
 	Since time.Time // optional, omit this to fetch all records
 	// Deleted is true if we want to read deleted records instead of active records.
