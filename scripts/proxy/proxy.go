@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/amp-labs/connectors/basic"
+	"github.com/amp-labs/connectors/connector"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/utils"
 	"golang.org/x/oauth2"
@@ -203,7 +203,6 @@ func buildProxy(provider string, scopes []string, clientId, clientSecret string,
 func getProviderConfig(provider string, substitutions map[string]string) *providers.ProviderInfo {
 	config, err := providers.ReadInfo(provider, &substitutions)
 	if err != nil {
-
 		panic(fmt.Errorf("%w: %s", err, provider))
 	}
 
@@ -227,9 +226,9 @@ func configureOAuth(clientId, clientSecret string, scopes []string, providerInfo
 func setupHttpClient(cfg *oauth2.Config, accessToken, refreshToken, provider string, expiry time.Time, providerInfo *providers.ProviderInfo) *http.Client {
 	ctx := context.Background()
 
-	conn, err := basic.NewConnector(
+	conn, err := connector.NewConnector(
 		provider,
-		basic.WithClient(ctx, http.DefaultClient, cfg, &oauth2.Token{
+		connector.WithClient(ctx, http.DefaultClient, cfg, &oauth2.Token{
 			AccessToken:  accessToken,
 			RefreshToken: refreshToken,
 			Expiry:       expiry, // will trigger reuse of refresh token
