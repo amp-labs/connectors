@@ -30,11 +30,10 @@ const (
 	AWeber                              Provider = "aWeber"
 	GetResponse                         Provider = "getResponse"
 	ConstantContact                     Provider = "constantContact"
-	MicrosoftDynamics365Sales           Provider = "microsoftDynamics365Sales"
+	MicrosoftDynamics365CRM             Provider = "microsoftDynamics365CRM"
 	MicrosoftDynamics365BusinessCentral Provider = "microsoftDynamics365BusinessCentral"
 	Gainsight                           Provider = "gainsight"
 	Box                                 Provider = "box"
-	GoogleCalendar                      Provider = "googleCalendar"
 	ZendeskSupport                      Provider = "zendeskSupport"
 	ZendeskChat                         Provider = "zendeskChat"
 	WordPress                           Provider = "wordPress"
@@ -642,8 +641,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
-	// MS Sales configuration
-	MicrosoftDynamics365Sales: {
+	MicrosoftDynamics365CRM: {
 		AuthType: Oauth2,
 		BaseURL:  "https://{{.workspace}}.api.crm.dynamics.com",
 		OauthOpts: OauthOpts{
