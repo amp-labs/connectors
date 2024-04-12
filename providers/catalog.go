@@ -39,6 +39,8 @@ const (
 	ZendeskChat                         Provider = "zendeskChat"
 	WordPress                           Provider = "wordPress"
 	Airtable                            Provider = "airtable"
+	Slack                               Provider = "slack"
+	HelpScoutMailbox                    Provider = "helpScoutMailbox"
 	Webflow                             Provider = "webflow"
 )
 
@@ -68,7 +70,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Insert: false,
 				Update: false,
 				Upsert: true,
-				Delete: false,
+				Delete: true,
 			},
 			Proxy:     true,
 			Read:      true,
@@ -401,7 +403,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	// Dropbox configuration
 	Dropbox: {
 		AuthType: Oauth2,
-		BaseURL:  "https://api.dropboxapi.com/2/",
+		BaseURL:  "https://api.dropboxapi.com",
 		OauthOpts: OauthOpts{
 			AuthURL:                   "https://www.dropbox.com/oauth2/authorize",
 			TokenURL:                  "https://api.dropboxapi.com/oauth2/token",
@@ -765,32 +767,6 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
-	GoogleCalendar: {
-		AuthType: Oauth2,
-		BaseURL:  "https://www.googleapis.com/calendar",
-		OauthOpts: OauthOpts{
-			AuthURL:                   "https://accounts.google.com/o/oauth2/v2/auth",
-			TokenURL:                  "https://oauth2.googleapis.com/token",
-			ExplicitScopesRequired:    true,
-			ExplicitWorkspaceRequired: false,
-			TokenMetadataFields: TokenMetadataFields{
-				ScopesField: "scope",
-			},
-		},
-		Support: Support{
-			BulkWrite: BulkWriteSupport{
-				Insert: false,
-				Update: false,
-				Upsert: false,
-				Delete: false,
-			},
-			Proxy:     false,
-			Read:      false,
-			Subscribe: false,
-			Write:     false,
-		},
-	},
-
 	// Zendesk Support configuration
 	ZendeskSupport: {
 		AuthType: Oauth2,
@@ -890,13 +866,66 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
+	// Slack configuration
+	Slack: {
+		AuthType: Oauth2,
+		BaseURL:  "https://slack.com/api",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://slack.com/oauth/v2/authorize",
+			TokenURL:                  "https://slack.com/api/oauth.v2.access",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: true,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField:       "scope",
+				WorkspaceRefField: "workspace_name",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+	// HelpScoutMailbox Support Configuration
+	HelpScoutMailbox: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.helpscout.net",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://secure.helpscout.net/authentication/authorizeClientApplication",
+			TokenURL:                  "https://api.helpscout.net/v2/oauth2/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
 	// Webflow Support Configuration
 	Webflow: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.webflow.com",
 		OauthOpts: OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   "https://webflow.com/oauth/authorize?",
+			AuthURL:                   "https://webflow.com/oauth/authorize",
 			TokenURL:                  "https://api.webflow.com/oauth/access_token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
