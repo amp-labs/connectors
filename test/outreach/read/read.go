@@ -54,7 +54,8 @@ func GetOutreachConnector(ctx context.Context, filePath string) *outreach.Connec
 	tok := utils.OutreachOauthTokenFromRegistry(registry)
 
 	conn, err := connectors.Outreach(
-		outreach.WithClient(ctx, http.DefaultClient, cfg, tok))
+		outreach.WithClient(ctx, http.DefaultClient, cfg, tok),
+	)
 	if err != nil {
 		testUtils.Fail("error creating outreach connector", "error", err)
 	}
@@ -63,13 +64,22 @@ func GetOutreachConnector(ctx context.Context, filePath string) *outreach.Connec
 }
 
 func main() {
-	Outreach := GetOutreachConnector(context.TODO(), DefaultCredsFile)
+	outreach := GetOutreachConnector(context.TODO(), DefaultCredsFile)
 
-	config := common.ReadParams{
+	config := connectors.ReadParams{
 		ObjectName: "users",
+		FilterBy: common.Filter{
+			Key:   "id",
+			Value: "3",
+		},
+		SortBy: common.Sorter{
+			Key:   "id",
+			Value: common.Ascending,
+		},
+		PageSize: 1,
 		// NextPage:   "https://api.outreach.io/api/v2/users?page%5Blimit%5D=1\u0026page%5Boffset%5D=2",
 	}
-	result, err := Outreach.Read(context.TODO(), config)
+	result, err := outreach.Read(context.TODO(), config)
 	if err != nil {
 		log.Fatal(err)
 	}

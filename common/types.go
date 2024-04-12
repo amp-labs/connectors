@@ -86,7 +86,33 @@ type ReadParams struct {
 	Since time.Time // optional, omit this to fetch all records
 	// Deleted is true if we want to read deleted records instead of active records.
 	Deleted bool // optional, defaults to false
+	// The size of the returned records per page
+	PageSize int // optional
+	// The filtering criteria
+	FilterBy Filter // optional
+	// Sorting criteria
+	SortBy Sorter // optional
 }
+
+// A Key-Value data structure that can hold different values
+// To be used in filtering and sorting.
+type Filter struct {
+	Key   string
+	Value any
+}
+
+type Sorter struct {
+	Key   string
+	Value Order
+}
+
+// Order represents the order type
+type Order int
+
+const (
+	Ascending Order = iota
+	Descending
+)
 
 // WriteParams defines how we are writing data to a SaaS API.
 type WriteParams struct {
