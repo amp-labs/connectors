@@ -302,15 +302,15 @@ var testCases = []struct { // nolint
 		expected: &ProviderInfo{
 			Support: Support{
 				BulkWrite: BulkWriteSupport{
-					Insert: true,
-					Update: true,
-					Upsert: true,
-					Delete: true,
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
 				},
-				Proxy:     true,
-				Read:      true,
+				Proxy:     false,
+				Read:      false,
 				Subscribe: false,
-				Write:     true,
+				Write:     false,
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
@@ -323,7 +323,7 @@ var testCases = []struct { // nolint
 					ScopesField: "scope",
 				},
 			},
-			BaseURL: "https://a.klaviyo.com/api",
+			BaseURL: "https://a.klaviyo.com",
 		},
 		expectedErr: nil,
 	},

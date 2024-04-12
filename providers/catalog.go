@@ -282,7 +282,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	// Klaviyo configuration
 	Klaviyo: {
 		AuthType: Oauth2,
-		BaseURL:  "https://a.klaviyo.com/api",
+		BaseURL:  "https://a.klaviyo.com",
 		OauthOpts: OauthOpts{
 			GrantType:                 PKCE,
 			AuthURL:                   "https://www.klaviyo.com/oauth/authorize",
@@ -295,15 +295,15 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
-				Insert: true,
-				Update: true,
-				Upsert: true,
-				Delete: true,
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
 			},
-			Proxy:     true,
-			Read:      true,
+			Proxy:     false,
+			Read:      false,
 			Subscribe: false,
-			Write:     true,
+			Write:     false,
 		},
 	},
 
