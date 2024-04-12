@@ -13,6 +13,7 @@ const (
 	Pipedrive                           Provider = "pipedrive"
 	Copper                              Provider = "copper"
 	ZohoCRM                             Provider = "zohoCRM"
+	Klaviyo                             Provider = "klaviyo"
 	Sellsy                              Provider = "sellsy"
 	Attio                               Provider = "attio"
 	Close                               Provider = "close"
@@ -279,11 +280,40 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
+	// Klaviyo configuration
+	Klaviyo: {
+		AuthType: Oauth2,
+		BaseURL:  "https://a.klaviyo.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 PKCE,
+			AuthURL:                   "https://www.klaviyo.com/oauth/authorize",
+			TokenURL:                  "https://a.klaviyo.com/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
 	// Sellsy configuration
 	Sellsy: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.sellsy.com",
 		OauthOpts: OauthOpts{
+			GrantType:                 PKCE,
 			AuthURL:                   "https://login.sellsy.com/oauth2/authorization",
 			TokenURL:                  "https://login.sellsy.com/oauth2/access-tokens",
 			ExplicitScopesRequired:    false,
