@@ -106,7 +106,7 @@ type Sorter struct {
 	Value Order
 }
 
-// Order represents the order type
+// Order represents the order type.
 type Order int
 
 const (

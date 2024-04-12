@@ -31,9 +31,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 			return nil, err
 		}
 
-		// Testing pagination
 		fullURL += q
-		fmt.Println("The fullURL: ", fullURL)
 
 		res, err = c.get(ctx, fullURL)
 		if err != nil {
@@ -50,28 +48,26 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 }
 
 func makeQueryValues(config common.ReadParams) string {
-	var q = "?"
+	query := "?"
 
 	// pageSize default values differ depending on endpoints
 	if config.PageSize != 0 {
-		q += fmt.Sprintf("page[size]=%v&", config.PageSize)
+		query += fmt.Sprintf("page[size]=%v&", config.PageSize)
 	}
 
 	if len(config.FilterBy.Key) > 0 {
 		switch deduceFilteringType(config) {
 		case true:
-			q = q + parseFilteringAttributes(config)
+			query += parseFilteringAttributes(config)
 		default:
-			q += fmt.Sprintf("filter[%s]=%v&", config.FilterBy.Key, config.FilterBy.Value)
+			query += fmt.Sprintf("filter[%s]=%v&", config.FilterBy.Key, config.FilterBy.Value)
 		}
 	}
 
 	s := parseSortingQuery(config)
-	q += s
+	query += s
 
-	fmt.Println(q)
-
-	return q
+	return query
 }
 
 // deduceFilteringType checks if the given parameters are
@@ -79,21 +75,21 @@ func makeQueryValues(config common.ReadParams) string {
 // sending the request.
 func deduceFilteringType(config common.ReadParams) bool {
 	_, OK := config.FilterBy.Value.([]any)
+
 	return OK
 }
 
 func parseFilteringAttributes(config common.ReadParams) string {
-	var q string
+	var query string
 
 	if len(config.FilterBy.Key) > 0 {
 		filter := config.FilterBy.Key
 
 		// Check the data type of the provided value
 		// is string. If it's create the filter query
-		fmt.Println("Values")
 		if arr, ok := config.FilterBy.Value.([]string); ok {
 			values := strings.Join(arr, ",")
-			q = fmt.Sprintf("filter[%s]=%v", filter, values)
+			query = fmt.Sprintf("filter[%s]=%v", filter, values)
 		}
 
 		// Checking if the type of the values is integer
@@ -105,25 +101,25 @@ func parseFilteringAttributes(config common.ReadParams) string {
 			}
 
 			nv := strings.Join(values, ",")
-			q = fmt.Sprintf("filter[%s]=%v&", filter, nv)
+			query = fmt.Sprintf("filter[%s]=%v&", filter, nv)
 		}
 	}
 
-	return q
+	return query
 }
 
 func parseSortingQuery(config common.ReadParams) string {
-	var q string
-	sorter := config.SortBy.Key
+	var query string
 
+	sorter := config.SortBy.Key
 	if len(sorter) > 0 {
 		switch config.SortBy.Value {
-		case 1:
-			q = fmt.Sprintf("sort=-%s", sorter)
-		default:
-			q = fmt.Sprintf("sort=%s", sorter)
+		case common.Ascending:
+			query = fmt.Sprintf("sort=%s&", sorter)
+		case common.Descending:
+			query = fmt.Sprintf("sort=-%s&", sorter)
 		}
 	}
 
-	return q
+	return query
 }
