@@ -28,7 +28,7 @@ var testCases = []struct { // nolint
 					Insert: false,
 					Update: false,
 					Upsert: true,
-					Delete: false,
+					Delete: true,
 				},
 				Subscribe: false,
 				Proxy:     true,

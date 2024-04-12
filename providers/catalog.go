@@ -70,7 +70,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Insert: false,
 				Update: false,
 				Upsert: true,
-				Delete: false,
+				Delete: true,
 			},
 			Proxy:     true,
 			Read:      true,
