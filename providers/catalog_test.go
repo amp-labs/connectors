@@ -297,10 +297,43 @@ var testCases = []struct { // nolint
 	},
 
 	{
+		provider:    Klaviyo,
+		description: "Valid Klaviyo provider config with no substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				GrantType:                 "PKCE",
+				AuthURL:                   "https://www.klaviyo.com/oauth/authorize",
+				TokenURL:                  "https://a.klaviyo.com/oauth/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
+			},
+			BaseURL: "https://a.klaviyo.com",
+		},
+		expectedErr: nil,
+	},
+
+	{
 		provider: Sellsy,
 		expected: &ProviderInfo{
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
+				GrantType:                 PKCE,
 				AuthURL:                   "https://login.sellsy.com/oauth2/authorization",
 				TokenURL:                  "https://login.sellsy.com/oauth2/access-tokens",
 				ExplicitScopesRequired:    false,
