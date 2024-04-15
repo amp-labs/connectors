@@ -5,6 +5,7 @@ package providers
 // ================================================================================
 
 const (
+	Mock                                Provider = "mock"
 	Salesforce                          Provider = "salesforce"
 	Hubspot                             Provider = "hubspot"
 	LinkedIn                            Provider = "linkedIn"
@@ -49,6 +50,26 @@ const (
 // ================================================================================
 
 var catalog = CatalogType{ // nolint:gochecknoglobals
+	Mock: {
+		AuthType: None,
+		BaseURL:  "https://mock.com",
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: true,
+				Update: true,
+				Upsert: true,
+				Delete: true,
+			},
+			Proxy:     true,
+			Read:      true,
+			Subscribe: true,
+			Write:     true,
+		},
+		ProviderOpts: ProviderOpts{
+			"isMock": "true",
+		},
+	},
+
 	// Salesforce configuration
 	Salesforce: {
 		AuthType: Oauth2,
