@@ -1,16 +1,14 @@
 package outreach
 
 import (
-	"strings"
+	"fmt"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers"
 )
 
 const (
-	// we need to change the BaseURL
-	// for this to be v2.
-	apiVersion = "api/v2"
+	providerOptionRestApiURL = "restAPIURL"
 )
 
 type Connector struct {
@@ -49,10 +47,15 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		return nil, err
 	}
 
+	restApi, ok := providerInfo.GetOption(providerOptionRestApiURL)
+	if !ok {
+		return nil, fmt.Errorf("restAPIURL not set: %w", providers.ErrProviderOptionNotFound)
+	}
+
 	params.client.HTTPClient.Base = providerInfo.BaseURL
 
 	return &Connector{
 		Client:  params.client,
-		BaseURL: strings.Join([]string{params.client.HTTPClient.Base, apiVersion}, "/"),
+		BaseURL: restApi,
 	}, nil
 }

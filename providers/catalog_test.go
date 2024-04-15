@@ -182,6 +182,9 @@ var testCases = []struct { // nolint
 				ExplicitWorkspaceRequired: false,
 			},
 			BaseURL: "https://api.outreach.io",
+			ProviderOpts: ProviderOpts{
+				"restAPIURL": "https://api.outreach.io/api/v1",
+			},
 		},
 		expectedErr: nil,
 	},
