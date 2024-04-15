@@ -45,7 +45,9 @@ func WithWrite(write func(ctx context.Context, params common.WriteParams) (*comm
 }
 
 // WithListObjectMetadata sets the listObjectMetadata function for the connector.
-func WithListObjectMetadata(listObjectMetadata func(ctx context.Context, objectNames []string) (*common.ListObjectMetadataResult, error)) Option {
+func WithListObjectMetadata(
+	listObjectMetadata func(ctx context.Context, objectNames []string) (*common.ListObjectMetadataResult, error),
+) Option {
 	return func(params *mockParams) {
 		params.listObjectMetadata = listObjectMetadata
 	}

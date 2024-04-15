@@ -85,6 +85,9 @@ func (c *Connector) Write(ctx context.Context, params common.WriteParams) (*comm
 	return c.write(ctx, params)
 }
 
-func (c *Connector) ListObjectMetadata(ctx context.Context, objectNames []string) (*common.ListObjectMetadataResult, error) {
+func (c *Connector) ListObjectMetadata(
+	ctx context.Context,
+	objectNames []string,
+) (*common.ListObjectMetadataResult, error) {
 	return c.listObjectMetadata(ctx, objectNames)
 }
