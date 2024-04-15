@@ -1108,6 +1108,39 @@ var testCases = []struct { // nolint
 		},
 		expectedErr: nil,
 	},
+	{
+		provider:    Miro,
+		description: "Valid Miro provider config with no substitutions",
+		expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
+				AuthURL:                   "https://miro.com/oauth/authorize",
+				TokenURL:                  "https://api.miro.com/v1/oauth/token",
+				ExplicitScopesRequired:    false,
+				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ConsumerRefField:  "user_id",
+					WorkspaceRefField: "team_id",
+					ScopesField:       "scope",
+				},
+			},
+			Support: Support{
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+			BaseURL: "https://api.miro.com",
+		},
+		expectedErr: nil,
+	},
 }
 
 func TestReadInfo(t *testing.T) { // nolint
