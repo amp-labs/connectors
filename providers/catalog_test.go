@@ -28,7 +28,7 @@ var testCases = []struct { // nolint
 					Insert: false,
 					Update: false,
 					Upsert: true,
-					Delete: false,
+					Delete: true,
 				},
 				Subscribe: false,
 				Proxy:     true,
@@ -300,10 +300,43 @@ var testCases = []struct { // nolint
 	},
 
 	{
+		provider:    Klaviyo,
+		description: "Valid Klaviyo provider config with no substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				GrantType:                 "PKCE",
+				AuthURL:                   "https://www.klaviyo.com/oauth/authorize",
+				TokenURL:                  "https://a.klaviyo.com/oauth/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
+			},
+			BaseURL: "https://a.klaviyo.com",
+		},
+		expectedErr: nil,
+	},
+
+	{
 		provider: Sellsy,
 		expected: &ProviderInfo{
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
+				GrantType:                 PKCE,
 				AuthURL:                   "https://login.sellsy.com/oauth2/authorization",
 				TokenURL:                  "https://login.sellsy.com/oauth2/access-tokens",
 				ExplicitScopesRequired:    false,
@@ -463,7 +496,7 @@ var testCases = []struct { // nolint
 				Subscribe: false,
 				Write:     false,
 			},
-			BaseURL: "https://api.dropboxapi.com/2/",
+			BaseURL: "https://api.dropboxapi.com",
 		},
 		expectedErr: nil,
 	},
@@ -655,6 +688,7 @@ var testCases = []struct { // nolint
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
 				AuthURL:                   "https://auth.calendly.com/oauth/authorize",
 				TokenURL:                  "https://auth.calendly.com/oauth/token",
 				ExplicitScopesRequired:    false,
@@ -719,8 +753,8 @@ var testCases = []struct { // nolint
 		expectedErr: nil,
 	},
 	{
-		provider:    MicrosoftDynamics365Sales,
-		description: "MS Dynamics 365 Sales provider config with valid substitutions",
+		provider:    MicrosoftDynamics365CRM,
+		description: "MS Dynamics 365 CRM provider config with valid substitutions",
 		substitutions: map[string]string{
 			"workspace": "testing",
 		},
@@ -739,6 +773,7 @@ var testCases = []struct { // nolint
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
 				AuthURL:                   "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
 				TokenURL:                  "https://login.microsoftonline.com/common/oauth2/v2.0/token",
 				ExplicitScopesRequired:    true,
@@ -866,36 +901,6 @@ var testCases = []struct { // nolint
 		expectedErr: nil,
 	},
 	{
-		provider:    GoogleCalendar,
-		description: "Google Calendar provider config with no substitutions",
-		expected: &ProviderInfo{
-			Support: Support{
-				Read:  false,
-				Write: false,
-				BulkWrite: BulkWriteSupport{
-					Insert: false,
-					Update: false,
-					Upsert: false,
-					Delete: false,
-				},
-				Subscribe: false,
-				Proxy:     false,
-			},
-			AuthType: Oauth2,
-			OauthOpts: OauthOpts{
-				AuthURL:                   "https://accounts.google.com/o/oauth2/v2/auth",
-				TokenURL:                  "https://oauth2.googleapis.com/token",
-				ExplicitWorkspaceRequired: false,
-				ExplicitScopesRequired:    true,
-				TokenMetadataFields: TokenMetadataFields{
-					ScopesField: "scope",
-				},
-			},
-			BaseURL: "https://www.googleapis.com/calendar",
-		},
-		expectedErr: nil,
-	},
-	{
 		provider:    ZendeskSupport,
 		description: "Zendesk Support provider config with valid substitutions",
 		substitutions: map[string]string{
@@ -916,6 +921,7 @@ var testCases = []struct { // nolint
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
 				AuthURL:                   "https://testing.zendesk.com/oauth/authorizations/new",
 				TokenURL:                  "https://testing.zendesk.com/oauth/tokens",
 				ExplicitScopesRequired:    true,
@@ -934,6 +940,7 @@ var testCases = []struct { // nolint
 		expected: &ProviderInfo{
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
 				AuthURL:                   "https://www.zopim.com/oauth2/authorizations/new?subdomain=test",
 				TokenURL:                  "https://www.zopim.com/oauth2/token",
 				ExplicitScopesRequired:    true,
@@ -1042,6 +1049,65 @@ var testCases = []struct { // nolint
 				},
 			},
 			BaseURL: "https://slack.com/api",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    HelpScoutMailbox,
+		description: "Valid HelpScoutMailbox provider config with no substitutions",
+		expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
+				AuthURL:                   "https://secure.helpscout.net/authentication/authorizeClientApplication",
+				TokenURL:                  "https://api.helpscout.net/v2/oauth2/token",
+				ExplicitScopesRequired:    false,
+				ExplicitWorkspaceRequired: false,
+			},
+			Support: Support{
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+			BaseURL: "https://api.helpscout.net",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    Webflow,
+		description: "Valid Webflow provider config with no substitutions",
+		expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
+				AuthURL:                   "https://webflow.com/oauth/authorize",
+				TokenURL:                  "https://api.webflow.com/oauth/access_token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
+			},
+			Support: Support{
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+			BaseURL: "https://api.webflow.com",
 		},
 		expectedErr: nil,
 	},

@@ -13,11 +13,16 @@ import (
 	"github.com/amp-labs/connectors/salesforce"
 )
 
-// BasicConnector is an interface that can be used to implement a connector with
+// Connector is an interface that can be used to implement a connector with
 // basic configuration about the provider.
-type BasicConnector interface {
+type Connector interface {
 	fmt.Stringer
 	io.Closer
+
+	// JSONHTTPClient returns the underlying JSON HTTP client. This is useful for
+	// testing, or for calling methods that aren't exposed by the Connector
+	// interface directly. Authentication and token refreshes will be handled automatically.
+	JSONHTTPClient() *common.JSONHTTPClient
 
 	// HTTPClient returns the underlying HTTP client. This is useful for proxy requests.
 	HTTPClient() *common.HTTPClient
@@ -26,9 +31,9 @@ type BasicConnector interface {
 	Provider() providers.Provider
 }
 
-// Connector is an interface that all connectors must implement.
-type Connector interface {
-	BasicConnector
+// ReadConnector is an interface that extends the Connector interface with read capabilities.
+type ReadConnector interface {
+	Connector
 
 	// Read reads a page of data from the connector. This can be called multiple
 	// times to read all the data. The caller is responsible for paging, by
@@ -37,15 +42,21 @@ type Connector interface {
 	// Authentication corner cases are handled internally, but all other errors
 	// are returned to the caller.
 	Read(ctx context.Context, params ReadParams) (*ReadResult, error)
+}
+
+// WriteConnector is an interface that extends the Connector interface with write capabilities.
+type WriteConnector interface {
+	Connector
 
 	Write(ctx context.Context, params WriteParams) (*WriteResult, error)
+}
+
+// ObjectMetadataConnector is an interface that extends the Connector interface with
+// the ability to list object metadata.
+type ObjectMetadataConnector interface {
+	Connector
 
 	ListObjectMetadata(ctx context.Context, objectNames []string) (*ListObjectMetadataResult, error)
-
-	// JSONHTTPClient returns the underlying JSON HTTP client. This is useful for
-	// testing, or for calling methods that aren't exposed by the Connector
-	// interface directly. Authentication and token refreshes will be handled automatically.
-	JSONHTTPClient() *common.JSONHTTPClient
 }
 
 // API is a function that returns a Connector. It's used as a factory.
