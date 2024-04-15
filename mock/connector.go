@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers"
 )
@@ -12,9 +11,9 @@ import (
 type Connector struct {
 	client *common.JSONHTTPClient
 
-	read               func(ctx context.Context, params connectors.ReadParams) (*connectors.ReadResult, error)
-	write              func(ctx context.Context, params connectors.WriteParams) (*connectors.WriteResult, error)
-	listObjectMetadata func(ctx context.Context, objectNames []string) (*connectors.ListObjectMetadataResult, error)
+	read               func(ctx context.Context, params common.ReadParams) (*common.ReadResult, error)
+	write              func(ctx context.Context, params common.WriteParams) (*common.WriteResult, error)
+	listObjectMetadata func(ctx context.Context, objectNames []string) (*common.ListObjectMetadataResult, error)
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
@@ -31,13 +30,13 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	}()
 
 	params := &mockParams{
-		read: func(ctx context.Context, params connectors.ReadParams) (*connectors.ReadResult, error) {
+		read: func(ctx context.Context, params common.ReadParams) (*common.ReadResult, error) {
 			return nil, fmt.Errorf("%w: %s", ErrNotImplemented, "read")
 		},
-		write: func(ctx context.Context, params connectors.WriteParams) (*connectors.WriteResult, error) {
+		write: func(ctx context.Context, params common.WriteParams) (*common.WriteResult, error) {
 			return nil, fmt.Errorf("%w: %s", ErrNotImplemented, "write")
 		},
-		listObjectMetadata: func(ctx context.Context, objectNames []string) (*connectors.ListObjectMetadataResult, error) {
+		listObjectMetadata: func(ctx context.Context, objectNames []string) (*common.ListObjectMetadataResult, error) {
 			return nil, fmt.Errorf("%w: %s", ErrNotImplemented, "listObjectMetadata")
 		},
 	}
@@ -78,14 +77,14 @@ func (c *Connector) Provider() providers.Provider {
 	return providers.Mock
 }
 
-func (c *Connector) Read(ctx context.Context, params connectors.ReadParams) (*connectors.ReadResult, error) {
+func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common.ReadResult, error) {
 	return c.read(ctx, params)
 }
 
-func (c *Connector) Write(ctx context.Context, params connectors.WriteParams) (*connectors.WriteResult, error) {
+func (c *Connector) Write(ctx context.Context, params common.WriteParams) (*common.WriteResult, error) {
 	return c.write(ctx, params)
 }
 
-func (c *Connector) ListObjectMetadata(ctx context.Context, objectNames []string) (*connectors.ListObjectMetadataResult, error) {
+func (c *Connector) ListObjectMetadata(ctx context.Context, objectNames []string) (*common.ListObjectMetadataResult, error) {
 	return c.listObjectMetadata(ctx, objectNames)
 }

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 )
 
@@ -32,21 +31,21 @@ func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
 }
 
 // WithRead sets the read function for the connector.
-func WithRead(read func(ctx context.Context, params connectors.ReadParams) (*connectors.ReadResult, error)) Option {
+func WithRead(read func(ctx context.Context, params common.ReadParams) (*common.ReadResult, error)) Option {
 	return func(params *mockParams) {
 		params.read = read
 	}
 }
 
 // WithWrite sets the write function for the connector.
-func WithWrite(write func(ctx context.Context, params connectors.WriteParams) (*connectors.WriteResult, error)) Option {
+func WithWrite(write func(ctx context.Context, params common.WriteParams) (*common.WriteResult, error)) Option {
 	return func(params *mockParams) {
 		params.write = write
 	}
 }
 
 // WithListObjectMetadata sets the listObjectMetadata function for the connector.
-func WithListObjectMetadata(listObjectMetadata func(ctx context.Context, objectNames []string) (*connectors.ListObjectMetadataResult, error)) Option {
+func WithListObjectMetadata(listObjectMetadata func(ctx context.Context, objectNames []string) (*common.ListObjectMetadataResult, error)) Option {
 	return func(params *mockParams) {
 		params.listObjectMetadata = listObjectMetadata
 	}
@@ -55,9 +54,9 @@ func WithListObjectMetadata(listObjectMetadata func(ctx context.Context, objectN
 // mockParams is the internal configuration for the mock connector.
 type mockParams struct {
 	client             *common.JSONHTTPClient // required
-	read               func(ctx context.Context, params connectors.ReadParams) (*connectors.ReadResult, error)
-	write              func(ctx context.Context, params connectors.WriteParams) (*connectors.WriteResult, error)
-	listObjectMetadata func(ctx context.Context, objectNames []string) (*connectors.ListObjectMetadataResult, error)
+	read               func(ctx context.Context, params common.ReadParams) (*common.ReadResult, error)
+	write              func(ctx context.Context, params common.WriteParams) (*common.WriteResult, error)
+	listObjectMetadata func(ctx context.Context, objectNames []string) (*common.ListObjectMetadataResult, error)
 }
 
 // prepare finalizes and validates the connector configuration, and returns an error if it's invalid.
