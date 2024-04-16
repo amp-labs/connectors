@@ -2,7 +2,6 @@ package msdsales
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 
@@ -18,25 +17,25 @@ func (*Connector) interpretJSONError(res *http.Response, body []byte) error {
 
 	switch res.StatusCode {
 	case http.StatusBadRequest:
-		return errors.Join(common.ErrBadRequest, apiError)
+		return createError(common.ErrBadRequest, apiError)
 	case http.StatusUnauthorized:
-		return errors.Join(common.ErrAccessToken, apiError)
+		return createError(common.ErrAccessToken, apiError)
 	case http.StatusForbidden:
-		return errors.Join(common.ErrForbidden, apiError)
+		return createError(common.ErrForbidden, apiError)
 	case http.StatusNotFound:
-		return errors.Join(common.ErrBadRequest, apiError) // FIXME more specific error
+		return createError(common.ErrBadRequest, apiError) // TODO more specific error
 	case http.StatusMethodNotAllowed:
-		return errors.Join(common.ErrBadRequest, apiError) // FIXME more specific error
+		return createError(common.ErrBadRequest, apiError) // TODO more specific error
 	case http.StatusPreconditionFailed:
-		return errors.Join(common.ErrBadRequest, apiError) // FIXME more specific error
+		return createError(common.ErrBadRequest, apiError) // TODO more specific error
 	case http.StatusRequestEntityTooLarge:
-		return errors.Join(common.ErrBadRequest, apiError) // FIXME more specific error
+		return createError(common.ErrBadRequest, apiError) // TODO more specific error
 	case http.StatusTooManyRequests:
-		return errors.Join(common.ErrLimitExceeded, apiError)
+		return createError(common.ErrLimitExceeded, apiError)
 	case http.StatusNotImplemented:
-		return errors.Join(common.ErrNotImplemented, apiError)
+		return createError(common.ErrNotImplemented, apiError)
 	case http.StatusServiceUnavailable:
-		return errors.Join(common.ErrServer, apiError)
+		return createError(common.ErrServer, apiError)
 	default:
 		return common.InterpretError(res, body)
 	}
@@ -49,7 +48,6 @@ type SalesResponseError struct {
 type SalesError struct {
 	Code    string `json:"code"`
 	Message string `json:"message"`
-	// FIXME below fields are non empty only if request had header `Prefer: odata.include-annotations="*"`
 	*EnhancedSalesError
 }
 
@@ -59,6 +57,10 @@ type EnhancedSalesError struct {
 	InnerMessage string `json:"@Microsoft.PowerApps.CDS.InnerError.Message"`
 }
 
-func (s SalesResponseError) Error() string {
-	return s.Err.Message
+func createError(base error, response *SalesResponseError) error {
+	if len(response.Err.Message) > 0 {
+		return fmt.Errorf("%w: %s", base, response.Err.Message)
+	}
+
+	return base
 }

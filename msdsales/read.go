@@ -3,38 +3,19 @@ package msdsales
 import (
 	"context"
 	"fmt"
-	"math"
 	"net/url"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
 )
 
-// TODO MS Sales allows fine control of reading
-// TODO basic read
-// $select = ReadParams{fields} [COMPLETED]
-// $expand = nested response
-// $orderby = list of fields with asc/desc keyword
-// TODO batch
-// $apply = batch
-// TODO search
-// $filter = query functions, comparisons
-// TODO pagination
-// $top = <int> of entries to return (ignored if header <Prefer: odata.maxpagesize>)
-// $count = counts all existing rows (@odata.count)
-
 var annotationsHeader = common.Header{
 	Key:   "Prefer",
-	Value: "odata.include-annotations=\"*\"", // TODO we can specify which annotations to include
+	Value: `odata.include-annotations="*"`,
 }
 
-func newPaginationHeader(pageSize int) common.Header {
-	return common.Header{
-		Key:   "Prefer",
-		Value: fmt.Sprintf("odata.maxpagesize=%v", pageSize),
-	}
-}
-
+// Microsoft API supports other capabilities like filtering, grouping, and sorting which we can potentially tap into later.
+// See https://learn.microsoft.com/en-us/power-apps/developer/data-platform/webapi/query-data-web-api#odata-query-options
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
 	var fullURL string
 
@@ -44,11 +25,9 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		fullURL = c.getURL(relativeURL)
 	} else {
 		// Next page
-		fullURL = config.NextPage
+		fullURL = config.NextPage.String()
 	}
-	// TODO given that one of the fields is annotation we can automatically add annotation header
-	// (how the hell the end user gonna know about the names of those fields)
-	rsp, err := c.get(ctx, fullURL, newPaginationHeader(resolvePageSize(config)), annotationsHeader)
+	rsp, err := c.get(ctx, fullURL, newPaginationHeader(DefaultPageSize), annotationsHeader)
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +42,13 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	)
 }
 
-// TODO this must be tested very well, must follow MS query syntax.
+func newPaginationHeader(pageSize int) common.Header {
+	return common.Header{
+		Key:   "Prefer",
+		Value: fmt.Sprintf("odata.maxpagesize=%v", pageSize),
+	}
+}
+
 func makeQueryValues(config common.ReadParams) string {
 	queryValues := url.Values{}
 
@@ -89,12 +74,4 @@ func makeQueryValues(config common.ReadParams) string {
 	}
 
 	return result
-}
-
-func resolvePageSize(config common.ReadParams) int {
-	if config.PageSize == 0 {
-		return MaxPageSize
-	}
-
-	return int(math.Min(MaxPageSize, float64(config.PageSize)))
 }

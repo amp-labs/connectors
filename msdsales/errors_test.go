@@ -3,13 +3,14 @@ package msdsales
 import (
 	"errors"
 	"net/http"
+	"strings"
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 )
 
-func Test_interpretJSONError(t *testing.T) {
+func TestInterpretJSONError(t *testing.T) {
 	t.Parallel()
 
 	type input struct {
@@ -39,8 +40,8 @@ func Test_interpretJSONError(t *testing.T) {
 			expectedErr: interpreter.ErrUnmarshal,
 		},
 		{
-			// FIXME should it indicate that connector could handle it?
-			// FIXME It would be bad to mask partial API implementation with actual caller error
+			// TODO should it indicate that connector could handle it?
+			// TODO It would be bad to mask partial API implementation with actual caller error
 			name: "Unknown response status produces caller error",
 			input: input{
 				res: &http.Response{
@@ -82,9 +83,7 @@ func Test_interpretJSONError(t *testing.T) {
 				  "message": "<A message describing the error>"  
 				 }  
 				}`))
-		target := &SalesResponseError{} // this var must be of the most concrete type for errors.As to succeed
-
-		if !errors.As(err, &target) {
+		if !strings.Contains(err.Error(), "<A message describing the error>") {
 			t.Fatalf("expected errot type mismatched for: (%v)", err)
 		}
 	})

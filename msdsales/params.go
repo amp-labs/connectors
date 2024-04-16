@@ -11,8 +11,8 @@ import (
 )
 
 const (
-	// MaxPageSize is upper limit on elements per page.
-	MaxPageSize = 100
+	// DefaultPageSize is number of elements per page.
+	DefaultPageSize = 100
 )
 
 // Option is a function which mutates the connector configuration.

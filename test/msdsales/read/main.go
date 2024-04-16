@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/amp-labs/connectors/msdsales"
 	"os"
 	"os/signal"
 	"syscall"
@@ -31,9 +32,8 @@ func main() {
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "contacts",
 		Fields: []string{
-			"fullname", "emailaddress1", "fax", "familystatuscode",
+			"fullname", "emailaddress1", "fax",
 		},
-		PageSize: 2,
 	})
 	if err != nil {
 		utils.Fail("error reading from microsoft sales", "error", err)
@@ -42,7 +42,7 @@ func main() {
 	fmt.Println("Reading contacts..")
 	utils.DumpJSON(res, os.Stdout)
 
-	if res.Rows != 2 && !res.Done {
-		utils.Fail("expected exactly 2 resource and more pages")
+	if res.Rows > msdsales.DefaultPageSize {
+		utils.Fail(fmt.Sprintf("expected max %v rows", msdsales.DefaultPageSize))
 	}
 }

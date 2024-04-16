@@ -3,6 +3,7 @@ package msdsales
 import (
 	"context"
 	"errors"
+	"github.com/spyzhov/ajson"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -11,11 +12,10 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
-	"github.com/amp-labs/connectors/common/reqrepeater"
 	"github.com/go-test/deep"
 )
 
-func Test_makeQueryValues(t *testing.T) {
+func TestMakeQueryValues(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
@@ -89,16 +89,17 @@ var contactsFirstPageResponse = `{
 		"@odata.nextLink": "https://org5bd08fdd.api.crm.dynamics.com/api/data/v9.2/contacts?$select=fullname,emailaddress1,fax,familystatuscode&$skiptoken=%3Ccookie%20pagenumber=%222%22%20pagingcookie=%22%253ccookie%2520page%253d%25221%2522%253e%253ccontactid%2520last%253d%2522%257b9FD4A450-CB0C-EA11-A813-000D3A1B1223%257d%2522%2520first%253d%2522%257bCDCFA450-CB0C-EA11-A813-000D3A1B1223%257d%2522%2520%252f%253e%253c%252fcookie%253e%22%20istracking=%22False%22%20/%3E"
 	}`
 
-func Test_Read(t *testing.T) {
+func TestRead(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name         string
-		input        common.ReadParams
-		server       *httptest.Server
-		connector    Connector
-		expected     *common.ReadResult
-		expectedErrs []error
+		name             string
+		input            common.ReadParams
+		server           *httptest.Server
+		connector        Connector
+		expected         *common.ReadResult
+		expectedErrs     []error
+		expectedErrTypes []error
 	}{
 		{
 			name: "Mime response header expected",
@@ -130,7 +131,7 @@ func Test_Read(t *testing.T) {
 					"garbage": {}
 				}`)
 			})),
-			expectedErrs: []error{errors.New("wrong request: wrong key 'value'")},
+			expectedErrTypes: []error{ajson.Error{}},
 		},
 		{
 			name: "Incorrect data type in payload",
@@ -198,7 +199,7 @@ func Test_Read(t *testing.T) {
 		{
 			name: "Successful read with chosen fields",
 			input: common.ReadParams{
-				Fields: []string{"fullname", "familystatuscode"},
+				Fields: []string{"fullname", "fax"},
 			},
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
@@ -209,8 +210,8 @@ func Test_Read(t *testing.T) {
 				Rows: 2,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
-						"fullname":         "Heriberto Nathan",
-						"familystatuscode": float64(1),
+						"fullname": "Heriberto Nathan",
+						"fax":      "614-555-0122",
 					},
 					Raw: map[string]any{
 						"@odata.etag":   "W/\"4372108\"",
@@ -223,8 +224,8 @@ func Test_Read(t *testing.T) {
 					},
 				}, {
 					Fields: map[string]any{
-						"fullname":         "Dwayne Elijah",
-						"familystatuscode": float64(1),
+						"fullname": "Dwayne Elijah",
+						"fax":      "281-555-0158",
 					},
 					Raw: map[string]any{
 						"@odata.etag":   "W/\"4372115\"",
@@ -257,28 +258,38 @@ func Test_Read(t *testing.T) {
 				t.Fatalf("%s: error in test while constructin connector %v", tt.name, err)
 			}
 
-			// for testing we want to redirect calls to our server
-			connector.BaseURL = tt.server.URL
-			connector.Client.HTTPClient.Base = tt.server.URL
-			// failed requests will be not retried
-			connector.RetryStrategy = &reqrepeater.NullStrategy{}
+			// for testing we want to redirect calls to our mock server
+			connector.setBaseURL(tt.server.URL)
 
 			// start of tests
 			output, err := connector.Read(ctx, tt.input)
-			if len(tt.expectedErrs) == 0 && err != nil {
-				t.Fatalf("%s: expected no errors, got: (%v)", tt.name, err)
+			if err != nil {
+				if len(tt.expectedErrs)+len(tt.expectedErrTypes) == 0 {
+					t.Fatalf("%s: expected no errors, got: (%v)", tt.name, err)
+				}
+			} else {
+				// check that missing error is what is expected
+				if len(tt.expectedErrs) != 0 {
+					t.Fatalf("%s: expected errors (%v), but got nothing", tt.name, tt.expectedErrs)
+				}
+				if len(tt.expectedErrTypes) != 0 {
+					t.Fatalf("%s: expected error types (%v), but got nothing", tt.name, tt.expectedErrTypes)
+				}
 			}
 
-			if len(tt.expectedErrs) != 0 && err == nil {
-				t.Fatalf("%s: expected errors (%v), but got nothing", tt.name, tt.expectedErrs)
+			// check every error
+			for _, expectedErr := range tt.expectedErrTypes {
+				if reflect.TypeOf(err) != reflect.TypeOf(expectedErr) {
+					t.Fatalf("%s: expected Error type: (%T), got: (%T)", tt.name, expectedErr, err)
+				}
 			}
-
 			for _, expectedErr := range tt.expectedErrs {
 				if !errors.Is(err, expectedErr) && !strings.Contains(err.Error(), expectedErr.Error()) {
 					t.Fatalf("%s: expected Error: (%v), got: (%v)", tt.name, expectedErr, err)
 				}
 			}
 
+			// compare desired output
 			if !reflect.DeepEqual(output, tt.expected) {
 				diff := deep.Equal(output, tt.expected)
 				t.Fatalf("%s:, \nexpected: (%v), \ngot: (%v), \ndiff: (%v)", tt.name, tt.expected, output, diff)

@@ -81,9 +81,7 @@ type ReadParams struct {
 	// The fields we are reading from the object, e.g. ["Id", "Name", "BillingCity"]
 	Fields []string // required, at least one field needed
 	// NextPage is an opaque token that can be used to get the next page of results.
-	NextPage string // optional, only set this if you want to read the next page of results
-	// PageSize number of elements per page
-	PageSize int64 // optional, desired page size
+	NextPage NextPageToken // optional, only set this if you want to read the next page of results
 	// Since is a timestamp that can be used to get only records that have changed since that time.
 	Since time.Time // optional, omit this to fetch all records
 	// Deleted is true if we want to read deleted records instead of active records.
@@ -108,6 +106,10 @@ type WriteParams struct {
 // And although each provider will be different, callers should expect that this token
 // will expire after some period of time. So long-term storage of this token is not recommended.
 type NextPageToken string
+
+func (t NextPageToken) String() string {
+	return string(t)
+}
 
 // ReadResult is what's returned from reading data via the Read call.
 type ReadResult struct {

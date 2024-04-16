@@ -22,11 +22,6 @@ func getNextRecordsURL(node *ajson.Node) (string, error) {
 	return common.JSONManager.GetString(node, "@odata.nextLink", true)
 }
 
-// FIXME we must differentiate between GET and LIST (it is LIST now)
-// sometimes the fields that user requests are either
-// * singular record
-// * list of records
-// * hybrid, list of records with extra fields describing list.
 func getMarshaledData(records []map[string]interface{}, fields []string) ([]common.ReadResultRow, error) {
 	data := make([]common.ReadResultRow, len(records))
 

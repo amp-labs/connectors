@@ -2,17 +2,12 @@ package msdsales
 
 import (
 	"fmt"
-	"strings"
-	"time"
-
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
-	"github.com/amp-labs/connectors/common/reqrepeater"
 	"github.com/amp-labs/connectors/providers"
+	"strings"
 )
-
-var DefaultRequestRetryLimit = 3
 
 var DefaultModuleCRM = paramsbuilder.APIModule{ // nolint: gochecknoglobals
 	Label:   "api/data",
@@ -23,7 +18,6 @@ type Connector struct {
 	BaseURL       string
 	Module        string
 	Client        *common.JSONHTTPClient
-	RetryStrategy reqrepeater.Strategy
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
@@ -44,18 +38,12 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		return nil, err
 	}
 
-	baseURL := providerInfo.BaseURL
 	conn = &Connector{
-		BaseURL: baseURL,
 		Module:  params.Module.Suffix,
 		Client:  params.Client.Caller,
-		RetryStrategy: &reqrepeater.UniformRetryStrategy{ // FIXME call retry strategy could be part of options
-			RetryLimit: DefaultRequestRetryLimit,
-			Interval:   time.Second,
-		},
 	}
 	// connector and its client must mirror base url and provide its own error parser
-	conn.Client.HTTPClient.Base = baseURL
+	conn.setBaseURL(providerInfo.BaseURL)
 	conn.Client.HTTPClient.ErrorHandler = interpreter.ErrorHandler{
 		JSON: conn.interpretJSONError,
 	}.Handle
@@ -71,7 +59,7 @@ func (c *Connector) String() string {
 	return fmt.Sprintf("%s.Connector[%s]", c.Provider(), c.Module)
 }
 
-func (c *Connector) getURL(arg string) string { // FIXME should it be part of Connector interface?
+func (c *Connector) getURL(arg string) string {
 	parts := []string{c.BaseURL, c.Module, arg}
 	filtered := make([]string, 0)
 
@@ -82,4 +70,9 @@ func (c *Connector) getURL(arg string) string { // FIXME should it be part of Co
 	}
 
 	return strings.Join(filtered, "/")
+}
+
+func (c *Connector) setBaseURL(newURL string)  {
+	c.BaseURL = newURL
+	c.Client.HTTPClient.Base = newURL
 }
