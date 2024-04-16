@@ -993,7 +993,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenMetadataFields: TokenMetadataFields{
 				ConsumerRefField:  "user_id",
 				WorkspaceRefField: "team_id",
-				ScopesField: "scope",
+				ScopesField:       "scope",
 			},
 		},
 		Support: Support{
