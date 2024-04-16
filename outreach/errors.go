@@ -2,8 +2,6 @@ package outreach
 
 import (
 	"errors"
-
-	"github.com/amp-labs/connectors/common"
 )
 
 var (
@@ -14,18 +12,5 @@ var (
 )
 
 func (c *Connector) HandleError(err error) error {
-	switch {
-	case errors.Is(err, common.ErrAccessToken):
-		// Retryable, so just log and retry
-		return err
-	case errors.Is(err, common.ErrRetryable):
-		return err
-	case errors.Is(err, common.ErrApiDisabled):
-		fallthrough
-	case errors.Is(err, common.ErrForbidden):
-		fallthrough
-	default:
-		// Anything else is a permanent error
-		return err
-	}
+	return err
 }

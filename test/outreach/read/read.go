@@ -63,13 +63,13 @@ func GetOutreachConnector(ctx context.Context, filePath string) *outreach.Connec
 }
 
 func main() {
-	outreach := GetOutreachConnector(context.TODO(), DefaultCredsFile)
+	outreach := GetOutreachConnector(context.Background(), DefaultCredsFile)
 
 	config := connectors.ReadParams{
 		ObjectName: "users",
 		// NextPage:   "https://api.outreach.io/api/v2/users?page%5Blimit%5D=1\u0026page%5Boffset%5D=2",
 	}
-	result, err := outreach.Read(context.TODO(), config)
+	result, err := outreach.Read(context.Background(), config)
 	if err != nil {
 		log.Fatal(err)
 	}
