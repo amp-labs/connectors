@@ -8,7 +8,6 @@ import (
 	"os"
 
 	"github.com/amp-labs/connectors"
-	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/outreach"
 	testUtils "github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/utils"
@@ -68,15 +67,6 @@ func main() {
 
 	config := connectors.ReadParams{
 		ObjectName: "users",
-		FilterBy: common.Filter{
-			Key:   "id",
-			Value: "3",
-		},
-		SortBy: common.Sorter{
-			Key:   "id",
-			Value: common.Ascending,
-		},
-		PageSize: 1,
 		// NextPage:   "https://api.outreach.io/api/v2/users?page%5Blimit%5D=1\u0026page%5Boffset%5D=2",
 	}
 	result, err := outreach.Read(context.TODO(), config)

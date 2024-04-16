@@ -7,7 +7,11 @@ Read is used to list all records of a given type. For example, if you want to li
 ### Example Usage
 
 ```
-// Call Read to list records in an object
+
+// Create the outreach connector instance 
+// This assumes you called the instance client
+
+// Call Read to list records in a users object
 res, err := client.Read(context.TODO(),common.ReadParams{
 		ObjectName: "users",
         })
