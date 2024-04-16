@@ -90,7 +90,7 @@ func HubspotOAuthConfigFromRegistry(registry CredentialsRegistry) *oauth2.Config
 	return cfg
 }
 
-var MSDynamics365SalesWorkspace = "org5bd08fdd"
+var MSDynamics365SalesWorkspace = "org5bd08fdd" //nolint:gochecknoglobals
 
 func MSDynamics365SalesConfigFromRegistry(registry CredentialsRegistry) *oauth2.Config {
 	clientId := registry.MustString(ClientId)

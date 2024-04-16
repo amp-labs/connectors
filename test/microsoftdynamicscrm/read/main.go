@@ -3,13 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/amp-labs/connectors/msdsales"
 	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/amp-labs/connectors/common"
-	msTest "github.com/amp-labs/connectors/test/msdsales"
+	"github.com/amp-labs/connectors/microsoftdynamicscrm"
+	msTest "github.com/amp-labs/connectors/test/microsoftdynamicscrm"
 	"github.com/amp-labs/connectors/test/utils"
 )
 
@@ -42,7 +42,7 @@ func main() {
 	fmt.Println("Reading contacts..")
 	utils.DumpJSON(res, os.Stdout)
 
-	if res.Rows > msdsales.DefaultPageSize {
-		utils.Fail(fmt.Sprintf("expected max %v rows", msdsales.DefaultPageSize))
+	if res.Rows > microsoftdynamicscrm.DefaultPageSize {
+		utils.Fail(fmt.Sprintf("expected max %v rows", microsoftdynamicscrm.DefaultPageSize))
 	}
 }

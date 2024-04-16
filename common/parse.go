@@ -85,7 +85,7 @@ var (
 
 	// JSONManager is a helpful wrapper of ajson library that adds errors when querying JSON payload
 	// and provides common conversion methods.
-	JSONManager = jsonManager{}
+	JSONManager = jsonManager{} //nolint:gochecknoglobals
 )
 
 type jsonManager struct{}

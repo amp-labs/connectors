@@ -1,9 +1,8 @@
-package msdsales
+package microsoftdynamicscrm
 
 import (
 	"context"
 	"errors"
-	"github.com/spyzhov/ajson"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -12,7 +11,9 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/go-test/deep"
+	"github.com/spyzhov/ajson"
 )
 
 func TestMakeQueryValues(t *testing.T) {
@@ -52,7 +53,10 @@ func TestMakeQueryValues(t *testing.T) {
 	}
 
 	for _, tt := range tests {
+		tt := tt // rebind, omit loop side effects for parallel goroutine
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			output := makeQueryValues(tt.input)
 			if !reflect.DeepEqual(output, tt.expected) {
 				t.Fatalf("%s: expected: (%v), got: (%v)", tt.name, tt.expected, output)
@@ -61,36 +65,13 @@ func TestMakeQueryValues(t *testing.T) {
 	}
 }
 
-var contactsFirstPageResponse = `{
-		"@odata.context": "https://org5bd08fdd.api.crm.dynamics.com/api/data/v9.2/$metadata#contacts(fullname,emailaddress1,fax,familystatuscode)",
-		"@Microsoft.Dynamics.CRM.totalrecordcount": -1,
-		"@Microsoft.Dynamics.CRM.totalrecordcountlimitexceeded": false,
-		"@Microsoft.Dynamics.CRM.globalmetadataversion": "6012567",
-		"value": [
-		{
-		  "@odata.etag": "W/\"4372108\"",
-		  "fullname": "Heriberto Nathan",
-		  "emailaddress1": "heriberto@northwindtraders.com",
-		  "fax": "614-555-0122",
-		  "familystatuscode@OData.Community.Display.V1.FormattedValue": "Single",
-		  "familystatuscode": 1,
-		  "contactid": "cdcfa450-cb0c-ea11-a813-000d3a1b1223"
-		},
-		{
-		  "@odata.etag": "W/\"4372115\"",
-		  "fullname": "Dwayne Elijah",
-		  "emailaddress1": "dwayne@alpineskihouse.com",
-		  "fax": "281-555-0158",
-		  "familystatuscode@OData.Community.Display.V1.FormattedValue": "Single",
-		  "familystatuscode": 1,
-		  "contactid": "9fd4a450-cb0c-ea11-a813-000d3a1b1223"
-		}
-		],
-		"@odata.nextLink": "https://org5bd08fdd.api.crm.dynamics.com/api/data/v9.2/contacts?$select=fullname,emailaddress1,fax,familystatuscode&$skiptoken=%3Ccookie%20pagenumber=%222%22%20pagingcookie=%22%253ccookie%2520page%253d%25221%2522%253e%253ccontactid%2520last%253d%2522%257b9FD4A450-CB0C-EA11-A813-000D3A1B1223%257d%2522%2520first%253d%2522%257bCDCFA450-CB0C-EA11-A813-000D3A1B1223%257d%2522%2520%252f%253e%253c%252fcookie%253e%22%20istracking=%22False%22%20/%3E"
-	}`
-
-func TestRead(t *testing.T) {
+func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 	t.Parallel()
+
+	fakeServerResp, err := mockutils.DataFromFile("read.json")
+	if err != nil {
+		t.Fatalf("failed to start test, input file missing, %v", err)
+	}
 
 	tests := []struct {
 		name             string
@@ -106,7 +87,7 @@ func TestRead(t *testing.T) {
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusTeapot)
 			})),
-			expectedErrs: []error{interpreter.MissingContentType},
+			expectedErrs: []error{interpreter.ErrMissingContentType},
 		},
 		{
 			name: "Correct error message is understood from JSON response",
@@ -120,7 +101,9 @@ func TestRead(t *testing.T) {
 					}
 				}`)
 			})),
-			expectedErrs: []error{common.ErrBadRequest, errors.New("Resource not found for the segment 'conacs'")},
+			expectedErrs: []error{
+				common.ErrBadRequest, errors.New("Resource not found for the segment 'conacs'"), // nolint:goerr113
+			},
 		},
 		{
 			name: "Incorrect key in payload",
@@ -164,7 +147,7 @@ func TestRead(t *testing.T) {
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
-				writeBody(w, contactsFirstPageResponse)
+				_, _ = w.Write(fakeServerResp)
 			})),
 			expected: &common.ReadResult{
 				Rows: 2,
@@ -191,7 +174,7 @@ func TestRead(t *testing.T) {
 						"contactid":        "9fd4a450-cb0c-ea11-a813-000d3a1b1223",
 					},
 				}},
-				NextPage: "https://org5bd08fdd.api.crm.dynamics.com/api/data/v9.2/contacts?$select=fullname,emailaddress1,fax,familystatuscode&$skiptoken=%3Ccookie%20pagenumber=%222%22%20pagingcookie=%22%253ccookie%2520page%253d%25221%2522%253e%253ccontactid%2520last%253d%2522%257b9FD4A450-CB0C-EA11-A813-000D3A1B1223%257d%2522%2520first%253d%2522%257bCDCFA450-CB0C-EA11-A813-000D3A1B1223%257d%2522%2520%252f%253e%253c%252fcookie%253e%22%20istracking=%22False%22%20/%3E",
+				NextPage: "https://org5bd08fdd.api.crm.dynamics.com/api/data/v9.2/contacts?$select=fullname,emailaddress1,fax,familystatuscode&$skiptoken=%3Ccookie%20pagenumber=%222%22%20pagingcookie=%22%253ccookie%2520page%253d%25221%2522%253e%253ccontactid%2520last%253d%2522%257b9FD4A450-CB0C-EA11-A813-000D3A1B1223%257d%2522%2520first%253d%2522%257bCDCFA450-CB0C-EA11-A813-000D3A1B1223%257d%2522%2520%252f%253e%253c%252fcookie%253e%22%20istracking=%22False%22%20/%3E", // nolint:lll
 				Done:     false,
 			},
 			expectedErrs: nil,
@@ -204,7 +187,7 @@ func TestRead(t *testing.T) {
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
-				writeBody(w, contactsFirstPageResponse)
+				_, _ = w.Write(fakeServerResp)
 			})),
 			expected: &common.ReadResult{
 				Rows: 2,
@@ -237,7 +220,7 @@ func TestRead(t *testing.T) {
 						"contactid":        "9fd4a450-cb0c-ea11-a813-000d3a1b1223",
 					},
 				}},
-				NextPage: "https://org5bd08fdd.api.crm.dynamics.com/api/data/v9.2/contacts?$select=fullname,emailaddress1,fax,familystatuscode&$skiptoken=%3Ccookie%20pagenumber=%222%22%20pagingcookie=%22%253ccookie%2520page%253d%25221%2522%253e%253ccontactid%2520last%253d%2522%257b9FD4A450-CB0C-EA11-A813-000D3A1B1223%257d%2522%2520first%253d%2522%257bCDCFA450-CB0C-EA11-A813-000D3A1B1223%257d%2522%2520%252f%253e%253c%252fcookie%253e%22%20istracking=%22False%22%20/%3E",
+				NextPage: "https://org5bd08fdd.api.crm.dynamics.com/api/data/v9.2/contacts?$select=fullname,emailaddress1,fax,familystatuscode&$skiptoken=%3Ccookie%20pagenumber=%222%22%20pagingcookie=%22%253ccookie%2520page%253d%25221%2522%253e%253ccontactid%2520last%253d%2522%257b9FD4A450-CB0C-EA11-A813-000D3A1B1223%257d%2522%2520first%253d%2522%257bCDCFA450-CB0C-EA11-A813-000D3A1B1223%257d%2522%2520%252f%253e%253c%252fcookie%253e%22%20istracking=%22False%22%20/%3E", // nolint:lll
 				Done:     false,
 			},
 			expectedErrs: nil,
@@ -245,7 +228,10 @@ func TestRead(t *testing.T) {
 	}
 
 	for _, tt := range tests {
+		// nolint:varnamelen
+		tt := tt // rebind, omit loop side effects for parallel goroutine
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 			defer tt.server.Close()
 
 			ctx := context.Background()
@@ -272,6 +258,7 @@ func TestRead(t *testing.T) {
 				if len(tt.expectedErrs) != 0 {
 					t.Fatalf("%s: expected errors (%v), but got nothing", tt.name, tt.expectedErrs)
 				}
+
 				if len(tt.expectedErrTypes) != 0 {
 					t.Fatalf("%s: expected error types (%v), but got nothing", tt.name, tt.expectedErrTypes)
 				}
@@ -283,6 +270,7 @@ func TestRead(t *testing.T) {
 					t.Fatalf("%s: expected Error type: (%T), got: (%T)", tt.name, expectedErr, err)
 				}
 			}
+
 			for _, expectedErr := range tt.expectedErrs {
 				if !errors.Is(err, expectedErr) && !strings.Contains(err.Error(), expectedErr.Error()) {
 					t.Fatalf("%s: expected Error: (%v), got: (%v)", tt.name, expectedErr, err)

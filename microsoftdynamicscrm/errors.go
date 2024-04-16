@@ -1,4 +1,4 @@
-package msdsales
+package microsoftdynamicscrm
 
 import (
 	"encoding/json"
@@ -9,7 +9,7 @@ import (
 	"github.com/amp-labs/connectors/common/interpreter"
 )
 
-func (*Connector) interpretJSONError(res *http.Response, body []byte) error {
+func (*Connector) interpretJSONError(res *http.Response, body []byte) error { //nolint:cyclop
 	apiError := &SalesResponseError{}
 	if err := json.Unmarshal(body, &apiError); err != nil {
 		return fmt.Errorf("interpretJSONError: %w %w", interpreter.ErrUnmarshal, err)
@@ -52,9 +52,9 @@ type SalesError struct {
 }
 
 type EnhancedSalesError struct {
-	HelpLink     string `json:"@Microsoft.PowerApps.CDS.HelpLink"`
-	TraceText    string `json:"@Microsoft.PowerApps.CDS.TraceText"`
-	InnerMessage string `json:"@Microsoft.PowerApps.CDS.InnerError.Message"`
+	HelpLink     string `json:"@Microsoft.PowerApps.CDS.HelpLink"`           // nolint:tagliatelle
+	TraceText    string `json:"@Microsoft.PowerApps.CDS.TraceText"`          // nolint:tagliatelle
+	InnerMessage string `json:"@Microsoft.PowerApps.CDS.InnerError.Message"` // nolint:tagliatelle
 }
 
 func createError(base error, response *SalesResponseError) error {

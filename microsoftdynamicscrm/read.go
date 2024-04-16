@@ -1,4 +1,4 @@
-package msdsales
+package microsoftdynamicscrm
 
 import (
 	"context"
@@ -9,11 +9,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 )
 
-var annotationsHeader = common.Header{
-	Key:   "Prefer",
-	Value: `odata.include-annotations="*"`,
-}
-
+// nolint:lll
 // Microsoft API supports other capabilities like filtering, grouping, and sorting which we can potentially tap into later.
 // See https://learn.microsoft.com/en-us/power-apps/developer/data-platform/webapi/query-data-web-api#odata-query-options
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
@@ -27,7 +23,13 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		// Next page
 		fullURL = config.NextPage.String()
 	}
-	rsp, err := c.get(ctx, fullURL, newPaginationHeader(DefaultPageSize), annotationsHeader)
+
+	// always include annotations header
+	// response will describe enums, foreign relationship, etc.
+	rsp, err := c.get(ctx, fullURL, newPaginationHeader(DefaultPageSize), common.Header{
+		Key:   "Prefer",
+		Value: `odata.include-annotations="*"`,
+	})
 	if err != nil {
 		return nil, err
 	}

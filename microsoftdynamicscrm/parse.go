@@ -1,4 +1,4 @@
-package msdsales
+package microsoftdynamicscrm
 
 import (
 	"github.com/amp-labs/connectors/common"

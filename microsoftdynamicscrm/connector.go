@@ -1,12 +1,13 @@
-package msdsales
+package microsoftdynamicscrm
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/providers"
-	"strings"
 )
 
 var DefaultModuleCRM = paramsbuilder.APIModule{ // nolint: gochecknoglobals
@@ -15,9 +16,9 @@ var DefaultModuleCRM = paramsbuilder.APIModule{ // nolint: gochecknoglobals
 }
 
 type Connector struct {
-	BaseURL       string
-	Module        string
-	Client        *common.JSONHTTPClient
+	BaseURL string
+	Module  string
+	Client  *common.JSONHTTPClient
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
@@ -31,7 +32,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		return nil, err
 	}
 
-	providerInfo, err := providers.ReadInfo(providers.MicrosoftDynamics365Sales, &map[string]string{
+	providerInfo, err := providers.ReadInfo(providers.MicrosoftDynamics365CRM, &map[string]string{
 		"workspace": params.Workspace.Name,
 	})
 	if err != nil {
@@ -39,8 +40,8 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	}
 
 	conn = &Connector{
-		Module:  params.Module.Suffix,
-		Client:  params.Client.Caller,
+		Module: params.Module.Suffix,
+		Client: params.Client.Caller,
 	}
 	// connector and its client must mirror base url and provide its own error parser
 	conn.setBaseURL(providerInfo.BaseURL)
@@ -52,7 +53,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 }
 
 func (c *Connector) Provider() providers.Provider {
-	return providers.MicrosoftDynamics365Sales
+	return providers.MicrosoftDynamics365CRM
 }
 
 func (c *Connector) String() string {
@@ -72,7 +73,7 @@ func (c *Connector) getURL(arg string) string {
 	return strings.Join(filtered, "/")
 }
 
-func (c *Connector) setBaseURL(newURL string)  {
+func (c *Connector) setBaseURL(newURL string) {
 	c.BaseURL = newURL
 	c.Client.HTTPClient.Base = newURL
 }

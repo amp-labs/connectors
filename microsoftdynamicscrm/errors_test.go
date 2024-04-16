@@ -1,4 +1,4 @@
-package msdsales
+package microsoftdynamicscrm
 
 import (
 	"errors"
@@ -10,7 +10,7 @@ import (
 	"github.com/amp-labs/connectors/common/interpreter"
 )
 
-func TestInterpretJSONError(t *testing.T) {
+func TestInterpretJSONError(t *testing.T) { //nolint:funlen
 	t.Parallel()
 
 	type input struct {
@@ -66,7 +66,10 @@ func TestInterpretJSONError(t *testing.T) {
 	connector := Connector{}
 
 	for _, tt := range tests {
+		tt := tt // rebind, omit loop side effects for parallel goroutine
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			err := connector.interpretJSONError(tt.input.res, tt.input.body)
 			if !errors.Is(err, tt.expectedErr) {
 				t.Fatalf("%s: expected: (%v), got: (%v)", tt.name, tt.expectedErr, err)
@@ -75,6 +78,8 @@ func TestInterpretJSONError(t *testing.T) {
 	}
 
 	t.Run("Correct interpretation of error payload", func(t *testing.T) {
+		t.Parallel()
+
 		err := connector.interpretJSONError(&http.Response{
 			StatusCode: http.StatusBadRequest,
 		}, []byte(`{  
