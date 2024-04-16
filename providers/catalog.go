@@ -52,7 +52,7 @@ const (
 var catalog = CatalogType{ // nolint:gochecknoglobals
 	Mock: {
 		AuthType: None,
-		BaseURL:  "https://mock.com",
+		BaseURL:  "https://not-a-real-domain.mock",
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: true,
