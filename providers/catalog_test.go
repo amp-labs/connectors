@@ -240,6 +240,39 @@ var testCases = []struct { // nolint
 		expectedErr: nil,
 	},
 
+	// Wrike provider
+
+	{
+		provider:    Wrikle,
+		description: "Valid Wrike provider config with no substitutions",
+		expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://www.wrike.com/oauth2/authorize",
+				TokenURL:                  "https://www.wrike.com/oauth2/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
+			},
+			Support: Support{
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+			BaseURL: "https://www.wrike.com/api/v4",
+		},
+		expectedErr: nil,
+	},
+
 	{
 		provider:    Copper,
 		description: "Valid Copper provider config with no substitutions",

@@ -25,6 +25,7 @@ const (
 	Zoom                                Provider = "zoom"
 	Intercom                            Provider = "intercom"
 	Capsule                             Provider = "capsule"
+	Wrikle                              Provider = "wrikle"
 	DocuSign                            Provider = "docuSign"
 	DocuSignDeveloper                   Provider = "docuSignDeveloper"
 	Calendly                            Provider = "calendly"
@@ -217,6 +218,33 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://api.capsulecrm.com/oauth/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Wrikle configuration
+	Wrikle: {
+		AuthType: Oauth2,
+		BaseURL:  "https://www.wrike.com/api/v4",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://www.wrike.com/oauth2/authorize",
+			TokenURL:                  "https://www.wrike.com/oauth2/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
