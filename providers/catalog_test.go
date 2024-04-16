@@ -193,8 +193,8 @@ var testCases = []struct { // nolint
 		description: "Valid RingCentral provider config with no substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:  true,
-				Write: true,
+				Read:  false,
+				Write: false,
 				BulkWrite: BulkWriteSupport{
 					Insert: false,
 
