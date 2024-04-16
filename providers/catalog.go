@@ -55,14 +55,14 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://not-a-real-domain.mock",
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
-				Insert: true,
-				Update: true,
-				Upsert: true,
-				Delete: true,
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
 			},
 			Proxy:     true,
 			Read:      true,
-			Subscribe: true,
+			Subscribe: false,
 			Write:     true,
 		},
 		ProviderOpts: ProviderOpts{
