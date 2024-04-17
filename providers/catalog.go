@@ -5,6 +5,7 @@ package providers
 // ================================================================================
 
 const (
+	Mock                                Provider = "mock"
 	Salesforce                          Provider = "salesforce"
 	Hubspot                             Provider = "hubspot"
 	LinkedIn                            Provider = "linkedIn"
@@ -13,6 +14,7 @@ const (
 	Pipedrive                           Provider = "pipedrive"
 	Copper                              Provider = "copper"
 	ZohoCRM                             Provider = "zohoCRM"
+	Klaviyo                             Provider = "klaviyo"
 	Sellsy                              Provider = "sellsy"
 	Attio                               Provider = "attio"
 	Close                               Provider = "close"
@@ -30,11 +32,10 @@ const (
 	AWeber                              Provider = "aWeber"
 	GetResponse                         Provider = "getResponse"
 	ConstantContact                     Provider = "constantContact"
-	MicrosoftDynamics365Sales           Provider = "microsoftDynamics365Sales"
+	MicrosoftDynamics365CRM             Provider = "microsoftDynamics365CRM"
 	MicrosoftDynamics365BusinessCentral Provider = "microsoftDynamics365BusinessCentral"
 	Gainsight                           Provider = "gainsight"
 	Box                                 Provider = "box"
-	GoogleCalendar                      Provider = "googleCalendar"
 	ZendeskSupport                      Provider = "zendeskSupport"
 	ZendeskChat                         Provider = "zendeskChat"
 	WordPress                           Provider = "wordPress"
@@ -42,6 +43,8 @@ const (
 	Slack                               Provider = "slack"
 	HelpScoutMailbox                    Provider = "helpScoutMailbox"
 	Timely                              Provider = "timely"
+	Atlassian                           Provider = "atlassian"
+	Webflow                             Provider = "webflow"
 )
 
 // ================================================================================
@@ -49,6 +52,26 @@ const (
 // ================================================================================
 
 var catalog = CatalogType{ // nolint:gochecknoglobals
+	Mock: {
+		AuthType: None,
+		BaseURL:  "https://not-a-real-domain.mock",
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     true,
+			Read:      true,
+			Subscribe: false,
+			Write:     true,
+		},
+		ProviderOpts: ProviderOpts{
+			"isMock": "true",
+		},
+	},
+
 	// Salesforce configuration
 	Salesforce: {
 		AuthType: Oauth2,
@@ -286,11 +309,40 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
+	// Klaviyo configuration
+	Klaviyo: {
+		AuthType: Oauth2,
+		BaseURL:  "https://a.klaviyo.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 PKCE,
+			AuthURL:                   "https://www.klaviyo.com/oauth/authorize",
+			TokenURL:                  "https://a.klaviyo.com/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
 	// Sellsy configuration
 	Sellsy: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.sellsy.com",
 		OauthOpts: OauthOpts{
+			GrantType:                 PKCE,
 			AuthURL:                   "https://login.sellsy.com/oauth2/authorization",
 			TokenURL:                  "https://login.sellsy.com/oauth2/access-tokens",
 			ExplicitScopesRequired:    false,
@@ -590,6 +642,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://api.calendly.com",
 		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://auth.calendly.com/oauth/authorize",
 			TokenURL:                  "https://auth.calendly.com/oauth/token",
 			ExplicitScopesRequired:    false,
@@ -657,11 +710,11 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
-	// MS Sales configuration
-	MicrosoftDynamics365Sales: {
+	MicrosoftDynamics365CRM: {
 		AuthType: Oauth2,
 		BaseURL:  "https://{{.workspace}}.api.crm.dynamics.com",
 		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
 			TokenURL:                  "https://login.microsoftonline.com/common/oauth2/v2.0/token",
 			ExplicitScopesRequired:    true,
@@ -785,6 +838,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://{{.workspace}}.zendesk.com",
 		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://{{.workspace}}.zendesk.com/oauth/authorizations/new",
 			TokenURL:                  "https://{{.workspace}}.zendesk.com/oauth/tokens",
 			ExplicitScopesRequired:    true,
@@ -808,6 +862,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://www.zopim.com",
 		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://www.zopim.com/oauth2/authorizations/new?subdomain={{.workspace}}",
 			TokenURL:                  "https://www.zopim.com/oauth2/token",
 			ExplicitScopesRequired:    true,
@@ -941,6 +996,59 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			AuthURL:                   "https://api.timelyapp.com/1.1/oauth/authorize",
 			TokenURL:                  "https://api.timelyapp.com/1.1/oauth/token",
 			ExplicitScopesRequired:    false,
+      ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+      
+	// Atlassian configuration
+	Atlassian: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.atlassian.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://auth.atlassian.com/authorize",
+			TokenURL:                  "https://auth.atlassian.com/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+    },
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+  
+	// Webflow Support Configuration
+	Webflow: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.webflow.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://webflow.com/oauth/authorize",
+			TokenURL:                  "https://api.webflow.com/oauth/access_token",
+			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
