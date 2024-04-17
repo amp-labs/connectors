@@ -1214,7 +1214,7 @@ var testCases = []struct { // nolint
 	{
 		provider:    GoogleContacts,
 		description: "Valid GoogleContacts provider config with no substitutions",
-    expected: &ProviderInfo{
+    	expected: &ProviderInfo{
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
 				GrantType:                 AuthorizationCode,
@@ -1238,11 +1238,11 @@ var testCases = []struct { // nolint
 				Subscribe: false,
 				Write:     false,
 			},
-      BaseURL: "https://people.googleapis.com",
-    },
+      		BaseURL: "https://people.googleapis.com",
+    	},
 		expectedErr: nil,
 	},
-  {
+  	{
 		provider:    GoogleMail,
 		description: "Valid GoogleMail provider config with no substitutions",
 		expected: &ProviderInfo{
