@@ -46,7 +46,7 @@ const (
 	Atlassian                           Provider = "atlassian"
 	Webflow                             Provider = "webflow"
 	StackExchange                       Provider = "stackExchange"
-	GMail                               Provider = "gmail"
+	GoogleMail                          Provider = "googleMail"
 )
 
 // ================================================================================
@@ -1097,8 +1097,8 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
-	// GMail Support Configuration
-	GMail: {
+	// GoogleMail Support Configuration
+	GoogleMail: {
 		AuthType: Oauth2,
 		BaseURL:  "https://gmail.googleapis.com",
 		OauthOpts: OauthOpts{
