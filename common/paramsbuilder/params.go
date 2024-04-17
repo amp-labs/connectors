@@ -17,14 +17,14 @@ type ParamAssurance interface {
 }
 
 var (
-	ErrMissingClient    = errors.New("JSON http client not set")
+	ErrMissingClient    = errors.New("http client not set")
 	ErrMissingWorkspace = errors.New("missing workspace name")
 )
 
 // Client params sets up authenticated proxy HTTP client
 // This can be reused among other param builders by composition.
 type Client struct {
-	Caller *common.JSONHTTPClient
+	Caller *common.HTTPClient
 }
 
 func (p *Client) ValidateParams() error {
@@ -55,11 +55,9 @@ func (p *Client) WithClient(
 }
 
 func (p *Client) WithAuthenticatedClient(client common.AuthenticatedHTTPClient) {
-	p.Caller = &common.JSONHTTPClient{
-		HTTPClient: &common.HTTPClient{
-			Client:       client,
-			ErrorHandler: common.InterpretError,
-		},
+	p.Caller = &common.HTTPClient{
+		Client:       client,
+		ErrorHandler: common.InterpretError,
 	}
 }
 
