@@ -596,12 +596,13 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	// DocuSign configuration
 	DocuSign: {
 		AuthType: Oauth2,
-		BaseURL:  "https://{{.workspace}}.docusign.net",
+		// TODO: we don't have a good way to get the server string yet. Need to make API call to /oauth/userinfo.
+		BaseURL:  "https://{{.server}}.docusign.net",
 		OauthOpts: OauthOpts{
 			AuthURL:                   "https://account.docusign.com/oauth/auth",
 			TokenURL:                  "https://account.docusign.com/oauth/token",
 			ExplicitScopesRequired:    true,
-			ExplicitWorkspaceRequired: true,
+			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
