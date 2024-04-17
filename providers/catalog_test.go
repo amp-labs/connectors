@@ -1212,9 +1212,9 @@ var testCases = []struct { // nolint
 		expectedErr: nil,
 	},
 	{
-		provider:    GoogleContacts,
-		description: "Valid GoogleContacts provider config with no substitutions",
-    	expected: &ProviderInfo{
+		provider:    Google,
+		description: "Valid Google provider config with no substitutions",
+		expected: &ProviderInfo{
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
 				GrantType:                 AuthorizationCode,
@@ -1238,11 +1238,42 @@ var testCases = []struct { // nolint
 				Subscribe: false,
 				Write:     false,
 			},
-      		BaseURL: "https://people.googleapis.com",
-    	},
+			BaseURL: "https://www.googleapis.com",
+		},
 		expectedErr: nil,
 	},
-  	{
+	{
+		provider:    GoogleContacts,
+		description: "Valid GoogleContacts provider config with no substitutions",
+		expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
+				AuthURL:                   "https://accounts.google.com/o/oauth2/v2/auth",
+				TokenURL:                  "https://oauth2.googleapis.com/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
+			},
+			Support: Support{
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+			BaseURL: "https://people.googleapis.com",
+		},
+		expectedErr: nil,
+	},
+	{
 		provider:    GoogleMail,
 		description: "Valid GoogleMail provider config with no substitutions",
 		expected: &ProviderInfo{

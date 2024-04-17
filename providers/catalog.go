@@ -46,6 +46,7 @@ const (
 	Atlassian                           Provider = "atlassian"
 	Webflow                             Provider = "webflow"
 	StackExchange                       Provider = "stackExchange"
+	Google                              Provider = "google"
 	GoogleContacts                      Provider = "googleContacts"
 	GoogleMail                          Provider = "googleMail"
 )
@@ -1098,11 +1099,39 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
+	// Google Support Configuration
+	Google: {
+		AuthType: Oauth2,
+		BaseURL:  "https://www.googleapis.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://accounts.google.com/o/oauth2/v2/auth",
+			TokenURL:                  "https://oauth2.googleapis.com/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
 	// GoogleContacts Support Configuration
 	GoogleContacts: {
 		AuthType: Oauth2,
 		BaseURL:  "https://people.googleapis.com",
-    OauthOpts: OauthOpts{
+		OauthOpts: OauthOpts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://accounts.google.com/o/oauth2/v2/auth",
 			TokenURL:                  "https://oauth2.googleapis.com/token",
