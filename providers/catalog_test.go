@@ -153,6 +153,9 @@ var testCases = []struct { // nolint
 				TokenURL:                  "https://accounts.salesloft.com/oauth/token",
 				ExplicitScopesRequired:    false,
 				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
 			},
 			BaseURL: "https://api.salesloft.com",
 		},
@@ -180,6 +183,9 @@ var testCases = []struct { // nolint
 				TokenURL:                  "https://api.outreach.io/oauth/token",
 				ExplicitScopesRequired:    true,
 				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
 			},
 			BaseURL: "https://api.outreach.io",
 		},
@@ -466,6 +472,9 @@ var testCases = []struct { // nolint
 				TokenURL:                  "https://app.asana.com/-/oauth_token",
 				ExplicitScopesRequired:    false,
 				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ConsumerRefField: "data.id",
+				},
 			},
 			BaseURL: "https://app.asana.com/api",
 		},
@@ -553,6 +562,10 @@ var testCases = []struct { // nolint
 				TokenURL:                  "https://app.gong.io/oauth2/generate-customer-token",
 				ExplicitWorkspaceRequired: false,
 				ExplicitScopesRequired:    true,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField:      "scope",
+					ConsumerRefField: "client_id",
+				},
 			},
 			BaseURL: "https://testing.api.gong.io",
 		},
@@ -1078,6 +1091,65 @@ var testCases = []struct { // nolint
 		expectedErr: nil,
 	},
 	{
+		provider:    Timely,
+		description: "Valid Timely provider config with no substitutions",
+    	expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
+        		AuthURL:                   "https://api.timelyapp.com/1.1/oauth/authorize",
+				TokenURL:                  "https://api.timelyapp.com/1.1/oauth/token",
+				ExplicitScopesRequired:    false,
+        		ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
+			},
+			Support: Support{
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Subscribe: false,
+				Proxy:     false,
+			},
+     	 	BaseURL: "https://api.timelyapp.com",
+    	},
+		expectedErr: nil,
+  	},
+  	{
+		provider:    Atlassian,
+		description: "Valid Atlassian provider config with no substitutions",
+    	expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
+        		AuthURL:                   "https://auth.atlassian.com/authorize",
+				TokenURL:                  "https://auth.atlassian.com/oauth/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+      		},
+			Support: Support{
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+      		BaseURL: "https://api.atlassian.com",
+    	},
+		expectedErr: nil,
+  	},
+  	{
 		provider:    Webflow,
 		description: "Valid Webflow provider config with no substitutions",
 		expected: &ProviderInfo{
@@ -1104,7 +1176,38 @@ var testCases = []struct { // nolint
 				Subscribe: false,
 				Write:     false,
 			},
-			BaseURL: "https://api.webflow.com",
+      		BaseURL: "https://api.webflow.com",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    StackExchange,
+		description: "Valid StackExchange provider config with non-existent substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
+				AuthURL:                   "https://stackoverflow.com/oauth",
+				TokenURL:                  "https://stackoverflow.com/oauth/access_token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
+			},
+			BaseURL: "https://api.stackexchange.com",
 		},
 		expectedErr: nil,
 	},
