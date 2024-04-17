@@ -1078,6 +1078,34 @@ var testCases = []struct { // nolint
 		expectedErr: nil,
 	},
 	{
+		provider:    Atlassian,
+		description: "Valid Atlassian provider config with no substitutions",
+    expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
+        AuthURL:                   "https://auth.atlassian.com/authorize",
+				TokenURL:                  "https://auth.atlassian.com/oauth/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+      },
+			Support: Support{
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+      BaseURL: "https://api.atlassian.com",
+    },
+		expectedErr: nil,
+  },
+  {
 		provider:    Webflow,
 		description: "Valid Webflow provider config with no substitutions",
 		expected: &ProviderInfo{
