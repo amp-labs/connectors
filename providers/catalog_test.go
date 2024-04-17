@@ -774,7 +774,7 @@ var testCases = []struct { // nolint
 		expected: &ProviderInfo{
 			Support: Support{
 				Read:  false,
-				Write: true,
+				Write: false,
 				BulkWrite: BulkWriteSupport{
 					Insert: false,
 					Update: false,
