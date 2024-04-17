@@ -1181,6 +1181,37 @@ var testCases = []struct { // nolint
 		expectedErr: nil,
 	},
 	{
+		provider:    Smartsheet,
+		description: "Valid Smartsheet provider config with no substitutions",
+		expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
+				AuthURL:                   "https://app.smartsheet.com/b/authorize",
+				TokenURL:                  "https://api.smartsheet.com/2.0/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
+			},
+			Support: Support{
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+			BaseURL: "https://api.smartsheet.com",
+		},
+		expectedErr: nil,
+	},
+	{
 		provider:    StackExchange,
 		description: "Valid StackExchange provider config with non-existent substitutions",
 		expected: &ProviderInfo{
