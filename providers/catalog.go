@@ -1080,7 +1080,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://app.smartsheet.com/b/authorize",
 			TokenURL:                  "https://api.smartsheet.com/2.0/token",
-      ExplicitScopesRequired:    true,
+			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
@@ -1132,7 +1132,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	GoogleContacts: {
 		AuthType: Oauth2,
 		BaseURL:  "https://people.googleapis.com",
-    OauthOpts: OauthOpts{
+		OauthOpts: OauthOpts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://accounts.google.com/o/oauth2/v2/auth",
 			TokenURL:                  "https://oauth2.googleapis.com/token",

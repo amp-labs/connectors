@@ -232,6 +232,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		tt := tt // rebind, omit loop side effects for parallel goroutine
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			defer tt.server.Close()
 
 			ctx := context.Background()
