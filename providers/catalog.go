@@ -738,7 +738,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
-			Write:     false,
+			Write:     true,
 		},
 	},
 

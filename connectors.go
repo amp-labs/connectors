@@ -54,6 +54,13 @@ type WriteConnector interface {
 	Write(ctx context.Context, params WriteParams) (*WriteResult, error)
 }
 
+// DeleteConnector is an interface that extends the Connector interface with delete capabilities.
+type DeleteConnector interface {
+	Connector
+
+	Delete(ctx context.Context, params DeleteParams) (*DeleteResult, error)
+}
+
 // ObjectMetadataConnector is an interface that extends the Connector interface with
 // the ability to list object metadata.
 type ObjectMetadataConnector interface {
@@ -93,8 +100,10 @@ var Outreach API[*outreach.Connector, outreach.Option] = outreach.NewConnector /
 type (
 	ReadParams               = common.ReadParams
 	WriteParams              = common.WriteParams
+	DeleteParams             = common.DeleteParams
 	ReadResult               = common.ReadResult
 	WriteResult              = common.WriteResult
+	DeleteResult             = common.DeleteResult
 	ListObjectMetadataResult = common.ListObjectMetadataResult
 
 	ErrorWithStatus = common.HTTPStatusError
