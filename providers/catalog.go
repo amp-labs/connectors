@@ -5,6 +5,7 @@ package providers
 // ================================================================================
 
 const (
+	Mock                                Provider = "mock"
 	Salesforce                          Provider = "salesforce"
 	Hubspot                             Provider = "hubspot"
 	LinkedIn                            Provider = "linkedIn"
@@ -41,8 +42,13 @@ const (
 	Airtable                            Provider = "airtable"
 	Slack                               Provider = "slack"
 	HelpScoutMailbox                    Provider = "helpScoutMailbox"
+	Timely                              Provider = "timely"
+	Atlassian                           Provider = "atlassian"
 	Webflow                             Provider = "webflow"
 	Smartsheet                          Provider = "smartsheet"
+	StackExchange                       Provider = "stackExchange"
+	GoogleContacts                      Provider = "googleContacts"
+	GoogleMail                          Provider = "googleMail"
 )
 
 // ================================================================================
@@ -50,6 +56,26 @@ const (
 // ================================================================================
 
 var catalog = CatalogType{ // nolint:gochecknoglobals
+	Mock: {
+		AuthType: None,
+		BaseURL:  "https://not-a-real-domain.mock",
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     true,
+			Read:      true,
+			Subscribe: false,
+			Write:     true,
+		},
+		ProviderOpts: ProviderOpts{
+			"isMock": "true",
+		},
+	},
+
 	// Salesforce configuration
 	Salesforce: {
 		AuthType: Oauth2,
@@ -146,6 +172,9 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://accounts.salesloft.com/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -170,6 +199,9 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://api.outreach.io/oauth/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -415,6 +447,9 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://app.asana.com/-/oauth_token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ConsumerRefField: "data.id",
+			},
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -491,6 +526,10 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://app.gong.io/oauth2/generate-customer-token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField:      "scope",
+				ConsumerRefField: "client_id",
+			},
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -952,6 +991,59 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
+	// Timely Configuration
+	Timely: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.timelyapp.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://api.timelyapp.com/1.1/oauth/authorize",
+			TokenURL:                  "https://api.timelyapp.com/1.1/oauth/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Atlassian configuration
+	Atlassian: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.atlassian.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://auth.atlassian.com/authorize",
+			TokenURL:                  "https://auth.atlassian.com/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
 	// Webflow Support Configuration
 	Webflow: {
 		AuthType: Oauth2,
@@ -979,6 +1071,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Write:     false,
 		},
 	},
+
 	// Smartsheet Support Configuration
 	Smartsheet: {
 		AuthType: Oauth2,
@@ -987,6 +1080,90 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://app.smartsheet.com/b/authorize",
 			TokenURL:                  "https://api.smartsheet.com/2.0/token",
+      ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// StackExchange configuration
+	StackExchange: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.stackexchange.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://stackoverflow.com/oauth",
+			TokenURL:                  "https://stackoverflow.com/oauth/access_token/json",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// GoogleContacts Support Configuration
+	GoogleContacts: {
+		AuthType: Oauth2,
+		BaseURL:  "https://people.googleapis.com",
+    OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://accounts.google.com/o/oauth2/v2/auth",
+			TokenURL:                  "https://oauth2.googleapis.com/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// GoogleMail Support Configuration
+	GoogleMail: {
+		AuthType: Oauth2,
+		BaseURL:  "https://gmail.googleapis.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://accounts.google.com/o/oauth2/v2/auth",
+			TokenURL:                  "https://oauth2.googleapis.com/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 			TokenMetadataFields: TokenMetadataFields{

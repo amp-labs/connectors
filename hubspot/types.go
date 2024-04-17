@@ -1,10 +1,12 @@
 package hubspot
 
+import "github.com/amp-labs/connectors/common"
+
 type SearchParams struct {
 	// The name of the object we are reading, e.g. "Account"
 	ObjectName string // required
 	// NextPage is an opaque token that can be used to get the next page of results.
-	NextPage string // optional, only set this if you want to read the next page of results
+	NextPage common.NextPageToken // optional, only set this if you want to read the next page of results
 	// SortBy is the field to sort by in the direction specified by SortDirection.
 	SortBy []SortBy // optional
 	// FilterBy is the filter to apply to the search

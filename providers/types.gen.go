@@ -5,6 +5,7 @@ package providers
 
 // Defines values for AuthType.
 const (
+	None   AuthType = "none"
 	Oauth2 AuthType = "oauth2"
 )
 
