@@ -996,7 +996,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			AuthURL:                   "https://api.timelyapp.com/1.1/oauth/authorize",
 			TokenURL:                  "https://api.timelyapp.com/1.1/oauth/token",
 			ExplicitScopesRequired:    false,
-      ExplicitWorkspaceRequired: false,
+            ExplicitWorkspaceRequired: false,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
 			},

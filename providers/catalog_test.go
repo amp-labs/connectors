@@ -1093,14 +1093,14 @@ var testCases = []struct { // nolint
 	{
 		provider:    Timely,
 		description: "Valid Timely provider config with no substitutions",
-    expected: &ProviderInfo{
+    	expected: &ProviderInfo{
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
 				GrantType:                 AuthorizationCode,
-        AuthURL:                   "https://api.timelyapp.com/1.1/oauth/authorize",
+        		AuthURL:                   "https://api.timelyapp.com/1.1/oauth/authorize",
 				TokenURL:                  "https://api.timelyapp.com/1.1/oauth/token",
 				ExplicitScopesRequired:    false,
-        ExplicitWorkspaceRequired: false,
+        		ExplicitWorkspaceRequired: false,
 				TokenMetadataFields: TokenMetadataFields{
 					ScopesField: "scope",
 				},
@@ -1117,22 +1117,22 @@ var testCases = []struct { // nolint
 				Subscribe: false,
 				Proxy:     false,
 			},
-      BaseURL: "https://api.timelyapp.com",
-    },
+     	 	BaseURL: "https://api.timelyapp.com",
+    	},
 		expectedErr: nil,
-  },
-  {
+  	},
+  	{
 		provider:    Atlassian,
 		description: "Valid Atlassian provider config with no substitutions",
-    expected: &ProviderInfo{
+    	expected: &ProviderInfo{
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
 				GrantType:                 AuthorizationCode,
-        AuthURL:                   "https://auth.atlassian.com/authorize",
+        		AuthURL:                   "https://auth.atlassian.com/authorize",
 				TokenURL:                  "https://auth.atlassian.com/oauth/token",
 				ExplicitScopesRequired:    true,
 				ExplicitWorkspaceRequired: false,
-      },
+      		},
 			Support: Support{
 				BulkWrite: BulkWriteSupport{
 					Insert: false,
@@ -1145,11 +1145,11 @@ var testCases = []struct { // nolint
 				Subscribe: false,
 				Write:     false,
 			},
-      BaseURL: "https://api.atlassian.com",
-    },
+      		BaseURL: "https://api.atlassian.com",
+    	},
 		expectedErr: nil,
-  },
-  {
+  	},
+  	{
 		provider:    Webflow,
 		description: "Valid Webflow provider config with no substitutions",
 		expected: &ProviderInfo{
@@ -1165,18 +1165,18 @@ var testCases = []struct { // nolint
 				},
 			},
 			Support: Support{
-				Read:  false,
-				Write: false,
 				BulkWrite: BulkWriteSupport{
 					Insert: false,
 					Update: false,
 					Upsert: false,
 					Delete: false,
 				},
-				Subscribe: false,
 				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
 			},
-      BaseURL: "https://api.webflow.com",
+      		BaseURL: "https://api.webflow.com",
 		},
 		expectedErr: nil,
 	},
