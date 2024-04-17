@@ -1000,7 +1000,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			AuthURL:                   "https://api.timelyapp.com/1.1/oauth/authorize",
 			TokenURL:                  "https://api.timelyapp.com/1.1/oauth/token",
 			ExplicitScopesRequired:    false,
-            ExplicitWorkspaceRequired: false,
+			ExplicitWorkspaceRequired: false,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
 			},
@@ -1018,7 +1018,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Write:     false,
 		},
 	},
-      
+
 	// Atlassian configuration
 	Atlassian: {
 		AuthType: Oauth2,
@@ -1029,7 +1029,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://auth.atlassian.com/oauth/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
-    },
+		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
@@ -1043,7 +1043,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Write:     false,
 		},
 	},
-  
+
 	// Webflow Support Configuration
 	Webflow: {
 		AuthType: Oauth2,

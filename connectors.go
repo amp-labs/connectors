@@ -9,9 +9,9 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/hubspot"
-	"github.com/amp-labs/connectors/outreach"
 	"github.com/amp-labs/connectors/microsoftdynamicscrm"
 	"github.com/amp-labs/connectors/mock"
+	"github.com/amp-labs/connectors/outreach"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/salesforce"
 )

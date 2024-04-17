@@ -166,4 +166,3 @@ func OutreachOauthTokenFromRegistry(registry CredentialsRegistry) *oauth2.Token 
 
 	return tok
 }
-
