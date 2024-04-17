@@ -45,6 +45,7 @@ const (
 	Timely                              Provider = "timely"
 	Atlassian                           Provider = "atlassian"
 	Webflow                             Provider = "webflow"
+	StackExchange                       Provider = "stackExchange"
 )
 
 // ================================================================================
@@ -1048,6 +1049,33 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://webflow.com/oauth/authorize",
 			TokenURL:                  "https://api.webflow.com/oauth/access_token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+	// StackExchange configuration
+	StackExchange: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.stackexchange.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://stackoverflow.com/oauth",
+			TokenURL:                  "https://stackoverflow.com/oauth/access_token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 			TokenMetadataFields: TokenMetadataFields{
