@@ -120,5 +120,8 @@ go.work
 
 playground/
 
-creds.json
+*creds.json
 **/.DS_Store
+
+# ssl certificates
+.ssl/

@@ -22,14 +22,20 @@ var testCases = []struct { // nolint
 		},
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      true,
-				Write:     true,
-				BulkWrite: true,
+				Read:  true,
+				Write: true,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: true,
+					Delete: true,
+				},
 				Subscribe: false,
 				Proxy:     true,
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
 				AuthURL:                   "https://example.my.salesforce.com/services/oauth2/authorize",
 				TokenURL:                  "https://example.my.salesforce.com/services/oauth2/token",
 				ExplicitWorkspaceRequired: true,
@@ -56,14 +62,20 @@ var testCases = []struct { // nolint
 		},
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      true,
-				Write:     true,
-				BulkWrite: false,
+				Read:  true,
+				Write: true,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     true,
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
 				AuthURL:                   "https://app.hubspot.com/oauth/authorize",
 				TokenURL:                  "https://api.hubapi.com/oauth/v1/token",
 				ExplicitScopesRequired:    true,
@@ -81,14 +93,20 @@ var testCases = []struct { // nolint
 		},
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
 				AuthURL:                   "https://www.linkedin.com/oauth/v2/authorization",
 				TokenURL:                  "https://www.linkedin.com/oauth/v2/accessToken",
 				ExplicitScopesRequired:    true,
@@ -118,9 +136,14 @@ var testCases = []struct { // nolint
 		},
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -140,9 +163,14 @@ var testCases = []struct { // nolint
 		description: "Valid Outreach provider config with no substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -169,7 +197,12 @@ var testCases = []struct { // nolint
 				ExplicitWorkspaceRequired: false,
 			},
 			Support: Support{
-				BulkWrite: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Proxy:     false,
 				Read:      false,
 				Subscribe: false,
@@ -181,17 +214,138 @@ var testCases = []struct { // nolint
 	},
 
 	{
+		provider: Capsule,
+		expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://api.capsulecrm.com/oauth/authorise",
+				TokenURL:                  "https://api.capsulecrm.com/oauth/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+			},
+			Support: Support{
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+			BaseURL: "https://api.capsulecrm.com/api",
+		},
+		expectedErr: nil,
+	},
+
+	{
+		provider:    Copper,
+		description: "Valid Copper provider config with no substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://app.copper.com/oauth/authorize",
+				TokenURL:                  "https://app.copper.com/oauth/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+			},
+			BaseURL: "https://api.copper.com/developer_api",
+		},
+		expectedErr: nil,
+	},
+
+	{
+		provider:    ZohoCRM,
+		description: "Valid ZohoCRM provider config with no substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://accounts.zoho.com/oauth/v2/auth",
+				TokenURL:                  "https://accounts.zoho.com/oauth/v2/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+			},
+			BaseURL: "https://www.zohoapis.com",
+		},
+		expectedErr: nil,
+	},
+
+	{
+		provider:    Klaviyo,
+		description: "Valid Klaviyo provider config with no substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				GrantType:                 "PKCE",
+				AuthURL:                   "https://www.klaviyo.com/oauth/authorize",
+				TokenURL:                  "https://a.klaviyo.com/oauth/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
+			},
+			BaseURL: "https://a.klaviyo.com",
+		},
+		expectedErr: nil,
+	},
+
+	{
 		provider: Sellsy,
 		expected: &ProviderInfo{
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
+				GrantType:                 PKCE,
 				AuthURL:                   "https://login.sellsy.com/oauth2/authorization",
 				TokenURL:                  "https://login.sellsy.com/oauth2/access-tokens",
 				ExplicitScopesRequired:    false,
 				ExplicitWorkspaceRequired: false,
 			},
 			Support: Support{
-				BulkWrite: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Proxy:     false,
 				Read:      false,
 				Subscribe: false,
@@ -210,9 +364,14 @@ var testCases = []struct { // nolint
 		},
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -236,7 +395,12 @@ var testCases = []struct { // nolint
 				Read:  false,
 				Write: false,
 
-				BulkWrite: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -260,7 +424,12 @@ var testCases = []struct { // nolint
 				Read:  false,
 				Write: false,
 
-				BulkWrite: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -280,9 +449,14 @@ var testCases = []struct { // nolint
 		description: "Valid Asana provider config with no substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -308,13 +482,18 @@ var testCases = []struct { // nolint
 				ExplicitWorkspaceRequired: false,
 			},
 			Support: Support{
-				BulkWrite: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Proxy:     false,
 				Read:      false,
 				Subscribe: false,
 				Write:     false,
 			},
-			BaseURL: "https://api.dropboxapi.com/2/",
+			BaseURL: "https://api.dropboxapi.com",
 		},
 		expectedErr: nil,
 	},
@@ -323,9 +502,14 @@ var testCases = []struct { // nolint
 		description: "Valid Notion provider config with no substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     true,
 			},
@@ -352,9 +536,14 @@ var testCases = []struct { // nolint
 		},
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -374,9 +563,14 @@ var testCases = []struct { // nolint
 		description: "Zoom provider config with no substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -396,9 +590,14 @@ var testCases = []struct { // nolint
 		description: "Valid Intercom provider config with no substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
@@ -415,22 +614,34 @@ var testCases = []struct { // nolint
 	},
 	{
 		provider: DocuSign,
+		substitutions: map[string]string{
+			"workspace": "example",
+		},
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
 				AuthURL:                   "https://account.docusign.com/oauth/auth",
 				TokenURL:                  "https://account.docusign.com/oauth/token",
 				ExplicitScopesRequired:    true,
 				ExplicitWorkspaceRequired: true,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
 			},
-			BaseURL: "https://{{.workspace}}.docusign.net",
+			BaseURL: "https://example.docusign.net",
 		},
 		expectedErr: nil,
 	},
@@ -438,20 +649,470 @@ var testCases = []struct { // nolint
 		provider: DocuSignDeveloper,
 		expected: &ProviderInfo{
 			Support: Support{
-				Read:      false,
-				Write:     false,
-				BulkWrite: false,
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
 				Subscribe: false,
 				Proxy:     false,
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
 				AuthURL:                   "https://account-d.docusign.com/oauth/auth",
 				TokenURL:                  "https://account-d.docusign.com/oauth/token",
 				ExplicitScopesRequired:    true,
 				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
 			},
 			BaseURL: "https://demo.docusign.net",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    Calendly,
+		description: "Calendly provider config with no substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
+				AuthURL:                   "https://auth.calendly.com/oauth/authorize",
+				TokenURL:                  "https://auth.calendly.com/oauth/token",
+				ExplicitScopesRequired:    false,
+				ExplicitWorkspaceRequired: false,
+			},
+			BaseURL: "https://api.calendly.com",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    GetResponse,
+		description: "GetResponse provider config with no substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://app.getresponse.com/oauth2_authorize.html",
+				TokenURL:                  "https://api.getresponse.com/v3/token",
+				ExplicitScopesRequired:    false,
+				ExplicitWorkspaceRequired: false,
+			},
+			BaseURL: "https://api.getresponse.com",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    AWeber,
+		description: "Valid AWeber provider config with no substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://auth.aweber.com/oauth2/authorize",
+				TokenURL:                  "https://auth.aweber.com/oauth2/token",
+				ExplicitWorkspaceRequired: false,
+				ExplicitScopesRequired:    true,
+			},
+			BaseURL: "https://api.aweber.com",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    MicrosoftDynamics365CRM,
+		description: "MS Dynamics 365 CRM provider config with valid substitutions",
+		substitutions: map[string]string{
+			"workspace": "testing",
+		},
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
+				AuthURL:                   "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+				TokenURL:                  "https://login.microsoftonline.com/common/oauth2/v2.0/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: true,
+			},
+			BaseURL: "https://testing.api.crm.dynamics.com",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    ConstantContact,
+		description: "Valid ConstantContact provider config with no substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://authz.constantcontact.com/oauth2/default/v1/authorize",
+				TokenURL:                  "https://authz.constantcontact.com/oauth2/default/v1/token",
+				ExplicitWorkspaceRequired: false,
+				ExplicitScopesRequired:    true,
+			},
+			BaseURL: "https://api.cc.email",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    MicrosoftDynamics365BusinessCentral,
+		description: "Dynamics 365 Business Central provider config with substitutions",
+		substitutions: map[string]string{
+			"workspace": "tenantID",
+		},
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://login.microsoftonline.com/tenantID/oauth2/v2.0/authorize",
+				TokenURL:                  "https://login.microsoftonline.com/tenantID/oauth2/v2.0/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: true,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
+			},
+			BaseURL: "https://api.businesscentral.dynamics.com",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    Gainsight,
+		description: "Gainsight config with substitutions",
+		substitutions: map[string]string{
+			"workspace": "company",
+		},
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://company.gainsightcloud.com/v1/authorize",
+				TokenURL:                  "https://company.gainsightcloud.com/v1/users/oauth/token",
+				ExplicitScopesRequired:    false,
+				ExplicitWorkspaceRequired: true,
+			},
+			BaseURL: "https://company.gainsightcloud.com",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    Box,
+		description: "Box config with no substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://account.box.com/api/oauth2/authorize",
+				TokenURL:                  "https://api.box.com/oauth2/token",
+				ExplicitScopesRequired:    false,
+				ExplicitWorkspaceRequired: false,
+			},
+			BaseURL: "https://api.box.com",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    ZendeskSupport,
+		description: "Zendesk Support provider config with valid substitutions",
+		substitutions: map[string]string{
+			"workspace": "testing",
+		},
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
+				AuthURL:                   "https://testing.zendesk.com/oauth/authorizations/new",
+				TokenURL:                  "https://testing.zendesk.com/oauth/tokens",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: true,
+			},
+			BaseURL: "https://testing.zendesk.com",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    ZendeskChat,
+		description: "Valid ZendeskChat provider config with substitutions",
+		substitutions: map[string]string{
+			"workspace": "test",
+		},
+		expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
+				AuthURL:                   "https://www.zopim.com/oauth2/authorizations/new?subdomain=test",
+				TokenURL:                  "https://www.zopim.com/oauth2/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: true,
+			},
+			Support: Support{
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+			BaseURL: "https://www.zopim.com",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    WordPress,
+		description: "Valid WordPress provider config with no substitutions",
+		expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://public-api.wordpress.com/oauth2/authorize",
+				TokenURL:                  "https://public-api.wordpress.com/oauth2/token",
+				ExplicitScopesRequired:    false,
+				ExplicitWorkspaceRequired: false,
+			},
+			Support: Support{
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+			BaseURL: "https://public-api.wordpress.com",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    Airtable,
+		description: "Valid Airtable provider config with no substitutions",
+		expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				GrantType:                 PKCE,
+				AuthURL:                   "https://airtable.com/oauth2/v1/authorize",
+				TokenURL:                  "https://airtable.com/oauth2/v1/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
+			},
+			Support: Support{
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+			BaseURL: "https://api.airtable.com",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    Slack,
+		description: "Valid Slack provider config with non-existent substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
+				AuthURL:                   "https://slack.com/oauth/v2/authorize",
+				TokenURL:                  "https://slack.com/api/oauth.v2.access",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: true,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField:       "scope",
+					WorkspaceRefField: "workspace_name",
+				},
+			},
+			BaseURL: "https://slack.com/api",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    HelpScoutMailbox,
+		description: "Valid HelpScoutMailbox provider config with no substitutions",
+		expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
+				AuthURL:                   "https://secure.helpscout.net/authentication/authorizeClientApplication",
+				TokenURL:                  "https://api.helpscout.net/v2/oauth2/token",
+				ExplicitScopesRequired:    false,
+				ExplicitWorkspaceRequired: false,
+			},
+			Support: Support{
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+			BaseURL: "https://api.helpscout.net",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    Webflow,
+		description: "Valid Webflow provider config with no substitutions",
+		expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
+				AuthURL:                   "https://webflow.com/oauth/authorize",
+				TokenURL:                  "https://api.webflow.com/oauth/access_token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
+			},
+			Support: Support{
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+			BaseURL: "https://api.webflow.com",
 		},
 		expectedErr: nil,
 	},

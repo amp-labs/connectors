@@ -6,55 +6,42 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/salesforce"
-	"github.com/amp-labs/connectors/test"
+	testUtils "github.com/amp-labs/connectors/test/utils"
+	"github.com/amp-labs/connectors/utils"
 	"github.com/subchen/go-xmldom"
-	"golang.org/x/oauth2"
 )
 
 func main() {
-	creds, err := test.GetCreds("../creds.json")
-	if err != nil {
-		slog.Error("Error getting creds", "error", err)
-		os.Exit(1)
+	handler := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
+		Level: slog.LevelDebug,
+	})
+
+	logger := slog.New(handler)
+	slog.SetDefault(logger)
+
+	// assumes that this code is being run from the root of the project
+	// go run test/salesforce/bulkwrite/main.go
+	filePath := os.Getenv("SALESFORCE_CRED_FILE_PATH")
+	if filePath == "" {
+		filePath = "./salesforce-creds.json"
 	}
 
-	clientId := creds.ClientId
-	clientSecret := creds.ClientSecret
-	accessToken := creds.AccessToken
-	refreshToken := creds.RefreshToken
+	ampConnectionSchemaReader := testUtils.JSONFileReaders(filePath)
+	credentialsRegistry := utils.NewCredentialsRegistry()
+	credentialsRegistry.AddReaders(ampConnectionSchemaReader...)
+	salesforceWorkspace := credentialsRegistry.MustString(utils.WorkspaceRef)
 
-	salesforceWorkspace := creds.Workspace
-
-	cfg := &oauth2.Config{
-		ClientID:     clientId,
-		ClientSecret: clientSecret,
-		Endpoint: oauth2.Endpoint{
-			AuthURL:   fmt.Sprintf("https://%s.my.salesforce.com/services/oauth2/authorize", salesforceWorkspace),
-			TokenURL:  fmt.Sprintf("https://%s.my.salesforce.com/services/oauth2/token", salesforceWorkspace),
-			AuthStyle: oauth2.AuthStyleInParams,
-		},
-	}
-
-	tok := &oauth2.Token{
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
-		TokenType:    "bearer",
-		Expiry:       time.Now().Add(-1 * time.Hour),
-	}
-
+	cfg := utils.SalesforceOAuthConfigFromRegistry(credentialsRegistry)
+	tok := utils.SalesforceOauthTokenFromRegistry(credentialsRegistry)
 	ctx := context.Background()
 
 	sfc, err := connectors.Salesforce(
-		salesforce.WithClient(ctx, http.DefaultClient, cfg, tok,
-			salesforce.GetTokenUpdater(tok), // this is necessary to update token
-		),
-		salesforce.WithWorkspace(salesforceWorkspace),
-	)
+		salesforce.WithClient(ctx, http.DefaultClient, cfg, tok),
+		salesforce.WithWorkspace(salesforceWorkspace))
 	if err != nil {
 		slog.Error("Error creating Salesforce connector", "error", err)
 

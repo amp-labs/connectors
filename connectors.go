@@ -5,18 +5,26 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net/http"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/hubspot"
+	"github.com/amp-labs/connectors/microsoftdynamicscrm"
+	"github.com/amp-labs/connectors/mock"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/salesforce"
 )
 
-// BasicConnector is an interface that can be used to implement a connector with
+// Connector is an interface that can be used to implement a connector with
 // basic configuration about the provider.
-type BasicConnector interface {
+type Connector interface {
 	fmt.Stringer
 	io.Closer
+
+	// JSONHTTPClient returns the underlying JSON HTTP client. This is useful for
+	// testing, or for calling methods that aren't exposed by the Connector
+	// interface directly. Authentication and token refreshes will be handled automatically.
+	JSONHTTPClient() *common.JSONHTTPClient
 
 	// HTTPClient returns the underlying HTTP client. This is useful for proxy requests.
 	HTTPClient() *common.HTTPClient
@@ -25,9 +33,9 @@ type BasicConnector interface {
 	Provider() providers.Provider
 }
 
-// Connector is an interface that all connectors must implement.
-type Connector interface {
-	BasicConnector
+// ReadConnector is an interface that extends the Connector interface with read capabilities.
+type ReadConnector interface {
+	Connector
 
 	// Read reads a page of data from the connector. This can be called multiple
 	// times to read all the data. The caller is responsible for paging, by
@@ -36,15 +44,21 @@ type Connector interface {
 	// Authentication corner cases are handled internally, but all other errors
 	// are returned to the caller.
 	Read(ctx context.Context, params ReadParams) (*ReadResult, error)
+}
+
+// WriteConnector is an interface that extends the Connector interface with write capabilities.
+type WriteConnector interface {
+	Connector
 
 	Write(ctx context.Context, params WriteParams) (*WriteResult, error)
+}
+
+// ObjectMetadataConnector is an interface that extends the Connector interface with
+// the ability to list object metadata.
+type ObjectMetadataConnector interface {
+	Connector
 
 	ListObjectMetadata(ctx context.Context, objectNames []string) (*ListObjectMetadataResult, error)
-
-	// JSONHTTPClient returns the underlying JSON HTTP client. This is useful for
-	// testing, or for calling methods that aren't exposed by the Connector
-	// interface directly. Authentication and token refreshes will be handled automatically.
-	JSONHTTPClient() *common.JSONHTTPClient
 }
 
 // API is a function that returns a Connector. It's used as a factory.
@@ -64,6 +78,12 @@ var Salesforce API[*salesforce.Connector, salesforce.Option] = salesforce.NewCon
 
 // Hubspot is an API that returns a new Hubspot Connector.
 var Hubspot API[*hubspot.Connector, hubspot.Option] = hubspot.NewConnector //nolint:gochecknoglobals
+
+// MSDynamicsSales is an API that returns a new MS Dynamics 365 Sales Connector.
+var MSDynamicsSales API[*microsoftdynamicscrm.Connector, microsoftdynamicscrm.Option] = microsoftdynamicscrm.NewConnector //nolint:gochecknoglobals,lll
+
+// Mock is an API that returns a new Mock Connector.
+var Mock API[*mock.Connector, mock.Option] = mock.NewConnector //nolint:gochecknoglobals
 
 // We re-export the following types so that they can be used by consumers of this library.
 type (
@@ -103,6 +123,8 @@ var (
 // since you get type safety and more readable code.
 func New(provider providers.Provider, opts map[string]any) (Connector, error) { //nolint:ireturn
 	switch provider {
+	case providers.Mock:
+		return newMock(opts)
 	case providers.Salesforce:
 		return newSalesforce(opts)
 	case providers.Hubspot:
@@ -110,6 +132,39 @@ func New(provider providers.Provider, opts map[string]any) (Connector, error) { 
 	default:
 		return nil, fmt.Errorf("%w: %s", ErrUnknownConnector, provider)
 	}
+}
+
+// newMock returns a new Mock Connector, by unwrapping the options and passing them to the Mock API.
+func newMock(opts map[string]any) (Connector, error) { //nolint:ireturn
+	var options []mock.Option
+
+	c, valid := getParam[*http.Client](opts, "client")
+	if valid {
+		options = append(options, mock.WithClient(c))
+	}
+
+	a, valid := getParam[common.AuthenticatedHTTPClient](opts, "authenticated-client")
+	if valid {
+		options = append(options, mock.WithAuthenticatedClient(a))
+	}
+
+	r, valid := getParam[func(ctx context.Context, params ReadParams) (*ReadResult, error)](opts, "read")
+	if valid {
+		options = append(options, mock.WithRead(r))
+	}
+
+	w, valid := getParam[func(ctx context.Context, params WriteParams) (*WriteResult, error)](opts, "write")
+	if valid {
+		options = append(options, mock.WithWrite(w))
+	}
+
+	l, valid := getParam[func(ctx context.Context, objectNames []string) (*ListObjectMetadataResult, error)](
+		opts, "list-object-metadata")
+	if valid {
+		options = append(options, mock.WithListObjectMetadata(l))
+	}
+
+	return Mock.New(options...)
 }
 
 // newSalesforce returns a new Salesforce Connector, by unwrapping the options and passing them to the Salesforce API.

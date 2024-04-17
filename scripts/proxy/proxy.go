@@ -11,8 +11,9 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"time"
 
-	"github.com/amp-labs/connectors/basic"
+	"github.com/amp-labs/connectors/connector"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/utils"
 	"golang.org/x/oauth2"
@@ -86,6 +87,16 @@ var readers = []utils.Reader{
 		JSONPath: "$['refreshToken']",
 		CredKey:  "RefreshToken",
 	},
+	&utils.JSONReader{
+		FilePath: DefaultCredsFile,
+		JSONPath: "$['expiry']",
+		CredKey:  "Expiry",
+	},
+	&utils.JSONReader{
+		FilePath: DefaultCredsFile,
+		JSONPath: "$['expiryFormat']",
+		CredKey:  "ExpiryFormat",
+	},
 }
 
 func main() {
@@ -99,6 +110,8 @@ func main() {
 	clientSecret := registry.MustString("ClientSecret")
 	accessToken := registry.MustString("AccessToken")
 	refreshToken := registry.MustString("RefreshToken")
+	atExpiry := registry.MustString("Expiry")
+	atExpiryTimeFormat := registry.MustString("ExpiryFormat")
 
 	scopes, err := registry.GetString("Scopes")
 	if err != nil {
@@ -118,8 +131,41 @@ func main() {
 		substitutionsMap[key] = val.MustString()
 	}
 
+	expiry := parseAccessTokenExpiry(atExpiry, atExpiryTimeFormat)
+
 	validateRequiredFlags(provider, clientId, clientSecret)
-	startProxy(provider, oauthScopes, clientId, clientSecret, substitutionsMap, DefaultPort, accessToken, refreshToken)
+	startProxy(provider, oauthScopes, clientId, clientSecret, substitutionsMap, DefaultPort, accessToken, refreshToken, expiry)
+}
+
+func parseAccessTokenExpiry(expiryStr, timeFormat string) time.Time {
+	formatEnums := map[string]string{
+		"Layout":      time.Layout,
+		"ANSIC":       time.ANSIC,
+		"UnixDate":    time.UnixDate,
+		"RubyDate":    time.RubyDate,
+		"RFC822":      time.RFC822,
+		"RFC822Z":     time.RFC822Z,
+		"RFC850":      time.RFC850,
+		"RFC1123":     time.RFC1123,
+		"RFC1123Z":    time.RFC1123Z,
+		"RFC3339":     time.RFC3339,
+		"RFC3339Nano": time.RFC3339Nano,
+		"Kitchen":     time.Kitchen,
+		"DateOnly":    time.DateOnly,
+	}
+
+	format, found := formatEnums[timeFormat]
+	if !found {
+		// specific format is specified instead of enum
+		format = timeFormat
+	}
+
+	expiry, err := time.Parse(format, expiryStr)
+	if err != nil {
+		panic(err)
+	}
+
+	return expiry
 }
 
 func validateRequiredFlags(provider, clientId, clientSecret string) {
@@ -130,8 +176,8 @@ func validateRequiredFlags(provider, clientId, clientSecret string) {
 	}
 }
 
-func startProxy(provider string, scopes []string, clientId, clientSecret string, substitutions map[string]string, port int, accessToken, refreshToken string) {
-	proxy := buildProxy(provider, scopes, clientId, clientSecret, substitutions, accessToken, refreshToken)
+func startProxy(provider string, scopes []string, clientId, clientSecret string, substitutions map[string]string, port int, accessToken, refreshToken string, expiry time.Time) {
+	proxy := buildProxy(provider, scopes, clientId, clientSecret, substitutions, accessToken, refreshToken, expiry)
 	http.Handle("/", proxy)
 
 	fmt.Printf("\nProxy server listening on :%d\n", port)
@@ -141,10 +187,10 @@ func startProxy(provider string, scopes []string, clientId, clientSecret string,
 	}
 }
 
-func buildProxy(provider string, scopes []string, clientId, clientSecret string, substitutions map[string]string, accessToken, refreshToken string) *Proxy {
+func buildProxy(provider string, scopes []string, clientId, clientSecret string, substitutions map[string]string, accessToken, refreshToken string, expiry time.Time) *Proxy {
 	providerInfo := getProviderConfig(provider, substitutions)
 	cfg := configureOAuth(clientId, clientSecret, scopes, providerInfo)
-	httpClient := setupHttpClient(cfg, accessToken, refreshToken, provider, providerInfo)
+	httpClient := setupHttpClient(cfg, accessToken, refreshToken, provider, expiry, providerInfo)
 
 	target, err := url.Parse(providerInfo.BaseURL)
 	if err != nil {
@@ -157,7 +203,7 @@ func buildProxy(provider string, scopes []string, clientId, clientSecret string,
 func getProviderConfig(provider string, substitutions map[string]string) *providers.ProviderInfo {
 	config, err := providers.ReadInfo(provider, &substitutions)
 	if err != nil {
-		panic(err)
+		panic(fmt.Errorf("%w: %s", err, provider))
 	}
 
 	return config
@@ -171,18 +217,22 @@ func configureOAuth(clientId, clientSecret string, scopes []string, providerInfo
 		Endpoint: oauth2.Endpoint{
 			AuthURL:   providerInfo.OauthOpts.AuthURL,
 			TokenURL:  providerInfo.OauthOpts.TokenURL,
-			AuthStyle: oauth2.AuthStyleInParams,
+			AuthStyle: oauth2.AuthStyleAutoDetect,
 		},
 	}
 }
 
 // This helps with refreshing tokens automatically.
-func setupHttpClient(cfg *oauth2.Config, accessToken, refreshToken string, provider string, providerInfo *providers.ProviderInfo) *http.Client {
+func setupHttpClient(cfg *oauth2.Config, accessToken, refreshToken, provider string, expiry time.Time, providerInfo *providers.ProviderInfo) *http.Client {
 	ctx := context.Background()
 
-	conn, err := basic.NewConnector(
+	conn, err := connector.NewConnector(
 		provider,
-		basic.WithClient(ctx, http.DefaultClient, cfg, &oauth2.Token{AccessToken: accessToken, RefreshToken: refreshToken}),
+		connector.WithClient(ctx, http.DefaultClient, cfg, &oauth2.Token{
+			AccessToken:  accessToken,
+			RefreshToken: refreshToken,
+			Expiry:       expiry, // will trigger reuse of refresh token
+		}),
 	)
 	if err != nil {
 		panic(err)
