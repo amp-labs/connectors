@@ -1200,7 +1200,7 @@ var testCases = []struct { // nolint
 			OauthOpts: OauthOpts{
 				GrantType:                 AuthorizationCode,
 				AuthURL:                   "https://stackoverflow.com/oauth",
-				TokenURL:                  "https://stackoverflow.com/oauth/access_token",
+				TokenURL:                  "https://stackoverflow.com/oauth/access_token/json",
 				ExplicitScopesRequired:    true,
 				ExplicitWorkspaceRequired: false,
 				TokenMetadataFields: TokenMetadataFields{
