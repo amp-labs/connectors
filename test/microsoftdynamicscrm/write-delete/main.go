@@ -35,12 +35,12 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	filePath := os.Getenv("MS_SALES_CRED_FILE")
+	filePath := os.Getenv("MS_CRM_CRED_FILE")
 	if filePath == "" {
-		filePath = "./ms-sales-creds.json"
+		filePath = "./ms-crn-creds.json"
 	}
 
-	conn := msTest.GetMSDynamics365SalesConnector(ctx, filePath)
+	conn := msTest.GetMSDynamics365CRMConnector(ctx, filePath)
 	defer utils.Close(conn)
 
 	fmt.Println("> TEST Create/Update/Delete lead")
@@ -106,7 +106,7 @@ func readLeads(ctx context.Context, conn *microsoftdynamicscrm.Connector) *commo
 		},
 	})
 	if err != nil {
-		utils.Fail("error reading from microsoft sales", "error", err)
+		utils.Fail("error reading from microsoft CRM", "error", err)
 	}
 
 	return res
@@ -119,7 +119,7 @@ func createLead(ctx context.Context, conn *microsoftdynamicscrm.Connector, paylo
 		RecordData: payload,
 	})
 	if err != nil {
-		utils.Fail("error writing to microsoft sales", "error", err)
+		utils.Fail("error writing to microsoft CRM", "error", err)
 	}
 
 	if !res.Success {
@@ -134,7 +134,7 @@ func updateLead(ctx context.Context, conn *microsoftdynamicscrm.Connector, leadI
 		RecordData: payload,
 	})
 	if err != nil {
-		utils.Fail("error writing to microsoft sales", "error", err)
+		utils.Fail("error writing to microsoft CRM", "error", err)
 	}
 
 	if !res.Success {
@@ -148,7 +148,7 @@ func removeLead(ctx context.Context, conn *microsoftdynamicscrm.Connector, leadI
 		RecordId:   leadID,
 	})
 	if err != nil {
-		utils.Fail("error deleting for microsoft sales", "error", err)
+		utils.Fail("error deleting for microsoft CRM", "error", err)
 	}
 
 	if !res.Success {
