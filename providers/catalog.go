@@ -42,6 +42,7 @@ const (
 	Airtable                            Provider = "airtable"
 	Slack                               Provider = "slack"
 	HelpScoutMailbox                    Provider = "helpScoutMailbox"
+	Atlassian                           Provider = "atlassian"
 	Webflow                             Provider = "webflow"
 )
 
@@ -972,6 +973,31 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
+	// Atlassian configuration
+	Atlassian: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.atlassian.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://auth.atlassian.com/authorize",
+			TokenURL:                  "https://auth.atlassian.com/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+    },
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+  
 	// Webflow Support Configuration
 	Webflow: {
 		AuthType: Oauth2,
