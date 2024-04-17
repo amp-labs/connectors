@@ -1222,6 +1222,9 @@ var testCases = []struct { // nolint
 				TokenURL:                  "https://oauth2.googleapis.com/token",
 				ExplicitScopesRequired:    true,
 				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
 			},
 			Support: Support{
 				BulkWrite: BulkWriteSupport{
