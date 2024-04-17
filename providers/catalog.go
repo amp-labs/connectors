@@ -45,6 +45,7 @@ const (
 	Timely                              Provider = "timely"
 	Atlassian                           Provider = "atlassian"
 	Webflow                             Provider = "webflow"
+	Smartsheet                          Provider = "smartsheet"
 	StackExchange                       Provider = "stackExchange"
 	GoogleContacts                      Provider = "googleContacts"
 	GoogleMail                          Provider = "googleMail"
@@ -1070,6 +1071,35 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Write:     false,
 		},
 	},
+
+	// Smartsheet Support Configuration
+	Smartsheet: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.smartsheet.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://app.smartsheet.com/b/authorize",
+			TokenURL:                  "https://api.smartsheet.com/2.0/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
 	// StackExchange configuration
 	StackExchange: {
 		AuthType: Oauth2,
@@ -1102,7 +1132,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	GoogleContacts: {
 		AuthType: Oauth2,
 		BaseURL:  "https://people.googleapis.com",
-    OauthOpts: OauthOpts{
+		OauthOpts: OauthOpts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://accounts.google.com/o/oauth2/v2/auth",
 			TokenURL:                  "https://oauth2.googleapis.com/token",

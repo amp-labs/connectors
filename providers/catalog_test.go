@@ -1181,6 +1181,37 @@ var testCases = []struct { // nolint
 		expectedErr: nil,
 	},
 	{
+		provider:    Smartsheet,
+		description: "Valid Smartsheet provider config with no substitutions",
+		expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
+				AuthURL:                   "https://app.smartsheet.com/b/authorize",
+				TokenURL:                  "https://api.smartsheet.com/2.0/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
+			},
+			Support: Support{
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+			BaseURL: "https://api.smartsheet.com",
+		},
+		expectedErr: nil,
+	},
+	{
 		provider:    StackExchange,
 		description: "Valid StackExchange provider config with non-existent substitutions",
 		expected: &ProviderInfo{
@@ -1214,7 +1245,7 @@ var testCases = []struct { // nolint
 	{
 		provider:    GoogleContacts,
 		description: "Valid GoogleContacts provider config with no substitutions",
-    	expected: &ProviderInfo{
+		expected: &ProviderInfo{
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
 				GrantType:                 AuthorizationCode,
@@ -1238,11 +1269,11 @@ var testCases = []struct { // nolint
 				Subscribe: false,
 				Write:     false,
 			},
-      		BaseURL: "https://people.googleapis.com",
-    	},
+			BaseURL: "https://people.googleapis.com",
+		},
 		expectedErr: nil,
 	},
-  	{
+	{
 		provider:    GoogleMail,
 		description: "Valid GoogleMail provider config with no substitutions",
 		expected: &ProviderInfo{
