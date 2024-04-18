@@ -97,8 +97,11 @@ func parseJSONResponse(res *http.Response, body []byte) (*JSONHTTPResponse, erro
 			return nil, fmt.Errorf("failed to parse content type: %w", err)
 		}
 
-		if mimeType != "application/json" {
-			return nil, fmt.Errorf("%w: expected content type to be application/json, got %s", ErrNotJSON, mimeType)
+		// Providers implementing JSONAPISpeicifcations returns application/vnd.api+json
+		if mimeType != "application/json" && mimeType != "application/vnd.api+json" {
+			return nil, fmt.Errorf("%w: expected content type to be application/json or application/vnd.api+json , got %s",
+				ErrNotJSON, mimeType,
+			)
 		}
 	}
 
