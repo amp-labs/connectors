@@ -188,6 +188,9 @@ var testCases = []struct { // nolint
 				},
 			},
 			BaseURL: "https://api.outreach.io",
+			ProviderOpts: ProviderOpts{
+				"restAPIURL": "https://api.outreach.io/api/v2",
+			},
 		},
 		expectedErr: nil,
 	},
