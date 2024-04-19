@@ -216,6 +216,9 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Subscribe: false,
 			Write:     false,
 		},
+		ProviderOpts: ProviderOpts{
+			"restAPIURL": "https://api.outreach.io/api/v2",
+		},
 	},
 
 	// Pipedrive configuration
