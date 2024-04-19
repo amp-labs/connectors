@@ -68,6 +68,8 @@ const (
 	Aircall                             Provider = "aircall"
 	Drift                               Provider = "drift"
 	Microsoft                           Provider = "microsoft"
+	GoogleMail                          Provider = "googleMail"
+	Formstack                           Provider = "formstack"
 )
 
 // ================================================================================
@@ -1696,6 +1698,31 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			AuthURL:                   "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
 			TokenURL:                  "https://login.microsoftonline.com/common/oauth2/v2.0/token",
 			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Formstack configuration
+	Formstack: {
+		AuthType: Oauth2,
+		BaseURL:  "https://www.formstack.com/api",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://www.formstack.com/api/v2/oauth2/authorize",
+			TokenURL:                  "https://www.formstack.com/api/v2/oauth2/token",
+			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
