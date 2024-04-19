@@ -209,7 +209,7 @@ var testCases = []struct { // nolint
 
 				TokenURL:                  "https://api.na3.echosign.com/oauth/v2/token",
 				ExplicitScopesRequired:    true,
-				ExplicitWorkspaceRequired: false,
+				ExplicitWorkspaceRequired: true,
 				TokenMetadataFields: TokenMetadataFields{
 					ConsumerRefField:  "api_access_point",
 					WorkspaceRefField: "web_access_point",

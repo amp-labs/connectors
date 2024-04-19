@@ -211,7 +211,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			AuthURL:                   "https://secure.{{.workspace}}.adobesign.com/public/oauth/v2",
 			TokenURL:                  "https://api.{{.workspace}}.echosign.com/oauth/v2/token",
 			ExplicitScopesRequired:    true,
-			ExplicitWorkspaceRequired: false,
+			ExplicitWorkspaceRequired: true,
 			TokenMetadataFields: TokenMetadataFields{
 				ConsumerRefField:  "api_access_point",
 				WorkspaceRefField: "web_access_point",
