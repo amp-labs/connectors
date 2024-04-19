@@ -213,10 +213,11 @@ var testCases = []struct { // nolint
 				AuthURL:  "https://platform.ringcentral.com/restapi/oauth/authorize",
 				TokenURL: "https://platform.ringcentral.com/restapi/oauth/token",
 
-				ExplicitScopesRequired:    true,
+				ExplicitScopesRequired:    false,
 				ExplicitWorkspaceRequired: false,
 				TokenMetadataFields: TokenMetadataFields{
-					ScopesField: "scope",
+					ScopesField:      "scope",
+					ConsumerRefField: "owner_id",
 				},
 			},
 			BaseURL: "https://platform.ringcentral.com/restapi",
