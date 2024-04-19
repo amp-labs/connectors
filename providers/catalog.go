@@ -188,7 +188,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	// RingCentral configuration
 	RingCentral: {
 		AuthType: Oauth2,
-		BaseURL:  "https://platform.ringcentral.com/restapi",
+		BaseURL:  "https://platform.devtest.ringcentral.com",
 		OauthOpts: OauthOpts{
 			GrantType:                 PKCE,
 			AuthURL:                   "https://platform.ringcentral.com/restapi/oauth/authorize",

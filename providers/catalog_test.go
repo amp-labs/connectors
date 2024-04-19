@@ -220,7 +220,7 @@ var testCases = []struct { // nolint
 					ConsumerRefField: "owner_id",
 				},
 			},
-			BaseURL: "https://platform.ringcentral.com/restapi",
+			BaseURL: "https://platform.devtest.ringcentral.com",
 		},
 		expectedErr: nil,
 	},
