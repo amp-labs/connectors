@@ -57,6 +57,7 @@ const (
 	Figma                               Provider = "figma"
 	Miro                                Provider = "miro"
 	Typeform                            Provider = "typeform"
+	Zuora                               Provider = "zuora"
 )
 
 // ================================================================================
@@ -1379,6 +1380,31 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			AuthURL:                   "https://api.typeform.com/oauth/authorize",
 			TokenURL:                  "https://api.typeform.com/oauth/token",
 			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Zuora Configuration
+	Zuora: {
+		AuthType: Oauth2,
+		BaseURL:  "https://rest.test.zuora.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 ClientCredentials,
+			AuthURL:                   "https://rest.test.zuora.com/oauth/auth_mock",
+			TokenURL:                  "https://rest.test.zuora.com/oauth/token",
+			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
