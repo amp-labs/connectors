@@ -50,6 +50,7 @@ const (
 	Google                              Provider = "google"
 	GoogleContacts                      Provider = "googleContacts"
 	GoogleMail                          Provider = "googleMail"
+	Monday                              Provider = "monday"
 )
 
 // ================================================================================
@@ -1197,6 +1198,33 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			AuthURL:                   "https://accounts.google.com/o/oauth2/v2/auth",
 			TokenURL:                  "https://oauth2.googleapis.com/token",
 			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	Monday: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.monday.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://auth.monday.com/oauth2/authorize",
+			TokenURL:                  "https://auth.monday.com/oauth2/token",
+			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
