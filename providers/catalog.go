@@ -25,7 +25,7 @@ const (
 	Zoom                                Provider = "zoom"
 	Intercom                            Provider = "intercom"
 	Capsule                             Provider = "capsule"
-	Wrikle                              Provider = "wrikle"
+	Wrike                               Provider = "wrike"
 	DocuSign                            Provider = "docuSign"
 	DocuSignDeveloper                   Provider = "docuSignDeveloper"
 	Calendly                            Provider = "calendly"
@@ -234,7 +234,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	},
 
 	// Wrikle configuration
-	Wrikle: {
+	Wrike: {
 		AuthType: Oauth2,
 		BaseURL:  "https://www.wrike.com/api/v4",
 		OauthOpts: OauthOpts{

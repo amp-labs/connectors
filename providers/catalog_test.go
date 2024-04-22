@@ -243,7 +243,7 @@ var testCases = []struct { // nolint
 	// Wrike provider
 
 	{
-		provider:    Wrikle,
+		provider:    Wrike,
 		description: "Valid Wrike provider config with no substitutions",
 		expected: &ProviderInfo{
 			AuthType: Oauth2,
