@@ -1623,6 +1623,34 @@ var testCases = []struct { // nolint
 		},
 		expectedErr: nil,
 	},
+	{
+		provider:    OneDrive,
+		description: "Valid OneDrive provider config with no substitutions",
+		expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
+				AuthURL:                   "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+				TokenURL:                  "https://login.microsoftonline.com/common/oauth2/v2.0/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+			},
+			Support: Support{
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+			BaseURL: "https://graph.microsoft.com",
+		},
+		expectedErr: nil,
+	},
 }
 
 func TestReadInfo(t *testing.T) { // nolint
