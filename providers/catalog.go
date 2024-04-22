@@ -50,6 +50,7 @@ const (
 	Google                              Provider = "google"
 	GoogleContacts                      Provider = "googleContacts"
 	GoogleMail                          Provider = "googleMail"
+	Figma                               Provider = "figma"
 )
 
 // ================================================================================
@@ -1200,6 +1201,34 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			ExplicitWorkspaceRequired: false,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Figma Support Configuration
+	Figma: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.figma.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://www.figma.com/oauth",
+			TokenURL:                  "https://www.figma.com/api/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ConsumerRefField: "user_id",
 			},
 		},
 		Support: Support{
