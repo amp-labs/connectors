@@ -598,28 +598,30 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	},
 
 	// DocuSign configuration
-	DocuSign: {
-		AuthType: Oauth2,
-		BaseURL:  "https://{{.workspace}}.docusign.net",
-		OauthOpts: OauthOpts{
-			AuthURL:                   "https://account.docusign.com/oauth/auth",
-			TokenURL:                  "https://account.docusign.com/oauth/token",
-			ExplicitScopesRequired:    true,
-			ExplicitWorkspaceRequired: true,
-		},
-		Support: Support{
-			BulkWrite: BulkWriteSupport{
-				Insert: false,
-				Update: false,
-				Upsert: false,
-				Delete: false,
-			},
-			Proxy:     false,
-			Read:      false,
-			Subscribe: false,
-			Write:     false,
-		},
-	},
+	// TODO: we don't have a good way to get the server string yet. Need to make API call to /oauth/userinfo.
+	// Leaving this connector commented out until that is unblocked.
+	//DocuSign: {
+	//	AuthType: Oauth2,
+	//	BaseURL:  "https://{{.server}}.docusign.net",
+	//	OauthOpts: OauthOpts{
+	//		AuthURL:                   "https://account.docusign.com/oauth/auth",
+	//		TokenURL:                  "https://account.docusign.com/oauth/token",
+	//		ExplicitScopesRequired:    true,
+	//		ExplicitWorkspaceRequired: false,
+	//	},
+	//	Support: Support{
+	//		BulkWrite: BulkWriteSupport{
+	//			Insert: false,
+	//			Update: false,
+	//			Upsert: false,
+	//			Delete: false,
+	//		},
+	//		Proxy:     false,
+	//		Read:      false,
+	//		Subscribe: false,
+	//		Write:     false,
+	//	},
+	// },
 
 	// DocuSign Developer configuration
 	DocuSignDeveloper: {

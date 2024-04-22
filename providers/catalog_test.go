@@ -628,35 +628,36 @@ var testCases = []struct { // nolint
 		},
 		expectedErr: nil,
 	},
-	{
-		provider: DocuSign,
-		substitutions: map[string]string{
-			"workspace": "example",
-		},
-		expected: &ProviderInfo{
-			Support: Support{
-				Read:  false,
-				Write: false,
-				BulkWrite: BulkWriteSupport{
-					Insert: false,
-					Update: false,
-					Upsert: false,
-					Delete: false,
-				},
-				Subscribe: false,
-				Proxy:     false,
-			},
-			AuthType: Oauth2,
-			OauthOpts: OauthOpts{
-				AuthURL:                   "https://account.docusign.com/oauth/auth",
-				TokenURL:                  "https://account.docusign.com/oauth/token",
-				ExplicitScopesRequired:    true,
-				ExplicitWorkspaceRequired: true,
-			},
-			BaseURL: "https://example.docusign.net",
-		},
-		expectedErr: nil,
-	},
+	// TODO: uncomment this when the docusign connector is uncommented
+	//{
+	//	provider: DocuSign,
+	//	substitutions: map[string]string{
+	//		"server": "example",
+	//	},
+	//	expected: &ProviderInfo{
+	//		Support: Support{
+	//			Read:  false,
+	//			Write: false,
+	//			BulkWrite: BulkWriteSupport{
+	//				Insert: false,
+	//				Update: false,
+	//				Upsert: false,
+	//				Delete: false,
+	//			},
+	//			Subscribe: false,
+	//			Proxy:     false,
+	//		},
+	//		AuthType: Oauth2,
+	//		OauthOpts: OauthOpts{
+	//			AuthURL:                   "https://account.docusign.com/oauth/auth",
+	//			TokenURL:                  "https://account.docusign.com/oauth/token",
+	//			ExplicitScopesRequired:    true,
+	//			ExplicitWorkspaceRequired: false,
+	//		},
+	//		BaseURL: "https://example.docusign.net",
+	//	},
+	//	expectedErr: nil,
+	// },
 	{
 		provider: DocuSignDeveloper,
 		expected: &ProviderInfo{
