@@ -9,6 +9,8 @@ import (
 
 type writeMethod func(context.Context, string, any) (*common.JSONHTTPResponse, error)
 
+// Write data will be used to Create or Update entity.
+// Return: common.WriteResult, where only the Success flag will be set.
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
 	if len(config.ObjectName) == 0 {
 		return nil, common.ErrMissingObjects
