@@ -34,7 +34,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			expectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
-			name:  "Write object and it's ID must be included",
+			name:  "Write object and its ID must be included",
 			input: common.DeleteParams{ObjectName: "fax"},
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusTeapot)
