@@ -21,12 +21,12 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	filePath := os.Getenv("MS_SALES_CRED_FILE")
+	filePath := os.Getenv("MS_CRM_CRED_FILE")
 	if filePath == "" {
-		filePath = "./ms-sales-creds.json"
+		filePath = "./ms-crm-creds.json"
 	}
 
-	conn := msTest.GetMSDynamics365SalesConnector(ctx, filePath)
+	conn := msTest.GetMSDynamics365CRMConnector(ctx, filePath)
 	defer utils.Close(conn)
 
 	res, err := conn.Read(ctx, common.ReadParams{
@@ -36,7 +36,7 @@ func main() {
 		},
 	})
 	if err != nil {
-		utils.Fail("error reading from microsoft sales", "error", err)
+		utils.Fail("error reading from microsoft CRM", "error", err)
 	}
 
 	fmt.Println("Reading contacts..")
