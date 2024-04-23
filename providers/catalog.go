@@ -57,26 +57,6 @@ const (
 // ================================================================================
 
 var catalog = CatalogType{ // nolint:gochecknoglobals
-	Mock: {
-		AuthType: None,
-		BaseURL:  "https://not-a-real-domain.mock",
-		Support: Support{
-			BulkWrite: BulkWriteSupport{
-				Insert: false,
-				Update: false,
-				Upsert: false,
-				Delete: false,
-			},
-			Proxy:     true,
-			Read:      true,
-			Subscribe: false,
-			Write:     true,
-		},
-		ProviderOpts: ProviderOpts{
-			"isMock": "true",
-		},
-	},
-
 	// Salesforce configuration
 	Salesforce: {
 		AuthType: Oauth2,
