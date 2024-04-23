@@ -19,7 +19,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 	var write writeMethod
 	if len(config.RecordId) == 0 {
 		// writing to the entity without id means
-		// that we are extending 'List' resource
+		// that we are extending 'List' resource and creating a new record
 		write = c.post
 	} else {
 		// only patch is supported for updating 'Single' resource
