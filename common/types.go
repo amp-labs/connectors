@@ -59,7 +59,7 @@ var (
 	ErrMissingObjects = errors.New("no objects provided")
 
 	// ErrMissingRecordID is returned when resource id is missing in the request.
-	ErrMissingRecordID = errors.New("no object id provided")
+	ErrMissingRecordID = errors.New("no object ID provided")
 
 	// ErrInvalidPathJoin is returned when the path join is invalid.
 	ErrInvalidPathJoin = errors.New("invalid path join")
