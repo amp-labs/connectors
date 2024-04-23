@@ -106,7 +106,7 @@ type WriteParams struct {
 
 // DeleteParams defines how we are deleting data in SaaS API.
 type DeleteParams struct {
-	// The name of the object we are writing, e.g. "Account"
+	// The name of the object we are deleting, e.g. "Account"
 	ObjectName string // required
 
 	// The external ID of the object instance we are removing.
