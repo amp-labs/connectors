@@ -29,7 +29,7 @@ var (
 	ErrNoParens       = errors.New("value cannot contain < or >")
 )
 
-// XMLHTTPClient speaks from http client in XML.
+// XMLHTTPClient is an HTTP client that can parse XML response.
 type XMLHTTPClient struct {
 	HTTPClient *HTTPClient // underlying HTTP client. Required.
 }

@@ -580,7 +580,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	// DocuSign configuration
 	// TODO: we don't have a good way to get the server string yet. Need to make API call to /oauth/userinfo.
 	// Leaving this connector commented out until that is unblocked.
-	//DocuSign: {
+	// DocuSign: {
 	//	AuthType: Oauth2,
 	//	BaseURL:  "https://{{.server}}.docusign.net",
 	//	OauthOpts: OauthOpts{

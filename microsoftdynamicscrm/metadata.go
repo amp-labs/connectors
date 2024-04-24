@@ -39,8 +39,7 @@ func (c *Connector) ListObjectMetadata(
 	if err != nil {
 		return nil, err
 	}
-	// FIXME a call to the metadata endpoint is costly, once queried and processed we should Cache entities
-	// even if the caller requested metadata for only one object we still load the whole schema (~10 sec)
+
 	result, err := convertEntitySetToMetadataSet(objectNames, entities)
 	if err != nil {
 		return nil, err
