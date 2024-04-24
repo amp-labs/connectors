@@ -74,7 +74,6 @@ func (c *Connector) interpretJSONError(res *http.Response, body []byte) error {
 }
 
 func (c *Connector) HandleError(err error) error {
-
 	urlErr, ok := err.(*url.Error)
 	if ok {
 		oauthErr, ok := urlErr.Err.(*oauth2.RetrieveError)
