@@ -74,12 +74,10 @@ func (c *Connector) interpretJSONError(res *http.Response, body []byte) error {
 }
 
 func (c *Connector) HandleError(err error) error {
-	//nolint:errorlint
-	urlErr, ok := err.(*url.Error)
-	if ok {
-		//nolint:errorlint
-		oauthErr, ok := urlErr.Err.(*oauth2.RetrieveError)
-		if ok {
+	var urlErr *url.Error
+	if errors.As(err, &urlErr) {
+		var oauthErr *oauth2.RetrieveError
+		if urlErr != nil && errors.As(urlErr.Err, &oauthErr) {
 			if oauthErr.ErrorCode == "invalid_grant" {
 				return errors.Join(common.ErrInvalidGrant, err)
 			}
