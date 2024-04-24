@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 )
@@ -49,7 +50,7 @@ func (c *Connector) interpretJSONError(res *http.Response, body []byte) error {
 	}
 
 	for _, sfErr := range errs {
-		switch sfErr.ErrorCode {
+		switch strings.ToUpper(sfErr.ErrorCode) {
 		case "INVALID_SESSION_ID":
 			return createError(common.ErrInvalidSessionId, sfErr)
 		case "INSUFFICIENT_ACCESS_OR_READONLY":

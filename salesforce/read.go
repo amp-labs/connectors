@@ -47,10 +47,6 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	}
 
 	if err != nil {
-		if strings.Contains(err.Error(), "invalid_grant") {
-			return nil, common.ErrInvalidGrant
-		}
-
 		return nil, err
 	}
 
