@@ -5,9 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"strings"
+	"net/url"
 
 	"github.com/amp-labs/connectors/common"
+	"golang.org/x/oauth2"
 )
 
 var (
@@ -50,7 +51,7 @@ func (c *Connector) interpretJSONError(res *http.Response, body []byte) error {
 	}
 
 	for _, sfErr := range errs {
-		switch strings.ToUpper(sfErr.ErrorCode) {
+		switch sfErr.ErrorCode {
 		case "INVALID_SESSION_ID":
 			return createError(common.ErrInvalidSessionId, sfErr)
 		case "INSUFFICIENT_ACCESS_OR_READONLY":
@@ -73,6 +74,17 @@ func (c *Connector) interpretJSONError(res *http.Response, body []byte) error {
 }
 
 func (c *Connector) HandleError(err error) error {
+
+	urlErr, ok := err.(*url.Error)
+	if ok {
+		oauthErr, ok := urlErr.Err.(*oauth2.RetrieveError)
+		if ok {
+			if oauthErr.ErrorCode == "invalid_grant" {
+				return errors.Join(common.ErrInvalidGrant, err)
+			}
+		}
+	}
+
 	switch {
 	case errors.Is(err, common.ErrAccessToken):
 		// Retryable, so just log and retry
