@@ -199,7 +199,7 @@ var testCases = []struct { // nolint
 		provider:    AdobeSign,
 		description: "Valid AdobeSign provider config with substitutions",
 		substitutions: map[string]string{
-			"workspace": "na3",
+			"shard": "na3",
 		},
 		expected: &ProviderInfo{
 			AuthType: Oauth2,
@@ -227,7 +227,7 @@ var testCases = []struct { // nolint
 				Subscribe: false,
 				Write:     false,
 			},
-			BaseURL: "https://api.na3.adobesign.com/",
+			BaseURL: "https://api.na3.adobesign.com",
 		},
 		expectedErr: nil,
 	},
