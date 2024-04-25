@@ -306,6 +306,37 @@ var testCases = []struct { // nolint
 	},
 
 	{
+		provider:    Mural,
+		description: "Valid Mural provider config with no substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://api.mural.co/oauth/authorize",
+				TokenURL:                  "https://api.mural.co/oauth/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
+			},
+			BaseURL: "https://api.mural.co/api",
+		},
+		expectedErr: nil,
+	},
+
+	{
 		provider:    Klaviyo,
 		description: "Valid Klaviyo provider config with no substitutions",
 		expected: &ProviderInfo{
