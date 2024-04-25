@@ -236,7 +236,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	// Wrikle configuration
 	Wrike: {
 		AuthType: Oauth2,
-		BaseURL:  "https://www.wrike.com/api/v4",
+		BaseURL:  "https://www.wrike.com/api",
 		OauthOpts: OauthOpts{
 			AuthURL:                   "https://www.wrike.com/oauth2/authorize",
 			TokenURL:                  "https://www.wrike.com/oauth2/token",

@@ -268,7 +268,7 @@ var testCases = []struct { // nolint
 				Subscribe: false,
 				Write:     false,
 			},
-			BaseURL: "https://www.wrike.com/api/v4",
+			BaseURL: "https://www.wrike.com/api",
 		},
 		expectedErr: nil,
 	},
