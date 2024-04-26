@@ -186,9 +186,11 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	},
 
 	// RingCentral configuration
+	// Use  "env": "devtest." for sandbox and "env": "" for production
+
 	RingCentral: {
 		AuthType: Oauth2,
-		BaseURL:  "https://platform.devtest.ringcentral.com",
+		BaseURL:  "https://platform.{{.env}}ringcentral.com",
 		OauthOpts: OauthOpts{
 			GrantType:                 PKCE,
 			AuthURL:                   "https://platform.ringcentral.com/restapi/oauth/authorize",

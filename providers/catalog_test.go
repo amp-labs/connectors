@@ -190,7 +190,10 @@ var testCases = []struct { // nolint
 
 	{
 		provider:    RingCentral,
-		description: "Valid RingCentral provider config with no substitutions",
+		description: "Valid RingCentral provider config with a substitution",
+		substitutions: map[string]string{
+			"env": "devtest.",
+		},
 		expected: &ProviderInfo{
 			Support: Support{
 				Read:  false,
