@@ -231,34 +231,6 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
-	// Adobe Sign configuration
-	AdobeSign: {
-		AuthType: Oauth2,
-		BaseURL:  "https://api.{{.shard}}.adobesign.com",
-		OauthOpts: OauthOpts{
-			AuthURL:                   "https://secure.{{.shard}}.adobesign.com/public/oauth/v2",
-			TokenURL:                  "https://api.{{.shard}}.echosign.com/oauth/v2/token",
-			ExplicitScopesRequired:    true,
-			ExplicitWorkspaceRequired: true,
-			TokenMetadataFields: TokenMetadataFields{
-				ConsumerRefField:  "api_access_point",
-				WorkspaceRefField: "web_access_point",
-			},
-		},
-		Support: Support{
-			BulkWrite: BulkWriteSupport{
-				Insert: false,
-				Update: false,
-				Upsert: false,
-				Delete: false,
-			},
-			Proxy:     false,
-			Read:      false,
-			Subscribe: false,
-			Write:     false,
-		},
-	},
-
 	// Pipedrive configuration
 	Pipedrive: {
 		AuthType: Oauth2,
