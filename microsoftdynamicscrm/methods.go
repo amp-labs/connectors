@@ -47,6 +47,17 @@ func (c *Connector) delete(ctx context.Context, url string) (*common.JSONHTTPRes
 	return rsp, nil
 }
 
+func (c *Connector) getXML(ctx context.Context,
+	url string, headers ...common.Header,
+) (*common.XMLHTTPResponse, error) {
+	rsp, err := c.XMLClient.Get(ctx, url, headers...)
+	if err = handleError(err); err != nil {
+		return nil, err
+	}
+
+	return rsp, nil
+}
+
 func handleError(err error) error {
 	if err == nil {
 		return nil
