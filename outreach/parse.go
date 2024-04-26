@@ -33,7 +33,7 @@ func parsePagingNext(node *ajson.Node) (*ajson.Node, error) {
 	}
 
 	if !links.IsObject() {
-		return nil, ErrNotObject
+		return nil, common.ErrNotObject
 	}
 
 	return links, nil
@@ -51,7 +51,7 @@ func checkURL(node *ajson.Node) (string, error) {
 	}
 
 	if !next.IsString() {
-		return "", ErrNotString
+		return "", common.ErrNotString
 	}
 
 	return next.String(), nil
@@ -65,7 +65,7 @@ func getRecords(node *ajson.Node) ([]map[string]interface{}, error) {
 	}
 
 	if !records.IsArray() {
-		return nil, ErrNotArray
+		return nil, common.ErrNotArray
 	}
 
 	arr := records.MustArray()
@@ -74,7 +74,7 @@ func getRecords(node *ajson.Node) ([]map[string]interface{}, error) {
 
 	for _, v := range arr {
 		if !v.IsObject() {
-			return nil, ErrNotObject
+			return nil, common.ErrNotObject
 		}
 
 		data, err := v.Unpack()
@@ -84,7 +84,7 @@ func getRecords(node *ajson.Node) ([]map[string]interface{}, error) {
 
 		m, ok := data.(map[string]interface{})
 		if !ok {
-			return nil, ErrNotObject
+			return nil, common.ErrNotObject
 		}
 
 		out = append(out, m)
@@ -101,7 +101,7 @@ func getTotalSize(node *ajson.Node) (int64, error) {
 	}
 
 	if !node.IsArray() {
-		return 0, ErrNotArray
+		return 0, common.ErrNotArray
 	}
 
 	return int64(node.Size()), nil

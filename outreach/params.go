@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"golang.org/x/oauth2"
 )
 
@@ -43,7 +44,7 @@ func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
 
 func (params *outreachParams) prepare() (*outreachParams, error) {
 	if params.client == nil {
-		return nil, ErrMissingClient
+		return nil, paramsbuilder.ErrMissingClient
 	}
 
 	return params, nil
