@@ -43,6 +43,9 @@ var (
 	// ErrNotJSON is returned when a response is not JSON.
 	ErrNotJSON = errors.New("response is not JSON")
 
+	// ErrNotXML is returned when a response is not XML.
+	ErrNotXML = errors.New("response is not XML")
+
 	// ErrMissingOauthConfig is returned when the OAuth config is missing.
 	ErrMissingOauthConfig = errors.New("missing OAuth config")
 
