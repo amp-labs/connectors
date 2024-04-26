@@ -17,6 +17,8 @@ var (
 	ErrObjectNotFound     = errors.New("object not found")
 )
 
+// Please note: MSDynamics API does not return proper display names for objects and fields,
+// so the ListObjectMetadataResult will have display names that look like "accountleads".
 func (c *Connector) ListObjectMetadata(
 	ctx context.Context, objectNames []string,
 ) (*common.ListObjectMetadataResult, error) {
