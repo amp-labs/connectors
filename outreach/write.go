@@ -2,14 +2,24 @@ package outreach
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/url"
 
 	"github.com/amp-labs/connectors/common"
 )
 
-// Header for the content-Type in JSONAPISpecification
-var JSONAPIContentTypeHeader = common.Header{
+type WriteResponse struct {
+	Data struct {
+		Attributes    map[string]any `json:"attributes"`
+		Relationships map[string]any `json:"relationships"`
+		Links         map[string]any `json:"links"`
+		ID            int            `json:"id"`
+		Type          string         `json:"type"`
+	} `json:"data"`
+}
+
+var JSONAPIContentTypeHeader = common.Header{ //nolint:gochecknoglobals
 	Key:   "Content-Type",
 	Value: "application/vnd.api+json",
 }
@@ -35,8 +45,8 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		write = c.Client.Post
 	}
 
-	// Outreach requires everything to be wrapped in a "data" object.
-	data := make(map[string]interface{})
+	// Outreach wraps everything in a "data" object.
+	data := make(map[string]any)
 	data["data"] = config.RecordData
 
 	res, err := write(ctx, URL, data, JSONAPIContentTypeHeader)
@@ -44,9 +54,19 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, err
 	}
 
-	// parse the result
-	fmt.Println(res)
+	var response WriteResponse
 
-	return nil, nil
+	err = json.Unmarshal(res.Body.Source(), &response)
+	if err != nil {
+		return nil, err
+	}
 
+	resdata := make(map[string]any)
+	resdata["data"] = response.Data
+
+	return &common.WriteResult{
+		Success:  true,
+		RecordId: fmt.Sprint(response.Data.ID),
+		Data:     resdata,
+	}, nil
 }

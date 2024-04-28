@@ -104,7 +104,7 @@ func testReadConnector(ctx context.Context, conn connectors.ReadConnector) error
 		// NextPage:   "https://api.outreach.io/api/v2/users?page%5Blimit%5D=1\u0026page%5Boffset%5D=2",
 	}
 
-	result, err := conn.Read(context.Background(), config)
+	result, err := conn.Read(ctx, config)
 	if err != nil {
 		return err
 	}
@@ -165,6 +165,7 @@ func testCreate(ctx context.Context, conn connectors.WriteConnector) error {
 	}
 
 	_, _ = os.Stdout.Write(jsonStr)
+	_, _ = os.Stdout.WriteString("\n")
 
 	return nil
 }
@@ -197,6 +198,7 @@ func testUpdate(ctx context.Context, conn connectors.WriteConnector) error {
 	}
 
 	_, _ = os.Stdout.Write(jsonStr)
+	_, _ = os.Stdout.WriteString("\n")
 
 	return nil
 }
