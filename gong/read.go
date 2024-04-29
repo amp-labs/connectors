@@ -2,9 +2,11 @@ package gong
 
 import (
 	"context"
+
 	"net/url"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/spyzhov/ajson"
 )
 
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
@@ -17,8 +19,6 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	if config.Fields != nil {
 		fields = config.Fields
 
-	} else {
-		fields = []string{"*"}
 	}
 
 	fullURL, err := url.JoinPath(c.BaseURL, config.ObjectName)
@@ -32,7 +32,9 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	}
 
 	return common.ParseResult(res, getTotalSize,
-		getRecords,
+		func(node *ajson.Node) ([]map[string]interface{}, error) {
+			return getRecords(node, config.ObjectName)
+		},
 		getNextRecordsURL,
 		getMarshaledData,
 		fields,

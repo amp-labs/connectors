@@ -5,61 +5,27 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-// getNextRecords returns the "next" url for the next page of results,
-// If available, else returns an empty string.
+// getNextRecords returns the token or empty string if there are no more records.
 func getNextRecordsURL(node *ajson.Node) (string, error) {
-	var nextPage string
 
-	if node.HasKey("links") {
-		links, err := parsePagingNext(node)
-		if err != nil {
-			return "", err
-		}
-
-		nextPage, err = checkURL(links)
-		if err != nil {
-			return "", err
-		}
-	}
-
-	return nextPage, nil
-}
-
-// parsePagingNext is a helper to return the links node.
-func parsePagingNext(node *ajson.Node) (*ajson.Node, error) {
-	links, err := node.GetKey("links")
-	if err != nil {
-		return nil, err
-	}
-
-	if !links.IsObject() {
-		return nil, ErrNotObject
-	}
-
-	return links, nil
-}
-
-// checkURL is a helper function that returns the url of the  next page.
-func checkURL(node *ajson.Node) (string, error) {
-	if !node.HasKey("next") {
-		return "", nil
-	}
-
-	next, err := node.GetKey("next")
+	recordsNode, err := node.GetKey("records")
 	if err != nil {
 		return "", err
 	}
 
-	if !next.IsString() {
-		return "", ErrNotString
+	cursorNode, err := recordsNode.GetKey("cursor")
+	if err != nil {
+		return "", err
 	}
 
-	return next.String(), nil
+	nextPage := cursorNode.String()
+	return nextPage, nil
 }
 
 // getRecords returns the records from the response.
-func getRecords(node *ajson.Node) ([]map[string]interface{}, error) {
-	records, err := node.GetKey("users")
+func getRecords(node *ajson.Node, objectName string) ([]map[string]interface{}, error) {
+
+	records, err := node.GetKey(objectName)
 	if err != nil {
 		return nil, err
 	}
@@ -95,16 +61,24 @@ func getRecords(node *ajson.Node) ([]map[string]interface{}, error) {
 
 // getTotalSize returns the total number of records that match the query.
 func getTotalSize(node *ajson.Node) (int64, error) {
-	node, err := node.GetKey("users")
+
+	recordsNode, err := node.GetKey("records")
 	if err != nil {
 		return 0, err
 	}
 
-	if !node.IsArray() {
-		return 0, ErrNotArray
+	totalRecordsNode, err := recordsNode.GetKey("totalRecords")
+	if err != nil {
+		return 0, err
 	}
 
-	return int64(node.Size()), nil
+	totalRecords, err := totalRecordsNode.GetNumeric()
+	if err != nil {
+		return 0, err
+	}
+
+	return int64(totalRecords), nil
+
 }
 
 // getMarshaledData accepts a list of records and returns a list of structured data ([]ReadResultRow).
