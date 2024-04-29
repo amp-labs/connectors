@@ -162,7 +162,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				WithWorkspace("test-workspace"),
 			)
 			if err != nil {
-				t.Fatalf("%s: error in test while constructin connector %v", tt.name, err)
+				t.Fatalf("%s: error in test while constructing connector %v", tt.name, err)
 			}
 
 			// for testing we want to redirect calls to our mock server
