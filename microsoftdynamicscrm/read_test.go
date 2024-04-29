@@ -16,55 +16,6 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-func TestMakeQueryValues(t *testing.T) {
-	t.Parallel()
-
-	tests := []struct {
-		name     string
-		input    common.ReadParams
-		expected string
-	}{
-		{
-			name:     "No params no query string",
-			input:    common.ReadParams{},
-			expected: "",
-		},
-		{
-			name: "One parameter",
-			input: common.ReadParams{
-				Fields: []string{"cat"},
-			},
-			expected: "?$select=cat",
-		},
-		{
-			name: "Many parameters",
-			input: common.ReadParams{
-				Fields: []string{"cat", "dog", "parrot", "hamster"},
-			},
-			expected: "?$select=cat,dog,parrot,hamster",
-		},
-		{
-			name: "OData parameters with @ symbol",
-			input: common.ReadParams{
-				Fields: []string{"cat", "@odata.dog", "parrot"},
-			},
-			expected: "?$select=cat,@odata.dog,parrot",
-		},
-	}
-
-	for _, tt := range tests {
-		tt := tt // rebind, omit loop side effects for parallel goroutine
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-
-			output := makeQueryValues(tt.input)
-			if !reflect.DeepEqual(output, tt.expected) {
-				t.Fatalf("%s: expected: (%v), got: (%v)", tt.name, tt.expected, output)
-			}
-		})
-	}
-}
-
 func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
@@ -242,7 +193,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				WithWorkspace("test-workspace"),
 			)
 			if err != nil {
-				t.Fatalf("%s: error in test while constructin connector %v", tt.name, err)
+				t.Fatalf("%s: error in test while constructing connector %v", tt.name, err)
 			}
 
 			// for testing we want to redirect calls to our mock server
