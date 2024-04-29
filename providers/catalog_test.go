@@ -196,6 +196,40 @@ var testCases = []struct { // nolint
 	},
 
 	{
+		provider:    AdobeSign,
+		description: "Valid AdobeSign provider config with no substitutions",
+		expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+
+				AuthURL: "https://secure.echosign.com/public/oauth/v2",
+
+				TokenURL:                  "https://secure.adobesign.com/oauth/v2/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ConsumerRefField:  "api_access_point",
+					WorkspaceRefField: "web_access_point",
+				},
+			},
+			Support: Support{
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+			BaseURL: "https://api.na3.adobesign.com",
+		},
+		expectedErr: nil,
+	},
+
+	{
 		provider: Pipedrive,
 		expected: &ProviderInfo{
 			AuthType: Oauth2,
