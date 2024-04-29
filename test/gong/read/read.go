@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -67,10 +68,55 @@ func GetGongConnector(ctx context.Context, filePath string) *gong.Connector {
 func main() {
 	gong := GetGongConnector(context.Background(), DefaultCredsFile)
 
-	config := connectors.ReadParams{
-		ObjectName: "users",
-		// NextPage:   ".../v2/users?page%5Blimit%5D=1\u0026page%5Boffset%5D=2",
+	gong.BaseURL = gong.BaseURL + "/v2"
+
+	// Cursors are not empty in case there are 100+ records, if less - empty
+	// If empty, the first page is returned
+
+	var config connectors.ReadParams
+
+	objectName := "calls"
+
+	switch objectName {
+	case "users":
+		config = connectors.ReadParams{
+			ObjectName: objectName,
+			Fields:     []string{"id", "emailAddress", "created"},
+		}
+	case "calls":
+		config = connectors.ReadParams{
+			ObjectName: objectName,
+			Fields:     []string{"id", "duration", "participants"},
+		}
+	case "interaction":
+		config = connectors.ReadParams{
+			ObjectName: objectName,
+			Fields:     []string{"id", "type", "timestamp"},
+		}
+	case "scorecards":
+		config = connectors.ReadParams{
+			ObjectName: objectName,
+			Fields:     []string{"id", "score", "comments"},
+		}
+	case "day-by-day":
+		config = connectors.ReadParams{
+			ObjectName: objectName,
+			Fields:     []string{"date", "totalCalls", "totalDuration"},
+		}
+	case "aggregate-by-period":
+		config = connectors.ReadParams{
+			ObjectName: objectName,
+			Fields:     []string{"period", "totalCalls", "totalDuration"},
+		}
+	case "aggregate":
+		config = connectors.ReadParams{
+			ObjectName: objectName,
+			Fields:     []string{"totalCalls", "totalDuration"},
+		}
+	default:
+		fmt.Println("Invalid object name")
 	}
+
 	result, err := gong.Read(context.Background(), config)
 	if err != nil {
 		log.Fatal(err)
