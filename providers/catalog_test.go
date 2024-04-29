@@ -195,6 +195,45 @@ var testCases = []struct { // nolint
 		expectedErr: nil,
 	},
 
+	// RingCentral
+
+	{
+		provider:    RingCentral,
+		description: "Valid RingCentral provider config without substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+
+					Update: false,
+					Upsert: false,
+
+					Delete: false,
+				},
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				GrantType: PKCE,
+
+				AuthURL:  "https://platform.ringcentral.com/restapi/oauth/authorize",
+				TokenURL: "https://platform.ringcentral.com/restapi/oauth/token",
+
+				ExplicitScopesRequired:    false,
+				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField:      "scope",
+					ConsumerRefField: "owner_id",
+				},
+			},
+			BaseURL: "https://platform.ringcentral.com",
+		},
+		expectedErr: nil,
+	},
+
 	{
 		provider: Pipedrive,
 		expected: &ProviderInfo{
