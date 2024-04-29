@@ -16,7 +16,7 @@ components:
   schemas:
     AuthType:
       type: string
-      enum: [oauth2]
+      enum: [oauth2, none]
       x-oapi-codegen-extra-tags:
         validate: required
 
