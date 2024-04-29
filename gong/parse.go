@@ -59,7 +59,7 @@ func checkURL(node *ajson.Node) (string, error) {
 
 // getRecords returns the records from the response.
 func getRecords(node *ajson.Node) ([]map[string]interface{}, error) {
-	records, err := node.GetKey("data")
+	records, err := node.GetKey("users")
 	if err != nil {
 		return nil, err
 	}
@@ -95,7 +95,7 @@ func getRecords(node *ajson.Node) ([]map[string]interface{}, error) {
 
 // getTotalSize returns the total number of records that match the query.
 func getTotalSize(node *ajson.Node) (int64, error) {
-	node, err := node.GetKey("data")
+	node, err := node.GetKey("users")
 	if err != nil {
 		return 0, err
 	}

@@ -49,16 +49,12 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		return nil, err
 	}
 
-	/*restApi, ok := providerInfo.GetOption(providerOptionRestApiURL)
-	if !ok {
-		return nil, fmt.Errorf("restAPIURL not set: %w", providers.ErrProviderOptionNotFound)
-	}
+	restApi := providerInfo.BaseURL
 
-	*/
 	params.client.HTTPClient.Base = providerInfo.BaseURL
 
 	return &Connector{
-		Client: params.client,
-		//BaseURL: restApi,
+		Client:  params.client,
+		BaseURL: restApi,
 	}, nil
 }
