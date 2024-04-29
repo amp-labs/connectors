@@ -190,10 +190,7 @@ var testCases = []struct { // nolint
 
 	{
 		provider:    RingCentral,
-		description: "Valid RingCentral provider config with a substitution",
-		substitutions: map[string]string{
-			"env": "devtest.",
-		},
+		description: "Valid RingCentral provider config without substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
 				Read:  false,
@@ -223,7 +220,7 @@ var testCases = []struct { // nolint
 					ConsumerRefField: "owner_id",
 				},
 			},
-			BaseURL: "https://platform.devtest.ringcentral.com",
+			BaseURL: "https://platform.ringcentral.com",
 		},
 		expectedErr: nil,
 	},
