@@ -11,6 +11,7 @@ const (
 	LinkedIn                            Provider = "linkedIn"
 	Salesloft                           Provider = "salesloft"
 	Outreach                            Provider = "outreach"
+	RingCentral                         Provider = "ringCentral"
 	Pipedrive                           Provider = "pipedrive"
 	Copper                              Provider = "copper"
 	ZohoCRM                             Provider = "zohoCRM"
@@ -200,6 +201,36 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 		ProviderOpts: ProviderOpts{
 			"restAPIURL": "https://api.outreach.io/api/v2",
+		},
+	},
+
+	// RingCentral configuration
+
+	RingCentral: {
+		AuthType: Oauth2,
+		BaseURL:  "https://platform.ringcentral.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 PKCE,
+			AuthURL:                   "https://platform.ringcentral.com/restapi/oauth/authorize",
+			TokenURL:                  "https://platform.ringcentral.com/restapi/oauth/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField:      "scope",
+				ConsumerRefField: "owner_id",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
 		},
 	},
 
