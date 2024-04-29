@@ -19,7 +19,7 @@ func getRecords(node *ajson.Node) ([]map[string]any, error) {
 }
 
 func getNextRecordsURL(node *ajson.Node) (string, error) {
-	return common.JSONManager.GetString(node, "@odata.nextLink", true)
+	return common.JSONManager.GetStringWithDefault(node, "@odata.nextLink", "")
 }
 
 func getMarshaledData(records []map[string]interface{}, fields []string) ([]common.ReadResultRow, error) {

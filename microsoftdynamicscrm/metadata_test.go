@@ -18,10 +18,7 @@ import (
 func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
-	fakeServerResp, err := mockutils.DataFromFile("metadata.xml")
-	if err != nil {
-		t.Fatalf("failed to start test, input file missing, %v", err)
-	}
+	fakeServerResp := mockutils.DataFromFile(t, "metadata.xml")
 
 	tests := []struct {
 		name                string

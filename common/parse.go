@@ -2,11 +2,14 @@ package common
 
 import (
 	"errors"
+	"fmt"
 	"math"
 	"strings"
 
 	"github.com/spyzhov/ajson"
 )
+
+type NextPageFunc func(*ajson.Node) (string, error)
 
 // ParseResult parses the response from a provider into a ReadResult. A 2xx return type is assumed.
 // The sizeFunc, recordsFunc, nextPageFunc, and marshalFunc are used to extract the relevant data from the response.
@@ -76,12 +79,17 @@ func ExtractLowercaseFieldsFromRaw(fields []string, record map[string]interface{
 	return out
 }
 
+const (
+	KeysZoomSeparator = "."
+)
+
 var (
-	ErrNotArray   = errors.New("JSON value is not an array")
-	ErrNotObject  = errors.New("JSON value is not an object")
-	ErrNotString  = errors.New("JSON value is not a string")
-	ErrNotNumeric = errors.New("JSON value is not a numeric")
-	ErrNotInteger = errors.New("JSON value is not an integer")
+	ErrNotArray    = errors.New("JSON value is not an array")
+	ErrNotObject   = errors.New("JSON value is not an object")
+	ErrNotString   = errors.New("JSON value is not a string")
+	ErrNotNumeric  = errors.New("JSON value is not a numeric")
+	ErrNotInteger  = errors.New("JSON value is not an integer")
+	ErrKeyNotFound = errors.New("key not found")
 
 	// JSONManager is a helpful wrapper of ajson library that adds errors when querying JSON payload
 	// and provides common conversion methods.
@@ -114,25 +122,57 @@ func (jsonManager) ArrToMap(arr []*ajson.Node) ([]map[string]any, error) {
 	return output, nil
 }
 
-func (jsonManager) GetInteger(node *ajson.Node, key string) (int64, error) {
-	innerNode, err := node.GetKey(key)
+func (m jsonManager) GetIntegerWithDefault(node *ajson.Node, key string, defaultValue int64) (int64, error) {
+	result, err := m.GetInteger(node, key, true)
 	if err != nil {
 		return 0, err
 	}
 
+	if result == nil {
+		return defaultValue, err
+	}
+
+	return *result, nil
+}
+
+func (jsonManager) GetInteger(node *ajson.Node, key string, optional bool) (*int64, error) {
+	if !node.HasKey(key) {
+		if optional {
+			// null value in payload is allowed
+			return nil, nil // nolint:nilnil
+		} else {
+			return nil, createKeyNotFoundErr(key)
+		}
+	}
+
+	innerNode, err := node.GetKey(key)
+	if err != nil {
+		return nil, err
+	}
+
+	if innerNode.IsNull() {
+		return nil, handleNullNode(key, optional)
+	}
+
 	count, err := innerNode.GetNumeric()
 	if err != nil {
-		return 0, ErrNotNumeric
+		return nil, ErrNotNumeric
 	}
 
 	if math.Mod(count, 1.0) != 0 {
-		return 0, ErrNotInteger
+		return nil, ErrNotInteger
 	}
 
-	return int64(count), nil
+	result := int64(count)
+
+	return &result, nil
 }
 
 func (jsonManager) GetArr(node *ajson.Node, key string) ([]*ajson.Node, error) {
+	if !node.HasKey(key) {
+		return nil, createKeyNotFoundErr(key)
+	}
+
 	records, err := node.GetKey(key)
 	if err != nil {
 		return nil, err
@@ -140,40 +180,117 @@ func (jsonManager) GetArr(node *ajson.Node, key string) ([]*ajson.Node, error) {
 
 	arr, err := records.GetArray()
 	if err != nil {
-		return nil, ErrNotArray
+		return nil, formatProblematicKeyError(key, ErrNotArray)
 	}
 
 	return arr, nil
 }
 
-func (jsonManager) ArrSize(node *ajson.Node, key string) (int64, error) {
-	innerNode, err := node.GetKey(key)
+func (m jsonManager) ArrSize(node *ajson.Node, keys string) (int64, error) {
+	arr, err := m.GetArr(node, keys)
 	if err != nil {
 		return 0, err
 	}
 
-	if !innerNode.IsArray() {
-		return 0, ErrNotArray
-	}
-
-	return int64(innerNode.Size()), nil
+	return int64(len(arr)), nil
 }
 
-func (jsonManager) GetString(node *ajson.Node, key string, optional bool) (string, error) {
-	if optional && !node.HasKey(key) {
-		// null value in payload is allowed
-		return "", nil
-	}
-
-	innerNode, err := node.GetKey(key)
+func (m jsonManager) GetStringWithDefault(node *ajson.Node, key string, defaultValue string) (string, error) {
+	result, err := m.GetString(node, key, true)
 	if err != nil {
 		return "", err
 	}
 
-	txt, err := innerNode.GetString()
-	if err != nil {
-		return "", ErrNotString
+	if result == nil {
+		return defaultValue, err
 	}
 
-	return txt, nil
+	return *result, nil
+}
+
+func (jsonManager) GetString(node *ajson.Node, key string, optional bool) (*string, error) {
+	if !node.HasKey(key) {
+		if optional {
+			// null value in payload is allowed
+			return nil, nil // nolint:nilnil
+		} else {
+			return nil, createKeyNotFoundErr(key)
+		}
+	}
+
+	innerNode, err := node.GetKey(key)
+	if err != nil {
+		return nil, err
+	}
+
+	if innerNode.IsNull() {
+		return nil, handleNullNode(key, optional)
+	}
+
+	txt, err := innerNode.GetString()
+	if err != nil {
+		return nil, ErrNotString
+	}
+
+	return &txt, nil
+}
+
+// GetNestedNode reaches into the JSON node by zooming via dot separated keys
+// Ex: keys = item.shipping.address => item has object with shipping key and so on.
+func (jsonManager) GetNestedNode(node *ajson.Node, keys []string) (*ajson.Node, error) {
+	var err error
+
+	// traverse nested JSON, use every key to zoom in
+	for _, key := range keys {
+		if !node.HasKey(key) {
+			message := fmt.Sprintf("%v; zoom=%v", key, strings.Join(keys, KeysZoomSeparator))
+
+			return nil, createKeyNotFoundErr(message)
+		}
+
+		node, err = node.GetKey(key)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if !node.IsObject() {
+		return nil, ErrNotObject
+	}
+
+	return node, nil
+}
+
+func (jsonManager) ObjToMap(node *ajson.Node) (map[string]any, error) {
+	data, err := node.GetObject()
+	if err != nil {
+		return nil, err
+	}
+
+	result := make(map[string]any)
+	for k, v := range data {
+		result[k] = v
+	}
+
+	return result, nil
+}
+
+func handleNullNode(key string, optional bool) error {
+	if optional {
+		return nil
+	}
+
+	return formatProblematicKeyError(key, ErrNullJSON)
+}
+
+func formatProblematicKeyError(key string, baseErr error) error {
+	return fmt.Errorf("problematic key: %v %w", key, baseErr)
+}
+
+func DotZoom(keys string) []string {
+	return strings.Split(keys, KeysZoomSeparator)
+}
+
+func createKeyNotFoundErr(key string) error {
+	return errors.Join(ErrKeyNotFound, fmt.Errorf("key: [%v]", key)) // nolint:goerr113
 }

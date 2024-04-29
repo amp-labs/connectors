@@ -72,7 +72,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			input: common.DeleteParams{ObjectName: "fax", RecordId: "dd2f7870-3fe8-ee11-a204-0022481f9e3c"},
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondWithMethodExpectation(w, r, "DELETE")
+				mockutils.RespondNoContentForMethod(w, r, "DELETE")
 			})),
 			expected:     &common.DeleteResult{Success: true},
 			expectedErrs: nil,

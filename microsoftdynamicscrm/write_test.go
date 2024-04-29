@@ -64,7 +64,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			input: common.WriteParams{ObjectName: "fax"},
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondWithMethodExpectation(w, r, "POST")
+				mockutils.RespondNoContentForMethod(w, r, "POST")
 			})),
 			expected:     &common.WriteResult{Success: true},
 			expectedErrs: nil,
@@ -74,7 +74,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			input: common.WriteParams{ObjectName: "fax", RecordId: "dd2f7870-3fe8-ee11-a204-0022481f9e3c"},
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondWithMethodExpectation(w, r, "PATCH")
+				mockutils.RespondNoContentForMethod(w, r, "PATCH")
 			})),
 			expected:     &common.WriteResult{Success: true},
 			expectedErrs: nil,

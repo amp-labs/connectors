@@ -43,6 +43,9 @@ var (
 	// ErrNotJSON is returned when a response is not JSON.
 	ErrNotJSON = errors.New("response is not JSON")
 
+	// ErrNullJSON is returned when a JSON key is null.
+	ErrNullJSON = errors.New("value of JSON key is null")
+
 	// ErrNotXML is returned when a response is not XML.
 	ErrNotXML = errors.New("response is not XML")
 

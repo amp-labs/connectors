@@ -13,25 +13,20 @@ import (
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/go-test/deep"
-	"github.com/spyzhov/ajson"
 )
 
 func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
-	fakeServerResp, err := mockutils.DataFromFile("read.json")
-	if err != nil {
-		t.Fatalf("failed to start test, input file missing, %v", err)
-	}
+	fakeServerResp := mockutils.DataFromFile(t, "read.json")
 
 	tests := []struct {
-		name             string
-		input            common.ReadParams
-		server           *httptest.Server
-		connector        Connector
-		expected         *common.ReadResult
-		expectedErrs     []error
-		expectedErrTypes []error
+		name         string
+		input        common.ReadParams
+		server       *httptest.Server
+		connector    Connector
+		expected     *common.ReadResult
+		expectedErrs []error
 	}{
 		{
 			name: "Mime response header expected",
@@ -65,7 +60,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 					"garbage": {}
 				}`)
 			})),
-			expectedErrTypes: []error{ajson.Error{}},
+			expectedErrs: []error{common.ErrKeyNotFound},
 		},
 		{
 			name: "Incorrect data type in payload",
@@ -202,7 +197,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			// start of tests
 			output, err := connector.Read(ctx, tt.input)
 			if err != nil {
-				if len(tt.expectedErrs)+len(tt.expectedErrTypes) == 0 {
+				if len(tt.expectedErrs) == 0 {
 					t.Fatalf("%s: expected no errors, got: (%v)", tt.name, err)
 				}
 			} else {
@@ -210,19 +205,9 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				if len(tt.expectedErrs) != 0 {
 					t.Fatalf("%s: expected errors (%v), but got nothing", tt.name, tt.expectedErrs)
 				}
-
-				if len(tt.expectedErrTypes) != 0 {
-					t.Fatalf("%s: expected error types (%v), but got nothing", tt.name, tt.expectedErrTypes)
-				}
 			}
 
 			// check every error
-			for _, expectedErr := range tt.expectedErrTypes {
-				if reflect.TypeOf(err) != reflect.TypeOf(expectedErr) {
-					t.Fatalf("%s: expected Error type: (%T), got: (%T)", tt.name, expectedErr, err)
-				}
-			}
-
 			for _, expectedErr := range tt.expectedErrs {
 				if !errors.Is(err, expectedErr) && !strings.Contains(err.Error(), expectedErr.Error()) {
 					t.Fatalf("%s: expected Error: (%v), got: (%v)", tt.name, expectedErr, err)
