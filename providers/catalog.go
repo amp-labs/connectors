@@ -1399,7 +1399,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	// Zuora Configuration
 	Zuora: {
 		AuthType: Oauth2,
-		BaseURL:  "https://rest.test.zuora.com",
+		BaseURL:  "https://{{.subdomain}}.zuora.com",
 		OauthOpts: OauthOpts{
 			GrantType:                 ClientCredentials,
 			AuthURL:                   "https://rest.test.zuora.com/oauth/auth_mock",

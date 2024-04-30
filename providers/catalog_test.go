@@ -1565,7 +1565,10 @@ var testCases = []struct { // nolint
 	},
 	{
 		provider:    Zuora,
-		description: "Valid Zuora provider config with no substitutions",
+		description: "Valid Zuora provider config with substitutions",
+		substitutions: map[string]string{
+			"subdomain": "rest.test",
+		},
 		expected: &ProviderInfo{
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
