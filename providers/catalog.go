@@ -532,7 +532,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	// Gong configuration
 	Gong: {
 		AuthType: Oauth2,
-		BaseURL:  "https://{{.workspace}}.api.gong.io",
+		BaseURL:  "https://api.gong.io",
 		OauthOpts: OauthOpts{
 			AuthURL:                   "https://app.gong.io/oauth2/authorize",
 			TokenURL:                  "https://app.gong.io/oauth2/generate-customer-token",
