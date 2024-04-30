@@ -13,6 +13,7 @@ import (
 type gongParams struct {
 	client *common.JSONHTTPClient
 	paramsbuilder.Workspace
+	paramsbuilder.APIModule
 	substitutions map[string]string
 }
 
@@ -52,6 +53,12 @@ func WithClient(ctx context.Context, client *http.Client, config *oauth2.Config,
 func WithWorkspace(workspaceRef string) Option {
 	return func(params *gongParams) {
 		params.WithWorkspace(workspaceRef)
+	}
+}
+
+func WithModule(module paramsbuilder.APIModule) Option {
+	return func(params *gongParams) {
+		params.APIModule = module
 	}
 }
 

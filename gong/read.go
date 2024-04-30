@@ -2,7 +2,6 @@ package gong
 
 import (
 	"context"
-
 	"net/url"
 
 	"github.com/amp-labs/connectors/common"
@@ -10,20 +9,26 @@ import (
 )
 
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
+
 	var (
-		res    *common.JSONHTTPResponse
-		err    error
+		res *common.JSONHTTPResponse
+
 		fields []string
 	)
 
-	if config.Fields != nil {
-		fields = config.Fields
+	fullURL, err := url.JoinPath(c.BaseURL, c.APIModule.Version, config.ObjectName)
 
-	}
-
-	fullURL, err := url.JoinPath(c.BaseURL, config.ObjectName)
 	if err != nil {
 		return nil, err
+	}
+
+	if len(config.NextPage) != 0 { // not the first page, add a cursor
+
+		fullURL = fullURL + "?cursor=" + config.NextPage.String()
+	}
+
+	if config.Fields != nil {
+		fields = config.Fields
 	}
 
 	res, err = c.get(ctx, fullURL)
@@ -35,7 +40,10 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		func(node *ajson.Node) ([]map[string]interface{}, error) {
 			return getRecords(node, config.ObjectName)
 		},
-		getNextRecordsURL,
+		func(node *ajson.Node) (string, error) {
+			return getNextRecordsURL(node, fullURL)
+		},
+
 		getMarshaledData,
 		fields,
 	)
