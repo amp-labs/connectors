@@ -1339,6 +1339,37 @@ var testCases = []struct { // nolint
 		expectedErr: nil,
 	},
 	{
+		provider:    Monday,
+		description: "Valid Monday provider config with no substitutions",
+		expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
+				AuthURL:                   "https://auth.monday.com/oauth2/authorize",
+				TokenURL:                  "https://auth.monday.com/oauth2/token",
+				ExplicitScopesRequired:    false,
+				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
+			},
+			Support: Support{
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+			BaseURL: "https://api.monday.com",
+		},
+		expectedErr: nil,
+	},
+	{
 		provider:    Figma,
 		description: "Valid Figma provider config with no substitutions",
 		expected: &ProviderInfo{

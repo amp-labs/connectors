@@ -11,9 +11,11 @@ const (
 	LinkedIn                            Provider = "linkedIn"
 	Salesloft                           Provider = "salesloft"
 	Outreach                            Provider = "outreach"
+	RingCentral                         Provider = "ringCentral"
 	Pipedrive                           Provider = "pipedrive"
 	Copper                              Provider = "copper"
 	ZohoCRM                             Provider = "zohoCRM"
+	Mural                               Provider = "mural"
 	Klaviyo                             Provider = "klaviyo"
 	Sellsy                              Provider = "sellsy"
 	Attio                               Provider = "attio"
@@ -26,6 +28,7 @@ const (
 	Zoom                                Provider = "zoom"
 	Intercom                            Provider = "intercom"
 	Capsule                             Provider = "capsule"
+	Wrike                               Provider = "wrike"
 	DocuSign                            Provider = "docuSign"
 	DocuSignDeveloper                   Provider = "docuSignDeveloper"
 	Calendly                            Provider = "calendly"
@@ -50,6 +53,7 @@ const (
 	Google                              Provider = "google"
 	GoogleContacts                      Provider = "googleContacts"
 	GoogleMail                          Provider = "googleMail"
+	Monday                              Provider = "monday"
 	Figma                               Provider = "figma"
 )
 
@@ -58,26 +62,6 @@ const (
 // ================================================================================
 
 var catalog = CatalogType{ // nolint:gochecknoglobals
-	Mock: {
-		AuthType: None,
-		BaseURL:  "https://not-a-real-domain.mock",
-		Support: Support{
-			BulkWrite: BulkWriteSupport{
-				Insert: false,
-				Update: false,
-				Upsert: false,
-				Delete: false,
-			},
-			Proxy:     true,
-			Read:      true,
-			Subscribe: false,
-			Write:     true,
-		},
-		ProviderOpts: ProviderOpts{
-			"isMock": "true",
-		},
-	},
-
 	// Salesforce configuration
 	Salesforce: {
 		AuthType: Oauth2,
@@ -222,6 +206,36 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
+	// RingCentral configuration
+
+	RingCentral: {
+		AuthType: Oauth2,
+		BaseURL:  "https://platform.ringcentral.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 PKCE,
+			AuthURL:                   "https://platform.ringcentral.com/restapi/oauth/authorize",
+			TokenURL:                  "https://platform.ringcentral.com/restapi/oauth/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField:      "scope",
+				ConsumerRefField: "owner_id",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
 	// Pipedrive configuration
 	Pipedrive: {
 		AuthType: Oauth2,
@@ -270,6 +284,33 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
+	// Wrikle configuration
+	Wrike: {
+		AuthType: Oauth2,
+		BaseURL:  "https://www.wrike.com/api",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://www.wrike.com/oauth2/authorize",
+			TokenURL:                  "https://www.wrike.com/oauth2/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
 	// Copper configuration
 	Copper: {
 		AuthType: Oauth2,
@@ -303,6 +344,33 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://accounts.zoho.com/oauth/v2/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Mural configuration
+	Mural: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.mural.co/api",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://api.mural.co/oauth/authorize",
+			TokenURL:                  "https://api.mural.co/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -599,28 +667,30 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	},
 
 	// DocuSign configuration
-	DocuSign: {
-		AuthType: Oauth2,
-		BaseURL:  "https://{{.workspace}}.docusign.net",
-		OauthOpts: OauthOpts{
-			AuthURL:                   "https://account.docusign.com/oauth/auth",
-			TokenURL:                  "https://account.docusign.com/oauth/token",
-			ExplicitScopesRequired:    true,
-			ExplicitWorkspaceRequired: true,
-		},
-		Support: Support{
-			BulkWrite: BulkWriteSupport{
-				Insert: false,
-				Update: false,
-				Upsert: false,
-				Delete: false,
-			},
-			Proxy:     false,
-			Read:      false,
-			Subscribe: false,
-			Write:     false,
-		},
-	},
+	// TODO: we don't have a good way to get the server string yet. Need to make API call to /oauth/userinfo.
+	// Leaving this connector commented out until that is unblocked.
+	// DocuSign: {
+	//	AuthType: Oauth2,
+	//	BaseURL:  "https://{{.server}}.docusign.net",
+	//	OauthOpts: OauthOpts{
+	//		AuthURL:                   "https://account.docusign.com/oauth/auth",
+	//		TokenURL:                  "https://account.docusign.com/oauth/token",
+	//		ExplicitScopesRequired:    true,
+	//		ExplicitWorkspaceRequired: false,
+	//	},
+	//	Support: Support{
+	//		BulkWrite: BulkWriteSupport{
+	//			Insert: false,
+	//			Update: false,
+	//			Upsert: false,
+	//			Delete: false,
+	//		},
+	//		Proxy:     false,
+	//		Read:      false,
+	//		Subscribe: false,
+	//		Write:     false,
+	//	},
+	// },
 
 	// DocuSign Developer configuration
 	DocuSignDeveloper: {
@@ -1070,7 +1140,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -1198,6 +1268,33 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			AuthURL:                   "https://accounts.google.com/o/oauth2/v2/auth",
 			TokenURL:                  "https://oauth2.googleapis.com/token",
 			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	Monday: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.monday.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://auth.monday.com/oauth2/authorize",
+			TokenURL:                  "https://auth.monday.com/oauth2/token",
+			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",

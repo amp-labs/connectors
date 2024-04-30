@@ -10,7 +10,7 @@ import (
 )
 
 func (*Connector) interpretJSONError(res *http.Response, body []byte) error { //nolint:cyclop
-	apiError := &SalesResponseError{}
+	apiError := &CRMResponseError{}
 	if err := json.Unmarshal(body, &apiError); err != nil {
 		return fmt.Errorf("interpretJSONError: %w %w", interpreter.ErrUnmarshal, err)
 	}
@@ -41,23 +41,23 @@ func (*Connector) interpretJSONError(res *http.Response, body []byte) error { //
 	}
 }
 
-type SalesResponseError struct {
-	Err SalesError `json:"error"`
+type CRMResponseError struct {
+	Err CRMError `json:"error"`
 }
 
-type SalesError struct {
+type CRMError struct {
 	Code    string `json:"code"`
 	Message string `json:"message"`
-	*EnhancedSalesError
+	*EnhancedCRMError
 }
 
-type EnhancedSalesError struct {
+type EnhancedCRMError struct {
 	HelpLink     string `json:"@Microsoft.PowerApps.CDS.HelpLink"`           // nolint:tagliatelle
 	TraceText    string `json:"@Microsoft.PowerApps.CDS.TraceText"`          // nolint:tagliatelle
 	InnerMessage string `json:"@Microsoft.PowerApps.CDS.InnerError.Message"` // nolint:tagliatelle
 }
 
-func createError(base error, response *SalesResponseError) error {
+func createError(base error, response *CRMResponseError) error {
 	if len(response.Err.Message) > 0 {
 		return fmt.Errorf("%w: %s", base, response.Err.Message)
 	}
