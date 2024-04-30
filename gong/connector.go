@@ -2,12 +2,19 @@ package gong
 
 import (
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/providers"
 )
 
+var DefaultModule = paramsbuilder.APIModule{ // nolint: gochecknoglobals
+	Label:   "api/data",
+	Version: "v2",
+}
+
 type Connector struct {
-	BaseURL string
-	Client  *common.JSONHTTPClient
+	BaseURL   string
+	Client    *common.JSONHTTPClient
+	APIModule paramsbuilder.APIModule
 }
 
 func WithCatalogSubstitutions(substitutions map[string]string) Option {
@@ -49,12 +56,9 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		return nil, err
 	}
 
-	restApi := providerInfo.BaseURL
-
-	params.client.HTTPClient.Base = providerInfo.BaseURL
-
 	return &Connector{
-		Client:  params.client,
-		BaseURL: restApi,
+		Client:    params.client,
+		BaseURL:   providerInfo.BaseURL,
+		APIModule: params.APIModule,
 	}, nil
 }

@@ -3,15 +3,15 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"log"
+	"log/slog"
 	"net/http"
 	"os"
 
 	"github.com/amp-labs/connectors/gong"
 
 	"github.com/amp-labs/connectors"
-	testUtils "github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/utils"
+	"github.com/joho/godotenv"
 )
 
 const (
@@ -19,6 +19,7 @@ const (
 )
 
 func GetGongConnector(ctx context.Context, filePath string) *gong.Connector {
+
 	registry := utils.NewCredentialsRegistry()
 
 	readers := []utils.Reader{
@@ -56,36 +57,58 @@ func GetGongConnector(ctx context.Context, filePath string) *gong.Connector {
 	conn, err := connectors.Gong(
 		gong.WithClient(ctx, http.DefaultClient, cfg, tok),
 		gong.WithWorkspace(utils.GongWorkspace),
+		gong.WithModule(gong.DefaultModule),
 	)
 	if err != nil {
-		testUtils.Fail("error creating gong connector", "error", err)
+		slog.Error("error creating gong connector", "error", err)
 	}
+
+	defer func() {
+		_ = conn.Close()
+	}()
 
 	return conn
 }
 
 func main() {
+	os.Exit(mainFn())
+}
+
+func mainFn() int {
+
+	handler := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
+		Level: slog.LevelDebug,
+	})
+
+	logger := slog.New(handler)
+	slog.SetDefault(logger)
+
+	if err := godotenv.Load(); err != nil {
+		slog.Warn("No .env file provided")
+	}
+
 	gong := GetGongConnector(context.Background(), DefaultCredsFile)
 
-	gong.BaseURL = gong.BaseURL + "/v2"
-
 	config := connectors.ReadParams{
-		ObjectName: "calls",
-		Fields:     []string{"title", "duration"},
-		NextPage:   "eyJhbGciOiJIUzI1NiJ9.eyJjYWxsSWQiOjQ5NTM3MDc2MDE3NzYyMzgzNjAsInRvdGFsIjoxNzksInBhZ2VOdW1iZXIiOjAsInBhZ2VTaXplIjoxMDAsInRpbWUiOiIyMDIyLTA5LTEzVDA5OjMwOjAwWiIsImV4cCI6MTcxNDQwODE5MX0.cFcPhzRLCwOve4PGXMvo16E0SgrPfCdHYI2PPnBNTEs",
+		ObjectName: "calls", // could be calls, users
+		Fields:     []string{"url"},
+		//NextPage:   "eyJhbGciOiJIUzI1NiJ9.eyJjYWxsSWQiOjQ5NTM3MDc2MDE3NzYyMzgzNjAsInRvdGFsIjoxNzksInBhZ2VOdW1iZXIiOjAsInBhZ2VTaXplIjoxMDAsInRpbWUiOiIyMDIyLTA5LTEzVDA5OjMwOjAwWiIsImV4cCI6MTcxNDQ3NjU4MX0.slRd0i1iPnBHnOxgVPhCREIJmmxkUBJOd6f0N9lHfHs",
 	}
 
 	result, err := gong.Read(context.Background(), config)
 	if err != nil {
-		log.Fatal(err)
+		slog.Error("Error reading from Gong", "error", err)
+		return 1
 	}
 
-	// Print the results
 	jsonStr, err := json.MarshalIndent(result, "", "  ")
 	if err != nil {
-		log.Fatal(err)
+		slog.Error("Marshalling Error", "error", err)
+		return 1
 	}
 
 	_, _ = os.Stdout.Write(jsonStr)
 	_, _ = os.Stdout.WriteString("\n")
+
+	return 0
 }

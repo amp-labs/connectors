@@ -1,16 +1,22 @@
 package gong
 
 import (
+	"log/slog"
+
 	"github.com/amp-labs/connectors/common"
 	"github.com/spyzhov/ajson"
 )
 
 // getNextRecords returns the token or empty string if there are no more records.
-func getNextRecordsURL(node *ajson.Node) (string, error) {
+func getNextRecordsURL(node *ajson.Node, fullURL string) (string, error) {
 
 	recordsNode, err := node.GetKey("records")
 	if err != nil {
 		return "", err
+	}
+
+	if !recordsNode.HasKey("cursor") {
+		return "", nil
 	}
 
 	cursorNode, err := recordsNode.GetKey("cursor")
@@ -18,7 +24,8 @@ func getNextRecordsURL(node *ajson.Node) (string, error) {
 		return "", err
 	}
 
-	nextPage := cursorNode.String()
+	nextPage := fullURL + "?cursor=" + cursorNode.MustString()
+	slog.Debug("Next page", "nextPage", nextPage)
 	return nextPage, nil
 }
 
@@ -67,7 +74,7 @@ func getTotalSize(node *ajson.Node) (int64, error) {
 		return 0, err
 	}
 
-	totalRecordsNode, err := recordsNode.GetKey("totalRecords")
+	totalRecordsNode, err := recordsNode.GetKey("currentPageSize")
 	if err != nil {
 		return 0, err
 	}
