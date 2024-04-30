@@ -54,6 +54,7 @@ const (
 	GoogleContacts                      Provider = "googleContacts"
 	GoogleMail                          Provider = "googleMail"
 	Monday                              Provider = "monday"
+	Miro                                Provider = "miro"
 )
 
 // ================================================================================
@@ -1297,6 +1298,36 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			ExplicitWorkspaceRequired: false,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Miro Support Configuration
+	Miro: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.miro.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://miro.com/oauth/authorize",
+			TokenURL:                  "https://api.miro.com/v1/oauth/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ConsumerRefField:  "user_id",
+				WorkspaceRefField: "team_id",
+				ScopesField:       "scope",
 			},
 		},
 		Support: Support{
