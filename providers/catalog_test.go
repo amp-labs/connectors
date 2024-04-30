@@ -195,6 +195,45 @@ var testCases = []struct { // nolint
 		expectedErr: nil,
 	},
 
+	// RingCentral
+
+	{
+		provider:    RingCentral,
+		description: "Valid RingCentral provider config without substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+
+					Update: false,
+					Upsert: false,
+
+					Delete: false,
+				},
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				GrantType: PKCE,
+
+				AuthURL:  "https://platform.ringcentral.com/restapi/oauth/authorize",
+				TokenURL: "https://platform.ringcentral.com/restapi/oauth/token",
+
+				ExplicitScopesRequired:    false,
+				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField:      "scope",
+					ConsumerRefField: "owner_id",
+				},
+			},
+			BaseURL: "https://platform.ringcentral.com",
+		},
+		expectedErr: nil,
+	},
+
 	{
 		provider: Pipedrive,
 		expected: &ProviderInfo{
@@ -245,6 +284,39 @@ var testCases = []struct { // nolint
 				Write:     false,
 			},
 			BaseURL: "https://api.capsulecrm.com/api",
+		},
+		expectedErr: nil,
+	},
+
+	// Wrike provider
+
+	{
+		provider:    Wrike,
+		description: "Valid Wrike provider config with no substitutions",
+		expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://www.wrike.com/oauth2/authorize",
+				TokenURL:                  "https://www.wrike.com/oauth2/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
+			},
+			Support: Support{
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+			BaseURL: "https://www.wrike.com/api",
 		},
 		expectedErr: nil,
 	},
@@ -301,6 +373,37 @@ var testCases = []struct { // nolint
 				ExplicitWorkspaceRequired: false,
 			},
 			BaseURL: "https://www.zohoapis.com",
+		},
+		expectedErr: nil,
+	},
+
+	{
+		provider:    Mural,
+		description: "Valid Mural provider config with no substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://api.mural.co/oauth/authorize",
+				TokenURL:                  "https://api.mural.co/oauth/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
+			},
+			BaseURL: "https://api.mural.co/api",
 		},
 		expectedErr: nil,
 	},
@@ -628,35 +731,36 @@ var testCases = []struct { // nolint
 		},
 		expectedErr: nil,
 	},
-	{
-		provider: DocuSign,
-		substitutions: map[string]string{
-			"workspace": "example",
-		},
-		expected: &ProviderInfo{
-			Support: Support{
-				Read:  false,
-				Write: false,
-				BulkWrite: BulkWriteSupport{
-					Insert: false,
-					Update: false,
-					Upsert: false,
-					Delete: false,
-				},
-				Subscribe: false,
-				Proxy:     false,
-			},
-			AuthType: Oauth2,
-			OauthOpts: OauthOpts{
-				AuthURL:                   "https://account.docusign.com/oauth/auth",
-				TokenURL:                  "https://account.docusign.com/oauth/token",
-				ExplicitScopesRequired:    true,
-				ExplicitWorkspaceRequired: true,
-			},
-			BaseURL: "https://example.docusign.net",
-		},
-		expectedErr: nil,
-	},
+	// TODO: uncomment this when the docusign connector is uncommented
+	//{
+	//	provider: DocuSign,
+	//	substitutions: map[string]string{
+	//		"server": "example",
+	//	},
+	//	expected: &ProviderInfo{
+	//		Support: Support{
+	//			Read:  false,
+	//			Write: false,
+	//			BulkWrite: BulkWriteSupport{
+	//				Insert: false,
+	//				Update: false,
+	//				Upsert: false,
+	//				Delete: false,
+	//			},
+	//			Subscribe: false,
+	//			Proxy:     false,
+	//		},
+	//		AuthType: Oauth2,
+	//		OauthOpts: OauthOpts{
+	//			AuthURL:                   "https://account.docusign.com/oauth/auth",
+	//			TokenURL:                  "https://account.docusign.com/oauth/token",
+	//			ExplicitScopesRequired:    true,
+	//			ExplicitWorkspaceRequired: false,
+	//		},
+	//		BaseURL: "https://example.docusign.net",
+	//	},
+	//	expectedErr: nil,
+	// },
 	{
 		provider: DocuSignDeveloper,
 		expected: &ProviderInfo{
@@ -1174,7 +1278,7 @@ var testCases = []struct { // nolint
 					Upsert: false,
 					Delete: false,
 				},
-				Proxy:     false,
+				Proxy:     true,
 				Read:      false,
 				Subscribe: false,
 				Write:     false,
