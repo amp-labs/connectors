@@ -1402,8 +1402,8 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://{{.subdomain}}.zuora.com",
 		OauthOpts: OauthOpts{
 			GrantType:                 ClientCredentials,
-			AuthURL:                   "https://rest.test.zuora.com/oauth/auth_mock",
-			TokenURL:                  "https://rest.test.zuora.com/oauth/token",
+			AuthURL:                   "https://{{.subdomain}}.zuora.com/oauth/auth_mock",
+			TokenURL:                  "https://{{.subdomain}}.zuora.com/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
 		},
