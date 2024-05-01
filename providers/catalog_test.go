@@ -645,10 +645,7 @@ var testCases = []struct { // nolint
 	},
 	{
 		provider:    Gong,
-		description: "Gong provider config with valid substitutions",
-		substitutions: map[string]string{
-			"workspace": "testing",
-		},
+		description: "Gong provider config without substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
 				Read:  false,
@@ -673,7 +670,7 @@ var testCases = []struct { // nolint
 					ConsumerRefField: "client_id",
 				},
 			},
-			BaseURL: "https://testing.api.gong.io",
+			BaseURL: "https://api.gong.io",
 		},
 		expectedErr: nil,
 	},
