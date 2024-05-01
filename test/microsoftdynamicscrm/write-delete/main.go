@@ -88,7 +88,7 @@ func main() {
 
 func searchLead(res *common.ReadResult, key, value string) map[string]any {
 	for _, data := range res.Data {
-		if data.Fields[key] == value {
+		if compare(data.Fields[key], value) {
 			return data.Fields
 		}
 	}
