@@ -55,6 +55,7 @@ const (
 	GoogleMail                          Provider = "googleMail"
 	Monday                              Provider = "monday"
 	Miro                                Provider = "miro"
+	Typeform                            Provider = "typeform"
 )
 
 // ================================================================================
@@ -1329,6 +1330,30 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				WorkspaceRefField: "team_id",
 				ScopesField:       "scope",
 			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	Typeform: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.typeform.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://api.typeform.com/oauth/authorize",
+			TokenURL:                  "https://api.typeform.com/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
