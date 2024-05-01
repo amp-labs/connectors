@@ -1471,6 +1471,37 @@ var testCases = []struct { // nolint
 		expectedErr: nil,
 	},
 	{
+		provider:    Figma,
+		description: "Valid Figma provider config with no substitutions",
+		expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
+				AuthURL:                   "https://www.figma.com/oauth",
+				TokenURL:                  "https://www.figma.com/api/oauth/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ConsumerRefField: "user_id",
+				},
+			},
+			Support: Support{
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+			BaseURL: "https://api.figma.com",
+		},
+		expectedErr: nil,
+	},
+	{
 		provider:    Miro,
 		description: "Valid Miro provider config with no substitutions",
 		expected: &ProviderInfo{
@@ -1527,6 +1558,7 @@ var testCases = []struct { // nolint
 				Subscribe: false,
 				Write:     false,
 			},
+
 			BaseURL: "https://api.typeform.com",
 		},
 		expectedErr: nil,
