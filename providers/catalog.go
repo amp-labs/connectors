@@ -29,8 +29,8 @@ const (
 	Intercom                            Provider = "intercom"
 	Capsule                             Provider = "capsule"
 	Wrike                               Provider = "wrike"
-	DocuSign                            Provider = "docuSign"
-	DocuSignDeveloper                   Provider = "docuSignDeveloper"
+	Docusign                            Provider = "docusign"
+	DocusignDeveloper                   Provider = "docusignDeveloper"
 	Calendly                            Provider = "calendly"
 	AWeber                              Provider = "aWeber"
 	GetResponse                         Provider = "getResponse"
@@ -55,6 +55,8 @@ const (
 	GoogleMail                          Provider = "googleMail"
 	Monday                              Provider = "monday"
 	Figma                               Provider = "figma"
+	Miro                                Provider = "miro"
+	Typeform                            Provider = "typeform"
 )
 
 // ================================================================================
@@ -593,7 +595,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	// Gong configuration
 	Gong: {
 		AuthType: Oauth2,
-		BaseURL:  "https://{{.workspace}}.api.gong.io",
+		BaseURL:  "https://api.gong.io",
 		OauthOpts: OauthOpts{
 			AuthURL:                   "https://app.gong.io/oauth2/authorize",
 			TokenURL:                  "https://app.gong.io/oauth2/generate-customer-token",
@@ -666,10 +668,10 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
-	// DocuSign configuration
+	// Docusign configuration
 	// TODO: we don't have a good way to get the server string yet. Need to make API call to /oauth/userinfo.
 	// Leaving this connector commented out until that is unblocked.
-	// DocuSign: {
+	// Docusign: {
 	//	AuthType: Oauth2,
 	//	BaseURL:  "https://{{.server}}.docusign.net",
 	//	OauthOpts: OauthOpts{
@@ -692,8 +694,8 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	//	},
 	// },
 
-	// DocuSign Developer configuration
-	DocuSignDeveloper: {
+	// Docusign Developer configuration
+	DocusignDeveloper: {
 		AuthType: Oauth2,
 		BaseURL:  "https://demo.docusign.net",
 		OauthOpts: OauthOpts{
@@ -1313,7 +1315,6 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Write:     false,
 		},
 	},
-
 	// Figma Support Configuration
 	Figma: {
 		AuthType: Oauth2,
@@ -1327,6 +1328,58 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenMetadataFields: TokenMetadataFields{
 				ConsumerRefField: "user_id",
 			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+	// Miro Support Configuration
+	Miro: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.miro.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://miro.com/oauth/authorize",
+			TokenURL:                  "https://api.miro.com/v1/oauth/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ConsumerRefField:  "user_id",
+				WorkspaceRefField: "team_id",
+				ScopesField:       "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+	Typeform: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.typeform.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://api.typeform.com/oauth/authorize",
+			TokenURL:                  "https://api.typeform.com/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{

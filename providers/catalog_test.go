@@ -645,10 +645,7 @@ var testCases = []struct { // nolint
 	},
 	{
 		provider:    Gong,
-		description: "Gong provider config with valid substitutions",
-		substitutions: map[string]string{
-			"workspace": "testing",
-		},
+		description: "Gong provider config without substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
 				Read:  false,
@@ -673,7 +670,7 @@ var testCases = []struct { // nolint
 					ConsumerRefField: "client_id",
 				},
 			},
-			BaseURL: "https://testing.api.gong.io",
+			BaseURL: "https://api.gong.io",
 		},
 		expectedErr: nil,
 	},
@@ -733,7 +730,7 @@ var testCases = []struct { // nolint
 	},
 	// TODO: uncomment this when the docusign connector is uncommented
 	//{
-	//	provider: DocuSign,
+	//	provider: Docusign,
 	//	substitutions: map[string]string{
 	//		"server": "example",
 	//	},
@@ -762,7 +759,7 @@ var testCases = []struct { // nolint
 	//	expectedErr: nil,
 	// },
 	{
-		provider: DocuSignDeveloper,
+		provider: DocusignDeveloper,
 		expected: &ProviderInfo{
 			Support: Support{
 				Read:  false,
@@ -1501,6 +1498,68 @@ var testCases = []struct { // nolint
 				Write:     false,
 			},
 			BaseURL: "https://api.figma.com",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    Miro,
+		description: "Valid Miro provider config with no substitutions",
+		expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
+				AuthURL:                   "https://miro.com/oauth/authorize",
+				TokenURL:                  "https://api.miro.com/v1/oauth/token",
+				ExplicitScopesRequired:    false,
+				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ConsumerRefField:  "user_id",
+					WorkspaceRefField: "team_id",
+					ScopesField:       "scope",
+				},
+			},
+			Support: Support{
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+			BaseURL: "https://api.miro.com",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    Typeform,
+		description: "Valid Typeform provider config with no substitutions",
+		expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
+				AuthURL:                   "https://api.typeform.com/oauth/authorize",
+				TokenURL:                  "https://api.typeform.com/oauth/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+			},
+			Support: Support{
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+
+			BaseURL: "https://api.typeform.com",
 		},
 		expectedErr: nil,
 	},
