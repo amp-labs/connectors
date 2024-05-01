@@ -733,7 +733,7 @@ var testCases = []struct { // nolint
 	},
 	// TODO: uncomment this when the docusign connector is uncommented
 	//{
-	//	provider: DocuSign,
+	//	provider: Docusign,
 	//	substitutions: map[string]string{
 	//		"server": "example",
 	//	},
@@ -762,7 +762,7 @@ var testCases = []struct { // nolint
 	//	expectedErr: nil,
 	// },
 	{
-		provider: DocuSignDeveloper,
+		provider: DocusignDeveloper,
 		expected: &ProviderInfo{
 			Support: Support{
 				Read:  false,

@@ -29,8 +29,8 @@ const (
 	Intercom                            Provider = "intercom"
 	Capsule                             Provider = "capsule"
 	Wrike                               Provider = "wrike"
-	DocuSign                            Provider = "docuSign"
-	DocuSignDeveloper                   Provider = "docuSignDeveloper"
+	Docusign                            Provider = "docuSign"
+	DocusignDeveloper                   Provider = "docuSignDeveloper"
 	Calendly                            Provider = "calendly"
 	AWeber                              Provider = "aWeber"
 	GetResponse                         Provider = "getResponse"
@@ -666,10 +666,10 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
-	// DocuSign configuration
+	// Docusign configuration
 	// TODO: we don't have a good way to get the server string yet. Need to make API call to /oauth/userinfo.
 	// Leaving this connector commented out until that is unblocked.
-	// DocuSign: {
+	// Docusign: {
 	//	AuthType: Oauth2,
 	//	BaseURL:  "https://{{.server}}.docusign.net",
 	//	OauthOpts: OauthOpts{
@@ -692,8 +692,8 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	//	},
 	// },
 
-	// DocuSign Developer configuration
-	DocuSignDeveloper: {
+	// Docusign Developer configuration
+	DocusignDeveloper: {
 		AuthType: Oauth2,
 		BaseURL:  "https://demo.docusign.net",
 		OauthOpts: OauthOpts{
