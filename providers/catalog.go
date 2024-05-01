@@ -54,6 +54,7 @@ const (
 	GoogleContacts                      Provider = "googleContacts"
 	GoogleMail                          Provider = "googleMail"
 	Monday                              Provider = "monday"
+	Figma                               Provider = "figma"
 	Miro                                Provider = "miro"
 	Typeform                            Provider = "typeform"
 )
@@ -1314,7 +1315,33 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Write:     false,
 		},
 	},
-
+	// Figma Support Configuration
+	Figma: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.figma.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://www.figma.com/oauth",
+			TokenURL:                  "https://www.figma.com/api/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ConsumerRefField: "user_id",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
 	// Miro Support Configuration
 	Miro: {
 		AuthType: Oauth2,
@@ -1344,7 +1371,6 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Write:     false,
 		},
 	},
-
 	Typeform: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.typeform.com",
