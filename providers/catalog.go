@@ -206,12 +206,12 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	// Adobe Sign configuration
 	AdobeSign: {
 		AuthType: Oauth2,
-		BaseURL:  "https://api.na3.adobesign.com",
+		BaseURL:  "https://api.{{.shard}}.adobesign.com",
 		OauthOpts: OauthOpts{
-			AuthURL:                   "https://secure.echosign.com/public/oauth/v2",
-			TokenURL:                  "https://secure.adobesign.com/oauth/v2/token",
+			AuthURL:                   "https://secure.{{.shard}}.adobesign.com/public/oauth/v2",
+			TokenURL:                  "https://api.{{.shard}}.echosign.com/oauth/v2/token",
 			ExplicitScopesRequired:    true,
-			ExplicitWorkspaceRequired: false,
+			ExplicitWorkspaceRequired: true,
 			TokenMetadataFields: TokenMetadataFields{
 				ConsumerRefField:  "api_access_point",
 				WorkspaceRefField: "web_access_point",
