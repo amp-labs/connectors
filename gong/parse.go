@@ -25,16 +25,17 @@ func getNextRecordsURL(node *ajson.Node, fullURL string) (string, error) {
 	}
 
 	nextPage := fullURL + "?cursor=" + cursorNode.MustString()
-	slog.Debug("Next page", "nextPage", nextPage)
+
 	return nextPage, nil
 }
 
 // getRecords returns the records from the response.
 func getRecords(node *ajson.Node, objectName string) ([]map[string]interface{}, error) {
+	slog.Debug("getRecords", "objectName", objectName)
 
 	records, err := node.GetKey(objectName)
 	if err != nil {
-		return nil, err
+		return nil, ErrNotArray
 	}
 
 	if !records.IsArray() {
@@ -71,7 +72,7 @@ func getTotalSize(node *ajson.Node) (int64, error) {
 
 	recordsNode, err := node.GetKey("records")
 	if err != nil {
-		return 0, err
+		return 0, common.ErrNotArray
 	}
 
 	totalRecordsNode, err := recordsNode.GetKey("currentPageSize")
