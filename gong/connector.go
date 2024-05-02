@@ -1,8 +1,14 @@
 package gong
 
 import (
+	"net/http"
+
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
+
+	"errors"
+
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -24,17 +30,10 @@ func WithCatalogSubstitutions(substitutions map[string]string) Option {
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	defer func() {
-		if re := recover(); re != nil {
-			tmp, ok := re.(error)
-			if !ok {
-				panic(re)
-			}
-
-			outErr = tmp
-			conn = nil
-		}
-	}()
+	defer common.PanicRecovery(func(cause error) {
+		outErr = cause
+		conn = nil
+	})
 
 	params := &gongParams{}
 	for _, opt := range opts {
@@ -56,9 +55,27 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		return nil, err
 	}
 
-	return &Connector{
+	conn = &Connector{
 		Client:    params.client,
 		BaseURL:   providerInfo.BaseURL,
 		APIModule: params.APIModule,
-	}, nil
+	}
+
+	conn.setBaseURL(providerInfo.BaseURL)
+	conn.Client.HTTPClient.ErrorHandler = interpreter.ErrorHandler{
+		JSON: func(res *http.Response, body []byte) error {
+			// You need to create an error from the response and body
+			// This is just an example, adjust it according to your needs
+			err := errors.ErrUnsupported
+			return conn.HandleError(err)
+		},
+	}.Handle
+
+	return conn, nil
+
+}
+
+func (c *Connector) setBaseURL(newURL string) {
+	c.BaseURL = newURL
+	c.Client.HTTPClient.Base = newURL
 }
