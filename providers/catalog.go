@@ -1427,6 +1427,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://api.hellosign.com",
 		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://app.hellosign.com/oauth/authorize",
 			TokenURL:                  "https://app.hellosign.com/oauth/token",
 			ExplicitScopesRequired:    true,
