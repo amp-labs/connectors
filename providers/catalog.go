@@ -65,6 +65,8 @@ const (
 	Zoom                                Provider = "zoom"
 	Zuora                               Provider = "zuora"
 	Aircall                             Provider = "aircall"
+	InstagramBasic                      Provider = "instagramBasic"
+	InstagramGraphAPI                   Provider = "instagramGraphAPI"
 )
 
 // ================================================================================
@@ -1604,6 +1606,62 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://dashboard.aircall.io/oauth/authorize",
 			TokenURL:                  "https://api.aircall.io/v1/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// InstagramBasic Support Configuration
+	InstagramBasic: {
+		AuthType: Oauth2,
+		BaseURL:  "https://graph.instagram.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://api.instagram.com/oauth/authorize",
+			TokenURL:                  "https://api.instagram.com/oauth/access_token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// InstagramGraphAPI Support Configuration
+	InstagramGraphAPI: {
+		AuthType: Oauth2,
+		BaseURL:  "https://graph.facebook.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 ClientCredentials,
+			AuthURL:                   "https://www.facebook.com/dialog/oauth/mock",
+			TokenURL:                  "https://www.facebook.com/dialog/oauth",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 			TokenMetadataFields: TokenMetadataFields{
