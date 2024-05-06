@@ -58,6 +58,7 @@ const (
 	Miro                                Provider = "miro"
 	Typeform                            Provider = "typeform"
 	Zuora                               Provider = "zuora"
+	DropboxSign                         Provider = "dropboxSign"
 )
 
 // ================================================================================
@@ -1405,6 +1406,30 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			AuthURL:                   "https://{{.subdomain}}.zuora.com/oauth/auth_mock",
 			TokenURL:                  "https://{{.subdomain}}.zuora.com/oauth/token",
 			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// DropboxSign Configuration
+	DropboxSign: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.hellosign.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://app.hellosign.com/oauth/authorize",
+			TokenURL:                  "https://app.hellosign.com/oauth/token",
+			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
