@@ -217,7 +217,8 @@ var testCases = []struct { // nolint
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
-				GrantType: PKCE,
+				GrantType: AuthorizationCode,
+				WithPKCE:  true,
 
 				AuthURL:  "https://platform.ringcentral.com/restapi/oauth/authorize",
 				TokenURL: "https://platform.ringcentral.com/restapi/oauth/token",
@@ -426,7 +427,8 @@ var testCases = []struct { // nolint
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
-				GrantType:                 "PKCE",
+				GrantType:                 AuthorizationCode,
+				WithPKCE:                  true,
 				AuthURL:                   "https://www.klaviyo.com/oauth/authorize",
 				TokenURL:                  "https://a.klaviyo.com/oauth/token",
 				ExplicitScopesRequired:    true,
@@ -445,7 +447,8 @@ var testCases = []struct { // nolint
 		expected: &ProviderInfo{
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
-				GrantType:                 PKCE,
+				GrantType:                 AuthorizationCode,
+				WithPKCE:                  true,
 				AuthURL:                   "https://login.sellsy.com/oauth2/authorization",
 				TokenURL:                  "https://login.sellsy.com/oauth2/access-tokens",
 				ExplicitScopesRequired:    false,
@@ -1109,7 +1112,8 @@ var testCases = []struct { // nolint
 		expected: &ProviderInfo{
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
-				GrantType:                 PKCE,
+				GrantType:                 AuthorizationCode,
+				WithPKCE:                  true,
 				AuthURL:                   "https://airtable.com/oauth2/v1/authorize",
 				TokenURL:                  "https://airtable.com/oauth2/v1/token",
 				ExplicitScopesRequired:    true,
@@ -1591,6 +1595,35 @@ var testCases = []struct { // nolint
 				Write:     false,
 			},
 			BaseURL: "https://rest.test.zuora.com",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    TwitterAds,
+		description: "Valid Twitter Ads provider config with no substitutions",
+		expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
+				WithPKCE:                  true,
+				AuthURL:                   "https://twitter.com/i/oauth2/authorize",
+				TokenURL:                  "https://api.twitter.com/2/oauth2/token",
+				ExplicitScopesRequired:    false,
+				ExplicitWorkspaceRequired: false,
+			},
+			Support: Support{
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+			BaseURL: "https://ads-api.twitter.com",
 		},
 		expectedErr: nil,
 	},

@@ -58,6 +58,7 @@ const (
 	Miro                                Provider = "miro"
 	Typeform                            Provider = "typeform"
 	Zuora                               Provider = "zuora"
+	TwitterAds                          Provider = "twitterAds"
 )
 
 // ================================================================================
@@ -215,7 +216,8 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://platform.ringcentral.com",
 		OauthOpts: OauthOpts{
-			GrantType:                 PKCE,
+			GrantType:                 AuthorizationCode,
+			WithPKCE:                  true,
 			AuthURL:                   "https://platform.ringcentral.com/restapi/oauth/authorize",
 			TokenURL:                  "https://platform.ringcentral.com/restapi/oauth/token",
 			ExplicitScopesRequired:    false,
@@ -394,7 +396,8 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://a.klaviyo.com",
 		OauthOpts: OauthOpts{
-			GrantType:                 PKCE,
+			GrantType:                 AuthorizationCode,
+			WithPKCE:                  true,
 			AuthURL:                   "https://www.klaviyo.com/oauth/authorize",
 			TokenURL:                  "https://a.klaviyo.com/oauth/token",
 			ExplicitScopesRequired:    true,
@@ -422,7 +425,8 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://api.sellsy.com",
 		OauthOpts: OauthOpts{
-			GrantType:                 PKCE,
+			GrantType:                 AuthorizationCode,
+			WithPKCE:                  true,
 			AuthURL:                   "https://login.sellsy.com/oauth2/authorization",
 			TokenURL:                  "https://login.sellsy.com/oauth2/access-tokens",
 			ExplicitScopesRequired:    false,
@@ -993,7 +997,8 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://api.airtable.com",
 		OauthOpts: OauthOpts{
-			GrantType:                 PKCE,
+			GrantType:                 AuthorizationCode,
+			WithPKCE:                  true,
 			AuthURL:                   "https://airtable.com/oauth2/v1/authorize",
 			TokenURL:                  "https://airtable.com/oauth2/v1/token",
 			ExplicitScopesRequired:    true,
@@ -1404,6 +1409,31 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			GrantType:                 ClientCredentials,
 			AuthURL:                   "https://{{.subdomain}}.zuora.com/oauth/auth_mock",
 			TokenURL:                  "https://{{.subdomain}}.zuora.com/oauth/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	TwitterAds: {
+		AuthType: Oauth2,
+		BaseURL:  "https://ads-api.twitter.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			WithPKCE:                  true,
+			AuthURL:                   "https://twitter.com/i/oauth2/authorize",
+			TokenURL:                  "https://api.twitter.com/2/oauth2/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
 		},

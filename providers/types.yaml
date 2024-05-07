@@ -86,10 +86,11 @@ components:
           - explicitScopesRequired
           - explicitWorkspaceRequired
           - tokenMetadataFields
+          - withPKCE
       properties:
         grantType:
           type: string
-          enum: [authorizationCode, clientCredentials, PKCE]
+          enum: [authorizationCode, clientCredentials]
         authURL:
           type: string
           example: https://login.salesforce.com/services/oauth2/authorize
@@ -104,6 +105,9 @@ components:
           type: boolean
           example: true
         explicitWorkspaceRequired:
+          type: boolean
+          example: true
+        withPKCE:
           type: boolean
           example: true
         tokenMetadataFields:

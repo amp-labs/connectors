@@ -92,6 +92,11 @@ var readers = []utils.Reader{
 		JSONPath: "$['state']",
 		CredKey:  "State",
 	},
+	&utils.JSONReader{
+		FilePath: DefaultCredsFile,
+		JSONPath: "$['verifier']",
+		CredKey:  "Verifier",
+	},
 }
 
 // OAuthApp is a simple OAuth app that can be used to get an OAuth token.
@@ -99,11 +104,11 @@ type OAuthApp struct {
 	Callback string
 	Port     int
 	Config   *oauth2.Config
-	Options  []oauth2.AuthCodeOption
 	State    string
 	Proto    string
 	SSLCert  string
 	SSLKey   string
+	PKCE     *PKCE
 }
 
 // ServeHTTP implements the http.Handler interface.
@@ -116,7 +121,7 @@ func (a *OAuthApp) ServeHTTP(writer http.ResponseWriter, request *http.Request) 
 	case request.URL.Path == "/" && request.Method == "GET":
 		// Redirect to the OAuth provider.
 		encState := base64.URLEncoding.EncodeToString([]byte(a.State))
-		url := a.Config.AuthCodeURL(encState, a.Options...)
+		url := a.Config.AuthCodeURL(encState, a.GetAuthOptions()...)
 		writer.Header().Set("Location", url)
 		writer.WriteHeader(http.StatusTemporaryRedirect)
 
@@ -153,7 +158,7 @@ func (a *OAuthApp) processCallback(writer http.ResponseWriter, request *http.Req
 	}
 
 	// Exchange the code for a token.
-	tok, err := a.Config.Exchange(request.Context(), code)
+	tok, err := a.Config.Exchange(request.Context(), code, a.GetExchangeOptions()...)
 	if err != nil {
 		slog.Error("Error exchanging code for token", "error", err)
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
@@ -277,18 +282,16 @@ func setup() *OAuthApp {
 	app := &OAuthApp{
 		Callback: *callback,
 		Port:     *port,
-		Proto:    *proto,
-		SSLCert:  *SSLCert,
-		SSLKey:   *SSLKey,
 		Config: &oauth2.Config{
 			ClientID:     clientId,
 			ClientSecret: clientSecret,
 			RedirectURL:  redirect,
 			Scopes:       oauthScopes,
 		},
-	}
-	if state != "" {
-		app.State = state
+		State:   state,
+		Proto:   *proto,
+		SSLCert: *SSLCert,
+		SSLKey:  *SSLKey,
 	}
 
 	substitutions, err := registry.GetMap("Substitutions")
@@ -307,6 +310,11 @@ func setup() *OAuthApp {
 		slog.Error("failed to read provider config", "error", err)
 
 		os.Exit(1)
+	}
+
+	if providerInfo.OauthOpts.WithPKCE {
+		verifier := registry.MustString("Verifier")
+		app.PKCE = NewPKCE(verifier)
 	}
 
 	// Set up the OAuth config based on the provider.
