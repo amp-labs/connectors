@@ -229,28 +229,28 @@ func TestJsonManager_GetNestedNode(t *testing.T) {
 
 	tests := []struct {
 		name        string
-		input       string
+		input       []string
 		expectedErr error
 		withErr     bool
 	}{
 		{
 			name:    "Missing nested object",
-			input:   "payload.random",
+			input:   []string{"payload", "random"},
 			withErr: true,
 		},
 		{
 			name:        "Nested key is found but Null",
-			input:       "payload.notes.links",
+			input:       []string{"payload", "notes", "links"},
 			expectedErr: ErrNotObject,
 		},
 		{
 			name:        "Invalid data type of existing key",
-			input:       "payload.notes.body.text",
+			input:       []string{"payload", "notes", "body", "text"},
 			expectedErr: ErrNotObject,
 		},
 		{
 			name:  "Valid nested object",
-			input: "payload.notes.body",
+			input: []string{"payload", "notes", "body"},
 		},
 	}
 
@@ -260,7 +260,7 @@ func TestJsonManager_GetNestedNode(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			_, err := JSONManager.GetNestedNode(j, DotZoom(tt.input))
+			_, err := JSONManager.GetNestedObject(j, tt.input...)
 			if tt.withErr {
 				if err == nil {
 					t.Fatalf("%s: expected error while none received", tt.name)

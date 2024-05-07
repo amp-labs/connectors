@@ -61,7 +61,7 @@ func (c *Connector) String() string {
 	return fmt.Sprintf("%s.Connector[%s]", c.Provider(), c.Module)
 }
 
-func (c *Connector) getURL(arg string) *linkutils.URL {
+func (c *Connector) getURL(arg string) (*linkutils.URL, error) {
 	parts := []string{c.BaseURL, c.Module, arg}
 	filtered := make([]string, 0)
 

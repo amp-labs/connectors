@@ -117,7 +117,7 @@ func TestNewURL(t *testing.T) { // nolint:funlen
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			output, err := newURL(tt.input)
+			output, err := NewURL(tt.input)
 			if !errors.Is(err, tt.expectedErr) {
 				t.Fatalf("%s: expected: (%v), got: (%v)", tt.name, tt.expectedErr, err)
 			}
@@ -203,7 +203,7 @@ func TestWithQueryParam(t *testing.T) { // nolint:funlen
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			output, err := newURL(tt.input)
+			output, err := NewURL(tt.input)
 			if err != nil {
 				t.Fatalf("bad test (%v)", tt.name)
 			}

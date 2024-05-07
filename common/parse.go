@@ -79,10 +79,6 @@ func ExtractLowercaseFieldsFromRaw(fields []string, record map[string]interface{
 	return out
 }
 
-const (
-	KeysZoomSeparator = "."
-)
-
 var (
 	ErrNotArray    = errors.New("JSON value is not an array")
 	ErrNotObject   = errors.New("JSON value is not an object")
@@ -235,15 +231,15 @@ func (jsonManager) GetString(node *ajson.Node, key string, optional bool) (*stri
 	return &txt, nil
 }
 
-// GetNestedNode reaches into the JSON node by zooming via dot separated keys
-// Ex: keys = item.shipping.address => item has object with shipping key and so on.
-func (jsonManager) GetNestedNode(node *ajson.Node, keys []string) (*ajson.Node, error) {
+// GetNestedObject reaches into the JSON node by zooming keys
+// Ex: keys = [item, shipping, address] => item has object with shipping key and so on.
+func (jsonManager) GetNestedObject(node *ajson.Node, keys ...string) (*ajson.Node, error) {
 	var err error
 
 	// traverse nested JSON, use every key to zoom in
 	for _, key := range keys {
 		if !node.HasKey(key) {
-			message := fmt.Sprintf("%v; zoom=%v", key, strings.Join(keys, KeysZoomSeparator))
+			message := fmt.Sprintf("%v; zoom=%v", key, strings.Join(keys, " "))
 
 			return nil, createKeyNotFoundErr(message)
 		}
@@ -285,10 +281,6 @@ func handleNullNode(key string, optional bool) error {
 
 func formatProblematicKeyError(key string, baseErr error) error {
 	return fmt.Errorf("problematic key: %v %w", key, baseErr)
-}
-
-func DotZoom(keys string) []string {
-	return strings.Split(keys, KeysZoomSeparator)
 }
 
 func createKeyNotFoundErr(key string) error {

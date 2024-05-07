@@ -1,10 +1,12 @@
 package linkutils
 
 import (
-	"fmt"
+	"errors"
 	"net/url"
 	"strings"
 )
+
+var ErrInvalidURL = errors.New("URL format is incorrect")
 
 // URL focuses on query params and treats the rest as immutable string.
 // You can use any URL string to construct this object.
@@ -17,25 +19,15 @@ type URL struct {
 }
 
 // NewURL will be constructed given valid full url which may have query params.
-func NewURL(base string) *URL {
-	u, err := newURL(base)
-	if err != nil {
-		panic(fmt.Errorf("invalid url construction %w", err))
-	}
-
-	return u
-}
-
-// internal testable constructor.
-func newURL(base string) (*URL, error) {
+func NewURL(base string) (*URL, error) {
 	delegateURL, err := url.Parse(base)
 	if err != nil {
-		return nil, err
+		return nil, errors.Join(err, ErrInvalidURL)
 	}
 
 	values, err := url.ParseQuery(delegateURL.RawQuery)
 	if err != nil {
-		return nil, err
+		return nil, errors.Join(err, ErrInvalidURL)
 	}
 
 	result := &URL{
@@ -64,6 +56,11 @@ func (u *URL) WithQueryParam(name, value string) {
 
 func (u *URL) RemoveQueryParam(name string) {
 	delete(u.queryParams, name)
+}
+
+// ToURL relies on String method.
+func (u *URL) ToURL() (*url.URL, error) {
+	return url.Parse(u.String())
 }
 
 func (u *URL) String() string {
