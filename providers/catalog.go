@@ -64,6 +64,7 @@ const (
 	ZohoCRM                             Provider = "zohoCRM"
 	Zoom                                Provider = "zoom"
 	Zuora                               Provider = "zuora"
+	Aircall                             Provider = "aircall"
 )
 
 // ================================================================================
@@ -1575,6 +1576,34 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 			GrantType:                 AuthorizationCode,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Aircall Configuration
+	Aircall: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.aircall.io/v1",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://dashboard.aircall.io/oauth/authorize",
+			TokenURL:                  "https://api.aircall.io/v1/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
 			},
