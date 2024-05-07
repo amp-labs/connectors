@@ -22,7 +22,7 @@ if err != nil {
 ```
 
 ## Write
-Write is used to create/update objects in outreach connector. For an instance creating an emailAddress object, you use the Write methid and `emailAddress` object   
+Write is used to create/update objects in outreach connector. For an instance creating an emailAddress object, you use the Write method and `emailAddress` object   
 
 ### Example usage
 ```
@@ -42,11 +42,17 @@ type EmailAddress struct {
 // Create an outreach connector instance (any method you prefer)
 // This Assumes you named the instance client
 
-config := common.WriteParams{
+attribute := Attribute{
+		Email:     gofakeit.Email(),
+		EmailType: "email",
+		Order:     0,
+		Status:    "null",
+	}
+
+	config := common.WriteParams{
 		ObjectName: "emailAddresses",
-		RecordData: EmailAddressUpdate{
-			Attributes: patt,
-			ID:         5,
+		RecordData: EmailAddress{
+			Attributes: attribute,
 			Type:       "emailAddress",
 		},
 	}
