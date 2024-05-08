@@ -2,24 +2,25 @@ package microsoftdynamicscrm
 
 import (
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 
 func getTotalSize(node *ajson.Node) (int64, error) {
-	return common.JSONManager.ArrSize(node, "value")
+	return jsonquery.New(node).ArraySize("value")
 }
 
 func getRecords(node *ajson.Node) ([]map[string]any, error) {
-	arr, err := common.JSONManager.GetArr(node, "value")
+	arr, err := jsonquery.New(node).Array("value", false)
 	if err != nil {
 		return nil, err
 	}
 
-	return common.JSONManager.ArrToMap(arr)
+	return jsonquery.Convertor.ArrayToMap(arr)
 }
 
 func getNextRecordsURL(node *ajson.Node) (string, error) {
-	return common.JSONManager.GetStringWithDefault(node, "@odata.nextLink", "")
+	return jsonquery.New(node).StrWithDefault("@odata.nextLink", "")
 }
 
 func getMarshaledData(records []map[string]interface{}, fields []string) ([]common.ReadResultRow, error) {

@@ -11,6 +11,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
+	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/go-test/deep"
 )
@@ -60,7 +61,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 					"garbage": {}
 				}`)
 			})),
-			expectedErrs: []error{common.ErrKeyNotFound},
+			expectedErrs: []error{jsonquery.ErrKeyNotFound},
 		},
 		{
 			name: "Incorrect data type in payload",
@@ -71,7 +72,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 					"value": {}
 				}`)
 			})),
-			expectedErrs: []error{common.ErrNotArray},
+			expectedErrs: []error{jsonquery.ErrNotArray},
 		},
 		{
 			name: "Next page cursor may be missing in payload",

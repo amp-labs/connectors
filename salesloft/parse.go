@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/common/linkutils"
 	"github.com/spyzhov/ajson"
 )
@@ -30,32 +31,27 @@ Response example:
 	}
 */
 func getTotalSize(node *ajson.Node) (int64, error) {
-	return common.JSONManager.ArrSize(node, "data")
+	return jsonquery.New(node).ArraySize("data")
 }
 
 func getRecords(node *ajson.Node) ([]map[string]any, error) {
-	arr, err := common.JSONManager.GetArr(node, "data")
+	arr, err := jsonquery.New(node).Array("data", false)
 	if err != nil {
 		return nil, err
 	}
 
-	return common.JSONManager.ArrToMap(arr)
+	return jsonquery.Convertor.ArrayToMap(arr)
 }
 
 func makeNextRecordsURL(reqLink *linkutils.URL) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
-		nested, err := common.JSONManager.GetNestedObject(node, "metadata", "paging")
+		nextPageNum, err := jsonquery.New(node, "metadata", "paging").Integer("next_page", true)
 		if err != nil {
-			if errors.Is(err, common.ErrKeyNotFound) {
+			if errors.Is(err, jsonquery.ErrKeyNotFound) {
 				// list resource doesn't support pagination, hence no next page
 				return "", nil
 			}
 
-			return "", err
-		}
-
-		nextPageNum, err := common.JSONManager.GetInteger(nested, "next_page", true)
-		if err != nil {
 			return "", err
 		}
 
