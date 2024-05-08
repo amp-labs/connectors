@@ -170,12 +170,15 @@ func (a *OAuthApp) processCallback(writer http.ResponseWriter, request *http.Req
 		return
 	}
 
+	// Print the token which will also print raw metadata
+	fmt.Printf("%+v", tok)
+
 	writer.Header().Set("Content-Type", "application/json")
 	writer.Header().Set("Content-Length", strconv.FormatInt(int64(len(jsonBody)), 10))
 	writer.WriteHeader(http.StatusOK)
 
 	// All done
-	if _, err = writer.Write(jsonBody); err != nil { // nosemgrep
+	if _, err = writer.Write([]byte("Received a token, printed in the console")); err != nil { // nosemgrep
 		slog.Error("Error writing token", "error", err)
 
 		os.Exit(1)

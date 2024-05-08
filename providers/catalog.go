@@ -11,9 +11,11 @@ const (
 	LinkedIn                            Provider = "linkedIn"
 	Salesloft                           Provider = "salesloft"
 	Outreach                            Provider = "outreach"
+	RingCentral                         Provider = "ringCentral"
 	Pipedrive                           Provider = "pipedrive"
 	Copper                              Provider = "copper"
 	ZohoCRM                             Provider = "zohoCRM"
+	Mural                               Provider = "mural"
 	Klaviyo                             Provider = "klaviyo"
 	Sellsy                              Provider = "sellsy"
 	Attio                               Provider = "attio"
@@ -26,8 +28,9 @@ const (
 	Zoom                                Provider = "zoom"
 	Intercom                            Provider = "intercom"
 	Capsule                             Provider = "capsule"
-	DocuSign                            Provider = "docuSign"
-	DocuSignDeveloper                   Provider = "docuSignDeveloper"
+	Wrike                               Provider = "wrike"
+	Docusign                            Provider = "docusign"
+	DocusignDeveloper                   Provider = "docusignDeveloper"
 	Calendly                            Provider = "calendly"
 	AWeber                              Provider = "aWeber"
 	GetResponse                         Provider = "getResponse"
@@ -42,7 +45,20 @@ const (
 	Airtable                            Provider = "airtable"
 	Slack                               Provider = "slack"
 	HelpScoutMailbox                    Provider = "helpScoutMailbox"
+	Timely                              Provider = "timely"
+	Atlassian                           Provider = "atlassian"
 	Webflow                             Provider = "webflow"
+	Smartsheet                          Provider = "smartsheet"
+	StackExchange                       Provider = "stackExchange"
+	Google                              Provider = "google"
+	GoogleContacts                      Provider = "googleContacts"
+	GoogleMail                          Provider = "googleMail"
+	Monday                              Provider = "monday"
+	Figma                               Provider = "figma"
+	Miro                                Provider = "miro"
+	Typeform                            Provider = "typeform"
+	Zuora                               Provider = "zuora"
+	DropboxSign                         Provider = "dropboxSign"
 )
 
 // ================================================================================
@@ -50,26 +66,6 @@ const (
 // ================================================================================
 
 var catalog = CatalogType{ // nolint:gochecknoglobals
-	Mock: {
-		AuthType: None,
-		BaseURL:  "https://not-a-real-domain.mock",
-		Support: Support{
-			BulkWrite: BulkWriteSupport{
-				Insert: false,
-				Update: false,
-				Upsert: false,
-				Delete: false,
-			},
-			Proxy:     true,
-			Read:      true,
-			Subscribe: false,
-			Write:     true,
-		},
-		ProviderOpts: ProviderOpts{
-			"isMock": "true",
-		},
-	},
-
 	// Salesforce configuration
 	Salesforce: {
 		AuthType: Oauth2,
@@ -166,6 +162,9 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://accounts.salesloft.com/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -190,6 +189,42 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://api.outreach.io/oauth/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+		ProviderOpts: ProviderOpts{
+			"restAPIURL": "https://api.outreach.io/api/v2",
+		},
+	},
+
+	// RingCentral configuration
+
+	RingCentral: {
+		AuthType: Oauth2,
+		BaseURL:  "https://platform.ringcentral.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 PKCE,
+			AuthURL:                   "https://platform.ringcentral.com/restapi/oauth/authorize",
+			TokenURL:                  "https://platform.ringcentral.com/restapi/oauth/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField:      "scope",
+				ConsumerRefField: "owner_id",
+			},
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -253,6 +288,33 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
+	// Wrikle configuration
+	Wrike: {
+		AuthType: Oauth2,
+		BaseURL:  "https://www.wrike.com/api",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://www.wrike.com/oauth2/authorize",
+			TokenURL:                  "https://www.wrike.com/oauth2/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
 	// Copper configuration
 	Copper: {
 		AuthType: Oauth2,
@@ -286,6 +348,33 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://accounts.zoho.com/oauth/v2/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Mural configuration
+	Mural: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.mural.co/api",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://api.mural.co/oauth/authorize",
+			TokenURL:                  "https://api.mural.co/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -435,6 +524,9 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://app.asana.com/-/oauth_token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ConsumerRefField: "data.id",
+			},
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -505,12 +597,16 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	// Gong configuration
 	Gong: {
 		AuthType: Oauth2,
-		BaseURL:  "https://{{.workspace}}.api.gong.io",
+		BaseURL:  "https://api.gong.io",
 		OauthOpts: OauthOpts{
 			AuthURL:                   "https://app.gong.io/oauth2/authorize",
 			TokenURL:                  "https://app.gong.io/oauth2/generate-customer-token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField:      "scope",
+				ConsumerRefField: "client_id",
+			},
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -574,36 +670,34 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
-	// DocuSign configuration
-	DocuSign: {
-		AuthType: Oauth2,
-		BaseURL:  "https://{{.workspace}}.docusign.net",
-		OauthOpts: OauthOpts{
-			GrantType:                 AuthorizationCode,
-			AuthURL:                   "https://account.docusign.com/oauth/auth",
-			TokenURL:                  "https://account.docusign.com/oauth/token",
-			ExplicitScopesRequired:    true,
-			ExplicitWorkspaceRequired: true,
-			TokenMetadataFields: TokenMetadataFields{
-				ScopesField: "scope",
-			},
-		},
-		Support: Support{
-			BulkWrite: BulkWriteSupport{
-				Insert: false,
-				Update: false,
-				Upsert: false,
-				Delete: false,
-			},
-			Proxy:     false,
-			Read:      false,
-			Subscribe: false,
-			Write:     false,
-		},
-	},
+	// Docusign configuration
+	// TODO: we don't have a good way to get the server string yet. Need to make API call to /oauth/userinfo.
+	// Leaving this connector commented out until that is unblocked.
+	// Docusign: {
+	//	AuthType: Oauth2,
+	//	BaseURL:  "https://{{.server}}.docusign.net",
+	//	OauthOpts: OauthOpts{
+	//		AuthURL:                   "https://account.docusign.com/oauth/auth",
+	//		TokenURL:                  "https://account.docusign.com/oauth/token",
+	//		ExplicitScopesRequired:    true,
+	//		ExplicitWorkspaceRequired: false,
+	//	},
+	//	Support: Support{
+	//		BulkWrite: BulkWriteSupport{
+	//			Insert: false,
+	//			Update: false,
+	//			Upsert: false,
+	//			Delete: false,
+	//		},
+	//		Proxy:     false,
+	//		Read:      false,
+	//		Subscribe: false,
+	//		Write:     false,
+	//	},
+	// },
 
-	// DocuSign Developer configuration
-	DocuSignDeveloper: {
+	// Docusign Developer configuration
+	DocusignDeveloper: {
 		AuthType: Oauth2,
 		BaseURL:  "https://demo.docusign.net",
 		OauthOpts: OauthOpts{
@@ -980,6 +1074,59 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
+	// Timely Configuration
+	Timely: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.timelyapp.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://api.timelyapp.com/1.1/oauth/authorize",
+			TokenURL:                  "https://api.timelyapp.com/1.1/oauth/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Atlassian configuration
+	Atlassian: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.atlassian.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://auth.atlassian.com/authorize",
+			TokenURL:                  "https://auth.atlassian.com/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
 	// Webflow Support Configuration
 	Webflow: {
 		AuthType: Oauth2,
@@ -993,6 +1140,302 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
 			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     true,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Smartsheet Support Configuration
+	Smartsheet: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.smartsheet.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://app.smartsheet.com/b/authorize",
+			TokenURL:                  "https://api.smartsheet.com/2.0/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// StackExchange configuration
+	StackExchange: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.stackexchange.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://stackoverflow.com/oauth",
+			TokenURL:                  "https://stackoverflow.com/oauth/access_token/json",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Google Support Configuration
+	Google: {
+		AuthType: Oauth2,
+		BaseURL:  "https://www.googleapis.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://accounts.google.com/o/oauth2/v2/auth",
+			TokenURL:                  "https://oauth2.googleapis.com/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// GoogleContacts Support Configuration
+	GoogleContacts: {
+		AuthType: Oauth2,
+		BaseURL:  "https://people.googleapis.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://accounts.google.com/o/oauth2/v2/auth",
+			TokenURL:                  "https://oauth2.googleapis.com/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// GoogleMail Support Configuration
+	GoogleMail: {
+		AuthType: Oauth2,
+		BaseURL:  "https://gmail.googleapis.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://accounts.google.com/o/oauth2/v2/auth",
+			TokenURL:                  "https://oauth2.googleapis.com/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	Monday: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.monday.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://auth.monday.com/oauth2/authorize",
+			TokenURL:                  "https://auth.monday.com/oauth2/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+	// Figma Support Configuration
+	Figma: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.figma.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://www.figma.com/oauth",
+			TokenURL:                  "https://www.figma.com/api/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ConsumerRefField: "user_id",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+	// Miro Support Configuration
+	Miro: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.miro.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://miro.com/oauth/authorize",
+			TokenURL:                  "https://api.miro.com/v1/oauth/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ConsumerRefField:  "user_id",
+				WorkspaceRefField: "team_id",
+				ScopesField:       "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     true,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+	Typeform: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.typeform.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://api.typeform.com/oauth/authorize",
+			TokenURL:                  "https://api.typeform.com/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Zuora Configuration
+	Zuora: {
+		AuthType: Oauth2,
+		BaseURL:  "https://{{.subdomain}}.zuora.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 ClientCredentials,
+			AuthURL:                   "https://{{.subdomain}}.zuora.com/oauth/auth_mock",
+			TokenURL:                  "https://{{.subdomain}}.zuora.com/oauth/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// DropboxSign Configuration
+	DropboxSign: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.hellosign.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://app.hellosign.com/oauth/authorize",
+			TokenURL:                  "https://app.hellosign.com/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{

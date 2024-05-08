@@ -10,7 +10,7 @@ import (
 	"github.com/amp-labs/connectors/utils"
 )
 
-func GetMSDynamics365SalesConnector(ctx context.Context, filePath string) *microsoftdynamicscrm.Connector {
+func GetMSDynamics365CRMConnector(ctx context.Context, filePath string) *microsoftdynamicscrm.Connector {
 	registry := utils.NewCredentialsRegistry()
 
 	readers := []utils.Reader{
@@ -42,16 +42,16 @@ func GetMSDynamics365SalesConnector(ctx context.Context, filePath string) *micro
 	}
 	_ = registry.AddReaders(readers...)
 
-	cfg := utils.MSDynamics365SalesConfigFromRegistry(registry)
-	tok := utils.MSDynamics365SalesTokenFromRegistry(registry)
+	cfg := utils.MSDynamics365CRMConfigFromRegistry(registry)
+	tok := utils.MSDynamics365CRMTokenFromRegistry(registry)
 
-	conn, err := connectors.MSDynamicsSales(
+	conn, err := connectors.MSDynamicsCRM(
 		microsoftdynamicscrm.WithClient(ctx, http.DefaultClient, cfg, tok),
-		microsoftdynamicscrm.WithWorkspace(utils.MSDynamics365SalesWorkspace),
+		microsoftdynamicscrm.WithWorkspace(utils.MSDynamics365CRMWorkspace),
 		microsoftdynamicscrm.WithModule(microsoftdynamicscrm.DefaultModuleCRM),
 	)
 	if err != nil {
-		testUtils.Fail("error creating microsoft sales connector", "error", err)
+		testUtils.Fail("error creating microsoft CRM connector", "error", err)
 	}
 
 	return conn

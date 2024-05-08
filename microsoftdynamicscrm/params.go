@@ -18,7 +18,7 @@ const (
 // Option is a function which mutates the connector configuration.
 type Option func(params *parameters)
 
-// parameters MS Sales supports auth client, workspace, etc. by delegation.
+// parameters MS CRM supports auth client, workspace, etc. by delegation.
 type parameters struct {
 	paramsbuilder.Client
 	paramsbuilder.Workspace
