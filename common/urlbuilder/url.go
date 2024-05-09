@@ -13,38 +13,28 @@ var ErrInvalidURL = errors.New("URL format is incorrect")
 // Its primary goal is to "Expose Query Manipulation".
 // Under the hood it uses url.URL library.
 type URL struct {
-	baseURL            string
+	delegate           *url.URL
 	queryParams        url.Values
-	fragment           string
 	encodingExceptions map[string]string
 }
 
 // New URL will be constructed given valid full url which may have query params.
 func New(base string) (*URL, error) {
-	delegateURL, err := url.Parse(base)
+	delegate, err := url.Parse(base)
 	if err != nil {
 		return nil, errors.Join(err, ErrInvalidURL)
 	}
 
-	values, err := url.ParseQuery(delegateURL.RawQuery)
+	values, err := url.ParseQuery(delegate.RawQuery)
 	if err != nil {
 		return nil, errors.Join(err, ErrInvalidURL)
 	}
 
-	result := &URL{
-		queryParams: values,
-		fragment:    delegateURL.Fragment,
-	}
-
-	// Given url.URL structure of:
-	// scheme://[userinfo@]host/path[?query][#fragment]
-	// omit query and fragment to acquire base of URL
-	delegateURL.RawQuery = ""
-	delegateURL.RawFragment = ""
-	delegateURL.Fragment = ""
-	result.baseURL = delegateURL.String()
-
-	return result, nil
+	return &URL{
+		delegate:           delegate,
+		queryParams:        values,
+		encodingExceptions: nil,
+	}, nil
 }
 
 func (u *URL) WithQueryParamList(name string, values []string) {
@@ -65,46 +55,44 @@ func (u *URL) AddEncodingExceptions(exceptions map[string]string) {
 
 // ToURL relies on String method.
 func (u *URL) ToURL() (*url.URL, error) {
-	return url.Parse(u.String())
+	// Current URL wrapper will be realised as equivalent to url.URL type.
+	// It must be done via String() which handles query params.
+	result, err := url.Parse(u.String())
+	if err != nil {
+		return nil, errors.Join(err, ErrInvalidURL)
+	}
+
+	return result, nil
 }
 
 func (u *URL) String() string {
-	return u.baseURL + u.queryValuesToString() + u.fragmentToString()
+	// Everything stays the same
+	// The only thing that we alter in the delegate's query params
+	u.delegate.RawQuery = u.queryValuesToString()
+
+	return u.delegate.String()
 }
 
-/*
-Return options:
-
-	=> empty string
-	=> list of query parameters prefixed with `?`
-*/
+// URL may have special encoding rules.
+// Those can be set via AddEncodingExceptions.
 func (u *URL) queryValuesToString() string {
-	// We are not fully happy with strict encoding provided by url library
-	// some special symbols are allowed
 	result := u.queryParams.Encode()
-	if len(result) != 0 {
-		for before, after := range u.encodingExceptions {
-			result = strings.ReplaceAll(result, before, after)
-		}
-
-		return "?" + result
-	}
-
-	return ""
-}
-
-func (u *URL) fragmentToString() string {
-	if len(u.fragment) == 0 {
+	if len(result) == 0 {
 		return ""
 	}
 
-	return "#" + u.fragment
+	// We are not fully happy with strict encoding provided by url library
+	// some special symbols are allowed
+	for before, after := range u.encodingExceptions {
+		result = strings.ReplaceAll(result, before, after)
+	}
+
+	return result
 }
 
 func (u *URL) AddPath(paths ...string) *URL {
-	delegateURL, _ := url.Parse(u.baseURL)
-	delegateURL = delegateURL.JoinPath(paths...)
-	u.baseURL = delegateURL.String()
+	// replace delegate with a new URL
+	u.delegate = u.delegate.JoinPath(paths...)
 
 	return u
 }
