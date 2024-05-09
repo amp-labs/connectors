@@ -35,6 +35,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 		res, err := c.get(ctx, objURL)
 		if err != nil {
 			objMetadata.Errors[obj] = err
+			continue
 		}
 
 		// Check nil response body, to avoid panic.
