@@ -9,7 +9,6 @@ import (
 )
 
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
-
 	var (
 		res *common.JSONHTTPResponse
 
@@ -17,7 +16,6 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	)
 
 	fullURL, err := url.JoinPath(c.BaseURL, c.APIModule.Version, config.ObjectName)
-
 	if err != nil {
 		return nil, err
 	}

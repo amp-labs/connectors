@@ -4,10 +4,7 @@ import (
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
-
-	"errors"
 
 	"github.com/amp-labs/connectors/providers"
 )
@@ -62,20 +59,16 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	}
 
 	conn.setBaseURL(providerInfo.BaseURL)
-	conn.Client.HTTPClient.ErrorHandler = interpreter.ErrorHandler{
-		JSON: func(res *http.Response, body []byte) error {
-			// You need to create an error from the response and body
-			// This is just an example, adjust it according to your needs
-			err := errors.ErrUnsupported
-			return conn.HandleError(err)
-		},
-	}.Handle
+	conn.Client.HTTPClient.ErrorHandler = conn.interpretError
 
 	return conn, nil
-
 }
 
 func (c *Connector) setBaseURL(newURL string) {
 	c.BaseURL = newURL
 	c.Client.HTTPClient.Base = newURL
+}
+
+func (c *Connector) interpretError(res *http.Response, body []byte) error {
+	return common.InterpretError(res, body)
 }

@@ -92,7 +92,6 @@ func mainFn() int {
 	config := connectors.ReadParams{
 		ObjectName: "calls", // could be calls, users
 		Fields:     []string{"url"},
-		//NextPage:   "eyJhbGciOiJIUzI1NiJ9.eyJjYWxsSWQiOjQ5NTM3MDc2MDE3NzYyMzgzNjAsInRvdGFsIjoxNzksInBhZ2VOdW1iZXIiOjAsInBhZ2VTaXplIjoxMDAsInRpbWUiOiIyMDIyLTA5LTEzVDA5OjMwOjAwWiIsImV4cCI6MTcxNDQ3NjU4MX0.slRd0i1iPnBHnOxgVPhCREIJmmxkUBJOd6f0N9lHfHs",
 	}
 
 	result, err := gong.Read(context.Background(), config)

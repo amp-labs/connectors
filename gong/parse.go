@@ -9,7 +9,6 @@ import (
 
 // getNextRecords returns the token or empty string if there are no more records.
 func getNextRecordsURL(node *ajson.Node, fullURL string) (string, error) {
-
 	recordsNode, err := node.GetKey("records")
 	if err != nil {
 		return "", err
@@ -69,7 +68,6 @@ func getRecords(node *ajson.Node, objectName string) ([]map[string]interface{}, 
 
 // getTotalSize returns the total number of records that match the query.
 func getTotalSize(node *ajson.Node) (int64, error) {
-
 	recordsNode, err := node.GetKey("records")
 	if err != nil {
 		return 0, common.ErrNotArray
@@ -86,7 +84,6 @@ func getTotalSize(node *ajson.Node) (int64, error) {
 	}
 
 	return int64(totalRecords), nil
-
 }
 
 // getMarshaledData accepts a list of records and returns a list of structured data ([]ReadResultRow).

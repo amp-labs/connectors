@@ -10,7 +10,6 @@ import (
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/interpreter"
 
 	"github.com/amp-labs/connectors/utils"
 	"github.com/go-test/deep"
@@ -31,24 +30,19 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		{
 			name: "Mime response header expected",
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("Content-Type", "invalid")
 				w.WriteHeader(http.StatusTeapot)
 			})),
-			expectedErrs: []error{interpreter.ErrMissingContentType},
+			expectedErrs: []error{errors.New("HTTP status 418: caller error")},
 		},
 		{
 			name: "Correct error message is understood from JSON response",
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusBadRequest)
-				writeBody(w, `{
-					"error": {
-						"code": "0x80060888",
-						"message":"Resource not found"
-					}
-				}`)
 			})),
 			expectedErrs: []error{
-				errors.New("unsupported operation"), // nolint:goerr113
+				errors.New("HTTP status 400: caller error:"), // nolint:goerr113
 			},
 		},
 
