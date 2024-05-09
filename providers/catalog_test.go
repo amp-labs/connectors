@@ -1005,6 +1005,7 @@ var testCases = []struct { // nolint
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
 				AuthURL:                   "https://account.box.com/api/oauth2/authorize",
 				TokenURL:                  "https://api.box.com/oauth2/token",
 				ExplicitScopesRequired:    false,
