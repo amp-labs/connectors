@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/linkutils"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
 // nolint:lll
@@ -38,14 +38,14 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	)
 }
 
-func (c *Connector) buildReadURL(config common.ReadParams) (*linkutils.URL, error) {
+func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error) {
 	if len(config.NextPage) != 0 {
 		// Next page
-		return linkutils.NewURL(config.NextPage.String())
+		return constructURL(config.NextPage.String())
 	}
 
 	// First page
-	link, err := linkutils.NewURL(c.getURL(config.ObjectName))
+	link, err := constructURL(c.getURL(config.ObjectName))
 	if err != nil {
 		return nil, err
 	}

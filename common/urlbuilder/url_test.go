@@ -1,64 +1,10 @@
-package linkutils
+package urlbuilder
 
 import (
 	"errors"
 	"reflect"
-	"strings"
 	"testing"
 )
-
-func TestQueryValuesToString(t *testing.T) {
-	t.Parallel()
-
-	tests := []struct {
-		name     string
-		input    URL
-		expected string
-	}{
-		{
-			name: "No params no query string",
-			input: URL{
-				queryParams: nil,
-			},
-			expected: "",
-		},
-		{
-			name:     "One parameter",
-			input:    createURLWithQuery("$select", []string{"cat"}),
-			expected: "?$select=cat",
-		},
-		{
-			name:     "Many parameters",
-			input:    createURLWithQuery("$select", []string{"cat", "dog", "parrot", "hamster"}),
-			expected: "?$select=cat,dog,parrot,hamster",
-		},
-		{
-			name:     "OData parameters with @ symbol",
-			input:    createURLWithQuery("$select", []string{"cat", "@odata.dog", "parrot"}),
-			expected: "?$select=cat,@odata.dog,parrot",
-		},
-	}
-
-	for _, tt := range tests {
-		tt := tt // rebind, omit loop side effects for parallel goroutine
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-
-			output := tt.input.queryValuesToString()
-			if !reflect.DeepEqual(output, tt.expected) {
-				t.Fatalf("%s: expected: (%v), got: (%v)", tt.name, tt.expected, output)
-			}
-		})
-	}
-}
-
-func createURLWithQuery(key string, values []string) URL {
-	value := strings.Join(values, ",")
-
-	return URL{
-		queryParams: map[string][]string{key: {value}},
-	}
-}
 
 func TestNewURL(t *testing.T) { // nolint:funlen
 	t.Parallel()
@@ -117,7 +63,7 @@ func TestNewURL(t *testing.T) { // nolint:funlen
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			output, err := NewURL(tt.input)
+			output, err := New(tt.input)
 			if !errors.Is(err, tt.expectedErr) {
 				t.Fatalf("%s: expected: (%v), got: (%v)", tt.name, tt.expectedErr, err)
 			}
@@ -203,7 +149,7 @@ func TestWithQueryParam(t *testing.T) { // nolint:funlen
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			output, err := NewURL(tt.input)
+			output, err := New(tt.input)
 			if err != nil {
 				t.Fatalf("bad test (%v)", tt.name)
 			}

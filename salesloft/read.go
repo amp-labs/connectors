@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/linkutils"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
@@ -29,10 +29,10 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	)
 }
 
-func (c *Connector) buildReadURL(config common.ReadParams) (*linkutils.URL, error) {
+func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error) {
 	if len(config.NextPage) != 0 {
 		// Next page
-		return linkutils.NewURL(config.NextPage.String())
+		return urlbuilder.New(config.NextPage.String())
 	}
 
 	// First page

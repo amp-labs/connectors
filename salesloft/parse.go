@@ -6,7 +6,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/jsonquery"
-	"github.com/amp-labs/connectors/common/linkutils"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/spyzhov/ajson"
 )
 
@@ -43,7 +43,7 @@ func getRecords(node *ajson.Node) ([]map[string]any, error) {
 	return jsonquery.Convertor.ArrayToMap(arr)
 }
 
-func makeNextRecordsURL(reqLink *linkutils.URL) common.NextPageFunc {
+func makeNextRecordsURL(reqLink *urlbuilder.URL) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
 		nextPageNum, err := jsonquery.New(node, "metadata", "paging").Integer("next_page", true)
 		if err != nil {

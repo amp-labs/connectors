@@ -1,4 +1,4 @@
-package linkutils
+package urlbuilder
 
 import (
 	"errors"
@@ -13,13 +13,14 @@ var ErrInvalidURL = errors.New("URL format is incorrect")
 // Its primary goal is to "Expose Query Manipulation".
 // Under the hood it uses url.URL library.
 type URL struct {
-	baseURL     string
-	queryParams url.Values
-	fragment    string
+	baseURL            string
+	queryParams        url.Values
+	fragment           string
+	encodingExceptions map[string]string
 }
 
-// NewURL will be constructed given valid full url which may have query params.
-func NewURL(base string) (*URL, error) {
+// New URL will be constructed given valid full url which may have query params.
+func New(base string) (*URL, error) {
 	delegateURL, err := url.Parse(base)
 	if err != nil {
 		return nil, errors.Join(err, ErrInvalidURL)
@@ -58,6 +59,10 @@ func (u *URL) RemoveQueryParam(name string) {
 	delete(u.queryParams, name)
 }
 
+func (u *URL) AddEncodingExceptions(exceptions map[string]string) {
+	u.encodingExceptions = exceptions
+}
+
 // ToURL relies on String method.
 func (u *URL) ToURL() (*url.URL, error) {
 	return url.Parse(u.String())
@@ -78,18 +83,14 @@ func (u *URL) queryValuesToString() string {
 	// some special symbols are allowed
 	result := u.queryParams.Encode()
 	if len(result) != 0 {
-		for before, after := range map[string]string{
-			"%40": "@",
-			"%24": "$",
-			"%2C": ",",
-		} {
+		for before, after := range u.encodingExceptions {
 			result = strings.ReplaceAll(result, before, after)
 		}
 
 		return "?" + result
 	}
 
-	return result
+	return ""
 }
 
 func (u *URL) fragmentToString() string {

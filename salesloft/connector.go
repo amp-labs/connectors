@@ -6,8 +6,8 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
-	"github.com/amp-labs/connectors/common/linkutils"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -61,7 +61,7 @@ func (c *Connector) String() string {
 	return fmt.Sprintf("%s.Connector[%s]", c.Provider(), c.Module)
 }
 
-func (c *Connector) getURL(arg string) (*linkutils.URL, error) {
+func (c *Connector) getURL(arg string) (*urlbuilder.URL, error) {
 	parts := []string{c.BaseURL, c.Module, arg}
 	filtered := make([]string, 0)
 
@@ -71,7 +71,7 @@ func (c *Connector) getURL(arg string) (*linkutils.URL, error) {
 		}
 	}
 
-	return linkutils.NewURL(strings.Join(filtered, "/"))
+	return urlbuilder.New(strings.Join(filtered, "/"))
 }
 
 func (c *Connector) setBaseURL(newURL string) {
