@@ -9,6 +9,7 @@ var (
 	ErrNotArray      = errors.New("results data is not an array")
 	ErrNotObject     = errors.New("record is not an object")
 	ErrNotString     = errors.New("next is not a string")
+	ErrEmptyResponse = errors.New("empty response body")
 )
 
 func (c *Connector) HandleError(err error) error {
