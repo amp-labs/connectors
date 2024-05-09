@@ -13,6 +13,7 @@ var (
 	ErrNotString   = errors.New("JSON value is not a string")
 	ErrNotNumeric  = errors.New("JSON value is not a numeric")
 	ErrNotInteger  = errors.New("JSON value is not an integer")
+	ErrUnpacking   = errors.New("failed to unpack ajson node")
 )
 
 func handleNullNode(key string, optional bool) error {

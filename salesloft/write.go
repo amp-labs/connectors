@@ -5,6 +5,8 @@ import (
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/jsonquery"
+	"github.com/spyzhov/ajson"
 )
 
 type writeMethod func(context.Context, string, any) (*common.JSONHTTPResponse, error)
@@ -14,7 +16,10 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, common.ErrMissingObjects
 	}
 
-	url := c.getURL(config.ObjectName)
+	url, err := c.getURL(config.ObjectName)
+	if err != nil {
+		return nil, err
+	}
 
 	var write writeMethod
 	if len(config.RecordId) == 0 {
@@ -40,13 +45,17 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		}, nil
 	}
 
-	// TODO investigate that all endpoints "wrap" payload under `data` key
-	nested, err := common.JSONManager.GetNestedNode(res.Body, []string{"data"})
+	// write response was with payload
+	return constructWriteResult(res.Body)
+}
+
+func constructWriteResult(body *ajson.Node) (*common.WriteResult, error) {
+	nested, err := jsonquery.New(body).Object("data", false)
 	if err != nil {
 		return nil, err
 	}
 
-	rawID, err := common.JSONManager.GetInteger(nested, "id", true)
+	rawID, err := jsonquery.New(nested).Integer("id", true)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +66,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		recordID = strconv.FormatInt(*rawID, 10)
 	}
 
-	data, err := common.JSONManager.ObjToMap(nested)
+	data, err := jsonquery.Convertor.ObjectToMap(nested)
 	if err != nil {
 		return nil, err
 	}

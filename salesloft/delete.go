@@ -15,10 +15,15 @@ func (c *Connector) Delete(ctx context.Context, config common.DeleteParams) (*co
 		return nil, common.ErrMissingRecordID
 	}
 
-	url := c.getURL(config.ObjectName).AddPath(config.RecordId)
+	url, err := c.getURL(config.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	url.AddPath(config.RecordId)
 
 	// 204 NoContent is expected
-	_, err := c.delete(ctx, url.String())
+	_, err = c.delete(ctx, url.String())
 	if err != nil {
 		return nil, err
 	}

@@ -1,11 +1,9 @@
 package mockutils
 
 import (
-	"fmt"
 	"reflect"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/spyzhov/ajson"
 )
 
 var (
@@ -30,27 +28,16 @@ func (writeResultComparator) SubsetData(actual, expected *common.WriteResult) bo
 		return false
 	}
 
-	for k, v := range expected.Data {
+	for k, expectedValue := range expected.Data {
 		actualValue, ok := actual.Data[k]
 		if !ok {
 			return false
 		}
 
-		if convertToString(actualValue) != convertToString(v) {
+		if !reflect.DeepEqual(actualValue, expectedValue) {
 			return false
 		}
 	}
 
 	return true
-}
-
-func convertToString(obj any) string {
-	if node, ok := obj.(*ajson.Node); ok {
-		val, err := node.Value()
-		if err == nil {
-			return fmt.Sprintf("%v", val)
-		}
-	}
-
-	return fmt.Sprintf("%v", obj)
 }

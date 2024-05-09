@@ -101,11 +101,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 				RecordId: "1",
 				Errors:   nil,
 				Data: map[string]any{
-					"id":          "1",
+					"id":          1.0,
 					"name":        "Hogwarts School of Witchcraft and Wizardry",
 					"description": "British school of magic for students",
 					"country":     "Scotland",
-					"counts":      map[string]any{"people": 15},
+					"counts":      map[string]any{"people": 15.0},
 				},
 			},
 			expectedErrs: nil,
@@ -154,7 +154,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 				RecordId: "22463",
 				Errors:   nil,
 				Data: map[string]any{
-					"id":   "22463",
+					"id":   22463.0,
 					"name": "Hierarchy overview",
 					"view": "companies",
 				},
