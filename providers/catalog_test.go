@@ -175,7 +175,7 @@ var testCases = []struct { // nolint
 					Delete: false,
 				},
 				Subscribe: false,
-				Proxy:     false,
+				Proxy:     true,
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
@@ -1010,6 +1010,7 @@ var testCases = []struct { // nolint
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
 				AuthURL:                   "https://account.box.com/api/oauth2/authorize",
 				TokenURL:                  "https://api.box.com/oauth2/token",
 				ExplicitScopesRequired:    false,
@@ -1036,7 +1037,7 @@ var testCases = []struct { // nolint
 					Delete: false,
 				},
 				Subscribe: false,
-				Proxy:     false,
+				Proxy:     true,
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
@@ -1530,7 +1531,7 @@ var testCases = []struct { // nolint
 					Upsert: false,
 					Delete: false,
 				},
-				Proxy:     false,
+				Proxy:     true,
 				Read:      false,
 				Subscribe: false,
 				Write:     false,
@@ -1596,6 +1597,35 @@ var testCases = []struct { // nolint
 				Write:     false,
 			},
 			BaseURL: "https://rest.test.zuora.com",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    DropboxSign,
+		description: "Valid DropboxSign provider config with no substitutions",
+		expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
+				AuthURL:                   "https://app.hellosign.com/oauth/authorize",
+				TokenURL:                  "https://app.hellosign.com/oauth/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+			},
+			Support: Support{
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+
+			BaseURL: "https://api.hellosign.com",
 		},
 		expectedErr: nil,
 	},
