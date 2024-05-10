@@ -701,10 +701,14 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://demo.docusign.net",
 		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://account-d.docusign.com/oauth/auth",
 			TokenURL:                  "https://account-d.docusign.com/oauth/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -713,7 +717,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
