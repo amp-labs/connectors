@@ -69,6 +69,7 @@ func main() {
 		ObjectName: "users",
 		// NextPage:   "https://api.outreach.io/api/v2/users?page%5Blimit%5D=1\u0026page%5Boffset%5D=2",
 	}
+
 	result, err := outreach.Read(context.Background(), config)
 	if err != nil {
 		log.Fatal(err)

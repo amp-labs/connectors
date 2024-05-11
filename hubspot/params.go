@@ -69,6 +69,12 @@ func (p *hubspotParams) prepare() (out *hubspotParams, err error) {
 		return nil, ErrMissingClient
 	}
 
+	// making sure the provided module is supported.
+	// If the provide module is not supprted. defaults to CRM.
+	if !supportsModule(p.module) {
+		p.module = ModuleCRM.String()
+	}
+
 	return p, nil
 }
 

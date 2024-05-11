@@ -11,9 +11,11 @@ const (
 	LinkedIn                            Provider = "linkedIn"
 	Salesloft                           Provider = "salesloft"
 	Outreach                            Provider = "outreach"
+	RingCentral                         Provider = "ringCentral"
 	Pipedrive                           Provider = "pipedrive"
 	Copper                              Provider = "copper"
 	ZohoCRM                             Provider = "zohoCRM"
+	Mural                               Provider = "mural"
 	Klaviyo                             Provider = "klaviyo"
 	Sellsy                              Provider = "sellsy"
 	Attio                               Provider = "attio"
@@ -26,8 +28,9 @@ const (
 	Zoom                                Provider = "zoom"
 	Intercom                            Provider = "intercom"
 	Capsule                             Provider = "capsule"
-	DocuSign                            Provider = "docuSign"
-	DocuSignDeveloper                   Provider = "docuSignDeveloper"
+	Wrike                               Provider = "wrike"
+	Docusign                            Provider = "docusign"
+	DocusignDeveloper                   Provider = "docusignDeveloper"
 	Calendly                            Provider = "calendly"
 	AWeber                              Provider = "aWeber"
 	GetResponse                         Provider = "getResponse"
@@ -50,7 +53,13 @@ const (
 	Google                              Provider = "google"
 	GoogleContacts                      Provider = "googleContacts"
 	GoogleMail                          Provider = "googleMail"
-	ClickUp                             Provider = "clickUp"
+	Monday                              Provider = "monday"
+	Figma                               Provider = "figma"
+	Miro                                Provider = "miro"
+	Typeform                            Provider = "typeform"
+	Zuora                               Provider = "zuora"
+	DropboxSign                         Provider = "dropboxSign"
+	ClickUp                             Provider = "clickup"
 )
 
 // ================================================================================
@@ -58,26 +67,6 @@ const (
 // ================================================================================
 
 var catalog = CatalogType{ // nolint:gochecknoglobals
-	Mock: {
-		AuthType: None,
-		BaseURL:  "https://not-a-real-domain.mock",
-		Support: Support{
-			BulkWrite: BulkWriteSupport{
-				Insert: false,
-				Update: false,
-				Upsert: false,
-				Delete: false,
-			},
-			Proxy:     true,
-			Read:      true,
-			Subscribe: false,
-			Write:     true,
-		},
-		ProviderOpts: ProviderOpts{
-			"isMock": "true",
-		},
-	},
-
 	// Salesforce configuration
 	Salesforce: {
 		AuthType: Oauth2,
@@ -212,13 +201,43 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
 		},
 		ProviderOpts: ProviderOpts{
 			"restAPIURL": "https://api.outreach.io/api/v2",
+		},
+	},
+
+	// RingCentral configuration
+
+	RingCentral: {
+		AuthType: Oauth2,
+		BaseURL:  "https://platform.ringcentral.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 PKCE,
+			AuthURL:                   "https://platform.ringcentral.com/restapi/oauth/authorize",
+			TokenURL:                  "https://platform.ringcentral.com/restapi/oauth/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField:      "scope",
+				ConsumerRefField: "owner_id",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
 		},
 	},
 
@@ -270,6 +289,33 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
+	// Wrikle configuration
+	Wrike: {
+		AuthType: Oauth2,
+		BaseURL:  "https://www.wrike.com/api",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://www.wrike.com/oauth2/authorize",
+			TokenURL:                  "https://www.wrike.com/oauth2/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
 	// Copper configuration
 	Copper: {
 		AuthType: Oauth2,
@@ -303,6 +349,33 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://accounts.zoho.com/oauth/v2/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Mural configuration
+	Mural: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.mural.co/api",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://api.mural.co/oauth/authorize",
+			TokenURL:                  "https://api.mural.co/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -525,7 +598,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	// Gong configuration
 	Gong: {
 		AuthType: Oauth2,
-		BaseURL:  "https://{{.workspace}}.api.gong.io",
+		BaseURL:  "https://api.gong.io",
 		OauthOpts: OauthOpts{
 			AuthURL:                   "https://app.gong.io/oauth2/authorize",
 			TokenURL:                  "https://app.gong.io/oauth2/generate-customer-token",
@@ -598,10 +671,10 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
-	// DocuSign configuration
+	// Docusign configuration
 	// TODO: we don't have a good way to get the server string yet. Need to make API call to /oauth/userinfo.
 	// Leaving this connector commented out until that is unblocked.
-	//DocuSign: {
+	// Docusign: {
 	//	AuthType: Oauth2,
 	//	BaseURL:  "https://{{.server}}.docusign.net",
 	//	OauthOpts: OauthOpts{
@@ -624,15 +697,19 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	//	},
 	// },
 
-	// DocuSign Developer configuration
-	DocuSignDeveloper: {
+	// Docusign Developer configuration
+	DocusignDeveloper: {
 		AuthType: Oauth2,
 		BaseURL:  "https://demo.docusign.net",
 		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://account-d.docusign.com/oauth/auth",
 			TokenURL:                  "https://account-d.docusign.com/oauth/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -641,7 +718,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -825,6 +902,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://api.box.com",
 		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://account.box.com/api/oauth2/authorize",
 			TokenURL:                  "https://api.box.com/oauth2/token",
 			ExplicitScopesRequired:    false,
@@ -862,7 +940,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -967,7 +1045,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -1072,7 +1150,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -1219,6 +1297,161 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
+	Monday: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.monday.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://auth.monday.com/oauth2/authorize",
+			TokenURL:                  "https://auth.monday.com/oauth2/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+	// Figma Support Configuration
+	Figma: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.figma.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://www.figma.com/oauth",
+			TokenURL:                  "https://www.figma.com/api/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ConsumerRefField: "user_id",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+	// Miro Support Configuration
+	Miro: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.miro.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://miro.com/oauth/authorize",
+			TokenURL:                  "https://api.miro.com/v1/oauth/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ConsumerRefField:  "user_id",
+				WorkspaceRefField: "team_id",
+				ScopesField:       "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     true,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+	Typeform: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.typeform.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://api.typeform.com/oauth/authorize",
+			TokenURL:                  "https://api.typeform.com/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Zuora Configuration
+	Zuora: {
+		AuthType: Oauth2,
+		BaseURL:  "https://{{.subdomain}}.zuora.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 ClientCredentials,
+			AuthURL:                   "https://{{.subdomain}}.zuora.com/oauth/auth_mock",
+			TokenURL:                  "https://{{.subdomain}}.zuora.com/oauth/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// DropboxSign Configuration
+	DropboxSign: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.hellosign.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://app.hellosign.com/oauth/authorize",
+			TokenURL:                  "https://app.hellosign.com/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
 	// ClickUp Support Configuration
 	ClickUp: {
 		AuthType: Oauth2,
