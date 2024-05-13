@@ -61,6 +61,7 @@ const (
 	DropboxSign                         Provider = "dropboxSign"
 	ClickUp                             Provider = "clickup"
 	Discord                             Provider = "discord"
+	Drift                               Provider = "drift"
 )
 
 // ================================================================================
