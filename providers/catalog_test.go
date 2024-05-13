@@ -591,10 +591,15 @@ var testCases = []struct { // nolint
 		expected: &ProviderInfo{
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
 				AuthURL:                   "https://www.dropbox.com/oauth2/authorize",
 				TokenURL:                  "https://api.dropboxapi.com/oauth2/token",
 				ExplicitScopesRequired:    false,
 				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField:      "scope",
+					ConsumerRefField: "account_id",
+				},
 			},
 			Support: Support{
 				BulkWrite: BulkWriteSupport{
@@ -603,7 +608,7 @@ var testCases = []struct { // nolint
 					Upsert: false,
 					Delete: false,
 				},
-				Proxy:     false,
+				Proxy:     true,
 				Read:      false,
 				Subscribe: false,
 				Write:     false,
