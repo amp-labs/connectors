@@ -671,7 +671,7 @@ var testCases = []struct { // nolint
 				ExplicitWorkspaceRequired: false,
 				ExplicitScopesRequired:    true,
 				TokenMetadataFields: TokenMetadataFields{
-					ScopesField:      "scope",
+					ScopesField: "scope",
 				},
 			},
 			BaseURL: "https://api.gong.io",
