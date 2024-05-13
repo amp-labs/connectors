@@ -19,3 +19,5 @@ Please add screenshots that show successful pagination using the connector.
 ## Successful console operation (operation & events)
 
 ## Failed console operation (operation & events)
+
+## Raw token response
