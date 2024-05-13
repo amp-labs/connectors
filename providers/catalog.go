@@ -5,8 +5,8 @@ package providers
 // ================================================================================
 
 const (
-	AWeber                              Provider = "aWeber"
 	Airtable                            Provider = "airtable"
+	AWeber                              Provider = "aWeber"
 	Asana                               Provider = "asana"
 	Atlassian                           Provider = "atlassian"
 	Attio                               Provider = "attio"
@@ -27,6 +27,9 @@ const (
 	GetResponse                         Provider = "getResponse"
 	Gmail                               Provider = "gmail"
 	Gong                                Provider = "gong"
+	IroncladDemo                        Provider = "ironcladDemo"
+	IroncladEU                          Provider = "ironcladEU"
+	Ironclad                            Provider = "ironclad"
 	Google                              Provider = "google"
 	GoogleContacts                      Provider = "googleContacts"
 	HelpScoutMailbox                    Provider = "helpScoutMailbox"
@@ -549,10 +552,15 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://api.dropboxapi.com",
 		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://www.dropbox.com/oauth2/authorize",
 			TokenURL:                  "https://api.dropboxapi.com/oauth2/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField:      "scope",
+				ConsumerRefField: "account_id",
+			},
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -561,7 +569,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -1004,6 +1012,34 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://airtable.com/oauth2/v1/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Ironclad Support Configuration
+	Ironclad: {
+		AuthType: Oauth2,
+		BaseURL:  "https://ironcladapp.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://ironcladapp.com/oauth/authorize",
+			TokenURL:                  "https://ironcladapp.com/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			GrantType:                 AuthorizationCode,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
 			},
@@ -1486,6 +1522,60 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://discord.com/api/oauth2/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	IroncladDemo: {
+		AuthType: Oauth2,
+		BaseURL:  "https://demo.ironcladapp.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://demo.ironcladapp.com/oauth/authorize",
+			TokenURL:                  "https://demo.ironcladapp.com/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			GrantType:                 AuthorizationCode,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	IroncladEU: {
+		AuthType: Oauth2,
+		BaseURL:  "https://eu1.ironcladapp.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://eu1.ironcladapp.com/oauth/authorize",
+			TokenURL:                  "https://eu1.ironcladapp.com/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			GrantType:                 AuthorizationCode,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
 			},

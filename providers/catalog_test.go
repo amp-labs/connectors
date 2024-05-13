@@ -591,10 +591,15 @@ var testCases = []struct { // nolint
 		expected: &ProviderInfo{
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
 				AuthURL:                   "https://www.dropbox.com/oauth2/authorize",
 				TokenURL:                  "https://api.dropboxapi.com/oauth2/token",
 				ExplicitScopesRequired:    false,
 				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField:      "scope",
+					ConsumerRefField: "account_id",
+				},
 			},
 			Support: Support{
 				BulkWrite: BulkWriteSupport{
@@ -603,7 +608,7 @@ var testCases = []struct { // nolint
 					Upsert: false,
 					Delete: false,
 				},
-				Proxy:     false,
+				Proxy:     true,
 				Read:      false,
 				Subscribe: false,
 				Write:     false,
@@ -1108,6 +1113,68 @@ var testCases = []struct { // nolint
 		expectedErr: nil,
 	},
 	{
+		provider:    IroncladDemo,
+		description: "IroncladDemo config with no substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Read:      false,
+				Write:     false,
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://demo.ironcladapp.com/oauth/authorize",
+				TokenURL:                  "https://demo.ironcladapp.com/oauth/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+				GrantType:                 AuthorizationCode,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
+			},
+			BaseURL: "https://demo.ironcladapp.com",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    IroncladEU,
+		description: "IroncladEU config with no substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Read:      false,
+				Write:     false,
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://eu1.ironcladapp.com/oauth/authorize",
+				TokenURL:                  "https://eu1.ironcladapp.com/oauth/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+				GrantType:                 AuthorizationCode,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
+			},
+			BaseURL: "https://eu1.ironcladapp.com",
+		},
+		expectedErr: nil,
+	},
+	{
 		provider:    Airtable,
 		description: "Valid Airtable provider config with no substitutions",
 		expected: &ProviderInfo{
@@ -1135,6 +1202,37 @@ var testCases = []struct { // nolint
 				Write:     false,
 			},
 			BaseURL: "https://api.airtable.com",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    Ironclad,
+		description: "Ironclad config with no substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://ironcladapp.com/oauth/authorize",
+				TokenURL:                  "https://ironcladapp.com/oauth/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+				GrantType:                 AuthorizationCode,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
+			},
+			BaseURL: "https://ironcladapp.com",
 		},
 		expectedErr: nil,
 	},
