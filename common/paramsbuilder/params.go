@@ -98,5 +98,9 @@ type APIModule struct {
 }
 
 func (a APIModule) String() string {
+	if len(a.Label) == 0 {
+		return a.Version
+	}
+
 	return fmt.Sprintf("%s/%s", a.Label, a.Version)
 }
