@@ -139,7 +139,10 @@ components:
           $ref: '#/components/schemas/Support'
         providerOpts:
           $ref: '#/components/schemas/ProviderOpts'
-
+        displayName:
+          type: string
+          example: Zendesk Chat
+          description: The display name of the provider, if omitted, defaults to provider name.
     CatalogType:
       type: object
       additionalProperties:
