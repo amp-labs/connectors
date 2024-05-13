@@ -66,7 +66,13 @@ func mainFn() int { //nolint:funlen
 		_ = sfc.Close()
 	}()
 
-	if err := testConnector(ctx, sfc); err != nil {
+	if err := testReadConnector(ctx, sfc); err != nil {
+		slog.Error("Error testing", "connector", sfc, "error", err)
+
+		return 1
+	}
+
+	if err := testWriteConnector(ctx, sfc); err != nil {
 		slog.Error("Error testing", "connector", sfc, "error", err)
 
 		return 1
@@ -75,7 +81,7 @@ func mainFn() int { //nolint:funlen
 	return 0
 }
 
-func testConnector(ctx context.Context, conn connectors.Connector) error {
+func testReadConnector(ctx context.Context, conn connectors.ReadConnector) error {
 	// Create a context with a timeout
 	ctx, done := context.WithTimeout(ctx, TimeoutSeconds*time.Second)
 	defer done()
@@ -98,6 +104,10 @@ func testConnector(ctx context.Context, conn connectors.Connector) error {
 	_, _ = os.Stdout.Write(jsonStr)
 	_, _ = os.Stdout.WriteString("\n")
 
+	return nil
+}
+
+func testWriteConnector(ctx context.Context, conn connectors.WriteConnector) error {
 	// IMPORTANT: every time this test is run, it will create a new Account
 	// in SFDC instance. Will need to delete those out at later date.
 	writtenRecordId, err := testSalesforceValidCreate(ctx, conn)
@@ -115,7 +125,7 @@ func testConnector(ctx context.Context, conn connectors.Connector) error {
 const accountNumber = 123
 
 // testSalesforceValidCreate will create a valid record in Salesforce.
-func testSalesforceValidCreate(ctx context.Context, conn connectors.Connector) (string, error) {
+func testSalesforceValidCreate(ctx context.Context, conn connectors.WriteConnector) (string, error) {
 	writeRes, err := conn.Write(ctx, connectors.WriteParams{
 		ObjectName: "Account",
 		RecordData: map[string]interface{}{
@@ -142,7 +152,7 @@ func testSalesforceValidCreate(ctx context.Context, conn connectors.Connector) (
 const accountNumber2 = 456
 
 // testSalesforceValidUpdate will update existing record in Salesforce.
-func testSalesforceValidUpdate(ctx context.Context, conn connectors.Connector, writtenRecordId string) error {
+func testSalesforceValidUpdate(ctx context.Context, conn connectors.WriteConnector, writtenRecordId string) error {
 	writeRes, err := conn.Write(ctx, connectors.WriteParams{
 		ObjectName: "Account",
 		RecordData: map[string]interface{}{

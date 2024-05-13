@@ -89,3 +89,80 @@ func HubspotOAuthConfigFromRegistry(registry CredentialsRegistry) *oauth2.Config
 
 	return cfg
 }
+
+var MSDynamics365CRMWorkspace = "org5bd08fdd" //nolint:gochecknoglobals
+
+func MSDynamics365CRMConfigFromRegistry(registry CredentialsRegistry) *oauth2.Config {
+	clientId := registry.MustString(ClientId)
+	clientSecret := registry.MustString(ClientSecret)
+
+	cfg := &oauth2.Config{
+		ClientID:     clientId,
+		ClientSecret: clientSecret,
+		RedirectURL:  "http://localhost:8080/callbacks/v1/oauth",
+		Endpoint: oauth2.Endpoint{
+			AuthURL:   "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+			TokenURL:  "https://login.microsoftonline.com/common/oauth2/v2.0/token",
+			AuthStyle: oauth2.AuthStyleInParams,
+		},
+		Scopes: []string{
+			fmt.Sprintf("https://%v.crm.dynamics.com/user_impersonation", MSDynamics365CRMWorkspace),
+			"offline_access",
+		},
+	}
+
+	return cfg
+}
+
+func MSDynamics365CRMTokenFromRegistry(registry CredentialsRegistry) *oauth2.Token {
+	accessToken := registry.MustString(AccessToken)
+	refreshToken := registry.MustString(RefreshToken)
+
+	tok := &oauth2.Token{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+		TokenType:    "bearer",
+		Expiry:       time.Now().Add(-1 * time.Hour), // just pretend it's expired already, whatever, it'll fetch a new one.
+	}
+
+	return tok
+}
+
+func OutreachOAuthConfigFromRegistry(registry CredentialsRegistry) *oauth2.Config {
+	clientId := registry.MustString(ClientId)
+	clientSecret := registry.MustString(ClientSecret)
+
+	cfg := &oauth2.Config{
+		ClientID:     clientId,
+		ClientSecret: clientSecret,
+		RedirectURL:  "https://dev-api.withampersand.com/callbacks/v1/oauth",
+		Endpoint: oauth2.Endpoint{
+			AuthURL:   "https://api.outreach.io/oauth/authorize",
+			TokenURL:  "https://api.outreach.io/oauth/token",
+			AuthStyle: oauth2.AuthStyleInParams,
+		},
+		Scopes: []string{
+			"users.all",
+			"accounts.read",
+			"calls.all",
+			"events.all",
+			"teams.all",
+		},
+	}
+
+	return cfg
+}
+
+func OutreachOauthTokenFromRegistry(registry CredentialsRegistry) *oauth2.Token {
+	accessToken := registry.MustString(AccessToken)
+	refreshToken := registry.MustString(RefreshToken)
+
+	tok := &oauth2.Token{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+		TokenType:    "bearer",
+		Expiry:       time.Now().Add(-1 * time.Hour), // just pretend it's expired already, whatever, it'll fetch a new one.
+	}
+
+	return tok
+}

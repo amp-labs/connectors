@@ -20,7 +20,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	if len(config.NextPage) > 0 {
 		// If NextPage is set, then we're reading the next page of results.
 		// All that matters is the NextPage URL, the fields are ignored.
-		location, joinErr := url.JoinPath("https://"+c.Domain, config.NextPage)
+		location, joinErr := url.JoinPath("https://"+c.Domain, config.NextPage.String())
 		if joinErr != nil {
 			return nil, joinErr
 		}
