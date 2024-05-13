@@ -1040,7 +1040,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 			GrantType:                 AuthorizationCode,
-      TokenMetadataFields: TokenMetadataFields{
+			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
 			},
 		},
@@ -1057,7 +1057,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Write:     false,
 		},
 	},
-  
+
 	// Slack configuration
 	Slack: {
 		AuthType: Oauth2,

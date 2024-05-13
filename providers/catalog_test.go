@@ -1149,9 +1149,9 @@ var testCases = []struct { // nolint
 		description: "Ironclad config with no substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
-        Read:      false,
-				Write:     false,
-        BulkWrite: BulkWriteSupport{
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
 					Insert: false,
 					Update: false,
 					Upsert: false,
@@ -1167,15 +1167,15 @@ var testCases = []struct { // nolint
 				ExplicitScopesRequired:    true,
 				ExplicitWorkspaceRequired: false,
 				GrantType:                 AuthorizationCode,
-        TokenMetadataFields: TokenMetadataFields{
+				TokenMetadataFields: TokenMetadataFields{
 					ScopesField: "scope",
 				},
-      },
-      BaseURL: "https://ironcladapp.com",
-    },
+			},
+			BaseURL: "https://ironcladapp.com",
+		},
 		expectedErr: nil,
 	},
-  {
+	{
 		provider:    Slack,
 		description: "Valid Slack provider config with non-existent substitutions",
 		expected: &ProviderInfo{
