@@ -1,0 +1,53 @@
+name: Handle Issue Closure Webhook
+
+on:
+  issues:
+    types: [closed]
+
+jobs:
+  process_issue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Get Issue Information
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GitHub token secret
+          COMPLETED_WEBHOOK_URL: ${{ secrets.ISSUE_COMPLETED_WEBHOOK_URL }}  
+          CANCELLED_WEBHOOK_URL: ${{ secrets.ISSUE_CANCELLED_WEBHOOK_URL }} 
+        run: |
+          import requests
+          import sys
+
+          issue_number = '${{ github.event.issue.number }}'
+          repo = '${{ github.repository }}'
+          api_url = f'https://api.github.com/repos/{repo}/issues/{issue_number}?apiVersion=2022-11-28'
+          
+          headers = {
+              'Authorization': f'token {GITHUB_TOKEN}',
+              'Accept': 'application/vnd.github.v3+json'
+          }
+
+          response = requests.get(api_url, headers=headers)
+          issue_info = response.json()
+          state_reason = issue_info.get('state_reason', None)
+          issue_url = issue_info.get('html_url', '')
+
+          if state_reason == 'completed':
+              webhook_url = env['COMPLETED_WEBHOOK_URL']
+              data = {'issue_url': issue_url}
+              requests.post(webhook_url, json=data)
+          elif state_reason == 'not_planned':
+              webhook_url = env['CANCELLED_WEBHOOK_URL']
+              data = {'issue_url': issue_url}
+              requests.post(webhook_url, json=data)
+          else:
+              print("No valid state reason found. Exiting.")
+              sys.exit()
+
