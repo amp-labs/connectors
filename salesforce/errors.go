@@ -5,8 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
 
 	"github.com/amp-labs/connectors/common"
+	"golang.org/x/oauth2"
 )
 
 var (
@@ -72,6 +74,16 @@ func (c *Connector) interpretJSONError(res *http.Response, body []byte) error {
 }
 
 func (c *Connector) HandleError(err error) error {
+	var urlErr *url.Error
+	if errors.As(err, &urlErr) {
+		var oauthErr *oauth2.RetrieveError
+		if urlErr != nil && errors.As(urlErr.Err, &oauthErr) {
+			if oauthErr.ErrorCode == "invalid_grant" {
+				return errors.Join(common.ErrInvalidGrant, err)
+			}
+		}
+	}
+
 	switch {
 	case errors.Is(err, common.ErrAccessToken):
 		// Retryable, so just log and retry
