@@ -732,36 +732,35 @@ var testCases = []struct { // nolint
 		},
 		expectedErr: nil,
 	},
-	// TODO: uncomment this when the docusign connector is uncommented
-	//{
-	//	provider: Docusign,
-	//	substitutions: map[string]string{
-	//		"server": "example",
-	//	},
-	//	expected: &ProviderInfo{
-	//		Support: Support{
-	//			Read:  false,
-	//			Write: false,
-	//			BulkWrite: BulkWriteSupport{
-	//				Insert: false,
-	//				Update: false,
-	//				Upsert: false,
-	//				Delete: false,
-	//			},
-	//			Subscribe: false,
-	//			Proxy:     false,
-	//		},
-	//		AuthType: Oauth2,
-	//		OauthOpts: OauthOpts{
-	//			AuthURL:                   "https://account.docusign.com/oauth/auth",
-	//			TokenURL:                  "https://account.docusign.com/oauth/token",
-	//			ExplicitScopesRequired:    true,
-	//			ExplicitWorkspaceRequired: false,
-	//		},
-	//		BaseURL: "https://example.docusign.net",
-	//	},
-	//	expectedErr: nil,
-	// },
+	{
+		provider: Docusign,
+		substitutions: map[string]string{
+			"server": "example",
+		},
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://account.docusign.com/oauth/auth",
+				TokenURL:                  "https://account.docusign.com/oauth/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+			},
+			BaseURL: "https://example.docusign.net",
+		},
+		expectedErr: nil,
+	},
 	{
 		provider: DocusignDeveloper,
 		expected: &ProviderInfo{
@@ -899,7 +898,7 @@ var testCases = []struct { // nolint
 				AuthURL:                   "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
 				TokenURL:                  "https://login.microsoftonline.com/common/oauth2/v2.0/token",
 				ExplicitScopesRequired:    true,
-				ExplicitWorkspaceRequired: true,
+				ExplicitWorkspaceRequired: false,
 			},
 			BaseURL: "https://testing.api.crm.dynamics.com",
 		},
@@ -1258,7 +1257,7 @@ var testCases = []struct { // nolint
 				AuthURL:                   "https://slack.com/oauth/v2/authorize",
 				TokenURL:                  "https://slack.com/api/oauth.v2.access",
 				ExplicitScopesRequired:    true,
-				ExplicitWorkspaceRequired: true,
+				ExplicitWorkspaceRequired: false,
 				TokenMetadataFields: TokenMetadataFields{
 					ScopesField:       "scope",
 					WorkspaceRefField: "workspace_name",
@@ -1511,7 +1510,7 @@ var testCases = []struct { // nolint
 		expectedErr: nil,
 	},
 	{
-		provider:    GoogleMail,
+		provider:    Gmail,
 		description: "Valid GoogleMail provider config with no substitutions",
 		expected: &ProviderInfo{
 			AuthType: Oauth2,
@@ -1669,7 +1668,7 @@ var testCases = []struct { // nolint
 		provider:    Zuora,
 		description: "Valid Zuora provider config with substitutions",
 		substitutions: map[string]string{
-			"subdomain": "rest.test",
+			"workspace": "rest.test",
 		},
 		expected: &ProviderInfo{
 			AuthType: Oauth2,
@@ -1678,7 +1677,7 @@ var testCases = []struct { // nolint
 				AuthURL:                   "https://rest.test.zuora.com/oauth/auth_mock",
 				TokenURL:                  "https://rest.test.zuora.com/oauth/token",
 				ExplicitScopesRequired:    false,
-				ExplicitWorkspaceRequired: false,
+				ExplicitWorkspaceRequired: true,
 			},
 			Support: Support{
 				BulkWrite: BulkWriteSupport{

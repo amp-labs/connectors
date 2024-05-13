@@ -5,65 +5,65 @@ package providers
 // ================================================================================
 
 const (
-	Mock                                Provider = "mock"
-	Salesforce                          Provider = "salesforce"
-	Hubspot                             Provider = "hubspot"
-	LinkedIn                            Provider = "linkedIn"
-	Salesloft                           Provider = "salesloft"
-	Outreach                            Provider = "outreach"
-	RingCentral                         Provider = "ringCentral"
-	Pipedrive                           Provider = "pipedrive"
-	Copper                              Provider = "copper"
-	ZohoCRM                             Provider = "zohoCRM"
-	Mural                               Provider = "mural"
-	Klaviyo                             Provider = "klaviyo"
-	Sellsy                              Provider = "sellsy"
-	Attio                               Provider = "attio"
-	Close                               Provider = "close"
-	Keap                                Provider = "keap"
+	Airtable                            Provider = "airtable"
+	AWeber                              Provider = "aWeber"
 	Asana                               Provider = "asana"
-	Dropbox                             Provider = "dropbox"
-	Notion                              Provider = "notion"
-	Gong                                Provider = "gong"
-	Zoom                                Provider = "zoom"
-	Intercom                            Provider = "intercom"
+	Atlassian                           Provider = "atlassian"
+	Attio                               Provider = "attio"
+	Box                                 Provider = "box"
+	Calendly                            Provider = "calendly"
 	Capsule                             Provider = "capsule"
-	Wrike                               Provider = "wrike"
+	ClickUp                             Provider = "clickup"
+	Close                               Provider = "close"
+	ConstantContact                     Provider = "constantContact"
+	Copper                              Provider = "copper"
+	Discord                             Provider = "discord"
 	Docusign                            Provider = "docusign"
 	DocusignDeveloper                   Provider = "docusignDeveloper"
-	Calendly                            Provider = "calendly"
-	AWeber                              Provider = "aWeber"
-	GetResponse                         Provider = "getResponse"
-	ConstantContact                     Provider = "constantContact"
-	MicrosoftDynamics365CRM             Provider = "microsoftDynamics365CRM"
-	MicrosoftDynamics365BusinessCentral Provider = "microsoftDynamics365BusinessCentral"
+	Dropbox                             Provider = "dropbox"
+	DropboxSign                         Provider = "dropboxSign"
+	Figma                               Provider = "figma"
 	Gainsight                           Provider = "gainsight"
-	Box                                 Provider = "box"
-	ZendeskSupport                      Provider = "zendeskSupport"
-	ZendeskChat                         Provider = "zendeskChat"
-	WordPress                           Provider = "wordPress"
+	GetResponse                         Provider = "getResponse"
+	Gmail                               Provider = "gmail"
+	Gong                                Provider = "gong"
 	IroncladDemo                        Provider = "ironcladDemo"
 	IroncladEU                          Provider = "ironcladEU"
-	Airtable                            Provider = "airtable"
 	Ironclad                            Provider = "ironclad"
-	Slack                               Provider = "slack"
-	HelpScoutMailbox                    Provider = "helpScoutMailbox"
-	Timely                              Provider = "timely"
-	Atlassian                           Provider = "atlassian"
-	Webflow                             Provider = "webflow"
-	Smartsheet                          Provider = "smartsheet"
-	StackExchange                       Provider = "stackExchange"
 	Google                              Provider = "google"
 	GoogleContacts                      Provider = "googleContacts"
-	GoogleMail                          Provider = "googleMail"
-	Monday                              Provider = "monday"
-	Figma                               Provider = "figma"
+	HelpScoutMailbox                    Provider = "helpScoutMailbox"
+	Hubspot                             Provider = "hubspot"
+	Intercom                            Provider = "intercom"
+	Keap                                Provider = "keap"
+	Klaviyo                             Provider = "klaviyo"
+	LinkedIn                            Provider = "linkedIn"
+	MicrosoftDynamics365BusinessCentral Provider = "microsoftDynamics365BusinessCentral"
+	MicrosoftDynamics365CRM             Provider = "microsoftDynamics365CRM"
 	Miro                                Provider = "miro"
+	Mock                                Provider = "mock"
+	Monday                              Provider = "monday"
+	Mural                               Provider = "mural"
+	Notion                              Provider = "notion"
+	Outreach                            Provider = "outreach"
+	Pipedrive                           Provider = "pipedrive"
+	RingCentral                         Provider = "ringCentral"
+	Salesforce                          Provider = "salesforce"
+	Salesloft                           Provider = "salesloft"
+	Sellsy                              Provider = "sellsy"
+	Slack                               Provider = "slack"
+	Smartsheet                          Provider = "smartsheet"
+	StackExchange                       Provider = "stackExchange"
+	Timely                              Provider = "timely"
 	Typeform                            Provider = "typeform"
+	Webflow                             Provider = "webflow"
+	WordPress                           Provider = "wordPress"
+	Wrike                               Provider = "wrike"
+	ZendeskChat                         Provider = "zendeskChat"
+	ZendeskSupport                      Provider = "zendeskSupport"
+	ZohoCRM                             Provider = "zohoCRM"
+	Zoom                                Provider = "zoom"
 	Zuora                               Provider = "zuora"
-	DropboxSign                         Provider = "dropboxSign"
-	ClickUp                             Provider = "clickup"
-	Discord                             Provider = "discord"
 )
 
 // ================================================================================
@@ -680,30 +680,28 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	},
 
 	// Docusign configuration
-	// TODO: we don't have a good way to get the server string yet. Need to make API call to /oauth/userinfo.
-	// Leaving this connector commented out until that is unblocked.
-	// Docusign: {
-	//	AuthType: Oauth2,
-	//	BaseURL:  "https://{{.server}}.docusign.net",
-	//	OauthOpts: OauthOpts{
-	//		AuthURL:                   "https://account.docusign.com/oauth/auth",
-	//		TokenURL:                  "https://account.docusign.com/oauth/token",
-	//		ExplicitScopesRequired:    true,
-	//		ExplicitWorkspaceRequired: false,
-	//	},
-	//	Support: Support{
-	//		BulkWrite: BulkWriteSupport{
-	//			Insert: false,
-	//			Update: false,
-	//			Upsert: false,
-	//			Delete: false,
-	//		},
-	//		Proxy:     false,
-	//		Read:      false,
-	//		Subscribe: false,
-	//		Write:     false,
-	//	},
-	// },
+	Docusign: {
+		AuthType: Oauth2,
+		BaseURL:  "https://{{.server}}.docusign.net",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://account.docusign.com/oauth/auth",
+			TokenURL:                  "https://account.docusign.com/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
 
 	// Docusign Developer configuration
 	DocusignDeveloper: {
@@ -814,7 +812,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			AuthURL:                   "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
 			TokenURL:                  "https://login.microsoftonline.com/common/oauth2/v2.0/token",
 			ExplicitScopesRequired:    true,
-			ExplicitWorkspaceRequired: true,
+			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -1068,7 +1066,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			AuthURL:                   "https://slack.com/oauth/v2/authorize",
 			TokenURL:                  "https://slack.com/api/oauth.v2.access",
 			ExplicitScopesRequired:    true,
-			ExplicitWorkspaceRequired: true,
+			ExplicitWorkspaceRequired: false,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField:       "scope",
 				WorkspaceRefField: "workspace_name",
@@ -1306,7 +1304,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	},
 
 	// GoogleMail Support Configuration
-	GoogleMail: {
+	Gmail: {
 		AuthType: Oauth2,
 		BaseURL:  "https://gmail.googleapis.com",
 		OauthOpts: OauthOpts{
@@ -1442,13 +1440,13 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	// Zuora Configuration
 	Zuora: {
 		AuthType: Oauth2,
-		BaseURL:  "https://{{.subdomain}}.zuora.com",
+		BaseURL:  "https://{{.workspace}}.zuora.com",
 		OauthOpts: OauthOpts{
 			GrantType:                 ClientCredentials,
-			AuthURL:                   "https://{{.subdomain}}.zuora.com/oauth/auth_mock",
-			TokenURL:                  "https://{{.subdomain}}.zuora.com/oauth/token",
+			AuthURL:                   "https://{{.workspace}}.zuora.com/oauth/auth_mock",
+			TokenURL:                  "https://{{.workspace}}.zuora.com/oauth/token",
 			ExplicitScopesRequired:    false,
-			ExplicitWorkspaceRequired: false,
+			ExplicitWorkspaceRequired: true,
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
