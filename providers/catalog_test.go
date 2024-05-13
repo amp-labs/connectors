@@ -1117,65 +1117,65 @@ var testCases = []struct { // nolint
 		provider:    IroncladDemo,
 		description: "IroncladDemo config with no substitutions",
 		expected: &ProviderInfo{
-      Support: Support{
-        BulkWrite: BulkWriteSupport{
+			Support: Support{
+				BulkWrite: BulkWriteSupport{
 					Insert: false,
 					Update: false,
 					Upsert: false,
 					Delete: false,
 				},
-        Read:      false,
-        Write:     false,
+				Read:      false,
+				Write:     false,
 				Subscribe: false,
 				Proxy:     false,
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
-        AuthURL:                   "https://demo.ironcladapp.com/oauth/authorize",
+				AuthURL:                   "https://demo.ironcladapp.com/oauth/authorize",
 				TokenURL:                  "https://demo.ironcladapp.com/oauth/token",
 				ExplicitScopesRequired:    true,
 				ExplicitWorkspaceRequired: false,
 				GrantType:                 AuthorizationCode,
-        TokenMetadataFields: TokenMetadataFields{
+				TokenMetadataFields: TokenMetadataFields{
 					ScopesField: "scope",
 				},
 			},
-      BaseURL: "https://demo.ironcladapp.com",
-    },
-    expectedErr: nil,
-  },
-  {
+			BaseURL: "https://demo.ironcladapp.com",
+		},
+		expectedErr: nil,
+	},
+	{
 		provider:    IroncladEU,
 		description: "IroncladEU config with no substitutions",
 		expected: &ProviderInfo{
 			Support: Support{
-        BulkWrite: BulkWriteSupport{
+				BulkWrite: BulkWriteSupport{
 					Insert: false,
 					Update: false,
 					Upsert: false,
 					Delete: false,
 				},
-        Read:      false,
-        Write:     false,
+				Read:      false,
+				Write:     false,
 				Subscribe: false,
 				Proxy:     false,
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
-        AuthURL:                   "https://eu1.ironcladapp.com/oauth/authorize",
+				AuthURL:                   "https://eu1.ironcladapp.com/oauth/authorize",
 				TokenURL:                  "https://eu1.ironcladapp.com/oauth/token",
 				ExplicitScopesRequired:    true,
 				ExplicitWorkspaceRequired: false,
 				GrantType:                 AuthorizationCode,
-        TokenMetadataFields: TokenMetadataFields{
+				TokenMetadataFields: TokenMetadataFields{
 					ScopesField: "scope",
 				},
 			},
-      BaseURL: "https://demo.ironcladapp.com",
-    },
-    expectedErr: nil,
-  },
-  {
+			BaseURL: "https://eu1.ironcladapp.com",
+		},
+		expectedErr: nil,
+	},
+	{
 		provider:    Airtable,
 		description: "Valid Airtable provider config with no substitutions",
 		expected: &ProviderInfo{
@@ -1495,7 +1495,7 @@ var testCases = []struct { // nolint
 					ScopesField: "scope",
 				},
 			},
-      Support: Support{
+			Support: Support{
 				BulkWrite: BulkWriteSupport{
 					Insert: false,
 					Update: false,
@@ -1765,7 +1765,7 @@ var testCases = []struct { // nolint
 				TokenURL:                  "https://discord.com/api/oauth2/token",
 				ExplicitScopesRequired:    true,
 				ExplicitWorkspaceRequired: false,
-        TokenMetadataFields: TokenMetadataFields{
+				TokenMetadataFields: TokenMetadataFields{
 					ScopesField: "scope",
 				},
 			},

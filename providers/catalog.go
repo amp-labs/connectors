@@ -42,7 +42,7 @@ const (
 	ZendeskSupport                      Provider = "zendeskSupport"
 	ZendeskChat                         Provider = "zendeskChat"
 	WordPress                           Provider = "wordPress"
-	IroncladDemo                        Provider = "ironcladEU"
+	IroncladDemo                        Provider = "ironcladDemo"
 	IroncladEU                          Provider = "ironcladEU"
 	Airtable                            Provider = "airtable"
 	Ironclad                            Provider = "ironclad"
@@ -1548,7 +1548,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		OauthOpts: OauthOpts{
 			AuthURL:                   "https://demo.ironcladapp.com/oauth/authorize",
 			TokenURL:                  "https://demo.ironcladapp.com/oauth/token",
-      ExplicitScopesRequired:    true,
+			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 			GrantType:                 AuthorizationCode,
 			TokenMetadataFields: TokenMetadataFields{
