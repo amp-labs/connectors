@@ -707,6 +707,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Subscribe: false,
 			Write:     false,
 		},
+		PostAuthInfoNeeded: true,
 	},
 
 	// Docusign Developer configuration

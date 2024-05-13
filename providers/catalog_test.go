@@ -760,6 +760,9 @@ var testCases = []struct { // nolint
 				ExplicitScopesRequired:    true,
 				ExplicitWorkspaceRequired: false,
 			},
+			ProviderOpts: ProviderOpts{
+				"userInfoURL": "https://account.docusign.com/oauth/userinfo",
+			},
 			BaseURL: "https://example.docusign.net",
 		},
 		expectedErr: nil,
