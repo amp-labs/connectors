@@ -615,7 +615,6 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			ExplicitWorkspaceRequired: false,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField:      "scope",
-				ConsumerRefField: "client_id",
 			},
 		},
 		Support: Support{
