@@ -1145,6 +1145,37 @@ var testCases = []struct { // nolint
 		expectedErr: nil,
 	},
 	{
+		provider:    Ironclad,
+		description: "Ironclad config with no substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://ironcladapp.com/oauth/authorize",
+				TokenURL:                  "https://ironcladapp.com/oauth/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+				GrantType:                 AuthorizationCode,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
+			},
+			BaseURL: "https://ironcladapp.com",
+		},
+		expectedErr: nil,
+	},
+	{
 		provider:    Slack,
 		description: "Valid Slack provider config with non-existent substitutions",
 		expected: &ProviderInfo{

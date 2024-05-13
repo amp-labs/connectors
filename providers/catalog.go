@@ -43,6 +43,7 @@ const (
 	ZendeskChat                         Provider = "zendeskChat"
 	WordPress                           Provider = "wordPress"
 	Airtable                            Provider = "airtable"
+	Ironclad                            Provider = "ironclad"
 	Slack                               Provider = "slack"
 	HelpScoutMailbox                    Provider = "helpScoutMailbox"
 	Timely                              Provider = "timely"
@@ -1011,6 +1012,34 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://airtable.com/oauth2/v1/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Ironclad Support Configuration
+	Ironclad: {
+		AuthType: Oauth2,
+		BaseURL:  "https://ironcladapp.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://ironcladapp.com/oauth/authorize",
+			TokenURL:                  "https://ironcladapp.com/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			GrantType:                 AuthorizationCode,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
 			},
