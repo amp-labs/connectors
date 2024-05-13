@@ -60,6 +60,7 @@ const (
 	Zuora                               Provider = "zuora"
 	DropboxSign                         Provider = "dropboxSign"
 	ClickUp                             Provider = "clickup"
+	Discord                             Provider = "discord"
 )
 
 // ================================================================================
@@ -1462,6 +1463,34 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://api.clickup.com/api/v2/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Discord Support Configuration
+	Discord: {
+		AuthType: Oauth2,
+		BaseURL:  "https://discord.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://discord.com/oauth2/authorize",
+			TokenURL:                  "https://discord.com/api/oauth2/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
