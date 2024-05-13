@@ -1,6 +1,6 @@
 # Running instructions
 
-## Step 1: prepare "ms-dales-creds.json" file
+## Step 1: prepare "ms-crm-creds.json" file
 
 Create a file called "ms-crm-creds.json" in the root of the project with the following contents
 

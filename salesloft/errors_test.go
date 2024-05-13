@@ -1,4 +1,4 @@
-package microsoftdynamicscrm
+package salesloft
 
 import (
 	"errors"
@@ -21,6 +21,7 @@ func TestInterpretJSONError(t *testing.T) { //nolint:funlen
 	tests := []struct {
 		name        string
 		input       input
+		comparator  func(actual, expected error) bool
 		expectedErr error
 	}{
 		{
@@ -40,9 +41,6 @@ func TestInterpretJSONError(t *testing.T) { //nolint:funlen
 			expectedErr: interpreter.ErrUnmarshal,
 		},
 		{
-			// TODO should it indicate that connector could handle it?
-			// TODO It would be bad to mask partial API implementation with actual caller error
-			// search for other test occurrences in the code base when resolving it
 			name: "Unknown response status produces caller error",
 			input: input{
 				res: &http.Response{
@@ -62,35 +60,65 @@ func TestInterpretJSONError(t *testing.T) { //nolint:funlen
 			},
 			expectedErr: common.ErrLimitExceeded,
 		},
+		{
+			name: "Server error response invalid 'status' data type",
+			input: input{
+				res: &http.Response{
+					StatusCode: http.StatusBadRequest,
+				},
+				body: []byte(`{"status":"string while it should be a number"}`),
+			},
+			expectedErr: interpreter.ErrUnmarshal,
+		},
+		{
+			name: "Correct interpretation of singular error payload",
+			input: input{
+				res: &http.Response{
+					StatusCode: http.StatusBadRequest,
+				},
+				body: []byte(`{"status": 123,"error": "error message from server"}`),
+			},
+			comparator:  softStringErrComparison,
+			expectedErr: errors.New("error message from server"), // nolint:goerr113
+		},
+		{
+			name: "List schema is selected for error response",
+			input: input{
+				res: &http.Response{
+					StatusCode: http.StatusBadRequest,
+				},
+				body: []byte(`{"errors": {"details":"some helpful message"}}`),
+			},
+			comparator: softStringErrComparison,
+			// this error message is coming from response payload
+			expectedErr: errors.New("some helpful message"), // nolint:goerr113
+		},
 	}
 
 	connector := Connector{}
 
 	for _, tt := range tests {
+		// nolint:varnamelen
 		tt := tt // rebind, omit loop side effects for parallel goroutine
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
 			err := connector.interpretJSONError(tt.input.res, tt.input.body)
-			if !errors.Is(err, tt.expectedErr) {
+
+			var ok bool
+			if tt.comparator == nil {
+				ok = errors.Is(err, tt.expectedErr)
+			} else {
+				ok = tt.comparator(err, tt.expectedErr)
+			}
+
+			if !ok {
 				t.Fatalf("%s: expected: (%v), got: (%v)", tt.name, tt.expectedErr, err)
 			}
 		})
 	}
+}
 
-	t.Run("Correct interpretation of error payload", func(t *testing.T) {
-		t.Parallel()
-
-		err := connector.interpretJSONError(&http.Response{
-			StatusCode: http.StatusBadRequest,
-		}, []byte(`{  
-				 "error":{  
-				  "code": "<This code is not related to the http status code and is frequently empty>",  
-				  "message": "<A message describing the error>"  
-				 }  
-				}`))
-		if !strings.Contains(err.Error(), "<A message describing the error>") {
-			t.Fatalf("expected errot type mismatched for: (%v)", err)
-		}
-	})
+func softStringErrComparison(actual, expected error) bool {
+	return strings.Contains(actual.Error(), expected.Error())
 }

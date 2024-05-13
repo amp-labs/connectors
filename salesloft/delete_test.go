@@ -1,4 +1,4 @@
-package microsoftdynamicscrm
+package salesloft
 
 import (
 	"context"
@@ -18,6 +18,8 @@ import (
 func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 	t.Parallel()
 
+	listSchema := mockutils.DataFromFile(t, "write-signals-error.json")
+
 	tests := []struct {
 		name         string
 		input        common.DeleteParams
@@ -35,7 +37,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			name:  "Write object and its ID must be included",
-			input: common.DeleteParams{ObjectName: "fax"},
+			input: common.DeleteParams{ObjectName: "signals"},
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusTeapot)
 			})),
@@ -43,7 +45,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			name:  "Mime response header expected",
-			input: common.DeleteParams{ObjectName: "fax", RecordId: "dd2f7870-3fe8-ee11-a204-0022481f9e3c"},
+			input: common.DeleteParams{ObjectName: "signals", RecordId: "22165"},
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusTeapot)
 			})),
@@ -51,25 +53,20 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			name:  "Correct error message is understood from JSON response",
-			input: common.DeleteParams{ObjectName: "fax", RecordId: "dd2f7870-3fe8-ee11-a204-0022481f9e3c"},
+			input: common.DeleteParams{ObjectName: "signals", RecordId: "22165"},
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusBadRequest)
-				writeBody(w, `{
-					"error": {
-						"code": "0x80060888",
-						"message":"Resource not found for the segment 'conacs'."
-					}
-				}`)
+				w.WriteHeader(http.StatusUnprocessableEntity)
+				_, _ = w.Write(listSchema)
 			})),
 			expectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Resource not found for the segment 'conacs'"), // nolint:goerr113
+				errors.New("no Signal Registration found for integration id 5167 and given type"), // nolint:goerr113
 			},
 		},
 		{
 			name:  "Successful delete",
-			input: common.DeleteParams{ObjectName: "fax", RecordId: "dd2f7870-3fe8-ee11-a204-0022481f9e3c"},
+			input: common.DeleteParams{ObjectName: "signals", RecordId: "22165"},
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				mockutils.RespondNoContentForMethod(w, r, "DELETE")
@@ -91,7 +88,6 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 
 			connector, err := NewConnector(
 				WithAuthenticatedClient(http.DefaultClient),
-				WithWorkspace("test-workspace"),
 			)
 			if err != nil {
 				t.Fatalf("%s: error in test while constructing connector %v", tt.name, err)
