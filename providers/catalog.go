@@ -43,6 +43,7 @@ const (
 	ZendeskChat                         Provider = "zendeskChat"
 	WordPress                           Provider = "wordPress"
 	IroncladDemo                        Provider = "ironcladEU"
+	IroncladEU                          Provider = "ironcladEU"
 	Airtable                            Provider = "airtable"
 	Ironclad                            Provider = "ironclad"
 	Slack                               Provider = "slack"
@@ -1541,13 +1542,39 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
-	// IroncladEU Support Configuration
 	IroncladDemo: {
 		AuthType: Oauth2,
 		BaseURL:  "https://demo.ironcladapp.com",
 		OauthOpts: OauthOpts{
 			AuthURL:                   "https://demo.ironcladapp.com/oauth/authorize",
 			TokenURL:                  "https://demo.ironcladapp.com/oauth/token",
+      ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			GrantType:                 AuthorizationCode,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	IroncladEU: {
+		AuthType: Oauth2,
+		BaseURL:  "https://eu1.ironcladapp.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://eu1.ironcladapp.com/oauth/authorize",
+			TokenURL:                  "https://eu1.ironcladapp.com/oauth/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 			GrantType:                 AuthorizationCode,

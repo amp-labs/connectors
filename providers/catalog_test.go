@@ -1118,21 +1118,52 @@ var testCases = []struct { // nolint
 		description: "IroncladDemo config with no substitutions",
 		expected: &ProviderInfo{
       Support: Support{
-				BulkWrite: BulkWriteSupport{
+        BulkWrite: BulkWriteSupport{
 					Insert: false,
 					Update: false,
 					Upsert: false,
 					Delete: false,
 				},
         Read:      false,
-				Write:     false,
+        Write:     false,
 				Subscribe: false,
 				Proxy:     false,
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
-				AuthURL:                   "https://demo.ironcladapp.com/oauth/authorize",
+        AuthURL:                   "https://demo.ironcladapp.com/oauth/authorize",
 				TokenURL:                  "https://demo.ironcladapp.com/oauth/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+				GrantType:                 AuthorizationCode,
+        TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
+			},
+      BaseURL: "https://demo.ironcladapp.com",
+    },
+    expectedErr: nil,
+  },
+  {
+		provider:    IroncladEU,
+		description: "IroncladEU config with no substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+        BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+        Read:      false,
+        Write:     false,
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+        AuthURL:                   "https://eu1.ironcladapp.com/oauth/authorize",
+				TokenURL:                  "https://eu1.ironcladapp.com/oauth/token",
 				ExplicitScopesRequired:    true,
 				ExplicitWorkspaceRequired: false,
 				GrantType:                 AuthorizationCode,
