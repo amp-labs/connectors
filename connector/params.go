@@ -1,4 +1,4 @@
-package basic
+package connector
 
 import (
 	"context"
@@ -18,15 +18,15 @@ var (
 	ErrMissingProvider = errors.New("missing provider")
 )
 
-type Option func(*basicParams)
+type Option func(*connectorParams)
 
-type basicParams struct {
+type connectorParams struct {
 	provider      providers.Provider
 	client        *common.JSONHTTPClient
 	substitutions map[string]string
 }
 
-func (p *basicParams) prepare() (*basicParams, error) {
+func (p *connectorParams) prepare() (*connectorParams, error) {
 	if p.provider == "" {
 		return nil, ErrMissingProvider
 	}
@@ -42,7 +42,7 @@ func (p *basicParams) prepare() (*basicParams, error) {
 // reading from providers.yaml. If the provider values are not set, the connector
 // will use error out.
 func WithCatalogSubstitutions(substitutions map[string]string) Option {
-	return func(params *basicParams) {
+	return func(params *connectorParams) {
 		params.substitutions = substitutions
 	}
 }
@@ -51,7 +51,7 @@ func WithCatalogSubstitutions(substitutions map[string]string) Option {
 func WithClient(ctx context.Context, client *http.Client, config *oauth2.Config, token *oauth2.Token,
 	opts ...common.OAuthOption,
 ) Option {
-	return func(params *basicParams) {
+	return func(params *connectorParams) {
 		options := []common.OAuthOption{
 			common.WithClient(client),
 			common.WithOAuthConfig(config),
@@ -69,7 +69,7 @@ func WithClient(ctx context.Context, client *http.Client, config *oauth2.Config,
 
 // WithAuthenticatedClient sets the http client to use for the connector. Its usage is optional.
 func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
-	return func(params *basicParams) {
+	return func(params *connectorParams) {
 		params.client = &common.JSONHTTPClient{
 			HTTPClient: &common.HTTPClient{
 				Client:       client,

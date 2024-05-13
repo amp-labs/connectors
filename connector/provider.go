@@ -1,4 +1,4 @@
-package basic
+package connector
 
 import (
 	"github.com/amp-labs/connectors/providers"
