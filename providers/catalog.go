@@ -125,7 +125,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
-	// LinkedIn configuration
+	// LinkedIn & Linkedin Ads Manageconfiguration
 	LinkedIn: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.linkedin.com",
