@@ -60,11 +60,6 @@ func (j *JSONHTTPClient) Post(ctx context.Context,
 		return nil, err
 	}
 
-	// empty response body should not be parsed as JSON since it will cause ajson to err
-	if len(body) == 0 {
-		return nil, nil //nolint:nilnil
-	}
-
 	return parseJSONResponse(res, body)
 }
 
@@ -76,9 +71,13 @@ func (j *JSONHTTPClient) Patch(ctx context.Context,
 		return nil, err
 	}
 
-	// empty response body should not be parsed as JSON since it will cause ajson to err
-	if len(body) == 0 {
-		return nil, nil //nolint:nilnil
+	return parseJSONResponse(res, body)
+}
+
+func (j *JSONHTTPClient) Delete(ctx context.Context, url string, headers ...Header) (*JSONHTTPResponse, error) {
+	res, body, err := j.HTTPClient.Delete(ctx, url, addAcceptJSONHeader(headers)) //nolint:bodyclose
+	if err != nil {
+		return nil, err
 	}
 
 	return parseJSONResponse(res, body)
@@ -86,6 +85,10 @@ func (j *JSONHTTPClient) Patch(ctx context.Context,
 
 // parseJSONResponse parses the given HTTP response and returns a JSONHTTPResponse.
 func parseJSONResponse(res *http.Response, body []byte) (*JSONHTTPResponse, error) {
+	// empty response body should not be parsed as JSON since it will cause ajson to err
+	if len(body) == 0 {
+		return nil, nil //nolint:nilnil
+	}
 	// Ensure the response is JSON
 	ct := res.Header.Get("Content-Type")
 	if len(ct) > 0 {
@@ -94,8 +97,11 @@ func parseJSONResponse(res *http.Response, body []byte) (*JSONHTTPResponse, erro
 			return nil, fmt.Errorf("failed to parse content type: %w", err)
 		}
 
-		if mimeType != "application/json" {
-			return nil, fmt.Errorf("%w: expected content type to be application/json, got %s", ErrNotJSON, mimeType)
+		// Providers implementing JSONAPISpeicifcations returns application/vnd.api+json
+		if mimeType != "application/json" && mimeType != "application/vnd.api+json" {
+			return nil, fmt.Errorf("%w: expected content type to be application/json or application/vnd.api+json , got %s",
+				ErrNotJSON, mimeType,
+			)
 		}
 	}
 

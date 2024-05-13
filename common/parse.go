@@ -1,6 +1,8 @@
 package common
 
 import (
+	"errors"
+	"math"
 	"strings"
 
 	"github.com/spyzhov/ajson"
@@ -72,4 +74,106 @@ func ExtractLowercaseFieldsFromRaw(fields []string, record map[string]interface{
 	}
 
 	return out
+}
+
+var (
+	ErrNotArray   = errors.New("JSON value is not an array")
+	ErrNotObject  = errors.New("JSON value is not an object")
+	ErrNotString  = errors.New("JSON value is not a string")
+	ErrNotNumeric = errors.New("JSON value is not a numeric")
+	ErrNotInteger = errors.New("JSON value is not an integer")
+
+	// JSONManager is a helpful wrapper of ajson library that adds errors when querying JSON payload
+	// and provides common conversion methods.
+	JSONManager = jsonManager{} //nolint:gochecknoglobals
+)
+
+type jsonManager struct{}
+
+func (jsonManager) ArrToMap(arr []*ajson.Node) ([]map[string]any, error) {
+	output := make([]map[string]any, 0, len(arr))
+
+	for _, v := range arr {
+		if !v.IsObject() {
+			return nil, ErrNotObject
+		}
+
+		data, err := v.Unpack()
+		if err != nil {
+			return nil, err
+		}
+
+		m, ok := data.(map[string]interface{})
+		if !ok {
+			return nil, ErrNotObject
+		}
+
+		output = append(output, m)
+	}
+
+	return output, nil
+}
+
+func (jsonManager) GetInteger(node *ajson.Node, key string) (int64, error) {
+	innerNode, err := node.GetKey(key)
+	if err != nil {
+		return 0, err
+	}
+
+	count, err := innerNode.GetNumeric()
+	if err != nil {
+		return 0, ErrNotNumeric
+	}
+
+	if math.Mod(count, 1.0) != 0 {
+		return 0, ErrNotInteger
+	}
+
+	return int64(count), nil
+}
+
+func (jsonManager) GetArr(node *ajson.Node, key string) ([]*ajson.Node, error) {
+	records, err := node.GetKey(key)
+	if err != nil {
+		return nil, err
+	}
+
+	arr, err := records.GetArray()
+	if err != nil {
+		return nil, ErrNotArray
+	}
+
+	return arr, nil
+}
+
+func (jsonManager) ArrSize(node *ajson.Node, key string) (int64, error) {
+	innerNode, err := node.GetKey(key)
+	if err != nil {
+		return 0, err
+	}
+
+	if !innerNode.IsArray() {
+		return 0, ErrNotArray
+	}
+
+	return int64(innerNode.Size()), nil
+}
+
+func (jsonManager) GetString(node *ajson.Node, key string, optional bool) (string, error) {
+	if optional && !node.HasKey(key) {
+		// null value in payload is allowed
+		return "", nil
+	}
+
+	innerNode, err := node.GetKey(key)
+	if err != nil {
+		return "", err
+	}
+
+	txt, err := innerNode.GetString()
+	if err != nil {
+		return "", ErrNotString
+	}
+
+	return txt, nil
 }
