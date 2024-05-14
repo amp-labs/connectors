@@ -65,7 +65,6 @@ const (
 	Zoom                                Provider = "zoom"
 	Zuora                               Provider = "zuora"
 	OneDrive                            Provider = "oneDrive"
-	OneDrive                            Provider = "oneDrive"
 )
 
 // ================================================================================
@@ -1580,31 +1579,6 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
 			},
-		},
-		Support: Support{
-			BulkWrite: BulkWriteSupport{
-				Insert: false,
-				Update: false,
-				Upsert: false,
-				Delete: false,
-			},
-			Proxy:     false,
-			Read:      false,
-			Subscribe: false,
-			Write:     false,
-		},
-	},
-
-	// OneDrive configuration
-	OneDrive: {
-		AuthType: Oauth2,
-		BaseURL:  "https://graph.microsoft.com",
-		OauthOpts: OauthOpts{
-			GrantType:                 AuthorizationCode,
-			AuthURL:                   "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
-			TokenURL:                  "https://login.microsoftonline.com/common/oauth2/v2.0/token",
-			ExplicitScopesRequired:    true,
-			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
