@@ -43,6 +43,9 @@ var (
 	// ErrNotJSON is returned when a response is not JSON.
 	ErrNotJSON = errors.New("response is not JSON")
 
+	// ErrNotXML is returned when a response is not XML.
+	ErrNotXML = errors.New("response is not XML")
+
 	// ErrMissingOauthConfig is returned when the OAuth config is missing.
 	ErrMissingOauthConfig = errors.New("missing OAuth config")
 
@@ -57,6 +60,9 @@ var (
 
 	// ErrMissingObjects is returned when no objects are provided in the request.
 	ErrMissingObjects = errors.New("no objects provided")
+
+	// ErrMissingRecordID is returned when resource id is missing in the request.
+	ErrMissingRecordID = errors.New("no object ID provided")
 
 	// ErrInvalidPathJoin is returned when the path join is invalid.
 	ErrInvalidPathJoin = errors.New("invalid path join")
@@ -81,7 +87,7 @@ type ReadParams struct {
 	// The fields we are reading from the object, e.g. ["Id", "Name", "BillingCity"]
 	Fields []string // required, at least one field needed
 	// NextPage is an opaque token that can be used to get the next page of results.
-	NextPage string // optional, only set this if you want to read the next page of results
+	NextPage NextPageToken // optional, only set this if you want to read the next page of results
 	// Since is a timestamp that can be used to get only records that have changed since that time.
 	Since time.Time // optional, omit this to fetch all records
 	// Deleted is true if we want to read deleted records instead of active records.
@@ -101,11 +107,24 @@ type WriteParams struct {
 	RecordData any // required
 }
 
+// DeleteParams defines how we are deleting data in SaaS API.
+type DeleteParams struct {
+	// The name of the object we are deleting, e.g. "Account"
+	ObjectName string // required
+
+	// The external ID of the object instance we are removing.
+	RecordId string // required
+}
+
 // NextPageToken is an opaque token that can be used to get the next page of results.
 // Callers are encouraged to treat this as an opaque string, and not attempt to parse it.
 // And although each provider will be different, callers should expect that this token
 // will expire after some period of time. So long-term storage of this token is not recommended.
 type NextPageToken string
+
+func (t NextPageToken) String() string {
+	return string(t)
+}
 
 // ReadResult is what's returned from reading data via the Read call.
 type ReadResult struct {
@@ -139,6 +158,12 @@ type WriteResult struct {
 	Errors []interface{} `json:"errors,omitempty"` // optional
 	// Data is a JSON node containing data about the properties that were updated.
 	Data map[string]interface{} `json:"data,omitempty"` // optional
+}
+
+// DeleteResult is what's returned from deleting data via the Delete call.
+type DeleteResult struct {
+	// Success is true if deletion succeeded.
+	Success bool `json:"success"`
 }
 
 // NewHTTPStatusError creates a new error with the given HTTP status.

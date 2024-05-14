@@ -5,11 +5,12 @@ go 1.21
 require (
 	github.com/brianvoe/gofakeit/v6 v6.28.0
 	github.com/go-playground/validator v9.31.0+incompatible
+	github.com/go-test/deep v1.1.0
 	github.com/joho/godotenv v1.5.1
 	github.com/spyzhov/ajson v0.9.1
 	github.com/stretchr/testify v1.9.0
 	github.com/subchen/go-xmldom v1.1.2
-	golang.org/x/oauth2 v0.19.0
+	golang.org/x/oauth2 v0.20.0
 )
 
 require (

@@ -49,7 +49,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	if len(config.NextPage) > 0 {
 		// If NextPage is set, then we're reading the next page of results.
 		// All that matters is the NextPage URL, the fields are ignored.
-		rsp, err = c.get(ctx, config.NextPage)
+		rsp, err = c.get(ctx, config.NextPage.String())
 	} else {
 		// If NextPage is not set, then we're reading the first page of results.
 		// We need to construct the query and then make the request.
