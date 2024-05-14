@@ -66,14 +66,6 @@ const (
 	Zuora                               Provider = "zuora"
 )
 
-func optionalString(s string) *string {
-	if s == "" {
-		return nil
-	}
-
-	return &s
-}
-
 // ================================================================================
 // Contains critical provider configuration (using types from types.gen.go)
 // ================================================================================
@@ -938,7 +930,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 
 	// Zendesk Support configuration
 	ZendeskSupport: {
-		DisplayName: optionalString("Zendesk Support"),
+		DisplayName: "Zendesk Support",
 		AuthType:    Oauth2,
 		BaseURL:     "https://{{.workspace}}.zendesk.com",
 		OauthOpts: OauthOpts{
@@ -963,7 +955,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	},
 
 	ZendeskChat: {
-		DisplayName: optionalString("Zendesk Chat"),
+		DisplayName: "Zendesk Chat",
 		AuthType:    Oauth2,
 		BaseURL:     "https://www.zopim.com",
 		OauthOpts: OauthOpts{

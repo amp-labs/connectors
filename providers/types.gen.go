@@ -52,7 +52,7 @@ type ProviderInfo struct {
 	BaseURL  string   `json:"baseURL" validate:"required"`
 
 	// DisplayName The display name of the provider, if omitted, defaults to provider name.
-	DisplayName  *string      `json:"displayName,omitempty"`
+	DisplayName  string       `json:"displayName,omitempty"`
 	OauthOpts    OauthOpts    `json:"oauthOpts" validate:"required"`
 	ProviderOpts ProviderOpts `json:"providerOpts"`
 	Support      Support      `json:"support" validate:"required"`
