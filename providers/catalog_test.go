@@ -1814,6 +1814,42 @@ var testCases = []struct { // nolint
 		},
 		expectedErr: nil,
 	},
+
+	{
+		provider:    Talkdesk,
+		description: "Valid Talkdesk provider config with substitutions",
+		substitutions: map[string]string{
+			"workspace": "ampersand-dev",
+		},
+		expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
+				AuthURL:                   "https://ampersand-dev.talkdeskid.com/oauth/authorize",
+				TokenURL:                  "https://ampersand-dev.talkdeskid.com/oauth/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: true,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
+			},
+			Support: Support{
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+
+			BaseURL: "https://api.talkdeskapp.com",
+		},
+		expectedErr: nil,
+	},
 }
 
 func TestReadInfo(t *testing.T) { // nolint

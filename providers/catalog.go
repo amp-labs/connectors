@@ -65,6 +65,7 @@ const (
 	Zoom                                Provider = "zoom"
 	Zuora                               Provider = "zuora"
 	Aircall                             Provider = "aircall"
+	Talkdesk                            Provider = "talkdesk"
 )
 
 // ================================================================================
@@ -1606,6 +1607,34 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://api.aircall.io/v1/oauth/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Talkdesk Configuration
+	Talkdesk: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.talkdeskapp.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://{{.workspace}}.talkdeskid.com/oauth/authorize",
+			TokenURL:                  "https://{{.workspace}}.talkdeskid.com/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: true,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
 			},
