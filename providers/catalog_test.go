@@ -1810,7 +1810,7 @@ var testCases = []struct { // nolint
 				Subscribe: false,
 				Write:     false,
 			},
-			BaseURL: "https://api.aircall.io/v1",
+			BaseURL: "https://api.aircall.io",
 		},
 		expectedErr: nil,
 	},

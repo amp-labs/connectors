@@ -1597,7 +1597,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	// Aircall Configuration
 	Aircall: {
 		AuthType: Oauth2,
-		BaseURL:  "https://api.aircall.io/v1",
+		BaseURL:  "https://api.aircall.io",
 		OauthOpts: OauthOpts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://dashboard.aircall.io/oauth/authorize",
