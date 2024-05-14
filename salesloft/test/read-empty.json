@@ -1,0 +1,16 @@
+{
+  "metadata": {
+    "filtering": {},
+    "paging": {
+      "per_page": 25,
+      "current_page": 1,
+      "next_page": null,
+      "prev_page": null
+    },
+    "sorting": {
+      "sort_by": "updated_at",
+      "sort_direction": "DESC NULLS LAST"
+    }
+  },
+  "data": []
+}

@@ -1,0 +1,65 @@
+{
+  "metadata": {
+    "filtering": {},
+    "sorting": {
+      "sort_by": "id",
+      "sort_direction": "DESC NULLS LAST"
+    }
+  },
+  "data": [
+    {
+      "id": 49067,
+      "guid": "0863ed13-7120-479b-8650-206a3679e2fb",
+      "created_at": "2024-02-20T20:03:20.996772-05:00",
+      "updated_at": "2024-04-27T07:18:23.531659-04:00",
+      "name": "Int User",
+      "first_name": "Int",
+      "last_name": "User",
+      "job_role": null,
+      "active": true,
+      "time_zone": "US/Eastern",
+      "locale_utc_offset": -240,
+      "slack_username": "somebody",
+      "twitter_handle": null,
+      "email": "somebody@withampersand.com",
+      "email_client_email_address": "somebody@withampersand.com",
+      "sending_email_address": "somebody@withampersand.com",
+      "from_address": null,
+      "full_email_address": "\"Int User\" <somebody@withampersand.com>",
+      "bcc_email_address": null,
+      "work_country": null,
+      "seat_package": "premier",
+      "email_signature": "",
+      "email_signature_type": "html",
+      "email_signature_click_tracking_disabled": false,
+      "team_admin": true,
+      "local_dial_enabled": false,
+      "click_to_call_enabled": false,
+      "email_client_configured": false,
+      "crm_connected": false,
+      "external_feature_flags": {
+        "ma_enabled": true,
+        "ma_dev_qa_tools": false,
+        "ma_mobile_workflow": true,
+        "ma_dark_mode": true,
+        "hot_leads": true,
+        "people_crud_allow_create": true,
+        "people_crud_allow_delete": true,
+        "linkedin_oauth_flow": true
+      },
+      "_private_fields": {},
+      "phone_client": {
+        "id": 46885
+      },
+      "phone_number_assignment": null,
+      "group": null,
+      "team": {
+        "_href": "https://api.salesloft.com/v2/team",
+        "id": 111855
+      },
+      "role": {
+        "id": "Admin"
+      }
+    }
+  ]
+}

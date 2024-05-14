@@ -134,7 +134,7 @@ func (h *HTTPClient) Delete(ctx context.Context,
 func (h *HTTPClient) httpGet(ctx context.Context,
 	url string, headers []Header,
 ) (*http.Response, []byte, error) {
-	req, err := makeGetRequest(ctx, url, headers)
+	req, err := MakeGetRequest(ctx, url, headers)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -191,7 +191,7 @@ func (h *HTTPClient) httpDelete(ctx context.Context,
 }
 
 // makeGetRequest creates a GET request with the given headers.
-func makeGetRequest(ctx context.Context, url string, headers []Header) (*http.Request, error) {
+func MakeGetRequest(ctx context.Context, url string, headers []Header) (*http.Request, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %w", err)
