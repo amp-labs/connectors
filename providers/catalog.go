@@ -1090,6 +1090,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	},
 	// HelpScoutMailbox Support Configuration
 	HelpScoutMailbox: {
+		DisplayName: "Help Count",
 		AuthType: Oauth2,
 		BaseURL:  "https://api.helpscout.net",
 		OauthOpts: OauthOpts{
