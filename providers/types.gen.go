@@ -48,8 +48,11 @@ type Provider = string
 
 // ProviderInfo defines model for ProviderInfo.
 type ProviderInfo struct {
-	AuthType     AuthType     `json:"authType" validate:"required"`
-	BaseURL      string       `json:"baseURL" validate:"required"`
+	AuthType AuthType `json:"authType" validate:"required"`
+	BaseURL  string   `json:"baseURL" validate:"required"`
+
+	// DisplayName The display name of the provider, if omitted, defaults to provider name.
+	DisplayName  string       `json:"displayName,omitempty"`
 	OauthOpts    OauthOpts    `json:"oauthOpts" validate:"required"`
 	ProviderOpts ProviderOpts `json:"providerOpts"`
 	Support      Support      `json:"support" validate:"required"`

@@ -931,8 +931,9 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 
 	// Zendesk Support configuration
 	ZendeskSupport: {
-		AuthType: Oauth2,
-		BaseURL:  "https://{{.workspace}}.zendesk.com",
+		DisplayName: "Zendesk Support",
+		AuthType:    Oauth2,
+		BaseURL:     "https://{{.workspace}}.zendesk.com",
 		OauthOpts: OauthOpts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://{{.workspace}}.zendesk.com/oauth/authorizations/new",
@@ -955,8 +956,9 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	},
 
 	ZendeskChat: {
-		AuthType: Oauth2,
-		BaseURL:  "https://www.zopim.com",
+		DisplayName: "Zendesk Chat",
+		AuthType:    Oauth2,
+		BaseURL:     "https://www.zopim.com",
 		OauthOpts: OauthOpts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://www.zopim.com/oauth2/authorizations/new?subdomain={{.workspace}}",
