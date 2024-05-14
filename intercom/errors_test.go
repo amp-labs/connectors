@@ -59,6 +59,9 @@ func TestInterpretJSONError(t *testing.T) { //nolint:funlen
 			},
 			expectedErr: common.ErrLimitExceeded,
 		},
+
+		// TODO test errors response with list of errors
+
 	}
 
 	connector := Connector{}

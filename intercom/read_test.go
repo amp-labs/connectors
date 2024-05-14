@@ -29,6 +29,13 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	// x := mockutils.DataFromFile(t, "read-notes-2-last-page.json")
 	// x := mockutils.DataFromFile(t, "read-conversations.json")
 
+	// TODO think about test cases
+
+	// list => data [popular]
+	// something.list => apply plural form to `something` [common]
+	// event.summary => events (add as exception?) [unique]
+	// Download content data export: returns None in payload [unique]
+
 	tests := []struct {
 		name         string
 		input        common.ReadParams
