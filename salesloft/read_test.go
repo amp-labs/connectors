@@ -1,4 +1,4 @@
-package microsoftdynamicscrm
+package salesloft
 
 import (
 	"context"
@@ -16,16 +16,19 @@ import (
 	"github.com/go-test/deep"
 )
 
-func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
+func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
-	fakeServerResp := mockutils.DataFromFile(t, "read.json")
+	responseEmptyRead := mockutils.DataFromFile(t, "read-empty.json")
+	responseListPeople := mockutils.DataFromFile(t, "read-list-people.json")
+	responseListUsers := mockutils.DataFromFile(t, "read-list-users.json")
 
 	tests := []struct {
 		name         string
 		input        common.ReadParams
 		server       *httptest.Server
 		connector    Connector
+		comparator   func(serverURL string, actual, expected *common.ReadResult) bool // custom comparison
 		expected     *common.ReadResult
 		expectedErrs []error
 	}{
@@ -40,16 +43,13 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			name: "Correct error message is understood from JSON response",
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusBadRequest)
-				writeBody(w, `{
-					"error": {
-						"code": "0x80060888",
-						"message":"Resource not found for the segment 'conacs'."
-					}
+				w.WriteHeader(http.StatusNotFound)
+				mockutils.WriteBody(w, `{
+					"error": "Not Found"
 				}`)
 			})),
 			expectedErrs: []error{
-				common.ErrBadRequest, errors.New("Resource not found for the segment 'conacs'"), // nolint:goerr113
+				common.ErrBadRequest, errors.New("Not Found"), // nolint:goerr113
 			},
 		},
 		{
@@ -57,7 +57,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
-				writeBody(w, `{
+				mockutils.WriteBody(w, `{
 					"garbage": {}
 				}`)
 			})),
@@ -68,8 +68,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
-				writeBody(w, `{
-					"value": {}
+				mockutils.WriteBody(w, `{
+					"data": {}
 				}`)
 			})),
 			expectedErrs: []error{jsonquery.ErrNotArray},
@@ -79,9 +79,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
-				writeBody(w, `{
-					"value": []
-				}`)
+				_, _ = w.Write(responseEmptyRead)
 			})),
 			expected: &common.ReadResult{
 				Data: []common.ReadResultRow{},
@@ -90,84 +88,107 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			expectedErrs: nil,
 		},
 		{
-			name: "Successful read with 2 entries",
+			name: "Next page URL is correctly inferred",
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
-				_, _ = w.Write(fakeServerResp)
+				_, _ = w.Write(responseListPeople)
 			})),
+			comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
+				expectedNextPage := strings.ReplaceAll(expected.NextPage.String(), "{{testServerURL}}", baseURL)
+				return actual.NextPage.String() == expectedNextPage // nolint:nlreturn
+			},
 			expected: &common.ReadResult{
-				Rows: 2,
+				NextPage: "{{testServerURL}}?page=2&per_page=100",
+			},
+			expectedErrs: nil,
+		},
+		{
+			name: "Successful read with 25 entries, checking one row",
+			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusOK)
+				_, _ = w.Write(responseListPeople)
+			})),
+			comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
+				return mockutils.ReadResultComparator.SubsetRaw(actual, expected) &&
+					actual.Done == expected.Done &&
+					actual.Rows == expected.Rows
+			},
+			expected: &common.ReadResult{
+				Rows: 25,
+				// We are only interested to validate only first Read Row!
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{},
 					Raw: map[string]any{
-						"@odata.etag":   "W/\"4372108\"",
-						"fullname":      "Heriberto Nathan",
-						"emailaddress1": "heriberto@northwindtraders.com",
-						"fax":           "614-555-0122",
-						"familystatuscode@OData.Community.Display.V1.FormattedValue": "Single",
-						"familystatuscode": float64(1),
-						"contactid":        "cdcfa450-cb0c-ea11-a813-000d3a1b1223",
-					},
-				}, {
-					Fields: map[string]any{},
-					Raw: map[string]any{
-						"@odata.etag":   "W/\"4372115\"",
-						"fullname":      "Dwayne Elijah",
-						"emailaddress1": "dwayne@alpineskihouse.com",
-						"fax":           "281-555-0158",
-						"familystatuscode@OData.Community.Display.V1.FormattedValue": "Single",
-						"familystatuscode": float64(1),
-						"contactid":        "9fd4a450-cb0c-ea11-a813-000d3a1b1223",
+						"first_name":             "Lynnelle",
+						"email_address":          "losbourn29@paypal.com",
+						"full_email_address":     "\"Lynnelle new\" <losbourn29@paypal.com>",
+						"person_company_website": "http://paypal.com",
 					},
 				}},
-				NextPage: "https://org5bd08fdd.api.crm.dynamics.com/api/data/v9.2/contacts?$select=fullname,emailaddress1,fax,familystatuscode&$skiptoken=%3Ccookie%20pagenumber=%222%22%20pagingcookie=%22%253ccookie%2520page%253d%25221%2522%253e%253ccontactid%2520last%253d%2522%257b9FD4A450-CB0C-EA11-A813-000D3A1B1223%257d%2522%2520first%253d%2522%257bCDCFA450-CB0C-EA11-A813-000D3A1B1223%257d%2522%2520%252f%253e%253c%252fcookie%253e%22%20istracking=%22False%22%20/%3E", // nolint:lll
-				Done:     false,
+				Done: false,
 			},
 			expectedErrs: nil,
 		},
 		{
 			name: "Successful read with chosen fields",
 			input: common.ReadParams{
-				Fields: []string{"fullname", "fax"},
+				Fields: []string{"email_address", "person_company_website"},
 			},
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
-				_, _ = w.Write(fakeServerResp)
+				_, _ = w.Write(responseListPeople)
 			})),
+			comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
+				return mockutils.ReadResultComparator.SubsetFields(actual, expected) &&
+					mockutils.ReadResultComparator.SubsetRaw(actual, expected)
+			},
 			expected: &common.ReadResult{
-				Rows: 2,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
-						"fullname": "Heriberto Nathan",
-						"fax":      "614-555-0122",
+						"email_address":          "losbourn29@paypal.com",
+						"person_company_website": "http://paypal.com",
 					},
 					Raw: map[string]any{
-						"@odata.etag":   "W/\"4372108\"",
-						"fullname":      "Heriberto Nathan",
-						"emailaddress1": "heriberto@northwindtraders.com",
-						"fax":           "614-555-0122",
-						"familystatuscode@OData.Community.Display.V1.FormattedValue": "Single",
-						"familystatuscode": float64(1),
-						"contactid":        "cdcfa450-cb0c-ea11-a813-000d3a1b1223",
-					},
-				}, {
-					Fields: map[string]any{
-						"fullname": "Dwayne Elijah",
-						"fax":      "281-555-0158",
-					},
-					Raw: map[string]any{
-						"@odata.etag":   "W/\"4372115\"",
-						"fullname":      "Dwayne Elijah",
-						"emailaddress1": "dwayne@alpineskihouse.com",
-						"fax":           "281-555-0158",
-						"familystatuscode@OData.Community.Display.V1.FormattedValue": "Single",
-						"familystatuscode": float64(1),
-						"contactid":        "9fd4a450-cb0c-ea11-a813-000d3a1b1223",
+						"first_name":             "Lynnelle",
+						"email_address":          "losbourn29@paypal.com",
+						"full_email_address":     "\"Lynnelle new\" <losbourn29@paypal.com>",
+						"person_company_website": "http://paypal.com",
 					},
 				}},
-				NextPage: "https://org5bd08fdd.api.crm.dynamics.com/api/data/v9.2/contacts?$select=fullname,emailaddress1,fax,familystatuscode&$skiptoken=%3Ccookie%20pagenumber=%222%22%20pagingcookie=%22%253ccookie%2520page%253d%25221%2522%253e%253ccontactid%2520last%253d%2522%257b9FD4A450-CB0C-EA11-A813-000D3A1B1223%257d%2522%2520first%253d%2522%257bCDCFA450-CB0C-EA11-A813-000D3A1B1223%257d%2522%2520%252f%253e%253c%252fcookie%253e%22%20istracking=%22False%22%20/%3E", // nolint:lll
+			},
+			expectedErrs: nil,
+		},
+		{
+			name: "Listing Users without pagination payload",
+			input: common.ReadParams{
+				Fields: []string{"email", "guid"},
+			},
+			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusOK)
+				_, _ = w.Write(responseListUsers)
+			})),
+			comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
+				return mockutils.ReadResultComparator.SubsetFields(actual, expected) &&
+					mockutils.ReadResultComparator.SubsetRaw(actual, expected)
+			},
+			expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"guid":  "0863ed13-7120-479b-8650-206a3679e2fb",
+						"email": "somebody@withampersand.com",
+					},
+					Raw: map[string]any{
+						"name":       "Int User",
+						"first_name": "Int",
+						"last_name":  "User",
+					},
+				}},
+				NextPage: "",
 				Done:     false,
 			},
 			expectedErrs: nil,
@@ -186,7 +207,6 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 
 			connector, err := NewConnector(
 				WithAuthenticatedClient(http.DefaultClient),
-				WithWorkspace("test-workspace"),
 			)
 			if err != nil {
 				t.Fatalf("%s: error in test while constructing connector %v", tt.name, err)
@@ -216,14 +236,18 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			}
 
 			// compare desired output
-			if !reflect.DeepEqual(output, tt.expected) {
+			var ok bool
+			if tt.comparator == nil {
+				// default comparison is concerned about all fields
+				ok = reflect.DeepEqual(output, tt.expected)
+			} else {
+				ok = tt.comparator(tt.server.URL, output, tt.expected)
+			}
+
+			if !ok {
 				diff := deep.Equal(output, tt.expected)
 				t.Fatalf("%s:, \nexpected: (%v), \ngot: (%v), \ndiff: (%v)", tt.name, tt.expected, output, diff)
 			}
 		})
 	}
-}
-
-func writeBody(w http.ResponseWriter, body string) {
-	_, _ = w.Write([]byte(body))
 }

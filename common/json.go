@@ -63,6 +63,17 @@ func (j *JSONHTTPClient) Post(ctx context.Context,
 	return parseJSONResponse(res, body)
 }
 
+func (j *JSONHTTPClient) Put(ctx context.Context,
+	url string, reqBody any, headers ...Header,
+) (*JSONHTTPResponse, error) {
+	res, body, err := j.HTTPClient.Put(ctx, url, reqBody, addAcceptJSONHeader(headers)) //nolint:bodyclose
+	if err != nil {
+		return nil, err
+	}
+
+	return parseJSONResponse(res, body)
+}
+
 func (j *JSONHTTPClient) Patch(ctx context.Context,
 	url string, reqBody any, headers ...Header,
 ) (*JSONHTTPResponse, error) {

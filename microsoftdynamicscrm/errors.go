@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 )
 
@@ -15,30 +14,7 @@ func (*Connector) interpretJSONError(res *http.Response, body []byte) error { //
 		return fmt.Errorf("interpretJSONError: %w %w", interpreter.ErrUnmarshal, err)
 	}
 
-	switch res.StatusCode {
-	case http.StatusBadRequest:
-		return createError(common.ErrBadRequest, apiError)
-	case http.StatusUnauthorized:
-		return createError(common.ErrAccessToken, apiError)
-	case http.StatusForbidden:
-		return createError(common.ErrForbidden, apiError)
-	case http.StatusNotFound:
-		return createError(common.ErrBadRequest, apiError) // TODO more specific error
-	case http.StatusMethodNotAllowed:
-		return createError(common.ErrBadRequest, apiError) // TODO more specific error
-	case http.StatusPreconditionFailed:
-		return createError(common.ErrBadRequest, apiError) // TODO more specific error
-	case http.StatusRequestEntityTooLarge:
-		return createError(common.ErrBadRequest, apiError) // TODO more specific error
-	case http.StatusTooManyRequests:
-		return createError(common.ErrLimitExceeded, apiError)
-	case http.StatusNotImplemented:
-		return createError(common.ErrNotImplemented, apiError)
-	case http.StatusServiceUnavailable:
-		return createError(common.ErrServer, apiError)
-	default:
-		return common.InterpretError(res, body)
-	}
+	return createError(interpreter.DefaultStatusCodeMappingToErr(res, body), apiError)
 }
 
 type CRMResponseError struct {

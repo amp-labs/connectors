@@ -18,10 +18,7 @@ import (
 func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
-	fakeServerResp, err := mockutils.DataFromFile("metadata.xml")
-	if err != nil {
-		t.Fatalf("failed to start test, input file missing, %v", err)
-	}
+	fakeServerResp := mockutils.DataFromFile(t, "metadata.xml")
 
 	tests := []struct {
 		name                string
@@ -162,7 +159,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				WithWorkspace("test-workspace"),
 			)
 			if err != nil {
-				t.Fatalf("%s: error in test while constructin connector %v", tt.name, err)
+				t.Fatalf("%s: error in test while constructing connector %v", tt.name, err)
 			}
 
 			// for testing we want to redirect calls to our mock server

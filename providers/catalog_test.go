@@ -145,7 +145,7 @@ var testCases = []struct { // nolint
 					Delete: false,
 				},
 				Subscribe: false,
-				Proxy:     false,
+				Proxy:     true,
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
@@ -591,10 +591,15 @@ var testCases = []struct { // nolint
 		expected: &ProviderInfo{
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
 				AuthURL:                   "https://www.dropbox.com/oauth2/authorize",
 				TokenURL:                  "https://api.dropboxapi.com/oauth2/token",
 				ExplicitScopesRequired:    false,
 				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField:      "scope",
+					ConsumerRefField: "account_id",
+				},
 			},
 			Support: Support{
 				BulkWrite: BulkWriteSupport{
@@ -603,7 +608,7 @@ var testCases = []struct { // nolint
 					Upsert: false,
 					Delete: false,
 				},
-				Proxy:     false,
+				Proxy:     true,
 				Read:      false,
 				Subscribe: false,
 				Write:     false,
@@ -666,8 +671,7 @@ var testCases = []struct { // nolint
 				ExplicitWorkspaceRequired: false,
 				ExplicitScopesRequired:    true,
 				TokenMetadataFields: TokenMetadataFields{
-					ScopesField:      "scope",
-					ConsumerRefField: "client_id",
+					ScopesField: "scope",
 				},
 			},
 			BaseURL: "https://api.gong.io",
@@ -728,36 +732,35 @@ var testCases = []struct { // nolint
 		},
 		expectedErr: nil,
 	},
-	// TODO: uncomment this when the docusign connector is uncommented
-	//{
-	//	provider: Docusign,
-	//	substitutions: map[string]string{
-	//		"server": "example",
-	//	},
-	//	expected: &ProviderInfo{
-	//		Support: Support{
-	//			Read:  false,
-	//			Write: false,
-	//			BulkWrite: BulkWriteSupport{
-	//				Insert: false,
-	//				Update: false,
-	//				Upsert: false,
-	//				Delete: false,
-	//			},
-	//			Subscribe: false,
-	//			Proxy:     false,
-	//		},
-	//		AuthType: Oauth2,
-	//		OauthOpts: OauthOpts{
-	//			AuthURL:                   "https://account.docusign.com/oauth/auth",
-	//			TokenURL:                  "https://account.docusign.com/oauth/token",
-	//			ExplicitScopesRequired:    true,
-	//			ExplicitWorkspaceRequired: false,
-	//		},
-	//		BaseURL: "https://example.docusign.net",
-	//	},
-	//	expectedErr: nil,
-	// },
+	{
+		provider: Docusign,
+		substitutions: map[string]string{
+			"server": "example",
+		},
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://account.docusign.com/oauth/auth",
+				TokenURL:                  "https://account.docusign.com/oauth/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+			},
+			BaseURL: "https://example.docusign.net",
+		},
+		expectedErr: nil,
+	},
 	{
 		provider: DocusignDeveloper,
 		expected: &ProviderInfo{
@@ -802,7 +805,7 @@ var testCases = []struct { // nolint
 					Delete: false,
 				},
 				Subscribe: false,
-				Proxy:     false,
+				Proxy:     true,
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
@@ -895,7 +898,7 @@ var testCases = []struct { // nolint
 				AuthURL:                   "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
 				TokenURL:                  "https://login.microsoftonline.com/common/oauth2/v2.0/token",
 				ExplicitScopesRequired:    true,
-				ExplicitWorkspaceRequired: true,
+				ExplicitWorkspaceRequired: false,
 			},
 			BaseURL: "https://testing.api.crm.dynamics.com",
 		},
@@ -1005,7 +1008,7 @@ var testCases = []struct { // nolint
 					Delete: false,
 				},
 				Subscribe: false,
-				Proxy:     false,
+				Proxy:     true,
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
@@ -1109,6 +1112,68 @@ var testCases = []struct { // nolint
 		expectedErr: nil,
 	},
 	{
+		provider:    IroncladDemo,
+		description: "IroncladDemo config with no substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Read:      false,
+				Write:     false,
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://demo.ironcladapp.com/oauth/authorize",
+				TokenURL:                  "https://demo.ironcladapp.com/oauth/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+				GrantType:                 AuthorizationCode,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
+			},
+			BaseURL: "https://demo.ironcladapp.com",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    IroncladEU,
+		description: "IroncladEU config with no substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Read:      false,
+				Write:     false,
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://eu1.ironcladapp.com/oauth/authorize",
+				TokenURL:                  "https://eu1.ironcladapp.com/oauth/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+				GrantType:                 AuthorizationCode,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
+			},
+			BaseURL: "https://eu1.ironcladapp.com",
+		},
+		expectedErr: nil,
+	},
+	{
 		provider:    Airtable,
 		description: "Valid Airtable provider config with no substitutions",
 		expected: &ProviderInfo{
@@ -1140,6 +1205,37 @@ var testCases = []struct { // nolint
 		expectedErr: nil,
 	},
 	{
+		provider:    Ironclad,
+		description: "Ironclad config with no substitutions",
+		expected: &ProviderInfo{
+			Support: Support{
+				Read:  false,
+				Write: false,
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Subscribe: false,
+				Proxy:     false,
+			},
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://ironcladapp.com/oauth/authorize",
+				TokenURL:                  "https://ironcladapp.com/oauth/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+				GrantType:                 AuthorizationCode,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
+			},
+			BaseURL: "https://ironcladapp.com",
+		},
+		expectedErr: nil,
+	},
+	{
 		provider:    Slack,
 		description: "Valid Slack provider config with non-existent substitutions",
 		expected: &ProviderInfo{
@@ -1161,7 +1257,7 @@ var testCases = []struct { // nolint
 				AuthURL:                   "https://slack.com/oauth/v2/authorize",
 				TokenURL:                  "https://slack.com/api/oauth.v2.access",
 				ExplicitScopesRequired:    true,
-				ExplicitWorkspaceRequired: true,
+				ExplicitWorkspaceRequired: false,
 				TokenMetadataFields: TokenMetadataFields{
 					ScopesField:       "scope",
 					WorkspaceRefField: "workspace_name",
@@ -1414,7 +1510,7 @@ var testCases = []struct { // nolint
 		expectedErr: nil,
 	},
 	{
-		provider:    GoogleMail,
+		provider:    Gmail,
 		description: "Valid GoogleMail provider config with no substitutions",
 		expected: &ProviderInfo{
 			AuthType: Oauth2,
@@ -1572,7 +1668,7 @@ var testCases = []struct { // nolint
 		provider:    Zuora,
 		description: "Valid Zuora provider config with substitutions",
 		substitutions: map[string]string{
-			"subdomain": "rest.test",
+			"workspace": "rest.test",
 		},
 		expected: &ProviderInfo{
 			AuthType: Oauth2,
@@ -1581,7 +1677,7 @@ var testCases = []struct { // nolint
 				AuthURL:                   "https://rest.test.zuora.com/oauth/auth_mock",
 				TokenURL:                  "https://rest.test.zuora.com/oauth/token",
 				ExplicitScopesRequired:    false,
-				ExplicitWorkspaceRequired: false,
+				ExplicitWorkspaceRequired: true,
 			},
 			Support: Support{
 				BulkWrite: BulkWriteSupport{
@@ -1653,6 +1749,68 @@ var testCases = []struct { // nolint
 				Write:     false,
 			},
 			BaseURL: "https://api.clickup.com",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    Discord,
+		description: "Valid Discord provider config with no substitutions",
+		expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
+				AuthURL:                   "https://discord.com/oauth2/authorize",
+				TokenURL:                  "https://discord.com/api/oauth2/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
+			},
+			Support: Support{
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+			BaseURL: "https://discord.com",
+		},
+		expectedErr: nil,
+	},
+	{
+		provider:    Aircall,
+		description: "Valid Aircall provider config without substitutions",
+		expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
+				AuthURL:                   "https://dashboard.aircall.io/oauth/authorize",
+				TokenURL:                  "https://api.aircall.io/v1/oauth/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
+			},
+			Support: Support{
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+			BaseURL: "https://api.aircall.io",
 		},
 		expectedErr: nil,
 	},
