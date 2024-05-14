@@ -1687,6 +1687,37 @@ var testCases = []struct { // nolint
 		},
 		expectedErr: nil,
 	},
+	{
+		provider:    Drift,
+		description: "Valid Drift provider config with no substitutions",
+		expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				GrantType:                 AuthorizationCode,
+				AuthURL:                   "https://dev.drift.com/authorize",
+				TokenURL:                  "https://driftapi.com/oauth2/token",
+				ExplicitScopesRequired:    false,
+				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields:       TokenMetadataFields{
+					WorkspaceRefField: "orgId",
+				},
+			},
+			Support: Support{
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+			BaseURL: "https://driftapi.com",
+		},
+		expectedErr: nil,
+	},
 }
 
 func TestReadInfo(t *testing.T) { // nolint
