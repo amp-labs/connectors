@@ -692,7 +692,7 @@ var testCases = []struct { // nolint
 					Delete: false,
 				},
 				Subscribe: false,
-				Proxy:     false,
+				Proxy:     true,
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
@@ -700,6 +700,9 @@ var testCases = []struct { // nolint
 				TokenURL:                  "https://zoom.us/oauth/token",
 				ExplicitScopesRequired:    false,
 				ExplicitWorkspaceRequired: false,
+				TokenMetadataFields: TokenMetadataFields{
+					ScopesField: "scope",
+				},
 			},
 			BaseURL: "https://api.zoom.us",
 		},
