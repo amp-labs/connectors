@@ -349,8 +349,8 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	// ZohoCRM configuration
 	ZohoCRM: {
 		DisplayName: "Zoho CRM",
-		AuthType: Oauth2,
-		BaseURL:  "https://www.zohoapis.com",
+		AuthType:    Oauth2,
+		BaseURL:     "https://www.zohoapis.com",
 		OauthOpts: OauthOpts{
 			AuthURL:                   "https://accounts.zoho.com/oauth/v2/auth",
 			TokenURL:                  "https://accounts.zoho.com/oauth/v2/token",
@@ -832,9 +832,9 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	},
 
 	MicrosoftDynamics365CRM: {
-		DisplayName:"Microsoft Dynamics CRM",
-		AuthType: Oauth2,
-		BaseURL:  "https://{{.workspace}}.api.crm.dynamics.com",
+		DisplayName: "Microsoft Dynamics CRM",
+		AuthType:    Oauth2,
+		BaseURL:     "https://{{.workspace}}.api.crm.dynamics.com",
 		OauthOpts: OauthOpts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
@@ -859,8 +859,8 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	// ConstantContact configuration
 	ConstantContact: {
 		DisplayName: "Constant Contact",
-		AuthType: Oauth2,
-		BaseURL:  "https://api.cc.email",
+		AuthType:    Oauth2,
+		BaseURL:     "https://api.cc.email",
 		OauthOpts: OauthOpts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://authz.constantcontact.com/oauth2/default/v1/authorize",
@@ -885,8 +885,8 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	// Microsoft Dynamics 365 Business Central configuration
 	MicrosoftDynamics365BusinessCentral: {
 		DisplayName: "Dynamics 365 Business Central",
-		AuthType: Oauth2,
-		BaseURL:  "https://api.businesscentral.dynamics.com",
+		AuthType:    Oauth2,
+		BaseURL:     "https://api.businesscentral.dynamics.com",
 		OauthOpts: OauthOpts{
 			AuthURL:                   "https://login.microsoftonline.com/{{.workspace}}/oauth2/v2.0/authorize",
 			TokenURL:                  "https://login.microsoftonline.com/{{.workspace}}/oauth2/v2.0/token",
@@ -1121,8 +1121,8 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	// HelpScoutMailbox Support Configuration
 	HelpScoutMailbox: {
 		DisplayName: "Help Scout Mailbox",
-		AuthType: Oauth2,
-		BaseURL:  "https://api.helpscout.net",
+		AuthType:    Oauth2,
+		BaseURL:     "https://api.helpscout.net",
 		OauthOpts: OauthOpts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://secure.helpscout.net/authentication/authorizeClientApplication",
@@ -1175,8 +1175,8 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	// Atlassian configuration
 	Atlassian: {
 		DisplayName: "Atlassian Jira",
-		AuthType: Oauth2,
-		BaseURL:  "https://api.atlassian.com",
+		AuthType:    Oauth2,
+		BaseURL:     "https://api.atlassian.com",
 		OauthOpts: OauthOpts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://auth.atlassian.com/authorize",
@@ -1310,8 +1310,8 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	// GoogleContacts Support Configuration
 	GoogleContacts: {
 		DisplayName: "Google Contacts",
-		AuthType: Oauth2,
-		BaseURL:  "https://people.googleapis.com",
+		AuthType:    Oauth2,
+		BaseURL:     "https://people.googleapis.com",
 		OauthOpts: OauthOpts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://accounts.google.com/o/oauth2/v2/auth",
@@ -1498,8 +1498,8 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	// DropboxSign Configuration
 	DropboxSign: {
 		DisplayName: "Dropbox Sign",
-		AuthType: Oauth2,
-		BaseURL:  "https://api.hellosign.com",
+		AuthType:    Oauth2,
+		BaseURL:     "https://api.hellosign.com",
 		OauthOpts: OauthOpts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://app.hellosign.com/oauth/authorize",
@@ -1602,8 +1602,8 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 
 	IroncladEU: {
 		DisplayName: "Ironclad Europe",
-		AuthType: Oauth2,
-		BaseURL:  "https://eu1.ironcladapp.com",
+		AuthType:    Oauth2,
+		BaseURL:     "https://eu1.ironcladapp.com",
 		OauthOpts: OauthOpts{
 			AuthURL:                   "https://eu1.ironcladapp.com/oauth/authorize",
 			TokenURL:                  "https://eu1.ironcladapp.com/oauth/token",
