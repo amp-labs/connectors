@@ -2,10 +2,12 @@ package intercom
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 )
 
@@ -25,13 +27,32 @@ Response example:
 	}
 */
 
+var ErrUnknownErrorResponseFormat = errors.New("error response has unexpected format")
+
 func (*Connector) interpretJSONError(res *http.Response, body []byte) error { //nolint:cyclop
 	var payload ResponseError
 	if err := json.Unmarshal(body, &payload); err != nil {
 		return fmt.Errorf("interpretJSONError general: %w %w", interpreter.ErrUnmarshal, err)
 	}
 
-	return payload.combineErr(interpreter.DefaultStatusCodeMappingToErr(res, body))
+	return payload.combineErr(statusCodeMapping(res, body))
+}
+
+func statusCodeMapping(res *http.Response, body []byte) error {
+	switch res.StatusCode {
+	case http.StatusPaymentRequired:
+		return common.ErrBadRequest
+	case http.StatusNotAcceptable:
+		return common.ErrBadRequest
+	case http.StatusConflict:
+		return common.ErrBadRequest
+	case http.StatusUnsupportedMediaType:
+		return common.ErrBadRequest
+	case http.StatusUnprocessableEntity:
+		return common.ErrBadRequest
+	default:
+		return interpreter.DefaultStatusCodeMappingToErr(res, body)
+	}
 }
 
 type ResponseError struct {
@@ -59,5 +80,10 @@ func (r ResponseError) combineErr(base error) error {
 		messages[i] = descr.Code + message
 	}
 
-	return fmt.Errorf("%w: %s", base, strings.Join(messages, ","))
+	data := strings.Join(messages, ",")
+	if len(data) == 0 {
+		return errors.Join(base, ErrUnknownErrorResponseFormat)
+	}
+
+	return fmt.Errorf("%w: %s", base, data)
 }

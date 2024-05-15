@@ -1,0 +1,9 @@
+{
+  "errors": [
+    {
+      "code": "media_type_not_acceptable",
+      "message": "The Accept header should send a media type of application/json"
+    }
+  ],
+  "type": "error.list"
+}

@@ -3,14 +3,18 @@ package intercom
 import (
 	"errors"
 	"net/http"
+	"strings"
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
 )
 
 func TestInterpretJSONError(t *testing.T) { //nolint:funlen
 	t.Parallel()
+
+	responseNotAcceptable := mockutils.DataFromFile(t, "media-not-acceptable.json")
 
 	type input struct {
 		res  *http.Response
@@ -18,10 +22,10 @@ func TestInterpretJSONError(t *testing.T) { //nolint:funlen
 	}
 
 	tests := []struct {
-		name        string
-		input       input
-		comparator  func(actual, expected error) bool
-		expectedErr error
+		name         string
+		input        input
+		comparator   func(actual error, expectedErrs []error) bool
+		expectedErrs []error
 	}{
 		{
 			name: "Missing response body cannot be unmarshalled",
@@ -29,7 +33,7 @@ func TestInterpretJSONError(t *testing.T) { //nolint:funlen
 				res:  nil,
 				body: nil,
 			},
-			expectedErr: interpreter.ErrUnmarshal,
+			expectedErrs: []error{interpreter.ErrUnmarshal},
 		},
 		{
 			name: "Empty response body cannot be unmarshalled",
@@ -37,7 +41,7 @@ func TestInterpretJSONError(t *testing.T) { //nolint:funlen
 				res:  nil,
 				body: []byte(``),
 			},
-			expectedErr: interpreter.ErrUnmarshal,
+			expectedErrs: []error{interpreter.ErrUnmarshal},
 		},
 		{
 			name: "Unknown response status produces caller error",
@@ -47,7 +51,7 @@ func TestInterpretJSONError(t *testing.T) { //nolint:funlen
 				},
 				body: []byte(`{}`),
 			},
-			expectedErr: common.ErrCaller,
+			expectedErrs: []error{common.ErrCaller},
 		},
 		{
 			name: "Correct status of TooManyRequests",
@@ -57,11 +61,34 @@ func TestInterpretJSONError(t *testing.T) { //nolint:funlen
 				},
 				body: []byte(`{"data":{"base":"BTC","currency":"USD","amount":4225.87}}`),
 			},
-			expectedErr: common.ErrLimitExceeded,
+			expectedErrs: []error{common.ErrLimitExceeded},
 		},
-
-		// TODO test errors response with list of errors
-
+		{
+			name: "Conflict response with missing error codes",
+			input: input{
+				res: &http.Response{
+					StatusCode: http.StatusConflict,
+				},
+				// response body should have `code`. In addition, 409 is mapped correctly
+				body: []byte(`{"errors": [{"details":"conflicting values"}]}`),
+			},
+			expectedErrs: []error{common.ErrBadRequest, ErrUnknownErrorResponseFormat}, // nolint:goerr113
+		},
+		{
+			name: "Correct status and message handling",
+			input: input{
+				res: &http.Response{
+					StatusCode: http.StatusNotAcceptable,
+				},
+				body: responseNotAcceptable,
+			},
+			expectedErrs: []error{
+				common.ErrBadRequest,
+				errors.New( // nolint:goerr113
+					"media_type_not_acceptable[The Accept header should send a media type of application/json]",
+				),
+			},
+		},
 	}
 
 	connector := Connector{}
@@ -73,16 +100,28 @@ func TestInterpretJSONError(t *testing.T) { //nolint:funlen
 			t.Parallel()
 
 			err := connector.interpretJSONError(tt.input.res, tt.input.body)
-
-			var ok bool
-			if tt.comparator == nil {
-				ok = errors.Is(err, tt.expectedErr)
+			if err != nil {
+				if len(tt.expectedErrs) == 0 {
+					t.Fatalf("%s: expected no errors, got: (%v)", tt.name, err)
+				}
 			} else {
-				ok = tt.comparator(err, tt.expectedErr)
+				// check that missing error is what is expected
+				if len(tt.expectedErrs) != 0 {
+					t.Fatalf("%s: expected errors (%v), but got nothing", tt.name, tt.expectedErrs)
+				}
 			}
 
-			if !ok {
-				t.Fatalf("%s: expected: (%v), got: (%v)", tt.name, tt.expectedErr, err)
+			// check every error
+			if tt.comparator == nil {
+				for _, expectedErr := range tt.expectedErrs {
+					if !errors.Is(err, expectedErr) && !strings.Contains(err.Error(), expectedErr.Error()) {
+						t.Fatalf("%s: expected Error: (%v), got: (%v)", tt.name, expectedErr, err)
+					}
+				}
+			} else { // nolint:gocritic
+				if !tt.comparator(err, tt.expectedErrs) {
+					t.Fatalf("%s: expected: (%v), got: (%v)", tt.name, tt.expectedErrs, err)
+				}
 			}
 		})
 	}
