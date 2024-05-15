@@ -1826,7 +1826,7 @@ var testCases = []struct { // nolint
 				ExplicitScopesRequired:    true,
 				ExplicitWorkspaceRequired: false,
 				TokenMetadataFields: TokenMetadataFields{
-					ScopesField: "scope",
+					ConsumerRefField: "user_id",
 				},
 			},
 			Support: Support{
@@ -1856,9 +1856,6 @@ var testCases = []struct { // nolint
 				TokenURL:                  "https://www.facebook.com/dialog/oauth",
 				ExplicitScopesRequired:    true,
 				ExplicitWorkspaceRequired: false,
-				TokenMetadataFields: TokenMetadataFields{
-					ScopesField: "scope",
-				},
 			},
 			Support: Support{
 				BulkWrite: BulkWriteSupport{
