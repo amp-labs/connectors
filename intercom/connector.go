@@ -58,7 +58,7 @@ func (c *Connector) Provider() providers.Provider {
 }
 
 func (c *Connector) String() string {
-	return fmt.Sprintf("%s.Connector", c.Provider())
+	return fmt.Sprintf("%s.Connector[%s]", c.Provider(), c.Module)
 }
 
 // nolint:unused
