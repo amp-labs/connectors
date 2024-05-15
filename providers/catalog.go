@@ -348,6 +348,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 
 	// ZohoCRM configuration
 	ZohoCRM: {
+		DisplayName: "Zoho CRM",
 		AuthType: Oauth2,
 		BaseURL:  "https://www.zohoapis.com",
 		OauthOpts: OauthOpts{
@@ -831,6 +832,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	},
 
 	MicrosoftDynamics365CRM: {
+		DisplayName:"Microsoft Dynamics CRM",
 		AuthType: Oauth2,
 		BaseURL:  "https://{{.workspace}}.api.crm.dynamics.com",
 		OauthOpts: OauthOpts{
@@ -856,6 +858,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 
 	// ConstantContact configuration
 	ConstantContact: {
+		DisplayName: "Constant Contact",
 		AuthType: Oauth2,
 		BaseURL:  "https://api.cc.email",
 		OauthOpts: OauthOpts{
@@ -880,6 +883,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 
 	// Microsoft Dynamics 365 Business Central configuration
 	MicrosoftDynamics365BusinessCentral: {
+		DisplayName: "Dynamics 365 Business Central",
 		AuthType: Oauth2,
 		BaseURL:  "https://api.businesscentral.dynamics.com",
 		OauthOpts: OauthOpts{
@@ -1115,6 +1119,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	},
 	// HelpScoutMailbox Support Configuration
 	HelpScoutMailbox: {
+		DisplayName: "Help Scout Mailbox",
 		AuthType: Oauth2,
 		BaseURL:  "https://api.helpscout.net",
 		OauthOpts: OauthOpts{
@@ -1168,6 +1173,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 
 	// Atlassian configuration
 	Atlassian: {
+		DisplayName: "Atlassian Jira",
 		AuthType: Oauth2,
 		BaseURL:  "https://api.atlassian.com",
 		OauthOpts: OauthOpts{
@@ -1302,6 +1308,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 
 	// GoogleContacts Support Configuration
 	GoogleContacts: {
+		DisplayName: "Google Contacts",
 		AuthType: Oauth2,
 		BaseURL:  "https://people.googleapis.com",
 		OauthOpts: OauthOpts{
@@ -1489,6 +1496,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 
 	// DropboxSign Configuration
 	DropboxSign: {
+		DisplayName: "Dropbox Sign",
 		AuthType: Oauth2,
 		BaseURL:  "https://api.hellosign.com",
 		OauthOpts: OauthOpts{
@@ -1592,6 +1600,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	},
 
 	IroncladEU: {
+		DisplayName: "Ironclad Europe",
 		AuthType: Oauth2,
 		BaseURL:  "https://eu1.ironcladapp.com",
 		OauthOpts: OauthOpts{
