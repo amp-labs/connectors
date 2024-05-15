@@ -2,6 +2,7 @@ package intercom
 
 import (
 	"errors"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/jsonquery"
@@ -25,14 +26,27 @@ Response example:
 	  }
 	}
 
-Note: `pages.next` can be null.
+Note:
+
+	=> `pages.next` can be null.
+	=> Sometimes array of objects is not stored at `data` but named after `type`.
 */
 func getTotalSize(node *ajson.Node) (int64, error) {
-	return jsonquery.New(node).ArraySize("data")
+	arrKey, err := extractListFieldName(node)
+	if err != nil {
+		return 0, err
+	}
+
+	return jsonquery.New(node).ArraySize(arrKey)
 }
 
 func getRecords(node *ajson.Node) ([]map[string]any, error) {
-	arr, err := jsonquery.New(node).Array("data", false)
+	arrKey, err := extractListFieldName(node)
+	if err != nil {
+		return nil, err
+	}
+
+	arr, err := jsonquery.New(node).Array(arrKey, false)
 	if err != nil {
 		return nil, err
 	}
@@ -96,6 +110,46 @@ func getMarshaledData(records []map[string]interface{}, fields []string) ([]comm
 	return data, nil
 }
 
-// func getList(node *ajson.Node) (*ajson.Node, error) {
-//	jsonquery.New(node)
-//}
+// The key that stores array in response payload will be dynamically figured out.
+// Ex: {"data": []} vs {"teams":[]} vs {"segments":[]}.
+func extractListFieldName(node *ajson.Node) (string, error) {
+	// default field at which list is stored
+	defaultFieldName := "data"
+
+	fieldName, err := jsonquery.New(node).Str("type", true)
+	if err != nil {
+		return "", err
+	}
+
+	if fieldName == nil {
+		// this object has no `type` field to infer where the array is situated
+		// it is unexpected to encounter it
+		return defaultFieldName, nil
+	}
+
+	name := *fieldName
+	// by applying plural form to the object name we will the name of field containing array
+	// Ex with `list` suffix:
+	// 		activity_log.list => activity_logs
+	// 		admin.list => admins
+	// 		conversation.list => conversations
+	// 		segment.list => segments
+	// 		team.list => teams
+	// Exceptions:
+	//		event.summary => events
+
+	parts := strings.Split(name, ".")
+	if len(parts) == 2 { // nolint:gomnd
+		// custom name is used when it has 2 parts
+		return applyPluralForm(parts[0]), nil
+	}
+
+	// usually when we have a pure `list` type it means array is stored at `data` field
+	return defaultFieldName, nil
+}
+
+func applyPluralForm(word string) string {
+	// The requirement for Intercom's object pluralisation is low and simple
+	// There is no need to consider all English orthography cases
+	return word + "s"
+}

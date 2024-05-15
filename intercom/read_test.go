@@ -23,7 +23,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseContactsFirstPage := mockutils.DataFromFile(t, "read-contacts-1-first-page.json")
 	responseContactsSecondPage := mockutils.DataFromFile(t, "read-contacts-2-second-page.json")
 	responseContactsThirdPage := mockutils.DataFromFile(t, "read-contacts-3-last-page.json")
-	// responseReadConversations := mockutils.DataFromFile(t, "read-conversations.json")
+	responseReadConversations := mockutils.DataFromFile(t, "read-conversations.json")
 	responseNotesFirstPage := mockutils.DataFromFile(t, "read-notes-1-first-page.json")
 	responseNotesSecondPage := mockutils.DataFromFile(t, "read-notes-2-last-page.json")
 
@@ -198,6 +198,38 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				NextPage: "{{testServerURL}}?per_page=50&starting_after=" +
 					"Wy0xLCI2NjQzOWI5NDdiYjA5NWE2ODFmN2ZkOWUiLDNd",
 				Done: false,
+			},
+			expectedErrs: nil,
+		},
+		{
+			name: "Successful read of named list",
+			input: common.ReadParams{
+				Fields: []string{"state"},
+			},
+			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusOK)
+				_, _ = w.Write(responseReadConversations)
+			})),
+			comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
+				return mockutils.ReadResultComparator.SubsetFields(actual, expected) &&
+					actual.NextPage.String() == expected.NextPage.String() &&
+					actual.Done == expected.Done &&
+					actual.Rows == expected.Rows
+			},
+			expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"state": "closed",
+					},
+				}, {
+					Fields: map[string]any{
+						"state": "open",
+					},
+				}},
+				NextPage: "",
+				Done:     true,
 			},
 			expectedErrs: nil,
 		},
