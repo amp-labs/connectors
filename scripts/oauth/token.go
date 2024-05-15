@@ -43,9 +43,13 @@ import (
 // go run token.go
 
 const (
+	HttpProtocol = "http"
+
 	DefaultCredsFile    = "creds.json"
 	DefaultServerPort   = 8080
 	DefaultCallbackPath = "/callbacks/v1/oauth"
+	DefaultSSLCert      = ".ssl/server.crt"
+	DefaultSSLKey       = ".ssl/server.key"
 
 	WaitBeforeExitSeconds    = 1
 	ReadHeaderTimeoutSeconds = 3
@@ -97,6 +101,9 @@ type OAuthApp struct {
 	Config   *oauth2.Config
 	Options  []oauth2.AuthCodeOption
 	State    string
+	Proto    string
+	SSLCert  string
+	SSLKey   string
 }
 
 // ServeHTTP implements the http.Handler interface.
@@ -163,12 +170,15 @@ func (a *OAuthApp) processCallback(writer http.ResponseWriter, request *http.Req
 		return
 	}
 
+	// Print the token which will also print raw metadata
+	fmt.Printf("%+v", tok)
+
 	writer.Header().Set("Content-Type", "application/json")
 	writer.Header().Set("Content-Length", strconv.FormatInt(int64(len(jsonBody)), 10))
 	writer.WriteHeader(http.StatusOK)
 
 	// All done
-	if _, err = writer.Write(jsonBody); err != nil { // nosemgrep
+	if _, err = writer.Write([]byte("Received a token, printed in the console")); err != nil { // nosemgrep
 		slog.Error("Error writing token", "error", err)
 
 		os.Exit(1)
@@ -189,7 +199,7 @@ func (a *OAuthApp) Run() error {
 
 	go func() {
 		time.Sleep(1 * time.Second)
-		openBrowser(fmt.Sprintf("http://localhost:%d", a.Port))
+		openBrowser(fmt.Sprintf("%s://localhost:%d", a.Proto, a.Port))
 	}()
 
 	server := &http.Server{
@@ -197,8 +207,12 @@ func (a *OAuthApp) Run() error {
 		ReadHeaderTimeout: ReadHeaderTimeoutSeconds * time.Second,
 	}
 
-	// nosemgrep: go.lang.security.audit.net.use-tls.use-tls
-	return server.ListenAndServe()
+	if a.Proto == HttpProtocol {
+		// nosemgrep: go.lang.security.audit.net.use-tls.use-tls
+		return server.ListenAndServe()
+	} else {
+		return server.ListenAndServeTLS(a.SSLCert, a.SSLKey)
+	}
 }
 
 // openBrowser tries to open the URL in a browser. Should work on most standard platforms.
@@ -227,6 +241,10 @@ func openBrowser(url string) {
 func setup() *OAuthApp {
 	// Define the CLI flags.
 	port := flag.Int("port", DefaultServerPort, "port to listen on")
+	SSLCert := flag.String("sslcert", DefaultSSLCert, "ssl certificate")
+	SSLKey := flag.String("sslkey", DefaultSSLKey, "ssl key")
+	proto := flag.String("proto", HttpProtocol, "http or https protocol")
+
 	callback := flag.String("callback", DefaultCallbackPath, "the full OAuth callback path (arbitrary)")
 	flag.Parse()
 
@@ -236,13 +254,17 @@ func setup() *OAuthApp {
 	}
 
 	// Determine the OAuth redirect URL.
-	redirect := fmt.Sprintf("http://localhost:%d%s", *port, *callback)
+	redirect := fmt.Sprintf("%s://localhost:%d%s", *proto, *port, *callback)
 
 	// Get the OAuth scopes from the flag.
 	provider := registry.MustString("Provider")
 	clientId := registry.MustString("ClientId")
 	clientSecret := registry.MustString("ClientSecret")
-	state := registry.MustString("State")
+
+	state, err := registry.GetString("State")
+	if err != nil {
+		slog.Warn("no state attached, ensure that the provider doesn't require state")
+	}
 
 	scopes, err := registry.GetString("Scopes")
 	if err != nil {
@@ -255,6 +277,9 @@ func setup() *OAuthApp {
 	app := &OAuthApp{
 		Callback: *callback,
 		Port:     *port,
+		Proto:    *proto,
+		SSLCert:  *SSLCert,
+		SSLKey:   *SSLKey,
 		Config: &oauth2.Config{
 			ClientID:     clientId,
 			ClientSecret: clientSecret,

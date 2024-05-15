@@ -14,9 +14,10 @@ import (
 )
 
 const (
-	Insert BulkWriteMode = "insert"
-	Upsert BulkWriteMode = "upsert"
-	Update BulkWriteMode = "update"
+	Insert BulkOperationMode = "insert"
+	Upsert BulkOperationMode = "upsert"
+	Update BulkOperationMode = "update"
+	Delete BulkOperationMode = "delete"
 
 	JobStateAborted        = "Aborted"
 	JobStateFailed         = "Failed"
@@ -29,16 +30,17 @@ const (
 )
 
 var (
-	ErrKeyNotFound      = errors.New("key not found")
-	ErrUnknownNodeType  = errors.New("unknown node type when parsing JSON")
-	ErrInvalidType      = errors.New("invalid type")
-	ErrInvalidJobState  = errors.New("invalid job state")
-	ErrUnsupportedMode  = errors.New("unsupported mode")
-	ErrReadToByteFailed = errors.New("failed to read data to bytes")
+	ErrKeyNotFound          = errors.New("key not found")
+	ErrUnknownNodeType      = errors.New("unknown node type when parsing JSON")
+	ErrInvalidType          = errors.New("invalid type")
+	ErrInvalidJobState      = errors.New("invalid job state")
+	ErrUnsupportedMode      = errors.New("unsupported mode")
+	ErrReadToByteFailed     = errors.New("failed to read data to bytes")
+	ErrUnsupportedOperation = errors.New("unsupported operation")
 )
 
-// BulkWriteParams defines how we are writing data to a SaaS API.
-type BulkWriteParams struct {
+// BulkOperationParams defines how we are writing data to a SaaS API.
+type BulkOperationParams struct {
 	// The name of the object we are writing, e.g. "Account"
 	ObjectName string // required
 
@@ -49,13 +51,13 @@ type BulkWriteParams struct {
 	CSVData io.Reader // required
 
 	// Salesforce operation mode
-	Mode BulkWriteMode
+	Mode BulkOperationMode
 }
 
-type BulkWriteMode string
+type BulkOperationMode string
 
-// BulkWriteResult is what's returned from writing data via the BulkWrite call.
-type BulkWriteResult struct {
+// BulkOperation is what's returned from writing data via the BulkOperation call.
+type BulkOperationResult struct {
 	// State is the state of the bulk job process
 	State string `json:"state"`
 	// JobId is the ID of the bulk job process
@@ -66,25 +68,26 @@ type GetJobInfoResult struct {
 	Id                     string  `json:"id"`
 	Object                 string  `json:"object"`
 	CreatedById            string  `json:"createdById"`
-	ExternalIdFieldName    string  `json:"externalIdFieldName"`
+	ExternalIdFieldName    string  `json:"externalIdFieldName,omitempty"`
 	State                  string  `json:"state"`
 	Operation              string  `json:"operation"`
 	ColumnDelimiter        string  `json:"columnDelimiter"`
 	LineEnding             string  `json:"lineEnding"`
 	NumberRecordsFailed    float64 `json:"numberRecordsFailed"`
 	NumberRecordsProcessed float64 `json:"numberRecordsProcessed"`
-	ErrorMessage           string  `json:"errorMessage,omitempty"`
+	ErrorMessage           string  `json:"errorMessage"`
 
-	ApexProcessingTime      float64 `json:"apexProcessingTime"`
-	ApiActiveProcessingTime float64 `json:"apiActiveProcessingTime"`
-	ApiVersion              float64 `json:"apiVersion"`
-	ConcurrencyMode         string  `json:"concurrencyMode"`
-	ContentType             string  `json:"contentType"`
-	CreatedDate             string  `json:"createdDate"`
-	JobType                 string  `json:"jobType"`
-	Retries                 float64 `json:"retries"`
-	SystemModstamp          string  `json:"systemModstamp"`
-	TotalProcessingTime     float64 `json:"totalProcessingTime"`
+	ApexProcessingTime      float64 `json:"apexProcessingTime,omitempty"`
+	ApiActiveProcessingTime float64 `json:"apiActiveProcessingTime,omitempty"`
+	ApiVersion              float64 `json:"apiVersion,omitempty"`
+	ConcurrencyMode         string  `json:"concurrencyMode,omitempty"`
+	ContentType             string  `json:"contentType,omitempty"`
+	CreatedDate             string  `json:"createdDate,omitempty"`
+	JobType                 string  `json:"jobType,omitempty"`
+	Retries                 float64 `json:"retries,omitempty"`
+	SystemModstamp          string  `json:"systemModstamp,omitempty"`
+	TotalProcessingTime     float64 `json:"totalProcessingTime,omitempty"`
+	IsPkChunkingSupported   bool    `json:"isPkChunkingSupported,omitempty"`
 }
 
 type FailInfo struct {
@@ -104,101 +107,27 @@ type JobResults struct {
 
 func (c *Connector) BulkWrite( //nolint:funlen,cyclop
 	ctx context.Context,
-	config BulkWriteParams,
-) (*BulkWriteResult, error) {
+	config BulkOperationParams,
+) (*BulkOperationResult, error) {
 	// Only support upsert for now
-	switch config.Mode {
-	case Upsert:
-		break
-	case Insert:
-		return nil, fmt.Errorf("%w: %s", ErrUnsupportedMode, "insert")
-	case Update:
-		return nil, fmt.Errorf("%w: %s", ErrUnsupportedMode, "Update")
-	default:
+	if config.Mode != Upsert {
 		return nil, fmt.Errorf("%w: %s", ErrUnsupportedMode, config.Mode)
 	}
 
-	// cretes batch upload job, returns json with id and other info
-	res, err := c.createJob(ctx, config)
+	jobBody := map[string]any{
+		"object":              config.ObjectName,
+		"externalIdFieldName": config.ExternalIdField,
+		"contentType":         "CSV",
+		"operation":           "upsert",
+		"lineEnding":          "LF",
+	}
+
+	result, err := c.bulkOperation(ctx, config, jobBody)
 	if err != nil {
-		return nil, fmt.Errorf("createJob failed: %w", err)
+		return nil, fmt.Errorf("bulk write failed: %w", err)
 	}
 
-	resObject, err := res.Body.GetObject()
-	if err != nil {
-		return nil, fmt.Errorf(
-			"parsing result of createJob failed: %w",
-			errors.Join(err, common.ErrParseError),
-		)
-	}
-
-	state, err := resObject["state"].GetString()
-	if err != nil {
-		unpacked, _ := resObject["state"].Unpack()
-
-		return nil, fmt.Errorf(
-			"%w: expected salesforce job state to be string in response, got %T",
-			ErrInvalidType,
-			unpacked,
-		)
-	}
-
-	if strings.ToLower(state) != "open" {
-		return nil, fmt.Errorf("%w: expected job state to be open, got %s", ErrInvalidJobState, state)
-	}
-
-	jobId, err := resObject["id"].GetString()
-	if err != nil {
-		unpacked, _ := resObject["id"].Unpack()
-
-		return nil, fmt.Errorf(
-			"%w: expected salesforce job id to be string in response, got %T",
-			ErrInvalidType,
-			unpacked)
-	}
-
-	// upload csv and there is no response body other than status code
-	_, err = c.uploadCSV(ctx, jobId, config)
-	if err != nil {
-		return nil, fmt.Errorf("uploadCSV failed: %w", err)
-	}
-
-	data, err := c.completeUpload(ctx, jobId)
-	if err != nil {
-		return nil, fmt.Errorf("completeUpload failed: %w", err)
-	}
-
-	dataObject, err := data.Body.GetObject()
-	if err != nil {
-		return nil, fmt.Errorf("parsing result of completeUpload failed: %w", errors.Join(err, common.ErrParseError))
-	}
-
-	updatedJobId, err := dataObject["id"].GetString()
-	if err != nil {
-		unpacked, _ := dataObject["id"].Unpack()
-
-		return nil, fmt.Errorf(
-			"%w: expected salesforce job id to be string in response, got %T",
-			ErrInvalidType,
-			unpacked,
-		)
-	}
-
-	completeState, err := dataObject["state"].GetString() //nolint:varnamelen
-	if err != nil {
-		unpacked, _ := resObject["state"].Unpack()
-
-		return nil, fmt.Errorf(
-			"%w: expected salesforce job state to be string in response, got %T",
-			ErrInvalidType,
-			unpacked,
-		)
-	}
-
-	return &BulkWriteResult{
-		JobId: updatedJobId,
-		State: completeState,
-	}, nil
+	return result, nil
 }
 
 func joinURLPath(baseURL string, paths ...string) (string, error) {
@@ -210,30 +139,22 @@ func joinURLPath(baseURL string, paths ...string) (string, error) {
 	return location, nil
 }
 
-func (c *Connector) createJob(ctx context.Context, config BulkWriteParams) (*common.JSONHTTPResponse, error) {
+func (c *Connector) createJob(ctx context.Context, body map[string]any) (*common.JSONHTTPResponse, error) {
 	location, err := joinURLPath(c.BaseURL, "jobs/ingest")
 	if err != nil {
 		return nil, err
 	}
 
-	body := map[string]interface{}{
-		"object":              config.ObjectName,
-		"externalIdFieldName": config.ExternalIdField,
-		"contentType":         "CSV",
-		"operation":           "upsert",
-		"lineEnding":          "LF",
-	}
-
 	return c.post(ctx, location, body)
 }
 
-func (c *Connector) uploadCSV(ctx context.Context, jobId string, config BulkWriteParams) ([]byte, error) {
+func (c *Connector) uploadCSV(ctx context.Context, jobId string, csvData io.Reader) ([]byte, error) {
 	location, err := joinURLPath(c.BaseURL, fmt.Sprintf("jobs/ingest/%s/batches", jobId))
 	if err != nil {
 		return nil, err
 	}
 
-	data, err := io.ReadAll(config.CSVData)
+	data, err := io.ReadAll(csvData)
 	if err != nil {
 		return nil, fmt.Errorf(
 			"failed to upload CSV to salesforce: %w",
@@ -300,6 +221,22 @@ func (c *Connector) GetJobResults(ctx context.Context, jobId string) (*JobResult
 	return c.getPartialFailureDetails(ctx, jobInfo)
 }
 
+func (c *Connector) GetSuccessfulJobResults(ctx context.Context, jobId string) (*http.Response, error) {
+	location, err := joinURLPath(c.BaseURL, fmt.Sprintf("jobs/ingest/%s/successfulResults", jobId))
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := common.MakeJSONGetRequest(ctx, location, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create get request: %w", err)
+	}
+
+	// Get the connector's JSONHTTPClient, which is a special HTTPClient that handles JSON responses,
+	// and use it's underlying http.Client to make the request.
+	return c.Client.HTTPClient.Client.Do(req)
+}
+
 func (c *Connector) getJobResults(ctx context.Context, jobId string) (*http.Response, error) {
 	location, err := joinURLPath(c.BaseURL, fmt.Sprintf("jobs/ingest/%s/failedResults", jobId))
 	if err != nil {
@@ -316,7 +253,7 @@ func (c *Connector) getJobResults(ctx context.Context, jobId string) (*http.Resp
 	return c.Client.HTTPClient.Client.Do(req)
 }
 
-//nolint:funlen
+//nolint:funlen,cyclop
 func (c *Connector) getPartialFailureDetails(ctx context.Context, jobInfo *GetJobInfoResult) (*JobResults, error) {
 	// Query Salesforce to get partial failure details
 	res, err := c.getJobResults(ctx, jobInfo.Id)
@@ -348,17 +285,27 @@ func (c *Connector) getPartialFailureDetails(ctx context.Context, jobInfo *GetJo
 			return nil, err
 		}
 
+		fieldNames := []string{sfIdFieldName, sfErrorFieldName}
+
+		if jobInfo.ExternalIdFieldName != "" {
+			fieldNames = append(fieldNames, jobInfo.ExternalIdFieldName)
+		}
+
 		// Get column index of sf__Id, sf__Error, and externalIdFieldName in header row
 		// Salesforce API responses may not be consistent with the order of columns, so we need to get the index
 		if rowIdx == 0 {
-			indiceMap, err := getColumnIndice(record, []string{sfIdFieldName, sfErrorFieldName, jobInfo.ExternalIdFieldName})
+			indiceMap, err := getColumnIndice(record, fieldNames)
 			if err != nil {
 				return nil, err
 			}
 
 			sfIdColIdx = indiceMap[sfIdFieldName]
 			sfErrorColIdx = indiceMap[sfErrorFieldName]
-			externalIdColIdx = indiceMap[jobInfo.ExternalIdFieldName]
+
+			if jobInfo.ExternalIdFieldName != "" {
+				externalIdColIdx = indiceMap[jobInfo.ExternalIdFieldName]
+			}
+
 			rowIdx++
 
 			continue
@@ -367,14 +314,26 @@ func (c *Connector) getPartialFailureDetails(ctx context.Context, jobInfo *GetJo
 		sfId := record[sfIdColIdx]
 		failureMap := failInfo.FailedUpdates
 		errMsg := record[sfErrorColIdx]
-		externalId := record[externalIdColIdx]
 
 		if sfId == "" {
 			// If sf__Id is empty, it means the record is not updated, so it's a create failure
 			failureMap = failInfo.FailedCreates
 		}
 
-		failureMap[errMsg] = append(failureMap[errMsg], externalId)
+		var referenceId string
+
+		switch jobInfo.Operation {
+		case "upsert":
+			// for bulkwrite, we will have ExternalIdFieldName
+			referenceId = record[externalIdColIdx]
+		case "delete":
+			// for bulkdelete, we will have sf__Id as reference
+			referenceId = sfId
+		default:
+			return nil, fmt.Errorf("%w: %s", ErrUnsupportedOperation, jobInfo.Operation)
+		}
+
+		failureMap[errMsg] = append(failureMap[errMsg], referenceId)
 	}
 
 	return &JobResults{
@@ -429,4 +388,168 @@ func (c *Connector) getIncompleteJobResults(jobInfo *GetJobInfoResult) *JobResul
 	}
 
 	return jobResult
+}
+
+func (c *Connector) BulkDelete(ctx context.Context, params BulkOperationParams) (*BulkOperationResult, error) {
+	jobBody := map[string]any{
+		"operation": "delete",
+		"object":    params.ObjectName,
+	}
+
+	return c.bulkOperation(ctx, params, jobBody)
+}
+
+//nolint:funlen,cyclop
+func (c *Connector) bulkOperation(
+	ctx context.Context,
+	params BulkOperationParams,
+	jobBody map[string]any,
+) (*BulkOperationResult, error) {
+	res, err := c.createJob(ctx, jobBody)
+	if err != nil {
+		return nil, fmt.Errorf("createJob failed: %w", err)
+	}
+
+	resObject, err := res.Body.GetObject()
+	if err != nil {
+		return nil, fmt.Errorf(
+			"parsing result of createJob failed: %w",
+			errors.Join(err, common.ErrParseError),
+		)
+	}
+
+	state, err := resObject["state"].GetString()
+	if err != nil {
+		unpacked, _ := resObject["state"].Unpack()
+
+		return nil, fmt.Errorf(
+			"%w: expected salesforce job state to be string in response, got %T",
+			ErrInvalidType,
+			unpacked,
+		)
+	}
+
+	if strings.ToLower(state) != "open" {
+		return nil, fmt.Errorf("%w: expected job state to be open, got %s", ErrInvalidJobState, state)
+	}
+
+	jobId, err := resObject["id"].GetString()
+	if err != nil {
+		unpacked, _ := resObject["id"].Unpack()
+
+		return nil, fmt.Errorf(
+			"%w: expected salesforce job id to be string in response, got %T",
+			ErrInvalidType,
+			unpacked)
+	}
+
+	// upload csv and there is no response body other than status code
+	_, err = c.uploadCSV(ctx, jobId, params.CSVData)
+	if err != nil {
+		return nil, fmt.Errorf("uploadCSV failed: %w", err)
+	}
+
+	data, err := c.completeUpload(ctx, jobId)
+	if err != nil {
+		return nil, fmt.Errorf("completeUpload failed: %w", err)
+	}
+
+	dataObject, err := data.Body.GetObject()
+	if err != nil {
+		return nil, fmt.Errorf("parsing result of completeUpload failed: %w", errors.Join(err, common.ErrParseError))
+	}
+
+	updatedJobId, err := dataObject["id"].GetString()
+	if err != nil {
+		unpacked, _ := dataObject["id"].Unpack()
+
+		return nil, fmt.Errorf(
+			"%w: expected salesforce job id to be string in response, got %T",
+			ErrInvalidType,
+			unpacked,
+		)
+	}
+
+	completeState, err := dataObject["state"].GetString() //nolint:varnamelen
+	if err != nil {
+		unpacked, _ := resObject["state"].Unpack()
+
+		return nil, fmt.Errorf(
+			"%w: expected salesforce job state to be string in response, got %T",
+			ErrInvalidType,
+			unpacked,
+		)
+	}
+
+	return &BulkOperationResult{
+		JobId: updatedJobId,
+		State: completeState,
+	}, nil
+}
+
+func (c *Connector) BulkQuery(
+	ctx context.Context,
+	query string,
+) (*GetJobInfoResult, error) {
+	location, err := joinURLPath(c.BaseURL, "jobs/query")
+	if err != nil {
+		return nil, err
+	}
+
+	jobBody := map[string]any{
+		"operation": "query",
+		"query":     query,
+	}
+
+	res, err := c.post(ctx, location, jobBody)
+	if err != nil {
+		return nil, fmt.Errorf("bulk query failed: %w", err)
+	}
+
+	return common.UnmarshalJSON[GetJobInfoResult](res)
+}
+
+func (c *Connector) GetBulkQueryInfo(
+	ctx context.Context,
+	jobId string,
+) (*GetJobInfoResult, error) {
+	location, err := joinURLPath(c.BaseURL, "jobs/query", jobId)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := c.get(ctx, location)
+	if err != nil {
+		return nil, fmt.Errorf(
+			"failed to get bulk query info for job '%s': %w",
+			jobId,
+			errors.Join(err, common.ErrRequestFailed),
+		)
+	}
+
+	return common.UnmarshalJSON[GetJobInfoResult](res)
+}
+
+func (c *Connector) GetBulkQueryResults(
+	ctx context.Context,
+	jobId string,
+) (*http.Response, error) {
+	location, err := joinURLPath(c.BaseURL, fmt.Sprintf("jobs/query/%s/results", jobId))
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := common.MakeJSONGetRequest(ctx, location, []common.Header{
+		{
+			Key:   "Accept",
+			Value: "text/csv",
+		},
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get results for bulk query %s: %w", jobId, err)
+	}
+
+	// Get the connector's JSONHTTPClient, which is a special HTTPClient that handles JSON responses,
+	// and use it's underlying http.Client to make the request.
+	return c.Client.HTTPClient.Client.Do(req)
 }

@@ -31,3 +31,14 @@ func InterpretError(res *http.Response, body []byte) error {
 
 	return NewHTTPStatusError(res.StatusCode, fmt.Errorf("%w: %s", ErrUnknown, string(body)))
 }
+
+func PanicRecovery(wrapup func(cause error)) {
+	if re := recover(); re != nil {
+		err, ok := re.(error)
+		if !ok {
+			panic(re)
+		}
+
+		wrapup(err)
+	}
+}

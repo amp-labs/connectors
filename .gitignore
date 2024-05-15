@@ -122,3 +122,6 @@ playground/
 
 *creds.json
 **/.DS_Store
+
+# ssl certificates
+.ssl/

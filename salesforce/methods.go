@@ -45,16 +45,3 @@ func (c *Connector) patch(ctx context.Context, url string, body any) (*common.JS
 
 	return rsp, nil
 }
-
-// // get reads data from Salesforce. It handles retries and access token refreshes.
-// func (c *Connector) getCSV(ctx context.Context, url string) ([]byte, error) {
-// 	body, err := c.JSONClient.GetCSV(ctx, url, common.Header{
-// 		Key:   "Accept",
-// 		Value: "text/csv",
-// 	})
-// 	if err != nil {
-// 		return nil, c.HandleError(err)
-// 	}
-
-// 	return body, nil
-// }

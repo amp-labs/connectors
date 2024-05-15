@@ -1,0 +1,43 @@
+{
+  "data": {
+    "id": 175204275,
+    "created_at": "2024-05-01T06:12:41.102458-04:00",
+    "updated_at": "2024-05-01T06:12:41.102458-04:00",
+    "description": null,
+    "due_date": "2025-01-01",
+    "due_at": null,
+    "subject": "call me maybe",
+    "current_state": "scheduled",
+    "task_type": "call",
+    "remind_at": null,
+    "expires_after": null,
+    "completed_at": null,
+    "_integration_id": null,
+    "_integration_step_id": null,
+    "_integration_task_id": null,
+    "_integration_name": null,
+    "_integration_task_type_label": null,
+    "custom_attributes": {},
+    "score": {
+      "score": "0.0",
+      "prioritizer_uuid": "salesloft.prioritizers/rhythm",
+      "factors": {}
+    },
+    "object_references": [],
+    "source": "salesloft.api",
+    "multitouch_group_id": null,
+    "person": {
+      "_href": "https://api.salesloft.com/v2/people/164510523",
+      "id": 164510523
+    },
+    "user": {
+      "_href": "https://api.salesloft.com/v2/users/51550",
+      "id": 51550
+    },
+    "created_by_user": {
+      "_href": "https://api.salesloft.com/v2/users/49067",
+      "id": 49067
+    },
+    "completed_by": null
+  }
+}

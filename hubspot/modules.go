@@ -21,6 +21,20 @@ var ModuleEmpty = APIModule{ // nolint: gochecknoglobals
 	Version: "",
 }
 
+// supportedModules represents currently working and supported modules within the Hubspot connector.
+// Any added module should be appended added here.
+var supportedModules = []APIModule{ModuleCRM} // nolint: gochecknoglobals
+
 func (a APIModule) String() string {
 	return fmt.Sprintf("%s/%s", a.Label, a.Version)
+}
+
+func supportsModule(module string) bool {
+	for _, mod := range supportedModules {
+		if module == mod.String() {
+			return true
+		}
+	}
+
+	return false
 }
