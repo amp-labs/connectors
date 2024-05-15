@@ -12,6 +12,7 @@ const (
 	Attio                               Provider = "attio"
 	Box                                 Provider = "box"
 	Calendly                            Provider = "calendly"
+	CampaignMonitor                     Provider = "campaignMonitor"
 	Capsule                             Provider = "capsule"
 	ClickUp                             Provider = "clickup"
 	Close                               Provider = "close"
@@ -751,6 +752,30 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Delete: false,
 			},
 			Proxy:     true,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// campaignMonitor configuration
+	CampaignMonitor: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.createsend.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://api.createsend.com/oauth",
+			TokenURL:                  "https://api.createsend.com/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
