@@ -918,7 +918,7 @@ var testCases = []struct { // nolint
 					Delete: false,
 				},
 				Subscribe: false,
-				Proxy:     false,
+				Proxy:     true,
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
@@ -926,6 +926,7 @@ var testCases = []struct { // nolint
 				TokenURL:                  "https://authz.constantcontact.com/oauth2/default/v1/token",
 				ExplicitWorkspaceRequired: false,
 				ExplicitScopesRequired:    true,
+				GrantType:                 AuthorizationCode,
 			},
 			BaseURL: "https://api.cc.email",
 		},
