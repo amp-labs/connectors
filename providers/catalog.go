@@ -831,6 +831,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 
 	// ConstantContact configuration
 	ConstantContact: {
+		DisplayName: "Constant Contact"
 		AuthType: Oauth2,
 		BaseURL:  "https://api.cc.email",
 		OauthOpts: OauthOpts{
@@ -1090,6 +1091,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	},
 	// HelpScoutMailbox Support Configuration
 	HelpScoutMailbox: {
+		DisplayName: "Help Scout Mailbox"
 		AuthType: Oauth2,
 		BaseURL:  "https://api.helpscout.net",
 		OauthOpts: OauthOpts{
