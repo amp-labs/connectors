@@ -1,4 +1,4 @@
-package salesloft
+package intercom
 
 import (
 	"context"
@@ -18,7 +18,7 @@ import (
 func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 	t.Parallel()
 
-	listSchema := mockutils.DataFromFile(t, "write-signals-error.json")
+	responseNotFound := mockutils.DataFromFile(t, "resource-not-found.json")
 
 	tests := []struct {
 		name         string
@@ -37,7 +37,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			name:  "Delete param object and its ID must be included",
-			input: common.DeleteParams{ObjectName: "signals"},
+			input: common.DeleteParams{ObjectName: "articles"},
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusTeapot)
 			})),
@@ -45,7 +45,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			name:  "Mime response header expected",
-			input: common.DeleteParams{ObjectName: "signals", RecordId: "22165"},
+			input: common.DeleteParams{ObjectName: "articles", RecordId: "9333415"},
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusTeapot)
 			})),
@@ -53,20 +53,20 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			name:  "Correct error message is understood from JSON response",
-			input: common.DeleteParams{ObjectName: "signals", RecordId: "22165"},
+			input: common.DeleteParams{ObjectName: "articles", RecordId: "9333415"},
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusUnprocessableEntity)
-				_, _ = w.Write(listSchema)
+				_, _ = w.Write(responseNotFound)
 			})),
 			expectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("no Signal Registration found for integration id 5167 and given type"), // nolint:goerr113
+				errors.New("not_found[Resource Not Found]"), // nolint:goerr113
 			},
 		},
 		{
 			name:  "Successful delete",
-			input: common.DeleteParams{ObjectName: "signals", RecordId: "22165"},
+			input: common.DeleteParams{ObjectName: "articles", RecordId: "9333415"},
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				mockutils.RespondNoContentForMethod(w, r, "DELETE")
