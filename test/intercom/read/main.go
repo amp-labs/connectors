@@ -33,7 +33,8 @@ func main() {
 		ObjectName: "conversations",
 		Fields: []string{
 			"id",
-			"body",
+			"state",
+			"type",
 		},
 	})
 	if err != nil {
