@@ -1,6 +1,6 @@
 module github.com/amp-labs/connectors
 
-go 1.21
+go 1.21.0
 
 require (
 	github.com/brianvoe/gofakeit/v6 v6.28.0
@@ -10,7 +10,7 @@ require (
 	github.com/spyzhov/ajson v0.9.1
 	github.com/stretchr/testify v1.9.0
 	github.com/subchen/go-xmldom v1.1.2
-	golang.org/x/oauth2 v0.19.0
+	golang.org/x/oauth2 v0.20.0
 )
 
 require (

@@ -1,0 +1,73 @@
+{
+  "data": {
+    "id": 1,
+    "created_at": "2024-01-01T00:00:00.000000+00:00",
+    "updated_at": "2024-01-01T00:00:00.000000+00:00",
+    "archived_at": "2024-01-01T00:00:00.000000+00:00",
+    "name": "Hogwarts School of Witchcraft and Wizardry",
+    "domain": "salesloft.com",
+    "conversational_name": "Hogwarts",
+    "description": "British school of magic for students",
+    "phone": "+1 444 555 6666",
+    "website": "https://salesloft.com",
+    "linkedin_url": "https://www.linkedin.com/company/2296178/",
+    "twitter_handle": "@kyleporter",
+    "street": "4 Picket Drive",
+    "city": "Dufftown",
+    "state": "Mortlach",
+    "postal_code": "55555",
+    "country": "Scotland",
+    "locale": "Europe/London",
+    "industry": "Education",
+    "company_type": "Private",
+    "founded": "March 1st, 1820",
+    "revenue_range": "1,000,000-2,000,000",
+    "size": "1500",
+    "crm_id": "003i000001mnhpD",
+    "crm_url": "https://na15.salesforce.com/003i000001mnhpD",
+    "crm_object_type": "account",
+    "owner_crm_id": "003i000001mnhpD",
+    "last_contacted_at": "2024-01-01T00:00:00.000000+00:00",
+    "last_contacted_type": "call",
+    "do_not_contact": true,
+    "custom_fields": {
+      "MyField": "A Value",
+      "Other": "Field"
+    },
+    "user_relationships": {
+      "bff": "0037h00000d78aAAAQ",
+      "Other": "_is_null"
+    },
+    "tags": [
+      "7-23-2017",
+      "dreamforce"
+    ],
+    "counts": {
+      "people": 15
+    },
+    "owner": {
+      "id": 1,
+      "_href": "https://api.salesloft.com/v2/users/1"
+    },
+    "creator": {
+      "id": 1,
+      "_href": "https://api.salesloft.com/v2/users/1"
+    },
+    "last_contacted_by": {
+      "id": 1,
+      "_href": "https://api.salesloft.com/v2/users/1"
+    },
+    "last_contacted_person": {
+      "id": 1,
+      "_href": "https://api.salesloft.com/v2/people/1"
+    },
+    "company_stage": {
+      "id": 1,
+      "_href": "https://api.salesloft.com/v2/account_stages/1"
+    },
+    "account_tier": {
+      "id": 1,
+      "_href": "https://api.salesloft.com/v2/account_tiers/1"
+    }
+  }
+}

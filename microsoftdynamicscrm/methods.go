@@ -20,6 +20,44 @@ func (c *Connector) get(ctx context.Context,
 	return rsp, nil
 }
 
+func (c *Connector) post(ctx context.Context, url string, body any) (*common.JSONHTTPResponse, error) {
+	rsp, err := c.Client.Post(ctx, url, body)
+	if err = handleError(err); err != nil {
+		return nil, err
+	}
+
+	return rsp, nil
+}
+
+func (c *Connector) patch(ctx context.Context, url string, body any) (*common.JSONHTTPResponse, error) {
+	rsp, err := c.Client.Patch(ctx, url, body)
+	if err = handleError(err); err != nil {
+		return nil, err
+	}
+
+	return rsp, nil
+}
+
+func (c *Connector) delete(ctx context.Context, url string) (*common.JSONHTTPResponse, error) {
+	rsp, err := c.Client.Delete(ctx, url)
+	if err = handleError(err); err != nil {
+		return nil, err
+	}
+
+	return rsp, nil
+}
+
+func (c *Connector) getXML(ctx context.Context,
+	url string, headers ...common.Header,
+) (*common.XMLHTTPResponse, error) {
+	rsp, err := c.XMLClient.Get(ctx, url, headers...)
+	if err = handleError(err); err != nil {
+		return nil, err
+	}
+
+	return rsp, nil
+}
+
 func handleError(err error) error {
 	if err == nil {
 		return nil

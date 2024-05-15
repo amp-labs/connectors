@@ -1,0 +1,578 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+    <edmx:Reference Uri="https://vocabularies.odata.org/OData.Community.Keys.V1.xml">
+        <edmx:Include Namespace="OData.Community.Keys.V1" Alias="Keys"/>
+        <edmx:IncludeAnnotations TermNamespace="OData.Community.Keys.V1"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="https://vocabularies.odata.org/OData.Community.Display.V1.xml">
+        <edmx:Include Namespace="OData.Community.Display.V1" Alias="Display"/>
+        <edmx:IncludeAnnotations TermNamespace="OData.Community.Display.V1"/>
+    </edmx:Reference>
+    <edmx:DataServices>
+        <Schema Namespace="Microsoft.Dynamics.CRM" Alias="mscrm" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+            <EntityType Name="crmbaseentity" Abstract="true"/>
+            <EntityType Name="accountleads" BaseType="mscrm.crmbaseentity">
+                <Key>
+                    <PropertyRef Name="accountleadid"/>
+                </Key>
+                <Property Name="importsequencenumber" Type="Edm.Int32"/>
+                <Property Name="accountleadid" Type="Edm.Guid"/>
+                <Property Name="name" Type="Edm.String" Unicode="false"/>
+                <Property Name="accountid" Type="Edm.Guid"/>
+                <Property Name="overriddencreatedon" Type="Edm.DateTimeOffset"/>
+                <Property Name="versionnumber" Type="Edm.Int64"/>
+                <Property Name="leadid" Type="Edm.Guid"/>
+                <Property Name="timezoneruleversionnumber" Type="Edm.Int32"/>
+                <Property Name="utcconversiontimezonecode" Type="Edm.Int32"/>
+                <NavigationProperty Name="accountleads_AsyncOperations" Type="Collection(mscrm.asyncoperation)"
+                                    Partner="regardingobjectid_accountleads"/>
+                <NavigationProperty Name="accountleads_MailboxTrackingFolders"
+                                    Type="Collection(mscrm.mailboxtrackingfolder)"
+                                    Partner="regardingobjectid_accountleads"/>
+                <NavigationProperty Name="accountleads_BulkDeleteFailures" Type="Collection(mscrm.bulkdeletefailure)"
+                                    Partner="regardingobjectid_accountleads"/>
+                <NavigationProperty Name="accountleads_PrincipalObjectAttributeAccesses"
+                                    Type="Collection(mscrm.principalobjectattributeaccess)"
+                                    Partner="objectid_accountleads"/>
+            </EntityType>
+            <EntityType Name="adx_invitation_invitecontacts" BaseType="mscrm.crmbaseentity">
+                <Key>
+                    <PropertyRef Name="adx_invitation_invitecontactsid"/>
+                </Key>
+                <Property Name="adx_invitationid" Type="Edm.Guid"/>
+                <Property Name="versionnumber" Type="Edm.Int64"/>
+                <Property Name="contactid" Type="Edm.Guid"/>
+                <Property Name="adx_invitation_invitecontactsid" Type="Edm.Guid"/>
+            </EntityType>
+            <EntityType Name="phonecall" BaseType="mscrm.activitypointer">
+                <Key>
+                    <PropertyRef Name="activityid"/>
+                </Key>
+                <Property Name="subcategory" Type="Edm.String" Unicode="false"/>
+                <Property Name="directioncode" Type="Edm.Boolean"/>
+                <Property Name="overriddencreatedon" Type="Edm.DateTimeOffset"/>
+                <Property Name="category" Type="Edm.String" Unicode="false"/>
+                <Property Name="subscriptionid" Type="Edm.Guid"/>
+                <Property Name="phonenumber" Type="Edm.String" Unicode="false"/>
+                <Property Name="importsequencenumber" Type="Edm.Int32"/>
+                <NavigationProperty Name="phonecall_PostRegardings" Type="Collection(mscrm.postregarding)"
+                                    Partner="regardingobjectid_phonecall"/>
+                <NavigationProperty Name="phonecall_PostFollows" Type="Collection(mscrm.postfollow)"
+                                    Partner="regardingobjectid_phonecall"/>
+                <NavigationProperty Name="regardingobjectid_knowledgebaserecord_phonecall"
+                                    Type="mscrm.knowledgebaserecord"
+                                    Nullable="false" Partner="KnowledgeBaseRecord_PhoneCalls"/>
+                <NavigationProperty Name="phonecall_actioncard" Type="Collection(mscrm.actioncard)"
+                                    Partner="regardingobjectid_phonecall_actioncard"/>
+                <NavigationProperty Name="transactioncurrencyid_phonecall" Type="mscrm.transactioncurrency"
+                                    Nullable="false"
+                                    Partner="TransactionCurrency_PhoneCall"/>
+                <NavigationProperty Name="regardingobjectid_contact_phonecall" Type="mscrm.contact" Nullable="false"
+                                    Partner="Contact_Phonecalls"/>
+                <NavigationProperty Name="sla_phonecall_sla" Type="mscrm.sla" Nullable="false"
+                                    Partner="manualsla_phonecall"/>
+                <NavigationProperty Name="PhoneCall_BulkDeleteFailures" Type="Collection(mscrm.bulkdeletefailure)"
+                                    Partner="regardingobjectid_phonecall"/>
+                <NavigationProperty Name="modifiedonbehalfby_phonecall" Type="mscrm.systemuser" Nullable="false"
+                                    Partner="lk_phonecall_modifiedonbehalfby"/>
+                <NavigationProperty Name="PhoneCall_AsyncOperations" Type="Collection(mscrm.asyncoperation)"
+                                    Partner="regardingobjectid_phonecall"/>
+                <NavigationProperty Name="regardingobjectid_account_phonecall" Type="mscrm.account" Nullable="false"
+                                    Partner="Account_Phonecalls"/>
+                <NavigationProperty Name="createdby_phonecall" Type="mscrm.systemuser" Nullable="false"
+                                    Partner="lk_phonecall_createdby"/>
+                <NavigationProperty Name="createdonbehalfby_phonecall" Type="mscrm.systemuser" Nullable="false"
+                                    Partner="lk_phonecall_createdonbehalfby"/>
+                <NavigationProperty Name="phonecall_activity_parties" Type="Collection(mscrm.activityparty)"
+                                    Partner="activityid_phonecall"/>
+                <NavigationProperty Name="PhoneCall_ProcessSessions" Type="Collection(mscrm.processsession)"
+                                    Partner="regardingobjectid_phonecall"/>
+                <NavigationProperty Name="owningbusinessunit_phonecall" Type="mscrm.businessunit" Nullable="false"
+                                    Partner="business_unit_phone_call_activities"/>
+                <NavigationProperty Name="PhoneCall_DuplicateMatchingRecord" Type="Collection(mscrm.duplicaterecord)"
+                                    Partner="duplicaterecordid_phonecall"/>
+                <NavigationProperty Name="regardingobjectid_knowledgearticle_phonecall" Type="mscrm.knowledgearticle"
+                                    Nullable="false" Partner="KnowledgeArticle_Phonecalls"/>
+                <NavigationProperty Name="stageid_processstage" Type="mscrm.processstage" Nullable="false"
+                                    Partner="processstage_phonecalls"/>
+                <NavigationProperty Name="PhoneCall_DuplicateBaseRecord" Type="Collection(mscrm.duplicaterecord)"
+                                    Partner="baserecordid_phonecall"/>
+                <NavigationProperty Name="phonecall_connections1" Type="Collection(mscrm.connection)"
+                                    Partner="record1id_phonecall"/>
+                <NavigationProperty Name="activityid_activitypointer" Type="mscrm.activitypointer" Nullable="false"
+                                    Partner="activity_pointer_phonecall"/>
+                <NavigationProperty Name="slakpiinstance_phonecall" Type="Collection(mscrm.slakpiinstance)"
+                                    Partner="regarding_phonecall"/>
+                <NavigationProperty Name="slainvokedid_phonecall_sla" Type="mscrm.sla" Nullable="false"
+                                    Partner="sla_phonecall"/>
+                <NavigationProperty Name="PhoneCall_SyncErrors" Type="Collection(mscrm.syncerror)"
+                                    Partner="regardingobjectid_phonecall_syncerror"/>
+                <NavigationProperty Name="modifiedby_phonecall" Type="mscrm.systemuser" Nullable="false"
+                                    Partner="lk_phonecall_modifiedby"/>
+                <NavigationProperty Name="owningteam_phonecall" Type="mscrm.team" Nullable="false"
+                                    Partner="team_phonecall"/>
+                <NavigationProperty Name="PhoneCall_QueueItem" Type="Collection(mscrm.queueitem)"
+                                    Partner="objectid_phonecall"/>
+                <NavigationProperty Name="PhoneCall_Annotation" Type="Collection(mscrm.annotation)"
+                                    Partner="objectid_phonecall"/>
+                <NavigationProperty Name="phonecall_connections2" Type="Collection(mscrm.connection)"
+                                    Partner="record2id_phonecall"/>
+                <NavigationProperty Name="owninguser_phonecall" Type="mscrm.systemuser" Nullable="false"
+                                    Partner="user_phonecall"/>
+                <NavigationProperty Name="phonecall_principalobjectattributeaccess"
+                                    Type="Collection(mscrm.principalobjectattributeaccess)"
+                                    Partner="objectid_phonecall"/>
+                <NavigationProperty Name="ownerid_phonecall" Type="mscrm.principal" Nullable="false"
+                                    Partner="owner_phonecalls"/>
+                <NavigationProperty Name="regardingobjectid_adx_invitation_phonecall" Type="mscrm.adx_invitation"
+                                    Nullable="false"
+                                    Partner="adx_invitation_PhoneCalls"/>
+                <NavigationProperty Name="regardingobjectid_mspp_adplacement_phonecall" Type="mscrm.mspp_adplacement"
+                                    Nullable="false" Partner="mspp_adplacement_PhoneCalls"/>
+                <NavigationProperty Name="regardingobjectid_mspp_pollplacement_phonecall"
+                                    Type="mscrm.mspp_pollplacement"
+                                    Nullable="false" Partner="mspp_pollplacement_PhoneCalls"/>
+                <NavigationProperty Name="regardingobjectid_mspp_publishingstatetransitionrule_phonecall"
+                                    Type="mscrm.mspp_publishingstatetransitionrule" Nullable="false"
+                                    Partner="mspp_publishingstatetransitionrule_PhoneCalls"/>
+                <NavigationProperty Name="regardingobjectid_mspp_redirect_phonecall" Type="mscrm.mspp_redirect"
+                                    Nullable="false"
+                                    Partner="mspp_redirect_PhoneCalls"/>
+                <NavigationProperty Name="regardingobjectid_mspp_shortcut_phonecall" Type="mscrm.mspp_shortcut"
+                                    Nullable="false"
+                                    Partner="mspp_shortcut_PhoneCalls"/>
+                <NavigationProperty Name="regardingobjectid_mspp_website_phonecall" Type="mscrm.mspp_website"
+                                    Nullable="false"
+                                    Partner="mspp_website_PhoneCalls"/>
+                <NavigationProperty Name="regardingobjectid_lead_phonecall" Type="mscrm.lead" Nullable="false"
+                                    Partner="Lead_Phonecalls"/>
+                <NavigationProperty Name="regardingobjectid_bookableresourcebooking_phonecall"
+                                    Type="mscrm.bookableresourcebooking"
+                                    Nullable="false" Partner="bookableresourcebooking_PhoneCalls"/>
+                <NavigationProperty Name="regardingobjectid_bookableresourcebookingheader_phonecall"
+                                    Type="mscrm.bookableresourcebookingheader" Nullable="false"
+                                    Partner="bookableresourcebookingheader_PhoneCalls"/>
+                <NavigationProperty Name="regardingobjectid_bulkoperation_phonecall" Type="mscrm.bulkoperation"
+                                    Nullable="false"
+                                    Partner="BulkOperation_Phonecall"/>
+                <NavigationProperty Name="regardingobjectid_campaign_phonecall" Type="mscrm.campaign" Nullable="false"
+                                    Partner="Campaign_Phonecalls"/>
+                <NavigationProperty Name="regardingobjectid_campaignactivity_phonecall" Type="mscrm.campaignactivity"
+                                    Nullable="false" Partner="CampaignActivity_Phonecalls"/>
+                <NavigationProperty Name="phonecall_campaignresponse" Type="Collection(mscrm.campaignresponse)"
+                                    Partner="originatingactivityid_phonecall"/>
+                <NavigationProperty Name="regardingobjectid_contract_phonecall" Type="mscrm.contract" Nullable="false"
+                                    Partner="Contract_Phonecalls"/>
+                <NavigationProperty Name="regardingobjectid_entitlement_phonecall" Type="mscrm.entitlement"
+                                    Nullable="false"
+                                    Partner="entitlement_PhoneCalls"/>
+                <NavigationProperty Name="regardingobjectid_entitlementtemplate_phonecall"
+                                    Type="mscrm.entitlementtemplate"
+                                    Nullable="false" Partner="entitlementtemplate_PhoneCalls"/>
+                <NavigationProperty Name="regardingobjectid_incident_phonecall" Type="mscrm.incident" Nullable="false"
+                                    Partner="Incident_Phonecalls"/>
+                <NavigationProperty Name="regardingobjectid_site_phonecall" Type="mscrm.site" Nullable="false"
+                                    Partner="site_PhoneCalls"/>
+                <NavigationProperty Name="regardingobjectid_msdyn_customerasset_phonecall"
+                                    Type="mscrm.msdyn_customerasset"
+                                    Nullable="false" Partner="msdyn_customerasset_PhoneCalls"/>
+                <NavigationProperty Name="regardingobjectid_msdyn_playbookinstance_phonecall"
+                                    Type="mscrm.msdyn_playbookinstance"
+                                    Nullable="false" Partner="msdyn_playbookinstance_PhoneCalls"/>
+                <NavigationProperty Name="regardingobjectid_invoice_phonecall" Type="mscrm.invoice" Nullable="false"
+                                    Partner="Invoice_Phonecalls"/>
+                <NavigationProperty Name="regardingobjectid_opportunity_phonecall" Type="mscrm.opportunity"
+                                    Nullable="false"
+                                    Partner="Opportunity_Phonecalls"/>
+                <NavigationProperty Name="regardingobjectid_quote_phonecall" Type="mscrm.quote" Nullable="false"
+                                    Partner="Quote_Phonecalls"/>
+                <NavigationProperty Name="regardingobjectid_salesorder_phonecall" Type="mscrm.salesorder"
+                                    Nullable="false"
+                                    Partner="SalesOrder_Phonecalls"/>
+                <NavigationProperty Name="regardingobjectid_msdyn_postalbum_phonecall" Type="mscrm.msdyn_postalbum"
+                                    Nullable="false"
+                                    Partner="msdyn_postalbum_PhoneCalls"/>
+                <NavigationProperty Name="regardingobjectid_msdyn_swarm_phonecall" Type="mscrm.msdyn_swarm"
+                                    Nullable="false"
+                                    Partner="msdyn_swarm_PhoneCalls"/>
+                <NavigationProperty Name="msdyn_phonecall_msdyn_transcript_transcripttarget"
+                                    Type="Collection(mscrm.msdyn_transcript)"
+                                    Partner="msdyn_transcripttarget_phonecall"/>
+                <NavigationProperty Name="msdyn_phonecall_msdyn_ocrecording_recordingtarget"
+                                    Type="Collection(mscrm.msdyn_ocrecording)"
+                                    Partner="msdyn_recordingtarget_phonecall"/>
+                <NavigationProperty Name="msdyn_phonecall_msdyn_conversationinsight_conversationinsighttarget"
+                                    Type="Collection(mscrm.msdyn_conversationinsight)"
+                                    Partner="msdyn_conversationinsighttarget_phonecall"/>
+                <NavigationProperty Name="msdyn_msdyn_conversationactionitem_phonecall_msdyn_createdactivity"
+                                    Type="Collection(mscrm.msdyn_conversationactionitem)"
+                                    Partner="msdyn_createdactivity_phonecall"/>
+                <NavigationProperty Name="msdyn_msdyn_sciconversation_phonecall_msdyn_relatedactivity"
+                                    Type="Collection(mscrm.msdyn_sciconversation)"
+                                    Partner="msdyn_relatedactivity_phonecall"/>
+                <NavigationProperty Name="msdyn_phonecall_msdyn_recording_phone_call_activity"
+                                    Type="Collection(mscrm.msdyn_recording)" Partner="msdyn_phone_call_activity"/>
+                <NavigationProperty Name="regardingobjectid_msdyn_salessuggestion_phonecall"
+                                    Type="mscrm.msdyn_salessuggestion"
+                                    Nullable="false" Partner="msdyn_salessuggestion_PhoneCalls"/>
+                <NavigationProperty Name="msdyn_msdyn_salescopilotinsight_phonecall_msdyn_activityid"
+                                    Type="Collection(mscrm.msdyn_salescopilotinsight)"
+                                    Partner="msdyn_activityid_phonecall"/>
+                <NavigationProperty Name="serviceid_phonecall" Type="mscrm.service" Nullable="false"
+                                    Partner="service_phonecalls"/>
+            </EntityType>
+            <EntityType Name="activitypointer" BaseType="mscrm.crmbaseentity" Abstract="true">
+                <Key>
+                    <PropertyRef Name="activityid"/>
+                </Key>
+                <Property Name="_transactioncurrencyid_value" Type="Edm.Guid"/>
+                <Property Name="instancetypecode" Type="Edm.Int32"/>
+                <Property Name="_modifiedby_value" Type="Edm.Guid"/>
+                <Property Name="_createdby_value" Type="Edm.Guid"/>
+                <Property Name="onholdtime" Type="Edm.Int32"/>
+                <Property Name="description" Type="Edm.String" Unicode="false"/>
+                <Property Name="seriesid" Type="Edm.Guid"/>
+                <Property Name="_ownerid_value" Type="Edm.Guid"/>
+                <Property Name="lastonholdtime" Type="Edm.DateTimeOffset"/>
+                <Property Name="_owningteam_value" Type="Edm.Guid"/>
+                <Property Name="activitytypecode" Type="Edm.String" Unicode="false"/>
+                <Property Name="deliverylastattemptedon" Type="Edm.DateTimeOffset"/>
+                <Property Name="exchangerate" Type="Edm.Decimal" Scale="Variable"/>
+                <Property Name="isbilled" Type="Edm.Boolean"/>
+                <Property Name="leftvoicemail" Type="Edm.Boolean"/>
+                <Property Name="postponeactivityprocessinguntil" Type="Edm.DateTimeOffset"/>
+                <Property Name="_owningbusinessunit_value" Type="Edm.Guid"/>
+                <Property Name="traversedpath" Type="Edm.String" Unicode="false"/>
+                <Property Name="scheduledstart" Type="Edm.DateTimeOffset"/>
+                <Property Name="descriptionblobid" Type="Edm.Binary"/>
+                <Property Name="activityadditionalparams" Type="Edm.String" Unicode="false"/>
+                <Property Name="subject" Type="Edm.String" Unicode="false"/>
+                <Property Name="scheduleddurationminutes" Type="Edm.Int32"/>
+                <Property Name="_serviceid_value" Type="Edm.Guid"/>
+                <Property Name="versionnumber" Type="Edm.Int64"/>
+                <Property Name="community" Type="Edm.Int32"/>
+                <Property Name="_createdonbehalfby_value" Type="Edm.Guid"/>
+                <Property Name="_slainvokedid_value" Type="Edm.Guid"/>
+                <Property Name="_regardingobjectid_value" Type="Edm.Guid"/>
+                <Property Name="actualdurationminutes" Type="Edm.Int32"/>
+                <Property Name="exchangeweblink" Type="Edm.String" Unicode="false"/>
+                <Property Name="senton" Type="Edm.DateTimeOffset"/>
+                <Property Name="isworkflowcreated" Type="Edm.Boolean"/>
+                <Property Name="scheduledend" Type="Edm.DateTimeOffset"/>
+                <Property Name="isregularactivity" Type="Edm.Boolean"/>
+                <Property Name="_slaid_value" Type="Edm.Guid"/>
+                <Property Name="_owninguser_value" Type="Edm.Guid"/>
+                <Property Name="ismapiprivate" Type="Edm.Boolean"/>
+                <Property Name="activityid" Type="Edm.Guid"/>
+                <Property Name="formattedscheduledend" Type="Edm.DateTimeOffset"/>
+                <Property Name="exchangeitemid" Type="Edm.String" Unicode="false"/>
+                <Property Name="processid" Type="Edm.Guid"/>
+                <Property Name="_sendermailboxid_value" Type="Edm.Guid"/>
+                <Property Name="stageid" Type="Edm.Guid"/>
+                <Property Name="modifiedon" Type="Edm.DateTimeOffset"/>
+                <Property Name="createdon" Type="Edm.DateTimeOffset"/>
+                <Property Name="formattedscheduledstart" Type="Edm.DateTimeOffset"/>
+                <Property Name="statuscode" Type="Edm.Int32"/>
+                <Property Name="statecode" Type="Edm.Int32"/>
+                <Property Name="actualend" Type="Edm.DateTimeOffset"/>
+                <Property Name="_modifiedonbehalfby_value" Type="Edm.Guid"/>
+                <Property Name="actualstart" Type="Edm.DateTimeOffset"/>
+                <Property Name="prioritycode" Type="Edm.Int32"/>
+                <Property Name="descriptionblobid_name" Type="Edm.String" Unicode="false"/>
+                <Property Name="deliveryprioritycode" Type="Edm.Int32"/>
+                <Property Name="sortdate" Type="Edm.DateTimeOffset"/>
+                <Property Name="timezoneruleversionnumber" Type="Edm.Int32"/>
+                <Property Name="utcconversiontimezonecode" Type="Edm.Int32"/>
+                <NavigationProperty Name="regardingobjectid_new_interactionforemail" Type="mscrm.interactionforemail"
+                                    Nullable="false"
+                                    Partner="new_interactionforemail_ActivityPointers">
+                    <ReferentialConstraint Property="_regardingobjectid_value"
+                                           ReferencedProperty="interactionforemailid"/>
+                </NavigationProperty>
+                <NavigationProperty Name="regardingobjectid_knowledgebaserecord" Type="mscrm.knowledgebaserecord"
+                                    Nullable="false"
+                                    Partner="KnowledgeBaseRecord_ActivityPointers">
+                    <ReferentialConstraint Property="_regardingobjectid_value"
+                                           ReferencedProperty="knowledgebaserecordid"/>
+                </NavigationProperty>
+                <NavigationProperty Name="regardingobjectid_account" Type="mscrm.account" Nullable="false"
+                                    Partner="Account_ActivityPointers">
+                    <ReferentialConstraint Property="_regardingobjectid_value" ReferencedProperty="accountid"/>
+                </NavigationProperty>
+                <NavigationProperty Name="createdby" Type="mscrm.systemuser" Nullable="false"
+                                    Partner="lk_activitypointer_createdby">
+                    <ReferentialConstraint Property="_createdby_value" ReferencedProperty="systemuserid"/>
+                </NavigationProperty>
+                <NavigationProperty Name="regardingobjectid_contact" Type="mscrm.contact" Nullable="false"
+                                    Partner="Contact_ActivityPointers">
+                    <ReferentialConstraint Property="_regardingobjectid_value" ReferencedProperty="contactid"/>
+                </NavigationProperty>
+                <NavigationProperty Name="activity_pointer_socialactivity" Type="Collection(mscrm.socialactivity)"
+                                    Partner="activityid_activitypointer"/>
+                <NavigationProperty Name="activity_pointer_recurringappointmentmaster"
+                                    Type="Collection(mscrm.recurringappointmentmaster)"
+                                    Partner="activityid_activitypointer"/>
+                <NavigationProperty Name="activity_pointer_email" Type="Collection(mscrm.email)"
+                                    Partner="activityid_activitypointer"/>
+                <NavigationProperty Name="sendermailboxid" Type="mscrm.mailbox" Nullable="false"
+                                    Partner="activitypointer_sendermailboxid_mailbox">
+                    <ReferentialConstraint Property="_sendermailboxid_value" ReferencedProperty="mailboxid"/>
+                </NavigationProperty>
+                <NavigationProperty Name="transactioncurrencyid" Type="mscrm.transactioncurrency" Nullable="false"
+                                    Partner="TransactionCurrency_ActivityPointer">
+                    <ReferentialConstraint Property="_transactioncurrencyid_value"
+                                           ReferencedProperty="transactioncurrencyid"/>
+                </NavigationProperty>
+                <NavigationProperty Name="ActivityPointer_QueueItem" Type="Collection(mscrm.queueitem)"
+                                    Partner="objectid_activitypointer"/>
+                <NavigationProperty Name="ownerid" Type="mscrm.principal" Nullable="false"
+                                    Partner="owner_activitypointers">
+                    <ReferentialConstraint Property="_ownerid_value" ReferencedProperty="ownerid"/>
+                </NavigationProperty>
+                <NavigationProperty Name="owninguser" Type="mscrm.systemuser" Nullable="false" Partner="user_activity">
+                    <ReferentialConstraint Property="_owninguser_value" ReferencedProperty="systemuserid"/>
+                </NavigationProperty>
+                <NavigationProperty Name="sla_activitypointer_sla" Type="mscrm.sla" Nullable="false"
+                                    Partner="manualsla_activitypointer">
+                    <ReferentialConstraint Property="_slaid_value" ReferencedProperty="slaid"/>
+                </NavigationProperty>
+                <NavigationProperty Name="owningbusinessunit" Type="mscrm.businessunit" Nullable="false"
+                                    Partner="business_unit_activitypointer">
+                    <ReferentialConstraint Property="_owningbusinessunit_value" ReferencedProperty="businessunitid"/>
+                </NavigationProperty>
+                <NavigationProperty Name="regardingobjectid_knowledgearticle" Type="mscrm.knowledgearticle"
+                                    Nullable="false"
+                                    Partner="KnowledgeArticle_ActivityPointers">
+                    <ReferentialConstraint Property="_regardingobjectid_value" ReferencedProperty="knowledgearticleid"/>
+                </NavigationProperty>
+                <NavigationProperty Name="modifiedonbehalfby" Type="mscrm.systemuser" Nullable="false"
+                                    Partner="lk_activitypointer_modifiedonbehalfby">
+                    <ReferentialConstraint Property="_modifiedonbehalfby_value" ReferencedProperty="systemuserid"/>
+                </NavigationProperty>
+                <NavigationProperty Name="activity_pointer_activity_mime_attachment"
+                                    Type="Collection(mscrm.activitymimeattachment)"
+                                    Partner="objectid_activitypointer"/>
+                <NavigationProperty Name="activity_pointer_fax" Type="Collection(mscrm.fax)"
+                                    Partner="activityid_activitypointer"/>
+                <NavigationProperty Name="createdonbehalfby" Type="mscrm.systemuser" Nullable="false"
+                                    Partner="lk_activitypointer_createdonbehalfby">
+                    <ReferentialConstraint Property="_createdonbehalfby_value" ReferencedProperty="systemuserid"/>
+                </NavigationProperty>
+                <NavigationProperty Name="modifiedby" Type="mscrm.systemuser" Nullable="false"
+                                    Partner="lk_activitypointer_modifiedby">
+                    <ReferentialConstraint Property="_modifiedby_value" ReferencedProperty="systemuserid"/>
+                </NavigationProperty>
+                <NavigationProperty Name="activity_pointer_task" Type="Collection(mscrm.task)"
+                                    Partner="activityid_activitypointer"/>
+                <NavigationProperty Name="activity_pointer_phonecall" Type="Collection(mscrm.phonecall)"
+                                    Partner="activityid_activitypointer"/>
+                <NavigationProperty Name="activity_pointer_appointment" Type="Collection(mscrm.appointment)"
+                                    Partner="activityid_activitypointer"/>
+                <NavigationProperty Name="activity_pointer_letter" Type="Collection(mscrm.letter)"
+                                    Partner="activityid_activitypointer"/>
+                <NavigationProperty Name="activitypointer_connections2" Type="Collection(mscrm.connection)"
+                                    Partner="record2id_activitypointer"/>
+                <NavigationProperty Name="slakpiinstance_activitypointer" Type="Collection(mscrm.slakpiinstance)"
+                                    Partner="regarding_activitypointer"/>
+                <NavigationProperty Name="owningteam" Type="mscrm.team" Nullable="false" Partner="team_activity">
+                    <ReferentialConstraint Property="_owningteam_value" ReferencedProperty="teamid"/>
+                </NavigationProperty>
+                <NavigationProperty Name="ActivityPointer_BulkDeleteFailures" Type="Collection(mscrm.bulkdeletefailure)"
+                                    Partner="regardingobjectid_activitypointer"/>
+                <NavigationProperty Name="slainvokedid_activitypointer_sla" Type="mscrm.sla" Nullable="false"
+                                    Partner="sla_activitypointer">
+                    <ReferentialConstraint Property="_slainvokedid_value" ReferencedProperty="slaid"/>
+                </NavigationProperty>
+                <NavigationProperty Name="activitypointer_connections1" Type="Collection(mscrm.connection)"
+                                    Partner="record1id_activitypointer"/>
+                <NavigationProperty Name="ActivityPointer_AsyncOperations" Type="Collection(mscrm.asyncoperation)"
+                                    Partner="regardingobjectid_activitypointer"/>
+                <NavigationProperty Name="activity_pointer_recurrencerule" Type="Collection(mscrm.recurrencerule)"
+                                    Partner="objectid"/>
+                <NavigationProperty Name="activitypointer_activity_parties" Type="Collection(mscrm.activityparty)"
+                                    Partner="activityid_activitypointer"/>
+                <NavigationProperty Name="activity_pointer_chat" Type="Collection(mscrm.chat)"
+                                    Partner="activityid_chat"/>
+                <NavigationProperty Name="activitypointer_FileAttachments" Type="Collection(mscrm.fileattachment)"
+                                    Partner="objectid_activitypointer"/>
+                <NavigationProperty Name="regardingobjectid_adx_invitation" Type="mscrm.adx_invitation" Nullable="false"
+                                    Partner="adx_invitation_ActivityPointers">
+                    <ReferentialConstraint Property="_regardingobjectid_value" ReferencedProperty="adx_invitationid"/>
+                </NavigationProperty>
+                <NavigationProperty Name="activity_pointer_adx_inviteredemption"
+                                    Type="Collection(mscrm.adx_inviteredemption)"
+                                    Partner="activityid_adx_inviteredemption"/>
+                <NavigationProperty Name="activity_pointer_adx_portalcomment" Type="Collection(mscrm.adx_portalcomment)"
+                                    Partner="activityid_adx_portalcomment"/>
+                <NavigationProperty Name="regardingobjectid_mspp_adplacement" Type="mscrm.mspp_adplacement"
+                                    Nullable="false"
+                                    Partner="mspp_adplacement_ActivityPointers">
+                    <ReferentialConstraint Property="_regardingobjectid_value" ReferencedProperty="mspp_adplacementid"/>
+                </NavigationProperty>
+                <NavigationProperty Name="regardingobjectid_mspp_pollplacement" Type="mscrm.mspp_pollplacement"
+                                    Nullable="false"
+                                    Partner="mspp_pollplacement_ActivityPointers">
+                    <ReferentialConstraint Property="_regardingobjectid_value"
+                                           ReferencedProperty="mspp_pollplacementid"/>
+                </NavigationProperty>
+                <NavigationProperty Name="regardingobjectid_mspp_publishingstatetransitionrule"
+                                    Type="mscrm.mspp_publishingstatetransitionrule" Nullable="false"
+                                    Partner="mspp_publishingstatetransitionrule_ActivityPointers">
+                    <ReferentialConstraint Property="_regardingobjectid_value"
+                                           ReferencedProperty="mspp_publishingstatetransitionruleid"/>
+                </NavigationProperty>
+                <NavigationProperty Name="regardingobjectid_mspp_redirect" Type="mscrm.mspp_redirect" Nullable="false"
+                                    Partner="mspp_redirect_ActivityPointers">
+                    <ReferentialConstraint Property="_regardingobjectid_value" ReferencedProperty="mspp_redirectid"/>
+                </NavigationProperty>
+                <NavigationProperty Name="regardingobjectid_mspp_shortcut" Type="mscrm.mspp_shortcut" Nullable="false"
+                                    Partner="mspp_shortcut_ActivityPointers">
+                    <ReferentialConstraint Property="_regardingobjectid_value" ReferencedProperty="mspp_shortcutid"/>
+                </NavigationProperty>
+                <NavigationProperty Name="regardingobjectid_mspp_website" Type="mscrm.mspp_website" Nullable="false"
+                                    Partner="mspp_website_ActivityPointers">
+                    <ReferentialConstraint Property="_regardingobjectid_value" ReferencedProperty="mspp_websiteid"/>
+                </NavigationProperty>
+                <NavigationProperty Name="regardingobjectid_lead" Type="mscrm.lead" Nullable="false"
+                                    Partner="Lead_ActivityPointers">
+                    <ReferentialConstraint Property="_regardingobjectid_value" ReferencedProperty="leadid"/>
+                </NavigationProperty>
+                <NavigationProperty Name="regardingobjectid_bookableresourcebooking"
+                                    Type="mscrm.bookableresourcebooking"
+                                    Nullable="false" Partner="bookableresourcebooking_ActivityPointers">
+                    <ReferentialConstraint Property="_regardingobjectid_value"
+                                           ReferencedProperty="bookableresourcebookingid"/>
+                </NavigationProperty>
+                <NavigationProperty Name="regardingobjectid_bookableresourcebookingheader"
+                                    Type="mscrm.bookableresourcebookingheader"
+                                    Nullable="false" Partner="bookableresourcebookingheader_ActivityPointers">
+                    <ReferentialConstraint Property="_regardingobjectid_value"
+                                           ReferencedProperty="bookableresourcebookingheaderid"/>
+                </NavigationProperty>
+                <NavigationProperty Name="activity_pointer_BulkOperation" Type="Collection(mscrm.bulkoperation)"
+                                    Partner="activityid_activitypointer"/>
+                <NavigationProperty Name="regardingobjectid_campaign" Type="mscrm.campaign" Nullable="false"
+                                    Partner="Campaign_ActivityPointers">
+                    <ReferentialConstraint Property="_regardingobjectid_value" ReferencedProperty="campaignid"/>
+                </NavigationProperty>
+                <NavigationProperty Name="activity_pointer_campaignactivity" Type="Collection(mscrm.campaignactivity)"
+                                    Partner="activityid_activitypointer"/>
+                <NavigationProperty Name="activity_pointer_campaignresponse" Type="Collection(mscrm.campaignresponse)"
+                                    Partner="activityid_activitypointer"/>
+                <NavigationProperty Name="activity_pointer_BulkOperation_logs" Type="Collection(mscrm.bulkoperationlog)"
+                                    Partner="bulkoperationid_activitypointer"/>
+                <NavigationProperty Name="CreatedActivity_BulkOperationLogs" Type="Collection(mscrm.bulkoperationlog)"
+                                    Partner="createdobjectid_activitypointer"/>
+                <NavigationProperty Name="ActivityPointer_CampaignActivityItems"
+                                    Type="Collection(mscrm.campaignactivityitem)"
+                                    Partner="campaignactivityid"/>
+                <NavigationProperty Name="activity_campaignresponse" Type="Collection(mscrm.campaignresponse)"
+                                    Partner="originatingactivityid_activitypointer"/>
+                <NavigationProperty Name="regardingobjectid_campaignactivity" Type="mscrm.campaignactivity"
+                                    Nullable="false"
+                                    Partner="CampaignActivity_ActivityPointers"/>
+                <NavigationProperty Name="regardingobjectid_bulkoperation" Type="mscrm.bulkoperation" Nullable="false"
+                                    Partner="BulkOperation_ActivityPointers"/>
+                <NavigationProperty Name="regardingobjectid_entitlement" Type="mscrm.entitlement" Nullable="false"
+                                    Partner="entitlement_ActivityPointers">
+                    <ReferentialConstraint Property="_regardingobjectid_value" ReferencedProperty="entitlementid"/>
+                </NavigationProperty>
+                <NavigationProperty Name="regardingobjectid_entitlementtemplate" Type="mscrm.entitlementtemplate"
+                                    Nullable="false"
+                                    Partner="entitlementtemplate_ActivityPointers">
+                    <ReferentialConstraint Property="_regardingobjectid_value"
+                                           ReferencedProperty="entitlementtemplateid"/>
+                </NavigationProperty>
+                <NavigationProperty Name="regardingobjectid_site" Type="mscrm.site" Nullable="false"
+                                    Partner="site_ActivityPointers">
+                    <ReferentialConstraint Property="_regardingobjectid_value" ReferencedProperty="siteid"/>
+                </NavigationProperty>
+                <NavigationProperty Name="regardingobjectid_msdyn_customerasset" Type="mscrm.msdyn_customerasset"
+                                    Nullable="false"
+                                    Partner="msdyn_customerasset_ActivityPointers">
+                    <ReferentialConstraint Property="_regardingobjectid_value"
+                                           ReferencedProperty="msdyn_customerassetid"/>
+                </NavigationProperty>
+                <NavigationProperty Name="regardingobjectid_msdyn_playbookinstance" Type="mscrm.msdyn_playbookinstance"
+                                    Nullable="false"
+                                    Partner="msdyn_playbookinstance_ActivityPointers">
+                    <ReferentialConstraint Property="_regardingobjectid_value"
+                                           ReferencedProperty="msdyn_playbookinstanceid"/>
+                </NavigationProperty>
+                <NavigationProperty Name="regardingobjectid_invoice" Type="mscrm.invoice" Nullable="false"
+                                    Partner="Invoice_ActivityPointers">
+                    <ReferentialConstraint Property="_regardingobjectid_value" ReferencedProperty="invoiceid"/>
+                </NavigationProperty>
+                <NavigationProperty Name="regardingobjectid_opportunity" Type="mscrm.opportunity" Nullable="false"
+                                    Partner="Opportunity_ActivityPointers">
+                    <ReferentialConstraint Property="_regardingobjectid_value" ReferencedProperty="opportunityid"/>
+                </NavigationProperty>
+                <NavigationProperty Name="activity_pointer_opportunity_close" Type="Collection(mscrm.opportunityclose)"
+                                    Partner="activityid_activitypointer"/>
+                <NavigationProperty Name="activity_pointer_order_close" Type="Collection(mscrm.orderclose)"
+                                    Partner="activityid_activitypointer"/>
+                <NavigationProperty Name="activity_pointer_quote_close" Type="Collection(mscrm.quoteclose)"
+                                    Partner="activityid_activitypointer"/>
+                <NavigationProperty Name="regardingobjectid_quote" Type="mscrm.quote" Nullable="false"
+                                    Partner="Quote_ActivityPointers">
+                    <ReferentialConstraint Property="_regardingobjectid_value" ReferencedProperty="quoteid"/>
+                </NavigationProperty>
+                <NavigationProperty Name="regardingobjectid_salesorder" Type="mscrm.salesorder" Nullable="false"
+                                    Partner="SalesOrder_ActivityPointers">
+                    <ReferentialConstraint Property="_regardingobjectid_value" ReferencedProperty="salesorderid"/>
+                </NavigationProperty>
+                <NavigationProperty Name="msdyn_readtracker_poly_activitypointer"
+                                    Type="Collection(mscrm.msdyn_readtracker)"
+                                    Partner="msdyn_RegardingObjectId"/>
+                <NavigationProperty Name="regardingobjectid_msdyn_postalbum" Type="mscrm.msdyn_postalbum"
+                                    Nullable="false"
+                                    Partner="msdyn_postalbum_ActivityPointers">
+                    <ReferentialConstraint Property="_regardingobjectid_value" ReferencedProperty="msdyn_postalbumid"/>
+                </NavigationProperty>
+                <NavigationProperty Name="activity_pointer_msfp_alert" Type="Collection(mscrm.msfp_alert)"
+                                    Partner="activityid_msfp_alert"/>
+                <NavigationProperty Name="activity_pointer_msfp_surveyinvite" Type="Collection(mscrm.msfp_surveyinvite)"
+                                    Partner="activityid_msfp_surveyinvite"/>
+                <NavigationProperty Name="activity_pointer_msfp_surveyresponse"
+                                    Type="Collection(mscrm.msfp_surveyresponse)"
+                                    Partner="activityid_msfp_surveyresponse"/>
+                <NavigationProperty Name="activity_pointer_msdyn_copilottranscript"
+                                    Type="Collection(mscrm.msdyn_copilottranscript)"
+                                    Partner="activityid_msdyn_copilottranscript"/>
+                <NavigationProperty Name="regardingobjectid_msdyn_swarm" Type="mscrm.msdyn_swarm" Nullable="false"
+                                    Partner="msdyn_swarm_ActivityPointers">
+                    <ReferentialConstraint Property="_regardingobjectid_value" ReferencedProperty="msdyn_swarmid"/>
+                </NavigationProperty>
+                <NavigationProperty Name="activity_pointer_msdyn_ocliveworkitem"
+                                    Type="Collection(mscrm.msdyn_ocliveworkitem)"
+                                    Partner="activityid_msdyn_ocliveworkitem"/>
+                <NavigationProperty Name="activity_pointer_msdyn_ocsession" Type="Collection(mscrm.msdyn_ocsession)"
+                                    Partner="activityid_msdyn_ocsession"/>
+                <NavigationProperty Name="regardingobjectid_msdyn_salessuggestion" Type="mscrm.msdyn_salessuggestion"
+                                    Nullable="false"
+                                    Partner="msdyn_salessuggestion_ActivityPointers">
+                    <ReferentialConstraint Property="_regardingobjectid_value"
+                                           ReferencedProperty="msdyn_salessuggestionid"/>
+                </NavigationProperty>
+                <NavigationProperty Name="activity_pointer_incident_resolution"
+                                    Type="Collection(mscrm.incidentresolution)"
+                                    Partner="activityid_activitypointer"/>
+                <NavigationProperty Name="regardingobjectid_incident" Type="mscrm.incident" Nullable="false"
+                                    Partner="Incident_ActivityPointers">
+                    <ReferentialConstraint Property="_regardingobjectid_value" ReferencedProperty="incidentid"/>
+                </NavigationProperty>
+                <NavigationProperty Name="serviceid" Type="mscrm.service" Nullable="false"
+                                    Partner="service_activity_pointers">
+                    <ReferentialConstraint Property="_serviceid_value" ReferencedProperty="serviceid"/>
+                </NavigationProperty>
+                <NavigationProperty Name="activity_pointer_service_appointment"
+                                    Type="Collection(mscrm.serviceappointment)"
+                                    Partner="activityid_activitypointer"/>
+                <NavigationProperty Name="regardingobjectid_contract" Type="mscrm.contract" Nullable="false"
+                                    Partner="Contract_ActivityPointers">
+                    <ReferentialConstraint Property="_regardingobjectid_value" ReferencedProperty="contractid"/>
+                </NavigationProperty>
+            </EntityType>
+        </Schema>
+    </edmx:DataServices>
+</edmx:Edmx>
