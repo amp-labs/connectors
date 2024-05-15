@@ -137,6 +137,7 @@ func main() {
 func getTokensFromRegistry() *oauth2.Token {
 	accessToken := registry.MustString("AccessToken")
 	refreshToken, err := registry.GetString("RefreshToken")
+
 	if err != nil {
 		// we are working without refresh token
 		return &oauth2.Token{
