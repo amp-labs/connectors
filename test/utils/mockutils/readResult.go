@@ -6,9 +6,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 )
 
-var (
-	ReadResultComparator = readResultComparator{}
-)
+var ReadResultComparator = readResultComparator{}
 
 type readResultComparator struct{}
 

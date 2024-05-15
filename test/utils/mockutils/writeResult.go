@@ -6,9 +6,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 )
 
-var (
-	WriteResultComparator = writeResultComparator{}
-)
+var WriteResultComparator = writeResultComparator{}
 
 type writeResultComparator struct{}
 
