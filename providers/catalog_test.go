@@ -1439,9 +1439,6 @@ var testCases = []struct { // nolint
 				TokenURL:                  "https://stackoverflow.com/oauth/access_token/json",
 				ExplicitScopesRequired:    true,
 				ExplicitWorkspaceRequired: false,
-				TokenMetadataFields: TokenMetadataFields{
-					ScopesField: "scope",
-				},
 			},
 			BaseURL: "https://api.stackexchange.com",
 		},

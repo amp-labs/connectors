@@ -1232,9 +1232,6 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://stackoverflow.com/oauth/access_token/json",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
-			TokenMetadataFields: TokenMetadataFields{
-				ScopesField: "scope",
-			},
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
