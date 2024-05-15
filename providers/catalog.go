@@ -1724,6 +1724,9 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://www.formstack.com/api/v2/oauth2/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ConsumerRefField: "user_id",
+			},
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
