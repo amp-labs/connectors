@@ -16,7 +16,7 @@ components:
   schemas:
     AuthType:
       type: string
-      enum: [oauth2]
+      enum: [oauth2, none]
       x-oapi-codegen-extra-tags:
         validate: required
 
@@ -32,7 +32,7 @@ components:
         - write
       properties:
         bulkWrite:
-          type: boolean
+          $ref: '#/components/schemas/BulkWriteSupport'
         proxy:
           type: boolean
         read:
@@ -41,7 +41,24 @@ components:
           type: boolean
         write:
           type: boolean
-
+    BulkWriteSupport:
+      type: object
+      x-oapi-codegen-extra-tags:
+        validate: required
+      required:
+        - insert
+        - update
+        - upsert
+        - delete
+      properties:
+        insert:
+          type: boolean
+        update:
+          type: boolean
+        upsert:
+          type: boolean
+        delete:
+          type: boolean
     TokenMetadataFields:
       type: object
       properties:
@@ -63,12 +80,16 @@ components:
       x-oapi-codegen-extra-tags:
         validate: required
       required:
+          - grantType
           - authURL
           - tokenURL
           - explicitScopesRequired
           - explicitWorkspaceRequired
           - tokenMetadataFields
       properties:
+        grantType:
+          type: string
+          enum: [authorizationCode, clientCredentials, PKCE]
         authURL:
           type: string
           example: https://login.salesforce.com/services/oauth2/authorize
@@ -118,7 +139,11 @@ components:
           $ref: '#/components/schemas/Support'
         providerOpts:
           $ref: '#/components/schemas/ProviderOpts'
-
+        displayName:
+          type: string
+          example: Zendesk Chat
+          description: The display name of the provider, if omitted, defaults to provider name.
+          x-go-type-skip-optional-pointer: true
     CatalogType:
       type: object
       additionalProperties:
