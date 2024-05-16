@@ -8,8 +8,8 @@ import (
 	"syscall"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/salesloft"
-	msTest "github.com/amp-labs/connectors/test/salesloft"
+	"github.com/amp-labs/connectors/intercom"
+	msTest "github.com/amp-labs/connectors/test/intercom"
 	"github.com/amp-labs/connectors/test/utils"
 )
 
@@ -21,29 +21,30 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	filePath := os.Getenv("SALESLOFT_CRED_FILE")
+	filePath := os.Getenv("INTERCOM_CRED_FILE")
 	if filePath == "" {
-		filePath = "./salesloft-creds.json"
+		filePath = "./intercom-creds.json"
 	}
 
-	conn := msTest.GetSalesloftConnector(ctx, filePath)
+	conn := msTest.GetIntercomConnector(ctx, filePath)
 	defer utils.Close(conn)
 
 	res, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: "people",
+		ObjectName: "conversations",
 		Fields: []string{
-			"display_name",
-			"email_address",
+			"id",
+			"state",
+			"type",
 		},
 	})
 	if err != nil {
-		utils.Fail("error reading from Salesloft", "error", err)
+		utils.Fail("error reading from Intercom", "error", err)
 	}
 
-	fmt.Println("Reading people..")
+	fmt.Println("Reading conversations..")
 	utils.DumpJSON(res, os.Stdout)
 
-	if res.Rows > salesloft.DefaultPageSize {
-		utils.Fail(fmt.Sprintf("expected max %v rows", salesloft.DefaultPageSize))
+	if res.Rows > intercom.DefaultPageSize {
+		utils.Fail(fmt.Sprintf("expected max %v rows", intercom.DefaultPageSize))
 	}
 }

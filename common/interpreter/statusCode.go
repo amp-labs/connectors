@@ -18,6 +18,8 @@ func DefaultStatusCodeMappingToErr(res *http.Response, body []byte) error { // n
 		return common.ErrBadRequest // TODO more specific error
 	case http.StatusMethodNotAllowed:
 		return common.ErrBadRequest // TODO more specific error
+	case http.StatusRequestTimeout:
+		return common.ErrBadRequest
 	case http.StatusPreconditionFailed:
 		return common.ErrBadRequest // TODO more specific error
 	case http.StatusRequestEntityTooLarge:
@@ -26,7 +28,13 @@ func DefaultStatusCodeMappingToErr(res *http.Response, body []byte) error { // n
 		return common.ErrLimitExceeded
 	case http.StatusNotImplemented:
 		return common.ErrNotImplemented
+	case http.StatusInternalServerError:
+		return common.ErrServer
+	case http.StatusBadGateway:
+		return common.ErrServer
 	case http.StatusServiceUnavailable:
+		return common.ErrServer
+	case http.StatusGatewayTimeout:
 		return common.ErrServer
 	default:
 		return common.InterpretError(res, body)
