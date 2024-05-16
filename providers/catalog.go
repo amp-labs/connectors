@@ -40,7 +40,7 @@ const (
 	Klaviyo                             Provider = "klaviyo"
 	LinkedIn                            Provider = "linkedIn"
 	MicrosoftDynamics365BusinessCentral Provider = "microsoftDynamics365BusinessCentral"
-	MicrosoftDynamics365CRM             Provider = "microsoftDynamics365CRM"
+	DynamicsCRM                         Provider = "dynamicsCRM"
 	Miro                                Provider = "miro"
 	Mock                                Provider = "mock"
 	Monday                              Provider = "monday"
@@ -831,7 +831,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
-	MicrosoftDynamics365CRM: {
+	DynamicsCRM: {
 		DisplayName: "Microsoft Dynamics CRM",
 		AuthType:    Oauth2,
 		BaseURL:     "https://{{.workspace}}.api.crm.dynamics.com",

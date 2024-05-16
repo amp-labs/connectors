@@ -33,7 +33,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		return nil, err
 	}
 
-	providerInfo, err := providers.ReadInfo(providers.MicrosoftDynamics365CRM, &map[string]string{
+	providerInfo, err := providers.ReadInfo(providers.DynamicsCRM, &map[string]string{
 		"workspace": params.Workspace.Name,
 	})
 	if err != nil {
@@ -60,7 +60,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 }
 
 func (c *Connector) Provider() providers.Provider {
-	return providers.MicrosoftDynamics365CRM
+	return providers.DynamicsCRM
 }
 
 func (c *Connector) String() string {

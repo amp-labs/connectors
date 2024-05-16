@@ -904,7 +904,7 @@ var testCases = []struct { // nolint
 		expectedErr: nil,
 	},
 	{
-		provider:    MicrosoftDynamics365CRM,
+		provider:    DynamicsCRM,
 		description: "MS Dynamics 365 CRM provider config with valid substitutions",
 		substitutions: map[string]string{
 			"workspace": "testing",
