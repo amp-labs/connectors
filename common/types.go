@@ -214,3 +214,8 @@ type ObjectMetadata struct {
 	// FieldsMap is a map of field names to field display names
 	FieldsMap map[string]string
 }
+
+type PostAuthInfo struct {
+	CatalogVars *map[string]string
+	RawResponse *JSONHTTPResponse
+}

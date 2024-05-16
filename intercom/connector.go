@@ -1,4 +1,4 @@
-package microsoftdynamicscrm
+package intercom
 
 import (
 	"fmt"
@@ -7,19 +7,18 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers"
 )
 
-var DefaultModuleCRM = paramsbuilder.APIModule{ // nolint: gochecknoglobals
-	Label:   "api/data",
-	Version: "v9.2",
+var DefaultModule = paramsbuilder.APIModule{ // nolint: gochecknoglobals
+	Version: "2.11",
 }
 
 type Connector struct {
-	BaseURL   string
-	Module    string
-	Client    *common.JSONHTTPClient
-	XMLClient *common.XMLHTTPClient
+	BaseURL string
+	Module  string
+	Client  *common.JSONHTTPClient
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
@@ -33,9 +32,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		return nil, err
 	}
 
-	providerInfo, err := providers.ReadInfo(providers.DynamicsCRM, &map[string]string{
-		"workspace": params.Workspace.Name,
-	})
+	providerInfo, err := providers.ReadInfo(providers.Intercom, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -44,9 +41,6 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	conn = &Connector{
 		Module: params.Module.Suffix,
 		Client: &common.JSONHTTPClient{
-			HTTPClient: httpClient,
-		},
-		XMLClient: &common.XMLHTTPClient{
 			HTTPClient: httpClient,
 		},
 	}
@@ -60,15 +54,16 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 }
 
 func (c *Connector) Provider() providers.Provider {
-	return providers.DynamicsCRM
+	return providers.Intercom
 }
 
 func (c *Connector) String() string {
 	return fmt.Sprintf("%s.Connector[%s]", c.Provider(), c.Module)
 }
 
-func (c *Connector) getURL(arg string) string {
-	parts := []string{c.BaseURL, c.Module, arg}
+// nolint:unused
+func (c *Connector) getURL(arg string) (*urlbuilder.URL, error) {
+	parts := []string{c.BaseURL, arg}
 	filtered := make([]string, 0)
 
 	for _, part := range parts {
@@ -77,7 +72,7 @@ func (c *Connector) getURL(arg string) string {
 		}
 	}
 
-	return strings.Join(filtered, "/")
+	return constructURL(strings.Join(filtered, "/"))
 }
 
 func (c *Connector) setBaseURL(newURL string) {

@@ -1,0 +1,49 @@
+{
+  "type": "list",
+  "data": [
+    {
+      "type": "note",
+      "id": "126896008",
+      "created_at": 1715698990,
+      "contact": {
+        "type": "contact",
+        "id": "6643703ffae7834d1792fd30"
+      },
+      "author": {
+        "type": "admin",
+        "id": "7387622",
+        "name": "User",
+        "email": "user@gmail.com",
+        "away_mode_enabled": false,
+        "away_mode_reassign": false
+      },
+      "body": "<p>All the world’s a stage, and all the men and women merely players. William Shakespeare</p>"
+    },
+    {
+      "type": "note",
+      "id": "126895924",
+      "created_at": 1715698976,
+      "contact": {
+        "type": "contact",
+        "id": "6643703ffae7834d1792fd30"
+      },
+      "author": {
+        "type": "admin",
+        "id": "7387622",
+        "name": "User",
+        "email": "user@gmail.com",
+        "away_mode_enabled": false,
+        "away_mode_reassign": false
+      },
+      "body": "<p>All that glitters is not gold. William Shakespeare</p>"
+    }
+  ],
+  "total_count": 3,
+  "pages": {
+    "type": "pages",
+    "next": "https://api.intercom.io/contacts/6643703ffae7834d1792fd30/notes?per_page=2&page=2",
+    "page": 1,
+    "per_page": 2,
+    "total_pages": 2
+  }
+}

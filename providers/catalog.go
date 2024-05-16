@@ -12,6 +12,7 @@ const (
 	Attio                               Provider = "attio"
 	Box                                 Provider = "box"
 	Calendly                            Provider = "calendly"
+	CampaignMonitor                     Provider = "campaignMonitor"
 	Capsule                             Provider = "capsule"
 	ClickUp                             Provider = "clickup"
 	Close                               Provider = "close"
@@ -39,7 +40,7 @@ const (
 	Klaviyo                             Provider = "klaviyo"
 	LinkedIn                            Provider = "linkedIn"
 	MicrosoftDynamics365BusinessCentral Provider = "microsoftDynamics365BusinessCentral"
-	MicrosoftDynamics365CRM             Provider = "microsoftDynamics365CRM"
+	DynamicsCRM                         Provider = "dynamicsCRM"
 	Miro                                Provider = "miro"
 	Mock                                Provider = "mock"
 	Monday                              Provider = "monday"
@@ -348,8 +349,9 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 
 	// ZohoCRM configuration
 	ZohoCRM: {
-		AuthType: Oauth2,
-		BaseURL:  "https://www.zohoapis.com",
+		DisplayName: "Zoho CRM",
+		AuthType:    Oauth2,
+		BaseURL:     "https://www.zohoapis.com",
 		OauthOpts: OauthOpts{
 			AuthURL:                   "https://accounts.zoho.com/oauth/v2/auth",
 			TokenURL:                  "https://accounts.zoho.com/oauth/v2/token",
@@ -542,7 +544,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -642,6 +644,9 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://zoom.us/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -650,7 +655,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -698,11 +703,12 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
 		},
+		PostAuthInfoNeeded: true,
 	},
 
 	// Docusign Developer configuration
@@ -758,6 +764,30 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
+	// campaignMonitor configuration
+	CampaignMonitor: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.createsend.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://api.createsend.com/oauth",
+			TokenURL:                  "https://api.createsend.com/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
 	// GetResponse configuration
 	GetResponse: {
 		AuthType: Oauth2,
@@ -806,9 +836,10 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
-	MicrosoftDynamics365CRM: {
-		AuthType: Oauth2,
-		BaseURL:  "https://{{.workspace}}.api.crm.dynamics.com",
+	DynamicsCRM: {
+		DisplayName: "Microsoft Dynamics CRM",
+		AuthType:    Oauth2,
+		BaseURL:     "https://{{.workspace}}.api.crm.dynamics.com",
 		OauthOpts: OauthOpts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
@@ -832,9 +863,11 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 
 	// ConstantContact configuration
 	ConstantContact: {
-		AuthType: Oauth2,
-		BaseURL:  "https://api.cc.email",
+		DisplayName: "Constant Contact",
+		AuthType:    Oauth2,
+		BaseURL:     "https://api.cc.email",
 		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://authz.constantcontact.com/oauth2/default/v1/authorize",
 			TokenURL:                  "https://authz.constantcontact.com/oauth2/default/v1/token",
 			ExplicitScopesRequired:    true,
@@ -847,7 +880,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -856,8 +889,9 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 
 	// Microsoft Dynamics 365 Business Central configuration
 	MicrosoftDynamics365BusinessCentral: {
-		AuthType: Oauth2,
-		BaseURL:  "https://api.businesscentral.dynamics.com",
+		DisplayName: "Dynamics 365 Business Central",
+		AuthType:    Oauth2,
+		BaseURL:     "https://api.businesscentral.dynamics.com",
 		OauthOpts: OauthOpts{
 			AuthURL:                   "https://login.microsoftonline.com/{{.workspace}}/oauth2/v2.0/authorize",
 			TokenURL:                  "https://login.microsoftonline.com/{{.workspace}}/oauth2/v2.0/token",
@@ -874,7 +908,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -932,8 +966,9 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 
 	// Zendesk Support configuration
 	ZendeskSupport: {
-		AuthType: Oauth2,
-		BaseURL:  "https://{{.workspace}}.zendesk.com",
+		DisplayName: "Zendesk Support",
+		AuthType:    Oauth2,
+		BaseURL:     "https://{{.workspace}}.zendesk.com",
 		OauthOpts: OauthOpts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://{{.workspace}}.zendesk.com/oauth/authorizations/new",
@@ -956,8 +991,9 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	},
 
 	ZendeskChat: {
-		AuthType: Oauth2,
-		BaseURL:  "https://www.zopim.com",
+		DisplayName: "Zendesk Chat",
+		AuthType:    Oauth2,
+		BaseURL:     "https://www.zopim.com",
 		OauthOpts: OauthOpts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://www.zopim.com/oauth2/authorizations/new?subdomain={{.workspace}}",
@@ -986,8 +1022,11 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		OauthOpts: OauthOpts{
 			AuthURL:                   "https://public-api.wordpress.com/oauth2/authorize",
 			TokenURL:                  "https://public-api.wordpress.com/oauth2/token",
-			ExplicitScopesRequired:    false,
+			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -996,7 +1035,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -1089,8 +1128,9 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	},
 	// HelpScoutMailbox Support Configuration
 	HelpScoutMailbox: {
-		AuthType: Oauth2,
-		BaseURL:  "https://api.helpscout.net",
+		DisplayName: "Help Scout Mailbox",
+		AuthType:    Oauth2,
+		BaseURL:     "https://api.helpscout.net",
 		OauthOpts: OauthOpts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://secure.helpscout.net/authentication/authorizeClientApplication",
@@ -1105,7 +1145,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -1142,8 +1182,9 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 
 	// Atlassian configuration
 	Atlassian: {
-		AuthType: Oauth2,
-		BaseURL:  "https://api.atlassian.com",
+		DisplayName: "Atlassian Jira",
+		AuthType:    Oauth2,
+		BaseURL:     "https://api.atlassian.com",
 		OauthOpts: OauthOpts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://auth.atlassian.com/authorize",
@@ -1158,7 +1199,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -1231,9 +1272,6 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://stackoverflow.com/oauth/access_token/json",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
-			TokenMetadataFields: TokenMetadataFields{
-				ScopesField: "scope",
-			},
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -1279,8 +1317,9 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 
 	// GoogleContacts Support Configuration
 	GoogleContacts: {
-		AuthType: Oauth2,
-		BaseURL:  "https://people.googleapis.com",
+		DisplayName: "Google Contacts",
+		AuthType:    Oauth2,
+		BaseURL:     "https://people.googleapis.com",
 		OauthOpts: OauthOpts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://accounts.google.com/o/oauth2/v2/auth",
@@ -1298,7 +1337,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -1466,8 +1505,9 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 
 	// DropboxSign Configuration
 	DropboxSign: {
-		AuthType: Oauth2,
-		BaseURL:  "https://api.hellosign.com",
+		DisplayName: "Dropbox Sign",
+		AuthType:    Oauth2,
+		BaseURL:     "https://api.hellosign.com",
 		OauthOpts: OauthOpts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://app.hellosign.com/oauth/authorize",
@@ -1506,7 +1546,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -1597,8 +1637,9 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	},
 
 	IroncladEU: {
-		AuthType: Oauth2,
-		BaseURL:  "https://eu1.ironcladapp.com",
+		DisplayName: "Ironclad Europe",
+		AuthType:    Oauth2,
+		BaseURL:     "https://eu1.ironcladapp.com",
 		OauthOpts: OauthOpts{
 			AuthURL:                   "https://eu1.ironcladapp.com/oauth/authorize",
 			TokenURL:                  "https://eu1.ironcladapp.com/oauth/token",

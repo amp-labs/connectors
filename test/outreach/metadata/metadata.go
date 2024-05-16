@@ -2,10 +2,9 @@ package main
 
 import (
 	"context"
-	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/outreach"
@@ -63,24 +62,18 @@ func GetOutreachConnector(ctx context.Context, filePath string) *outreach.Connec
 }
 
 func main() {
-	outreach := GetOutreachConnector(context.Background(), DefaultCredsFile)
+	objects := []string{"emailAddresses", "users", "ladecima"}
 
-	config := connectors.ReadParams{
-		ObjectName: "users",
-		// NextPage:   "https://api.outreach.io/api/v2/users?page%5Blimit%5D=1\u0026page%5Boffset%5D=2",
-	}
+	ctx := context.Background()
 
-	result, err := outreach.Read(context.Background(), config)
+	conn := GetOutreachConnector(ctx, "creds.json")
+
+	m, err := conn.ListObjectMetadata(ctx, objects)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// Print the results
-	jsonStr, err := json.MarshalIndent(result, "", "  ")
-	if err != nil {
-		log.Fatal(err)
-	}
+	fmt.Printf("The Object-Metadata: %v\n", m.Result)
 
-	_, _ = os.Stdout.Write(jsonStr)
-	_, _ = os.Stdout.WriteString("\n")
+	fmt.Printf("The Errors: %v\n", m.Errors)
 }
