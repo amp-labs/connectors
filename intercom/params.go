@@ -12,7 +12,7 @@ import (
 
 const (
 	// DefaultPageSize is number of elements per page.
-	DefaultPageSize = 50
+	DefaultPageSize = 60
 )
 
 // Option is a function which mutates the connector configuration.

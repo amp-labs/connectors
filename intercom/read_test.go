@@ -120,7 +120,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				return actual.NextPage.String() == expectedNextPage // nolint:nlreturn
 			},
 			expected: &common.ReadResult{
-				NextPage: "{{testServerURL}}?per_page=50&starting_after=" +
+				NextPage: "{{testServerURL}}?per_page=60&starting_after=" +
 					"WzE3MTU2OTU2NzkwMDAsIjY2NDM3MDNmZmFlNzgzNGQxNzkyZmQzMCIsMl0=",
 			},
 			expectedErrs: nil,
@@ -188,7 +188,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"updated_at": float64(1715706939),
 					},
 				}},
-				NextPage: "{{testServerURL}}?per_page=50&starting_after=" +
+				NextPage: "{{testServerURL}}?per_page=60&starting_after=" +
 					"Wy0xLCI2NjQzOWI5NDdiYjA5NWE2ODFmN2ZkOWUiLDNd",
 				Done: false,
 			},
