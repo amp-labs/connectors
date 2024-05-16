@@ -7,6 +7,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/gertd/go-pluralize"
 	"github.com/spyzhov/ajson"
 )
 
@@ -149,7 +150,5 @@ func extractListFieldName(node *ajson.Node) (string, error) {
 }
 
 func applyPluralForm(word string) string {
-	// The requirement for Intercom's object pluralisation is low and simple
-	// There is no need to consider all English orthography cases
-	return word + "s"
+	return pluralize.NewClient().Plural(word)
 }

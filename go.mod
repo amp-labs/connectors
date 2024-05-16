@@ -15,6 +15,7 @@ require (
 
 require (
 	github.com/antchfx/xpath v0.0.0-20170515025933-1f3266e77307 // indirect
+	github.com/gertd/go-pluralize v0.2.1 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
