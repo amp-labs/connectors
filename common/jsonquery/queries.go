@@ -36,6 +36,10 @@ func (q *Query) Object(key string, optional bool) (*ajson.Node, error) {
 		return nil, nil // nolint:nilnil
 	}
 
+	if node.IsNull() {
+		return nil, handleNullNode(key, optional)
+	}
+
 	if !node.IsObject() {
 		return nil, ErrNotObject
 	}
@@ -51,6 +55,10 @@ func (q *Query) Integer(key string, optional bool) (*int64, error) {
 
 	if node == nil {
 		return nil, nil // nolint:nilnil
+	}
+
+	if node.IsNull() {
+		return nil, handleNullNode(key, optional)
 	}
 
 	count, err := node.GetNumeric()
@@ -77,6 +85,10 @@ func (q *Query) Str(key string, optional bool) (*string, error) {
 		return nil, nil // nolint:nilnil
 	}
 
+	if node.IsNull() {
+		return nil, handleNullNode(key, optional)
+	}
+
 	txt, err := node.GetString()
 	if err != nil {
 		return nil, ErrNotString
@@ -93,6 +105,10 @@ func (q *Query) Array(key string, optional bool) ([]*ajson.Node, error) {
 
 	if node == nil {
 		return nil, nil // nolint:nilnil
+	}
+
+	if node.IsNull() {
+		return nil, handleNullNode(key, optional)
 	}
 
 	arr, err := node.GetArray()
