@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"strings"
+
+	"github.com/amp-labs/connectors/common"
 )
 
 var (
@@ -11,14 +13,17 @@ var (
 	ErrNoAccounts       = errors.New("no accounts found in user info")
 	ErrParsingServer    = errors.New("error parsing server from user info")
 
-	userInfoUrl = "https://account.docusign.com/oauth/userinfo"
+	userInfoURL = "https://account.docusign.com/oauth/userinfo" // nolint:gochecknoglobals
 )
 
-func (c *Connector) GetPostAuthInfo(ctx context.Context) (map[string]string, error) {
-	resp, err := c.get(ctx, userInfoUrl)
+func (c *Connector) GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, error) { // nolint:cyclop
+	resp, err := c.get(ctx, userInfoURL)
 	if err != nil {
 		return nil, err
 	}
+
+	var postAuthInfo common.PostAuthInfo
+	postAuthInfo.RawResponse = resp
 
 	accounts, err := resp.Body.GetKey("accounts")
 	if err != nil {
@@ -45,25 +50,29 @@ func (c *Connector) GetPostAuthInfo(ctx context.Context) (map[string]string, err
 			return nil, err
 		}
 
-		if val {
-			baseUri, err := account.GetKey("base_uri")
-			if err != nil {
-				return nil, err
-			}
-
-			server, err := baseUri.GetString()
-			if err != nil {
-				return nil, err
-			}
-
-			if baseWithoutHttps := strings.TrimPrefix(server, "https://"); baseWithoutHttps != server {
-				if parts := strings.SplitN(baseWithoutHttps, ".", 2); len(parts) > 1 {
-					return map[string]string{"server": parts[0]}, nil
-				}
-			}
-
-			return nil, ErrParsingServer
+		if !val {
+			continue
 		}
+
+		baseURI, err := account.GetKey("base_uri")
+		if err != nil {
+			return nil, err
+		}
+
+		baseURIString, err := baseURI.GetString()
+		if err != nil {
+			return nil, err
+		}
+
+		if baseURLWithoutHTTPS := strings.TrimPrefix(baseURIString, "https://"); baseURLWithoutHTTPS != baseURIString {
+			if parts := strings.SplitN(baseURLWithoutHTTPS, ".", 2); len(parts) > 1 { // nolint:gomnd
+				postAuthInfo.CatalogVars = &map[string]string{"server": parts[0]}
+
+				return &postAuthInfo, nil
+			}
+		}
+
+		return nil, ErrParsingServer
 	}
 
 	return nil, ErrNoDefaultAccount

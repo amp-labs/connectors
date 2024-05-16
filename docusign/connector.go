@@ -5,10 +5,6 @@ import (
 	"github.com/amp-labs/connectors/providers"
 )
 
-const (
-	providerOptionUserInfoURL = "userInfoURL"
-)
-
 type Connector struct {
 	ProviderInfo *providers.ProviderInfo
 	Client       *common.JSONHTTPClient
@@ -53,4 +49,9 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	conn.Client.HTTPClient.Base = conn.ProviderInfo.BaseURL
 
 	return conn, nil
+}
+
+// Provider returns the connector provider.
+func (c *Connector) Provider() providers.Provider {
+	return providers.Docusign
 }

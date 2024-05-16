@@ -73,7 +73,7 @@ type ObjectMetadataConnector interface {
 type AuthMetadataConnector interface {
 	Connector
 
-	GetPostAuthInfo(ctx context.Context) (map[string]string, error)
+	GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, error)
 }
 
 // API is a function that returns a Connector. It's used as a factory.
