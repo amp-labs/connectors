@@ -80,7 +80,7 @@ func (r ResponseError) combineErr(base error) error {
 		messages[i] = descr.Code + message
 	}
 
-	data := strings.Join(messages, ",")
+	data := strings.Join(messages, ", ")
 	if len(data) == 0 {
 		return errors.Join(base, ErrUnknownErrorResponseFormat)
 	}
