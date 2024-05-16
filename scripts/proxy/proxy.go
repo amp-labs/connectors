@@ -108,10 +108,7 @@ func main() {
 	provider := registry.MustString("Provider")
 	clientId := registry.MustString("ClientId")
 	clientSecret := registry.MustString("ClientSecret")
-	accessToken := registry.MustString("AccessToken")
-	refreshToken := registry.MustString("RefreshToken")
-	atExpiry := registry.MustString("Expiry")
-	atExpiryTimeFormat := registry.MustString("ExpiryFormat")
+	tokens := getTokensFromRegistry()
 
 	scopes, err := registry.GetString("Scopes")
 	if err != nil {
@@ -131,10 +128,33 @@ func main() {
 		substitutionsMap[key] = val.MustString()
 	}
 
+	validateRequiredFlags(provider, clientId, clientSecret)
+	startProxy(provider, oauthScopes, clientId, clientSecret, substitutionsMap, DefaultPort, tokens)
+}
+
+// Some connectors may implement Refresh tokens, when it happens expiry must be provided alongside.
+// Library shouldn't attempt to refresh tokens if API doesn't support `refresh_token` grant type.
+func getTokensFromRegistry() *oauth2.Token {
+	accessToken := registry.MustString("AccessToken")
+	refreshToken, err := registry.GetString("RefreshToken")
+
+	if err != nil {
+		// we are working without refresh token
+		return &oauth2.Token{
+			AccessToken: accessToken,
+		}
+	}
+
+	// refresh token should be specified with expiry
+	atExpiry := registry.MustString("Expiry")
+	atExpiryTimeFormat := registry.MustString("ExpiryFormat")
 	expiry := parseAccessTokenExpiry(atExpiry, atExpiryTimeFormat)
 
-	validateRequiredFlags(provider, clientId, clientSecret)
-	startProxy(provider, oauthScopes, clientId, clientSecret, substitutionsMap, DefaultPort, accessToken, refreshToken, expiry)
+	return &oauth2.Token{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+		Expiry:       expiry, // required: will trigger reuse of refresh token
+	}
 }
 
 func parseAccessTokenExpiry(expiryStr, timeFormat string) time.Time {
@@ -176,8 +196,8 @@ func validateRequiredFlags(provider, clientId, clientSecret string) {
 	}
 }
 
-func startProxy(provider string, scopes []string, clientId, clientSecret string, substitutions map[string]string, port int, accessToken, refreshToken string, expiry time.Time) {
-	proxy := buildProxy(provider, scopes, clientId, clientSecret, substitutions, accessToken, refreshToken, expiry)
+func startProxy(provider string, scopes []string, clientId, clientSecret string, substitutions map[string]string, port int, tokens *oauth2.Token) {
+	proxy := buildProxy(provider, scopes, clientId, clientSecret, substitutions, tokens)
 	http.Handle("/", proxy)
 
 	fmt.Printf("\nProxy server listening on :%d\n", port)
@@ -187,10 +207,10 @@ func startProxy(provider string, scopes []string, clientId, clientSecret string,
 	}
 }
 
-func buildProxy(provider string, scopes []string, clientId, clientSecret string, substitutions map[string]string, accessToken, refreshToken string, expiry time.Time) *Proxy {
+func buildProxy(provider string, scopes []string, clientId, clientSecret string, substitutions map[string]string, tokens *oauth2.Token) *Proxy {
 	providerInfo := getProviderConfig(provider, substitutions)
 	cfg := configureOAuth(clientId, clientSecret, scopes, providerInfo)
-	httpClient := setupHttpClient(cfg, accessToken, refreshToken, provider, expiry, providerInfo)
+	httpClient := setupHttpClient(cfg, tokens, provider, providerInfo)
 
 	target, err := url.Parse(providerInfo.BaseURL)
 	if err != nil {
@@ -223,16 +243,12 @@ func configureOAuth(clientId, clientSecret string, scopes []string, providerInfo
 }
 
 // This helps with refreshing tokens automatically.
-func setupHttpClient(cfg *oauth2.Config, accessToken, refreshToken, provider string, expiry time.Time, providerInfo *providers.ProviderInfo) *http.Client {
+func setupHttpClient(cfg *oauth2.Config, tokens *oauth2.Token, provider string, providerInfo *providers.ProviderInfo) *http.Client {
 	ctx := context.Background()
 
 	conn, err := connector.NewConnector(
 		provider,
-		connector.WithClient(ctx, http.DefaultClient, cfg, &oauth2.Token{
-			AccessToken:  accessToken,
-			RefreshToken: refreshToken,
-			Expiry:       expiry, // will trigger reuse of refresh token
-		}),
+		connector.WithClient(ctx, http.DefaultClient, cfg, tokens),
 	)
 	if err != nil {
 		panic(err)

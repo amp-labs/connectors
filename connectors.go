@@ -11,8 +11,10 @@ import (
 	"github.com/amp-labs/connectors/hubspot"
 	"github.com/amp-labs/connectors/microsoftdynamicscrm"
 	"github.com/amp-labs/connectors/mock"
+	"github.com/amp-labs/connectors/outreach"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/salesforce"
+	"github.com/amp-labs/connectors/salesloft"
 )
 
 // Connector is an interface that can be used to implement a connector with
@@ -53,6 +55,13 @@ type WriteConnector interface {
 	Write(ctx context.Context, params WriteParams) (*WriteResult, error)
 }
 
+// DeleteConnector is an interface that extends the Connector interface with delete capabilities.
+type DeleteConnector interface {
+	Connector
+
+	Delete(ctx context.Context, params DeleteParams) (*DeleteResult, error)
+}
+
 // ObjectMetadataConnector is an interface that extends the Connector interface with
 // the ability to list object metadata.
 type ObjectMetadataConnector interface {
@@ -79,18 +88,26 @@ var Salesforce API[*salesforce.Connector, salesforce.Option] = salesforce.NewCon
 // Hubspot is an API that returns a new Hubspot Connector.
 var Hubspot API[*hubspot.Connector, hubspot.Option] = hubspot.NewConnector //nolint:gochecknoglobals
 
-// MSDynamicsSales is an API that returns a new MS Dynamics 365 Sales Connector.
-var MSDynamicsSales API[*microsoftdynamicscrm.Connector, microsoftdynamicscrm.Option] = microsoftdynamicscrm.NewConnector //nolint:gochecknoglobals,lll
+// MSDynamicsCRM is an API that returns a new MS Dynamics 365 Sales Connector.
+var MSDynamicsCRM API[*microsoftdynamicscrm.Connector, microsoftdynamicscrm.Option] = microsoftdynamicscrm.NewConnector //nolint:gochecknoglobals,lll
 
 // Mock is an API that returns a new Mock Connector.
 var Mock API[*mock.Connector, mock.Option] = mock.NewConnector //nolint:gochecknoglobals
+
+// Outreach is an API that returns a new Outreach Connector.
+var Outreach API[*outreach.Connector, outreach.Option] = outreach.NewConnector //nolint:gochecknoglobals
+
+// Salesloft is an API that returns a new Salesloft Connector.
+var Salesloft API[*salesloft.Connector, salesloft.Option] = salesloft.NewConnector //nolint:gochecknoglobals
 
 // We re-export the following types so that they can be used by consumers of this library.
 type (
 	ReadParams               = common.ReadParams
 	WriteParams              = common.WriteParams
+	DeleteParams             = common.DeleteParams
 	ReadResult               = common.ReadResult
 	WriteResult              = common.WriteResult
+	DeleteResult             = common.DeleteResult
 	ListObjectMetadataResult = common.ListObjectMetadataResult
 
 	ErrorWithStatus = common.HTTPStatusError
@@ -129,6 +146,8 @@ func New(provider providers.Provider, opts map[string]any) (Connector, error) { 
 		return newSalesforce(opts)
 	case providers.Hubspot:
 		return newHubspot(opts)
+	case providers.Outreach:
+		return newOutreach(opts)
 	default:
 		return nil, fmt.Errorf("%w: %s", ErrUnknownConnector, provider)
 	}
@@ -199,6 +218,18 @@ func newHubspot(opts map[string]any) (Connector, error) { //nolint:ireturn
 	}
 
 	return Hubspot.New(options...)
+}
+
+// newOutreach returns a new Outreach Connector, by unwrapping the options and passing them to the Outreach API.
+func newOutreach(opts map[string]any) (Connector, error) { //nolint:ireturn
+	var options []outreach.Option
+
+	c, valid := getParam[common.AuthenticatedHTTPClient](opts, "client")
+	if valid {
+		options = append(options, outreach.WithAuthenticatedClient(c))
+	}
+
+	return Outreach.New(options...)
 }
 
 // getParam returns the value of the given key, if present, safely cast to an assumed type.
