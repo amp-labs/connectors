@@ -819,6 +819,36 @@ var testCases = []struct { // nolint
 		},
 		expectedErr: nil,
 	},
+
+	// Campaign Monitor
+
+	{
+		provider: CampaignMonitor,
+		expected: &ProviderInfo{
+			AuthType: Oauth2,
+			OauthOpts: OauthOpts{
+				AuthURL:                   "https://api.createsend.com/oauth",
+				TokenURL:                  "https://api.createsend.com/oauth/token",
+				ExplicitScopesRequired:    true,
+				ExplicitWorkspaceRequired: false,
+			},
+			Support: Support{
+				BulkWrite: BulkWriteSupport{
+					Insert: false,
+					Update: false,
+					Upsert: false,
+					Delete: false,
+				},
+				Proxy:     false,
+				Read:      false,
+				Subscribe: false,
+				Write:     false,
+			},
+			BaseURL: "https://api.createsend.com",
+		},
+		expectedErr: nil,
+	},
+
 	{
 		provider:    GetResponse,
 		description: "GetResponse provider config with no substitutions",
@@ -918,7 +948,7 @@ var testCases = []struct { // nolint
 					Delete: false,
 				},
 				Subscribe: false,
-				Proxy:     false,
+				Proxy:     true,
 			},
 			AuthType: Oauth2,
 			OauthOpts: OauthOpts{
@@ -926,6 +956,7 @@ var testCases = []struct { // nolint
 				TokenURL:                  "https://authz.constantcontact.com/oauth2/default/v1/token",
 				ExplicitWorkspaceRequired: false,
 				ExplicitScopesRequired:    true,
+				GrantType:                 AuthorizationCode,
 			},
 			BaseURL: "https://api.cc.email",
 		},
