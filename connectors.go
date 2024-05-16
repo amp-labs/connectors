@@ -71,6 +71,12 @@ type ObjectMetadataConnector interface {
 	ListObjectMetadata(ctx context.Context, objectNames []string) (*ListObjectMetadataResult, error)
 }
 
+type AuthMetadataConnector interface {
+	Connector
+
+	GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, error)
+}
+
 // API is a function that returns a Connector. It's used as a factory.
 type API[Conn Connector, Option any] func(opts ...Option) (Conn, error)
 
