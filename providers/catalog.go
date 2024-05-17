@@ -1243,9 +1243,6 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://api.smartsheet.com/2.0/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
-			TokenMetadataFields: TokenMetadataFields{
-				ScopesField: "scope",
-			},
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
