@@ -66,6 +66,7 @@ const (
 	Zoom                                Provider = "zoom"
 	Zuora                               Provider = "zuora"
 	Aircall                             Provider = "aircall"
+	Drift                               Provider = "drift"
 )
 
 // ================================================================================
@@ -1561,6 +1562,34 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			ExplicitWorkspaceRequired: false,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Drift Configuration
+	Drift: {
+		AuthType: Oauth2,
+		BaseURL:  "https://driftapi.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://dev.drift.com/authorize",
+			TokenURL:                  "https://driftapi.com/oauth2/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				WorkspaceRefField: "orgId",
 			},
 		},
 		Support: Support{
