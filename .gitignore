@@ -125,3 +125,5 @@ playground/
 
 # ssl certificates
 .ssl/
+
+time-formatter/*
