@@ -20,7 +20,9 @@ func (c *Connector) get(ctx context.Context,
 	return rsp, nil
 }
 
-func (c *Connector) post(ctx context.Context, url string, body any) (*common.JSONHTTPResponse, error) {
+func (c *Connector) post(ctx context.Context, url string,
+	body any, headers ...common.Header,
+) (*common.JSONHTTPResponse, error) {
 	rsp, err := c.Client.Post(ctx, url, body)
 	if err = handleError(err); err != nil {
 		return nil, err
@@ -29,7 +31,9 @@ func (c *Connector) post(ctx context.Context, url string, body any) (*common.JSO
 	return rsp, nil
 }
 
-func (c *Connector) put(ctx context.Context, url string, body any) (*common.JSONHTTPResponse, error) {
+func (c *Connector) put(ctx context.Context, url string,
+	body any, headers ...common.Header,
+) (*common.JSONHTTPResponse, error) {
 	rsp, err := c.Client.Put(ctx, url, body)
 	if err = handleError(err); err != nil {
 		return nil, err
