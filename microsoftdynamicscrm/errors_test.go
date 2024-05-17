@@ -42,6 +42,7 @@ func TestInterpretJSONError(t *testing.T) { //nolint:funlen
 		{
 			// TODO should it indicate that connector could handle it?
 			// TODO It would be bad to mask partial API implementation with actual caller error
+			// search for other test occurrences in the code base when resolving it
 			name: "Unknown response status produces caller error",
 			input: input{
 				res: &http.Response{

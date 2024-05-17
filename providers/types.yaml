@@ -139,6 +139,16 @@ components:
           $ref: '#/components/schemas/Support'
         providerOpts:
           $ref: '#/components/schemas/ProviderOpts'
+        displayName:
+          type: string
+          example: Zendesk Chat
+          description: The display name of the provider, if omitted, defaults to provider name.
+          x-go-type-skip-optional-pointer: true
+        postAuthInfoNeeded:
+          type: boolean
+          example: true
+          description: If true, we require additional information after auth to start making requests.
+          x-go-type-skip-optional-pointer: true
 
     CatalogType:
       type: object
