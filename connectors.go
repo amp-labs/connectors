@@ -9,11 +9,13 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/hubspot"
+	"github.com/amp-labs/connectors/intercom"
 	"github.com/amp-labs/connectors/microsoftdynamicscrm"
 	"github.com/amp-labs/connectors/mock"
 	"github.com/amp-labs/connectors/outreach"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/salesforce"
+	"github.com/amp-labs/connectors/salesloft"
 )
 
 // Connector is an interface that can be used to implement a connector with
@@ -69,6 +71,12 @@ type ObjectMetadataConnector interface {
 	ListObjectMetadata(ctx context.Context, objectNames []string) (*ListObjectMetadataResult, error)
 }
 
+type AuthMetadataConnector interface {
+	Connector
+
+	GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, error)
+}
+
 // API is a function that returns a Connector. It's used as a factory.
 type API[Conn Connector, Option any] func(opts ...Option) (Conn, error)
 
@@ -95,6 +103,12 @@ var Mock API[*mock.Connector, mock.Option] = mock.NewConnector //nolint:gocheckn
 
 // Outreach is an API that returns a new Outreach Connector.
 var Outreach API[*outreach.Connector, outreach.Option] = outreach.NewConnector //nolint:gochecknoglobals
+
+// Salesloft is an API that returns a new Salesloft Connector.
+var Salesloft API[*salesloft.Connector, salesloft.Option] = salesloft.NewConnector //nolint:gochecknoglobals
+
+// Intercom is an API that returns a new Intercom Connector.
+var Intercom API[*intercom.Connector, intercom.Option] = intercom.NewConnector //nolint:gochecknoglobals
 
 // We re-export the following types so that they can be used by consumers of this library.
 type (

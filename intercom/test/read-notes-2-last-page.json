@@ -1,0 +1,31 @@
+{
+  "type": "list",
+  "data": [
+    {
+      "type": "note",
+      "id": "126895811",
+      "created_at": 1715698958,
+      "contact": {
+        "type": "contact",
+        "id": "6643703ffae7834d1792fd30"
+      },
+      "author": {
+        "type": "admin",
+        "id": "7387622",
+        "name": "User",
+        "email": "user@gmail.com",
+        "away_mode_enabled": false,
+        "away_mode_reassign": false
+      },
+      "body": "<p>A rose by any other name would smell as sweet. William Shakespeare</p>"
+    }
+  ],
+  "total_count": 3,
+  "pages": {
+    "type": "pages",
+    "next": null,
+    "page": 2,
+    "per_page": 2,
+    "total_pages": 2
+  }
+}

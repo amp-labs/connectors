@@ -1,0 +1,112 @@
+{
+  "type": "list",
+  "data": [
+    {
+      "type": "contact",
+      "id": "66439b947bb095a681f7fd9e",
+      "workspace_id": "le2pquh0",
+      "external_id": "985632",
+      "role": "user",
+      "email": "patrick@gmail.com",
+      "phone": null,
+      "name": "Patrick",
+      "avatar": null,
+      "owner_id": null,
+      "social_profiles": {
+        "type": "list",
+        "data": []
+      },
+      "has_hard_bounced": false,
+      "marked_email_as_spam": false,
+      "unsubscribed_from_emails": false,
+      "created_at": 1715706772,
+      "updated_at": 1715706939,
+      "signed_up_at": null,
+      "last_seen_at": null,
+      "last_replied_at": null,
+      "last_contacted_at": null,
+      "last_email_opened_at": null,
+      "last_email_clicked_at": null,
+      "language_override": null,
+      "browser": null,
+      "browser_version": null,
+      "browser_language": null,
+      "os": null,
+      "location": {
+        "type": "location",
+        "country": null,
+        "region": null,
+        "city": null,
+        "country_code": null,
+        "continent_code": null
+      },
+      "android_app_name": null,
+      "android_app_version": null,
+      "android_device": null,
+      "android_os_version": null,
+      "android_sdk_version": null,
+      "android_last_seen_at": null,
+      "ios_app_name": null,
+      "ios_app_version": null,
+      "ios_device": null,
+      "ios_os_version": null,
+      "ios_sdk_version": null,
+      "ios_last_seen_at": null,
+      "custom_attributes": {},
+      "tags": {
+        "type": "list",
+        "data": [],
+        "url": "/contacts/66439b947bb095a681f7fd9e/tags",
+        "total_count": 0,
+        "has_more": false
+      },
+      "notes": {
+        "type": "list",
+        "data": [],
+        "url": "/contacts/66439b947bb095a681f7fd9e/notes",
+        "total_count": 0,
+        "has_more": false
+      },
+      "companies": {
+        "type": "list",
+        "data": [],
+        "url": "/contacts/66439b947bb095a681f7fd9e/companies",
+        "total_count": 0,
+        "has_more": false
+      },
+      "opted_out_subscription_types": {
+        "type": "list",
+        "data": [],
+        "url": "/contacts/66439b947bb095a681f7fd9e/subscriptions",
+        "total_count": 0,
+        "has_more": false
+      },
+      "opted_in_subscription_types": {
+        "type": "list",
+        "data": [],
+        "url": "/contacts/66439b947bb095a681f7fd9e/subscriptions",
+        "total_count": 0,
+        "has_more": false
+      },
+      "utm_campaign": null,
+      "utm_content": null,
+      "utm_medium": null,
+      "utm_source": null,
+      "utm_term": null,
+      "referrer": null,
+      "sms_consent": false,
+      "unsubscribed_from_sms": false
+    }
+  ],
+  "total_count": 3,
+  "pages": {
+    "type": "pages",
+    "next": {
+      "page": 3,
+      "starting_after": "Wy0xLCI2NjQzOWI5NDdiYjA5NWE2ODFmN2ZkOWUiLDNd"
+    },
+    "page": 2,
+    "per_page": 1,
+    "total_pages": 3
+  }
+}

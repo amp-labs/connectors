@@ -128,6 +128,39 @@ func MSDynamics365CRMTokenFromRegistry(registry CredentialsRegistry) *oauth2.Tok
 	return tok
 }
 
+func SalesloftConfigFromRegistry(registry CredentialsRegistry) *oauth2.Config {
+	clientId := registry.MustString(ClientId)
+	clientSecret := registry.MustString(ClientSecret)
+
+	cfg := &oauth2.Config{
+		ClientID:     clientId,
+		ClientSecret: clientSecret,
+		RedirectURL:  "http://localhost:8080/callbacks/v1/oauth",
+		Endpoint: oauth2.Endpoint{
+			AuthURL:   "https://accounts.salesloft.com/oauth/authorize",
+			TokenURL:  "https://accounts.salesloft.com/oauth/token",
+			AuthStyle: oauth2.AuthStyleInParams,
+		},
+		Scopes: []string{},
+	}
+
+	return cfg
+}
+
+func SalesloftTokenFromRegistry(registry CredentialsRegistry) *oauth2.Token {
+	accessToken := registry.MustString(AccessToken)
+	refreshToken := registry.MustString(RefreshToken)
+
+	tok := &oauth2.Token{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+		TokenType:    "bearer",
+		Expiry:       time.Now().Add(-1 * time.Hour), // just pretend it's expired already, whatever, it'll fetch a new one.
+	}
+
+	return tok
+}
+
 func OutreachOAuthConfigFromRegistry(registry CredentialsRegistry) *oauth2.Config {
 	clientId := registry.MustString(ClientId)
 	clientSecret := registry.MustString(ClientSecret)
@@ -162,6 +195,36 @@ func OutreachOauthTokenFromRegistry(registry CredentialsRegistry) *oauth2.Token 
 		RefreshToken: refreshToken,
 		TokenType:    "bearer",
 		Expiry:       time.Now().Add(-1 * time.Hour), // just pretend it's expired already, whatever, it'll fetch a new one.
+	}
+
+	return tok
+}
+
+func IntercomConfigFromRegistry(registry CredentialsRegistry) *oauth2.Config {
+	clientId := registry.MustString(ClientId)
+	clientSecret := registry.MustString(ClientSecret)
+
+	cfg := &oauth2.Config{
+		ClientID:     clientId,
+		ClientSecret: clientSecret,
+		RedirectURL:  "http://localhost:8080/callbacks/v1/oauth",
+		Endpoint: oauth2.Endpoint{
+			AuthURL:   "https://app.intercom.com/oauth",
+			TokenURL:  "https://api.intercom.io/auth/eagle/token",
+			AuthStyle: oauth2.AuthStyleInParams,
+		},
+		Scopes: []string{},
+	}
+
+	return cfg
+}
+
+func IntercomTokenFromRegistry(registry CredentialsRegistry) *oauth2.Token {
+	accessToken := registry.MustString(AccessToken)
+
+	tok := &oauth2.Token{
+		AccessToken: accessToken,
+		TokenType:   "bearer",
 	}
 
 	return tok
