@@ -484,6 +484,11 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://api.close.com/oauth2/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ConsumerRefField:  "user_id",
+				WorkspaceRefField: "organization_id",
+				ScopesField:       "scope",
+			},
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
