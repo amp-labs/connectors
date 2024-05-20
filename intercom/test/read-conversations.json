@@ -1,0 +1,195 @@
+{
+  "type": "conversation.list",
+  "pages": {
+    "type": "pages",
+    "page": 1,
+    "per_page": "50",
+    "total_pages": 1
+  },
+  "total_count": 2,
+  "conversations": [
+    {
+      "type": "conversation",
+      "id": "2",
+      "created_at": 1715707193,
+      "updated_at": 1715707194,
+      "waiting_since": null,
+      "snoozed_until": null,
+      "source": {
+        "type": "conversation",
+        "id": "107849593",
+        "delivered_as": "automated",
+        "subject": "",
+        "body": "<p>Hi Sponge,<br>how is going?</p>",
+        "author": {
+          "type": "admin",
+          "id": "7387622",
+          "name": "Constantin Koval",
+          "email": "constantin.y.koval@gmail.com"
+        },
+        "attachments": [],
+        "url": null,
+        "redacted": false
+      },
+      "contacts": {
+        "type": "contact.list",
+        "contacts": [
+          {
+            "type": "contact",
+            "id": "66439cea83905da73e39822e",
+            "external_id": "874521"
+          }
+        ]
+      },
+      "first_contact_reply": null,
+      "admin_assignee_id": null,
+      "team_assignee_id": null,
+      "open": false,
+      "state": "closed",
+      "read": false,
+      "tags": {
+        "type": "tag.list",
+        "tags": []
+      },
+      "priority": "not_priority",
+      "sla_applied": null,
+      "statistics": {
+        "type": "conversation_statistics",
+        "time_to_assignment": null,
+        "time_to_admin_reply": null,
+        "time_to_first_close": null,
+        "time_to_last_close": null,
+        "median_time_to_reply": null,
+        "first_contact_reply_at": null,
+        "first_assignment_at": null,
+        "first_admin_reply_at": null,
+        "first_close_at": null,
+        "last_assignment_at": null,
+        "last_assignment_admin_reply_at": null,
+        "last_contact_reply_at": null,
+        "last_admin_reply_at": null,
+        "last_close_at": null,
+        "last_closed_by_id": null,
+        "count_reopens": 0,
+        "count_assignments": 0,
+        "count_conversation_parts": 2
+      },
+      "conversation_rating": null,
+      "teammates": {
+        "type": "admin.list",
+        "admins": [
+          {
+            "type": "admin",
+            "id": "7387622"
+          }
+        ]
+      },
+      "title": null,
+      "custom_attributes": {
+        "Language": "English"
+      },
+      "topics": {
+        "type": "topic.list",
+        "topics": [],
+        "total_count": 0
+      },
+      "ticket": null,
+      "linked_objects": {
+        "type": "list",
+        "data": [],
+        "total_count": 0,
+        "has_more": false
+      },
+      "ai_agent": null,
+      "ai_agent_participated": false
+    },
+    {
+      "type": "conversation",
+      "id": "1",
+      "created_at": 1715695679,
+      "updated_at": 1715695679,
+      "waiting_since": null,
+      "snoozed_until": null,
+      "source": {
+        "type": null,
+        "id": "1",
+        "delivered_as": "admin_initiated",
+        "subject": "",
+        "body": "",
+        "author": {
+          "type": "admin",
+          "id": "7387871",
+          "name": "Fin",
+          "email": "operator+le2pquh0@intercom.io"
+        },
+        "attachments": [],
+        "url": null,
+        "redacted": false
+      },
+      "contacts": {
+        "type": "contact.list",
+        "contacts": [
+          {
+            "type": "contact",
+            "id": "6643703ffae7834d1792fd30",
+            "external_id": "43232fbe-a2dc-44e0-bf3c-45b7516876c6"
+          }
+        ]
+      },
+      "first_contact_reply": null,
+      "admin_assignee_id": null,
+      "team_assignee_id": null,
+      "open": true,
+      "state": "open",
+      "read": false,
+      "tags": {
+        "type": "tag.list",
+        "tags": []
+      },
+      "priority": "not_priority",
+      "sla_applied": null,
+      "statistics": {
+        "type": "conversation_statistics",
+        "time_to_assignment": null,
+        "time_to_admin_reply": null,
+        "time_to_first_close": null,
+        "time_to_last_close": null,
+        "median_time_to_reply": null,
+        "first_contact_reply_at": null,
+        "first_assignment_at": null,
+        "first_admin_reply_at": null,
+        "first_close_at": null,
+        "last_assignment_at": null,
+        "last_assignment_admin_reply_at": null,
+        "last_contact_reply_at": null,
+        "last_admin_reply_at": null,
+        "last_close_at": null,
+        "last_closed_by_id": null,
+        "count_reopens": 0,
+        "count_assignments": 0,
+        "count_conversation_parts": 1
+      },
+      "conversation_rating": null,
+      "teammates": {
+        "type": "admin.list",
+        "admins": []
+      },
+      "title": null,
+      "custom_attributes": {},
+      "topics": {
+        "type": "topic.list",
+        "topics": [],
+        "total_count": 0
+      },
+      "ticket": null,
+      "linked_objects": {
+        "type": "list",
+        "data": [],
+        "total_count": 0,
+        "has_more": false
+      },
+      "ai_agent": null,
+      "ai_agent_participated": false
+    }
+  ]
+}
