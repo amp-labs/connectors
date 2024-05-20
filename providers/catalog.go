@@ -47,6 +47,7 @@ const (
 	Mural                               Provider = "mural"
 	Notion                              Provider = "notion"
 	Outreach                            Provider = "outreach"
+	Pinterest                           Provider = "pinterest"
 	Pipedrive                           Provider = "pipedrive"
 	RingCentral                         Provider = "ringCentral"
 	Salesforce                          Provider = "salesforce"
@@ -1697,6 +1698,34 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://login.microsoftonline.com/common/oauth2/v2.0/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Pinterest configuration
+	Pinterest: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.pinterest.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://www.pinterest.com/oauth",
+			TokenURL:                  "https://api.pinterest.com/v5/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
