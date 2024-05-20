@@ -67,6 +67,7 @@ const (
 	Zuora                               Provider = "zuora"
 	Aircall                             Provider = "aircall"
 	Drift                               Provider = "drift"
+	Microsoft                           Provider = "microsoft"
 )
 
 // ================================================================================
@@ -1669,6 +1670,31 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://dashboard.aircall.io/oauth/authorize",
 			TokenURL:                  "https://api.aircall.io/v1/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Microsoft configuration
+	Microsoft: {
+		AuthType: Oauth2,
+		BaseURL:  "https://graph.microsoft.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+			TokenURL:                  "https://login.microsoftonline.com/common/oauth2/v2.0/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 		},
