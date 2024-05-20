@@ -23,6 +23,10 @@ func ParseResult(
 	marshalFunc func([]map[string]any, []string) ([]ReadResultRow, error),
 	fields []string,
 ) (*ReadResult, error) {
+	if resp == nil {
+		return &ReadResult{}, nil
+	}
+
 	totalSize, err := sizeFunc(resp.Body)
 	if err != nil {
 		return nil, err
