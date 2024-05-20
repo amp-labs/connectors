@@ -1599,7 +1599,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     ,
+			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
