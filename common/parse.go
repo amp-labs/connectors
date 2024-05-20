@@ -24,7 +24,7 @@ func ParseResult(
 	fields []string,
 ) (*ReadResult, error) {
 	if resp == nil {
-		return &ReadResult{}, nil
+		return nil, ErrEmptyResponse
 	}
 
 	totalSize, err := sizeFunc(resp.Body)
