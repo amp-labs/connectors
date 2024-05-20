@@ -68,7 +68,6 @@ const (
 	Aircall                             Provider = "aircall"
 	Drift                               Provider = "drift"
 	Microsoft                           Provider = "microsoft"
-	Domo                                Provider = "domo"
 )
 
 // ================================================================================
@@ -1712,4 +1711,5 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Write:     false,
 		},
 	},
+	
 }
