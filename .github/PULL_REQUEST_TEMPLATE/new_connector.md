@@ -1,6 +1,7 @@
+Closes #<issue-number>
+
 ## Checklist
 - [ ] Ran Linter
-- [ ] Catalog tests passing
 
 ## Catalog variables
 <Does the provider's info include any template variables such as `{{workspace}}`?>
