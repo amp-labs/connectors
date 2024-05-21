@@ -72,6 +72,7 @@ const (
 	Formstack                           Provider = "formstack"
 	Aha                                 Provider = "aha"
 	SnapchatAds                         Provider = "snapchatAds"
+	InstagramBasic                      Provider = "instagramBasic"
 )
 
 // ================================================================================
@@ -1740,7 +1741,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenMetadataFields: TokenMetadataFields{
 				ConsumerRefField: "user_id",
 			},
-    },
+		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
@@ -1817,6 +1818,33 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 			GrantType:                 AuthorizationCode,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+	// InstagramBasic Configuration
+	InstagramBasic: {
+		AuthType: Oauth2,
+		BaseURL:  "https://graph.instagram.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://api.instagram.com/oauth/authorize",
+			TokenURL:                  "https://api.instagram.com/oauth/access_token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "user_id",
+			},
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
