@@ -69,6 +69,7 @@ const (
 	Aircall                             Provider = "aircall"
 	Drift                               Provider = "drift"
 	Microsoft                           Provider = "microsoft"
+	Aha                                 Provider = "aha"
 )
 
 // ================================================================================
@@ -1726,6 +1727,30 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
 			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	Aha: {
+		AuthType: Oauth2,
+		BaseURL:  "https://{{.workspace}}.aha.io/api",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://{{.workspace}}.aha.io/oauth/authorize",
+			TokenURL:                  "https://{{.workspace}}.aha.io/oauth/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: true,
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
