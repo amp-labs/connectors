@@ -47,6 +47,7 @@ const (
 	Mural                               Provider = "mural"
 	Notion                              Provider = "notion"
 	Outreach                            Provider = "outreach"
+	Pinterest                           Provider = "pinterest"
 	Pipedrive                           Provider = "pipedrive"
 	RingCentral                         Provider = "ringCentral"
 	Salesforce                          Provider = "salesforce"
@@ -68,8 +69,8 @@ const (
 	Aircall                             Provider = "aircall"
 	Drift                               Provider = "drift"
 	Microsoft                           Provider = "microsoft"
-	GoogleMail                          Provider = "googleMail"
 	Formstack                           Provider = "formstack"
+	Aha                                 Provider = "aha"
 )
 
 // ================================================================================
@@ -1727,6 +1728,58 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenMetadataFields: TokenMetadataFields{
 				ConsumerRefField: "user_id",
 			},
+    },
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Pinterest configuration
+	Pinterest: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.pinterest.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://www.pinterest.com/oauth",
+			TokenURL:                  "https://api.pinterest.com/v5/oauth/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	Aha: {
+		AuthType: Oauth2,
+		BaseURL:  "https://{{.workspace}}.aha.io/api",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://{{.workspace}}.aha.io/oauth/authorize",
+			TokenURL:                  "https://{{.workspace}}.aha.io/oauth/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: true,
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
