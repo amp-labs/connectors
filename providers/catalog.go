@@ -71,6 +71,7 @@ const (
 	Microsoft                           Provider = "microsoft"
 	Formstack                           Provider = "formstack"
 	Aha                                 Provider = "aha"
+	SnapchatAds                         Provider = "snapchatAds"
 )
 
 // ================================================================================
@@ -1791,6 +1792,31 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://{{.workspace}}.aha.io/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: true,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Snapchat Ads configuration file
+	SnapchatAds: {
+		AuthType: Oauth2,
+		BaseURL:  "https://adsapi.snapchat.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://accounts.snapchat.com/login/oauth2/authorize",
+			TokenURL:                  "https://accounts.snapchat.com/login/oauth2/access_token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			GrantType:                 AuthorizationCode,
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
