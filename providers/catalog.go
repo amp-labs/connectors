@@ -506,6 +506,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://api.infusionsoft.com",
 
 		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://accounts.infusionsoft.com/app/oauth/authorize",
 			TokenURL:                  "https://api.infusionsoft.com/token",
 			ExplicitScopesRequired:    false,
