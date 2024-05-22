@@ -42,14 +42,14 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		},
 		{
 			name:  "Successfully describe one object with metadata",
-			input: []string{"help_center"},
+			input: []string{"help_centers"},
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusTeapot)
 			})),
 			expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
-					"help_center": {
-						DisplayName: "Help Center",
+					"help_centers": {
+						DisplayName: "Help Centers",
 						FieldsMap: map[string]string{
 							"created_at":        "created_at",
 							"display_name":      "display_name",
@@ -67,30 +67,33 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		},
 		{
 			name:  "Successfully describe multiple objects with metadata",
-			input: []string{"file_attribute", "group_content"},
+			input: []string{"data_events", "teams"},
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusTeapot)
 			})),
 			expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
-					"file_attribute": {
-						DisplayName: "File",
+					"data_events": {
+						DisplayName: "Data Events",
 						FieldsMap: map[string]string{
-							"content_type": "content_type",
-							"filesize":     "filesize",
-							"height":       "height",
-							"name":         "name",
-							"type":         "type",
-							"url":          "url",
-							"width":        "width",
+							"created_at":       "created_at",
+							"email":            "email",
+							"event_name":       "event_name",
+							"id":               "id",
+							"intercom_user_id": "intercom_user_id",
+							"metadata":         "metadata",
+							"type":             "type",
+							"user_id":          "user_id",
 						},
 					},
-					"group_content": {
-						DisplayName: "Group Content",
+					"teams": {
+						DisplayName: "Teams",
 						FieldsMap: map[string]string{
-							"description": "description",
-							"name":        "name",
-							"type":        "type",
+							"admin_ids":            "admin_ids",
+							"admin_priority_level": "admin_priority_level",
+							"id":                   "id",
+							"name":                 "name",
+							"type":                 "type",
 						},
 					},
 				},
