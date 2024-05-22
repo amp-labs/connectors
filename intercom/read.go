@@ -2,6 +2,7 @@ package intercom
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
@@ -14,9 +15,11 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
+	fmt.Println("[connector] MAKING GET REQUEST TO", link.String())
+
 	rsp, err := c.get(ctx, link.String(), common.Header{
 		Key:   "Intercom-Version",
-		Value: c.Module,
+		Value: apiVersion,
 	})
 	if err != nil {
 		return nil, err

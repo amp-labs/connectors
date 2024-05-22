@@ -15,6 +15,8 @@ var DefaultModule = paramsbuilder.APIModule{ // nolint: gochecknoglobals
 	Version: "2.11",
 }
 
+const apiVersion = "2.11"
+
 type Connector struct {
 	BaseURL string
 	Module  string
