@@ -53,6 +53,7 @@ const (
 	Salesforce                          Provider = "salesforce"
 	Salesloft                           Provider = "salesloft"
 	Sellsy                              Provider = "sellsy"
+	ServiceNow                          Provider = "serviceNow"
 	Slack                               Provider = "slack"
 	Smartsheet                          Provider = "smartsheet"
 	StackExchange                       Provider = "stackExchange"
@@ -1740,7 +1741,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenMetadataFields: TokenMetadataFields{
 				ConsumerRefField: "user_id",
 			},
-    },
+		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
@@ -1817,6 +1818,34 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 			GrantType:                 AuthorizationCode,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// ServiceNow configuration file
+	ServiceNow: {
+		AuthType: Oauth2,
+		BaseURL:  "https://{{.workspace}}.service-now.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://{{.workspace}}.service-now.com/oauth_auth.do",
+			TokenURL:                  "https://{{.workspace}}.service-now.com/oauth_token.do",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: true,
+			GrantType:                 AuthorizationCode,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
