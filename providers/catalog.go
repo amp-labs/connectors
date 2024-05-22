@@ -357,10 +357,15 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType:    Oauth2,
 		BaseURL:     "https://www.zohoapis.com",
 		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://accounts.zoho.com/oauth/v2/auth",
 			TokenURL:                  "https://accounts.zoho.com/oauth/v2/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				WorkspaceRefField: "api_domain",
+				ScopesField:       "scope",
+			},
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
