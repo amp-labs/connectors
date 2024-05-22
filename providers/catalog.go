@@ -1740,7 +1740,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenMetadataFields: TokenMetadataFields{
 				ConsumerRefField: "user_id",
 			},
-    },
+		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
