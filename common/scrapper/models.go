@@ -4,8 +4,20 @@ import (
 	"strings"
 )
 
+type ModelDocLinks []ModelDocLink
+
+func (l ModelDocLinks) FindByName(name string) (ModelDocLink, bool) {
+	for _, link := range l {
+		if link.Name == name {
+			return link, true
+		}
+	}
+
+	return ModelDocLink{}, false
+}
+
 type ModelURLRegistry struct {
-	ModelDocs []ModelDocLink `json:"data"`
+	ModelDocs ModelDocLinks `json:"data"`
 }
 
 type ModelDocLink struct {
