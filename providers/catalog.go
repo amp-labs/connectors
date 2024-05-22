@@ -72,7 +72,7 @@ const (
 	Formstack                           Provider = "formstack"
 	Aha                                 Provider = "aha"
 	SnapchatAds                         Provider = "snapchatAds"
-	InstagramBasic                      Provider = "instagramBasic"
+	Instagram                           Provider = "instagram"
 )
 
 // ================================================================================
@@ -1832,8 +1832,10 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Write:     false,
 		},
 	},
-	// InstagramBasic Configuration
-	InstagramBasic: {
+
+	// Instagram Configuration
+	// TODO: Supports only short-lived tokens
+	Instagram: {
 		AuthType: Oauth2,
 		BaseURL:  "https://graph.instagram.com",
 		OauthOpts: OauthOpts{
