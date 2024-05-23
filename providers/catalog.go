@@ -1832,32 +1832,4 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Write:     false,
 		},
 	},
-
-	// Pinterest configuration
-	Pinterest: {
-		AuthType: Oauth2,
-		BaseURL:  "https://api.pinterest.com",
-		OauthOpts: OauthOpts{
-			GrantType:                 AuthorizationCode,
-			AuthURL:                   "https://www.pinterest.com/oauth",
-			TokenURL:                  "https://api.pinterest.com/v5/oauth/token",
-			ExplicitScopesRequired:    true,
-			ExplicitWorkspaceRequired: false,
-			TokenMetadataFields: TokenMetadataFields{
-				ScopesField: "scope",
-			},
-		},
-		Support: Support{
-			BulkWrite: BulkWriteSupport{
-				Insert: false,
-				Update: false,
-				Upsert: false,
-				Delete: false,
-			},
-			Proxy:     false,
-			Read:      false,
-			Subscribe: false,
-			Write:     false,
-		},
-	},
 }
