@@ -23,7 +23,7 @@ const (
 	DocusignDeveloper                   Provider = "docusignDeveloper"
 	Dropbox                             Provider = "dropbox"
 	DropboxSign                         Provider = "dropboxSign"
-	FacebookAdsManager                  Provider = "facebookAdsManager"
+	Facebook                            Provider = "facebook"
 	Figma                               Provider = "figma"
 	Gainsight                           Provider = "gainsight"
 	GetResponse                         Provider = "getResponse"
@@ -1528,8 +1528,8 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
-	// Faceboook Ads Manager Configuration
-	FacebookAdsManager: {
+	// Facebook Ads Manager Configuration
+	Facebook: {
 		AuthType: Oauth2,
 		BaseURL:  "https://graph.facebook.com",
 		OauthOpts: OauthOpts{
