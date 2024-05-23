@@ -12,10 +12,10 @@ type HeaderAuthClientOption func(params *headerClientParams)
 // adding the provided headers to every request. There's no additional
 // logic for refreshing tokens or anything like that. This is appropriate
 // for APIs that use keys or basic auth.
-func NewHeaderAuthHTTPClient(
+func NewHeaderAuthHTTPClient( //nolint:ireturn
 	ctx context.Context,
 	opts ...HeaderAuthClientOption,
-) (AuthenticatedHTTPClient, error) { //nolint:ireturn
+) (AuthenticatedHTTPClient, error) {
 	params := &headerClientParams{}
 	for _, opt := range opts {
 		opt(params)
