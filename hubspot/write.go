@@ -18,10 +18,8 @@ type writeResponse struct {
 	UpdatedAt             string         `json:"updatedAt"`
 }
 
-type writeMethod func(context.Context, string, any, ...common.Header) (*common.JSONHTTPResponse, error)
-
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
-	var write writeMethod
+	var write common.WriteMethod
 
 	relativeURL := strings.Join([]string{"objects", config.ObjectName}, "/")
 	url := c.getURL(relativeURL)

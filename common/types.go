@@ -1,6 +1,7 @@
 package common
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"time"
@@ -165,6 +166,10 @@ type DeleteResult struct {
 	// Success is true if deletion succeeded.
 	Success bool `json:"success"`
 }
+
+// WriteMethod is signature for any HTTP method that performs write modifications.
+// Ex: Post/Put/Patch.
+type WriteMethod func(context.Context, string, any, ...Header) (*JSONHTTPResponse, error)
 
 // NewHTTPStatusError creates a new error with the given HTTP status.
 func NewHTTPStatusError(status int, err error) error {

@@ -1,0 +1,10 @@
+{
+  "type": "error.list",
+  "request_id": "000cc1764nf6i2r1rlo0",
+  "errors": [
+    {
+      "code": "not_found",
+      "message": "Resource Not Found"
+    }
+  ]
+}
