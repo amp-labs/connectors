@@ -5,7 +5,6 @@ import (
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
@@ -40,7 +39,7 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 	}
 
 	// First page
-	link, err := c.getURL(naming.NewPluralString(config.ObjectName).String())
+	link, err := c.getURL(config.ObjectName)
 	if err != nil {
 		return nil, err
 	}
