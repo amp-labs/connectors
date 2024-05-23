@@ -21,7 +21,6 @@ type Option func(params *parameters)
 // parameters Intercom supports auth client by delegation.
 type parameters struct {
 	paramsbuilder.Client
-	paramsbuilder.Module
 }
 
 func (p parameters) FromOptions(opts ...Option) (*parameters, error) {
@@ -36,7 +35,6 @@ func (p parameters) FromOptions(opts ...Option) (*parameters, error) {
 func (p parameters) ValidateParams() error {
 	return errors.Join(
 		p.Client.ValidateParams(),
-		p.Module.ValidateParams(),
 	)
 }
 
@@ -51,11 +49,5 @@ func WithClient(ctx context.Context, client *http.Client,
 func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
 	return func(params *parameters) {
 		params.WithAuthenticatedClient(client)
-	}
-}
-
-func WithModule(module paramsbuilder.APIModule) Option {
-	return func(params *parameters) {
-		params.WithModule(module)
 	}
 }
