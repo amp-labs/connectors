@@ -55,7 +55,8 @@ func (p *headerClientParams) prepare() *headerClientParams {
 // newHTTPClient returns a new http client for the connector, with automatic OAuth authentication.
 func newHeaderAuthClient(_ context.Context, params *headerClientParams) AuthenticatedHTTPClient { //nolint:ireturn
 	return &headerAuthClient{
-		client: params.client,
+		client:  params.client,
+		headers: params.headers,
 	}
 }
 
