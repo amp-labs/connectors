@@ -12,20 +12,16 @@ type HeaderAuthClientOption func(params *headerClientParams)
 // adding the provided headers to every request. There's no additional
 // logic for refreshing tokens or anything like that. This is appropriate
 // for APIs that use keys or basic auth.
-func NewHeaderAuthHTTPClient(ctx context.Context, opts ...HeaderAuthClientOption) (AuthenticatedHTTPClient, error) { //nolint:ireturn
+func NewHeaderAuthHTTPClient(
+	ctx context.Context,
+	opts ...HeaderAuthClientOption,
+) (AuthenticatedHTTPClient, error) { //nolint:ireturn
 	params := &headerClientParams{}
 	for _, opt := range opts {
 		opt(params)
 	}
 
-	var err error
-
-	params, err = params.prepare()
-	if err != nil {
-		return nil, err
-	}
-
-	return newHeaderAuthClient(ctx, params), nil
+	return newHeaderAuthClient(ctx, params.prepare()), nil
 }
 
 // WithHeaderClient sets the http client to use for the connector. Its usage is optional.
@@ -48,12 +44,12 @@ type headerClientParams struct {
 	headers []Header
 }
 
-func (p *headerClientParams) prepare() (*headerClientParams, error) {
+func (p *headerClientParams) prepare() *headerClientParams {
 	if p.client == nil {
 		p.client = http.DefaultClient
 	}
 
-	return p, nil
+	return p
 }
 
 // newHTTPClient returns a new http client for the connector, with automatic OAuth authentication.
