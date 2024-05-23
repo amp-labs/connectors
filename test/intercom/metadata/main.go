@@ -9,13 +9,12 @@ import (
 	"syscall"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/naming"
 	msTest "github.com/amp-labs/connectors/test/intercom"
 	"github.com/amp-labs/connectors/test/utils"
 )
 
 var (
-	objectName = "company"
+	objectName = "admins"
 )
 
 // we want to compare fields returned by read and schema properties provided by metadata methods
@@ -73,9 +72,9 @@ func compareFieldsMatch(metadata *common.ListObjectMetadataResult, response map[
 
 	mismatch := make([]error, 0)
 
-	for name := range metadata.Result[naming.NewPluralString(objectName).String()].FieldsMap {
-		if _, found := fields[name]; found {
-			fields[name] = true
+	for _, displayName := range metadata.Result[objectName].FieldsMap {
+		if _, found := fields[displayName]; found {
+			fields[displayName] = true
 		}
 	}
 

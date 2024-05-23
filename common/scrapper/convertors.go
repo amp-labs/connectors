@@ -5,20 +5,18 @@ import (
 	"fmt"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/naming"
 )
 
 var ErrObjectNotFound = errors.New("object not found")
 
-func (r *ObjectMetadataResult) Select(objectNames naming.PluralStrings) (*common.ListObjectMetadataResult, error) {
+func (r *ObjectMetadataResult) Select(objectNames []string) (*common.ListObjectMetadataResult, error) {
 	list := &common.ListObjectMetadataResult{
 		Result: make(map[string]common.ObjectMetadata),
 		Errors: nil,
 	}
 
 	// Convert and return only listed objects
-	for _, n := range objectNames {
-		name := n.String()
+	for _, name := range objectNames {
 		if v, ok := r.Result[name]; ok {
 			// move metadata from scrapper object to common object
 			list.Result[name] = common.ObjectMetadata{
