@@ -51,7 +51,7 @@ func (r *ModelURLRegistry) Add(displayName, url string) {
 
 type ObjectMetadataResult struct {
 	// Result is a map of object names to object metadata
-	Result map[string]*ObjectMetadata `json:"data"`
+	Result map[string]ObjectMetadata `json:"data"`
 }
 
 type ObjectMetadata struct {
@@ -64,14 +64,14 @@ type ObjectMetadata struct {
 
 func NewObjectMetadataResult() *ObjectMetadataResult {
 	return &ObjectMetadataResult{
-		Result: make(map[string]*ObjectMetadata),
+		Result: make(map[string]ObjectMetadata),
 	}
 }
 
 func (r *ObjectMetadataResult) Add(objectName string, objectDisplayName string, fieldName string) {
 	data, ok := r.Result[objectName]
 	if !ok {
-		data = &ObjectMetadata{
+		data = ObjectMetadata{
 			DisplayName: objectDisplayName,
 			FieldsMap:   make(map[string]string),
 		}
