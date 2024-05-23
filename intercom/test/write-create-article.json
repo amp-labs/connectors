@@ -1,0 +1,25 @@
+{
+  "id": "9333081",
+  "type": "article",
+  "workspace_id": "le2pquh0",
+  "parent_id": null,
+  "parent_type": null,
+  "parent_ids": [],
+  "statistics": {
+    "type": "article_statistics",
+    "views": 0,
+    "conversations": 0,
+    "reactions": 0,
+    "happy_reaction_percentage": 0,
+    "neutral_reaction_percentage": 0,
+    "sad_reaction_percentage": 0
+  },
+  "title": "Famous quotes",
+  "description": "To be, or not to be, that is the question. – William Shakespeare",
+  "body": "",
+  "author_id": 7387622,
+  "state": "draft",
+  "created_at": 1715806375,
+  "updated_at": 1715806375,
+  "url": null
+}

@@ -1,8 +1,7 @@
-package salesloft
+package intercom
 
 import (
 	"context"
-	"strconv"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/jsonquery"
@@ -48,23 +47,12 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 }
 
 func constructWriteResult(body *ajson.Node) (*common.WriteResult, error) {
-	nested, err := jsonquery.New(body).Object("data", false)
+	recordID, err := jsonquery.New(body).StrWithDefault("id", "")
 	if err != nil {
 		return nil, err
 	}
 
-	rawID, err := jsonquery.New(nested).Integer("id", true)
-	if err != nil {
-		return nil, err
-	}
-
-	recordID := ""
-	if rawID != nil {
-		// optional
-		recordID = strconv.FormatInt(*rawID, 10)
-	}
-
-	data, err := jsonquery.Convertor.ObjectToMap(nested)
+	data, err := jsonquery.Convertor.ObjectToMap(body)
 	if err != nil {
 		return nil, err
 	}

@@ -30,12 +30,35 @@ Response example:
 var ErrUnknownErrorResponseFormat = errors.New("error response has unexpected format")
 
 func (*Connector) interpretJSONError(res *http.Response, body []byte) error { //nolint:cyclop
-	var payload ResponseError
+	payload := make(map[string]any)
 	if err := json.Unmarshal(body, &payload); err != nil {
 		return fmt.Errorf("interpretJSONError general: %w %w", interpreter.ErrUnmarshal, err)
 	}
 
-	return payload.combineErr(statusCodeMapping(res, body))
+	// now we can choose which error response Schema we expect
+	var schema errorDescriptor
+
+	if _, ok := payload["errors"]; ok {
+		apiError := &ResponseListError{}
+		if err := json.Unmarshal(body, &apiError); err != nil {
+			return fmt.Errorf("interpretJSONError ListError: %w %w", interpreter.ErrUnmarshal, err)
+		}
+
+		schema = apiError
+		if res.StatusCode == http.StatusUnprocessableEntity {
+			return schema.combineErr(common.ErrBadRequest)
+		}
+	} else {
+		// default to simple response
+		apiError := &ResponseSingleError{}
+		if err := json.Unmarshal(body, &apiError); err != nil {
+			return fmt.Errorf("interpretJSONError SingleError: %w %w", interpreter.ErrUnmarshal, err)
+		}
+
+		schema = apiError
+	}
+
+	return schema.combineErr(statusCodeMapping(res, body))
 }
 
 func statusCodeMapping(res *http.Response, body []byte) error {
@@ -55,7 +78,11 @@ func statusCodeMapping(res *http.Response, body []byte) error {
 	}
 }
 
-type ResponseError struct {
+type errorDescriptor interface {
+	combineErr(base error) error
+}
+
+type ResponseListError struct {
 	Type      string             `json:"type"`
 	RequestId *string            `json:"request_id"` // nolint:tagliatelle
 	Errors    []DescriptiveError `json:"errors"`
@@ -67,7 +94,7 @@ type DescriptiveError struct {
 	Field   *string `json:"field"`
 }
 
-func (r ResponseError) combineErr(base error) error {
+func (r ResponseListError) combineErr(base error) error {
 	messages := make([]string, len(r.Errors))
 
 	for i, descr := range r.Errors {
@@ -86,4 +113,13 @@ func (r ResponseError) combineErr(base error) error {
 	}
 
 	return fmt.Errorf("%w: %s", base, data)
+}
+
+type ResponseSingleError struct {
+	Status int64  `json:"status"`
+	Error  string `json:"error"`
+}
+
+func (r ResponseSingleError) combineErr(base error) error {
+	return fmt.Errorf("%w: %s", base, r.Error)
 }
