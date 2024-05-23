@@ -5,6 +5,7 @@ package providers
 // ================================================================================
 
 const (
+	AdobeSign                           Provider = "adobeSign"
 	Airtable                            Provider = "airtable"
 	AWeber                              Provider = "aWeber"
 	Asana                               Provider = "asana"
@@ -79,6 +80,36 @@ const (
 // ================================================================================
 
 var catalog = CatalogType{ // nolint:gochecknoglobals
+
+	// Adobe Sign configuration with substitution
+	AdobeSign: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.{{.shard}}.adobesign.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://secure.{{.shard}}.adobesign.com/public/oauth/v2",
+			TokenURL:                  "https://api.{{.shard}}.echosign.com/oauth/v2/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: true,
+			TokenMetadataFields: TokenMetadataFields{
+				ConsumerRefField:  "api_access_point",
+				WorkspaceRefField: "web_access_point",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
 	// Salesforce configuration
 	Salesforce: {
 		AuthType: Oauth2,
