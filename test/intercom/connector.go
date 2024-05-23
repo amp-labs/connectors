@@ -37,7 +37,6 @@ func GetIntercomConnector(ctx context.Context, filePath string) *intercom.Connec
 
 	conn, err := connectors.Intercom(
 		intercom.WithClient(ctx, http.DefaultClient, cfg, tok),
-		intercom.WithModule(intercom.DefaultModule),
 	)
 	if err != nil {
 		testUtils.Fail("error creating Intercom connector", "error", err)
