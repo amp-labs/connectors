@@ -1,6 +1,8 @@
 package metadata
 
 import (
+	_ "embed"
+	"encoding/json"
 	"path/filepath"
 	"runtime"
 
@@ -11,6 +13,11 @@ const (
 	IndexFile   = "index.json"
 	SchemasFile = "schemas.json"
 )
+
+// Static file containing a list of object metadata is embedded and can be served.
+//
+//go:embed schemas.json
+var schemas []byte
 
 func SaveIndex(index *scrapper.ModelURLRegistry) error {
 	return scrapper.FlushToFile(resolveRelativePath(IndexFile), index)
@@ -32,14 +39,14 @@ func SaveSchemas(schemas *scrapper.ObjectMetadataResult) error {
 }
 
 func LoadSchemas() (*scrapper.ObjectMetadataResult, error) {
-	var schemas *scrapper.ObjectMetadataResult
+	var result *scrapper.ObjectMetadataResult
 
-	err := scrapper.LoadFile(resolveRelativePath(SchemasFile), &schemas)
+	err := json.Unmarshal(schemas, &result)
 	if err != nil {
 		return nil, err
 	}
 
-	return schemas, nil
+	return result, nil
 }
 
 func resolveRelativePath(filename string) string {
