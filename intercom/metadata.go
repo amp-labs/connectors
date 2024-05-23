@@ -2,6 +2,7 @@ package intercom
 
 import (
 	"context"
+
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/intercom/metadata"
 )
@@ -14,7 +15,7 @@ func (c *Connector) ListObjectMetadata(
 		return nil, common.ErrMissingObjects
 	}
 
-	schemas, err := metadata.LoadSchemas()
+	schemas, err := metadata.FileManager.LoadSchemas()
 	if err != nil {
 		return nil, common.ErrMetadataLoadFailure
 	}

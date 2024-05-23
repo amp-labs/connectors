@@ -60,11 +60,11 @@ func createIndex() {
 		log.Printf("Index completed %.2f%%\n", getPercentage(i, len(sections))) // nolint:forbidigo
 	}
 
-	must(metadata.SaveIndex(registry))
+	must(metadata.FileManager.SaveIndex(registry))
 }
 
 func createSchemas() {
-	index, err := metadata.LoadIndex()
+	index, err := metadata.FileManager.LoadIndex()
 	must(err)
 
 	schemas := scrapper.NewObjectMetadataResult()
@@ -84,7 +84,7 @@ func createSchemas() {
 		log.Printf("Schemas completed %.2f%% [%v]\n", getPercentage(i, len(documents)), model.Name)
 	}
 
-	must(metadata.SaveSchemas(schemas))
+	must(metadata.FileManager.SaveSchemas(schemas))
 }
 
 func getSchemasForListEndpoints(index *scrapper.ModelURLRegistry) scrapper.ModelDocLinks {
