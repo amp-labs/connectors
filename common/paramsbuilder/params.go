@@ -79,6 +79,8 @@ func (p *Workspace) WithWorkspace(workspaceRef string) {
 }
 
 // Module params adds suffix to URL controlling API versions.
+// This is relevant where there are several APIs for different product areas or sub-products, and the APIs
+// are versioned differently or have different ways of constructing URLs from object names.
 type Module struct {
 	Suffix string
 }
