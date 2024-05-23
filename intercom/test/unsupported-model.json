@@ -1,0 +1,10 @@
+{
+  "type": "error.list",
+  "request_id": "0000vu89qmaaos7flru0",
+  "errors": [
+    {
+      "code": "parameter_invalid",
+      "message": "unsupported model parameter [someModelName]"
+    }
+  ]
+}
