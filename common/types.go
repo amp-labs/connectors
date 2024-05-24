@@ -79,6 +79,9 @@ var (
 
 	// ErrBadRequest is returned when we get a 400 response from the provider.
 	ErrBadRequest = errors.New("bad request")
+
+	// ErrMetadataLoadFailure is returned when files that contain metadata for a connector cannot be loaded.
+	ErrMetadataLoadFailure = errors.New("cannot load metadata")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.
