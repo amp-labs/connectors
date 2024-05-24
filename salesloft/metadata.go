@@ -1,10 +1,10 @@
-package intercom
+package salesloft
 
 import (
 	"context"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/intercom/metadata"
+	"github.com/amp-labs/connectors/salesloft/metadata"
 )
 
 func (c *Connector) ListObjectMetadata(
