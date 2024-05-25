@@ -73,6 +73,7 @@ const (
 	Aha                                 Provider = "aha"
 	SnapchatAds                         Provider = "snapchatAds"
 	Instagram                           Provider = "instagram"
+	Github                              Provider = "github"
 )
 
 // ================================================================================
@@ -1848,6 +1849,31 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "user_id",
 			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Github Configuration
+	Github: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.github.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://github.com/login/oauth/authorize",
+			TokenURL:                  "https://github.com/login/oauth/access_token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
