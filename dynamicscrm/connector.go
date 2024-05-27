@@ -1,4 +1,4 @@
-package microsoftdynamicscrm
+package dynamicscrm
 
 import (
 	"fmt"
@@ -7,6 +7,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -33,13 +34,6 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		return nil, err
 	}
 
-	providerInfo, err := providers.ReadInfo(providers.DynamicsCRM, &map[string]string{
-		"workspace": params.Workspace.Name,
-	})
-	if err != nil {
-		return nil, err
-	}
-
 	httpClient := params.Client.Caller
 	conn = &Connector{
 		Module: params.Module.Suffix,
@@ -50,6 +44,14 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 			HTTPClient: httpClient,
 		},
 	}
+
+	providerInfo, err := providers.ReadInfo(conn.Provider(), &map[string]string{
+		"workspace": params.Workspace.Name,
+	})
+	if err != nil {
+		return nil, err
+	}
+
 	// connector and its client must mirror base url and provide its own error parser
 	conn.setBaseURL(providerInfo.BaseURL)
 	conn.Client.HTTPClient.ErrorHandler = interpreter.ErrorHandler{
@@ -67,8 +69,8 @@ func (c *Connector) String() string {
 	return fmt.Sprintf("%s.Connector[%s]", c.Provider(), c.Module)
 }
 
-func (c *Connector) getURL(arg string) string {
-	parts := []string{c.BaseURL, c.Module, arg}
+func (c *Connector) getURL(arg string) (*urlbuilder.URL, error) {
+	parts := []string{c.BaseURL, arg}
 	filtered := make([]string, 0)
 
 	for _, part := range parts {
@@ -77,7 +79,7 @@ func (c *Connector) getURL(arg string) string {
 		}
 	}
 
-	return strings.Join(filtered, "/")
+	return constructURL(strings.Join(filtered, "/"))
 }
 
 func (c *Connector) setBaseURL(newURL string) {

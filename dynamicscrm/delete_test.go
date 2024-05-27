@@ -1,4 +1,4 @@
-package microsoftdynamicscrm
+package dynamicscrm
 
 import (
 	"context"
@@ -55,7 +55,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusBadRequest)
-				writeBody(w, `{
+				mockutils.WriteBody(w, `{
 					"error": {
 						"code": "0x80060888",
 						"message":"Resource not found for the segment 'conacs'."

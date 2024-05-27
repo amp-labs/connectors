@@ -8,9 +8,9 @@ import (
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/dynamicscrm"
 	"github.com/amp-labs/connectors/hubspot"
 	"github.com/amp-labs/connectors/intercom"
-	"github.com/amp-labs/connectors/microsoftdynamicscrm"
 	"github.com/amp-labs/connectors/mock"
 	"github.com/amp-labs/connectors/outreach"
 	"github.com/amp-labs/connectors/providers"
@@ -95,8 +95,8 @@ var Salesforce API[*salesforce.Connector, salesforce.Option] = salesforce.NewCon
 // Hubspot is an API that returns a new Hubspot Connector.
 var Hubspot API[*hubspot.Connector, hubspot.Option] = hubspot.NewConnector //nolint:gochecknoglobals
 
-// MSDynamicsCRM is an API that returns a new MS Dynamics 365 Sales Connector.
-var MSDynamicsCRM API[*microsoftdynamicscrm.Connector, microsoftdynamicscrm.Option] = microsoftdynamicscrm.NewConnector //nolint:gochecknoglobals,lll
+// DynamicsCRM is an API that returns a new Microsoft Dynamics 365 CRM Connector.
+var DynamicsCRM API[*dynamicscrm.Connector, dynamicscrm.Option] = dynamicscrm.NewConnector //nolint:gochecknoglobals,lll
 
 // Mock is an API that returns a new Mock Connector.
 var Mock API[*mock.Connector, mock.Option] = mock.NewConnector //nolint:gochecknoglobals

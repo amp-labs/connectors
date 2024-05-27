@@ -8,8 +8,8 @@ import (
 	"syscall"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/microsoftdynamicscrm"
-	msTest "github.com/amp-labs/connectors/test/microsoftdynamicscrm"
+	"github.com/amp-labs/connectors/dynamicscrm"
+	connTest "github.com/amp-labs/connectors/test/dynamicscrm"
 	"github.com/amp-labs/connectors/test/utils"
 )
 
@@ -26,7 +26,7 @@ func main() {
 		filePath = "./ms-crm-creds.json"
 	}
 
-	conn := msTest.GetMSDynamics365CRMConnector(ctx, filePath)
+	conn := connTest.GetMSDynamics365CRMConnector(ctx, filePath)
 	defer utils.Close(conn)
 
 	res, err := conn.Read(ctx, common.ReadParams{
@@ -42,7 +42,7 @@ func main() {
 	fmt.Println("Reading contacts..")
 	utils.DumpJSON(res, os.Stdout)
 
-	if res.Rows > microsoftdynamicscrm.DefaultPageSize {
-		utils.Fail(fmt.Sprintf("expected max %v rows", microsoftdynamicscrm.DefaultPageSize))
+	if res.Rows > dynamicscrm.DefaultPageSize {
+		utils.Fail(fmt.Sprintf("expected max %v rows", dynamicscrm.DefaultPageSize))
 	}
 }
