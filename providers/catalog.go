@@ -284,6 +284,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://api.capsulecrm.com/api",
 		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://api.capsulecrm.com/oauth/authorise",
 			TokenURL:                  "https://api.capsulecrm.com/oauth/token",
 			ExplicitScopesRequired:    true,
