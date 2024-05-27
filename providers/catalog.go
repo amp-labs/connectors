@@ -388,6 +388,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://api.mural.co/api",
 		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://api.mural.co/oauth/authorize",
 			TokenURL:                  "https://api.mural.co/oauth/token",
 			ExplicitScopesRequired:    true,
