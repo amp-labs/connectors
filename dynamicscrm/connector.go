@@ -11,7 +11,7 @@ import (
 	"github.com/amp-labs/connectors/providers"
 )
 
-var DefaultModuleCRM = paramsbuilder.APIModule{ // nolint: gochecknoglobals
+var DataModule = paramsbuilder.APIModule{ // nolint: gochecknoglobals
 	Label:   "api/data",
 	Version: "v9.2",
 }
@@ -70,7 +70,7 @@ func (c *Connector) String() string {
 }
 
 func (c *Connector) getURL(arg string) (*urlbuilder.URL, error) {
-	parts := []string{c.BaseURL, arg}
+	parts := []string{c.BaseURL, c.Module, arg}
 	filtered := make([]string, 0)
 
 	for _, part := range parts {
