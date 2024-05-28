@@ -23,6 +23,7 @@ const (
 	DocusignDeveloper                   Provider = "docusignDeveloper"
 	Dropbox                             Provider = "dropbox"
 	DropboxSign                         Provider = "dropboxSign"
+	Facebook                            Provider = "facebook"
 	Figma                               Provider = "figma"
 	Gainsight                           Provider = "gainsight"
 	GetResponse                         Provider = "getResponse"
@@ -1544,6 +1545,32 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Write:     false,
 		},
 	},
+
+	// Facebook Ads Manager Configuration
+	Facebook: {
+		AuthType: Oauth2,
+		BaseURL:  "https://graph.facebook.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://www.facebook.com/v19.0/dialog/oauth",
+			TokenURL:                  "https://graph.facebook.com/v19.0/oauth/access_token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
 	// ClickUp Support Configuration
 	ClickUp: {
 		AuthType: Oauth2,
