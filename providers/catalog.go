@@ -57,6 +57,7 @@ const (
 	Slack                               Provider = "slack"
 	Smartsheet                          Provider = "smartsheet"
 	StackExchange                       Provider = "stackExchange"
+	TeamleaderCRM                       Provider = "teamleaderCRM"
 	Timely                              Provider = "timely"
 	Typeform                            Provider = "typeform"
 	Webflow                             Provider = "webflow"
@@ -1878,6 +1879,31 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "user_id",
 			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// TeamleaderCRM Configuration
+	TeamleaderCRM: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.focus.teamleader.eu",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://focus.teamleader.eu/oauth2/authorize",
+			TokenURL:                  "https://focus.teamleader.eu/oauth2/access_token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
