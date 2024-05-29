@@ -10,7 +10,7 @@ import (
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/scrapper"
+	"github.com/amp-labs/connectors/tools/scrapper"
 	"github.com/go-test/deep"
 )
 
