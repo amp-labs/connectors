@@ -75,6 +75,7 @@ const (
 	Aha                                 Provider = "aha"
 	SnapchatAds                         Provider = "snapchatAds"
 	Instagram                           Provider = "instagram"
+	Seismic                             Provider = "seismic"
 )
 
 // ================================================================================
@@ -1904,6 +1905,30 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://focus.teamleader.eu/oauth2/access_token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	Seismic: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.seismic.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://auth.seismic.com/tenants/{{.workspace}}/connect/authorize",
+			TokenURL:                  "https://auth.seismic.com/tenants/{{.workspace}}/connect/token#a",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: true,
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
