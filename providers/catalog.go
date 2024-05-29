@@ -23,6 +23,7 @@ const (
 	DocusignDeveloper                   Provider = "docusignDeveloper"
 	Dropbox                             Provider = "dropbox"
 	DropboxSign                         Provider = "dropboxSign"
+	Facebook                            Provider = "facebook"
 	Figma                               Provider = "figma"
 	Gainsight                           Provider = "gainsight"
 	GetResponse                         Provider = "getResponse"
@@ -56,6 +57,7 @@ const (
 	Slack                               Provider = "slack"
 	Smartsheet                          Provider = "smartsheet"
 	StackExchange                       Provider = "stackExchange"
+	TeamleaderCRM                       Provider = "teamleaderCRM"
 	Timely                              Provider = "timely"
 	Typeform                            Provider = "typeform"
 	Webflow                             Provider = "webflow"
@@ -260,6 +262,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://api.pipedrive.com",
 		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://oauth.pipedrive.com/oauth/authorize",
 			TokenURL:                  "https://oauth.pipedrive.com/oauth/token",
 			ExplicitScopesRequired:    true,
@@ -284,6 +287,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://api.capsulecrm.com/api",
 		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://api.capsulecrm.com/oauth/authorise",
 			TokenURL:                  "https://api.capsulecrm.com/oauth/token",
 			ExplicitScopesRequired:    true,
@@ -308,13 +312,11 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://www.wrike.com/api",
 		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://www.wrike.com/oauth2/authorize",
 			TokenURL:                  "https://www.wrike.com/oauth2/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
-			TokenMetadataFields: TokenMetadataFields{
-				ScopesField: "scope",
-			},
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -390,6 +392,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://api.mural.co/api",
 		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://api.mural.co/oauth/authorize",
 			TokenURL:                  "https://api.mural.co/oauth/token",
 			ExplicitScopesRequired:    true,
@@ -468,11 +471,12 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	// Attio configuration
 	Attio: {
 		AuthType: Oauth2,
-		BaseURL:  "https://api.attio.com/api",
+		BaseURL:  "https://api.attio.com",
 		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://app.attio.com/authorize",
 			TokenURL:                  "https://app.attio.com/oauth/token",
-			ExplicitScopesRequired:    true,
+			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
@@ -512,7 +516,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -524,6 +528,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://api.infusionsoft.com",
 
 		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://accounts.infusionsoft.com/app/oauth/authorize",
 			TokenURL:                  "https://api.infusionsoft.com/token",
 			ExplicitScopesRequired:    false,
@@ -1544,6 +1549,32 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Write:     false,
 		},
 	},
+
+	// Facebook Ads Manager Configuration
+	Facebook: {
+		AuthType: Oauth2,
+		BaseURL:  "https://graph.facebook.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://www.facebook.com/v19.0/dialog/oauth",
+			TokenURL:                  "https://graph.facebook.com/v19.0/oauth/access_token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
 	// ClickUp Support Configuration
 	ClickUp: {
 		AuthType: Oauth2,
@@ -1779,7 +1810,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -1849,6 +1880,31 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "user_id",
 			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// TeamleaderCRM Configuration
+	TeamleaderCRM: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.focus.teamleader.eu",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://focus.teamleader.eu/oauth2/authorize",
+			TokenURL:                  "https://focus.teamleader.eu/oauth2/access_token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
