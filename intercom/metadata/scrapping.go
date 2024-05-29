@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/amp-labs/connectors/common/scrapper"
+	"github.com/amp-labs/connectors/tools/scrapper"
 )
 
 var (
