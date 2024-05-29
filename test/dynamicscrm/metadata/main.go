@@ -10,14 +10,14 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/naming"
 	connTest "github.com/amp-labs/connectors/test/dynamicscrm"
 	"github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 )
 
 var (
-	objectName = naming.NewSingularString("account")
+	objectName     = "accounts"
+	objectNameMeta = "account"
 )
 
 // we want to compare fields returned by read and schema properties provided by metadata methods
@@ -39,7 +39,7 @@ func main() {
 	defer utils.Close(conn)
 
 	response, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: objectName.Plural().String(),
+		ObjectName: objectName,
 	})
 	if err != nil {
 		utils.Fail("error reading from microsoft CRM", "error", err)
@@ -52,7 +52,7 @@ func main() {
 	beforeCall := time.Now()
 
 	metadata, err := conn.ListObjectMetadata(ctx, []string{
-		objectName.String(),
+		objectNameMeta,
 	})
 	if err != nil {
 		utils.Fail("error listing metadata for microsoft CRM", "error", err)
@@ -64,7 +64,7 @@ func main() {
 
 	data := sanitizeReadResponse(response.Data[0].Raw)
 
-	mismatchErr := mockutils.ValidateReadConformsMetadata(objectName.String(), data, metadata)
+	mismatchErr := mockutils.ValidateReadConformsMetadata(objectNameMeta, data, metadata)
 	if mismatchErr != nil {
 		utils.Fail("schema and payload response have mismatching fields", "error", mismatchErr)
 	} else {
