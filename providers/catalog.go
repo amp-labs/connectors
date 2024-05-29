@@ -40,7 +40,7 @@ const (
 	Keap                                Provider = "keap"
 	Klaviyo                             Provider = "klaviyo"
 	LinkedIn                            Provider = "linkedIn"
-	MicrosoftDynamics365BusinessCentral Provider = "microsoftDynamics365BusinessCentral"
+	DynamicsBusinessCentral             Provider = "dynamicsBusinessCentral"
 	DynamicsCRM                         Provider = "dynamicsCRM"
 	Miro                                Provider = "miro"
 	Mock                                Provider = "mock"
@@ -912,8 +912,8 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	},
 
 	// Microsoft Dynamics 365 Business Central configuration
-	MicrosoftDynamics365BusinessCentral: {
-		DisplayName: "Dynamics 365 Business Central",
+	DynamicsBusinessCentral: {
+		DisplayName: "Microsoft Dynamics Business Central",
 		AuthType:    Oauth2,
 		BaseURL:     "https://api.businesscentral.dynamics.com",
 		OauthOpts: OauthOpts{
