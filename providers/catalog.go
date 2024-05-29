@@ -57,7 +57,7 @@ const (
 	Slack                               Provider = "slack"
 	Smartsheet                          Provider = "smartsheet"
 	StackExchange                       Provider = "stackExchange"
-	Teamleader                          Provider = "teamleader"
+	TeamleaderCRM                       Provider = "teamleaderCRM"
 	Timely                              Provider = "timely"
 	Typeform                            Provider = "typeform"
 	Webflow                             Provider = "webflow"
@@ -1894,8 +1894,8 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
-	// Teamleader Configuration
-	Teamleader: {
+	// TeamleaderCRM Configuration
+	TeamleaderCRM: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.focus.teamleader.eu",
 		OauthOpts: OauthOpts{
