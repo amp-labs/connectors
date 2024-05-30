@@ -82,6 +82,15 @@ func substituteStruct(input interface{}, substitutions *map[string]string) (err 
 			field.SetString(substitutedVal)
 		}
 
+		if field.Kind() == reflect.Pointer {
+			if field.Elem().Kind() == reflect.Struct {
+				err := substituteStruct(field.Elem().Addr().Interface(), substitutions)
+				if err != nil {
+					return err
+				}
+			}
+		}
+
 		// If the field is a struct, perform substitution on its fields.
 		if field.Kind() == reflect.Struct {
 			err := substituteStruct(field.Addr().Interface(), substitutions)

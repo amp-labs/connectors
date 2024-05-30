@@ -16,7 +16,7 @@ components:
   schemas:
     AuthType:
       type: string
-      enum: [oauth2, none]
+      enum: [oauth2, api_key, basic, none]
       x-oapi-codegen-extra-tags:
         validate: required
 
@@ -109,6 +109,20 @@ components:
         tokenMetadataFields:
           $ref: '#/components/schemas/TokenMetadataFields'
 
+    ApiKeyOpts:
+      type: object
+      required:
+        - headerName
+      properties:
+        headerName:
+          type: string
+          example: X-Api-Key
+          x-oapi-codegen-extra-tags:
+            validate: required
+        valuePrefix:
+          type: string
+          example: "Bearer "
+
     ProviderOpts:
         type: object
         additionalProperties:
@@ -124,7 +138,6 @@ components:
         - baseURL
         - authType
         - support
-        - oauthOpts
         - providerOpts
       properties:
         authType:
@@ -135,6 +148,8 @@ components:
             validate: required
         oauthOpts:
           $ref: '#/components/schemas/OauthOpts'
+        apiKeyOpts:
+          $ref: '#/components/schemas/ApiKeyOpts'
         support:
           $ref: '#/components/schemas/Support'
         providerOpts:
