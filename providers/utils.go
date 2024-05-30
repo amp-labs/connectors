@@ -31,10 +31,12 @@ func ReadCatalog() (CatalogType, error) {
 
 	// Validate the provider configuration
 	v := validator.New()
-	for _, providerInfo := range catalog {
+	for provider, providerInfo := range catalog {
 		if err := v.Struct(providerInfo); err != nil {
 			return nil, err
 		}
+
+		providerInfo.Name = provider
 	}
 
 	return catalog, nil
