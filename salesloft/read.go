@@ -14,7 +14,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	rsp, err := c.get(ctx, link.String())
+	rsp, err := c.Client.Get(ctx, link.String())
 	if err != nil {
 		return nil, err
 	}

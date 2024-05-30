@@ -16,7 +16,7 @@ func (*Connector) interpretJSONError(res *http.Response, body []byte) error { //
 	}
 
 	// now we can choose which error response Schema we expect
-	var schema errorDescriptor
+	var schema common.ErrorDescriptor
 
 	if _, ok := payload["errors"]; ok {
 		apiError := &ResponseListError{}
@@ -26,7 +26,7 @@ func (*Connector) interpretJSONError(res *http.Response, body []byte) error { //
 
 		schema = apiError
 		if res.StatusCode == http.StatusUnprocessableEntity {
-			return schema.combineErr(common.ErrBadRequest)
+			return schema.CombineErr(common.ErrBadRequest)
 		}
 	} else {
 		// default to simple response
@@ -39,18 +39,14 @@ func (*Connector) interpretJSONError(res *http.Response, body []byte) error { //
 	}
 
 	// enhance status code error with response payload
-	return schema.combineErr(interpreter.DefaultStatusCodeMappingToErr(res, body))
-}
-
-type errorDescriptor interface {
-	combineErr(base error) error
+	return schema.CombineErr(interpreter.DefaultStatusCodeMappingToErr(res, body))
 }
 
 type ResponseListError struct {
 	Errors map[string]any `json:"errors"`
 }
 
-func (r ResponseListError) combineErr(base error) error {
+func (r ResponseListError) CombineErr(base error) error {
 	var message string
 
 	data, err := json.Marshal(r.Errors)
@@ -68,6 +64,6 @@ type ResponseSingleError struct {
 	Err    string `json:"error"`
 }
 
-func (r ResponseSingleError) combineErr(base error) error {
+func (r ResponseSingleError) CombineErr(base error) error {
 	return fmt.Errorf("%w: %s", base, r.Err)
 }

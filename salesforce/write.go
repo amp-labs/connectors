@@ -29,7 +29,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		location += "?_HttpMethod=PATCH"
 	}
 
-	rsp, err = c.post(ctx, location, config.RecordData)
+	rsp, err = c.Client.Post(ctx, location, config.RecordData)
 	if err != nil {
 		return nil, err
 	}

@@ -32,7 +32,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 			return nil, err
 		}
 
-		res, err := c.get(ctx, objURL)
+		res, err := c.Client.Get(ctx, objURL)
 		if err != nil {
 			objMetadata.Errors[obj] = err
 

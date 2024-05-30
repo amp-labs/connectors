@@ -13,7 +13,8 @@ import (
 // JSONHTTPClient is an HTTP client which makes certain assumptions, such as
 // that the response body is JSON. It also handles OAuth access token refreshes.
 type JSONHTTPClient struct {
-	HTTPClient *HTTPClient // underlying HTTP client. Required.
+	HTTPClient         *HTTPClient        // underlying HTTP client. Required.
+	ErrorPostProcessor ErrorPostProcessor // Errors returned from CRUD methods will go via this method. Optional.
 }
 
 // JSONHTTPResponse is a JSON response from an HTTP request.
@@ -41,7 +42,7 @@ type JSONHTTPResponse struct {
 func (j *JSONHTTPClient) Get(ctx context.Context, url string, headers ...Header) (*JSONHTTPResponse, error) {
 	res, body, err := j.HTTPClient.Get(ctx, url, addAcceptJSONHeader(headers)) //nolint:bodyclose
 	if err != nil {
-		return nil, err
+		return nil, j.ErrorPostProcessor.handleError(err)
 	}
 
 	return parseJSONResponse(res, body)
@@ -57,7 +58,7 @@ func (j *JSONHTTPClient) Post(ctx context.Context,
 ) (*JSONHTTPResponse, error) {
 	res, body, err := j.HTTPClient.Post(ctx, url, reqBody, addAcceptJSONHeader(headers)) //nolint:bodyclose
 	if err != nil {
-		return nil, err
+		return nil, j.ErrorPostProcessor.handleError(err)
 	}
 
 	return parseJSONResponse(res, body)
@@ -68,7 +69,7 @@ func (j *JSONHTTPClient) Put(ctx context.Context,
 ) (*JSONHTTPResponse, error) {
 	res, body, err := j.HTTPClient.Put(ctx, url, reqBody, addAcceptJSONHeader(headers)) //nolint:bodyclose
 	if err != nil {
-		return nil, err
+		return nil, j.ErrorPostProcessor.handleError(err)
 	}
 
 	return parseJSONResponse(res, body)
@@ -79,7 +80,7 @@ func (j *JSONHTTPClient) Patch(ctx context.Context,
 ) (*JSONHTTPResponse, error) {
 	res, body, err := j.HTTPClient.Patch(ctx, url, reqBody, addAcceptJSONHeader(headers)) //nolint:bodyclose
 	if err != nil {
-		return nil, err
+		return nil, j.ErrorPostProcessor.handleError(err)
 	}
 
 	return parseJSONResponse(res, body)
@@ -88,7 +89,7 @@ func (j *JSONHTTPClient) Patch(ctx context.Context,
 func (j *JSONHTTPClient) Delete(ctx context.Context, url string, headers ...Header) (*JSONHTTPResponse, error) {
 	res, body, err := j.HTTPClient.Delete(ctx, url, addAcceptJSONHeader(headers)) //nolint:bodyclose
 	if err != nil {
-		return nil, err
+		return nil, j.ErrorPostProcessor.handleError(err)
 	}
 
 	return parseJSONResponse(res, body)
