@@ -67,7 +67,7 @@ func ReadInfo(provider Provider, substitutions *map[string]string) (*ProviderInf
 
 // substituteStruct performs string substitution on the fields of the input struct
 // using the substitutions map.
-func substituteStruct(input interface{}, substitutions *map[string]string) (err error) { //nolint:gocognit
+func substituteStruct(input interface{}, substitutions *map[string]string) (err error) { //nolint:gocognit,cyclop,lll
 	configStruct := reflect.ValueOf(input).Elem()
 	for i := 0; i < configStruct.NumField(); i++ {
 		field := configStruct.Field(i)
