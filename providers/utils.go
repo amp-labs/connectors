@@ -20,6 +20,7 @@ import (
 var (
 	ErrProviderCatalogNotFound = errors.New("provider or provider catalog not found")
 	ErrProviderOptionNotFound  = errors.New("provider option not found")
+	ErrClient                  = errors.New("client creation failed")
 )
 
 func ReadCatalog() (CatalogType, error) {
@@ -154,27 +155,45 @@ func (i *ProviderInfo) GetOption(key string) (string, bool) {
 	return val, ok
 }
 
-var ErrClient = errors.New("client creation failed")
-
+// BasicParams is the parameters to create a basic auth client.
 type BasicParams struct {
 	User string
 	Pass string
 }
 
+// OAuth2AuthCodeParams is the parameters to create an OAuth2 auth code client.
 type OAuth2AuthCodeParams struct {
 	Config *oauth2.Config
 	Token  *oauth2.Token
 }
 
+// NewClientParams is the parameters to create a new HTTP client.
 type NewClientParams struct {
-	Debug               bool
-	Client              *http.Client
-	BasicCreds          *BasicParams
-	OAuth2ClientCreds   *clientcredentials.Config
+	// Debug will enable debug mode for the client.
+	Debug bool
+
+	// Client is the http client to use for the client. If
+	// the value is nil, the default http client will be used.
+	Client *http.Client
+
+	// BasicCreds is the basic auth credentials to use for the client.
+	// If the provider uses basic auth, this field must be set.
+	BasicCreds *BasicParams
+
+	// OAuth2ClientCreds is the client credentials to use for the client.
+	// If the provider uses client credentials, this field must be set.
+	OAuth2ClientCreds *clientcredentials.Config
+
+	// OAuth2AuthCodeCreds is the auth code credentials to use for the client.
+	// If the provider uses auth code, this field must be set.
 	OAuth2AuthCodeCreds *OAuth2AuthCodeParams
-	ApiKey              string
+
+	// ApiKey is the api key to use for the client. If the provider uses api-key
+	// auth, this field must be set.
+	ApiKey string
 }
 
+// NewClient will create a new authenticated client based on the provider's auth type.
 func (i *ProviderInfo) NewClient(ctx context.Context, params *NewClientParams) (common.AuthenticatedHTTPClient, error) {
 	if params == nil {
 		params = &NewClientParams{}
