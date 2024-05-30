@@ -1,4 +1,4 @@
-package microsoftdynamicscrm
+package dynamicscrm
 
 import (
 	"context"
@@ -17,10 +17,13 @@ func (c *Connector) Delete(ctx context.Context, config common.DeleteParams) (*co
 	}
 
 	// resource id must be enclosed in brackets
-	url := c.getURL(fmt.Sprintf("%v(%v)", config.ObjectName, config.RecordId))
+	url, err := c.getURL(fmt.Sprintf("%v(%v)", config.ObjectName, config.RecordId))
+	if err != nil {
+		return nil, err
+	}
 
 	// 204 NoContent is expected
-	_, err := c.delete(ctx, url)
+	_, err = c.Client.Delete(ctx, url.String())
 	if err != nil {
 		return nil, err
 	}

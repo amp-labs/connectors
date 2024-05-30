@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"os"
 	"os/signal"
@@ -11,13 +10,14 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors/common"
-	msTest "github.com/amp-labs/connectors/test/microsoftdynamicscrm"
+	connTest "github.com/amp-labs/connectors/test/dynamicscrm"
 	"github.com/amp-labs/connectors/test/utils"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
 )
 
 var (
-	objectName       = "account"
-	objectNamePlural = "accounts"
+	objectName     = "accounts"
+	objectNameMeta = "account"
 )
 
 // we want to compare fields returned by read and schema properties provided by metadata methods
@@ -35,11 +35,11 @@ func main() {
 		filePath = "./ms-crm-creds.json"
 	}
 
-	conn := msTest.GetMSDynamics365CRMConnector(ctx, filePath)
+	conn := connTest.GetMSDynamics365CRMConnector(ctx, filePath)
 	defer utils.Close(conn)
 
 	response, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: objectNamePlural,
+		ObjectName: objectName,
 	})
 	if err != nil {
 		utils.Fail("error reading from microsoft CRM", "error", err)
@@ -52,7 +52,7 @@ func main() {
 	beforeCall := time.Now()
 
 	metadata, err := conn.ListObjectMetadata(ctx, []string{
-		objectName,
+		objectNameMeta,
 	})
 	if err != nil {
 		utils.Fail("error listing metadata for microsoft CRM", "error", err)
@@ -62,7 +62,9 @@ func main() {
 
 	fmt.Println("Compare object metadata against endpoint response:")
 
-	mismatchErr := compareFieldsMatch(metadata, response.Data[0].Raw, objectName)
+	data := sanitizeReadResponse(response.Data[0].Raw)
+
+	mismatchErr := mockutils.ValidateReadConformsMetadata(objectNameMeta, data, metadata)
 	if mismatchErr != nil {
 		utils.Fail("schema and payload response have mismatching fields", "error", mismatchErr)
 	} else {
@@ -70,31 +72,16 @@ func main() {
 	}
 }
 
-func compareFieldsMatch(metadata *common.ListObjectMetadataResult, response map[string]any, objectName string) error {
-	fields := make(map[string]bool)
+func sanitizeReadResponse(response map[string]any) map[string]any {
+	crucialFields := make(map[string]any)
 
-	for field := range response {
+	for field, v := range response {
 		// ignore all fields that are OData annotations
-		if !strings.Contains(field, "@") {
-			fields[field] = false
+		// they are not part of ObjectMetadata
+		if !strings.HasPrefix(field, "@") {
+			crucialFields[field] = v
 		}
 	}
 
-	mismatch := make([]error, 0)
-
-	for _, displayName := range metadata.Result[objectName].FieldsMap {
-		if _, found := fields[displayName]; found {
-			fields[displayName] = true
-		} else {
-			mismatch = append(mismatch, fmt.Errorf("read payload doesn't have %v", displayName))
-		}
-	}
-
-	for name, found := range fields {
-		if !found {
-			mismatch = append(mismatch, fmt.Errorf("metadata schema is missing field %v", name))
-		}
-	}
-
-	return errors.Join(mismatch...)
+	return crucialFields
 }

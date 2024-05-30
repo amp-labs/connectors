@@ -1,4 +1,4 @@
-package microsoftdynamicscrm
+package dynamicscrm
 
 import "github.com/amp-labs/connectors/common"
 

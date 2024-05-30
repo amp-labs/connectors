@@ -1,4 +1,4 @@
-package microsoftdynamicscrm
+package dynamicscrm
 
 import (
 	"context"
@@ -14,23 +14,29 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, common.ErrMissingObjects
 	}
 
-	url := c.getURL(config.ObjectName)
+	var resource string
 
 	var write common.WriteMethod
 	if len(config.RecordId) == 0 {
 		// writing to the entity without id means
 		// that we are extending 'List' resource and creating a new record
-		write = c.post
+		write = c.Client.Post
+		resource = config.ObjectName
 	} else {
 		// only patch is supported for updating 'Single' resource
-		write = c.patch
+		write = c.Client.Patch
 		// resource id is passed via brackets in OData spec
-		url = fmt.Sprintf("%s(%s)", url, config.RecordId)
+		resource = fmt.Sprintf("%s(%s)", config.ObjectName, config.RecordId)
+	}
+
+	url, err := c.getURL(resource)
+	if err != nil {
+		return nil, err
 	}
 
 	// Neither Post nor Patch return any response data on successful completion
 	// Both complete with 204 NoContent
-	_, err := write(ctx, url, config.RecordData)
+	_, err = write(ctx, url.String(), config.RecordData)
 	if err != nil {
 		return nil, err
 	}
