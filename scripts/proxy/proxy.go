@@ -373,7 +373,7 @@ func startOAuthAuthCodeProxy(ctx context.Context, provider string, scopes []stri
 func buildOAuth2ClientCredentialsProxy(ctx context.Context, provider string, scopes []string, clientId, clientSecret string, substitutions map[string]string) *Proxy {
 	providerInfo := getProviderConfig(provider, substitutions)
 	cfg := configureOAuthClientCredentials(clientId, clientSecret, scopes, providerInfo)
-	httpClient := setupOAuth2ClientCredentialsHttpClient(ctx, cfg, provider)
+	httpClient := setupOAuth2ClientCredentialsHttpClient(ctx, providerInfo, cfg)
 
 	target, err := url.Parse(providerInfo.BaseURL)
 	if err != nil {
@@ -385,7 +385,7 @@ func buildOAuth2ClientCredentialsProxy(ctx context.Context, provider string, sco
 
 func buildApiKeyProxy(ctx context.Context, provider string, substitutions map[string]string, apiKey string) *Proxy {
 	providerInfo := getProviderConfig(provider, substitutions)
-	httpClient := setupApiKeyHttpClient(ctx, provider, providerInfo, apiKey)
+	httpClient := setupApiKeyHttpClient(ctx, providerInfo, apiKey)
 
 	target, err := url.Parse(providerInfo.BaseURL)
 	if err != nil {
@@ -397,7 +397,7 @@ func buildApiKeyProxy(ctx context.Context, provider string, substitutions map[st
 
 func buildBasicAuthProxy(ctx context.Context, provider string, substitutions map[string]string, user, pass string) *Proxy {
 	providerInfo := getProviderConfig(provider, substitutions)
-	httpClient := setupBasicAuthHttpClient(ctx, provider, user, pass)
+	httpClient := setupBasicAuthHttpClient(ctx, providerInfo, user, pass)
 
 	target, err := url.Parse(providerInfo.BaseURL)
 	if err != nil {
@@ -410,7 +410,7 @@ func buildBasicAuthProxy(ctx context.Context, provider string, substitutions map
 func buildOAuth2AuthCodeProxy(ctx context.Context, provider string, scopes []string, clientId, clientSecret string, substitutions map[string]string, tokens *oauth2.Token) *Proxy {
 	providerInfo := getProviderConfig(provider, substitutions)
 	cfg := configureOAuthAuthCode(clientId, clientSecret, scopes, providerInfo)
-	httpClient := setupOAuth2AuthCodeHttpClient(ctx, cfg, tokens, provider)
+	httpClient := setupOAuth2AuthCodeHttpClient(ctx, providerInfo, cfg, tokens)
 
 	target, err := url.Parse(providerInfo.BaseURL)
 	if err != nil {
@@ -451,89 +451,79 @@ func configureOAuthAuthCode(clientId, clientSecret string, scopes []string, prov
 	}
 }
 
-func setupOAuth2ClientCredentialsHttpClient(ctx context.Context, cfg *clientcredentials.Config, provider string) common.AuthenticatedHTTPClient {
-	options := []common.OAuthOption{
-		common.WithOAuthClient(http.DefaultClient),
-		common.WithTokenSource(cfg.TokenSource(ctx)),
-	}
-
-	if *debug {
-		options = append(options, common.WithOAuthDebug(common.DebugRequest))
-	}
-
-	oauthClient, err := common.NewOAuthHTTPClient(ctx, options...)
+func setupOAuth2ClientCredentialsHttpClient(ctx context.Context, prov *providers.ProviderInfo, cfg *clientcredentials.Config) common.AuthenticatedHTTPClient {
+	c, err := prov.NewClient(ctx, &providers.NewClientParams{
+		Debug:             *debug,
+		OAuth2ClientCreds: cfg,
+	})
 	if err != nil {
 		panic(err)
 	}
 
-	conn, err := connector.NewConnector(provider, connector.WithAuthenticatedClient(oauthClient))
+	cc, err := connector.NewConnector(prov.Name, connector.WithAuthenticatedClient(c))
 	if err != nil {
 		panic(err)
 	}
 
-	return conn.HTTPClient().Client
+	return cc.HTTPClient().Client
 }
 
 // This helps with refreshing tokens automatically.
-func setupOAuth2AuthCodeHttpClient(ctx context.Context, cfg *oauth2.Config, tokens *oauth2.Token, provider string) common.AuthenticatedHTTPClient {
-	var opts []connector.Option
-	if *debug {
-		opts = append(opts, connector.WithClient(ctx,
-			http.DefaultClient, cfg, tokens,
-			common.WithOAuthDebug(common.DebugRequest)))
-	} else {
-		opts = append(opts, connector.WithClient(ctx,
-			http.DefaultClient, cfg, tokens))
-	}
-
-	conn, err := connector.NewConnector(provider, opts...)
+func setupOAuth2AuthCodeHttpClient(ctx context.Context, prov *providers.ProviderInfo, cfg *oauth2.Config, tokens *oauth2.Token) common.AuthenticatedHTTPClient {
+	c, err := prov.NewClient(ctx, &providers.NewClientParams{
+		Debug: *debug,
+		OAuth2AuthCodeCreds: &providers.OAuth2AuthCodeParams{
+			Config: cfg,
+			Token:  tokens,
+		},
+	})
 	if err != nil {
 		panic(err)
 	}
 
-	return conn.HTTPClient().Client
+	cc, err := connector.NewConnector(prov.Name, connector.WithAuthenticatedClient(c))
+	if err != nil {
+		panic(err)
+	}
+
+	return cc.HTTPClient().Client
 }
 
-func setupBasicAuthHttpClient(ctx context.Context, provider string, user, pass string) common.AuthenticatedHTTPClient {
-	var opts []common.HeaderAuthClientOption
-	if *debug {
-		opts = append(opts, common.WithHeaderDebug(common.DebugRequest))
-	}
-
-	client, err := common.NewBasicAuthHTTPClient(ctx, user, pass, opts...)
+func setupBasicAuthHttpClient(ctx context.Context, prov *providers.ProviderInfo, user, pass string) common.AuthenticatedHTTPClient {
+	c, err := prov.NewClient(ctx, &providers.NewClientParams{
+		Debug: *debug,
+		BasicCreds: &providers.BasicParams{
+			User: user,
+			Pass: pass,
+		},
+	})
 	if err != nil {
 		panic(err)
 	}
 
-	conn, err := connector.NewConnector(provider, connector.WithAuthenticatedClient(client))
+	cc, err := connector.NewConnector(prov.Name, connector.WithAuthenticatedClient(c))
 	if err != nil {
 		panic(err)
 	}
 
-	return conn.HTTPClient().Client
+	return cc.HTTPClient().Client
 }
 
-func setupApiKeyHttpClient(ctx context.Context, provider string, info *providers.ProviderInfo, apiKey string) common.AuthenticatedHTTPClient {
-	if info.ApiKeyOpts.ValuePrefix != nil {
-		apiKey = *info.ApiKeyOpts.ValuePrefix + apiKey
-	}
-
-	var opts []common.HeaderAuthClientOption
-	if *debug {
-		opts = append(opts, common.WithHeaderDebug(common.DebugRequest))
-	}
-
-	client, err := common.NewApiKeyAuthHTTPClient(ctx, info.ApiKeyOpts.HeaderName, apiKey, opts...)
+func setupApiKeyHttpClient(ctx context.Context, prov *providers.ProviderInfo, apiKey string) common.AuthenticatedHTTPClient {
+	c, err := prov.NewClient(ctx, &providers.NewClientParams{
+		Debug:  *debug,
+		ApiKey: apiKey,
+	})
 	if err != nil {
 		panic(err)
 	}
 
-	conn, err := connector.NewConnector(provider, connector.WithAuthenticatedClient(client))
+	cc, err := connector.NewConnector(prov.Name, connector.WithAuthenticatedClient(c))
 	if err != nil {
 		panic(err)
 	}
 
-	return conn.HTTPClient().Client
+	return cc.HTTPClient().Client
 }
 
 type Proxy struct {

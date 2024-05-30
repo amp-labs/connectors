@@ -135,11 +135,14 @@ components:
     ProviderInfo:
       type: object
       required:
+        - name
         - baseURL
         - authType
         - support
         - providerOpts
       properties:
+        name:
+          type: string
         authType:
           $ref: '#/components/schemas/AuthType'
         baseURL:
