@@ -194,7 +194,7 @@ type NewClientParams struct {
 }
 
 // NewClient will create a new authenticated client based on the provider's auth type.
-func (i *ProviderInfo) NewClient(ctx context.Context, params *NewClientParams) (common.AuthenticatedHTTPClient, error) {
+func (i *ProviderInfo) NewClient(ctx context.Context, params *NewClientParams) (common.AuthenticatedHTTPClient, error) { //nolint:lll,cyclop
 	if params == nil {
 		params = &NewClientParams{}
 	}
@@ -209,9 +209,11 @@ func (i *ProviderInfo) NewClient(ctx context.Context, params *NewClientParams) (
 
 		switch i.OauthOpts.GrantType {
 		case AuthorizationCode:
-			return createOAuth2AuthCodeHttpClient(ctx, params.Client, params.Debug, params.OAuth2AuthCodeCreds)
+			return createOAuth2AuthCodeHTTPClient(ctx, params.Client, params.Debug, params.OAuth2AuthCodeCreds)
 		case ClientCredentials:
-			return createOAuth2ClientCredentialsHttpClient(ctx, params.Client, params.Debug, params.OAuth2ClientCreds)
+			return createOAuth2ClientCredentialsHTTPClient(ctx, params.Client, params.Debug, params.OAuth2ClientCreds)
+		case PKCE:
+			return nil, fmt.Errorf("%w: %s", ErrClient, "PKCE grant type not supported")
 		default:
 			return nil, fmt.Errorf("%w: unsupported grant type %q", ErrClient, i.OauthOpts.GrantType)
 		}
@@ -220,16 +222,17 @@ func (i *ProviderInfo) NewClient(ctx context.Context, params *NewClientParams) (
 			return nil, fmt.Errorf("%w: %s", ErrClient, "basic credentials not found")
 		}
 
-		return createBasicAuthHttpClient(ctx, params.Client, params.Debug, params.BasicCreds.User, params.BasicCreds.Pass)
+		return createBasicAuthHTTPClient(ctx, params.Client, params.Debug, params.BasicCreds.User, params.BasicCreds.Pass)
 	case ApiKey:
 		if i.ApiKeyOpts == nil {
 			return nil, fmt.Errorf("%w: api key options not found", ErrClient)
 		}
+
 		if len(params.ApiKey) == 0 {
 			return nil, fmt.Errorf("%w: api key not given", ErrClient)
 		}
 
-		return createApiKeyHttpClient(ctx, params.Client, params.Debug, i, params.ApiKey)
+		return createApiKeyHTTPClient(ctx, params.Client, params.Debug, i, params.ApiKey)
 	default:
 		return nil, fmt.Errorf("%w: unsupported auth type %q", ErrClient, i.AuthType)
 	}
@@ -243,7 +246,7 @@ func getClient(client *http.Client) *http.Client {
 	return client
 }
 
-func createUnauthenticatedClient(
+func createUnauthenticatedClient( //nolint:ireturn
 	ctx context.Context,
 	client *http.Client,
 	dbg bool,
@@ -259,7 +262,7 @@ func createUnauthenticatedClient(
 	return common.NewHeaderAuthHTTPClient(ctx, opts...)
 }
 
-func createBasicAuthHttpClient(
+func createBasicAuthHTTPClient( //nolint:ireturn
 	ctx context.Context,
 	client *http.Client,
 	dbg bool,
@@ -282,7 +285,7 @@ func createBasicAuthHttpClient(
 	return c, nil
 }
 
-func createOAuth2AuthCodeHttpClient(
+func createOAuth2AuthCodeHTTPClient( //nolint:ireturn
 	ctx context.Context,
 	client *http.Client,
 	dbg bool,
@@ -310,7 +313,7 @@ func createOAuth2AuthCodeHttpClient(
 	return oauthClient, nil
 }
 
-func createOAuth2ClientCredentialsHttpClient(
+func createOAuth2ClientCredentialsHTTPClient( //nolint:ireturn
 	ctx context.Context,
 	client *http.Client,
 	dbg bool,
@@ -333,7 +336,7 @@ func createOAuth2ClientCredentialsHttpClient(
 	return oauthClient, nil
 }
 
-func createApiKeyHttpClient(
+func createApiKeyHTTPClient( //nolint:ireturn
 	ctx context.Context,
 	client *http.Client,
 	dbg bool,
