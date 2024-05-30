@@ -1,9 +1,9 @@
-package microsoftdynamicscrm
+package dynamicscrm
 
 import "github.com/amp-labs/connectors/common/urlbuilder"
 
 // Microsoft uses special symbology when making queries.
-var microsoftQueryEncodingExceptions = map[string]string{ //nolint:gochecknoglobals
+var queryEncodingExceptions = map[string]string{ //nolint:gochecknoglobals
 	"%40": "@",
 	"%24": "$",
 	"%2C": ",",
@@ -15,7 +15,7 @@ func constructURL(base string) (*urlbuilder.URL, error) {
 		return nil, err
 	}
 
-	link.AddEncodingExceptions(microsoftQueryEncodingExceptions)
+	link.AddEncodingExceptions(queryEncodingExceptions)
 
 	return link, nil
 }

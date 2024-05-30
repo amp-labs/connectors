@@ -1,4 +1,4 @@
-package microsoftdynamicscrm
+package dynamicscrm
 
 import (
 	"context"
@@ -17,7 +17,7 @@ var (
 	ErrObjectNotFound     = errors.New("object not found")
 )
 
-// Please note: MSDynamics API does not return proper display names for objects and fields,
+// ListObjectMetadata Please note: MSDynamics API does not return proper display names for objects and fields,
 // so the ListObjectMetadataResult will have display names that look like "accountleads".
 func (c *Connector) ListObjectMetadata(
 	ctx context.Context, objectNames []string,
@@ -27,7 +27,12 @@ func (c *Connector) ListObjectMetadata(
 		return nil, common.ErrMissingObjects
 	}
 
-	rsp, err := c.getXML(ctx, c.getURL("$metadata"))
+	url, err := c.getURL("$metadata")
+	if err != nil {
+		return nil, err
+	}
+
+	rsp, err := c.XMLClient.Get(ctx, url.String())
 	if err != nil {
 		return nil, err
 	}

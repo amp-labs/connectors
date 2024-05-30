@@ -1,4 +1,4 @@
-package microsoftdynamicscrm
+package dynamicscrm
 
 import (
 	"context"
@@ -20,7 +20,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 
 	// always include annotations header
 	// response will describe enums, foreign relationship, etc.
-	rsp, err := c.get(ctx, link.String(), newPaginationHeader(DefaultPageSize), common.Header{
+	rsp, err := c.Client.Get(ctx, link.String(), newPaginationHeader(DefaultPageSize), common.Header{
 		Key:   "Prefer",
 		Value: `odata.include-annotations="*"`,
 	})
@@ -45,7 +45,7 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 	}
 
 	// First page
-	link, err := constructURL(c.getURL(config.ObjectName))
+	link, err := c.getURL(config.ObjectName)
 	if err != nil {
 		return nil, err
 	}

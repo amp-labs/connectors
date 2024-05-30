@@ -1,4 +1,4 @@
-package microsoftdynamicscrm
+package dynamicscrm
 
 import (
 	"context"
@@ -41,7 +41,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusBadRequest)
-				writeBody(w, `{
+				mockutils.WriteBody(w, `{
 					"error": {
 						"code": "0x80060888",
 						"message":"Resource not found for the segment 'conacs'."
@@ -57,7 +57,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
-				writeBody(w, `{
+				mockutils.WriteBody(w, `{
 					"garbage": {}
 				}`)
 			})),
@@ -68,7 +68,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
-				writeBody(w, `{
+				mockutils.WriteBody(w, `{
 					"value": {}
 				}`)
 			})),
@@ -79,7 +79,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
-				writeBody(w, `{
+				mockutils.WriteBody(w, `{
 					"value": []
 				}`)
 			})),
@@ -222,8 +222,4 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			}
 		})
 	}
-}
-
-func writeBody(w http.ResponseWriter, body string) {
-	_, _ = w.Write([]byte(body))
 }

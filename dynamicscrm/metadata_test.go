@@ -1,4 +1,4 @@
-package microsoftdynamicscrm
+package dynamicscrm
 
 import (
 	"context"
@@ -51,7 +51,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/xml")
 				w.WriteHeader(http.StatusOK)
-				writeBody(w, "")
+				mockutils.WriteBody(w, "")
 			})),
 			expectedErrs: []error{common.ErrNotXML},
 		},
@@ -61,7 +61,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/xml")
 				w.WriteHeader(http.StatusOK)
-				writeBody(w, `<?xml version="1.0" encoding="utf-8"?>`)
+				mockutils.WriteBody(w, `<?xml version="1.0" encoding="utf-8"?>`)
 			})),
 			expectedErrs: []error{common.ErrNoXMLRoot},
 		},
@@ -71,9 +71,9 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/xml")
 				w.WriteHeader(http.StatusOK)
-				writeBody(w, `
-<?xml version="1.0" encoding="utf-8"?>
-<edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx"></edmx:Edmx>`)
+				mockutils.WriteBody(w, `
+				<?xml version="1.0" encoding="utf-8"?>
+				<edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx"></edmx:Edmx>`)
 			})),
 			expectedErrs: []error{ErrMissingSchema},
 		},

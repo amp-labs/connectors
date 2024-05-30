@@ -8,9 +8,10 @@ import (
 	"syscall"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/microsoftdynamicscrm"
-	msTest "github.com/amp-labs/connectors/test/microsoftdynamicscrm"
+	"github.com/amp-labs/connectors/dynamicscrm"
+	connTest "github.com/amp-labs/connectors/test/dynamicscrm"
 	"github.com/amp-labs/connectors/test/utils"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
 )
 
 type LeadCreatePayload struct {
@@ -40,7 +41,7 @@ func main() {
 		filePath = "./ms-crn-creds.json"
 	}
 
-	conn := msTest.GetMSDynamics365CRMConnector(ctx, filePath)
+	conn := connTest.GetMSDynamics365CRMConnector(ctx, filePath)
 	defer utils.Close(conn)
 
 	fmt.Println("> TEST Create/Update/Delete lead")
@@ -62,8 +63,8 @@ func main() {
 	leadID := fmt.Sprintf("%v", lead["leadid"])
 	fmt.Println("Updating some lead properties")
 	updateLead(ctx, conn, leadID, &LeadUploadPayload{
-		LastName:  strPtr(""),
-		FirstName: strPtr("Squidward"),
+		LastName:  mockutils.Pointers.Str(""),
+		FirstName: mockutils.Pointers.Str("Squidward"),
 	})
 	fmt.Println("View that lead has changed accordingly")
 
@@ -76,7 +77,7 @@ func main() {
 		"companyname": "Bikini Bottom",
 		"subject":     "Burgers",
 	} {
-		if !compare(lead[k], v) {
+		if !mockutils.DoesObjectCorrespondToString(lead[k], v) {
 			utils.Fail("error updated properties do not match", k, v, lead[k])
 		}
 	}
@@ -88,7 +89,7 @@ func main() {
 
 func searchLead(res *common.ReadResult, key, value string) map[string]any {
 	for _, data := range res.Data {
-		if compare(data.Fields[key], value) {
+		if mockutils.DoesObjectCorrespondToString(data.Fields[key], value) {
 			return data.Fields
 		}
 	}
@@ -98,7 +99,7 @@ func searchLead(res *common.ReadResult, key, value string) map[string]any {
 	return nil
 }
 
-func readLeads(ctx context.Context, conn *microsoftdynamicscrm.Connector) *common.ReadResult {
+func readLeads(ctx context.Context, conn *dynamicscrm.Connector) *common.ReadResult {
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "leads",
 		Fields: []string{
@@ -112,7 +113,7 @@ func readLeads(ctx context.Context, conn *microsoftdynamicscrm.Connector) *commo
 	return res
 }
 
-func createLead(ctx context.Context, conn *microsoftdynamicscrm.Connector, payload *LeadCreatePayload) {
+func createLead(ctx context.Context, conn *dynamicscrm.Connector, payload *LeadCreatePayload) {
 	res, err := conn.Write(ctx, common.WriteParams{
 		ObjectName: "leads",
 		RecordId:   "",
@@ -127,7 +128,7 @@ func createLead(ctx context.Context, conn *microsoftdynamicscrm.Connector, paylo
 	}
 }
 
-func updateLead(ctx context.Context, conn *microsoftdynamicscrm.Connector, leadID string, payload *LeadUploadPayload) {
+func updateLead(ctx context.Context, conn *dynamicscrm.Connector, leadID string, payload *LeadUploadPayload) {
 	res, err := conn.Write(ctx, common.WriteParams{
 		ObjectName: "leads",
 		RecordId:   leadID,
@@ -142,7 +143,7 @@ func updateLead(ctx context.Context, conn *microsoftdynamicscrm.Connector, leadI
 	}
 }
 
-func removeLead(ctx context.Context, conn *microsoftdynamicscrm.Connector, leadID string) {
+func removeLead(ctx context.Context, conn *dynamicscrm.Connector, leadID string) {
 	res, err := conn.Delete(ctx, common.DeleteParams{
 		ObjectName: "leads",
 		RecordId:   leadID,
@@ -154,16 +155,4 @@ func removeLead(ctx context.Context, conn *microsoftdynamicscrm.Connector, leadI
 	if !res.Success {
 		utils.Fail("failed to remove a lead")
 	}
-}
-
-func strPtr(s string) *string {
-	return &s
-}
-
-func compare(field any, value string) bool {
-	if len(value) == 0 && field == nil {
-		return true
-	}
-
-	return fmt.Sprintf("%v", field) == value
 }
