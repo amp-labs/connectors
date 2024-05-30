@@ -142,6 +142,8 @@ components:
         - providerOpts
       properties:
         name:
+          # If you're maintaining catalog.go, the name field will be auto-set for you,
+          # so you don't need to worry about it. Add it for completeness if you want.
           type: string
         authType:
           $ref: '#/components/schemas/AuthType'
