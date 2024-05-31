@@ -16,7 +16,7 @@ components:
   schemas:
     AuthType:
       type: string
-      enum: [oauth2, none]
+      enum: [oauth2, api_key, basic, none]
       x-oapi-codegen-extra-tags:
         validate: required
 
@@ -109,6 +109,26 @@ components:
         tokenMetadataFields:
           $ref: '#/components/schemas/TokenMetadataFields'
 
+    ApiKeyOpts:
+      type: object
+      required:
+        - headerName
+      properties:
+        headerName:
+          type: string
+          example: X-Api-Key
+          x-oapi-codegen-extra-tags:
+            validate: required
+        valuePrefix:
+          type: string
+          example: "Bearer "
+          x-go-type-skip-optional-pointer: true
+        docsURL:
+          type: string
+          description: URL with more information about how to get or use an API key.
+          example: https://docs.example.com/api-key
+          x-go-type-skip-optional-pointer: true
+
     ProviderOpts:
         type: object
         additionalProperties:
@@ -121,12 +141,16 @@ components:
     ProviderInfo:
       type: object
       required:
+        - name
         - baseURL
         - authType
         - support
-        - oauthOpts
         - providerOpts
       properties:
+        name:
+          # If you're maintaining catalog.go, the name field will be auto-set for you,
+          # so you don't need to worry about it. Add it for completeness if you want.
+          type: string
         authType:
           $ref: '#/components/schemas/AuthType'
         baseURL:
@@ -135,6 +159,8 @@ components:
             validate: required
         oauthOpts:
           $ref: '#/components/schemas/OauthOpts'
+        apiKeyOpts:
+          $ref: '#/components/schemas/ApiKeyOpts'
         support:
           $ref: '#/components/schemas/Support'
         providerOpts:
