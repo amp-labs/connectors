@@ -18,7 +18,7 @@ func WithClient(ctx context.Context, client *http.Client, config *oauth2.Config,
 ) Option {
 	return func(params *outreachParams) {
 		oauthclient, err := common.NewOAuthHTTPClient(
-			ctx, common.WithClient(client),
+			ctx, common.WithOAuthClient(client),
 			common.WithOAuthConfig(config),
 			common.WithOAuthToken(token),
 		)

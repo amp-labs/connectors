@@ -54,6 +54,7 @@ const (
 	Salesforce              Provider = "salesforce"
 	Salesloft               Provider = "salesloft"
 	Sellsy                  Provider = "sellsy"
+	ServiceNow              Provider = "serviceNow"
 	Slack                   Provider = "slack"
 	Smartsheet              Provider = "smartsheet"
 	StackExchange           Provider = "stackExchange"
@@ -1929,6 +1930,34 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://auth.seismic.com/tenants/{{.workspace}}/connect/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: true,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// ServiceNow configuration
+	ServiceNow: {
+		AuthType: Oauth2,
+		BaseURL:  "https://{{.workspace}}.service-now.com",
+		OauthOpts: OauthOpts{
+			AuthURL:                   "https://{{.workspace}}.service-now.com/oauth_auth.do",
+			TokenURL:                  "https://{{.workspace}}.service-now.com/oauth_token.do",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: true,
+			GrantType:                 AuthorizationCode,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
