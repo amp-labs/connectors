@@ -20,8 +20,10 @@ const (
 
 // ApiKeyOpts defines model for ApiKeyOpts.
 type ApiKeyOpts struct {
-	HeaderName  string  `json:"headerName" validate:"required"`
-	ValuePrefix *string `json:"valuePrefix,omitempty"`
+	// DocsURL URL with more information about how to get or use an API key.
+	DocsURL     string `json:"docsURL,omitempty"`
+	HeaderName  string `json:"headerName" validate:"required"`
+	ValuePrefix string `json:"valuePrefix,omitempty"`
 }
 
 // AuthType defines model for AuthType.

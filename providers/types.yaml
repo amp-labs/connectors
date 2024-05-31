@@ -122,6 +122,12 @@ components:
         valuePrefix:
           type: string
           example: "Bearer "
+          x-go-type-skip-optional-pointer: true
+        docsURL:
+          type: string
+          description: URL with more information about how to get or use an API key.
+          example: https://docs.example.com/api-key
+          x-go-type-skip-optional-pointer: true
 
     ProviderOpts:
         type: object
