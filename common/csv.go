@@ -16,12 +16,12 @@ import (
 func (j *JSONHTTPClient) PutCSV(ctx context.Context, url string, reqBody []byte, headers ...Header) ([]byte, error) {
 	fullURL, err := j.HTTPClient.getURL(url)
 	if err != nil {
-		return nil, err
+		return nil, j.ErrorPostProcessor.handleError(err)
 	}
 
 	_, body, err := j.httpPutCSV(ctx, fullURL, headers, reqBody) // nolint:bodyclose
 	if err != nil {
-		return nil, err
+		return nil, j.ErrorPostProcessor.handleError(err)
 	}
 
 	return body, nil

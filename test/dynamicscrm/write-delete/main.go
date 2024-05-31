@@ -38,7 +38,7 @@ func main() {
 
 	filePath := os.Getenv("MS_CRM_CRED_FILE")
 	if filePath == "" {
-		filePath = "./ms-crn-creds.json"
+		filePath = "./ms-crm-creds.json"
 	}
 
 	conn := connTest.GetMSDynamics365CRMConnector(ctx, filePath)
