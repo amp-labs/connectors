@@ -6,18 +6,14 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
-	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers"
 )
 
-var DefaultModule = paramsbuilder.APIModule{ // nolint: gochecknoglobals
-	Version: "2.11",
-}
+const apiVersion = "2.11"
 
 type Connector struct {
 	BaseURL string
-	Module  string
 	Client  *common.JSONHTTPClient
 }
 
@@ -39,7 +35,6 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 
 	httpClient := params.Client.Caller
 	conn = &Connector{
-		Module: params.Module.Suffix,
 		Client: &common.JSONHTTPClient{
 			HTTPClient: httpClient,
 		},
@@ -58,7 +53,7 @@ func (c *Connector) Provider() providers.Provider {
 }
 
 func (c *Connector) String() string {
-	return fmt.Sprintf("%s.Connector[%s]", c.Provider(), c.Module)
+	return fmt.Sprintf("%s.Connector", c.Provider())
 }
 
 // nolint:unused

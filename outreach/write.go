@@ -18,10 +18,8 @@ var JSONAPIContentTypeHeader = common.Header{ //nolint:gochecknoglobals
 	Value: "application/vnd.api+json",
 }
 
-type writeMethod func(context.Context, string, any, ...common.Header) (*common.JSONHTTPResponse, error)
-
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
-	var write writeMethod
+	var write common.WriteMethod
 
 	URL, err := url.JoinPath(c.BaseURL, config.ObjectName)
 	if err != nil {

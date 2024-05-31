@@ -5,74 +5,78 @@ package providers
 // ================================================================================
 
 const (
-	Airtable                            Provider = "airtable"
-	AWeber                              Provider = "aWeber"
-	Asana                               Provider = "asana"
-	Atlassian                           Provider = "atlassian"
-	Attio                               Provider = "attio"
-	Box                                 Provider = "box"
-	Calendly                            Provider = "calendly"
-	CampaignMonitor                     Provider = "campaignMonitor"
-	Capsule                             Provider = "capsule"
-	ClickUp                             Provider = "clickup"
-	Close                               Provider = "close"
-	ConstantContact                     Provider = "constantContact"
-	Copper                              Provider = "copper"
-	Discord                             Provider = "discord"
-	Docusign                            Provider = "docusign"
-	DocusignDeveloper                   Provider = "docusignDeveloper"
-	Dropbox                             Provider = "dropbox"
-	DropboxSign                         Provider = "dropboxSign"
-	Figma                               Provider = "figma"
-	Gainsight                           Provider = "gainsight"
-	GetResponse                         Provider = "getResponse"
-	Gmail                               Provider = "gmail"
-	Gong                                Provider = "gong"
-	IroncladDemo                        Provider = "ironcladDemo"
-	IroncladEU                          Provider = "ironcladEU"
-	Ironclad                            Provider = "ironclad"
-	Google                              Provider = "google"
-	GoogleContacts                      Provider = "googleContacts"
-	HelpScoutMailbox                    Provider = "helpScoutMailbox"
-	Hubspot                             Provider = "hubspot"
-	Intercom                            Provider = "intercom"
-	Keap                                Provider = "keap"
-	Klaviyo                             Provider = "klaviyo"
-	LinkedIn                            Provider = "linkedIn"
-	MicrosoftDynamics365BusinessCentral Provider = "microsoftDynamics365BusinessCentral"
-	DynamicsCRM                         Provider = "dynamicsCRM"
-	Miro                                Provider = "miro"
-	Mock                                Provider = "mock"
-	Monday                              Provider = "monday"
-	Mural                               Provider = "mural"
-	Notion                              Provider = "notion"
-	Outreach                            Provider = "outreach"
-	Pinterest                           Provider = "pinterest"
-	Pipedrive                           Provider = "pipedrive"
-	RingCentral                         Provider = "ringCentral"
-	Salesforce                          Provider = "salesforce"
-	Salesloft                           Provider = "salesloft"
-	Sellsy                              Provider = "sellsy"
-	ServiceNow                          Provider = "serviceNow"
-	Slack                               Provider = "slack"
-	Smartsheet                          Provider = "smartsheet"
-	StackExchange                       Provider = "stackExchange"
-	Timely                              Provider = "timely"
-	Typeform                            Provider = "typeform"
-	Webflow                             Provider = "webflow"
-	WordPress                           Provider = "wordPress"
-	Wrike                               Provider = "wrike"
-	ZendeskChat                         Provider = "zendeskChat"
-	ZendeskSupport                      Provider = "zendeskSupport"
-	ZohoCRM                             Provider = "zohoCRM"
-	Zoom                                Provider = "zoom"
-	Zuora                               Provider = "zuora"
-	Aircall                             Provider = "aircall"
-	Drift                               Provider = "drift"
-	Microsoft                           Provider = "microsoft"
-	Formstack                           Provider = "formstack"
-	Aha                                 Provider = "aha"
-	SnapchatAds                         Provider = "snapchatAds"
+	Airtable                Provider = "airtable"
+	AWeber                  Provider = "aWeber"
+	Asana                   Provider = "asana"
+	Atlassian               Provider = "atlassian"
+	Attio                   Provider = "attio"
+	Box                     Provider = "box"
+	Calendly                Provider = "calendly"
+	CampaignMonitor         Provider = "campaignMonitor"
+	Capsule                 Provider = "capsule"
+	ClickUp                 Provider = "clickup"
+	Close                   Provider = "close"
+	ConstantContact         Provider = "constantContact"
+	Copper                  Provider = "copper"
+	Discord                 Provider = "discord"
+	Docusign                Provider = "docusign"
+	DocusignDeveloper       Provider = "docusignDeveloper"
+	Dropbox                 Provider = "dropbox"
+	DropboxSign             Provider = "dropboxSign"
+	Facebook                Provider = "facebook"
+	Figma                   Provider = "figma"
+	Gainsight               Provider = "gainsight"
+	GetResponse             Provider = "getResponse"
+	Gmail                   Provider = "gmail"
+	Gong                    Provider = "gong"
+	IroncladDemo            Provider = "ironcladDemo"
+	IroncladEU              Provider = "ironcladEU"
+	Ironclad                Provider = "ironclad"
+	Google                  Provider = "google"
+	GoogleContacts          Provider = "googleContacts"
+	HelpScoutMailbox        Provider = "helpScoutMailbox"
+	Hubspot                 Provider = "hubspot"
+	Intercom                Provider = "intercom"
+	Keap                    Provider = "keap"
+	Klaviyo                 Provider = "klaviyo"
+	LinkedIn                Provider = "linkedIn"
+	DynamicsBusinessCentral Provider = "dynamicsBusinessCentral"
+	DynamicsCRM             Provider = "dynamicsCRM"
+	Miro                    Provider = "miro"
+	Mock                    Provider = "mock"
+	Monday                  Provider = "monday"
+	Mural                   Provider = "mural"
+	Notion                  Provider = "notion"
+	Outreach                Provider = "outreach"
+	Pinterest               Provider = "pinterest"
+	Pipedrive               Provider = "pipedrive"
+	RingCentral             Provider = "ringCentral"
+	Salesforce              Provider = "salesforce"
+	Salesloft               Provider = "salesloft"
+	Sellsy                  Provider = "sellsy"
+	ServiceNow              Provider = "serviceNow"
+	Slack                   Provider = "slack"
+	Smartsheet              Provider = "smartsheet"
+	StackExchange           Provider = "stackExchange"
+	TeamleaderCRM           Provider = "teamleaderCRM"
+	Timely                  Provider = "timely"
+	Typeform                Provider = "typeform"
+	Webflow                 Provider = "webflow"
+	WordPress               Provider = "wordPress"
+	Wrike                   Provider = "wrike"
+	ZendeskChat             Provider = "zendeskChat"
+	ZendeskSupport          Provider = "zendeskSupport"
+	ZohoCRM                 Provider = "zohoCRM"
+	Zoom                    Provider = "zoom"
+	Zuora                   Provider = "zuora"
+	Aircall                 Provider = "aircall"
+	Drift                   Provider = "drift"
+	Microsoft               Provider = "microsoft"
+	Formstack               Provider = "formstack"
+	Aha                     Provider = "aha"
+	SnapchatAds             Provider = "snapchatAds"
+	Instagram               Provider = "instagram"
+	Seismic                 Provider = "seismic"
 )
 
 // ================================================================================
@@ -259,6 +263,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://api.pipedrive.com",
 		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://oauth.pipedrive.com/oauth/authorize",
 			TokenURL:                  "https://oauth.pipedrive.com/oauth/token",
 			ExplicitScopesRequired:    true,
@@ -283,6 +288,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://api.capsulecrm.com/api",
 		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://api.capsulecrm.com/oauth/authorise",
 			TokenURL:                  "https://api.capsulecrm.com/oauth/token",
 			ExplicitScopesRequired:    true,
@@ -307,13 +313,11 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://www.wrike.com/api",
 		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://www.wrike.com/oauth2/authorize",
 			TokenURL:                  "https://www.wrike.com/oauth2/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
-			TokenMetadataFields: TokenMetadataFields{
-				ScopesField: "scope",
-			},
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -334,6 +338,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://api.copper.com/developer_api",
 		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://app.copper.com/oauth/authorize",
 			TokenURL:                  "https://app.copper.com/oauth/token",
 			ExplicitScopesRequired:    true,
@@ -346,7 +351,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -388,6 +393,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://api.mural.co/api",
 		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://api.mural.co/oauth/authorize",
 			TokenURL:                  "https://api.mural.co/oauth/token",
 			ExplicitScopesRequired:    true,
@@ -466,11 +472,12 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	// Attio configuration
 	Attio: {
 		AuthType: Oauth2,
-		BaseURL:  "https://api.attio.com/api",
+		BaseURL:  "https://api.attio.com",
 		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://app.attio.com/authorize",
 			TokenURL:                  "https://app.attio.com/oauth/token",
-			ExplicitScopesRequired:    true,
+			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
@@ -510,7 +517,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -522,6 +529,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://api.infusionsoft.com",
 
 		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://accounts.infusionsoft.com/app/oauth/authorize",
 			TokenURL:                  "https://api.infusionsoft.com/token",
 			ExplicitScopesRequired:    false,
@@ -534,7 +542,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -645,7 +653,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -696,8 +704,8 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
-			Read:      false,
+			Proxy:     true,
+			Read:      true,
 			Subscribe: false,
 			Write:     false,
 		},
@@ -905,8 +913,8 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	},
 
 	// Microsoft Dynamics 365 Business Central configuration
-	MicrosoftDynamics365BusinessCentral: {
-		DisplayName: "Dynamics 365 Business Central",
+	DynamicsBusinessCentral: {
+		DisplayName: "Microsoft Dynamics Business Central",
 		AuthType:    Oauth2,
 		BaseURL:     "https://api.businesscentral.dynamics.com",
 		OauthOpts: OauthOpts{
@@ -1542,6 +1550,32 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Write:     false,
 		},
 	},
+
+	// Facebook Ads Manager Configuration
+	Facebook: {
+		AuthType: Oauth2,
+		BaseURL:  "https://graph.facebook.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://www.facebook.com/v19.0/dialog/oauth",
+			TokenURL:                  "https://graph.facebook.com/v19.0/oauth/access_token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
 	// ClickUp Support Configuration
 	ClickUp: {
 		AuthType: Oauth2,
@@ -1696,7 +1730,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -1721,7 +1755,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -1777,7 +1811,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -1801,7 +1835,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -1833,7 +1867,85 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
-	// ServiceNow configuration file
+	// Instagram Configuration
+	// TODO: Supports only short-lived tokens
+	Instagram: {
+		AuthType: Oauth2,
+		BaseURL:  "https://graph.instagram.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://api.instagram.com/oauth/authorize",
+			TokenURL:                  "https://api.instagram.com/oauth/access_token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "user_id",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// TeamleaderCRM Configuration
+	TeamleaderCRM: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.focus.teamleader.eu",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://focus.teamleader.eu/oauth2/authorize",
+			TokenURL:                  "https://focus.teamleader.eu/oauth2/access_token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	Seismic: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.seismic.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://auth.seismic.com/tenants/{{.workspace}}/connect/authorize",
+			TokenURL:                  "https://auth.seismic.com/tenants/{{.workspace}}/connect/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: true,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// ServiceNow configuration
 	ServiceNow: {
 		AuthType: Oauth2,
 		BaseURL:  "https://{{.workspace}}.service-now.com",

@@ -9,8 +9,6 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-type writeMethod func(context.Context, string, any) (*common.JSONHTTPResponse, error)
-
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
 	if len(config.ObjectName) == 0 {
 		return nil, common.ErrMissingObjects
@@ -21,7 +19,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, err
 	}
 
-	var write writeMethod
+	var write common.WriteMethod
 	if len(config.RecordId) == 0 {
 		// writing to the entity without id means
 		// that we are extending 'List' resource and creating a new record

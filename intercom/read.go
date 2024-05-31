@@ -16,7 +16,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 
 	rsp, err := c.get(ctx, link.String(), common.Header{
 		Key:   "Intercom-Version",
-		Value: c.Module,
+		Value: apiVersion,
 	})
 	if err != nil {
 		return nil, err

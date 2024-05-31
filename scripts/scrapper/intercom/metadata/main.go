@@ -5,8 +5,9 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/amp-labs/connectors/common/scrapper"
 	"github.com/amp-labs/connectors/intercom/metadata"
+	"github.com/amp-labs/connectors/tools/scrapper"
+	"github.com/gertd/go-pluralize"
 )
 
 const (
@@ -59,16 +60,20 @@ func createIndex() {
 		log.Printf("Index completed %.2f%%\n", getPercentage(i, len(sections))) // nolint:forbidigo
 	}
 
-	must(metadata.SaveIndex(registry))
+	must(metadata.FileManager.SaveIndex(registry))
 }
 
 func createSchemas() {
-	index, err := metadata.LoadIndex()
+	index, err := metadata.FileManager.LoadIndex()
 	must(err)
 
 	schemas := scrapper.NewObjectMetadataResult()
 
-	for i, model := range index.ModelDocs {
+	// Not all schemas are important.
+	// Single GET methods to be discarded. Only match schemas that describe single item for LIST endpoint.
+	documents := getSchemasForListEndpoints(index)
+
+	for i, model := range documents {
 		doc := scrapper.QueryHTML(model.URL)
 
 		doc.Find(`.field-name`).Each(func(i int, s *goquery.Selection) {
@@ -76,10 +81,35 @@ func createSchemas() {
 			schemas.Add(model.Name, model.DisplayName, name)
 		})
 
-		log.Printf("Schemas completed %.2f%% [%v]\n", getPercentage(i, len(index.ModelDocs)), model.Name)
+		log.Printf("Schemas completed %.2f%% [%v]\n", getPercentage(i, len(documents)), model.Name)
 	}
 
-	must(metadata.SaveSchemas(schemas))
+	must(metadata.FileManager.SaveSchemas(schemas))
+}
+
+func getSchemasForListEndpoints(index *scrapper.ModelURLRegistry) scrapper.ModelDocLinks {
+	listSchemas := make(scrapper.ModelDocLinks, 0)
+
+	for _, doc := range index.ModelDocs {
+		if schemaName, isList := strings.CutSuffix(doc.Name, "_list"); isList {
+			if schema, found := index.ModelDocs.FindByName(schemaName); found {
+				listSchemas = append(listSchemas, adaptSchemaToMatchObjectName(schema))
+			} else {
+				log.Printf("There is no schema describing list elements [%v]\n", schemaName)
+			}
+		}
+	}
+
+	return listSchemas
+}
+
+func adaptSchemaToMatchObjectName(schema scrapper.ModelDocLink) scrapper.ModelDocLink {
+	// ObjectNames must be plural.
+	return scrapper.ModelDocLink{
+		Name:        pluralize.NewClient().Plural(schema.Name),
+		DisplayName: pluralize.NewClient().Plural(schema.DisplayName),
+		URL:         schema.URL,
+	}
 }
 
 func getPercentage(i int, i2 int) float64 {

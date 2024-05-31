@@ -1,6 +1,7 @@
 package common
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"time"
@@ -78,6 +79,9 @@ var (
 
 	// ErrBadRequest is returned when we get a 400 response from the provider.
 	ErrBadRequest = errors.New("bad request")
+
+	// ErrMetadataLoadFailure is returned when files that contain metadata for a connector cannot be loaded.
+	ErrMetadataLoadFailure = errors.New("cannot load metadata")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.
@@ -165,6 +169,10 @@ type DeleteResult struct {
 	// Success is true if deletion succeeded.
 	Success bool `json:"success"`
 }
+
+// WriteMethod is signature for any HTTP method that performs write modifications.
+// Ex: Post/Put/Patch.
+type WriteMethod func(context.Context, string, any, ...Header) (*JSONHTTPResponse, error)
 
 // NewHTTPStatusError creates a new error with the given HTTP status.
 func NewHTTPStatusError(status int, err error) error {

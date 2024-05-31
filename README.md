@@ -1,6 +1,12 @@
 # Ampersand Connectors
 
-This is a Go library that makes it easier to make API calls to SaaS products such as Salesforce and Hubspot. It handles constructing the correct API requests from a configuration object, and pagination logic.
+This is a Go library that makes it easier to make API calls to SaaS products such as Salesforce and Hubspot. It handles constructing the correct API requests given desired objects and fields.
+
+It can be either be used as a standalone library, or as a part of the [Ampersand platform](https://docs.withampersand.com/), which offers additional benefits such as:
+- Handling auth flows
+- Orchestration of scheduled reads, real-time writes, or bulk writes
+- Handling API quotas from SaaS APIs
+- A dashboard for observability and troubleshooting
 
 Sample usage:
 

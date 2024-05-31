@@ -2,13 +2,10 @@ package intercom
 
 import (
 	"context"
-	"errors"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/intercom/metadata"
 )
-
-var ErrLoadFailure = errors.New("cannot load metadata")
 
 func (c *Connector) ListObjectMetadata(
 	ctx context.Context, objectNames []string,
@@ -18,9 +15,9 @@ func (c *Connector) ListObjectMetadata(
 		return nil, common.ErrMissingObjects
 	}
 
-	schemas, err := metadata.LoadSchemas()
+	schemas, err := metadata.FileManager.LoadSchemas()
 	if err != nil {
-		return nil, ErrLoadFailure
+		return nil, common.ErrMetadataLoadFailure
 	}
 
 	return schemas.Select(objectNames)

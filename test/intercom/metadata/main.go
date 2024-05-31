@@ -14,8 +14,7 @@ import (
 )
 
 var (
-	objectName     = "admins"
-	objectNameMeta = "admin"
+	objectName = "admins"
 )
 
 // we want to compare fields returned by read and schema properties provided by metadata methods
@@ -48,7 +47,7 @@ func main() {
 	}
 
 	metadata, err := conn.ListObjectMetadata(ctx, []string{
-		objectNameMeta,
+		objectName,
 	})
 	if err != nil {
 		utils.Fail("error listing metadata for Intercom", "error", err)
@@ -73,7 +72,7 @@ func compareFieldsMatch(metadata *common.ListObjectMetadataResult, response map[
 
 	mismatch := make([]error, 0)
 
-	for _, displayName := range metadata.Result[objectNameMeta].FieldsMap {
+	for _, displayName := range metadata.Result[objectName].FieldsMap {
 		if _, found := fields[displayName]; found {
 			fields[displayName] = true
 		}
