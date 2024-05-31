@@ -5,77 +5,78 @@ package providers
 // ================================================================================
 
 const (
-	Airtable                            Provider = "airtable"
-	AWeber                              Provider = "aWeber"
-	Asana                               Provider = "asana"
-	Atlassian                           Provider = "atlassian"
-	Attio                               Provider = "attio"
-	Box                                 Provider = "box"
-	Calendly                            Provider = "calendly"
-	CampaignMonitor                     Provider = "campaignMonitor"
-	Capsule                             Provider = "capsule"
-	ClickUp                             Provider = "clickup"
-	Close                               Provider = "close"
-	ConstantContact                     Provider = "constantContact"
-	Copper                              Provider = "copper"
-	Discord                             Provider = "discord"
-	Docusign                            Provider = "docusign"
-	DocusignDeveloper                   Provider = "docusignDeveloper"
-	Dropbox                             Provider = "dropbox"
-	DropboxSign                         Provider = "dropboxSign"
-	Facebook                            Provider = "facebook"
-	Figma                               Provider = "figma"
-	Gainsight                           Provider = "gainsight"
-	GetResponse                         Provider = "getResponse"
-	Gmail                               Provider = "gmail"
-	Gong                                Provider = "gong"
-	IroncladDemo                        Provider = "ironcladDemo"
-	IroncladEU                          Provider = "ironcladEU"
-	Ironclad                            Provider = "ironclad"
-	Google                              Provider = "google"
-	GoogleContacts                      Provider = "googleContacts"
-	HelpScoutMailbox                    Provider = "helpScoutMailbox"
-	Hubspot                             Provider = "hubspot"
-	Intercom                            Provider = "intercom"
-	Keap                                Provider = "keap"
-	Klaviyo                             Provider = "klaviyo"
-	LinkedIn                            Provider = "linkedIn"
-	DynamicsBusinessCentral             Provider = "dynamicsBusinessCentral"
-	DynamicsCRM                         Provider = "dynamicsCRM"
-	Miro                                Provider = "miro"
-	Mock                                Provider = "mock"
-	Monday                              Provider = "monday"
-	Mural                               Provider = "mural"
-	Notion                              Provider = "notion"
-	Outreach                            Provider = "outreach"
-	Pinterest                           Provider = "pinterest"
-	Pipedrive                           Provider = "pipedrive"
-	RingCentral                         Provider = "ringCentral"
-	Salesforce                          Provider = "salesforce"
-	Salesloft                           Provider = "salesloft"
-	Sellsy                              Provider = "sellsy"
-	Slack                               Provider = "slack"
-	Smartsheet                          Provider = "smartsheet"
-	StackExchange                       Provider = "stackExchange"
-	TeamleaderCRM                       Provider = "teamleaderCRM"
-	Timely                              Provider = "timely"
-	Typeform                            Provider = "typeform"
-	Webflow                             Provider = "webflow"
-	WordPress                           Provider = "wordPress"
-	Wrike                               Provider = "wrike"
-	ZendeskChat                         Provider = "zendeskChat"
-	ZendeskSupport                      Provider = "zendeskSupport"
-	ZohoCRM                             Provider = "zohoCRM"
-	Zoom                                Provider = "zoom"
-	Zuora                               Provider = "zuora"
-	Aircall                             Provider = "aircall"
-	Drift                               Provider = "drift"
-	Microsoft                           Provider = "microsoft"
-	Formstack                           Provider = "formstack"
-	Aha                                 Provider = "aha"
-	SnapchatAds                         Provider = "snapchatAds"
-	Instagram                           Provider = "instagram"
-	Seismic                             Provider = "seismic"
+	AcuityScheduling        Provider = "acuityScheduling"
+	Airtable                Provider = "airtable"
+	AWeber                  Provider = "aWeber"
+	Asana                   Provider = "asana"
+	Atlassian               Provider = "atlassian"
+	Attio                   Provider = "attio"
+	Box                     Provider = "box"
+	Calendly                Provider = "calendly"
+	CampaignMonitor         Provider = "campaignMonitor"
+	Capsule                 Provider = "capsule"
+	ClickUp                 Provider = "clickup"
+	Close                   Provider = "close"
+	ConstantContact         Provider = "constantContact"
+	Copper                  Provider = "copper"
+	Discord                 Provider = "discord"
+	Docusign                Provider = "docusign"
+	DocusignDeveloper       Provider = "docusignDeveloper"
+	Dropbox                 Provider = "dropbox"
+	DropboxSign             Provider = "dropboxSign"
+	Facebook                Provider = "facebook"
+	Figma                   Provider = "figma"
+	Gainsight               Provider = "gainsight"
+	GetResponse             Provider = "getResponse"
+	Gmail                   Provider = "gmail"
+	Gong                    Provider = "gong"
+	IroncladDemo            Provider = "ironcladDemo"
+	IroncladEU              Provider = "ironcladEU"
+	Ironclad                Provider = "ironclad"
+	Google                  Provider = "google"
+	GoogleContacts          Provider = "googleContacts"
+	HelpScoutMailbox        Provider = "helpScoutMailbox"
+	Hubspot                 Provider = "hubspot"
+	Intercom                Provider = "intercom"
+	Keap                    Provider = "keap"
+	Klaviyo                 Provider = "klaviyo"
+	LinkedIn                Provider = "linkedIn"
+	DynamicsBusinessCentral Provider = "dynamicsBusinessCentral"
+	DynamicsCRM             Provider = "dynamicsCRM"
+	Miro                    Provider = "miro"
+	Mock                    Provider = "mock"
+	Monday                  Provider = "monday"
+	Mural                   Provider = "mural"
+	Notion                  Provider = "notion"
+	Outreach                Provider = "outreach"
+	Pinterest               Provider = "pinterest"
+	Pipedrive               Provider = "pipedrive"
+	RingCentral             Provider = "ringCentral"
+	Salesforce              Provider = "salesforce"
+	Salesloft               Provider = "salesloft"
+	Sellsy                  Provider = "sellsy"
+	Slack                   Provider = "slack"
+	Smartsheet              Provider = "smartsheet"
+	StackExchange           Provider = "stackExchange"
+	TeamleaderCRM           Provider = "teamleaderCRM"
+	Timely                  Provider = "timely"
+	Typeform                Provider = "typeform"
+	Webflow                 Provider = "webflow"
+	WordPress               Provider = "wordPress"
+	Wrike                   Provider = "wrike"
+	ZendeskChat             Provider = "zendeskChat"
+	ZendeskSupport          Provider = "zendeskSupport"
+	ZohoCRM                 Provider = "zohoCRM"
+	Zoom                    Provider = "zoom"
+	Zuora                   Provider = "zuora"
+	Aircall                 Provider = "aircall"
+	Drift                   Provider = "drift"
+	Microsoft               Provider = "microsoft"
+	Formstack               Provider = "formstack"
+	Aha                     Provider = "aha"
+	SnapchatAds             Provider = "snapchatAds"
+	Instagram               Provider = "instagram"
+	Seismic                 Provider = "seismic"
 )
 
 // ================================================================================
@@ -1929,6 +1930,31 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://auth.seismic.com/tenants/{{.workspace}}/connect/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: true,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// AcuityScheduling Configuration
+	AcuityScheduling: {
+		AuthType: Oauth2,
+		BaseURL:  "https://acuityscheduling.com",
+		OauthOpts: OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://acuityscheduling.com/oauth2/authorize",
+			TokenURL:                  "https://acuityscheduling.com/oauth2/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
