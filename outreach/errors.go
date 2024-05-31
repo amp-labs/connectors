@@ -11,7 +11,3 @@ var (
 	ErrNotString     = errors.New("next is not a string")
 	ErrEmptyResponse = errors.New("empty response body")
 )
-
-func (c *Connector) HandleError(err error) error {
-	return err
-}
