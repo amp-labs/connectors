@@ -56,7 +56,6 @@ func GetGongConnector(ctx context.Context, filePath string) *gong.Connector {
 
 	conn, err := connectors.Gong(
 		gong.WithClient(ctx, http.DefaultClient, cfg, tok),
-		gong.WithModule(gong.DefaultModule),
 	)
 	if err != nil {
 		slog.Error("error creating gong connector", "error", err)

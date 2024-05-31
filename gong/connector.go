@@ -4,20 +4,14 @@ import (
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/paramsbuilder"
-
 	"github.com/amp-labs/connectors/providers"
 )
 
-var DefaultModule = paramsbuilder.APIModule{ // nolint: gochecknoglobals
-	Label:   "api/data",
-	Version: "v2",
-}
+const ApiVersion = "v2"
 
 type Connector struct {
-	BaseURL   string
-	Client    *common.JSONHTTPClient
-	APIModule paramsbuilder.APIModule
+	BaseURL string
+	Client  *common.JSONHTTPClient
 }
 
 func WithCatalogSubstitutions(substitutions map[string]string) Option {
@@ -53,9 +47,8 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	}
 
 	conn = &Connector{
-		Client:    params.client,
-		BaseURL:   providerInfo.BaseURL,
-		APIModule: params.APIModule,
+		Client:  params.client,
+		BaseURL: providerInfo.BaseURL,
 	}
 
 	conn.setBaseURL(providerInfo.BaseURL)

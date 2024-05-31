@@ -19,8 +19,7 @@ type gongParams struct {
 
 type Option func(params *gongParams)
 
-func (p gongParams) FromOptions(opts ...Option) (*gongParams, error) {
-	params := &p
+func (params *gongParams) FromOptions(opts ...Option) (*gongParams, error) {
 	for _, opt := range opts {
 		opt(params)
 	}
@@ -28,9 +27,9 @@ func (p gongParams) FromOptions(opts ...Option) (*gongParams, error) {
 	return params, params.ValidateParams()
 }
 
-func (p gongParams) ValidateParams() error {
+func (params *gongParams) ValidateParams() error {
 	return errors.Join(
-		p.Workspace.ValidateParams(),
+		params.Workspace.ValidateParams(),
 	)
 }
 

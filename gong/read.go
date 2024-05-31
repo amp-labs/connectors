@@ -15,13 +15,12 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		fields []string
 	)
 
-	fullURL, err := url.JoinPath(c.BaseURL, c.APIModule.Version, config.ObjectName)
+	fullURL, err := url.JoinPath(c.BaseURL, ApiVersion, config.ObjectName)
 	if err != nil {
 		return nil, err
 	}
 
-	if len(config.NextPage) != 0 { // not the first page, add a cursor
-
+	if len(config.NextPage) != 0 { //not the first page, add a cursor
 		fullURL = fullURL + "?cursor=" + config.NextPage.String()
 	}
 
@@ -39,7 +38,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 			return getRecords(node, config.ObjectName)
 		},
 		func(node *ajson.Node) (string, error) {
-			return getNextRecordsURL(node, fullURL)
+			return getNextRecordsURL(node)
 		},
 
 		getMarshaledData,

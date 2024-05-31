@@ -6,7 +6,7 @@ import (
 )
 
 // getNextRecords returns the token or empty string if there are no more records.
-func getNextRecordsURL(node *ajson.Node, fullURL string) (string, error) {
+func getNextRecordsURL(node *ajson.Node) (string, error) {
 	recordsNode, err := node.GetKey("records")
 	if err != nil {
 		return "", err
@@ -21,21 +21,13 @@ func getNextRecordsURL(node *ajson.Node, fullURL string) (string, error) {
 		return "", err
 	}
 
-	// For unit tests to run correctly
-	if fullURL != "https://api.gong.io" {
-		fullURL = "https://api.gong.io"
-	}
-
-	nextPage := fullURL + "?cursor=" + cursorNode.MustString()
+	nextPage := cursorNode.MustString()
 
 	return nextPage, nil
 }
 
 // getRecords returns the records from the response.
 func getRecords(node *ajson.Node, objectName string) ([]map[string]interface{}, error) {
-	if objectName == "" {
-		objectName = "calls" // default object name
-	}
 
 	records, err := node.GetKey(objectName)
 
@@ -48,7 +40,6 @@ func getRecords(node *ajson.Node, objectName string) ([]map[string]interface{}, 
 	}
 
 	arr := records.MustArray()
-
 	out := make([]map[string]interface{}, 0, len(arr))
 
 	for _, v := range arr {

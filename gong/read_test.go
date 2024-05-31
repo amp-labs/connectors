@@ -11,7 +11,6 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
-
 	"github.com/go-test/deep"
 )
 
@@ -31,7 +30,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		expectedErrTypes []error
 	}{
 		{
-			name: "Bad request handling test",
+			name:  "Bad request handling test",
+			input: common.ReadParams{ObjectName: "calls"},
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusBadRequest)
@@ -48,7 +48,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		},
 
 		{
-			name: "Records section is missing in the payload",
+			name:  "Records section is missing in the payload",
+			input: common.ReadParams{ObjectName: "calls"},
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
@@ -61,7 +62,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		},
 
 		{
-			name: "currentPageSize parameter is missing in the payload",
+			name:  "currentPageSize parameter is missing in the payload",
+			input: common.ReadParams{ObjectName: "calls"},
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
@@ -81,7 +83,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		},
 
 		{
-			name: "Successful read with 2 entries",
+			name:  "Successful read with 2 entries wihtout cursor/next page",
+			input: common.ReadParams{ObjectName: "calls"},
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
@@ -114,7 +117,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		},
 
 		{
-			name: "Cursor test with 2 entries",
+			name:  "Succesful read with 2 entries and cursor for next page",
+			input: common.ReadParams{ObjectName: "calls"},
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
@@ -141,14 +145,15 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 						"workspaceId":    "1007648505208900737",
 					},
 				}},
-				NextPage: "https://api.gong.io?cursor=eyJhbGciOiJIUzI1NiJ9.eyJjYWxsSWQiOjQ5NTM3MDc2MDE3NzYyMzgzNjAsInRvdGFsIjoxNzksInBhZ2VOdW1iZXIiOjAsInBhZ2VTaXplIjoxMDAsInRpbWUiOiIyMDIyLTA5LTEzVDA5OjMwOjAwWiIsImV4cCI6MTcxNjYyNjE0Nn0.o6SIJZFyjlxDC8m3HJM_TBn39M6WakXpbMXFXX3Iy9I", // nolint:lll
+				NextPage: "eyJhbGciOiJIUzI1NiJ9.eyJjYWxsSWQiOjQ5NTM3MDc2MDE3NzYyMzgzNjAsInRvdGFsIjoxNzksInBhZ2VOdW1iZXIiOjAsInBhZ2VTaXplIjoxMDAsInRpbWUiOiIyMDIyLTA5LTEzVDA5OjMwOjAwWiIsImV4cCI6MTcxNjYyNjE0Nn0.o6SIJZFyjlxDC8m3HJM_TBn39M6WakXpbMXFXX3Iy9I", // nolint:lll
 				Done:     false,
 			},
 			expectedErrs: nil,
 		},
 
 		{
-			name: "Incorrect data type in payload",
+			name:  "Incorrect data type in payload",
+			input: common.ReadParams{ObjectName: "calls"},
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
@@ -172,7 +177,6 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 
 			connector, err := NewConnector(
 				WithAuthenticatedClient(http.DefaultClient),
-				WithModule(DefaultModule),
 			)
 			if err != nil {
 				t.Fatalf("%s: error in test while initializing connector %v", tt.name, err)
