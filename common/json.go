@@ -39,7 +39,7 @@ type JSONHTTPResponse struct {
 // refresh the access token and retry the request. If errorHandler is nil, then the default error
 // handler is used. If not, the caller can inject their own error handling logic.
 func (j *JSONHTTPClient) Get(ctx context.Context, url string, headers ...Header) (*JSONHTTPResponse, error) {
-	res, body, err := j.HTTPClient.Get(ctx, url, addAcceptJSONHeader(headers)) //nolint:bodyclose
+	res, body, err := j.HTTPClient.Get(ctx, url, addAcceptJSONHeader(headers)...) //nolint:bodyclose
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +55,7 @@ func (j *JSONHTTPClient) Get(ctx context.Context, url string, headers ...Header)
 func (j *JSONHTTPClient) Post(ctx context.Context,
 	url string, reqBody any, headers ...Header,
 ) (*JSONHTTPResponse, error) {
-	res, body, err := j.HTTPClient.Post(ctx, url, reqBody, addAcceptJSONHeader(headers)) //nolint:bodyclose
+	res, body, err := j.HTTPClient.Post(ctx, url, reqBody, addAcceptJSONHeader(headers)...) //nolint:bodyclose
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +66,7 @@ func (j *JSONHTTPClient) Post(ctx context.Context,
 func (j *JSONHTTPClient) Put(ctx context.Context,
 	url string, reqBody any, headers ...Header,
 ) (*JSONHTTPResponse, error) {
-	res, body, err := j.HTTPClient.Put(ctx, url, reqBody, addAcceptJSONHeader(headers)) //nolint:bodyclose
+	res, body, err := j.HTTPClient.Put(ctx, url, reqBody, addAcceptJSONHeader(headers)...) //nolint:bodyclose
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +77,7 @@ func (j *JSONHTTPClient) Put(ctx context.Context,
 func (j *JSONHTTPClient) Patch(ctx context.Context,
 	url string, reqBody any, headers ...Header,
 ) (*JSONHTTPResponse, error) {
-	res, body, err := j.HTTPClient.Patch(ctx, url, reqBody, addAcceptJSONHeader(headers)) //nolint:bodyclose
+	res, body, err := j.HTTPClient.Patch(ctx, url, reqBody, addAcceptJSONHeader(headers)...) //nolint:bodyclose
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +86,7 @@ func (j *JSONHTTPClient) Patch(ctx context.Context,
 }
 
 func (j *JSONHTTPClient) Delete(ctx context.Context, url string, headers ...Header) (*JSONHTTPResponse, error) {
-	res, body, err := j.HTTPClient.Delete(ctx, url, addAcceptJSONHeader(headers)) //nolint:bodyclose
+	res, body, err := j.HTTPClient.Delete(ctx, url, addAcceptJSONHeader(headers)...) //nolint:bodyclose
 	if err != nil {
 		return nil, err
 	}
