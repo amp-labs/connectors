@@ -196,7 +196,7 @@ type NewClientParams struct {
 }
 
 // NewClient will create a new authenticated client based on the provider's auth type.
-func (i *ProviderInfo) NewClient(ctx context.Context, params *NewClientParams) (common.AuthenticatedHTTPClient, error) { //nolint:lll,cyclop
+func (i *ProviderInfo) NewClient(ctx context.Context, params *NewClientParams) (common.AuthenticatedHTTPClient, error) { //nolint:lll,cyclop,ireturn
 	if params == nil {
 		params = &NewClientParams{}
 	}
