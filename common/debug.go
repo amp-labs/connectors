@@ -8,11 +8,11 @@ import (
 	"os"
 )
 
-func DebugRequest(req *http.Request, rsp *http.Response) {
-	DumpRequest(os.Stdout, req, rsp)
+func PrintRequestAndResponse(req *http.Request, rsp *http.Response) {
+	dumpRequest(os.Stdout, req, rsp)
 }
 
-func DumpRequest(writer io.Writer, req *http.Request, rsp *http.Response) {
+func dumpRequest(writer io.Writer, req *http.Request, rsp *http.Response) {
 	type syncable interface {
 		Sync() error
 	}

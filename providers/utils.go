@@ -258,7 +258,7 @@ func createUnauthenticatedClient( //nolint:ireturn
 	}
 
 	if dbg {
-		opts = append(opts, common.WithHeaderDebug(common.DebugRequest))
+		opts = append(opts, common.WithHeaderDebug(common.PrintRequestAndResponse))
 	}
 
 	return common.NewHeaderAuthHTTPClient(ctx, opts...)
@@ -276,7 +276,7 @@ func createBasicAuthHTTPClient( //nolint:ireturn
 	}
 
 	if dbg {
-		opts = append(opts, common.WithHeaderDebug(common.DebugRequest))
+		opts = append(opts, common.WithHeaderDebug(common.PrintRequestAndResponse))
 	}
 
 	c, err := common.NewBasicAuthHTTPClient(ctx, user, pass, opts...)
@@ -304,7 +304,7 @@ func createOAuth2AuthCodeHTTPClient( //nolint:ireturn
 	}
 
 	if dbg {
-		options = append(options, common.WithOAuthDebug(common.DebugRequest))
+		options = append(options, common.WithOAuthDebug(common.PrintRequestAndResponse))
 	}
 
 	oauthClient, err := common.NewOAuthHTTPClient(ctx, options...)
@@ -327,7 +327,7 @@ func createOAuth2ClientCredentialsHTTPClient( //nolint:ireturn
 	}
 
 	if dbg {
-		options = append(options, common.WithOAuthDebug(common.DebugRequest))
+		options = append(options, common.WithOAuthDebug(common.PrintRequestAndResponse))
 	}
 
 	oauthClient, err := common.NewOAuthHTTPClient(ctx, options...)
@@ -354,7 +354,7 @@ func createApiKeyHTTPClient( //nolint:ireturn
 	}
 
 	if dbg {
-		opts = append(opts, common.WithHeaderDebug(common.DebugRequest))
+		opts = append(opts, common.WithHeaderDebug(common.PrintRequestAndResponse))
 	}
 
 	c, err := common.NewApiKeyAuthHTTPClient(ctx, info.ApiKeyOpts.HeaderName, apiKey, opts...)
