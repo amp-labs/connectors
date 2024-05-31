@@ -61,7 +61,8 @@ func WithOAuthConfig(config *oauth2.Config) OAuthOption {
 	}
 }
 
-// WithOAuthDebug sets a debug function to be called on every request and response.
+// WithOAuthDebug sets a debug function to be called on every request and response,
+// after the response has been received from the downstream API. 
 func WithOAuthDebug(f func(req *http.Request, rsp *http.Response)) OAuthOption {
 	return func(params *oauthClientParams) {
 		params.debug = f
