@@ -31,6 +31,14 @@ func WithHeaderClient(client *http.Client) HeaderAuthClientOption {
 	}
 }
 
+// WithHeaderDebug sets a debug function to be called on every request and response,
+// after the response has been received from the downstream API. 
+func WithHeaderDebug(f func(req *http.Request, rsp *http.Response)) HeaderAuthClientOption {
+	return func(params *headerClientParams) {
+		params.debug = f
+	}
+}
+
 // WithHeaders sets the headers to use for the connector. Its usage is optional.
 func WithHeaders(headers ...Header) HeaderAuthClientOption {
 	return func(params *headerClientParams) {
@@ -42,6 +50,7 @@ func WithHeaders(headers ...Header) HeaderAuthClientOption {
 type headerClientParams struct {
 	client  *http.Client
 	headers []Header
+	debug   func(req *http.Request, rsp *http.Response)
 }
 
 func (p *headerClientParams) prepare() *headerClientParams {
@@ -57,12 +66,14 @@ func newHeaderAuthClient(_ context.Context, params *headerClientParams) Authenti
 	return &headerAuthClient{
 		client:  params.client,
 		headers: params.headers,
+		debug:   params.debug,
 	}
 }
 
 type headerAuthClient struct {
 	client  *http.Client
 	headers []Header
+	debug   func(req *http.Request, rsp *http.Response)
 }
 
 func (c *headerAuthClient) Do(req *http.Request) (*http.Response, error) {
@@ -73,7 +84,16 @@ func (c *headerAuthClient) Do(req *http.Request) (*http.Response, error) {
 		req.Header.Add(header.Key, header.Value)
 	}
 
-	return c.client.Do(req)
+	rsp, err := c.client.Do(req)
+	if err != nil {
+		return rsp, err
+	}
+
+	if c.debug != nil {
+		c.debug(req, cloneResponse(rsp))
+	}
+
+	return rsp, nil
 }
 
 func (c *headerAuthClient) CloseIdleConnections() {
