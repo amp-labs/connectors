@@ -77,6 +77,7 @@ const (
 	SnapchatAds             Provider = "snapchatAds"
 	Instagram               Provider = "instagram"
 	Seismic                 Provider = "seismic"
+	Github                  Provider = "github"
 )
 
 // ================================================================================
@@ -1904,6 +1905,31 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://focus.teamleader.eu/oauth2/authorize",
 			TokenURL:                  "https://focus.teamleader.eu/oauth2/access_token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Github Configuration
+	Github: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.github.com",
+		OauthOpts: &OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://github.com/login/oauth/authorize",
+			TokenURL:                  "https://github.com/login/oauth/access_token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
 		},
