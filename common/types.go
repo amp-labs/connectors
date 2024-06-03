@@ -82,6 +82,9 @@ var (
 
 	// ErrMetadataLoadFailure is returned when files that contain metadata for a connector cannot be loaded.
 	ErrMetadataLoadFailure = errors.New("cannot load metadata")
+
+	// ErrEmptyResponse is returned when the jsonResponse is nil.
+	ErrEmptyJSONHTTPResponse = errors.New("empty json http response")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.
