@@ -1978,7 +1978,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	AcuityScheduling: {
 		AuthType: Oauth2,
 		BaseURL:  "https://acuityscheduling.com",
-		OauthOpts: OauthOpts{
+		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://acuityscheduling.com/oauth2/authorize",
 			TokenURL:                  "https://acuityscheduling.com/oauth2/token",
