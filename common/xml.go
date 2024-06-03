@@ -31,7 +31,8 @@ var (
 
 // XMLHTTPClient is an HTTP client that can parse XML response.
 type XMLHTTPClient struct {
-	HTTPClient *HTTPClient // underlying HTTP client. Required.
+	HTTPClient         *HTTPClient        // underlying HTTP client. Required.
+	ErrorPostProcessor ErrorPostProcessor // Errors returned from CRUD methods will go via this method. Optional.
 }
 
 type XMLHTTPResponse struct {
@@ -61,9 +62,9 @@ func (r XMLHTTPResponse) GetRoot() (*xmldom.Node, error) {
 // refresh the access token and retry the request. If errorHandler is nil, then the default error
 // handler is used. If not, the caller can inject their own error handling logic.
 func (j *XMLHTTPClient) Get(ctx context.Context, url string, headers ...Header) (*XMLHTTPResponse, error) {
-	res, body, err := j.HTTPClient.Get(ctx, url, addAcceptXMLHeader(headers)) //nolint:bodyclose
+	res, body, err := j.HTTPClient.Get(ctx, url, addAcceptXMLHeader(headers)...) //nolint:bodyclose
 	if err != nil {
-		return nil, err
+		return nil, j.ErrorPostProcessor.handleError(err)
 	}
 
 	return parseXMLResponse(res, body)

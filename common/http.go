@@ -42,7 +42,7 @@ func (h *HTTPClient) getURL(url string) (string, error) {
 // an error is returned. If the response is a 401, the caller should refresh the access token
 // and retry the request. If errorHandler is nil, then the default error handler is used.
 // If not, the caller can inject their own error handling logic.
-func (h *HTTPClient) Get(ctx context.Context, url string, headers []Header) (*http.Response, []byte, error) {
+func (h *HTTPClient) Get(ctx context.Context, url string, headers ...Header) (*http.Response, []byte, error) {
 	fullURL, err := h.getURL(url)
 	if err != nil {
 		return nil, nil, err
@@ -62,7 +62,7 @@ func (h *HTTPClient) Get(ctx context.Context, url string, headers []Header) (*ht
 // refresh the access token and retry the request. If errorHandler is nil, then the default error
 // handler is used. If not, the caller can inject their own error handling logic.
 func (h *HTTPClient) Post(ctx context.Context,
-	url string, reqBody any, headers []Header,
+	url string, reqBody any, headers ...Header,
 ) (*http.Response, []byte, error) {
 	fullURL, err := h.getURL(url)
 	if err != nil {
@@ -83,7 +83,7 @@ func (h *HTTPClient) Post(ctx context.Context,
 // refresh the access token and retry the request. If errorHandler is nil, then the default error
 // handler is used. If not, the caller can inject their own error handling logic.
 func (h *HTTPClient) Patch(ctx context.Context,
-	url string, reqBody any, headers []Header,
+	url string, reqBody any, headers ...Header,
 ) (*http.Response, []byte, error) {
 	fullURL, err := h.getURL(url)
 	if err != nil {
@@ -99,7 +99,7 @@ func (h *HTTPClient) Patch(ctx context.Context,
 }
 
 func (h *HTTPClient) Put(ctx context.Context,
-	url string, reqBody any, headers []Header,
+	url string, reqBody any, headers ...Header,
 ) (*http.Response, []byte, error) {
 	fullURL, err := h.getURL(url)
 	if err != nil {
@@ -115,7 +115,7 @@ func (h *HTTPClient) Put(ctx context.Context,
 }
 
 func (h *HTTPClient) Delete(ctx context.Context,
-	url string, headers []Header,
+	url string, headers ...Header,
 ) (*http.Response, []byte, error) {
 	fullURL, err := h.getURL(url)
 	if err != nil {
