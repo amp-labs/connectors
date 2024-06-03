@@ -1,7 +1,9 @@
 package common
 
 import (
+	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 )
 
@@ -40,5 +42,39 @@ func PanicRecovery(wrapup func(cause error)) {
 		}
 
 		wrapup(err)
+	}
+}
+
+// ErrorDescriptor enhances base error with extra message.
+type ErrorDescriptor interface {
+	CombineErr(base error) error
+}
+
+type ErrorPostProcessor struct {
+	Process func(err error) error
+}
+
+func (p ErrorPostProcessor) handleError(err error) error {
+	if err == nil {
+		return nil
+	}
+
+	switch {
+	case errors.Is(err, ErrAccessToken):
+		slog.Warn("Access token invalid, retrying", "error", err)
+
+		fallthrough
+	case errors.Is(err, ErrRetryable):
+		fallthrough
+	case errors.Is(err, ErrApiDisabled):
+		fallthrough
+	case errors.Is(err, ErrForbidden):
+		fallthrough
+	default:
+		if p.Process != nil {
+			return p.Process(err)
+		}
+
+		return err
 	}
 }

@@ -41,7 +41,7 @@ func (p *Client) WithClient(
 	opts ...common.OAuthOption,
 ) {
 	options := []common.OAuthOption{
-		common.WithClient(client),
+		common.WithOAuthClient(client),
 		common.WithOAuthConfig(config),
 		common.WithOAuthToken(token),
 	}

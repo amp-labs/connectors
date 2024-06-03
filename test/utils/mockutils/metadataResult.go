@@ -12,7 +12,8 @@ import (
 // which is fine and not a cause for an error.
 // However, it will return a Joined error for every Read field that is missing in Metadata.
 func ValidateReadConformsMetadata(objectName string,
-	readResponse map[string]any, metadata *common.ListObjectMetadataResult) error {
+	readResponse map[string]any, metadata *common.ListObjectMetadataResult,
+) error {
 	fields := make(map[string]bool)
 
 	for field := range readResponse {

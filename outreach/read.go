@@ -17,7 +17,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	if len(config.NextPage) > 0 {
 		// If NextPage is set, then we're reading the next page of results.
 		// The NextPage URL has all the necessary parameters.
-		res, err = c.get(ctx, config.NextPage.String())
+		res, err = c.Client.Get(ctx, config.NextPage.String())
 		if err != nil {
 			return nil, err
 		}
@@ -27,7 +27,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 			return nil, err
 		}
 
-		res, err = c.get(ctx, fullURL)
+		res, err = c.Client.Get(ctx, fullURL)
 		if err != nil {
 			return nil, err
 		}

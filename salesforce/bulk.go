@@ -145,7 +145,7 @@ func (c *Connector) createJob(ctx context.Context, body map[string]any) (*common
 		return nil, err
 	}
 
-	return c.post(ctx, location, body)
+	return c.Client.Post(ctx, location, body)
 }
 
 func (c *Connector) uploadCSV(ctx context.Context, jobId string, csvData io.Reader) ([]byte, error) {
@@ -162,7 +162,7 @@ func (c *Connector) uploadCSV(ctx context.Context, jobId string, csvData io.Read
 		)
 	}
 
-	return c.putCSV(ctx, location, data)
+	return c.Client.PutCSV(ctx, location, data)
 }
 
 func (c *Connector) completeUpload(ctx context.Context, jobId string) (*common.JSONHTTPResponse, error) {
@@ -175,7 +175,7 @@ func (c *Connector) completeUpload(ctx context.Context, jobId string) (*common.J
 		return nil, err
 	}
 
-	return c.patch(ctx, location, updateLoadCompleteBody)
+	return c.Client.Patch(ctx, location, updateLoadCompleteBody)
 }
 
 func (c *Connector) GetJobInfo(ctx context.Context, jobId string) (*GetJobInfoResult, error) {
@@ -184,7 +184,7 @@ func (c *Connector) GetJobInfo(ctx context.Context, jobId string) (*GetJobInfoRe
 		return nil, err
 	}
 
-	rsp, err := c.get(ctx, location)
+	rsp, err := c.Client.Get(ctx, location)
 	if err != nil {
 		return nil, fmt.Errorf("getGetInfo failed: %w", errors.Join(err, common.ErrRequestFailed))
 	}
@@ -501,7 +501,7 @@ func (c *Connector) BulkQuery(
 		"query":     query,
 	}
 
-	res, err := c.post(ctx, location, jobBody)
+	res, err := c.Client.Post(ctx, location, jobBody)
 	if err != nil {
 		return nil, fmt.Errorf("bulk query failed: %w", err)
 	}
@@ -518,7 +518,7 @@ func (c *Connector) GetBulkQueryInfo(
 		return nil, err
 	}
 
-	res, err := c.get(ctx, location)
+	res, err := c.Client.Get(ctx, location)
 	if err != nil {
 		return nil, fmt.Errorf(
 			"failed to get bulk query info for job '%s': %w",

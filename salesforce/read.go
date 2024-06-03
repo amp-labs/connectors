@@ -25,7 +25,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 			return nil, joinErr
 		}
 
-		rsp, err = c.get(ctx, location)
+		rsp, err = c.Client.Get(ctx, location)
 	} else {
 		// If NextPage is not set, then we're reading the first page of results.
 		// We need to construct the SOQL query and then make the request.
@@ -43,7 +43,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 			return nil, joinErr
 		}
 
-		rsp, err = c.get(ctx, location+"?"+qp.Encode())
+		rsp, err = c.Client.Get(ctx, location+"?"+qp.Encode())
 	}
 
 	if err != nil {
