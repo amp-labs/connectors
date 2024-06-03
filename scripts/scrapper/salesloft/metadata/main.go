@@ -5,8 +5,8 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/amp-labs/connectors/common/scrapper"
 	"github.com/amp-labs/connectors/salesloft/metadata"
+	"github.com/amp-labs/connectors/tools/scrapper"
 )
 
 const (

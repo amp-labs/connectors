@@ -24,7 +24,7 @@ func (c *Connector) Delete(ctx context.Context, config common.DeleteParams) (*co
 
 	// Server usually responds with data indicating resource id that was just removed,
 	// or it returns the same payload as during Get/Post/Put requests
-	_, err = c.delete(ctx, url.String())
+	_, err = c.Client.Delete(ctx, url.String())
 	if err != nil {
 		return nil, err
 	}

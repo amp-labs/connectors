@@ -84,6 +84,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 
 	conn.Client.HTTPClient.Base = providerInfo.BaseURL
 	conn.Client.HTTPClient.ErrorHandler = conn.interpretError
+	conn.Client.ErrorPostProcessor.Process = handleError
 
 	return conn, nil
 }

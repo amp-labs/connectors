@@ -23,7 +23,7 @@ func WithClient(ctx context.Context, client *http.Client, config *oauth2.Config,
 ) Option {
 	return func(params *hubspotParams) {
 		options := []common.OAuthOption{
-			common.WithClient(client),
+			common.WithOAuthClient(client),
 			common.WithOAuthConfig(config),
 			common.WithOAuthToken(token),
 		}

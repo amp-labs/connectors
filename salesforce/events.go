@@ -201,7 +201,7 @@ func (c *Connector) RunEventRelay(ctx context.Context, cfg *EventRelayConfig) er
 		},
 	}
 
-	_, err = c.patch(ctx, location, config) // patch returns no content with 204. If it fails, it will return an error.
+	_, err = c.Client.Patch(ctx, location, config) // patch returns no content with 204. If it fails, it will return an error.
 	if err != nil {
 		slog.Error("Run EventRelayConfig", "error", err)
 
@@ -214,7 +214,7 @@ func (c *Connector) RunEventRelay(ctx context.Context, cfg *EventRelayConfig) er
 // nolint: lll
 // https://developer.salesforce.com/docs/atlas.en-us.chatterapi.meta/chatterapi/connect_responses_organization.htm?q=organization
 func (c *Connector) getOrganization(ctx context.Context) (map[string]*ajson.Node, error) {
-	resp, err := c.get(ctx, "connect/organization")
+	resp, err := c.Client.Get(ctx, "connect/organization")
 	if err != nil {
 		return nil, err
 	}
@@ -258,7 +258,7 @@ func (c *Connector) postToSFAPI(ctx context.Context, body any, path string, enti
 		return nil, err
 	}
 
-	resp, err := c.post(ctx, location, body)
+	resp, err := c.Client.Post(ctx, location, body)
 	if err != nil {
 		return nil, err
 	}

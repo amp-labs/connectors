@@ -73,7 +73,7 @@ func (c *Connector) interpretJSONError(res *http.Response, body []byte) error {
 	return common.InterpretError(res, body)
 }
 
-func (c *Connector) HandleError(err error) error {
+func handleError(err error) error {
 	var urlErr *url.Error
 	if errors.As(err, &urlErr) {
 		var oauthErr *oauth2.RetrieveError
@@ -84,20 +84,5 @@ func (c *Connector) HandleError(err error) error {
 		}
 	}
 
-	switch {
-	case errors.Is(err, common.ErrAccessToken):
-		// Retryable, so just log and retry
-		// TODO: Retry
-		return err
-	case errors.Is(err, common.ErrRetryable):
-		// TODO: Retry
-		return err
-	case errors.Is(err, common.ErrApiDisabled):
-		fallthrough
-	case errors.Is(err, common.ErrForbidden):
-		fallthrough
-	default:
-		// Anything else is a permanent error
-		return err
-	}
+	return err
 }
