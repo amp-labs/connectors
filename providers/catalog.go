@@ -83,6 +83,8 @@ const (
 // Contains critical provider configuration (using types from types.gen.go)
 // ================================================================================
 
+// Adding the comment for testing purpose
+
 var catalog = CatalogType{ // nolint:gochecknoglobals
 	// Salesforce configuration
 	Salesforce: {
