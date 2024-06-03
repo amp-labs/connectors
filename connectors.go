@@ -9,6 +9,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/dynamicscrm"
+	"github.com/amp-labs/connectors/gong"
 	"github.com/amp-labs/connectors/hubspot"
 	"github.com/amp-labs/connectors/intercom"
 	"github.com/amp-labs/connectors/mock"
@@ -103,6 +104,9 @@ var Mock API[*mock.Connector, mock.Option] = mock.NewConnector //nolint:gocheckn
 
 // Outreach is an API that returns a new Outreach Connector.
 var Outreach API[*outreach.Connector, outreach.Option] = outreach.NewConnector //nolint:gochecknoglobals
+
+// Gong is an API that returns a new Gong Connector.
+var Gong API[*gong.Connector, gong.Option] = gong.NewConnector //nolint:gochecknoglobals
 
 // Salesloft is an API that returns a new Salesloft Connector.
 var Salesloft API[*salesloft.Connector, salesloft.Option] = salesloft.NewConnector //nolint:gochecknoglobals
