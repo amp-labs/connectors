@@ -1,0 +1,37 @@
+package {{ .Package }}
+
+import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+
+	"github.com/amp-labs/connectors/common/interpreter"
+)
+
+func (*Connector) interpretJSONError(res *http.Response, body []byte) error { //nolint:cyclop
+	var payload ResponseError
+	if err := json.Unmarshal(body, &payload); err != nil {
+		return fmt.Errorf("interpretJSONError general: %w %w", interpreter.ErrUnmarshal, err)
+	}
+
+	// TODO if error response from the server is not consistent consider using `common.ErrorDescriptor` interface
+	// see usages how it is used
+
+	return payload.CombineErr(statusCodeMapping(res, body))
+}
+
+func statusCodeMapping(res *http.Response, body []byte) error {
+	switch res.StatusCode { // nolint:gocritic
+	// TODO create mapping unique for this connector, the rest Status Codes will default to base handler
+	default:
+		return interpreter.DefaultStatusCodeMappingToErr(res, body)
+	}
+}
+
+type ResponseError struct{}
+
+func (r ResponseError) CombineErr(base error) error {
+	// TODO convert response error from server into golang error. Decide what message to use from payload.
+	// TODO Any error response from server should implement ErrorDescriptor by attaching message, enhancing an error.
+	return fmt.Errorf("%w: %v", base, r)
+}

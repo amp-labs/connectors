@@ -1,0 +1,158 @@
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
+
+	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/{{ .Package }}"
+	connTest "github.com/amp-labs/connectors/test/{{ .Package }}"
+	"github.com/amp-labs/connectors/test/utils"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
+)
+
+type {{ .ObjectName }}Payload struct { // TODO fill in properties
+	Name       string `json:"name,omitempty"`
+	View       string `json:"view,omitempty"`
+	ViewParams string `json:"view_params,omitempty"` // JSON object of list view parameters
+	IsDefault  *bool  `json:"is_default,omitempty"`
+	Shared     bool   `json:"shared,omitempty"`
+}
+
+var (
+	objectName = "{{ .ObjectName | plural }}" // nolint: gochecknoglobals
+)
+
+
+func main() {
+	// Handle Ctrl-C gracefully.
+	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer done()
+
+	// Set up slog logging.
+	utils.SetupLogging()
+
+	filePath := os.Getenv("{{ .Provider | snake | upper }}_CRED_FILE")
+	if filePath == "" {
+		filePath = "./{{ .Provider | kebab }}-creds.json"
+	}
+
+	conn := connTest.Get{{ .Provider }}Connector(ctx, filePath)
+	defer utils.Close(conn)
+
+	fmt.Println("> TEST Create/Update/Delete {{ .ObjectName }}")
+	fmt.Println("Creating {{ .ObjectName }}")
+
+	// NOTE: list view must have unique `Name`
+	view := create{{ .ObjectName | camel }}(ctx, conn, &{{ .ObjectName }}Payload{
+		Name:       "Tom's Prospects",
+		View:       "companies",
+		ViewParams: "",
+		IsDefault:  mockutils.Pointers.Bool(true),
+		Shared:     false,
+	})
+
+	fmt.Println("Updating some {{ .ObjectName }} properties")
+	update{{ .ObjectName | camel }}(ctx, conn, view.RecordId, &{{ .ObjectName }}Payload{
+		Name:      "Jerry's Prospects",
+		View:      "companies",
+		IsDefault: mockutils.Pointers.Bool(false),
+	})
+
+	fmt.Println("View that {{ .ObjectName }} has changed accordingly")
+
+	res := read{{ .ObjectName | camel }}(ctx, conn)
+
+	updatedView := search{{ .ObjectName | camel }}(res, "id", view.RecordId)
+	for k, v := range map[string]string{
+		"name":       "Jerry's Prospects",
+		"view":       "companies",
+		"is_default": "false",
+		"shared":     "false",
+	} {
+		if !mockutils.DoesObjectCorrespondToString(updatedView[k], v) {
+			utils.Fail("error updated properties do not match", k, v, updatedView[k])
+		}
+	}
+
+	fmt.Println("Removing this {{ .ObjectName }}")
+	remove{{ .ObjectName | camel }}(ctx, conn, view.RecordId)
+	fmt.Println("> Successful test completion")
+}
+
+func search{{ .ObjectName | camel }}(res *common.ReadResult, key, value string) map[string]any {
+	for _, data := range res.Data {
+		if mockutils.DoesObjectCorrespondToString(data.Fields[key], value) {
+			return data.Raw
+		}
+	}
+
+	utils.Fail("error finding {{ .ObjectName }}")
+
+	return nil
+}
+
+func read{{ .ObjectName | camel }}(ctx context.Context, conn *{{ .Package }}.Connector) *common.ReadResult {
+	res, err := conn.Read(ctx, common.ReadParams{
+		ObjectName: objectName,
+		Fields: []string{
+			"id", "view", "name",
+		},
+	})
+	if err != nil {
+		utils.Fail("error reading from {{ .Provider }}", "error", err)
+	}
+
+	return res
+}
+
+func create{{ .ObjectName | camel }}(ctx context.Context, conn *{{ .Package }}.Connector, payload *{{ .ObjectName }}Payload) *common.WriteResult {
+	res, err := conn.Write(ctx, common.WriteParams{
+		ObjectName: objectName,
+		RecordId:   "",
+		RecordData: payload,
+	})
+	if err != nil {
+		utils.Fail("error writing to {{ .Provider }}", "error", err)
+	}
+
+	if !res.Success {
+		utils.Fail("failed to create a {{ .ObjectName }}")
+	}
+
+	return res
+}
+
+func update{{ .ObjectName | camel }}(ctx context.Context, conn *{{ .Package }}.Connector, viewID string, payload *{{ .ObjectName }}Payload) *common.WriteResult {
+	res, err := conn.Write(ctx, common.WriteParams{
+		ObjectName: objectName,
+		RecordId:   viewID,
+		RecordData: payload,
+	})
+	if err != nil {
+		utils.Fail("error writing to {{ .Provider }}", "error", err)
+	}
+
+	if !res.Success {
+		utils.Fail("failed to update a {{ .ObjectName }}")
+	}
+
+	return res
+}
+
+func remove{{ .ObjectName | camel }}(ctx context.Context, conn *{{ .Package }}.Connector, viewID string) {
+	res, err := conn.Delete(ctx, common.DeleteParams{
+		ObjectName: objectName,
+		RecordId:   viewID,
+	})
+	if err != nil {
+		utils.Fail("error deleting for {{ .Provider }}", "error", err)
+	}
+
+	if !res.Success {
+		utils.Fail("failed to remove a {{ .ObjectName }}")
+	}
+}
