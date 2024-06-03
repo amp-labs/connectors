@@ -77,7 +77,7 @@ const (
 	SnapchatAds             Provider = "snapchatAds"
 	Instagram               Provider = "instagram"
 	Seismic                 Provider = "seismic"
-  Github                  Provider = "github"
+	Github                  Provider = "github"
 )
 
 // ================================================================================
@@ -1926,13 +1926,13 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Github: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.github.com",
-		OauthOpts: OauthOpts{
+		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://github.com/login/oauth/authorize",
 			TokenURL:                  "https://github.com/login/oauth/access_token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
-    },
+		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,

@@ -32,7 +32,7 @@ func WithHeaderClient(client *http.Client) HeaderAuthClientOption {
 }
 
 // WithHeaderDebug sets a debug function to be called on every request and response,
-// after the response has been received from the downstream API. 
+// after the response has been received from the downstream API.
 func WithHeaderDebug(f func(req *http.Request, rsp *http.Response)) HeaderAuthClientOption {
 	return func(params *headerClientParams) {
 		params.debug = f
