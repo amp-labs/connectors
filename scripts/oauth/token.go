@@ -309,6 +309,30 @@ func setup() *OAuthApp {
 		os.Exit(1)
 	}
 
+	if providerInfo.AuthType != providers.Oauth2 {
+		slog.Error("provider does not support OAuth2, not compatible with this script", "provider", provider)
+
+		os.Exit(1)
+	}
+
+	if providerInfo.OauthOpts == nil {
+		slog.Error("provider does not have OAuth2 options, not compatible with this script", "provider", provider)
+
+		os.Exit(1)
+	}
+
+	if providerInfo.OauthOpts.GrantType != providers.AuthorizationCode {
+		slog.Error("provider does not support authorization code grant, not compatible with this script", "provider", provider)
+
+		os.Exit(1)
+	}
+
+	if providerInfo.OauthOpts.AuthURL == nil {
+		slog.Error("provider does not have an AuthURL, not compatible with this script", "provider", provider)
+
+		os.Exit(1)
+	}
+
 	// Set up the OAuth config based on the provider.
 	app.Config.Endpoint = oauth2.Endpoint{
 		AuthURL:   *providerInfo.OauthOpts.AuthURL,
