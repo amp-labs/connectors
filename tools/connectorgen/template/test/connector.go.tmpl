@@ -1,0 +1,59 @@
+package {{ .Package }}
+
+import (
+	"context"
+	"net/http"
+
+	"github.com/amp-labs/connectors"
+	"github.com/amp-labs/connectors/{{ .Package }}"
+	testUtils "github.com/amp-labs/connectors/test/utils"
+	"github.com/amp-labs/connectors/utils"
+)
+
+func Get{{ .Provider }}Connector(ctx context.Context, filePath string) *{{ .Package }}.Connector {
+	registry := utils.NewCredentialsRegistry()
+
+	readers := []utils.Reader{
+		&utils.JSONReader{
+			FilePath: filePath,
+			JSONPath: "$.CLIENT_ID",
+			CredKey:  "clientId",
+		},
+		&utils.JSONReader{
+			FilePath: filePath,
+			JSONPath: "$.CLIENT_SECRET",
+			CredKey:  "clientSecret",
+		},
+		&utils.JSONReader{
+			FilePath: filePath,
+			JSONPath: "$.ACCESS_TOKEN",
+			CredKey:  "accessToken",
+		},
+		&utils.JSONReader{
+			FilePath: filePath,
+			JSONPath: "$.REFRESH_TOKEN",
+			CredKey:  "refreshToken",
+		},
+		&utils.JSONReader{
+			FilePath: filePath,
+			JSONPath: "$.PROVIDER",
+			CredKey:  "provider",
+		},
+	}
+	_ = registry.AddReaders(readers...)
+
+	// TODO create config and token registries
+	cfg := utils.{{ .Provider }}ConfigFromRegistry(registry)
+	tok := utils.{{ .Provider }}TokenFromRegistry(registry)
+
+	// TODO provide required options
+	conn, err := connectors.{{ .Provider }}(
+		{{ .Package }}.WithClient(ctx, http.DefaultClient, cfg, tok),
+		{{ .Package }}.WithWorkspace(utils.{{ .Provider }}Workspace),
+	)
+	if err != nil {
+		testUtils.Fail("error creating connector", "error", err)
+	}
+
+	return conn
+}
