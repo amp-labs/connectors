@@ -81,6 +81,7 @@ const (
 	ZohoCRM                 Provider = "zohoCRM"
 	Zoom                    Provider = "zoom"
 	Zuora                   Provider = "zuora"
+	MParticle               Provider = "mParticle"
 )
 
 // ================================================================================
@@ -2080,6 +2081,30 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://launchpad.37signals.com/authorization/new?type=web_server",
 			TokenURL:                  "https://launchpad.37signals.com/authorization/token?type=refresh",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// MParticle Configuration
+	MParticle: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.mparticle.com",
+		OauthOpts: &OauthOpts{
+			GrantType:                 ClientCredentials,
+			TokenURL:                  "https://sso.auth.mparticle.com/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
 		},
