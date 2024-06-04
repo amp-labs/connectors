@@ -33,3 +33,8 @@ test:
 .PHONY: pr-template
 pr-template:
 	. ./scripts/bash/pr_options.sh; pr_template
+
+# Compiles connector generator CLI. For more information see scripts/connectorgen/README.md
+.PHONY: connector-gen
+connector-gen:
+	go build -o ./bin/cgen ./scripts/connectorgen/main.go && echo "now run command: ./bin/cgen"
