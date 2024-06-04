@@ -311,7 +311,7 @@ func setup() *OAuthApp {
 
 	// Set up the OAuth config based on the provider.
 	app.Config.Endpoint = oauth2.Endpoint{
-		AuthURL:   providerInfo.OauthOpts.AuthURL,
+		AuthURL:   *providerInfo.OauthOpts.AuthURL,
 		TokenURL:  providerInfo.OauthOpts.TokenURL,
 		AuthStyle: oauth2.AuthStyleAutoDetect,
 	}
