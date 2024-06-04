@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
-	"text/template"
+	"text/template" // nosemgrep:go.lang.security.audit.xss.import-text-template.import-text-template
 
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/iancoleman/strcase"
