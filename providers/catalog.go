@@ -1951,7 +1951,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://api.mparticle.com",
 		OauthOpts: OauthOpts{
 			GrantType:                 ClientCredentials,
-			AuthURL:                   "https://sso.auth.mparticle.com/oauth/token",
+			AuthURL:                   "https://sso.auth.mparticle.com/oauth/token",// mParticle doesn't provide this
 			TokenURL:                  "https://sso.auth.mparticle.com/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
