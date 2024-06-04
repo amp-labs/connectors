@@ -867,11 +867,13 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType:    Oauth2,
 		BaseURL:     "https://{{.workspace}}.api.crm.dynamics.com",
 		OauthOpts: &OauthOpts{
-			GrantType:                 AuthorizationCode,
-			AuthURL:                   "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
-			TokenURL:                  "https://login.microsoftonline.com/common/oauth2/v2.0/token",
-			ExplicitScopesRequired:    true,
-			ExplicitWorkspaceRequired: false,
+			GrantType:              AuthorizationCode,
+			AuthURL:                "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+			TokenURL:               "https://login.microsoftonline.com/common/oauth2/v2.0/token",
+			ExplicitScopesRequired: true,
+			// TODO: flip this to false once we implement the ability to get workspace
+			// information post-auth.
+			ExplicitWorkspaceRequired: true,
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
