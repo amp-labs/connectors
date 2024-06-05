@@ -78,6 +78,8 @@ const (
 	SnapchatAds             Provider = "snapchatAds"
 	Instagram               Provider = "instagram"
 	Seismic                 Provider = "seismic"
+	Github                  Provider = "github"
+	Basecamp                Provider = "basecamp"
 )
 
 // ================================================================================
@@ -277,7 +279,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -302,7 +304,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -327,7 +329,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -855,7 +857,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -867,11 +869,13 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType:    Oauth2,
 		BaseURL:     "https://{{.workspace}}.api.crm.dynamics.com",
 		OauthOpts: &OauthOpts{
-			GrantType:                 AuthorizationCode,
-			AuthURL:                   "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
-			TokenURL:                  "https://login.microsoftonline.com/common/oauth2/v2.0/token",
-			ExplicitScopesRequired:    true,
-			ExplicitWorkspaceRequired: false,
+			GrantType:              AuthorizationCode,
+			AuthURL:                "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+			TokenURL:               "https://login.microsoftonline.com/common/oauth2/v2.0/token",
+			ExplicitScopesRequired: true,
+			// TODO: flip this to false once we implement the ability to get workspace
+			// information post-auth.
+			ExplicitWorkspaceRequired: true,
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -1570,7 +1574,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -1651,7 +1655,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -1922,6 +1926,31 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
+	// Github Configuration
+	Github: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.github.com",
+		OauthOpts: &OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://github.com/login/oauth/authorize",
+			TokenURL:                  "https://github.com/login/oauth/access_token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
 	Seismic: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.seismic.com",
@@ -1983,6 +2012,32 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			AuthURL:                   "https://acuityscheduling.com/oauth2/authorize",
 			TokenURL:                  "https://acuityscheduling.com/oauth2/token",
 			ExplicitScopesRequired:    true,
+      ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Basecamp Configuration
+	// The wokspace in baseURL should be mapped to accounts.id
+	Basecamp: {
+		AuthType: Oauth2,
+		BaseURL:  "https://3.basecampapi.com/{{.workspace}}",
+		OauthOpts: &OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://launchpad.37signals.com/authorization/new?type=web_server",
+			TokenURL:                  "https://launchpad.37signals.com/authorization/token?type=refresh",
+			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{

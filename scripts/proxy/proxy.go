@@ -236,6 +236,7 @@ func mainBasic(ctx context.Context, provider string, substitutionsMap map[string
 func getTokensFromRegistry() *oauth2.Token {
 	accessToken := registry.MustString("AccessToken")
 	refreshToken, err := registry.GetString("RefreshToken")
+
 	if err != nil {
 		// we are working without refresh token
 		return &oauth2.Token{
@@ -289,6 +290,7 @@ func parseAccessTokenExpiry(expiryStr, timeFormat string) time.Time {
 func validateRequiredOAuth2Flags(ctx context.Context, provider, clientId, clientSecret string) {
 	if provider == "" || clientId == "" || clientSecret == "" {
 		_, _ = fmt.Fprintln(os.Stderr, "Missing required flags: -provider, -client-id, -client-secret")
+
 		flag.Usage()
 		os.Exit(1)
 	}
@@ -299,6 +301,7 @@ func validateRequiredOAuth2Flags(ctx context.Context, provider, clientId, client
 // and has a cleaner shutdown sequence.
 func listen(ctx context.Context, port int) error {
 	var lc net.ListenConfig
+
 	listener, err := lc.Listen(ctx, "tcp", fmt.Sprintf(":%d", port))
 	if err != nil {
 		return err
@@ -310,6 +313,7 @@ func listen(ctx context.Context, port int) error {
 
 	go func() {
 		<-ctx.Done()
+
 		_ = server.Shutdown(context.Background())
 	}()
 

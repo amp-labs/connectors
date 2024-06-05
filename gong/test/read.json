@@ -1,0 +1,24 @@
+{
+  "requestId": "6s68ryso1a3c6rxz1gr",
+  "records": {
+      "totalRecords": 2,
+      "currentPageSize": 2,
+      "currentPageNumber": 0
+  },
+  "calls": [
+      {
+          "id": "52947912500572621",
+          "url": "https://us-49467.app.gong.io/call?id=52947912500572621",
+          "workspaceId": "1007648505208900737",
+          "clientUniqueId": "ce93bb26-de69-41e3-8a7f-43ea3714b9e8",
+          "customData": "R1201"
+      },
+      {
+          "id": "137982752092261989",
+          "url": "https://us-49467.app.gong.io/call?id=137982752092261989",
+          "workspaceId": "1007648505208900737",
+          "clientUniqueId": "f77501df-0c70-4c38-b565-a3a09fee14fb",
+          "customData": "R1201"
+      }
+  ]
+}
