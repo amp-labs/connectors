@@ -2,6 +2,7 @@
 package main
 
 import (
+	"context"
 	"encoding/base64"
 	"encoding/json"
 	"flag"
@@ -9,6 +10,7 @@ import (
 	"log"
 	"log/slog"
 	"net/http"
+	"net/url"
 	"os"
 	"os/exec"
 	"runtime"
@@ -19,6 +21,7 @@ import (
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/utils"
 	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/clientcredentials"
 )
 
 // ================================
@@ -96,14 +99,16 @@ var readers = []utils.Reader{
 
 // OAuthApp is a simple OAuth app that can be used to get an OAuth token.
 type OAuthApp struct {
-	Callback string
-	Port     int
-	Config   *oauth2.Config
-	Options  []oauth2.AuthCodeOption
-	State    string
-	Proto    string
-	SSLCert  string
-	SSLKey   string
+	GrantType         providers.OauthOptsGrantType
+	Callback          string
+	Port              int
+	Config            *oauth2.Config
+	ClientCredsConfig *clientcredentials.Config
+	Options           []oauth2.AuthCodeOption
+	State             string
+	Proto             string
+	SSLCert           string
+	SSLKey            string
 }
 
 // ServeHTTP implements the http.Handler interface.
@@ -193,25 +198,39 @@ func (a *OAuthApp) processCallback(writer http.ResponseWriter, request *http.Req
 
 // Run executes the OAuth flow to get a token.
 func (a *OAuthApp) Run() error {
-	slog.Info("starting OAuth app", "port", a.Port)
+	if a.GrantType == providers.ClientCredentials {
+		src := a.ClientCredsConfig.TokenSource(context.Background())
+		tok, err := src.Token()
+		if err != nil {
+			return err
+		}
 
-	http.Handle("/", a)
+		header := tok.Type() + " " + tok.AccessToken
+		fmt.Println("Expiry: " + tok.Expiry.String())
+		fmt.Println("Authorization: " + header)
 
-	go func() {
-		time.Sleep(1 * time.Second)
-		openBrowser(fmt.Sprintf("%s://localhost:%d", a.Proto, a.Port))
-	}()
-
-	server := &http.Server{
-		Addr:              fmt.Sprintf("0.0.0.0:%d", a.Port),
-		ReadHeaderTimeout: ReadHeaderTimeoutSeconds * time.Second,
-	}
-
-	if a.Proto == HttpProtocol {
-		// nosemgrep: go.lang.security.audit.net.use-tls.use-tls
-		return server.ListenAndServe()
+		return nil
 	} else {
-		return server.ListenAndServeTLS(a.SSLCert, a.SSLKey)
+		slog.Info("starting OAuth app", "port", a.Port)
+
+		http.Handle("/", a)
+
+		go func() {
+			time.Sleep(1 * time.Second)
+			openBrowser(fmt.Sprintf("%s://localhost:%d", a.Proto, a.Port))
+		}()
+
+		server := &http.Server{
+			Addr:              fmt.Sprintf("0.0.0.0:%d", a.Port),
+			ReadHeaderTimeout: ReadHeaderTimeoutSeconds * time.Second,
+		}
+
+		if a.Proto == HttpProtocol {
+			// nosemgrep: go.lang.security.audit.net.use-tls.use-tls
+			return server.ListenAndServe()
+		} else {
+			return server.ListenAndServeTLS(a.SSLCert, a.SSLKey)
+		}
 	}
 }
 
@@ -248,49 +267,6 @@ func setup() *OAuthApp {
 	callback := flag.String("callback", DefaultCallbackPath, "the full OAuth callback path (arbitrary)")
 	flag.Parse()
 
-	err := registry.AddReaders(readers...)
-	if err != nil {
-		return nil
-	}
-
-	// Determine the OAuth redirect URL.
-	redirect := fmt.Sprintf("%s://localhost:%d%s", *proto, *port, *callback)
-
-	// Get the OAuth scopes from the flag.
-	provider := registry.MustString("Provider")
-	clientId := registry.MustString("ClientId")
-	clientSecret := registry.MustString("ClientSecret")
-
-	state, err := registry.GetString("State")
-	if err != nil {
-		slog.Warn("no state attached, ensure that the provider doesn't require state")
-	}
-
-	scopes, err := registry.GetString("Scopes")
-	if err != nil {
-		slog.Warn("no scopes attached, ensure that the provider doesn't require scopes")
-	}
-
-	oauthScopes := strings.Split(scopes, ",")
-
-	// Create the OAuth app.
-	app := &OAuthApp{
-		Callback: *callback,
-		Port:     *port,
-		Proto:    *proto,
-		SSLCert:  *SSLCert,
-		SSLKey:   *SSLKey,
-		Config: &oauth2.Config{
-			ClientID:     clientId,
-			ClientSecret: clientSecret,
-			RedirectURL:  redirect,
-			Scopes:       oauthScopes,
-		},
-	}
-	if state != "" {
-		app.State = state
-	}
-
 	substitutions, err := registry.GetMap("Substitutions")
 	if err != nil {
 		slog.Warn("no substitutions, ensure that the provider info doesn't have any {{variables}}")
@@ -302,6 +278,12 @@ func setup() *OAuthApp {
 		substitutionsMap[key] = val.MustString()
 	}
 
+	if err = registry.AddReaders(readers...); err != nil {
+		return nil
+	}
+
+	provider := registry.MustString("Provider")
+
 	providerInfo, err := providers.ReadInfo(provider, &substitutionsMap)
 	if err != nil {
 		slog.Error("failed to read provider config", "error", err)
@@ -309,14 +291,106 @@ func setup() *OAuthApp {
 		os.Exit(1)
 	}
 
-	// Set up the OAuth config based on the provider.
-	app.Config.Endpoint = oauth2.Endpoint{
-		AuthURL:   providerInfo.OauthOpts.AuthURL,
-		TokenURL:  providerInfo.OauthOpts.TokenURL,
-		AuthStyle: oauth2.AuthStyleAutoDetect,
+	if providerInfo.AuthType != providers.Oauth2 {
+		slog.Error("provider does not support OAuth2, not compatible with this script", "provider", provider)
+
+		os.Exit(1)
 	}
 
-	return app
+	if providerInfo.OauthOpts == nil {
+		slog.Error("provider does not have OAuth2 options, not compatible with this script", "provider", provider)
+
+		os.Exit(1)
+	}
+
+	// Get the OAuth scopes from the flag.
+	clientId := registry.MustString("ClientId")
+	clientSecret := registry.MustString("ClientSecret")
+
+	scopes, err := registry.GetString("Scopes")
+	if err != nil {
+		slog.Warn("no scopes attached, ensure that the provider doesn't require scopes")
+	}
+
+	oauthScopes := strings.Split(scopes, ",")
+
+	switch providerInfo.OauthOpts.GrantType {
+	case providers.AuthorizationCode:
+		if providerInfo.OauthOpts.AuthURL == nil {
+			slog.Error("provider does not have an AuthURL, not compatible with this script", "provider", provider)
+
+			os.Exit(1)
+		}
+
+		// Determine the OAuth redirect URL.
+		redirect := fmt.Sprintf("%s://localhost:%d%s", *proto, *port, *callback)
+
+		state, err := registry.GetString("State")
+		if err != nil {
+			slog.Warn("no state attached, ensure that the provider doesn't require state")
+		}
+
+		// Create the OAuth app.
+		app := &OAuthApp{
+			GrantType: providers.AuthorizationCode,
+			Callback:  *callback,
+			Port:      *port,
+			Proto:     *proto,
+			SSLCert:   *SSLCert,
+			SSLKey:    *SSLKey,
+			Config: &oauth2.Config{
+				ClientID:     clientId,
+				ClientSecret: clientSecret,
+				RedirectURL:  redirect,
+				Scopes:       oauthScopes,
+			},
+		}
+		if state != "" {
+			app.State = state
+		}
+
+		// Set up the OAuth config based on the provider.
+		app.Config.Endpoint = oauth2.Endpoint{
+			AuthURL:   *providerInfo.OauthOpts.AuthURL,
+			TokenURL:  providerInfo.OauthOpts.TokenURL,
+			AuthStyle: oauth2.AuthStyleAutoDetect,
+		}
+
+		return app
+	case providers.ClientCredentials:
+		state, err := registry.GetString("State")
+		if err != nil {
+			slog.Warn("no state attached, ensure that the provider doesn't require state")
+		}
+
+		// Create the OAuth app.
+		app := &OAuthApp{
+			GrantType: providers.ClientCredentials,
+			ClientCredsConfig: &clientcredentials.Config{
+				ClientID:     clientId,
+				ClientSecret: clientSecret,
+				TokenURL:     providerInfo.OauthOpts.TokenURL,
+				Scopes:       oauthScopes,
+				AuthStyle:    oauth2.AuthStyleAutoDetect,
+			},
+		}
+		if state != "" {
+			app.State = state
+		}
+
+		if providerInfo.OauthOpts.Audience != nil {
+			aud := *providerInfo.OauthOpts.Audience
+			app.ClientCredsConfig.EndpointParams = url.Values{"audience": {aud}}
+		}
+
+		return app
+	default:
+		slog.Error("provider does not support authorization code or client credentials grant, not compatible with this script", "provider", provider)
+
+		os.Exit(1)
+	}
+
+	return nil
 }
 
 func main() {

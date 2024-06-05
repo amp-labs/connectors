@@ -81,7 +81,6 @@ components:
         validate: required
       required:
           - grantType
-          - authURL
           - tokenURL
           - explicitScopesRequired
           - explicitWorkspaceRequired
@@ -93,8 +92,6 @@ components:
         authURL:
           type: string
           example: https://login.salesforce.com/services/oauth2/authorize
-          x-oapi-codegen-extra-tags:
-            validate: required
         tokenURL:
           type: string
           example: https://login.salesforce.com/services/oauth2/token
@@ -106,6 +103,9 @@ components:
         explicitWorkspaceRequired:
           type: boolean
           example: true
+        audience:
+          type: string
+          example: https://api.mparticle.com
         tokenMetadataFields:
           $ref: '#/components/schemas/TokenMetadataFields'
 

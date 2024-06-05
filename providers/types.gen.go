@@ -42,12 +42,13 @@ type CatalogType map[string]ProviderInfo
 
 // OauthOpts defines model for OauthOpts.
 type OauthOpts struct {
-	AuthURL                   string              `json:"authURL" validate:"required"`
-	TokenURL                  string              `json:"tokenURL" validate:"required"`
+	Audience                  *string             `json:"audience,omitempty"`
+	AuthURL                   *string             `json:"authURL,omitempty"`
 	ExplicitScopesRequired    bool                `json:"explicitScopesRequired"`
 	ExplicitWorkspaceRequired bool                `json:"explicitWorkspaceRequired"`
 	GrantType                 OauthOptsGrantType  `json:"grantType"`
 	TokenMetadataFields       TokenMetadataFields `json:"tokenMetadataFields"`
+	TokenURL                  string              `json:"tokenURL" validate:"required"`
 }
 
 // OauthOptsGrantType defines model for OauthOpts.GrantType.

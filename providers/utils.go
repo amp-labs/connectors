@@ -374,6 +374,10 @@ func createApiKeyHTTPClient( //nolint:ireturn
 	return c, nil
 }
 
+func pointerFor[T any](value T) *T {
+	return &value
+}
+
 // clone uses gob to deep copy objects.
 func clone[T any](input T) (T, error) { // nolint:ireturn
 	var buf bytes.Buffer
