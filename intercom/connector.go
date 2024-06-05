@@ -12,6 +12,11 @@ import (
 
 const apiVersion = "2.11"
 
+var apiVersionHeader = common.Header{ // nolint:gochecknoglobals
+	Key:   "Intercom-Version",
+	Value: apiVersion,
+}
+
 type Connector struct {
 	BaseURL string
 	Client  *common.JSONHTTPClient
