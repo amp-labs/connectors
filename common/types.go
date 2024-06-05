@@ -83,7 +83,7 @@ var (
 	// ErrMetadataLoadFailure is returned when files that contain metadata for a connector cannot be loaded.
 	ErrMetadataLoadFailure = errors.New("cannot load metadata")
 
-	// ErrEmptyResponse is returned when the jsonResponse is nil.
+	// ErrEmptyJSONHTTPResponse is returned when the JSONHTTPResponse is nil.
 	ErrEmptyJSONHTTPResponse = errors.New("empty json http response")
 )
 
