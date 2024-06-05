@@ -434,12 +434,19 @@ func getProviderConfig(provider string, substitutions map[string]string) *provid
 }
 
 func configureOAuthClientCredentials(clientId, clientSecret string, scopes []string, providerInfo *providers.ProviderInfo) *clientcredentials.Config {
-	return &clientcredentials.Config{
+	cfg := &clientcredentials.Config{
 		ClientID:     clientId,
 		ClientSecret: clientSecret,
 		Scopes:       scopes,
 		TokenURL:     providerInfo.OauthOpts.TokenURL,
 	}
+
+	if providerInfo.OauthOpts.Audience != nil {
+		aud := *providerInfo.OauthOpts.Audience
+		cfg.EndpointParams = url.Values{"audience": {aud}}
+	}
+
+	return cfg
 }
 
 func configureOAuthAuthCode(clientId, clientSecret string, scopes []string, providerInfo *providers.ProviderInfo) *oauth2.Config {
