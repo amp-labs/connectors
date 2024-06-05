@@ -7,9 +7,8 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/amp-labs/connectors/gong"
-
 	"github.com/amp-labs/connectors"
+	"github.com/amp-labs/connectors/gong"
 	"github.com/amp-labs/connectors/utils"
 	"github.com/joho/godotenv"
 )
@@ -19,7 +18,6 @@ const (
 )
 
 func GetGongConnector(ctx context.Context, filePath string) *gong.Connector {
-
 	registry := utils.NewCredentialsRegistry()
 
 	readers := []utils.Reader{
@@ -73,7 +71,6 @@ func main() {
 }
 
 func mainFn() int {
-
 	handler := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
 		Level: slog.LevelDebug,
 	})

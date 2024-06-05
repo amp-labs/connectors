@@ -20,7 +20,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	if len(config.NextPage) != 0 { //not the first page, add a cursor
+	if len(config.NextPage) != 0 { // not the first page, add a cursor
 		fullURL = fullURL + "?cursor=" + config.NextPage.String()
 	}
 
@@ -37,10 +37,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		func(node *ajson.Node) ([]map[string]interface{}, error) {
 			return getRecords(node, config.ObjectName)
 		},
-		func(node *ajson.Node) (string, error) {
-			return getNextRecordsURL(node)
-		},
-
+		getNextRecordsURL,
 		getMarshaledData,
 		fields,
 	)
