@@ -5,6 +5,7 @@ package providers
 // ================================================================================
 
 const (
+	AcuityScheduling        Provider = "acuityScheduling"
 	Airtable                Provider = "airtable"
 	AWeber                  Provider = "aWeber"
 	Asana                   Provider = "asana"
@@ -1987,6 +1988,31 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
 			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// AcuityScheduling Configuration
+	AcuityScheduling: {
+		AuthType: Oauth2,
+		BaseURL:  "https://acuityscheduling.com",
+		OauthOpts: &OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://acuityscheduling.com/oauth2/authorize",
+			TokenURL:                  "https://acuityscheduling.com/oauth2/token",
+			ExplicitScopesRequired:    true,
+      ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
