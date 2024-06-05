@@ -16,6 +16,12 @@ import (
 	"github.com/go-test/deep"
 )
 
+var testApiVersionHeader = http.Header{} // nolint:gochecknoglobals
+
+func init() {
+	testApiVersionHeader.Add("Intercom-Version", "2.11")
+}
+
 func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
@@ -91,6 +97,22 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Data: []common.ReadResultRow{},
 				Done: true,
 			},
+			expectedErrs: nil,
+		},
+		{
+			name: "API version header is passed as server request",
+			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("Content-Type", "application/json")
+				mockutils.RespondToHeader(w, r, testApiVersionHeader, func() {
+					w.WriteHeader(http.StatusOK)
+					_, _ = w.Write(responseNotesSecondPage)
+				})
+			})),
+			comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
+				// response doesn't matter much, as soon as we don't have errors we are good
+				return actual.Done == expected.Done
+			},
+			expected:     &common.ReadResult{Done: true},
 			expectedErrs: nil,
 		},
 		{
