@@ -184,6 +184,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://accounts.salesloft.com/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
+			GrantType:                 AuthorizationCode,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
 			},
@@ -211,6 +212,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://api.outreach.io/oauth/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
+			GrantType:                 AuthorizationCode,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
 			},
@@ -562,6 +564,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://app.asana.com/-/oauth_token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
+			GrantType:                 AuthorizationCode,
 			TokenMetadataFields: TokenMetadataFields{
 				ConsumerRefField: "data.id",
 			},
@@ -618,6 +621,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://api.notion.com/v1/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
+			GrantType:                 AuthorizationCode,
 			TokenMetadataFields: TokenMetadataFields{
 				ConsumerRefField:  "owner.user.id",
 				WorkspaceRefField: "workspace_id",
@@ -646,6 +650,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://app.gong.io/oauth2/generate-customer-token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
+			GrantType:                 AuthorizationCode,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
 			},
@@ -673,6 +678,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://zoom.us/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
+			GrantType:                 AuthorizationCode,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
 			},
@@ -700,6 +706,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://api.intercom.io/auth/eagle/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
+			GrantType:                 AuthorizationCode,
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -724,6 +731,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://account.docusign.com/oauth/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
+			GrantType:                 AuthorizationCode,
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -802,6 +810,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://api.createsend.com/oauth/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
+			GrantType:                 AuthorizationCode,
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -826,6 +835,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://api.getresponse.com/v3/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
+			GrantType:                 AuthorizationCode,
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -850,6 +860,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://auth.aweber.com/oauth2/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
+			GrantType:                 AuthorizationCode,
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -928,6 +939,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://login.microsoftonline.com/{{.workspace}}/oauth2/v2.0/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: true,
+			GrantType:                 AuthorizationCode,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
 			},
@@ -955,6 +967,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://{{.workspace}}.gainsightcloud.com/v1/users/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: true,
+			GrantType:                 AuthorizationCode,
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -1055,6 +1068,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://public-api.wordpress.com/oauth2/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
+			GrantType:                 AuthorizationCode,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
 			},
