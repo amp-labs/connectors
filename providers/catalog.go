@@ -6,11 +6,14 @@ package providers
 
 const (
 	AcuityScheduling        Provider = "acuityScheduling"
+	Aha                     Provider = "aha"
+	Aircall                 Provider = "aircall"
 	Airtable                Provider = "airtable"
-	AWeber                  Provider = "aWeber"
 	Asana                   Provider = "asana"
 	Atlassian               Provider = "atlassian"
 	Attio                   Provider = "attio"
+	AWeber                  Provider = "aWeber"
+	Basecamp                Provider = "basecamp"
 	Box                     Provider = "box"
 	Calendly                Provider = "calendly"
 	CampaignMonitor         Provider = "campaignMonitor"
@@ -22,27 +25,32 @@ const (
 	Discord                 Provider = "discord"
 	Docusign                Provider = "docusign"
 	DocusignDeveloper       Provider = "docusignDeveloper"
+	Drift                   Provider = "drift"
 	Dropbox                 Provider = "dropbox"
 	DropboxSign             Provider = "dropboxSign"
+	DynamicsBusinessCentral Provider = "dynamicsBusinessCentral"
+	DynamicsCRM             Provider = "dynamicsCRM"
 	Facebook                Provider = "facebook"
 	Figma                   Provider = "figma"
+	Formstack               Provider = "formstack"
 	Gainsight               Provider = "gainsight"
 	GetResponse             Provider = "getResponse"
+	Github                  Provider = "github"
 	Gmail                   Provider = "gmail"
 	Gong                    Provider = "gong"
-	IroncladDemo            Provider = "ironcladDemo"
-	IroncladEU              Provider = "ironcladEU"
-	Ironclad                Provider = "ironclad"
 	Google                  Provider = "google"
 	GoogleContacts          Provider = "googleContacts"
 	HelpScoutMailbox        Provider = "helpScoutMailbox"
 	Hubspot                 Provider = "hubspot"
+	Instagram               Provider = "instagram"
 	Intercom                Provider = "intercom"
+	Ironclad                Provider = "ironclad"
+	IroncladDemo            Provider = "ironcladDemo"
+	IroncladEU              Provider = "ironcladEU"
 	Keap                    Provider = "keap"
 	Klaviyo                 Provider = "klaviyo"
 	LinkedIn                Provider = "linkedIn"
-	DynamicsBusinessCentral Provider = "dynamicsBusinessCentral"
-	DynamicsCRM             Provider = "dynamicsCRM"
+	Microsoft               Provider = "microsoft"
 	Miro                    Provider = "miro"
 	Mock                    Provider = "mock"
 	Monday                  Provider = "monday"
@@ -54,10 +62,13 @@ const (
 	RingCentral             Provider = "ringCentral"
 	Salesforce              Provider = "salesforce"
 	Salesloft               Provider = "salesloft"
+	Seismic                 Provider = "seismic"
 	Sellsy                  Provider = "sellsy"
 	ServiceNow              Provider = "serviceNow"
+	SharePoint              Provider = "sharePoint"
 	Slack                   Provider = "slack"
 	Smartsheet              Provider = "smartsheet"
+	SnapchatAds             Provider = "snapchatAds"
 	StackExchange           Provider = "stackExchange"
 	TeamleaderCRM           Provider = "teamleaderCRM"
 	Timely                  Provider = "timely"
@@ -70,16 +81,6 @@ const (
 	ZohoCRM                 Provider = "zohoCRM"
 	Zoom                    Provider = "zoom"
 	Zuora                   Provider = "zuora"
-	Aircall                 Provider = "aircall"
-	Drift                   Provider = "drift"
-	Microsoft               Provider = "microsoft"
-	Formstack               Provider = "formstack"
-	Aha                     Provider = "aha"
-	SnapchatAds             Provider = "snapchatAds"
-	Instagram               Provider = "instagram"
-	Seismic                 Provider = "seismic"
-	Github                  Provider = "github"
-	Basecamp                Provider = "basecamp"
 )
 
 // ================================================================================
@@ -1872,6 +1873,34 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
+	SharePoint: {
+		AuthType: Oauth2,
+		BaseURL:  "https://{{.workspace}}.sharepoint.com/_api",
+		OauthOpts: &OauthOpts{
+			GrantType:              AuthorizationCode,
+			AuthURL:                "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+			TokenURL:               "https://login.microsoftonline.com/common/oauth2/v2.0/token",
+			ExplicitScopesRequired: true,
+			// TODO: Switch to post-auth metadata collection
+			ExplicitWorkspaceRequired: true,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     true,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
 	// Instagram Configuration
 	// TODO: Supports only short-lived tokens
 	Instagram: {
@@ -2012,7 +2041,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			AuthURL:                   "https://acuityscheduling.com/oauth2/authorize",
 			TokenURL:                  "https://acuityscheduling.com/oauth2/token",
 			ExplicitScopesRequired:    true,
-      ExplicitWorkspaceRequired: false,
+			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
