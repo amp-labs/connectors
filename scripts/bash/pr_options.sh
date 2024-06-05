@@ -10,7 +10,7 @@ pr_template() {
   USER_NAME=$(git config user.name)
   URL=$(git config --get remote.origin.url)
   REPO_NAME=$(basename -s .git "$URL") # your repo name, can be fork name
-  ORGANISATION="$(echo "$URL" | sed -r 's/(.+):(.+)\/([^.]+)(\.git)?/\2/')"
+  ORGANIZATION="$(echo "$URL" | sed -r 's/(.+):(.+)\/([^.]+)(\.git)?/\2/')"
 
   echo "PR templates"
   # For every template markdown file construct a URL
@@ -18,7 +18,7 @@ pr_template() {
   do
     TEMPLATE=$(basename "$FILE_NAME")
     # Construct URL for comparing branch against main origin
-    PR_URL="https://github.com/amp-labs/connectors/compare/${TARGET_BRANCH}...${ORGANISATION}:${REPO_NAME}:${SOURCE_BRANCH}?template=${TEMPLATE}"
+    PR_URL="https://github.com/amp-labs/connectors/compare/${TARGET_BRANCH}...${ORGANIZATION}:${REPO_NAME}:${SOURCE_BRANCH}?template=${TEMPLATE}"
     PR_FORK_URL="https://github.com/amp-labs/connectors/compare/${TARGET_BRANCH}...${USER_NAME}:${REPO_NAME}:${SOURCE_BRANCH}?template=${TEMPLATE}"
 
     # Display 3 columns with ident, where first column is min 40 chars
