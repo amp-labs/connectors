@@ -85,6 +85,22 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			expectedErrs: nil,
 		},
 		{
+			name:  "API version header is passed as server request on POST",
+			input: common.WriteParams{ObjectName: "articles"},
+			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("Content-Type", "application/json")
+				mockutils.RespondToHeader(w, r, testApiVersionHeader, func() {
+					w.WriteHeader(http.StatusOK)
+					_, _ = w.Write(createArticle)
+				})
+			})),
+			comparator: func(actual, expected *common.WriteResult) bool {
+				return actual.Success == expected.Success
+			},
+			expected:     &common.WriteResult{Success: true},
+			expectedErrs: nil,
+		},
+		{
 			name:  "Valid creation of an article",
 			input: common.WriteParams{ObjectName: "articles"},
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

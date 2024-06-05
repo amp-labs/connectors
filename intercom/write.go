@@ -30,7 +30,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		url.AddPath(config.RecordId)
 	}
 
-	res, err := write(ctx, url.String(), config.RecordData)
+	res, err := write(ctx, url.String(), config.RecordData, apiVersionHeader)
 	if err != nil {
 		return nil, err
 	}
