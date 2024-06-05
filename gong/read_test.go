@@ -117,7 +117,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		},
 
 		{
-			name:  "Succesful read with 2 entries and cursor for next page",
+			name:  "Successful read with 2 entries and cursor for next page",
 			input: common.ReadParams{ObjectName: "calls"},
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
