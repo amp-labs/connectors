@@ -879,7 +879,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	DynamicsCRM: {
 		DisplayName: "Microsoft Dynamics CRM",
 		AuthType:    Oauth2,
-		BaseURL:     "https://{{.workspace}}.api.crm.dynamics.com",
+		BaseURL:     "https://{{.workspace}}.api.crm.dynamics.com/api/data",
 		OauthOpts: &OauthOpts{
 			GrantType:              AuthorizationCode,
 			AuthURL:                "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
