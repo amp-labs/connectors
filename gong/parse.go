@@ -28,9 +28,7 @@ func getNextRecordsURL(node *ajson.Node) (string, error) {
 
 // getRecords returns the records from the response.
 func getRecords(node *ajson.Node, objectName string) ([]map[string]interface{}, error) {
-
 	records, err := node.GetKey(objectName)
-
 	if err != nil {
 		return nil, ErrNotArray
 	}
