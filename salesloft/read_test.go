@@ -99,7 +99,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				return actual.NextPage.String() == expectedNextPage // nolint:nlreturn
 			},
 			expected: &common.ReadResult{
-				NextPage: "{{testServerURL}}?page=2&per_page=100",
+				NextPage: "{{testServerURL}}/v2?page=2&per_page=100",
 			},
 			expectedErrs: nil,
 		},
