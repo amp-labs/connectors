@@ -47,7 +47,6 @@ func GetSalesloftConnector(ctx context.Context, filePath string) *salesloft.Conn
 
 	conn, err := connectors.Salesloft(
 		salesloft.WithClient(ctx, http.DefaultClient, cfg, tok),
-		salesloft.WithModule(salesloft.DefaultModuleCRM),
 	)
 	if err != nil {
 		testUtils.Fail("error creating Salesloft connector", "error", err)
