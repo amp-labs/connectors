@@ -48,7 +48,6 @@ func GetMSDynamics365CRMConnector(ctx context.Context, filePath string) *dynamic
 	conn, err := connectors.DynamicsCRM(
 		dynamicscrm.WithClient(ctx, http.DefaultClient, cfg, tok),
 		dynamicscrm.WithWorkspace(utils.MSDynamics365CRMWorkspace),
-		dynamicscrm.WithModule(dynamicscrm.DataModule),
 	)
 	if err != nil {
 		testUtils.Fail("error creating microsoft CRM connector", "error", err)
