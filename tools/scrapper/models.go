@@ -1,6 +1,7 @@
 package scrapper
 
 import (
+	"sort"
 	"strings"
 )
 
@@ -46,6 +47,12 @@ func (r *ModelURLRegistry) Add(displayName, url string) {
 		DisplayName: displayName,
 		Name:        name,
 		URL:         url,
+	})
+}
+
+func (r *ModelURLRegistry) Sort() {
+	sort.Slice(r.ModelDocs, func(i, j int) bool {
+		return r.ModelDocs[i].Name < r.ModelDocs[j].Name
 	})
 }
 
