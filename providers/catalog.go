@@ -2102,7 +2102,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	SurveyMonkey: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.surveymonkey.com",
-		OauthOpts: OauthOpts{
+		OauthOpts: &OauthOpts{
 			AuthURL:                   "https://api.surveymonkey.com/oauth/authorize",
 			TokenURL:                  "https://api.surveymonkey.com/oauth/token",
 			ExplicitScopesRequired:    false,
