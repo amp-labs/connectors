@@ -314,7 +314,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
-	// Wrikle configuration
+	// Wrike configuration
 	Wrike: {
 		AuthType: Oauth2,
 		BaseURL:  "https://www.wrike.com/api",
