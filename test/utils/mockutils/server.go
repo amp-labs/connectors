@@ -59,5 +59,6 @@ func headerIsSubset(superset, subset http.Header) (string, bool) {
 			}
 		}
 	}
+
 	return "", true
 }

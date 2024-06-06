@@ -1,6 +1,6 @@
 {
   "data": {
-    "account-stages": {
+    "account_stages": {
       "displayName": "List account stages",
       "fields": {
         "active": "active",
@@ -11,7 +11,7 @@
         "updated_at": "updated_at"
       }
     },
-    "account-tiers": {
+    "account_tiers": {
       "displayName": "List Account Tiers",
       "fields": {
         "created_at": "created_at",
@@ -66,7 +66,7 @@
         "website": "website"
       }
     },
-    "action-details-call-instructions": {
+    "action_details_call_instructions": {
       "displayName": "List call instructions",
       "fields": {
         "created_at": "created_at",
@@ -94,7 +94,7 @@
         "user": "user"
       }
     },
-    "activities-calls": {
+    "activities_calls": {
       "displayName": "List calls",
       "fields": {
         "action": "action",
@@ -115,7 +115,7 @@
         "user": "user"
       }
     },
-    "activities-emails": {
+    "activities_emails": {
       "displayName": "List emails",
       "fields": {
         "action": "action",
@@ -127,6 +127,7 @@
         "counts": "counts",
         "created_at": "created_at",
         "crm_activity": "crm_activity",
+        "draft_with_ai": "draft_with_ai",
         "email_template": "email_template",
         "error_message": "error_message",
         "headers": "headers",
@@ -146,7 +147,7 @@
         "view_tracking": "view_tracking"
       }
     },
-    "activity-histories": {
+    "activity_histories": {
       "displayName": "List Past Activities",
       "fields": {
         "created_at": "created_at",
@@ -164,7 +165,7 @@
         "user_guid": "user_guid"
       }
     },
-    "bulk-jobs": {
+    "bulk_jobs": {
       "displayName": "List bulk jobs",
       "fields": {
         "created_at": "created_at",
@@ -183,7 +184,7 @@
         "updated_at": "updated_at"
       }
     },
-    "bulk-jobs-job-data": {
+    "bulk_jobs_job_data": {
       "displayName": "List job data for a bulk job",
       "fields": {
         "error": "error",
@@ -193,7 +194,7 @@
         "status": "status"
       }
     },
-    "bulk-jobs-results": {
+    "bulk_jobs_results": {
       "displayName": "List job data for a completed bulk job.",
       "fields": {
         "error": "error",
@@ -203,7 +204,7 @@
         "status": "status"
       }
     },
-    "cadence-memberships": {
+    "cadence_memberships": {
       "displayName": "List cadence memberships",
       "fields": {
         "added_at": "added_at",
@@ -252,7 +253,7 @@
         "updated_at": "updated_at"
       }
     },
-    "calendar-events": {
+    "calendar_events": {
       "displayName": "List calendar events",
       "fields": {
         "all_day": "all_day",
@@ -285,7 +286,7 @@
         "user_guid": "user_guid"
       }
     },
-    "call-data-records": {
+    "call_data_records": {
       "displayName": "List call data records",
       "fields": {
         "call": "call",
@@ -307,7 +308,7 @@
         "user": "user"
       }
     },
-    "call-dispositions": {
+    "call_dispositions": {
       "displayName": "List call dispositions",
       "fields": {
         "created_at": "created_at",
@@ -316,7 +317,7 @@
         "updated_at": "updated_at"
       }
     },
-    "call-sentiments": {
+    "call_sentiments": {
       "displayName": "List call sentiments",
       "fields": {
         "created_at": "created_at",
@@ -325,7 +326,7 @@
         "updated_at": "updated_at"
       }
     },
-    "crm-activities": {
+    "crm_activities": {
       "displayName": "List crm activities",
       "fields": {
         "activity_type": "activity_type",
@@ -341,7 +342,7 @@
         "user": "user"
       }
     },
-    "crm-activity-fields": {
+    "crm_activity_fields": {
       "displayName": "List crm activity fields",
       "fields": {
         "created_at": "created_at",
@@ -357,7 +358,7 @@
         "value": "value"
       }
     },
-    "crm-users": {
+    "crm_users": {
       "displayName": "List crm users",
       "fields": {
         "created_at": "created_at",
@@ -370,7 +371,7 @@
         "user": "user"
       }
     },
-    "custom-fields": {
+    "custom_fields": {
       "displayName": "List custom fields",
       "fields": {
         "created_at": "created_at",
@@ -381,14 +382,14 @@
         "value_type": "value_type"
       }
     },
-    "custom-roles": {
+    "custom_roles": {
       "displayName": "List custom roles",
       "fields": {
         "id": "id",
         "name": "name"
       }
     },
-    "data-control-requests": {
+    "data_control_requests": {
       "displayName": "Retrieve a list of Requests",
       "fields": {
         "dry_run": "dry_run",
@@ -400,7 +401,7 @@
         "user_guid": "user_guid"
       }
     },
-    "email-template-attachments": {
+    "email_template_attachments": {
       "displayName": "List email template attachments",
       "fields": {
         "attachment_content_type": "attachment_content_type",
@@ -414,7 +415,7 @@
         "scanned": "scanned"
       }
     },
-    "email-templates": {
+    "email_templates": {
       "displayName": "List email templates",
       "fields": {
         "_links": "_links",
@@ -461,7 +462,7 @@
         "user_id": "user_id"
       }
     },
-    "integrations-signals-registrations": {
+    "integrations_signals_registrations": {
       "displayName": "List Signal Registrations",
       "fields": {
         "attribution": "attribution",
@@ -477,7 +478,7 @@
         "type": "type"
       }
     },
-    "integrations-signals-registrations-plays": {
+    "integrations_signals_registrations_plays": {
       "displayName": "List Play Registrations",
       "fields": {
         "attributes": "attributes",
@@ -522,6 +523,7 @@
         "last_name": "last_name",
         "local_dial_enabled": "local_dial_enabled",
         "locale_utc_offset": "locale_utc_offset",
+        "manager_user_guid": "manager_user_guid",
         "name": "name",
         "phone_client": "phone_client",
         "phone_number_assignment": "phone_number_assignment",
@@ -597,7 +599,7 @@
         "user": "user"
       }
     },
-    "pending-emails": {
+    "pending_emails": {
       "displayName": "List pending emails",
       "fields": {
         "id": "id",
@@ -667,7 +669,7 @@
         "work_state": "work_state"
       }
     },
-    "person-stages": {
+    "person_stages": {
       "displayName": "List person stages",
       "fields": {
         "active": "active",
@@ -678,7 +680,7 @@
         "updated_at": "updated_at"
       }
     },
-    "phone-number-assignments": {
+    "phone_number_assignments": {
       "displayName": "List phone number assignments",
       "fields": {
         "id": "id",
@@ -686,7 +688,7 @@
         "user": "user"
       }
     },
-    "phone-numbers-caller-ids": {
+    "phone_numbers_caller_ids": {
       "displayName": "List caller ids",
       "fields": {
         "account_name": "account_name",
@@ -695,7 +697,7 @@
         "title": "title"
       }
     },
-    "saved-list-views": {
+    "saved_list_views": {
       "displayName": "List saved list views",
       "fields": {
         "id": "id",
@@ -769,13 +771,14 @@
         "user": "user"
       }
     },
-    "tasks-counts": {
+    "tasks_counts": {
       "displayName": "Fetch task counts",
       "fields": {
         "call": "call",
         "email": "email",
         "general": "general",
         "integration": "integration",
+        "other": "other",
         "total": "total"
       }
     },
@@ -803,7 +806,7 @@
         "updated_at": "updated_at"
       }
     },
-    "team-template-attachments": {
+    "team_template_attachments": {
       "displayName": "List team template attachments",
       "fields": {
         "attachment_file_size": "attachment_file_size",
@@ -814,7 +817,7 @@
         "team_template": "team_template"
       }
     },
-    "team-templates": {
+    "team_templates": {
       "displayName": "List team templates",
       "fields": {
         "_links": "_links",
@@ -860,6 +863,7 @@
         "last_name": "last_name",
         "local_dial_enabled": "local_dial_enabled",
         "locale_utc_offset": "locale_utc_offset",
+        "manager_user_guid": "manager_user_guid",
         "name": "name",
         "phone_client": "phone_client",
         "phone_number_assignment": "phone_number_assignment",
@@ -874,7 +878,7 @@
         "work_country": "work_country"
       }
     },
-    "webhook-subscriptions": {
+    "webhook_subscriptions": {
       "displayName": "List webhook subscriptions",
       "fields": {
         "callback_token": "callback_token",

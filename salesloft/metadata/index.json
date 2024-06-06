@@ -261,16 +261,6 @@
       "url": "https://developers.salesloft.com/docs/api/crm-users-index"
     },
     {
-      "name": "custom-fields-index",
-      "displayName": "List custom fields",
-      "url": "https://developers.salesloft.com/docs/api/custom-fields-index"
-    },
-    {
-      "name": "custom-fields-create",
-      "displayName": "Create a custom field",
-      "url": "https://developers.salesloft.com/docs/api/custom-fields-create"
-    },
-    {
       "name": "custom-fields-show",
       "displayName": "Fetch a custom field",
       "url": "https://developers.salesloft.com/docs/api/custom-fields-show"
@@ -279,6 +269,16 @@
       "name": "custom-fields-destroy",
       "displayName": "Delete a custom field",
       "url": "https://developers.salesloft.com/docs/api/custom-fields-destroy"
+    },
+    {
+      "name": "custom-fields-index",
+      "displayName": "List custom fields",
+      "url": "https://developers.salesloft.com/docs/api/custom-fields-index"
+    },
+    {
+      "name": "custom-fields-create",
+      "displayName": "Create a custom field",
+      "url": "https://developers.salesloft.com/docs/api/custom-fields-create"
     },
     {
       "name": "custom-roles-index",
@@ -646,16 +646,6 @@
       "url": "https://developers.salesloft.com/docs/api/tags-index"
     },
     {
-      "name": "tasks-create",
-      "displayName": "Create a Task",
-      "url": "https://developers.salesloft.com/docs/api/tasks-create"
-    },
-    {
-      "name": "tasks-index",
-      "displayName": "List tasks",
-      "url": "https://developers.salesloft.com/docs/api/tasks-index"
-    },
-    {
       "name": "tasks-show",
       "displayName": "Fetch a task",
       "url": "https://developers.salesloft.com/docs/api/tasks-show"
@@ -664,6 +654,16 @@
       "name": "tasks-update",
       "displayName": "Update a Task",
       "url": "https://developers.salesloft.com/docs/api/tasks-update"
+    },
+    {
+      "name": "tasks-create",
+      "displayName": "Create a Task",
+      "url": "https://developers.salesloft.com/docs/api/tasks-create"
+    },
+    {
+      "name": "tasks-index",
+      "displayName": "List tasks",
+      "url": "https://developers.salesloft.com/docs/api/tasks-index"
     },
     {
       "name": "team-template-attachments-index",
