@@ -70,6 +70,7 @@ const (
 	Smartsheet              Provider = "smartsheet"
 	SnapchatAds             Provider = "snapchatAds"
 	StackExchange           Provider = "stackExchange"
+	SurveyMonkey            Provider = "surveyMonkey"
 	TeamleaderCRM           Provider = "teamleaderCRM"
 	Timely                  Provider = "timely"
 	Typeform                Provider = "typeform"
@@ -2082,6 +2083,31 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://launchpad.37signals.com/authorization/token?type=refresh",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// SurveyMonkey configuration file
+	SurveyMonkey: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.surveymonkey.com",
+		OauthOpts: &OauthOpts{
+			AuthURL:                   "https://api.surveymonkey.com/oauth/authorize",
+			TokenURL:                  "https://api.surveymonkey.com/oauth/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+			GrantType:                 AuthorizationCode,
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
