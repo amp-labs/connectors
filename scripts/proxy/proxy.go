@@ -441,8 +441,8 @@ func configureOAuthClientCredentials(clientId, clientSecret string, scopes []str
 		TokenURL:     providerInfo.OauthOpts.TokenURL,
 	}
 
-	if providerInfo.OauthOpts.Audience != nil {
-		aud := *providerInfo.OauthOpts.Audience
+	if providerInfo.OauthOpts.Audience != "" {
+		aud := providerInfo.OauthOpts.Audience
 		cfg.EndpointParams = url.Values{"audience": {aud}}
 	}
 
@@ -455,7 +455,7 @@ func configureOAuthAuthCode(clientId, clientSecret string, scopes []string, prov
 		ClientSecret: clientSecret,
 		Scopes:       scopes,
 		Endpoint: oauth2.Endpoint{
-			AuthURL:   *providerInfo.OauthOpts.AuthURL,
+			AuthURL:   providerInfo.OauthOpts.AuthURL,
 			TokenURL:  providerInfo.OauthOpts.TokenURL,
 			AuthStyle: oauth2.AuthStyleAutoDetect,
 		},
