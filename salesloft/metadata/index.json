@@ -1,21 +1,6 @@
 {
   "data": [
     {
-      "name": "me-index",
-      "displayName": "Fetch current user",
-      "url": "https://developers.salesloft.com/docs/api/me-index"
-    },
-    {
-      "name": "team-index",
-      "displayName": "Fetch current team",
-      "url": "https://developers.salesloft.com/docs/api/team-index"
-    },
-    {
-      "name": "data-control-account-redaction-create",
-      "displayName": "Execute an account redaction workflow",
-      "url": "https://developers.salesloft.com/docs/api/data-control-account-redaction-create"
-    },
-    {
       "name": "account-stages-index",
       "displayName": "List account stages",
       "url": "https://developers.salesloft.com/docs/api/account-stages-index"
@@ -41,19 +26,19 @@
       "url": "https://developers.salesloft.com/docs/api/account-upserts-create"
     },
     {
-      "name": "data-control-account-and-people-redaction-create",
-      "displayName": "Submit an account and people redaction  request",
-      "url": "https://developers.salesloft.com/docs/api/data-control-account-and-people-redaction-create"
+      "name": "accounts-create",
+      "displayName": "Create an account",
+      "url": "https://developers.salesloft.com/docs/api/accounts-create"
+    },
+    {
+      "name": "accounts-destroy",
+      "displayName": "Delete an account",
+      "url": "https://developers.salesloft.com/docs/api/accounts-destroy"
     },
     {
       "name": "accounts-index",
       "displayName": "List accounts",
       "url": "https://developers.salesloft.com/docs/api/accounts-index"
-    },
-    {
-      "name": "accounts-create",
-      "displayName": "Create an account",
-      "url": "https://developers.salesloft.com/docs/api/accounts-create"
     },
     {
       "name": "accounts-show",
@@ -66,9 +51,14 @@
       "url": "https://developers.salesloft.com/docs/api/accounts-update"
     },
     {
-      "name": "accounts-destroy",
-      "displayName": "Delete an account",
-      "url": "https://developers.salesloft.com/docs/api/accounts-destroy"
+      "name": "action-details-call-instructions-index",
+      "displayName": "List call instructions",
+      "url": "https://developers.salesloft.com/docs/api/action-details-call-instructions-index"
+    },
+    {
+      "name": "action-details-call-instructions-show",
+      "displayName": "Fetch a call instructions",
+      "url": "https://developers.salesloft.com/docs/api/action-details-call-instructions-show"
     },
     {
       "name": "actions-index",
@@ -81,24 +71,39 @@
       "url": "https://developers.salesloft.com/docs/api/actions-show"
     },
     {
+      "name": "activities-calls-create",
+      "displayName": "Create a call",
+      "url": "https://developers.salesloft.com/docs/api/activities-calls-create"
+    },
+    {
+      "name": "activities-calls-index",
+      "displayName": "List calls",
+      "url": "https://developers.salesloft.com/docs/api/activities-calls-index"
+    },
+    {
+      "name": "activities-calls-show",
+      "displayName": "Fetch a call",
+      "url": "https://developers.salesloft.com/docs/api/activities-calls-show"
+    },
+    {
       "name": "activities-create",
       "displayName": "Create an activity",
       "url": "https://developers.salesloft.com/docs/api/activities-create"
     },
     {
+      "name": "activities-emails-index",
+      "displayName": "List emails",
+      "url": "https://developers.salesloft.com/docs/api/activities-emails-index"
+    },
+    {
+      "name": "activities-emails-show",
+      "displayName": "Fetch an email",
+      "url": "https://developers.salesloft.com/docs/api/activities-emails-show"
+    },
+    {
       "name": "activity-histories-index",
       "displayName": "List Past Activities",
       "url": "https://developers.salesloft.com/docs/api/activity-histories-index"
-    },
-    {
-      "name": "bulk-jobs-update",
-      "displayName": "Update a bulk job",
-      "url": "https://developers.salesloft.com/docs/api/bulk-jobs-update"
-    },
-    {
-      "name": "bulk-jobs-show",
-      "displayName": "Fetch a bulk job",
-      "url": "https://developers.salesloft.com/docs/api/bulk-jobs-show"
     },
     {
       "name": "bulk-jobs-create",
@@ -126,6 +131,16 @@
       "url": "https://developers.salesloft.com/docs/api/bulk-jobs-results-index"
     },
     {
+      "name": "bulk-jobs-show",
+      "displayName": "Fetch a bulk job",
+      "url": "https://developers.salesloft.com/docs/api/bulk-jobs-show"
+    },
+    {
+      "name": "bulk-jobs-update",
+      "displayName": "Update a bulk job",
+      "url": "https://developers.salesloft.com/docs/api/bulk-jobs-update"
+    },
+    {
       "name": "bulk-reschedule-tasks-create",
       "displayName": "Reschedule many tasks at once",
       "url": "https://developers.salesloft.com/docs/api/bulk-reschedule-tasks-create"
@@ -141,24 +156,24 @@
       "url": "https://developers.salesloft.com/docs/api/cadence-imports-create"
     },
     {
-      "name": "cadence-memberships-index",
-      "displayName": "List cadence memberships",
-      "url": "https://developers.salesloft.com/docs/api/cadence-memberships-index"
-    },
-    {
       "name": "cadence-memberships-create",
       "displayName": "Create a cadence membership",
       "url": "https://developers.salesloft.com/docs/api/cadence-memberships-create"
     },
     {
-      "name": "cadence-memberships-show",
-      "displayName": "Fetch a cadence membership",
-      "url": "https://developers.salesloft.com/docs/api/cadence-memberships-show"
-    },
-    {
       "name": "cadence-memberships-destroy",
       "displayName": "Delete a cadence membership",
       "url": "https://developers.salesloft.com/docs/api/cadence-memberships-destroy"
+    },
+    {
+      "name": "cadence-memberships-index",
+      "displayName": "List cadence memberships",
+      "url": "https://developers.salesloft.com/docs/api/cadence-memberships-index"
+    },
+    {
+      "name": "cadence-memberships-show",
+      "displayName": "Fetch a cadence membership",
+      "url": "https://developers.salesloft.com/docs/api/cadence-memberships-show"
     },
     {
       "name": "cadences-index",
@@ -171,14 +186,14 @@
       "url": "https://developers.salesloft.com/docs/api/cadences-show"
     },
     {
-      "name": "calendar-events-upsert-create",
-      "displayName": "Upsert a calendar event",
-      "url": "https://developers.salesloft.com/docs/api/calendar-events-upsert-create"
-    },
-    {
       "name": "calendar-events-index",
       "displayName": "List calendar events",
       "url": "https://developers.salesloft.com/docs/api/calendar-events-index"
+    },
+    {
+      "name": "calendar-events-upsert-create",
+      "displayName": "Upsert a calendar event",
+      "url": "https://developers.salesloft.com/docs/api/calendar-events-upsert-create"
     },
     {
       "name": "call-data-records-index",
@@ -196,49 +211,14 @@
       "url": "https://developers.salesloft.com/docs/api/call-dispositions-index"
     },
     {
-      "name": "action-details-call-instructions-index",
-      "displayName": "List call instructions",
-      "url": "https://developers.salesloft.com/docs/api/action-details-call-instructions-index"
-    },
-    {
-      "name": "action-details-call-instructions-show",
-      "displayName": "Fetch a call instructions",
-      "url": "https://developers.salesloft.com/docs/api/action-details-call-instructions-show"
-    },
-    {
       "name": "call-sentiments-index",
       "displayName": "List call sentiments",
       "url": "https://developers.salesloft.com/docs/api/call-sentiments-index"
     },
     {
-      "name": "phone-numbers-caller-ids-index",
-      "displayName": "List caller ids",
-      "url": "https://developers.salesloft.com/docs/api/phone-numbers-caller-ids-index"
-    },
-    {
-      "name": "activities-calls-index",
-      "displayName": "List calls",
-      "url": "https://developers.salesloft.com/docs/api/activities-calls-index"
-    },
-    {
-      "name": "activities-calls-create",
-      "displayName": "Create a call",
-      "url": "https://developers.salesloft.com/docs/api/activities-calls-create"
-    },
-    {
-      "name": "activities-calls-show",
-      "displayName": "Fetch a call",
-      "url": "https://developers.salesloft.com/docs/api/activities-calls-show"
-    },
-    {
       "name": "create-conversations-call",
       "displayName": "Create Conversations Call",
       "url": "https://developers.salesloft.com/docs/api/create-conversations-call"
-    },
-    {
-      "name": "tasks-counts-index",
-      "displayName": "Fetch task counts",
-      "url": "https://developers.salesloft.com/docs/api/tasks-counts-index"
     },
     {
       "name": "crm-activities-index",
@@ -261,9 +241,9 @@
       "url": "https://developers.salesloft.com/docs/api/crm-users-index"
     },
     {
-      "name": "custom-fields-show",
-      "displayName": "Fetch a custom field",
-      "url": "https://developers.salesloft.com/docs/api/custom-fields-show"
+      "name": "custom-fields-create",
+      "displayName": "Create a custom field",
+      "url": "https://developers.salesloft.com/docs/api/custom-fields-create"
     },
     {
       "name": "custom-fields-destroy",
@@ -276,9 +256,9 @@
       "url": "https://developers.salesloft.com/docs/api/custom-fields-index"
     },
     {
-      "name": "custom-fields-create",
-      "displayName": "Create a custom field",
-      "url": "https://developers.salesloft.com/docs/api/custom-fields-create"
+      "name": "custom-fields-show",
+      "displayName": "Fetch a custom field",
+      "url": "https://developers.salesloft.com/docs/api/custom-fields-show"
     },
     {
       "name": "custom-roles-index",
@@ -289,6 +269,36 @@
       "name": "custom-roles-show",
       "displayName": "Fetch a custom role",
       "url": "https://developers.salesloft.com/docs/api/custom-roles-show"
+    },
+    {
+      "name": "data-control-account-and-people-redaction-create",
+      "displayName": "Submit an account and people redaction  request",
+      "url": "https://developers.salesloft.com/docs/api/data-control-account-and-people-redaction-create"
+    },
+    {
+      "name": "data-control-account-redaction-create",
+      "displayName": "Execute an account redaction workflow",
+      "url": "https://developers.salesloft.com/docs/api/data-control-account-redaction-create"
+    },
+    {
+      "name": "data-control-people-soft-deletion-create",
+      "displayName": "Submit a people soft deletion request",
+      "url": "https://developers.salesloft.com/docs/api/data-control-people-soft-deletion-create"
+    },
+    {
+      "name": "data-control-requests-index",
+      "displayName": "Retrieve a list of Requests",
+      "url": "https://developers.salesloft.com/docs/api/data-control-requests-index"
+    },
+    {
+      "name": "data-control-requests-show",
+      "displayName": "Fetch a Request record",
+      "url": "https://developers.salesloft.com/docs/api/data-control-requests-show"
+    },
+    {
+      "name": "data-control-right-to-be-forgotten-create",
+      "displayName": "Submit a right to be forgotten request",
+      "url": "https://developers.salesloft.com/docs/api/data-control-right-to-be-forgotten-create"
     },
     {
       "name": "email-missing-tags-create",
@@ -311,16 +321,6 @@
       "url": "https://developers.salesloft.com/docs/api/email-templates-show"
     },
     {
-      "name": "activities-emails-index",
-      "displayName": "List emails",
-      "url": "https://developers.salesloft.com/docs/api/activities-emails-index"
-    },
-    {
-      "name": "activities-emails-show",
-      "displayName": "Fetch an email",
-      "url": "https://developers.salesloft.com/docs/api/activities-emails-show"
-    },
-    {
       "name": "external-emails-create",
       "displayName": "Create an External Email",
       "url": "https://developers.salesloft.com/docs/api/external-emails-create"
@@ -329,6 +329,11 @@
       "name": "groups-create",
       "displayName": "Create a group",
       "url": "https://developers.salesloft.com/docs/api/groups-create"
+    },
+    {
+      "name": "groups-destroy",
+      "displayName": "Deletes a Group by ID",
+      "url": "https://developers.salesloft.com/docs/api/groups-destroy"
     },
     {
       "name": "groups-index",
@@ -346,19 +351,19 @@
       "url": "https://developers.salesloft.com/docs/api/groups-update"
     },
     {
-      "name": "groups-destroy",
-      "displayName": "Deletes a Group by ID",
-      "url": "https://developers.salesloft.com/docs/api/groups-destroy"
+      "name": "imports-create",
+      "displayName": "Create an import",
+      "url": "https://developers.salesloft.com/docs/api/imports-create"
+    },
+    {
+      "name": "imports-destroy",
+      "displayName": "Delete an import",
+      "url": "https://developers.salesloft.com/docs/api/imports-destroy"
     },
     {
       "name": "imports-index",
       "displayName": "List imports",
       "url": "https://developers.salesloft.com/docs/api/imports-index"
-    },
-    {
-      "name": "imports-create",
-      "displayName": "Create an import",
-      "url": "https://developers.salesloft.com/docs/api/imports-create"
     },
     {
       "name": "imports-show",
@@ -371,14 +376,54 @@
       "url": "https://developers.salesloft.com/docs/api/imports-update"
     },
     {
-      "name": "imports-destroy",
-      "displayName": "Delete an import",
-      "url": "https://developers.salesloft.com/docs/api/imports-destroy"
+      "name": "integrations-signals-registrations-create",
+      "displayName": "Create a Signal Registration",
+      "url": "https://developers.salesloft.com/docs/api/integrations-signals-registrations-create"
     },
     {
-      "name": "third-party-live-feed-items-create",
-      "displayName": "Create a live feed item",
-      "url": "https://developers.salesloft.com/docs/api/third-party-live-feed-items-create"
+      "name": "integrations-signals-registrations-destroy",
+      "displayName": "Deletes a Signal Registration",
+      "url": "https://developers.salesloft.com/docs/api/integrations-signals-registrations-destroy"
+    },
+    {
+      "name": "integrations-signals-registrations-index",
+      "displayName": "List Signal Registrations",
+      "url": "https://developers.salesloft.com/docs/api/integrations-signals-registrations-index"
+    },
+    {
+      "name": "integrations-signals-registrations-plays-create",
+      "displayName": "Create a Play Registration",
+      "url": "https://developers.salesloft.com/docs/api/integrations-signals-registrations-plays-create"
+    },
+    {
+      "name": "integrations-signals-registrations-plays-destroy",
+      "displayName": "Delete a Play Registration",
+      "url": "https://developers.salesloft.com/docs/api/integrations-signals-registrations-plays-destroy"
+    },
+    {
+      "name": "integrations-signals-registrations-plays-index",
+      "displayName": "List Play Registrations",
+      "url": "https://developers.salesloft.com/docs/api/integrations-signals-registrations-plays-index"
+    },
+    {
+      "name": "integrations-signals-registrations-plays-show",
+      "displayName": "Show a Play Registration",
+      "url": "https://developers.salesloft.com/docs/api/integrations-signals-registrations-plays-show"
+    },
+    {
+      "name": "integrations-signals-registrations-plays-update",
+      "displayName": "Update a Play Registration",
+      "url": "https://developers.salesloft.com/docs/api/integrations-signals-registrations-plays-update"
+    },
+    {
+      "name": "integrations-signals-registrations-show",
+      "displayName": "Fetch a Signal Registration",
+      "url": "https://developers.salesloft.com/docs/api/integrations-signals-registrations-show"
+    },
+    {
+      "name": "integrations-signals-registrations-update",
+      "displayName": "Update a Signal Registration",
+      "url": "https://developers.salesloft.com/docs/api/integrations-signals-registrations-update"
     },
     {
       "name": "live-website-tracking-parameters-create",
@@ -386,9 +431,29 @@
       "url": "https://developers.salesloft.com/docs/api/live-website-tracking-parameters-create"
     },
     {
+      "name": "me-index",
+      "displayName": "Fetch current user",
+      "url": "https://developers.salesloft.com/docs/api/me-index"
+    },
+    {
       "name": "meetings-index",
       "displayName": "List meetings",
       "url": "https://developers.salesloft.com/docs/api/meetings-index"
+    },
+    {
+      "name": "meetings-reschedule-links-show",
+      "displayName": "Fetch a reschedule meeting link",
+      "url": "https://developers.salesloft.com/docs/api/meetings-reschedule-links-show"
+    },
+    {
+      "name": "meetings-settings-searches-create",
+      "displayName": "List meeting settings",
+      "url": "https://developers.salesloft.com/docs/api/meetings-settings-searches-create"
+    },
+    {
+      "name": "meetings-settings-update",
+      "displayName": "Update a meeting setting",
+      "url": "https://developers.salesloft.com/docs/api/meetings-settings-update"
     },
     {
       "name": "meetings-update",
@@ -401,14 +466,19 @@
       "url": "https://developers.salesloft.com/docs/api/mime-email-payloads-show"
     },
     {
-      "name": "notes-index",
-      "displayName": "List notes",
-      "url": "https://developers.salesloft.com/docs/api/notes-index"
-    },
-    {
       "name": "notes-create",
       "displayName": "Create a note",
       "url": "https://developers.salesloft.com/docs/api/notes-create"
+    },
+    {
+      "name": "notes-destroy",
+      "displayName": "Delete a note",
+      "url": "https://developers.salesloft.com/docs/api/notes-destroy"
+    },
+    {
+      "name": "notes-index",
+      "displayName": "List notes",
+      "url": "https://developers.salesloft.com/docs/api/notes-index"
     },
     {
       "name": "notes-show",
@@ -419,11 +489,6 @@
       "name": "notes-update",
       "displayName": "Update a note",
       "url": "https://developers.salesloft.com/docs/api/notes-update"
-    },
-    {
-      "name": "notes-destroy",
-      "displayName": "Delete a note",
-      "url": "https://developers.salesloft.com/docs/api/notes-destroy"
     },
     {
       "name": "ongoing-actions-create",
@@ -441,14 +506,19 @@
       "url": "https://developers.salesloft.com/docs/api/pending-emails-update"
     },
     {
-      "name": "people-index",
-      "displayName": "List people",
-      "url": "https://developers.salesloft.com/docs/api/people-index"
-    },
-    {
       "name": "people-create",
       "displayName": "Create a person",
       "url": "https://developers.salesloft.com/docs/api/people-create"
+    },
+    {
+      "name": "people-destroy",
+      "displayName": "Delete a person",
+      "url": "https://developers.salesloft.com/docs/api/people-destroy"
+    },
+    {
+      "name": "people-index",
+      "displayName": "List people",
+      "url": "https://developers.salesloft.com/docs/api/people-index"
     },
     {
       "name": "people-show",
@@ -461,24 +531,19 @@
       "url": "https://developers.salesloft.com/docs/api/people-update"
     },
     {
-      "name": "people-destroy",
-      "displayName": "Delete a person",
-      "url": "https://developers.salesloft.com/docs/api/people-destroy"
+      "name": "person-stages-create",
+      "displayName": "Create a person stage",
+      "url": "https://developers.salesloft.com/docs/api/person-stages-create"
     },
     {
-      "name": "data-control-people-soft-deletion-create",
-      "displayName": "Submit a people soft deletion request",
-      "url": "https://developers.salesloft.com/docs/api/data-control-people-soft-deletion-create"
+      "name": "person-stages-destroy",
+      "displayName": "Delete an person stage",
+      "url": "https://developers.salesloft.com/docs/api/person-stages-destroy"
     },
     {
       "name": "person-stages-index",
       "displayName": "List person stages",
       "url": "https://developers.salesloft.com/docs/api/person-stages-index"
-    },
-    {
-      "name": "person-stages-create",
-      "displayName": "Create a person stage",
-      "url": "https://developers.salesloft.com/docs/api/person-stages-create"
     },
     {
       "name": "person-stages-show",
@@ -489,11 +554,6 @@
       "name": "person-stages-update",
       "displayName": "Update a person stage",
       "url": "https://developers.salesloft.com/docs/api/person-stages-update"
-    },
-    {
-      "name": "person-stages-destroy",
-      "displayName": "Delete an person stage",
-      "url": "https://developers.salesloft.com/docs/api/person-stages-destroy"
     },
     {
       "name": "person-upserts-create",
@@ -511,29 +571,9 @@
       "url": "https://developers.salesloft.com/docs/api/phone-number-assignments-show"
     },
     {
-      "name": "integrations-signals-registrations-plays-update",
-      "displayName": "Update a Play Registration",
-      "url": "https://developers.salesloft.com/docs/api/integrations-signals-registrations-plays-update"
-    },
-    {
-      "name": "integrations-signals-registrations-plays-show",
-      "displayName": "Show a Play Registration",
-      "url": "https://developers.salesloft.com/docs/api/integrations-signals-registrations-plays-show"
-    },
-    {
-      "name": "integrations-signals-registrations-plays-destroy",
-      "displayName": "Delete a Play Registration",
-      "url": "https://developers.salesloft.com/docs/api/integrations-signals-registrations-plays-destroy"
-    },
-    {
-      "name": "integrations-signals-registrations-plays-create",
-      "displayName": "Create a Play Registration",
-      "url": "https://developers.salesloft.com/docs/api/integrations-signals-registrations-plays-create"
-    },
-    {
-      "name": "integrations-signals-registrations-plays-index",
-      "displayName": "List Play Registrations",
-      "url": "https://developers.salesloft.com/docs/api/integrations-signals-registrations-plays-index"
+      "name": "phone-numbers-caller-ids-index",
+      "displayName": "List caller ids",
+      "url": "https://developers.salesloft.com/docs/api/phone-numbers-caller-ids-index"
     },
     {
       "name": "phone-numbers-recording-settings-show",
@@ -541,39 +581,9 @@
       "url": "https://developers.salesloft.com/docs/api/phone-numbers-recording-settings-show"
     },
     {
-      "name": "data-control-requests-show",
-      "displayName": "Fetch a Request record",
-      "url": "https://developers.salesloft.com/docs/api/data-control-requests-show"
-    },
-    {
-      "name": "data-control-requests-index",
-      "displayName": "Retrieve a list of Requests",
-      "url": "https://developers.salesloft.com/docs/api/data-control-requests-index"
-    },
-    {
-      "name": "meetings-reschedule-links-show",
-      "displayName": "Fetch a reschedule meeting link",
-      "url": "https://developers.salesloft.com/docs/api/meetings-reschedule-links-show"
-    },
-    {
-      "name": "data-control-right-to-be-forgotten-create",
-      "displayName": "Submit a right to be forgotten request",
-      "url": "https://developers.salesloft.com/docs/api/data-control-right-to-be-forgotten-create"
-    },
-    {
-      "name": "saved-list-views-index",
-      "displayName": "List saved list views",
-      "url": "https://developers.salesloft.com/docs/api/saved-list-views-index"
-    },
-    {
       "name": "saved-list-views-create",
       "displayName": "Create a saved list view",
       "url": "https://developers.salesloft.com/docs/api/saved-list-views-create"
-    },
-    {
-      "name": "saved-list-views-show",
-      "displayName": "Fetch a saved list view",
-      "url": "https://developers.salesloft.com/docs/api/saved-list-views-show"
     },
     {
       "name": "saved-list-views-destroy",
@@ -581,44 +591,19 @@
       "url": "https://developers.salesloft.com/docs/api/saved-list-views-destroy"
     },
     {
+      "name": "saved-list-views-index",
+      "displayName": "List saved list views",
+      "url": "https://developers.salesloft.com/docs/api/saved-list-views-index"
+    },
+    {
+      "name": "saved-list-views-show",
+      "displayName": "Fetch a saved list view",
+      "url": "https://developers.salesloft.com/docs/api/saved-list-views-show"
+    },
+    {
       "name": "saved-list-views-update",
       "displayName": "Update a saved list view",
       "url": "https://developers.salesloft.com/docs/api/saved-list-views-update"
-    },
-    {
-      "name": "meetings-settings-searches-create",
-      "displayName": "List meeting settings",
-      "url": "https://developers.salesloft.com/docs/api/meetings-settings-searches-create"
-    },
-    {
-      "name": "meetings-settings-update",
-      "displayName": "Update a meeting setting",
-      "url": "https://developers.salesloft.com/docs/api/meetings-settings-update"
-    },
-    {
-      "name": "integrations-signals-registrations-update",
-      "displayName": "Update a Signal Registration",
-      "url": "https://developers.salesloft.com/docs/api/integrations-signals-registrations-update"
-    },
-    {
-      "name": "integrations-signals-registrations-show",
-      "displayName": "Fetch a Signal Registration",
-      "url": "https://developers.salesloft.com/docs/api/integrations-signals-registrations-show"
-    },
-    {
-      "name": "integrations-signals-registrations-destroy",
-      "displayName": "Deletes a Signal Registration",
-      "url": "https://developers.salesloft.com/docs/api/integrations-signals-registrations-destroy"
-    },
-    {
-      "name": "integrations-signals-registrations-create",
-      "displayName": "Create a Signal Registration",
-      "url": "https://developers.salesloft.com/docs/api/integrations-signals-registrations-create"
-    },
-    {
-      "name": "integrations-signals-registrations-index",
-      "displayName": "List Signal Registrations",
-      "url": "https://developers.salesloft.com/docs/api/integrations-signals-registrations-index"
     },
     {
       "name": "signals-create",
@@ -646,14 +631,9 @@
       "url": "https://developers.salesloft.com/docs/api/tags-index"
     },
     {
-      "name": "tasks-show",
-      "displayName": "Fetch a task",
-      "url": "https://developers.salesloft.com/docs/api/tasks-show"
-    },
-    {
-      "name": "tasks-update",
-      "displayName": "Update a Task",
-      "url": "https://developers.salesloft.com/docs/api/tasks-update"
+      "name": "tasks-counts-index",
+      "displayName": "Fetch task counts",
+      "url": "https://developers.salesloft.com/docs/api/tasks-counts-index"
     },
     {
       "name": "tasks-create",
@@ -664,6 +644,21 @@
       "name": "tasks-index",
       "displayName": "List tasks",
       "url": "https://developers.salesloft.com/docs/api/tasks-index"
+    },
+    {
+      "name": "tasks-show",
+      "displayName": "Fetch a task",
+      "url": "https://developers.salesloft.com/docs/api/tasks-show"
+    },
+    {
+      "name": "tasks-update",
+      "displayName": "Update a Task",
+      "url": "https://developers.salesloft.com/docs/api/tasks-update"
+    },
+    {
+      "name": "team-index",
+      "displayName": "Fetch current team",
+      "url": "https://developers.salesloft.com/docs/api/team-index"
     },
     {
       "name": "team-template-attachments-index",
@@ -681,6 +676,11 @@
       "url": "https://developers.salesloft.com/docs/api/team-templates-show"
     },
     {
+      "name": "third-party-live-feed-items-create",
+      "displayName": "Create a live feed item",
+      "url": "https://developers.salesloft.com/docs/api/third-party-live-feed-items-create"
+    },
+    {
       "name": "users-index",
       "displayName": "List users",
       "url": "https://developers.salesloft.com/docs/api/users-index"
@@ -696,14 +696,9 @@
       "url": "https://developers.salesloft.com/docs/api/users-update"
     },
     {
-      "name": "webhook-subscriptions-update",
-      "displayName": "Update a webhook subscription",
-      "url": "https://developers.salesloft.com/docs/api/webhook-subscriptions-update"
-    },
-    {
-      "name": "webhook-subscriptions-show",
-      "displayName": "Fetch a webhook subscription",
-      "url": "https://developers.salesloft.com/docs/api/webhook-subscriptions-show"
+      "name": "webhook-subscriptions-create",
+      "displayName": "Create a webhook subscription",
+      "url": "https://developers.salesloft.com/docs/api/webhook-subscriptions-create"
     },
     {
       "name": "webhook-subscriptions-destroy",
@@ -711,14 +706,19 @@
       "url": "https://developers.salesloft.com/docs/api/webhook-subscriptions-destroy"
     },
     {
-      "name": "webhook-subscriptions-create",
-      "displayName": "Create a webhook subscription",
-      "url": "https://developers.salesloft.com/docs/api/webhook-subscriptions-create"
-    },
-    {
       "name": "webhook-subscriptions-index",
       "displayName": "List webhook subscriptions",
       "url": "https://developers.salesloft.com/docs/api/webhook-subscriptions-index"
+    },
+    {
+      "name": "webhook-subscriptions-show",
+      "displayName": "Fetch a webhook subscription",
+      "url": "https://developers.salesloft.com/docs/api/webhook-subscriptions-show"
+    },
+    {
+      "name": "webhook-subscriptions-update",
+      "displayName": "Update a webhook subscription",
+      "url": "https://developers.salesloft.com/docs/api/webhook-subscriptions-update"
     }
   ]
 }
