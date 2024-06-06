@@ -42,7 +42,8 @@ type CatalogType map[string]ProviderInfo
 
 // OauthOpts defines model for OauthOpts.
 type OauthOpts struct {
-	AuthURL                   *string             `json:"authURL,omitempty"`
+	Audience                  string              `json:"audience,omitempty"`
+	AuthURL                   string              `json:"authURL,omitempty"`
 	ExplicitScopesRequired    bool                `json:"explicitScopesRequired"`
 	ExplicitWorkspaceRequired bool                `json:"explicitWorkspaceRequired"`
 	GrantType                 OauthOptsGrantType  `json:"grantType"`

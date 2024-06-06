@@ -94,7 +94,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://{{.workspace}}.my.salesforce.com",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://{{.workspace}}.my.salesforce.com/services/oauth2/authorize"),
+			AuthURL:                   "https://{{.workspace}}.my.salesforce.com/services/oauth2/authorize",
 			TokenURL:                  "https://{{.workspace}}.my.salesforce.com/services/oauth2/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: true,
@@ -128,7 +128,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://api.hubapi.com",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://app.hubspot.com/oauth/authorize"),
+			AuthURL:                   "https://app.hubspot.com/oauth/authorize",
 			TokenURL:                  "https://api.hubapi.com/oauth/v1/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
@@ -153,7 +153,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://api.linkedin.com",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://www.linkedin.com/oauth/v2/authorization"),
+			AuthURL:                   "https://www.linkedin.com/oauth/v2/authorization",
 			TokenURL:                  "https://www.linkedin.com/oauth/v2/accessToken",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
@@ -180,7 +180,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://api.salesloft.com",
 		OauthOpts: &OauthOpts{
-			AuthURL:                   pointerFor("https://accounts.salesloft.com/oauth/authorize"),
+			AuthURL:                   "https://accounts.salesloft.com/oauth/authorize",
 			TokenURL:                  "https://accounts.salesloft.com/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
@@ -208,7 +208,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://api.outreach.io",
 		OauthOpts: &OauthOpts{
-			AuthURL:                   pointerFor("https://api.outreach.io/oauth/authorize"),
+			AuthURL:                   "https://api.outreach.io/oauth/authorize",
 			TokenURL:                  "https://api.outreach.io/oauth/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
@@ -241,7 +241,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://platform.ringcentral.com",
 		OauthOpts: &OauthOpts{
 			GrantType:                 PKCE,
-			AuthURL:                   pointerFor("https://platform.ringcentral.com/restapi/oauth/authorize"),
+			AuthURL:                   "https://platform.ringcentral.com/restapi/oauth/authorize",
 			TokenURL:                  "https://platform.ringcentral.com/restapi/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
@@ -270,7 +270,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://api.pipedrive.com",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://oauth.pipedrive.com/oauth/authorize"),
+			AuthURL:                   "https://oauth.pipedrive.com/oauth/authorize",
 			TokenURL:                  "https://oauth.pipedrive.com/oauth/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
@@ -295,7 +295,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://api.capsulecrm.com/api",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://api.capsulecrm.com/oauth/authorise"),
+			AuthURL:                   "https://api.capsulecrm.com/oauth/authorise",
 			TokenURL:                  "https://api.capsulecrm.com/oauth/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
@@ -320,7 +320,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://www.wrike.com/api",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://www.wrike.com/oauth2/authorize"),
+			AuthURL:                   "https://www.wrike.com/oauth2/authorize",
 			TokenURL:                  "https://www.wrike.com/oauth2/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
@@ -345,7 +345,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://api.copper.com/developer_api",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://app.copper.com/oauth/authorize"),
+			AuthURL:                   "https://app.copper.com/oauth/authorize",
 			TokenURL:                  "https://app.copper.com/oauth/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
@@ -371,7 +371,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:     "https://www.zohoapis.com",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://accounts.zoho.com/oauth/v2/auth"),
+			AuthURL:                   "https://accounts.zoho.com/oauth/v2/auth",
 			TokenURL:                  "https://accounts.zoho.com/oauth/v2/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
@@ -400,7 +400,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://api.mural.co/api",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://api.mural.co/oauth/authorize"),
+			AuthURL:                   "https://api.mural.co/oauth/authorize",
 			TokenURL:                  "https://api.mural.co/oauth/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
@@ -428,7 +428,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://a.klaviyo.com",
 		OauthOpts: &OauthOpts{
 			GrantType:                 PKCE,
-			AuthURL:                   pointerFor("https://www.klaviyo.com/oauth/authorize"),
+			AuthURL:                   "https://www.klaviyo.com/oauth/authorize",
 			TokenURL:                  "https://a.klaviyo.com/oauth/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
@@ -456,7 +456,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://api.sellsy.com",
 		OauthOpts: &OauthOpts{
 			GrantType:                 PKCE,
-			AuthURL:                   pointerFor("https://login.sellsy.com/oauth2/authorization"),
+			AuthURL:                   "https://login.sellsy.com/oauth2/authorization",
 			TokenURL:                  "https://login.sellsy.com/oauth2/access-tokens",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
@@ -481,7 +481,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://api.attio.com",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://app.attio.com/authorize"),
+			AuthURL:                   "https://app.attio.com/authorize",
 			TokenURL:                  "https://app.attio.com/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
@@ -506,7 +506,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://api.close.com/api",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://app.close.com/oauth2/authorize"),
+			AuthURL:                   "https://app.close.com/oauth2/authorize",
 			TokenURL:                  "https://api.close.com/oauth2/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
@@ -536,7 +536,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://accounts.infusionsoft.com/app/oauth/authorize"),
+			AuthURL:                   "https://accounts.infusionsoft.com/app/oauth/authorize",
 			TokenURL:                  "https://api.infusionsoft.com/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
@@ -560,7 +560,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://app.asana.com/api",
 		OauthOpts: &OauthOpts{
-			AuthURL:                   pointerFor("https://app.asana.com/-/oauth_authorize"),
+			AuthURL:                   "https://app.asana.com/-/oauth_authorize",
 			TokenURL:                  "https://app.asana.com/-/oauth_token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
@@ -589,7 +589,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://api.dropboxapi.com",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://www.dropbox.com/oauth2/authorize"),
+			AuthURL:                   "https://www.dropbox.com/oauth2/authorize",
 			TokenURL:                  "https://api.dropboxapi.com/oauth2/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
@@ -617,7 +617,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://api.notion.com",
 		OauthOpts: &OauthOpts{
-			AuthURL:                   pointerFor("https://api.notion.com/v1/oauth/authorize"),
+			AuthURL:                   "https://api.notion.com/v1/oauth/authorize",
 			TokenURL:                  "https://api.notion.com/v1/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
@@ -646,7 +646,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://api.gong.io",
 		OauthOpts: &OauthOpts{
-			AuthURL:                   pointerFor("https://app.gong.io/oauth2/authorize"),
+			AuthURL:                   "https://app.gong.io/oauth2/authorize",
 			TokenURL:                  "https://app.gong.io/oauth2/generate-customer-token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
@@ -674,7 +674,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://api.zoom.us",
 		OauthOpts: &OauthOpts{
-			AuthURL:                   pointerFor("https://zoom.us/oauth/authorize"),
+			AuthURL:                   "https://zoom.us/oauth/authorize",
 			TokenURL:                  "https://zoom.us/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
@@ -702,7 +702,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://api.intercom.io",
 		OauthOpts: &OauthOpts{
-			AuthURL:                   pointerFor("https://app.intercom.com/oauth"),
+			AuthURL:                   "https://app.intercom.com/oauth",
 			TokenURL:                  "https://api.intercom.io/auth/eagle/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
@@ -727,7 +727,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://{{.server}}.docusign.net",
 		OauthOpts: &OauthOpts{
-			AuthURL:                   pointerFor("https://account.docusign.com/oauth/auth"),
+			AuthURL:                   "https://account.docusign.com/oauth/auth",
 			TokenURL:                  "https://account.docusign.com/oauth/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
@@ -754,7 +754,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://demo.docusign.net",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://account-d.docusign.com/oauth/auth"),
+			AuthURL:                   "https://account-d.docusign.com/oauth/auth",
 			TokenURL:                  "https://account-d.docusign.com/oauth/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
@@ -782,7 +782,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://api.calendly.com",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://auth.calendly.com/oauth/authorize"),
+			AuthURL:                   "https://auth.calendly.com/oauth/authorize",
 			TokenURL:                  "https://auth.calendly.com/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
@@ -806,7 +806,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://api.createsend.com",
 		OauthOpts: &OauthOpts{
-			AuthURL:                   pointerFor("https://api.createsend.com/oauth"),
+			AuthURL:                   "https://api.createsend.com/oauth",
 			TokenURL:                  "https://api.createsend.com/oauth/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
@@ -831,7 +831,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://api.getresponse.com",
 		OauthOpts: &OauthOpts{
-			AuthURL:                   pointerFor("https://app.getresponse.com/oauth2_authorize.html"),
+			AuthURL:                   "https://app.getresponse.com/oauth2_authorize.html",
 			TokenURL:                  "https://api.getresponse.com/v3/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
@@ -856,7 +856,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://api.aweber.com",
 		OauthOpts: &OauthOpts{
-			AuthURL:                   pointerFor("https://auth.aweber.com/oauth2/authorize"),
+			AuthURL:                   "https://auth.aweber.com/oauth2/authorize",
 			TokenURL:                  "https://auth.aweber.com/oauth2/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
@@ -882,7 +882,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:     "https://{{.workspace}}.api.crm.dynamics.com/api/data",
 		OauthOpts: &OauthOpts{
 			GrantType:              AuthorizationCode,
-			AuthURL:                pointerFor("https://login.microsoftonline.com/common/oauth2/v2.0/authorize"),
+			AuthURL:                "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
 			TokenURL:               "https://login.microsoftonline.com/common/oauth2/v2.0/token",
 			ExplicitScopesRequired: true,
 			// TODO: flip this to false once we implement the ability to get workspace
@@ -910,7 +910,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:     "https://api.cc.email",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://authz.constantcontact.com/oauth2/default/v1/authorize"),
+			AuthURL:                   "https://authz.constantcontact.com/oauth2/default/v1/authorize",
 			TokenURL:                  "https://authz.constantcontact.com/oauth2/default/v1/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
@@ -935,7 +935,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType:    Oauth2,
 		BaseURL:     "https://api.businesscentral.dynamics.com",
 		OauthOpts: &OauthOpts{
-			AuthURL:                   pointerFor("https://login.microsoftonline.com/{{.workspace}}/oauth2/v2.0/authorize"),
+			AuthURL:                   "https://login.microsoftonline.com/{{.workspace}}/oauth2/v2.0/authorize",
 			TokenURL:                  "https://login.microsoftonline.com/{{.workspace}}/oauth2/v2.0/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: true,
@@ -963,7 +963,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://{{.workspace}}.gainsightcloud.com",
 		OauthOpts: &OauthOpts{
-			AuthURL:                   pointerFor("https://{{.workspace}}.gainsightcloud.com/v1/authorize"),
+			AuthURL:                   "https://{{.workspace}}.gainsightcloud.com/v1/authorize",
 			TokenURL:                  "https://{{.workspace}}.gainsightcloud.com/v1/users/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: true,
@@ -989,7 +989,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://api.box.com",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://account.box.com/api/oauth2/authorize"),
+			AuthURL:                   "https://account.box.com/api/oauth2/authorize",
 			TokenURL:                  "https://api.box.com/oauth2/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
@@ -1015,7 +1015,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:     "https://{{.workspace}}.zendesk.com",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://{{.workspace}}.zendesk.com/oauth/authorizations/new"),
+			AuthURL:                   "https://{{.workspace}}.zendesk.com/oauth/authorizations/new",
 			TokenURL:                  "https://{{.workspace}}.zendesk.com/oauth/tokens",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: true,
@@ -1040,7 +1040,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:     "https://www.zopim.com",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://www.zopim.com/oauth2/authorizations/new?subdomain={{.workspace}}"),
+			AuthURL:                   "https://www.zopim.com/oauth2/authorizations/new?subdomain={{.workspace}}",
 			TokenURL:                  "https://www.zopim.com/oauth2/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: true,
@@ -1064,7 +1064,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://public-api.wordpress.com",
 		OauthOpts: &OauthOpts{
-			AuthURL:                   pointerFor("https://public-api.wordpress.com/oauth2/authorize"),
+			AuthURL:                   "https://public-api.wordpress.com/oauth2/authorize",
 			TokenURL:                  "https://public-api.wordpress.com/oauth2/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
@@ -1093,7 +1093,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://api.airtable.com",
 		OauthOpts: &OauthOpts{
 			GrantType:                 PKCE,
-			AuthURL:                   pointerFor("https://airtable.com/oauth2/v1/authorize"),
+			AuthURL:                   "https://airtable.com/oauth2/v1/authorize",
 			TokenURL:                  "https://airtable.com/oauth2/v1/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
@@ -1120,7 +1120,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://ironcladapp.com",
 		OauthOpts: &OauthOpts{
-			AuthURL:                   pointerFor("https://ironcladapp.com/oauth/authorize"),
+			AuthURL:                   "https://ironcladapp.com/oauth/authorize",
 			TokenURL:                  "https://ironcladapp.com/oauth/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
@@ -1149,7 +1149,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://slack.com/api",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://slack.com/oauth/v2/authorize"),
+			AuthURL:                   "https://slack.com/oauth/v2/authorize",
 			TokenURL:                  "https://slack.com/api/oauth.v2.access",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
@@ -1178,7 +1178,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:     "https://api.helpscout.net",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://secure.helpscout.net/authentication/authorizeClientApplication"),
+			AuthURL:                   "https://secure.helpscout.net/authentication/authorizeClientApplication",
 			TokenURL:                  "https://api.helpscout.net/v2/oauth2/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
@@ -1203,7 +1203,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://api.timelyapp.com",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://api.timelyapp.com/1.1/oauth/authorize"),
+			AuthURL:                   "https://api.timelyapp.com/1.1/oauth/authorize",
 			TokenURL:                  "https://api.timelyapp.com/1.1/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
@@ -1232,7 +1232,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:     "https://api.atlassian.com",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://auth.atlassian.com/authorize"),
+			AuthURL:                   "https://auth.atlassian.com/authorize",
 			TokenURL:                  "https://auth.atlassian.com/oauth/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
@@ -1257,7 +1257,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://api.webflow.com",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://webflow.com/oauth/authorize"),
+			AuthURL:                   "https://webflow.com/oauth/authorize",
 			TokenURL:                  "https://api.webflow.com/oauth/access_token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
@@ -1285,7 +1285,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://api.smartsheet.com",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://app.smartsheet.com/b/authorize"),
+			AuthURL:                   "https://app.smartsheet.com/b/authorize",
 			TokenURL:                  "https://api.smartsheet.com/2.0/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
@@ -1310,7 +1310,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://api.stackexchange.com",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://stackoverflow.com/oauth"),
+			AuthURL:                   "https://stackoverflow.com/oauth",
 			TokenURL:                  "https://stackoverflow.com/oauth/access_token/json",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
@@ -1335,7 +1335,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://www.googleapis.com",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://accounts.google.com/o/oauth2/v2/auth"),
+			AuthURL:                   "https://accounts.google.com/o/oauth2/v2/auth",
 			TokenURL:                  "https://oauth2.googleapis.com/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
@@ -1364,7 +1364,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:     "https://people.googleapis.com",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://accounts.google.com/o/oauth2/v2/auth"),
+			AuthURL:                   "https://accounts.google.com/o/oauth2/v2/auth",
 			TokenURL:                  "https://oauth2.googleapis.com/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
@@ -1392,7 +1392,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://gmail.googleapis.com",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://accounts.google.com/o/oauth2/v2/auth"),
+			AuthURL:                   "https://accounts.google.com/o/oauth2/v2/auth",
 			TokenURL:                  "https://oauth2.googleapis.com/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
@@ -1419,7 +1419,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://api.monday.com",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://auth.monday.com/oauth2/authorize"),
+			AuthURL:                   "https://auth.monday.com/oauth2/authorize",
 			TokenURL:                  "https://auth.monday.com/oauth2/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
@@ -1446,7 +1446,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://api.figma.com",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://www.figma.com/oauth"),
+			AuthURL:                   "https://www.figma.com/oauth",
 			TokenURL:                  "https://www.figma.com/api/oauth/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
@@ -1473,7 +1473,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://api.miro.com",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://miro.com/oauth/authorize"),
+			AuthURL:                   "https://miro.com/oauth/authorize",
 			TokenURL:                  "https://api.miro.com/v1/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
@@ -1501,7 +1501,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://api.typeform.com",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://api.typeform.com/oauth/authorize"),
+			AuthURL:                   "https://api.typeform.com/oauth/authorize",
 			TokenURL:                  "https://api.typeform.com/oauth/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
@@ -1526,7 +1526,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://{{.workspace}}.zuora.com",
 		OauthOpts: &OauthOpts{
 			GrantType:                 ClientCredentials,
-			AuthURL:                   pointerFor("https://{{.workspace}}.zuora.com/oauth/auth_mock"),
+			AuthURL:                   "https://{{.workspace}}.zuora.com/oauth/auth_mock",
 			TokenURL:                  "https://{{.workspace}}.zuora.com/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: true,
@@ -1552,7 +1552,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:     "https://api.hellosign.com",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://app.hellosign.com/oauth/authorize"),
+			AuthURL:                   "https://app.hellosign.com/oauth/authorize",
 			TokenURL:                  "https://app.hellosign.com/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
@@ -1577,7 +1577,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://graph.facebook.com",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://www.facebook.com/v19.0/dialog/oauth"),
+			AuthURL:                   "https://www.facebook.com/v19.0/dialog/oauth",
 			TokenURL:                  "https://graph.facebook.com/v19.0/oauth/access_token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
@@ -1602,7 +1602,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://api.clickup.com",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://app.clickup.com/api"),
+			AuthURL:                   "https://app.clickup.com/api",
 			TokenURL:                  "https://api.clickup.com/api/v2/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
@@ -1627,7 +1627,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://discord.com",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://discord.com/oauth2/authorize"),
+			AuthURL:                   "https://discord.com/oauth2/authorize",
 			TokenURL:                  "https://discord.com/api/oauth2/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
@@ -1655,7 +1655,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://driftapi.com",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://dev.drift.com/authorize"),
+			AuthURL:                   "https://dev.drift.com/authorize",
 			TokenURL:                  "https://driftapi.com/oauth2/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
@@ -1681,7 +1681,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://demo.ironcladapp.com",
 		OauthOpts: &OauthOpts{
-			AuthURL:                   pointerFor("https://demo.ironcladapp.com/oauth/authorize"),
+			AuthURL:                   "https://demo.ironcladapp.com/oauth/authorize",
 			TokenURL:                  "https://demo.ironcladapp.com/oauth/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
@@ -1709,7 +1709,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType:    Oauth2,
 		BaseURL:     "https://eu1.ironcladapp.com",
 		OauthOpts: &OauthOpts{
-			AuthURL:                   pointerFor("https://eu1.ironcladapp.com/oauth/authorize"),
+			AuthURL:                   "https://eu1.ironcladapp.com/oauth/authorize",
 			TokenURL:                  "https://eu1.ironcladapp.com/oauth/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
@@ -1738,7 +1738,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://api.aircall.io",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://dashboard.aircall.io/oauth/authorize"),
+			AuthURL:                   "https://dashboard.aircall.io/oauth/authorize",
 			TokenURL:                  "https://api.aircall.io/v1/oauth/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
@@ -1763,7 +1763,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://graph.microsoft.com",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://login.microsoftonline.com/common/oauth2/v2.0/authorize"),
+			AuthURL:                   "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
 			TokenURL:                  "https://login.microsoftonline.com/common/oauth2/v2.0/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
@@ -1788,7 +1788,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://www.formstack.com/api",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://www.formstack.com/api/v2/oauth2/authorize"),
+			AuthURL:                   "https://www.formstack.com/api/v2/oauth2/authorize",
 			TokenURL:                  "https://www.formstack.com/api/v2/oauth2/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
@@ -1816,7 +1816,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://api.pinterest.com",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://www.pinterest.com/oauth"),
+			AuthURL:                   "https://www.pinterest.com/oauth",
 			TokenURL:                  "https://api.pinterest.com/v5/oauth/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
@@ -1843,7 +1843,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://{{.workspace}}.aha.io/api",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://{{.workspace}}.aha.io/oauth/authorize"),
+			AuthURL:                   "https://{{.workspace}}.aha.io/oauth/authorize",
 			TokenURL:                  "https://{{.workspace}}.aha.io/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: true,
@@ -1867,7 +1867,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://adsapi.snapchat.com",
 		OauthOpts: &OauthOpts{
-			AuthURL:                   pointerFor("https://accounts.snapchat.com/login/oauth2/authorize"),
+			AuthURL:                   "https://accounts.snapchat.com/login/oauth2/authorize",
 			TokenURL:                  "https://accounts.snapchat.com/login/oauth2/access_token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
@@ -1922,7 +1922,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://graph.instagram.com",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://api.instagram.com/oauth/authorize"),
+			AuthURL:                   "https://api.instagram.com/oauth/authorize",
 			TokenURL:                  "https://api.instagram.com/oauth/access_token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
@@ -1950,7 +1950,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://api.focus.teamleader.eu",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://focus.teamleader.eu/oauth2/authorize"),
+			AuthURL:                   "https://focus.teamleader.eu/oauth2/authorize",
 			TokenURL:                  "https://focus.teamleader.eu/oauth2/access_token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
@@ -1975,7 +1975,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://api.github.com",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://github.com/login/oauth/authorize"),
+			AuthURL:                   "https://github.com/login/oauth/authorize",
 			TokenURL:                  "https://github.com/login/oauth/access_token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
@@ -1999,7 +1999,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		BaseURL:  "https://api.seismic.com",
 		OauthOpts: &OauthOpts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   pointerFor("https://auth.seismic.com/tenants/{{.workspace}}/connect/authorize"),
+			AuthURL:                   "https://auth.seismic.com/tenants/{{.workspace}}/connect/authorize",
 			TokenURL:                  "https://auth.seismic.com/tenants/{{.workspace}}/connect/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: true,
@@ -2023,7 +2023,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://{{.workspace}}.service-now.com",
 		OauthOpts: &OauthOpts{
-			AuthURL:                   pointerFor("https://{{.workspace}}.service-now.com/oauth_auth.do"),
+			AuthURL:                   "https://{{.workspace}}.service-now.com/oauth_auth.do",
 			TokenURL:                  "https://{{.workspace}}.service-now.com/oauth_token.do",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: true,

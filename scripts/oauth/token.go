@@ -10,6 +10,7 @@ import (
 	"log"
 	"log/slog"
 	"net/http"
+	"net/url"
 	"os"
 	"os/exec"
 	"runtime"
@@ -315,7 +316,7 @@ func setup() *OAuthApp {
 
 	switch providerInfo.OauthOpts.GrantType {
 	case providers.AuthorizationCode:
-		if providerInfo.OauthOpts.AuthURL == nil {
+		if providerInfo.OauthOpts.AuthURL == "" {
 			slog.Error("provider does not have an AuthURL, not compatible with this script", "provider", provider)
 
 			os.Exit(1)
@@ -350,7 +351,7 @@ func setup() *OAuthApp {
 
 		// Set up the OAuth config based on the provider.
 		app.Config.Endpoint = oauth2.Endpoint{
-			AuthURL:   *providerInfo.OauthOpts.AuthURL,
+			AuthURL:   providerInfo.OauthOpts.AuthURL,
 			TokenURL:  providerInfo.OauthOpts.TokenURL,
 			AuthStyle: oauth2.AuthStyleAutoDetect,
 		}
@@ -375,6 +376,11 @@ func setup() *OAuthApp {
 		}
 		if state != "" {
 			app.State = state
+		}
+
+		if providerInfo.OauthOpts.Audience != "" {
+			aud := providerInfo.OauthOpts.Audience
+			app.ClientCredsConfig.EndpointParams = url.Values{"audience": {aud}}
 		}
 
 		return app
