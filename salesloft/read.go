@@ -3,6 +3,7 @@ package salesloft
 import (
 	"context"
 	"strconv"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -42,6 +43,13 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 	}
 
 	link.WithQueryParam("per_page", strconv.Itoa(DefaultPageSize))
+
+	if !config.Since.IsZero() {
+		// documentation states ISO8601, while server accepts different formats
+		// but for consistency sticking to one format
+		updatedSince := config.Since.Format(time.RFC3339Nano)
+		link.WithQueryParam("updated_at[gte]", updatedSince)
+	}
 
 	return link, nil
 }
