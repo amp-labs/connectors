@@ -289,6 +289,7 @@ func parseAccessTokenExpiry(expiryStr, timeFormat string) time.Time {
 func validateRequiredOAuth2Flags(ctx context.Context, provider, clientId, clientSecret string) {
 	if provider == "" || clientId == "" || clientSecret == "" {
 		_, _ = fmt.Fprintln(os.Stderr, "Missing required flags: -provider, -client-id, -client-secret")
+
 		flag.Usage()
 		os.Exit(1)
 	}
@@ -299,6 +300,7 @@ func validateRequiredOAuth2Flags(ctx context.Context, provider, clientId, client
 // and has a cleaner shutdown sequence.
 func listen(ctx context.Context, port int) error {
 	var lc net.ListenConfig
+
 	listener, err := lc.Listen(ctx, "tcp", fmt.Sprintf(":%d", port))
 	if err != nil {
 		return err
@@ -310,6 +312,7 @@ func listen(ctx context.Context, port int) error {
 
 	go func() {
 		<-ctx.Done()
+
 		_ = server.Shutdown(context.Background())
 	}()
 
@@ -430,12 +433,19 @@ func getProviderConfig(provider string, substitutions map[string]string) *provid
 }
 
 func configureOAuthClientCredentials(clientId, clientSecret string, scopes []string, providerInfo *providers.ProviderInfo) *clientcredentials.Config {
-	return &clientcredentials.Config{
+	cfg := &clientcredentials.Config{
 		ClientID:     clientId,
 		ClientSecret: clientSecret,
 		Scopes:       scopes,
 		TokenURL:     providerInfo.OauthOpts.TokenURL,
 	}
+
+	if providerInfo.OauthOpts.Audience != "" {
+		aud := providerInfo.OauthOpts.Audience
+		cfg.EndpointParams = url.Values{"audience": {aud}}
+	}
+
+	return cfg
 }
 
 func configureOAuthAuthCode(clientId, clientSecret string, scopes []string, providerInfo *providers.ProviderInfo) *oauth2.Config {

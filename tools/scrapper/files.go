@@ -26,6 +26,8 @@ func NewMetadataFileManager(schemas []byte, locator MetadataFileLocator) *Metada
 }
 
 func (m MetadataFileManager) SaveIndex(index *ModelURLRegistry) error {
+	index.Sort()
+
 	return FlushToFile(m.locator.AbsPathTo(IndexFile), index)
 }
 

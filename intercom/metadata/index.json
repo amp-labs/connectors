@@ -1,141 +1,6 @@
 {
   "data": [
     {
-      "name": "admin",
-      "displayName": "Admin",
-      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Admins/admin"
-    },
-    {
-      "name": "article",
-      "displayName": "Article",
-      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Articles/article"
-    },
-    {
-      "name": "article_list_item",
-      "displayName": "Articles",
-      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Articles/article_list_item"
-    },
-    {
-      "name": "article_search_highlights",
-      "displayName": "Article Search Highlights",
-      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Articles/article_search_highlights"
-    },
-    {
-      "name": "article_search_response",
-      "displayName": "Article Search Response",
-      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Articles/article_search_response"
-    },
-    {
-      "name": "company",
-      "displayName": "Company",
-      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Companies/company"
-    },
-    {
-      "name": "contact",
-      "displayName": "Contact",
-      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Contacts/contact"
-    },
-    {
-      "name": "conversation",
-      "displayName": "Conversation",
-      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Conversations/conversation"
-    },
-    {
-      "name": "data_attribute",
-      "displayName": "Data Attribute",
-      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Data-Attributes/data_attribute"
-    },
-    {
-      "name": "data_event",
-      "displayName": "Data Event",
-      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Data-Events/data_event"
-    },
-    {
-      "name": "data_export",
-      "displayName": "Data Export",
-      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Data-Export/data_export"
-    },
-    {
-      "name": "collection",
-      "displayName": "Collection",
-      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Help-Center/collection"
-    },
-    {
-      "name": "help_center",
-      "displayName": "Help Center",
-      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Help-Center/help_center"
-    },
-    {
-      "name": "help_center_list",
-      "displayName": "Help Centers",
-      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Help-Center/help_center_list"
-    },
-    {
-      "name": "message",
-      "displayName": "Message",
-      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Messages/message"
-    },
-    {
-      "name": "news_item",
-      "displayName": "News Item",
-      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/News/news_item"
-    },
-    {
-      "name": "newsfeed",
-      "displayName": "Newsfeed",
-      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/News/newsfeed"
-    },
-    {
-      "name": "newsfeed_assignment",
-      "displayName": "Newsfeed Assignment",
-      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/News/newsfeed_assignment"
-    },
-    {
-      "name": "note",
-      "displayName": "Note",
-      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Notes/note"
-    },
-    {
-      "name": "segment",
-      "displayName": "Segment",
-      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Segments/segment"
-    },
-    {
-      "name": "subscription_type",
-      "displayName": "Subscription Types",
-      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Subscription-Types/subscription_type"
-    },
-    {
-      "name": "tag",
-      "displayName": "Tag",
-      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Tags/tag"
-    },
-    {
-      "name": "team",
-      "displayName": "Team",
-      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Teams/team"
-    },
-    {
-      "name": "ticket",
-      "displayName": "Ticket",
-      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Tickets/ticket"
-    },
-    {
-      "name": "ticket_contacts",
-      "displayName": "Contacts",
-      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Tickets/ticket_contacts"
-    },
-    {
-      "name": "ticket_part",
-      "displayName": "Ticket Part",
-      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Tickets/ticket_part"
-    },
-    {
-      "name": "ticket_type",
-      "displayName": "Ticket Type",
-      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Tickets/ticket_type"
-    },
-    {
       "name": "activity_log",
       "displayName": "Activity Log",
       "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Models/activity_log"
@@ -154,6 +19,11 @@
       "name": "addressable_list",
       "displayName": "Addressable List",
       "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Models/addressable_list"
+    },
+    {
+      "name": "admin",
+      "displayName": "Admin",
+      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Admins/admin"
     },
     {
       "name": "admin_list",
@@ -186,6 +56,11 @@
       "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Models/app"
     },
     {
+      "name": "article",
+      "displayName": "Article",
+      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Articles/article"
+    },
+    {
       "name": "article_content",
       "displayName": "Article Content",
       "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Models/article_content"
@@ -194,6 +69,21 @@
       "name": "article_list",
       "displayName": "Articles",
       "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Models/article_list"
+    },
+    {
+      "name": "article_list_item",
+      "displayName": "Articles",
+      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Articles/article_list_item"
+    },
+    {
+      "name": "article_search_highlights",
+      "displayName": "Article Search Highlights",
+      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Articles/article_search_highlights"
+    },
+    {
+      "name": "article_search_response",
+      "displayName": "Article Search Response",
+      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Articles/article_search_response"
     },
     {
       "name": "article_statistics",
@@ -221,9 +111,19 @@
       "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Models/close_conversation_request"
     },
     {
+      "name": "collection",
+      "displayName": "Collection",
+      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Help-Center/collection"
+    },
+    {
       "name": "collection_list",
       "displayName": "Collections",
       "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Models/collection_list"
+    },
+    {
+      "name": "company",
+      "displayName": "Company",
+      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Companies/company"
     },
     {
       "name": "company_attached_contacts",
@@ -244,6 +144,11 @@
       "name": "company_scroll",
       "displayName": "Company Scroll",
       "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Models/company_scroll"
+    },
+    {
+      "name": "contact",
+      "displayName": "Contact",
+      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Contacts/contact"
     },
     {
       "name": "contact_archived",
@@ -359,6 +264,11 @@
       "name": "content_sources_list",
       "displayName": "Content Source List",
       "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Models/content_sources_list"
+    },
+    {
+      "name": "conversation",
+      "displayName": "Conversation",
+      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Conversations/conversation"
     },
     {
       "name": "conversation_attachment_files",
@@ -521,9 +431,19 @@
       "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Models/customer_request"
     },
     {
+      "name": "data_attribute",
+      "displayName": "Data Attribute",
+      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Data-Attributes/data_attribute"
+    },
+    {
       "name": "data_attribute_list",
       "displayName": "Data Attribute List",
       "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Models/data_attribute_list"
+    },
+    {
+      "name": "data_event",
+      "displayName": "Data Event",
+      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Data-Events/data_event"
     },
     {
       "name": "data_event_list",
@@ -539,6 +459,11 @@
       "name": "data_event_summary_item",
       "displayName": "Data Event Summary Item",
       "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Models/data_event_summary_item"
+    },
+    {
+      "name": "data_export",
+      "displayName": "Data Export",
+      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Data-Export/data_export"
     },
     {
       "name": "data_export_csv",
@@ -591,6 +516,16 @@
       "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Models/group_translated_content"
     },
     {
+      "name": "help_center",
+      "displayName": "Help Center",
+      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Help-Center/help_center"
+    },
+    {
+      "name": "help_center_list",
+      "displayName": "Help Centers",
+      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Help-Center/help_center_list"
+    },
+    {
       "name": "intercom_version",
       "displayName": "intercom_version",
       "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Models/intercom_version"
@@ -611,14 +546,39 @@
       "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Models/merge_contacts_request"
     },
     {
+      "name": "message",
+      "displayName": "Message",
+      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Messages/message"
+    },
+    {
       "name": "multiple_filter_search_request",
       "displayName": "Multiple Filter Search Request",
       "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Models/multiple_filter_search_request"
     },
     {
+      "name": "news_item",
+      "displayName": "News Item",
+      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/News/news_item"
+    },
+    {
       "name": "news_item_request",
       "displayName": "Create News Item Request",
       "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Models/news_item_request"
+    },
+    {
+      "name": "newsfeed",
+      "displayName": "Newsfeed",
+      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/News/newsfeed"
+    },
+    {
+      "name": "newsfeed_assignment",
+      "displayName": "Newsfeed Assignment",
+      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/News/newsfeed_assignment"
+    },
+    {
+      "name": "note",
+      "displayName": "Note",
+      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Notes/note"
     },
     {
       "name": "note_list",
@@ -671,6 +631,11 @@
       "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Models/search_request"
     },
     {
+      "name": "segment",
+      "displayName": "Segment",
+      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Segments/segment"
+    },
+    {
       "name": "segment_list",
       "displayName": "Segment List",
       "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Models/segment_list"
@@ -701,9 +666,19 @@
       "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Models/starting_after_paging"
     },
     {
+      "name": "subscription_type",
+      "displayName": "Subscription Types",
+      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Subscription-Types/subscription_type"
+    },
+    {
       "name": "subscription_type_list",
       "displayName": "Subscription Types",
       "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Models/subscription_type_list"
+    },
+    {
+      "name": "tag",
+      "displayName": "Tag",
+      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Tags/tag"
     },
     {
       "name": "tag_company_request",
@@ -726,6 +701,11 @@
       "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Models/tags"
     },
     {
+      "name": "team",
+      "displayName": "Team",
+      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Teams/team"
+    },
+    {
       "name": "team_list",
       "displayName": "Team List",
       "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Models/team_list"
@@ -736,6 +716,16 @@
       "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Models/team_priority_level"
     },
     {
+      "name": "ticket",
+      "displayName": "Ticket",
+      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Tickets/ticket"
+    },
+    {
+      "name": "ticket_contacts",
+      "displayName": "Contacts",
+      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Tickets/ticket_contacts"
+    },
+    {
       "name": "ticket_custom_attributes",
       "displayName": "Ticket Attributes",
       "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Models/ticket_custom_attributes"
@@ -744,6 +734,11 @@
       "name": "ticket_list",
       "displayName": "Ticket List",
       "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Models/ticket_list"
+    },
+    {
+      "name": "ticket_part",
+      "displayName": "Ticket Part",
+      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Tickets/ticket_part"
     },
     {
       "name": "ticket_part_author",
@@ -764,6 +759,11 @@
       "name": "ticket_request_custom_attributes",
       "displayName": "Ticket Attributes",
       "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Models/ticket_request_custom_attributes"
+    },
+    {
+      "name": "ticket_type",
+      "displayName": "Ticket Type",
+      "url": "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Tickets/ticket_type"
     },
     {
       "name": "ticket_type_attribute",

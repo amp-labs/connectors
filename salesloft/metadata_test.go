@@ -42,13 +42,13 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		},
 		{
 			name:  "Successfully describe one object with metadata",
-			input: []string{"bulk-jobs-results"},
+			input: []string{"bulk_jobs_results"},
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusTeapot)
 			})),
 			expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
-					"bulk-jobs-results": {
+					"bulk_jobs_results": {
 						DisplayName: "List job data for a completed bulk job.",
 						FieldsMap: map[string]string{
 							"error":    "error",
@@ -65,13 +65,13 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		},
 		{
 			name:  "Successfully describe multiple objects with metadata",
-			input: []string{"account-tiers", "actions"},
+			input: []string{"account_tiers", "actions"},
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusTeapot)
 			})),
 			expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
-					"account-tiers": {
+					"account_tiers": {
 						DisplayName: "List Account Tiers",
 						FieldsMap: map[string]string{
 							"created_at": "created_at",

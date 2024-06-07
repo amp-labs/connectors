@@ -14,10 +14,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	rsp, err := c.Client.Get(ctx, link.String(), common.Header{
-		Key:   "Intercom-Version",
-		Value: apiVersion,
-	})
+	rsp, err := c.Client.Get(ctx, link.String(), apiVersionHeader)
 	if err != nil {
 		return nil, err
 	}

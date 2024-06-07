@@ -42,7 +42,8 @@ type CatalogType map[string]ProviderInfo
 
 // OauthOpts defines model for OauthOpts.
 type OauthOpts struct {
-	AuthURL                   string              `json:"authURL" validate:"required"`
+	Audience                  string              `json:"audience,omitempty"`
+	AuthURL                   string              `json:"authURL,omitempty"`
 	ExplicitScopesRequired    bool                `json:"explicitScopesRequired"`
 	ExplicitWorkspaceRequired bool                `json:"explicitWorkspaceRequired"`
 	GrantType                 OauthOptsGrantType  `json:"grantType"`
@@ -65,7 +66,7 @@ type ProviderInfo struct {
 	// DisplayName The display name of the provider, if omitted, defaults to provider name.
 	DisplayName string     `json:"displayName,omitempty"`
 	Name        string     `json:"name"`
-	OauthOpts   *OauthOpts `json:"oauthOpts,omitempty" validate:"required"`
+	OauthOpts   *OauthOpts `json:"oauthOpts,omitempty"`
 
 	// PostAuthInfoNeeded If true, we require additional information after auth to start making requests.
 	PostAuthInfoNeeded bool         `json:"postAuthInfoNeeded,omitempty"`

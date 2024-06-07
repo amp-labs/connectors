@@ -122,13 +122,13 @@ If you don't, the provider info will be incomplete and the connector will not wo
 For example, a provider may use `{{workspace}}` in an option (maybe in the base URL) which needs to be replaced with an actual customer instance name. In that case, you would initialize the connector like this:
 
 ```go
-conn, err := basic.NewConnector(
+conn, err := connector.NewConnector(
     providers.SomeProvider,
-    basic.WithClient(context.Background(), http.DefaultClient, cfg, tok),
+    connector.WithClient(context.Background(), http.DefaultClient, cfg, tok),
     
     // WithCatalogSubstitutions allows you to replace placeholders in the catalog (providers.yaml) with actual values.
-    basic.WithCatalogSubstitutions(map[string]string{
-		"workspace": "customer-instance-ref"
+    connector.WithCatalogSubstitutions(map[string]string{
+		"workspace": "customer-instance-ref",
 	}),
 )
 ```

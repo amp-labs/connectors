@@ -7,6 +7,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/amp-labs/connectors/salesloft/metadata"
 	"github.com/amp-labs/connectors/tools/scrapper"
+	"github.com/iancoleman/strcase"
 )
 
 const (
@@ -56,6 +57,8 @@ func createSchemas() {
 		doc := scrapper.QueryHTML(model.URL)
 
 		// There are 2 unordered lists that describe response schema
+		modelName := strcase.ToSnake(model.Name)
+
 		doc.Find(`.openapi-tabs__schema-container ul`).
 			Each(func(i int, list *goquery.Selection) {
 				list.Children().Each(func(i int, property *goquery.Selection) {
@@ -63,12 +66,12 @@ func createSchemas() {
 					// Only the first most field represents top level fields of response payload
 					fieldName := property.Find(`strong`).First().Text()
 					if len(fieldName) != 0 {
-						schemas.Add(model.Name, model.DisplayName, fieldName)
+						schemas.Add(modelName, model.DisplayName, fieldName)
 					}
 				})
 			})
 
-		log.Printf("Schemas completed %.2f%% [%v]\n", getPercentage(i, len(filteredListDocs)), model.Name)
+		log.Printf("Schemas completed %.2f%% [%v]\n", getPercentage(i, len(filteredListDocs)), modelName)
 	}
 
 	must(metadata.FileManager.SaveSchemas(schemas))
