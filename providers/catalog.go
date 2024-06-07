@@ -82,6 +82,7 @@ const (
 	ZohoCRM                 Provider = "zohoCRM"
 	Zoom                    Provider = "zoom"
 	Zuora                   Provider = "zuora"
+	MParticle				Provider = "mParticle"
 )
 
 // ================================================================================
@@ -2122,4 +2123,32 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Write:     false,
 		},
 	},
+
+	// MParticle Configuration
+    MParticle: {
+        AuthType: Oauth2,
+        BaseURL:  "https://api.mparticle.com",
+        OauthOpts: &OauthOpts{
+            GrantType:                 ClientCredentials,
+            // mParticle doesn't provide this
+            TokenURL:                  "https://sso.auth.mparticle.com/oauth/token",
+            ExplicitScopesRequired:    false,
+            ExplicitWorkspaceRequired: false,
+			Audience: "https://api.mparticle.com",
+        },
+        Support: Support{
+            BulkWrite: BulkWriteSupport{
+                Insert: false,
+                Update: false,
+                Upsert: false,
+                Delete: false,
+            },
+            Proxy:     false,
+            Read:      false,
+            Subscribe: false,
+            Write:     false,
+        },
+    },
+
+
 }
