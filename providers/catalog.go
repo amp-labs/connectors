@@ -5,11 +5,15 @@ package providers
 // ================================================================================
 
 const (
+	AcuityScheduling        Provider = "acuityScheduling"
+	Aha                     Provider = "aha"
+	Aircall                 Provider = "aircall"
 	Airtable                Provider = "airtable"
-	AWeber                  Provider = "aWeber"
 	Asana                   Provider = "asana"
 	Atlassian               Provider = "atlassian"
 	Attio                   Provider = "attio"
+	AWeber                  Provider = "aWeber"
+	Basecamp                Provider = "basecamp"
 	Box                     Provider = "box"
 	Calendly                Provider = "calendly"
 	CampaignMonitor         Provider = "campaignMonitor"
@@ -21,27 +25,32 @@ const (
 	Discord                 Provider = "discord"
 	Docusign                Provider = "docusign"
 	DocusignDeveloper       Provider = "docusignDeveloper"
+	Drift                   Provider = "drift"
 	Dropbox                 Provider = "dropbox"
 	DropboxSign             Provider = "dropboxSign"
+	DynamicsBusinessCentral Provider = "dynamicsBusinessCentral"
+	DynamicsCRM             Provider = "dynamicsCRM"
 	Facebook                Provider = "facebook"
 	Figma                   Provider = "figma"
+	Formstack               Provider = "formstack"
 	Gainsight               Provider = "gainsight"
 	GetResponse             Provider = "getResponse"
+	Github                  Provider = "github"
 	Gmail                   Provider = "gmail"
 	Gong                    Provider = "gong"
-	IroncladDemo            Provider = "ironcladDemo"
-	IroncladEU              Provider = "ironcladEU"
-	Ironclad                Provider = "ironclad"
 	Google                  Provider = "google"
 	GoogleContacts          Provider = "googleContacts"
 	HelpScoutMailbox        Provider = "helpScoutMailbox"
 	Hubspot                 Provider = "hubspot"
+	Instagram               Provider = "instagram"
 	Intercom                Provider = "intercom"
+	Ironclad                Provider = "ironclad"
+	IroncladDemo            Provider = "ironcladDemo"
+	IroncladEU              Provider = "ironcladEU"
 	Keap                    Provider = "keap"
 	Klaviyo                 Provider = "klaviyo"
 	LinkedIn                Provider = "linkedIn"
-	DynamicsBusinessCentral Provider = "dynamicsBusinessCentral"
-	DynamicsCRM             Provider = "dynamicsCRM"
+	Microsoft               Provider = "microsoft"
 	Miro                    Provider = "miro"
 	Mock                    Provider = "mock"
 	Monday                  Provider = "monday"
@@ -53,12 +62,17 @@ const (
 	RingCentral             Provider = "ringCentral"
 	Salesforce              Provider = "salesforce"
 	Salesloft               Provider = "salesloft"
+	Seismic                 Provider = "seismic"
 	Sellsy                  Provider = "sellsy"
 	ServiceNow              Provider = "serviceNow"
+	SharePoint              Provider = "sharePoint"
 	Slack                   Provider = "slack"
 	Smartsheet              Provider = "smartsheet"
+	SnapchatAds             Provider = "snapchatAds"
 	StackExchange           Provider = "stackExchange"
+	SurveyMonkey            Provider = "surveyMonkey"
 	TeamleaderCRM           Provider = "teamleaderCRM"
+	Teamwork                Provider = "teamwork"
 	Timely                  Provider = "timely"
 	Typeform                Provider = "typeform"
 	Webflow                 Provider = "webflow"
@@ -69,14 +83,6 @@ const (
 	ZohoCRM                 Provider = "zohoCRM"
 	Zoom                    Provider = "zoom"
 	Zuora                   Provider = "zuora"
-	Aircall                 Provider = "aircall"
-	Drift                   Provider = "drift"
-	Microsoft               Provider = "microsoft"
-	Formstack               Provider = "formstack"
-	Aha                     Provider = "aha"
-	SnapchatAds             Provider = "snapchatAds"
-	Instagram               Provider = "instagram"
-	Seismic                 Provider = "seismic"
 )
 
 // ================================================================================
@@ -180,6 +186,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://accounts.salesloft.com/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
+			GrantType:                 AuthorizationCode,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
 			},
@@ -207,6 +214,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://api.outreach.io/oauth/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
+			GrantType:                 AuthorizationCode,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
 			},
@@ -276,7 +284,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -301,14 +309,14 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
 		},
 	},
 
-	// Wrikle configuration
+	// Wrike configuration
 	Wrike: {
 		AuthType: Oauth2,
 		BaseURL:  "https://www.wrike.com/api",
@@ -326,7 +334,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -558,6 +566,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://app.asana.com/-/oauth_token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
+			GrantType:                 AuthorizationCode,
 			TokenMetadataFields: TokenMetadataFields{
 				ConsumerRefField: "data.id",
 			},
@@ -614,6 +623,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://api.notion.com/v1/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
+			GrantType:                 AuthorizationCode,
 			TokenMetadataFields: TokenMetadataFields{
 				ConsumerRefField:  "owner.user.id",
 				WorkspaceRefField: "workspace_id",
@@ -642,6 +652,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://app.gong.io/oauth2/generate-customer-token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
+			GrantType:                 AuthorizationCode,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
 			},
@@ -669,6 +680,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://zoom.us/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
+			GrantType:                 AuthorizationCode,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
 			},
@@ -696,6 +708,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://api.intercom.io/auth/eagle/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
+			GrantType:                 AuthorizationCode,
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -720,6 +733,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://account.docusign.com/oauth/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
+			GrantType:                 AuthorizationCode,
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -798,6 +812,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://api.createsend.com/oauth/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
+			GrantType:                 AuthorizationCode,
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -822,6 +837,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://api.getresponse.com/v3/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
+			GrantType:                 AuthorizationCode,
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -846,6 +862,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://auth.aweber.com/oauth2/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
+			GrantType:                 AuthorizationCode,
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -854,7 +871,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -864,13 +881,15 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	DynamicsCRM: {
 		DisplayName: "Microsoft Dynamics CRM",
 		AuthType:    Oauth2,
-		BaseURL:     "https://{{.workspace}}.api.crm.dynamics.com",
+		BaseURL:     "https://{{.workspace}}.api.crm.dynamics.com/api/data",
 		OauthOpts: &OauthOpts{
-			GrantType:                 AuthorizationCode,
-			AuthURL:                   "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
-			TokenURL:                  "https://login.microsoftonline.com/common/oauth2/v2.0/token",
-			ExplicitScopesRequired:    true,
-			ExplicitWorkspaceRequired: false,
+			GrantType:              AuthorizationCode,
+			AuthURL:                "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+			TokenURL:               "https://login.microsoftonline.com/common/oauth2/v2.0/token",
+			ExplicitScopesRequired: true,
+			// TODO: flip this to false once we implement the ability to get workspace
+			// information post-auth.
+			ExplicitWorkspaceRequired: true,
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -922,6 +941,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://login.microsoftonline.com/{{.workspace}}/oauth2/v2.0/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: true,
+			GrantType:                 AuthorizationCode,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
 			},
@@ -949,6 +969,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://{{.workspace}}.gainsightcloud.com/v1/users/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: true,
+			GrantType:                 AuthorizationCode,
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -1049,6 +1070,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://public-api.wordpress.com/oauth2/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
+			GrantType:                 AuthorizationCode,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
 			},
@@ -1569,7 +1591,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -1650,7 +1672,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -1783,7 +1805,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -1867,6 +1889,34 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
+	SharePoint: {
+		AuthType: Oauth2,
+		BaseURL:  "https://{{.workspace}}.sharepoint.com/_api",
+		OauthOpts: &OauthOpts{
+			GrantType:              AuthorizationCode,
+			AuthURL:                "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+			TokenURL:               "https://login.microsoftonline.com/common/oauth2/v2.0/token",
+			ExplicitScopesRequired: true,
+			// TODO: Switch to post-auth metadata collection
+			ExplicitWorkspaceRequired: true,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     true,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
 	// Instagram Configuration
 	// TODO: Supports only short-lived tokens
 	Instagram: {
@@ -1921,6 +1971,31 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
+	// Github Configuration
+	Github: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.github.com",
+		OauthOpts: &OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://github.com/login/oauth/authorize",
+			TokenURL:                  "https://github.com/login/oauth/access_token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
 	Seismic: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.seismic.com",
@@ -1958,6 +2033,107 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
 			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// AcuityScheduling Configuration
+	AcuityScheduling: {
+		AuthType: Oauth2,
+		BaseURL:  "https://acuityscheduling.com",
+		OauthOpts: &OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://acuityscheduling.com/oauth2/authorize",
+			TokenURL:                  "https://acuityscheduling.com/oauth2/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Basecamp Configuration
+	// The wokspace in baseURL should be mapped to accounts.id
+	Basecamp: {
+		AuthType: Oauth2,
+		BaseURL:  "https://3.basecampapi.com/{{.workspace}}",
+		OauthOpts: &OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://launchpad.37signals.com/authorization/new?type=web_server",
+			TokenURL:                  "https://launchpad.37signals.com/authorization/token?type=refresh",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// SurveyMonkey configuration file
+	SurveyMonkey: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.surveymonkey.com",
+		OauthOpts: &OauthOpts{
+			AuthURL:                   "https://api.surveymonkey.com/oauth/authorize",
+			TokenURL:                  "https://api.surveymonkey.com/oauth/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+			GrantType:                 AuthorizationCode,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Teamwork configuration
+	Teamwork: {
+		AuthType: Oauth2,
+		BaseURL:  "https://{{.workspace}}.teamwork.com",
+		OauthOpts: &OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://www.teamwork.com/launchpad/login",
+			TokenURL:                  "https://www.teamwork.com/launchpad/v1/token.json",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: true,
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
