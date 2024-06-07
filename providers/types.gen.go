@@ -66,7 +66,7 @@ type ProviderInfo struct {
 	// DisplayName The display name of the provider, if omitted, defaults to provider name.
 	DisplayName string     `json:"displayName,omitempty"`
 	Name        string     `json:"name"`
-	OauthOpts   *OauthOpts `json:"oauthOpts,omitempty" validate:"required"`
+	OauthOpts   *OauthOpts `json:"oauthOpts,omitempty"`
 
 	// PostAuthInfoNeeded If true, we require additional information after auth to start making requests.
 	PostAuthInfoNeeded bool         `json:"postAuthInfoNeeded,omitempty"`

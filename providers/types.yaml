@@ -77,8 +77,6 @@ components:
 
     OauthOpts:
       type: object
-      x-oapi-codegen-extra-tags:
-        validate: required
       required:
           - grantType
           - tokenURL
