@@ -47,6 +47,7 @@ const (
 	Ironclad                Provider = "ironclad"
 	IroncladDemo            Provider = "ironcladDemo"
 	IroncladEU              Provider = "ironcladEU"
+	Iterable                Provider = "iterable"
 	Keap                    Provider = "keap"
 	Klaviyo                 Provider = "klaviyo"
 	LinkedIn                Provider = "linkedIn"
@@ -2108,6 +2109,28 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
 			GrantType:                 AuthorizationCode,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Iterable API Key authentication
+	Iterable: {
+		AuthType: ApiKey,
+		BaseURL:  "https://api.iterable.com",
+		ApiKeyOpts: &ApiKeyOpts{
+			HeaderName: "Api-Key",
+			DocsURL:    "https://app.iterable.com/settings/apiKeys",
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
