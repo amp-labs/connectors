@@ -12,6 +12,6 @@ jobs:
           cache: false
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
-        continue-on-error: true
+        continue-on-error: false
         with:
-          version: latest
+          version: v1.54
