@@ -72,6 +72,7 @@ const (
 	StackExchange           Provider = "stackExchange"
 	SurveyMonkey            Provider = "surveyMonkey"
 	TeamleaderCRM           Provider = "teamleaderCRM"
+	Teamwork                Provider = "teamwork"
 	Timely                  Provider = "timely"
 	Typeform                Provider = "typeform"
 	Webflow                 Provider = "webflow"
@@ -2108,6 +2109,31 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
 			GrantType:                 AuthorizationCode,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Teamwork configuration
+	Teamwork: {
+		AuthType: Oauth2,
+		BaseURL:  "https://{{.workspace}}.teamwork.com",
+		OauthOpts: &OauthOpts{
+			GrantType:                 AuthorizationCode,
+			AuthURL:                   "https://www.teamwork.com/launchpad/login",
+			TokenURL:                  "https://www.teamwork.com/launchpad/v1/token.json",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: true,
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
