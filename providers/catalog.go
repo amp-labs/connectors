@@ -2138,7 +2138,6 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				ConsumerRefField: "userId",
 			},
 		},
-
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
