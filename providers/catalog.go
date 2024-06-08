@@ -25,7 +25,7 @@ const (
 	Discord                 Provider = "discord"
 	Docusign                Provider = "docusign"
 	DocusignDeveloper       Provider = "docusignDeveloper"
-	Domo Provider = "domo"
+	Domo                    Provider = "domo"
 	Drift                   Provider = "drift"
 	Dropbox                 Provider = "dropbox"
 	DropboxSign             Provider = "dropboxSign"
