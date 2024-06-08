@@ -25,7 +25,7 @@ const (
 	Discord                 Provider = "discord"
 	Docusign                Provider = "docusign"
 	DocusignDeveloper       Provider = "docusignDeveloper"
-	Domo					Provider = "domo"
+	Domo                    Provider = "domo"
 	Drift                   Provider = "drift"
 	Dropbox                 Provider = "dropbox"
 	DropboxSign             Provider = "dropboxSign"
@@ -2126,12 +2126,12 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 
 	// Domo configuration file
 	Domo: {
-        AuthType: Oauth2,
-        BaseURL:  "https://api.domo.com",
+		AuthType: Oauth2,
+		BaseURL:  "https://api.domo.com",
 		OauthOpts: &OauthOpts{
-            GrantType: ClientCredentials,
-			TokenURL: "https://api.domo.com/oauth/token",
-            ExplicitScopesRequired:    false,
+			GrantType:                 ClientCredentials,
+			TokenURL:                  "https://api.domo.com/oauth/token",
+			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
@@ -2146,7 +2146,5 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Subscribe: false,
 			Write:     false,
 		},
-    },
-
-	
+	},
 }

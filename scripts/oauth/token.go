@@ -200,6 +200,7 @@ func (a *OAuthApp) processCallback(writer http.ResponseWriter, request *http.Req
 func (a *OAuthApp) Run() error {
 	if a.GrantType == providers.ClientCredentials {
 		src := a.ClientCredsConfig.TokenSource(context.Background())
+
 		tok, err := src.Token()
 		if err != nil {
 			return err
