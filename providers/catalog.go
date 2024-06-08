@@ -2133,7 +2133,12 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://api.domo.com/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField:      "scope",
+				ConsumerRefField: "userId",
+			},
 		},
+
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
