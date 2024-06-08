@@ -2124,7 +2124,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
-	//GoogleAds configuration file
+	// GoogleAds configuration file
 	GoogleAds: {
 		AuthType: Oauth2,
 		BaseURL:  "https://googleads.googleapis.com",
