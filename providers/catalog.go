@@ -26,7 +26,6 @@ const (
 	Docusign                Provider = "docusign"
 	DocusignDeveloper       Provider = "docusignDeveloper"
 	Domo					Provider = "domo"
-	DomoAT					Provider = "domoAT"
 	Drift                   Provider = "drift"
 	Dropbox                 Provider = "dropbox"
 	DropboxSign             Provider = "dropboxSign"
