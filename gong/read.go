@@ -28,7 +28,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		fields = config.Fields
 	}
 
-	res, err = c.get(ctx, fullURL)
+	res, err = c.Client.Get(ctx, fullURL)
 	if err != nil {
 		return nil, err
 	}
