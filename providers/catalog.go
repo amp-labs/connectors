@@ -1978,7 +1978,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://github.com/login/oauth/authorize",
 			TokenURL:                  "https://github.com/login/oauth/access_token",
-			ExplicitScopesRequired:    false,
+			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
