@@ -83,6 +83,7 @@ const (
 	ZohoCRM                 Provider = "zohoCRM"
 	Zoom                    Provider = "zoom"
 	Zuora                   Provider = "zuora"
+	Marketo                 Provider = "marketo"
 )
 
 // ================================================================================
@@ -2133,6 +2134,31 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		ApiKeyOpts: &ApiKeyOpts{
 			HeaderName: "Api-Key",
 			DocsURL:    "https://app.iterable.com/settings/apiKeys",
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Marketo configuration file
+	// workspace maps to marketo instance
+	Marketo: {
+		AuthType: Oauth2,
+		BaseURL:  "https:/{{.workspace}}.mktorest.com",
+		OauthOpts: &OauthOpts{
+			TokenURL:                  "https:/{{.workspace}}.mktorest.com/identity/oauth/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: true,
+			GrantType:                 ClientCredentials,
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
