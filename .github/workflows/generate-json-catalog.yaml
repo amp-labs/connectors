@@ -1,4 +1,4 @@
-name: Update catalog.json
+name: Publish JSON catalog
 
 on:
   pull_request:
@@ -26,6 +26,7 @@ jobs:
         shell: bash
 
       - name: Push changes
+        if: steps.filter.outputs.catalog == 'true'
         run: |
           git config --global user.email "no-reply@github.com"
           git config --global user.name "GitHub Actions"
