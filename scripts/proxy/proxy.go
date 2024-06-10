@@ -190,7 +190,7 @@ func mainOAuth2ClientCreds(ctx context.Context, provider string, substitutionsMa
 
 	oauthScopes := strings.Split(scopes, ",")
 
-	validateRequiredOAuth2Flags(ctx, provider, clientId, clientSecret)
+	validateRequiredOAuth2Flags(provider, clientId, clientSecret)
 	startOAuthClientCredsProxy(ctx, provider, oauthScopes, clientId, clientSecret, substitutionsMap, DefaultPort)
 }
 
@@ -206,7 +206,7 @@ func mainOAuth2AuthCode(ctx context.Context, provider string, substitutionsMap m
 
 	oauthScopes := strings.Split(scopes, ",")
 
-	validateRequiredOAuth2Flags(ctx, provider, clientId, clientSecret)
+	validateRequiredOAuth2Flags(provider, clientId, clientSecret)
 	startOAuthAuthCodeProxy(ctx, provider, oauthScopes, clientId, clientSecret, substitutionsMap, DefaultPort, tokens)
 }
 
@@ -286,7 +286,7 @@ func parseAccessTokenExpiry(expiryStr, timeFormat string) time.Time {
 	return expiry
 }
 
-func validateRequiredOAuth2Flags(ctx context.Context, provider, clientId, clientSecret string) {
+func validateRequiredOAuth2Flags(provider, clientId, clientSecret string) {
 	if provider == "" || clientId == "" || clientSecret == "" {
 		_, _ = fmt.Fprintln(os.Stderr, "Missing required flags: -provider, -client-id, -client-secret")
 
@@ -436,8 +436,11 @@ func configureOAuthClientCredentials(clientId, clientSecret string, scopes []str
 	cfg := &clientcredentials.Config{
 		ClientID:     clientId,
 		ClientSecret: clientSecret,
-		Scopes:       scopes,
 		TokenURL:     providerInfo.OauthOpts.TokenURL,
+	}
+
+	if providerInfo.OauthOpts.ExplicitScopesRequired {
+		cfg.Scopes = scopes
 	}
 
 	if providerInfo.OauthOpts.Audience != "" {
