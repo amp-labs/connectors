@@ -45,8 +45,10 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 	link.WithQueryParam("per_page", strconv.Itoa(DefaultPageSize))
 
 	if !config.Since.IsZero() {
-		// documentation states ISO8601, while server accepts different formats
-		// but for consistency sticking to one format
+		// Documentation states ISO8601, while server accepts different formats
+		// but for consistency we are sticking to one format to be sent.
+		// For the reference any API resource that has time specified iso8601 string.
+		// One example, say accounts: https://developers.salesloft.com/docs/api/accounts-index
 		updatedSince := config.Since.Format(time.RFC3339Nano)
 		link.WithQueryParam("updated_at[gte]", updatedSince)
 	}
