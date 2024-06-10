@@ -6,6 +6,7 @@ package providers
 
 const (
 	AcuityScheduling        Provider = "acuityScheduling"
+	AdobeExperiencePlatform Provider = "adobeExperiencePlatform"
 	Aha                     Provider = "aha"
 	Aircall                 Provider = "aircall"
 	Airtable                Provider = "airtable"
@@ -2310,6 +2311,30 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Type:       InHeader,
 			HeaderName: "Api-Key",
 			DocsURL:    "https://developer.getguru.com/docs/getting-started",
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// AdobePlatformExchange 2-legged auth
+	AdobeExperiencePlatform: {
+		AuthType: Oauth2,
+		BaseURL:  "https://platform.adobe.io",
+		OauthOpts: &OauthOpts{
+			GrantType:                 ClientCredentials,
+			TokenURL:                  "https://ims-na1.adobelogin.com/ims/token/v3",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
