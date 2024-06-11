@@ -5,9 +5,11 @@ import (
 	"bytes"
 	"context"
 	"encoding/gob"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
+	"os"
 	"reflect"
 	"strings"
 	"text/template" // nosemgrep: go.lang.security.audit.xss.import-text-template.import-text-template
@@ -24,6 +26,12 @@ var (
 	ErrClient                  = errors.New("client creation failed")
 )
 
+const (
+	// jsonCatalog is the path to the catalog.json file which is
+	// generated every time providers/catalog.go is updated.
+	jsonCatalogFilePath = "providers/catalog.json"
+)
+
 type CatalogOption func(params *catalogParams)
 
 type catalogParams struct {
@@ -35,6 +43,33 @@ func WithCatalog(c CatalogType) CatalogOption {
 	return func(params *catalogParams) {
 		params.catalog = c
 	}
+}
+
+// ReadLatestCatalog reads the catalog from the catalog.json file.
+func ReadLatestCatalog() (CatalogType, error) {
+	var jsonCatalog CatalogType
+
+	// Read the catalog from the catalog.json file
+	file, err := os.ReadFile(jsonCatalogFilePath)
+	if err != nil {
+		return nil, err
+	}
+
+	// Unmarshal the catalog from the file
+	if err := json.Unmarshal(file, &jsonCatalog); err != nil {
+		return nil, err
+	}
+
+	return jsonCatalog, nil
+}
+
+func ReadLatestInfo(provider Provider, substitutions *map[string]string) (*ProviderInfo, error) {
+	catalog, err := ReadLatestCatalog()
+	if err != nil {
+		return nil, err
+	}
+
+	return ReadInfo(provider, substitutions, WithCatalog(catalog))
 }
 
 func ReadCatalog(opts ...CatalogOption) (CatalogType, error) {
