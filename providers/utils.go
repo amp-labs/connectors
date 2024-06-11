@@ -24,8 +24,31 @@ var (
 	ErrClient                  = errors.New("client creation failed")
 )
 
-func ReadCatalog() (CatalogType, error) {
-	catalog, err := clone[CatalogType](catalog)
+type CatalogOption func(params *catalogParams)
+
+type catalogParams struct {
+	catalog CatalogType
+}
+
+// WithCatalog is an option that can be used to override the default catalog.
+func WithCatalog(c CatalogType) CatalogOption {
+	return func(params *catalogParams) {
+		params.catalog = c
+	}
+}
+
+func ReadCatalog(opts ...CatalogOption) (CatalogType, error) {
+	params := &catalogParams{catalog: catalog}
+
+	for _, opt := range opts {
+		opt(params)
+	}
+
+	if params.catalog == nil {
+		return nil, ErrProviderCatalogNotFound
+	}
+
+	catalog, err := clone[CatalogType](params.catalog)
 	if err != nil {
 		return nil, err
 	}
@@ -53,8 +76,18 @@ func SetInfo(provider Provider, info ProviderInfo) {
 
 // ReadInfo reads the information from the catalog for specific provider. It also performs string substitution
 // on the values in the config that are surrounded by {{}}.
-func ReadInfo(provider Provider, substitutions *map[string]string) (*ProviderInfo, error) {
-	pInfo, ok := catalog[provider]
+func ReadInfo(provider Provider, substitutions *map[string]string, opts ...CatalogOption) (*ProviderInfo, error) {
+	params := &catalogParams{catalog: catalog}
+
+	for _, opt := range opts {
+		opt(params)
+	}
+
+	if params.catalog == nil {
+		return nil, ErrProviderCatalogNotFound
+	}
+
+	pInfo, ok := params.catalog[provider]
 	if !ok {
 		return nil, ErrProviderCatalogNotFound
 	}
