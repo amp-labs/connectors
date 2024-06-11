@@ -8,6 +8,8 @@ import (
 	"github.com/amp-labs/connectors/providers"
 )
 
+const writePerm = 0o644
+
 func main() {
 	catalog, err := providers.ReadCatalog()
 	if err != nil {
@@ -21,7 +23,7 @@ func main() {
 
 	tempFile := "providers/catalog.json"
 
-	err = os.WriteFile(tempFile, bytes, 0o644)
+	err = os.WriteFile(tempFile, bytes, writePerm)
 	if err != nil {
 		log.Fatal(err)
 	}
