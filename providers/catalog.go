@@ -2159,6 +2159,9 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: true,
 			GrantType:                 ClientCredentials,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
