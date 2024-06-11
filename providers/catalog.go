@@ -51,6 +51,7 @@ const (
 	Keap                    Provider = "keap"
 	Klaviyo                 Provider = "klaviyo"
 	LinkedIn                Provider = "linkedIn"
+	Marketo                 Provider = "marketo"
 	Microsoft               Provider = "microsoft"
 	Miro                    Provider = "miro"
 	Mock                    Provider = "mock"
@@ -83,7 +84,6 @@ const (
 	ZohoCRM                 Provider = "zohoCRM"
 	Zoom                    Provider = "zoom"
 	Zuora                   Provider = "zuora"
-	Marketo                 Provider = "marketo"
 )
 
 // ================================================================================
