@@ -2153,9 +2153,9 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	// workspace maps to marketo instance
 	Marketo: {
 		AuthType: Oauth2,
-		BaseURL:  "https:/{{.workspace}}.mktorest.com",
+		BaseURL:  "https://{{.workspace}}.mktorest.com",
 		OauthOpts: &OauthOpts{
-			TokenURL:                  "https:/{{.workspace}}.mktorest.com/identity/oauth/token",
+			TokenURL:                  "https://{{.workspace}}.mktorest.com/identity/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: true,
 			GrantType:                 ClientCredentials,
