@@ -99,7 +99,7 @@ var readers = []utils.Reader{
 
 // OAuthApp is a simple OAuth app that can be used to get an OAuth token.
 type OAuthApp struct {
-	GrantType         providers.OauthOptsGrantType
+	GrantType         providers.Oauth2OptsGrantType
 	Callback          string
 	Port              int
 	Config            *oauth2.Config
@@ -298,7 +298,7 @@ func setup() *OAuthApp {
 		os.Exit(1)
 	}
 
-	if providerInfo.OauthOpts == nil {
+	if providerInfo.Oauth2Opts == nil {
 		slog.Error("provider does not have OAuth2 options, not compatible with this script", "provider", provider)
 
 		os.Exit(1)
@@ -315,9 +315,9 @@ func setup() *OAuthApp {
 
 	oauthScopes := strings.Split(scopes, ",")
 
-	switch providerInfo.OauthOpts.GrantType {
+	switch providerInfo.Oauth2Opts.GrantType {
 	case providers.AuthorizationCode:
-		if providerInfo.OauthOpts.AuthURL == "" {
+		if providerInfo.Oauth2Opts.AuthURL == "" {
 			slog.Error("provider does not have an AuthURL, not compatible with this script", "provider", provider)
 
 			os.Exit(1)
@@ -352,8 +352,8 @@ func setup() *OAuthApp {
 
 		// Set up the OAuth config based on the provider.
 		app.Config.Endpoint = oauth2.Endpoint{
-			AuthURL:   providerInfo.OauthOpts.AuthURL,
-			TokenURL:  providerInfo.OauthOpts.TokenURL,
+			AuthURL:   providerInfo.Oauth2Opts.AuthURL,
+			TokenURL:  providerInfo.Oauth2Opts.TokenURL,
 			AuthStyle: oauth2.AuthStyleAutoDetect,
 		}
 
@@ -370,7 +370,7 @@ func setup() *OAuthApp {
 			ClientCredsConfig: &clientcredentials.Config{
 				ClientID:     clientId,
 				ClientSecret: clientSecret,
-				TokenURL:     providerInfo.OauthOpts.TokenURL,
+				TokenURL:     providerInfo.Oauth2Opts.TokenURL,
 				Scopes:       oauthScopes,
 				AuthStyle:    oauth2.AuthStyleAutoDetect,
 			},
@@ -379,8 +379,8 @@ func setup() *OAuthApp {
 			app.State = state
 		}
 
-		if providerInfo.OauthOpts.Audience != "" {
-			aud := providerInfo.OauthOpts.Audience
+		if providerInfo.Oauth2Opts.Audience != "" {
+			aud := providerInfo.Oauth2Opts.Audience
 			app.ClientCredsConfig.EndpointParams = url.Values{"audience": {aud}}
 		}
 

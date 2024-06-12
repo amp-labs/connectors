@@ -10,10 +10,10 @@ import (
 	"net/http"
 	"reflect"
 	"strings"
-	"text/template" // nosemgrep: go.lang.security.audit.xss.import-text-template.import-text-template
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/go-playground/validator"
+	"text/template" // nosemgrep: go.lang.security.audit.xss.import-text-template.import-text-template
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
 )
@@ -247,11 +247,11 @@ func (i *ProviderInfo) NewClient(ctx context.Context, params *NewClientParams) (
 	case None:
 		return createUnauthenticatedClient(ctx, params.Client, params.Debug)
 	case Oauth2:
-		if i.OauthOpts == nil {
+		if i.Oauth2Opts == nil {
 			return nil, fmt.Errorf("%w: %s", ErrClient, "oauth2 options not found")
 		}
 
-		switch i.OauthOpts.GrantType {
+		switch i.Oauth2Opts.GrantType {
 		case AuthorizationCode:
 			return createOAuth2AuthCodeHTTPClient(ctx, params.Client, params.Debug, params.OAuth2AuthCodeCreds)
 		case ClientCredentials:
@@ -259,7 +259,7 @@ func (i *ProviderInfo) NewClient(ctx context.Context, params *NewClientParams) (
 		case PKCE:
 			return nil, fmt.Errorf("%w: %s", ErrClient, "PKCE grant type not supported")
 		default:
-			return nil, fmt.Errorf("%w: unsupported grant type %q", ErrClient, i.OauthOpts.GrantType)
+			return nil, fmt.Errorf("%w: unsupported grant type %q", ErrClient, i.Oauth2Opts.GrantType)
 		}
 	case Basic:
 		if params.BasicCreds == nil {
@@ -387,24 +387,43 @@ func createApiKeyHTTPClient( //nolint:ireturn
 	info *ProviderInfo,
 	apiKey string,
 ) (common.AuthenticatedHTTPClient, error) {
-	if info.ApiKeyOpts.ValuePrefix != "" {
-		apiKey = info.ApiKeyOpts.ValuePrefix + apiKey
+	if info.ApiKeyOpts.Type == InHeader {
+		if info.ApiKeyOpts.ValuePrefix != "" {
+			apiKey = info.ApiKeyOpts.ValuePrefix + apiKey
+		}
+
+		opts := []common.HeaderAuthClientOption{
+			common.WithHeaderClient(getClient(client)),
+		}
+
+		if dbg {
+			opts = append(opts, common.WithHeaderDebug(common.PrintRequestAndResponse))
+		}
+
+		c, err := common.NewApiKeyHeaderAuthHTTPClient(ctx, info.ApiKeyOpts.HeaderName, apiKey, opts...)
+		if err != nil {
+			return nil, fmt.Errorf("%w: failed to create api key client: %w", ErrClient, err)
+		}
+
+		return c, nil
+	} else if info.ApiKeyOpts.Type == InQuery {
+		opts := []common.QueryParamAuthClientOption{
+			common.WithQueryParamClient(getClient(client)),
+		}
+
+		if dbg {
+			opts = append(opts, common.WithQueryParamDebug(common.PrintRequestAndResponse))
+		}
+
+		c, err := common.NewApiKeyQueryParamAuthHTTPClient(ctx, info.ApiKeyOpts.QueryParamName, apiKey, opts...)
+		if err != nil {
+			return nil, fmt.Errorf("%w: failed to create api key client: %w", ErrClient, err)
+		}
+
+		return c, nil
 	}
 
-	opts := []common.HeaderAuthClientOption{
-		common.WithHeaderClient(getClient(client)),
-	}
-
-	if dbg {
-		opts = append(opts, common.WithHeaderDebug(common.PrintRequestAndResponse))
-	}
-
-	c, err := common.NewApiKeyAuthHTTPClient(ctx, info.ApiKeyOpts.HeaderName, apiKey, opts...)
-	if err != nil {
-		panic(err)
-	}
-
-	return c, nil
+	return nil, fmt.Errorf("%w: unsupported api key type %q", ErrClient, info.ApiKeyOpts.Type)
 }
 
 // clone uses gob to deep copy objects.
