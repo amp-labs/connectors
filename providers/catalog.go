@@ -6,6 +6,7 @@ package providers
 
 const (
 	AcuityScheduling        Provider = "acuityScheduling"
+	ActiveCampaign          Provider = "activeCampaign"
 	Aha                     Provider = "aha"
 	Aircall                 Provider = "aircall"
 	Airtable                Provider = "airtable"
@@ -2060,6 +2061,28 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://acuityscheduling.com/oauth2/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// ActiveCampaign Configuration
+	ActiveCampaign: {
+		AuthType: ApiKey,
+		BaseURL:  "https://{{.workspace}}.api-us1.com",
+		ApiKeyOpts: &ApiKeyOpts{
+			HeaderName: "Api-Token",
+			DocsURL:    "https://help.activecampaign.com/hc/en-us/articles/115001012084-How-to-find-your-API-key",
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
