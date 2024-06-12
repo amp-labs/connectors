@@ -57,6 +57,7 @@ const (
 	Monday                  Provider = "monday"
 	Mural                   Provider = "mural"
 	Notion                  Provider = "notion"
+	OpenAI                  Provider = "openAI"
 	Outreach                Provider = "outreach"
 	Pinterest               Provider = "pinterest"
 	Pipedrive               Provider = "pipedrive"
@@ -637,6 +638,28 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Delete: false,
 			},
 			Proxy:     true,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	OpenAI: {
+		AuthType: ApiKey,
+		BaseURL:  "https://api.openai.com",
+		ApiKeyOpts: &ApiKeyOpts{
+			HeaderName:  "Authorization",
+			ValuePrefix: "Bearer ",
+			DocsURL:     "https://platform.openai.com/docs/api-reference/api-keys",
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
