@@ -42,6 +42,7 @@ const (
 	GoogleContacts          Provider = "googleContacts"
 	HelpScoutMailbox        Provider = "helpScoutMailbox"
 	Hubspot                 Provider = "hubspot"
+	Hunter                  Provider = "hunter"
 	Instagram               Provider = "instagram"
 	Intercom                Provider = "intercom"
 	Ironclad                Provider = "ironclad"
@@ -2133,6 +2134,28 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		ApiKeyOpts: &ApiKeyOpts{
 			HeaderName: "Api-Key",
 			DocsURL:    "https://app.iterable.com/settings/apiKeys",
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Hunter configuration
+	Hunter: {
+		AuthType: ApiKey,
+		BaseURL:  "https://api.hunter.io",
+		ApiKeyOpts: &ApiKeyOpts{
+			HeaderName: "X-API-KEY",
+			DocsURL:    "https://hunter.io/api-documentation/v2",
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
