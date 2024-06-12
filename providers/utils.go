@@ -387,7 +387,7 @@ func createApiKeyHTTPClient( //nolint:ireturn
 	info *ProviderInfo,
 	apiKey string,
 ) (common.AuthenticatedHTTPClient, error) {
-	if info.ApiKeyOpts.Type == InHeader {
+	if info.ApiKeyOpts.Type == InHeader { //nolint:nestif
 		if info.ApiKeyOpts.ValuePrefix != "" {
 			apiKey = info.ApiKeyOpts.ValuePrefix + apiKey
 		}
