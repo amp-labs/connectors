@@ -388,7 +388,7 @@ func createApiKeyHTTPClient( //nolint:ireturn
 	apiKey string,
 ) (common.AuthenticatedHTTPClient, error) {
 	if info.ApiKeyOpts.ValuePrefix != "" {
-		apiKey = info.ApiKeyOpts.ValuePrefix + apiKey
+		apiKey = info.ApiKeyOpts.ValuePrefix + " " + apiKey
 	}
 
 	opts := []common.HeaderAuthClientOption{
