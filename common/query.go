@@ -66,7 +66,10 @@ func (p *queryParamClientParams) prepare() *queryParamClientParams {
 }
 
 // newQueryParamAuthClient returns a new http client for the connector, with automatic OAuth authentication.
-func newQueryParamAuthClient(_ context.Context, params *queryParamClientParams) AuthenticatedHTTPClient { //nolint:ireturn
+func newQueryParamAuthClient( //nolint:ireturn
+	_ context.Context,
+	params *queryParamClientParams,
+) AuthenticatedHTTPClient {
 	return &queryParamAuthClient{
 		client: params.client,
 		params: params.params,
