@@ -90,11 +90,10 @@ func HubspotOAuthConfigFromRegistry(registry CredentialsRegistry) *oauth2.Config
 	return cfg
 }
 
-var MSDynamics365CRMWorkspace = "org5bd08fdd" //nolint:gochecknoglobals
-
 func MSDynamics365CRMConfigFromRegistry(registry CredentialsRegistry) *oauth2.Config {
 	clientId := registry.MustString(ClientId)
 	clientSecret := registry.MustString(ClientSecret)
+	workspace := registry.MustString(WorkspaceRef)
 
 	cfg := &oauth2.Config{
 		ClientID:     clientId,
@@ -106,7 +105,7 @@ func MSDynamics365CRMConfigFromRegistry(registry CredentialsRegistry) *oauth2.Co
 			AuthStyle: oauth2.AuthStyleInParams,
 		},
 		Scopes: []string{
-			fmt.Sprintf("https://%v.crm.dynamics.com/user_impersonation", MSDynamics365CRMWorkspace),
+			fmt.Sprintf("https://%v.crm.dynamics.com/user_impersonation", workspace),
 			"offline_access",
 		},
 	}
