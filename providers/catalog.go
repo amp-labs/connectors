@@ -43,6 +43,7 @@ const (
 	HelpScoutMailbox        Provider = "helpScoutMailbox"
 	Hubspot                 Provider = "hubspot"
 	Instagram               Provider = "instagram"
+	Insightly               Provider = "insightly"
 	Intercom                Provider = "intercom"
 	Ironclad                Provider = "ironclad"
 	IroncladDemo            Provider = "ironcladDemo"
@@ -2134,6 +2135,29 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Type:       InHeader,
 			HeaderName: "Api-Key",
 			DocsURL:    "https://app.iterable.com/settings/apiKeys",
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Insightly API Key authentication
+	Insightly: {
+		AuthType: ApiKey,
+		BaseURL:  "https://api.na1.insightly.com",
+		ApiKeyOpts: &ApiKeyOpts{
+			Type:       InHeader,
+			HeaderName: "Api-Key",
+			DocsURL:    "https://api.na1.insightly.com/v3.1/#!/Overview/Introduction",
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
