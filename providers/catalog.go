@@ -2149,11 +2149,13 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Write:     false,
 		},
 	},
+
 	// Apollo Io API Key authentication
 	ApolloIo: {
 		AuthType: ApiKey,
 		BaseURL:  "https://api.apollo.io",
 		ApiKeyOpts: &ApiKeyOpts{
+			Type:       InHeader,
 			HeaderName: "Api-Key",
 			DocsURL:    "https://app.apollo.io/#/settings/integrations/api",
 		},
@@ -2170,5 +2172,4 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Write:     false,
 		},
 	},
-
 }
