@@ -9,6 +9,7 @@ const (
 	Aha                     Provider = "aha"
 	Aircall                 Provider = "aircall"
 	Airtable                Provider = "airtable"
+	ApolloIo                Provider = "apolloIo"
 	Asana                   Provider = "asana"
 	Atlassian               Provider = "atlassian"
 	Attio                   Provider = "attio"
@@ -2148,4 +2149,26 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Write:     false,
 		},
 	},
+	// Apollo Io API Key authentication
+	ApolloIo: {
+		AuthType: ApiKey,
+		BaseURL:  "https://api.apollo.io",
+		ApiKeyOpts: &ApiKeyOpts{
+			HeaderName: "Api-Key",
+			DocsURL:    "https://app.apollo.io/#/settings/integrations/api",
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
 }
