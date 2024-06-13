@@ -648,6 +648,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: ApiKey,
 		BaseURL:  "https://api.openai.com",
 		ApiKeyOpts: &ApiKeyOpts{
+			Type:        InHeader,
 			HeaderName:  "Authorization",
 			ValuePrefix: "Bearer ",
 			DocsURL:     "https://platform.openai.com/docs/api-reference/api-keys",
