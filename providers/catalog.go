@@ -22,6 +22,7 @@ const (
 	Close                   Provider = "close"
 	ConstantContact         Provider = "constantContact"
 	Copper                  Provider = "copper"
+	CustomerIO              Provider = "customerIO"
 	Discord                 Provider = "discord"
 	Docusign                Provider = "docusign"
 	DocusignDeveloper       Provider = "docusignDeveloper"
@@ -360,6 +361,29 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Delete: false,
 			},
 			Proxy:     true,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	CustomerIO: {
+		AuthType: ApiKey,
+		BaseURL:  "...",
+		ApiKeyOpts: &ApiKeyOpts{
+			Type:        InHeader,
+			HeaderName:  "Authorization",
+			ValuePrefix: "Bearer ",
+			DocsURL:     "https://platform.openai.com/docs/api-reference/api-keys",
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
