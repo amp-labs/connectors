@@ -6,7 +6,7 @@ const (
 	IroncladEU   Provider = "ironcladEU"
 )
 
-func init() {
+func init() { //nolint:funlen
 	// Ironclad Support Configuration
 	SetInfo(Ironclad, ProviderInfo{
 		AuthType: Oauth2,
