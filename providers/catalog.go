@@ -40,6 +40,7 @@ const (
 	Gong                    Provider = "gong"
 	Google                  Provider = "google"
 	GoogleContacts          Provider = "googleContacts"
+	Guru                    Provider = "guru"
 	HelpScoutMailbox        Provider = "helpScoutMailbox"
 	Hubspot                 Provider = "hubspot"
 	Instagram               Provider = "instagram"
@@ -2134,6 +2135,29 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Type:       InHeader,
 			HeaderName: "Api-Key",
 			DocsURL:    "https://app.iterable.com/settings/apiKeys",
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Guru API Key authentication
+	Guru: {
+		AuthType: ApiKey,
+		BaseURL:  "https://api.getguru.com",
+		ApiKeyOpts: &ApiKeyOpts{
+			Type:       InHeader,
+			HeaderName: "Api-Key",
+			DocsURL:    "https://developer.getguru.com/docs/getting-started",
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
