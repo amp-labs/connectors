@@ -22,6 +22,7 @@ const (
 	Close                   Provider = "close"
 	ConstantContact         Provider = "constantContact"
 	Copper                  Provider = "copper"
+	CustomerJourneysTrack   Provider = "customerJourneysTrack"
 	Discord                 Provider = "discord"
 	Docusign                Provider = "docusign"
 	DocusignDeveloper       Provider = "docusignDeveloper"
@@ -360,6 +361,24 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Delete: false,
 			},
 			Proxy:     true,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	CustomerJourneysTrack: {
+		AuthType: ApiKey,
+		BaseURL:  "https://track.customer.io",
+		// DocsURL: https://customer.io/docs/api/track/#section/Authentication
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
