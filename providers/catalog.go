@@ -46,6 +46,7 @@ const (
 	GoogleContacts          Provider = "googleContacts"
 	HelpScoutMailbox        Provider = "helpScoutMailbox"
 	Hubspot                 Provider = "hubspot"
+	Hunter                  Provider = "hunter"
 	Instagram               Provider = "instagram"
 	Intercom                Provider = "intercom"
 	Ironclad                Provider = "ironclad"
@@ -2212,6 +2213,31 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Hunter Configuration
+    Hunter: {
+        AuthType: ApiKey,
+        BaseURL: "https://api.hunter.io/",
+        // For 6sense, the header needs to be 'Authorization: Token {your_api_key}'
+        ApiKeyOpts: &ApiKeyOpts{
+            Type:        InQuery, // Can also be InQuery
+			// HeaderName: "X-API-KEY",
+			QueryParamName: "api_key",
+            DocsURL: "https://hunter.io/api-documentation#authentication",
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+             Insert: false,
+             Update: false,
+             Upsert: false,
+             Delete: false,
+            },
 			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
