@@ -55,6 +55,7 @@ const (
 	LinkedIn                Provider = "linkedIn"
 	Microsoft               Provider = "microsoft"
 	Miro                    Provider = "miro"
+	Mixmax                  Provider = "mixmax"
 	Mock                    Provider = "mock"
 	Monday                  Provider = "monday"
 	Mural                   Provider = "mural"
@@ -2150,8 +2151,8 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Write:     false,
 		},
 	},
-  
-  // Blueshift configuration
+
+	// Blueshift configuration
 	Blueshift: {
 		AuthType: Basic,
 		BaseURL:  "https://api.getblueshift.com/api",
@@ -2170,11 +2171,16 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		PostAuthInfoNeeded: false,
 	},
 
-	// BlueshiftEU configuration
-	BlueshiftEU: {
-		AuthType: Basic,
-		BaseURL:  "https://api.eu.getblueshift.com/api",
-    Support: Support{
+	// Mixmax API Key authentication
+	Mixmax: {
+		AuthType: ApiKey,
+		BaseURL:  "https://api.mixmax.com",
+		ApiKeyOpts: &ApiKeyOpts{
+			Type:       InHeader,
+			HeaderName: "X-API-Token",
+			DocsURL:    "https://developer.mixmax.com/reference/getting-started-with-the-api",
+		},
+		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
 				Update: false,
@@ -2186,6 +2192,5 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Subscribe: false,
 			Write:     false,
 		},
-		PostAuthInfoNeeded: false,
 	},
 }
