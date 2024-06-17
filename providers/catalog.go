@@ -368,7 +368,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	},
 
 	CustomerJourneysTrack: {
-		AuthType: ApiKey,
+		AuthType: Basic,
 		BaseURL:  "https://track.customer.io",
 		// DocsURL: https://customer.io/docs/api/track/#section/Authentication
 		Support: Support{
