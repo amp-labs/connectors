@@ -24,6 +24,7 @@ const (
 	Close                   Provider = "close"
 	ConstantContact         Provider = "constantContact"
 	Copper                  Provider = "copper"
+	CustomerDataPipelines   Provider = "customerDataPipelines"
 	Discord                 Provider = "discord"
 	Docusign                Provider = "docusign"
 	DocusignDeveloper       Provider = "docusignDeveloper"
@@ -364,6 +365,24 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Delete: false,
 			},
 			Proxy:     true,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	CustomerDataPipelines: {
+		AuthType: Basic,
+		BaseURL:  "https://cdp.customer.io/v1",
+		// DocsURL: https://customer.io/docs/api/cdp/#section/Authentication
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
