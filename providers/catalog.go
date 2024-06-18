@@ -2193,4 +2193,23 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Write:     false,
 		},
 	},
+
+	// BlueshiftEU configuration
+	BlueshiftEU: {
+		AuthType: Basic,
+		BaseURL:  "https://api.eu.getblueshift.com/api",
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+		PostAuthInfoNeeded: false,
+	},
 }
