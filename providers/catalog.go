@@ -14,6 +14,7 @@ const (
 	Attio                   Provider = "attio"
 	AWeber                  Provider = "aWeber"
 	Basecamp                Provider = "basecamp"
+	BlueshiftEU             Provider = "blueshiftEU"
 	Blueshift               Provider = "blueshift"
 	Box                     Provider = "box"
 	Calendly                Provider = "calendly"
@@ -2149,12 +2150,31 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Write:     false,
 		},
 	},
-
-	// Blueshift configuration
+  
+  // Blueshift configuration
 	Blueshift: {
 		AuthType: Basic,
 		BaseURL:  "https://api.getblueshift.com/api",
 		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+		PostAuthInfoNeeded: false,
+	},
+
+	// BlueshiftEU configuration
+	BlueshiftEU: {
+		AuthType: Basic,
+		BaseURL:  "https://api.eu.getblueshift.com/api",
+    Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
 				Update: false,
