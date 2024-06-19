@@ -47,6 +47,7 @@ const (
 	HelpScoutMailbox        Provider = "helpScoutMailbox"
 	Hubspot                 Provider = "hubspot"
 	Hunter                  Provider = "hunter"
+	Hive                    Provider = "hive"
 	Instagram               Provider = "instagram"
 	Intercom                Provider = "intercom"
 	Ironclad                Provider = "ironclad"
@@ -2228,6 +2229,29 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Type:           InQuery,
 			QueryParamName: "api_key",
 			DocsURL:        "https://hunter.io/api-documentation#authentication",
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Hive Connector Configuration
+	Hive: {
+		AuthType: ApiKey,
+		BaseURL:  "https://app.hive.com",
+		ApiKeyOpts: &ApiKeyOpts{
+			Type:       InHeader,
+			HeaderName: "Api-Key",
+			DocsURL:    "https://developers.hive.com/reference/api-keys-and-auth",
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
