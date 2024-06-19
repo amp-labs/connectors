@@ -227,9 +227,11 @@ func mainBasic(ctx context.Context, provider string, substitutionsMap map[string
 	if len(user)+len(pass) == 0 {
 		log.Fatalf("Missing username or password")
 	}
+
 	if len(user) == 0 {
 		slog.Warn("no username for basic authentication, ensure that it is not required")
 	}
+
 	if len(pass) == 0 {
 		slog.Warn("no password for basic authentication, ensure that it is not required")
 	}

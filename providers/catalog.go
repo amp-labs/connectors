@@ -46,6 +46,7 @@ const (
 	GoogleContacts          Provider = "googleContacts"
 	HelpScoutMailbox        Provider = "helpScoutMailbox"
 	Hubspot                 Provider = "hubspot"
+	Hunter                  Provider = "hunter"
 	Instagram               Provider = "instagram"
 	Intercom                Provider = "intercom"
 	Ironclad                Provider = "ironclad"
@@ -2219,76 +2220,14 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
-	// Blueshift configuration
-	Blueshift: {
-		AuthType: Basic,
-		BaseURL:  "https://api.getblueshift.com/api",
-		Support: Support{
-			BulkWrite: BulkWriteSupport{
-				Insert: false,
-				Update: false,
-				Upsert: false,
-				Delete: false,
-			},
-			Proxy:     false,
-			Read:      false,
-			Subscribe: false,
-			Write:     false,
-		},
-		PostAuthInfoNeeded: false,
-	},
-
-	// Mixmax API Key authentication
-	Mixmax: {
+	// Hunter Connector Configuration
+	Hunter: {
 		AuthType: ApiKey,
-		BaseURL:  "https://api.mixmax.com",
+		BaseURL:  "https://api.hunter.io/",
 		ApiKeyOpts: &ApiKeyOpts{
-			Type:       InHeader,
-			HeaderName: "X-API-Token",
-			DocsURL:    "https://developer.mixmax.com/reference/getting-started-with-the-api",
-		},
-		Support: Support{
-			BulkWrite: BulkWriteSupport{
-				Insert: false,
-				Update: false,
-				Upsert: false,
-				Delete: false,
-			},
-			Proxy:     false,
-			Read:      false,
-			Subscribe: false,
-			Write:     false,
-		},
-	},
-
-	// BlueshiftEU configuration
-	BlueshiftEU: {
-		AuthType: Basic,
-		BaseURL:  "https://api.eu.getblueshift.com/api",
-		Support: Support{
-			BulkWrite: BulkWriteSupport{
-				Insert: false,
-				Update: false,
-				Upsert: false,
-				Delete: false,
-			},
-			Proxy:     false,
-			Read:      false,
-			Subscribe: false,
-			Write:     false,
-		},
-		PostAuthInfoNeeded: false,
-	},
-
-	// MessageBird configuration
-	MessageBird: {
-		AuthType: ApiKey,
-		BaseURL:  "https://api.bird.com",
-		ApiKeyOpts: &ApiKeyOpts{
-			Type:        InHeader,
-			HeaderName:  "Authorization",
-			ValuePrefix: "AccessKey ",
-			DocsURL:     "https://docs.bird.com/api",
+			Type:           InQuery,
+			QueryParamName: "api_key",
+			DocsURL:        "https://hunter.io/api-documentation#authentication",
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
