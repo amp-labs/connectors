@@ -6,14 +6,18 @@ package providers
 
 const (
 	AcuityScheduling        Provider = "acuityScheduling"
+	AdobeExperiencePlatform Provider = "adobeExperiencePlatform"
 	Aha                     Provider = "aha"
 	Aircall                 Provider = "aircall"
 	Airtable                Provider = "airtable"
+	Anthropic               Provider = "anthropic"
 	Asana                   Provider = "asana"
 	Atlassian               Provider = "atlassian"
 	Attio                   Provider = "attio"
 	AWeber                  Provider = "aWeber"
 	Basecamp                Provider = "basecamp"
+	BlueshiftEU             Provider = "blueshiftEU"
+	Blueshift               Provider = "blueshift"
 	Box                     Provider = "box"
 	Calendly                Provider = "calendly"
 	CampaignMonitor         Provider = "campaignMonitor"
@@ -22,10 +26,13 @@ const (
 	Close                   Provider = "close"
 	ConstantContact         Provider = "constantContact"
 	Copper                  Provider = "copper"
+	CustomerDataPipelines   Provider = "customerDataPipelines"
 	CustomerJourneysApp     Provider = "customerJourneysApp"
+	CustomerJourneysTrack   Provider = "customerJourneysTrack"
 	Discord                 Provider = "discord"
 	Docusign                Provider = "docusign"
 	DocusignDeveloper       Provider = "docusignDeveloper"
+	Domo                    Provider = "domo"
 	Drift                   Provider = "drift"
 	Dropbox                 Provider = "dropbox"
 	DropboxSign             Provider = "dropboxSign"
@@ -41,8 +48,10 @@ const (
 	Gong                    Provider = "gong"
 	Google                  Provider = "google"
 	GoogleContacts          Provider = "googleContacts"
+	Guru                    Provider = "guru"
 	HelpScoutMailbox        Provider = "helpScoutMailbox"
 	Hubspot                 Provider = "hubspot"
+	Hunter                  Provider = "hunter"
 	Instagram               Provider = "instagram"
 	Intercom                Provider = "intercom"
 	Ironclad                Provider = "ironclad"
@@ -52,12 +61,16 @@ const (
 	Keap                    Provider = "keap"
 	Klaviyo                 Provider = "klaviyo"
 	LinkedIn                Provider = "linkedIn"
+	Marketo                 Provider = "marketo"
+	MessageBird             Provider = "messageBird"
 	Microsoft               Provider = "microsoft"
 	Miro                    Provider = "miro"
+	Mixmax                  Provider = "mixmax"
 	Mock                    Provider = "mock"
 	Monday                  Provider = "monday"
 	Mural                   Provider = "mural"
 	Notion                  Provider = "notion"
+	OpenAI                  Provider = "openAI"
 	Outreach                Provider = "outreach"
 	Pinterest               Provider = "pinterest"
 	Pipedrive               Provider = "pipedrive"
@@ -171,7 +184,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -367,6 +380,24 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
+	CustomerDataPipelines: {
+		AuthType: Basic,
+		BaseURL:  "https://cdp.customer.io/v1",
+		// DocsURL: https://customer.io/docs/api/cdp/#section/Authentication
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
 	CustomerJourneysApp: {
 		AuthType: ApiKey,
 		BaseURL:  "https://api.customer.io",
@@ -376,6 +407,24 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			ValuePrefix: "Bearer ",
 			DocsURL:     "https://customer.io/docs/api/app/#section/Authentication",
 		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	CustomerJourneysTrack: {
+		AuthType: Basic,
+		BaseURL:  "https://track.customer.io",
+		// DocsURL: https://customer.io/docs/api/track/#section/Authentication
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
@@ -661,6 +710,29 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Delete: false,
 			},
 			Proxy:     true,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	OpenAI: {
+		AuthType: ApiKey,
+		BaseURL:  "https://api.openai.com",
+		ApiKeyOpts: &ApiKeyOpts{
+			Type:        InHeader,
+			HeaderName:  "Authorization",
+			ValuePrefix: "Bearer ",
+			DocsURL:     "https://platform.openai.com/docs/api-reference/api-keys",
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -1126,6 +1198,28 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
 			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	Anthropic: {
+		AuthType: ApiKey,
+		BaseURL:  "https://api.anthropic.com",
+		ApiKeyOpts: &ApiKeyOpts{
+			Type:       InHeader,
+			HeaderName: "x-api-key",
+			DocsURL:    "https://docs.anthropic.com/en/api/getting-started#authentication",
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -2002,8 +2096,8 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://github.com/login/oauth/authorize",
 			TokenURL:                  "https://github.com/login/oauth/access_token",
-			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
+			ExplicitScopesRequired:    true,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
 			},
@@ -2150,6 +2244,34 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
+	// Domo configuration file
+	Domo: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.domo.com",
+		Oauth2Opts: &Oauth2Opts{
+			GrantType:                 ClientCredentials,
+			TokenURL:                  "https://api.domo.com/oauth/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField:      "scope",
+				ConsumerRefField: "userId",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
 	// Iterable API Key authentication
 	Iterable: {
 		AuthType: ApiKey,
@@ -2158,6 +2280,104 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Type:       InHeader,
 			HeaderName: "Api-Key",
 			DocsURL:    "https://app.iterable.com/settings/apiKeys",
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Marketo configuration file
+	// workspace maps to marketo instance
+	Marketo: {
+		AuthType: Oauth2,
+		BaseURL:  "https://{{.workspace}}.mktorest.com",
+		Oauth2Opts: &Oauth2Opts{
+			TokenURL:                  "https://{{.workspace}}.mktorest.com/identity/oauth/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: true,
+			GrantType:                 ClientCredentials,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Hunter Connector Configuration
+	Hunter: {
+		AuthType: ApiKey,
+		BaseURL:  "https://api.hunter.io/",
+		ApiKeyOpts: &ApiKeyOpts{
+			Type:           InQuery,
+			QueryParamName: "api_key",
+			DocsURL:        "https://hunter.io/api-documentation#authentication",
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Guru API Key authentication
+	Guru: {
+		AuthType: ApiKey,
+		BaseURL:  "https://api.getguru.com",
+		ApiKeyOpts: &ApiKeyOpts{
+			Type:       InHeader,
+			HeaderName: "Api-Key",
+			DocsURL:    "https://developer.getguru.com/docs/getting-started",
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// AdobeExperiencePlatform 2-legged auth
+	AdobeExperiencePlatform: {
+		AuthType: Oauth2,
+		BaseURL:  "https://platform.adobe.io",
+		Oauth2Opts: &Oauth2Opts{
+			GrantType:                 ClientCredentials,
+			TokenURL:                  "https://ims-na1.adobelogin.com/ims/token/v3",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
