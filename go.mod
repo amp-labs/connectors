@@ -10,9 +10,9 @@ require (
 	github.com/go-test/deep v1.1.0
 	github.com/iancoleman/strcase v0.3.0
 	github.com/joho/godotenv v1.5.1
-	github.com/spf13/cobra v1.8.0
+	github.com/spf13/cobra v1.8.1
 	github.com/spf13/viper v1.19.0
-	github.com/spyzhov/ajson v0.9.2
+	github.com/spyzhov/ajson v0.9.3
 	github.com/stretchr/testify v1.9.0
 	github.com/subchen/go-xmldom v1.1.2
 	golang.org/x/oauth2 v0.21.0
