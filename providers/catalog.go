@@ -45,6 +45,7 @@ const (
 	Gong                    Provider = "gong"
 	Google                  Provider = "google"
 	GoogleContacts          Provider = "googleContacts"
+	Guru                    Provider = "guru"
 	HelpScoutMailbox        Provider = "helpScoutMailbox"
 	Hubspot                 Provider = "hubspot"
 	Hunter                  Provider = "hunter"
@@ -2286,6 +2287,29 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Type:           InQuery,
 			QueryParamName: "api_key",
 			DocsURL:        "https://hunter.io/api-documentation#authentication",
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Guru API Key authentication
+	Guru: {
+		AuthType: ApiKey,
+		BaseURL:  "https://api.getguru.com",
+		ApiKeyOpts: &ApiKeyOpts{
+			Type:       InHeader,
+			HeaderName: "Api-Key",
+			DocsURL:    "https://developer.getguru.com/docs/getting-started",
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
