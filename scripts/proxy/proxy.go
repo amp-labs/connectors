@@ -224,8 +224,16 @@ func mainBasic(ctx context.Context, provider string, substitutionsMap map[string
 	user := registry.MustString("UserName")
 	pass := registry.MustString("Password")
 
-	if user == "" || pass == "" {
+	if len(user)+len(pass) == 0 {
 		log.Fatalf("Missing username or password")
+	}
+
+	if len(user) == 0 {
+		slog.Warn("no username for basic authentication, ensure that it is not required")
+	}
+
+	if len(pass) == 0 {
+		slog.Warn("no password for basic authentication, ensure that it is not required")
 	}
 
 	startBasicAuthProxy(ctx, provider, user, pass, substitutionsMap, DefaultPort)
@@ -236,6 +244,7 @@ func mainBasic(ctx context.Context, provider string, substitutionsMap map[string
 func getTokensFromRegistry() *oauth2.Token {
 	accessToken := registry.MustString("AccessToken")
 	refreshToken, err := registry.GetString("RefreshToken")
+
 	if err != nil {
 		// we are working without refresh token
 		return &oauth2.Token{
