@@ -58,6 +58,7 @@ const (
 	IroncladDemo            Provider = "ironcladDemo"
 	IroncladEU              Provider = "ironcladEU"
 	Iterable                Provider = "iterable"
+	Jotform                 Provider = "jotform"
 	Keap                    Provider = "keap"
 	Klaviyo                 Provider = "klaviyo"
 	LinkedIn                Provider = "linkedIn"
@@ -2378,6 +2379,29 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			TokenURL:                  "https://ims-na1.adobelogin.com/ims/token/v3",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Jotform API Key authentication
+	Jotform: {
+		AuthType: ApiKey,
+		BaseURL:  "https://api.jotform.com",
+		ApiKeyOpts: &ApiKeyOpts{
+			Type:           InQuery,
+			QueryParamName: "api_key",
+			DocsURL:        "https://api.jotform.com/docs/",
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
