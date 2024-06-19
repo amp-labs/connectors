@@ -158,17 +158,17 @@ func main() {
 
 	switch info.AuthType {
 	case providers.Oauth2:
-		if info.OauthOpts == nil {
+		if info.Oauth2Opts == nil {
 			log.Fatalf("Missing OAuth options for provider %s", provider)
 		}
 
-		switch info.OauthOpts.GrantType {
+		switch info.Oauth2Opts.GrantType {
 		case providers.ClientCredentials:
 			mainOAuth2ClientCreds(ctx, provider, substitutionsMap)
 		case providers.AuthorizationCode:
 			mainOAuth2AuthCode(ctx, provider, substitutionsMap)
 		default:
-			log.Fatalf("Unsupported OAuth2 grant type: %s", info.OauthOpts.GrantType)
+			log.Fatalf("Unsupported OAuth2 grant type: %s", info.Oauth2Opts.GrantType)
 		}
 	case providers.ApiKey:
 		mainApiKey(ctx, provider, substitutionsMap)
@@ -224,8 +224,16 @@ func mainBasic(ctx context.Context, provider string, substitutionsMap map[string
 	user := registry.MustString("UserName")
 	pass := registry.MustString("Password")
 
-	if user == "" || pass == "" {
+	if len(user)+len(pass) == 0 {
 		log.Fatalf("Missing username or password")
+	}
+
+	if len(user) == 0 {
+		slog.Warn("no username for basic authentication, ensure that it is not required")
+	}
+
+	if len(pass) == 0 {
+		slog.Warn("no password for basic authentication, ensure that it is not required")
 	}
 
 	startBasicAuthProxy(ctx, provider, user, pass, substitutionsMap, DefaultPort)
@@ -437,15 +445,15 @@ func configureOAuthClientCredentials(clientId, clientSecret string, scopes []str
 	cfg := &clientcredentials.Config{
 		ClientID:     clientId,
 		ClientSecret: clientSecret,
-		TokenURL:     providerInfo.OauthOpts.TokenURL,
+		TokenURL:     providerInfo.Oauth2Opts.TokenURL,
 	}
 
-	if providerInfo.OauthOpts.ExplicitScopesRequired {
+	if providerInfo.Oauth2Opts.ExplicitScopesRequired {
 		cfg.Scopes = scopes
 	}
 
-	if providerInfo.OauthOpts.Audience != "" {
-		aud := providerInfo.OauthOpts.Audience
+	if providerInfo.Oauth2Opts.Audience != "" {
+		aud := providerInfo.Oauth2Opts.Audience
 		cfg.EndpointParams = url.Values{"audience": {aud}}
 	}
 
@@ -458,8 +466,8 @@ func configureOAuthAuthCode(clientId, clientSecret string, scopes []string, prov
 		ClientSecret: clientSecret,
 		Scopes:       scopes,
 		Endpoint: oauth2.Endpoint{
-			AuthURL:   providerInfo.OauthOpts.AuthURL,
-			TokenURL:  providerInfo.OauthOpts.TokenURL,
+			AuthURL:   providerInfo.Oauth2Opts.AuthURL,
+			TokenURL:  providerInfo.Oauth2Opts.TokenURL,
 			AuthStyle: oauth2.AuthStyleAutoDetect,
 		},
 	}

@@ -1,7 +1,9 @@
 package main
 
 import (
+	"flag"
 	"log"
+	"sort"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
@@ -17,11 +19,23 @@ const (
 	ModelIndexURL = "https://developers.salesloft.com/docs/api"
 )
 
+var withQueryParamStats bool // nolint:gochecknoglobals
+
+func init() {
+	flag.BoolVar(&withQueryParamStats, "queryParamStats", false,
+		"collect statistics on query parameters")
+	flag.Parse()
+}
+
 func main() {
-	// index will have URLs for every schema
-	createIndex()
-	// using index file collect response fields for every object
-	createSchemas()
+	if withQueryParamStats {
+		createQueryParamStats()
+	} else {
+		// index will have URLs for every schema
+		createIndex()
+		// using index file collect response fields for every object
+		createSchemas()
+	}
 
 	log.Println("Completed.")
 }
@@ -75,6 +89,63 @@ func createSchemas() {
 	}
 
 	must(metadata.FileManager.SaveSchemas(schemas))
+}
+
+func createQueryParamStats() {
+	index, err := metadata.FileManager.LoadIndex()
+	must(err)
+
+	registry := make(map[string][]string)
+
+	filteredListDocs := getFilteredListDocs(index)
+	numObjects := len(filteredListDocs)
+
+	for i, model := range filteredListDocs { // nolint:varnamelen
+		doc := scrapper.QueryHTML(model.URL)
+
+		modelName := strcase.ToSnake(model.Name)
+
+		doc.Find(`.openapi-params__list-item .openapi-schema__property`).Each(func(i int, element *goquery.Selection) {
+			prop := element.Text()
+			if _, found := registry[prop]; !found {
+				registry[prop] = make([]string, 0)
+			}
+
+			registry[prop] = append(registry[prop], modelName)
+		})
+
+		log.Printf("Query param schemas completed %.2f%% [%v]\n", getPercentage(i, numObjects), modelName)
+	}
+
+	// create set of query parameters
+	properties := make([]string, 0)
+
+	for prop := range registry {
+		if strings.Contains(prop, "[") {
+			properties = append(properties, prop)
+		}
+	}
+	// sort query parameters, where most occurred come first
+	sort.SliceStable(properties, func(i, j int) bool {
+		a := properties[i]
+		b := properties[j]
+		l1 := len(registry[a])
+		l2 := len(registry[b])
+
+		if l1 == l2 {
+			return a < b
+		}
+
+		return l1 > l2
+	})
+
+	// finally prepare to write to file
+	stats := scrapper.NewQueryParamStats(numObjects)
+	for _, prop := range properties {
+		stats.Add(prop, registry[prop])
+	}
+
+	must(metadata.FileManager.SaveQueryParamStats(stats))
 }
 
 /*
