@@ -2225,7 +2225,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: ApiKey,
 		BaseURL:  "https://api.hunter.io/",
 		ApiKeyOpts: &ApiKeyOpts{
-			Type: InQuery, 
+			Type:           InQuery,
 			QueryParamName: "api_key",
 			DocsURL:        "https://hunter.io/api-documentation#authentication",
 		},
