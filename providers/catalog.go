@@ -9,11 +9,14 @@ const (
 	Aha                     Provider = "aha"
 	Aircall                 Provider = "aircall"
 	Airtable                Provider = "airtable"
+	Anthropic               Provider = "anthropic"
 	Asana                   Provider = "asana"
 	Atlassian               Provider = "atlassian"
 	Attio                   Provider = "attio"
 	AWeber                  Provider = "aWeber"
 	Basecamp                Provider = "basecamp"
+	BlueshiftEU             Provider = "blueshiftEU"
+	Blueshift               Provider = "blueshift"
 	Box                     Provider = "box"
 	Calendly                Provider = "calendly"
 	CampaignMonitor         Provider = "campaignMonitor"
@@ -22,6 +25,7 @@ const (
 	Close                   Provider = "close"
 	ConstantContact         Provider = "constantContact"
 	Copper                  Provider = "copper"
+	CustomerDataPipelines   Provider = "customerDataPipelines"
 	Discord                 Provider = "discord"
 	Docusign                Provider = "docusign"
 	DocusignDeveloper       Provider = "docusignDeveloper"
@@ -43,20 +47,25 @@ const (
 	GoogleContacts          Provider = "googleContacts"
 	HelpScoutMailbox        Provider = "helpScoutMailbox"
 	Hubspot                 Provider = "hubspot"
+	Hunter                  Provider = "hunter"
 	Instagram               Provider = "instagram"
 	Intercom                Provider = "intercom"
 	Ironclad                Provider = "ironclad"
 	IroncladDemo            Provider = "ironcladDemo"
 	IroncladEU              Provider = "ironcladEU"
+	Iterable                Provider = "iterable"
 	Keap                    Provider = "keap"
 	Klaviyo                 Provider = "klaviyo"
 	LinkedIn                Provider = "linkedIn"
+	MessageBird             Provider = "messageBird"
 	Microsoft               Provider = "microsoft"
 	Miro                    Provider = "miro"
+	Mixmax                  Provider = "mixmax"
 	Mock                    Provider = "mock"
 	Monday                  Provider = "monday"
 	Mural                   Provider = "mural"
 	Notion                  Provider = "notion"
+	OpenAI                  Provider = "openAI"
 	Outreach                Provider = "outreach"
 	Pinterest               Provider = "pinterest"
 	Pipedrive               Provider = "pipedrive"
@@ -94,7 +103,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Salesforce: {
 		AuthType: Oauth2,
 		BaseURL:  "https://{{.workspace}}.my.salesforce.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://{{.workspace}}.my.salesforce.com/services/oauth2/authorize",
 			TokenURL:                  "https://{{.workspace}}.my.salesforce.com/services/oauth2/token",
@@ -128,7 +137,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Hubspot: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.hubapi.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://app.hubspot.com/oauth/authorize",
 			TokenURL:                  "https://api.hubapi.com/oauth/v1/token",
@@ -153,7 +162,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	LinkedIn: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.linkedin.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://www.linkedin.com/oauth/v2/authorization",
 			TokenURL:                  "https://www.linkedin.com/oauth/v2/accessToken",
@@ -170,7 +179,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -181,7 +190,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Salesloft: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.salesloft.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			AuthURL:                   "https://accounts.salesloft.com/oauth/authorize",
 			TokenURL:                  "https://accounts.salesloft.com/oauth/token",
 			ExplicitScopesRequired:    false,
@@ -209,7 +218,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Outreach: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.outreach.io",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			AuthURL:                   "https://api.outreach.io/oauth/authorize",
 			TokenURL:                  "https://api.outreach.io/oauth/token",
 			ExplicitScopesRequired:    true,
@@ -241,7 +250,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	RingCentral: {
 		AuthType: Oauth2,
 		BaseURL:  "https://platform.ringcentral.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 PKCE,
 			AuthURL:                   "https://platform.ringcentral.com/restapi/oauth/authorize",
 			TokenURL:                  "https://platform.ringcentral.com/restapi/oauth/token",
@@ -270,7 +279,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Pipedrive: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.pipedrive.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://oauth.pipedrive.com/oauth/authorize",
 			TokenURL:                  "https://oauth.pipedrive.com/oauth/token",
@@ -295,7 +304,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Capsule: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.capsulecrm.com/api",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://api.capsulecrm.com/oauth/authorise",
 			TokenURL:                  "https://api.capsulecrm.com/oauth/token",
@@ -320,7 +329,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Wrike: {
 		AuthType: Oauth2,
 		BaseURL:  "https://www.wrike.com/api",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://www.wrike.com/oauth2/authorize",
 			TokenURL:                  "https://www.wrike.com/oauth2/token",
@@ -345,7 +354,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Copper: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.copper.com/developer_api",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://app.copper.com/oauth/authorize",
 			TokenURL:                  "https://app.copper.com/oauth/token",
@@ -366,12 +375,30 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
+	CustomerDataPipelines: {
+		AuthType: Basic,
+		BaseURL:  "https://cdp.customer.io/v1",
+		// DocsURL: https://customer.io/docs/api/cdp/#section/Authentication
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
 	// ZohoCRM configuration
 	ZohoCRM: {
 		DisplayName: "Zoho CRM",
 		AuthType:    Oauth2,
 		BaseURL:     "https://www.zohoapis.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://accounts.zoho.com/oauth/v2/auth",
 			TokenURL:                  "https://accounts.zoho.com/oauth/v2/token",
@@ -400,7 +427,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Mural: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.mural.co/api",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://api.mural.co/oauth/authorize",
 			TokenURL:                  "https://api.mural.co/oauth/token",
@@ -428,7 +455,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Klaviyo: {
 		AuthType: Oauth2,
 		BaseURL:  "https://a.klaviyo.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 PKCE,
 			AuthURL:                   "https://www.klaviyo.com/oauth/authorize",
 			TokenURL:                  "https://a.klaviyo.com/oauth/token",
@@ -456,7 +483,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Sellsy: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.sellsy.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 PKCE,
 			AuthURL:                   "https://login.sellsy.com/oauth2/authorization",
 			TokenURL:                  "https://login.sellsy.com/oauth2/access-tokens",
@@ -481,7 +508,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Attio: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.attio.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://app.attio.com/authorize",
 			TokenURL:                  "https://app.attio.com/oauth/token",
@@ -506,7 +533,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Close: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.close.com/api",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://app.close.com/oauth2/authorize",
 			TokenURL:                  "https://api.close.com/oauth2/token",
@@ -536,7 +563,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		AuthType: Oauth2,
 		BaseURL:  "https://api.infusionsoft.com",
 
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://accounts.infusionsoft.com/app/oauth/authorize",
 			TokenURL:                  "https://api.infusionsoft.com/token",
@@ -561,7 +588,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Asana: {
 		AuthType: Oauth2,
 		BaseURL:  "https://app.asana.com/api",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			AuthURL:                   "https://app.asana.com/-/oauth_authorize",
 			TokenURL:                  "https://app.asana.com/-/oauth_token",
 			ExplicitScopesRequired:    false,
@@ -589,7 +616,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Dropbox: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.dropboxapi.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://www.dropbox.com/oauth2/authorize",
 			TokenURL:                  "https://api.dropboxapi.com/oauth2/token",
@@ -618,7 +645,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Notion: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.notion.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			AuthURL:                   "https://api.notion.com/v1/oauth/authorize",
 			TokenURL:                  "https://api.notion.com/v1/oauth/token",
 			ExplicitScopesRequired:    false,
@@ -643,11 +670,34 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
+	OpenAI: {
+		AuthType: ApiKey,
+		BaseURL:  "https://api.openai.com",
+		ApiKeyOpts: &ApiKeyOpts{
+			Type:        InHeader,
+			HeaderName:  "Authorization",
+			ValuePrefix: "Bearer ",
+			DocsURL:     "https://platform.openai.com/docs/api-reference/api-keys",
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
 	// Gong configuration
 	Gong: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.gong.io",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			AuthURL:                   "https://app.gong.io/oauth2/authorize",
 			TokenURL:                  "https://app.gong.io/oauth2/generate-customer-token",
 			ExplicitScopesRequired:    true,
@@ -675,7 +725,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Zoom: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.zoom.us",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			AuthURL:                   "https://zoom.us/oauth/authorize",
 			TokenURL:                  "https://zoom.us/oauth/token",
 			ExplicitScopesRequired:    false,
@@ -703,7 +753,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Intercom: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.intercom.io",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			AuthURL:                   "https://app.intercom.com/oauth",
 			TokenURL:                  "https://api.intercom.io/auth/eagle/token",
 			ExplicitScopesRequired:    false,
@@ -728,7 +778,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Docusign: {
 		AuthType: Oauth2,
 		BaseURL:  "https://{{.server}}.docusign.net",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			AuthURL:                   "https://account.docusign.com/oauth/auth",
 			TokenURL:                  "https://account.docusign.com/oauth/token",
 			ExplicitScopesRequired:    true,
@@ -754,7 +804,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	DocusignDeveloper: {
 		AuthType: Oauth2,
 		BaseURL:  "https://demo.docusign.net",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://account-d.docusign.com/oauth/auth",
 			TokenURL:                  "https://account-d.docusign.com/oauth/token",
@@ -782,7 +832,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Calendly: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.calendly.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://auth.calendly.com/oauth/authorize",
 			TokenURL:                  "https://auth.calendly.com/oauth/token",
@@ -807,7 +857,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	CampaignMonitor: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.createsend.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			AuthURL:                   "https://api.createsend.com/oauth",
 			TokenURL:                  "https://api.createsend.com/oauth/token",
 			ExplicitScopesRequired:    true,
@@ -832,7 +882,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	GetResponse: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.getresponse.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			AuthURL:                   "https://app.getresponse.com/oauth2_authorize.html",
 			TokenURL:                  "https://api.getresponse.com/v3/token",
 			ExplicitScopesRequired:    false,
@@ -857,7 +907,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	AWeber: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.aweber.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			AuthURL:                   "https://auth.aweber.com/oauth2/authorize",
 			TokenURL:                  "https://auth.aweber.com/oauth2/token",
 			ExplicitScopesRequired:    true,
@@ -882,7 +932,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		DisplayName: "Microsoft Dynamics CRM",
 		AuthType:    Oauth2,
 		BaseURL:     "https://{{.workspace}}.api.crm.dynamics.com/api/data",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:              AuthorizationCode,
 			AuthURL:                "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
 			TokenURL:               "https://login.microsoftonline.com/common/oauth2/v2.0/token",
@@ -910,7 +960,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		DisplayName: "Constant Contact",
 		AuthType:    Oauth2,
 		BaseURL:     "https://api.cc.email",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://authz.constantcontact.com/oauth2/default/v1/authorize",
 			TokenURL:                  "https://authz.constantcontact.com/oauth2/default/v1/token",
@@ -936,7 +986,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		DisplayName: "Microsoft Dynamics Business Central",
 		AuthType:    Oauth2,
 		BaseURL:     "https://api.businesscentral.dynamics.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			AuthURL:                   "https://login.microsoftonline.com/{{.workspace}}/oauth2/v2.0/authorize",
 			TokenURL:                  "https://login.microsoftonline.com/{{.workspace}}/oauth2/v2.0/token",
 			ExplicitScopesRequired:    true,
@@ -964,7 +1014,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Gainsight: {
 		AuthType: Oauth2,
 		BaseURL:  "https://{{.workspace}}.gainsightcloud.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			AuthURL:                   "https://{{.workspace}}.gainsightcloud.com/v1/authorize",
 			TokenURL:                  "https://{{.workspace}}.gainsightcloud.com/v1/users/oauth/token",
 			ExplicitScopesRequired:    false,
@@ -989,7 +1039,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Box: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.box.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://account.box.com/api/oauth2/authorize",
 			TokenURL:                  "https://api.box.com/oauth2/token",
@@ -1015,7 +1065,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		DisplayName: "Zendesk Support",
 		AuthType:    Oauth2,
 		BaseURL:     "https://{{.workspace}}.zendesk.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://{{.workspace}}.zendesk.com/oauth/authorizations/new",
 			TokenURL:                  "https://{{.workspace}}.zendesk.com/oauth/tokens",
@@ -1040,7 +1090,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		DisplayName: "Zendesk Chat",
 		AuthType:    Oauth2,
 		BaseURL:     "https://www.zopim.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://www.zopim.com/oauth2/authorizations/new?subdomain={{.workspace}}",
 			TokenURL:                  "https://www.zopim.com/oauth2/token",
@@ -1065,7 +1115,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	WordPress: {
 		AuthType: Oauth2,
 		BaseURL:  "https://public-api.wordpress.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			AuthURL:                   "https://public-api.wordpress.com/oauth2/authorize",
 			TokenURL:                  "https://public-api.wordpress.com/oauth2/token",
 			ExplicitScopesRequired:    true,
@@ -1093,7 +1143,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Airtable: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.airtable.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 PKCE,
 			AuthURL:                   "https://airtable.com/oauth2/v1/authorize",
 			TokenURL:                  "https://airtable.com/oauth2/v1/token",
@@ -1117,11 +1167,33 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
+	Anthropic: {
+		AuthType: ApiKey,
+		BaseURL:  "https://api.anthropic.com",
+		ApiKeyOpts: &ApiKeyOpts{
+			Type:       InHeader,
+			HeaderName: "x-api-key",
+			DocsURL:    "https://docs.anthropic.com/en/api/getting-started#authentication",
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
 	// Ironclad Support Configuration
 	Ironclad: {
 		AuthType: Oauth2,
 		BaseURL:  "https://ironcladapp.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			AuthURL:                   "https://ironcladapp.com/oauth/authorize",
 			TokenURL:                  "https://ironcladapp.com/oauth/token",
 			ExplicitScopesRequired:    true,
@@ -1149,7 +1221,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Slack: {
 		AuthType: Oauth2,
 		BaseURL:  "https://slack.com/api",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://slack.com/oauth/v2/authorize",
 			TokenURL:                  "https://slack.com/api/oauth.v2.access",
@@ -1178,7 +1250,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		DisplayName: "Help Scout Mailbox",
 		AuthType:    Oauth2,
 		BaseURL:     "https://api.helpscout.net",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://secure.helpscout.net/authentication/authorizeClientApplication",
 			TokenURL:                  "https://api.helpscout.net/v2/oauth2/token",
@@ -1203,7 +1275,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Timely: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.timelyapp.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://api.timelyapp.com/1.1/oauth/authorize",
 			TokenURL:                  "https://api.timelyapp.com/1.1/oauth/token",
@@ -1232,7 +1304,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		DisplayName: "Atlassian Jira",
 		AuthType:    Oauth2,
 		BaseURL:     "https://api.atlassian.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://auth.atlassian.com/authorize",
 			TokenURL:                  "https://auth.atlassian.com/oauth/token",
@@ -1257,7 +1329,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Webflow: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.webflow.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://webflow.com/oauth/authorize",
 			TokenURL:                  "https://api.webflow.com/oauth/access_token",
@@ -1285,7 +1357,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Smartsheet: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.smartsheet.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://app.smartsheet.com/b/authorize",
 			TokenURL:                  "https://api.smartsheet.com/2.0/token",
@@ -1310,7 +1382,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	StackExchange: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.stackexchange.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://stackoverflow.com/oauth",
 			TokenURL:                  "https://stackoverflow.com/oauth/access_token/json",
@@ -1335,7 +1407,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Google: {
 		AuthType: Oauth2,
 		BaseURL:  "https://www.googleapis.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://accounts.google.com/o/oauth2/v2/auth",
 			TokenURL:                  "https://oauth2.googleapis.com/token",
@@ -1364,7 +1436,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		DisplayName: "Google Contacts",
 		AuthType:    Oauth2,
 		BaseURL:     "https://people.googleapis.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://accounts.google.com/o/oauth2/v2/auth",
 			TokenURL:                  "https://oauth2.googleapis.com/token",
@@ -1392,7 +1464,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Gmail: {
 		AuthType: Oauth2,
 		BaseURL:  "https://gmail.googleapis.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://accounts.google.com/o/oauth2/v2/auth",
 			TokenURL:                  "https://oauth2.googleapis.com/token",
@@ -1419,7 +1491,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Monday: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.monday.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://auth.monday.com/oauth2/authorize",
 			TokenURL:                  "https://auth.monday.com/oauth2/token",
@@ -1446,7 +1518,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Figma: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.figma.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://www.figma.com/oauth",
 			TokenURL:                  "https://www.figma.com/api/oauth/token",
@@ -1473,7 +1545,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Miro: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.miro.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://miro.com/oauth/authorize",
 			TokenURL:                  "https://api.miro.com/v1/oauth/token",
@@ -1501,7 +1573,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Typeform: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.typeform.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://api.typeform.com/oauth/authorize",
 			TokenURL:                  "https://api.typeform.com/oauth/token",
@@ -1526,9 +1598,8 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Zuora: {
 		AuthType: Oauth2,
 		BaseURL:  "https://{{.workspace}}.zuora.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 ClientCredentials,
-			AuthURL:                   "https://{{.workspace}}.zuora.com/oauth/auth_mock",
 			TokenURL:                  "https://{{.workspace}}.zuora.com/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: true,
@@ -1552,7 +1623,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		DisplayName: "Dropbox Sign",
 		AuthType:    Oauth2,
 		BaseURL:     "https://api.hellosign.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://app.hellosign.com/oauth/authorize",
 			TokenURL:                  "https://app.hellosign.com/oauth/token",
@@ -1577,7 +1648,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Facebook: {
 		AuthType: Oauth2,
 		BaseURL:  "https://graph.facebook.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://www.facebook.com/v19.0/dialog/oauth",
 			TokenURL:                  "https://graph.facebook.com/v19.0/oauth/access_token",
@@ -1602,7 +1673,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	ClickUp: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.clickup.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://app.clickup.com/api",
 			TokenURL:                  "https://api.clickup.com/api/v2/oauth/token",
@@ -1627,7 +1698,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Discord: {
 		AuthType: Oauth2,
 		BaseURL:  "https://discord.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://discord.com/oauth2/authorize",
 			TokenURL:                  "https://discord.com/api/oauth2/token",
@@ -1655,7 +1726,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Drift: {
 		AuthType: Oauth2,
 		BaseURL:  "https://driftapi.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://dev.drift.com/authorize",
 			TokenURL:                  "https://driftapi.com/oauth2/token",
@@ -1682,7 +1753,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	IroncladDemo: {
 		AuthType: Oauth2,
 		BaseURL:  "https://demo.ironcladapp.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			AuthURL:                   "https://demo.ironcladapp.com/oauth/authorize",
 			TokenURL:                  "https://demo.ironcladapp.com/oauth/token",
 			ExplicitScopesRequired:    true,
@@ -1710,7 +1781,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		DisplayName: "Ironclad Europe",
 		AuthType:    Oauth2,
 		BaseURL:     "https://eu1.ironcladapp.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			AuthURL:                   "https://eu1.ironcladapp.com/oauth/authorize",
 			TokenURL:                  "https://eu1.ironcladapp.com/oauth/token",
 			ExplicitScopesRequired:    true,
@@ -1738,7 +1809,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Aircall: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.aircall.io",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://dashboard.aircall.io/oauth/authorize",
 			TokenURL:                  "https://api.aircall.io/v1/oauth/token",
@@ -1763,7 +1834,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Microsoft: {
 		AuthType: Oauth2,
 		BaseURL:  "https://graph.microsoft.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
 			TokenURL:                  "https://login.microsoftonline.com/common/oauth2/v2.0/token",
@@ -1788,7 +1859,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Formstack: {
 		AuthType: Oauth2,
 		BaseURL:  "https://www.formstack.com/api",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://www.formstack.com/api/v2/oauth2/authorize",
 			TokenURL:                  "https://www.formstack.com/api/v2/oauth2/token",
@@ -1816,7 +1887,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Pinterest: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.pinterest.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://www.pinterest.com/oauth",
 			TokenURL:                  "https://api.pinterest.com/v5/oauth/token",
@@ -1843,7 +1914,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Aha: {
 		AuthType: Oauth2,
 		BaseURL:  "https://{{.workspace}}.aha.io/api",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://{{.workspace}}.aha.io/oauth/authorize",
 			TokenURL:                  "https://{{.workspace}}.aha.io/oauth/token",
@@ -1868,7 +1939,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	SnapchatAds: {
 		AuthType: Oauth2,
 		BaseURL:  "https://adsapi.snapchat.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			AuthURL:                   "https://accounts.snapchat.com/login/oauth2/authorize",
 			TokenURL:                  "https://accounts.snapchat.com/login/oauth2/access_token",
 			ExplicitScopesRequired:    true,
@@ -1892,7 +1963,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	SharePoint: {
 		AuthType: Oauth2,
 		BaseURL:  "https://{{.workspace}}.sharepoint.com/_api",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:              AuthorizationCode,
 			AuthURL:                "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
 			TokenURL:               "https://login.microsoftonline.com/common/oauth2/v2.0/token",
@@ -1922,7 +1993,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Instagram: {
 		AuthType: Oauth2,
 		BaseURL:  "https://graph.instagram.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://api.instagram.com/oauth/authorize",
 			TokenURL:                  "https://api.instagram.com/oauth/access_token",
@@ -1950,7 +2021,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	TeamleaderCRM: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.focus.teamleader.eu",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://focus.teamleader.eu/oauth2/authorize",
 			TokenURL:                  "https://focus.teamleader.eu/oauth2/access_token",
@@ -1975,12 +2046,15 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Github: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.github.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://github.com/login/oauth/authorize",
 			TokenURL:                  "https://github.com/login/oauth/access_token",
-			ExplicitScopesRequired:    false,
+			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -1999,7 +2073,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Seismic: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.seismic.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://auth.seismic.com/tenants/{{.workspace}}/connect/authorize",
 			TokenURL:                  "https://auth.seismic.com/tenants/{{.workspace}}/connect/token",
@@ -2024,7 +2098,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	ServiceNow: {
 		AuthType: Oauth2,
 		BaseURL:  "https://{{.workspace}}.service-now.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			AuthURL:                   "https://{{.workspace}}.service-now.com/oauth_auth.do",
 			TokenURL:                  "https://{{.workspace}}.service-now.com/oauth_token.do",
 			ExplicitScopesRequired:    false,
@@ -2052,7 +2126,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	AcuityScheduling: {
 		AuthType: Oauth2,
 		BaseURL:  "https://acuityscheduling.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://acuityscheduling.com/oauth2/authorize",
 			TokenURL:                  "https://acuityscheduling.com/oauth2/token",
@@ -2078,7 +2152,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Basecamp: {
 		AuthType: Oauth2,
 		BaseURL:  "https://3.basecampapi.com/{{.workspace}}",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://launchpad.37signals.com/authorization/new?type=web_server",
 			TokenURL:                  "https://launchpad.37signals.com/authorization/token?type=refresh",
@@ -2103,7 +2177,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	SurveyMonkey: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.surveymonkey.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			AuthURL:                   "https://api.surveymonkey.com/oauth/authorize",
 			TokenURL:                  "https://api.surveymonkey.com/oauth/token",
 			ExplicitScopesRequired:    false,
@@ -2128,7 +2202,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 	Domo: {
 		AuthType: Oauth2,
 		BaseURL:  "https://api.domo.com",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 ClientCredentials,
 			TokenURL:                  "https://api.domo.com/oauth/token",
 			ExplicitScopesRequired:    false,
@@ -2137,6 +2211,52 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 				ScopesField:      "scope",
 				ConsumerRefField: "userId",
 			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Iterable API Key authentication
+	Iterable: {
+		AuthType: ApiKey,
+		BaseURL:  "https://api.iterable.com",
+		ApiKeyOpts: &ApiKeyOpts{
+			Type:       InHeader,
+			HeaderName: "Api-Key",
+			DocsURL:    "https://app.iterable.com/settings/apiKeys",
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Hunter Connector Configuration
+	Hunter: {
+		AuthType: ApiKey,
+		BaseURL:  "https://api.hunter.io/",
+		ApiKeyOpts: &ApiKeyOpts{
+			Type:           InQuery,
+			QueryParamName: "api_key",
+			DocsURL:        "https://hunter.io/api-documentation#authentication",
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{

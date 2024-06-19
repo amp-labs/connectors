@@ -75,10 +75,8 @@ components:
           example: scopes
           x-go-type-skip-optional-pointer: true
 
-    OauthOpts:
+    Oauth2Opts:
       type: object
-      x-oapi-codegen-extra-tags:
-        validate: required
       required:
           - grantType
           - tokenURL
@@ -114,13 +112,21 @@ components:
     ApiKeyOpts:
       type: object
       required:
-        - headerName
+        - type
       properties:
+        type:
+          type: string
+          enum: [in-query, in-header]
+          x-oapi-codegen-extra-tags:
+            validate: required
+        queryParamName:
+          type: string
+          example: api_key
+          x-go-type-skip-optional-pointer: true
         headerName:
           type: string
           example: X-Api-Key
-          x-oapi-codegen-extra-tags:
-            validate: required
+          x-go-type-skip-optional-pointer: true
         valuePrefix:
           type: string
           example: "Bearer "
@@ -159,8 +165,8 @@ components:
           type: string
           x-oapi-codegen-extra-tags:
             validate: required
-        oauthOpts:
-          $ref: '#/components/schemas/OauthOpts'
+        oauth2Opts:
+          $ref: '#/components/schemas/Oauth2Opts'
         apiKeyOpts:
           $ref: '#/components/schemas/ApiKeyOpts'
         support:

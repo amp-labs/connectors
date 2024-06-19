@@ -1,0 +1,38 @@
+name: Publish JSON catalog
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - 'main'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for changes in providers/catalog.go
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            catalog:
+              - 'providers/catalog.go'
+
+      - name: Run script if catalog has changed
+        if: steps.filter.outputs.catalog == 'true'
+        run: go run scripts/catalog/json.go
+        shell: bash
+
+      - name: Push changes
+        if: steps.filter.outputs.catalog == 'true'
+        run: |
+          git config --global user.email "no-reply@github.com"
+          git config --global user.name "GitHub Actions"
+          git add providers/catalog.json
+          git commit -m "Update catalog.json"
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -3,6 +3,7 @@ package mockutils
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 )
 
 func RespondNoContentForMethod(w http.ResponseWriter, r *http.Request, methodName string) {
@@ -42,6 +43,36 @@ func RespondToHeader(w http.ResponseWriter, r *http.Request, header http.Header,
 	}
 }
 
+func RespondToQueryParameters(w http.ResponseWriter, r *http.Request, queries url.Values, onSuccess func()) {
+	// if some query parameters are mismatching return error code so the test will fail
+	if queryParam, ok := queryParamsAreSubset(r.URL.Query(), queries); ok {
+		// if method is matching headers
+		onSuccess()
+	} else {
+		w.WriteHeader(http.StatusBadRequest)
+		WriteBody(w, fmt.Sprintf(`{
+			"error": {
+				"code": "from test",
+				"message": "test server mismatching [%v] query parameter"
+			}}`, queryParam))
+	}
+}
+
+func RespondToMissingQueryParameters(w http.ResponseWriter, r *http.Request, missingQueries []string, onSuccess func()) {
+	// if at least one query parameter exists return error code so the test will fail
+	if queryParam, ok := queryParamsMissing(r.URL.Query(), missingQueries); ok {
+		// if method is matching headers
+		onSuccess()
+	} else {
+		w.WriteHeader(http.StatusBadRequest)
+		WriteBody(w, fmt.Sprintf(`{
+			"error": {
+				"code": "from test",
+				"message": "test server found [%v] query parameter"
+			}}`, queryParam))
+	}
+}
+
 func WriteBody(w http.ResponseWriter, body string) {
 	_, _ = w.Write([]byte(body))
 }
@@ -57,6 +88,40 @@ func headerIsSubset(superset, subset http.Header) (string, bool) {
 			if _, found := superValues[value]; !found {
 				return name, false
 			}
+		}
+	}
+
+	return "", true
+}
+
+func queryParamsAreSubset(superset, subset url.Values) (string, bool) {
+	for param, values := range subset {
+		superValues := make(map[string]bool)
+
+		strings, ok := superset[param]
+		if !ok {
+			return param, false
+		}
+
+		for _, v := range strings {
+			superValues[v] = true
+		}
+
+		for _, value := range values {
+			if _, found := superValues[value]; !found {
+				return param, false
+			}
+		}
+	}
+
+	return "", true
+}
+
+func queryParamsMissing(superset url.Values, missing []string) (string, bool) {
+	for _, param := range missing {
+		if superset.Has(param) {
+			// query was found, while should be missing
+			return param, false
 		}
 	}
 
