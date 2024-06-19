@@ -6,5 +6,4 @@ const (
 )
 
 func init() {
-
 }
