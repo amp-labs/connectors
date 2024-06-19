@@ -2326,11 +2326,11 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
-	// AdobePlatformExchange 2-legged auth
+	// AdobeExperiencePlatform 2-legged auth
 	AdobeExperiencePlatform: {
 		AuthType: Oauth2,
 		BaseURL:  "https://platform.adobe.io",
-		OauthOpts: &OauthOpts{
+		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 ClientCredentials,
 			TokenURL:                  "https://ims-na1.adobelogin.com/ims/token/v3",
 			ExplicitScopesRequired:    true,
