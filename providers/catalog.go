@@ -2220,7 +2220,7 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 		},
 	},
 
-	// Hunter Configuration
+	// Hunter Connector Configuration
 	Hunter: {
 		AuthType: ApiKey,
 		BaseURL:  "https://api.hunter.io/",
