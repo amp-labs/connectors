@@ -29,6 +29,7 @@ const (
 	Discord                 Provider = "discord"
 	Docusign                Provider = "docusign"
 	DocusignDeveloper       Provider = "docusignDeveloper"
+	Domo                    Provider = "domo"
 	Drift                   Provider = "drift"
 	Dropbox                 Provider = "dropbox"
 	DropboxSign             Provider = "dropboxSign"
@@ -2182,6 +2183,34 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
 			GrantType:                 AuthorizationCode,
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Domo configuration file
+	Domo: {
+		AuthType: Oauth2,
+		BaseURL:  "https://api.domo.com",
+		Oauth2Opts: &Oauth2Opts{
+			GrantType:                 ClientCredentials,
+			TokenURL:                  "https://api.domo.com/oauth/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField:      "scope",
+				ConsumerRefField: "userId",
+			},
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
