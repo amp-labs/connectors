@@ -68,9 +68,16 @@ func ReadCatalog(opts ...CatalogOption) (CatalogType, error) {
 
 // SetInfo sets the information for a specific provider in the catalog.
 // This is useful to enable experimental providers or to override the default
-// provider information. As a general rule, don't ever call this function
-// in production code unless you have a compelling reason to do so.
+// provider information. This is primarily used to initialize the provider catalog.
+// Generally speaking, once the provider catalog is initialized, it should not be modified.
+// That having been said, there are some use cases where it is useful to override the
+// provider information, such as when testing new configurations. This function is not
+// thread-safe and should be called before the provider catalog is read.
 func SetInfo(provider Provider, info ProviderInfo) {
+	if catalog == nil {
+		catalog = make(CatalogType)
+	}
+
 	catalog[provider] = info
 }
 
