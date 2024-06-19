@@ -57,6 +57,7 @@ const (
 	Keap                    Provider = "keap"
 	Klaviyo                 Provider = "klaviyo"
 	LinkedIn                Provider = "linkedIn"
+	Marketo                 Provider = "marketo"
 	MessageBird             Provider = "messageBird"
 	Microsoft               Provider = "microsoft"
 	Miro                    Provider = "miro"
@@ -2234,6 +2235,34 @@ var catalog = CatalogType{ // nolint:gochecknoglobals
 			Type:       InHeader,
 			HeaderName: "Api-Key",
 			DocsURL:    "https://app.iterable.com/settings/apiKeys",
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     false,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+	},
+
+	// Marketo configuration file
+	// workspace maps to marketo instance
+	Marketo: {
+		AuthType: Oauth2,
+		BaseURL:  "https://{{.workspace}}.mktorest.com",
+		Oauth2Opts: &Oauth2Opts{
+			TokenURL:                  "https://{{.workspace}}.mktorest.com/identity/oauth/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: true,
+			GrantType:                 ClientCredentials,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
