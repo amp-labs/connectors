@@ -5,15 +5,15 @@ const Amplitude Provider = "amplitude"
 func init() {
 	// this connector supports the following apis
 	/*
-	Behavioral Cohorts
-	CCPA DSAR
-	Chart Annotations
-	Dashboard REST
-	Event Streaming Metrics Summary
-	Export
-	Releases*
-	Taxonomy
-	User Privacy
+		Behavioral Cohorts
+		CCPA DSAR
+		Chart Annotations
+		Dashboard REST
+		Event Streaming Metrics Summary
+		Export
+		Releases*
+		Taxonomy
+		User Privacy
 	*/
 	SetInfo(Amplitude, ProviderInfo{
 		AuthType: Basic,
