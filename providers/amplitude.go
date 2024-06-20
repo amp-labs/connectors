@@ -3,7 +3,18 @@ package providers
 const Amplitude Provider = "amplitude"
 
 func init() {
-	// Amplitude Support Configuration
+	// this connector supports the following apis
+	/*
+	Behavioral Cohorts
+	CCPA DSAR
+	Chart Annotations
+	Dashboard REST
+	Event Streaming Metrics Summary
+	Export
+	Releases*
+	Taxonomy
+	User Privacy
+	*/
 	SetInfo(Amplitude, ProviderInfo{
 		AuthType: Basic,
 		BaseURL:  "https://amplitude.com",
