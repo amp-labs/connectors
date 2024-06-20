@@ -9,7 +9,7 @@ func init() {
 		BaseURL:  "https://api.apollo.io",
 		ApiKeyOpts: &ApiKeyOpts{
 			Type:       InHeader,
-			HeaderName: "Api-Key",
+			HeaderName: "X-Api-Key",
 			DocsURL:    "https://app.apollo.io/#/settings/integrations/api",
 		},
 		Support: Support{
