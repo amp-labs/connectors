@@ -38,6 +38,7 @@ func main() {
 
 	countFile := "internal/provider_count.go"
 	str := fmt.Sprintf(countFileContents, len(catalog))
+
 	err = os.WriteFile(countFile, []byte(str), writePerm)
 	if err != nil {
 		log.Fatal(err)
