@@ -387,14 +387,14 @@ func createOAuth2ClientCredentialsHTTPClient( //nolint:ireturn
 	return oauthClient, nil
 }
 
-func createApiKeyHTTPClient( //nolint:ireturn
+func createApiKeyHTTPClient( //nolint:ireturn,cyclop
 	ctx context.Context,
 	client *http.Client,
 	dbg bool,
 	info *ProviderInfo,
 	apiKey string,
 ) (common.AuthenticatedHTTPClient, error) {
-	if info.ApiKeyOpts.Type == InHeader { //nolint:nestif
+	if info.ApiKeyOpts.Type == InHeader { //nolint:nestif,gocritic
 		apiKeyOpts, err := info.ApiKeyOpts.AsApiKeyInHeaderOpts()
 		if err != nil {
 			return nil, fmt.Errorf("%w: failed to convert api key opts: %w", ErrClient, err)
