@@ -10,10 +10,10 @@ import (
 	"net/http"
 	"reflect"
 	"strings"
+	"text/template" // nosemgrep: go.lang.security.audit.xss.import-text-template.import-text-template
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/go-playground/validator"
-	"text/template" // nosemgrep: go.lang.security.audit.xss.import-text-template.import-text-template
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
 )
