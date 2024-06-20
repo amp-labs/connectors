@@ -25,15 +25,22 @@ func init() {
 		},
 	})
 
+	apiKeyOpts := &ApiKeyOpts{
+		Type: InHeader,
+	}
+
+	if err := apiKeyOpts.MergeApiKeyInHeaderOpts(ApiKeyInHeaderOpts{
+		HeaderName:  "Authorization",
+		ValuePrefix: "Bearer ",
+		DocsURL:     "https://customer.io/docs/api/app/#section/Authentication",
+	}); err != nil {
+		panic(err)
+	}
+
 	SetInfo(CustomerJourneysApp, ProviderInfo{
-		AuthType: ApiKey,
-		BaseURL:  "https://api.customer.io",
-		ApiKeyOpts: &ApiKeyOpts{
-			Type:        InHeader,
-			HeaderName:  "Authorization",
-			ValuePrefix: "Bearer ",
-			DocsURL:     "https://customer.io/docs/api/app/#section/Authentication",
-		},
+		AuthType:   ApiKey,
+		BaseURL:    "https://api.customer.io",
+		ApiKeyOpts: apiKeyOpts,
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,

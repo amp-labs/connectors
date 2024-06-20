@@ -4,16 +4,16 @@ package providers
 import (
 	"bytes"
 	"context"
-	"encoding/gob"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
 	"reflect"
 	"strings"
-	"text/template" // nosemgrep: go.lang.security.audit.xss.import-text-template.import-text-template
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/go-playground/validator"
+	"text/template" // nosemgrep: go.lang.security.audit.xss.import-text-template.import-text-template
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
 )
@@ -395,8 +395,13 @@ func createApiKeyHTTPClient( //nolint:ireturn
 	apiKey string,
 ) (common.AuthenticatedHTTPClient, error) {
 	if info.ApiKeyOpts.Type == InHeader { //nolint:nestif
-		if info.ApiKeyOpts.ValuePrefix != "" {
-			apiKey = info.ApiKeyOpts.ValuePrefix + apiKey
+		apiKeyOpts, err := info.ApiKeyOpts.AsApiKeyInHeaderOpts()
+		if err != nil {
+			return nil, fmt.Errorf("%w: failed to convert api key opts: %w", ErrClient, err)
+		}
+
+		if apiKeyOpts.ValuePrefix != "" {
+			apiKey = apiKeyOpts.ValuePrefix + apiKey
 		}
 
 		opts := []common.HeaderAuthClientOption{
@@ -407,13 +412,18 @@ func createApiKeyHTTPClient( //nolint:ireturn
 			opts = append(opts, common.WithHeaderDebug(common.PrintRequestAndResponse))
 		}
 
-		c, err := common.NewApiKeyHeaderAuthHTTPClient(ctx, info.ApiKeyOpts.HeaderName, apiKey, opts...)
+		c, err := common.NewApiKeyHeaderAuthHTTPClient(ctx, apiKeyOpts.HeaderName, apiKey, opts...)
 		if err != nil {
 			return nil, fmt.Errorf("%w: failed to create api key client: %w", ErrClient, err)
 		}
 
 		return c, nil
 	} else if info.ApiKeyOpts.Type == InQuery {
+		apiKeyOpts, err := info.ApiKeyOpts.AsApiKeyInQueryParamOpts()
+		if err != nil {
+			return nil, fmt.Errorf("%w: failed to convert api key opts: %w", ErrClient, err)
+		}
+
 		opts := []common.QueryParamAuthClientOption{
 			common.WithQueryParamClient(getClient(client)),
 		}
@@ -422,12 +432,14 @@ func createApiKeyHTTPClient( //nolint:ireturn
 			opts = append(opts, common.WithQueryParamDebug(common.PrintRequestAndResponse))
 		}
 
-		c, err := common.NewApiKeyQueryParamAuthHTTPClient(ctx, info.ApiKeyOpts.QueryParamName, apiKey, opts...)
+		c, err := common.NewApiKeyQueryParamAuthHTTPClient(ctx, apiKeyOpts.QueryParamName, apiKey, opts...)
 		if err != nil {
 			return nil, fmt.Errorf("%w: failed to create api key client: %w", ErrClient, err)
 		}
 
 		return c, nil
+	} else if info.ApiKeyOpts.Type == InBody {
+		return nil, fmt.Errorf("%w: %s", ErrClient, "api key in body not currently supported")
 	}
 
 	return nil, fmt.Errorf("%w: unsupported api key type %q", ErrClient, info.ApiKeyOpts.Type)
@@ -435,18 +447,22 @@ func createApiKeyHTTPClient( //nolint:ireturn
 
 // clone uses gob to deep copy objects.
 func clone[T any](input T) (T, error) { // nolint:ireturn
+	// CJE: This has to be JSON because we have OpenAPI types with custom
+	// MarshalJSON and UnmarshalJSON methods. Don't use gob, or any other
+	// thing which relies on exported fields. We need the unexported fields too,
+	// which is what the custom JSON methods deal with.
 	var buf bytes.Buffer
-	enc := gob.NewEncoder(&buf)
-	dec := gob.NewDecoder(&buf)
+	enc := json.NewEncoder(&buf)
+	dec := json.NewDecoder(&buf)
 
 	if err := enc.Encode(input); err != nil {
 		return input, err
 	}
 
-	var clone T
-	if err := dec.Decode(&clone); err != nil {
+	var out T
+	if err := dec.Decode(&out); err != nil {
 		return input, err
 	}
 
-	return clone, nil
+	return out, nil
 }

@@ -106,36 +106,81 @@ components:
           type: string
           example: https://api.mparticle.com
           x-go-type-skip-optional-pointer: true
+        docsURL:
+          # Only set this value for OAuth2 flows that don't use a browser for auth.
+          type: string
+          description: URL with more information about how to get or use an API key.
+          example: https://docs.example.com/api-key
+          x-go-type-skip-optional-pointer: true
         tokenMetadataFields:
           $ref: '#/components/schemas/TokenMetadataFields'
 
-    ApiKeyOpts:
+    ApiKeyType:
+      type: string
+      enum: [in-query, in-header, in-body]
+      x-oapi-codegen-extra-tags:
+        validate: required
+
+    ApiKeyDocsURL:
+      type: string
+      description: URL with more information about how to get or use an API key.
+      example: https://docs.example.com/api-key
+      x-go-type-skip-optional-pointer: true
+
+    ApiKeyInHeaderOpts:
       type: object
       required:
-        - type
+        - headerName
       properties:
-        type:
-          type: string
-          enum: [in-query, in-header]
-          x-oapi-codegen-extra-tags:
-            validate: required
-        queryParamName:
-          type: string
-          example: api_key
-          x-go-type-skip-optional-pointer: true
         headerName:
           type: string
           example: X-Api-Key
-          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            validate: required
         valuePrefix:
           type: string
           example: "Bearer "
           x-go-type-skip-optional-pointer: true
         docsURL:
+          $ref: '#/components/schemas/ApiKeyDocsURL'
+
+    ApiKeyInQueryParamOpts:
+      type: object
+      required:
+        - queryParamName
+      properties:
+        queryParamName:
           type: string
-          description: URL with more information about how to get or use an API key.
-          example: https://docs.example.com/api-key
-          x-go-type-skip-optional-pointer: true
+          example: api_key
+          x-oapi-codegen-extra-tags:
+            validate: required
+        docsURL:
+          $ref: '#/components/schemas/ApiKeyDocsURL'
+
+    ApiKeyInBodyOpts:
+      type: object
+      required:
+        - bodyParamName
+      properties:
+        bodyParamName:
+          type: string
+          example: api_key
+          x-oapi-codegen-extra-tags:
+            validate: required
+        docsURL:
+          $ref: '#/components/schemas/ApiKeyDocsURL'
+
+    ApiKeyOpts:
+      type: object
+      oneOf:
+        - $ref: '#/components/schemas/ApiKeyInHeaderOpts'
+        - $ref: '#/components/schemas/ApiKeyInQueryParamOpts'
+        - $ref: '#/components/schemas/ApiKeyInBodyOpts'
+      required:
+        - type
+      properties:
+        type:
+          $ref: '#/components/schemas/ApiKeyType'
 
     ProviderOpts:
         type: object
