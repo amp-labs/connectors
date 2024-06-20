@@ -1,6 +1,8 @@
 package providers
 
-import "github.com/amp-labs/connectors/internal"
+import (
+	"github.com/amp-labs/connectors/internal/generated"
+)
 
 // ================================================================================
 // Contains critical provider configuration (using types from types.gen.go)
@@ -15,4 +17,4 @@ import "github.com/amp-labs/connectors/internal"
 // NOTE: There's no need to ever manually update the count. Even if it's
 // off by a few (which isn't a big deal), it'll get corrected next time
 // the script runs. So don't worry about it.
-var catalog = make(CatalogType, internal.ProviderCount) // nolint:gochecknoglobals
+var catalog = make(CatalogType, generated.ProviderCount) // nolint:gochecknoglobals

@@ -11,9 +11,9 @@ import (
 
 const writePerm = 0o644
 
-const countFileContents = `package internal
+const countFileContents = `package generated
 
-// This file is generated automatically, do not edit it manually.
+// This file will be updated automatically, do not edit it manually.
 
 const ProviderCount = %d
 `
@@ -36,7 +36,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	countFile := "internal/provider_count.go"
+	countFile := "internal/generated/provider_count.go"
 	str := fmt.Sprintf(countFileContents, len(catalog))
 
 	err = os.WriteFile(countFile, []byte(str), writePerm)
