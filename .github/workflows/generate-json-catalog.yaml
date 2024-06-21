@@ -18,7 +18,7 @@ jobs:
         with:
           filters: |
             catalog:
-              - 'providers/catalog.go'
+              - 'providers/*.go'
 
       - name: Run script if catalog has changed
         if: steps.filter.outputs.catalog == 'true'
