@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/intercom"
 	testUtils "github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/utils"
@@ -35,7 +34,7 @@ func GetIntercomConnector(ctx context.Context, filePath string) *intercom.Connec
 	cfg := utils.IntercomConfigFromRegistry(registry)
 	tok := utils.IntercomTokenFromRegistry(registry)
 
-	conn, err := connectors.Intercom(
+	conn, err := intercom.NewConnector(
 		intercom.WithClient(ctx, http.DefaultClient, cfg, tok),
 	)
 	if err != nil {

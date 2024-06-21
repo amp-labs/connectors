@@ -52,7 +52,7 @@ func GetGongConnector(ctx context.Context, filePath string) *gong.Connector {
 	cfg := utils.GongOAuthConfigFromRegistry(registry)
 	tok := utils.GongOauthTokenFromRegistry(registry)
 
-	conn, err := connectors.Gong(
+	conn, err := gong.NewConnector(
 		gong.WithClient(ctx, http.DefaultClient, cfg, tok),
 	)
 	if err != nil {
