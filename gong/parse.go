@@ -2,83 +2,31 @@ package gong
 
 import (
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 
-// getNextRecords returns the token or empty string if there are no more records.
-func getNextRecordsURL(node *ajson.Node) (string, error) {
-	recordsNode, err := node.GetKey("records")
-	if err != nil {
-		return "", err
+func makeGetTotalSize(objectName string) common.ListSizeFunc {
+	return func(node *ajson.Node) (int64, error) {
+		return jsonquery.New(node).ArraySize(objectName)
 	}
-
-	if !recordsNode.HasKey("cursor") {
-		return "", nil
-	}
-
-	cursorNode, err := recordsNode.GetKey("cursor")
-	if err != nil {
-		return "", err
-	}
-
-	nextPage := cursorNode.MustString()
-
-	return nextPage, nil
 }
 
-// getRecords returns the records from the response.
-func getRecords(node *ajson.Node, objectName string) ([]map[string]interface{}, error) {
-	records, err := node.GetKey(objectName)
-	if err != nil {
-		return nil, ErrNotArray
-	}
-
-	if !records.IsArray() {
-		return nil, ErrNotArray
-	}
-
-	arr := records.MustArray()
-	out := make([]map[string]interface{}, 0, len(arr))
-
-	for _, v := range arr {
-		if !v.IsObject() {
-			return nil, ErrNotObject
-		}
-
-		data, err := v.Unpack()
+func makeGetRecords(objectName string) common.RecordsFunc {
+	return func(node *ajson.Node) ([]map[string]any, error) {
+		// items are stored in array named after the API object
+		arr, err := jsonquery.New(node).Array(objectName, false)
 		if err != nil {
 			return nil, err
 		}
 
-		m, ok := data.(map[string]interface{})
-		if !ok {
-			return nil, ErrNotObject
-		}
-
-		out = append(out, m)
+		return jsonquery.Convertor.ArrayToMap(arr)
 	}
-
-	return out, nil
 }
 
-// getTotalSize returns the total number of records that match the query.
-func getTotalSize(node *ajson.Node) (int64, error) {
-	recordsNode, err := node.GetKey("records")
-	if err != nil {
-		return 0, common.ErrParseError
-	}
-
-	totalRecordsNode, err := recordsNode.GetKey("currentPageSize")
-	if err != nil {
-		return 0, common.ErrParseError
-	}
-
-	totalRecords, err := totalRecordsNode.GetNumeric()
-	if err != nil {
-		return 0, err
-	}
-
-	return int64(totalRecords), nil
+// getNextRecords returns the token or empty string if there are no more records.
+func getNextRecordsURL(node *ajson.Node) (string, error) {
+	return jsonquery.New(node, "records").StrWithDefault("cursor", "")
 }
 
 // getMarshaledData accepts a list of records and returns a list of structured data ([]ReadResultRow).

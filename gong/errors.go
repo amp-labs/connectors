@@ -1,15 +1,39 @@
 package gong
 
 import (
-	"errors"
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"strings"
+
+	"github.com/amp-labs/connectors/common/interpreter"
 )
 
-var (
-	ErrMissingClient = errors.New("JSON http client not set")
-	ErrNotArray      = errors.New("results data is not an array")
-	ErrNotObject     = errors.New("record is not an object")
-)
+func (*Connector) interpretJSONError(res *http.Response, body []byte) error { //nolint:cyclop
+	var payload ResponseError
+	if err := json.Unmarshal(body, &payload); err != nil {
+		return fmt.Errorf("interpretJSONError general: %w %w", interpreter.ErrUnmarshal, err)
+	}
 
-func (c *Connector) HandleError(err error) error {
-	return err
+	return payload.CombineErr(statusCodeMapping(res, body))
+}
+
+func statusCodeMapping(res *http.Response, body []byte) error {
+	switch res.StatusCode { // nolint:gocritic
+	default:
+		return interpreter.DefaultStatusCodeMappingToErr(res, body)
+	}
+}
+
+type ResponseError struct {
+	RequestId string   `json:"requestId"`
+	Errors    []string `json:"errors"`
+}
+
+func (r ResponseError) CombineErr(base error) error {
+	if len(r.Errors) == 0 {
+		return base
+	}
+
+	return fmt.Errorf("%w: %v", base, strings.Join(r.Errors, ","))
 }

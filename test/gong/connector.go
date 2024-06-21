@@ -1,15 +1,15 @@
-package {{ .Package }}
+package gong
 
 import (
 	"context"
 	"net/http"
 
-	"github.com/amp-labs/connectors/{{ .Package }}"
+	"github.com/amp-labs/connectors/gong"
 	testUtils "github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/utils"
 )
 
-func Get{{ .Provider }}Connector(ctx context.Context, filePath string) *{{ .Package }}.Connector {
+func GetGongConnector(ctx context.Context, filePath string) *gong.Connector {
 	registry := utils.NewCredentialsRegistry()
 
 	readers := []utils.Reader{
@@ -38,23 +38,14 @@ func Get{{ .Provider }}Connector(ctx context.Context, filePath string) *{{ .Pack
 			JSONPath: "$.provider",
 			CredKey:  utils.Provider,
 		},
-		&utils.JSONReader{
-			FilePath: filePath,
-			JSONPath: "$.workspace",
-			CredKey:  utils.WorkspaceRef,
-		},
 	}
 	_ = registry.AddReaders(readers...)
 
-	// TODO create config and token registries
-	cfg := utils.{{ .Provider }}ConfigFromRegistry(registry)
-	tok := utils.{{ .Provider }}TokenFromRegistry(registry)
-	workspace := registry.MustString(utils.WorkspaceRef)
+	cfg := utils.GongOAuthConfigFromRegistry(registry)
+	tok := utils.GongOauthTokenFromRegistry(registry)
 
-	// TODO provide required options
-	conn, err := {{ .Package }}.NewConnector(
-		{{ .Package }}.WithClient(ctx, http.DefaultClient, cfg, tok),
-		{{ .Package }}.WithWorkspace(workspace),
+	conn, err := gong.NewConnector(
+		gong.WithClient(ctx, http.DefaultClient, cfg, tok),
 	)
 	if err != nil {
 		testUtils.Fail("error creating connector", "error", err)
