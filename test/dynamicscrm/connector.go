@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/dynamicscrm"
 	testUtils "github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/utils"
@@ -45,7 +44,7 @@ func GetMSDynamics365CRMConnector(ctx context.Context, filePath string) *dynamic
 	cfg := utils.MSDynamics365CRMConfigFromRegistry(registry)
 	tok := utils.MSDynamics365CRMTokenFromRegistry(registry)
 
-	conn, err := connectors.DynamicsCRM(
+	conn, err := dynamicscrm.NewConnector(
 		dynamicscrm.WithClient(ctx, http.DefaultClient, cfg, tok),
 		dynamicscrm.WithWorkspace(utils.MSDynamics365CRMWorkspace),
 	)

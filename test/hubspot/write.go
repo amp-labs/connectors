@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/hubspot"
 	testUtils "github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/utils"
@@ -46,7 +45,7 @@ func GetHubspotConnector(ctx context.Context, filePath string) *hubspot.Connecto
 	cfg := utils.HubspotOAuthConfigFromRegistry(registry)
 	tok := utils.HubspotOauthTokenFromRegistry(registry)
 
-	conn, err := connectors.Hubspot(
+	conn, err := hubspot.NewConnector(
 		hubspot.WithClient(ctx, http.DefaultClient, cfg, tok),
 		hubspot.WithModule(hubspot.ModuleCRM))
 	if err != nil {
