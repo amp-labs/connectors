@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/amp-labs/connectors/catalog"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/connector"
 	"github.com/amp-labs/connectors/examples/utils"
-	"github.com/amp-labs/connectors/providers"
 )
 
 const ApiKey = "<api key>"
@@ -64,7 +64,7 @@ func anthropicAuthExample(ctx context.Context) error {
 
 // Create an auth connector with the Anthropic provider.
 func createAuthConnector(ctx context.Context) *connector.Connector {
-	conn, err := connector.NewConnector(providers.Anthropic,
+	conn, err := connector.NewConnector(catalog.Anthropic,
 		connector.WithAuthenticatedClient(createAuthenticatedHttpClient(ctx)))
 	if err != nil {
 		panic(err)
@@ -75,7 +75,7 @@ func createAuthConnector(ctx context.Context) *connector.Connector {
 
 // Create an api-key authenticated HTTP client for Anthropic.
 func createAuthenticatedHttpClient(ctx context.Context) common.AuthenticatedHTTPClient {
-	info, err := providers.ReadInfo(providers.Anthropic, nil)
+	info, err := catalog.ReadInfo(catalog.Anthropic, nil)
 	if err != nil {
 		panic(err)
 	}

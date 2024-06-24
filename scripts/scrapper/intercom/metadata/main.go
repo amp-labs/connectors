@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/amp-labs/connectors/intercom/metadata"
+	"github.com/amp-labs/connectors/providers/intercom/metadata"
 	"github.com/amp-labs/connectors/tools/scrapper"
 	"github.com/gertd/go-pluralize"
 )

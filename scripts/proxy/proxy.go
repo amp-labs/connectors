@@ -17,9 +17,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/amp-labs/connectors/catalog"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/connector"
-	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/utils"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
@@ -143,7 +143,7 @@ func main() {
 		substitutionsMap[key] = val.MustString()
 	}
 
-	info, err := providers.ReadInfo(provider, &substitutionsMap)
+	info, err := catalog.ReadInfo(provider, &substitutionsMap)
 	if err != nil {
 		log.Fatalf("Error reading provider info: %v", err)
 	}
@@ -157,26 +157,26 @@ func main() {
 	defer cancel()
 
 	switch info.AuthType {
-	case providers.Oauth2:
+	case catalog.Oauth2:
 		if info.Oauth2Opts == nil {
 			log.Fatalf("Missing OAuth options for provider %s", provider)
 		}
 
 		switch info.Oauth2Opts.GrantType {
-		case providers.ClientCredentials:
+		case catalog.ClientCredentials:
 			mainOAuth2ClientCreds(ctx, provider, substitutionsMap)
-		case providers.AuthorizationCode:
+		case catalog.AuthorizationCode:
 			mainOAuth2AuthCode(ctx, provider, substitutionsMap)
-		case providers.Password:
+		case catalog.Password:
 			// de facto, password grant acts as client credentials,
 			// even so access and refresh tokens were acquired differently.
 			mainOAuth2ClientCreds(ctx, provider, substitutionsMap)
 		default:
 			log.Fatalf("Unsupported OAuth2 grant type: %s", info.Oauth2Opts.GrantType)
 		}
-	case providers.ApiKey:
+	case catalog.ApiKey:
 		mainApiKey(ctx, provider, substitutionsMap)
-	case providers.Basic:
+	case catalog.Basic:
 		mainBasic(ctx, provider, substitutionsMap)
 	default:
 		log.Fatalf("Unsupported auth type: %s", info.AuthType)
@@ -215,7 +215,7 @@ func mainBasic(ctx context.Context, provider string, substitutions map[string]st
 	startProxy(ctx, proxy, DefaultPort)
 }
 
-func createBasicParams() *providers.BasicParams {
+func createBasicParams() *catalog.BasicParams {
 	user := registry.MustString("UserName")
 	pass := registry.MustString("Password")
 
@@ -231,7 +231,7 @@ func createBasicParams() *providers.BasicParams {
 		slog.Warn("no password for basic authentication, ensure that it is not required")
 	}
 
-	return &providers.BasicParams{
+	return &catalog.BasicParams{
 		User: user,
 		Pass: pass,
 	}
@@ -413,8 +413,8 @@ func buildOAuth2AuthCodeProxy(ctx context.Context, provider string, scopes []str
 	return newProxy(target, httpClient)
 }
 
-func getProviderConfig(provider string, substitutions map[string]string) *providers.ProviderInfo {
-	config, err := providers.ReadInfo(provider, &substitutions)
+func getProviderConfig(provider string, substitutions map[string]string) *catalog.ProviderInfo {
+	config, err := catalog.ReadInfo(provider, &substitutions)
 	if err != nil {
 		panic(fmt.Errorf("%w: %s", err, provider))
 	}
@@ -422,7 +422,7 @@ func getProviderConfig(provider string, substitutions map[string]string) *provid
 	return config
 }
 
-func configureOAuthClientCredentials(clientId, clientSecret string, scopes []string, providerInfo *providers.ProviderInfo) *clientcredentials.Config {
+func configureOAuthClientCredentials(clientId, clientSecret string, scopes []string, providerInfo *catalog.ProviderInfo) *clientcredentials.Config {
 	cfg := &clientcredentials.Config{
 		ClientID:     clientId,
 		ClientSecret: clientSecret,
@@ -447,7 +447,7 @@ type ClientAuthParams struct {
 	Scopes []string
 }
 
-func configureOAuthAuthCode(clientId, clientSecret string, scopes []string, providerInfo *providers.ProviderInfo) *oauth2.Config {
+func configureOAuthAuthCode(clientId, clientSecret string, scopes []string, providerInfo *catalog.ProviderInfo) *oauth2.Config {
 	return &oauth2.Config{
 		ClientID:     clientId,
 		ClientSecret: clientSecret,
@@ -460,8 +460,8 @@ func configureOAuthAuthCode(clientId, clientSecret string, scopes []string, prov
 	}
 }
 
-func setupOAuth2ClientCredentialsHttpClient(ctx context.Context, prov *providers.ProviderInfo, cfg *clientcredentials.Config) common.AuthenticatedHTTPClient {
-	c, err := prov.NewClient(ctx, &providers.NewClientParams{
+func setupOAuth2ClientCredentialsHttpClient(ctx context.Context, prov *catalog.ProviderInfo, cfg *clientcredentials.Config) common.AuthenticatedHTTPClient {
+	c, err := prov.NewClient(ctx, &catalog.NewClientParams{
 		Debug:             *debug,
 		OAuth2ClientCreds: cfg,
 	})
@@ -478,10 +478,10 @@ func setupOAuth2ClientCredentialsHttpClient(ctx context.Context, prov *providers
 }
 
 // This helps with refreshing tokens automatically.
-func setupOAuth2AuthCodeHttpClient(ctx context.Context, prov *providers.ProviderInfo, cfg *oauth2.Config, tokens *oauth2.Token) common.AuthenticatedHTTPClient {
-	c, err := prov.NewClient(ctx, &providers.NewClientParams{
+func setupOAuth2AuthCodeHttpClient(ctx context.Context, prov *catalog.ProviderInfo, cfg *oauth2.Config, tokens *oauth2.Token) common.AuthenticatedHTTPClient {
+	c, err := prov.NewClient(ctx, &catalog.NewClientParams{
 		Debug: *debug,
-		OAuth2AuthCodeCreds: &providers.OAuth2AuthCodeParams{
+		OAuth2AuthCodeCreds: &catalog.OAuth2AuthCodeParams{
 			Config: cfg,
 			Token:  tokens,
 		},
@@ -498,10 +498,10 @@ func setupOAuth2AuthCodeHttpClient(ctx context.Context, prov *providers.Provider
 	return cc.HTTPClient().Client
 }
 
-func setupBasicAuthHttpClient(ctx context.Context, prov *providers.ProviderInfo, user, pass string) common.AuthenticatedHTTPClient {
-	c, err := prov.NewClient(ctx, &providers.NewClientParams{
+func setupBasicAuthHttpClient(ctx context.Context, prov *catalog.ProviderInfo, user, pass string) common.AuthenticatedHTTPClient {
+	c, err := prov.NewClient(ctx, &catalog.NewClientParams{
 		Debug: *debug,
-		BasicCreds: &providers.BasicParams{
+		BasicCreds: &catalog.BasicParams{
 			User: user,
 			Pass: pass,
 		},
@@ -518,8 +518,8 @@ func setupBasicAuthHttpClient(ctx context.Context, prov *providers.ProviderInfo,
 	return cc.HTTPClient().Client
 }
 
-func setupApiKeyHttpClient(ctx context.Context, prov *providers.ProviderInfo, apiKey string) common.AuthenticatedHTTPClient {
-	c, err := prov.NewClient(ctx, &providers.NewClientParams{
+func setupApiKeyHttpClient(ctx context.Context, prov *catalog.ProviderInfo, apiKey string) common.AuthenticatedHTTPClient {
+	c, err := prov.NewClient(ctx, &catalog.NewClientParams{
 		Debug:  *debug,
 		ApiKey: apiKey,
 	})

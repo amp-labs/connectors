@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/amp-labs/connectors/catalog"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/connector"
 	"github.com/amp-labs/connectors/examples/utils"
-	"github.com/amp-labs/connectors/providers"
 )
 
 const (
@@ -70,8 +70,8 @@ func salesforceAuthExample(ctx context.Context) error {
 
 // Create an auth connector with the Salesforce provider.
 func createAuthConnector(ctx context.Context) *connector.Connector {
-	conn, err := connector.NewConnector(providers.Salesforce,
-		connector.WithCatalogSubstitutions(substitutions),
+	conn, err := connector.NewConnector(catalog.Salesforce,
+		connector.WithWorkspace(Workspace),
 		connector.WithAuthenticatedClient(createAuthenticatedHttpClient(ctx)))
 	if err != nil {
 		panic(err)
@@ -82,7 +82,7 @@ func createAuthConnector(ctx context.Context) *connector.Connector {
 
 // Create an OAuth2 authenticated HTTP client for Salesforce.
 func createAuthenticatedHttpClient(ctx context.Context) common.AuthenticatedHTTPClient {
-	info, err := providers.ReadInfo(providers.Salesforce, &substitutions)
+	info, err := catalog.ReadInfo(catalog.Salesforce, &substitutions)
 	if err != nil {
 		panic(err)
 	}

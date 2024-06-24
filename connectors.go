@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/amp-labs/connectors/catalog"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/providers"
 )
 
 // Connector is an interface that can be used to implement a connector with
@@ -24,7 +24,7 @@ type Connector interface {
 	HTTPClient() *common.HTTPClient
 
 	// Provider returns the connector provider.
-	Provider() providers.Provider
+	Provider() catalog.Provider
 }
 
 // ReadConnector is an interface that extends the Connector interface with read capabilities.

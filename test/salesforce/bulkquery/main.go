@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/amp-labs/connectors/salesforce"
+	"github.com/amp-labs/connectors/providers/salesforce"
 	testUtils "github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/utils"
 )

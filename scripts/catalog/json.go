@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/catalog"
 )
 
 const writePerm = 0o644
@@ -19,12 +19,12 @@ const ProviderCount = %d
 `
 
 func main() {
-	catalog, err := providers.ReadCatalog()
+	cat, err := catalog.ReadCatalog()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	bytes, err := json.Marshal(catalog)
+	bytes, err := json.Marshal(cat)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -37,7 +37,7 @@ func main() {
 	}
 
 	countFile := "internal/generated/provider_count.go"
-	str := fmt.Sprintf(countFileContents, len(catalog))
+	str := fmt.Sprintf(countFileContents, len(cat))
 
 	err = os.WriteFile(countFile, []byte(str), writePerm)
 	if err != nil {

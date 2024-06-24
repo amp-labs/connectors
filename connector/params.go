@@ -5,9 +5,9 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/amp-labs/connectors/catalog"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
-	"github.com/amp-labs/connectors/providers"
 	"golang.org/x/oauth2"
 )
 
@@ -22,7 +22,7 @@ var (
 type Option func(*parameters)
 
 type parameters struct {
-	provider providers.Provider
+	provider catalog.Provider
 	paramsbuilder.Client
 	paramsbuilder.Workspace
 }
