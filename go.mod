@@ -7,7 +7,7 @@ require (
 	github.com/brianvoe/gofakeit/v6 v6.28.0
 	github.com/gertd/go-pluralize v0.2.1
 	github.com/go-playground/validator v9.31.0+incompatible
-	github.com/go-test/deep v1.1.0
+	github.com/go-test/deep v1.1.1
 	github.com/iancoleman/strcase v0.3.0
 	github.com/joho/godotenv v1.5.1
 	github.com/spf13/cobra v1.8.1
