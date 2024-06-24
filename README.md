@@ -16,42 +16,24 @@ See the [examples directory](https://github.com/amp-labs/connectors/tree/main/ex
 
 ## Supported connectors
 
-Browse [the catalog file](https://github.com/amp-labs/connectors/blob/main/providers/catalog.go) to see a list of all the connectors that Ampersand supports, and which features are supported for connector.
+Browse [the catalog](https://github.com/amp-labs/connectors/tree/main/providers) to see a list of all the connectors that Ampersand supports, and which features are supported for connector.
 
-## Ways to initialize a Connector
-
-There are 3 ways to initialize a Connector:
-
-1. Initializing a provider-specific Connector (returns a concrete type). This method of initialization will allow you to use methods that only exist for that provider.
+## How to initialize a Connector
 
 ```go
-client, err := connectors.Salesforce(
+// Example for Salesforce
+client, err := salesforce.NewConnector(
     salesforce.WithClient(context.Background(), http.DefaultClient, cfg, tok),
     salesforce.WithWorkspace(Workspace))
 ```
 
-2. Initializing a generic Connector (returns an interface). This method of initialization will only allow you to use methods that are common to all providers. This is helpful if you would like your code to be provider-agnostic.
+## Auth connectors
 
-```go
-client, err := connectors.Salesforce.New(
-    salesforce.WithClient(context.Background(), http.DefaultClient, cfg, tok),
-    salesforce.WithWorkspace(Workspace))
-```
-
-3. With string parameter for API name (this is useful if you are parsing the API name from a config file, but should be avoided otherwise because it is not typesafe). This returns a generic Connector (returns an interface).
-
-```go
-client, err := connectors.New("salesforce", map[string]any{"workspace": "salesforce-instance-name"})
-```
-
-## Basic connectors
-
-Basic connectors allow you to proxy through requests to a SaaS provider via Ampersand. 
+Auth connectors allow you to proxy through requests to a SaaS provider via Ampersand. 
 
 #### Adding a new provider
 
 To add a new basic connector that allows proxying through the ampersand platform, you need to add a new entry to the `providers.yaml` file. The entry should have some required fields which are tagged with `validate: required` in the `providers/types.go` file.
-
 
 ### Initialization
 
