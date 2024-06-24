@@ -132,8 +132,8 @@ func (a *OAuthApp) ServeHTTP(writer http.ResponseWriter, request *http.Request) 
 	case request.URL.Path == "/" && request.Method == "GET":
 		// Redirect to the OAuth provider.
 		encState := base64.URLEncoding.EncodeToString([]byte(a.State))
-		url := a.Config.AuthCodeURL(encState, a.Options...)
-		writer.Header().Set("Location", url)
+		u := a.Config.AuthCodeURL(encState, a.Options...)
+		writer.Header().Set("Location", u)
 		writer.WriteHeader(http.StatusTemporaryRedirect)
 
 	default:
@@ -297,7 +297,7 @@ func setup() *OAuthApp {
 
 	substitutions, err := registry.GetMap("Substitutions")
 	if err != nil {
-		slog.Warn("no substitutions, ensure that the provider info doesn't have any {{variables}}")
+		slog.Warn("no substitutions, ensure that the provider info doesn't have any {{variables}}", err)
 	}
 
 	// Cast the substitutions to a map[string]string

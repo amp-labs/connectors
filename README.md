@@ -8,72 +8,11 @@ It can be either be used as a standalone library, or as a part of the [Ampersand
 - Handling API quotas from SaaS APIs
 - A dashboard for observability and troubleshooting
 
-Sample usage:
+## Examples
 
-```go
-import (
-  "context"
-  "fmt"
-  "net/http"
-  "time"
+See the [examples directory](https://github.com/amp-labs/connectors/tree/main/examples) for examples of how to use the library.
 
-  "github.com/amp-labs/connectors"
-  "github.com/amp-labs/connectors/salesforce"
-  "golang.org/x/oauth2"
-)
-
-const (
-  // Replace these with your own values.
-  Workspace = "<workspace>"
-  OAuthClientId = "<client id>"
-  OAuthClentSecret = "<client secret>"
-  OAuthAccessToken = "<access token>"
-  OAuthRefreshToken = "<refresh token>"
-
-)
-
-// Replace with when the access token will expire,
-// or leave as-is to have the token be refreshed right away.
-var AccessTokenExpiry = time.Now().Add(-1 * time.Hour)
-
-func main() {
-  // Set up the OAuth2 config
-  cfg := &oauth2.Config{
-    ClientID:     OAuthClientId,
-    ClientSecret: OAuthClentSecret,
-    Endpoint: oauth2.Endpoint{
-      AuthURL:   fmt.Sprintf("https://%s.my.salesforce.com/services/oauth2/authorize", Workspace),
-      TokenURL:  fmt.Sprintf("https://%s.my.salesforce.com/services/oauth2/token", Workspace),
-      AuthStyle: oauth2.AuthStyleInParams,
-    },
-  }
-
-  // Set up the OAuth2 token (obtained from Salesforce by authenticating)
-  tok := &oauth2.Token{
-    AccessToken:  OAuthAccessToken,
-    RefreshToken: OAuthRefreshToken,
-    TokenType:    "bearer",
-    Expiry:       AccessTokenExpiry,
-  }
-
-  // Create the Salesforce client
-  client, err := connectors.Salesforce(
-    salesforce.WithClient(context.Background(), http.DefaultClient, cfg, tok),
-    salesforce.WithWorkspace(Workspace))
-  if err != nil {
-    panic(err)
-  }
-
-  // Make a request to Salesforce
-  result, err := client.Read(context.Background(), connectors.ReadParams{
-    ObjectName: "Contact",
-    Fields: []string{"FirstName", "LastName", "Email"},
-  })
-  if err == nil {
-    fmt.Printf("Result is %v", result)
-  }
-}
-```
+* [Salesforce](https://github.com/amp-labs/connectors/tree/main/examples/salesforce)
 
 ## Supported connectors
 
