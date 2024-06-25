@@ -86,7 +86,7 @@ components:
       properties:
         grantType:
           type: string
-          enum: [authorizationCode, clientCredentials, PKCE]
+          enum: [authorizationCode, clientCredentials, password, PKCE]
         authURL:
           type: string
           example: https://login.salesforce.com/services/oauth2/authorize

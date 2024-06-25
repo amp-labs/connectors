@@ -263,6 +263,8 @@ func (i *ProviderInfo) NewClient(ctx context.Context, params *NewClientParams) (
 			return createOAuth2AuthCodeHTTPClient(ctx, params.Client, params.Debug, params.OAuth2AuthCodeCreds)
 		case ClientCredentials:
 			return createOAuth2ClientCredentialsHTTPClient(ctx, params.Client, params.Debug, params.OAuth2ClientCreds)
+		case Password:
+			return createOAuth2PasswordHTTPClient(ctx, params.Client, params.Debug, params.OAuth2AuthCodeCreds)
 		case PKCE:
 			return nil, fmt.Errorf("%w: %s", ErrClient, "PKCE grant type not supported")
 		default:
@@ -385,6 +387,17 @@ func createOAuth2ClientCredentialsHTTPClient( //nolint:ireturn
 	}
 
 	return oauthClient, nil
+}
+
+func createOAuth2PasswordHTTPClient(
+	ctx context.Context,
+	client *http.Client,
+	dbg bool,
+	cfg *OAuth2AuthCodeParams,
+) (common.AuthenticatedHTTPClient, error) {
+	// Refresh method works the same as with auth code method.
+	// Relies on access and refresh tokens created by Oauth2 password method.
+	return createOAuth2AuthCodeHTTPClient(ctx, client, dbg, cfg)
 }
 
 func createApiKeyHTTPClient( //nolint:ireturn
