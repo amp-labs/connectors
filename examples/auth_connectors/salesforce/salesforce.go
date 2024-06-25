@@ -62,6 +62,7 @@ func salesforceAuthExample(ctx context.Context) error {
 	return nil
 }
 
+// Create an auth connector with the Salesforce provider.
 func createAuthConnector() *connector.Connector {
 	conn, err := connector.NewConnector(providers.Salesforce,
 		connector.WithCatalogSubstitutions(substitutions),
@@ -73,13 +74,14 @@ func createAuthConnector() *connector.Connector {
 	return conn
 }
 
+// Create an OAuth2 authenticated HTTP client for Salesforce.
 func createAuthenticatedHttpClient() common.AuthenticatedHTTPClient {
 	info, err := providers.ReadInfo(providers.Salesforce, &substitutions)
 	if err != nil {
 		panic(err)
 	}
 
-	return example_utils.GetOAuth2AuthorizationCodeClient(info, example_utils.OAuth2AuthCodeOptions{
+	return example_utils.CreateOAuth2AuthorizationCodeClient(info, example_utils.OAuth2AuthCodeOptions{
 		OAuth2ClientId:     OAuth2ClientId,
 		OAuth2ClientSecret: OAuth2ClientSecret,
 		OAuth2AccessToken:  OAuth2AccessToken,

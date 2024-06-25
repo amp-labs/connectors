@@ -91,7 +91,7 @@ func createAuthenticatedHttpClient() common.AuthenticatedHTTPClient {
 		panic(err)
 	}
 
-	return example_utils.GetOAuth2AuthorizationCodeClient(info, example_utils.OAuth2AuthCodeOptions{
+	return example_utils.CreateOAuth2AuthorizationCodeClient(info, example_utils.OAuth2AuthCodeOptions{
 		OAuth2ClientId:     OAuth2ClientId,
 		OAuth2ClientSecret: OAuth2ClientSecret,
 		OAuth2AccessToken:  OAuth2AccessToken,

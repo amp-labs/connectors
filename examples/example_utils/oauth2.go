@@ -18,7 +18,7 @@ type OAuth2AuthCodeOptions struct {
 	Expiry             time.Time
 }
 
-func GetOAuth2AuthorizationCodeClient(info *providers.ProviderInfo, opts OAuth2AuthCodeOptions) common.AuthenticatedHTTPClient {
+func CreateOAuth2AuthorizationCodeClient(info *providers.ProviderInfo, opts OAuth2AuthCodeOptions) common.AuthenticatedHTTPClient {
 	// Create the authenticated HTTP client.
 	httpClient, err := info.NewClient(context.Background(), &providers.NewClientParams{
 		// If you set this to true, the client will log all requests and responses.
