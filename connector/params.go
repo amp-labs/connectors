@@ -3,10 +3,10 @@ package connector
 import (
 	"context"
 	"errors"
-	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/providers"
 	"golang.org/x/oauth2"
 )

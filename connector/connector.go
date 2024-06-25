@@ -28,13 +28,14 @@ func NewConnector(
 	// Create connector
 	conn = &Connector{
 		provider: params.provider,
-		Client:   &common.JSONHTTPClient{
+		Client: &common.JSONHTTPClient{
 			HTTPClient: params.Client.Caller,
 		},
 	}
 
 	// Read provider info & replace catalog variables with given substitutions, if any
 	substitution := params.Workspace.Substitution()
+
 	providerInfo, err := providers.ReadInfo(conn.provider, &substitution)
 	if err != nil {
 		return nil, err
