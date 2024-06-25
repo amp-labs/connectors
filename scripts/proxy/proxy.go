@@ -169,7 +169,7 @@ func main() {
 			mainOAuth2AuthCode(ctx, provider, substitutionsMap)
 		case providers.Password:
 			// de facto, password grant acts as client credentials,
-			// even so AT/RT were acquired differently.
+			// even so access and refresh tokens were acquired differently.
 			mainOAuth2ClientCreds(ctx, provider, substitutionsMap)
 		default:
 			log.Fatalf("Unsupported OAuth2 grant type: %s", info.Oauth2Opts.GrantType)

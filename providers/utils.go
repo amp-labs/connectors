@@ -395,8 +395,8 @@ func createOAuth2PasswordHTTPClient(
 	dbg bool,
 	cfg *OAuth2AuthCodeParams,
 ) (common.AuthenticatedHTTPClient, error) {
-	// it works the same as auth code method.
-	// password grant type should generate AT and RT.
+	// Refresh method works the same as with auth code method.
+	// Relies on access and refresh tokens created by Oauth2 password method.
 	return createOAuth2AuthCodeHTTPClient(ctx, client, dbg, cfg)
 }
 
