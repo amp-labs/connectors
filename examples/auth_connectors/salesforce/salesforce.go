@@ -8,7 +8,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/connector"
-	"github.com/amp-labs/connectors/examples/example_utils"
+	"github.com/amp-labs/connectors/examples/utils"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -34,7 +34,7 @@ var substitutions = map[string]string{
 
 // Run this example with `go run salesforce.go`
 func main() {
-	example_utils.Run(salesforceAuthExample)
+	utils.Run(salesforceAuthExample)
 }
 
 // Use the auth connector to make a request to the Salesforce API directly.
@@ -87,7 +87,7 @@ func createAuthenticatedHttpClient(ctx context.Context) common.AuthenticatedHTTP
 		panic(err)
 	}
 
-	return example_utils.CreateOAuth2AuthorizationCodeClient(ctx, info, example_utils.OAuth2AuthCodeOptions{
+	return utils.CreateOAuth2AuthorizationCodeClient(ctx, info, utils.OAuth2AuthCodeOptions{
 		OAuth2ClientId:     OAuth2ClientId,
 		OAuth2ClientSecret: OAuth2ClientSecret,
 		OAuth2AccessToken:  OAuth2AccessToken,

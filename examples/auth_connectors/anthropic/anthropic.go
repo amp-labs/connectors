@@ -7,7 +7,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/connector"
-	"github.com/amp-labs/connectors/examples/example_utils"
+	"github.com/amp-labs/connectors/examples/utils"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -15,7 +15,7 @@ const ApiKey = "<api key>"
 
 // Run this example with `go run anthropic.go`
 func main() {
-	example_utils.Run(anthropicAuthExample)
+	utils.Run(anthropicAuthExample)
 }
 
 // Use the auth connector to make a request to the Anthropic API directly.
@@ -80,7 +80,7 @@ func createAuthenticatedHttpClient(ctx context.Context) common.AuthenticatedHTTP
 		panic(err)
 	}
 
-	return example_utils.CreateApiKeyClient(ctx, info, example_utils.ApiKeyOptions{
+	return utils.CreateApiKeyClient(ctx, info, utils.ApiKeyOptions{
 		ApiKey: ApiKey,
 	})
 }

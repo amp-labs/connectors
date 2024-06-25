@@ -7,7 +7,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/connector"
-	"github.com/amp-labs/connectors/examples/example_utils"
+	"github.com/amp-labs/connectors/examples/utils"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -19,7 +19,7 @@ const (
 
 // Run this example with `go run adobe.go`
 func main() {
-	example_utils.Run(adobeAuthExample)
+	utils.Run(adobeAuthExample)
 }
 
 // Use the auth connector to make a request to the Adobe API directly.
@@ -73,7 +73,7 @@ func createAuthenticatedHttpClient(ctx context.Context) common.AuthenticatedHTTP
 		panic(err)
 	}
 
-	return example_utils.CreateOAuth2ClientCredentialsClient(ctx, info, example_utils.OAuth2ClientCredentialsOptions{
+	return utils.CreateOAuth2ClientCredentialsClient(ctx, info, utils.OAuth2ClientCredentialsOptions{
 		OAuth2ClientId:     OAuth2ClientId,
 		OAuth2ClientSecret: OAuth2ClientSecret,
 	})

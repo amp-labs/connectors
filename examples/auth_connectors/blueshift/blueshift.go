@@ -7,7 +7,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/connector"
-	"github.com/amp-labs/connectors/examples/example_utils"
+	"github.com/amp-labs/connectors/examples/utils"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -15,7 +15,7 @@ const ApiKey = "<api key>"
 
 // Run this example with `go run blueshift.go`
 func main() {
-	example_utils.Run(blueshiftAuthExample)
+	utils.Run(blueshiftAuthExample)
 }
 
 // Use the auth connector to make a request to the Blueshift API directly.
@@ -68,7 +68,7 @@ func createAuthenticatedHttpClient(ctx context.Context) common.AuthenticatedHTTP
 	}
 
 	// Blueshift uses basic auth, but the username is set to the API key and the password is empty.
-	return example_utils.CreateBasicAuthClient(ctx, info, example_utils.BasicAuthOptions{
+	return utils.CreateBasicAuthClient(ctx, info, utils.BasicAuthOptions{
 		User: ApiKey,
 		Pass: "",
 	})

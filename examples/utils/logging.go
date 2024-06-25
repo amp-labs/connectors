@@ -1,4 +1,4 @@
-package example_utils
+package utils
 
 import (
 	"log"
