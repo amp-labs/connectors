@@ -86,13 +86,6 @@ func WithTokenSource(tokenSource oauth2.TokenSource) OAuthOption {
 	}
 }
 
-// WithTokenSourceProvider sets provider that will yield tokens.
-func WithTokenSourceProvider(tokenProvider TokenProvider) OAuthOption {
-	return WithTokenSource(customTokenSource{
-		delegate: tokenProvider,
-	})
-}
-
 // prepare finalizes and validates the connector configuration, and returns an error if it's invalid.
 func (p *oauthClientParams) prepare() (*oauthClientParams, error) {
 	if p.client == nil {
@@ -258,13 +251,3 @@ func (w *observableTokenSource) HasChanged(tok *oauth2.Token) bool {
 		w.lastKnown.TokenType == tok.TokenType ||
 		w.lastKnown.Expiry.Equal(tok.Expiry)
 }
-
-type customTokenSource struct {
-	delegate TokenProvider
-}
-
-func (s customTokenSource) Token() (*oauth2.Token, error) {
-	return s.delegate()
-}
-
-type TokenProvider func() (*oauth2.Token, error)
