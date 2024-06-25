@@ -168,7 +168,9 @@ func main() {
 		case providers.AuthorizationCode:
 			mainOAuth2AuthCode(ctx, provider, substitutionsMap)
 		case providers.Password:
-			mainOAuth2PasswordCreds(ctx, provider, substitutionsMap)
+			// de facto, password grant acts as client credentials,
+			// even so AT/RT were acquired differently.
+			mainOAuth2ClientCreds(ctx, provider, substitutionsMap)
 		default:
 			log.Fatalf("Unsupported OAuth2 grant type: %s", info.Oauth2Opts.GrantType)
 		}
@@ -183,7 +185,8 @@ func main() {
 
 func mainOAuth2ClientCreds(ctx context.Context, provider string, substitutions map[string]string) {
 	params := createClientAuthParams(provider)
-	proxy := buildOAuth2ClientCredentialsProxy(ctx, provider, params.Scopes, params.ID, params.Secret, substitutions)
+	tokens := getTokensFromRegistry()
+	proxy := buildOAuth2AuthCodeProxy(ctx, provider, params.Scopes, params.ID, params.Secret, substitutions, tokens)
 	startProxy(ctx, proxy, DefaultPort)
 }
 
@@ -191,13 +194,6 @@ func mainOAuth2AuthCode(ctx context.Context, provider string, substitutions map[
 	params := createClientAuthParams(provider)
 	tokens := getTokensFromRegistry()
 	proxy := buildOAuth2AuthCodeProxy(ctx, provider, params.Scopes, params.ID, params.Secret, substitutions, tokens)
-	startProxy(ctx, proxy, DefaultPort)
-}
-
-func mainOAuth2PasswordCreds(ctx context.Context, provider string, substitutionsMap map[string]string) {
-	authParams := createClientAuthParams(provider)
-	basicParams := createBasicParams()
-	proxy := buildOAuth2PasswordProxy(ctx, provider, authParams, substitutionsMap, basicParams)
 	startProxy(ctx, proxy, DefaultPort)
 }
 
@@ -418,19 +414,6 @@ func buildOAuth2AuthCodeProxy(ctx context.Context, provider string, scopes []str
 	return newProxy(target, httpClient)
 }
 
-func buildOAuth2PasswordProxy(ctx context.Context, provider string, authParams *ClientAuthParams, substitutions map[string]string, params *providers.BasicParams) *Proxy {
-	providerInfo := getProviderConfig(provider, substitutions)
-	cfg := configureOAuthAuthCode(authParams.ID, authParams.Secret, authParams.Scopes, providerInfo)
-	httpClient := setupOAuth2PasswordHttpClient(ctx, providerInfo, cfg, params)
-
-	target, err := url.Parse(providerInfo.BaseURL)
-	if err != nil {
-		panic(err)
-	}
-
-	return newProxy(target, httpClient)
-}
-
 func getProviderConfig(provider string, substitutions map[string]string) *providers.ProviderInfo {
 	config, err := providers.ReadInfo(provider, &substitutions)
 	if err != nil {
@@ -502,26 +485,6 @@ func setupOAuth2AuthCodeHttpClient(ctx context.Context, prov *providers.Provider
 		OAuth2AuthCodeCreds: &providers.OAuth2AuthCodeParams{
 			Config: cfg,
 			Token:  tokens,
-		},
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	cc, err := connector.NewConnector(prov.Name, connector.WithAuthenticatedClient(c))
-	if err != nil {
-		panic(err)
-	}
-
-	return cc.HTTPClient().Client
-}
-
-func setupOAuth2PasswordHttpClient(ctx context.Context, prov *providers.ProviderInfo, cfg *oauth2.Config, params *providers.BasicParams) common.AuthenticatedHTTPClient {
-	c, err := prov.NewClient(ctx, &providers.NewClientParams{
-		Debug: *debug,
-		Oauth2PasswordParams: &providers.Oauth2PasswordParams{
-			Config:      cfg,
-			BasicParams: params,
 		},
 	})
 	if err != nil {

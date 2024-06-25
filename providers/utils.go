@@ -218,11 +218,6 @@ type OAuth2AuthCodeParams struct {
 	Token  *oauth2.Token
 }
 
-type Oauth2PasswordParams struct {
-	*oauth2.Config
-	*BasicParams
-}
-
 // NewClientParams is the parameters to create a new HTTP client.
 type NewClientParams struct {
 	// Debug will enable debug mode for the client.
@@ -243,9 +238,6 @@ type NewClientParams struct {
 	// OAuth2AuthCodeCreds is the auth code credentials to use for the client.
 	// If the provider uses auth code, this field must be set.
 	OAuth2AuthCodeCreds *OAuth2AuthCodeParams
-
-	// TODO comment
-	Oauth2PasswordParams *Oauth2PasswordParams
 
 	// ApiKey is the api key to use for the client. If the provider uses api-key
 	// auth, this field must be set.
@@ -272,7 +264,7 @@ func (i *ProviderInfo) NewClient(ctx context.Context, params *NewClientParams) (
 		case ClientCredentials:
 			return createOAuth2ClientCredentialsHTTPClient(ctx, params.Client, params.Debug, params.OAuth2ClientCreds)
 		case Password:
-			return createOAuth2PasswordHTTPClient(ctx, params.Client, params.Debug, params.Oauth2PasswordParams)
+			return createOAuth2PasswordHTTPClient(ctx, params.Client, params.Debug, params.OAuth2AuthCodeCreds)
 		case PKCE:
 			return nil, fmt.Errorf("%w: %s", ErrClient, "PKCE grant type not supported")
 		default:
@@ -397,29 +389,15 @@ func createOAuth2ClientCredentialsHTTPClient( //nolint:ireturn
 	return oauthClient, nil
 }
 
-func createOAuth2PasswordHTTPClient(ctx context.Context, client *http.Client,
-	dbg bool, params *Oauth2PasswordParams,
+func createOAuth2PasswordHTTPClient(
+	ctx context.Context,
+	client *http.Client,
+	dbg bool,
+	cfg *OAuth2AuthCodeParams,
 ) (common.AuthenticatedHTTPClient, error) {
-	options := []common.OAuthOption{
-		common.WithOAuthClient(getClient(client)),
-		common.WithTokenSourceProvider(func() (*oauth2.Token, error) {
-			// we could use refresh token, but it works a bit differently when refresh token was
-			// acquired via oauth2 password grant type.
-			// TODO this is called every time a request is made. Store AT/RT
-			return params.PasswordCredentialsToken(ctx, params.User, params.Pass)
-		}),
-	}
-
-	if dbg {
-		options = append(options, common.WithOAuthDebug(common.PrintRequestAndResponse))
-	}
-
-	oauthClient, err := common.NewOAuthHTTPClient(ctx, options...)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create oauth2 client: %w", ErrClient, err)
-	}
-
-	return oauthClient, nil
+	// it works the same as auth code method.
+	// password grant type should generate AT and RT.
+	return createOAuth2AuthCodeHTTPClient(ctx, client, dbg, cfg)
 }
 
 func createApiKeyHTTPClient( //nolint:ireturn
