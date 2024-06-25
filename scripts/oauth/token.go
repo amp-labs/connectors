@@ -95,6 +95,16 @@ var readers = []utils.Reader{
 		JSONPath: "$['state']",
 		CredKey:  "State",
 	},
+	&utils.JSONReader{
+		FilePath: DefaultCredsFile,
+		JSONPath: "$['userName']",
+		CredKey:  "UserName",
+	},
+	&utils.JSONReader{
+		FilePath: DefaultCredsFile,
+		JSONPath: "$['password']",
+		CredKey:  "Password",
+	},
 }
 
 // OAuthApp is a simple OAuth app that can be used to get an OAuth token.
@@ -109,6 +119,7 @@ type OAuthApp struct {
 	Proto             string
 	SSLCert           string
 	SSLKey            string
+	PasswordParams    *providers.BasicParams
 }
 
 // ServeHTTP implements the http.Handler interface.
@@ -211,6 +222,18 @@ func (a *OAuthApp) Run() error {
 		fmt.Println("Authorization: " + header)
 
 		return nil
+	} else if a.GrantType == providers.Password {
+		tok, err := a.Config.PasswordCredentialsToken(context.Background(), a.PasswordParams.User, a.PasswordParams.Pass)
+		if err != nil {
+			return err
+		}
+
+		header := tok.Type() + " " + tok.AccessToken
+		fmt.Println("Expiry: " + tok.Expiry.String())
+		fmt.Println("Authorization: " + header)
+		fmt.Println("Refresh Token: " + tok.RefreshToken)
+
+		return nil
 	} else {
 		slog.Info("starting OAuth app", "port", a.Port)
 
@@ -268,6 +291,10 @@ func setup() *OAuthApp {
 	callback := flag.String("callback", DefaultCallbackPath, "the full OAuth callback path (arbitrary)")
 	flag.Parse()
 
+	if err := registry.AddReaders(readers...); err != nil {
+		return nil
+	}
+
 	substitutions, err := registry.GetMap("Substitutions")
 	if err != nil {
 		slog.Warn("no substitutions, ensure that the provider info doesn't have any {{variables}}")
@@ -277,10 +304,6 @@ func setup() *OAuthApp {
 	substitutionsMap := make(map[string]string)
 	for key, val := range substitutions {
 		substitutionsMap[key] = val.MustString()
-	}
-
-	if err = registry.AddReaders(readers...); err != nil {
-		return nil
 	}
 
 	provider := registry.MustString("Provider")
@@ -373,6 +396,40 @@ func setup() *OAuthApp {
 				TokenURL:     providerInfo.Oauth2Opts.TokenURL,
 				Scopes:       oauthScopes,
 				AuthStyle:    oauth2.AuthStyleAutoDetect,
+			},
+		}
+		if state != "" {
+			app.State = state
+		}
+
+		if providerInfo.Oauth2Opts.Audience != "" {
+			aud := providerInfo.Oauth2Opts.Audience
+			app.ClientCredsConfig.EndpointParams = url.Values{"audience": {aud}}
+		}
+
+		return app
+	case providers.Password:
+		state, err := registry.GetString("State")
+		if err != nil {
+			slog.Warn("no state attached, ensure that the provider doesn't require state")
+		}
+
+		username := registry.MustString("UserName")
+		password := registry.MustString("Password")
+
+		app := &OAuthApp{
+			GrantType: providers.Password,
+			Config: &oauth2.Config{
+				ClientID:     clientId,
+				ClientSecret: clientSecret,
+				Scopes:       oauthScopes,
+				Endpoint: oauth2.Endpoint{
+					TokenURL: providerInfo.Oauth2Opts.TokenURL,
+				},
+			},
+			PasswordParams: &providers.BasicParams{
+				User: username,
+				Pass: password,
 			},
 		}
 		if state != "" {
