@@ -11,23 +11,27 @@ import (
 	"github.com/amp-labs/connectors/providers"
 )
 
-const ApiKey = "<api key>"
+const (
+	// Replace these with your own values.
+	OAuth2ClientId     = "<client id>"
+	OAuth2ClientSecret = "<client secret>"
+)
 
-// Run this example with `go run blueshift.go`
+// Run this example with `go run adobe.go`
 func main() {
-	example_utils.Run(blueshiftAuthExample)
+	example_utils.Run(adobeAuthExample)
 }
 
-// Use the auth connector to make a request to the Blueshift API directly.
+// Use the auth connector to make a request to the Adobe API directly.
 // The constructed client will take care of certain things like authentication,
 // URL construction, and response parsing. It's a thin wrapper around the
 // provider's REST API.
-func blueshiftAuthExample(ctx context.Context) error {
+func adobeAuthExample(ctx context.Context) error {
 	// Create an auth connector
 	conn := createAuthConnector(ctx)
 
-	// Call the Blueshift API
-	response, err := conn.Client.Get(ctx, "/api/v2/campaigns.json")
+	// Call the Adobe API (limits endpoint just for example)
+	response, err := conn.Client.Get(ctx, "/data/foundation/catalog/dataSets")
 	if err != nil {
 		return err
 	}
@@ -38,20 +42,22 @@ func blueshiftAuthExample(ctx context.Context) error {
 	}
 
 	// The response body is already parsed (as JSON). You can access it like this:
-	nodes, err := response.Body.JSONPath("$.campaigns[0].name")
+	nodes, err := response.Body.JSONPath("$.*.name")
 	if err != nil {
 		return err
 	}
 
-	// Print out the model field
-	fmt.Printf("first campaign name: %s\n", nodes[0].MustString())
+	// Print out the names of the data sets
+	for _, node := range nodes {
+		fmt.Printf("DataSet.Name: %s\n", node.MustString())
+	}
 
 	return nil
 }
 
-// Create an auth connector with the Blueshift provider.
+// Create an auth connector with the Adobe provider.
 func createAuthConnector(ctx context.Context) *connector.Connector {
-	conn, err := connector.NewConnector(providers.Blueshift,
+	conn, err := connector.NewConnector(providers.AdobeExperiencePlatform,
 		connector.WithAuthenticatedClient(createAuthenticatedHttpClient(ctx)))
 	if err != nil {
 		panic(err)
@@ -60,16 +66,15 @@ func createAuthConnector(ctx context.Context) *connector.Connector {
 	return conn
 }
 
-// Create a basic-auth authenticated HTTP client for Blueshift.
+// Create an OAuth2 authenticated HTTP client for Adobe.
 func createAuthenticatedHttpClient(ctx context.Context) common.AuthenticatedHTTPClient {
-	info, err := providers.ReadInfo(providers.Blueshift, nil)
+	info, err := providers.ReadInfo(providers.AdobeExperiencePlatform, nil)
 	if err != nil {
 		panic(err)
 	}
 
-	// Blueshift uses basic auth, but the username is set to the API key and the password is empty.
-	return example_utils.CreateBasicAuthClient(ctx, info, example_utils.BasicAuthOptions{
-		User: ApiKey,
-		Pass: "",
+	return example_utils.CreateOAuth2ClientCredentialsClient(ctx, info, example_utils.OAuth2ClientCredentialsOptions{
+		OAuth2ClientId:     OAuth2ClientId,
+		OAuth2ClientSecret: OAuth2ClientSecret,
 	})
 }
