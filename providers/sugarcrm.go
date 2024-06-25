@@ -6,10 +6,10 @@ func init() {
 	// 2-legged auth
 	SetInfo(SugarCRM, ProviderInfo{
 		AuthType: Oauth2,
-		BaseURL:  "{{.workspace}}",
+		BaseURL:  "{{.workspace}}/rest/v11_24",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 Password,
-			TokenURL:                  "{{.workspace}}/rest/{{.restVersion}}/oauth2/token",
+			TokenURL:                  "{{.workspace}}/rest/v11_24/oauth2/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: true,
 		},
