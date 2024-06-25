@@ -1,4 +1,4 @@
-package client_utils
+package example_utils
 
 import (
 	"context"
@@ -23,7 +23,7 @@ func GetOAuth2AuthorizationCodeClient(info *providers.ProviderInfo, opts OAuth2A
 	httpClient, err := info.NewClient(context.Background(), &providers.NewClientParams{
 		// If you set this to true, the client will log all requests and responses.
 		// Be careful with this in production, as it may expose sensitive data.
-		Debug: false,
+		Debug: *debug,
 
 		// If you have your own HTTP client, you can use it here.
 		Client: http.DefaultClient,
