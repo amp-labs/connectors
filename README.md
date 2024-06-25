@@ -12,7 +12,12 @@ It can be either be used as a standalone library, or as a part of the [Ampersand
 
 See the [examples directory](https://github.com/amp-labs/connectors/tree/main/examples) for examples of how to use the library.
 
-* [Salesforce](https://github.com/amp-labs/connectors/tree/main/examples/salesforce)
+| Provider      | Auth Connector                                                                                  | Deep Connector                                                                                  | AuthN                 | Notes |
+|---------------|-------------------------------------------------------------------------------------------------|------------------------------------------------------------------|-----------------------|------|
+| **Salesforce** | [example](https://github.com/amp-labs/connectors/tree/main/examples/auth_connectors/salesforce) | [example](https://github.com/amp-labs/connectors/tree/main/examples/deep_connectors/salesforce) | OAuth2 + Auth Code    | |
+| **Adobe** | [example](https://github.com/amp-labs/connectors/tree/main/examples/auth_connectors/adobe)      | | OAuth2 + Client Creds | |
+| **Anthropic** | [example](https://github.com/amp-labs/connectors/tree/main/examples/auth_connectors/antrhopic)  | | API Key               | |
+| **Blueshift** | [example](https://github.com/amp-labs/connectors/tree/main/examples/auth_connectors/blueshift) | | Basic Auth            | |
 
 ## Supported connectors
 
