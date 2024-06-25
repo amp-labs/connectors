@@ -3,6 +3,7 @@ package connector
 import (
 	"context"
 	"errors"
+	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
@@ -18,63 +19,54 @@ var (
 	ErrMissingProvider = errors.New("missing provider")
 )
 
-type Option func(*connectorParams)
+type Option func(*parameters)
 
-type connectorParams struct {
-	provider      providers.Provider
-	client        *common.JSONHTTPClient
-	substitutions map[string]string
+type parameters struct {
+	provider providers.Provider
+	paramsbuilder.Client
+	paramsbuilder.Workspace
 }
 
-func (p *connectorParams) prepare() (*connectorParams, error) {
+func (p parameters) FromOptions(opts ...Option) (*parameters, error) {
+	params := &p
+	for _, opt := range opts {
+		opt(params)
+	}
+
+	return params, params.ValidateParams()
+}
+
+func (p parameters) ValidateParams() error {
 	if p.provider == "" {
-		return nil, ErrMissingProvider
+		return ErrMissingProvider
 	}
 
-	if p.client == nil {
-		return nil, ErrMissingClient
-	}
+	// workspace is optional
 
-	return p, nil
-}
-
-// WithCatalogSubstitutions sets the provider values to use while making substitutions &
-// reading from providers.yaml. If the provider values are not set, the connector
-// will use error out.
-func WithCatalogSubstitutions(substitutions map[string]string) Option {
-	return func(params *connectorParams) {
-		params.substitutions = substitutions
-	}
+	return errors.Join(
+		p.Client.ValidateParams(),
+	)
 }
 
 // WithClient sets the http client to use for the connector.
-func WithClient(ctx context.Context, client *http.Client, config *oauth2.Config, token *oauth2.Token,
-	opts ...common.OAuthOption,
+func WithClient(ctx context.Context, client *http.Client,
+	config *oauth2.Config, token *oauth2.Token, opts ...common.OAuthOption,
 ) Option {
-	return func(params *connectorParams) {
-		options := []common.OAuthOption{
-			common.WithOAuthClient(client),
-			common.WithOAuthConfig(config),
-			common.WithOAuthToken(token),
-		}
-
-		oauthClient, err := common.NewOAuthHTTPClient(ctx, append(options, opts...)...)
-		if err != nil {
-			panic(err) // caught in NewConnector
-		}
-
-		WithAuthenticatedClient(oauthClient)(params)
+	return func(params *parameters) {
+		params.WithClient(ctx, client, config, token, opts...)
 	}
 }
 
 // WithAuthenticatedClient sets the http client to use for the connector. Its usage is optional.
 func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
-	return func(params *connectorParams) {
-		params.client = &common.JSONHTTPClient{
-			HTTPClient: &common.HTTPClient{
-				Client:       client,
-				ErrorHandler: common.InterpretError,
-			},
-		}
+	return func(params *parameters) {
+		params.WithAuthenticatedClient(client)
+	}
+}
+
+// WithWorkspace sets workspace which is used as substitution for URL templates.
+func WithWorkspace(workspaceRef string) Option {
+	return func(params *parameters) {
+		params.WithWorkspace(workspaceRef)
 	}
 }

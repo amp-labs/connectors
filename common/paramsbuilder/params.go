@@ -78,6 +78,10 @@ func (p *Workspace) WithWorkspace(workspaceRef string) {
 	p.Name = workspaceRef
 }
 
+func (p *Workspace) Substitution() map[string]string {
+	return map[string]string{"workspace": p.Name}
+}
+
 // Module params adds suffix to URL controlling API versions.
 // This is relevant where there are several APIs for different product areas or sub-products, and the APIs
 // are versioned differently or have different ways of constructing URLs from object names.
