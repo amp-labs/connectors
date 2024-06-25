@@ -19,7 +19,6 @@ import (
 var (
 	ErrCreateMetadata  = errors.New("error in CreateMetadata")
 	ErrCreatingRequest = errors.New("error in creating request")
-	ErrBadRequest      = errors.New("bad request")
 )
 
 func (c *Connector) CreateMetadata(

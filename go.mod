@@ -4,6 +4,7 @@ go 1.21.0
 
 require (
 	github.com/PuerkitoBio/goquery v1.9.2
+	github.com/antchfx/xmlquery v1.4.0
 	github.com/brianvoe/gofakeit/v6 v6.28.0
 	github.com/gertd/go-pluralize v0.2.1
 	github.com/go-playground/validator v9.31.0+incompatible
@@ -20,10 +21,11 @@ require (
 
 require (
 	github.com/andybalholm/cascadia v1.3.2 // indirect
-	github.com/antchfx/xpath v0.0.0-20170515025933-1f3266e77307 // indirect
+	github.com/antchfx/xpath v1.3.0 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
+	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
