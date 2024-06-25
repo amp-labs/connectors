@@ -21,6 +21,12 @@ const (
 	OAuth2RefreshToken = "<refresh token>"
 )
 
+// AccessTokenExpiry is the time when the access token expires.
+// This is used to determine if the token needs to be refreshed.
+// If you have an actual value, you can set it here. Otherwise
+// it will be set to a day ago to force a refresh.
+var AccessTokenExpiry = time.Now().Add(-24 * time.Hour)
+
 // substitutions is a map of variables that can be used in the provider catalog.
 var substitutions = map[string]string{
 	"workspace": Workspace,
@@ -37,7 +43,7 @@ func main() {
 // provider's REST API.
 func salesforceAuthExample(ctx context.Context) error {
 	// Create an auth connector
-	conn := createAuthConnector()
+	conn := createAuthConnector(ctx)
 
 	// Call the Salesforce API (limits endpoint just for example)
 	response, err := conn.Client.Get(ctx, "/services/data/v61.0/limits/")
@@ -63,10 +69,10 @@ func salesforceAuthExample(ctx context.Context) error {
 }
 
 // Create an auth connector with the Salesforce provider.
-func createAuthConnector() *connector.Connector {
+func createAuthConnector(ctx context.Context) *connector.Connector {
 	conn, err := connector.NewConnector(providers.Salesforce,
 		connector.WithCatalogSubstitutions(substitutions),
-		connector.WithAuthenticatedClient(createAuthenticatedHttpClient()))
+		connector.WithAuthenticatedClient(createAuthenticatedHttpClient(ctx)))
 	if err != nil {
 		panic(err)
 	}
@@ -75,17 +81,17 @@ func createAuthConnector() *connector.Connector {
 }
 
 // Create an OAuth2 authenticated HTTP client for Salesforce.
-func createAuthenticatedHttpClient() common.AuthenticatedHTTPClient {
+func createAuthenticatedHttpClient(ctx context.Context) common.AuthenticatedHTTPClient {
 	info, err := providers.ReadInfo(providers.Salesforce, &substitutions)
 	if err != nil {
 		panic(err)
 	}
 
-	return example_utils.CreateOAuth2AuthorizationCodeClient(info, example_utils.OAuth2AuthCodeOptions{
+	return example_utils.CreateOAuth2AuthorizationCodeClient(ctx, info, example_utils.OAuth2AuthCodeOptions{
 		OAuth2ClientId:     OAuth2ClientId,
 		OAuth2ClientSecret: OAuth2ClientSecret,
 		OAuth2AccessToken:  OAuth2AccessToken,
 		OAuth2RefreshToken: OAuth2RefreshToken,
-		Expiry:             time.Time{},
+		Expiry:             AccessTokenExpiry,
 	})
 }
