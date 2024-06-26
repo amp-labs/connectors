@@ -15,14 +15,7 @@ func (*Connector) interpretJSONError(res *http.Response, body []byte) error { //
 		return fmt.Errorf("interpretJSONError general: %w %w", interpreter.ErrUnmarshal, err)
 	}
 
-	return payload.CombineErr(statusCodeMapping(res, body))
-}
-
-func statusCodeMapping(res *http.Response, body []byte) error {
-	switch res.StatusCode { // nolint:gocritic
-	default:
-		return interpreter.DefaultStatusCodeMappingToErr(res, body)
-	}
+	return payload.CombineErr(interpreter.DefaultStatusCodeMappingToErr(res, body))
 }
 
 type ResponseError struct {
