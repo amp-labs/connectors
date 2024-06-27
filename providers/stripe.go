@@ -8,10 +8,10 @@ func init() {
 		AuthType: ApiKey,
 		BaseURL:  "https://api.stripe.com",
 		ApiKeyOpts: &ApiKeyOpts{
-			Type:        InHeader, // Can also be InQuery
+			Type:        InHeader,
 			HeaderName:  "Authorization",
 			ValuePrefix: "Bearer ",
-			DocsURL:     "https://api.6sense.com/docs/#get-your-api-token",
+			DocsURL:     "https://docs.stripe.com/keys",
 		}, Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
