@@ -79,8 +79,11 @@ func (p *Workspace) WithWorkspace(workspaceRef string) {
 	p.Name = workspaceRef
 }
 
-func (p *Workspace) Substitution() map[string]string {
-	return map[string]string{"workspace": p.Name}
+func (p *Workspace) getSubstitutionPlan() SubstitutionPlan {
+	return SubstitutionPlan{
+		from: variableWorkspace,
+		to:   p.Name,
+	}
 }
 
 // Module params adds suffix to URL controlling API versions.
