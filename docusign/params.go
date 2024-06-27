@@ -2,53 +2,46 @@ package docusign
 
 import (
 	"context"
+	"errors"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"golang.org/x/oauth2"
 )
 
-type docusignParams struct {
-	client *common.JSONHTTPClient
+type Option func(params *parameters)
+
+type parameters struct {
+	paramsbuilder.Client
 }
 
-type Option func(params *docusignParams)
+func (p parameters) FromOptions(opts ...Option) (*parameters, error) {
+	params := &p
+	for _, opt := range opts {
+		opt(params)
+	}
+
+	return params, params.ValidateParams()
+}
+
+func (p parameters) ValidateParams() error {
+	return errors.Join(
+		p.Client.ValidateParams(),
+	)
+}
 
 // WithClient sets the http client to use for the connector. Saves some boilerplate.
-func WithClient(ctx context.Context, client *http.Client, config *oauth2.Config, token *oauth2.Token,
-	opts ...common.OAuthOption,
+func WithClient(ctx context.Context, client *http.Client,
+	config *oauth2.Config, token *oauth2.Token, opts ...common.OAuthOption,
 ) Option {
-	return func(params *docusignParams) {
-		options := []common.OAuthOption{
-			common.WithOAuthClient(client),
-			common.WithOAuthConfig(config),
-			common.WithOAuthToken(token),
-		}
-
-		oauthClient, err := common.NewOAuthHTTPClient(ctx, append(options, opts...)...)
-		if err != nil {
-			panic(err) // caught in NewConnector
-		}
-
-		WithAuthenticatedClient(oauthClient)(params)
+	return func(params *parameters) {
+		params.WithClient(ctx, client, config, token, opts...)
 	}
 }
 
 func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
-	return func(params *docusignParams) {
-		params.client = &common.JSONHTTPClient{
-			HTTPClient: &common.HTTPClient{
-				Client:       client,
-				ErrorHandler: common.InterpretError,
-			},
-		}
+	return func(params *parameters) {
+		params.WithAuthenticatedClient(client)
 	}
-}
-
-func (params *docusignParams) prepare() (*docusignParams, error) {
-	if params.client == nil {
-		return nil, ErrMissingClient
-	}
-
-	return params, nil
 }
