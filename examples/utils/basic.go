@@ -4,8 +4,8 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/amp-labs/connectors/catalog"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/providers"
 )
 
 type BasicAuthOptions struct {
@@ -13,9 +13,9 @@ type BasicAuthOptions struct {
 	Pass string
 }
 
-func CreateBasicAuthClient(ctx context.Context, info *providers.ProviderInfo, opts BasicAuthOptions) common.AuthenticatedHTTPClient {
+func CreateBasicAuthClient(ctx context.Context, info *catalog.ProviderInfo, opts BasicAuthOptions) common.AuthenticatedHTTPClient {
 	// Create the authenticated HTTP client.
-	httpClient, err := info.NewClient(ctx, &providers.NewClientParams{
+	httpClient, err := info.NewClient(ctx, &catalog.NewClientParams{
 		// If you set this to true, the client will log all requests and responses.
 		// Be careful with this in production, as it may expose sensitive data.
 		Debug: *debug,
@@ -24,7 +24,7 @@ func CreateBasicAuthClient(ctx context.Context, info *providers.ProviderInfo, op
 		Client: http.DefaultClient,
 
 		// BasicCreds represents the basic authentication credentials.
-		BasicCreds: &providers.BasicParams{
+		BasicCreds: &catalog.BasicParams{
 			User: opts.User,
 			Pass: opts.Pass,
 		},
