@@ -33,7 +33,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		return nil, err
 	}
 
-	providerInfo, err := providers.ReadInfo(providers.Intercom, nil)
+	providerInfo, err := providers.ReadInfo(providers.Intercom)
 	if err != nil {
 		return nil, err
 	}
