@@ -132,8 +132,7 @@ func (a *OAuthApp) ServeHTTP(writer http.ResponseWriter, request *http.Request) 
 	case request.URL.Path == "/" && request.Method == "GET":
 		// Redirect to the OAuth provider.
 		encState := base64.URLEncoding.EncodeToString([]byte(a.State))
-		u := a.Config.AuthCodeURL(encState, a.Options...)
-		writer.Header().Set("Location", u)
+		writer.Header().Set("Location", a.Config.AuthCodeURL(encState, a.Options...))
 		writer.WriteHeader(http.StatusTemporaryRedirect)
 
 	default:
