@@ -1,11 +1,11 @@
-package providers
+package catalog
 
-const Freshdesk Provider = "freshdesk"
+const Mailgun Provider = "mailgun"
 
 func init() {
-	SetInfo(Freshdesk, ProviderInfo{
+	SetInfo(Mailgun, ProviderInfo{
 		AuthType: Basic,
-		BaseURL:  "https://{{.workspace}}.freshdesk.com",
+		BaseURL:  "https://api.mailgun.net",
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,

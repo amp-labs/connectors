@@ -1,11 +1,11 @@
-package providers
+package catalog
 
-const Geckoboard Provider = "geckoboard"
+const Freshdesk Provider = "freshdesk"
 
 func init() {
-	SetInfo(Geckoboard, ProviderInfo{
+	SetInfo(Freshdesk, ProviderInfo{
 		AuthType: Basic,
-		BaseURL:  "https://api.geckoboard.com",
+		BaseURL:  "https://{{.workspace}}.freshdesk.com",
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,

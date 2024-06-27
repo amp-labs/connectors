@@ -1,11 +1,11 @@
-package providers
+package catalog
 
-const Mailgun Provider = "mailgun"
+const Geckoboard Provider = "geckoboard"
 
 func init() {
-	SetInfo(Mailgun, ProviderInfo{
+	SetInfo(Geckoboard, ProviderInfo{
 		AuthType: Basic,
-		BaseURL:  "https://api.mailgun.net",
+		BaseURL:  "https://api.geckoboard.com",
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
