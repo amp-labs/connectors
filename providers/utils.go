@@ -13,15 +13,18 @@ import (
 	"text/template" // nosemgrep: go.lang.security.audit.xss.import-text-template.import-text-template
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/go-playground/validator"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
 )
 
 var (
-	ErrProviderCatalogNotFound = errors.New("provider or provider catalog not found")
-	ErrProviderOptionNotFound  = errors.New("provider option not found")
-	ErrClient                  = errors.New("client creation failed")
+	ErrCatalogNotFound        = errors.New("catalog not found")
+	ErrProviderNotFound       = errors.New("provider not found")
+	ErrProviderOptionNotFound = errors.New("provider option not found")
+	ErrClient                 = errors.New("client creation failed")
+	ErrSubstitutionFailure    = errors.New("failed to resolve substitutions")
 )
 
 type CatalogOption func(params *catalogParams)
@@ -37,25 +40,51 @@ func WithCatalog(c CatalogType) CatalogOption {
 	}
 }
 
-func ReadCatalog(opts ...CatalogOption) (CatalogType, error) {
+type CustomCatalog struct {
+	custom CatalogType
+}
+
+// NewCustomCatalog allows to apply modifiers on the base catalog, to tweak its content.
+// Just like the default catalog it supports reading data, resolves variable substitutions.
+func NewCustomCatalog(opts ...CatalogOption) CustomCatalog {
 	params := &catalogParams{catalog: catalog}
 
 	for _, opt := range opts {
 		opt(params)
 	}
 
-	if params.catalog == nil {
-		return nil, ErrProviderCatalogNotFound
+	return CustomCatalog{custom: params.catalog}
+}
+
+func (c CustomCatalog) catalog() (CatalogType, error) {
+	if c.custom == nil {
+		// Null catalog was probably set via options.
+		// This is not allowed.
+		return nil, ErrCatalogNotFound
 	}
 
-	catalog, err := clone[CatalogType](params.catalog)
+	return c.custom, nil
+}
+
+// ReadCatalog is used to get the catalog.
+func ReadCatalog(opts ...CatalogOption) (CatalogType, error) {
+	return NewCustomCatalog(opts...).ReadCatalog()
+}
+
+func (c CustomCatalog) ReadCatalog() (CatalogType, error) {
+	catalogInstance, err := c.catalog()
+	if err != nil {
+		return nil, err
+	}
+
+	catalogCopy, err := clone[CatalogType](catalogInstance)
 	if err != nil {
 		return nil, err
 	}
 
 	// Validate the provider configuration
 	v := validator.New()
-	for provider, providerInfo := range catalog {
+	for provider, providerInfo := range catalogCopy {
 		if err := v.Struct(providerInfo); err != nil {
 			return nil, err
 		}
@@ -63,7 +92,7 @@ func ReadCatalog(opts ...CatalogOption) (CatalogType, error) {
 		providerInfo.Name = provider
 	}
 
-	return catalog, nil
+	return catalogCopy, nil
 }
 
 // SetInfo sets the information for a specific provider in the catalog.
@@ -83,20 +112,20 @@ func SetInfo(provider Provider, info ProviderInfo) {
 
 // ReadInfo reads the information from the catalog for specific provider. It also performs string substitution
 // on the values in the config that are surrounded by {{}}.
-func ReadInfo(provider Provider, substitutions *map[string]string, opts ...CatalogOption) (*ProviderInfo, error) {
-	params := &catalogParams{catalog: catalog}
+// The catalog variable will be applied such that `{{.VAR_NAME}}` string will be replaced with `VAR_VALUE`.
+func ReadInfo(provider Provider, vars ...paramsbuilder.CatalogVariable) (*ProviderInfo, error) {
+	return NewCustomCatalog().ReadInfo(provider, vars...)
+}
 
-	for _, opt := range opts {
-		opt(params)
+func (c CustomCatalog) ReadInfo(provider Provider, vars ...paramsbuilder.CatalogVariable) (*ProviderInfo, error) {
+	catalogInstance, err := c.catalog()
+	if err != nil {
+		return nil, err
 	}
 
-	if params.catalog == nil {
-		return nil, ErrProviderCatalogNotFound
-	}
-
-	pInfo, ok := params.catalog[provider]
+	pInfo, ok := catalogInstance[provider]
 	if !ok {
-		return nil, ErrProviderCatalogNotFound
+		return nil, ErrProviderNotFound
 	}
 
 	// Clone before modifying
@@ -113,21 +142,33 @@ func ReadInfo(provider Provider, substitutions *map[string]string, opts ...Catal
 		return nil, err
 	}
 
-	if substitutions == nil {
-		substitutions = &map[string]string{}
-	}
-
 	// Apply substitutions to the provider configuration values which contain variables in the form of {{var}}.
-	if err := substituteStruct(&providerInfo, substitutions); err != nil {
+	if err := providerInfo.SubstituteWith(vars); err != nil {
 		return nil, err
 	}
 
 	return &providerInfo, nil
 }
 
+func (i *ProviderInfo) SubstituteWith(vars []paramsbuilder.CatalogVariable) error {
+	// TODO catalog substitution algorithm could live outside of this package
+	return applySubstitutions(paramsbuilder.NewCatalogSubstitutionRegistry(vars), i)
+}
+
+func applySubstitutions(substitutions paramsbuilder.SubstitutionRegistry[string], input any) error {
+	// TODO paramsbuilder.SubstitutionRegistry should have this function as a method
+	// (further refactoring maybe not in paramsbuilder package)
+	err := substituteStruct(input, substitutions)
+	if err != nil {
+		return errors.Join(err, ErrSubstitutionFailure)
+	}
+
+	return nil
+}
+
 // substituteStruct performs string substitution on the fields of the input struct
 // using the substitutions map.
-func substituteStruct(input interface{}, substitutions *map[string]string) (err error) { //nolint:gocognit,cyclop,lll
+func substituteStruct(input interface{}, substitutions map[string]string) (err error) { //nolint:gocognit,cyclop,lll
 	configStruct := reflect.ValueOf(input).Elem()
 	for i := 0; i < configStruct.NumField(); i++ {
 		field := configStruct.Field(i)
@@ -180,15 +221,16 @@ func substituteStruct(input interface{}, substitutions *map[string]string) (err 
 
 // substitute performs string substitution on the input string
 // using the substitutions map.
-func substitute(input string, substitutions *map[string]string) (string, error) {
-	tmpl, err := template.New("-").Parse(input)
+func substitute(input string, substitutions map[string]string) (string, error) {
+	// missing variables are not allowed, Execute will throw an error.
+	tmpl, err := template.New("-").Option("missingkey=error").Parse(input)
 	if err != nil {
 		return "", err
 	}
 
 	var result strings.Builder
 
-	err = tmpl.Execute(&result, substitutions)
+	err = tmpl.Execute(&result, &substitutions)
 	if err != nil {
 		return "", err
 	}
