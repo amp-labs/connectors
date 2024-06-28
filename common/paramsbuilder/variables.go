@@ -21,9 +21,13 @@ type SubstitutionPlan struct {
 	to   string
 }
 
-type SubstitutionRegistry[V string | *ajson.Node] map[string]V
+type RegistryValue interface {
+	string | *ajson.Node
+}
 
-func GetCatalogSubstitutionRegistry(vars []CatalogVariable) SubstitutionRegistry[string] {
+type SubstitutionRegistry[V RegistryValue] map[string]V
+
+func NewCatalogSubstitutionRegistry(vars []CatalogVariable) SubstitutionRegistry[string] {
 	substitutions := make(SubstitutionRegistry[string])
 
 	for _, variable := range vars {
@@ -36,17 +40,32 @@ func GetCatalogSubstitutionRegistry(vars []CatalogVariable) SubstitutionRegistry
 
 // NewCatalogVariables converts JSON into supported list of Catalog Variables.
 // This enforces type checking.
-func NewCatalogVariables(registry SubstitutionRegistry[*ajson.Node]) []CatalogVariable {
+func NewCatalogVariables[V RegistryValue](registry SubstitutionRegistry[V]) []CatalogVariable {
 	result := make([]CatalogVariable, 0)
 
 	for key, value := range registry {
+		name := registryValueToString(value)
+
 		switch key {
 		case variableWorkspace:
-			result = append(result, &Workspace{Name: value.MustString()})
+			result = append(result, &Workspace{Name: name})
 		default:
 			slog.Info("unknown substitution SubstitutionPlan for catalog", key, value)
 		}
 	}
 
 	return result
+}
+
+func registryValueToString[V RegistryValue](value V) string {
+	var name string
+	if v, ok := any(value).(string); ok {
+		name = v
+	}
+
+	if v, ok := any(value).(*ajson.Node); ok {
+		name = v.MustString()
+	}
+
+	return name
 }

@@ -20,10 +20,11 @@ import (
 )
 
 var (
-	ErrCatalogNotFound         = errors.New("catalog not found")
-	ErrProviderCatalogNotFound = errors.New("provider not found")
-	ErrProviderOptionNotFound  = errors.New("provider option not found")
-	ErrClient                  = errors.New("client creation failed")
+	ErrCatalogNotFound        = errors.New("catalog not found")
+	ErrProviderNotFound       = errors.New("provider not found")
+	ErrProviderOptionNotFound = errors.New("provider option not found")
+	ErrClient                 = errors.New("client creation failed")
+	ErrSubstitutionFailure    = errors.New("failed to resolve substitutions")
 )
 
 type CatalogOption func(params *catalogParams)
@@ -111,7 +112,7 @@ func SetInfo(provider Provider, info ProviderInfo) {
 
 // ReadInfo reads the information from the catalog for specific provider. It also performs string substitution
 // on the values in the config that are surrounded by {{}}.
-// The catalog variable will be applied such that `{{VAR_NAME}}` string will be replaced with `VAR_VALUE`.
+// The catalog variable will be applied such that `{{.VAR_NAME}}` string will be replaced with `VAR_VALUE`.
 func ReadInfo(provider Provider, vars ...paramsbuilder.CatalogVariable) (*ProviderInfo, error) {
 	return NewCustomCatalog().ReadInfo(provider, vars...)
 }
@@ -124,7 +125,7 @@ func (c CustomCatalog) ReadInfo(provider Provider, vars ...paramsbuilder.Catalog
 
 	pInfo, ok := catalogInstance[provider]
 	if !ok {
-		return nil, ErrProviderCatalogNotFound
+		return nil, ErrProviderNotFound
 	}
 
 	// Clone before modifying
@@ -151,7 +152,18 @@ func (c CustomCatalog) ReadInfo(provider Provider, vars ...paramsbuilder.Catalog
 
 func (i *ProviderInfo) SubstituteWith(vars []paramsbuilder.CatalogVariable) error {
 	// TODO catalog substitution algorithm could live outside of this package
-	return substituteStruct(i, paramsbuilder.GetCatalogSubstitutionRegistry(vars))
+	return applySubstitutions(paramsbuilder.NewCatalogSubstitutionRegistry(vars), i)
+}
+
+func applySubstitutions(substitutions paramsbuilder.SubstitutionRegistry[string], input any) error {
+	// TODO paramsbuilder.SubstitutionRegistry should have this function as a method
+	// (further refactoring maybe not in paramsbuilder package)
+	err := substituteStruct(input, substitutions)
+	if err != nil {
+		return errors.Join(err, ErrSubstitutionFailure)
+	}
+
+	return nil
 }
 
 // substituteStruct performs string substitution on the fields of the input struct
@@ -210,7 +222,8 @@ func substituteStruct(input interface{}, substitutions map[string]string) (err e
 // substitute performs string substitution on the input string
 // using the substitutions map.
 func substitute(input string, substitutions map[string]string) (string, error) {
-	tmpl, err := template.New("-").Parse(input)
+	// missing variables are not allowed, Execute will throw an error.
+	tmpl, err := template.New("-").Option("missingkey=error").Parse(input)
 	if err != nil {
 		return "", err
 	}

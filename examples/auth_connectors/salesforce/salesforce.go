@@ -3,11 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"net/http"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/connector"
 	"github.com/amp-labs/connectors/examples/utils"
 	"github.com/amp-labs/connectors/providers"
