@@ -17,6 +17,7 @@ func Init() {
 				ScopesField: "scope",
 			},
 		},
+		DisplayName: "Reddit Ads",
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
