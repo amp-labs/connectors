@@ -21,10 +21,10 @@ type SubstitutionPlan struct {
 	to   string
 }
 
-type SubstitutionRegistry map[string]string
+type SubstitutionRegistry[V string | *ajson.Node] map[string]V
 
-func GetCatalogSubstitutionRegistry(vars []CatalogVariable) SubstitutionRegistry {
-	substitutions := make(SubstitutionRegistry)
+func GetCatalogSubstitutionRegistry(vars []CatalogVariable) SubstitutionRegistry[string] {
+	substitutions := make(SubstitutionRegistry[string])
 
 	for _, variable := range vars {
 		s := variable.getSubstitutionPlan()
@@ -36,7 +36,7 @@ func GetCatalogSubstitutionRegistry(vars []CatalogVariable) SubstitutionRegistry
 
 // NewCatalogVariables converts JSON into supported list of Catalog Variables.
 // This enforces type checking.
-func NewCatalogVariables(registry map[string]*ajson.Node) []CatalogVariable {
+func NewCatalogVariables(registry SubstitutionRegistry[*ajson.Node]) []CatalogVariable {
 	result := make([]CatalogVariable, 0)
 
 	for key, value := range registry {
