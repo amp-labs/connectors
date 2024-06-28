@@ -45,7 +45,7 @@ type CustomCatalog struct {
 
 // CustomizedCatalog allows to apply modifiers on the base catalog, to tweak its content.
 // Just like the default catalog it supports reading data, resolves variable substitutions.
-func CustomizedCatalog(opts ...CatalogOption) CustomCatalog {
+func NewCustomCatalog(opts ...CatalogOption) CustomCatalog {
 	params := &catalogParams{catalog: catalog}
 
 	for _, opt := range opts {
