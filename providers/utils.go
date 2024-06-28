@@ -43,7 +43,7 @@ type CustomCatalog struct {
 	custom CatalogType
 }
 
-// CustomizedCatalog allows to apply modifiers on the base catalog, to tweak its content.
+// NewCustomCatalog allows to apply modifiers on the base catalog, to tweak its content.
 // Just like the default catalog it supports reading data, resolves variable substitutions.
 func NewCustomCatalog(opts ...CatalogOption) CustomCatalog {
 	params := &catalogParams{catalog: catalog}
@@ -67,7 +67,7 @@ func (c CustomCatalog) catalog() (CatalogType, error) {
 
 // ReadCatalog is used to get the catalog.
 func ReadCatalog(opts ...CatalogOption) (CatalogType, error) {
-	return CustomizedCatalog(opts...).ReadCatalog()
+	return NewCustomCatalog(opts...).ReadCatalog()
 }
 
 func (c CustomCatalog) ReadCatalog() (CatalogType, error) {
@@ -113,7 +113,7 @@ func SetInfo(provider Provider, info ProviderInfo) {
 // on the values in the config that are surrounded by {{}}.
 // The catalog variable will be applied such that `{{VAR_NAME}}` string will be replaced with `VAR_VALUE`.
 func ReadInfo(provider Provider, vars ...paramsbuilder.CatalogVariable) (*ProviderInfo, error) {
-	return CustomizedCatalog().ReadInfo(provider, vars...)
+	return NewCustomCatalog().ReadInfo(provider, vars...)
 }
 
 func (c CustomCatalog) ReadInfo(provider Provider, vars ...paramsbuilder.CatalogVariable) (*ProviderInfo, error) {
