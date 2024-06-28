@@ -59,7 +59,7 @@ func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
 // WithModule sets the hubspot API module to use for the connector. It's required.
 func WithModule(module paramsbuilder.APIModule) Option {
 	return func(params *parameters) {
-		params.WithModule(module, supportedModules, &ModuleCRM)
+		params.WithModule(module, supportedModules, &ModuleEmpty)
 	}
 }
 
