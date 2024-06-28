@@ -15,7 +15,7 @@ type CatalogVariable interface {
 	getSubstitution() SubstitutionPlan
 }
 
-// SubstitutionPlan tells what string should be replaced with what value.
+// SubstitutionPlan defines an intent to replace `from` with `to`.
 type SubstitutionPlan struct {
 	from string
 	to   string
