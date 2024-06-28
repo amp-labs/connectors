@@ -12,7 +12,7 @@ const (
 
 // CatalogVariable allows dynamically to replace variables represented with `{{VAR_NAME}}` string.
 type CatalogVariable interface {
-	getSubstitution() SubstitutionPlan
+	getSubstitutionPlan() SubstitutionPlan
 }
 
 // SubstitutionPlan defines an intent to replace `from` with `to`.
@@ -23,11 +23,11 @@ type SubstitutionPlan struct {
 
 type SubstitutionRegistry map[string]string
 
-func CatalogSubstitutions(vars []CatalogVariable) SubstitutionRegistry {
+func GetCatalogSubstitutionRegistry(vars []CatalogVariable) SubstitutionRegistry {
 	substitutions := make(SubstitutionRegistry)
 
 	for _, variable := range vars {
-		s := variable.getSubstitution()
+		s := variable.getSubstitutionPlan()
 		substitutions[s.from] = s.to
 	}
 

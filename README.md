@@ -45,7 +45,7 @@ To add a new basic connector that allows proxying through the ampersand platform
 **Note**: If your provider requires variables to be replaced in the catalog (providers.yaml), there is a defined list of options that will replace placeholders with actual values. 
 Error message will indicate what options are missing. 
 
-For example, a provider may use `{{workspace}}` in the base URL which needs to be replaced with an actual customer instance name. In that case, you would initialize the connector as usual:
+For example, a provider may use `{{workspace}}` in the base URL which needs to be replaced with an actual customer instance name. In that case, you would initialize the connector like this:
 
 ```go
 conn, err := connector.NewConnector(

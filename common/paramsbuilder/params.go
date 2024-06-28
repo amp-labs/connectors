@@ -79,7 +79,7 @@ func (p *Workspace) WithWorkspace(workspaceRef string) {
 	p.Name = workspaceRef
 }
 
-func (p *Workspace) getSubstitution() SubstitutionPlan {
+func (p *Workspace) getSubstitutionPlan() SubstitutionPlan {
 	return SubstitutionPlan{
 		from: variableWorkspace,
 		to:   p.Name,

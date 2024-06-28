@@ -151,7 +151,7 @@ func (c CustomCatalog) ReadInfo(provider Provider, vars ...paramsbuilder.Catalog
 
 func (i *ProviderInfo) SubstituteWith(vars []paramsbuilder.CatalogVariable) error {
 	// TODO catalog substitution algorithm could live outside of this package
-	return substituteStruct(i, paramsbuilder.CatalogSubstitutions(vars))
+	return substituteStruct(i, paramsbuilder.GetCatalogSubstitutionRegistry(vars))
 }
 
 // substituteStruct performs string substitution on the fields of the input struct
