@@ -1,0 +1,839 @@
+{
+  "data": {
+    "activities": {
+      "displayName": "activities",
+      "fields": {
+        "actor": "actor",
+        "actor_id": "actor_id",
+        "created_at": "created_at",
+        "id": "id",
+        "object": "object",
+        "target": "target",
+        "title": "title",
+        "updated_at": "updated_at",
+        "url": "url",
+        "user": "user",
+        "user_id": "user_id",
+        "verb": "verb"
+      }
+    },
+    "audit_logs": {
+      "displayName": "audit_logs",
+      "fields": {
+        "action": "action",
+        "action_label": "action_label",
+        "actor_id": "actor_id",
+        "actor_name": "actor_name",
+        "change_description": "change_description",
+        "created_at": "created_at",
+        "id": "id",
+        "ip_address": "ip_address",
+        "source_id": "source_id",
+        "source_label": "source_label",
+        "source_type": "source_type",
+        "url": "url"
+      }
+    },
+    "automations": {
+      "displayName": "automations",
+      "fields": {
+        "actions": "actions",
+        "active": "active",
+        "conditions": "conditions",
+        "created_at": "created_at",
+        "default": "default",
+        "id": "id",
+        "position": "position",
+        "raw_title": "raw_title",
+        "title": "title",
+        "updated_at": "updated_at"
+      }
+    },
+    "bookmarks": {
+      "displayName": "Bookmarks",
+      "fields": {
+        "created_at": "created_at",
+        "id": "id",
+        "ticket": "ticket",
+        "url": "url"
+      }
+    },
+    "brands": {
+      "displayName": "Brands",
+      "fields": {
+        "active": "active",
+        "brand_url": "brand_url",
+        "created_at": "created_at",
+        "default": "default",
+        "has_help_center": "has_help_center",
+        "help_center_state": "help_center_state",
+        "host_mapping": "host_mapping",
+        "id": "id",
+        "is_deleted": "is_deleted",
+        "logo": "logo",
+        "name": "name",
+        "signature_template": "signature_template",
+        "subdomain": "subdomain",
+        "ticket_form_ids": "ticket_form_ids",
+        "updated_at": "updated_at",
+        "url": "url"
+      }
+    },
+    "custom_objects": {
+      "displayName": "custom_objects",
+      "fields": {
+        "created_at": "created_at",
+        "created_by_user_id": "created_by_user_id",
+        "description": "description",
+        "key": "key",
+        "raw_description": "raw_description",
+        "raw_title": "raw_title",
+        "raw_title_pluralized": "raw_title_pluralized",
+        "title": "title",
+        "title_pluralized": "title_pluralized",
+        "updated_at": "updated_at",
+        "updated_by_user_id": "updated_by_user_id",
+        "url": "url"
+      }
+    },
+    "custom_roles": {
+      "displayName": "custom_roles",
+      "fields": {
+        "configuration": "configuration",
+        "created_at": "created_at",
+        "description": "description",
+        "id": "id",
+        "name": "name",
+        "role_type": "role_type",
+        "team_member_count": "team_member_count",
+        "updated_at": "updated_at"
+      }
+    },
+    "custom_statuses": {
+      "displayName": "custom_statuses",
+      "fields": {
+        "active": "active",
+        "agent_label": "agent_label",
+        "created_at": "created_at",
+        "default": "default",
+        "description": "description",
+        "end_user_description": "end_user_description",
+        "end_user_label": "end_user_label",
+        "id": "id",
+        "raw_agent_label": "raw_agent_label",
+        "raw_description": "raw_description",
+        "raw_end_user_description": "raw_end_user_description",
+        "raw_end_user_label": "raw_end_user_label",
+        "status_category": "status_category",
+        "updated_at": "updated_at"
+      }
+    },
+    "deleted_tickets": {
+      "displayName": "deleted_tickets",
+      "fields": {
+        "actor": "actor",
+        "deleted_at": "deleted_at",
+        "id": "id",
+        "previous_state": "previous_state",
+        "subject": "subject"
+      }
+    },
+    "deleted_users": {
+      "displayName": "deleted_users",
+      "fields": {
+        "active": "active",
+        "created_at": "created_at",
+        "email": "email",
+        "id": "id",
+        "locale": "locale",
+        "locale_id": "locale_id",
+        "name": "name",
+        "organization_id": "organization_id",
+        "phone": "phone",
+        "photo": "photo",
+        "role": "role",
+        "shared_phone_number": "shared_phone_number",
+        "time_zone": "time_zone",
+        "updated_at": "updated_at",
+        "url": "url"
+      }
+    },
+    "deletion_schedules": {
+      "displayName": "deletion_schedules",
+      "fields": {
+        "active": "active",
+        "conditions": "conditions",
+        "created_at": "created_at",
+        "default": "default",
+        "description": "description",
+        "id": "id",
+        "title": "title",
+        "updated_at": "updated_at",
+        "url": "url"
+      }
+    },
+    "email_notifications": {
+      "displayName": "email_notifications",
+      "fields": {
+        "comment_id": "comment_id",
+        "created_at": "created_at",
+        "email_id": "email_id",
+        "message_id": "message_id",
+        "notification_id": "notification_id",
+        "recipients": "recipients",
+        "ticket_id": "ticket_id",
+        "updated_at": "updated_at",
+        "url": "url"
+      }
+    },
+    "group_memberships": {
+      "displayName": "group_memberships",
+      "fields": {
+        "created_at": "created_at",
+        "default": "default",
+        "group_id": "group_id",
+        "id": "id",
+        "updated_at": "updated_at",
+        "url": "url",
+        "user_id": "user_id"
+      }
+    },
+    "groups": {
+      "displayName": "groups",
+      "fields": {
+        "created_at": "created_at",
+        "default": "default",
+        "deleted": "deleted",
+        "description": "description",
+        "id": "id",
+        "is_public": "is_public",
+        "name": "name",
+        "updated_at": "updated_at",
+        "url": "url"
+      }
+    },
+    "job_statuses": {
+      "displayName": "job_statuses",
+      "fields": {
+        "id": "id",
+        "job_type": "job_type",
+        "message": "message",
+        "progress": "progress",
+        "results": "results",
+        "status": "status",
+        "total": "total",
+        "url": "url"
+      }
+    },
+    "locales": {
+      "displayName": "locales",
+      "fields": {
+        "created_at": "created_at",
+        "id": "id",
+        "locale": "locale",
+        "name": "name",
+        "updated_at": "updated_at",
+        "url": "url"
+      }
+    },
+    "macros": {
+      "displayName": "macros",
+      "fields": {
+        "actions": "actions",
+        "active": "active",
+        "app_installation": "app_installation",
+        "categories": "categories",
+        "created_at": "created_at",
+        "default": "default",
+        "description": "description",
+        "id": "id",
+        "permissions": "permissions",
+        "position": "position",
+        "restriction": "restriction",
+        "title": "title",
+        "updated_at": "updated_at",
+        "url": "url",
+        "usage_1h": "usage_1h",
+        "usage_24h": "usage_24h",
+        "usage_30d": "usage_30d",
+        "usage_7d": "usage_7d"
+      }
+    },
+    "organization_fields": {
+      "displayName": "organization_fields",
+      "fields": {
+        "active": "active",
+        "created_at": "created_at",
+        "custom_field_options": "custom_field_options",
+        "description": "description",
+        "id": "id",
+        "key": "key",
+        "position": "position",
+        "raw_description": "raw_description",
+        "raw_title": "raw_title",
+        "regexp_for_validation": "regexp_for_validation",
+        "relationship_filter": "relationship_filter",
+        "relationship_target_type": "relationship_target_type",
+        "system": "system",
+        "tag": "tag",
+        "title": "title",
+        "type": "type",
+        "updated_at": "updated_at",
+        "url": "url"
+      }
+    },
+    "organization_memberships": {
+      "displayName": "organization_memberships",
+      "fields": {
+        "created_at": "created_at",
+        "default": "default",
+        "id": "id",
+        "organization_id": "organization_id",
+        "organization_name": "organization_name",
+        "updated_at": "updated_at",
+        "url": "url",
+        "user_id": "user_id",
+        "view_tickets": "view_tickets"
+      }
+    },
+    "organization_subscriptions": {
+      "displayName": "organization_subscriptions",
+      "fields": {
+        "created_at": "created_at",
+        "id": "id",
+        "organization_id": "organization_id",
+        "user_id": "user_id"
+      }
+    },
+    "organizations": {
+      "displayName": "organizations",
+      "fields": {
+        "created_at": "created_at",
+        "details": "details",
+        "domain_names": "domain_names",
+        "external_id": "external_id",
+        "group_id": "group_id",
+        "id": "id",
+        "name": "name",
+        "notes": "notes",
+        "organization_fields": "organization_fields",
+        "shared_comments": "shared_comments",
+        "shared_tickets": "shared_tickets",
+        "tags": "tags",
+        "updated_at": "updated_at",
+        "url": "url"
+      }
+    },
+    "queues": {
+      "displayName": "queues",
+      "fields": {
+        "created_at": "created_at",
+        "definition": "definition",
+        "description": "description",
+        "id": "id",
+        "name": "name",
+        "order": "order",
+        "primary_groups": "primary_groups",
+        "priority": "priority",
+        "secondary_groups": "secondary_groups",
+        "updated_at": "updated_at",
+        "url": "url"
+      }
+    },
+    "recipient_addresses": {
+      "displayName": "recipient_addresses",
+      "fields": {
+        "brand_id": "brand_id",
+        "cname_status": "cname_status",
+        "created_at": "created_at",
+        "default": "default",
+        "dns_results": "dns_results",
+        "domain_verification_code": "domain_verification_code",
+        "domain_verification_status": "domain_verification_status",
+        "email": "email",
+        "forwarding_status": "forwarding_status",
+        "id": "id",
+        "name": "name",
+        "spf_status": "spf_status",
+        "updated_at": "updated_at"
+      }
+    },
+    "requests": {
+      "displayName": "requests",
+      "fields": {
+        "assignee_id": "assignee_id",
+        "can_be_solved_by_me": "can_be_solved_by_me",
+        "collaborator_ids": "collaborator_ids",
+        "created_at": "created_at",
+        "custom_fields": "custom_fields",
+        "custom_status_id": "custom_status_id",
+        "description": "description",
+        "due_at": "due_at",
+        "email_cc_ids": "email_cc_ids",
+        "followup_source_id": "followup_source_id",
+        "group_id": "group_id",
+        "id": "id",
+        "is_public": "is_public",
+        "organization_id": "organization_id",
+        "priority": "priority",
+        "recipient": "recipient",
+        "requester_id": "requester_id",
+        "solved": "solved",
+        "status": "status",
+        "subject": "subject",
+        "ticket_form_id": "ticket_form_id",
+        "type": "type",
+        "updated_at": "updated_at",
+        "url": "url",
+        "via": "via"
+      }
+    },
+    "resource_collections": {
+      "displayName": "resource_collections",
+      "fields": {
+        "created_at": "created_at",
+        "id": "id",
+        "resources": "resources",
+        "updated_at": "updated_at"
+      }
+    },
+    "satisfaction_ratings": {
+      "displayName": "satisfaction_ratings",
+      "fields": {
+        "assignee_id": "assignee_id",
+        "comment": "comment",
+        "created_at": "created_at",
+        "group_id": "group_id",
+        "id": "id",
+        "reason": "reason",
+        "reason_code": "reason_code",
+        "reason_id": "reason_id",
+        "requester_id": "requester_id",
+        "score": "score",
+        "ticket_id": "ticket_id",
+        "updated_at": "updated_at",
+        "url": "url"
+      }
+    },
+    "satisfaction_reasons": {
+      "displayName": "reasons",
+      "fields": {
+        "created_at": "created_at",
+        "deleted_at": "deleted_at",
+        "id": "id",
+        "raw_value": "raw_value",
+        "reason_code": "reason_code",
+        "updated_at": "updated_at",
+        "url": "url",
+        "value": "value"
+      }
+    },
+    "search": {
+      "displayName": "results",
+      "fields": {
+        "created_at": "created_at",
+        "default": "default",
+        "deleted": "deleted",
+        "description": "description",
+        "id": "id",
+        "name": "name",
+        "result_type": "result_type",
+        "updated_at": "updated_at",
+        "url": "url"
+      }
+    },
+    "sessions": {
+      "displayName": "sessions",
+      "fields": {
+        "authenticated_at": "authenticated_at",
+        "id": "id",
+        "last_seen_at": "last_seen_at",
+        "url": "url",
+        "user_id": "user_id"
+      }
+    },
+    "sharing_agreements": {
+      "displayName": "sharing_agreements",
+      "fields": {
+        "created_at": "created_at",
+        "id": "id",
+        "name": "name",
+        "partner_name": "partner_name",
+        "remote_subdomain": "remote_subdomain",
+        "status": "status",
+        "type": "type",
+        "updated_at": "updated_at",
+        "url": "url"
+      }
+    },
+    "suspended_tickets": {
+      "displayName": "suspended_tickets",
+      "fields": {
+        "attachments": "attachments",
+        "author": "author",
+        "brand_id": "brand_id",
+        "cause": "cause",
+        "cause_id": "cause_id",
+        "content": "content",
+        "created_at": "created_at",
+        "error_messages": "error_messages",
+        "id": "id",
+        "message_id": "message_id",
+        "recipient": "recipient",
+        "subject": "subject",
+        "ticket_id": "ticket_id",
+        "updated_at": "updated_at",
+        "url": "url",
+        "via": "via"
+      }
+    },
+    "tags": {
+      "displayName": "tags",
+      "fields": {
+        "count": "count",
+        "name": "name"
+      }
+    },
+    "target_failures": {
+      "displayName": "target_failures",
+      "fields": {
+        "consecutive_failure_count": "consecutive_failure_count",
+        "created_at": "created_at",
+        "id": "id",
+        "raw_request": "raw_request",
+        "raw_response": "raw_response",
+        "status_code": "status_code",
+        "target_name": "target_name",
+        "url": "url"
+      }
+    },
+    "targets": {
+      "displayName": "targets",
+      "fields": {
+        "account_name": "account_name",
+        "active": "active",
+        "api_id": "api_id",
+        "api_token": "api_token",
+        "attribute": "attribute",
+        "content_type": "content_type",
+        "created_at": "created_at",
+        "email": "email",
+        "from": "from",
+        "group_id": "group_id",
+        "id": "id",
+        "message_id": "message_id",
+        "method": "method",
+        "owner_by": "owner_by",
+        "password": "password",
+        "preserve_format": "preserve_format",
+        "project_id": "project_id",
+        "requested_by": "requested_by",
+        "resource": "resource",
+        "room": "room",
+        "secret": "secret",
+        "ssl": "ssl",
+        "story_labels": "story_labels",
+        "story_title": "story_title",
+        "story_type": "story_type",
+        "subdomain": "subdomain",
+        "subject": "subject",
+        "target_url": "target_url",
+        "title": "title",
+        "to": "to",
+        "todo_list_id": "todo_list_id",
+        "token": "token",
+        "type": "type",
+        "us_small_business_account": "us_small_business_account",
+        "username": "username"
+      }
+    },
+    "ticket_audits": {
+      "displayName": "audits",
+      "fields": {
+        "author_id": "author_id",
+        "created_at": "created_at",
+        "events": "events",
+        "id": "id",
+        "metadata": "metadata",
+        "ticket_id": "ticket_id",
+        "via": "via"
+      }
+    },
+    "ticket_fields": {
+      "displayName": "ticket_fields",
+      "fields": {
+        "active": "active",
+        "agent_description": "agent_description",
+        "collapsed_for_agents": "collapsed_for_agents",
+        "created_at": "created_at",
+        "creator_app_name": "creator_app_name",
+        "creator_user_id": "creator_user_id",
+        "custom_field_options": "custom_field_options",
+        "custom_statuses": "custom_statuses",
+        "description": "description",
+        "editable_in_portal": "editable_in_portal",
+        "id": "id",
+        "position": "position",
+        "raw_description": "raw_description",
+        "raw_title": "raw_title",
+        "raw_title_in_portal": "raw_title_in_portal",
+        "regexp_for_validation": "regexp_for_validation",
+        "relationship_filter": "relationship_filter",
+        "relationship_target_type": "relationship_target_type",
+        "removable": "removable",
+        "required": "required",
+        "required_in_portal": "required_in_portal",
+        "sub_type_id": "sub_type_id",
+        "system_field_options": "system_field_options",
+        "tag": "tag",
+        "title": "title",
+        "title_in_portal": "title_in_portal",
+        "type": "type",
+        "updated_at": "updated_at",
+        "url": "url",
+        "visible_in_portal": "visible_in_portal"
+      }
+    },
+    "ticket_forms": {
+      "displayName": "ticket_forms",
+      "fields": {
+        "active": "active",
+        "agent_conditions": "agent_conditions",
+        "created_at": "created_at",
+        "default": "default",
+        "display_name": "display_name",
+        "end_user_conditions": "end_user_conditions",
+        "end_user_visible": "end_user_visible",
+        "id": "id",
+        "in_all_brands": "in_all_brands",
+        "name": "name",
+        "position": "position",
+        "raw_display_name": "raw_display_name",
+        "raw_name": "raw_name",
+        "restricted_brand_ids": "restricted_brand_ids",
+        "ticket_field_ids": "ticket_field_ids",
+        "updated_at": "updated_at",
+        "url": "url"
+      }
+    },
+    "ticket_metrics": {
+      "displayName": "ticket_metrics",
+      "fields": {
+        "agent_wait_time_in_minutes": "agent_wait_time_in_minutes",
+        "assigned_at": "assigned_at",
+        "assignee_stations": "assignee_stations",
+        "assignee_updated_at": "assignee_updated_at",
+        "created_at": "created_at",
+        "custom_status_updated_at": "custom_status_updated_at",
+        "first_resolution_time_in_minutes": "first_resolution_time_in_minutes",
+        "full_resolution_time_in_minutes": "full_resolution_time_in_minutes",
+        "group_stations": "group_stations",
+        "id": "id",
+        "initially_assigned_at": "initially_assigned_at",
+        "latest_comment_added_at": "latest_comment_added_at",
+        "on_hold_time_in_minutes": "on_hold_time_in_minutes",
+        "reopens": "reopens",
+        "replies": "replies",
+        "reply_time_in_minutes": "reply_time_in_minutes",
+        "reply_time_in_seconds": "reply_time_in_seconds",
+        "requester_updated_at": "requester_updated_at",
+        "requester_wait_time_in_minutes": "requester_wait_time_in_minutes",
+        "solved_at": "solved_at",
+        "status_updated_at": "status_updated_at",
+        "ticket_id": "ticket_id",
+        "updated_at": "updated_at",
+        "url": "url"
+      }
+    },
+    "tickets": {
+      "displayName": "tickets",
+      "fields": {
+        "allow_attachments": "allow_attachments",
+        "allow_channelback": "allow_channelback",
+        "assignee_email": "assignee_email",
+        "assignee_id": "assignee_id",
+        "attribute_value_ids": "attribute_value_ids",
+        "brand_id": "brand_id",
+        "collaborator_ids": "collaborator_ids",
+        "collaborators": "collaborators",
+        "comment": "comment",
+        "created_at": "created_at",
+        "custom_fields": "custom_fields",
+        "custom_status_id": "custom_status_id",
+        "description": "description",
+        "due_at": "due_at",
+        "email_cc_ids": "email_cc_ids",
+        "email_ccs": "email_ccs",
+        "external_id": "external_id",
+        "follower_ids": "follower_ids",
+        "followers": "followers",
+        "followup_ids": "followup_ids",
+        "forum_topic_id": "forum_topic_id",
+        "from_messaging_channel": "from_messaging_channel",
+        "group_id": "group_id",
+        "has_incidents": "has_incidents",
+        "id": "id",
+        "is_public": "is_public",
+        "macro_id": "macro_id",
+        "macro_ids": "macro_ids",
+        "metadata": "metadata",
+        "organization_id": "organization_id",
+        "priority": "priority",
+        "problem_id": "problem_id",
+        "raw_subject": "raw_subject",
+        "recipient": "recipient",
+        "requester": "requester",
+        "requester_id": "requester_id",
+        "safe_update": "safe_update",
+        "satisfaction_rating": "satisfaction_rating",
+        "sharing_agreement_ids": "sharing_agreement_ids",
+        "status": "status",
+        "subject": "subject",
+        "submitter_id": "submitter_id",
+        "tags": "tags",
+        "ticket_form_id": "ticket_form_id",
+        "type": "type",
+        "updated_at": "updated_at",
+        "updated_stamp": "updated_stamp",
+        "url": "url",
+        "via": "via",
+        "via_followup_source_id": "via_followup_source_id",
+        "via_id": "via_id",
+        "voice_comment": "voice_comment"
+      }
+    },
+    "trigger_categories": {
+      "displayName": "trigger_categories",
+      "fields": {
+        "active_count": "active_count",
+        "created_at": "created_at",
+        "id": "id",
+        "inactive_count": "inactive_count",
+        "name": "name",
+        "position": "position",
+        "updated_at": "updated_at"
+      }
+    },
+    "triggers": {
+      "displayName": "triggers",
+      "fields": {
+        "actions": "actions",
+        "active": "active",
+        "category_id": "category_id",
+        "conditions": "conditions",
+        "created_at": "created_at",
+        "default": "default",
+        "description": "description",
+        "id": "id",
+        "position": "position",
+        "raw_title": "raw_title",
+        "title": "title",
+        "updated_at": "updated_at",
+        "url": "url"
+      }
+    },
+    "user_fields": {
+      "displayName": "user_fields",
+      "fields": {
+        "active": "active",
+        "created_at": "created_at",
+        "custom_field_options": "custom_field_options",
+        "description": "description",
+        "id": "id",
+        "key": "key",
+        "position": "position",
+        "raw_description": "raw_description",
+        "raw_title": "raw_title",
+        "regexp_for_validation": "regexp_for_validation",
+        "relationship_filter": "relationship_filter",
+        "relationship_target_type": "relationship_target_type",
+        "system": "system",
+        "tag": "tag",
+        "title": "title",
+        "type": "type",
+        "updated_at": "updated_at",
+        "url": "url"
+      }
+    },
+    "users": {
+      "displayName": "users",
+      "fields": {
+        "active": "active",
+        "alias": "alias",
+        "chat_only": "chat_only",
+        "created_at": "created_at",
+        "custom_role_id": "custom_role_id",
+        "default_group_id": "default_group_id",
+        "details": "details",
+        "email": "email",
+        "external_id": "external_id",
+        "iana_time_zone": "iana_time_zone",
+        "id": "id",
+        "last_login_at": "last_login_at",
+        "locale": "locale",
+        "locale_id": "locale_id",
+        "moderator": "moderator",
+        "name": "name",
+        "notes": "notes",
+        "only_private_comments": "only_private_comments",
+        "organization_id": "organization_id",
+        "phone": "phone",
+        "photo": "photo",
+        "remote_photo_url": "remote_photo_url",
+        "report_csv": "report_csv",
+        "restricted_agent": "restricted_agent",
+        "role": "role",
+        "role_type": "role_type",
+        "shared": "shared",
+        "shared_agent": "shared_agent",
+        "shared_phone_number": "shared_phone_number",
+        "signature": "signature",
+        "suspended": "suspended",
+        "tags": "tags",
+        "ticket_restriction": "ticket_restriction",
+        "time_zone": "time_zone",
+        "two_factor_auth_enabled": "two_factor_auth_enabled",
+        "updated_at": "updated_at",
+        "url": "url",
+        "user_fields": "user_fields",
+        "verified": "verified"
+      }
+    },
+    "views": {
+      "displayName": "views",
+      "fields": {
+        "active": "active",
+        "conditions": "conditions",
+        "created_at": "created_at",
+        "default": "default",
+        "description": "description",
+        "execution": "execution",
+        "id": "id",
+        "position": "position",
+        "restriction": "restriction",
+        "title": "title",
+        "updated_at": "updated_at"
+      }
+    },
+    "workspaces": {
+      "displayName": "workspaces",
+      "fields": {
+        "activated": "activated",
+        "apps": "apps",
+        "conditions": "conditions",
+        "created_at": "created_at",
+        "description": "description",
+        "id": "id",
+        "macro_ids": "macro_ids",
+        "macros": "macros",
+        "position": "position",
+        "prefer_workspace_app_order": "prefer_workspace_app_order",
+        "selected_macros": "selected_macros",
+        "ticket_form_id": "ticket_form_id",
+        "title": "title",
+        "updated_at": "updated_at",
+        "url": "url"
+      }
+    }
+  }
+}

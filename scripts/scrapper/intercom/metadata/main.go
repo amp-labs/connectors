@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"log/slog"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
@@ -24,7 +25,7 @@ func main() {
 	// using index file collect response fields for every object
 	createSchemas()
 
-	log.Println("Completed.")
+	slog.Info("Completed.")
 }
 
 func createIndex() {
