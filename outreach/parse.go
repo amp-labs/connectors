@@ -2,109 +2,37 @@ package outreach
 
 import (
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 
 // getNextRecords returns the "next" url for the next page of results,
 // If available, else returns an empty string.
 func getNextRecordsURL(node *ajson.Node) (string, error) {
-	var nextPage string
-
-	if node.HasKey("links") {
-		links, err := parsePagingNext(node)
-		if err != nil {
-			return "", err
-		}
-
-		nextPage, err = checkURL(links)
-		if err != nil {
-			return "", err
-		}
-	}
-
-	return nextPage, nil
-}
-
-// parsePagingNext is a helper to return the links node.
-func parsePagingNext(node *ajson.Node) (*ajson.Node, error) {
-	links, err := node.GetKey("links")
-	if err != nil {
-		return nil, err
-	}
-
-	if !links.IsObject() {
-		return nil, ErrNotObject
-	}
-
-	return links, nil
-}
-
-// checkURL is a helper function that returns the url of the  next page.
-func checkURL(node *ajson.Node) (string, error) {
-	if !node.HasKey("next") {
-		return "", nil
-	}
-
-	next, err := node.GetKey("next")
+	nextPageURL, err := jsonquery.New(node, "links").Str("next", true)
 	if err != nil {
 		return "", err
 	}
 
-	if !next.IsString() {
-		return "", ErrNotString
+	if nextPageURL == nil {
+		return "", nil
 	}
 
-	return next.String(), nil
+	return *nextPageURL, nil
 }
 
 // getRecords returns the records from the response.
-func getRecords(node *ajson.Node) ([]map[string]interface{}, error) {
-	records, err := node.GetKey("data")
+func getRecords(node *ajson.Node) ([]map[string]any, error) {
+	records, err := jsonquery.New(node).Array("data", true)
 	if err != nil {
 		return nil, err
 	}
 
-	if !records.IsArray() {
-		return nil, ErrNotArray
-	}
-
-	arr := records.MustArray()
-
-	out := make([]map[string]interface{}, 0, len(arr))
-
-	for _, v := range arr {
-		if !v.IsObject() {
-			return nil, ErrNotObject
-		}
-
-		data, err := v.Unpack()
-		if err != nil {
-			return nil, err
-		}
-
-		m, ok := data.(map[string]interface{})
-		if !ok {
-			return nil, ErrNotObject
-		}
-
-		out = append(out, m)
-	}
-
-	return out, nil
+	return jsonquery.Convertor.ArrayToMap(records)
 }
 
-// getTotalSize returns the total number of records that match the query.
 func getTotalSize(node *ajson.Node) (int64, error) {
-	node, err := node.GetKey("data")
-	if err != nil {
-		return 0, err
-	}
-
-	if !node.IsArray() {
-		return 0, ErrNotArray
-	}
-
-	return int64(node.Size()), nil
+	return jsonquery.New(node).ArraySize("data")
 }
 
 // getMarshaledData accepts a list of records and returns a list of structured data ([]ReadResultRow).
