@@ -9,7 +9,7 @@ import (
 
 // Write will write data to Salesforce.
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
-	url, err := c.getURL("sobjects", config.ObjectName)
+	url, err := c.getRestApiURL("sobjects", config.ObjectName)
 	if err != nil {
 		return nil, err
 	}

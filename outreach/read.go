@@ -33,5 +33,5 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 		return constructURL(config.NextPage.String())
 	}
 
-	return c.getURL(config.ObjectName)
+	return c.getApiURL(config.ObjectName)
 }

@@ -41,7 +41,7 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 
 	// If NextPage is not set, then we're reading the first page of results.
 	// We need to construct the SOQL query and then make the request.
-	url, err := c.getURL("query")
+	url, err := c.getRestApiURL("query")
 	if err != nil {
 		return nil, err
 	}

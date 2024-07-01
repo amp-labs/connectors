@@ -39,7 +39,7 @@ func (c *Connector) ListObjectMetadata(
 	}
 
 	// Construct endpoint for the request
-	compositeRequestEndpoint, err := c.getURL("composite")
+	compositeRequestEndpoint, err := c.getRestApiURL("composite")
 	if err != nil {
 		return nil, err
 	}

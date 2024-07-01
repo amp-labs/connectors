@@ -20,7 +20,7 @@ var JSONAPIContentTypeHeader = common.Header{ //nolint:gochecknoglobals
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
 	var write common.WriteMethod
 
-	url, err := c.getURL(config.ObjectName)
+	url, err := c.getApiURL(config.ObjectName)
 	if err != nil {
 		return nil, err
 	}

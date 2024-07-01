@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"net/url"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
@@ -130,17 +129,8 @@ func (c *Connector) BulkWrite( //nolint:funlen,cyclop
 	return result, nil
 }
 
-func joinURLPath(baseURL string, paths ...string) (string, error) {
-	location, err := url.JoinPath(baseURL, paths...)
-	if err != nil {
-		return "", errors.Join(err, common.ErrInvalidPathJoin)
-	}
-
-	return location, nil
-}
-
 func (c *Connector) createJob(ctx context.Context, body map[string]any) (*common.JSONHTTPResponse, error) {
-	location, err := c.getURL("jobs/ingest")
+	location, err := c.getRestApiURL("jobs/ingest")
 	if err != nil {
 		return nil, err
 	}
@@ -149,7 +139,7 @@ func (c *Connector) createJob(ctx context.Context, body map[string]any) (*common
 }
 
 func (c *Connector) uploadCSV(ctx context.Context, jobId string, csvData io.Reader) ([]byte, error) {
-	location, err := c.getURL(fmt.Sprintf("jobs/ingest/%s/batches", jobId))
+	location, err := c.getRestApiURL(fmt.Sprintf("jobs/ingest/%s/batches", jobId))
 	if err != nil {
 		return nil, err
 	}
@@ -170,7 +160,7 @@ func (c *Connector) completeUpload(ctx context.Context, jobId string) (*common.J
 		"state": JobStateUploadComplete,
 	}
 
-	location, err := c.getURL("jobs/ingest/" + jobId)
+	location, err := c.getRestApiURL("jobs/ingest/" + jobId)
 	if err != nil {
 		return nil, err
 	}
@@ -179,7 +169,7 @@ func (c *Connector) completeUpload(ctx context.Context, jobId string) (*common.J
 }
 
 func (c *Connector) GetJobInfo(ctx context.Context, jobId string) (*GetJobInfoResult, error) {
-	location, err := c.getURL("jobs/ingest", jobId)
+	location, err := c.getRestApiURL("jobs/ingest", jobId)
 	if err != nil {
 		return nil, err
 	}
@@ -222,7 +212,7 @@ func (c *Connector) GetJobResults(ctx context.Context, jobId string) (*JobResult
 }
 
 func (c *Connector) GetSuccessfulJobResults(ctx context.Context, jobId string) (*http.Response, error) {
-	location, err := c.getURL(fmt.Sprintf("jobs/ingest/%s/successfulResults", jobId))
+	location, err := c.getRestApiURL(fmt.Sprintf("jobs/ingest/%s/successfulResults", jobId))
 	if err != nil {
 		return nil, err
 	}
@@ -238,7 +228,7 @@ func (c *Connector) GetSuccessfulJobResults(ctx context.Context, jobId string) (
 }
 
 func (c *Connector) getJobResults(ctx context.Context, jobId string) (*http.Response, error) {
-	location, err := c.getURL(fmt.Sprintf("jobs/ingest/%s/failedResults", jobId))
+	location, err := c.getRestApiURL(fmt.Sprintf("jobs/ingest/%s/failedResults", jobId))
 	if err != nil {
 		return nil, err
 	}
@@ -491,7 +481,7 @@ func (c *Connector) BulkQuery(
 	ctx context.Context,
 	query string,
 ) (*GetJobInfoResult, error) {
-	location, err := c.getURL("jobs/query")
+	location, err := c.getRestApiURL("jobs/query")
 	if err != nil {
 		return nil, err
 	}
@@ -513,7 +503,7 @@ func (c *Connector) GetBulkQueryInfo(
 	ctx context.Context,
 	jobId string,
 ) (*GetJobInfoResult, error) {
-	location, err := c.getURL("jobs/query", jobId)
+	location, err := c.getRestApiURL("jobs/query", jobId)
 	if err != nil {
 		return nil, err
 	}
@@ -534,7 +524,7 @@ func (c *Connector) GetBulkQueryResults(
 	ctx context.Context,
 	jobId string,
 ) (*http.Response, error) {
-	location, err := c.getURL(fmt.Sprintf("jobs/query/%s/results", jobId))
+	location, err := c.getRestApiURL(fmt.Sprintf("jobs/query/%s/results", jobId))
 	if err != nil {
 		return nil, err
 	}

@@ -2,7 +2,6 @@ package salesforce
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -10,9 +9,10 @@ import (
 )
 
 const (
-	apiVersion    = "59.0"
-	versionPrefix = "v"
-	restAPISuffix = "/services/data/v59.0"
+	apiVersion                 = "59.0"
+	versionPrefix              = "v"
+	restAPISuffix              = "/services/data/" + apiVersion
+	uriToolingEventRelayConfig = "tooling/sobjects/EventRelayConfig"
 )
 
 // Connector is a Salesforce connector.
@@ -70,21 +70,22 @@ func (c *Connector) String() string {
 	return fmt.Sprintf("%s.Connector", c.Provider())
 }
 
-func (c *Connector) getURL(paths ...string) (*urlbuilder.URL, error) {
+func (c *Connector) getRestApiURL(paths ...string) (*urlbuilder.URL, error) {
 	parts := append([]string{
-		c.BaseURL,
 		restAPISuffix, // scope URLs to API version
 	}, paths...)
 
-	return constructURL(strings.Join(parts, "/"))
+	return constructURL(c.BaseURL, parts...)
 }
 
 func (c *Connector) getDomainURL(paths ...string) (*urlbuilder.URL, error) {
-	parts := append([]string{
-		c.BaseURL,
-	}, paths...)
+	return constructURL(c.BaseURL, paths...)
+}
 
-	return constructURL(strings.Join(parts, "/"))
+// nolint: lll
+// https://developer.salesforce.com/docs/atlas.en-us.api_tooling.meta/api_tooling/tooling_api_objects_eventrelayconfig.htm?q=EventRelayConfig
+func (c *Connector) getURIPartEventRelayConfig(paths ...string) (*urlbuilder.URL, error) {
+	return constructURL(uriToolingEventRelayConfig, paths...)
 }
 
 func (c *Connector) setBaseURL(newURL string) {

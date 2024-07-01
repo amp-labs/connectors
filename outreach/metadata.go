@@ -26,7 +26,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 
 	for _, obj := range objectNames {
 		// Constructing the  request url.
-		url, err := c.getURL(obj)
+		url, err := c.getApiURL(obj)
 		if err != nil {
 			return nil, err
 		}
