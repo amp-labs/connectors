@@ -1,8 +1,6 @@
 package outreach
 
 import (
-	"strings"
-
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers"
@@ -46,16 +44,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 }
 
 func (c *Connector) getURL(arg string) (*urlbuilder.URL, error) {
-	parts := []string{c.BaseURL, apiVersion, arg}
-	filtered := make([]string, 0)
-
-	for _, part := range parts {
-		if len(part) != 0 {
-			filtered = append(filtered, part)
-		}
-	}
-
-	return constructURL(strings.Join(filtered, "/"))
+	return constructURL(c.BaseURL, apiVersion, arg)
 }
 
 func (c *Connector) setBaseURL(newURL string) {

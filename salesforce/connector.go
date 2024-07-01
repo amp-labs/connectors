@@ -2,7 +2,6 @@ package salesforce
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -72,19 +71,14 @@ func (c *Connector) String() string {
 
 func (c *Connector) getURL(paths ...string) (*urlbuilder.URL, error) {
 	parts := append([]string{
-		c.BaseURL,
 		restAPISuffix, // scope URLs to API version
 	}, paths...)
 
-	return constructURL(strings.Join(parts, "/"))
+	return constructURL(c.BaseURL, parts...)
 }
 
 func (c *Connector) getDomainURL(paths ...string) (*urlbuilder.URL, error) {
-	parts := append([]string{
-		c.BaseURL,
-	}, paths...)
-
-	return constructURL(strings.Join(parts, "/"))
+	return constructURL(c.BaseURL, paths...)
 }
 
 func (c *Connector) setBaseURL(newURL string) {

@@ -2,7 +2,6 @@ package salesloft
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
@@ -57,16 +56,7 @@ func (c *Connector) String() string {
 }
 
 func (c *Connector) getURL(arg string) (*urlbuilder.URL, error) {
-	parts := []string{c.BaseURL, apiVersion, arg}
-	filtered := make([]string, 0)
-
-	for _, part := range parts {
-		if len(part) != 0 {
-			filtered = append(filtered, part)
-		}
-	}
-
-	return urlbuilder.New(strings.Join(filtered, "/"))
+	return urlbuilder.New(c.BaseURL, apiVersion, arg)
 }
 
 func (c *Connector) setBaseURL(newURL string) {
