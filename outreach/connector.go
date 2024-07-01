@@ -1,14 +1,15 @@
 package outreach
 
 import (
-	"fmt"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers"
 )
 
 const (
-	providerOptionRestApiURL = "restAPIURL"
+	apiVersion = "api/v2"
 )
 
 type Connector struct {
@@ -33,19 +34,31 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		return nil, err
 	}
 
-	restApi, ok := providerInfo.GetOption(providerOptionRestApiURL)
-	if !ok {
-		return nil, fmt.Errorf("restAPIURL not set: %w", providers.ErrProviderOptionNotFound)
-	}
-
 	conn = &Connector{
 		Client: &common.JSONHTTPClient{
 			HTTPClient: params.Client.Caller,
 		},
-		BaseURL: restApi,
 	}
 
-	conn.Client.HTTPClient.Base = providerInfo.BaseURL
+	conn.setBaseURL(providerInfo.BaseURL)
 
 	return conn, nil
+}
+
+func (c *Connector) getURL(arg string) (*urlbuilder.URL, error) {
+	parts := []string{c.BaseURL, apiVersion, arg}
+	filtered := make([]string, 0)
+
+	for _, part := range parts {
+		if len(part) != 0 {
+			filtered = append(filtered, part)
+		}
+	}
+
+	return constructURL(strings.Join(filtered, "/"))
+}
+
+func (c *Connector) setBaseURL(newURL string) {
+	c.BaseURL = newURL
+	c.Client.HTTPClient.Base = newURL
 }
