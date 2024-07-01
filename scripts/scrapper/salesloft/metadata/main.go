@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/amp-labs/connectors/salesloft/metadata"
+	"github.com/amp-labs/connectors/providers/salesloft/metadata"
 	"github.com/amp-labs/connectors/tools/scrapper"
 	"github.com/iancoleman/strcase"
 )

@@ -6,10 +6,10 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors"
+	"github.com/amp-labs/connectors/catalog"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/examples/utils"
-	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/salesforce"
+	"github.com/amp-labs/connectors/providers/salesforce"
 )
 
 const (
@@ -92,7 +92,7 @@ func createDeepConnector(ctx context.Context) *salesforce.Connector {
 
 // Create an OAuth2 authenticated HTTP client for Salesforce.
 func createAuthenticatedHttpClient(ctx context.Context) common.AuthenticatedHTTPClient {
-	info, err := providers.ReadInfo(providers.Salesforce, &substitutions)
+	info, err := catalog.ReadInfo(catalog.Salesforce, &substitutions)
 	if err != nil {
 		panic(err)
 	}

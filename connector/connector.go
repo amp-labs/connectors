@@ -1,18 +1,18 @@
 package connector
 
 import (
+	"github.com/amp-labs/connectors/catalog"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/providers"
 )
 
 type Connector struct {
-	ProviderInfo *providers.ProviderInfo
+	ProviderInfo *catalog.ProviderInfo
 	Client       *common.JSONHTTPClient
-	provider     providers.Provider
+	provider     catalog.Provider
 }
 
 func NewConnector(
-	provider providers.Provider,
+	provider catalog.Provider,
 	opts ...Option,
 ) (conn *Connector, outErr error) {
 	defer common.PanicRecovery(func(cause error) {
@@ -36,7 +36,7 @@ func NewConnector(
 	// Read provider info & replace catalog variables with given substitutions, if any
 	substitution := params.Workspace.Substitution()
 
-	providerInfo, err := providers.ReadInfo(conn.provider, &substitution)
+	providerInfo, err := catalog.ReadInfo(conn.provider, &substitution)
 	if err != nil {
 		return nil, err
 	}

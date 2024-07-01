@@ -8,7 +8,7 @@ import (
 	"syscall"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/salesloft"
+	"github.com/amp-labs/connectors/providers/salesloft"
 	msTest "github.com/amp-labs/connectors/test/salesloft"
 	"github.com/amp-labs/connectors/test/utils"
 )

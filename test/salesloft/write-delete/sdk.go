@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/salesloft"
+	"github.com/amp-labs/connectors/providers/salesloft"
 	"github.com/amp-labs/connectors/test/utils"
 )
 

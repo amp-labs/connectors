@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/amp-labs/connectors/dynamicscrm"
+	"github.com/amp-labs/connectors/providers/dynamicscrm"
 	testUtils "github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/utils"
 )

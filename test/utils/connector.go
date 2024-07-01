@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/amp-labs/connectors/salesforce"
+	"github.com/amp-labs/connectors/providers/salesforce"
 	"github.com/amp-labs/connectors/utils"
 )
 

@@ -9,7 +9,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/outreach"
+	"github.com/amp-labs/connectors/providers/outreach"
 	testUtils "github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/utils"
 	"github.com/brianvoe/gofakeit/v6"

@@ -6,8 +6,8 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/amp-labs/connectors/catalog"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/providers"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
 )
@@ -21,9 +21,9 @@ type OAuth2AuthCodeOptions struct {
 	Scopes             []string
 }
 
-func CreateOAuth2AuthorizationCodeClient(ctx context.Context, info *providers.ProviderInfo, opts OAuth2AuthCodeOptions) common.AuthenticatedHTTPClient {
+func CreateOAuth2AuthorizationCodeClient(ctx context.Context, info *catalog.ProviderInfo, opts OAuth2AuthCodeOptions) common.AuthenticatedHTTPClient {
 	// Create the authenticated HTTP client.
-	httpClient, err := info.NewClient(ctx, &providers.NewClientParams{
+	httpClient, err := info.NewClient(ctx, &catalog.NewClientParams{
 		// If you set this to true, the client will log all requests and responses.
 		// Be careful with this in production, as it may expose sensitive data.
 		Debug: *debug,
@@ -31,7 +31,7 @@ func CreateOAuth2AuthorizationCodeClient(ctx context.Context, info *providers.Pr
 		// If you have your own HTTP client, you can use it here.
 		Client: http.DefaultClient,
 
-		OAuth2AuthCodeCreds: &providers.OAuth2AuthCodeParams{
+		OAuth2AuthCodeCreds: &catalog.OAuth2AuthCodeParams{
 			// Config represents the OAuth2 application's configuration. This is all known before the user authenticates.
 			Config: &oauth2.Config{
 				ClientID:     opts.OAuth2ClientId,
@@ -68,9 +68,9 @@ type OAuth2ClientCredentialsOptions struct {
 	EndpointParams     url.Values
 }
 
-func CreateOAuth2ClientCredentialsClient(ctx context.Context, info *providers.ProviderInfo, opts OAuth2ClientCredentialsOptions) common.AuthenticatedHTTPClient {
+func CreateOAuth2ClientCredentialsClient(ctx context.Context, info *catalog.ProviderInfo, opts OAuth2ClientCredentialsOptions) common.AuthenticatedHTTPClient {
 	// Create the authenticated HTTP client.
-	httpClient, err := info.NewClient(ctx, &providers.NewClientParams{
+	httpClient, err := info.NewClient(ctx, &catalog.NewClientParams{
 		// If you set this to true, the client will log all requests and responses.
 		// Be careful with this in production, as it may expose sensitive data.
 		Debug: *debug,

@@ -18,7 +18,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/catalog"
 	"github.com/amp-labs/connectors/utils"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
@@ -109,7 +109,7 @@ var readers = []utils.Reader{
 
 // OAuthApp is a simple OAuth app that can be used to get an OAuth token.
 type OAuthApp struct {
-	GrantType         providers.Oauth2OptsGrantType
+	GrantType         catalog.Oauth2OptsGrantType
 	Callback          string
 	Port              int
 	Config            *oauth2.Config
@@ -119,7 +119,7 @@ type OAuthApp struct {
 	Proto             string
 	SSLCert           string
 	SSLKey            string
-	PasswordParams    *providers.BasicParams
+	PasswordParams    *catalog.BasicParams
 }
 
 // ServeHTTP implements the http.Handler interface.
@@ -208,7 +208,7 @@ func (a *OAuthApp) processCallback(writer http.ResponseWriter, request *http.Req
 
 // Run executes the OAuth flow to get a token.
 func (a *OAuthApp) Run() error {
-	if a.GrantType == providers.ClientCredentials {
+	if a.GrantType == catalog.ClientCredentials {
 		src := a.ClientCredsConfig.TokenSource(context.Background())
 
 		tok, err := src.Token()
@@ -221,7 +221,7 @@ func (a *OAuthApp) Run() error {
 		fmt.Println("Authorization: " + header)
 
 		return nil
-	} else if a.GrantType == providers.Password {
+	} else if a.GrantType == catalog.Password {
 		tok, err := a.Config.PasswordCredentialsToken(context.Background(), a.PasswordParams.User, a.PasswordParams.Pass)
 		if err != nil {
 			return err
@@ -307,14 +307,14 @@ func setup() *OAuthApp {
 
 	provider := registry.MustString("Provider")
 
-	providerInfo, err := providers.ReadInfo(provider, &substitutionsMap)
+	providerInfo, err := catalog.ReadInfo(provider, &substitutionsMap)
 	if err != nil {
 		slog.Error("failed to read provider config", "error", err)
 
 		os.Exit(1)
 	}
 
-	if providerInfo.AuthType != providers.Oauth2 {
+	if providerInfo.AuthType != catalog.Oauth2 {
 		slog.Error("provider does not support OAuth2, not compatible with this script", "provider", provider)
 
 		os.Exit(1)
@@ -338,7 +338,7 @@ func setup() *OAuthApp {
 	oauthScopes := strings.Split(scopes, ",")
 
 	switch providerInfo.Oauth2Opts.GrantType {
-	case providers.AuthorizationCode:
+	case catalog.AuthorizationCode:
 		if providerInfo.Oauth2Opts.AuthURL == "" {
 			slog.Error("provider does not have an AuthURL, not compatible with this script", "provider", provider)
 
@@ -355,7 +355,7 @@ func setup() *OAuthApp {
 
 		// Create the OAuth app.
 		app := &OAuthApp{
-			GrantType: providers.AuthorizationCode,
+			GrantType: catalog.AuthorizationCode,
 			Callback:  *callback,
 			Port:      *port,
 			Proto:     *proto,
@@ -380,7 +380,7 @@ func setup() *OAuthApp {
 		}
 
 		return app
-	case providers.ClientCredentials:
+	case catalog.ClientCredentials:
 		state, err := registry.GetString("State")
 		if err != nil {
 			slog.Warn("no state attached, ensure that the provider doesn't require state")
@@ -388,7 +388,7 @@ func setup() *OAuthApp {
 
 		// Create the OAuth app.
 		app := &OAuthApp{
-			GrantType: providers.ClientCredentials,
+			GrantType: catalog.ClientCredentials,
 			ClientCredsConfig: &clientcredentials.Config{
 				ClientID:     clientId,
 				ClientSecret: clientSecret,
@@ -407,7 +407,7 @@ func setup() *OAuthApp {
 		}
 
 		return app
-	case providers.Password:
+	case catalog.Password:
 		state, err := registry.GetString("State")
 		if err != nil {
 			slog.Warn("no state attached, ensure that the provider doesn't require state")
@@ -417,7 +417,7 @@ func setup() *OAuthApp {
 		password := registry.MustString("Password")
 
 		app := &OAuthApp{
-			GrantType: providers.Password,
+			GrantType: catalog.Password,
 			Config: &oauth2.Config{
 				ClientID:     clientId,
 				ClientSecret: clientSecret,
@@ -426,7 +426,7 @@ func setup() *OAuthApp {
 					TokenURL: providerInfo.Oauth2Opts.TokenURL,
 				},
 			},
-			PasswordParams: &providers.BasicParams{
+			PasswordParams: &catalog.BasicParams{
 				User: username,
 				Pass: password,
 			},

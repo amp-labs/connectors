@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/amp-labs/connectors/salesloft"
+	"github.com/amp-labs/connectors/providers/salesloft"
 	testUtils "github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/utils"
 )

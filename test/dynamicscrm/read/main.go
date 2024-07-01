@@ -8,7 +8,7 @@ import (
 	"syscall"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/dynamicscrm"
+	"github.com/amp-labs/connectors/providers/dynamicscrm"
 	connTest "github.com/amp-labs/connectors/test/dynamicscrm"
 	"github.com/amp-labs/connectors/test/utils"
 )

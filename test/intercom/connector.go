@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/amp-labs/connectors/intercom"
+	"github.com/amp-labs/connectors/providers/intercom"
 	testUtils "github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/utils"
 )

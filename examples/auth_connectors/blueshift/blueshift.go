@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/amp-labs/connectors/catalog"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/connector"
 	"github.com/amp-labs/connectors/examples/utils"
-	"github.com/amp-labs/connectors/providers"
 )
 
 const ApiKey = "<api key>"
@@ -51,7 +51,7 @@ func blueshiftAuthExample(ctx context.Context) error {
 
 // Create an auth connector with the Blueshift provider.
 func createAuthConnector(ctx context.Context) *connector.Connector {
-	conn, err := connector.NewConnector(providers.Blueshift,
+	conn, err := connector.NewConnector(catalog.Blueshift,
 		connector.WithAuthenticatedClient(createAuthenticatedHttpClient(ctx)))
 	if err != nil {
 		panic(err)
@@ -62,7 +62,7 @@ func createAuthConnector(ctx context.Context) *connector.Connector {
 
 // Create a basic-auth authenticated HTTP client for Blueshift.
 func createAuthenticatedHttpClient(ctx context.Context) common.AuthenticatedHTTPClient {
-	info, err := providers.ReadInfo(providers.Blueshift, nil)
+	info, err := catalog.ReadInfo(catalog.Blueshift, nil)
 	if err != nil {
 		panic(err)
 	}
