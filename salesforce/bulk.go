@@ -140,16 +140,16 @@ func joinURLPath(baseURL string, paths ...string) (string, error) {
 }
 
 func (c *Connector) createJob(ctx context.Context, body map[string]any) (*common.JSONHTTPResponse, error) {
-	location, err := joinURLPath(c.BaseURL, "jobs/ingest")
+	location, err := c.getURL("jobs/ingest")
 	if err != nil {
 		return nil, err
 	}
 
-	return c.Client.Post(ctx, location, body)
+	return c.Client.Post(ctx, location.String(), body)
 }
 
 func (c *Connector) uploadCSV(ctx context.Context, jobId string, csvData io.Reader) ([]byte, error) {
-	location, err := joinURLPath(c.BaseURL, fmt.Sprintf("jobs/ingest/%s/batches", jobId))
+	location, err := c.getURL(fmt.Sprintf("jobs/ingest/%s/batches", jobId))
 	if err != nil {
 		return nil, err
 	}
@@ -162,7 +162,7 @@ func (c *Connector) uploadCSV(ctx context.Context, jobId string, csvData io.Read
 		)
 	}
 
-	return c.Client.PutCSV(ctx, location, data)
+	return c.Client.PutCSV(ctx, location.String(), data)
 }
 
 func (c *Connector) completeUpload(ctx context.Context, jobId string) (*common.JSONHTTPResponse, error) {
@@ -170,21 +170,21 @@ func (c *Connector) completeUpload(ctx context.Context, jobId string) (*common.J
 		"state": JobStateUploadComplete,
 	}
 
-	location, err := joinURLPath(c.BaseURL, "jobs/ingest/"+jobId)
+	location, err := c.getURL("jobs/ingest/" + jobId)
 	if err != nil {
 		return nil, err
 	}
 
-	return c.Client.Patch(ctx, location, updateLoadCompleteBody)
+	return c.Client.Patch(ctx, location.String(), updateLoadCompleteBody)
 }
 
 func (c *Connector) GetJobInfo(ctx context.Context, jobId string) (*GetJobInfoResult, error) {
-	location, err := joinURLPath(c.BaseURL, "jobs/ingest", jobId)
+	location, err := c.getURL("jobs/ingest", jobId)
 	if err != nil {
 		return nil, err
 	}
 
-	rsp, err := c.Client.Get(ctx, location)
+	rsp, err := c.Client.Get(ctx, location.String())
 	if err != nil {
 		return nil, fmt.Errorf("getGetInfo failed: %w", errors.Join(err, common.ErrRequestFailed))
 	}
@@ -222,12 +222,12 @@ func (c *Connector) GetJobResults(ctx context.Context, jobId string) (*JobResult
 }
 
 func (c *Connector) GetSuccessfulJobResults(ctx context.Context, jobId string) (*http.Response, error) {
-	location, err := joinURLPath(c.BaseURL, fmt.Sprintf("jobs/ingest/%s/successfulResults", jobId))
+	location, err := c.getURL(fmt.Sprintf("jobs/ingest/%s/successfulResults", jobId))
 	if err != nil {
 		return nil, err
 	}
 
-	req, err := common.MakeJSONGetRequest(ctx, location, nil)
+	req, err := common.MakeJSONGetRequest(ctx, location.String(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create get request: %w", err)
 	}
@@ -238,12 +238,12 @@ func (c *Connector) GetSuccessfulJobResults(ctx context.Context, jobId string) (
 }
 
 func (c *Connector) getJobResults(ctx context.Context, jobId string) (*http.Response, error) {
-	location, err := joinURLPath(c.BaseURL, fmt.Sprintf("jobs/ingest/%s/failedResults", jobId))
+	location, err := c.getURL(fmt.Sprintf("jobs/ingest/%s/failedResults", jobId))
 	if err != nil {
 		return nil, err
 	}
 
-	req, err := common.MakeJSONGetRequest(ctx, location, nil)
+	req, err := common.MakeJSONGetRequest(ctx, location.String(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create get request: %w", err)
 	}
@@ -491,7 +491,7 @@ func (c *Connector) BulkQuery(
 	ctx context.Context,
 	query string,
 ) (*GetJobInfoResult, error) {
-	location, err := joinURLPath(c.BaseURL, "jobs/query")
+	location, err := c.getURL("jobs/query")
 	if err != nil {
 		return nil, err
 	}
@@ -501,7 +501,7 @@ func (c *Connector) BulkQuery(
 		"query":     query,
 	}
 
-	res, err := c.Client.Post(ctx, location, jobBody)
+	res, err := c.Client.Post(ctx, location.String(), jobBody)
 	if err != nil {
 		return nil, fmt.Errorf("bulk query failed: %w", err)
 	}
@@ -513,12 +513,12 @@ func (c *Connector) GetBulkQueryInfo(
 	ctx context.Context,
 	jobId string,
 ) (*GetJobInfoResult, error) {
-	location, err := joinURLPath(c.BaseURL, "jobs/query", jobId)
+	location, err := c.getURL("jobs/query", jobId)
 	if err != nil {
 		return nil, err
 	}
 
-	res, err := c.Client.Get(ctx, location)
+	res, err := c.Client.Get(ctx, location.String())
 	if err != nil {
 		return nil, fmt.Errorf(
 			"failed to get bulk query info for job '%s': %w",
@@ -534,12 +534,12 @@ func (c *Connector) GetBulkQueryResults(
 	ctx context.Context,
 	jobId string,
 ) (*http.Response, error) {
-	location, err := joinURLPath(c.BaseURL, fmt.Sprintf("jobs/query/%s/results", jobId))
+	location, err := c.getURL(fmt.Sprintf("jobs/query/%s/results", jobId))
 	if err != nil {
 		return nil, err
 	}
 
-	req, err := common.MakeJSONGetRequest(ctx, location, []common.Header{
+	req, err := common.MakeJSONGetRequest(ctx, location.String(), []common.Header{
 		{
 			Key:   "Accept",
 			Value: "text/csv",

@@ -31,9 +31,5 @@ func init() {
 			Subscribe: false,
 			Write:     true,
 		},
-		ProviderOpts: ProviderOpts{
-			"restApiUrl": "https://{{.workspace}}.my.salesforce.com/services/data/v59.0",
-			"domain":     "{{.workspace}}.my.salesforce.com",
-		},
 	})
 }
