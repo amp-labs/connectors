@@ -75,7 +75,7 @@ func getTotalSize(node *ajson.Node) (int64, error) {
 	return int64(node.MustNumeric()), nil
 }
 
-func getMarshaledData(records []map[string]interface{}, fields []string) ([]common.ReadResultRow, error) {
+func getMarshalledData(records []map[string]interface{}, fields []string) ([]common.ReadResultRow, error) {
 	data := make([]common.ReadResultRow, len(records))
 
 	for i, record := range records {
