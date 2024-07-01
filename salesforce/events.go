@@ -189,6 +189,7 @@ func (c *Connector) CreateEventRelayConfig(
 // nolint: lll
 // https://developer.salesforce.com/docs/atlas.en-us.api_tooling.meta/api_tooling/tooling_api_objects_eventrelayconfig.htm?q=EventRelayConfig
 func (c *Connector) RunEventRelay(ctx context.Context, cfg *EventRelayConfig) error {
+	// TODO should there be a BaseURL?
 	location, err := joinURLPath("tooling/sobjects/EventRelayConfig", cfg.Id)
 	if err != nil {
 		return err
@@ -253,12 +254,12 @@ type Credential interface {
 }
 
 func (c *Connector) postToSFAPI(ctx context.Context, body any, path string, entity string) (*SFAPIResponseBody, error) {
-	location, err := joinURLPath(c.BaseURL, path)
+	location, err := c.getURL(path)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := c.Client.Post(ctx, location, body)
+	resp, err := c.Client.Post(ctx, location.String(), body)
 	if err != nil {
 		return nil, err
 	}
