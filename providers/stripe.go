@@ -8,10 +8,12 @@ func init() {
 		AuthType: ApiKey,
 		BaseURL:  "https://api.stripe.com",
 		ApiKeyOpts: &ApiKeyOpts{
-			Type:        InHeader,
-			HeaderName:  "Authorization",
-			ValuePrefix: "Bearer ",
-			DocsURL:     "https://docs.stripe.com/keys",
+			AttachmentType: Header,
+			Header: &ApiKeyOptsHeader{
+				Name:        "Authorization",
+				ValuePrefix: "Bearer ",
+			},
+			DocsURL: "https://docs.stripe.com/keys",
 		}, Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
