@@ -7,9 +7,11 @@ func init() {
 		AuthType: ApiKey,
 		BaseURL:  "https://{{.workspace}}.myshopify.com",
 		ApiKeyOpts: &ApiKeyOpts{
-			Type:       InHeader,
-			HeaderName: "X-Shopify-Access-Token",
-			DocsURL:    "https://shopify.dev/docs/api/admin-rest#authentication",
+			AttachmentType: Header,
+			Header: &ApiKeyOptsHeader{
+				Name: "X-Shopify-Access-Token",
+			},
+			DocsURL: "https://shopify.dev/docs/api/admin-rest#authentication",
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{

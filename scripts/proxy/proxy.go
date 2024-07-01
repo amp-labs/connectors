@@ -433,9 +433,9 @@ func configureOAuthClientCredentials(clientId, clientSecret string, scopes []str
 		cfg.Scopes = scopes
 	}
 
-	if providerInfo.Oauth2Opts.Audience != "" {
+	if providerInfo.Oauth2Opts.Audience != nil {
 		aud := providerInfo.Oauth2Opts.Audience
-		cfg.EndpointParams = url.Values{"audience": {aud}}
+		cfg.EndpointParams = url.Values{"audience": aud}
 	}
 
 	return cfg
