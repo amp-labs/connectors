@@ -273,3 +273,37 @@ func GongOauthTokenFromRegistry(registry CredentialsRegistry) *oauth2.Token {
 
 	return tok
 }
+
+func ZendeskSupportConfigFromRegistry(registry CredentialsRegistry) *oauth2.Config {
+	clientId := registry.MustString(ClientId)
+	clientSecret := registry.MustString(ClientSecret)
+	workspace := registry.MustString(WorkspaceRef)
+
+	cfg := &oauth2.Config{
+		ClientID:     clientId,
+		ClientSecret: clientSecret,
+		RedirectURL:  fmt.Sprintf("https://%v.zendesk.com", workspace),
+		Endpoint: oauth2.Endpoint{
+			AuthURL:   fmt.Sprintf("https://%v.zendesk.com/oauth/authorizations/new", workspace),
+			TokenURL:  fmt.Sprintf("https://%v.zendesk.com/oauth/tokens", workspace),
+			AuthStyle: oauth2.AuthStyleInParams,
+		},
+		Scopes: []string{
+			"read",
+			"write",
+		},
+	}
+
+	return cfg
+}
+
+func ZendeskSupportTokenFromRegistry(registry CredentialsRegistry) *oauth2.Token {
+	accessToken := registry.MustString(AccessToken)
+
+	tok := &oauth2.Token{
+		AccessToken: accessToken,
+		TokenType:   "bearer",
+	}
+
+	return tok
+}

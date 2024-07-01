@@ -1,4 +1,4 @@
-package gong
+package zendesksupport
 
 import (
 	"github.com/amp-labs/connectors/common"
@@ -24,12 +24,10 @@ func makeGetRecords(objectName string) common.RecordsFunc {
 	}
 }
 
-// getNextRecords returns the token or empty string if there are no more records.
 func getNextRecordsURL(node *ajson.Node) (string, error) {
-	return jsonquery.New(node, "records").StrWithDefault("cursor", "")
+	return jsonquery.New(node, "links").StrWithDefault("next", "")
 }
 
-// getMarshalledData accepts a list of records and returns a list of structured data ([]ReadResultRow).
 func getMarshalledData(records []map[string]interface{}, fields []string) ([]common.ReadResultRow, error) {
 	data := make([]common.ReadResultRow, len(records))
 
