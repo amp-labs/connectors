@@ -10,6 +10,8 @@ import (
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/interpreter"
+	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/go-test/deep"
 )
@@ -30,6 +32,24 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		expectedErrTypes []error
 	}{
 		{
+			name: "Mime response header expected",
+			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(http.StatusTeapot)
+			})),
+			expectedErrs: []error{interpreter.ErrMissingContentType},
+		},
+		{
+			name: "Incorrect key in payload",
+			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusOK)
+				mockutils.WriteBody(w, `{
+					"garbage": {}
+				}`)
+			})),
+			expectedErrs: []error{jsonquery.ErrKeyNotFound},
+		},
+		{
 			name:  "Bad request handling test",
 			input: common.ReadParams{ObjectName: "calls"},
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -43,10 +63,9 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				}`)
 			})),
 			expectedErrs: []error{
-				errors.New("HTTP status 400: caller error:"), // nolint:goerr113
+				common.ErrBadRequest, errors.New("Failed to verify cursor"), // nolint:goerr113
 			},
 		},
-
 		{
 			name:  "Records section is missing in the payload",
 			input: common.ReadParams{ObjectName: "calls"},
@@ -57,12 +76,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 					"value": []
 				}`)
 			})),
-
-			expectedErrs: []error{common.ErrParseError},
+			expectedErrs: []error{jsonquery.ErrKeyNotFound},
 		},
 
 		{
-			name:  "currentPageSize parameter is missing in the payload",
+			name:  "currentPageSize may be missing in payload",
 			input: common.ReadParams{ObjectName: "calls"},
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
@@ -78,8 +96,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			}		
 					`)
 			})),
-
-			expectedErrs: []error{common.ErrParseError},
+			expected: &common.ReadResult{
+				Data: []common.ReadResultRow{},
+				Done: true,
+			},
+			expectedErrs: nil,
 		},
 
 		{
@@ -150,7 +171,6 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			},
 			expectedErrs: nil,
 		},
-
 		{
 			name:  "Incorrect data type in payload",
 			input: common.ReadParams{ObjectName: "calls"},
@@ -158,10 +178,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
 				writeBody(w, `{
-					"values": {}
+					"calls": {}
 				}`)
 			})),
-			expectedErrs: []error{common.ErrParseError},
+			expectedErrs: []error{jsonquery.ErrNotArray},
 		},
 	}
 

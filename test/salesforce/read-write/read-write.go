@@ -53,7 +53,7 @@ func mainFn() int { //nolint:funlen
 	tok := utils.SalesforceOauthTokenFromRegistry(credentialsRegistry)
 	ctx := context.Background()
 
-	sfc, err := connectors.Salesforce(
+	sfc, err := salesforce.NewConnector(
 		salesforce.WithClient(ctx, http.DefaultClient, cfg, tok),
 		salesforce.WithWorkspace(salesforceWorkspace))
 	if err != nil {

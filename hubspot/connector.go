@@ -14,26 +14,12 @@ type Connector struct {
 
 // NewConnector returns a new Hubspot connector.
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	defer func() {
-		if re := recover(); re != nil {
-			tmp, ok := re.(error)
-			if !ok {
-				panic(re)
-			}
+	defer common.PanicRecovery(func(cause error) {
+		outErr = cause
+		conn = nil
+	})
 
-			outErr = tmp
-			conn = nil
-		}
-	}()
-
-	params := &hubspotParams{}
-	for _, opt := range opts {
-		opt(params)
-	}
-
-	var err error
-
-	params, err = params.prepare()
+	params, err := parameters{}.FromOptions(opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -44,14 +30,20 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		return nil, err
 	}
 
-	params.client.HTTPClient.Base = providerInfo.BaseURL
 	conn = &Connector{
-		BaseURL: params.client.HTTPClient.Base,
-		Module:  params.module,
-		Client:  params.client,
+		Client: &common.JSONHTTPClient{
+			HTTPClient: params.Client.Caller,
+		},
+		Module: params.Module.Suffix,
 	}
 
+	conn.setBaseURL(providerInfo.BaseURL)
 	conn.Client.HTTPClient.ErrorHandler = conn.interpretError
 
 	return conn, nil
+}
+
+func (c *Connector) setBaseURL(newURL string) {
+	c.BaseURL = newURL
+	c.Client.HTTPClient.Base = newURL
 }

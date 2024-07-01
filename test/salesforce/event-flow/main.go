@@ -10,7 +10,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/salesforce"
 	testUtils "github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/utils"
@@ -40,7 +39,7 @@ func main() {
 	tok := utils.SalesforceOauthTokenFromRegistry(credentialsRegistry)
 	ctx := context.Background()
 
-	sfc, err := connectors.Salesforce(
+	sfc, err := salesforce.NewConnector(
 		salesforce.WithClient(ctx, http.DefaultClient, cfg, tok),
 		salesforce.WithWorkspace(salesforceWorkspace))
 	if err != nil {
