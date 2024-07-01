@@ -42,7 +42,6 @@ type EmailAddress struct {
 }
 
 // Create an outreach connector instance 
-// Create the outreach connector instance 
 conn, err := outreach.NewConnector(
 		outreach.WithClient(ctx, http.DefaultClient, cfg, tok),
 )
