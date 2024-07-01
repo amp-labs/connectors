@@ -67,7 +67,7 @@ if err != nil {
 }
 ```
 
-### Supported Objects 
+## Supported Objects 
 Below is an exhaustive list of the supported Objects in the Outreach deep connector with their endpoint resources(ObjectName).
 
 Outreach API version : v2
