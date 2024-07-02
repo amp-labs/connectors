@@ -11,6 +11,7 @@ var (
 	ErrNotArray    = errors.New("JSON value is not an array")
 	ErrNotObject   = errors.New("JSON value is not an object")
 	ErrNotString   = errors.New("JSON value is not a string")
+	ErrNotBool     = errors.New("JSON value is not a boolean")
 	ErrNotNumeric  = errors.New("JSON value is not a numeric")
 	ErrNotInteger  = errors.New("JSON value is not an integer")
 	ErrUnpacking   = errors.New("failed to unpack ajson node")

@@ -1,4 +1,4 @@
-package gong
+package salesforce
 
 import "github.com/amp-labs/connectors/common/urlbuilder"
 
