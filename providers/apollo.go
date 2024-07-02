@@ -8,9 +8,11 @@ func init() {
 		AuthType: ApiKey,
 		BaseURL:  "https://api.apollo.io",
 		ApiKeyOpts: &ApiKeyOpts{
-			Type:       InHeader,
-			HeaderName: "X-Api-Key",
-			DocsURL:    "https://app.apollo.io/#/settings/integrations/api",
+			AttachmentType: Header,
+			Header: &ApiKeyOptsHeader{
+				Name: "X-Api-Key",
+			},
+			DocsURL: "https://apolloio.github.io/apollo-api-docs/?shell#authentication",
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
