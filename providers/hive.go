@@ -8,9 +8,11 @@ func init() {
 		AuthType: ApiKey,
 		BaseURL:  "https://app.hive.com",
 		ApiKeyOpts: &ApiKeyOpts{
-			Type:       InHeader,
-			HeaderName: "api_key",
-			DocsURL:    "https://developers.hive.com/reference/api-keys-and-auth",
+			AttachmentType: Header,
+			Header: &ApiKeyOptsHeader{
+				Name: "api_key",
+			},
+			DocsURL: "https://developers.hive.com/reference/api-keys-and-auth",
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
