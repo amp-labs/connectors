@@ -65,11 +65,11 @@ var (
 	// ErrMissingRecordID is returned when resource id is missing in the request.
 	ErrMissingRecordID = errors.New("no object ID provided")
 
+	// ErrMissingFields is returned when no fields are provided for reading.
+	ErrMissingFields = errors.New("no fields to select")
+
 	// ErrInvalidPathJoin is returned when the path join is invalid.
 	ErrInvalidPathJoin = errors.New("invalid path join")
-
-	// ErrReadFile is returned when the path is invalid.
-	ErrReadFile = errors.New("failed to read file")
 
 	// ErrRequestFailed is returned when the request failed.
 	ErrRequestFailed = errors.New("request failed")

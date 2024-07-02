@@ -1,0 +1,159 @@
+{
+  "totalSize": 8,
+  "done": true,
+  "nextRecordsUrl": "/services/data/v59.0/query/01g3A00007lZwLKQA0-2000",
+  "records": [
+    {
+      "attributes": {
+        "type": "Lead",
+        "url": "/services/data/v59.0/sobjects/Lead/00Qak00000696HFEAY"
+      },
+      "Address": {
+        "city": "Tallahassee",
+        "country": "USA",
+        "geocodeAccuracy": null,
+        "latitude": null,
+        "longitude": null,
+        "postalCode": "32306",
+        "state": "FL",
+        "street": "321 Westcott Building"
+      },
+      "City": "Tallahassee",
+      "CleanStatus": "Pending",
+      "FirstName": "Bertha"
+    },
+    {
+      "attributes": {
+        "type": "Lead",
+        "url": "/services/data/v59.0/sobjects/Lead/00Qak00000696HGEAY"
+      },
+      "Address": {
+        "city": null,
+        "country": "USA",
+        "geocodeAccuracy": null,
+        "latitude": null,
+        "longitude": null,
+        "postalCode": null,
+        "state": "VA",
+        "street": null
+      },
+      "City": null,
+      "CleanStatus": "Pending",
+      "FirstName": "Phyllis"
+    },
+    {
+      "attributes": {
+        "type": "Lead",
+        "url": "/services/data/v59.0/sobjects/Lead/00Qak00000696HHEAY"
+      },
+      "Address": {
+        "city": null,
+        "country": "Taiwan",
+        "geocodeAccuracy": null,
+        "latitude": null,
+        "longitude": null,
+        "postalCode": null,
+        "state": null,
+        "street": null
+      },
+      "City": null,
+      "CleanStatus": "Pending",
+      "FirstName": "Jeff"
+    },
+    {
+      "attributes": {
+        "type": "Lead",
+        "url": "/services/data/v59.0/sobjects/Lead/00Qak00000696HIEAY"
+      },
+      "Address": {
+        "city": null,
+        "country": "USA",
+        "geocodeAccuracy": null,
+        "latitude": null,
+        "longitude": null,
+        "postalCode": null,
+        "state": "MD",
+        "street": null
+      },
+      "City": null,
+      "CleanStatus": "Pending",
+      "FirstName": "Mike"
+    },
+    {
+      "attributes": {
+        "type": "Lead",
+        "url": "/services/data/v59.0/sobjects/Lead/00Qak00000696HJEAY"
+      },
+      "Address": {
+        "city": null,
+        "country": "USA",
+        "geocodeAccuracy": null,
+        "latitude": null,
+        "longitude": null,
+        "postalCode": null,
+        "state": "NC",
+        "street": null
+      },
+      "City": null,
+      "CleanStatus": "Pending",
+      "FirstName": "Patricia"
+    },
+    {
+      "attributes": {
+        "type": "Lead",
+        "url": "/services/data/v59.0/sobjects/Lead/00Qak00000696HKEAY"
+      },
+      "Address": {
+        "city": null,
+        "country": "USA",
+        "geocodeAccuracy": null,
+        "latitude": null,
+        "longitude": null,
+        "postalCode": null,
+        "state": "IL",
+        "street": null
+      },
+      "City": null,
+      "CleanStatus": "Pending",
+      "FirstName": "Brenda"
+    },
+    {
+      "attributes": {
+        "type": "Lead",
+        "url": "/services/data/v59.0/sobjects/Lead/00Qak00000696HLEAY"
+      },
+      "Address": {
+        "city": null,
+        "country": "USA",
+        "geocodeAccuracy": null,
+        "latitude": null,
+        "longitude": null,
+        "postalCode": null,
+        "state": "GA",
+        "street": null
+      },
+      "City": null,
+      "CleanStatus": "Pending",
+      "FirstName": "Violet"
+    },
+    {
+      "attributes": {
+        "type": "Lead",
+        "url": "/services/data/v59.0/sobjects/Lead/00Qak00000696HMEAY"
+      },
+      "Address": {
+        "city": null,
+        "country": "USA",
+        "geocodeAccuracy": null,
+        "latitude": null,
+        "longitude": null,
+        "postalCode": null,
+        "state": "CT",
+        "street": null
+      },
+      "City": null,
+      "CleanStatus": "Pending",
+      "FirstName": "Kathy"
+    }
+  ]
+}
