@@ -7,10 +7,12 @@ func init() {
 		AuthType: ApiKey,
 		BaseURL:  "https://{{.workspace}}.myfreshworks.com/crm/sales",
 		ApiKeyOpts: &ApiKeyOpts{
-			Type:        InHeader,
-			HeaderName:  "Authorization",
-			ValuePrefix: "Token token=",
-			DocsURL:     "https://developers.freshworks.com/crm/api/#authentication",
+			AttachmentType: Header,
+			Header: &ApiKeyOptsHeader{
+				Name:        "Authorization",
+				ValuePrefix: "Token token=",
+			},
+			DocsURL: "https://developers.freshworks.com/crm/api/#authentication",
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{

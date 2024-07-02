@@ -1,18 +1,17 @@
 package providers
 
-const Brevo Provider = "brevo"
+const Dixa Provider = "dixa"
 
 func init() {
-	// Brevo(Sendinblue) configuration
-	SetInfo(Brevo, ProviderInfo{
+	SetInfo(Dixa, ProviderInfo{
 		AuthType: ApiKey,
-		BaseURL:  "https://api.brevo.com",
+		BaseURL:  "https://dev.dixa.io",
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Header,
 			Header: &ApiKeyOptsHeader{
-				Name: "api-key",
+				Name: "Authorization",
 			},
-			DocsURL: "https://developers.brevo.com/docs/getting-started",
+			DocsURL: "https://docs.dixa.io/docs/api-standards-rules/#authentication",
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{

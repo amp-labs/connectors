@@ -401,9 +401,9 @@ func setup() *OAuthApp {
 			app.State = state
 		}
 
-		if providerInfo.Oauth2Opts.Audience != "" {
+		if providerInfo.Oauth2Opts.Audience != nil {
 			aud := providerInfo.Oauth2Opts.Audience
-			app.ClientCredsConfig.EndpointParams = url.Values{"audience": {aud}}
+			app.ClientCredsConfig.EndpointParams = url.Values{"audience": aud}
 		}
 
 		return app
@@ -435,9 +435,9 @@ func setup() *OAuthApp {
 			app.State = state
 		}
 
-		if providerInfo.Oauth2Opts.Audience != "" {
+		if providerInfo.Oauth2Opts.Audience != nil {
 			aud := providerInfo.Oauth2Opts.Audience
-			app.ClientCredsConfig.EndpointParams = url.Values{"audience": {aud}}
+			app.ClientCredsConfig.EndpointParams = url.Values{"audience": aud}
 		}
 
 		return app
