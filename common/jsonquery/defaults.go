@@ -25,3 +25,16 @@ func (q *Query) StrWithDefault(key string, defaultValue string) (string, error) 
 
 	return *result, nil
 }
+
+func (q *Query) BoolWithDefault(key string, defaultValue bool) (bool, error) {
+	result, err := q.Bool(key, true)
+	if err != nil {
+		return false, err
+	}
+
+	if result == nil {
+		return defaultValue, nil
+	}
+
+	return *result, nil
+}

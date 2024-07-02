@@ -97,6 +97,28 @@ func (q *Query) Str(key string, optional bool) (*string, error) {
 	return &txt, nil
 }
 
+func (q *Query) Bool(key string, optional bool) (*bool, error) {
+	node, err := q.getInnerKey(key, optional)
+	if err != nil {
+		return nil, err
+	}
+
+	if node == nil {
+		return nil, nil // nolint:nilnil
+	}
+
+	if node.IsNull() {
+		return nil, handleNullNode(key, optional)
+	}
+
+	flag, err := node.GetBool()
+	if err != nil {
+		return nil, ErrNotBool
+	}
+
+	return &flag, nil
+}
+
 func (q *Query) Array(key string, optional bool) ([]*ajson.Node, error) {
 	node, err := q.getInnerKey(key, optional)
 	if err != nil {
