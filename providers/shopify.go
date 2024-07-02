@@ -1,18 +1,17 @@
 package providers
 
-const Brevo Provider = "brevo"
+const Shopify Provider = "shopify"
 
 func init() {
-	// Brevo(Sendinblue) configuration
-	SetInfo(Brevo, ProviderInfo{
+	SetInfo(Shopify, ProviderInfo{
 		AuthType: ApiKey,
-		BaseURL:  "https://api.brevo.com",
+		BaseURL:  "https://{{.workspace}}.myshopify.com",
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Header,
 			Header: &ApiKeyOptsHeader{
-				Name: "api-key",
+				Name: "X-Shopify-Access-Token",
 			},
-			DocsURL: "https://developers.brevo.com/docs/getting-started",
+			DocsURL: "https://shopify.dev/docs/api/admin-rest#authentication",
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{

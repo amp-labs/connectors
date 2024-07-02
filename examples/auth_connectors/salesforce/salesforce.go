@@ -71,7 +71,7 @@ func salesforceAuthExample(ctx context.Context) error {
 // Create an auth connector with the Salesforce provider.
 func createAuthConnector(ctx context.Context) *connector.Connector {
 	conn, err := connector.NewConnector(providers.Salesforce,
-		connector.WithCatalogSubstitutions(substitutions),
+		connector.WithWorkspace(Workspace),
 		connector.WithAuthenticatedClient(createAuthenticatedHttpClient(ctx)))
 	if err != nil {
 		panic(err)

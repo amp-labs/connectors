@@ -8,10 +8,12 @@ func init() {
 		AuthType: ApiKey,
 		BaseURL:  "https://api.salesflare.com",
 		ApiKeyOpts: &ApiKeyOpts{
-			Type:        InHeader,
-			HeaderName:  "Authorization",
-			ValuePrefix: "Bearer ",
-			DocsURL:     "https://api.salesflare.com/docs#section/Introduction/Authentication",
+			AttachmentType: Header,
+			Header: &ApiKeyOptsHeader{
+				Name:        "Authorization",
+				ValuePrefix: "Bearer ",
+			},
+			DocsURL: "https://api.salesflare.com/docs#section/Introduction/Authentication",
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
