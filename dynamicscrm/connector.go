@@ -39,9 +39,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		},
 	}
 
-	providerInfo, err := providers.ReadInfo(conn.Provider(), &map[string]string{
-		"workspace": params.Workspace.Name,
-	})
+	providerInfo, err := providers.ReadInfo(conn.Provider(), &params.Workspace)
 	if err != nil {
 		return nil, err
 	}
