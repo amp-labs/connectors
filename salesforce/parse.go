@@ -1,78 +1,41 @@
 package salesforce
 
 import (
+	"errors"
+
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 
+// getTotalSize returns the total number of records that match the query.
+func getTotalSize(node *ajson.Node) (int64, error) {
+	size, err := jsonquery.New(node).Integer("totalSize", false)
+	if err != nil {
+		if !errors.Is(err, jsonquery.ErrKeyNotFound) {
+			return 0, err
+		}
+
+		// The totalSize key was missing. Try to manually count the number of records
+		return jsonquery.New(node).ArraySize("records")
+	}
+
+	return *size, nil
+}
+
 // getRecords returns the records from the response.
-func getRecords(node *ajson.Node) ([]map[string]interface{}, error) {
-	records, err := node.GetKey("records")
+func getRecords(node *ajson.Node) ([]map[string]any, error) {
+	records, err := jsonquery.New(node).Array("records", false)
 	if err != nil {
 		return nil, err
 	}
 
-	if !records.IsArray() {
-		return nil, ErrNotArray
-	}
-
-	arr := records.MustArray()
-
-	out := make([]map[string]interface{}, 0, len(arr))
-
-	for _, v := range arr {
-		if !v.IsObject() {
-			return nil, ErrNotObject
-		}
-
-		data, err := v.Unpack()
-		if err != nil {
-			return nil, err
-		}
-
-		m, ok := data.(map[string]interface{})
-		if !ok {
-			return nil, ErrNotObject
-		}
-
-		out = append(out, m)
-	}
-
-	return out, nil
+	return jsonquery.Convertor.ArrayToMap(records)
 }
 
 // getNextRecordsURL returns the URL for the next page of results.
 func getNextRecordsURL(node *ajson.Node) (string, error) {
-	var nextPage string
-
-	if node.HasKey("nextRecordsUrl") {
-		next, err := node.GetKey("nextRecordsUrl")
-		if err != nil {
-			return "", err
-		}
-
-		if !next.IsString() {
-			return "", ErrNotString
-		}
-
-		nextPage = next.MustString()
-	}
-
-	return nextPage, nil
-}
-
-// getTotalSize returns the total number of records that match the query.
-func getTotalSize(node *ajson.Node) (int64, error) {
-	node, err := node.GetKey("totalSize")
-	if err != nil {
-		return 0, err
-	}
-
-	if !node.IsNumeric() {
-		return 0, ErrNotNumeric
-	}
-
-	return int64(node.MustNumeric()), nil
+	return jsonquery.New(node).StrWithDefault("nextRecordsUrl", "")
 }
 
 func getMarshaledData(records []map[string]interface{}, fields []string) ([]common.ReadResultRow, error) {

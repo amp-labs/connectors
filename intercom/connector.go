@@ -2,7 +2,6 @@ package intercom
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
@@ -33,7 +32,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		return nil, err
 	}
 
-	providerInfo, err := providers.ReadInfo(providers.Intercom, nil)
+	providerInfo, err := providers.ReadInfo(providers.Intercom)
 	if err != nil {
 		return nil, err
 	}
@@ -63,16 +62,7 @@ func (c *Connector) String() string {
 
 // nolint:unused
 func (c *Connector) getURL(arg string) (*urlbuilder.URL, error) {
-	parts := []string{c.BaseURL, arg}
-	filtered := make([]string, 0)
-
-	for _, part := range parts {
-		if len(part) != 0 {
-			filtered = append(filtered, part)
-		}
-	}
-
-	return constructURL(strings.Join(filtered, "/"))
+	return constructURL(c.BaseURL, arg)
 }
 
 func (c *Connector) setBaseURL(newURL string) {

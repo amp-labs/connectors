@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/connector"
 	"github.com/amp-labs/connectors/examples/utils"
 	"github.com/amp-labs/connectors/providers"
@@ -14,6 +15,7 @@ import (
 
 const (
 	// Replace these with your own values.
+
 	Workspace          = "<workspace>"
 	OAuth2ClientId     = "<client id>"
 	OAuth2ClientSecret = "<client secret>"
@@ -26,11 +28,6 @@ const (
 // If you have an actual value, you can set it here. Otherwise
 // it will be set to a day ago to force a refresh.
 var AccessTokenExpiry = time.Now().Add(-24 * time.Hour)
-
-// substitutions is a map of variables that can be used in the provider catalog.
-var substitutions = map[string]string{
-	"workspace": Workspace,
-}
 
 // Run this example with `go run salesforce.go`
 func main() {
@@ -71,8 +68,8 @@ func salesforceAuthExample(ctx context.Context) error {
 // Create an auth connector with the Salesforce provider.
 func createAuthConnector(ctx context.Context) *connector.Connector {
 	conn, err := connector.NewConnector(providers.Salesforce,
-		connector.WithWorkspace(Workspace),
-		connector.WithAuthenticatedClient(createAuthenticatedHttpClient(ctx)))
+		connector.WithAuthenticatedClient(createAuthenticatedHttpClient(ctx)),
+		connector.WithWorkspace(Workspace))
 	if err != nil {
 		panic(err)
 	}
@@ -82,7 +79,7 @@ func createAuthConnector(ctx context.Context) *connector.Connector {
 
 // Create an OAuth2 authenticated HTTP client for Salesforce.
 func createAuthenticatedHttpClient(ctx context.Context) common.AuthenticatedHTTPClient {
-	info, err := providers.ReadInfo(providers.Salesforce, &substitutions)
+	info, err := providers.ReadInfo(providers.Salesforce, &paramsbuilder.Workspace{Name: Workspace})
 	if err != nil {
 		panic(err)
 	}

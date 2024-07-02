@@ -39,7 +39,7 @@ func (c *Connector) ListObjectMetadata(
 	}
 
 	// Construct endpoint for the request
-	compositeRequestEndpoint, err := url.JoinPath(c.BaseURL, "composite")
+	compositeRequestEndpoint, err := c.getURL("composite")
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +47,7 @@ func (c *Connector) ListObjectMetadata(
 	// Make the request
 	result, err := c.Client.Post(
 		ctx,
-		compositeRequestEndpoint,
+		compositeRequestEndpoint.String(),
 		compositeRequest{
 			CompositeRequest: requests,
 			// If we fail to fetch metadata for one object, we don't want to fail the entire request.

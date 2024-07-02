@@ -18,4 +18,7 @@ var ModuleEmpty = paramsbuilder.APIModule{ // nolint: gochecknoglobals
 
 // supportedModules represents currently working and supported modules within the Hubspot connector.
 // Any added module should be appended added here.
-var supportedModules = []paramsbuilder.APIModule{ModuleCRM} // nolint: gochecknoglobals
+var supportedModules = []paramsbuilder.APIModule{ // nolint: gochecknoglobals
+	ModuleEmpty,
+	ModuleCRM,
+}
