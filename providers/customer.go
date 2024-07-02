@@ -29,10 +29,12 @@ func init() {
 		AuthType: ApiKey,
 		BaseURL:  "https://api.customer.io",
 		ApiKeyOpts: &ApiKeyOpts{
-			Type:        InHeader,
-			HeaderName:  "Authorization",
-			ValuePrefix: "Bearer ",
-			DocsURL:     "https://customer.io/docs/api/app/#section/Authentication",
+			AttachmentType: Header,
+			Header: &ApiKeyOptsHeader{
+				Name:        "Authorization",
+				ValuePrefix: "Bearer ",
+			},
+			DocsURL: "https://customer.io/docs/api/app/#section/Authentication",
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
