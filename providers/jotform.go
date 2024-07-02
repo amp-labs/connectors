@@ -8,9 +8,11 @@ func init() {
 		AuthType: ApiKey,
 		BaseURL:  "https://api.jotform.com",
 		ApiKeyOpts: &ApiKeyOpts{
-			Type:           InQuery,
-			QueryParamName: "apiKey",
-			DocsURL:        "https://api.jotform.com/docs/",
+			AttachmentType: Query,
+			Query: &ApiKeyOptsQuery{
+				Name: "apiKey",
+			},
+			DocsURL: "https://api.jotform.com/docs/#authentication",
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
