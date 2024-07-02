@@ -6,7 +6,11 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-type NextPageFunc func(*ajson.Node) (string, error)
+type (
+	ListSizeFunc func(*ajson.Node) (int64, error)
+	NextPageFunc func(*ajson.Node) (string, error)
+	RecordsFunc  func(*ajson.Node) ([]map[string]any, error)
+)
 
 // ParseResult parses the response from a provider into a ReadResult. A 2xx return type is assumed.
 // The sizeFunc, recordsFunc, nextPageFunc, and marshalFunc are used to extract the relevant data from the response.

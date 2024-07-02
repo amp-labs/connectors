@@ -2,10 +2,11 @@ package hubspot
 
 import (
 	"context"
+	"errors"
 	"net/http"
-	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"golang.org/x/oauth2"
 )
 
@@ -15,67 +16,51 @@ const (
 )
 
 // Option is a function which mutates the hubspot connector configuration.
-type Option func(params *hubspotParams)
+type Option func(params *parameters)
+
+// parameters is the internal configuration for the hubspot connector.
+type parameters struct {
+	paramsbuilder.Client
+	paramsbuilder.Module
+}
+
+func (p parameters) FromOptions(opts ...Option) (*parameters, error) {
+	params := &p
+	for _, opt := range opts {
+		opt(params)
+	}
+
+	return params, params.ValidateParams()
+}
+
+func (p parameters) ValidateParams() error {
+	return errors.Join(
+		p.Client.ValidateParams(),
+		p.Module.ValidateParams(),
+	)
+}
 
 // WithClient sets the http client to use for the connector. Saves some boilerplate.
-func WithClient(ctx context.Context, client *http.Client, config *oauth2.Config, token *oauth2.Token,
-	opts ...common.OAuthOption,
+func WithClient(ctx context.Context, client *http.Client,
+	config *oauth2.Config, token *oauth2.Token, opts ...common.OAuthOption,
 ) Option {
-	return func(params *hubspotParams) {
-		options := []common.OAuthOption{
-			common.WithOAuthClient(client),
-			common.WithOAuthConfig(config),
-			common.WithOAuthToken(token),
-		}
-
-		oauthClient, err := common.NewOAuthHTTPClient(ctx, append(options, opts...)...)
-		if err != nil {
-			panic(err) // caught in NewConnector
-		}
-
-		WithAuthenticatedClient(oauthClient)(params)
+	return func(params *parameters) {
+		params.WithClient(ctx, client, config, token, opts...)
 	}
 }
 
 // WithAuthenticatedClient sets the http client to use for the connector. Its usage is optional.
 func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
-	return func(params *hubspotParams) {
-		params.client = &common.JSONHTTPClient{
-			HTTPClient: &common.HTTPClient{
-				Client:       client,
-				ErrorHandler: common.InterpretError,
-			},
-		}
+	return func(params *parameters) {
+		params.WithAuthenticatedClient(client)
 	}
 }
 
 // WithModule sets the hubspot API module to use for the connector. It's required.
-func WithModule(module APIModule) Option {
-	return func(params *hubspotParams) {
-		path := []string{module.Label, module.Version}
-		params.module = strings.Join(path, "/")
+func WithModule(module paramsbuilder.APIModule) Option {
+	return func(params *parameters) {
+		params.WithModule(module, supportedModules, &ModuleCRM)
 	}
-}
-
-// hubspotParams is the internal configuration for the hubspot connector.
-type hubspotParams struct {
-	client *common.JSONHTTPClient // required
-	module string                 // required
-}
-
-// prepare finalizes and validates the connector configuration, and returns an error if it's invalid.
-func (p *hubspotParams) prepare() (out *hubspotParams, err error) {
-	if p.client == nil {
-		return nil, ErrMissingClient
-	}
-
-	// making sure the provided module is supported.
-	// If the provide module is not supprted. defaults to CRM.
-	if !supportsModule(p.module) {
-		p.module = ModuleCRM.String()
-	}
-
-	return p, nil
 }
 
 func requiresFiltering(config common.ReadParams) bool {

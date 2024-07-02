@@ -7,9 +7,11 @@ func init() {
 		AuthType: ApiKey,
 		BaseURL:  "https://api.anthropic.com",
 		ApiKeyOpts: &ApiKeyOpts{
-			Type:       InHeader,
-			HeaderName: "x-api-key",
-			DocsURL:    "https://docs.anthropic.com/en/api/getting-started#authentication",
+			AttachmentType: Header,
+			Header: &ApiKeyOptsHeader{
+				Name: "x-api-key",
+			},
+			DocsURL: "https://docs.anthropic.com/en/api/getting-started#authentication",
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{

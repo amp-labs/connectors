@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/{{ .Package }}"
 	testUtils "github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/utils"
@@ -16,32 +15,32 @@ func Get{{ .Provider }}Connector(ctx context.Context, filePath string) *{{ .Pack
 	readers := []utils.Reader{
 		&utils.JSONReader{
 			FilePath: filePath,
-			JSONPath: "$.CLIENT_ID",
+			JSONPath: "$.clientId",
 			CredKey:  utils.ClientId,
 		},
 		&utils.JSONReader{
 			FilePath: filePath,
-			JSONPath: "$.CLIENT_SECRET",
+			JSONPath: "$.clientSecret",
 			CredKey:  utils.ClientSecret,
 		},
 		&utils.JSONReader{
 			FilePath: filePath,
-			JSONPath: "$.ACCESS_TOKEN",
+			JSONPath: "$.accessToken",
 			CredKey:  utils.AccessToken,
 		},
 		&utils.JSONReader{
 			FilePath: filePath,
-			JSONPath: "$.REFRESH_TOKEN",
+			JSONPath: "$.refreshToken",
 			CredKey:  utils.RefreshToken,
 		},
 		&utils.JSONReader{
 			FilePath: filePath,
-			JSONPath: "$.PROVIDER",
+			JSONPath: "$.provider",
 			CredKey:  utils.Provider,
 		},
 		&utils.JSONReader{
 			FilePath: filePath,
-			JSONPath: "$.WORKSPACE",
+			JSONPath: "$.workspace",
 			CredKey:  utils.WorkspaceRef,
 		},
 	}
@@ -53,7 +52,7 @@ func Get{{ .Provider }}Connector(ctx context.Context, filePath string) *{{ .Pack
 	workspace := registry.MustString(utils.WorkspaceRef)
 
 	// TODO provide required options
-	conn, err := connectors.{{ .Provider }}(
+	conn, err := {{ .Package }}.NewConnector(
 		{{ .Package }}.WithClient(ctx, http.DefaultClient, cfg, tok),
 		{{ .Package }}.WithWorkspace(workspace),
 	)

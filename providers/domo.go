@@ -10,7 +10,7 @@ func init() {
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 ClientCredentials,
 			TokenURL:                  "https://api.domo.com/oauth/token",
-			ExplicitScopesRequired:    false,
+			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField:      "scope",
