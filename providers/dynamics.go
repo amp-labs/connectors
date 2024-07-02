@@ -48,6 +48,9 @@ func init() {
 			// TODO: flip this to false once we implement the ability to get workspace
 			// information post-auth.
 			ExplicitWorkspaceRequired: true,
+			TokenMetadataFields: TokenMetadataFields{
+				ScopesField: "scope",
+			},
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -56,7 +59,7 @@ func init() {
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,

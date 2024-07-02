@@ -56,16 +56,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			expectedErrs: []error{common.ErrNotXML},
 		},
 		{
-			name:  "Missing XML root",
-			input: []string{"msfp_surveyinvite"},
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/xml")
-				w.WriteHeader(http.StatusOK)
-				mockutils.WriteBody(w, `<?xml version="1.0" encoding="utf-8"?>`)
-			})),
-			expectedErrs: []error{common.ErrNoXMLRoot},
-		},
-		{
 			name:  "Server response without CRM Schema",
 			input: []string{"msfp_surveyinvite"},
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

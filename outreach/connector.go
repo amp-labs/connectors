@@ -17,26 +17,12 @@ type Connector struct {
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	defer func() {
-		if re := recover(); re != nil {
-			tmp, ok := re.(error)
-			if !ok {
-				panic(re)
-			}
+	defer common.PanicRecovery(func(cause error) {
+		outErr = cause
+		conn = nil
+	})
 
-			outErr = tmp
-			conn = nil
-		}
-	}()
-
-	params := &outreachParams{}
-	for _, opt := range opts {
-		opt(params)
-	}
-
-	var err error
-
-	params, err = params.prepare()
+	params, err := parameters{}.FromOptions(opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -52,10 +38,14 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		return nil, fmt.Errorf("restAPIURL not set: %w", providers.ErrProviderOptionNotFound)
 	}
 
-	params.client.HTTPClient.Base = providerInfo.BaseURL
-
-	return &Connector{
-		Client:  params.client,
+	conn = &Connector{
+		Client: &common.JSONHTTPClient{
+			HTTPClient: params.Client.Caller,
+		},
 		BaseURL: restApi,
-	}, nil
+	}
+
+	conn.Client.HTTPClient.Base = providerInfo.BaseURL
+
+	return conn, nil
 }

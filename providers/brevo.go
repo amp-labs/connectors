@@ -8,9 +8,11 @@ func init() {
 		AuthType: ApiKey,
 		BaseURL:  "https://api.brevo.com",
 		ApiKeyOpts: &ApiKeyOpts{
-			Type:       InHeader,
-			HeaderName: "api-key",
-			DocsURL:    "https://developers.brevo.com/docs/getting-started",
+			AttachmentType: Header,
+			Header: &ApiKeyOptsHeader{
+				Name: "api-key",
+			},
+			DocsURL: "https://developers.brevo.com/docs/getting-started",
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{

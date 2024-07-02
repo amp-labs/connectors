@@ -2,49 +2,45 @@ package outreach
 
 import (
 	"context"
+	"errors"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"golang.org/x/oauth2"
 )
 
-type outreachParams struct {
-	client *common.JSONHTTPClient
+type Option func(params *parameters)
+
+type parameters struct {
+	paramsbuilder.Client
 }
 
-type Option func(params *outreachParams)
+func (p parameters) FromOptions(opts ...Option) (*parameters, error) {
+	params := &p
+	for _, opt := range opts {
+		opt(params)
+	}
 
-func WithClient(ctx context.Context, client *http.Client, config *oauth2.Config, token *oauth2.Token,
+	return params, params.ValidateParams()
+}
+
+func (p parameters) ValidateParams() error {
+	return errors.Join(
+		p.Client.ValidateParams(),
+	)
+}
+
+func WithClient(ctx context.Context, client *http.Client,
+	config *oauth2.Config, token *oauth2.Token, opts ...common.OAuthOption,
 ) Option {
-	return func(params *outreachParams) {
-		oauthclient, err := common.NewOAuthHTTPClient(
-			ctx, common.WithOAuthClient(client),
-			common.WithOAuthConfig(config),
-			common.WithOAuthToken(token),
-		)
-		if err != nil {
-			panic(err)
-		}
-
-		WithAuthenticatedClient(oauthclient)(params)
+	return func(params *parameters) {
+		params.WithClient(ctx, client, config, token, opts...)
 	}
 }
 
 func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
-	return func(params *outreachParams) {
-		params.client = &common.JSONHTTPClient{
-			HTTPClient: &common.HTTPClient{
-				Client:       client,
-				ErrorHandler: common.InterpretError,
-			},
-		}
+	return func(params *parameters) {
+		params.WithAuthenticatedClient(client)
 	}
-}
-
-func (params *outreachParams) prepare() (*outreachParams, error) {
-	if params.client == nil {
-		return nil, ErrMissingClient
-	}
-
-	return params, nil
 }

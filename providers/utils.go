@@ -263,6 +263,8 @@ func (i *ProviderInfo) NewClient(ctx context.Context, params *NewClientParams) (
 			return createOAuth2AuthCodeHTTPClient(ctx, params.Client, params.Debug, params.OAuth2AuthCodeCreds)
 		case ClientCredentials:
 			return createOAuth2ClientCredentialsHTTPClient(ctx, params.Client, params.Debug, params.OAuth2ClientCreds)
+		case Password:
+			return createOAuth2PasswordHTTPClient(ctx, params.Client, params.Debug, params.OAuth2AuthCodeCreds)
 		case PKCE:
 			return nil, fmt.Errorf("%w: %s", ErrClient, "PKCE grant type not supported")
 		default:
@@ -387,6 +389,17 @@ func createOAuth2ClientCredentialsHTTPClient( //nolint:ireturn
 	return oauthClient, nil
 }
 
+func createOAuth2PasswordHTTPClient(
+	ctx context.Context,
+	client *http.Client,
+	dbg bool,
+	cfg *OAuth2AuthCodeParams,
+) (common.AuthenticatedHTTPClient, error) {
+	// Refresh method works the same as with auth code method.
+	// Relies on access and refresh tokens created by Oauth2 password method.
+	return createOAuth2AuthCodeHTTPClient(ctx, client, dbg, cfg)
+}
+
 func createApiKeyHTTPClient( //nolint:ireturn
 	ctx context.Context,
 	client *http.Client,
@@ -394,9 +407,9 @@ func createApiKeyHTTPClient( //nolint:ireturn
 	info *ProviderInfo,
 	apiKey string,
 ) (common.AuthenticatedHTTPClient, error) {
-	if info.ApiKeyOpts.Type == InHeader { //nolint:nestif
-		if info.ApiKeyOpts.ValuePrefix != "" {
-			apiKey = info.ApiKeyOpts.ValuePrefix + apiKey
+	if info.ApiKeyOpts.AttachmentType == Header { //nolint:nestif
+		if info.ApiKeyOpts.Header.ValuePrefix != "" {
+			apiKey = info.ApiKeyOpts.Header.ValuePrefix + apiKey
 		}
 
 		opts := []common.HeaderAuthClientOption{
@@ -407,13 +420,13 @@ func createApiKeyHTTPClient( //nolint:ireturn
 			opts = append(opts, common.WithHeaderDebug(common.PrintRequestAndResponse))
 		}
 
-		c, err := common.NewApiKeyHeaderAuthHTTPClient(ctx, info.ApiKeyOpts.HeaderName, apiKey, opts...)
+		c, err := common.NewApiKeyHeaderAuthHTTPClient(ctx, info.ApiKeyOpts.Header.Name, apiKey, opts...)
 		if err != nil {
 			return nil, fmt.Errorf("%w: failed to create api key client: %w", ErrClient, err)
 		}
 
 		return c, nil
-	} else if info.ApiKeyOpts.Type == InQuery {
+	} else if info.ApiKeyOpts.AttachmentType == Query {
 		opts := []common.QueryParamAuthClientOption{
 			common.WithQueryParamClient(getClient(client)),
 		}
@@ -422,7 +435,7 @@ func createApiKeyHTTPClient( //nolint:ireturn
 			opts = append(opts, common.WithQueryParamDebug(common.PrintRequestAndResponse))
 		}
 
-		c, err := common.NewApiKeyQueryParamAuthHTTPClient(ctx, info.ApiKeyOpts.QueryParamName, apiKey, opts...)
+		c, err := common.NewApiKeyQueryParamAuthHTTPClient(ctx, info.ApiKeyOpts.Query.Name, apiKey, opts...)
 		if err != nil {
 			return nil, fmt.Errorf("%w: failed to create api key client: %w", ErrClient, err)
 		}
@@ -430,7 +443,7 @@ func createApiKeyHTTPClient( //nolint:ireturn
 		return c, nil
 	}
 
-	return nil, fmt.Errorf("%w: unsupported api key type %q", ErrClient, info.ApiKeyOpts.Type)
+	return nil, fmt.Errorf("%w: unsupported api key type %q", ErrClient, info.ApiKeyOpts.AttachmentType)
 }
 
 // clone uses gob to deep copy objects.

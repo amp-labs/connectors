@@ -167,6 +167,10 @@ func main() {
 			mainOAuth2ClientCreds(ctx, provider, substitutionsMap)
 		case providers.AuthorizationCode:
 			mainOAuth2AuthCode(ctx, provider, substitutionsMap)
+		case providers.Password:
+			// de facto, password grant acts as client credentials,
+			// even so access and refresh tokens were acquired differently.
+			mainOAuth2ClientCreds(ctx, provider, substitutionsMap)
 		default:
 			log.Fatalf("Unsupported OAuth2 grant type: %s", info.Oauth2Opts.GrantType)
 		}
@@ -179,48 +183,39 @@ func main() {
 	}
 }
 
-func mainOAuth2ClientCreds(ctx context.Context, provider string, substitutionsMap map[string]string) {
-	clientId := registry.MustString("ClientId")
-	clientSecret := registry.MustString("ClientSecret")
-
-	scopes, err := registry.GetString("Scopes")
-	if err != nil {
-		slog.Warn("no scopes attached, ensure that the provider doesn't require scopes")
-	}
-
-	oauthScopes := strings.Split(scopes, ",")
-
-	validateRequiredOAuth2Flags(provider, clientId, clientSecret)
-	startOAuthClientCredsProxy(ctx, provider, oauthScopes, clientId, clientSecret, substitutionsMap, DefaultPort)
-}
-
-func mainOAuth2AuthCode(ctx context.Context, provider string, substitutionsMap map[string]string) {
-	clientId := registry.MustString("ClientId")
-	clientSecret := registry.MustString("ClientSecret")
+func mainOAuth2ClientCreds(ctx context.Context, provider string, substitutions map[string]string) {
+	params := createClientAuthParams(provider)
 	tokens := getTokensFromRegistry()
-
-	scopes, err := registry.GetString("Scopes")
-	if err != nil {
-		slog.Warn("no scopes attached, ensure that the provider doesn't require scopes")
-	}
-
-	oauthScopes := strings.Split(scopes, ",")
-
-	validateRequiredOAuth2Flags(provider, clientId, clientSecret)
-	startOAuthAuthCodeProxy(ctx, provider, oauthScopes, clientId, clientSecret, substitutionsMap, DefaultPort, tokens)
+	proxy := buildOAuth2AuthCodeProxy(ctx, provider, params.Scopes, params.ID, params.Secret, substitutions, tokens)
+	startProxy(ctx, proxy, DefaultPort)
 }
 
-func mainApiKey(ctx context.Context, provider string, substitutionsMap map[string]string) {
+func mainOAuth2AuthCode(ctx context.Context, provider string, substitutions map[string]string) {
+	params := createClientAuthParams(provider)
+	tokens := getTokensFromRegistry()
+	proxy := buildOAuth2AuthCodeProxy(ctx, provider, params.Scopes, params.ID, params.Secret, substitutions, tokens)
+	startProxy(ctx, proxy, DefaultPort)
+}
+
+func mainApiKey(ctx context.Context, provider string, substitutions map[string]string) {
 	apiKey := registry.MustString("ApiKey")
 	if apiKey == "" {
 		_, _ = fmt.Fprintln(os.Stderr, "api key from registry is empty")
 		os.Exit(1)
 	}
 
-	startApiKeyProxy(ctx, provider, apiKey, substitutionsMap, DefaultPort)
+	proxy := buildApiKeyProxy(ctx, provider, substitutions, apiKey)
+	startProxy(ctx, proxy, DefaultPort)
 }
 
-func mainBasic(ctx context.Context, provider string, substitutionsMap map[string]string) {
+func mainBasic(ctx context.Context, provider string, substitutions map[string]string) {
+	params := createBasicParams()
+
+	proxy := buildBasicAuthProxy(ctx, provider, substitutions, params.User, params.Pass)
+	startProxy(ctx, proxy, DefaultPort)
+}
+
+func createBasicParams() *providers.BasicParams {
 	user := registry.MustString("UserName")
 	pass := registry.MustString("Password")
 
@@ -236,7 +231,28 @@ func mainBasic(ctx context.Context, provider string, substitutionsMap map[string
 		slog.Warn("no password for basic authentication, ensure that it is not required")
 	}
 
-	startBasicAuthProxy(ctx, provider, user, pass, substitutionsMap, DefaultPort)
+	return &providers.BasicParams{
+		User: user,
+		Pass: pass,
+	}
+}
+
+func createClientAuthParams(provider string) *ClientAuthParams {
+	clientId := registry.MustString("ClientId")
+	clientSecret := registry.MustString("ClientSecret")
+
+	scopes, err := registry.GetString("Scopes")
+	if err != nil {
+		slog.Warn("no scopes attached, ensure that the provider doesn't require scopes")
+	}
+
+	validateRequiredOAuth2Flags(provider, clientId, clientSecret)
+
+	return &ClientAuthParams{
+		ID:     clientId,
+		Secret: clientSecret,
+		Scopes: strings.Split(scopes, ","),
+	}
 }
 
 // Some connectors may implement Refresh tokens, when it happens expiry must be provided alongside.
@@ -337,41 +353,7 @@ func listen(ctx context.Context, port int) error {
 	return nil
 }
 
-func startOAuthClientCredsProxy(ctx context.Context, provider string, scopes []string, clientId, clientSecret string, substitutions map[string]string, port int) {
-	proxy := buildOAuth2ClientCredentialsProxy(ctx, provider, scopes, clientId, clientSecret, substitutions)
-	http.Handle("/", proxy)
-
-	fmt.Printf("\nProxy server listening on :%d\n", port)
-
-	if err := listen(ctx, port); err != nil {
-		panic(err)
-	}
-}
-
-func startApiKeyProxy(ctx context.Context, provider string, apiKey string, substitutions map[string]string, port int) {
-	proxy := buildApiKeyProxy(ctx, provider, substitutions, apiKey)
-	http.Handle("/", proxy)
-
-	fmt.Printf("\nProxy server listening on :%d\n", port)
-
-	if err := listen(ctx, port); err != nil {
-		panic(err)
-	}
-}
-
-func startBasicAuthProxy(ctx context.Context, provider string, user, pass string, substitutions map[string]string, port int) {
-	proxy := buildBasicAuthProxy(ctx, provider, substitutions, user, pass)
-	http.Handle("/", proxy)
-
-	fmt.Printf("\nProxy server listening on :%d\n", port)
-
-	if err := listen(ctx, port); err != nil {
-		panic(err)
-	}
-}
-
-func startOAuthAuthCodeProxy(ctx context.Context, provider string, scopes []string, clientId, clientSecret string, substitutions map[string]string, port int, tokens *oauth2.Token) {
-	proxy := buildOAuth2AuthCodeProxy(ctx, provider, scopes, clientId, clientSecret, substitutions, tokens)
+func startProxy(ctx context.Context, proxy *Proxy, port int) {
 	http.Handle("/", proxy)
 
 	fmt.Printf("\nProxy server listening on :%d\n", port)
@@ -451,12 +433,18 @@ func configureOAuthClientCredentials(clientId, clientSecret string, scopes []str
 		cfg.Scopes = scopes
 	}
 
-	if providerInfo.Oauth2Opts.Audience != "" {
+	if providerInfo.Oauth2Opts.Audience != nil {
 		aud := providerInfo.Oauth2Opts.Audience
-		cfg.EndpointParams = url.Values{"audience": {aud}}
+		cfg.EndpointParams = url.Values{"audience": aud}
 	}
 
 	return cfg
+}
+
+type ClientAuthParams struct {
+	ID     string
+	Secret string
+	Scopes []string
 }
 
 func configureOAuthAuthCode(clientId, clientSecret string, scopes []string, providerInfo *providers.ProviderInfo) *oauth2.Config {

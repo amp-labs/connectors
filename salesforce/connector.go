@@ -34,34 +34,20 @@ func APIVersionSOAP() string {
 
 // NewConnector returns a new Salesforce connector.
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	defer func() {
-		if re := recover(); re != nil {
-			tmp, ok := re.(error)
-			if !ok {
-				panic(re)
-			}
+	defer common.PanicRecovery(func(cause error) {
+		outErr = cause
+		conn = nil
+	})
 
-			outErr = tmp
-			conn = nil
-		}
-	}()
-
-	params := &sfParams{}
-	for _, opt := range opts {
-		opt(params)
-	}
-
-	var err error
-
-	params, err = params.prepare()
+	params, err := parameters{}.FromOptions(opts...)
 	if err != nil {
 		return nil, err
 	}
 
 	// Read provider info & replace catalog variables with given substitutions, if any
-	providerInfo, err := providers.ReadInfo(providers.Salesforce, &map[string]string{
-		"workspace": params.workspace,
-	})
+	substitution := params.Workspace.Substitution()
+
+	providerInfo, err := providers.ReadInfo(providers.Salesforce, &substitution)
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +65,9 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	conn = &Connector{
 		BaseURL: restApi,
 		Domain:  domain,
-		Client:  params.client,
+		Client: &common.JSONHTTPClient{
+			HTTPClient: params.Client.Caller,
+		},
 	}
 
 	conn.Client.HTTPClient.Base = providerInfo.BaseURL

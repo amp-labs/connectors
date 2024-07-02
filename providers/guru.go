@@ -5,13 +5,8 @@ const Guru Provider = "guru"
 func init() {
 	// Guru API Key authentication
 	SetInfo(Guru, ProviderInfo{
-		AuthType: ApiKey,
+		AuthType: Basic,
 		BaseURL:  "https://api.getguru.com",
-		ApiKeyOpts: &ApiKeyOpts{
-			Type:       InHeader,
-			HeaderName: "Api-Key",
-			DocsURL:    "https://developer.getguru.com/docs/getting-started",
-		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
@@ -24,5 +19,6 @@ func init() {
 			Subscribe: false,
 			Write:     false,
 		},
+		PostAuthInfoNeeded: false,
 	})
 }

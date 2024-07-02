@@ -78,7 +78,10 @@ func sanitizeReadResponse(response map[string]any) map[string]any {
 	for field, v := range response {
 		// ignore all fields that are OData annotations
 		// they are not part of ObjectMetadata
-		if !strings.HasPrefix(field, "@") {
+		lower := strings.ToLower(field)
+
+		isAnnotation := strings.Contains(lower, "@odata") || strings.Contains(lower, "@microsoft.dynamics.crm")
+		if !isAnnotation {
 			crucialFields[field] = v
 		}
 	}
