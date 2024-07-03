@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/salesforce"
 	"github.com/amp-labs/connectors/utils"
 )
@@ -26,7 +25,7 @@ func Connector(ctx context.Context) (*salesforce.Connector, error) {
 	cfg := utils.SalesforceOAuthConfigFromRegistry(credentialsRegistry)
 	tok := utils.SalesforceOauthTokenFromRegistry(credentialsRegistry)
 
-	return connectors.Salesforce(
+	return salesforce.NewConnector(
 		salesforce.WithClient(ctx, http.DefaultClient, cfg, tok),
 		salesforce.WithWorkspace(salesforceWorkspace))
 }

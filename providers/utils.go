@@ -24,8 +24,31 @@ var (
 	ErrClient                  = errors.New("client creation failed")
 )
 
-func ReadCatalog() (CatalogType, error) {
-	catalog, err := clone[CatalogType](catalog)
+type CatalogOption func(params *catalogParams)
+
+type catalogParams struct {
+	catalog CatalogType
+}
+
+// WithCatalog is an option that can be used to override the default catalog.
+func WithCatalog(c CatalogType) CatalogOption {
+	return func(params *catalogParams) {
+		params.catalog = c
+	}
+}
+
+func ReadCatalog(opts ...CatalogOption) (CatalogType, error) {
+	params := &catalogParams{catalog: catalog}
+
+	for _, opt := range opts {
+		opt(params)
+	}
+
+	if params.catalog == nil {
+		return nil, ErrProviderCatalogNotFound
+	}
+
+	catalog, err := clone[CatalogType](params.catalog)
 	if err != nil {
 		return nil, err
 	}
@@ -45,16 +68,33 @@ func ReadCatalog() (CatalogType, error) {
 
 // SetInfo sets the information for a specific provider in the catalog.
 // This is useful to enable experimental providers or to override the default
-// provider information. As a general rule, don't ever call this function
-// in production code unless you have a compelling reason to do so.
+// provider information. This is primarily used to initialize the provider catalog.
+// Generally speaking, once the provider catalog is initialized, it should not be modified.
+// That having been said, there are some use cases where it is useful to override the
+// provider information, such as when testing new configurations. This function is not
+// thread-safe and should be called before the provider catalog is read.
 func SetInfo(provider Provider, info ProviderInfo) {
+	if catalog == nil {
+		catalog = make(CatalogType)
+	}
+
 	catalog[provider] = info
 }
 
 // ReadInfo reads the information from the catalog for specific provider. It also performs string substitution
 // on the values in the config that are surrounded by {{}}.
-func ReadInfo(provider Provider, substitutions *map[string]string) (*ProviderInfo, error) {
-	pInfo, ok := catalog[provider]
+func ReadInfo(provider Provider, substitutions *map[string]string, opts ...CatalogOption) (*ProviderInfo, error) {
+	params := &catalogParams{catalog: catalog}
+
+	for _, opt := range opts {
+		opt(params)
+	}
+
+	if params.catalog == nil {
+		return nil, ErrProviderCatalogNotFound
+	}
+
+	pInfo, ok := params.catalog[provider]
 	if !ok {
 		return nil, ErrProviderCatalogNotFound
 	}
@@ -214,19 +254,21 @@ func (i *ProviderInfo) NewClient(ctx context.Context, params *NewClientParams) (
 	case None:
 		return createUnauthenticatedClient(ctx, params.Client, params.Debug)
 	case Oauth2:
-		if i.OauthOpts == nil {
+		if i.Oauth2Opts == nil {
 			return nil, fmt.Errorf("%w: %s", ErrClient, "oauth2 options not found")
 		}
 
-		switch i.OauthOpts.GrantType {
+		switch i.Oauth2Opts.GrantType {
 		case AuthorizationCode:
 			return createOAuth2AuthCodeHTTPClient(ctx, params.Client, params.Debug, params.OAuth2AuthCodeCreds)
 		case ClientCredentials:
 			return createOAuth2ClientCredentialsHTTPClient(ctx, params.Client, params.Debug, params.OAuth2ClientCreds)
+		case Password:
+			return createOAuth2PasswordHTTPClient(ctx, params.Client, params.Debug, params.OAuth2AuthCodeCreds)
 		case PKCE:
 			return nil, fmt.Errorf("%w: %s", ErrClient, "PKCE grant type not supported")
 		default:
-			return nil, fmt.Errorf("%w: unsupported grant type %q", ErrClient, i.OauthOpts.GrantType)
+			return nil, fmt.Errorf("%w: unsupported grant type %q", ErrClient, i.Oauth2Opts.GrantType)
 		}
 	case Basic:
 		if params.BasicCreds == nil {
@@ -347,6 +389,17 @@ func createOAuth2ClientCredentialsHTTPClient( //nolint:ireturn
 	return oauthClient, nil
 }
 
+func createOAuth2PasswordHTTPClient(
+	ctx context.Context,
+	client *http.Client,
+	dbg bool,
+	cfg *OAuth2AuthCodeParams,
+) (common.AuthenticatedHTTPClient, error) {
+	// Refresh method works the same as with auth code method.
+	// Relies on access and refresh tokens created by Oauth2 password method.
+	return createOAuth2AuthCodeHTTPClient(ctx, client, dbg, cfg)
+}
+
 func createApiKeyHTTPClient( //nolint:ireturn
 	ctx context.Context,
 	client *http.Client,
@@ -354,24 +407,43 @@ func createApiKeyHTTPClient( //nolint:ireturn
 	info *ProviderInfo,
 	apiKey string,
 ) (common.AuthenticatedHTTPClient, error) {
-	if info.ApiKeyOpts.ValuePrefix != "" {
-		apiKey = info.ApiKeyOpts.ValuePrefix + apiKey
+	if info.ApiKeyOpts.AttachmentType == Header { //nolint:nestif
+		if info.ApiKeyOpts.Header.ValuePrefix != "" {
+			apiKey = info.ApiKeyOpts.Header.ValuePrefix + apiKey
+		}
+
+		opts := []common.HeaderAuthClientOption{
+			common.WithHeaderClient(getClient(client)),
+		}
+
+		if dbg {
+			opts = append(opts, common.WithHeaderDebug(common.PrintRequestAndResponse))
+		}
+
+		c, err := common.NewApiKeyHeaderAuthHTTPClient(ctx, info.ApiKeyOpts.Header.Name, apiKey, opts...)
+		if err != nil {
+			return nil, fmt.Errorf("%w: failed to create api key client: %w", ErrClient, err)
+		}
+
+		return c, nil
+	} else if info.ApiKeyOpts.AttachmentType == Query {
+		opts := []common.QueryParamAuthClientOption{
+			common.WithQueryParamClient(getClient(client)),
+		}
+
+		if dbg {
+			opts = append(opts, common.WithQueryParamDebug(common.PrintRequestAndResponse))
+		}
+
+		c, err := common.NewApiKeyQueryParamAuthHTTPClient(ctx, info.ApiKeyOpts.Query.Name, apiKey, opts...)
+		if err != nil {
+			return nil, fmt.Errorf("%w: failed to create api key client: %w", ErrClient, err)
+		}
+
+		return c, nil
 	}
 
-	opts := []common.HeaderAuthClientOption{
-		common.WithHeaderClient(getClient(client)),
-	}
-
-	if dbg {
-		opts = append(opts, common.WithHeaderDebug(common.PrintRequestAndResponse))
-	}
-
-	c, err := common.NewApiKeyAuthHTTPClient(ctx, info.ApiKeyOpts.HeaderName, apiKey, opts...)
-	if err != nil {
-		panic(err)
-	}
-
-	return c, nil
+	return nil, fmt.Errorf("%w: unsupported api key type %q", ErrClient, info.ApiKeyOpts.AttachmentType)
 }
 
 // clone uses gob to deep copy objects.

@@ -3,8 +3,9 @@ package scrapper
 import "encoding/json"
 
 const (
-	IndexFile   = "index.json"
-	SchemasFile = "schemas.json"
+	IndexFile           = "index.json"
+	SchemasFile         = "schemas.json"
+	QueryParamStatsFile = "queryParamStats.json"
 )
 
 // MetadataFileLocator locates index and schema files.
@@ -55,4 +56,8 @@ func (m MetadataFileManager) LoadSchemas() (*ObjectMetadataResult, error) {
 	}
 
 	return result, nil
+}
+
+func (m MetadataFileManager) SaveQueryParamStats(stats *QueryParamStats) error {
+	return FlushToFile(m.locator.AbsPathTo(QueryParamStatsFile), stats)
 }
