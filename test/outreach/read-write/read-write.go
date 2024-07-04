@@ -72,7 +72,7 @@ func GetOutreachConnector(ctx context.Context, filePath string) *outreach.Connec
 	cfg := utils.OutreachOAuthConfigFromRegistry(registry)
 	tok := utils.OutreachOauthTokenFromRegistry(registry)
 
-	conn, err := connectors.Outreach(
+	conn, err := outreach.NewConnector(
 		outreach.WithClient(ctx, http.DefaultClient, cfg, tok),
 	)
 	if err != nil {

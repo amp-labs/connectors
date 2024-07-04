@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/outreach"
 	testUtils "github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/utils"
@@ -51,7 +50,7 @@ func GetOutreachConnector(ctx context.Context, filePath string) *outreach.Connec
 	cfg := utils.OutreachOAuthConfigFromRegistry(registry)
 	tok := utils.OutreachOauthTokenFromRegistry(registry)
 
-	conn, err := connectors.Outreach(
+	conn, err := outreach.NewConnector(
 		outreach.WithClient(ctx, http.DefaultClient, cfg, tok),
 	)
 	if err != nil {
