@@ -6,7 +6,7 @@ const (
 	GoogleAds      Provider = "googleAds"
 )
 
-// nolint:gochecknoinits
+//nolint:funlen
 func init() {
 	// Google Support Configuration
 	SetInfo(Google, ProviderInfo{
