@@ -6,7 +6,7 @@ func init() {
 	// Insightly API Key authentication
 	SetInfo(Insightly, ProviderInfo{
 		AuthType: Basic,
-		BaseURL:  "https://api.na1.insightly.com",
+		BaseURL:  "https://api.insightly.com",
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
