@@ -56,7 +56,12 @@ func (j *JSONHTTPClient) Get(ctx context.Context, url string, headers ...Header)
 func (j *JSONHTTPClient) Post(ctx context.Context,
 	url string, reqBody any, headers ...Header,
 ) (*JSONHTTPResponse, error) {
-	res, body, err := j.HTTPClient.Post(ctx, url, reqBody, addAcceptJSONHeader(headers)...) //nolint:bodyclose
+	data, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, fmt.Errorf("request body is not valid JSON, body is %v:\n%w", reqBody, err)
+	}
+
+	res, body, err := j.HTTPClient.Post(ctx, url, data, addAcceptJSONHeader(headers)...) //nolint:bodyclose
 	if err != nil {
 		return nil, j.ErrorPostProcessor.handleError(err)
 	}
