@@ -18,6 +18,9 @@ var (
 	ClientSecret = "clientSecret"
 	WorkspaceRef = "workspaceRef"
 	Provider     = "provider"
+	Username     = "username"
+	Password     = "password"
+	Region       = "region"
 )
 
 func SalesforceOAuthConfigFromRegistry(registry scanning.Registry) *oauth2.Config {

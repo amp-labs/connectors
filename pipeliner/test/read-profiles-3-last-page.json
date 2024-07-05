@@ -1,0 +1,11 @@
+{
+  "success": true,
+  "total": 42,
+  "page_info": {
+    "start_cursor": null,
+    "end_cursor": null,
+    "has_previous_page": false,
+    "has_next_page": false
+  },
+  "data": []
+}
