@@ -32,7 +32,7 @@ func (c *Connector) CreateMetadata(
 // CreateMetadataHelper is a recursive function that early exits when attemptsSoFar > 1.
 // This is a workaround for invalid token errors, because this is a SOAP API
 // the oauth2 library does not auto-refresh token the token in the first request,
-// but after a failed request, `tok` is updated, so we can retry again.
+// but after a failed request, `tok` is updated, so we can retry the request once.
 func (c *Connector) CreateMetadataHelper(
 	ctx context.Context,
 	metadata *xmldom.Node,
