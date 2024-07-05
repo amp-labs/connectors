@@ -5,6 +5,7 @@ const Pipeliner Provider = "pipeliner"
 func init() {
 	// Pipeliner API Key authentication
 	SetInfo(Pipeliner, ProviderInfo{
+		// TODO [ExplicitWorkspaceRequired: true]
 		DisplayName: "Pipeliner",
 		AuthType:    Basic,
 		BaseURL:     "https://eu-central.api.pipelinersales.com",
