@@ -26,34 +26,43 @@ func (c *Connector) CreateMetadata(
 	metadata *xmldom.Node,
 	tok *oauth2.Token,
 ) (string, error) {
+	return c.CreateMetadataHelper(ctx, metadata, tok, nil, 0)
+}
+
+// CreateMetadataHelper is a recursive function that early exits when attemptsSoFar > 1.
+// This is a workaround for invalid token errors, because this is a SOAP API
+// the oauth2 library does not auto-refresh token the token in the first request,
+// but after a failed request, `tok` is updated, so we can retry again.
+func (c *Connector) CreateMetadataHelper(
+	ctx context.Context,
+	metadata *xmldom.Node,
+	tok *oauth2.Token,
+	prevError error,
+	attemptSoFar int,
+) (string, error) {
+	if attemptSoFar > 1 {
+		return "", errors.Join(ErrCreateMetadata, prevError)
+	}
+
 	req, err := c.prepareXMLRequest(ctx, metadata, tok)
 	if err != nil {
 		return "", err
 	}
 
 	res, body, err := c.makeRequest(req) //nolint:bodyclose
-	// below is a workaround to refresh token if it is expired
-	// normally oauth2 library should handle this
-	// but SOAP API does not take token in header
-	// but takes it in body
-	// So in case of 500 error and INVALID_SESSION_ID in body
-	// we know it is session expired, and automatically refresh the token
-	// tok object will be updated with new token automatically after failing first call
-	// we simply make another call with updated token.
-	if res.StatusCode == 500 && strings.Contains(string(body), "INVALID_SESSION_ID") {
-		req, err = c.prepareXMLRequest(ctx, metadata, tok)
-		if err != nil {
-			return "", errors.Join(ErrCreateMetadata, err)
-		}
-		//nolint:bodyclose,ineffassign,staticcheck,wastedassign
-		res, body, err = c.makeRequest(req)
-	}
-
 	if err != nil {
-		return "", fmt.Errorf("%w: %s", errors.Join(ErrCreateMetadata, err), string(body))
+		if strings.Contains(err.Error(), "invalid_grant") {
+			return c.CreateMetadataHelper(ctx, metadata, tok, err, attemptSoFar+1)
+		}
+
+		return "", fmt.Errorf("%w: body: %s, res: %v", err, string(body), res)
 	}
 
 	if res.StatusCode < 200 || res.StatusCode > 299 {
+		if strings.Contains(string(body), "INVALID_SESSION_ID") {
+			return c.CreateMetadataHelper(ctx, metadata, tok, err, attemptSoFar+1)
+		}
+
 		return "", fmt.Errorf("%w: %s", ErrCreateMetadata, string(body))
 	}
 
