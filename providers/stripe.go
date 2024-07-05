@@ -1,20 +1,20 @@
 package providers
 
-const Brevo Provider = "brevo"
+const Stripe Provider = "stripe"
 
 func init() {
-	// Brevo(Sendinblue) configuration
-	SetInfo(Brevo, ProviderInfo{
+	// Stripe configuration
+	SetInfo(Stripe, ProviderInfo{
 		AuthType: ApiKey,
-		BaseURL:  "https://api.brevo.com",
+		BaseURL:  "https://api.stripe.com",
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Header,
 			Header: &ApiKeyOptsHeader{
-				Name: "api-key",
+				Name:        "Authorization",
+				ValuePrefix: "Bearer ",
 			},
-			DocsURL: "https://developers.brevo.com/docs/getting-started",
-		},
-		Support: Support{
+			DocsURL: "https://docs.stripe.com/keys",
+		}, Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
 				Update: false,
@@ -26,5 +26,6 @@ func init() {
 			Subscribe: false,
 			Write:     false,
 		},
+		PostAuthInfoNeeded: false,
 	})
 }

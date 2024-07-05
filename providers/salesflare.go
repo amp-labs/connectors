@@ -1,18 +1,19 @@
 package providers
 
-const Brevo Provider = "brevo"
+const Salesflare Provider = "salesflare"
 
 func init() {
-	// Brevo(Sendinblue) configuration
-	SetInfo(Brevo, ProviderInfo{
+	// Salesflare configuration
+	SetInfo(Salesflare, ProviderInfo{
 		AuthType: ApiKey,
-		BaseURL:  "https://api.brevo.com",
+		BaseURL:  "https://api.salesflare.com",
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Header,
 			Header: &ApiKeyOptsHeader{
-				Name: "api-key",
+				Name:        "Authorization",
+				ValuePrefix: "Bearer ",
 			},
-			DocsURL: "https://developers.brevo.com/docs/getting-started",
+			DocsURL: "https://api.salesflare.com/docs#section/Introduction/Authentication",
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{

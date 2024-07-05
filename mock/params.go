@@ -23,8 +23,7 @@ func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
 	return func(params *mockParams) {
 		params.client = &common.JSONHTTPClient{
 			HTTPClient: &common.HTTPClient{
-				Client:       client,
-				ErrorHandler: common.InterpretError,
+				Client: client,
 			},
 		}
 	}

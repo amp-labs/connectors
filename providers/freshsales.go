@@ -1,18 +1,18 @@
 package providers
 
-const Brevo Provider = "brevo"
+const Freshsales Provider = "freshsales"
 
 func init() {
-	// Brevo(Sendinblue) configuration
-	SetInfo(Brevo, ProviderInfo{
+	SetInfo(Freshsales, ProviderInfo{
 		AuthType: ApiKey,
-		BaseURL:  "https://api.brevo.com",
+		BaseURL:  "https://{{.workspace}}.myfreshworks.com/crm/sales",
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Header,
 			Header: &ApiKeyOptsHeader{
-				Name: "api-key",
+				Name:        "Authorization",
+				ValuePrefix: "Token token=",
 			},
-			DocsURL: "https://developers.brevo.com/docs/getting-started",
+			DocsURL: "https://developers.freshworks.com/crm/api/#authentication",
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{

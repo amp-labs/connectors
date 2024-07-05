@@ -260,7 +260,6 @@ func createClientAuthParams(provider string) *ClientAuthParams {
 func getTokensFromRegistry() *oauth2.Token {
 	accessToken := registry.MustString("AccessToken")
 	refreshToken, err := registry.GetString("RefreshToken")
-
 	if err != nil {
 		// we are working without refresh token
 		return &oauth2.Token{
@@ -434,9 +433,9 @@ func configureOAuthClientCredentials(clientId, clientSecret string, scopes []str
 		cfg.Scopes = scopes
 	}
 
-	if providerInfo.Oauth2Opts.Audience != "" {
+	if providerInfo.Oauth2Opts.Audience != nil {
 		aud := providerInfo.Oauth2Opts.Audience
-		cfg.EndpointParams = url.Values{"audience": {aud}}
+		cfg.EndpointParams = url.Values{"audience": aud}
 	}
 
 	return cfg

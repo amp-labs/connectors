@@ -17,17 +17,10 @@ type Connector struct {
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	defer func() {
-		if re := recover(); re != nil {
-			tmp, ok := re.(error)
-			if !ok {
-				panic(re)
-			}
-
-			outErr = tmp
-			conn = nil
-		}
-	}()
+	defer common.PanicRecovery(func(cause error) {
+		outErr = cause
+		conn = nil
+	})
 
 	params := &mockParams{
 		read: func(ctx context.Context, params common.ReadParams) (*common.ReadResult, error) {
