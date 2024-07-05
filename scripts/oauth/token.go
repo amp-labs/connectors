@@ -18,6 +18,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/utils"
 	"golang.org/x/oauth2"
@@ -299,15 +300,9 @@ func setup() *OAuthApp {
 		slog.Warn("no substitutions, ensure that the provider info doesn't have any {{variables}}", err)
 	}
 
-	// Cast the substitutions to a map[string]string
-	substitutionsMap := make(map[string]string)
-	for key, val := range substitutions {
-		substitutionsMap[key] = val.MustString()
-	}
-
 	provider := registry.MustString("Provider")
 
-	providerInfo, err := providers.ReadInfo(provider, &substitutionsMap)
+	providerInfo, err := providers.ReadInfo(provider, paramsbuilder.NewCatalogVariables(substitutions)...)
 	if err != nil {
 		slog.Error("failed to read provider config", "error", err)
 
