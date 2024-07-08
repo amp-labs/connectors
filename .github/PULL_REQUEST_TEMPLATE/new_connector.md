@@ -4,8 +4,8 @@ Closes #<issue-number>
 - [ ] Ran Linter
 
 ## Catalog variables
-<Does the provider's info include any template variables such as `{{workspace}}`?>
-* {{workspace}}
+<Does the provider's info include any template variables such as `{{.workspace}}`?>
+* {{.workspace}}
 
 ## Notes
 

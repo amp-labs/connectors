@@ -10,6 +10,7 @@ func Init() {
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://www.reddit.com/api/v1/authorize",
+			AuthURLParams:             map[string]string{"duration": "permanent"},
 			TokenURL:                  "https://www.reddit.com/api/v1/access_token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
