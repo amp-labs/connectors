@@ -28,7 +28,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		return nil, err
 	}
 
-	providerInfo, err := providers.ReadInfo(providers.Salesloft, nil)
+	providerInfo, err := providers.ReadInfo(providers.Salesloft)
 	if err != nil {
 		return nil, err
 	}

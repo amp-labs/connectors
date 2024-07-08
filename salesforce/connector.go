@@ -45,9 +45,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	}
 
 	// Read provider info & replace catalog variables with given substitutions, if any
-	substitution := params.Workspace.Substitution()
-
-	providerInfo, err := providers.ReadInfo(providers.Salesforce, &substitution)
+	providerInfo, err := providers.ReadInfo(providers.Salesforce, &params.Workspace)
 	if err != nil {
 		return nil, err
 	}
