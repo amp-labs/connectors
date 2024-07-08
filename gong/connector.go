@@ -35,7 +35,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	}
 
 	// Read provider info
-	providerInfo, err := providers.ReadInfo(conn.Provider(), nil)
+	providerInfo, err := providers.ReadInfo(conn.Provider())
 	if err != nil {
 		return nil, err
 	}
