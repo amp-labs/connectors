@@ -7,6 +7,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/examples/utils"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/salesforce"
@@ -26,11 +27,6 @@ const (
 // If you have an actual value, you can set it here. Otherwise
 // it will be set to a day ago to force a refresh.
 var AccessTokenExpiry = time.Now().Add(-24 * time.Hour)
-
-// substitutions is a map of variables that can be used in the provider catalog.
-var substitutions = map[string]string{
-	"workspace": Workspace,
-}
 
 // Run this example with `go run salesforce.go`
 func main() {
@@ -92,7 +88,7 @@ func createDeepConnector(ctx context.Context) *salesforce.Connector {
 
 // Create an OAuth2 authenticated HTTP client for Salesforce.
 func createAuthenticatedHttpClient(ctx context.Context) common.AuthenticatedHTTPClient {
-	info, err := providers.ReadInfo(providers.Salesforce, &substitutions)
+	info, err := providers.ReadInfo(providers.Salesforce, &paramsbuilder.Workspace{Name: Workspace})
 	if err != nil {
 		panic(err)
 	}

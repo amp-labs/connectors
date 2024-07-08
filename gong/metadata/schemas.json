@@ -1,0 +1,237 @@
+{
+	"data": {
+		"calls": {
+			"displayName": "Retrieve call data by date range (/v2/calls)",
+			"url": "https://gong.app.gong.io/settings/api/documentation#get-/v2/calls",
+			"fields": {
+				"id": "id",
+				"url": "url",
+				"title": "title",
+				"scheduled": "scheduled",
+				"started": "started",
+				"duration": "duration",
+				"primaryUserId": "primaryUserId",
+				"direction": "direction",
+				"system": "system",
+				"scope": "scope",
+				"media": "media",
+				"language": "language",
+				"workspaceId": "workspaceId",
+				"sdrDisposition": "sdrDisposition",
+				"clientUniqueId": "clientUniqueId",
+				"customData": "customData",
+				"purpose": "purpose",
+				"meetingUrl": "meetingUrl",
+				"isPrivate": "isPrivate",
+				"calendarEventId": "calendarEventId"
+			}
+		},
+		"calls/manual-crm-associations": {
+			"displayName": "List all calls that were manually associated with CRM objects (/v2/calls/manual-crm-associations) in Beta Phase",
+			"url": "https://gong.app.gong.io/settings/api/documentation#get-/v2/calls/manual-crm-associations",
+			"fields": {
+				"callId": "callId",
+				"userId": "userId",
+				"created": "created",
+				"associatedCrmObjects": "associatedCrmObjects"
+			}
+		},
+		"users": {
+			"displayName": "List all users (/v2/users)",
+			"url": "https://gong.app.gong.io/settings/api/documentation#get-/v2/users",
+			"fields": {
+				"id": "id",
+				"emailAddress": "emailAddress",
+				"created": "created",
+				"active": "active",
+				"emailAliases": "emailAliases",
+				"trustedEmailAddress": "trustedEmailAddress",
+				"firstName": "firstName",
+				"lastName": "lastName",
+				"title": "title",
+				"phoneNumber": "phoneNumber",
+				"extension": "extension",
+				"personalMeetingUrls": "personalMeetingUrls",
+				"settings": "settings",
+				"managerId": "managerId",
+				"meetingConsentPageUrl": "meetingConsentPageUrl",
+				"spokenLanguages": "spokenLanguages"
+			}
+		},
+		"users/-id-/settings-history": {
+			"displayName": "Retrieve user settings history (/v2/users/{id}/settings-history)",
+			"url": "https://gong.app.gong.io/settings/api/documentation#get-/v2/users/-id-/settings-history",
+			"fields": {
+				"setting": "setting",
+				"value": "value",
+				"time": "time"
+			}
+		},
+		"settings/scorecards": {
+			"displayName": "Retrieve scorecards details (/v2/settings/scorecards)",
+			"url": "https://gong.app.gong.io/settings/api/documentation#get-/v2/settings/scorecards",
+			"fields": {
+				"scorecardId": "scorecardId",
+				"scorecardName": "scorecardName",
+				"workspaceId": "workspaceId",
+				"enabled": "enabled",
+				"updaterUserId": "updaterUserId",
+				"created": "created",
+				"updated": "updated",
+				"questions": "questions"
+			}
+		},
+		"settings/trackers": {
+			"displayName": "Retrieve tracker details (/v2/settings/trackers)",
+			"url": "https://gong.app.gong.io/settings/api/documentation#get-/v2/settings/trackers",
+			"fields": {
+				"trackerId": "trackerId",
+				"trackerName": "trackerName",
+				"workspaceId": "workspaceId",
+				"languageKeywords": "languageKeywords",
+				"affiliation": "affiliation",
+				"partOfQuestion": "partOfQuestion",
+				"saidAt": "saidAt",
+				"saidAtInterval": "saidAtInterval",
+				"saidAtUnit": "saidAtUnit",
+				"saidInTopics": "saidInTopics",
+				"saidInCallParts": "saidInCallParts",
+				"filterQuery": "filterQuery",
+				"created": "created",
+				"creatorUserId": "creatorUserId",
+				"updated": "updated",
+				"updaterUserId": "updaterUserId"
+			}
+		},
+		"workspaces": {
+			"displayName": "List all company workspaces (/v2/workspaces)",
+			"url": "https://gong.app.gong.io/settings/api/documentation#get-/v2/workspaces",
+			"fields": {
+				"id": "id",
+				"name": "name",
+				"description": "description"
+			}
+		},
+		"library/folder-content": {
+			"displayName": "List of calls in a specific folder (/v2/library/folder-content)",
+			"url": "https://gong.app.gong.io/settings/api/documentation#get-/v2/library/folder-content",
+			"fields": {
+				"id": "id",
+				"title": "title",
+				"note": "note",
+				"addedBy": "addedBy",
+				"created": "created",
+				"url": "url",
+				"snippet": "snippet"
+			}
+		},
+		"library/folders": {
+			"displayName": "Retrieve Library folders (/v2/library/folders)",
+			"url": "https://gong.app.gong.io/settings/api/documentation#get-/v2/library/folders",
+			"fields": {
+				"id": "id",
+				"name": "name",
+				"parentFolderId": "parentFolderId",
+				"createdBy": "createdBy",
+				"updated": "updated"
+			}
+		},
+		"crm/integrations": {
+			"displayName": "Get Generic CRM integration details (/v2/crm/integrations)",
+			"url": "https://gong.app.gong.io/settings/api/documentation#get-/v2/crm/integrations",
+			"fields": {
+				"integrationId": "integrationId",
+				"ownerEmail": "ownerEmail",
+				"name": "name"
+			}
+		},
+		"crm/request-status": {
+			"displayName": "Get Request Status (/v2/crm/request-status)",
+			"url": "https://gong.app.gong.io/settings/api/documentation#get-/v2/crm/request-status",
+			"fields": {
+				"line": "line",
+				"description": "description"
+			}
+		},
+		"logs": {
+			"displayName": "Retrieve logs data by type and time range (/v2/logs)",
+			"url": "https://gong.app.gong.io/settings/api/documentation#get-/v2/logs",
+			"fields": {
+				"userId": "userId",
+				"userEmailAddress": "userEmailAddress",
+				"userFullName": "userFullName",
+				"impersonatorUserId": "impersonatorUserId",
+				"impersonatorEmailAddress": "impersonatorEmailAddress",
+				"impersonatorFullName": "impersonatorFullName",
+				"impersonatorCompanyId": "impersonatorCompanyId",
+				"eventTime": "eventTime",
+				"logRecord": "logRecord"
+			}
+		},
+		"all-permission-profiles": {
+			"displayName": "List all company permission profiles for a given workspace (/v2/all-permission-profiles)",
+			"url": "https://gong.app.gong.io/settings/api/documentation#get-/v2/all-permission-profiles",
+			"fields": {
+				"id": "id",
+				"name": "name",
+				"description": "description",
+				"callsAccess": "callsAccess",
+				"libraryFolderAccess": "libraryFolderAccess",
+				"dealsAccess": "dealsAccess",
+				"forecastPermissions": "forecastPermissions",
+				"coachingAccess": "coachingAccess",
+				"insightsAccess": "insightsAccess",
+				"emailsAccess": "emailsAccess",
+				"scoreCalls": "scoreCalls",
+				"downloadCallMedia": "downloadCallMedia",
+				"shareCallsWithCustomers": "shareCallsWithCustomers",
+				"manuallyScheduleAndUploadCalls": "manuallyScheduleAndUploadCalls",
+				"privateCalls": "privateCalls",
+				"deleteCalls": "deleteCalls",
+				"trimCalls": "trimCalls",
+				"deleteEmails": "deleteEmails",
+				"callsAndSearch": "callsAndSearch",
+				"library": "library",
+				"deals": "deals",
+				"createEditAndDeleteDealsBoards": "createEditAndDeleteDealsBoards",
+				"dealsInlineEditing": "dealsInlineEditing",
+				"account": "account",
+				"coaching": "coaching",
+				"teamStats": "teamStats",
+				"initiatives": "initiatives",
+				"market": "market",
+				"activity": "activity",
+				"forecast": "forecast",
+				"forecastManage": "forecastManage",
+				"engageManageCompanyTemplates": "engageManageCompanyTemplates",
+				"engageManageCompanySequences": "engageManageCompanySequences",
+				"manageGeneralBusinessSettings": "manageGeneralBusinessSettings",
+				"manageScorecards": "manageScorecards",
+				"exportCallsAndCoachingDataToCSV": "exportCallsAndCoachingDataToCSV",
+				"crmDataInlineEditing": "crmDataInlineEditing",
+				"crmDataImport": "crmDataImport"
+			}
+		},
+		"permission-profile/users": {
+			"displayName": "List all users attached to a given permission profile (/v2/permission-profile/users)",
+			"url": "https://gong.app.gong.io/settings/api/documentation#get-/v2/permission-profile/users",
+			"fields": {
+				"id": "id",
+				"fullName": "fullName",
+				"emailAddress": "emailAddress"
+			}
+		},
+		"flows": {
+			"displayName": "List Gong Engage flows (/v2/flows)",
+			"url": "https://gong.app.gong.io/settings/api/documentation#get-/v2/flows",
+			"fields": {
+				"id": "id",
+				"name": "name",
+				"folderId": "folderId",
+				"folderName": "folderName",
+				"visibility": "visibility",
+				"creationDate": "creationDate"
+			}
+		}
+	}
+}
