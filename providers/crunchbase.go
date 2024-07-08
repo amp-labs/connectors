@@ -8,9 +8,11 @@ func init() {
 		AuthType: ApiKey,
 		BaseURL:  "https://api.crunchbase.com",
 		ApiKeyOpts: &ApiKeyOpts{
-			Type:       InHeader,
-			HeaderName: "X-cb-user-key",
-			DocsURL:    "https://data.crunchbase.com/docs/getting-started",
+			AttachmentType: Header,
+			Header: &ApiKeyOptsHeader{
+				Name: "X-cb-user-key",
+			},
+			DocsURL: "https://data.crunchbase.com/docs/getting-started",
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
