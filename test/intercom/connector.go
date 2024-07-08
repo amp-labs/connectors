@@ -4,26 +4,27 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/amp-labs/connectors/common/credsregistry"
 	"github.com/amp-labs/connectors/intercom"
 	testUtils "github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/utils"
 )
 
 func GetIntercomConnector(ctx context.Context, filePath string) *intercom.Connector {
-	registry := utils.NewCredentialsRegistry()
+	registry := credsregistry.NewCredentialsRegistry()
 
-	readers := []utils.Reader{
-		&utils.JSONReader{
+	readers := []credsregistry.Reader{
+		&credsregistry.JSONReader{
 			FilePath: filePath,
 			JSONPath: "$.CLIENT_ID",
 			CredKey:  "clientId",
 		},
-		&utils.JSONReader{
+		&credsregistry.JSONReader{
 			FilePath: filePath,
 			JSONPath: "$.CLIENT_SECRET",
 			CredKey:  "clientSecret",
 		},
-		&utils.JSONReader{
+		&credsregistry.JSONReader{
 			FilePath: filePath,
 			JSONPath: "$.ACCESS_TOKEN",
 			CredKey:  "accessToken",

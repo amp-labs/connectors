@@ -4,36 +4,37 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/amp-labs/connectors/common/credsregistry"
 	"github.com/amp-labs/connectors/salesloft"
 	testUtils "github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/utils"
 )
 
 func GetSalesloftConnector(ctx context.Context, filePath string) *salesloft.Connector {
-	registry := utils.NewCredentialsRegistry()
+	registry := credsregistry.NewCredentialsRegistry()
 
-	readers := []utils.Reader{
-		&utils.JSONReader{
+	readers := []credsregistry.Reader{
+		&credsregistry.JSONReader{
 			FilePath: filePath,
 			JSONPath: "$.CLIENT_ID",
 			CredKey:  "clientId",
 		},
-		&utils.JSONReader{
+		&credsregistry.JSONReader{
 			FilePath: filePath,
 			JSONPath: "$.CLIENT_SECRET",
 			CredKey:  "clientSecret",
 		},
-		&utils.JSONReader{
+		&credsregistry.JSONReader{
 			FilePath: filePath,
 			JSONPath: "$.ACCESS_TOKEN",
 			CredKey:  "accessToken",
 		},
-		&utils.JSONReader{
+		&credsregistry.JSONReader{
 			FilePath: filePath,
 			JSONPath: "$.REFRESH_TOKEN",
 			CredKey:  "refreshToken",
 		},
-		&utils.JSONReader{
+		&credsregistry.JSONReader{
 			FilePath: filePath,
 			JSONPath: "$.PROVIDER",
 			CredKey:  "provider",

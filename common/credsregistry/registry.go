@@ -1,5 +1,5 @@
 // nolint: ireturn
-package utils
+package credsregistry
 
 import (
 	"errors"
@@ -13,17 +13,16 @@ import (
 )
 
 var (
-	validate                = validator.New() //nolint:gochecknoglobals
-	ErrKeyNotFound          = errors.New("key not found")
-	ErrWrongType            = errors.New("wrong type")
-	ErrEnvVarNotSet         = errors.New("environment variable not set")
-	ErrEmptyFilePathPathVar = errors.New("empty value for file path")
-	ErrJSONPathNotFound     = errors.New("empty value at json path")
-	ErrReaderNotFound       = errors.New("Reader not found")
-	ErrCredentialNotFound   = errors.New("credential not found")
+	validate              = validator.New() //nolint:gochecknoglobals
+	ErrKeyNotFound        = errors.New("key not found")
+	ErrWrongType          = errors.New("wrong type")
+	ErrEnvVarNotSet       = errors.New("environment variable not set")
+	ErrJSONPathNotFound   = errors.New("empty value at json path")
+	ErrReaderNotFound     = errors.New("Reader not found")
+	ErrCredentialNotFound = errors.New("credential not found")
 )
 
-type CredentialsRegistry map[string]Reader
+type Registry map[string]Reader
 
 type Reader interface {
 	Value() (any, error)
@@ -116,7 +115,7 @@ func (r *JSONReader) Value() (any, error) {
 	return list[0].Value()
 }
 
-func (c CredentialsRegistry) AddReader(reader Reader) error {
+func (c Registry) AddReader(reader Reader) error {
 	if err := validate.Struct(reader); err != nil {
 		return err
 	}
@@ -131,7 +130,7 @@ func (c CredentialsRegistry) AddReader(reader Reader) error {
 	return nil
 }
 
-func (c CredentialsRegistry) AddReaders(readers ...Reader) error {
+func (c Registry) AddReaders(readers ...Reader) error {
 	for _, reader := range readers {
 		if err := validate.Struct(reader); err != nil {
 			return fmt.Errorf("%w: %v", err, reader)
@@ -145,7 +144,7 @@ func (c CredentialsRegistry) AddReaders(readers ...Reader) error {
 	return nil
 }
 
-func (c CredentialsRegistry) Get(key string) (any, error) {
+func (c Registry) Get(key string) (any, error) {
 	reader, ok := c[key]
 	if !ok {
 		return nil, fmt.Errorf("%w: %s", ErrReaderNotFound, key)
@@ -154,7 +153,7 @@ func (c CredentialsRegistry) Get(key string) (any, error) {
 	return reader.Value()
 }
 
-func (c CredentialsRegistry) GetString(key string) (string, error) {
+func (c Registry) GetString(key string) (string, error) {
 	reader, ok := c[key]
 	if !ok {
 		return "", fmt.Errorf("%w: %s", ErrReaderNotFound, key)
@@ -163,7 +162,7 @@ func (c CredentialsRegistry) GetString(key string) (string, error) {
 	return getFromReader[string](reader)
 }
 
-func (c CredentialsRegistry) GetBool(key string) (bool, error) {
+func (c Registry) GetBool(key string) (bool, error) {
 	reader, ok := c[key]
 	if !ok {
 		return false, fmt.Errorf("%w: %s", ErrReaderNotFound, key)
@@ -172,7 +171,7 @@ func (c CredentialsRegistry) GetBool(key string) (bool, error) {
 	return getFromReader[bool](reader)
 }
 
-func (c CredentialsRegistry) GetInt(key string) (int, error) {
+func (c Registry) GetInt(key string) (int, error) {
 	reader, ok := c[key]
 	if !ok {
 		return 0, fmt.Errorf("%w: %s", ErrReaderNotFound, key)
@@ -181,7 +180,7 @@ func (c CredentialsRegistry) GetInt(key string) (int, error) {
 	return getFromReader[int](reader)
 }
 
-func (c CredentialsRegistry) GetFloat64(key string) (float64, error) {
+func (c Registry) GetFloat64(key string) (float64, error) {
 	reader, ok := c[key]
 	if !ok {
 		return 0, fmt.Errorf("%w: %s", ErrReaderNotFound, key)
@@ -190,7 +189,7 @@ func (c CredentialsRegistry) GetFloat64(key string) (float64, error) {
 	return getFromReader[float64](reader)
 }
 
-func (c CredentialsRegistry) GetFloat32(key string) (float32, error) {
+func (c Registry) GetFloat32(key string) (float32, error) {
 	reader, ok := c[key]
 	if !ok {
 		return 0, fmt.Errorf("%w: %s", ErrReaderNotFound, key)
@@ -199,7 +198,7 @@ func (c CredentialsRegistry) GetFloat32(key string) (float32, error) {
 	return getFromReader[float32](reader)
 }
 
-func (c CredentialsRegistry) GetInt64(key string) (int64, error) {
+func (c Registry) GetInt64(key string) (int64, error) {
 	reader, ok := c[key]
 	if !ok {
 		return 0, fmt.Errorf("%w: %s", ErrReaderNotFound, key)
@@ -208,7 +207,7 @@ func (c CredentialsRegistry) GetInt64(key string) (int64, error) {
 	return getFromReader[int64](reader)
 }
 
-func (c CredentialsRegistry) GetInt32(key string) (int32, error) {
+func (c Registry) GetInt32(key string) (int32, error) {
 	reader, ok := c[key]
 	if !ok {
 		return 0, fmt.Errorf("%w: %s", ErrReaderNotFound, key)
@@ -217,7 +216,7 @@ func (c CredentialsRegistry) GetInt32(key string) (int32, error) {
 	return getFromReader[int32](reader)
 }
 
-func (c CredentialsRegistry) GetInt16(key string) (int16, error) {
+func (c Registry) GetInt16(key string) (int16, error) {
 	reader, ok := c[key]
 	if !ok {
 		return 0, fmt.Errorf("%w: %s", ErrReaderNotFound, key)
@@ -226,7 +225,7 @@ func (c CredentialsRegistry) GetInt16(key string) (int16, error) {
 	return getFromReader[int16](reader)
 }
 
-func (c CredentialsRegistry) GetInt8(key string) (int8, error) {
+func (c Registry) GetInt8(key string) (int8, error) {
 	reader, ok := c[key]
 	if !ok {
 		return 0, fmt.Errorf("%w: %s", ErrReaderNotFound, key)
@@ -235,7 +234,7 @@ func (c CredentialsRegistry) GetInt8(key string) (int8, error) {
 	return getFromReader[int8](reader)
 }
 
-func (c CredentialsRegistry) GetUint64(key string) (uint64, error) {
+func (c Registry) GetUint64(key string) (uint64, error) {
 	reader, ok := c[key]
 	if !ok {
 		return 0, fmt.Errorf("%w: %s", ErrReaderNotFound, key)
@@ -244,7 +243,7 @@ func (c CredentialsRegistry) GetUint64(key string) (uint64, error) {
 	return getFromReader[uint64](reader)
 }
 
-func (c CredentialsRegistry) GetUint32(key string) (uint32, error) {
+func (c Registry) GetUint32(key string) (uint32, error) {
 	reader, ok := c[key]
 	if !ok {
 		return 0, fmt.Errorf("%w: %s", ErrReaderNotFound, key)
@@ -253,7 +252,7 @@ func (c CredentialsRegistry) GetUint32(key string) (uint32, error) {
 	return getFromReader[uint32](reader)
 }
 
-func (c CredentialsRegistry) GetUint16(key string) (uint16, error) {
+func (c Registry) GetUint16(key string) (uint16, error) {
 	reader, ok := c[key]
 	if !ok {
 		return 0, fmt.Errorf("%w: %s", ErrReaderNotFound, key)
@@ -262,7 +261,7 @@ func (c CredentialsRegistry) GetUint16(key string) (uint16, error) {
 	return getFromReader[uint16](reader)
 }
 
-func (c CredentialsRegistry) GetUint8(key string) (uint8, error) {
+func (c Registry) GetUint8(key string) (uint8, error) {
 	reader, ok := c[key]
 	if !ok {
 		return 0, fmt.Errorf("%w: %s", ErrReaderNotFound, key)
@@ -271,7 +270,7 @@ func (c CredentialsRegistry) GetUint8(key string) (uint8, error) {
 	return getFromReader[uint8](reader)
 }
 
-func (c CredentialsRegistry) GetUint(key string) (uint, error) {
+func (c Registry) GetUint(key string) (uint, error) {
 	reader, ok := c[key]
 	if !ok {
 		return 0, fmt.Errorf("%w: %s", ErrReaderNotFound, key)
@@ -280,7 +279,7 @@ func (c CredentialsRegistry) GetUint(key string) (uint, error) {
 	return getFromReader[uint](reader)
 }
 
-func (c CredentialsRegistry) GetMap(key string) (map[string]*ajson.Node, error) {
+func (c Registry) GetMap(key string) (map[string]*ajson.Node, error) {
 	reader, ok := c[key]
 	if !ok {
 		return nil, fmt.Errorf("%w: %s", ErrReaderNotFound, key)
@@ -289,7 +288,7 @@ func (c CredentialsRegistry) GetMap(key string) (map[string]*ajson.Node, error) 
 	return getFromReader[map[string]*ajson.Node](reader)
 }
 
-func (c CredentialsRegistry) MustString(credKey string) string {
+func (c Registry) MustString(credKey string) string {
 	str, err := c.GetString(credKey)
 	if err != nil {
 		log.Fatal(err)
@@ -298,7 +297,7 @@ func (c CredentialsRegistry) MustString(credKey string) string {
 	return str
 }
 
-func (c CredentialsRegistry) MustBool(credKey string) bool {
+func (c Registry) MustBool(credKey string) bool {
 	b, err := c.GetBool(credKey)
 	if err != nil {
 		log.Fatal(err)
@@ -307,7 +306,7 @@ func (c CredentialsRegistry) MustBool(credKey string) bool {
 	return b
 }
 
-func (c CredentialsRegistry) MustInt(credKey string) int {
+func (c Registry) MustInt(credKey string) int {
 	i, err := c.GetInt(credKey)
 	if err != nil {
 		log.Fatal(err)
@@ -316,7 +315,7 @@ func (c CredentialsRegistry) MustInt(credKey string) int {
 	return i
 }
 
-func (c CredentialsRegistry) MustFloat64(credKey string) float64 {
+func (c Registry) MustFloat64(credKey string) float64 {
 	f, err := c.GetFloat64(credKey)
 	if err != nil {
 		log.Fatal(err)
@@ -325,7 +324,7 @@ func (c CredentialsRegistry) MustFloat64(credKey string) float64 {
 	return f
 }
 
-func (c CredentialsRegistry) MustFloat32(credKey string) float32 {
+func (c Registry) MustFloat32(credKey string) float32 {
 	f, err := c.GetFloat32(credKey)
 	if err != nil {
 		log.Fatal(err)
@@ -334,7 +333,7 @@ func (c CredentialsRegistry) MustFloat32(credKey string) float32 {
 	return f
 }
 
-func (c CredentialsRegistry) MustInt64(credKey string) int64 {
+func (c Registry) MustInt64(credKey string) int64 {
 	i, err := c.GetInt64(credKey)
 	if err != nil {
 		log.Fatal(err)
@@ -343,7 +342,7 @@ func (c CredentialsRegistry) MustInt64(credKey string) int64 {
 	return i
 }
 
-func (c CredentialsRegistry) MustInt32(credKey string) int32 {
+func (c Registry) MustInt32(credKey string) int32 {
 	i, err := c.GetInt32(credKey)
 	if err != nil {
 		log.Fatal(err)
@@ -352,7 +351,7 @@ func (c CredentialsRegistry) MustInt32(credKey string) int32 {
 	return i
 }
 
-func (c CredentialsRegistry) MustInt16(credKey string) int16 {
+func (c Registry) MustInt16(credKey string) int16 {
 	i, err := c.GetInt16(credKey)
 	if err != nil {
 		log.Fatal(err)
@@ -361,7 +360,7 @@ func (c CredentialsRegistry) MustInt16(credKey string) int16 {
 	return i
 }
 
-func (c CredentialsRegistry) MustInt8(credKey string) int8 {
+func (c Registry) MustInt8(credKey string) int8 {
 	i, err := c.GetInt8(credKey)
 	if err != nil {
 		log.Fatal(err)
@@ -370,7 +369,7 @@ func (c CredentialsRegistry) MustInt8(credKey string) int8 {
 	return i
 }
 
-func (c CredentialsRegistry) MustUint64(credKey string) uint64 {
+func (c Registry) MustUint64(credKey string) uint64 {
 	i, err := c.GetUint64(credKey)
 	if err != nil {
 		log.Fatal(err)
@@ -379,7 +378,7 @@ func (c CredentialsRegistry) MustUint64(credKey string) uint64 {
 	return i
 }
 
-func (c CredentialsRegistry) MustUint32(credKey string) uint32 {
+func (c Registry) MustUint32(credKey string) uint32 {
 	i, err := c.GetUint32(credKey)
 	if err != nil {
 		log.Fatal(err)
@@ -388,7 +387,7 @@ func (c CredentialsRegistry) MustUint32(credKey string) uint32 {
 	return i
 }
 
-func (c CredentialsRegistry) MustUint16(credKey string) uint16 {
+func (c Registry) MustUint16(credKey string) uint16 {
 	i, err := c.GetUint16(credKey)
 	if err != nil {
 		log.Fatal(err)
@@ -397,7 +396,7 @@ func (c CredentialsRegistry) MustUint16(credKey string) uint16 {
 	return i
 }
 
-func (c CredentialsRegistry) MustUint8(credKey string) uint8 {
+func (c Registry) MustUint8(credKey string) uint8 {
 	i, err := c.GetUint8(credKey)
 	if err != nil {
 		log.Fatal(err)
@@ -406,7 +405,7 @@ func (c CredentialsRegistry) MustUint8(credKey string) uint8 {
 	return i
 }
 
-func (c CredentialsRegistry) MustUint(credKey string) uint {
+func (c Registry) MustUint(credKey string) uint {
 	i, err := c.GetUint(credKey)
 	if err != nil {
 		log.Fatal(err)
@@ -415,8 +414,8 @@ func (c CredentialsRegistry) MustUint(credKey string) uint {
 	return i
 }
 
-func NewCredentialsRegistry() CredentialsRegistry {
-	return make(CredentialsRegistry)
+func NewCredentialsRegistry() Registry {
+	return make(Registry)
 }
 
 func getFromReader[T any](reader Reader) (T, error) {

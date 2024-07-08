@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/amp-labs/connectors/common/credsregistry"
 	"github.com/amp-labs/connectors/salesforce"
 	"github.com/amp-labs/connectors/utils"
 )
@@ -18,7 +19,7 @@ func Connector(ctx context.Context) (*salesforce.Connector, error) {
 	}
 
 	ampConnectionSchemaReader := JSONFileReaders(filePath)
-	credentialsRegistry := utils.NewCredentialsRegistry()
+	credentialsRegistry := credsregistry.NewCredentialsRegistry()
 	credentialsRegistry.AddReaders(ampConnectionSchemaReader...)
 	salesforceWorkspace := credentialsRegistry.MustString(utils.WorkspaceRef)
 

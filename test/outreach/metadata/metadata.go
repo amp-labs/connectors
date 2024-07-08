@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/amp-labs/connectors/common/credsregistry"
 	"github.com/amp-labs/connectors/outreach"
 	testUtils "github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/utils"
@@ -16,30 +17,30 @@ const (
 )
 
 func GetOutreachConnector(ctx context.Context, filePath string) *outreach.Connector {
-	registry := utils.NewCredentialsRegistry()
+	registry := credsregistry.NewCredentialsRegistry()
 
-	readers := []utils.Reader{
-		&utils.JSONReader{
+	readers := []credsregistry.Reader{
+		&credsregistry.JSONReader{
 			FilePath: filePath,
 			JSONPath: "$['clientId']",
 			CredKey:  "clientId",
 		},
-		&utils.JSONReader{
+		&credsregistry.JSONReader{
 			FilePath: filePath,
 			JSONPath: "$['clientSecret']",
 			CredKey:  "clientSecret",
 		},
-		&utils.JSONReader{
+		&credsregistry.JSONReader{
 			FilePath: filePath,
 			JSONPath: "$['refreshToken']",
 			CredKey:  "refreshToken",
 		},
-		&utils.JSONReader{
+		&credsregistry.JSONReader{
 			FilePath: filePath,
 			JSONPath: "$['accessToken']",
 			CredKey:  "accessToken",
 		},
-		&utils.JSONReader{
+		&credsregistry.JSONReader{
 			FilePath: filePath,
 			JSONPath: "$['provider']",
 			CredKey:  "provider",

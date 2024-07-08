@@ -4,36 +4,37 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/amp-labs/connectors/common/credsregistry"
 	"github.com/amp-labs/connectors/gong"
 	testUtils "github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/utils"
 )
 
 func GetGongConnector(ctx context.Context, filePath string) *gong.Connector {
-	registry := utils.NewCredentialsRegistry()
+	registry := credsregistry.NewCredentialsRegistry()
 
-	readers := []utils.Reader{
-		&utils.JSONReader{
+	readers := []credsregistry.Reader{
+		&credsregistry.JSONReader{
 			FilePath: filePath,
 			JSONPath: "$.clientId",
 			CredKey:  utils.ClientId,
 		},
-		&utils.JSONReader{
+		&credsregistry.JSONReader{
 			FilePath: filePath,
 			JSONPath: "$.clientSecret",
 			CredKey:  utils.ClientSecret,
 		},
-		&utils.JSONReader{
+		&credsregistry.JSONReader{
 			FilePath: filePath,
 			JSONPath: "$.accessToken",
 			CredKey:  utils.AccessToken,
 		},
-		&utils.JSONReader{
+		&credsregistry.JSONReader{
 			FilePath: filePath,
 			JSONPath: "$.refreshToken",
 			CredKey:  utils.RefreshToken,
 		},
-		&utils.JSONReader{
+		&credsregistry.JSONReader{
 			FilePath: filePath,
 			JSONPath: "$.provider",
 			CredKey:  utils.Provider,

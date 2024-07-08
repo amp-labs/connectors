@@ -19,8 +19,8 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors/common/paramsbuilder"
+	"github.com/amp-labs/connectors/common/credsregistry"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/utils"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
 )
@@ -63,45 +63,45 @@ const (
 // No changes required below
 // ================================
 
-var registry = utils.NewCredentialsRegistry()
+var registry = credsregistry.NewCredentialsRegistry()
 
-var readers = []utils.Reader{
-	&utils.JSONReader{
+var readers = []credsregistry.Reader{
+	&credsregistry.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['clientId']",
 		CredKey:  "ClientId",
 	},
-	&utils.JSONReader{
+	&credsregistry.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['clientSecret']",
 		CredKey:  "ClientSecret",
 	},
-	&utils.JSONReader{
+	&credsregistry.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['scopes']",
 		CredKey:  "Scopes",
 	},
-	&utils.JSONReader{
+	&credsregistry.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['provider']",
 		CredKey:  "Provider",
 	},
-	&utils.JSONReader{
+	&credsregistry.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['substitutions']",
 		CredKey:  "Substitutions",
 	},
-	&utils.JSONReader{
+	&credsregistry.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['state']",
 		CredKey:  "State",
 	},
-	&utils.JSONReader{
+	&credsregistry.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['userName']",
 		CredKey:  "UserName",
 	},
-	&utils.JSONReader{
+	&credsregistry.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['password']",
 		CredKey:  "Password",

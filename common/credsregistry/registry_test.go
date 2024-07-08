@@ -1,5 +1,5 @@
 //nolint:gochecknoglobals
-package utils
+package credsregistry
 
 import (
 	"os"
@@ -9,7 +9,7 @@ import (
 )
 
 var testAccessTokenReader = &JSONReader{
-	FilePath: "testcred1.json",
+	FilePath: "test/cred1.json",
 	JSONPath: "$['accessToken']",
 	CredKey:  "AccessToken",
 }
@@ -20,22 +20,22 @@ var testPreset = []Reader{
 		CredKey: "ClientId",
 	},
 	&JSONReader{
-		FilePath: "testcred1.json",
+		FilePath: "test/cred1.json",
 		JSONPath: "$['useToken']",
 		CredKey:  "UseToken",
 	},
 	&JSONReader{
-		FilePath: "testcred2.json",
+		FilePath: "test/cred2.json",
 		JSONPath: "$['refreshToken']",
 		CredKey:  "RefreshToken",
 	},
 	&JSONReader{
-		FilePath: "testcred2.json",
+		FilePath: "test/cred2.json",
 		JSONPath: "$['providers'][0]['name']",
 		CredKey:  "Provider",
 	},
 	&JSONReader{
-		FilePath: "testcred2.json",
+		FilePath: "test/cred2.json",
 		JSONPath: "$['providers'][0]['number']",
 		CredKey:  "ProviderNumber",
 	},
