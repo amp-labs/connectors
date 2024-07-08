@@ -2,7 +2,7 @@ name: Publish JSON catalog
 
 on:
   pull_request:
-    types: [closed]
+    types: [opened, synchronize, closed]
     branches:
       - 'main'
 
@@ -11,9 +11,11 @@ jobs:
     permissions:
       contents: write
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.head_ref }}
 
       - name: Check for changes in providers/catalog.go
         uses: dorny/paths-filter@v3
@@ -36,6 +38,6 @@ jobs:
           git add providers/catalog.json
           git commit -m "Update catalog.json"
           git remote set-url origin https://x-access-token:${{ secrets.AMPERSAND_OPS_PAT }}@github.com/${{ github.repository }}
-          git push origin HEAD:main
+          git push origin HEAD:${{ github.head_ref }}
         env:
           GITHUB_TOKEN: ${{ secrets.AMPERSAND_OPS_PAT }}
