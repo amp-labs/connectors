@@ -28,7 +28,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	}
 
 	// Read provider info
-	conn.ProviderInfo, err = providers.ReadInfo(providers.Docusign, nil)
+	conn.ProviderInfo, err = providers.ReadInfo(providers.Docusign)
 	if err != nil {
 		return nil, err
 	}
