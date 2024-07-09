@@ -107,6 +107,8 @@ func SetInfo(provider Provider, info ProviderInfo) {
 		catalog = make(CatalogType)
 	}
 
+	info.Name = provider
+
 	catalog[provider] = info
 }
 
