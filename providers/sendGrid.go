@@ -5,8 +5,9 @@ const SendGrid Provider = "sendGrid"
 func init() {
 	// SendGrid configuration
 	SetInfo(SendGrid, ProviderInfo{
-		AuthType: ApiKey,
-		BaseURL:  "https://api.sendgrid.com",
+		DisplayName: "SendGrid",
+		AuthType:    ApiKey,
+		BaseURL:     "https://api.sendgrid.com",
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Header,
 			Header: &ApiKeyOptsHeader{

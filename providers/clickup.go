@@ -5,8 +5,9 @@ const ClickUp Provider = "clickup"
 func init() {
 	// ClickUp Support Configuration
 	SetInfo(ClickUp, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://api.clickup.com",
+		DisplayName: "ClickUp",
+		AuthType:    Oauth2,
+		BaseURL:     "https://api.clickup.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://app.clickup.com/api",

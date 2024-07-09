@@ -5,8 +5,9 @@ const Crunchbase Provider = "crunchbase"
 func init() {
 	// Crunchbase configuration
 	SetInfo(Crunchbase, ProviderInfo{
-		AuthType: ApiKey,
-		BaseURL:  "https://api.crunchbase.com",
+		DisplayName: "Crunchbase",
+		AuthType:    ApiKey,
+		BaseURL:     "https://api.crunchbase.com",
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Header,
 			Header: &ApiKeyOptsHeader{

@@ -13,9 +13,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 )
 
-var (
-	objectName = "users" // nolint: gochecknoglobals
-)
+var objectName = "users" // nolint: gochecknoglobals
 
 // We want to compare fields returned by read and schema properties provided by metadata methods.
 // Properties from read must all be present in schema definition.

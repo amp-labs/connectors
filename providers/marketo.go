@@ -6,8 +6,9 @@ func init() {
 	// Marketo configuration file
 	// workspace maps to marketo instance
 	SetInfo(Marketo, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://{{.workspace}}.mktorest.com",
+		DisplayName: "Marketo",
+		AuthType:    Oauth2,
+		BaseURL:     "https://{{.workspace}}.mktorest.com",
 		Oauth2Opts: &Oauth2Opts{
 			TokenURL:                  "https://{{.workspace}}.mktorest.com/identity/oauth/token",
 			ExplicitScopesRequired:    false,

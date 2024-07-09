@@ -4,8 +4,9 @@ const Dixa Provider = "dixa"
 
 func init() {
 	SetInfo(Dixa, ProviderInfo{
-		AuthType: ApiKey,
-		BaseURL:  "https://dev.dixa.io",
+		DisplayName: "Dixa",
+		AuthType:    ApiKey,
+		BaseURL:     "https://dev.dixa.io",
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Header,
 			Header: &ApiKeyOptsHeader{

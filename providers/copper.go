@@ -5,8 +5,9 @@ const Copper Provider = "copper"
 func init() {
 	// Copper configuration
 	SetInfo(Copper, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://api.copper.com/developer_api",
+		DisplayName: "Copper",
+		AuthType:    Oauth2,
+		BaseURL:     "https://api.copper.com/developer_api",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://app.copper.com/oauth/authorize",

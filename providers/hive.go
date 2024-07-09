@@ -5,8 +5,9 @@ const Hive Provider = "hive"
 func init() {
 	// Hive Connector Configuration
 	SetInfo(Hive, ProviderInfo{
-		AuthType: ApiKey,
-		BaseURL:  "https://app.hive.com",
+		DisplayName: "Hive",
+		AuthType:    ApiKey,
+		BaseURL:     "https://app.hive.com",
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Header,
 			Header: &ApiKeyOptsHeader{

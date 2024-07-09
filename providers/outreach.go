@@ -5,8 +5,9 @@ const Outreach Provider = "outreach"
 func init() {
 	// Outreach Configuration
 	SetInfo(Outreach, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://api.outreach.io",
+		DisplayName: "Outreach",
+		AuthType:    Oauth2,
+		BaseURL:     "https://api.outreach.io",
 		Oauth2Opts: &Oauth2Opts{
 			AuthURL:                   "https://api.outreach.io/oauth/authorize",
 			TokenURL:                  "https://api.outreach.io/oauth/token",

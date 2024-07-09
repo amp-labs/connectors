@@ -5,8 +5,9 @@ const Insightly = "insightly"
 func init() {
 	// Insightly API Key authentication
 	SetInfo(Insightly, ProviderInfo{
-		AuthType: Basic,
-		BaseURL:  "https://api.insightly.com",
+		DisplayName: "Insightly",
+		AuthType:    Basic,
+		BaseURL:     "https://api.insightly.com",
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,

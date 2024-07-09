@@ -8,8 +8,9 @@ const (
 func init() {
 	// Google Support Configuration
 	SetInfo(Google, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://www.googleapis.com",
+		DisplayName: "Google",
+		AuthType:    Oauth2,
+		BaseURL:     "https://www.googleapis.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://accounts.google.com/o/oauth2/v2/auth",

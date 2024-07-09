@@ -5,8 +5,9 @@ const Aha Provider = "aha"
 func init() {
 	// Aha Configuration
 	SetInfo(Aha, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://{{.workspace}}.aha.io/api",
+		DisplayName: "Aha",
+		AuthType:    Oauth2,
+		BaseURL:     "https://{{.workspace}}.aha.io/api",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://{{.workspace}}.aha.io/oauth/authorize",

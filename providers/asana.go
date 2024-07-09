@@ -5,8 +5,9 @@ const Asana Provider = "asana"
 func init() {
 	// Asana Configuration
 	SetInfo(Asana, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://app.asana.com/api",
+		DisplayName: "Asana",
+		AuthType:    Oauth2,
+		BaseURL:     "https://app.asana.com/api",
 		Oauth2Opts: &Oauth2Opts{
 			AuthURL:                   "https://app.asana.com/-/oauth_authorize",
 			TokenURL:                  "https://app.asana.com/-/oauth_token",

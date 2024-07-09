@@ -5,8 +5,9 @@ const StackExchange Provider = "stackExchange"
 func init() {
 	// StackExchange configuration
 	SetInfo(StackExchange, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://api.stackexchange.com",
+		DisplayName: "StackExchange",
+		AuthType:    Oauth2,
+		BaseURL:     "https://api.stackexchange.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://stackoverflow.com/oauth",

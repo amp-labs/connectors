@@ -8,8 +8,9 @@ const (
 
 func init() {
 	SetInfo(CustomerDataPipelines, ProviderInfo{
-		AuthType: Basic,
-		BaseURL:  "https://cdp.customer.io/v1",
+		DisplayName: "Customer.io Data Pipelines",
+		AuthType:    Basic,
+		BaseURL:     "https://cdp.customer.io/v1",
 		// DocsURL: https://customer.io/docs/api/cdp/#section/Authentication
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -26,8 +27,9 @@ func init() {
 	})
 
 	SetInfo(CustomerJourneysApp, ProviderInfo{
-		AuthType: ApiKey,
-		BaseURL:  "https://api.customer.io",
+		AuthType:    ApiKey,
+		DisplayName: "Customer.io Journeys App",
+		BaseURL:     "https://api.customer.io",
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Header,
 			Header: &ApiKeyOptsHeader{
@@ -51,8 +53,9 @@ func init() {
 	})
 
 	SetInfo(CustomerJourneysTrack, ProviderInfo{
-		AuthType: Basic,
-		BaseURL:  "https://track.customer.io",
+		DisplayName: "Customer.io Journeys Track",
+		AuthType:    Basic,
+		BaseURL:     "https://track.customer.io",
 		// DocsURL: https://customer.io/docs/api/track/#section/Authentication
 		Support: Support{
 			BulkWrite: BulkWriteSupport{

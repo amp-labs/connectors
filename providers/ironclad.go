@@ -9,8 +9,9 @@ const (
 func init() { //nolint:funlen
 	// Ironclad Support Configuration
 	SetInfo(Ironclad, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://ironcladapp.com",
+		DisplayName: "Ironclad",
+		AuthType:    Oauth2,
+		BaseURL:     "https://ironcladapp.com",
 		Oauth2Opts: &Oauth2Opts{
 			AuthURL:                   "https://ironcladapp.com/oauth/authorize",
 			TokenURL:                  "https://ironcladapp.com/oauth/token",
@@ -36,8 +37,9 @@ func init() { //nolint:funlen
 	})
 
 	SetInfo(IroncladDemo, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://demo.ironcladapp.com",
+		DisplayName: "Ironclad Demo",
+		AuthType:    Oauth2,
+		BaseURL:     "https://demo.ironcladapp.com",
 		Oauth2Opts: &Oauth2Opts{
 			AuthURL:                   "https://demo.ironcladapp.com/oauth/authorize",
 			TokenURL:                  "https://demo.ironcladapp.com/oauth/token",
