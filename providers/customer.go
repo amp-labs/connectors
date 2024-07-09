@@ -6,7 +6,7 @@ const (
 	CustomerJourneysTrack Provider = "customerJourneysTrack"
 )
 
-func init() {
+func init() { //nolint:funlen
 	SetInfo(CustomerDataPipelines, ProviderInfo{
 		DisplayName: "Customer.io Data Pipelines",
 		AuthType:    Basic,
