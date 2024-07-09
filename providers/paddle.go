@@ -1,7 +1,9 @@
 package providers
 
-const PaddleSandbox Provider = "paddleSandbox"
-const Paddle Provider = "paddle"
+const (
+	PaddleSandbox Provider = "paddleSandbox"
+	Paddle        Provider = "paddle"
+)
 
 func init() {
 	SetInfo(PaddleSandbox, ProviderInfo{
