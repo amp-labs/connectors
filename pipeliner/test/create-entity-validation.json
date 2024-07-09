@@ -1,0 +1,42 @@
+{
+  "code": 40000,
+  "name": "ERROR_ENTITY_VALIDATION",
+  "message": "\nNon-null field 'Note'[01909781-5963-26bc-28ff-747e10a79a52].owner' is null or empty.\nNon-null field 'note' is null or empty.\nNon-null field 'Note'[01909781-5963-26bc-28ff-747e10a79a52].owner_id' is null or empty.",
+  "entity_id": "01909781-5963-26bc-28ff-747e10a79a52",
+  "entity_name": "Note",
+  "entity_errors": [
+    {
+      "code": 119,
+      "name": "ERROR_PARAMETER_MISSING",
+      "message": "Non-null field 'note' is null or empty."
+    }
+  ],
+  "field_errors": [
+    {
+      "field_id": "200398aa-3921-0557-9bda-bb8f3e529a57",
+      "field_name": "owner_id",
+      "name": "ERROR_FIELD_VALIDATION",
+      "code": 40002,
+      "errors": [
+        {
+          "code": 119,
+          "name": "ERROR_PARAMETER_MISSING",
+          "message": "Non-null field 'Note'[01909781-5963-26bc-28ff-747e10a79a52].owner' is null or empty.",
+          "field_id": "200398aa-3921-0557-9bda-bb8f3e529a57",
+          "field_name": "owner_id"
+        },
+        {
+          "code": 119,
+          "name": "ERROR_PARAMETER_MISSING",
+          "message": "Non-null field 'Note'[01909781-5963-26bc-28ff-747e10a79a52].owner_id' is null or empty.",
+          "field_id": "200398aa-3921-0557-9bda-bb8f3e529a57",
+          "field_name": "owner_id"
+        }
+      ]
+    }
+  ],
+  "step_checklist_errors": [],
+  "entity_index": null,
+  "http_status": 422,
+  "success": false
+}
