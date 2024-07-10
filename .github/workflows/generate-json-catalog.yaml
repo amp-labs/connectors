@@ -2,7 +2,7 @@ name: Publish JSON catalog
 
 on:
   pull_request:
-    types: [closed]
+    types: [synchronize, closed]
     branches:
       - 'main'
 
