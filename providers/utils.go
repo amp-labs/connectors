@@ -130,6 +130,11 @@ func (c CustomCatalog) ReadInfo(provider Provider, vars ...paramsbuilder.Catalog
 		return nil, ErrProviderNotFound
 	}
 
+	// No substitution needed
+	if len(vars) == 0 {
+		return &pInfo, nil
+	}
+
 	// Clone before modifying
 	providerInfo, err := clone[ProviderInfo](pInfo)
 	if err != nil {
