@@ -14,7 +14,7 @@ var (
 	testCatalog CatalogType = map[string]ProviderInfo{ // nolint:gochecknoglobals
 		"test": {
 			AuthType:    Oauth2,
-			Name:        "Tester Testerson",
+			Name:        "test",
 			BaseURL:     "https://{{.workspace}}.test.com",
 			DisplayName: "Super Test",
 		},
