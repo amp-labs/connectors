@@ -106,7 +106,7 @@ func TestReadInfo(t *testing.T) { // nolint:funlen
 		expectedErrs []error
 	}{
 		{
-			name: "Custom catalog has missing provider",
+			name: "Returns missing provider error",
 			input: inType{
 				options:  customTestCatalogOption,
 				provider: "nobody knows",
@@ -116,17 +116,22 @@ func TestReadInfo(t *testing.T) { // nolint:funlen
 			expectedErrs: []error{ErrProviderNotFound},
 		},
 		{
-			name: "Provider requires substitution",
+			name: "Works without substitution",
 			input: inType{
 				options:  customTestCatalogOption,
 				provider: "test",
 				vars:     nil,
 			},
-			expected:     nil,
-			expectedErrs: []error{ErrSubstitutionFailure},
+			expected: &ProviderInfo{
+				AuthType:    Oauth2,
+				Name:        "test",
+				BaseURL:     "https://{{.workspace}}.test.com",
+				DisplayName: "Super Test",
+			},
+			expectedErrs: nil,
 		},
 		{
-			name: "Provider requires substitution",
+			name: "Works with substitution",
 			input: inType{
 				options:  customTestCatalogOption,
 				provider: "test",
