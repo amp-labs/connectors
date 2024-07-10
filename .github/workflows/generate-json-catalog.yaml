@@ -8,8 +8,7 @@ on:
 
 jobs:
   build:
-    permissions:
-      contents: write
+    permissions: write-all
     runs-on: ubuntu-latest
 #    if: github.event.pull_request.merged == true
     steps:
@@ -17,8 +16,10 @@ jobs:
         with:
           fetch-depth: 0
           ref: main
+        env:
+          GITHUB_TOKEN: ${{ secrets.AMPERSAND_OPS_PAT }}
 
-      - name: Check for changes in providers/catalog.go
+      - name: Check for changes in catalog
         uses: dorny/paths-filter@v3
         id: filter
         with:
