@@ -3,49 +3,21 @@ package salesforce
 import (
 	"context"
 	"fmt"
-	"net/url"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
-// Read reads data from Salesforce. By default it will read all rows (backfill). However, if Since is set,
+// Read reads data from Salesforce. By default, it will read all rows (backfill). However, if Since is set,
 // it will read only rows that have been updated since the specified time.
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
-	var (
-		rsp *common.JSONHTTPResponse
-		err error
-	)
-
-	if len(config.NextPage) > 0 {
-		// If NextPage is set, then we're reading the next page of results.
-		// All that matters is the NextPage URL, the fields are ignored.
-		location, joinErr := url.JoinPath("https://"+c.Domain, config.NextPage.String())
-		if joinErr != nil {
-			return nil, joinErr
-		}
-
-		rsp, err = c.Client.Get(ctx, location)
-	} else {
-		// If NextPage is not set, then we're reading the first page of results.
-		// We need to construct the SOQL query and then make the request.
-		soql, soqlErr := makeSOQL(config)
-		if soqlErr != nil {
-			return nil, soqlErr
-		}
-
-		// Encode the SOQL query as a URL parameter
-		qp := url.Values{}
-		qp.Add("q", soql)
-
-		location, joinErr := url.JoinPath(c.BaseURL, "/query/")
-		if joinErr != nil {
-			return nil, joinErr
-		}
-
-		rsp, err = c.Client.Get(ctx, location+"?"+qp.Encode())
+	url, err := c.buildReadURL(config)
+	if err != nil {
+		return nil, err
 	}
 
+	rsp, err := c.Client.Get(ctx, url.String())
 	if err != nil {
 		return nil, err
 	}
@@ -58,6 +30,30 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		getMarshaledData,
 		config.Fields,
 	)
+}
+
+func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error) {
+	if len(config.NextPage) != 0 {
+		// If NextPage is set, then we're reading the next page of results.
+		// All that matters is the NextPage URL, the fields are ignored.
+		return c.getDomainURL(config.NextPage.String())
+	}
+
+	// If NextPage is not set, then we're reading the first page of results.
+	// We need to construct the SOQL query and then make the request.
+	url, err := c.getRestApiURL("query")
+	if err != nil {
+		return nil, err
+	}
+
+	soql, err := makeSOQL(config)
+	if err != nil {
+		return nil, err
+	}
+
+	url.WithQueryParam("q", soql)
+
+	return url, nil
 }
 
 // makeSOQL returns the SOQL query for the desired read operation.

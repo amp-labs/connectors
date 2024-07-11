@@ -30,8 +30,5 @@ func init() {
 			Subscribe: false,
 			Write:     false,
 		},
-		ProviderOpts: ProviderOpts{
-			"restAPIURL": "https://api.outreach.io/api/v2",
-		},
 	})
 }

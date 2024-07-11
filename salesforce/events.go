@@ -186,10 +186,11 @@ func (c *Connector) CreateEventRelayConfig(
 	return cfg, nil
 }
 
+// RunEventRelay
 // nolint: lll
 // https://developer.salesforce.com/docs/atlas.en-us.api_tooling.meta/api_tooling/tooling_api_objects_eventrelayconfig.htm?q=EventRelayConfig
 func (c *Connector) RunEventRelay(ctx context.Context, cfg *EventRelayConfig) error {
-	location, err := joinURLPath("tooling/sobjects/EventRelayConfig", cfg.Id)
+	location, err := c.getURIPartEventRelayConfig(cfg.Id)
 	if err != nil {
 		return err
 	}
@@ -201,7 +202,8 @@ func (c *Connector) RunEventRelay(ctx context.Context, cfg *EventRelayConfig) er
 		},
 	}
 
-	_, err = c.Client.Patch(ctx, location, config) // patch returns no content with 204. If it fails, it will return an error.
+	// patch returns no content with 204. If it fails, it will return an error.
+	_, err = c.Client.Patch(ctx, location.String(), config)
 	if err != nil {
 		slog.Error("Run EventRelayConfig", "error", err)
 
@@ -253,12 +255,12 @@ type Credential interface {
 }
 
 func (c *Connector) postToSFAPI(ctx context.Context, body any, path string, entity string) (*SFAPIResponseBody, error) {
-	location, err := joinURLPath(c.BaseURL, path)
+	location, err := c.getRestApiURL(path)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := c.Client.Post(ctx, location, body)
+	resp, err := c.Client.Post(ctx, location.String(), body)
 	if err != nil {
 		return nil, err
 	}
