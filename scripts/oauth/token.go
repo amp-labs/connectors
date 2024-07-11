@@ -18,6 +18,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/utils"
 	"golang.org/x/oauth2"
@@ -95,11 +96,21 @@ var readers = []utils.Reader{
 		JSONPath: "$['state']",
 		CredKey:  "State",
 	},
+	&utils.JSONReader{
+		FilePath: DefaultCredsFile,
+		JSONPath: "$['userName']",
+		CredKey:  "UserName",
+	},
+	&utils.JSONReader{
+		FilePath: DefaultCredsFile,
+		JSONPath: "$['password']",
+		CredKey:  "Password",
+	},
 }
 
 // OAuthApp is a simple OAuth app that can be used to get an OAuth token.
 type OAuthApp struct {
-	GrantType         providers.OauthOptsGrantType
+	GrantType         providers.Oauth2OptsGrantType
 	Callback          string
 	Port              int
 	Config            *oauth2.Config
@@ -109,6 +120,7 @@ type OAuthApp struct {
 	Proto             string
 	SSLCert           string
 	SSLKey            string
+	PasswordParams    *providers.BasicParams
 }
 
 // ServeHTTP implements the http.Handler interface.
@@ -121,8 +133,7 @@ func (a *OAuthApp) ServeHTTP(writer http.ResponseWriter, request *http.Request) 
 	case request.URL.Path == "/" && request.Method == "GET":
 		// Redirect to the OAuth provider.
 		encState := base64.URLEncoding.EncodeToString([]byte(a.State))
-		url := a.Config.AuthCodeURL(encState, a.Options...)
-		writer.Header().Set("Location", url)
+		writer.Header().Set("Location", a.Config.AuthCodeURL(encState, a.Options...))
 		writer.WriteHeader(http.StatusTemporaryRedirect)
 
 	default:
@@ -200,6 +211,7 @@ func (a *OAuthApp) processCallback(writer http.ResponseWriter, request *http.Req
 func (a *OAuthApp) Run() error {
 	if a.GrantType == providers.ClientCredentials {
 		src := a.ClientCredsConfig.TokenSource(context.Background())
+
 		tok, err := src.Token()
 		if err != nil {
 			return err
@@ -208,6 +220,18 @@ func (a *OAuthApp) Run() error {
 		header := tok.Type() + " " + tok.AccessToken
 		fmt.Println("Expiry: " + tok.Expiry.String())
 		fmt.Println("Authorization: " + header)
+
+		return nil
+	} else if a.GrantType == providers.Password {
+		tok, err := a.Config.PasswordCredentialsToken(context.Background(), a.PasswordParams.User, a.PasswordParams.Pass)
+		if err != nil {
+			return err
+		}
+
+		header := tok.Type() + " " + tok.AccessToken
+		fmt.Println("Expiry: " + tok.Expiry.String())
+		fmt.Println("Authorization: " + header)
+		fmt.Println("Refresh Token: " + tok.RefreshToken)
 
 		return nil
 	} else {
@@ -267,24 +291,18 @@ func setup() *OAuthApp {
 	callback := flag.String("callback", DefaultCallbackPath, "the full OAuth callback path (arbitrary)")
 	flag.Parse()
 
+	if err := registry.AddReaders(readers...); err != nil {
+		return nil
+	}
+
 	substitutions, err := registry.GetMap("Substitutions")
 	if err != nil {
-		slog.Warn("no substitutions, ensure that the provider info doesn't have any {{variables}}")
-	}
-
-	// Cast the substitutions to a map[string]string
-	substitutionsMap := make(map[string]string)
-	for key, val := range substitutions {
-		substitutionsMap[key] = val.MustString()
-	}
-
-	if err = registry.AddReaders(readers...); err != nil {
-		return nil
+		slog.Warn("no substitutions, ensure that the provider info doesn't have any {{variables}}", err)
 	}
 
 	provider := registry.MustString("Provider")
 
-	providerInfo, err := providers.ReadInfo(provider, &substitutionsMap)
+	providerInfo, err := providers.ReadInfo(provider, paramsbuilder.NewCatalogVariables(substitutions)...)
 	if err != nil {
 		slog.Error("failed to read provider config", "error", err)
 
@@ -297,7 +315,7 @@ func setup() *OAuthApp {
 		os.Exit(1)
 	}
 
-	if providerInfo.OauthOpts == nil {
+	if providerInfo.Oauth2Opts == nil {
 		slog.Error("provider does not have OAuth2 options, not compatible with this script", "provider", provider)
 
 		os.Exit(1)
@@ -314,9 +332,9 @@ func setup() *OAuthApp {
 
 	oauthScopes := strings.Split(scopes, ",")
 
-	switch providerInfo.OauthOpts.GrantType {
+	switch providerInfo.Oauth2Opts.GrantType {
 	case providers.AuthorizationCode:
-		if providerInfo.OauthOpts.AuthURL == "" {
+		if providerInfo.Oauth2Opts.AuthURL == "" {
 			slog.Error("provider does not have an AuthURL, not compatible with this script", "provider", provider)
 
 			os.Exit(1)
@@ -351,8 +369,8 @@ func setup() *OAuthApp {
 
 		// Set up the OAuth config based on the provider.
 		app.Config.Endpoint = oauth2.Endpoint{
-			AuthURL:   providerInfo.OauthOpts.AuthURL,
-			TokenURL:  providerInfo.OauthOpts.TokenURL,
+			AuthURL:   providerInfo.Oauth2Opts.AuthURL,
+			TokenURL:  providerInfo.Oauth2Opts.TokenURL,
 			AuthStyle: oauth2.AuthStyleAutoDetect,
 		}
 
@@ -369,7 +387,7 @@ func setup() *OAuthApp {
 			ClientCredsConfig: &clientcredentials.Config{
 				ClientID:     clientId,
 				ClientSecret: clientSecret,
-				TokenURL:     providerInfo.OauthOpts.TokenURL,
+				TokenURL:     providerInfo.Oauth2Opts.TokenURL,
 				Scopes:       oauthScopes,
 				AuthStyle:    oauth2.AuthStyleAutoDetect,
 			},
@@ -378,9 +396,43 @@ func setup() *OAuthApp {
 			app.State = state
 		}
 
-		if providerInfo.OauthOpts.Audience != "" {
-			aud := providerInfo.OauthOpts.Audience
-			app.ClientCredsConfig.EndpointParams = url.Values{"audience": {aud}}
+		if providerInfo.Oauth2Opts.Audience != nil {
+			aud := providerInfo.Oauth2Opts.Audience
+			app.ClientCredsConfig.EndpointParams = url.Values{"audience": aud}
+		}
+
+		return app
+	case providers.Password:
+		state, err := registry.GetString("State")
+		if err != nil {
+			slog.Warn("no state attached, ensure that the provider doesn't require state")
+		}
+
+		username := registry.MustString("UserName")
+		password := registry.MustString("Password")
+
+		app := &OAuthApp{
+			GrantType: providers.Password,
+			Config: &oauth2.Config{
+				ClientID:     clientId,
+				ClientSecret: clientSecret,
+				Scopes:       oauthScopes,
+				Endpoint: oauth2.Endpoint{
+					TokenURL: providerInfo.Oauth2Opts.TokenURL,
+				},
+			},
+			PasswordParams: &providers.BasicParams{
+				User: username,
+				Pass: password,
+			},
+		}
+		if state != "" {
+			app.State = state
+		}
+
+		if providerInfo.Oauth2Opts.Audience != nil {
+			aud := providerInfo.Oauth2Opts.Audience
+			app.ClientCredsConfig.EndpointParams = url.Values{"audience": aud}
 		}
 
 		return app

@@ -3,6 +3,7 @@ package salesloft
 import (
 	"context"
 	"strconv"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -42,6 +43,15 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 	}
 
 	link.WithQueryParam("per_page", strconv.Itoa(DefaultPageSize))
+
+	if !config.Since.IsZero() {
+		// Documentation states ISO8601, while server accepts different formats
+		// but for consistency we are sticking to one format to be sent.
+		// For the reference any API resource that includes time data type mentions iso8601 string format.
+		// One example, say accounts is https://developers.salesloft.com/docs/api/accounts-index
+		updatedSince := config.Since.Format(time.RFC3339Nano)
+		link.WithQueryParam("updated_at[gte]", updatedSince)
+	}
 
 	return link, nil
 }

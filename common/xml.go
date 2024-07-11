@@ -1,7 +1,6 @@
 package common
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -10,8 +9,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/amp-labs/connectors/common/xquery"
 	"github.com/go-playground/validator"
-	"github.com/subchen/go-xmldom"
 )
 
 const (
@@ -23,7 +22,6 @@ const (
 var (
 	//nolint:gochecknoglobals
 	validate          = validator.New()
-	ErrNoXMLRoot      = errors.New("xml document has no root")
 	ErrNotXMLChildren = errors.New("children must be of type 'XMLData' or 'XMLString'")
 	ErrNoSelfClosing  = errors.New("selfClosing cannot be true if children are not present")
 	ErrNoParens       = errors.New("value cannot contain < or >")
@@ -46,15 +44,7 @@ type XMLHTTPResponse struct {
 	Headers http.Header
 
 	// Body is the unmarshalled response body in XML form. Content is the same as bodyBytes
-	Body *xmldom.Document
-}
-
-func (r XMLHTTPResponse) GetRoot() (*xmldom.Node, error) {
-	if r.Body == nil || r.Body.Root == nil {
-		return nil, ErrNoXMLRoot
-	}
-
-	return r.Body.Root, nil
+	Body *xquery.XML
 }
 
 // Get makes a GET request to the given URL and returns the response body as a XML object.
@@ -90,7 +80,7 @@ func parseXMLResponse(res *http.Response, body []byte) (*XMLHTTPResponse, error)
 	}
 
 	// Unmarshall the response body into XML
-	xmlBody, err := xmldom.Parse(bytes.NewReader(body))
+	xmlBody, err := xquery.NewXML(body)
 	if err != nil {
 		return nil, NewHTTPStatusError(res.StatusCode, fmt.Errorf("failed to unmarshall response body into XML: %w", err))
 	}

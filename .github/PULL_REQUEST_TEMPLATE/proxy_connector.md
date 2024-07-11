@@ -1,3 +1,5 @@
+Closes #<issue-number>
+
 ## Testing
 ### GET
 URL: <localhost:4444/v2/some-api-call>

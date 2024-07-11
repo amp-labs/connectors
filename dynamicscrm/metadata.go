@@ -6,7 +6,8 @@ import (
 	"fmt"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/subchen/go-xmldom"
+	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/common/xquery"
 )
 
 var (
@@ -21,6 +22,12 @@ var (
 // so the ListObjectMetadataResult will have display names that look like "accountleads".
 func (c *Connector) ListObjectMetadata(
 	ctx context.Context, objectNames []string,
+) (*common.ListObjectMetadataResult, error) {
+	return c.listObjectMetadata(ctx, naming.NewSingularStrings(objectNames))
+}
+
+func (c *Connector) listObjectMetadata(
+	ctx context.Context, objectNames naming.SingularStrings,
 ) (*common.ListObjectMetadataResult, error) {
 	// Ensure that objectNames is not empty
 	if len(objectNames) == 0 {
@@ -37,12 +44,7 @@ func (c *Connector) ListObjectMetadata(
 		return nil, err
 	}
 
-	root, err := rsp.GetRoot()
-	if err != nil {
-		return nil, err
-	}
-
-	entities, err := extractEntities(root)
+	entities, err := extractEntities(rsp.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -59,44 +61,46 @@ func (c *Connector) ListObjectMetadata(
 }
 
 // collects field properties and groups them in entities, other data in XML is ignored.
-func extractEntities(root *xmldom.Node) (EntitySet, error) {
-	querySchema := fmt.Sprintf("/DataServices/Schema[@Namespace='%v']", CRMMetadataSchemaName)
+func extractEntities(root *xquery.XML) (EntitySet, error) {
+	querySchema := fmt.Sprintf("//edmx:DataServices/Schema[@Namespace='%v']", CRMMetadataSchemaName)
 
-	schema := root.QueryOne(querySchema)
-	if schema == nil {
+	schema := root.FindOne(querySchema)
+	if schema.IsEmpty() {
 		return nil, ErrMissingSchema
 	}
 
 	entities := NewEntitySet()
 	// List all field properties that exist for current schema
 	queryListAllSchemaProperties := fmt.Sprintf(
-		"/DataServices/Schema[@Namespace='%v']/EntityType[*]/Property/@Name", CRMMetadataSchemaName)
-	root.QueryEach(queryListAllSchemaProperties, func(index int, property *xmldom.Node) {
+		"//edmx:DataServices/Schema[@Namespace='%v']/EntityType[*]/Property/@Name", CRMMetadataSchemaName)
+	for _, nameAttr := range root.FindMany(queryListAllSchemaProperties) {
 		// parent of a property is an Entity.
 		// Entity may inherit properties from a parent
 		// We save entity name and the name of its parent, so later we can infer all properties by denormalisation
-		entityName := property.Parent.GetAttributeValue("Name")
-		parentName := property.Parent.GetAttributeValue("BaseType")
+		property := nameAttr.Parent()
+		entityObj := property.Parent()
+		entityName := entityObj.Attr("Name")
+		parentName := entityObj.Attr("BaseType")
 		entity := entities.GetOrCreate(entityName, parentName)
-		propertyName := property.GetAttributeValue("Name")
+		propertyName := property.Attr("Name")
 		entity.AddProperty(propertyName)
-	})
+	}
 
 	queryListAbstractEntities := fmt.Sprintf(
-		"/DataServices/Schema[@Namespace='%v']/EntityType[@Abstract='true']", CRMMetadataSchemaName)
-	root.QueryEach(queryListAbstractEntities, func(index int, abstractEntity *xmldom.Node) {
-		if len(abstractEntity.Children) == 0 {
+		"//edmx:DataServices/Schema[@Namespace='%v']/EntityType[@Abstract='true']", CRMMetadataSchemaName)
+	for _, abstractEntity := range root.FindMany(queryListAbstractEntities) {
+		if !abstractEntity.HasChildren() {
 			// these entities were not included by previous query as they have no properties
 			// we programmatically find these special types, which are "primary values" but for structs
 			// Ex: crmbaseentity, crmmodelbaseentity,
-			entityName := abstractEntity.GetAttributeValue("Name")
+			entityName := abstractEntity.Attr("Name")
 			// effectively only create
 			_ = entities.GetOrCreate(entityName, "")
 		}
-	})
+	}
 
 	// link every child with parent completing hierarchy
-	schemaAlias := schema.GetAttributeValue("Alias")
+	schemaAlias := schema.Attr("Alias")
 	if err := entities.MatchParentsWithChildren(schemaAlias); err != nil {
 		return nil, errors.Join(ErrMetadataProcessing, err)
 	}
@@ -106,13 +110,18 @@ func extractEntities(root *xmldom.Node) (EntitySet, error) {
 
 // Select entities that match entity names of interest.
 // Every property has display identical to itself.
-func convertEntitySetToMetadataSet(names []string, entities EntitySet) (map[string]common.ObjectMetadata, error) {
+func convertEntitySetToMetadataSet(
+	names naming.SingularStrings, entities EntitySet,
+) (map[string]common.ObjectMetadata, error) {
 	result := map[string]common.ObjectMetadata{}
 
 	for _, name := range names {
-		entity, ok := entities[name]
+		nameStrSingle := name.String()
+
+		entity, ok := entities[nameStrSingle]
+
 		if !ok {
-			return nil, fmt.Errorf("unknown entity %v %w", name, ErrObjectNotFound)
+			return nil, fmt.Errorf("unknown entity %v %w", nameStrSingle, ErrObjectNotFound)
 		}
 
 		properties := entity.GetAllProperties()
@@ -122,8 +131,9 @@ func convertEntitySetToMetadataSet(names []string, entities EntitySet) (map[stri
 			fieldsMap[p] = p
 		}
 
-		result[name] = common.ObjectMetadata{
-			DisplayName: name,
+		nameStrPlural := name.Plural().String()
+		result[nameStrPlural] = common.ObjectMetadata{
+			DisplayName: nameStrPlural,
 			FieldsMap:   fieldsMap,
 		}
 	}

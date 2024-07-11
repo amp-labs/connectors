@@ -16,8 +16,7 @@ import (
 )
 
 var (
-	objectName     = "accounts"
-	objectNameMeta = "account"
+	objectName = "accounts"
 )
 
 // we want to compare fields returned by read and schema properties provided by metadata methods
@@ -52,7 +51,7 @@ func main() {
 	beforeCall := time.Now()
 
 	metadata, err := conn.ListObjectMetadata(ctx, []string{
-		objectNameMeta,
+		objectName,
 	})
 	if err != nil {
 		utils.Fail("error listing metadata for microsoft CRM", "error", err)
@@ -64,7 +63,7 @@ func main() {
 
 	data := sanitizeReadResponse(response.Data[0].Raw)
 
-	mismatchErr := mockutils.ValidateReadConformsMetadata(objectNameMeta, data, metadata)
+	mismatchErr := mockutils.ValidateReadConformsMetadata(objectName, data, metadata)
 	if mismatchErr != nil {
 		utils.Fail("schema and payload response have mismatching fields", "error", mismatchErr)
 	} else {
@@ -78,7 +77,10 @@ func sanitizeReadResponse(response map[string]any) map[string]any {
 	for field, v := range response {
 		// ignore all fields that are OData annotations
 		// they are not part of ObjectMetadata
-		if !strings.HasPrefix(field, "@") {
+		lower := strings.ToLower(field)
+
+		isAnnotation := strings.Contains(lower, "@odata") || strings.Contains(lower, "@microsoft.dynamics.crm")
+		if !isAnnotation {
 			crucialFields[field] = v
 		}
 	}

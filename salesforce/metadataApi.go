@@ -8,7 +8,6 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
-	"net/url"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
@@ -19,7 +18,6 @@ import (
 var (
 	ErrCreateMetadata  = errors.New("error in CreateMetadata")
 	ErrCreatingRequest = errors.New("error in creating request")
-	ErrBadRequest      = errors.New("bad request")
 )
 
 func (c *Connector) CreateMetadata(
@@ -68,14 +66,14 @@ func (c *Connector) prepareXMLRequest(
 ) (*http.Request, error) {
 	data := preparePayload(metadata, tok.AccessToken)
 
-	endPointURL, err := url.JoinPath(c.Client.HTTPClient.Base, "services/Soap/m/"+APIVersionSOAP())
+	url, err := c.getDomainURL("services/Soap/m/" + APIVersionSOAP())
 	if err != nil {
 		return nil, errors.Join(ErrCreatingRequest, err)
 	}
 
 	byteData := []byte(data)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, endPointURL, bytes.NewBuffer(byteData))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewBuffer(byteData))
 	if err != nil {
 		return nil, errors.Join(ErrCreatingRequest, err)
 	}

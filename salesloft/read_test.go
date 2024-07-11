@@ -5,9 +5,11 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
@@ -22,6 +24,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseEmptyRead := mockutils.DataFromFile(t, "read-empty.json")
 	responseListPeople := mockutils.DataFromFile(t, "read-list-people.json")
 	responseListUsers := mockutils.DataFromFile(t, "read-list-users.json")
+	responseListAccounts := mockutils.DataFromFile(t, "read-list-accounts.json")
+	responseListAccountsSince := mockutils.DataFromFile(t, "read-list-accounts-since.json")
+	accountsSince, err := time.Parse(time.RFC3339Nano, "2024-06-07T10:51:20.851224-04:00")
+	mockutils.NoErrors(t, err)
 
 	tests := []struct {
 		name         string
@@ -190,6 +196,47 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				}},
 				NextPage: "",
 				Done:     false,
+			},
+			expectedErrs: nil,
+		},
+		{
+			name:  "Successful read accounts without since query",
+			input: common.ReadParams{ObjectName: "accounts"},
+			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("Content-Type", "application/json")
+				mockutils.RespondToMissingQueryParameters(w, r, []string{"updated_at[gte]"}, func() {
+					w.WriteHeader(http.StatusOK)
+					_, _ = w.Write(responseListAccounts)
+				})
+			})),
+			comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
+				return actual.Rows == expected.Rows
+			},
+			expected: &common.ReadResult{
+				Rows: 4,
+			},
+			expectedErrs: nil,
+		},
+		{
+			name: "Successful read accounts since point in time",
+			input: common.ReadParams{
+				ObjectName: "accounts",
+				Since:      accountsSince,
+			},
+			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("Content-Type", "application/json")
+				mockutils.RespondToQueryParameters(w, r, url.Values{
+					"updated_at[gte]": []string{"2024-06-07T10:51:20.851224-04:00"},
+				}, func() {
+					w.WriteHeader(http.StatusOK)
+					_, _ = w.Write(responseListAccountsSince)
+				})
+			})),
+			comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
+				return actual.Rows == expected.Rows
+			},
+			expected: &common.ReadResult{
+				Rows: 2,
 			},
 			expectedErrs: nil,
 		},

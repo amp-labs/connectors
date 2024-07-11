@@ -1,0 +1,44 @@
+name: Publish JSON catalog
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - 'main'
+
+jobs:
+  build:
+    permissions: write-all
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.AMPERSAND_OPS_PAT }}
+          ref: main
+
+      - name: Check for changes in the catalog
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            catalog:
+              - 'providers/*.go'
+
+      - name: Run script if catalog has changed
+        if: steps.filter.outputs.catalog == 'true'
+        run: go run scripts/catalog/json.go
+        shell: bash
+
+      - name: Push changes
+        if: steps.filter.outputs.catalog == 'true'
+        run: |
+          git config --global user.email "devops@withampersand.com"
+          git config --global user.name "Ampersand Ops"
+          git add internal/generated/catalog.json internal/generated/provider_count.go
+          git commit -m "[ampersand-ops] auto: update catalog"
+          git remote set-url origin https://x-access-token:${{ secrets.AMPERSAND_OPS_PAT }}@github.com/${{ github.repository }}
+          git push origin HEAD:main
+        env:
+          GITHUB_TOKEN: ${{ secrets.AMPERSAND_OPS_PAT }}
