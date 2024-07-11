@@ -2,7 +2,6 @@ package salesforce
 
 import (
 	"context"
-	"net/url"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/spyzhov/ajson"
@@ -10,26 +9,18 @@ import (
 
 // Write will write data to Salesforce.
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
-	var (
-		rsp *common.JSONHTTPResponse
-		err error
-	)
-
-	location, joinErr := url.JoinPath(c.BaseURL+"/sobjects", config.ObjectName)
-	if joinErr != nil {
-		return nil, joinErr
+	url, err := c.getRestApiURL("sobjects", config.ObjectName)
+	if err != nil {
+		return nil, err
 	}
 
 	if config.RecordId != "" {
-		location, joinErr = url.JoinPath(location, config.RecordId)
-		if joinErr != nil {
-			return nil, joinErr
-		}
+		url.AddPath(config.RecordId)
 		// Salesforce allows for PATCH method override
-		location += "?_HttpMethod=PATCH"
+		url.WithQueryParam("_HttpMethod", "PATCH")
 	}
 
-	rsp, err = c.Client.Post(ctx, location, config.RecordData)
+	rsp, err := c.Client.Post(ctx, url.String(), config.RecordData)
 	if err != nil {
 		return nil, err
 	}
