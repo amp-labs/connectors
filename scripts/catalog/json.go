@@ -29,7 +29,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	tempFile := "providers/catalog.json"
+	tempFile := "internal/generated/catalog.json"
 
 	err = os.WriteFile(tempFile, bytes, writePerm)
 	if err != nil {
