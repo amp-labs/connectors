@@ -131,3 +131,5 @@ time-formatter/*
 bin/
 
 .env
+
+vendor/
