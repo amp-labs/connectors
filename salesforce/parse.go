@@ -38,7 +38,7 @@ func getNextRecordsURL(node *ajson.Node) (string, error) {
 	return jsonquery.New(node).StrWithDefault("nextRecordsUrl", "")
 }
 
-func getMarshaledData(records []map[string]interface{}, fields []string) ([]common.ReadResultRow, error) {
+func getMarshalledData(records []map[string]interface{}, fields []string) ([]common.ReadResultRow, error) {
 	data := make([]common.ReadResultRow, len(records))
 
 	for i, record := range records {
