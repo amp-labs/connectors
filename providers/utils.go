@@ -107,11 +107,13 @@ func SetInfo(provider Provider, info ProviderInfo) {
 		catalog = make(CatalogType)
 	}
 
+	info.Name = provider
+
 	catalog[provider] = info
 }
 
 // ReadInfo reads the information from the catalog for specific provider. It also performs string substitution
-// on the values in the config that are surrounded by {{}}.
+// on the values in the config that are surrounded by {{}}, if vars are provided.
 // The catalog variable will be applied such that `{{.VAR_NAME}}` string will be replaced with `VAR_VALUE`.
 func ReadInfo(provider Provider, vars ...paramsbuilder.CatalogVariable) (*ProviderInfo, error) {
 	return NewCustomCatalog().ReadInfo(provider, vars...)
@@ -126,6 +128,11 @@ func (c CustomCatalog) ReadInfo(provider Provider, vars ...paramsbuilder.Catalog
 	pInfo, ok := catalogInstance[provider]
 	if !ok {
 		return nil, ErrProviderNotFound
+	}
+
+	// No substitution needed
+	if len(vars) == 0 {
+		return &pInfo, nil
 	}
 
 	// Clone before modifying

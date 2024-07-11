@@ -129,3 +129,5 @@ playground/
 time-formatter/*
 
 bin/
+
+.env

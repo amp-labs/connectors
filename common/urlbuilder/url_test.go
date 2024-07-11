@@ -3,6 +3,7 @@ package urlbuilder
 import (
 	"errors"
 	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -112,6 +113,81 @@ func TestWithQueryParam(t *testing.T) { // nolint:funlen
 
 			if !reflect.DeepEqual(output, tt.expected) {
 				t.Fatalf("%s: expected: (%v), got: (%v)", tt.name, tt.expected, output)
+			}
+		})
+	}
+}
+
+func TestAddPath(t *testing.T) { // nolint:funlen
+	t.Parallel()
+
+	tests := []struct {
+		name     string
+		input    []string
+		expected string
+	}{
+		{
+			name:     "No path",
+			input:    nil,
+			expected: "",
+		},
+		{
+			name:     "Parts without slashes",
+			input:    []string{"carts", "personal", "products"},
+			expected: "/carts/personal/products",
+		},
+		{
+			name:     "Slashes at the beginning/end of URI part",
+			input:    []string{"carts/", "personal/", "/products"},
+			expected: "/carts/personal/products",
+		},
+		{
+			name:     "Double and triple slashes",
+			input:    []string{"carts///", "/personal//", "/products"},
+			expected: "/carts/personal/products",
+		},
+		{
+			name:     "Empty URI parts are ignored",
+			input:    []string{"wishlists", "", "//house", "", "items"},
+			expected: "/wishlists/house/items",
+		},
+		{
+			name:     "Slashes as URI parts are ignored",
+			input:    []string{"coupons", "/", "/", "redeem"},
+			expected: "/coupons/redeem",
+		},
+		{
+			name:     "Trailing slash is missing",
+			input:    []string{"search", "/"},
+			expected: "/search",
+		},
+		{
+			name:     "Trailing slashes are missing",
+			input:    []string{"search", "///"},
+			expected: "/search",
+		},
+	}
+
+	for _, tt := range tests {
+		// nolint:varnamelen
+		tt := tt // rebind, omit loop side effects for parallel goroutine
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			base := "https://google.com"
+			// Deliberately pass extra slashes which should have no effect
+			u, err := New(base + "////")
+			if err != nil {
+				t.Fatalf("bad test (%v)", tt.name)
+			}
+
+			// apply modifications from test scenario
+			fullURL := u.AddPath(tt.input...).String()
+			// We are testing only the path from root.
+			path, _ := strings.CutPrefix(fullURL, base)
+
+			if !reflect.DeepEqual(path, tt.expected) {
+				t.Fatalf("%s: expected: (%v), got: (%v)", tt.name, tt.expected, path)
 			}
 		})
 	}
