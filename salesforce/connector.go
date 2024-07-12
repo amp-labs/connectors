@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers"
 )
@@ -54,7 +55,10 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	}
 
 	conn.setBaseURL(providerInfo.BaseURL)
-	conn.Client.HTTPClient.ErrorHandler = conn.interpretError
+	conn.Client.HTTPClient.ErrorHandler = interpreter.ErrorHandler{
+		JSON: conn.interpretJSONError,
+	}.Handle
+	// attach error post-processing
 	conn.Client.ErrorPostProcessor.Process = handleError
 
 	return conn, nil

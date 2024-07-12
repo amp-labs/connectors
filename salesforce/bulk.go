@@ -30,7 +30,6 @@ const (
 
 var (
 	ErrKeyNotFound          = errors.New("key not found")
-	ErrUnknownNodeType      = errors.New("unknown node type when parsing JSON")
 	ErrInvalidType          = errors.New("invalid type")
 	ErrInvalidJobState      = errors.New("invalid job state")
 	ErrUnsupportedMode      = errors.New("unsupported mode")
