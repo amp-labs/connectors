@@ -4,7 +4,7 @@ const Mixpanel Provider = "mixpanel"
 
 func init() {
 	// Mixpanel configuration
-	// workspace maps to either region(api, api-eu) or server(data,data-eu).
+	// serviceSubdomain cab either be [api, api-eu, data,data-eu].
 	// Supported Mixpanel APIs
 	// -	Ingestion API
 	// -	Identity API
@@ -12,7 +12,7 @@ func init() {
 	// -	Data Pipelines API
 	SetInfo(Mixpanel, ProviderInfo{
 		AuthType: Basic,
-		BaseURL:  "https://{{.workspace}}.mixpanel.com",
+		BaseURL:  "https://{{.serviceSubdomain}}.mixpanel.com",
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
