@@ -3,7 +3,7 @@ package paramsbuilder
 import (
 	"log/slog"
 
-	"github.com/spyzhov/ajson"
+	"github.com/amp-labs/connectors/common/substitutions"
 )
 
 const (
@@ -21,30 +21,24 @@ type SubstitutionPlan struct {
 	To   string
 }
 
-type RegistryValue interface {
-	string | *ajson.Node
-}
-
-type SubstitutionRegistry[V RegistryValue] map[string]V
-
-func NewCatalogSubstitutionRegistry(vars []CatalogVariable) SubstitutionRegistry[string] {
-	substitutions := make(SubstitutionRegistry[string])
+func NewCatalogSubstitutionRegistry(vars []CatalogVariable) substitutions.Registry[string] {
+	subs := make(substitutions.Registry[string])
 
 	for _, variable := range vars {
 		s := variable.GetSubstitutionPlan()
-		substitutions[s.From] = s.To
+		subs[s.From] = s.To
 	}
 
-	return substitutions
+	return subs
 }
 
 // NewCatalogVariables converts JSON into supported list of Catalog Variables.
 // This enforces type checking.
-func NewCatalogVariables[V RegistryValue](registry SubstitutionRegistry[V]) []CatalogVariable {
+func NewCatalogVariables[V substitutions.RegistryValue](registry substitutions.Registry[V]) []CatalogVariable {
 	result := make([]CatalogVariable, 0)
 
 	for key, value := range registry {
-		name := registryValueToString(value)
+		name := substitutions.RegistryValueToString(value)
 
 		switch key {
 		case variableWorkspace:
@@ -55,17 +49,4 @@ func NewCatalogVariables[V RegistryValue](registry SubstitutionRegistry[V]) []Ca
 	}
 
 	return result
-}
-
-func registryValueToString[V RegistryValue](value V) string {
-	var name string
-	if v, ok := any(value).(string); ok {
-		name = v
-	}
-
-	if v, ok := any(value).(*ajson.Node); ok {
-		name = v.MustString()
-	}
-
-	return name
 }
