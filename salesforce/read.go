@@ -60,7 +60,7 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 func makeSOQL(config common.ReadParams) (string, error) {
 	// Make sure we have at least one field
 	if len(config.Fields) == 0 {
-		return "", ErrNoFields
+		return "", common.ErrMissingFields
 	}
 
 	// Get the field set in SOQL format
