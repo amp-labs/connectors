@@ -5,8 +5,9 @@ const WordPress Provider = "wordPress"
 func init() {
 	// WordPress Support configuration
 	SetInfo(WordPress, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://public-api.wordpress.com",
+		DisplayName: "WordPress",
+		AuthType:    Oauth2,
+		BaseURL:     "https://public-api.wordpress.com",
 		Oauth2Opts: &Oauth2Opts{
 			AuthURL:                   "https://public-api.wordpress.com/oauth2/authorize",
 			TokenURL:                  "https://public-api.wordpress.com/oauth2/token",

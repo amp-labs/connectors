@@ -8,8 +8,9 @@ const (
 func init() {
 	// Blueshift configuration
 	SetInfo(Blueshift, ProviderInfo{
-		AuthType: Basic,
-		BaseURL:  "https://api.getblueshift.com/api",
+		DisplayName: "Blueshift",
+		AuthType:    Basic,
+		BaseURL:     "https://api.getblueshift.com/api",
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
@@ -27,8 +28,9 @@ func init() {
 
 	// BlueshiftEU connfiguration
 	SetInfo(BlueshiftEU, ProviderInfo{
-		AuthType: Basic,
-		BaseURL:  "https://api.eu.getblueshift.com/api",
+		DisplayName: "Blueshift (EU)",
+		AuthType:    Basic,
+		BaseURL:     "https://api.eu.getblueshift.com/api",
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,

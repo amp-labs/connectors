@@ -5,8 +5,9 @@ const Salesloft Provider = "salesloft"
 func init() {
 	// Salesloft configuration
 	SetInfo(Salesloft, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://api.salesloft.com",
+		DisplayName: "Salesloft",
+		AuthType:    Oauth2,
+		BaseURL:     "https://api.salesloft.com",
 		Oauth2Opts: &Oauth2Opts{
 			AuthURL:                   "https://accounts.salesloft.com/oauth/authorize",
 			TokenURL:                  "https://accounts.salesloft.com/oauth/token",

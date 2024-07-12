@@ -4,8 +4,9 @@ const OpenAI Provider = "openAI"
 
 func init() {
 	SetInfo(OpenAI, ProviderInfo{
-		AuthType: ApiKey,
-		BaseURL:  "https://api.openai.com",
+		DisplayName: "OpenAI",
+		AuthType:    ApiKey,
+		BaseURL:     "https://api.openai.com",
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Header,
 			Header: &ApiKeyOptsHeader{

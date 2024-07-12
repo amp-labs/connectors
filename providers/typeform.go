@@ -4,8 +4,9 @@ const Typeform Provider = "typeform"
 
 func init() {
 	SetInfo(Typeform, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://api.typeform.com",
+		DisplayName: "Typeform",
+		AuthType:    Oauth2,
+		BaseURL:     "https://api.typeform.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://api.typeform.com/oauth/authorize",

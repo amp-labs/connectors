@@ -5,8 +5,9 @@ const Gmail Provider = "gmail"
 func init() {
 	// GoogleMail Support Configuration
 	SetInfo(Gmail, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://gmail.googleapis.com",
+		DisplayName: "Gmail",
+		AuthType:    Oauth2,
+		BaseURL:     "https://gmail.googleapis.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://accounts.google.com/o/oauth2/v2/auth",

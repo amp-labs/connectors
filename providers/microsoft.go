@@ -5,8 +5,9 @@ const Microsoft Provider = "microsoft"
 func init() {
 	// Microsoft Configuration
 	SetInfo(Microsoft, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://graph.microsoft.com",
+		DisplayName: "Microsoft",
+		AuthType:    Oauth2,
+		BaseURL:     "https://graph.microsoft.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",

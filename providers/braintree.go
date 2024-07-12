@@ -5,8 +5,9 @@ const Braintree Provider = "braintree"
 func init() {
 	// Braintree Configuration
 	SetInfo(Braintree, ProviderInfo{
-		AuthType: Basic,
-		BaseURL:  "https://payments.sandbox.braintree-api.com/graphql",
+		DisplayName: "Braintree",
+		AuthType:    Basic,
+		BaseURL:     "https://payments.sandbox.braintree-api.com/graphql",
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,

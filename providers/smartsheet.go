@@ -5,8 +5,9 @@ const Smartsheet Provider = "smartsheet"
 func init() {
 	// Smartsheet Support Configuration
 	SetInfo(Smartsheet, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://api.smartsheet.com",
+		DisplayName: "Smartsheet",
+		AuthType:    Oauth2,
+		BaseURL:     "https://api.smartsheet.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://app.smartsheet.com/b/authorize",

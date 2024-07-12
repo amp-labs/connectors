@@ -5,8 +5,9 @@ const Zuora Provider = "zuora"
 func init() {
 	// Zuora Configuration
 	SetInfo(Zuora, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://{{.workspace}}.zuora.com",
+		DisplayName: "Zuora",
+		AuthType:    Oauth2,
+		BaseURL:     "https://{{.workspace}}.zuora.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 ClientCredentials,
 			TokenURL:                  "https://{{.workspace}}.zuora.com/oauth/token",

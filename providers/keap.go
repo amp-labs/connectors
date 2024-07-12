@@ -5,9 +5,9 @@ const Keap Provider = "keap"
 func init() {
 	// Keap configuration
 	SetInfo(Keap, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://api.infusionsoft.com",
-
+		DisplayName: "Keap",
+		AuthType:    Oauth2,
+		BaseURL:     "https://api.infusionsoft.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://accounts.infusionsoft.com/app/oauth/authorize",
