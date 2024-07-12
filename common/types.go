@@ -66,7 +66,7 @@ var (
 	ErrMissingRecordID = errors.New("no object ID provided")
 
 	// ErrMissingFields is returned when no fields are provided for reading.
-	ErrMissingFields = errors.New("no fields to select")
+	ErrMissingFields = errors.New("no fields provided in ReadParams")
 
 	// ErrInvalidPathJoin is returned when the path join is invalid.
 	ErrInvalidPathJoin = errors.New("invalid path join")
