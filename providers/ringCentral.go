@@ -5,8 +5,9 @@ const RingCentral Provider = "ringCentral"
 func init() {
 	// RingCentral configuration
 	SetInfo(RingCentral, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://platform.ringcentral.com",
+		DisplayName: "RingCentral",
+		AuthType:    Oauth2,
+		BaseURL:     "https://platform.ringcentral.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 PKCE,
 			AuthURL:                   "https://platform.ringcentral.com/restapi/oauth/authorize",

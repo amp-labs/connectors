@@ -5,8 +5,9 @@ const PowerBI Provider = "powerBI"
 func init() {
 	// PowerBI configuration
 	SetInfo(PowerBI, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://api.powerbi.com",
+		DisplayName: "PowerBI",
+		AuthType:    Oauth2,
+		BaseURL:     "https://api.powerbi.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",

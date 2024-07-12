@@ -5,8 +5,9 @@ const Airtable Provider = "airtable"
 func init() {
 	// Airtable Support Configuration
 	SetInfo(Airtable, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://api.airtable.com",
+		DisplayName: "Airtable",
+		AuthType:    Oauth2,
+		BaseURL:     "https://api.airtable.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 PKCE,
 			AuthURL:                   "https://airtable.com/oauth2/v1/authorize",

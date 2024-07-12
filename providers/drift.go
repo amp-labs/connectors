@@ -5,8 +5,9 @@ const Drift Provider = "drift"
 func init() {
 	// Drift Configuration
 	SetInfo(Drift, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://driftapi.com",
+		DisplayName: "Drift",
+		AuthType:    Oauth2,
+		BaseURL:     "https://driftapi.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://dev.drift.com/authorize",

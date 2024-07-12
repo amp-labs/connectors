@@ -4,8 +4,9 @@ const Freshsales Provider = "freshsales"
 
 func init() {
 	SetInfo(Freshsales, ProviderInfo{
-		AuthType: ApiKey,
-		BaseURL:  "https://{{.workspace}}.myfreshworks.com/crm/sales",
+		DisplayName: "Freshsales",
+		AuthType:    ApiKey,
+		BaseURL:     "https://{{.workspace}}.myfreshworks.com/crm/sales",
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Header,
 			Header: &ApiKeyOptsHeader{

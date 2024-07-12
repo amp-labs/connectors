@@ -4,8 +4,9 @@ const Anthropic Provider = "anthropic"
 
 func init() {
 	SetInfo(Anthropic, ProviderInfo{
-		AuthType: ApiKey,
-		BaseURL:  "https://api.anthropic.com",
+		DisplayName: "Anthropic",
+		AuthType:    ApiKey,
+		BaseURL:     "https://api.anthropic.com",
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Header,
 			Header: &ApiKeyOptsHeader{

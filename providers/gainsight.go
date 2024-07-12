@@ -5,8 +5,9 @@ const Gainsight Provider = "gainsight"
 func init() {
 	// Gainsight configuration
 	SetInfo(Gainsight, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://{{.workspace}}.gainsightcloud.com",
+		DisplayName: "Gainsight",
+		AuthType:    Oauth2,
+		BaseURL:     "https://{{.workspace}}.gainsightcloud.com",
 		Oauth2Opts: &Oauth2Opts{
 			AuthURL:                   "https://{{.workspace}}.gainsightcloud.com/v1/authorize",
 			TokenURL:                  "https://{{.workspace}}.gainsightcloud.com/v1/users/oauth/token",

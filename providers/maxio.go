@@ -4,8 +4,9 @@ const Maxio Provider = "maxio"
 
 func init() {
 	SetInfo(Maxio, ProviderInfo{
-		AuthType: Basic,
-		BaseURL:  "https://{{.workspace}}.chargify.com",
+		DisplayName: "Maxio",
+		AuthType:    Basic,
+		BaseURL:     "https://{{.workspace}}.chargify.com",
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,

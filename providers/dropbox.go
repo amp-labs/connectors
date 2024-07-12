@@ -8,8 +8,9 @@ const (
 func init() {
 	// Dropbox configuration
 	SetInfo(Dropbox, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://api.dropboxapi.com",
+		DisplayName: "Dropbox",
+		AuthType:    Oauth2,
+		BaseURL:     "https://api.dropboxapi.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://www.dropbox.com/oauth2/authorize",

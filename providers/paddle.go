@@ -7,8 +7,9 @@ const (
 
 func init() {
 	SetInfo(PaddleSandbox, ProviderInfo{
-		AuthType: ApiKey,
-		BaseURL:  "https://sandbox-api.paddle.com",
+		DisplayName: "Paddle Sandbox",
+		AuthType:    ApiKey,
+		BaseURL:     "https://sandbox-api.paddle.com",
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Header,
 			Header: &ApiKeyOptsHeader{
@@ -31,8 +32,9 @@ func init() {
 		},
 	})
 	SetInfo(Paddle, ProviderInfo{
-		AuthType: ApiKey,
-		BaseURL:  "https://api.paddle.com",
+		DisplayName: "Paddle",
+		AuthType:    ApiKey,
+		BaseURL:     "https://api.paddle.com",
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Header,
 			Header: &ApiKeyOptsHeader{

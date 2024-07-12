@@ -5,8 +5,9 @@ const MessageBird Provider = "messageBird"
 func init() {
 	// MessageBird configuration
 	SetInfo(MessageBird, ProviderInfo{
-		AuthType: ApiKey,
-		BaseURL:  "https://api.bird.com",
+		DisplayName: "MessageBird",
+		AuthType:    ApiKey,
+		BaseURL:     "https://api.bird.com",
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Header,
 			Header: &ApiKeyOptsHeader{

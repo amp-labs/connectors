@@ -4,8 +4,9 @@ const Freshdesk Provider = "freshdesk"
 
 func init() {
 	SetInfo(Freshdesk, ProviderInfo{
-		AuthType: Basic,
-		BaseURL:  "https://{{.workspace}}.freshdesk.com",
+		DisplayName: "Freshdesk",
+		AuthType:    Basic,
+		BaseURL:     "https://{{.workspace}}.freshdesk.com",
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,

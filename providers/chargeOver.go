@@ -4,8 +4,9 @@ const ChargeOver Provider = "chargeOver"
 
 func init() {
 	SetInfo(ChargeOver, ProviderInfo{
-		AuthType: Basic,
-		BaseURL:  "https://{{.workspace}}.chargeover.com",
+		DisplayName: "ChargeOver",
+		AuthType:    Basic,
+		BaseURL:     "https://{{.workspace}}.chargeover.com",
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,

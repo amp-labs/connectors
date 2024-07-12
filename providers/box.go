@@ -5,8 +5,9 @@ const Box Provider = "box"
 func init() {
 	// Box Configuration
 	SetInfo(Box, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://api.box.com",
+		DisplayName: "Box",
+		AuthType:    Oauth2,
+		BaseURL:     "https://api.box.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://account.box.com/api/oauth2/authorize",
