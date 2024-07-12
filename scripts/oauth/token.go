@@ -374,6 +374,16 @@ func setup() *OAuthApp {
 			AuthStyle: oauth2.AuthStyleAutoDetect,
 		}
 
+		var authCodeOptions []oauth2.AuthCodeOption
+
+		authURLParams := providerInfo.Oauth2Opts.AuthURLParams
+		if authURLParams != nil {
+			for k, v := range authURLParams {
+				option := oauth2.SetAuthURLParam(k, v)
+				app.Options = append(authCodeOptions, option)
+			}
+		}
+
 		return app
 	case providers.ClientCredentials:
 		state, err := registry.GetString("State")
