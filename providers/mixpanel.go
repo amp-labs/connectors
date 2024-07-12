@@ -10,7 +10,6 @@ func init() {
 	// -	Identity API
 	// -	Event Export API
 	// -	Data Pipelines API
-
 	SetInfo(Mixpanel, ProviderInfo{
 		AuthType: Basic,
 		BaseURL:  "https://{{.workspace}}.mixpanel.com",
