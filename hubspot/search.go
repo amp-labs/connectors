@@ -32,7 +32,7 @@ func (c *Connector) Search(ctx context.Context, config SearchParams) (*common.Re
 		getTotalSize,
 		getRecords,
 		getNextRecordsAfter,
-		getMarshaledData,
+		getMarshalledData,
 		config.Fields,
 	)
 }
