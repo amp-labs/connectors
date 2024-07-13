@@ -19,8 +19,6 @@ import (
 func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
-	const workspace = "testWorkspace"
-
 	responseErrorFormat := mockutils.DataFromFile(t, "resource-not-found.json")
 	responseForbiddenError := mockutils.DataFromFile(t, "forbidden.json")
 	responseUsersFirstPage := mockutils.DataFromFile(t, "read-users-1-first-page.json")
@@ -37,7 +35,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		expectedErrs []error
 	}{
 		{
-			name: "Write object must be included",
+			name: "Read object must be included",
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusTeapot)
 			})),
@@ -182,7 +180,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 
 			connector, err := NewConnector(
 				WithAuthenticatedClient(http.DefaultClient),
-				WithWorkspace(workspace),
+				WithWorkspace("test-workspace"),
 			)
 			if err != nil {
 				t.Fatalf("%s: error in test while constructing connector %v", tt.name, err)
