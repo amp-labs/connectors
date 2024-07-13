@@ -2,6 +2,7 @@ package zendesksupport
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -17,28 +18,63 @@ func (*Connector) interpretJSONError(res *http.Response, body []byte) error { //
 
 	var schema common.ErrorDescriptor
 
-	if _, ok := payload["description"]; ok {
+	if _, ok := payload["description"]; schema == nil && ok {
 		apiError := &DescriptiveResponseError{}
 		if err := json.Unmarshal(body, &apiError); err != nil {
-			return fmt.Errorf("interpretJSONError ListError: %w %w", interpreter.ErrUnmarshal, err)
-		}
-
-		schema = apiError
-	} else {
-		apiError := &MessageResponseError{}
-		if err := json.Unmarshal(body, &apiError); err != nil {
-			return fmt.Errorf("interpretJSONError SingleError: %w %w", interpreter.ErrUnmarshal, err)
+			return fmt.Errorf(
+				"interpretJSONError DescriptiveResponseError: %w %w", interpreter.ErrUnmarshal, err)
 		}
 
 		schema = apiError
 	}
 
-	return schema.CombineErr(interpreter.DefaultStatusCodeMappingToErr(res, body))
+	if _, ok := payload["status"]; schema == nil && ok {
+		apiError := &StatusResponseError{}
+		if err := json.Unmarshal(body, &apiError); err != nil {
+			return fmt.Errorf("interpretJSONError StatusResponseError: %w %w", interpreter.ErrUnmarshal, err)
+		}
+
+		schema = apiError
+	}
+
+	// default format
+	if schema == nil {
+		apiError := &MessageResponseError{}
+		if err := json.Unmarshal(body, &apiError); err != nil {
+			return fmt.Errorf("interpretJSONError MessageResponseError: %w %w", interpreter.ErrUnmarshal, err)
+		}
+
+		schema = apiError
+	}
+
+	return schema.CombineErr(statusCodeMapping(res, body))
+}
+
+func statusCodeMapping(res *http.Response, body []byte) error {
+	if res.StatusCode == http.StatusInternalServerError {
+		return common.ErrServer
+	}
+
+	return interpreter.DefaultStatusCodeMappingToErr(res, body)
 }
 
 type DescriptiveResponseError struct {
-	Error       string `json:"error"`
+	descrDetailsError
+	Details map[string][]descrDetailsError `json:"details"`
+}
+
+type descrDetailsError struct {
+	ErrorStr    string `json:"error"`
 	Description string `json:"description"`
+}
+
+func (d descrDetailsError) Error() string {
+	return fmt.Sprintf("[%v]%v", d.ErrorStr, d.Description)
+}
+
+type StatusResponseError struct {
+	Status int    `json:"status"`
+	Error  string `json:"error"`
 }
 
 type MessageResponseError struct {
@@ -49,11 +85,25 @@ type MessageResponseError struct {
 }
 
 func (r DescriptiveResponseError) CombineErr(base error) error {
-	if len(r.Error)+len(r.Description) == 0 {
+	if len(r.ErrorStr)+len(r.Description) == 0 {
 		return base
 	}
 
-	return fmt.Errorf("%w: [%v]%v", base, r.Error, r.Description)
+	details := []error{
+		r.descrDetailsError,
+	}
+
+	for _, list := range r.Details {
+		for _, err := range list {
+			details = append(details, err)
+		}
+	}
+
+	return fmt.Errorf("%w: %w", base, errors.Join(details...))
+}
+
+func (r StatusResponseError) CombineErr(base error) error {
+	return fmt.Errorf("%w: %v", base, r.Error)
 }
 
 func (r MessageResponseError) CombineErr(base error) error {
