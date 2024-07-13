@@ -162,9 +162,9 @@ type WriteResult struct {
 	// RecordId is the ID of the written record.
 	RecordId string `json:"recordId,omitempty"` // optional
 	// Errors is list of error record returned by the API.
-	Errors []interface{} `json:"errors,omitempty"` // optional
+	Errors []any `json:"errors,omitempty"` // optional
 	// Data is a JSON node containing data about the properties that were updated.
-	Data map[string]interface{} `json:"data,omitempty"` // optional
+	Data map[string]any `json:"data,omitempty"` // optional
 }
 
 // DeleteResult is what's returned from deleting data via the Delete call.
