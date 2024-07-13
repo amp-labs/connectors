@@ -9,7 +9,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/credsregistry"
+	"github.com/amp-labs/connectors/common/scanning"
 	"github.com/amp-labs/connectors/outreach"
 	testUtils "github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/utils"
@@ -39,33 +39,33 @@ type EmailAddressUpdate struct {
 }
 
 func GetOutreachConnector(ctx context.Context, filePath string) *outreach.Connector {
-	registry := credsregistry.NewCredentialsRegistry()
+	registry := scanning.NewRegistry()
 
-	readers := []credsregistry.Reader{
-		&credsregistry.JSONReader{
+	readers := []scanning.Reader{
+		&scanning.JSONReader{
 			FilePath: filePath,
 			JSONPath: "$['clientId']",
-			CredKey:  "clientId",
+			KeyName:  "clientId",
 		},
-		&credsregistry.JSONReader{
+		&scanning.JSONReader{
 			FilePath: filePath,
 			JSONPath: "$['clientSecret']",
-			CredKey:  "clientSecret",
+			KeyName:  "clientSecret",
 		},
-		&credsregistry.JSONReader{
+		&scanning.JSONReader{
 			FilePath: filePath,
 			JSONPath: "$['refreshToken']",
-			CredKey:  "refreshToken",
+			KeyName:  "refreshToken",
 		},
-		&credsregistry.JSONReader{
+		&scanning.JSONReader{
 			FilePath: filePath,
 			JSONPath: "$['accessToken']",
-			CredKey:  "accessToken",
+			KeyName:  "accessToken",
 		},
-		&credsregistry.JSONReader{
+		&scanning.JSONReader{
 			FilePath: filePath,
 			JSONPath: "$['provider']",
-			CredKey:  "provider",
+			KeyName:  "provider",
 		},
 	}
 	registry.AddReaders(readers...)

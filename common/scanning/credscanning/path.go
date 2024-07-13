@@ -1,4 +1,4 @@
-package credsregistry
+package credscanning
 
 import (
 	"fmt"

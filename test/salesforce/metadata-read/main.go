@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"os"
 	"os/signal"
 	"syscall"
 
@@ -27,12 +26,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	filePath := os.Getenv("SALESFORCE_CRED_FILE")
-	if filePath == "" {
-		filePath = "./salesforce-creds.json"
-	}
-
-	conn := connTest.GetSalesforceConnector(ctx, filePath)
+	conn := connTest.GetSalesforceConnector(ctx)
 	defer utils.Close(conn)
 
 	response, err := conn.Read(ctx, common.ReadParams{

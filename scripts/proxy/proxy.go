@@ -17,8 +17,9 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/credsregistry"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
+	"github.com/amp-labs/connectors/common/scanning"
+	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/connector"
 	"github.com/amp-labs/connectors/providers"
 	"golang.org/x/oauth2"
@@ -55,68 +56,68 @@ var (
 // Main (no changes needed)
 // ==============================
 
-var registry = credsregistry.NewCredentialsRegistry()
+var registry = scanning.NewRegistry()
 
-var readers = []credsregistry.Reader{
-	&credsregistry.JSONReader{
+var readers = []scanning.Reader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['clientId']",
-		CredKey:  "ClientId",
+		KeyName:  "ClientId",
 	},
-	&credsregistry.JSONReader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['clientSecret']",
-		CredKey:  "ClientSecret",
+		KeyName:  "ClientSecret",
 	},
-	&credsregistry.JSONReader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['scopes']",
-		CredKey:  "Scopes",
+		KeyName:  "Scopes",
 	},
-	&credsregistry.JSONReader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['provider']",
-		CredKey:  "Provider",
+		KeyName:  "Provider",
 	},
-	&credsregistry.JSONReader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['substitutions']",
-		CredKey:  "Substitutions",
+		KeyName:  "Substitutions",
 	},
-	&credsregistry.JSONReader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['accessToken']",
-		CredKey:  "AccessToken",
+		KeyName:  "AccessToken",
 	},
-	&credsregistry.JSONReader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['refreshToken']",
-		CredKey:  "RefreshToken",
+		KeyName:  "RefreshToken",
 	},
-	&credsregistry.JSONReader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['expiry']",
-		CredKey:  "Expiry",
+		KeyName:  "Expiry",
 	},
-	&credsregistry.JSONReader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['expiryFormat']",
-		CredKey:  "ExpiryFormat",
+		KeyName:  "ExpiryFormat",
 	},
-	&credsregistry.JSONReader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['apiKey']",
-		CredKey:  "ApiKey",
+		KeyName:  "ApiKey",
 	},
-	&credsregistry.JSONReader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['userName']",
-		CredKey:  "UserName",
+		KeyName:  "UserName",
 	},
-	&credsregistry.JSONReader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['password']",
-		CredKey:  "Password",
+		KeyName:  "Password",
 	},
 }
 
@@ -252,7 +253,7 @@ func createClientAuthParams(provider string) *ClientAuthParams {
 }
 
 func getTokensFromRegistry() *oauth2.Token {
-	reader, err := credsregistry.NewJSONProviderCredentials(DefaultCredsFile, true)
+	reader, err := credscanning.NewJSONProviderCredentials(DefaultCredsFile, true)
 	if err != nil {
 		panic(err)
 	}

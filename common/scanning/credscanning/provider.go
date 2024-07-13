@@ -1,4 +1,6 @@
-package credsregistry
+// Package credscanning is a wrapper for scanning package.
+// Its focus is on scanning Credentials required for catalog provider.
+package credscanning
 
 import (
 	"errors"
@@ -6,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common/handy"
+	"github.com/amp-labs/connectors/common/scanning"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -16,7 +19,7 @@ var (
 
 // ProviderCredentials is a collection of values for a provider that come either from JSON or ENV.
 type ProviderCredentials struct {
-	Registry       Registry
+	Registry       scanning.Registry
 	ProviderValues map[string]string
 }
 
@@ -59,8 +62,8 @@ func createProviderCreds(
 		return nil, err
 	}
 
-	registry := NewCredentialsRegistry()
-	readers := handy.Lists[Reader]{}
+	registry := scanning.NewRegistry()
+	readers := handy.Lists[scanning.Reader]{}
 
 	// add readers for every field
 	for kind, fieldList := range fields {
@@ -82,7 +85,7 @@ func createProviderCreds(
 	return r, r.loadValues(readers)
 }
 
-func selectReader(field Field, filePath string, providerName string) Reader { // nolint:ireturn
+func selectReader(field Field, filePath string, providerName string) scanning.Reader { // nolint:ireturn
 	if len(filePath) != 0 {
 		return field.GetJSONReader(filePath)
 	}
@@ -90,7 +93,7 @@ func selectReader(field Field, filePath string, providerName string) Reader { //
 	return field.GetENVReader(providerName)
 }
 
-func (r ProviderCredentials) loadValues(readers handy.Lists[Reader]) error {
+func (r ProviderCredentials) loadValues(readers handy.Lists[scanning.Reader]) error {
 	// validate JSON file or ENV has all Required variables
 	missingKeys := make([]string, 0)
 
@@ -108,7 +111,7 @@ func (r ProviderCredentials) loadValues(readers handy.Lists[Reader]) error {
 	}
 
 	if len(missingKeys) != 0 {
-		return fmt.Errorf("%w: %s", ErrKeyNotFound, strings.Join(missingKeys, ","))
+		return fmt.Errorf("%w: %s", scanning.ErrKeyNotFound, strings.Join(missingKeys, ","))
 	}
 
 	// Optional values should be saved too
@@ -131,7 +134,7 @@ func (r ProviderCredentials) Get(field Field) string {
 }
 
 func getProviderName(filePath string) string {
-	registry := NewCredentialsRegistry()
+	registry := scanning.NewRegistry()
 
 	reader := Fields.Provider.GetJSONReader(filePath)
 

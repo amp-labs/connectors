@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/amp-labs/connectors/common/credsregistry"
+	"github.com/amp-labs/connectors/common/scanning"
 	"github.com/amp-labs/connectors/salesforce"
 	testUtils "github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/utils"
@@ -32,7 +32,7 @@ func main() {
 	}
 
 	ampConnectionSchemaReader := testUtils.JSONFileReaders(filePath)
-	credentialsRegistry := credsregistry.NewCredentialsRegistry()
+	credentialsRegistry := scanning.NewRegistry()
 	credentialsRegistry.AddReaders(ampConnectionSchemaReader...)
 	salesforceWorkspace := credentialsRegistry.MustString(utils.WorkspaceRef)
 

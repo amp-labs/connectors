@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/amp-labs/connectors/common/credsregistry"
+	"github.com/amp-labs/connectors/common/scanning"
 	"golang.org/x/oauth2"
 )
 
@@ -20,7 +20,7 @@ var (
 	Provider     = "provider"
 )
 
-func SalesforceOAuthConfigFromRegistry(registry credsregistry.Registry) *oauth2.Config {
+func SalesforceOAuthConfigFromRegistry(registry scanning.Registry) *oauth2.Config {
 	clientId := registry.MustString(ClientId)
 	clientSecret := registry.MustString(ClientSecret)
 	salesforceWorkspace := registry.MustString(WorkspaceRef)
@@ -38,7 +38,7 @@ func SalesforceOAuthConfigFromRegistry(registry credsregistry.Registry) *oauth2.
 	return cfg
 }
 
-func SalesforceOauthTokenFromRegistry(registry credsregistry.Registry) *oauth2.Token {
+func SalesforceOauthTokenFromRegistry(registry scanning.Registry) *oauth2.Token {
 	accessToken := registry.MustString(AccessToken)
 	refreshToken := registry.MustString(RefreshToken)
 
@@ -52,7 +52,7 @@ func SalesforceOauthTokenFromRegistry(registry credsregistry.Registry) *oauth2.T
 	return tok
 }
 
-func HubspotOauthTokenFromRegistry(registry credsregistry.Registry) *oauth2.Token {
+func HubspotOauthTokenFromRegistry(registry scanning.Registry) *oauth2.Token {
 	accessToken := registry.MustString(AccessToken)
 	refreshToken := registry.MustString(RefreshToken)
 
@@ -66,7 +66,7 @@ func HubspotOauthTokenFromRegistry(registry credsregistry.Registry) *oauth2.Toke
 	return tok
 }
 
-func HubspotOAuthConfigFromRegistry(registry credsregistry.Registry) *oauth2.Config {
+func HubspotOAuthConfigFromRegistry(registry scanning.Registry) *oauth2.Config {
 	clientId := registry.MustString(ClientId)
 	clientSecret := registry.MustString(ClientSecret)
 
@@ -93,7 +93,7 @@ func HubspotOAuthConfigFromRegistry(registry credsregistry.Registry) *oauth2.Con
 	return cfg
 }
 
-func SalesloftConfigFromRegistry(registry credsregistry.Registry) *oauth2.Config {
+func SalesloftConfigFromRegistry(registry scanning.Registry) *oauth2.Config {
 	clientId := registry.MustString(ClientId)
 	clientSecret := registry.MustString(ClientSecret)
 
@@ -112,7 +112,7 @@ func SalesloftConfigFromRegistry(registry credsregistry.Registry) *oauth2.Config
 	return cfg
 }
 
-func SalesloftTokenFromRegistry(registry credsregistry.Registry) *oauth2.Token {
+func SalesloftTokenFromRegistry(registry scanning.Registry) *oauth2.Token {
 	accessToken := registry.MustString(AccessToken)
 	refreshToken := registry.MustString(RefreshToken)
 
@@ -126,7 +126,7 @@ func SalesloftTokenFromRegistry(registry credsregistry.Registry) *oauth2.Token {
 	return tok
 }
 
-func OutreachOAuthConfigFromRegistry(registry credsregistry.Registry) *oauth2.Config {
+func OutreachOAuthConfigFromRegistry(registry scanning.Registry) *oauth2.Config {
 	clientId := registry.MustString(ClientId)
 	clientSecret := registry.MustString(ClientSecret)
 
@@ -151,7 +151,7 @@ func OutreachOAuthConfigFromRegistry(registry credsregistry.Registry) *oauth2.Co
 	return cfg
 }
 
-func OutreachOauthTokenFromRegistry(registry credsregistry.Registry) *oauth2.Token {
+func OutreachOauthTokenFromRegistry(registry scanning.Registry) *oauth2.Token {
 	accessToken := registry.MustString(AccessToken)
 	refreshToken := registry.MustString(RefreshToken)
 
@@ -165,7 +165,7 @@ func OutreachOauthTokenFromRegistry(registry credsregistry.Registry) *oauth2.Tok
 	return tok
 }
 
-func IntercomConfigFromRegistry(registry credsregistry.Registry) *oauth2.Config {
+func IntercomConfigFromRegistry(registry scanning.Registry) *oauth2.Config {
 	clientId := registry.MustString(ClientId)
 	clientSecret := registry.MustString(ClientSecret)
 
@@ -184,7 +184,7 @@ func IntercomConfigFromRegistry(registry credsregistry.Registry) *oauth2.Config 
 	return cfg
 }
 
-func IntercomTokenFromRegistry(registry credsregistry.Registry) *oauth2.Token {
+func IntercomTokenFromRegistry(registry scanning.Registry) *oauth2.Token {
 	accessToken := registry.MustString(AccessToken)
 
 	tok := &oauth2.Token{
@@ -195,7 +195,7 @@ func IntercomTokenFromRegistry(registry credsregistry.Registry) *oauth2.Token {
 	return tok
 }
 
-func GongOAuthConfigFromRegistry(registry credsregistry.Registry) *oauth2.Config {
+func GongOAuthConfigFromRegistry(registry scanning.Registry) *oauth2.Config {
 	clientId := registry.MustString(ClientId)
 	clientSecret := registry.MustString(ClientSecret)
 
@@ -224,7 +224,7 @@ func GongOAuthConfigFromRegistry(registry credsregistry.Registry) *oauth2.Config
 	return cfg
 }
 
-func GongOauthTokenFromRegistry(registry credsregistry.Registry) *oauth2.Token {
+func GongOauthTokenFromRegistry(registry scanning.Registry) *oauth2.Token {
 	accessToken := registry.MustString(AccessToken)
 	refreshToken := registry.MustString(RefreshToken)
 
@@ -235,40 +235,6 @@ func GongOauthTokenFromRegistry(registry credsregistry.Registry) *oauth2.Token {
 		RefreshToken: refreshToken,
 		TokenType:    "bearer",
 		Expiry:       expiry,
-	}
-
-	return tok
-}
-
-func ZendeskSupportConfigFromRegistry(registry CredentialsRegistry) *oauth2.Config {
-	clientId := registry.MustString(ClientId)
-	clientSecret := registry.MustString(ClientSecret)
-	workspace := registry.MustString(WorkspaceRef)
-
-	cfg := &oauth2.Config{
-		ClientID:     clientId,
-		ClientSecret: clientSecret,
-		RedirectURL:  fmt.Sprintf("https://%v.zendesk.com", workspace),
-		Endpoint: oauth2.Endpoint{
-			AuthURL:   fmt.Sprintf("https://%v.zendesk.com/oauth/authorizations/new", workspace),
-			TokenURL:  fmt.Sprintf("https://%v.zendesk.com/oauth/tokens", workspace),
-			AuthStyle: oauth2.AuthStyleInParams,
-		},
-		Scopes: []string{
-			"read",
-			"write",
-		},
-	}
-
-	return cfg
-}
-
-func ZendeskSupportTokenFromRegistry(registry CredentialsRegistry) *oauth2.Token {
-	accessToken := registry.MustString(AccessToken)
-
-	tok := &oauth2.Token{
-		AccessToken: accessToken,
-		TokenType:   "bearer",
 	}
 
 	return tok

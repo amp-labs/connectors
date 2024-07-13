@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/amp-labs/connectors/common/credsregistry"
+	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/dynamicscrm"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils"
@@ -13,12 +13,12 @@ import (
 )
 
 func GetMSDynamics365CRMConnector(ctx context.Context) *dynamicscrm.Connector {
-	filePath := credsregistry.LoadPath(providers.DynamicsCRM)
+	filePath := credscanning.LoadPath(providers.DynamicsCRM)
 	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	conn, err := dynamicscrm.NewConnector(
 		dynamicscrm.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
-		dynamicscrm.WithWorkspace(reader.Get(credsregistry.Fields.Workspace)),
+		dynamicscrm.WithWorkspace(reader.Get(credscanning.Fields.Workspace)),
 	)
 
 	if err != nil {
@@ -28,10 +28,10 @@ func GetMSDynamics365CRMConnector(ctx context.Context) *dynamicscrm.Connector {
 	return conn
 }
 
-func getConfig(reader *credsregistry.ProviderCredentials) *oauth2.Config {
+func getConfig(reader *credscanning.ProviderCredentials) *oauth2.Config {
 	return &oauth2.Config{
-		ClientID:     reader.Get(credsregistry.Fields.ClientId),
-		ClientSecret: reader.Get(credsregistry.Fields.ClientSecret),
+		ClientID:     reader.Get(credscanning.Fields.ClientId),
+		ClientSecret: reader.Get(credscanning.Fields.ClientSecret),
 		RedirectURL:  "http://localhost:8080/callbacks/v1/oauth",
 		Endpoint: oauth2.Endpoint{
 			AuthURL:   "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
@@ -40,7 +40,7 @@ func getConfig(reader *credsregistry.ProviderCredentials) *oauth2.Config {
 		},
 		Scopes: []string{
 			fmt.Sprintf("https://%v.crm.dynamics.com/user_impersonation",
-				reader.Get(credsregistry.Fields.Workspace)),
+				reader.Get(credscanning.Fields.Workspace)),
 			"offline_access",
 		},
 	}

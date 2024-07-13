@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors"
-	"github.com/amp-labs/connectors/common/credsregistry"
+	"github.com/amp-labs/connectors/common/scanning"
 	"github.com/amp-labs/connectors/salesforce"
 	testUtils "github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/utils"
@@ -41,7 +41,7 @@ func mainFn() int { //nolint:funlen
 	}
 
 	salesforceEnvVarPrefix := "SALESFORCE_"
-	credentialsRegistry := credsregistry.NewCredentialsRegistry()
+	credentialsRegistry := scanning.NewRegistry()
 
 	envSchema := testUtils.EnvVarsReaders(salesforceEnvVarPrefix)
 	credentialsRegistry.AddReaders(

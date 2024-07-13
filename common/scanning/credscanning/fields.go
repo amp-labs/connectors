@@ -1,10 +1,11 @@
-package credsregistry
+package credscanning
 
 import (
 	"fmt"
 	"strings"
 
 	"github.com/amp-labs/connectors/common/handy"
+	"github.com/amp-labs/connectors/common/scanning"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/iancoleman/strcase"
 )
@@ -92,18 +93,18 @@ type Field struct {
 	SuffixENV string
 }
 
-func (f Field) GetJSONReader(filepath string) *JSONReader {
-	return &JSONReader{
+func (f Field) GetJSONReader(filepath string) *scanning.JSONReader {
+	return &scanning.JSONReader{
 		FilePath: filepath,
 		JSONPath: jsonPathTo(f.PathJSON),
-		CredKey:  f.Name,
+		KeyName:  f.Name,
 	}
 }
 
-func (f Field) GetENVReader(providerName string) *EnvReader {
-	return &EnvReader{
+func (f Field) GetENVReader(providerName string) *scanning.EnvReader {
+	return &scanning.EnvReader{
 		EnvName: envNameFor(providerName, f.SuffixENV),
-		CredKey: f.Name,
+		KeyName: f.Name,
 	}
 }
 
