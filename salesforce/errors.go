@@ -11,11 +11,7 @@ import (
 	"golang.org/x/oauth2"
 )
 
-var (
-	ErrNotArray           = errors.New("records is not an array")
-	ErrNotString          = errors.New("nextRecordsUrl isn't a string")
-	ErrCannotReadMetadata = errors.New("cannot read object metadata, it is possible you don't have the correct permissions set") // nolint:lll
-)
+var ErrCannotReadMetadata = errors.New("cannot read object metadata, it is possible you don't have the correct permissions set") // nolint:lll
 
 type jsonError struct {
 	Message   string `json:"message"`
@@ -53,6 +49,8 @@ func (c *Connector) interpretJSONError(res *http.Response, body []byte) error { 
 		case "INVALID_TYPE":
 			fallthrough
 		case "INVALID_FIELD_FOR_INSERT_UPDATE":
+			fallthrough
+		case "MALFORMED_QUERY":
 			fallthrough
 		case "INVALID_FIELD":
 			return createError(common.ErrBadRequest, sfErr)

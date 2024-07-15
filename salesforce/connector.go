@@ -12,7 +12,9 @@ import (
 const (
 	apiVersion                 = "59.0"
 	versionPrefix              = "v"
-	restAPISuffix              = "/services/data/" + apiVersion
+	version                    = versionPrefix + apiVersion
+	restAPISuffix              = "/services/data/" + version
+	uriSobjects                = restAPISuffix + "/sobjects"
 	uriToolingEventRelayConfig = "tooling/sobjects/EventRelayConfig"
 )
 
@@ -20,10 +22,6 @@ const (
 type Connector struct {
 	BaseURL string
 	Client  *common.JSONHTTPClient
-}
-
-func APIVersion() string {
-	return versionPrefix + apiVersion
 }
 
 func APIVersionSOAP() string {
@@ -90,6 +88,10 @@ func (c *Connector) getDomainURL(paths ...string) (*urlbuilder.URL, error) {
 // https://developer.salesforce.com/docs/atlas.en-us.api_tooling.meta/api_tooling/tooling_api_objects_eventrelayconfig.htm?q=EventRelayConfig
 func (c *Connector) getURIPartEventRelayConfig(paths ...string) (*urlbuilder.URL, error) {
 	return constructURL(uriToolingEventRelayConfig, paths...)
+}
+
+func (c *Connector) getURIPartSobjectsDescribe(objectName string) (*urlbuilder.URL, error) {
+	return constructURL(uriSobjects, objectName, "describe")
 }
 
 func (c *Connector) setBaseURL(newURL string) {
