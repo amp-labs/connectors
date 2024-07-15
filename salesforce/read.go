@@ -2,8 +2,6 @@ package salesforce
 
 import (
 	"context"
-	"fmt"
-	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -12,6 +10,11 @@ import (
 // Read reads data from Salesforce. By default, it will read all rows (backfill). However, if Since is set,
 // it will read only rows that have been updated since the specified time.
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
+	// Make sure we have at least one field
+	if len(config.Fields) == 0 {
+		return nil, common.ErrMissingFields
+	}
+
 	url, err := c.buildReadURL(config)
 	if err != nil {
 		return nil, err
@@ -46,55 +49,23 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 		return nil, err
 	}
 
-	soql, err := makeSOQL(config)
-	if err != nil {
-		return nil, err
-	}
-
-	url.WithQueryParam("q", soql)
+	url.WithQueryParam("q", makeSOQL(config))
 
 	return url, nil
 }
 
 // makeSOQL returns the SOQL query for the desired read operation.
-func makeSOQL(config common.ReadParams) (string, error) {
-	// Make sure we have at least one field
-	if len(config.Fields) == 0 {
-		return "", common.ErrMissingFields
-	}
-
-	// Get the field set in SOQL format
-	fields := getFieldSet(config.Fields)
-
-	hasWhere := false
-	soql := fmt.Sprintf("SELECT %s FROM %s", fields, config.ObjectName)
+func makeSOQL(config common.ReadParams) string {
+	soql := (&soqlBuilder{}).SelectFields(config.Fields).From(config.ObjectName)
 
 	// If Since is not set, then we're doing a backfill. We read all rows (in pages)
 	if !config.Since.IsZero() {
-		soql += " WHERE SystemModstamp > " + config.Since.Format("2006-01-02T15:04:05Z")
-		hasWhere = true
+		soql.Where("SystemModstamp > " + config.Since.Format("2006-01-02T15:04:05Z"))
 	}
 
 	if config.Deleted {
-		if !hasWhere {
-			soql += " WHERE"
-		} else {
-			soql += " AND"
-		}
-
-		soql += " IsDeleted = true"
+		soql.Where("IsDeleted = true")
 	}
 
-	return soql, nil
-}
-
-// getFieldSet returns the field set in SOQL format.
-func getFieldSet(fields []string) string {
-	for _, field := range fields {
-		if field == "*" {
-			return "FIELDS(ALL)"
-		}
-	}
-
-	return strings.Join(fields, ",")
+	return soql.String()
 }
