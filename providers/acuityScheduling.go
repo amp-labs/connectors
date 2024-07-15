@@ -5,8 +5,9 @@ const AcuityScheduling Provider = "acuityScheduling"
 func init() {
 	// AcuityScheduling Configuration
 	SetInfo(AcuityScheduling, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://acuityscheduling.com",
+		DisplayName: "acuity:scheduling",
+		AuthType:    Oauth2,
+		BaseURL:     "https://acuityscheduling.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://acuityscheduling.com/oauth2/authorize",
@@ -21,7 +22,7 @@ func init() {
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,

@@ -4,8 +4,9 @@ const Shopify Provider = "shopify"
 
 func init() {
 	SetInfo(Shopify, ProviderInfo{
-		AuthType: ApiKey,
-		BaseURL:  "https://{{.workspace}}.myshopify.com",
+		DisplayName: "Shopify",
+		AuthType:    ApiKey,
+		BaseURL:     "https://{{.workspace}}.myshopify.com",
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Header,
 			Header: &ApiKeyOptsHeader{

@@ -1,8 +1,6 @@
 package gong
 
 import (
-	"strings"
-
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -35,7 +33,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	}
 
 	// Read provider info
-	providerInfo, err := providers.ReadInfo(conn.Provider(), nil)
+	providerInfo, err := providers.ReadInfo(conn.Provider())
 	if err != nil {
 		return nil, err
 	}
@@ -50,16 +48,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 }
 
 func (c *Connector) getURL(arg string) (*urlbuilder.URL, error) {
-	parts := []string{c.BaseURL, ApiVersion, arg}
-	filtered := make([]string, 0)
-
-	for _, part := range parts {
-		if len(part) != 0 {
-			filtered = append(filtered, part)
-		}
-	}
-
-	return constructURL(strings.Join(filtered, "/"))
+	return constructURL(c.BaseURL, ApiVersion, arg)
 }
 
 func (c *Connector) setBaseURL(newURL string) {

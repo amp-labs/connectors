@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"net/url"
 
 	"github.com/amp-labs/connectors/common"
 )
@@ -21,16 +20,13 @@ var JSONAPIContentTypeHeader = common.Header{ //nolint:gochecknoglobals
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
 	var write common.WriteMethod
 
-	URL, err := url.JoinPath(c.BaseURL, config.ObjectName)
+	url, err := c.getApiURL(config.ObjectName)
 	if err != nil {
 		return nil, err
 	}
 
 	if len(config.RecordId) > 0 {
-		URL, err = url.JoinPath(URL, config.RecordId)
-		if err != nil {
-			return nil, err
-		}
+		url.AddPath(config.RecordId)
 
 		write = c.Client.Patch
 	} else {
@@ -41,7 +37,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 	data := make(map[string]any)
 	data["data"] = config.RecordData
 
-	res, err := write(ctx, URL, data, JSONAPIContentTypeHeader)
+	res, err := write(ctx, url.String(), data, JSONAPIContentTypeHeader)
 	if err != nil {
 		return nil, err
 	}

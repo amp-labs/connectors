@@ -5,8 +5,9 @@ const Monday Provider = "monday"
 func init() {
 	// Monday Configuration
 	SetInfo(Monday, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://api.monday.com",
+		DisplayName: "Monday",
+		AuthType:    Oauth2,
+		BaseURL:     "https://api.monday.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://auth.monday.com/oauth2/authorize",

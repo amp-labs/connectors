@@ -5,8 +5,9 @@ const Timely Provider = "timely"
 func init() {
 	// Timely Configuration
 	SetInfo(Timely, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://api.timelyapp.com",
+		DisplayName: "Timely",
+		AuthType:    Oauth2,
+		BaseURL:     "https://api.timelyapp.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://api.timelyapp.com/1.1/oauth/authorize",

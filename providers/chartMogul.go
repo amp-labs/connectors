@@ -4,8 +4,9 @@ const ChartMogul Provider = "chartMogul"
 
 func init() {
 	SetInfo(ChartMogul, ProviderInfo{
-		AuthType: Basic,
-		BaseURL:  "https://api.chartmogul.com",
+		DisplayName: "ChartMogul",
+		AuthType:    Basic,
+		BaseURL:     "https://api.chartmogul.com",
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,

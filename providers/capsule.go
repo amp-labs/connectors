@@ -5,8 +5,9 @@ const Capsule Provider = "capsule"
 func init() {
 	// Capsule Configuration
 	SetInfo(Capsule, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://api.capsulecrm.com/api",
+		DisplayName: "Capsule",
+		AuthType:    Oauth2,
+		BaseURL:     "https://api.capsulecrm.com/api",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://api.capsulecrm.com/oauth/authorise",

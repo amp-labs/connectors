@@ -5,8 +5,9 @@ const Stripe Provider = "stripe"
 func init() {
 	// Stripe configuration
 	SetInfo(Stripe, ProviderInfo{
-		AuthType: ApiKey,
-		BaseURL:  "https://api.stripe.com",
+		DisplayName: "Stripe",
+		AuthType:    ApiKey,
+		BaseURL:     "https://api.stripe.com",
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Header,
 			Header: &ApiKeyOptsHeader{

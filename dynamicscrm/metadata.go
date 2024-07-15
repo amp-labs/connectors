@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/xquery"
 )
 
@@ -21,6 +22,12 @@ var (
 // so the ListObjectMetadataResult will have display names that look like "accountleads".
 func (c *Connector) ListObjectMetadata(
 	ctx context.Context, objectNames []string,
+) (*common.ListObjectMetadataResult, error) {
+	return c.listObjectMetadata(ctx, naming.NewSingularStrings(objectNames))
+}
+
+func (c *Connector) listObjectMetadata(
+	ctx context.Context, objectNames naming.SingularStrings,
 ) (*common.ListObjectMetadataResult, error) {
 	// Ensure that objectNames is not empty
 	if len(objectNames) == 0 {
@@ -103,13 +110,18 @@ func extractEntities(root *xquery.XML) (EntitySet, error) {
 
 // Select entities that match entity names of interest.
 // Every property has display identical to itself.
-func convertEntitySetToMetadataSet(names []string, entities EntitySet) (map[string]common.ObjectMetadata, error) {
+func convertEntitySetToMetadataSet(
+	names naming.SingularStrings, entities EntitySet,
+) (map[string]common.ObjectMetadata, error) {
 	result := map[string]common.ObjectMetadata{}
 
 	for _, name := range names {
-		entity, ok := entities[name]
+		nameStrSingle := name.String()
+
+		entity, ok := entities[nameStrSingle]
+
 		if !ok {
-			return nil, fmt.Errorf("unknown entity %v %w", name, ErrObjectNotFound)
+			return nil, fmt.Errorf("unknown entity %v %w", nameStrSingle, ErrObjectNotFound)
 		}
 
 		properties := entity.GetAllProperties()
@@ -119,8 +131,9 @@ func convertEntitySetToMetadataSet(names []string, entities EntitySet) (map[stri
 			fieldsMap[p] = p
 		}
 
-		result[name] = common.ObjectMetadata{
-			DisplayName: name,
+		nameStrPlural := name.Plural().String()
+		result[nameStrPlural] = common.ObjectMetadata{
+			DisplayName: nameStrPlural,
 			FieldsMap:   fieldsMap,
 		}
 	}

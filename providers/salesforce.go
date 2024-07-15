@@ -5,8 +5,9 @@ const Salesforce Provider = "salesforce"
 func init() {
 	// Salesforce configuration
 	SetInfo(Salesforce, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://{{.workspace}}.my.salesforce.com",
+		DisplayName: "Salesforce",
+		AuthType:    Oauth2,
+		BaseURL:     "https://{{.workspace}}.my.salesforce.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://{{.workspace}}.my.salesforce.com/services/oauth2/authorize",
@@ -30,10 +31,6 @@ func init() {
 			Read:      true,
 			Subscribe: false,
 			Write:     true,
-		},
-		ProviderOpts: ProviderOpts{
-			"restApiUrl": "https://{{.workspace}}.my.salesforce.com/services/data/v59.0",
-			"domain":     "{{.workspace}}.my.salesforce.com",
 		},
 	})
 }

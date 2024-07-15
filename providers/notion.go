@@ -5,8 +5,9 @@ const Notion Provider = "notion"
 func init() {
 	// Notion Configuration
 	SetInfo(Notion, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://api.notion.com",
+		DisplayName: "Notion",
+		AuthType:    Oauth2,
+		BaseURL:     "https://api.notion.com",
 		Oauth2Opts: &Oauth2Opts{
 			AuthURL:                   "https://api.notion.com/v1/oauth/authorize",
 			TokenURL:                  "https://api.notion.com/v1/oauth/token",
