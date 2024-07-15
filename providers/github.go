@@ -4,8 +4,9 @@ const Github Provider = "github"
 
 func init() {
 	SetInfo(Github, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://api.github.com",
+		DisplayName: "GitHub",
+		AuthType:    Oauth2,
+		BaseURL:     "https://api.github.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://github.com/login/oauth/authorize",

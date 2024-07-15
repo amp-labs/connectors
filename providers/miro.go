@@ -5,8 +5,9 @@ const Miro Provider = "miro"
 func init() {
 	// Miro Support Configuration
 	SetInfo(Miro, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://api.miro.com",
+		DisplayName: "Miro",
+		AuthType:    Oauth2,
+		BaseURL:     "https://api.miro.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://miro.com/oauth/authorize",

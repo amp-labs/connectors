@@ -5,8 +5,9 @@ const AdobeExperiencePlatform Provider = "adobeExperiencePlatform"
 func init() {
 	// AdobeExperiencePlatform 2-legged auth
 	SetInfo(AdobeExperiencePlatform, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://platform.adobe.io",
+		DisplayName: "Adobe Experience Platform",
+		AuthType:    Oauth2,
+		BaseURL:     "https://platform.adobe.io",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 ClientCredentials,
 			TokenURL:                  "https://ims-na1.adobelogin.com/ims/token/v3",

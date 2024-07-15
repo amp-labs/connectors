@@ -5,8 +5,9 @@ const Coda Provider = "coda"
 func init() {
 	// Coda Configuration
 	SetInfo(Coda, ProviderInfo{
-		AuthType: ApiKey,
-		BaseURL:  "https://coda.io/apis",
+		DisplayName: "Coda",
+		AuthType:    ApiKey,
+		BaseURL:     "https://coda.io/apis",
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Header,
 			Header: &ApiKeyOptsHeader{

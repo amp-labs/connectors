@@ -5,8 +5,9 @@ const Attio Provider = "attio"
 func init() {
 	// Attio Configuration
 	SetInfo(Attio, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://api.attio.com",
+		DisplayName: "Attio",
+		AuthType:    Oauth2,
+		BaseURL:     "https://api.attio.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://app.attio.com/authorize",

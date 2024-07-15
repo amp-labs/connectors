@@ -5,8 +5,9 @@ const Apollo = "apollo"
 func init() {
 	// Apollo API Key authentication
 	SetInfo(Apollo, ProviderInfo{
-		AuthType: ApiKey,
-		BaseURL:  "https://api.apollo.io",
+		DisplayName: "Apollo",
+		AuthType:    ApiKey,
+		BaseURL:     "https://api.apollo.io",
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Header,
 			Header: &ApiKeyOptsHeader{

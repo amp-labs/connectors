@@ -8,8 +8,9 @@ const (
 func init() {
 	// Docusign configuration
 	SetInfo(Docusign, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://{{.server}}.docusign.net",
+		DisplayName: "Docusign",
+		AuthType:    Oauth2,
+		BaseURL:     "https://{{.server}}.docusign.net",
 		Oauth2Opts: &Oauth2Opts{
 			AuthURL:                   "https://account.docusign.com/oauth/auth",
 			TokenURL:                  "https://account.docusign.com/oauth/token",
@@ -34,8 +35,9 @@ func init() {
 
 	// Docusign Developer configuration
 	SetInfo(DocusignDeveloper, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://demo.docusign.net",
+		DisplayName: "Docusign Developer",
+		AuthType:    Oauth2,
+		BaseURL:     "https://demo.docusign.net",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://account-d.docusign.com/oauth/auth",

@@ -5,8 +5,9 @@ const Salesflare Provider = "salesflare"
 func init() {
 	// Salesflare configuration
 	SetInfo(Salesflare, ProviderInfo{
-		AuthType: ApiKey,
-		BaseURL:  "https://api.salesflare.com",
+		DisplayName: "Salesflare",
+		AuthType:    ApiKey,
+		BaseURL:     "https://api.salesflare.com",
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Header,
 			Header: &ApiKeyOptsHeader{

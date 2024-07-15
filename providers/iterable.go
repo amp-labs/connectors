@@ -5,8 +5,9 @@ const Iterable Provider = "iterable"
 func init() {
 	// Iterable API Key authentication
 	SetInfo(Iterable, ProviderInfo{
-		AuthType: ApiKey,
-		BaseURL:  "https://api.iterable.com",
+		DisplayName: "Iterable",
+		AuthType:    ApiKey,
+		BaseURL:     "https://api.iterable.com",
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Header,
 			Header: &ApiKeyOptsHeader{

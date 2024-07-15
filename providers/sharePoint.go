@@ -4,8 +4,9 @@ const SharePoint Provider = "sharePoint"
 
 func init() {
 	SetInfo(SharePoint, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://{{.workspace}}.sharepoint.com/_api",
+		DisplayName: "SharePoint",
+		AuthType:    Oauth2,
+		BaseURL:     "https://{{.workspace}}.sharepoint.com/_api",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:              AuthorizationCode,
 			AuthURL:                "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
