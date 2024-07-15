@@ -13,10 +13,7 @@ import (
 
 var (
 	ErrNotArray           = errors.New("records is not an array")
-	ErrNotObject          = errors.New("record isn't an object")
 	ErrNotString          = errors.New("nextRecordsUrl isn't a string")
-	ErrNotBool            = errors.New("done isn't a boolean")
-	ErrNotNumeric         = errors.New("totalSize isn't numeric")
 	ErrCannotReadMetadata = errors.New("cannot read object metadata, it is possible you don't have the correct permissions set") // nolint:lll
 )
 
@@ -54,6 +51,10 @@ func (c *Connector) interpretJSONError(res *http.Response, body []byte) error { 
 		case "REQUEST_LIMIT_EXCEEDED":
 			return createError(common.ErrLimitExceeded, sfErr)
 		case "INVALID_TYPE":
+			fallthrough
+		case "INVALID_FIELD_FOR_INSERT_UPDATE":
+			fallthrough
+		case "INVALID_FIELD":
 			return createError(common.ErrBadRequest, sfErr)
 		default:
 			continue
