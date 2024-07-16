@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/brianvoe/gofakeit/v6"
 	"os"
 	"os/signal"
 	"strings"
@@ -14,6 +13,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	connTest "github.com/amp-labs/connectors/test/zendesksupport"
 	"github.com/amp-labs/connectors/zendesksupport"
+	"github.com/brianvoe/gofakeit/v6"
 )
 
 type brandsPayload struct {
