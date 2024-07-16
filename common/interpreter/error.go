@@ -21,6 +21,7 @@ type FaultyResponseHandler func(res *http.Response, body []byte) error
 // otherwise defaults to general error interpretation.
 type ErrorHandler struct {
 	JSON FaultyResponseHandler
+	XML  FaultyResponseHandler
 }
 
 func (h ErrorHandler) Handle(res *http.Response, body []byte) error {
@@ -31,6 +32,10 @@ func (h ErrorHandler) Handle(res *http.Response, body []byte) error {
 
 	if h.JSON != nil && mediaType == "application/json" {
 		return h.JSON(res, body)
+	}
+
+	if h.XML != nil && (mediaType == "text/xml" || mediaType == "application/xml") {
+		return h.XML(res, body)
 	}
 
 	return common.InterpretError(res, body)

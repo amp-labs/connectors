@@ -60,3 +60,15 @@ func GetSalesforceConnector(ctx context.Context, filePath string) *salesforce.Co
 
 	return conn
 }
+
+func GetSalesforceAccessToken(filePath string) string {
+	registry := utils.NewCredentialsRegistry()
+
+	_ = registry.AddReaders(&utils.JSONReader{
+		FilePath: filePath,
+		JSONPath: "$.accessToken",
+		CredKey:  utils.AccessToken,
+	})
+
+	return registry.MustString(utils.AccessToken)
+}

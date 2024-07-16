@@ -12,13 +12,14 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 	"github.com/go-test/deep"
 )
 
 func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 	t.Parallel()
 
-	responseServerError := mockutils.DataFromFile(t, "server-error.json")
+	responseServerError := testutils.DataFromFile(t, "server-error.json")
 
 	tests := []struct {
 		name         string
