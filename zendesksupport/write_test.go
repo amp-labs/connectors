@@ -12,6 +12,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 	"github.com/go-test/deep"
 )
 
@@ -21,10 +22,10 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 	// server-error.json occurs when trying to Create object without payload name.
 	// ex: for tickets payload must have { "ticket": {...} }
 
-	responseMissingParameterError := mockutils.DataFromFile(t, "missing-parameter.json")
-	responseDuplicateError := mockutils.DataFromFile(t, "duplicate-error.json")
-	responseRecordValidationError := mockutils.DataFromFile(t, "record-validation.json")
-	createBrand := mockutils.DataFromFile(t, "create-brand.json")
+	responseMissingParameterError := testutils.DataFromFile(t, "missing-parameter.json")
+	responseDuplicateError := testutils.DataFromFile(t, "duplicate-error.json")
+	responseRecordValidationError := testutils.DataFromFile(t, "record-validation.json")
+	createBrand := testutils.DataFromFile(t, "create-brand.json")
 
 	tests := []struct {
 		name         string

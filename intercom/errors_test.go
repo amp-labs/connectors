@@ -8,13 +8,13 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
-	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
 func TestInterpretJSONError(t *testing.T) { //nolint:funlen
 	t.Parallel()
 
-	responseNotAcceptable := mockutils.DataFromFile(t, "media-not-acceptable.json")
+	responseNotAcceptable := testutils.DataFromFile(t, "media-not-acceptable.json")
 
 	type input struct {
 		res  *http.Response
