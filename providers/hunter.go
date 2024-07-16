@@ -5,12 +5,15 @@ const Hunter Provider = "hunter"
 func init() {
 	// Hunter Connector Configuration
 	SetInfo(Hunter, ProviderInfo{
-		AuthType: ApiKey,
-		BaseURL:  "https://api.hunter.io/",
+		DisplayName: "Hunter",
+		AuthType:    ApiKey,
+		BaseURL:     "https://api.hunter.io/",
 		ApiKeyOpts: &ApiKeyOpts{
-			Type:           InQuery,
-			QueryParamName: "api_key",
-			DocsURL:        "https://hunter.io/api-documentation#authentication",
+			AttachmentType: Query,
+			Query: &ApiKeyOptsQuery{
+				Name: "api_key",
+			},
+			DocsURL: "https://hunter.io/api-documentation#authentication",
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{

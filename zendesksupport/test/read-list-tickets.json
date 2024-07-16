@@ -1,0 +1,73 @@
+{
+  "tickets": [
+    {
+      "url": "https://d3v-ampersand.zendesk.com/api/v2/tickets/1.json",
+      "id": 1,
+      "external_id": null,
+      "via": {
+        "channel": "sample_ticket",
+        "source": {
+          "from": {},
+          "to": {},
+          "rel": null
+        }
+      },
+      "created_at": "2024-02-15T16:23:07Z",
+      "updated_at": "2024-05-03T15:54:37Z",
+      "generated_timestamp": 1714751677,
+      "type": "incident",
+      "subject": "Updated to: Hello World",
+      "raw_subject": "Updated to: Hello World",
+      "description": "Hi there,\n\nI’m sending an email because I’m having a problem setting up your new product. Can you help me troubleshoot?\n\nThanks,\n The Customer\n\n",
+      "priority": "normal",
+      "status": "open",
+      "recipient": null,
+      "requester_id": 26363597354387,
+      "submitter_id": 26363624373267,
+      "assignee_id": 26363624373267,
+      "organization_id": null,
+      "group_id": 26363643448211,
+      "collaborator_ids": [],
+      "follower_ids": [],
+      "email_cc_ids": [],
+      "forum_topic_id": null,
+      "problem_id": null,
+      "has_incidents": false,
+      "is_public": true,
+      "due_at": null,
+      "tags": [
+        "sample",
+        "support",
+        "zendesk"
+      ],
+      "custom_fields": [
+        {
+          "id": 26363685850259,
+          "value": null
+        },
+        {
+          "id": 26363655924371,
+          "value": null
+        }
+      ],
+      "satisfaction_rating": null,
+      "sharing_agreement_ids": [],
+      "custom_status_id": 26363643424147,
+      "followup_ids": [],
+      "ticket_form_id": 26363596576915,
+      "brand_id": 26363596759827,
+      "allow_channelback": false,
+      "allow_attachments": true,
+      "from_messaging_channel": false
+    }
+  ],
+  "meta": {
+    "has_more": true,
+    "after_cursor": "eyJvIjoibmljZV9pZCIsInYiOiJhUUVBQUFBQUFBQUEifQ==",
+    "before_cursor": "eyJvIjoibmljZV9pZCIsInYiOiJhUUVBQUFBQUFBQUEifQ=="
+  },
+  "links": {
+    "prev": "https://d3v-ampersand.zendesk.com/api/v2/tickets.json?page%5Bbefore%5D=eyJvIjoibmljZV9pZCIsInYiOiJhUUVBQUFBQUFBQUEifQ%3D%3D&page%5Bsize%5D=1",
+    "next": "https://d3v-ampersand.zendesk.com/api/v2/tickets.json?page%5Bafter%5D=eyJvIjoibmljZV9pZCIsInYiOiJhUUVBQUFBQUFBQUEifQ%3D%3D&page%5Bsize%5D=1"
+  }
+}

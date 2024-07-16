@@ -11,29 +11,11 @@ import (
 	"golang.org/x/oauth2"
 )
 
-var (
-	ErrNotArray           = errors.New("records is not an array")
-	ErrNotObject          = errors.New("record isn't an object")
-	ErrNoFields           = errors.New("no fields specified")
-	ErrNotString          = errors.New("nextRecordsUrl isn't a string")
-	ErrNotBool            = errors.New("done isn't a boolean")
-	ErrNotNumeric         = errors.New("totalSize isn't numeric")
-	ErrMissingWorkspace   = errors.New("missing Salesforce workspace name")
-	ErrMissingClient      = errors.New("JSON http client not set")
-	ErrCannotReadMetadata = errors.New("cannot read object metadata, it is possible you don't have the correct permissions set") // nolint:lll
-)
+var ErrCannotReadMetadata = errors.New("cannot read object metadata, it is possible you don't have the correct permissions set") // nolint:lll
 
 type jsonError struct {
 	Message   string `json:"message"`
 	ErrorCode string `json:"errorCode"`
-}
-
-func (c *Connector) interpretError(res *http.Response, body []byte) error {
-	if res.Header.Get("Content-Type") == "application/json" {
-		return c.interpretJSONError(res, body)
-	}
-
-	return common.InterpretError(res, body)
 }
 
 func createError(baseErr error, sfErr jsonError) error {
@@ -44,8 +26,8 @@ func createError(baseErr error, sfErr jsonError) error {
 	return baseErr
 }
 
-func (c *Connector) interpretJSONError(res *http.Response, body []byte) error {
-	errs := []jsonError{}
+func (c *Connector) interpretJSONError(res *http.Response, body []byte) error { // nolint:cyclop
+	var errs []jsonError
 	if err := json.Unmarshal(body, &errs); err != nil {
 		return fmt.Errorf("json.Unmarshal failed: %w", err)
 	}
@@ -64,6 +46,14 @@ func (c *Connector) interpretJSONError(res *http.Response, body []byte) error {
 			return createError(common.ErrInvalidGrant, sfErr)
 		case "REQUEST_LIMIT_EXCEEDED":
 			return createError(common.ErrLimitExceeded, sfErr)
+		case "INVALID_TYPE":
+			fallthrough
+		case "INVALID_FIELD_FOR_INSERT_UPDATE":
+			fallthrough
+		case "MALFORMED_QUERY":
+			fallthrough
+		case "INVALID_FIELD":
+			return createError(common.ErrBadRequest, sfErr)
 		default:
 			continue
 		}

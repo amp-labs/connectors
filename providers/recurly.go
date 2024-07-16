@@ -4,8 +4,9 @@ const Recurly Provider = "recurly"
 
 func init() {
 	SetInfo(Recurly, ProviderInfo{
-		AuthType: Basic,
-		BaseURL:  "https://v3.recurly.com",
+		DisplayName: "Recurly",
+		AuthType:    Basic,
+		BaseURL:     "https://v3.recurly.com",
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,

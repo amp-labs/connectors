@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"net/url"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
@@ -24,22 +23,20 @@ func (c *Connector) ListObjectMetadata(
 
 	// Construct describe requests for each object name
 	for idx, objectName := range objectNames {
-		describeObjectURL, err := url.JoinPath(
-			fmt.Sprintf("/services/data/%s/sobjects/%s/describe", APIVersion(), objectName),
-		)
+		describeObjectURL, err := c.getURIPartSobjectsDescribe(objectName)
 		if err != nil {
 			return nil, err
 		}
 
 		requests[idx] = compositeRequestItem{
 			Method:      "GET",
-			URL:         describeObjectURL,
+			URL:         describeObjectURL.String(),
 			ReferenceId: objectName,
 		}
 	}
 
 	// Construct endpoint for the request
-	compositeRequestEndpoint, err := url.JoinPath(c.BaseURL, "composite")
+	compositeRequestEndpoint, err := c.getRestApiURL("composite")
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +44,7 @@ func (c *Connector) ListObjectMetadata(
 	// Make the request
 	result, err := c.Client.Post(
 		ctx,
-		compositeRequestEndpoint,
+		compositeRequestEndpoint.String(),
 		compositeRequest{
 			CompositeRequest: requests,
 			// If we fail to fetch metadata for one object, we don't want to fail the entire request.
@@ -63,12 +60,12 @@ func (c *Connector) ListObjectMetadata(
 }
 
 // constructResponseMap constructs a map of object names to object metadata from the composite response.
-func constructResponseMap(result *common.JSONHTTPResponse) (*common.ListObjectMetadataResult, error) {
+func constructResponseMap(response *common.JSONHTTPResponse) (*common.ListObjectMetadataResult, error) {
 	objectsMap := &common.ListObjectMetadataResult{}
 	objectsMap.Result = make(map[string]common.ObjectMetadata)
 	objectsMap.Errors = make(map[string]error)
 
-	resp, err := common.UnmarshalJSON[compositeResponse](result)
+	resp, err := common.UnmarshalJSON[compositeResponse](response)
 	if err != nil {
 		return nil, fmt.Errorf("error unmarshalling response from JSON: %w", err)
 	}

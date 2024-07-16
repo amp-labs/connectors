@@ -13,6 +13,10 @@ import (
 	"github.com/amp-labs/connectors/test/utils"
 )
 
+var (
+	objectName = "contacts"
+)
+
 func main() {
 	// Handle Ctrl-C gracefully.
 	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
@@ -30,7 +34,7 @@ func main() {
 	defer utils.Close(conn)
 
 	res, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: "contacts",
+		ObjectName: objectName,
 		Fields: []string{
 			"fullname", "emailaddress1", "fax",
 		},

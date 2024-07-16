@@ -18,6 +18,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/utils"
 	"golang.org/x/oauth2"
@@ -132,8 +133,7 @@ func (a *OAuthApp) ServeHTTP(writer http.ResponseWriter, request *http.Request) 
 	case request.URL.Path == "/" && request.Method == "GET":
 		// Redirect to the OAuth provider.
 		encState := base64.URLEncoding.EncodeToString([]byte(a.State))
-		url := a.Config.AuthCodeURL(encState, a.Options...)
-		writer.Header().Set("Location", url)
+		writer.Header().Set("Location", a.Config.AuthCodeURL(encState, a.Options...))
 		writer.WriteHeader(http.StatusTemporaryRedirect)
 
 	default:
@@ -297,18 +297,12 @@ func setup() *OAuthApp {
 
 	substitutions, err := registry.GetMap("Substitutions")
 	if err != nil {
-		slog.Warn("no substitutions, ensure that the provider info doesn't have any {{variables}}")
-	}
-
-	// Cast the substitutions to a map[string]string
-	substitutionsMap := make(map[string]string)
-	for key, val := range substitutions {
-		substitutionsMap[key] = val.MustString()
+		slog.Warn("no substitutions, ensure that the provider info doesn't have any {{variables}}", err)
 	}
 
 	provider := registry.MustString("Provider")
 
-	providerInfo, err := providers.ReadInfo(provider, &substitutionsMap)
+	providerInfo, err := providers.ReadInfo(provider, paramsbuilder.NewCatalogVariables(substitutions)...)
 	if err != nil {
 		slog.Error("failed to read provider config", "error", err)
 
@@ -380,6 +374,16 @@ func setup() *OAuthApp {
 			AuthStyle: oauth2.AuthStyleAutoDetect,
 		}
 
+		var authCodeOptions []oauth2.AuthCodeOption
+
+		authURLParams := providerInfo.Oauth2Opts.AuthURLParams
+		if authURLParams != nil {
+			for k, v := range authURLParams {
+				option := oauth2.SetAuthURLParam(k, v)
+				app.Options = append(authCodeOptions, option)
+			}
+		}
+
 		return app
 	case providers.ClientCredentials:
 		state, err := registry.GetString("State")
@@ -402,9 +406,9 @@ func setup() *OAuthApp {
 			app.State = state
 		}
 
-		if providerInfo.Oauth2Opts.Audience != "" {
+		if providerInfo.Oauth2Opts.Audience != nil {
 			aud := providerInfo.Oauth2Opts.Audience
-			app.ClientCredsConfig.EndpointParams = url.Values{"audience": {aud}}
+			app.ClientCredsConfig.EndpointParams = url.Values{"audience": aud}
 		}
 
 		return app
@@ -436,9 +440,9 @@ func setup() *OAuthApp {
 			app.State = state
 		}
 
-		if providerInfo.Oauth2Opts.Audience != "" {
+		if providerInfo.Oauth2Opts.Audience != nil {
 			aud := providerInfo.Oauth2Opts.Audience
-			app.ClientCredsConfig.EndpointParams = url.Values{"audience": {aud}}
+			app.ClientCredsConfig.EndpointParams = url.Values{"audience": aud}
 		}
 
 		return app

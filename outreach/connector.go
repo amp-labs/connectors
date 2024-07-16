@@ -1,14 +1,13 @@
 package outreach
 
 import (
-	"fmt"
-
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers"
 )
 
 const (
-	providerOptionRestApiURL = "restAPIURL"
+	apiVersion = "api/v2"
 )
 
 type Connector struct {
@@ -17,45 +16,38 @@ type Connector struct {
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	defer func() {
-		if re := recover(); re != nil {
-			tmp, ok := re.(error)
-			if !ok {
-				panic(re)
-			}
+	defer common.PanicRecovery(func(cause error) {
+		outErr = cause
+		conn = nil
+	})
 
-			outErr = tmp
-			conn = nil
-		}
-	}()
-
-	params := &outreachParams{}
-	for _, opt := range opts {
-		opt(params)
-	}
-
-	var err error
-
-	params, err = params.prepare()
+	params, err := parameters{}.FromOptions(opts...)
 	if err != nil {
 		return nil, err
 	}
 
 	// Read provider info
-	providerInfo, err := providers.ReadInfo(providers.Outreach, nil)
+	providerInfo, err := providers.ReadInfo(providers.Outreach)
 	if err != nil {
 		return nil, err
 	}
 
-	restApi, ok := providerInfo.GetOption(providerOptionRestApiURL)
-	if !ok {
-		return nil, fmt.Errorf("restAPIURL not set: %w", providers.ErrProviderOptionNotFound)
+	conn = &Connector{
+		Client: &common.JSONHTTPClient{
+			HTTPClient: params.Client.Caller,
+		},
 	}
 
-	params.client.HTTPClient.Base = providerInfo.BaseURL
+	conn.setBaseURL(providerInfo.BaseURL)
 
-	return &Connector{
-		Client:  params.client,
-		BaseURL: restApi,
-	}, nil
+	return conn, nil
+}
+
+func (c *Connector) getApiURL(arg string) (*urlbuilder.URL, error) {
+	return constructURL(c.BaseURL, apiVersion, arg)
+}
+
+func (c *Connector) setBaseURL(newURL string) {
+	c.BaseURL = newURL
+	c.Client.HTTPClient.Base = newURL
 }

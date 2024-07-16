@@ -7,8 +7,8 @@ var intercomQueryEncodingExceptions = map[string]string{ //nolint:gochecknogloba
 	"%3D": "=",
 }
 
-func constructURL(base string) (*urlbuilder.URL, error) {
-	link, err := urlbuilder.New(base)
+func constructURL(base string, path ...string) (*urlbuilder.URL, error) {
+	link, err := urlbuilder.New(base, path...)
 	if err != nil {
 		return nil, err
 	}

@@ -16,8 +16,9 @@ func init() {
 		User Privacy
 	*/
 	SetInfo(Amplitude, ProviderInfo{
-		AuthType: Basic,
-		BaseURL:  "https://amplitude.com",
+		DisplayName: "Amplitude",
+		AuthType:    Basic,
+		BaseURL:     "https://amplitude.com",
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,

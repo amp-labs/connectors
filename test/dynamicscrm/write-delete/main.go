@@ -14,6 +14,10 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 )
 
+var (
+	objectName = "leads"
+)
+
 type LeadCreatePayload struct {
 	LastName    string `json:"lastname,omitempty"`
 	FirstName   string `json:"firstname,omitempty"`
@@ -101,7 +105,7 @@ func searchLead(res *common.ReadResult, key, value string) map[string]any {
 
 func readLeads(ctx context.Context, conn *dynamicscrm.Connector) *common.ReadResult {
 	res, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: "leads",
+		ObjectName: objectName,
 		Fields: []string{
 			"leadid", "lastname", "firstname", "companyname", "subject",
 		},
@@ -115,7 +119,7 @@ func readLeads(ctx context.Context, conn *dynamicscrm.Connector) *common.ReadRes
 
 func createLead(ctx context.Context, conn *dynamicscrm.Connector, payload *LeadCreatePayload) {
 	res, err := conn.Write(ctx, common.WriteParams{
-		ObjectName: "leads",
+		ObjectName: objectName,
 		RecordId:   "",
 		RecordData: payload,
 	})
@@ -130,7 +134,7 @@ func createLead(ctx context.Context, conn *dynamicscrm.Connector, payload *LeadC
 
 func updateLead(ctx context.Context, conn *dynamicscrm.Connector, leadID string, payload *LeadUploadPayload) {
 	res, err := conn.Write(ctx, common.WriteParams{
-		ObjectName: "leads",
+		ObjectName: objectName,
 		RecordId:   leadID,
 		RecordData: payload,
 	})
@@ -145,7 +149,7 @@ func updateLead(ctx context.Context, conn *dynamicscrm.Connector, leadID string,
 
 func removeLead(ctx context.Context, conn *dynamicscrm.Connector, leadID string) {
 	res, err := conn.Delete(ctx, common.DeleteParams{
-		ObjectName: "leads",
+		ObjectName: objectName,
 		RecordId:   leadID,
 	})
 	if err != nil {

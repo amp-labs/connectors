@@ -17,8 +17,9 @@ type ParamAssurance interface {
 }
 
 var (
-	ErrMissingClient    = errors.New("http client not set")
-	ErrMissingWorkspace = errors.New("missing workspace name")
+	ErrMissingClient     = errors.New("http client not set")
+	ErrMissingWorkspace  = errors.New("missing workspace name")
+	ErrNoSupportedModule = errors.New("no supported module was chosen")
 )
 
 // Client params sets up authenticated proxy HTTP client
@@ -78,20 +79,57 @@ func (p *Workspace) WithWorkspace(workspaceRef string) {
 	p.Name = workspaceRef
 }
 
+func (p *Workspace) GetSubstitutionPlan() SubstitutionPlan {
+	return SubstitutionPlan{
+		From: variableWorkspace,
+		To:   p.Name,
+	}
+}
+
 // Module params adds suffix to URL controlling API versions.
 // This is relevant where there are several APIs for different product areas or sub-products, and the APIs
 // are versioned differently or have different ways of constructing URLs from object names.
 type Module struct {
-	Suffix string
+	Suffix    string
+	supported []APIModule
+	fallback  *APIModule
 }
 
 func (p *Module) ValidateParams() error {
-	// url suffix may be omitted
+	// making sure the provided module is supported.
+	// If the provided module is not supported, use fallback.
+	if !p.isSupported() {
+		if p.fallback == nil {
+			// not supported and user didn't provide a fallback
+			return ErrNoSupportedModule
+		}
+
+		// replace with fallback module
+		p.Suffix = p.fallback.String()
+
+		// even fallback is not supported
+		if !p.isSupported() {
+			return ErrNoSupportedModule
+		}
+	}
+
 	return nil
 }
 
-func (p *Module) WithModule(module APIModule) {
+func (p *Module) WithModule(module APIModule, supported []APIModule, defaultModule *APIModule) {
 	p.Suffix = module.String()
+	p.supported = supported
+	p.fallback = defaultModule
+}
+
+func (p *Module) isSupported() bool {
+	for _, mod := range p.supported {
+		if p.Suffix == mod.String() {
+			return true
+		}
+	}
+
+	return false
 }
 
 type APIModule struct {

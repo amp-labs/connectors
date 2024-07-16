@@ -5,12 +5,15 @@ const Brevo Provider = "brevo"
 func init() {
 	// Brevo(Sendinblue) configuration
 	SetInfo(Brevo, ProviderInfo{
-		AuthType: ApiKey,
-		BaseURL:  "https://api.brevo.com",
+		DisplayName: "Brevo",
+		AuthType:    ApiKey,
+		BaseURL:     "https://api.brevo.com",
 		ApiKeyOpts: &ApiKeyOpts{
-			Type:       InHeader,
-			HeaderName: "api-key",
-			DocsURL:    "https://developers.brevo.com/docs/getting-started",
+			AttachmentType: Header,
+			Header: &ApiKeyOptsHeader{
+				Name: "api-key",
+			},
+			DocsURL: "https://developers.brevo.com/docs/getting-started",
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
