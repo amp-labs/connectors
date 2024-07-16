@@ -174,8 +174,14 @@ type BasicParams struct {
 
 // OAuth2AuthCodeParams is the parameters to create an OAuth2 auth code client.
 type OAuth2AuthCodeParams struct {
-	Config *oauth2.Config
-	Token  *oauth2.Token
+	Config  *oauth2.Config
+	Token   *oauth2.Token
+	Options []common.OAuthOption
+}
+
+type OAuth2ClientCredentialsParams struct {
+	Config  *clientcredentials.Config
+	Options []common.OAuthOption
 }
 
 // NewClientParams is the parameters to create a new HTTP client.
@@ -193,7 +199,7 @@ type NewClientParams struct {
 
 	// OAuth2ClientCreds is the client credentials to use for the client.
 	// If the provider uses client credentials, this field must be set.
-	OAuth2ClientCreds *clientcredentials.Config
+	OAuth2ClientCreds *OAuth2ClientCredentialsParams
 
 	// OAuth2AuthCodeCreds is the auth code credentials to use for the client.
 	// If the provider uses auth code, this field must be set.
@@ -318,6 +324,8 @@ func createOAuth2AuthCodeHTTPClient( //nolint:ireturn
 		options = append(options, common.WithOAuthDebug(common.PrintRequestAndResponse))
 	}
 
+	options = append(options, cfg.Options...)
+
 	oauthClient, err := common.NewOAuthHTTPClient(ctx, options...)
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create oauth2 client: %w", ErrClient, err)
@@ -330,16 +338,18 @@ func createOAuth2ClientCredentialsHTTPClient( //nolint:ireturn
 	ctx context.Context,
 	client *http.Client,
 	dbg bool,
-	cfg *clientcredentials.Config,
+	cfg *OAuth2ClientCredentialsParams,
 ) (common.AuthenticatedHTTPClient, error) {
 	options := []common.OAuthOption{
 		common.WithOAuthClient(getClient(client)),
-		common.WithTokenSource(cfg.TokenSource(ctx)),
+		common.WithTokenSource(cfg.Config.TokenSource(ctx)),
 	}
 
 	if dbg {
 		options = append(options, common.WithOAuthDebug(common.PrintRequestAndResponse))
 	}
+
+	options = append(options, cfg.Options...)
 
 	oauthClient, err := common.NewOAuthHTTPClient(ctx, options...)
 	if err != nil {
