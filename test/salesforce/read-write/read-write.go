@@ -5,20 +5,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
-	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/amp-labs/connectors"
-	"github.com/amp-labs/connectors/common/scanning"
-	"github.com/amp-labs/connectors/salesforce"
-	testUtils "github.com/amp-labs/connectors/test/utils"
-	"github.com/amp-labs/connectors/utils"
-	"github.com/joho/godotenv"
+	connTest "github.com/amp-labs/connectors/test/salesforce"
+	"github.com/amp-labs/connectors/test/utils"
 )
-
-// Set the appropriate environment variables in a .env file, then run:
-// go run test/salesforce.go
 
 const TimeoutSeconds = 30
 
@@ -27,54 +22,24 @@ func main() {
 }
 
 func mainFn() int { //nolint:funlen
-	handler := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
-		Level: slog.LevelDebug,
-	})
+	// Handle Ctrl-C gracefully.
+	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer done()
 
-	logger := slog.New(handler)
-	slog.SetDefault(logger)
+	// Set up slog logging.
+	utils.SetupLogging()
 
-	if err := godotenv.Load(); err != nil {
-		slog.Error("Error loading .env file", "error", err)
+	conn := connTest.GetSalesforceConnector(ctx)
+	defer utils.Close(conn)
 
-		return 1
-	}
-
-	salesforceEnvVarPrefix := "SALESFORCE_"
-	credentialsRegistry := scanning.NewRegistry()
-
-	envSchema := testUtils.EnvVarsReaders(salesforceEnvVarPrefix)
-	credentialsRegistry.AddReaders(
-		envSchema...,
-	)
-
-	salesforceWorkspace := credentialsRegistry.MustString(utils.WorkspaceRef)
-
-	cfg := utils.SalesforceOAuthConfigFromRegistry(credentialsRegistry)
-	tok := utils.SalesforceOauthTokenFromRegistry(credentialsRegistry)
-	ctx := context.Background()
-
-	sfc, err := salesforce.NewConnector(
-		salesforce.WithClient(ctx, http.DefaultClient, cfg, tok),
-		salesforce.WithWorkspace(salesforceWorkspace))
-	if err != nil {
-		slog.Error("Error creating Salesforce connector", "error", err)
+	if err := testReadConnector(ctx, conn); err != nil {
+		slog.Error("Error testing", "connector", conn, "error", err)
 
 		return 1
 	}
 
-	defer func() {
-		_ = sfc.Close()
-	}()
-
-	if err := testReadConnector(ctx, sfc); err != nil {
-		slog.Error("Error testing", "connector", sfc, "error", err)
-
-		return 1
-	}
-
-	if err := testWriteConnector(ctx, sfc); err != nil {
-		slog.Error("Error testing", "connector", sfc, "error", err)
+	if err := testWriteConnector(ctx, conn); err != nil {
+		slog.Error("Error testing", "connector", conn, "error", err)
 
 		return 1
 	}
