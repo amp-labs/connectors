@@ -8,6 +8,7 @@ import (
 	"net/url"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/xquery"
 	"golang.org/x/oauth2"
 )
 
@@ -52,6 +53,8 @@ func (c *Connector) interpretJSONError(res *http.Response, body []byte) error { 
 			fallthrough
 		case "MALFORMED_QUERY":
 			fallthrough
+		case "FIELD_INTEGRITY_EXCEPTION":
+			fallthrough
 		case "INVALID_FIELD":
 			return createError(common.ErrBadRequest, sfErr)
 		default:
@@ -75,4 +78,34 @@ func handleError(err error) error {
 	}
 
 	return err
+}
+
+func (c *Connector) interpretXMLError(res *http.Response, body []byte) error {
+	xml, err := xquery.NewXML(body)
+	if err != nil {
+		// Response body cannot be understood in the form of valid XML structure.
+		// Default error handling.
+		return common.InterpretError(res, body)
+	}
+
+	code := xml.FindOne("//faultcode").Text()
+	message := xml.FindOne("//faultstring").Text()
+
+	var matchingErr error
+
+	switch code {
+	case "soapenv:Client":
+		matchingErr = common.ErrBadRequest
+	case "sf:INVALID_SESSION_ID":
+		matchingErr = common.ErrAccessToken
+	}
+
+	if matchingErr == nil {
+		return common.InterpretError(res, body)
+	}
+
+	return createError(matchingErr, jsonError{
+		Message:   message,
+		ErrorCode: code,
+	})
 }

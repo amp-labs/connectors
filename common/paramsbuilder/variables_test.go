@@ -3,6 +3,8 @@ package paramsbuilder
 import (
 	"reflect"
 	"testing"
+
+	"github.com/amp-labs/connectors/common/substitutions"
 )
 
 func TestNewCatalogVariables(t *testing.T) {
@@ -10,12 +12,12 @@ func TestNewCatalogVariables(t *testing.T) {
 
 	tests := []struct {
 		name     string
-		input    SubstitutionRegistry[string]
+		input    substitutions.Registry[string]
 		expected []CatalogVariable
 	}{
 		{
 			name: "Unknown substitutions are not translated to Variables",
-			input: SubstitutionRegistry[string]{
+			input: substitutions.Registry[string]{
 				"insect":  "butterfly",
 				"fish":    "catfish",
 				"nothing": "",
@@ -25,7 +27,7 @@ func TestNewCatalogVariables(t *testing.T) {
 		},
 		{
 			name: "Only workspace Variable is captured",
-			input: SubstitutionRegistry[string]{
+			input: substitutions.Registry[string]{
 				"insect":    "butterfly",
 				"workspace": "office",
 			},
@@ -54,19 +56,19 @@ func TestNewCatalogSubstitutionRegistry(t *testing.T) {
 	tests := []struct {
 		name     string
 		input    []CatalogVariable
-		expected SubstitutionRegistry[string]
+		expected substitutions.Registry[string]
 	}{
 		{
 			name:     "No variables - no substitutions",
 			input:    []CatalogVariable{},
-			expected: SubstitutionRegistry[string]{},
+			expected: substitutions.Registry[string]{},
 		},
 		{
 			name: "Workspace is translated into substitution",
 			input: []CatalogVariable{
 				&Workspace{Name: "cool organization"},
 			},
-			expected: SubstitutionRegistry[string]{
+			expected: substitutions.Registry[string]{
 				variableWorkspace: "cool organization",
 			},
 		},

@@ -13,15 +13,16 @@ import (
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 	"github.com/go-test/deep"
 )
 
 func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
-	responseUnknownObject := mockutils.DataFromFile(t, "unknown-object.json")
-	responseLeadsFirstPage := mockutils.DataFromFile(t, "read-list-leads.json")
-	responseListContacts := mockutils.DataFromFile(t, "read-list-contacts.json")
+	responseUnknownObject := testutils.DataFromFile(t, "unknown-object.json")
+	responseLeadsFirstPage := testutils.DataFromFile(t, "read-list-leads.json")
+	responseListContacts := testutils.DataFromFile(t, "read-list-contacts.json")
 
 	tests := []struct {
 		name         string

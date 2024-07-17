@@ -13,17 +13,18 @@ import (
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 	"github.com/go-test/deep"
 )
 
 func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
-	responseErrorFormat := mockutils.DataFromFile(t, "resource-not-found.json")
-	responseForbiddenError := mockutils.DataFromFile(t, "forbidden.json")
-	responseUsersFirstPage := mockutils.DataFromFile(t, "read-users-1-first-page.json")
-	responseUsersEmptyPage := mockutils.DataFromFile(t, "read-users-2-empty-page.json")
-	responseReadTickets := mockutils.DataFromFile(t, "read-list-tickets.json")
+	responseErrorFormat := testutils.DataFromFile(t, "resource-not-found.json")
+	responseForbiddenError := testutils.DataFromFile(t, "forbidden.json")
+	responseUsersFirstPage := testutils.DataFromFile(t, "read-users-1-first-page.json")
+	responseUsersEmptyPage := testutils.DataFromFile(t, "read-users-2-empty-page.json")
+	responseReadTickets := testutils.DataFromFile(t, "read-list-tickets.json")
 
 	tests := []struct {
 		name         string

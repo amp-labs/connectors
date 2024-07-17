@@ -62,7 +62,7 @@ func (h *HTTPClient) Get(ctx context.Context, url string, headers ...Header) (*h
 // refresh the access token and retry the request. If errorHandler is nil, then the default error
 // handler is used. If not, the caller can inject their own error handling logic.
 func (h *HTTPClient) Post(ctx context.Context,
-	url string, reqBody any, headers ...Header,
+	url string, reqBody []byte, headers ...Header,
 ) (*http.Response, []byte, error) {
 	fullURL, err := h.getURL(url)
 	if err != nil {
@@ -144,7 +144,7 @@ func (h *HTTPClient) httpGet(ctx context.Context,
 
 // httpPost makes a POST request to the given URL and returns the response & response body.
 func (h *HTTPClient) httpPost(ctx context.Context, url string,
-	headers []Header, body any,
+	headers []Header, body []byte,
 ) (*http.Response, []byte, error) {
 	req, err := makePostRequest(ctx, url, headers, body)
 	if err != nil {
@@ -190,7 +190,7 @@ func (h *HTTPClient) httpDelete(ctx context.Context,
 	return h.sendRequest(req)
 }
 
-// makeGetRequest creates a GET request with the given headers.
+// MakeGetRequest creates a GET request with the given headers.
 func MakeGetRequest(ctx context.Context, url string, headers []Header) (*http.Request, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
@@ -200,20 +200,16 @@ func MakeGetRequest(ctx context.Context, url string, headers []Header) (*http.Re
 	return addHeaders(req, headers), nil
 }
 
-// makePostRequest creates a POST request with the given headers and body, and adds the
-// Content-Type header. It then returns the request.
-func makePostRequest(ctx context.Context, url string, headers []Header, body any) (*http.Request, error) {
-	jBody, err := json.Marshal(body)
-	if err != nil {
-		return nil, fmt.Errorf("request body is not valid JSON, body is %v:\n%w", body, err)
-	}
+// makePostRequest creates request that will post bytes of data. If no content type defaults to JSON.
+func makePostRequest(ctx context.Context, url string, headers []Header, data []byte) (*http.Request, error) {
+	buffer := bytes.NewBuffer(data)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(jBody))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, buffer)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
 
-	req.ContentLength = int64(len(jBody))
+	req.ContentLength = int64(len(data))
 
 	return addJSONContentTypeIfNotPresent(addHeaders(req, headers)), nil
 }

@@ -12,15 +12,16 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 	"github.com/go-test/deep"
 )
 
 func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 	t.Parallel()
 
-	listSchema := mockutils.DataFromFile(t, "write-signals-error.json")
-	createAccountRes := mockutils.DataFromFile(t, "write-create-account.json")
-	createTaskRes := mockutils.DataFromFile(t, "write-create-task.json")
+	listSchema := testutils.DataFromFile(t, "write-signals-error.json")
+	createAccountRes := testutils.DataFromFile(t, "write-create-account.json")
+	createTaskRes := testutils.DataFromFile(t, "write-create-task.json")
 
 	tests := []struct {
 		name         string
