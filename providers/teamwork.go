@@ -5,6 +5,7 @@ const Teamwork Provider = "teamwork"
 func init() {
 	// Teamwork Configuration
 	SetInfo(Teamwork, ProviderInfo{
+		DisplayName: "Teamwork",
 		AuthType: Oauth2,
 		BaseURL:  "https://{{.workspace}}.teamwork.com",
 		Oauth2Opts: &Oauth2Opts{
