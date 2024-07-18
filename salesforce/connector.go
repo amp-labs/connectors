@@ -12,18 +12,17 @@ import (
 const (
 	apiVersion                 = "59.0"
 	versionPrefix              = "v"
-	restAPISuffix              = "/services/data/" + apiVersion
+	version                    = versionPrefix + apiVersion
+	restAPISuffix              = "/services/data/" + version
+	uriSobjects                = restAPISuffix + "/sobjects"
 	uriToolingEventRelayConfig = "tooling/sobjects/EventRelayConfig"
 )
 
 // Connector is a Salesforce connector.
 type Connector struct {
-	BaseURL string
-	Client  *common.JSONHTTPClient
-}
-
-func APIVersion() string {
-	return versionPrefix + apiVersion
+	BaseURL   string
+	Client    *common.JSONHTTPClient
+	XMLClient *common.XMLHTTPClient
 }
 
 func APIVersionSOAP() string {
@@ -42,24 +41,32 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		return nil, err
 	}
 
-	// Read provider info & replace catalog variables with given substitutions, if any
-	providerInfo, err := providers.ReadInfo(providers.Salesforce, &params.Workspace)
-	if err != nil {
-		return nil, err
-	}
-
+	httpClient := params.Client.Caller
 	conn = &Connector{
 		Client: &common.JSONHTTPClient{
-			HTTPClient: params.Client.Caller,
+			HTTPClient: httpClient,
+			ErrorPostProcessor: common.ErrorPostProcessor{
+				Process: handleError,
+			},
 		},
+		XMLClient: &common.XMLHTTPClient{
+			HTTPClient: httpClient,
+			ErrorPostProcessor: common.ErrorPostProcessor{
+				Process: handleError,
+			},
+		},
+	}
+
+	providerInfo, err := providers.ReadInfo(conn.Provider(), &params.Workspace)
+	if err != nil {
+		return nil, err
 	}
 
 	conn.setBaseURL(providerInfo.BaseURL)
 	conn.Client.HTTPClient.ErrorHandler = interpreter.ErrorHandler{
 		JSON: conn.interpretJSONError,
+		XML:  conn.interpretXMLError,
 	}.Handle
-	// attach error post-processing
-	conn.Client.ErrorPostProcessor.Process = handleError
 
 	return conn, nil
 }
@@ -86,10 +93,18 @@ func (c *Connector) getDomainURL(paths ...string) (*urlbuilder.URL, error) {
 	return constructURL(c.BaseURL, paths...)
 }
 
+func (c *Connector) getSoapURL() (*urlbuilder.URL, error) {
+	return constructURL(c.BaseURL, "services/Soap/m", APIVersionSOAP())
+}
+
 // nolint: lll
 // https://developer.salesforce.com/docs/atlas.en-us.api_tooling.meta/api_tooling/tooling_api_objects_eventrelayconfig.htm?q=EventRelayConfig
 func (c *Connector) getURIPartEventRelayConfig(paths ...string) (*urlbuilder.URL, error) {
 	return constructURL(uriToolingEventRelayConfig, paths...)
+}
+
+func (c *Connector) getURIPartSobjectsDescribe(objectName string) (*urlbuilder.URL, error) {
+	return constructURL(uriSobjects, objectName, "describe")
 }
 
 func (c *Connector) setBaseURL(newURL string) {

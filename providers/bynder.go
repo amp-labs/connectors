@@ -1,19 +1,18 @@
 package providers
 
-const Discord Provider = "discord"
+const Bynder Provider = "bynder"
 
 func init() {
-	// Discord Support Configuration
-	SetInfo(Discord, ProviderInfo{
-		DisplayName: "Discord",
+	SetInfo(Bynder, ProviderInfo{
+		DisplayName: "bynder",
 		AuthType:    Oauth2,
-		BaseURL:     "https://discord.com",
+		BaseURL:     "https://{{.workspace}}.bynder.com/api",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   "https://discord.com/oauth2/authorize",
-			TokenURL:                  "https://discord.com/api/oauth2/token",
+			AuthURL:                   "https://{{.workspace}}.bynder.com/v6/authentication/oauth2/auth",
+			TokenURL:                  "https://{{.workspace}}.bynder.com/v6/authentication/oauth2/token",
 			ExplicitScopesRequired:    true,
-			ExplicitWorkspaceRequired: false,
+			ExplicitWorkspaceRequired: true,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
 			},

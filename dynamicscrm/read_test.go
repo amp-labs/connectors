@@ -13,13 +13,14 @@ import (
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 	"github.com/go-test/deep"
 )
 
 func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
-	fakeServerResp := mockutils.DataFromFile(t, "read.json")
+	fakeServerResp := testutils.DataFromFile(t, "read.json")
 
 	tests := []struct {
 		name         string

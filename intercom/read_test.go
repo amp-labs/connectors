@@ -13,6 +13,7 @@ import (
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 	"github.com/go-test/deep"
 )
 
@@ -25,13 +26,13 @@ func init() {
 func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
-	responseErrorFormat := mockutils.DataFromFile(t, "page-req-too-large.json")
-	responseContactsFirstPage := mockutils.DataFromFile(t, "read-contacts-1-first-page.json")
-	responseContactsSecondPage := mockutils.DataFromFile(t, "read-contacts-2-second-page.json")
-	responseContactsThirdPage := mockutils.DataFromFile(t, "read-contacts-3-last-page.json")
-	responseReadConversations := mockutils.DataFromFile(t, "read-conversations.json")
-	responseNotesFirstPage := mockutils.DataFromFile(t, "read-notes-1-first-page.json")
-	responseNotesSecondPage := mockutils.DataFromFile(t, "read-notes-2-last-page.json")
+	responseErrorFormat := testutils.DataFromFile(t, "page-req-too-large.json")
+	responseContactsFirstPage := testutils.DataFromFile(t, "read-contacts-1-first-page.json")
+	responseContactsSecondPage := testutils.DataFromFile(t, "read-contacts-2-second-page.json")
+	responseContactsThirdPage := testutils.DataFromFile(t, "read-contacts-3-last-page.json")
+	responseReadConversations := testutils.DataFromFile(t, "read-conversations.json")
+	responseNotesFirstPage := testutils.DataFromFile(t, "read-notes-1-first-page.json")
+	responseNotesSecondPage := testutils.DataFromFile(t, "read-notes-2-last-page.json")
 
 	tests := []struct {
 		name         string

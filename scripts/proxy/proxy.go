@@ -257,6 +257,7 @@ func createClientAuthParams(provider string) *ClientAuthParams {
 func getTokensFromRegistry() *oauth2.Token {
 	accessToken := registry.MustString("AccessToken")
 	refreshToken, err := registry.GetString("RefreshToken")
+
 	if err != nil {
 		// we are working without refresh token
 		return &oauth2.Token{
@@ -459,8 +460,10 @@ func configureOAuthAuthCode(clientId, clientSecret string, scopes []string, prov
 
 func setupOAuth2ClientCredentialsHttpClient(ctx context.Context, prov *providers.ProviderInfo, cfg *clientcredentials.Config) common.AuthenticatedHTTPClient {
 	c, err := prov.NewClient(ctx, &providers.NewClientParams{
-		Debug:             *debug,
-		OAuth2ClientCreds: cfg,
+		Debug: *debug,
+		OAuth2ClientCreds: &providers.OAuth2ClientCredentialsParams{
+			Config: cfg,
+		},
 	})
 	if err != nil {
 		panic(err)

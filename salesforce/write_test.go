@@ -13,16 +13,17 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 	"github.com/go-test/deep"
 )
 
 func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 	t.Parallel()
 
-	responseUnknownField := mockutils.DataFromFile(t, "unknown-field.json")
-	responseInvalidFieldUpsert := mockutils.DataFromFile(t, "invalid-field-upsert.json")
-	responseCreateOK := mockutils.DataFromFile(t, "create-ok.json")
-	responseOKWithErrors := mockutils.DataFromFile(t, "success-with-errors.json")
+	responseUnknownField := testutils.DataFromFile(t, "unknown-field.json")
+	responseInvalidFieldUpsert := testutils.DataFromFile(t, "invalid-field-upsert.json")
+	responseCreateOK := testutils.DataFromFile(t, "create-ok.json")
+	responseOKWithErrors := testutils.DataFromFile(t, "success-with-errors.json")
 
 	tests := []struct {
 		name         string
