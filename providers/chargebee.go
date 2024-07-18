@@ -6,6 +6,7 @@ func init() {
 	// Chargebee connfiguration
 	// workspace maps to site
 	SetInfo(Chargebee, ProviderInfo{
+		DisplayName: "Chargebee",
 		AuthType: Basic,
 		BaseURL:  "https://{{.workspace}}.chargebee.com/api",
 		Support: Support{
