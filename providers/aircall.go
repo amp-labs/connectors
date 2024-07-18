@@ -5,8 +5,9 @@ const Aircall Provider = "aircall"
 func init() {
 	// Aircall Configuration
 	SetInfo(Aircall, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://api.aircall.io",
+		DisplayName: "Aircall",
+		AuthType:    Oauth2,
+		BaseURL:     "https://api.aircall.io",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://dashboard.aircall.io/oauth/authorize",

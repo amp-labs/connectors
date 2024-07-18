@@ -5,8 +5,9 @@ const CampaignMonitor Provider = "campaignMonitor"
 func init() {
 	// CampaignMonitor Configuration
 	SetInfo(CampaignMonitor, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://api.createsend.com",
+		DisplayName: "Campaign Monitor",
+		AuthType:    Oauth2,
+		BaseURL:     "https://api.createsend.com",
 		Oauth2Opts: &Oauth2Opts{
 			AuthURL:                   "https://api.createsend.com/oauth",
 			TokenURL:                  "https://api.createsend.com/oauth/token",

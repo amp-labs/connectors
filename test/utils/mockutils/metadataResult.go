@@ -3,6 +3,7 @@ package mockutils
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 )
@@ -49,26 +50,43 @@ func (metadataResultComparator) SubsetFields(actual, expected *common.ListObject
 func ValidateReadConformsMetadata(objectName string,
 	readResponse map[string]any, metadata *common.ListObjectMetadataResult,
 ) error {
-	fields := make(map[string]bool)
+	fields := make(checkList)
 
 	for field := range readResponse {
-		fields[field] = false
+		fields.Add(field)
 	}
 
 	mismatch := make([]error, 0)
 
-	for _, displayName := range metadata.Result[objectName].FieldsMap {
-		if _, found := fields[displayName]; found {
-			fields[displayName] = true
-		}
+	objectName = strings.ToLower(objectName)
+	for name := range metadata.Result[objectName].FieldsMap {
+		fields.CheckIfExists(name)
 	}
 
 	// every field from Read must be known to ListObjectMetadata
-	for name, found := range fields {
-		if !found {
+	for name, checked := range fields {
+		if !checked {
 			mismatch = append(mismatch, fmt.Errorf("metadata schema is missing field %v", name))
 		}
 	}
 
 	return errors.Join(mismatch...)
+}
+
+type checkList map[string]bool
+
+func (l checkList) Add(value string) {
+	l[strings.ToLower(value)] = false
+}
+
+func (l checkList) Has(value string) bool {
+	_, found := l[strings.ToLower(value)]
+
+	return found
+}
+
+func (l checkList) CheckIfExists(value string) {
+	if l.Has(value) {
+		l[strings.ToLower(value)] = true
+	}
 }

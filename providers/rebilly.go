@@ -5,8 +5,9 @@ const Rebilly Provider = "rebilly"
 func init() {
 	// Rebilly Configuration
 	SetInfo(Rebilly, ProviderInfo{
-		AuthType: ApiKey,
-		BaseURL:  "https://api.rebilly.com",
+		DisplayName: "Rebilly",
+		AuthType:    ApiKey,
+		BaseURL:     "https://api.rebilly.com",
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Header,
 			Header: &ApiKeyOptsHeader{

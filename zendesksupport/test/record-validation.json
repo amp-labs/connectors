@@ -1,0 +1,24 @@
+{
+  "error": "RecordInvalid",
+  "description": "Record validation errors",
+  "details": {
+    "route.subdomain": [
+      {
+        "description": "Subdomain: is invalid (three or more letters and numbers only, without spaces)",
+        "error": "InvalidValue"
+      }
+    ],
+    "recipient_addresses.email": [
+      {
+        "description": "Email is not properly formatted",
+        "error": "InvalidFormat"
+      }
+    ],
+    "name": [
+      {
+        "description": "Name: cannot be blank",
+        "error": "BlankValue"
+      }
+    ]
+  }
+}

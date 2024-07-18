@@ -5,8 +5,9 @@ const Jotform Provider = "jotform"
 func init() {
 	// Jotform API Key authentication
 	SetInfo(Jotform, ProviderInfo{
-		AuthType: ApiKey,
-		BaseURL:  "https://api.jotform.com",
+		DisplayName: "Jotform",
+		AuthType:    ApiKey,
+		BaseURL:     "https://api.jotform.com",
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Query,
 			Query: &ApiKeyOptsQuery{

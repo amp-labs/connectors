@@ -460,8 +460,10 @@ func configureOAuthAuthCode(clientId, clientSecret string, scopes []string, prov
 
 func setupOAuth2ClientCredentialsHttpClient(ctx context.Context, prov *providers.ProviderInfo, cfg *clientcredentials.Config) common.AuthenticatedHTTPClient {
 	c, err := prov.NewClient(ctx, &providers.NewClientParams{
-		Debug:             *debug,
-		OAuth2ClientCreds: cfg,
+		Debug: *debug,
+		OAuth2ClientCreds: &providers.OAuth2ClientCredentialsParams{
+			Config: cfg,
+		},
 	})
 	if err != nil {
 		panic(err)

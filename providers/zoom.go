@@ -5,8 +5,9 @@ const Zoom Provider = "zoom"
 func init() {
 	// Zoom configuration
 	SetInfo(Zoom, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://api.zoom.us",
+		DisplayName: "Zoom",
+		AuthType:    Oauth2,
+		BaseURL:     "https://api.zoom.us",
 		Oauth2Opts: &Oauth2Opts{
 			AuthURL:                   "https://zoom.us/oauth/authorize",
 			TokenURL:                  "https://zoom.us/oauth/token",

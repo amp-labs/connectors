@@ -5,8 +5,9 @@ const ServiceNow Provider = "serviceNow"
 func init() {
 	// ServiceNow configuration
 	SetInfo(ServiceNow, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://{{.workspace}}.service-now.com",
+		DisplayName: "ServiceNow",
+		AuthType:    Oauth2,
+		BaseURL:     "https://{{.workspace}}.service-now.com",
 		Oauth2Opts: &Oauth2Opts{
 			AuthURL:                   "https://{{.workspace}}.service-now.com/oauth_auth.do",
 			TokenURL:                  "https://{{.workspace}}.service-now.com/oauth_token.do",
@@ -24,7 +25,7 @@ func init() {
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,

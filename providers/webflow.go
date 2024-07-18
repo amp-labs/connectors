@@ -5,8 +5,9 @@ const Webflow Provider = "webflow"
 func init() {
 	// Webflow Support Configuration
 	SetInfo(Webflow, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://api.webflow.com",
+		DisplayName: "Webflow",
+		AuthType:    Oauth2,
+		BaseURL:     "https://api.webflow.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://webflow.com/oauth/authorize",

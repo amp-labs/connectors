@@ -7,8 +7,9 @@ const (
 func init() {
 	// Gorgias Support Configuration
 	SetInfo(Gorgias, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://{{.workspace}}.gorgias.com",
+		DisplayName: "Gorgias",
+		AuthType:    Oauth2,
+		BaseURL:     "https://{{.workspace}}.gorgias.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://{{.workspace}}.gorgias.com/oauth/authorize",

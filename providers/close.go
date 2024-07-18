@@ -5,8 +5,9 @@ const Close Provider = "close"
 func init() {
 	// Close Configuration
 	SetInfo(Close, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://api.close.com/api",
+		DisplayName: "Close",
+		AuthType:    Oauth2,
+		BaseURL:     "https://api.close.com/api",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://app.close.com/oauth2/authorize",

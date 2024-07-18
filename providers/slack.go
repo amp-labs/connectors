@@ -5,8 +5,9 @@ const Slack Provider = "slack"
 func init() {
 	// Slack configuration
 	SetInfo(Slack, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://slack.com/api",
+		DisplayName: "Slack",
+		AuthType:    Oauth2,
+		BaseURL:     "https://slack.com/api",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://slack.com/oauth/v2/authorize",

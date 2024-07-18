@@ -5,8 +5,9 @@ const Calendly Provider = "calendly"
 func init() {
 	// Calendly Configuration
 	SetInfo(Calendly, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://api.calendly.com",
+		DisplayName: "Calendly",
+		AuthType:    Oauth2,
+		BaseURL:     "https://api.calendly.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://auth.calendly.com/oauth/authorize",

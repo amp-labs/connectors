@@ -6,8 +6,9 @@ func init() {
 	// Instagram Configuration
 	// TODO: Supports only short-lived tokens
 	SetInfo(Instagram, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://graph.instagram.com",
+		DisplayName: "Instagram",
+		AuthType:    Oauth2,
+		BaseURL:     "https://graph.instagram.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://api.instagram.com/oauth/authorize",

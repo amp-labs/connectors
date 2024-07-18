@@ -5,8 +5,9 @@ const Klaviyo Provider = "klaviyo"
 func init() {
 	// Klaviyo configuration
 	SetInfo(Klaviyo, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://a.klaviyo.com",
+		DisplayName: "Klaviyo",
+		AuthType:    Oauth2,
+		BaseURL:     "https://a.klaviyo.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 PKCE,
 			AuthURL:                   "https://www.klaviyo.com/oauth/authorize",
