@@ -5,6 +5,7 @@ const CallRail Provider = "callRail"
 func init() {
 	// CallRail Configuration
 	SetInfo(CallRail, ProviderInfo{
+		DisplayName: "CallRail",
 		AuthType: ApiKey,
 		BaseURL:  "https://api.callrail.com",
 		ApiKeyOpts: &ApiKeyOpts{
