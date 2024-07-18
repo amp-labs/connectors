@@ -4,8 +4,9 @@ const Geckoboard Provider = "geckoboard"
 
 func init() {
 	SetInfo(Geckoboard, ProviderInfo{
-		AuthType: Basic,
-		BaseURL:  "https://api.geckoboard.com",
+		DisplayName: "Geckoboard",
+		AuthType:    Basic,
+		BaseURL:     "https://api.geckoboard.com",
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,

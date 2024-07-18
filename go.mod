@@ -15,7 +15,6 @@ require (
 	github.com/spf13/viper v1.19.0
 	github.com/spyzhov/ajson v0.9.3
 	github.com/stretchr/testify v1.9.0
-	github.com/subchen/go-xmldom v1.1.2
 	golang.org/x/oauth2 v0.21.0
 )
 

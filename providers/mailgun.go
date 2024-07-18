@@ -4,8 +4,9 @@ const Mailgun Provider = "mailgun"
 
 func init() {
 	SetInfo(Mailgun, ProviderInfo{
-		AuthType: Basic,
-		BaseURL:  "https://api.mailgun.net",
+		DisplayName: "Mailgun",
+		AuthType:    Basic,
+		BaseURL:     "https://api.mailgun.net",
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,

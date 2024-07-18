@@ -12,22 +12,23 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 	"github.com/go-test/deep"
 )
 
 func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
-	fakeServerResp := mockutils.DataFromFile(t, "metadata.xml")
+	fakeServerResp := testutils.DataFromFile(t, "metadata.xml")
 
 	tests := []struct {
-		name                string
-		input               []string
-		server              *httptest.Server
-		connector           Connector
-		expected            *common.ListObjectMetadataResult
-		expectedFieldsCount map[string]int // used instead of `expected` when response result is too big
-		expectedErrs        []error
+		name         string
+		input        []string
+		server       *httptest.Server
+		connector    Connector
+		comparator   func(serverURL string, actual, expected *common.ListObjectMetadataResult) bool
+		expected     *common.ListObjectMetadataResult
+		expectedErrs []error
 	}{
 		{
 			name:  "At least one object name must be queried",
@@ -79,35 +80,50 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		},
 		{
 			name:  "Correctly list metadata for account leads and invite contact",
-			input: []string{"accountleads", "adx_invitation_invitecontacts"},
+			input: []string{"chats", "faxes"},
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/xml")
 				w.WriteHeader(http.StatusOK)
 				_, _ = w.Write(fakeServerResp)
 			})),
+			comparator: func(baseURL string, actual, expected *common.ListObjectMetadataResult) bool {
+				return mockutils.MetadataResultComparator.SubsetFields(actual, expected)
+			},
 			expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
-					"accountleads": {
-						DisplayName: "accountleads",
+					"faxes": {
+						DisplayName: "faxes",
 						FieldsMap: map[string]string{
-							"accountid":                 "accountid",
-							"accountleadid":             "accountleadid",
-							"importsequencenumber":      "importsequencenumber",
-							"leadid":                    "leadid",
-							"name":                      "name",
-							"overriddencreatedon":       "overriddencreatedon",
-							"timezoneruleversionnumber": "timezoneruleversionnumber",
-							"utcconversiontimezonecode": "utcconversiontimezonecode",
-							"versionnumber":             "versionnumber",
+							"tsid":                 "tsid",
+							"numberofpages":        "numberofpages",
+							"coverpagename":        "coverpagename",
+							"overriddencreatedon":  "overriddencreatedon",
+							"subcategory":          "subcategory",
+							"billingcode":          "billingcode",
+							"subscriptionid":       "subscriptionid",
+							"importsequencenumber": "importsequencenumber",
+							"directioncode":        "directioncode",
+							"faxnumber":            "faxnumber",
+							"category":             "category",
 						},
 					},
-					"adx_invitation_invitecontacts": {
-						DisplayName: "adx_invitation_invitecontacts",
+					"chats": {
+						DisplayName: "chats",
 						FieldsMap: map[string]string{
-							"adx_invitation_invitecontactsid": "adx_invitation_invitecontactsid",
-							"adx_invitationid":                "adx_invitationid",
-							"contactid":                       "contactid",
-							"versionnumber":                   "versionnumber",
+							"modifiedinteamson":                "modifiedinteamson",
+							"_linkedby_value":                  "_linkedby_value",
+							"_unlinkedby_value":                "_unlinkedby_value",
+							"teamschatid":                      "teamschatid",
+							"eventssummary":                    "eventssummary",
+							"importsequencenumber":             "importsequencenumber",
+							"overriddencreatedon":              "overriddencreatedon",
+							"linkedon":                         "linkedon",
+							"unlinkedon":                       "unlinkedon",
+							"lastsyncerror":                    "lastsyncerror",
+							"modifiedinteamsbyactivitypartyid": "modifiedinteamsbyactivitypartyid",
+							"syncstatus":                       "syncstatus",
+							"formattedscheduledstart":          "formattedscheduledstart",
+							"statuscode":                       "statuscode",
 						},
 					},
 				},
@@ -121,16 +137,19 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			// activitypointer 	(has 58 fields), which in turn inherits from
 			// crmbaseentity 	(has 0 fields)
 			name:  "Correctly list metadata for phone calls including inherited fields",
-			input: []string{"phonecall", "activitypointer", "crmbaseentity"},
+			input: []string{"phonecalls", "activitypointers", "crmbaseentities"},
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/xml")
 				w.WriteHeader(http.StatusOK)
 				_, _ = w.Write(fakeServerResp)
 			})),
-			expectedFieldsCount: map[string]int{
-				"phonecall":       65,
-				"activitypointer": 58,
-				"crmbaseentity":   0,
+			comparator: func(baseURL string, actual, expected *common.ListObjectMetadataResult) bool {
+				// we are comparing if number of fields match under ListObjectMetadataResult.Result
+				return compareFieldCount(map[string]int{
+					"phonecalls":       65,
+					"activitypointers": 58,
+					"crmbaseentities":  0,
+				}, actual)
 			},
 			expectedErrs: nil,
 		},
@@ -176,29 +195,33 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			}
 
 			// compare desired output
-			// there are 2 modes we can compare, by exact field values or matching quantity
-			if len(tt.expectedFieldsCount) != 0 {
-				// we are comparing if number of fields match under ListObjectMetadataResult.Result
-				for entityName, count := range tt.expectedFieldsCount {
-					entity, ok := output.Result[entityName]
-					if !ok {
-						t.Fatalf("%s: expected entity was missing: (%v)", tt.name, entityName)
-					}
+			var ok bool
+			if tt.comparator == nil {
+				// default comparison is concerned about all fields
+				ok = reflect.DeepEqual(output, tt.expected)
+			} else {
+				ok = tt.comparator(tt.server.URL, output, tt.expected)
+			}
 
-					got := len(entity.FieldsMap)
-					if got != count {
-						t.Fatalf("%s: expected entity '%v' to have (%v) fields got: (%v)",
-							tt.name, entityName, count, got)
-					}
-				}
-			} else { // nolint:gocritic
-				// usual comparison of ListObjectMetadataResult
-				if !reflect.DeepEqual(output, tt.expected) {
-					diff := deep.Equal(output, tt.expected)
-					t.Fatalf("%s:, \nexpected: (%v), \ngot: (%v), \ndiff: (%v)",
-						tt.name, tt.expected, output, diff)
-				}
+			if !ok {
+				diff := deep.Equal(output, tt.expected)
+				t.Fatalf("%s:, \nexpected: (%v), \ngot: (%v), \ndiff: (%v)", tt.name, tt.expected, output, diff)
 			}
 		})
 	}
+}
+
+func compareFieldCount(expectedFieldsCount map[string]int, actual *common.ListObjectMetadataResult) bool {
+	for entityName, count := range expectedFieldsCount {
+		if entity, ok := actual.Result[entityName]; !ok {
+			return false
+		} else {
+			got := len(entity.FieldsMap)
+			if got != count {
+				return false
+			}
+		}
+	}
+
+	return true
 }

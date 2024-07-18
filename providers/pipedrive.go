@@ -5,8 +5,9 @@ const Pipedrive Provider = "pipedrive"
 func init() {
 	// Pipedrive Configuration
 	SetInfo(Pipedrive, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://api.pipedrive.com",
+		DisplayName: "Pipedrive",
+		AuthType:    Oauth2,
+		BaseURL:     "https://api.pipedrive.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://oauth.pipedrive.com/oauth/authorize",

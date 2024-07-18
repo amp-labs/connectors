@@ -5,8 +5,9 @@ const Guru Provider = "guru"
 func init() {
 	// Guru API Key authentication
 	SetInfo(Guru, ProviderInfo{
-		AuthType: Basic,
-		BaseURL:  "https://api.getguru.com",
+		DisplayName: "Guru",
+		AuthType:    Basic,
+		BaseURL:     "https://api.getguru.com",
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,

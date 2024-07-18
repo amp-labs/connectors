@@ -5,8 +5,9 @@ const Discord Provider = "discord"
 func init() {
 	// Discord Support Configuration
 	SetInfo(Discord, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://discord.com",
+		DisplayName: "Discord",
+		AuthType:    Oauth2,
+		BaseURL:     "https://discord.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://discord.com/oauth2/authorize",
@@ -24,7 +25,7 @@ func init() {
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,

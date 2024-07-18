@@ -5,8 +5,9 @@ const Figma Provider = "figma"
 func init() {
 	// Figma Support Configuration
 	SetInfo(Figma, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://api.figma.com",
+		DisplayName: "Figma",
+		AuthType:    Oauth2,
+		BaseURL:     "https://api.figma.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://www.figma.com/oauth",

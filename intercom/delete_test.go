@@ -12,13 +12,14 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 	"github.com/go-test/deep"
 )
 
 func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 	t.Parallel()
 
-	responseNotFound := mockutils.DataFromFile(t, "resource-not-found.json")
+	responseNotFound := testutils.DataFromFile(t, "resource-not-found.json")
 
 	tests := []struct {
 		name         string

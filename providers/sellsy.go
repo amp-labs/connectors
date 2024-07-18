@@ -5,8 +5,9 @@ const Sellsy Provider = "sellsy"
 func init() {
 	// Sellsy configuration
 	SetInfo(Sellsy, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://api.sellsy.com",
+		DisplayName: "Sellsy",
+		AuthType:    Oauth2,
+		BaseURL:     "https://api.sellsy.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 PKCE,
 			AuthURL:                   "https://login.sellsy.com/oauth2/authorization",

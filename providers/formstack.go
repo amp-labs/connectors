@@ -5,8 +5,9 @@ const Formstack Provider = "formstack"
 func init() {
 	// Formstack configuration
 	SetInfo(Formstack, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://www.formstack.com/api",
+		DisplayName: "Formstack",
+		AuthType:    Oauth2,
+		BaseURL:     "https://www.formstack.com/api",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://www.formstack.com/api/v2/oauth2/authorize",

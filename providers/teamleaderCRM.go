@@ -5,8 +5,9 @@ const TeamleaderCRM Provider = "teamleaderCRM"
 func init() {
 	// TeamleaderCRM Configuration
 	SetInfo(TeamleaderCRM, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://api.focus.teamleader.eu",
+		DisplayName: "TeamleaderCRM",
+		AuthType:    Oauth2,
+		BaseURL:     "https://api.focus.teamleader.eu",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://focus.teamleader.eu/oauth2/authorize",
@@ -21,7 +22,7 @@ func init() {
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,

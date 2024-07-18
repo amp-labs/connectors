@@ -11,36 +11,24 @@ type Connector struct {
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	defer func() {
-		if re := recover(); re != nil {
-			tmp, ok := re.(error)
-			if !ok {
-				panic(re)
-			}
+	defer common.PanicRecovery(func(cause error) {
+		outErr = cause
+		conn = nil
+	})
 
-			outErr = tmp
-			conn = nil
-		}
-	}()
-
-	params := &docusignParams{}
-	for _, opt := range opts {
-		opt(params)
-	}
-
-	var err error
-
-	params, err = params.prepare()
+	params, err := parameters{}.FromOptions(opts...)
 	if err != nil {
 		return nil, err
 	}
 
 	conn = &Connector{
-		Client: params.client,
+		Client: &common.JSONHTTPClient{
+			HTTPClient: params.Client.Caller,
+		},
 	}
 
 	// Read provider info
-	conn.ProviderInfo, err = providers.ReadInfo(providers.Docusign, nil)
+	conn.ProviderInfo, err = providers.ReadInfo(providers.Docusign)
 	if err != nil {
 		return nil, err
 	}

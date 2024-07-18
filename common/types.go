@@ -65,11 +65,11 @@ var (
 	// ErrMissingRecordID is returned when resource id is missing in the request.
 	ErrMissingRecordID = errors.New("no object ID provided")
 
+	// ErrMissingFields is returned when no fields are provided for reading.
+	ErrMissingFields = errors.New("no fields provided in ReadParams")
+
 	// ErrInvalidPathJoin is returned when the path join is invalid.
 	ErrInvalidPathJoin = errors.New("invalid path join")
-
-	// ErrReadFile is returned when the path is invalid.
-	ErrReadFile = errors.New("failed to read file")
 
 	// ErrRequestFailed is returned when the request failed.
 	ErrRequestFailed = errors.New("request failed")
@@ -162,9 +162,9 @@ type WriteResult struct {
 	// RecordId is the ID of the written record.
 	RecordId string `json:"recordId,omitempty"` // optional
 	// Errors is list of error record returned by the API.
-	Errors []interface{} `json:"errors,omitempty"` // optional
+	Errors []any `json:"errors,omitempty"` // optional
 	// Data is a JSON node containing data about the properties that were updated.
-	Data map[string]interface{} `json:"data,omitempty"` // optional
+	Data map[string]any `json:"data,omitempty"` // optional
 }
 
 // DeleteResult is what's returned from deleting data via the Delete call.

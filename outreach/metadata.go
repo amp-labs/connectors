@@ -3,7 +3,6 @@ package outreach
 import (
 	"context"
 	"encoding/json"
-	"net/url"
 
 	"github.com/amp-labs/connectors/common"
 )
@@ -27,12 +26,12 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 
 	for _, obj := range objectNames {
 		// Constructing the  request url.
-		objURL, err := url.JoinPath(c.BaseURL, obj)
+		url, err := c.getApiURL(obj)
 		if err != nil {
 			return nil, err
 		}
 
-		res, err := c.Client.Get(ctx, objURL)
+		res, err := c.Client.Get(ctx, url.String())
 		if err != nil {
 			objMetadata.Errors[obj] = err
 

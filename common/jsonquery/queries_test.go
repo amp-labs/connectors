@@ -11,12 +11,14 @@ import (
 // nolint:gochecknoglobals
 var testJSONData = `{
 		"count":38, "text":"Hello World", "pi":3.14, "metadata":null, "list":[1,2,3], "arr":[],
+		"inProgress": false,
 		"payload": {
 			"notes": {
 				"links": null,
 				"body": {
 					"text": "Some notes",
-					"amount": 359
+					"amount": 359,
+					"purchased": true
 				},
 				"nested_arr": [1,2,3,4,5]
 			},
@@ -116,7 +118,7 @@ func TestQuery_Integer(t *testing.T) { // nolint:funlen
 	}
 }
 
-func TestQuery_String(t *testing.T) { // nolint:funlen
+func TestQueryString(t *testing.T) { // nolint:funlen
 	t.Parallel()
 
 	j := helperCreateJSON(t, testJSONData) // nolint:varnamelen
@@ -177,7 +179,7 @@ func TestQuery_String(t *testing.T) { // nolint:funlen
 				optional: false,
 				zoom:     []string{"payload", "notes", "body"},
 			},
-			expected: ptrString("Hello World"),
+			expected: ptrString("Some notes"),
 		},
 		{
 			name: "Non existent zoom path is ok for optional string",
@@ -196,7 +198,93 @@ func TestQuery_String(t *testing.T) { // nolint:funlen
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			output, err := New(j).Str(tt.input.key, tt.input.optional)
+			output, err := New(j, tt.input.zoom...).Str(tt.input.key, tt.input.optional)
+			assertJSONManagerOutput(t, tt.name, tt.expected, tt.expectedErr, output, err)
+		})
+	}
+}
+
+func TestQueryBool(t *testing.T) { // nolint:funlen
+	t.Parallel()
+
+	j := helperCreateJSON(t, testJSONData) // nolint:varnamelen
+
+	type inType struct {
+		key      string
+		optional bool
+		zoom     []string
+	}
+
+	tests := []struct {
+		name        string
+		input       inType
+		expected    *bool
+		expectedErr error
+	}{
+		{
+			name: "Missing required bool",
+			input: inType{
+				key:      "completed",
+				optional: false,
+			},
+			expectedErr: ErrKeyNotFound,
+		},
+		{
+			name: "Missing optional bool",
+			input: inType{
+				key:      "completed",
+				optional: true,
+			},
+			expected: nil,
+		},
+		{
+			name: "Incorrect data type",
+			input: inType{
+				key: "count",
+			},
+			expectedErr: ErrNotBool,
+		},
+		{
+			name: "Key is found but Null",
+			input: inType{
+				key: "metadata",
+			},
+			expectedErr: ErrNullJSON,
+		},
+		{
+			name: "Valid Bool",
+			input: inType{
+				key: "inProgress",
+			},
+			expected: ptrBool(false),
+		},
+		{
+			name: "Reaching for nested bool",
+			input: inType{
+				key:      "purchased",
+				optional: false,
+				zoom:     []string{"payload", "notes", "body"},
+			},
+			expected: ptrBool(true),
+		},
+		{
+			name: "Non existent zoom path is ok for optional bool",
+			input: inType{
+				key:      "applicable",
+				optional: true,
+				zoom:     []string{"payload", "location", "address"},
+			},
+			expected: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		// nolint:varnamelen
+		tt := tt // rebind, omit loop side effects for parallel goroutine
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			output, err := New(j, tt.input.zoom...).Bool(tt.input.key, tt.input.optional)
 			assertJSONManagerOutput(t, tt.name, tt.expected, tt.expectedErr, output, err)
 		})
 	}
@@ -408,4 +496,8 @@ func ptrInt64(num int64) *int64 {
 
 func ptrString(text string) *string {
 	return &text
+}
+
+func ptrBool(flag bool) *bool {
+	return &flag
 }

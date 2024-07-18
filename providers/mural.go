@@ -5,8 +5,9 @@ const Mural Provider = "mural"
 func init() {
 	// Mural Configuration
 	SetInfo(Mural, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://api.mural.co/api",
+		DisplayName: "Mural",
+		AuthType:    Oauth2,
+		BaseURL:     "https://api.mural.co/api",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://api.mural.co/oauth/authorize",

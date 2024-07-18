@@ -51,10 +51,24 @@ type XMLHTTPResponse struct {
 // If the response is not a 2xx, an error is returned. If the response is a 401, the caller should
 // refresh the access token and retry the request. If errorHandler is nil, then the default error
 // handler is used. If not, the caller can inject their own error handling logic.
-func (j *XMLHTTPClient) Get(ctx context.Context, url string, headers ...Header) (*XMLHTTPResponse, error) {
-	res, body, err := j.HTTPClient.Get(ctx, url, addAcceptXMLHeader(headers)...) //nolint:bodyclose
+func (c *XMLHTTPClient) Get(ctx context.Context, url string, headers ...Header) (*XMLHTTPResponse, error) {
+	res, body, err := c.HTTPClient.Get(ctx, url, addAcceptXMLHeader(headers)...) //nolint:bodyclose
 	if err != nil {
-		return nil, j.ErrorPostProcessor.handleError(err)
+		return nil, c.ErrorPostProcessor.handleError(err)
+	}
+
+	return parseXMLResponse(res, body)
+}
+
+// Post sends XML request and receives XML as a response.
+func (c *XMLHTTPClient) Post(ctx context.Context,
+	url string, node *xquery.XML, headers ...Header,
+) (*XMLHTTPResponse, error) {
+	data := []byte(node.RawXML())
+
+	res, body, err := c.HTTPClient.Post(ctx, url, data, addAcceptXMLHeader(headers)...) //nolint:bodyclose
+	if err != nil {
+		return nil, c.ErrorPostProcessor.handleError(err)
 	}
 
 	return parseXMLResponse(res, body)
@@ -74,7 +88,7 @@ func parseXMLResponse(res *http.Response, body []byte) (*XMLHTTPResponse, error)
 			return nil, fmt.Errorf("failed to parse content type: %w", err)
 		}
 
-		if mimeType != "application/xml" {
+		if mimeType != "application/xml" && mimeType != "text/xml" {
 			return nil, fmt.Errorf("%w: expected content type to be application/xml, got %s", ErrNotXML, mimeType)
 		}
 	}

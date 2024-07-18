@@ -5,12 +5,15 @@ const Iterable Provider = "iterable"
 func init() {
 	// Iterable API Key authentication
 	SetInfo(Iterable, ProviderInfo{
-		AuthType: ApiKey,
-		BaseURL:  "https://api.iterable.com",
+		DisplayName: "Iterable",
+		AuthType:    ApiKey,
+		BaseURL:     "https://api.iterable.com",
 		ApiKeyOpts: &ApiKeyOpts{
-			Type:       InHeader,
-			HeaderName: "Api-Key",
-			DocsURL:    "https://app.iterable.com/settings/apiKeys",
+			AttachmentType: Header,
+			Header: &ApiKeyOptsHeader{
+				Name: "Api-Key",
+			},
+			DocsURL: "https://app.iterable.com/settings/apiKeys",
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{

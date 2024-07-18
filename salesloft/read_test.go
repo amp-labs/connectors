@@ -15,17 +15,18 @@ import (
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 	"github.com/go-test/deep"
 )
 
 func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
-	responseEmptyRead := mockutils.DataFromFile(t, "read-empty.json")
-	responseListPeople := mockutils.DataFromFile(t, "read-list-people.json")
-	responseListUsers := mockutils.DataFromFile(t, "read-list-users.json")
-	responseListAccounts := mockutils.DataFromFile(t, "read-list-accounts.json")
-	responseListAccountsSince := mockutils.DataFromFile(t, "read-list-accounts-since.json")
+	responseEmptyRead := testutils.DataFromFile(t, "read-empty.json")
+	responseListPeople := testutils.DataFromFile(t, "read-list-people.json")
+	responseListUsers := testutils.DataFromFile(t, "read-list-users.json")
+	responseListAccounts := testutils.DataFromFile(t, "read-list-accounts.json")
+	responseListAccountsSince := testutils.DataFromFile(t, "read-list-accounts-since.json")
 	accountsSince, err := time.Parse(time.RFC3339Nano, "2024-06-07T10:51:20.851224-04:00")
 	mockutils.NoErrors(t, err)
 
