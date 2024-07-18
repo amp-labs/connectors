@@ -5,6 +5,7 @@ const Nutshell Provider = "nutshell"
 func init() {
 	// Nutshell Configuration
 	SetInfo(Nutshell, ProviderInfo{
+		DisplayName: "Nutshell",
 		AuthType: Basic,
 		BaseURL:  "https://app.nutshell.com",
 		Support: Support{
