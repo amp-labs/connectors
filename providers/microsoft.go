@@ -6,7 +6,7 @@ package providers
 const MicrosoftOffice365 Provider = "microsoftOffice365"
 
 func init() {
-	// Microsoft365 Configuration
+	// Microsoft Office 365 Configuration
 	SetInfo(MicrosoftOffice365, ProviderInfo{
 		DisplayName: "Microsoft Office 365",
 		AuthType:    Oauth2,
