@@ -6,8 +6,8 @@ func init() {
 	// Nutshell Configuration
 	SetInfo(Nutshell, ProviderInfo{
 		DisplayName: "Nutshell",
-		AuthType: Basic,
-		BaseURL:  "https://app.nutshell.com",
+		AuthType:    Basic,
+		BaseURL:     "https://app.nutshell.com",
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
