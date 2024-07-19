@@ -1,14 +1,13 @@
 package providers
 
-const Chargebee Provider = "chargebee"
+const Nutshell Provider = "nutshell"
 
 func init() {
-	// Chargebee connfiguration
-	// workspace maps to site
-	SetInfo(Chargebee, ProviderInfo{
-		DisplayName: "Chargebee",
+	// Nutshell Configuration
+	SetInfo(Nutshell, ProviderInfo{
+		DisplayName: "Nutshell",
 		AuthType:    Basic,
-		BaseURL:     "https://{{.workspace}}.chargebee.com/api",
+		BaseURL:     "https://app.nutshell.com",
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
