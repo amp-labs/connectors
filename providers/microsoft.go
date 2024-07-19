@@ -1,11 +1,14 @@
 package providers
 
-const Microsoft Provider = "microsoft"
+// Supported Microsoft Products includes OneDrive Outlook Excel
+// Edge Extensions Sharepoint OneNote Notifications Todos Teams Insights
+// Planner and Personal Contacts.
+const Microsoft365 Provider = "microsoft365"
 
 func init() {
-	// Microsoft Configuration
-	SetInfo(Microsoft, ProviderInfo{
-		DisplayName: "Microsoft",
+	// Microsoft365 Configuration
+	SetInfo(Microsoft365, ProviderInfo{
+		DisplayName: "Microsoft365",
 		AuthType:    Oauth2,
 		BaseURL:     "https://graph.microsoft.com",
 		Oauth2Opts: &Oauth2Opts{
