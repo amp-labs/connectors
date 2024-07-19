@@ -1,10 +1,10 @@
 package providers
 
-const TeamleaderCRM Provider = "teamleaderCRM"
+const Teamleader Provider = "teamleader"
 
 func init() {
-	// TeamleaderCRM Configuration
-	SetInfo(TeamleaderCRM, ProviderInfo{
+	// Teamleader Configuration
+	SetInfo(Teamleader, ProviderInfo{
 		DisplayName: "Teamleader",
 		AuthType:    Oauth2,
 		BaseURL:     "https://api.focus.teamleader.eu",
