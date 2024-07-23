@@ -1,17 +1,16 @@
 package providers
 
-const Atlassian Provider = "atlassian"
+const Podium Provider = "podium"
 
 func init() {
-	// Atlassian Configuration
-	SetInfo(Atlassian, ProviderInfo{
-		DisplayName: "Atlassian (Jira, Confluence)",
+	SetInfo(Podium, ProviderInfo{
+		DisplayName: "Podium",
 		AuthType:    Oauth2,
-		BaseURL:     "https://api.atlassian.com",
+		BaseURL:     "https://api.podium.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   "https://auth.atlassian.com/authorize",
-			TokenURL:                  "https://auth.atlassian.com/oauth/token",
+			AuthURL:                   "https://api.podium.com/oauth/authorize",
+			TokenURL:                  "https://api.podium.com/oauth/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 		},
