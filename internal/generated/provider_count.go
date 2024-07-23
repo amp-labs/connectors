@@ -2,4 +2,4 @@ package generated
 
 // This file will be updated automatically, do not edit it manually.
 
-const ProviderCount = 128
+const ProviderCount = 129
