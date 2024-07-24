@@ -30,21 +30,23 @@ type ProviderCredentials struct {
 // Therefore, explicitly state via arguments.
 func NewJSONProviderCredentials(
 	filePath string,
-	withAccessToken bool,
+	withRequiredAccessToken bool,
+	withRequiredWorkspace bool,
 ) (*ProviderCredentials, error) {
-	return createProviderCreds(getProviderName(filePath), withAccessToken, filePath)
+	return createProviderCreds(getProviderName(filePath), withRequiredAccessToken, withRequiredWorkspace, filePath)
 }
 
 // NewENVProviderCredentials reads ENV variables associated with a provider.
 func NewENVProviderCredentials(
 	providerName string,
-	withAccessToken bool,
+	withRequiredAccessToken bool,
+	withRequiredWorkspace bool,
 ) (*ProviderCredentials, error) {
-	return createProviderCreds(providerName, withAccessToken, "")
+	return createProviderCreds(providerName, withRequiredAccessToken, withRequiredWorkspace, "")
 }
 
 func createProviderCreds(
-	providerName string, withAccessToken bool, filePath string,
+	providerName string, withRequiredAccessToken, withRequiredWorkspace bool, filePath string,
 ) (*ProviderCredentials, error) {
 	// load provider from catalog to imply fields in JSON or ENV vars
 	catalog, err := providers.ReadCatalog()
@@ -57,7 +59,7 @@ func createProviderCreds(
 		return nil, ErrProviderNotFound
 	}
 
-	fields, err := getFields(info, withAccessToken)
+	fields, err := getFields(info, withRequiredAccessToken, withRequiredWorkspace)
 	if err != nil {
 		return nil, err
 	}
