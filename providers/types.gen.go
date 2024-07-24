@@ -102,7 +102,7 @@ type Provider = string
 type ProviderInfo struct {
 	// ApiKeyOpts Configuration for API key. Must be provided if authType is apiKey.
 	ApiKeyOpts *ApiKeyOpts `json:"apiKeyOpts,omitempty"`
-	AuthType   AuthType    `json:"authType" validate:"required"`
+	AuthType   AuthType    `json:"authType"             validate:"required"`
 
 	// BaseURL The base URL for making API requests.
 	BaseURL string `json:"baseURL" validate:"required"`
@@ -117,7 +117,7 @@ type ProviderInfo struct {
 	// PostAuthInfoNeeded If true, we require additional information after auth to start making requests.
 	PostAuthInfoNeeded bool         `json:"postAuthInfoNeeded,omitempty"`
 	ProviderOpts       ProviderOpts `json:"providerOpts"`
-	Support            Support      `json:"support" validate:"required"`
+	Support            Support      `json:"support"                      validate:"required"`
 }
 
 // ProviderOpts defines model for ProviderOpts.

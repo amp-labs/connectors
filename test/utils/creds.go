@@ -3,68 +3,88 @@ package utils
 import (
 	"fmt"
 
+	"github.com/amp-labs/connectors/common/scanning"
+	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/utils"
 )
 
 // preset values from JSON file from schema equal to response from reference: https://docs.withampersand.com/reference/getconnection
-func JSONFileReaders(filePath string) []utils.Reader {
-	schema := []utils.Reader{
-		&utils.JSONReader{
+func JSONFileReaders(filePath string) []scanning.Reader {
+	schema := []scanning.Reader{
+		&scanning.JSONReader{
 			FilePath: filePath,
 			JSONPath: "$.AccessToken.Token",
-			CredKey:  utils.AccessToken,
+			KeyName:  utils.AccessToken,
 		},
-		&utils.JSONReader{
+		&scanning.JSONReader{
 			FilePath: filePath,
 			JSONPath: "$.RefreshToken.Token",
-			CredKey:  utils.RefreshToken,
+			KeyName:  utils.RefreshToken,
 		},
-		&utils.JSONReader{
+		&scanning.JSONReader{
 			FilePath: filePath,
 			JSONPath: "$.providerApp.clientId",
-			CredKey:  utils.ClientId,
+			KeyName:  utils.ClientId,
 		},
-		&utils.JSONReader{
+		&scanning.JSONReader{
 			FilePath: filePath,
 			JSONPath: "$.providerApp.clientSecret",
-			CredKey:  utils.ClientSecret,
+			KeyName:  utils.ClientSecret,
 		},
-		&utils.JSONReader{
+		&scanning.JSONReader{
 			FilePath: filePath,
 			JSONPath: "$.providerWorkspaceRef",
-			CredKey:  utils.WorkspaceRef,
+			KeyName:  utils.WorkspaceRef,
 		},
-		&utils.JSONReader{
+		&scanning.JSONReader{
 			FilePath: filePath,
 			JSONPath: "$.providerApp.provider",
-			CredKey:  utils.Provider,
+			KeyName:  utils.Provider,
 		},
 	}
 
 	return schema
 }
 
-func EnvVarsReaders(prefix string) []utils.Reader {
-	return []utils.Reader{
-		&utils.EnvReader{
+func EnvVarsReaders(prefix string) []scanning.Reader {
+	return []scanning.Reader{
+		&scanning.EnvReader{
 			EnvName: fmt.Sprintf("%sACCESS_TOKEN", prefix),
-			CredKey: utils.AccessToken,
+			KeyName: utils.AccessToken,
 		},
-		&utils.EnvReader{
+		&scanning.EnvReader{
 			EnvName: fmt.Sprintf("%sREFRESH_TOKEN", prefix),
-			CredKey: utils.RefreshToken,
+			KeyName: utils.RefreshToken,
 		},
-		&utils.EnvReader{
+		&scanning.EnvReader{
 			EnvName: fmt.Sprintf("%sCLIENT_ID", prefix),
-			CredKey: utils.ClientId,
+			KeyName: utils.ClientId,
 		},
-		&utils.EnvReader{
+		&scanning.EnvReader{
 			EnvName: fmt.Sprintf("%sCLIENT_SECRET", prefix),
-			CredKey: utils.ClientSecret,
+			KeyName: utils.ClientSecret,
 		},
-		&utils.EnvReader{
+		&scanning.EnvReader{
 			EnvName: fmt.Sprintf("%sWORKSPACE_REF", prefix),
-			CredKey: utils.WorkspaceRef,
+			KeyName: utils.WorkspaceRef,
 		},
 	}
+}
+
+func MustCreateProvCredJSON(filePath string, withAccessToken bool) *credscanning.ProviderCredentials {
+	reader, err := credscanning.NewJSONProviderCredentials(filePath, withAccessToken)
+	if err != nil {
+		Fail("json creds file error", "error", err)
+	}
+
+	return reader
+}
+
+func MustCreateProvCredENV(providerName string, withAccessToken bool) *credscanning.ProviderCredentials {
+	reader, err := credscanning.NewENVProviderCredentials(providerName, withAccessToken)
+	if err != nil {
+		Fail("environment error", "error", err)
+	}
+
+	return reader
 }

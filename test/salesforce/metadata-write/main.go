@@ -24,14 +24,7 @@ func main() {
 	logger := slog.New(handler)
 	slog.SetDefault(logger)
 
-	// assumes that this code is being run from the root of the project
-	// go run test/salesforce/bulkwrite/main.go
-	filePath := os.Getenv("SALESFORCE_CRED_FILE_PATH")
-	if filePath == "" {
-		filePath = "./salesforce-creds.json"
-	}
-
-	conn := connTest.GetSalesforceConnector(ctx, filePath)
+	conn := connTest.GetSalesforceConnector(ctx)
 	defer utils.Close(conn)
 
 	input := []byte(`
@@ -61,7 +54,7 @@ func main() {
     </metadata>
 </createMetadata>
 `)
-	accessToken := connTest.GetSalesforceAccessToken(filePath)
+	accessToken := connTest.GetSalesforceAccessToken()
 
 	res, err := conn.CreateMetadata(ctx, input, accessToken)
 	if err != nil {

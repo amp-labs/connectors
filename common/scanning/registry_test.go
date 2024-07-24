@@ -1,5 +1,5 @@
 //nolint:gochecknoglobals
-package utils
+package scanning
 
 import (
 	"os"
@@ -9,39 +9,39 @@ import (
 )
 
 var testAccessTokenReader = &JSONReader{
-	FilePath: "testcred1.json",
+	FilePath: "test/cred1.json",
 	JSONPath: "$['accessToken']",
-	CredKey:  "AccessToken",
+	KeyName:  "AccessToken",
 }
 
 var testPreset = []Reader{
 	&EnvReader{
 		EnvName: "TEST_ENV_CLIENT_ID",
-		CredKey: "ClientId",
+		KeyName: "ClientId",
 	},
 	&JSONReader{
-		FilePath: "testcred1.json",
+		FilePath: "test/cred1.json",
 		JSONPath: "$['useToken']",
-		CredKey:  "UseToken",
+		KeyName:  "UseToken",
 	},
 	&JSONReader{
-		FilePath: "testcred2.json",
+		FilePath: "test/cred2.json",
 		JSONPath: "$['refreshToken']",
-		CredKey:  "RefreshToken",
+		KeyName:  "RefreshToken",
 	},
 	&JSONReader{
-		FilePath: "testcred2.json",
+		FilePath: "test/cred2.json",
 		JSONPath: "$['providers'][0]['name']",
-		CredKey:  "Provider",
+		KeyName:  "Provider",
 	},
 	&JSONReader{
-		FilePath: "testcred2.json",
+		FilePath: "test/cred2.json",
 		JSONPath: "$['providers'][0]['number']",
-		CredKey:  "ProviderNumber",
+		KeyName:  "ProviderNumber",
 	},
 	&ValueReader{
 		Val:     "myValue",
-		CredKey: "MyValue",
+		KeyName: "MyValue",
 	},
 }
 
@@ -52,7 +52,7 @@ func TestCredentialOptions(t *testing.T) {
 		t.Fatal("Error setting environment variable")
 	}
 
-	opts := NewCredentialsRegistry()
+	opts := NewRegistry()
 
 	require.NoError(t, opts.AddReader(testAccessTokenReader))
 

@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"os"
 	"os/signal"
 	"syscall"
 
@@ -40,12 +39,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	filePath := os.Getenv("MS_CRM_CRED_FILE")
-	if filePath == "" {
-		filePath = "./ms-crm-creds.json"
-	}
-
-	conn := connTest.GetMSDynamics365CRMConnector(ctx, filePath)
+	conn := connTest.GetMSDynamics365CRMConnector(ctx)
 	defer utils.Close(conn)
 
 	fmt.Println("> TEST Create/Update/Delete lead")
