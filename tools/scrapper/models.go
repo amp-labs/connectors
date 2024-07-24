@@ -7,6 +7,8 @@ import (
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/amp-labs/connectors/common/naming"
 )
 
 type ModelDocLinks []ModelDocLink
@@ -62,7 +64,7 @@ func (r *ModelURLRegistry) Sort() {
 
 type ObjectMetadataResult struct {
 	// Result is a map of object names to object metadata
-	Result map[string]ObjectMetadata `json:"data"`
+	Result map[naming.LowerString]ObjectMetadata `json:"data"`
 }
 
 type ObjectMetadata struct {
@@ -75,18 +77,20 @@ type ObjectMetadata struct {
 
 func NewObjectMetadataResult() *ObjectMetadataResult {
 	return &ObjectMetadataResult{
-		Result: make(map[string]ObjectMetadata),
+		Result: make(map[naming.LowerString]ObjectMetadata),
 	}
 }
 
 func (r *ObjectMetadataResult) Add(objectName string, objectDisplayName string, fieldName string) {
-	data, ok := r.Result[objectName]
+	name := naming.NewLowerString(objectName)
+
+	data, ok := r.Result[name]
 	if !ok {
 		data = ObjectMetadata{
 			DisplayName: objectDisplayName,
 			FieldsMap:   make(map[string]string),
 		}
-		r.Result[objectName] = data
+		r.Result[name] = data
 	}
 
 	data.FieldsMap[fieldName] = fieldName
