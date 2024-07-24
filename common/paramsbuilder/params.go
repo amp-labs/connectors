@@ -35,6 +35,7 @@ func Create[P ParamAssurance](params P, opts []func(params *P)) (*P, error) {
 
 // Client params sets up authenticated proxy HTTP client
 // This can be reused among other param builders by composition.
+// There are many types of authentication, where only one must be chosen. Ex: oauth2.
 type Client struct {
 	Caller *common.HTTPClient
 }
@@ -47,7 +48,8 @@ func (p *Client) ValidateParams() error {
 	return nil
 }
 
-func (p *Client) WithClient(
+// WithOauthClient option that sets up client that utilises Oauth2 authentication.
+func (p *Client) WithOauthClient(
 	ctx context.Context, client *http.Client,
 	config *oauth2.Config, token *oauth2.Token,
 	opts ...common.OAuthOption,
@@ -64,6 +66,24 @@ func (p *Client) WithClient(
 	}
 
 	p.WithAuthenticatedClient(oauthClient)
+}
+
+// WithBasicClient option that sets up client that utilises Basic (username, password) authentication.
+func (p *Client) WithBasicClient(
+	ctx context.Context, client *http.Client,
+	user, pass string,
+	opts ...common.HeaderAuthClientOption,
+) {
+	options := []common.HeaderAuthClientOption{
+		common.WithHeaderClient(client),
+	}
+
+	basicClient, err := common.NewBasicAuthHTTPClient(ctx, user, pass, append(options, opts...)...)
+	if err != nil {
+		panic(err) // caught in NewConnector
+	}
+
+	p.WithAuthenticatedClient(basicClient)
 }
 
 func (p *Client) WithAuthenticatedClient(client common.AuthenticatedHTTPClient) {
