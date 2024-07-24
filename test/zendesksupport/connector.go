@@ -14,7 +14,7 @@ import (
 
 func GetZendeskSupportConnector(ctx context.Context) *zendesksupport.Connector {
 	filePath := credscanning.LoadPath(providers.ZendeskSupport)
-	reader := utils.MustCreateProvCredJSON(filePath, true)
+	reader := utils.MustCreateProvCredJSON(filePath, true, true)
 
 	conn, err := zendesksupport.NewConnector(
 		zendesksupport.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
