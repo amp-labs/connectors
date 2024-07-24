@@ -16,20 +16,11 @@ const (
 )
 
 // Option is a function which mutates the connector configuration.
-type Option func(params *parameters)
+type Option = func(params *parameters)
 
 // parameters Intercom supports auth client by delegation.
 type parameters struct {
 	paramsbuilder.Client
-}
-
-func (p parameters) FromOptions(opts ...Option) (*parameters, error) {
-	params := &p
-	for _, opt := range opts {
-		opt(params)
-	}
-
-	return params, params.ValidateParams()
 }
 
 func (p parameters) ValidateParams() error {

@@ -5,6 +5,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
+	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers"
 )
@@ -27,7 +28,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		conn = nil
 	})
 
-	params, err := parameters{}.FromOptions(opts...)
+	params, err := paramsbuilder.Apply(parameters{}, opts)
 	if err != nil {
 		return nil, err
 	}

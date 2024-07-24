@@ -19,21 +19,12 @@ var (
 	ErrMissingProvider = errors.New("missing provider")
 )
 
-type Option func(*parameters)
+type Option = func(*parameters)
 
 type parameters struct {
 	provider providers.Provider
 	paramsbuilder.Client
 	paramsbuilder.Workspace
-}
-
-func (p parameters) FromOptions(opts ...Option) (*parameters, error) {
-	params := &p
-	for _, opt := range opts {
-		opt(params)
-	}
-
-	return params, params.ValidateParams()
 }
 
 func (p parameters) ValidateParams() error {
