@@ -25,12 +25,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	filePath := os.Getenv("ZENDESK_SUPPORT_CRED_FILE")
-	if filePath == "" {
-		filePath = "./zendesk-support-creds.json"
-	}
-
-	conn := connTest.GetZendeskSupportConnector(ctx, filePath)
+	conn := connTest.GetZendeskSupportConnector(ctx)
 	defer utils.Close(conn)
 
 	res, err := conn.Read(ctx, common.ReadParams{

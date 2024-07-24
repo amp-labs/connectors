@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"os"
 	"os/signal"
 	"strings"
 	"syscall"
@@ -37,12 +36,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	filePath := os.Getenv("ZENDESK_SUPPORT_CRED_FILE")
-	if filePath == "" {
-		filePath = "./zendesk-support-creds.json"
-	}
-
-	conn := connTest.GetZendeskSupportConnector(ctx, filePath)
+	conn := connTest.GetZendeskSupportConnector(ctx)
 	defer utils.Close(conn)
 
 	fmt.Println("> TEST Create/Update/Delete brands")
