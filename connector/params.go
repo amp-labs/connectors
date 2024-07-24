@@ -25,6 +25,7 @@ type parameters struct {
 	provider providers.Provider
 	paramsbuilder.Client
 	paramsbuilder.Workspace
+	paramsbuilder.Region
 }
 
 func (p parameters) ValidateParams() error {
@@ -33,6 +34,7 @@ func (p parameters) ValidateParams() error {
 	}
 
 	// workspace is optional
+	// region is optional
 
 	return errors.Join(
 		p.Client.ValidateParams(),

@@ -29,6 +29,7 @@ var Fields = struct { // nolint:gochecknoglobals
 	ApiKey Field
 	// Catalog variables
 	Workspace Field
+	Region    Field
 }{
 	Provider: Field{
 		Name:      "provider",
@@ -84,6 +85,11 @@ var Fields = struct { // nolint:gochecknoglobals
 		Name:      "workspace",
 		PathJSON:  "substitutions.workspace",
 		SuffixENV: "WORKSPACE",
+	},
+	Region: Field{
+		Name:      "region",
+		PathJSON:  "substitutions.region",
+		SuffixENV: "REGION",
 	},
 }
 
@@ -142,6 +148,12 @@ func getFields(info providers.ProviderInfo, withAccessToken bool) (handy.Lists[F
 			lists.Add(requiredType, Fields.Workspace)
 		}
 	}
+
+	// FIXME provider information should have flag for region.
+	// This will allow to validate user input is sufficient for this provider.
+	// If info has Region enabled, then add it as required for scanning.
+	// For now read as optional.
+	lists.Add(optionalType, Fields.Region)
 
 	return lists, nil
 }

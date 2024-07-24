@@ -8,6 +8,7 @@ import (
 
 const (
 	variableWorkspace = "workspace"
+	variableRegion    = "region"
 )
 
 // CatalogVariable allows dynamically to replace variables represented with `{{VAR_NAME}}` string.
@@ -43,6 +44,8 @@ func NewCatalogVariables[V substitutions.RegistryValue](registry substitutions.R
 		switch key {
 		case variableWorkspace:
 			result = append(result, &Workspace{Name: name})
+		case variableRegion:
+			result = append(result, &Region{Name: name})
 		default:
 			slog.Info("unknown substitution SubstitutionPlan for catalog", key, value)
 		}

@@ -20,6 +20,7 @@ var (
 	ErrMissingClient     = errors.New("http client not set")
 	ErrMissingWorkspace  = errors.New("missing workspace name")
 	ErrNoSupportedModule = errors.New("no supported module was chosen")
+	ErrMissingRegion     = errors.New("missing region name")
 )
 
 // Create will apply options to construct a ready to go set of parameters.
@@ -174,4 +175,28 @@ func (a APIModule) String() string {
 	}
 
 	return fmt.Sprintf("%s/%s", a.Label, a.Version)
+}
+
+// Region param sets up varying regions, part of the world.
+type Region struct {
+	Name string
+}
+
+func (r *Region) ValidateParams() error {
+	if len(r.Name) == 0 {
+		return ErrMissingRegion
+	}
+
+	return nil
+}
+
+func (r *Region) WithRegion(region string) {
+	r.Name = region
+}
+
+func (r *Region) GetSubstitutionPlan() SubstitutionPlan {
+	return SubstitutionPlan{
+		From: variableRegion,
+		To:   r.Name,
+	}
 }
