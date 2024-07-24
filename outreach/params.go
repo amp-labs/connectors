@@ -10,19 +10,10 @@ import (
 	"golang.org/x/oauth2"
 )
 
-type Option func(params *parameters)
+type Option = func(params *parameters)
 
 type parameters struct {
 	paramsbuilder.Client
-}
-
-func (p parameters) FromOptions(opts ...Option) (*parameters, error) {
-	params := &p
-	for _, opt := range opts {
-		opt(params)
-	}
-
-	return params, params.ValidateParams()
 }
 
 func (p parameters) ValidateParams() error {
