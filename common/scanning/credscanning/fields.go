@@ -142,7 +142,7 @@ func getFields(info providers.ProviderInfo,
 
 	options := info.Oauth2Opts
 	if options != nil {
-		// FIXME imply workspace requirement when provider info will change
+		// TODO: remove when workspaceRequired is a top level field in ProviderInfo, not just in OAuth2Opts
 		// As of now Workspace can only be implied for connectors supporting Oauth2.
 		// The changes extending to all connectors will happen
 		// at later time as indicated by https://github.com/amp-labs/openapi/pull/15.
