@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"os"
 	"os/signal"
 	"syscall"
 
@@ -35,12 +34,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	filePath := os.Getenv("{{ .Provider | snake | upper }}_CRED_FILE")
-	if filePath == "" {
-		filePath = "./{{ .Provider | kebab }}-creds.json"
-	}
-
-	conn := connTest.Get{{ .Provider }}Connector(ctx, filePath)
+	conn := connTest.Get{{ .Provider }}Connector(ctx)
 	defer utils.Close(conn)
 
 	fmt.Println("> TEST Create/Update/Delete {{ .ObjectName }}")

@@ -4,61 +4,40 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/{{ .Package }}"
-	testUtils "github.com/amp-labs/connectors/test/utils"
-	"github.com/amp-labs/connectors/utils"
+	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/test/utils"
+	"golang.org/x/oauth2"
 )
 
-func Get{{ .Provider }}Connector(ctx context.Context, filePath string) *{{ .Package }}.Connector {
-	registry := utils.NewCredentialsRegistry()
-
-	readers := []utils.Reader{
-		&utils.JSONReader{
-			FilePath: filePath,
-			JSONPath: "$.clientId",
-			CredKey:  utils.ClientId,
-		},
-		&utils.JSONReader{
-			FilePath: filePath,
-			JSONPath: "$.clientSecret",
-			CredKey:  utils.ClientSecret,
-		},
-		&utils.JSONReader{
-			FilePath: filePath,
-			JSONPath: "$.accessToken",
-			CredKey:  utils.AccessToken,
-		},
-		&utils.JSONReader{
-			FilePath: filePath,
-			JSONPath: "$.refreshToken",
-			CredKey:  utils.RefreshToken,
-		},
-		&utils.JSONReader{
-			FilePath: filePath,
-			JSONPath: "$.provider",
-			CredKey:  utils.Provider,
-		},
-		&utils.JSONReader{
-			FilePath: filePath,
-			JSONPath: "$.workspace",
-			CredKey:  utils.WorkspaceRef,
-		},
-	}
-	_ = registry.AddReaders(readers...)
-
-	// TODO create config and token registries
-	cfg := utils.{{ .Provider }}ConfigFromRegistry(registry)
-	tok := utils.{{ .Provider }}TokenFromRegistry(registry)
-	workspace := registry.MustString(utils.WorkspaceRef)
+func Get{{ .Provider }}Connector(ctx context.Context) *{{ .Package }}.Connector {
+	filePath := credscanning.LoadPath(providers.{{ .Provider }})
+	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	// TODO provide required options
 	conn, err := {{ .Package }}.NewConnector(
 		{{ .Package }}.WithClient(ctx, http.DefaultClient, cfg, tok),
 		{{ .Package }}.WithWorkspace(workspace),
+		{{ .Package }}.WithModule({{ .Package }}.ModuleName),
 	)
 	if err != nil {
-		testUtils.Fail("error creating connector", "error", err)
+		utils.Fail("error creating connector", "error", err)
 	}
 
 	return conn
+}
+
+func getConfig(reader *credscanning.ProviderCredentials) *oauth2.Config {
+	return &oauth2.Config{
+		ClientID:     reader.Get(credscanning.Fields.ClientId),
+		ClientSecret: reader.Get(credscanning.Fields.ClientSecret),
+		RedirectURL:  "http://localhost:8080/callbacks/v1/oauth",
+		Endpoint: oauth2.Endpoint{
+			AuthURL:   "",
+			TokenURL:  "",
+			AuthStyle: oauth2.AuthStyleInParams,
+		},
+		Scopes: []string{},
+	}
 }
