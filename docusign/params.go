@@ -14,11 +14,13 @@ type Option = func(params *parameters)
 
 type parameters struct {
 	paramsbuilder.Client
+	paramsbuilder.Metadata
 }
 
 func (p parameters) ValidateParams() error {
 	return errors.Join(
 		p.Client.ValidateParams(),
+		p.Metadata.ValidateParams(),
 	)
 }
 
@@ -34,5 +36,12 @@ func WithClient(ctx context.Context, client *http.Client,
 func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
 	return func(params *parameters) {
 		params.WithAuthenticatedClient(client)
+	}
+}
+
+// WithMetadata sets authentication metadata expected by connector.
+func WithMetadata(metadata map[string]string) Option {
+	return func(params *parameters) {
+		params.WithMetadata(metadata, requiredMetadataFields)
 	}
 }
