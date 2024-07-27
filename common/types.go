@@ -150,9 +150,9 @@ type ReadResult struct {
 type ReadResultRow struct {
 	// Fields is a map of requested provider field names to values.
 	// All field names are in lowercase (eg: accountid, name, billingcityid)
-	Fields map[string]interface{} `json:"fields"`
+	Fields map[string]any `json:"fields"`
 	// Raw is the raw JSON response from the provider.
-	Raw map[string]interface{} `json:"raw"`
+	Raw map[string]any `json:"raw"`
 }
 
 // WriteResult is what's returned from writing data via the Write call.
