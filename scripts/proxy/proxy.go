@@ -253,7 +253,7 @@ func createClientAuthParams(provider string) *ClientAuthParams {
 }
 
 func getTokensFromRegistry() *oauth2.Token {
-	reader, err := credscanning.NewJSONProviderCredentials(DefaultCredsFile, true)
+	reader, err := credscanning.NewJSONProviderCredentials(DefaultCredsFile, true, false)
 	if err != nil {
 		panic(err)
 	}
