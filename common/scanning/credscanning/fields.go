@@ -108,14 +108,16 @@ func (f Field) GetENVReader(providerName string) *scanning.EnvReader {
 	}
 }
 
-func getFields(info providers.ProviderInfo, withAccessToken bool) (handy.Lists[Field], error) {
+func getFields(info providers.ProviderInfo,
+	withRequiredAccessToken, withRequiredWorkspace bool,
+) (handy.Lists[Field], error) {
 	lists := handy.Lists[Field]{}
 	requiredType := "required"
 	optionalType := "optional"
 
 	lists.Add(requiredType, Fields.Provider)
 
-	if withAccessToken {
+	if withRequiredAccessToken {
 		lists.Add(requiredType, Fields.AccessToken)
 		lists.Add(optionalType, Fields.RefreshToken, Fields.Expiry, Fields.ExpiryFormat)
 	}
@@ -134,13 +136,18 @@ func getFields(info providers.ProviderInfo, withAccessToken bool) (handy.Lists[F
 
 	options := info.Oauth2Opts
 	if options != nil {
+		// FIXME imply workspace requirement when provider info will change
 		// As of now Workspace can only be implied for connectors supporting Oauth2.
 		// The changes extending to all connectors will happen
 		// at later time as indicated by https://github.com/amp-labs/openapi/pull/15.
 		// This field should be a general/universal workspace flag in which ever place it will be under ProviderInfo.
 		if options.ExplicitWorkspaceRequired {
-			lists.Add(requiredType, Fields.Workspace)
+			withRequiredWorkspace = true
 		}
+	}
+
+	if withRequiredWorkspace {
+		lists.Add(requiredType, Fields.Workspace)
 	}
 
 	return lists, nil
