@@ -33,7 +33,7 @@ func WithClient(ctx context.Context, client *http.Client,
 	config *oauth2.Config, token *oauth2.Token, opts ...common.OAuthOption,
 ) Option {
 	return func(params *parameters) {
-		params.WithClient(ctx, client, config, token, opts...)
+		params.WithOauthClient(ctx, client, config, token, opts...)
 	}
 }
 
