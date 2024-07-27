@@ -104,7 +104,12 @@ func (j *JSONHTTPClient) Delete(ctx context.Context, url string, headers ...Head
 func parseJSONResponse(res *http.Response, body []byte) (*JSONHTTPResponse, error) {
 	// empty response body should not be parsed as JSON since it will cause ajson to err
 	if len(body) == 0 {
-		return nil, nil //nolint:nilnil
+		return &JSONHTTPResponse{
+			bodyBytes: body,
+			Code:      res.StatusCode,
+			Headers:   res.Header,
+			Body:      nil,
+		}, nil
 	}
 	// Ensure the response is JSON
 	ct := res.Header.Get("Content-Type")
