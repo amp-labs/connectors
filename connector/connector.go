@@ -2,6 +2,7 @@ package connector
 
 import (
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -20,7 +21,7 @@ func NewConnector(
 		conn = nil
 	})
 
-	params, err := parameters{provider: provider}.FromOptions(opts...)
+	params, err := paramsbuilder.Apply(parameters{provider: provider}, opts)
 	if err != nil {
 		return nil, err
 	}
