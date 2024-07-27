@@ -87,7 +87,7 @@ func createProviderCreds(
 
 func selectReader(field Field, filePath string, providerName string) scanning.Reader { // nolint:ireturn
 	if len(filePath) != 0 {
-		return field.GetJSONReader(filePath)
+		return field.GetJSONReader(filePath) // nolint:ireturn
 	}
 
 	return field.GetENVReader(providerName)
