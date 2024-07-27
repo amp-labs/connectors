@@ -16,32 +16,3 @@ func (m Map[K, V]) Keys() []K {
 func (m Map[K, V]) KeySet() Set[K] {
 	return NewSet(m.Keys())
 }
-
-type Set[V comparable] map[V]struct{}
-
-func NewSet[V comparable](values []V) Set[V] {
-	result := make(Set[V])
-	for _, v := range values {
-		result[v] = struct{}{}
-	}
-
-	return result
-}
-
-func (s Set[V]) Diff(other Set[V]) []V {
-	difference := s.Subtract(other)
-
-	return append(difference, other.Subtract(s)...)
-}
-
-func (s Set[V]) Subtract(other Set[V]) []V {
-	difference := make([]V, 0)
-
-	for v := range s {
-		if _, ok := other[v]; !ok {
-			difference = append(difference, v)
-		}
-	}
-
-	return difference
-}
