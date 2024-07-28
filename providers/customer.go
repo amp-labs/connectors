@@ -12,6 +12,16 @@ func init() { //nolint:funlen
 		AuthType:    Basic,
 		BaseURL:     "https://cdp.customer.io/v1",
 		// DocsURL: https://customer.io/docs/api/cdp/#section/Authentication
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "",
+				LogoURL: "",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "",
+				LogoURL: "",
+			},
+		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
@@ -38,6 +48,16 @@ func init() { //nolint:funlen
 			},
 			DocsURL: "https://customer.io/docs/api/app/#section/Authentication",
 		},
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "",
+				LogoURL: "",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "",
+				LogoURL: "",
+			},
+		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
@@ -57,6 +77,16 @@ func init() { //nolint:funlen
 		AuthType:    Basic,
 		BaseURL:     "https://track.customer.io",
 		// DocsURL: https://customer.io/docs/api/track/#section/Authentication
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "",
+				LogoURL: "",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "",
+				LogoURL: "",
+			},
+		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
