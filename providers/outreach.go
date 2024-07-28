@@ -8,6 +8,16 @@ func init() {
 		DisplayName: "Outreach",
 		AuthType:    Oauth2,
 		BaseURL:     "https://api.outreach.io",
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722167157/media/outreach.io_1722167156.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722167157/media/outreach.io_1722167156.jpg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722167157/media/outreach.io_1722167156.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722167157/media/outreach.io_1722167156.jpg",
+			},
+		},
 		Oauth2Opts: &Oauth2Opts{
 			AuthURL:                   "https://api.outreach.io/oauth/authorize",
 			TokenURL:                  "https://api.outreach.io/oauth/token",

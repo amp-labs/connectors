@@ -9,6 +9,16 @@ func init() {
 		DisplayName: "Basecamp",
 		AuthType:    Oauth2,
 		BaseURL:     "https://3.basecampapi.com/{{.workspace}}",
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722164556/media/basecamp_1722164555.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722164556/media/basecamp_1722164555.jpg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722164556/media/basecamp_1722164555.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722164556/media/basecamp_1722164555.jpg",
+			},
+		},
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://launchpad.37signals.com/authorization/new?type=web_server",

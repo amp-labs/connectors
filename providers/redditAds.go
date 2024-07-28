@@ -7,6 +7,16 @@ func Init() {
 	SetInfo(RedditAds, ProviderInfo{
 		AuthType: Oauth2,
 		BaseURL:  "https://ads-api.reddit.com",
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722168110/media/reddit.com_1722168108.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722168110/media/reddit.com_1722168108.jpg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722168110/media/reddit.com_1722168108.jpgjpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722168110/media/reddit.com_1722168108.jpg",
+			},
+		},
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://www.reddit.com/api/v1/authorize",

@@ -9,6 +9,16 @@ func init() {
 		DisplayName: "Chargebee",
 		AuthType:    Basic,
 		BaseURL:     "https://{{.workspace}}.chargebee.com/api",
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722165406/media/chargebee.com_1722165405.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722165406/media/chargebee.com_1722165405.jpg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722165406/media/chargebee.com_1722165405.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722165406/media/chargebee.com_1722165405.jpg",
+			},
+		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,

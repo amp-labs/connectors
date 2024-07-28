@@ -8,6 +8,16 @@ func init() {
 		DisplayName: "Salesloft",
 		AuthType:    Oauth2,
 		BaseURL:     "https://api.salesloft.com",
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722168309/media/salesloft.com_1722168308.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722168309/media/salesloft.com_1722168308.jpg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722168309/media/salesloft.com_1722168308.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722168309/media/salesloft.com_1722168308.jpg",
+			},
+		},
 		Oauth2Opts: &Oauth2Opts{
 			AuthURL:                   "https://accounts.salesloft.com/oauth/authorize",
 			TokenURL:                  "https://accounts.salesloft.com/oauth/token",

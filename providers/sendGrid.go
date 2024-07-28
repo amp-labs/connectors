@@ -16,6 +16,16 @@ func init() {
 			},
 			DocsURL: "https://www.twilio.com/docs/sendgrid",
 		},
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722168426/media/sendgrid.com_1722168425.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722168426/media/sendgrid.com_1722168425.jpg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722168426/media/sendgrid.com_1722168425.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722168426/media/sendgrid.com_1722168425.jpg",
+			},
+		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,

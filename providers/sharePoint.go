@@ -7,6 +7,16 @@ func init() {
 		DisplayName: "SharePoint",
 		AuthType:    Oauth2,
 		BaseURL:     "https://{{.workspace}}.sharepoint.com/_api",
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722166950/media/microsoft.com_1722166949.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722166950/media/microsoft.com_1722166949.jpg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722166950/media/microsoft.com_1722166949.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722166950/media/microsoft.com_1722166949.jpg",
+			},
+		},
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:              AuthorizationCode,
 			AuthURL:                "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",

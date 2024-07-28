@@ -12,6 +12,16 @@ func init() { //nolint:funlen
 		DisplayName: "Ironclad",
 		AuthType:    Oauth2,
 		BaseURL:     "https://ironcladapp.com",
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722166230/media/ironcladapp.com_1722166229.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722166230/media/ironcladapp.com_1722166229.jpg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722166230/media/ironcladapp.com_1722166229.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722166230/media/ironcladapp.com_1722166229.jpg",
+			},
+		},
 		Oauth2Opts: &Oauth2Opts{
 			AuthURL:                   "https://ironcladapp.com/oauth/authorize",
 			TokenURL:                  "https://ironcladapp.com/oauth/token",
@@ -40,6 +50,16 @@ func init() { //nolint:funlen
 		DisplayName: "Ironclad Demo",
 		AuthType:    Oauth2,
 		BaseURL:     "https://demo.ironcladapp.com",
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722166230/media/ironcladapp.com_1722166229.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722166230/media/ironcladapp.com_1722166229.jpg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722166230/media/ironcladapp.com_1722166229.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722166230/media/ironcladapp.com_1722166229.jpg",
+			},
+		},
 		Oauth2Opts: &Oauth2Opts{
 			AuthURL:                   "https://demo.ironcladapp.com/oauth/authorize",
 			TokenURL:                  "https://demo.ironcladapp.com/oauth/token",
@@ -68,6 +88,16 @@ func init() { //nolint:funlen
 		DisplayName: "Ironclad Europe",
 		AuthType:    Oauth2,
 		BaseURL:     "https://eu1.ironcladapp.com",
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722166230/media/ironcladapp.com_1722166229.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722166230/media/ironcladapp.com_1722166229.jpg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722166230/media/ironcladapp.com_1722166229.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722166230/media/ironcladapp.com_1722166229.jpg",
+			},
+		},
 		Oauth2Opts: &Oauth2Opts{
 			AuthURL:                   "https://eu1.ironcladapp.com/oauth/authorize",
 			TokenURL:                  "https://eu1.ironcladapp.com/oauth/token",

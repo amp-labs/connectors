@@ -8,6 +8,16 @@ func init() {
 		DisplayName: "Gong",
 		AuthType:    Oauth2,
 		BaseURL:     "https://api.gong.io",
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722165958/media/gong.io_1722165957.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722165958/media/gong.io_1722165957.jpg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722165958/media/gong.io_1722165957.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722165958/media/gong.io_1722165957.jpg",
+			},
+		},
 		Oauth2Opts: &Oauth2Opts{
 			AuthURL:                   "https://app.gong.io/oauth2/authorize",
 			TokenURL:                  "https://app.gong.io/oauth2/generate-customer-token",

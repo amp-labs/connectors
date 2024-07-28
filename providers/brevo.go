@@ -8,6 +8,16 @@ func init() {
 		DisplayName: "Brevo",
 		AuthType:    ApiKey,
 		BaseURL:     "https://api.brevo.com",
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722165255/media/brevo.com_1722165254.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722165255/media/brevo.com_1722165254.jpg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722165255/media/brevo.com_1722165254.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722165255/media/brevo.com_1722165254.jpg",
+			},
+		},
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Header,
 			Header: &ApiKeyOptsHeader{

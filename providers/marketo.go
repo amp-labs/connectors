@@ -9,6 +9,16 @@ func init() {
 		DisplayName: "Marketo",
 		AuthType:    Oauth2,
 		BaseURL:     "https://{{.workspace}}.mktorest.com",
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722166604/media/marketo.com_1722166602.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722166604/media/marketo.com_1722166602.jpg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722166604/media/marketo.com_1722166602.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722166604/media/marketo.com_1722166602.jpg",
+			},
+		},
 		Oauth2Opts: &Oauth2Opts{
 			TokenURL:                  "https://{{.workspace}}.mktorest.com/identity/oauth/token",
 			ExplicitScopesRequired:    false,
