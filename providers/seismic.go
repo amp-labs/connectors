@@ -14,6 +14,16 @@ func init() {
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: true,
 		},
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "",
+				LogoURL: "",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "",
+				LogoURL: "",
+			},
+		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
