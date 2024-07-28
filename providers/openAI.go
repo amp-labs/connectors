@@ -15,6 +15,16 @@ func init() {
 			},
 			DocsURL: "https://platform.openai.com/docs/api-reference/api-keys",
 		},
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722184924/media/openAI_1722184923.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722184924/media/openAI_1722184923.jpg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722184924/media/openAI_1722184923.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722184924/media/openAI_1722184923.jpg",
+			},
+		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
