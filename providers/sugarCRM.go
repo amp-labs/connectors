@@ -16,12 +16,12 @@ func init() {
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "",
-				LogoURL: "",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722187058/media/sugarCRM_1722187057.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722187058/media/sugarCRM_1722187057.jpg",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "",
-				LogoURL: "",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722187058/media/sugarCRM_1722187057.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722187058/media/sugarCRM_1722187057.jpg",
 			},
 		},
 		Support: Support{
