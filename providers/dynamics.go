@@ -1,3 +1,4 @@
+// nolint:lll
 package providers
 
 const (
@@ -5,7 +6,7 @@ const (
 	DynamicsCRM             Provider = "dynamicsCRM"
 )
 
-func init() {
+func init() { // nolint:funlen
 	// Microsoft Dynamics 365 Business Central configuration
 	SetInfo(DynamicsBusinessCentral, ProviderInfo{
 		DisplayName: "Microsoft Dynamics Business Central",
@@ -19,6 +20,16 @@ func init() {
 			GrantType:                 AuthorizationCode,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
+			},
+		},
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722183299/media/dynamicsBusinessCentral_1722183299.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722183299/media/dynamicsBusinessCentral_1722183299.jpg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722183299/media/dynamicsBusinessCentral_1722183299.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722183299/media/dynamicsBusinessCentral_1722183299.jpg",
 			},
 		},
 		Support: Support{
