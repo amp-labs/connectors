@@ -1,7 +1,7 @@
 package providers
 
 const (
-	ZendeskChat    Provider = "zendeskSupport"
+	ZendeskChat    Provider = "zendeskChat"
 	ZendeskSupport Provider = "zendeskSupport"
 )
 
