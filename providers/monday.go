@@ -18,6 +18,16 @@ func init() {
 				ScopesField: "scope",
 			},
 		},
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722182530/media/monday_1722182528.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722182530/media/monday_1722182528.jpg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722182530/media/monday_1722182528.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722182530/media/monday_1722182528.jpg",
+			},
+		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
