@@ -14,12 +14,12 @@ func init() { //nolint:funlen
 		// DocsURL: https://customer.io/docs/api/cdp/#section/Authentication
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "",
-				LogoURL: "",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722185635/media/customerDataPipelines_1722185634.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722185635/media/customerDataPipelines_1722185634.jpg",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "",
-				LogoURL: "",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722185635/media/customerDataPipelines_1722185634.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722185635/media/customerDataPipelines_1722185634.jpg",
 			},
 		},
 		Support: Support{
@@ -50,12 +50,12 @@ func init() { //nolint:funlen
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "",
-				LogoURL: "",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722185635/media/customerDataPipelines_1722185634.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722185635/media/customerDataPipelines_1722185634.jpg",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "",
-				LogoURL: "",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722185635/media/customerDataPipelines_1722185634.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722185635/media/customerDataPipelines_1722185634.jpg",
 			},
 		},
 		Support: Support{
@@ -79,12 +79,12 @@ func init() { //nolint:funlen
 		// DocsURL: https://customer.io/docs/api/track/#section/Authentication
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "",
-				LogoURL: "",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722185635/media/customerDataPipelines_1722185634.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722185635/media/customerDataPipelines_1722185634.jpg",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "",
-				LogoURL: "",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722185635/media/customerDataPipelines_1722185634.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722185635/media/customerDataPipelines_1722185634.jpg",
 			},
 		},
 		Support: Support{
