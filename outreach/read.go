@@ -2,6 +2,8 @@ package outreach
 
 import (
 	"context"
+	"fmt"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -27,11 +29,24 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 }
 
 func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error) {
+	// If NextPage is set, then we're reading the next page of results.
+	// The NextPage URL has all the necessary parameters.
 	if len(config.NextPage) > 0 {
-		// If NextPage is set, then we're reading the next page of results.
-		// The NextPage URL has all the necessary parameters.
 		return constructURL(config.NextPage.String())
 	}
 
-	return c.getApiURL(config.ObjectName)
+	url, err := c.getApiURL(config.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	// If Since is not set, then we're doing a backfill. We read all rows (in pages)
+	// Making sure the time passed, is in the format outreach expects.
+	if !config.Since.IsZero() {
+		time := config.Since.Format(time.DateOnly)
+		fmtTime := fmt.Sprintf("%s..inf", time)
+		url.WithQueryParam("filter[updatedAt]", fmtTime)
+	}
+
+	return url, nil
 }

@@ -3,16 +3,13 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"log"
-	"net/http"
+	"log/slog"
 	"os"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/scanning"
-	"github.com/amp-labs/connectors/outreach"
-	testUtils "github.com/amp-labs/connectors/test/utils"
-	"github.com/amp-labs/connectors/utils"
+	outreach_test "github.com/amp-labs/connectors/test/outreach"
+	"github.com/amp-labs/connectors/test/utils"
 	"github.com/brianvoe/gofakeit/v6"
 )
 
@@ -38,88 +35,19 @@ type EmailAddressUpdate struct {
 	ID         int       `json:"id"` // necessary in updating
 }
 
-func GetOutreachConnector(ctx context.Context, filePath string) *outreach.Connector {
-	registry := scanning.NewRegistry()
-
-	readers := []scanning.Reader{
-		&scanning.JSONReader{
-			FilePath: filePath,
-			JSONPath: "$['clientId']",
-			KeyName:  "clientId",
-		},
-		&scanning.JSONReader{
-			FilePath: filePath,
-			JSONPath: "$['clientSecret']",
-			KeyName:  "clientSecret",
-		},
-		&scanning.JSONReader{
-			FilePath: filePath,
-			JSONPath: "$['refreshToken']",
-			KeyName:  "refreshToken",
-		},
-		&scanning.JSONReader{
-			FilePath: filePath,
-			JSONPath: "$['accessToken']",
-			KeyName:  "accessToken",
-		},
-		&scanning.JSONReader{
-			FilePath: filePath,
-			JSONPath: "$['provider']",
-			KeyName:  "provider",
-		},
-	}
-	registry.AddReaders(readers...)
-
-	cfg := utils.OutreachOAuthConfigFromRegistry(registry)
-	tok := utils.OutreachOauthTokenFromRegistry(registry)
-
-	conn, err := outreach.NewConnector(
-		outreach.WithClient(ctx, http.DefaultClient, cfg, tok),
-	)
-	if err != nil {
-		testUtils.Fail("error creating outreach connector", "error", err)
-	}
-
-	return conn
-}
-
 func main() {
 	var err error
+	ctx := context.Background()
 
-	outreach := GetOutreachConnector(context.Background(), DefaultCredsFile)
+	conn := outreach_test.GetOutreachConnector(context.Background(), DefaultCredsFile)
 
-	err = testReadConnector(context.Background(), outreach)
+	// Set up slog logging.
+	utils.SetupLogging()
+
+	err = testWriteConnector(ctx, conn)
 	if err != nil {
-		log.Fatal(err)
+		slog.Error("Error testing", "connector", conn, "error", err)
 	}
-
-	err = testWriteConnector(context.Background(), outreach)
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
-func testReadConnector(ctx context.Context, conn connectors.ReadConnector) error {
-	config := connectors.ReadParams{
-		ObjectName: "users",
-		// NextPage:   "https://api.outreach.io/api/v2/users?page%5Blimit%5D=1\u0026page%5Boffset%5D=2",
-	}
-
-	result, err := conn.Read(ctx, config)
-	if err != nil {
-		return err
-	}
-
-	// Print the results
-	jsonStr, err := json.MarshalIndent(result, "", "  ")
-	if err != nil {
-		return err
-	}
-
-	_, _ = os.Stdout.Write(jsonStr)
-	_, _ = os.Stdout.WriteString("\n")
-
-	return nil
 }
 
 func testWriteConnector(ctx context.Context, conn connectors.WriteConnector) error {
