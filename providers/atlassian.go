@@ -38,5 +38,6 @@ func init() {
 			Subscribe: false,
 			Write:     false,
 		},
+		PostAuthInfoNeeded: true,
 	})
 }
