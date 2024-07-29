@@ -1,21 +1,22 @@
 package providers
 
-const Gmail Provider = "gmail"
+const ZohoCRM Provider = "zoho"
 
 func init() {
-	// GoogleMail Support Configuration
-	SetInfo(Gmail, ProviderInfo{
-		DisplayName: "Gmail",
+	// ZohoCRM configuration
+	SetInfo(ZohoCRM, ProviderInfo{
+		DisplayName: "Zoho",
 		AuthType:    Oauth2,
-		BaseURL:     "https://gmail.googleapis.com",
+		BaseURL:     "https://www.zohoapis.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   "https://accounts.google.com/o/oauth2/v2/auth",
-			TokenURL:                  "https://oauth2.googleapis.com/token",
+			AuthURL:                   "https://accounts.zoho.com/oauth/v2/auth",
+			TokenURL:                  "https://accounts.zoho.com/oauth/v2/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 			TokenMetadataFields: TokenMetadataFields{
-				ScopesField: "scope",
+				WorkspaceRefField: "api_domain",
+				ScopesField:       "scope",
 			},
 		},
 		Support: Support{
