@@ -1,10 +1,10 @@
 package providers
 
-const ZohoCRM Provider = "zoho"
+const Zoho Provider = "zoho"
 
 func init() {
-	// ZohoCRM configuration
-	SetInfo(ZohoCRM, ProviderInfo{
+	// Zoho configuration
+	SetInfo(Zoho, ProviderInfo{
 		DisplayName: "Zoho",
 		AuthType:    Oauth2,
 		BaseURL:     "https://www.zohoapis.com",
