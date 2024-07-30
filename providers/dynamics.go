@@ -24,12 +24,12 @@ func init() { // nolint:funlen
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722183299/media/dynamicsBusinessCentral_1722183299.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722183299/media/dynamicsBusinessCentral_1722183299.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722346320/media/dynamicsCRM_1722346320.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722346267/media/dynamicsCRM_1722346267.svg",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722183299/media/dynamicsBusinessCentral_1722183299.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722183299/media/dynamicsBusinessCentral_1722183299.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722346298/media/dynamicsCRM_1722346297.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722346267/media/dynamicsCRM_1722346267.svg",
 			},
 		},
 		Support: Support{
@@ -65,12 +65,12 @@ func init() { // nolint:funlen
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722183109/media/dynamicsCRM_1722183108.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722183109/media/dynamicsCRM_1722183108.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722346320/media/dynamicsCRM_1722346320.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722346267/media/dynamicsCRM_1722346267.svg",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722183109/media/dynamicsCRM_1722183108.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722183109/media/dynamicsCRM_1722183108.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722346298/media/dynamicsCRM_1722346297.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722346267/media/dynamicsCRM_1722346267.svg",
 			},
 		},
 		Support: Support{
