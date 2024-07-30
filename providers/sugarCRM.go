@@ -14,6 +14,16 @@ func init() {
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: true,
 		},
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722348686/media/sugarCRM_1722348686.png",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722348716/media/sugarCRM_1722348716.svg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722348686/media/sugarCRM_1722348686.png",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722348716/media/sugarCRM_1722348716.svg",
+			},
+		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
