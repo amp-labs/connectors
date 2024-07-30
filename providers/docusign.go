@@ -5,6 +5,7 @@ const (
 	DocusignDeveloper Provider = "docusignDeveloper"
 )
 
+//nolint:funlen
 func init() {
 	// Docusign configuration
 	SetInfo(Docusign, ProviderInfo{
@@ -18,7 +19,7 @@ func init() {
 			ExplicitWorkspaceRequired: false,
 			GrantType:                 AuthorizationCode,
 		},
-		//nolint:all
+		//nolint:lll
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722320728/media/Docusign%20%20%20%20%20%20%20%20%20%20Provider%20%3D%20%22docusign%22_1722320727.jpg",
@@ -59,7 +60,7 @@ func init() {
 				ScopesField: "scope",
 			},
 		},
-		//nolint:all
+		//nolint:lll
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722320728/media/Docusign%20%20%20%20%20%20%20%20%20%20Provider%20%3D%20%22docusign%22_1722320727.jpg",
