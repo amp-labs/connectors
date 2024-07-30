@@ -16,12 +16,12 @@ func init() {
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722187058/media/sugarCRM_1722187057.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722187058/media/sugarCRM_1722187057.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722348686/media/sugarCRM_1722348686.png",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722348716/media/sugarCRM_1722348716.svg",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722187058/media/sugarCRM_1722187057.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722187058/media/sugarCRM_1722187057.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722348686/media/sugarCRM_1722348686.png",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722348716/media/sugarCRM_1722348716.svg",
 			},
 		},
 		Support: Support{
