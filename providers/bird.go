@@ -1,11 +1,11 @@
 package providers
 
-const MessageBird Provider = "messageBird"
+const Bird Provider = "bird"
 
 func init() {
-	// MessageBird configuration
-	SetInfo(MessageBird, ProviderInfo{
-		DisplayName: "MessageBird",
+	// Bird configuration
+	SetInfo(Bird, ProviderInfo{
+		DisplayName: "Bird (MessageBird)",
 		AuthType:    ApiKey,
 		BaseURL:     "https://api.bird.com",
 		Media: &Media{

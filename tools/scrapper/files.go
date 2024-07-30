@@ -1,6 +1,10 @@
 package scrapper
 
-import "encoding/json"
+import (
+	"encoding/json"
+
+	"github.com/amp-labs/connectors/tools/fileconv"
+)
 
 const (
 	IndexFile           = "index.json"
@@ -8,18 +12,12 @@ const (
 	QueryParamStatsFile = "queryParamStats.json"
 )
 
-// MetadataFileLocator locates index and schema files.
-// Every module stores these files in its own place.
-type MetadataFileLocator interface {
-	AbsPathTo(filename string) string
-}
-
 type MetadataFileManager struct {
 	schemas []byte
-	locator MetadataFileLocator
+	locator fileconv.FileLocator
 }
 
-func NewMetadataFileManager(schemas []byte, locator MetadataFileLocator) *MetadataFileManager {
+func NewMetadataFileManager(schemas []byte, locator fileconv.FileLocator) *MetadataFileManager {
 	return &MetadataFileManager{
 		schemas: schemas,
 		locator: locator,

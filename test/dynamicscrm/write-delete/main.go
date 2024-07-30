@@ -7,6 +7,7 @@ import (
 	"syscall"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/handy"
 	"github.com/amp-labs/connectors/dynamicscrm"
 	connTest "github.com/amp-labs/connectors/test/dynamicscrm"
 	"github.com/amp-labs/connectors/test/utils"
@@ -61,8 +62,8 @@ func main() {
 	leadID := fmt.Sprintf("%v", lead["leadid"])
 	fmt.Println("Updating some lead properties")
 	updateLead(ctx, conn, leadID, &LeadUploadPayload{
-		LastName:  mockutils.Pointers.Str(""),
-		FirstName: mockutils.Pointers.Str("Squidward"),
+		LastName:  handy.Pointers.Str(""),
+		FirstName: handy.Pointers.Str("Squidward"),
 	})
 	fmt.Println("View that lead has changed accordingly")
 
