@@ -14,12 +14,12 @@ func init() { //nolint:funlen
 		// DocsURL: https://customer.io/docs/api/cdp/#section/Authentication
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722185635/media/customerDataPipelines_1722185634.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722185635/media/customerDataPipelines_1722185634.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722349524/media/customerDataPipelines_1722349524.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722349458/media/customerDataPipelines_1722349458.svg",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722185635/media/customerDataPipelines_1722185634.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722185635/media/customerDataPipelines_1722185634.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722349524/media/customerDataPipelines_1722349524.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722349482/media/customerDataPipelines_1722349482.svg",
 			},
 		},
 		Support: Support{
@@ -50,12 +50,12 @@ func init() { //nolint:funlen
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722185635/media/customerDataPipelines_1722185634.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722185635/media/customerDataPipelines_1722185634.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722349524/media/customerDataPipelines_1722349524.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722349458/media/customerDataPipelines_1722349458.svg",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722185635/media/customerDataPipelines_1722185634.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722185635/media/customerDataPipelines_1722185634.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722349524/media/customerDataPipelines_1722349524.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722349482/media/customerDataPipelines_1722349482.svg",
 			},
 		},
 		Support: Support{
@@ -79,12 +79,12 @@ func init() { //nolint:funlen
 		// DocsURL: https://customer.io/docs/api/track/#section/Authentication
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722185635/media/customerDataPipelines_1722185634.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722185635/media/customerDataPipelines_1722185634.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722349524/media/customerDataPipelines_1722349524.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722349458/media/customerDataPipelines_1722349458.svg",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722185635/media/customerDataPipelines_1722185634.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722185635/media/customerDataPipelines_1722185634.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722349524/media/customerDataPipelines_1722349524.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722349482/media/customerDataPipelines_1722349482.svg",
 			},
 		},
 		Support: Support{
