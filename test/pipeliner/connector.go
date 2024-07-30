@@ -2,12 +2,12 @@ package pipeliner
 
 import (
 	"context"
-	"github.com/amp-labs/connectors/common/scanning/credscanning"
-	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/test/utils"
 	"net/http"
 
+	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/pipeliner"
+	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/test/utils"
 )
 
 func GetPipelinerConnector(ctx context.Context) *pipeliner.Connector {
