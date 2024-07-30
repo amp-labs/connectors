@@ -20,5 +20,15 @@ func init() {
 			Write:     false,
 		},
 		PostAuthInfoNeeded: false,
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722071714/media/geckoboard_1722071713.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722071714/media/geckoboard_1722071713.svg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722071714/media/geckoboard_1722071713.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722071714/media/geckoboard_1722071713.svg",
+			},
+		},
 	})
 }
