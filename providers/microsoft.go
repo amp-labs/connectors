@@ -13,12 +13,12 @@ func init() {
 		BaseURL:     "https://graph.microsoft.com",
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722166950/media/microsoft.com_1722166949.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722166950/media/microsoft.com_1722166949.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722328808/media/microsoft_1722328808.png",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722328785/media/microsoft_1722328785.svg",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722166950/media/microsoft.com_1722166949.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722166950/media/microsoft.com_1722166949.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722328808/media/microsoft_1722328808.png",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722328785/media/microsoft_1722328785.svg",
 			},
 		},
 		Oauth2Opts: &Oauth2Opts{

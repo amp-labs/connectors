@@ -10,12 +10,12 @@ func init() {
 		BaseURL:     "https://api.bird.com",
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722166753/media/messagebird.com_1722166752.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722166753/media/messagebird.com_1722166752.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722328501/media/bird_1722328500.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722328456/media/bird_1722328455.svg",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722166753/media/messagebird.com_1722166752.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722166753/media/messagebird.com_1722166752.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722328535/media/bird_1722328534.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722328476/media/bird_1722328475.png",
 			},
 		},
 		ApiKeyOpts: &ApiKeyOpts{

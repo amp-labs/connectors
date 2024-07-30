@@ -10,12 +10,12 @@ func init() {
 		BaseURL:     "https://adsapi.snapchat.com",
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722168560/media/snapchat.com_1722168559.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722168560/media/snapchat.com_1722168559.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722330970/media/snapchatAds_1722330969.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722330970/media/snapchatAds_1722330969.svg",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722168560/media/snapchat.com_1722168559.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722168560/media/snapchat.com_1722168559.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722330931/media/snapchatAds_1722330931.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722330931/media/snapchatAds_1722330931.svg",
 			},
 		},
 		Oauth2Opts: &Oauth2Opts{

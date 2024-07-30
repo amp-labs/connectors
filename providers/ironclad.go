@@ -14,12 +14,12 @@ func init() { //nolint:funlen
 		BaseURL:     "https://ironcladapp.com",
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722166230/media/ironcladapp.com_1722166229.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722166230/media/ironcladapp.com_1722166229.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722328016/media/ironclad_1722328015.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722327987/media/ironclad_1722327987.svg",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722166230/media/ironcladapp.com_1722166229.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722166230/media/ironcladapp.com_1722166229.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722328016/media/ironclad_1722328015.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722327967/media/ironclad_1722327967.svg",
 			},
 		},
 		Oauth2Opts: &Oauth2Opts{
@@ -52,12 +52,12 @@ func init() { //nolint:funlen
 		BaseURL:     "https://demo.ironcladapp.com",
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722166230/media/ironcladapp.com_1722166229.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722166230/media/ironcladapp.com_1722166229.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722328016/media/ironclad_1722328015.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722327987/media/ironclad_1722327987.svg",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722166230/media/ironcladapp.com_1722166229.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722166230/media/ironcladapp.com_1722166229.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722328016/media/ironclad_1722328015.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722327967/media/ironclad_1722327967.svg",
 			},
 		},
 		Oauth2Opts: &Oauth2Opts{
@@ -90,12 +90,12 @@ func init() { //nolint:funlen
 		BaseURL:     "https://eu1.ironcladapp.com",
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722166230/media/ironcladapp.com_1722166229.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722166230/media/ironcladapp.com_1722166229.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722328016/media/ironclad_1722328015.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722327987/media/ironclad_1722327987.svg",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722166230/media/ironcladapp.com_1722166229.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722166230/media/ironcladapp.com_1722166229.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722328016/media/ironclad_1722328015.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722327967/media/ironclad_1722327967.svg",
 			},
 		},
 		Oauth2Opts: &Oauth2Opts{

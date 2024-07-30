@@ -10,12 +10,12 @@ func init() {
 		BaseURL:     "https://api.outreach.io",
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722167157/media/outreach.io_1722167156.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722167157/media/outreach.io_1722167156.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722329361/media/outreach_1722329360.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722329335/media/outreach_1722329335.svg",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722167157/media/outreach.io_1722167156.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722167157/media/outreach.io_1722167156.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722329361/media/outreach_1722329360.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722329335/media/outreach_1722329335.svg",
 			},
 		},
 		Oauth2Opts: &Oauth2Opts{

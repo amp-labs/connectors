@@ -10,12 +10,12 @@ func init() {
 		BaseURL:     "https://api.notion.com",
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722167069/media/notion.com_1722167068.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722167069/media/notion.com_1722167068.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722329109/media/notion_1722329109.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722329086/media/notion_1722329085.svg",
 			},
 			Regular: &MediaTypeRegular{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722167069/media/notion.com_1722167068.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722167069/media/notion.com_1722167068.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722329109/media/notion_1722329109.svg",
 			},
 		},
 		Oauth2Opts: &Oauth2Opts{

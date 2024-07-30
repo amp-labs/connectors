@@ -10,7 +10,7 @@ func init() {
 		BaseURL:     "https://app.asana.com/api",
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722164011/media/Asana_1722164010.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722163967/media/Asana_1722163967.jpg",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722163991/media/Asana_1722163991.svg",
 			},
 			Regular: &MediaTypeRegular{

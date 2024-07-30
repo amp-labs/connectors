@@ -11,12 +11,12 @@ func init() {
 		BaseURL:     "https://3.basecampapi.com/{{.workspace}}",
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722164556/media/basecamp_1722164555.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722164556/media/basecamp_1722164555.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722324615/media/basecamp_1722324614.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722324674/media/basecamp_1722324673.svg",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722164556/media/basecamp_1722164555.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722164556/media/basecamp_1722164555.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722324615/media/basecamp_1722324614.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722324674/media/basecamp_1722324673.svg",
 			},
 		},
 		Oauth2Opts: &Oauth2Opts{

@@ -11,12 +11,13 @@ func init() {
 		BaseURL:     "https://{{.workspace}}.chargebee.com/api",
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722165406/media/chargebee.com_1722165405.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722165406/media/chargebee.com_1722165405.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722326327/media/chargebee_1722326327.svg",
+				// The logo may be not be observed in dark mode.
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722326161/media/chargebee_1722326160.svg",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722165406/media/chargebee.com_1722165405.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722165406/media/chargebee.com_1722165405.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722326327/media/chargebee_1722326327.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722326161/media/chargebee_1722326160.svg",
 			},
 		},
 		Support: Support{

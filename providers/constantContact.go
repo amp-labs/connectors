@@ -10,12 +10,12 @@ func init() {
 		BaseURL:     "https://api.cc.email",
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722165757/media/constantcontact.com_1722165755.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722165757/media/constantcontact.com_1722165755.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722326707/media/constantContact_1722326706.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722326746/media/constantContact_1722326745.svg",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722165757/media/constantcontact.com_1722165755.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722165757/media/constantcontact.com_1722165755.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722326707/media/constantContact_1722326706.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722326772/media/constantContact_1722326771.svg",
 			},
 		},
 		Oauth2Opts: &Oauth2Opts{

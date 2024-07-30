@@ -10,12 +10,12 @@ func init() {
 		BaseURL:     "https://api.timelyapp.com",
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722168679/media/timelyapp.com_1722168678.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722168679/media/timelyapp.com_1722168678.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722331047/media/timely_1722331046.png",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722331078/media/timely_1722331078.svg",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722168679/media/timelyapp.com_1722168678.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722168679/media/timelyapp.com_1722168678.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722331047/media/timely_1722331046.png",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722331097/media/timely_1722331096.svg",
 			},
 		},
 		Oauth2Opts: &Oauth2Opts{
