@@ -15,6 +15,7 @@ func init() {
 			ExplicitWorkspaceRequired: true,
 			GrantType:                 AuthorizationCode,
 		},
+		//nolint:all
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722326070/media/const%20Gainsight%20Provider%20%3D%20%22gainsight%22_1722326070.svg",
