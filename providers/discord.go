@@ -18,6 +18,7 @@ func init() {
 				ScopesField: "scope",
 			},
 		},
+		//nolint:all
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722322380/media/const%20Discord%20Provider%20%3D%20%22discord%22_1722322358.svg",
