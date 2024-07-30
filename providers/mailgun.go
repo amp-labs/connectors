@@ -7,6 +7,9 @@ func init() {
 		DisplayName: "Mailgun",
 		AuthType:    Basic,
 		BaseURL:     "https://api.mailgun.net",
+		BasicOpts: &BasicAuthOpts{
+			DocsURL: "https://documentation.mailgun.com/docs/mailgun/api-reference/authentication/",
+		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
