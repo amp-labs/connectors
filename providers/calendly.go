@@ -17,12 +17,12 @@ func init() {
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722183743/media/calendly_1722183742.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722183743/media/calendly_1722183742.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722346654/media/calendly_1722346653.svg", // 13
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722346580/media/calendly_1722346580.svg", // 03
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722183743/media/calendly_1722183742.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722183743/media/calendly_1722183742.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722346682/media/calendly_1722346682.png", // 02
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722346580/media/calendly_1722346580.svg", // 11
 			},
 		},
 		Support: Support{
