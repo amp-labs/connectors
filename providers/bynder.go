@@ -4,7 +4,7 @@ const Bynder Provider = "bynder"
 
 func init() {
 	SetInfo(Bynder, ProviderInfo{
-		DisplayName: "bynder",
+		DisplayName: "Bynder",
 		AuthType:    Oauth2,
 		BaseURL:     "https://{{.workspace}}.bynder.com/api",
 		Oauth2Opts: &Oauth2Opts{
