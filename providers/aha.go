@@ -17,12 +17,12 @@ func init() {
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722184261/media/aha_1722184260.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722184261/media/aha_1722184260.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722347563/media/aha_1722347563.png",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722347588/media/aha_1722347588.svg",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722184261/media/aha_1722184260.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722184261/media/aha_1722184260.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722347563/media/aha_1722347563.png",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722347605/media/aha_1722347605.svg",
 			},
 		},
 		Support: Support{
