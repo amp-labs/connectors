@@ -1,0 +1,7 @@
+{
+  "code": 2006,
+  "name": "ERROR_UNKNOWN_TYPE",
+  "message": "cannot determine entity type from Contact",
+  "http_status": 404,
+  "success": false
+}
