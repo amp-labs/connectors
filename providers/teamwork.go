@@ -18,6 +18,17 @@ func init() {
 				ConsumerRefField: "user.id",
 			},
 		},
+		//nolint:lll
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722404948/media/const%20Teamwork%20Provider%20%3D%20%22teamwork%22_1722404947.png",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722404979/media/const%20Teamwork%20Provider%20%3D%20%22teamwork%22_1722404979.svg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722404948/media/const%20Teamwork%20Provider%20%3D%20%22teamwork%22_1722404947.png",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722404979/media/const%20Teamwork%20Provider%20%3D%20%22teamwork%22_1722404979.svg",
+			},
+		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
