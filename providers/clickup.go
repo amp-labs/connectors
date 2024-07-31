@@ -15,6 +15,17 @@ func init() {
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
 		},
+		//nolint:lll
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722433816/media/const%20ClickUp%20Provider%20%3D%20%22clickup%22_1722433817.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722433753/media/const%20ClickUp%20Provider%20%3D%20%22clickup%22_1722433753.svg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722433816/media/const%20ClickUp%20Provider%20%3D%20%22clickup%22_1722433817.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722433776/media/const%20ClickUp%20Provider%20%3D%20%22clickup%22_1722433777.svg",
+			},
+		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
