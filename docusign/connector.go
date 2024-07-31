@@ -7,8 +7,8 @@ import (
 )
 
 type Connector struct {
-	ProviderInfo *providers.ProviderInfo
-	Client       *common.JSONHTTPClient
+	BaseURL string
+	Client  *common.JSONHTTPClient
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
@@ -28,14 +28,17 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		},
 	}
 
+	// Convert metadata map to model which knows how to do variable substitution.
+	authMetadata := NewAuthMetadataVars(params.Metadata.Map)
+
 	// Read provider info
-	conn.ProviderInfo, err = providers.ReadInfo(providers.Docusign)
+	providerInfo, err := providers.ReadInfo(providers.Docusign, authMetadata)
 	if err != nil {
 		return nil, err
 	}
 
 	// Set the base URL
-	conn.Client.HTTPClient.Base = conn.ProviderInfo.BaseURL
+	conn.setBaseURL(providerInfo.BaseURL)
 
 	return conn, nil
 }
@@ -43,4 +46,9 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 // Provider returns the connector provider.
 func (c *Connector) Provider() providers.Provider {
 	return providers.Docusign
+}
+
+func (c *Connector) setBaseURL(newURL string) {
+	c.BaseURL = newURL
+	c.Client.HTTPClient.Base = newURL
 }
