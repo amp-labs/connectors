@@ -56,14 +56,12 @@ func ValidateReadConformsMetadata(objectName string,
 		fields.Add(field)
 	}
 
-	mismatch := make([]error, 0)
-
-	objectName = strings.ToLower(objectName)
 	for name := range metadata.Result[objectName].FieldsMap {
 		fields.CheckIfExists(name)
 	}
 
 	// every field from Read must be known to ListObjectMetadata
+	mismatch := make([]error, 0)
 	for name, checked := range fields {
 		if !checked {
 			mismatch = append(mismatch, fmt.Errorf("metadata schema is missing field %v", name))
