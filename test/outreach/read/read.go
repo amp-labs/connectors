@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors"
-	outreach_test "github.com/amp-labs/connectors/test/outreach"
+	"github.com/amp-labs/connectors/test/outreach"
 )
 
 const (
@@ -36,7 +36,7 @@ type EmailAddressUpdate struct {
 func main() {
 	var err error
 
-	conn := outreach_test.GetOutreachConnector(context.Background(), DefaultCredsFile)
+	conn := outreach.GetOutreachConnector(context.Background(), DefaultCredsFile)
 
 	err = testReadConnector(context.Background(), conn)
 	if err != nil {
@@ -49,7 +49,6 @@ func testReadConnector(ctx context.Context, conn connectors.ReadConnector) error
 		ObjectName: "sequences",
 		Since:      time.Now().Add(-720 * time.Hour), // Goes back a Month.
 		Fields:     []string{"type", "id", "relationships"},
-		// NextPage:   "https://api.outreach.io/api/v2/users?page%5Blimit%5D=1\u0026page%5Boffset%5D=2",
 	}
 
 	result, err := conn.Read(ctx, config)

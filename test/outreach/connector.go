@@ -1,4 +1,4 @@
-package outreach_test
+package outreach
 
 import (
 	"context"
