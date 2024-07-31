@@ -15,6 +15,17 @@ func init() {
 			},
 			DocsURL: "https://api.jotform.com/docs/#authentication",
 		},
+		//nolint:lll
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722412121/media/const%20Jotform%20Provider%20%3D%20%22jotform%22_1722412120.png",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722412311/media/const%20Jotform%20Provider%20%3D%20%22jotform%22_1722412311.svg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722412121/media/const%20Jotform%20Provider%20%3D%20%22jotform%22_1722412120.png",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722412311/media/const%20Jotform%20Provider%20%3D%20%22jotform%22_1722412311.svg",
+			},
+		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
