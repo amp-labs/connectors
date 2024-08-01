@@ -7,12 +7,12 @@ import (
 
 var ErrNoSupportedModule = errors.New("no supported module was chosen")
 
-// Module params adds suffix to URL controlling API versions.
-// This is relevant where there are several APIs for different product areas or sub-products, and the APIs
-// are versioned differently or have different ways of constructing URLs from object names.
+// Module represents a sub-product of a provider.
+// This is relevant where there are several APIs for different sub-products, and the APIs
+// are versioned differently or have different ways of constructing URLs and requests for reading/writing.
 type Module struct {
-	// Suffix represents part of URL string capturing the concept of module.
-	Suffix string
+	// Name represents the name of the sub-product. e.g. crm, marketing, etc.
+	Name string
 	// Connector implementation must provide list of modules that are currently supported.
 	// This defines a list of module a user could switch to. Any out of scope module will be ignored.
 	supported []APIModule
@@ -30,7 +30,7 @@ func (p *Module) ValidateParams() error {
 		}
 
 		// replace with fallback module
-		p.Suffix = p.fallback.String()
+		p.Name = p.fallback.String()
 
 		// even fallback is not supported
 		if !p.isSupported() {
@@ -42,14 +42,14 @@ func (p *Module) ValidateParams() error {
 }
 
 func (p *Module) WithModule(module APIModule, supported []APIModule, defaultModule *APIModule) {
-	p.Suffix = module.String()
+	p.Name = module.String()
 	p.supported = supported
 	p.fallback = defaultModule
 }
 
 func (p *Module) isSupported() bool {
 	for _, mod := range p.supported {
-		if p.Suffix == mod.String() {
+		if p.Name == mod.String() {
 			return true
 		}
 	}
