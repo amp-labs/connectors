@@ -35,7 +35,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		Client: &common.JSONHTTPClient{
 			HTTPClient: params.Client.Caller,
 		},
-		Module: params.Module.Suffix,
+		Module: params.Module.Name,
 	}
 
 	conn.setBaseURL(providerInfo.BaseURL)
