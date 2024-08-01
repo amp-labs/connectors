@@ -12,6 +12,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 	"github.com/go-test/deep"
 )
@@ -33,19 +34,15 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		expectedErrs []error
 	}{
 		{
-			name:  "At least one object name must be queried",
-			input: nil,
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusTeapot)
-			})),
+			name:         "At least one object name must be queried",
+			input:        nil,
+			server:       mockserver.Dummy(),
 			expectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
-			name:  "Mime response header expected",
-			input: []string{"accounts"},
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusTeapot)
-			})),
+			name:         "Mime response header expected",
+			input:        []string{"accounts"},
+			server:       mockserver.Dummy(),
 			expectedErrs: []error{interpreter.ErrMissingContentType},
 		},
 		{

@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/tools/scrapper"
 	"github.com/go-test/deep"
 )
@@ -25,27 +26,21 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		expectedErrs []error
 	}{
 		{
-			name:  "At least one object name must be queried",
-			input: nil,
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusTeapot)
-			})),
+			name:         "At least one object name must be queried",
+			input:        nil,
+			server:       mockserver.Dummy(),
 			expectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
-			name:  "Unknown object requested",
-			input: []string{"butterflies"},
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusTeapot)
-			})),
+			name:         "Unknown object requested",
+			input:        []string{"butterflies"},
+			server:       mockserver.Dummy(),
 			expectedErrs: []error{scrapper.ErrObjectNotFound},
 		},
 		{
-			name:  "Successfully describe one object with metadata",
-			input: []string{"brands"},
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusTeapot)
-			})),
+			name:   "Successfully describe one object with metadata",
+			input:  []string{"brands"},
+			server: mockserver.Dummy(),
 			expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"brands": {
@@ -75,11 +70,9 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			expectedErrs: nil,
 		},
 		{
-			name:  "Successfully describe multiple objects with metadata",
-			input: []string{"bookmarks", "ticket_audits"},
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusTeapot)
-			})),
+			name:   "Successfully describe multiple objects with metadata",
+			input:  []string{"bookmarks", "ticket_audits"},
+			server: mockserver.Dummy(),
 			expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"bookmarks": {
@@ -167,9 +160,7 @@ func BenchmarkListObjectMetadata(b *testing.B) {
 		b.Fatalf("%s: couldn't initialize connector", err)
 	}
 
-	dummyServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusTeapot)
-	}))
+	dummyServer := mockserver.Dummy()
 
 	connector.setBaseURL(dummyServer.URL)
 
