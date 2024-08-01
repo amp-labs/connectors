@@ -15,6 +15,7 @@ func init() {
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 		},
+		//nolint:lll
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722490152/media/const%20Atlassian%20Provider%20%3D%20%22atlassian%22_1722490153.svg",
