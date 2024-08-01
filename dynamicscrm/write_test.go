@@ -33,16 +33,13 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Correct error message is understood from JSON response",
 			Input: common.WriteParams{ObjectName: "fax"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusBadRequest)
-				mockutils.WriteBody(w, `{
+			Server: mockserver.New().JSON().Status(http.StatusBadRequest).
+				TextBody(`{
 					"error": {
 						"code": "0x80060888",
 						"message":"Resource not found for the segment 'conacs'."
 					}
-				}`)
-			})),
+				}`).Build(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
 				errors.New("Resource not found for the segment 'conacs'"), // nolint:goerr113
