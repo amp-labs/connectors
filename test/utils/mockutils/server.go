@@ -32,7 +32,7 @@ func RespondToMethod(w http.ResponseWriter, r *http.Request, methodName string, 
 
 func RespondToHeader(w http.ResponseWriter, r *http.Request, header http.Header, onSuccess func()) {
 	// if some headers are missing we return error code so the test will fail
-	if missingHeader, ok := headerIsSubset(r.Header, header); ok {
+	if missingHeader, ok := HeaderIsSubset(r.Header, header); ok {
 		// if method is matching headers
 		onSuccess()
 	} else {
@@ -46,7 +46,7 @@ func RespondToHeader(w http.ResponseWriter, r *http.Request, header http.Header,
 }
 
 func RespondToBody(w http.ResponseWriter, r *http.Request, body string, onSuccess func()) {
-	if ok := bodiesMatch(r.Body, body); ok {
+	if ok := BodiesMatch(r.Body, body); ok {
 		// if method is matching bodies
 		onSuccess()
 	} else {
@@ -61,7 +61,7 @@ func RespondToBody(w http.ResponseWriter, r *http.Request, body string, onSucces
 
 func RespondToQueryParameters(w http.ResponseWriter, r *http.Request, queries url.Values, onSuccess func()) {
 	// if some query parameters are mismatching return error code so the test will fail
-	if queryParam, ok := queryParamsAreSubset(r.URL.Query(), queries); ok {
+	if queryParam, ok := QueryParamsAreSubset(r.URL.Query(), queries); ok {
 		// if method is matching headers
 		onSuccess()
 	} else {
@@ -76,7 +76,7 @@ func RespondToQueryParameters(w http.ResponseWriter, r *http.Request, queries ur
 
 func RespondToMissingQueryParameters(w http.ResponseWriter, r *http.Request, missingQueries []string, onSuccess func()) {
 	// if at least one query parameter exists return error code so the test will fail
-	if queryParam, ok := queryParamsMissing(r.URL.Query(), missingQueries); ok {
+	if queryParam, ok := QueryParamsMissing(r.URL.Query(), missingQueries); ok {
 		// if method is matching headers
 		onSuccess()
 	} else {
@@ -93,7 +93,7 @@ func WriteBody(w http.ResponseWriter, body string) {
 	_, _ = w.Write([]byte(body))
 }
 
-func headerIsSubset(superset, subset http.Header) (string, bool) {
+func HeaderIsSubset(superset, subset http.Header) (string, bool) {
 	for name, values := range subset {
 		superValues := make(map[string]bool)
 		for _, v := range superset.Values(name) {
@@ -110,7 +110,7 @@ func headerIsSubset(superset, subset http.Header) (string, bool) {
 	return "", true
 }
 
-func queryParamsAreSubset(superset, subset url.Values) (string, bool) {
+func QueryParamsAreSubset(superset, subset url.Values) (string, bool) {
 	for param, values := range subset {
 		superValues := make(map[string]bool)
 
@@ -133,7 +133,7 @@ func queryParamsAreSubset(superset, subset url.Values) (string, bool) {
 	return "", true
 }
 
-func bodiesMatch(reader io.ReadCloser, expected string) bool {
+func BodiesMatch(reader io.ReadCloser, expected string) bool {
 	body, err := io.ReadAll(reader)
 	if err != nil {
 		return false
@@ -142,7 +142,7 @@ func bodiesMatch(reader io.ReadCloser, expected string) bool {
 	return string(body) == stringCleaner(expected, []string{"\n", "\t"})
 }
 
-func queryParamsMissing(superset url.Values, missing []string) (string, bool) {
+func QueryParamsMissing(superset url.Values, missing []string) (string, bool) {
 	for _, param := range missing {
 		if superset.Has(param) {
 			// query was found, while should be missing

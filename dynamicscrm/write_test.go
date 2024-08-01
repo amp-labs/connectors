@@ -3,14 +3,13 @@ package dynamicscrm
 import (
 	"errors"
 	"net/http"
-	"net/http/httptest"
 	"testing"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
-	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver/mockresponse"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 )
 
@@ -48,20 +47,24 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Write must act as a Create",
 			Input: common.WriteParams{ObjectName: "fax"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondNoContentForMethod(w, r, "POST")
-			})),
+			Server: mockserver.Select(
+				mockresponse.If().MethodIs("POST").Do(func(w http.ResponseWriter, r *http.Request) {
+					w.Header().Set("Content-Type", "application/json")
+					w.WriteHeader(http.StatusNoContent)
+				}),
+			),
 			Expected:     &common.WriteResult{Success: true},
 			ExpectedErrs: nil,
 		},
 		{
 			Name:  "Write must act as an Update",
 			Input: common.WriteParams{ObjectName: "fax", RecordId: "dd2f7870-3fe8-ee11-a204-0022481f9e3c"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondNoContentForMethod(w, r, "PATCH")
-			})),
+			Server: mockserver.Select(
+				mockresponse.If().MethodIs("PATCH").Do(func(w http.ResponseWriter, r *http.Request) {
+					w.Header().Set("Content-Type", "application/json")
+					w.WriteHeader(http.StatusNoContent)
+				}),
+			),
 			Expected:     &common.WriteResult{Success: true},
 			ExpectedErrs: nil,
 		},
