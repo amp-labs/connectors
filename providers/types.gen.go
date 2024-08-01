@@ -31,15 +31,19 @@ type ApiKeyOpts struct {
 	AttachmentType ApiKeyOptsAttachmentType `json:"attachmentType" validate:"required"`
 
 	// DocsURL URL with more information about how to get or use an API key.
-	DocsURL string            `json:"docsURL,omitempty"`
-	Header  *ApiKeyOptsHeader `json:"header,omitempty"`
-	Query   *ApiKeyOptsQuery  `json:"query,omitempty"`
+	DocsURL string `json:"docsURL,omitempty"`
+
+	// Header Configuration for API key in header. Must be provided if type is in-header.
+	Header *ApiKeyOptsHeader `json:"header,omitempty"`
+
+	// Query Configuration for API key in query parameter. Must be provided if type is in-query.
+	Query *ApiKeyOptsQuery `json:"query,omitempty"`
 }
 
 // ApiKeyOptsAttachmentType How the API key should be attached to requests.
 type ApiKeyOptsAttachmentType string
 
-// ApiKeyOptsHeader defines model for ApiKeyOptsHeader.
+// ApiKeyOptsHeader Configuration for API key in header. Must be provided if type is in-header.
 type ApiKeyOptsHeader struct {
 	// Name The name of the header to be used for the API key.
 	Name string `json:"name"`
@@ -48,7 +52,7 @@ type ApiKeyOptsHeader struct {
 	ValuePrefix string `json:"valuePrefix,omitempty"`
 }
 
-// ApiKeyOptsQuery defines model for ApiKeyOptsQuery.
+// ApiKeyOptsQuery Configuration for API key in query parameter. Must be provided if type is in-query.
 type ApiKeyOptsQuery struct {
 	// Name The name of the query parameter to be used for the API key.
 	Name string `json:"name"`
@@ -73,6 +77,14 @@ type BulkWriteSupport struct {
 
 // CatalogType defines model for CatalogType.
 type CatalogType map[string]ProviderInfo
+
+// CatalogWrapper defines model for CatalogWrapper.
+type CatalogWrapper struct {
+	Catalog CatalogType `json:"catalog"`
+
+	// Timestamp An RFC3339 formatted timestamp of when the catalog was generated.
+	Timestamp string `json:"timestamp" validate:"required"`
+}
 
 // Media defines model for Media.
 type Media struct {
@@ -119,7 +131,9 @@ type Oauth2Opts struct {
 	// ExplicitWorkspaceRequired Whether the workspace is required to be known ahead of the OAuth flow.
 	ExplicitWorkspaceRequired bool                `json:"explicitWorkspaceRequired"`
 	GrantType                 Oauth2OptsGrantType `json:"grantType"`
-	TokenMetadataFields       TokenMetadataFields `json:"tokenMetadataFields"`
+
+	// TokenMetadataFields Fields to be used to extract token metadata from the token response.
+	TokenMetadataFields TokenMetadataFields `json:"tokenMetadataFields"`
 
 	// TokenURL The token URL.
 	TokenURL string `json:"tokenURL" validate:"required"`
@@ -169,7 +183,7 @@ type Support struct {
 	Write     bool             `json:"write"`
 }
 
-// TokenMetadataFields defines model for TokenMetadataFields.
+// TokenMetadataFields Fields to be used to extract token metadata from the token response.
 type TokenMetadataFields struct {
 	ConsumerRefField  string `json:"consumerRefField,omitempty"`
 	ScopesField       string `json:"scopesField,omitempty"`
