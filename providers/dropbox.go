@@ -5,7 +5,7 @@ const (
 	DropboxSign Provider = "dropboxSign"
 )
 
-//nolint:funlen
+//nolint:all
 func init() {
 	// Dropbox configuration
 	SetInfo(Dropbox, ProviderInfo{
@@ -59,7 +59,6 @@ func init() {
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
 		},
-		//nolint:lll
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722491962/media/Dropbox%20%20%20%20%20Provider%20%3D%20%22dropbox%22_1722491963.svg",
