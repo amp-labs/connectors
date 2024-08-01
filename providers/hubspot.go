@@ -27,5 +27,15 @@ func init() {
 			Subscribe: false,
 			Write:     true,
 		},
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722479285/media/hubspot_1722479284.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722479245/media/hubspot_1722479244.svg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722479285/media/hubspot_1722479284.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722479265/media/hubspot_1722479265.svg",
+			},
+		},
 	})
 }
