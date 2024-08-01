@@ -13,6 +13,7 @@ import (
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 	"github.com/go-test/deep"
 )
@@ -34,18 +35,14 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		expectedErrs []error
 	}{
 		{
-			name: "At least one field must be provided",
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusTeapot)
-			})),
+			name:         "At least one field must be provided",
+			server:       mockserver.Dummy(),
 			expectedErrs: []error{common.ErrMissingFields},
 		},
 		{
-			name:  "Mime response header expected",
-			input: common.ReadParams{Fields: []string{"Name"}},
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusTeapot)
-			})),
+			name:         "Mime response header expected",
+			input:        common.ReadParams{Fields: []string{"Name"}},
+			server:       mockserver.Dummy(),
 			expectedErrs: []error{interpreter.ErrMissingContentType},
 		},
 		{
