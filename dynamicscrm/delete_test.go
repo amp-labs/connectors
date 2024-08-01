@@ -10,6 +10,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 )
 
@@ -18,18 +19,14 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 
 	tests := []testroutines.Delete{
 		{
-			Name: "Write object must be included",
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusTeapot)
-			})),
+			Name:         "Write object must be included",
+			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
-			Name:  "Write object and its ID must be included",
-			Input: common.DeleteParams{ObjectName: "fax"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusTeapot)
-			})),
+			Name:         "Write object and its ID must be included",
+			Input:        common.DeleteParams{ObjectName: "fax"},
+			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingRecordID},
 		},
 		{

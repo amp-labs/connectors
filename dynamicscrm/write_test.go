@@ -10,6 +10,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 )
 
@@ -18,19 +19,15 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 
 	tests := []testroutines.Write{
 		{
-			Name:  "Write object must be included",
-			Input: common.WriteParams{},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusTeapot)
-			})),
+			Name:         "Write object must be included",
+			Input:        common.WriteParams{},
+			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
-			Name:  "Mime response header expected",
-			Input: common.WriteParams{ObjectName: "fax"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusTeapot)
-			})),
+			Name:         "Mime response header expected",
+			Input:        common.WriteParams{ObjectName: "fax"},
+			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{interpreter.ErrMissingContentType},
 		},
 		{
