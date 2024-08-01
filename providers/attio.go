@@ -15,6 +15,17 @@ func init() {
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
 		},
+		//nolint:lll
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722508007/media/const%20Attio%20Provider%20%3D%20%22attio%22_1722508008.png",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722508138/media/const%20Attio%20Provider%20%3D%20%22attio%22_1722508139.svg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722508007/media/const%20Attio%20Provider%20%3D%20%22attio%22_1722508008.png",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722508086/media/const%20Attio%20Provider%20%3D%20%22attio%22_1722508087.svg",
+			},
+		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
