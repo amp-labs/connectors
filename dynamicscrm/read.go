@@ -14,6 +14,10 @@ import (
 // Microsoft API supports other capabilities like filtering, grouping, and sorting which we can potentially tap into later.
 // See https://learn.microsoft.com/en-us/power-apps/developer/data-platform/webapi/query-data-web-api#odata-query-options
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
+	if len(config.ObjectName) == 0 {
+		return nil, common.ErrMissingObjects
+	}
+
 	link, err := c.buildReadURL(config)
 	if err != nil {
 		return nil, err
