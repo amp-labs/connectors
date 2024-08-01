@@ -13,6 +13,7 @@ import (
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 	"github.com/go-test/deep"
 )
@@ -31,10 +32,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		expectedErrs []error
 	}{
 		{
-			name: "Mime response header expected",
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusTeapot)
-			})),
+			name:         "Mime response header expected",
+			server:       mockserver.Dummy(),
 			expectedErrs: []error{interpreter.ErrMissingContentType},
 		},
 		{
