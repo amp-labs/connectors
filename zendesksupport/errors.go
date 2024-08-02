@@ -1,7 +1,6 @@
 package zendesksupport
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -11,40 +10,24 @@ import (
 )
 
 func (*Connector) interpretJSONError(res *http.Response, body []byte) error { //nolint:cyclop
-	payload := make(map[string]any)
-	if err := json.Unmarshal(body, &payload); err != nil {
-		return fmt.Errorf("interpretJSONError general: %w %w", interpreter.ErrUnmarshal, err)
-	}
+	formats := interpreter.NewFormatSwitch(
+		[]interpreter.FormatTemplate{
+			{
+				MustKeys: []string{"description"},
+				Template: &DescriptiveResponseError{},
+			}, {
+				MustKeys: []string{"status"},
+				Template: &StatusResponseError{},
+			}, {
+				MustKeys: nil,
+				Template: &MessageResponseError{},
+			},
+		}...,
+	)
 
-	var schema common.ErrorDescriptor
-
-	if _, ok := payload["description"]; schema == nil && ok {
-		apiError := &DescriptiveResponseError{}
-		if err := json.Unmarshal(body, &apiError); err != nil {
-			return fmt.Errorf(
-				"interpretJSONError DescriptiveResponseError: %w %w", interpreter.ErrUnmarshal, err)
-		}
-
-		schema = apiError
-	}
-
-	if _, ok := payload["status"]; schema == nil && ok {
-		apiError := &StatusResponseError{}
-		if err := json.Unmarshal(body, &apiError); err != nil {
-			return fmt.Errorf("interpretJSONError StatusResponseError: %w %w", interpreter.ErrUnmarshal, err)
-		}
-
-		schema = apiError
-	}
-
-	// default format
-	if schema == nil {
-		apiError := &MessageResponseError{}
-		if err := json.Unmarshal(body, &apiError); err != nil {
-			return fmt.Errorf("interpretJSONError MessageResponseError: %w %w", interpreter.ErrUnmarshal, err)
-		}
-
-		schema = apiError
+	schema, err := formats.ParseJSON(body)
+	if err != nil {
+		return err
 	}
 
 	return schema.CombineErr(statusCodeMapping(res, body))
