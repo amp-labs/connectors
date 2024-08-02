@@ -9,6 +9,11 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
+// Read retrieves data based on the provided configuration parameters.
+//
+// This function executes a read operation using the given context and
+// configuration parameters. It returns the nested Attributes values read results or an error
+// if the operation fails.
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
 	url, err := c.buildReadURL(config)
 	if err != nil {
