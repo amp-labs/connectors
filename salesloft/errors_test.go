@@ -27,18 +27,18 @@ func TestInterpretJSONError(t *testing.T) { //nolint:funlen
 		{
 			name: "Missing response body cannot be unmarshalled",
 			input: input{
-				res:  nil,
+				res:  &http.Response{},
 				body: nil,
 			},
-			expectedErr: interpreter.ErrUnmarshal,
+			expectedErr: interpreter.ErrEmptyResponse,
 		},
 		{
 			name: "Empty response body cannot be unmarshalled",
 			input: input{
-				res:  nil,
+				res:  &http.Response{},
 				body: []byte(``),
 			},
-			expectedErr: interpreter.ErrUnmarshal,
+			expectedErr: interpreter.ErrEmptyResponse,
 		},
 		{
 			name: "Unknown response status produces caller error",
@@ -61,14 +61,14 @@ func TestInterpretJSONError(t *testing.T) { //nolint:funlen
 			expectedErr: common.ErrLimitExceeded,
 		},
 		{
-			name: "Server error response invalid 'status' data type",
+			name: "Server unknown error response, because mismatching 'status' data type",
 			input: input{
 				res: &http.Response{
 					StatusCode: http.StatusBadRequest,
 				},
 				body: []byte(`{"status":"string while it should be a number"}`),
 			},
-			expectedErr: interpreter.ErrUnmarshal,
+			expectedErr: interpreter.ErrUnknownResponseFormat,
 		},
 		{
 			name: "Correct interpretation of singular error payload",

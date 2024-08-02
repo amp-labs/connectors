@@ -10,36 +10,32 @@ import (
 )
 
 func (*Connector) interpretJSONError(res *http.Response, body []byte) error { //nolint:cyclop
-	payload := make(map[string]any)
-	if err := json.Unmarshal(body, &payload); err != nil {
-		return fmt.Errorf("interpretJSONError general: %w %w", interpreter.ErrUnmarshal, err)
+	formats := interpreter.NewFormatSwitch(
+		[]interpreter.FormatTemplate{
+			{
+				MustKeys: []string{"errors"},
+				Template: &ResponseListError{},
+			}, {
+				MustKeys: nil,
+				Template: &ResponseSingleError{},
+			},
+		}...,
+	)
+
+	schema, err := formats.ParseJSON(body)
+	if err != nil {
+		return err
 	}
 
-	// now we can choose which error response Schema we expect
-	var schema common.ErrorDescriptor
+	return schema.CombineErr(statusCodeMapping(res, body))
+}
 
-	if _, ok := payload["errors"]; ok {
-		apiError := &ResponseListError{}
-		if err := json.Unmarshal(body, &apiError); err != nil {
-			return fmt.Errorf("interpretJSONError ListError: %w %w", interpreter.ErrUnmarshal, err)
-		}
-
-		schema = apiError
-		if res.StatusCode == http.StatusUnprocessableEntity {
-			return schema.CombineErr(common.ErrBadRequest)
-		}
-	} else {
-		// default to simple response
-		apiError := &ResponseSingleError{}
-		if err := json.Unmarshal(body, &apiError); err != nil {
-			return fmt.Errorf("interpretJSONError SingleError: %w %w", interpreter.ErrUnmarshal, err)
-		}
-
-		schema = apiError
+func statusCodeMapping(res *http.Response, body []byte) error {
+	if res.StatusCode == http.StatusUnprocessableEntity {
+		return common.ErrBadRequest
 	}
 
-	// enhance status code error with response payload
-	return schema.CombineErr(interpreter.DefaultStatusCodeMappingToErr(res, body))
+	return interpreter.DefaultStatusCodeMappingToErr(res, body)
 }
 
 type ResponseListError struct {
