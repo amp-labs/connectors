@@ -79,12 +79,12 @@ func (c *Connector) retrieveCloudId(ctx context.Context) (string, error) {
 
 		if *workspaceName == c.workspace {
 			// names match, select this container.
-			cloudID, err := jsonquery.New(item).Str("id", false)
+			cloudId, err := jsonquery.New(item).Str("id", false)
 			if err != nil {
 				return "", err
 			}
 
-			return *cloudID, nil
+			return *cloudId, nil
 		}
 	}
 

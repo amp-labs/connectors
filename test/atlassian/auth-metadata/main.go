@@ -28,11 +28,11 @@ func main() {
 	}
 
 	metadata := atlassian.NewAuthMetadataVars(*info.CatalogVars)
-	cloudID := metadata.CloudId
+	cloudId := metadata.CloudId
 
-	if len(cloudID) == 0 {
+	if len(cloudId) == 0 {
 		utils.Fail("missing cloud id in post authentication metadata")
 	}
 
-	slog.Info("retrieved auth metadata", "cloud id", cloudID)
+	slog.Info("retrieved auth metadata", "cloud id", cloudId)
 }
