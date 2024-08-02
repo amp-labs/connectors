@@ -9,10 +9,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 )
 
-var (
-	ErrUnmarshal          = errors.New("unmarshal failed")
-	ErrMissingContentType = errors.New("mime.ParseMediaType failed")
-)
+var ErrMissingContentType = errors.New("mime.ParseMediaType failed")
 
 // FaultyResponseHandler used to parse erroneous response.
 type FaultyResponseHandler func(res *http.Response, body []byte) error
