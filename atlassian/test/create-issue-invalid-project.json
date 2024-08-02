@@ -1,0 +1,6 @@
+{
+  "errorMessages": [],
+  "errors": {
+    "project": "Specify a valid project ID or key"
+  }
+}
