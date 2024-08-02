@@ -18,24 +18,35 @@ var JSONAPIContentTypeHeader = common.Header{ //nolint:gochecknoglobals
 }
 
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
-	var write common.WriteMethod
+	var (
+		write common.WriteMethod
+		data  map[string]any
+		err   error
+	)
 
 	url, err := c.getApiURL(config.ObjectName)
 	if err != nil {
 		return nil, err
 	}
 
+	// prepares the updating data request.
 	if len(config.RecordId) > 0 {
 		url.AddPath(config.RecordId)
 
 		write = c.Client.Patch
-	} else {
-		write = c.Client.Post
-	}
 
-	// Outreach expects everything to be wrapped in a "data" object.
-	data := make(map[string]any)
-	data["data"] = config.RecordData
+		data, err = parseData(config.RecordData, config.ObjectName, config.RecordId)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		// prepares the creating data request.
+		write = c.Client.Post
+		data, err = parseData(config.RecordData, config.ObjectName)
+		if err != nil {
+			return nil, err
+		}
+	}
 
 	res, err := write(ctx, url.String(), data, JSONAPIContentTypeHeader)
 	if err != nil {
