@@ -7,8 +7,15 @@ import (
 	"github.com/amp-labs/connectors/common"
 )
 
-type ObjectOKResponse struct {
-	Data []map[string]any `json:"data"`
+type Data struct {
+	Data []DataItem `json:"data"`
+}
+
+type DataItem struct {
+	Type          string         `json:"type"`
+	ID            int            `json:"id"`
+	Relationships map[string]any `json:"relationships"`
+	Attributes    map[string]any `json:"attributes"`
 }
 
 func (c *Connector) ListObjectMetadata(ctx context.Context,
@@ -62,17 +69,16 @@ func metadataMapper(body []byte) (common.ObjectMetadata, error) {
 		FieldsMap: make(map[string]string),
 	}
 
-	var response ObjectOKResponse
+	var response Data
 
 	err := json.Unmarshal(body, &response)
 	if err != nil {
 		return metadata, err
 	}
 
-	for _, dataMap := range response.Data {
-		for attr := range dataMap {
-			metadata.FieldsMap[attr] = attr
-		}
+	attributes := response.Data[0].Attributes
+	for k := range attributes {
+		metadata.FieldsMap[k] = k
 	}
 
 	return metadata, nil
