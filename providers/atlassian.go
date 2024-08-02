@@ -13,8 +13,9 @@ func init() {
 			AuthURL:                   "https://auth.atlassian.com/authorize",
 			TokenURL:                  "https://auth.atlassian.com/oauth/token",
 			ExplicitScopesRequired:    true,
-			ExplicitWorkspaceRequired: false,
+			ExplicitWorkspaceRequired: true, // Needed for GetPostAuthInfo call
 		},
+		PostAuthInfoNeeded: true,
 		//nolint:lll
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
@@ -38,6 +39,5 @@ func init() {
 			Subscribe: false,
 			Write:     false,
 		},
-		PostAuthInfoNeeded: true,
 	})
 }
