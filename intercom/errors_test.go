@@ -28,20 +28,20 @@ func TestInterpretJSONError(t *testing.T) { //nolint:funlen
 		expectedErrs []error
 	}{
 		{
-			name: "Missing response body cannot be unmarshalled",
+			name: "Missing response body is reported as empty",
 			input: input{
-				res:  nil,
+				res:  &http.Response{},
 				body: nil,
 			},
-			expectedErrs: []error{interpreter.ErrUnmarshal},
+			expectedErrs: []error{interpreter.ErrEmptyResponse},
 		},
 		{
-			name: "Empty response body cannot be unmarshalled",
+			name: "Empty response body is reported as empty",
 			input: input{
-				res:  nil,
+				res:  &http.Response{},
 				body: []byte(``),
 			},
-			expectedErrs: []error{interpreter.ErrUnmarshal},
+			expectedErrs: []error{interpreter.ErrEmptyResponse},
 		},
 		{
 			name: "Unknown response status produces caller error",
