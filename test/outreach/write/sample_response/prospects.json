@@ -1,0 +1,443 @@
+{
+  "success": true,
+  "recordId": "9",
+  "data": {
+    "attributes": {
+      "accountName": "Testing Account",
+      "addedAt": null,
+      "addressCity": "SAN FRANCISCO",
+      "addressCountry": "USA",
+      "addressState": "CA",
+      "addressStreet": null,
+      "addressStreet2": null,
+      "addressZip": "0000000",
+      "angelListUrl": "https://withampersand.com",
+      "availableAt": null,
+      "callOptedOut": false,
+      "callsOptStatus": null,
+      "callsOptedAt": null,
+      "campaignName": "Joker's Marathon",
+      "clickCount": 0,
+      "company": "Testing Account",
+      "companyFollowers": null,
+      "companyFoundedAt": null,
+      "companyIndustry": null,
+      "companyLinkedIn": null,
+      "companyLinkedInEmployees": null,
+      "companyLocality": null,
+      "companyNatural": null,
+      "companySize": null,
+      "companyStartDate": null,
+      "companyType": null,
+      "contactHistogram": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "createdAt": "2024-08-02T09:56:52.000Z",
+      "custom1": null,
+      "custom10": null,
+      "custom100": null,
+      "custom101": null,
+      "custom102": null,
+      "custom103": null,
+      "custom104": null,
+      "custom105": null,
+      "custom106": null,
+      "custom107": null,
+      "custom108": null,
+      "custom109": null,
+      "custom11": null,
+      "custom110": null,
+      "custom111": null,
+      "custom112": null,
+      "custom113": null,
+      "custom114": null,
+      "custom115": null,
+      "custom116": null,
+      "custom117": null,
+      "custom118": null,
+      "custom119": null,
+      "custom12": null,
+      "custom120": null,
+      "custom121": null,
+      "custom122": null,
+      "custom123": null,
+      "custom124": null,
+      "custom125": null,
+      "custom126": null,
+      "custom127": null,
+      "custom128": null,
+      "custom129": null,
+      "custom13": null,
+      "custom130": null,
+      "custom131": null,
+      "custom132": null,
+      "custom133": null,
+      "custom134": null,
+      "custom135": null,
+      "custom136": null,
+      "custom137": null,
+      "custom138": null,
+      "custom139": null,
+      "custom14": null,
+      "custom140": null,
+      "custom141": null,
+      "custom142": null,
+      "custom143": null,
+      "custom144": null,
+      "custom145": null,
+      "custom146": null,
+      "custom147": null,
+      "custom148": null,
+      "custom149": null,
+      "custom15": null,
+      "custom150": null,
+      "custom16": null,
+      "custom17": null,
+      "custom18": null,
+      "custom19": null,
+      "custom2": null,
+      "custom20": null,
+      "custom21": null,
+      "custom22": null,
+      "custom23": null,
+      "custom24": null,
+      "custom25": null,
+      "custom26": null,
+      "custom27": null,
+      "custom28": null,
+      "custom29": null,
+      "custom3": null,
+      "custom30": null,
+      "custom31": null,
+      "custom32": null,
+      "custom33": null,
+      "custom34": null,
+      "custom35": null,
+      "custom36": null,
+      "custom37": null,
+      "custom38": null,
+      "custom39": null,
+      "custom4": null,
+      "custom40": null,
+      "custom41": null,
+      "custom42": null,
+      "custom43": null,
+      "custom44": null,
+      "custom45": null,
+      "custom46": null,
+      "custom47": null,
+      "custom48": null,
+      "custom49": null,
+      "custom5": null,
+      "custom50": null,
+      "custom51": null,
+      "custom52": null,
+      "custom53": null,
+      "custom54": null,
+      "custom55": null,
+      "custom56": null,
+      "custom57": null,
+      "custom58": null,
+      "custom59": null,
+      "custom6": null,
+      "custom60": null,
+      "custom61": null,
+      "custom62": null,
+      "custom63": null,
+      "custom64": null,
+      "custom65": null,
+      "custom66": null,
+      "custom67": null,
+      "custom68": null,
+      "custom69": null,
+      "custom7": null,
+      "custom70": null,
+      "custom71": null,
+      "custom72": null,
+      "custom73": null,
+      "custom74": null,
+      "custom75": null,
+      "custom76": null,
+      "custom77": null,
+      "custom78": null,
+      "custom79": null,
+      "custom8": null,
+      "custom80": null,
+      "custom81": null,
+      "custom82": null,
+      "custom83": null,
+      "custom84": null,
+      "custom85": null,
+      "custom86": null,
+      "custom87": null,
+      "custom88": null,
+      "custom89": null,
+      "custom9": null,
+      "custom90": null,
+      "custom91": null,
+      "custom92": null,
+      "custom93": null,
+      "custom94": null,
+      "custom95": null,
+      "custom96": null,
+      "custom97": null,
+      "custom98": null,
+      "custom99": null,
+      "dateOfBirth": null,
+      "degree": null,
+      "emailContacts": [],
+      "emailOptedOut": false,
+      "emails": [],
+      "emailsOptStatus": null,
+      "emailsOptedAt": null,
+      "engagedAt": null,
+      "engagedScore": 0,
+      "eventName": null,
+      "externalId": null,
+      "externalOwner": null,
+      "externalSource": "outreach-api",
+      "facebookUrl": null,
+      "firstName": null,
+      "gender": null,
+      "githubUrl": null,
+      "githubUsername": null,
+      "googlePlusUrl": null,
+      "graduationDate": null,
+      "homePhones": [],
+      "jobStartDate": null,
+      "lastName": null,
+      "linkedInConnections": null,
+      "linkedInId": null,
+      "linkedInSlug": null,
+      "linkedInUrl": null,
+      "middleName": null,
+      "mobilePhones": [],
+      "name": null,
+      "nickname": null,
+      "occupation": null,
+      "openCount": 0,
+      "optedOut": false,
+      "optedOutAt": null,
+      "otherPhones": [],
+      "personaName": null,
+      "personalNote1": null,
+      "personalNote2": null,
+      "preferredContact": null,
+      "quoraUrl": null,
+      "region": null,
+      "replyCount": 0,
+      "school": null,
+      "score": null,
+      "sharingTeamId": null,
+      "smsOptStatus": null,
+      "smsOptedAt": null,
+      "smsOptedOut": false,
+      "source": null,
+      "specialties": null,
+      "stackOverflowId": null,
+      "stackOverflowUrl": null,
+      "stageName": null,
+      "tags": [],
+      "timeZone": "America/Los_Angeles",
+      "timeZoneIana": "America/Los_Angeles",
+      "timeZoneInferred": null,
+      "title": null,
+      "touchedAt": null,
+      "trashedAt": null,
+      "twitterUrl": null,
+      "twitterUsername": null,
+      "updatedAt": "2024-08-02T09:56:52.000Z",
+      "updaterId": 2,
+      "updaterType": "User",
+      "voipPhones": [],
+      "websiteUrl1": "https://withampersand.com",
+      "websiteUrl2": null,
+      "websiteUrl3": null,
+      "workPhones": []
+    },
+    "id": 9,
+    "links": {
+      "self": "https://api.outreach.io/api/v2/prospects/9"
+    },
+    "relationships": {
+      "account": {
+        "data": {
+          "id": 2,
+          "type": "account"
+        }
+      },
+      "activeSequenceStates": {
+        "data": [],
+        "links": {
+          "related": "https://api.outreach.io/api/v2/sequenceStates?filter%5Bprospect%5D%5Bid%5D=9"
+        },
+        "meta": {
+          "count": 0
+        }
+      },
+      "assignedTeams": {
+        "data": [],
+        "links": {
+          "related": "https://api.outreach.io/api/v2/teams?filter%5Bprospect%5D%5Bid%5D=9"
+        },
+        "meta": {
+          "count": 0
+        }
+      },
+      "assignedUsers": {
+        "data": [],
+        "links": {
+          "related": "https://api.outreach.io/api/v2/users?filter%5Bprospect%5D%5Bid%5D=9"
+        },
+        "meta": {
+          "count": 0
+        }
+      },
+      "batches": {
+        "links": {
+          "related": "https://api.outreach.io/api/v2/batches?filter%5Bprospect%5D%5Bid%5D=9"
+        }
+      },
+      "calls": {
+        "links": {
+          "related": "https://api.outreach.io/api/v2/calls?filter%5Bprospect%5D%5Bid%5D=9"
+        }
+      },
+      "creator": {
+        "data": {
+          "id": 2,
+          "type": "user"
+        }
+      },
+      "defaultPluginMapping": {
+        "data": null
+      },
+      "emailAddresses": {
+        "data": [],
+        "links": {
+          "related": "https://api.outreach.io/api/v2/emailAddresses?filter%5Bprospect%5D%5Bid%5D=9"
+        },
+        "meta": {
+          "count": 0
+        }
+      },
+      "favorites": {
+        "data": [],
+        "links": {
+          "related": "https://api.outreach.io/api/v2/favorites?filter%5Bprospect%5D%5Bid%5D=9"
+        },
+        "meta": {
+          "count": 0
+        }
+      },
+      "mailings": {
+        "links": {
+          "related": "https://api.outreach.io/api/v2/mailings?filter%5Bprospect%5D%5Bid%5D=9"
+        }
+      },
+      "opportunities": {
+        "data": [],
+        "links": {
+          "related": "https://api.outreach.io/api/v2/opportunities?filter%5Bprospect%5D%5Bid%5D=9"
+        },
+        "meta": {
+          "count": 0
+        }
+      },
+      "opportunityProspectRoles": {
+        "data": [],
+        "links": {
+          "related": "https://api.outreach.io/api/v2/opportunityProspectRoles?filter%5Bprospect%5D%5Bid%5D=9"
+        },
+        "meta": {
+          "count": 0
+        }
+      },
+      "owner": {
+        "data": null
+      },
+      "persona": {
+        "data": null
+      },
+      "phoneNumbers": {
+        "data": [],
+        "links": {
+          "related": "https://api.outreach.io/api/v2/phoneNumbers?filter%5Bprospect%5D%5Bid%5D=9"
+        },
+        "meta": {
+          "count": 0
+        }
+      },
+      "sequenceStates": {
+        "links": {
+          "related": "https://api.outreach.io/api/v2/sequenceStates?filter%5Bprospect%5D%5Bid%5D=9"
+        }
+      },
+      "stage": {
+        "data": null
+      },
+      "tasks": {
+        "links": {
+          "related": "https://api.outreach.io/api/v2/tasks?filter%5Bprospect%5D%5Bid%5D=9"
+        }
+      },
+      "trashedByAccount": {
+        "data": null
+      },
+      "updater": {
+        "data": {
+          "id": 2,
+          "type": "user"
+        }
+      }
+    },
+    "type": "prospect"
+  }
+}
