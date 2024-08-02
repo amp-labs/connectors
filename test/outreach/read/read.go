@@ -15,24 +15,6 @@ const (
 	DefaultCredsFile = "creds.json"
 )
 
-type Attribute struct {
-	Email     string `json:"email"`
-	EmailType string `json:"emailType"`
-	Order     int    `json:"order"`
-	Status    string `json:"status"`
-}
-
-type EmailAddress struct {
-	Attributes Attribute `json:"attributes"`
-	Type       string    `json:"type"`
-}
-
-type EmailAddressUpdate struct {
-	Attributes Attribute `json:"attributes"`
-	Type       string    `json:"type"`
-	ID         int       `json:"id"` // necessary in updating
-}
-
 func main() {
 	var err error
 
