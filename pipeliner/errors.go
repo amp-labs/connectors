@@ -1,7 +1,6 @@
 package pipeliner
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -10,29 +9,21 @@ import (
 )
 
 func (*Connector) interpretJSONError(res *http.Response, body []byte) error { //nolint:cyclop
-	payload := make(map[string]any)
-	if err := json.Unmarshal(body, &payload); err != nil {
-		return fmt.Errorf("interpretJSONError general: %w %w", interpreter.ErrUnmarshal, err)
-	}
+	formats := interpreter.NewFormatSwitch(
+		[]interpreter.FormatTemplate{
+			{
+				MustKeys: []string{"code"},
+				Template: &ResponseWithCodeError{},
+			}, {
+				MustKeys: nil,
+				Template: &ResponseSimpleError{},
+			},
+		}...,
+	)
 
-	// now we can choose which error response Schema we expect
-	var schema common.ErrorDescriptor
-
-	if _, ok := payload["code"]; ok {
-		apiError := &ResponseWithCodeError{}
-		if err := json.Unmarshal(body, &apiError); err != nil {
-			return fmt.Errorf("interpretJSONError ResponseWithCodeError: %w %w", interpreter.ErrUnmarshal, err)
-		}
-
-		schema = apiError
-	} else {
-		// default to simple response
-		apiError := &ResponseSimpleError{}
-		if err := json.Unmarshal(body, &apiError); err != nil {
-			return fmt.Errorf("interpretJSONError ResponseSimpleError: %w %w", interpreter.ErrUnmarshal, err)
-		}
-
-		schema = apiError
+	schema, err := formats.ParseJSON(body)
+	if err != nil {
+		return err
 	}
 
 	return schema.CombineErr(statusCodeMapping(res, body))
