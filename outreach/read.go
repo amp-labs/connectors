@@ -46,7 +46,7 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 	}
 
 	// If Since is not set, then we're doing a backfill. We read all rows (in pages)
-	// Making that Since is in the format the Outreach API expects, and that the time is in the past.
+	// If Since is present, we turn it into the format the Outreach API expects
 	if !config.Since.IsZero() {
 		time := config.Since.Format(time.DateOnly)
 		fmtTime := fmt.Sprintf("%s..inf", time)
