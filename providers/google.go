@@ -50,7 +50,7 @@ func init() {
 	})
 
 	// Google Analytics Admin Configuration
-	SetInfo(Google, ProviderInfo{
+	SetInfo(GoogleAnalyticsAdmin, ProviderInfo{
 		DisplayName: "Google Analytics Admin",
 		AuthType:    Oauth2,
 		BaseURL:     "https://analyticsadmin.googleapis.com",
@@ -80,7 +80,7 @@ func init() {
 	})
 
 	// Google Analytics Admin Configuration
-	SetInfo(Google, ProviderInfo{
+	SetInfo(GoogleAnalyticsData, ProviderInfo{
 		DisplayName: "Google Analytics Data",
 		AuthType:    Oauth2,
 		BaseURL:     "https://analyticsdata.googleapis.com",
