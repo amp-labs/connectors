@@ -25,7 +25,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 }
 
 func testWriteConnector(ctx context.Context, conn connectors.WriteConnector) error {

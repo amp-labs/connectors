@@ -1,11 +1,8 @@
 package outreach
 
 import (
-	"strconv"
-
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/jsonquery"
-	"github.com/amp-labs/connectors/common/naming"
 	"github.com/spyzhov/ajson"
 )
 
@@ -50,56 +47,4 @@ func getMarshalledData(records []map[string]interface{}, fields []string) ([]com
 	}
 
 	return data, nil
-}
-
-// parseData wraps the data in the format required by Outreach API.
-func parseData(cfg common.WriteParams) (map[string]any, error) {
-	var (
-		nestedFields = make(map[string]any)
-		attributes   = make(map[string]any)
-		reqData      = make(map[string]any)
-	)
-
-	// Updating requires the id in the request body.
-	// Re-adding it to the request.
-	if len(cfg.RecordId) > 0 {
-		iD, err := strconv.Atoi(cfg.RecordId)
-		if err != nil {
-			return nil, ErrIdMustInt
-		}
-
-		nestedFields[idKey] = iD
-	}
-
-	received, ok := cfg.RecordData.(map[string]any) //nolint: varnamelen
-	if !ok {
-		return nil, ErrMustJSON
-	}
-
-	// If Relationships key has data, add it on the request.
-	value, ok := received[relationshipsKey]
-	if ok {
-		nestedFields[relationshipsKey] = value
-	}
-
-	// Adds attributes key values.
-	for k, v := range received {
-		if k != relationshipsKey && k != typeKey {
-			attributes[k] = v
-		}
-	}
-
-	// If no type provided, provides a type which should be a singular word of the ObjectName
-	// is added.
-	_, ok = received[typeKey]
-	if !ok {
-		objectType := naming.NewSingularString(cfg.ObjectName)
-		received[typeKey] = objectType
-	}
-
-	nestedFields[attributesKey] = attributes
-	nestedFields[typeKey] = received[typeKey]
-	reqData[dataKey] = nestedFields
-
-	return reqData, nil
 }
