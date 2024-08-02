@@ -4,9 +4,11 @@ import (
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 )
 
+const serverKey = "server"
+
 // Metadata fields that must be specified to initialize connector.
 var requiredMetadataFields = []string{ // nolint:gochecknoglobals
-	"server",
+	serverKey,
 }
 
 // AuthMetadataVars is a complete list of authentication metadata associated with connector.
@@ -18,14 +20,14 @@ type AuthMetadataVars struct {
 // NewAuthMetadataVars parses map into the model.
 func NewAuthMetadataVars(dictionary map[string]string) *AuthMetadataVars {
 	return &AuthMetadataVars{
-		Server: dictionary["server"],
+		Server: dictionary[serverKey],
 	}
 }
 
 // AsMap converts model back to the map.
 func (v AuthMetadataVars) AsMap() *map[string]string {
 	return &map[string]string{
-		"server": v.Server,
+		serverKey: v.Server,
 	}
 }
 
@@ -33,7 +35,7 @@ func (v AuthMetadataVars) AsMap() *map[string]string {
 // Only server URL is supported.
 func (v AuthMetadataVars) GetSubstitutionPlan() paramsbuilder.SubstitutionPlan {
 	return paramsbuilder.SubstitutionPlan{
-		From: "server",
+		From: serverKey,
 		To:   v.Server,
 	}
 }

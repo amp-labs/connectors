@@ -47,7 +47,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 
 		// Check nil response body, to avoid panic.
 		if res == nil || res.Body == nil {
-			objMetadata.Errors[obj] = ErrEmptyResponse
+			objMetadata.Errors[obj] = common.ErrEmptyResponse
 
 			continue
 		}
