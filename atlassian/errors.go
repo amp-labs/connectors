@@ -1,43 +1,33 @@
 package atlassian
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
 	"strings"
 	"time"
 
-	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 )
 
 func (*Connector) interpretJSONError(res *http.Response, body []byte) error { //nolint:cyclop
-	payload := make(map[string]any)
-	if err := json.Unmarshal(body, &payload); err != nil {
-		return fmt.Errorf("interpretJSONError general: %w %w", interpreter.ErrUnmarshal, err)
+	formats := interpreter.NewFormatSwitch(
+		[]interpreter.FormatTemplate{
+			{
+				MustKeys: []string{"status"},
+				Template: &ResponseStatusError{},
+			}, {
+				MustKeys: nil,
+				Template: &ResponseMessagesError{},
+			},
+		}...,
+	)
+
+	schema, err := formats.ParseJSON(body)
+	if err != nil {
+		return err
 	}
 
-	// now we can choose which error response Schema we expect
-	var schema common.ErrorDescriptor
-
-	if _, ok := payload["status"]; ok {
-		apiError := &ResponseStatusError{}
-		if err := json.Unmarshal(body, &apiError); err != nil {
-			return fmt.Errorf("interpretJSONError SingleError: %w %w", interpreter.ErrUnmarshal, err)
-		}
-
-		schema = apiError
-	} else {
-		apiError := &ResponseMessagesError{}
-		if err := json.Unmarshal(body, &apiError); err != nil {
-			return fmt.Errorf("interpretJSONError MessagesError: %w %w", interpreter.ErrUnmarshal, err)
-		}
-
-		schema = apiError
-	}
-
-	// enhance status code error with response payload
 	return schema.CombineErr(interpreter.DefaultStatusCodeMappingToErr(res, body))
 }
 
