@@ -30,7 +30,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context, _ []string) (*common
 	// Read response is flattened exposing only important fields which happen to not have id.
 	// To mitigate this API response the Read method will attach id.
 	// Therefore, metadata must include it too.
-	fields["id"] = "Identifier"
+	fields["id"] = "Id"
 
 	return &common.ListObjectMetadataResult{
 		Result: map[string]common.ObjectMetadata{

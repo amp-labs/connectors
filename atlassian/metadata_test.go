@@ -96,7 +96,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						DisplayName: "Issue",
 						FieldsMap: map[string]string{
 							// Manually attached fields:
-							"id": "Identifier",
+							"id": "Id",
 							// Fields coming from server response:
 							"issuekey":                      "Key",
 							"priority":                      "Priority",
@@ -132,7 +132,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				WithWorkspace("test-workspace"),
 				WithModule(ModuleJira),
 				WithMetadata(map[string]string{
-					"cloudID": "ebc887b2-7e61-4059-ab35-71f15cc16e12", // it doesn't matter for the test
+					"cloudId": "ebc887b2-7e61-4059-ab35-71f15cc16e12", // any value will work for the test
 				}),
 			)
 			if err != nil {
@@ -176,5 +176,23 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				t.Fatalf("%s:, \nexpected: (%v), \ngot: (%v), \ndiff: (%v)", tt.name, tt.expected, output, diff)
 			}
 		})
+	}
+}
+
+func TestListObjectMetadataWithoutMetadata(t *testing.T) {
+	t.Parallel()
+
+	connector, err := NewConnector(
+		WithAuthenticatedClient(http.DefaultClient),
+		WithWorkspace("test-workspace"),
+		WithModule(ModuleJira),
+	)
+	if err != nil {
+		t.Fatal("failed to create connector")
+	}
+
+	_, err = connector.ListObjectMetadata(context.Background(), nil)
+	if !errors.Is(err, ErrMissingCloudId) {
+		t.Fatalf("expected ListObjectMetadata method to complain about missing cloud id")
 	}
 }
