@@ -10,10 +10,6 @@ import (
 	"github.com/amp-labs/connectors/utils"
 )
 
-const (
-	DefaultCredsFile = "creds.json"
-)
-
 func GetOutreachConnector(ctx context.Context, filePath string) *outreach.Connector {
 	registry := scanning.NewRegistry()
 
