@@ -2,6 +2,7 @@ package atlassian
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -41,18 +42,41 @@ func (*Connector) interpretJSONError(res *http.Response, body []byte) error { //
 }
 
 type ResponseMessagesError struct {
-	ErrorMessages   []string `json:"errorMessages"`
-	WarningMessages []string `json:"warningMessages"`
+	ErrorMessages   []string          `json:"errorMessages"`
+	WarningMessages []string          `json:"warningMessages"`
+	Errors          map[string]string `json:"errors"`
 }
 
+// CombineErr will produce dynamic error from server response body.
+// The base error serves as a main static error on top of stacked errors.
+// That static error should be used in conditional decisions. Ex: common.ErrBadRequest.
 func (r ResponseMessagesError) CombineErr(base error) error {
-	if len(r.ErrorMessages) == 0 {
-		return base
+	result := base
+
+	if len(r.ErrorMessages) != 0 {
+		result = errors.Join(result, errors.New( // nolint:goerr113
+			strings.Join(r.ErrorMessages, ","),
+		))
 	}
 
-	message := strings.Join(r.ErrorMessages, ",")
+	if len(r.WarningMessages) != 0 {
+		result = errors.Join(result, errors.New( // nolint:goerr113
+			strings.Join(r.WarningMessages, ","),
+		))
+	}
 
-	return fmt.Errorf("%w: %v", base, message)
+	if len(r.Errors) != 0 {
+		messages := make([]string, 0)
+		for k, v := range r.Errors {
+			messages = append(messages, fmt.Sprintf("%v:%v", k, v))
+		}
+
+		result = errors.Join(result, errors.New( // nolint:goerr113
+			strings.Join(messages, ","),
+		))
+	}
+
+	return result
 }
 
 type ResponseStatusError struct {
