@@ -38,7 +38,7 @@ func init() {
 			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
-			Write:     false,
+			Write:     true,
 		},
 	})
 }
