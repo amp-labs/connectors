@@ -1,12 +1,19 @@
 package interpreter
 
+// ErrorDescriptor enhances base error with extra message.
+// Every implementor decides how server response will be converted, and
+// how important message will be formated into helpful error.
+type ErrorDescriptor interface {
+	CombineErr(base error) error
+}
+
 // FormatTemplate holds concrete struct that represent erroneous server response.
 // It is used by FormatSwitch.
 type FormatTemplate struct {
 	// MustKeys is a list of important keys that if all present will signify the match for Template.
 	MustKeys []string
 	// Template is a struct pointer which will be used to flush the data into.
-	// Must implement common.ErrorDescriptor.
+	// Must implement ErrorDescriptor.
 	Template any
 }
 
