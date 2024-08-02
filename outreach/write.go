@@ -34,18 +34,14 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		url.AddPath(config.RecordId)
 
 		write = c.Client.Patch
-
-		data, err = parseData(config.RecordData, config.ObjectName, config.RecordId)
-		if err != nil {
-			return nil, err
-		}
 	} else {
 		// prepares the creating data request.
 		write = c.Client.Post
-		data, err = parseData(config.RecordData, config.ObjectName)
-		if err != nil {
-			return nil, err
-		}
+	}
+
+	data, err = parseData(config)
+	if err != nil {
+		return nil, err
 	}
 
 	res, err := write(ctx, url.String(), data, JSONAPIContentTypeHeader)

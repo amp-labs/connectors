@@ -53,7 +53,7 @@ func getMarshalledData(records []map[string]interface{}, fields []string) ([]com
 }
 
 // parseData wraps the data in the format required by Outreach API.
-func parseData(data any, objectName string, id ...string) (map[string]any, error) {
+func parseData(cfg common.WriteParams) (map[string]any, error) {
 	var (
 		nestedFields = make(map[string]any)
 		attributes   = make(map[string]any)
@@ -62,8 +62,8 @@ func parseData(data any, objectName string, id ...string) (map[string]any, error
 
 	// Updating requires the id in the request body.
 	// Re-adding it to the request.
-	if len(id) > 0 {
-		iD, err := strconv.Atoi(id[0])
+	if len(cfg.RecordId) > 0 {
+		iD, err := strconv.Atoi(cfg.RecordId)
 		if err != nil {
 			return nil, ErrIdMustInt
 		}
@@ -71,7 +71,7 @@ func parseData(data any, objectName string, id ...string) (map[string]any, error
 		nestedFields[idKey] = iD
 	}
 
-	received, ok := data.(map[string]any) //nolint: varnamelen
+	received, ok := cfg.RecordData.(map[string]any) //nolint: varnamelen
 	if !ok {
 		return nil, ErrMustJSON
 	}
@@ -93,7 +93,7 @@ func parseData(data any, objectName string, id ...string) (map[string]any, error
 	// is added.
 	_, ok = received[typeKey]
 	if !ok {
-		objectType := naming.NewSingularString(objectName)
+		objectType := naming.NewSingularString(cfg.ObjectName)
 		received[typeKey] = objectType
 	}
 
