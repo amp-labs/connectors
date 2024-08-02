@@ -23,7 +23,7 @@ func getNextRecordsURL(node *ajson.Node) (string, error) {
 
 // getRecords returns the records from the response.
 func getRecords(node *ajson.Node) ([]map[string]any, error) {
-	records, err := jsonquery.New(node).Array("data", false)
+	records, err := node.JSONPath("$..attributes")
 	if err != nil {
 		return nil, err
 	}
