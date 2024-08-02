@@ -24,20 +24,20 @@ func TestInterpretJSONError(t *testing.T) { //nolint:funlen
 		expectedErr error
 	}{
 		{
-			name: "Missing response body cannot be unmarshalled",
+			name: "Missing response body is reported as empty",
 			input: input{
-				res:  nil,
+				res:  &http.Response{},
 				body: nil,
 			},
-			expectedErr: interpreter.ErrUnmarshal,
+			expectedErr: interpreter.ErrEmptyResponse,
 		},
 		{
-			name: "Empty response body cannot be unmarshalled",
+			name: "Empty response body is reported as empty",
 			input: input{
-				res:  nil,
+				res:  &http.Response{},
 				body: []byte(``),
 			},
-			expectedErr: interpreter.ErrUnmarshal,
+			expectedErr: interpreter.ErrEmptyResponse,
 		},
 		{
 			// TODO should it indicate that connector could handle it?
