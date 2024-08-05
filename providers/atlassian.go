@@ -5,7 +5,7 @@ const Atlassian Provider = "atlassian"
 func init() {
 	// Atlassian Configuration
 	SetInfo(Atlassian, ProviderInfo{
-		DisplayName: "Atlassian (Jira, Confluence)",
+		DisplayName: "Atlassian",
 		AuthType:    Oauth2,
 		BaseURL:     "https://api.atlassian.com",
 		Oauth2Opts: &Oauth2Opts{
