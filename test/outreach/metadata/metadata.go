@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	objects := []string{"sequences", "mailings"}
+	objects := []string{"sequences"}
 
 	ctx := context.Background()
 

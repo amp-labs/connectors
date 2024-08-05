@@ -81,5 +81,11 @@ func metadataMapper(body []byte) (common.ObjectMetadata, error) {
 		metadata.FieldsMap[k] = k
 	}
 
+	// Append id in the metadata response. Only adds it, if available.
+	// 0 is not a valid id in outreach types. Id are read-only and starts at 1.
+	if response.Data[0].ID != 0 {
+		metadata.FieldsMap[idKey] = idKey
+	}
+
 	return metadata, nil
 }
