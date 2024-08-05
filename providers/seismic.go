@@ -11,7 +11,7 @@ func init() {
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://auth.seismic.com/tenants/{{.workspace}}/connect/authorize",
 			TokenURL:                  "https://auth.seismic.com/tenants/{{.workspace}}/connect/token",
-			ExplicitScopesRequired:    false,
+			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: true,
 		},
 		Media: &Media{
