@@ -61,7 +61,6 @@ func constructRecords(d Data) []map[string]any {
 	for i, record := range d.Data {
 		recordItems := make(map[string]any)
 		recordItems[idKey] = record.ID
-		recordItems[typeKey] = record.Type
 
 		for k, v := range record.Attributes {
 			recordItems[k] = v
