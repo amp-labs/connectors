@@ -56,17 +56,18 @@ func getMarshalledData(records []map[string]any, fields []string) ([]common.Read
 }
 
 func constructRecords(d Data) []map[string]any {
-	var records []map[string]any
+	records := make([]map[string]any, len(d.Data))
 
-	for _, record := range d.Data {
-		var recordItems = make(map[string]any)
+	for i, record := range d.Data {
+		recordItems := make(map[string]any)
 
 		recordItems[idKey] = record.ID
 
 		for k, v := range record.Attributes {
 			recordItems[k] = v
 		}
-		records = append(records, recordItems)
+
+		records[i] = recordItems
 	}
 
 	return records
