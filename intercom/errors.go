@@ -28,39 +28,24 @@ Response example:
 
 var ErrUnknownErrorResponseFormat = errors.New("error response has unexpected format")
 
-func (*Connector) interpretJSONError(res *http.Response, body []byte) error {
-	formats := interpreter.NewFormatSwitch(
-		[]interpreter.FormatTemplate{
-			{
-				MustKeys: []string{"errors"},
-				Template: &ResponseListError{},
-			}, {
-				MustKeys: nil,
-				Template: &ResponseSingleError{},
-			},
-		}...,
-	)
+var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
+	[]interpreter.FormatTemplate{
+		{
+			MustKeys: []string{"errors"},
+			Template: &ResponseListError{},
+		}, {
+			MustKeys: nil,
+			Template: &ResponseSingleError{},
+		},
+	}...,
+)
 
-	schema := formats.ParseJSON(body)
-
-	return schema.CombineErr(statusCodeMapping(res, body))
-}
-
-func statusCodeMapping(res *http.Response, body []byte) error {
-	switch res.StatusCode {
-	case http.StatusPaymentRequired:
-		return common.ErrBadRequest
-	case http.StatusNotAcceptable:
-		return common.ErrBadRequest
-	case http.StatusConflict:
-		return common.ErrBadRequest
-	case http.StatusUnsupportedMediaType:
-		return common.ErrBadRequest
-	case http.StatusUnprocessableEntity:
-		return common.ErrBadRequest
-	default:
-		return interpreter.DefaultStatusCodeMappingToErr(res, body)
-	}
+var statusCodeMapping = map[int]error{ // nolint:gochecknoglobals
+	http.StatusPaymentRequired:      common.ErrBadRequest,
+	http.StatusNotAcceptable:        common.ErrBadRequest,
+	http.StatusConflict:             common.ErrBadRequest,
+	http.StatusUnsupportedMediaType: common.ErrBadRequest,
+	http.StatusUnprocessableEntity:  common.ErrBadRequest,
 }
 
 type ResponseListError struct {
