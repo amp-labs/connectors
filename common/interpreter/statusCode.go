@@ -1,10 +1,13 @@
 package interpreter
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
 )
+
+var ErrEmptyResponse = errors.New("empty provider response")
 
 func DefaultStatusCodeMappingToErr(res *http.Response, body []byte) error { // nolint:cyclop
 	switch res.StatusCode {
@@ -37,6 +40,10 @@ func DefaultStatusCodeMappingToErr(res *http.Response, body []byte) error { // n
 	case http.StatusGatewayTimeout:
 		return common.ErrServer
 	default:
+		if len(body) == 0 {
+			return ErrEmptyResponse
+		}
+
 		return common.InterpretError(res, body)
 	}
 }
