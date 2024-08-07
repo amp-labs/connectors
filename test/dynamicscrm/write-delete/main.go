@@ -3,15 +3,19 @@ package main
 import (
 	"context"
 	"fmt"
-	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/handy"
 	"github.com/amp-labs/connectors/dynamicscrm"
 	connTest "github.com/amp-labs/connectors/test/dynamicscrm"
 	"github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+)
+
+var (
+	objectName = "leads"
 )
 
 type LeadCreatePayload struct {
@@ -36,12 +40,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	filePath := os.Getenv("MS_CRM_CRED_FILE")
-	if filePath == "" {
-		filePath = "./ms-crm-creds.json"
-	}
-
-	conn := connTest.GetMSDynamics365CRMConnector(ctx, filePath)
+	conn := connTest.GetMSDynamics365CRMConnector(ctx)
 	defer utils.Close(conn)
 
 	fmt.Println("> TEST Create/Update/Delete lead")
@@ -63,8 +62,8 @@ func main() {
 	leadID := fmt.Sprintf("%v", lead["leadid"])
 	fmt.Println("Updating some lead properties")
 	updateLead(ctx, conn, leadID, &LeadUploadPayload{
-		LastName:  mockutils.Pointers.Str(""),
-		FirstName: mockutils.Pointers.Str("Squidward"),
+		LastName:  handy.Pointers.Str(""),
+		FirstName: handy.Pointers.Str("Squidward"),
 	})
 	fmt.Println("View that lead has changed accordingly")
 
@@ -101,7 +100,7 @@ func searchLead(res *common.ReadResult, key, value string) map[string]any {
 
 func readLeads(ctx context.Context, conn *dynamicscrm.Connector) *common.ReadResult {
 	res, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: "leads",
+		ObjectName: objectName,
 		Fields: []string{
 			"leadid", "lastname", "firstname", "companyname", "subject",
 		},
@@ -115,7 +114,7 @@ func readLeads(ctx context.Context, conn *dynamicscrm.Connector) *common.ReadRes
 
 func createLead(ctx context.Context, conn *dynamicscrm.Connector, payload *LeadCreatePayload) {
 	res, err := conn.Write(ctx, common.WriteParams{
-		ObjectName: "leads",
+		ObjectName: objectName,
 		RecordId:   "",
 		RecordData: payload,
 	})
@@ -130,7 +129,7 @@ func createLead(ctx context.Context, conn *dynamicscrm.Connector, payload *LeadC
 
 func updateLead(ctx context.Context, conn *dynamicscrm.Connector, leadID string, payload *LeadUploadPayload) {
 	res, err := conn.Write(ctx, common.WriteParams{
-		ObjectName: "leads",
+		ObjectName: objectName,
 		RecordId:   leadID,
 		RecordData: payload,
 	})
@@ -145,7 +144,7 @@ func updateLead(ctx context.Context, conn *dynamicscrm.Connector, leadID string,
 
 func removeLead(ctx context.Context, conn *dynamicscrm.Connector, leadID string) {
 	res, err := conn.Delete(ctx, common.DeleteParams{
-		ObjectName: "leads",
+		ObjectName: objectName,
 		RecordId:   leadID,
 	})
 	if err != nil {

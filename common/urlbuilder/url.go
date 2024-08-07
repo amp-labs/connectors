@@ -19,8 +19,8 @@ type URL struct {
 }
 
 // New URL will be constructed given valid full url which may have query params.
-func New(base string) (*URL, error) {
-	delegate, err := url.Parse(base)
+func New(base string, path ...string) (*URL, error) {
+	delegate, err := url.Parse(cleanTrailingSlashes(base))
 	if err != nil {
 		return nil, errors.Join(err, ErrInvalidURL)
 	}
@@ -30,11 +30,14 @@ func New(base string) (*URL, error) {
 		return nil, errors.Join(err, ErrInvalidURL)
 	}
 
-	return &URL{
+	u := &URL{
 		delegate:           delegate,
 		queryParams:        values,
 		encodingExceptions: nil,
-	}, nil
+	}
+	u.AddPath(path...)
+
+	return u, nil
 }
 
 func (u *URL) WithQueryParamList(name string, values []string) {
@@ -92,7 +95,32 @@ func (u *URL) queryValuesToString() string {
 
 func (u *URL) AddPath(paths ...string) *URL {
 	// replace delegate with a new URL
-	u.delegate = u.delegate.JoinPath(paths...)
+	if len(paths) == 0 {
+		// nothing to be done here
+		return u
+	}
+
+	uriParts := make([]string, len(paths))
+
+	for i, p := range paths {
+		if i == len(paths)-1 {
+			// last index
+			p = cleanTrailingSlashes(p)
+		}
+
+		uriParts[i] = p
+	}
+
+	u.delegate = u.delegate.JoinPath(uriParts...)
 
 	return u
+}
+
+func cleanTrailingSlashes(link string) string {
+	found := true
+	for found {
+		link, found = strings.CutSuffix(link, "/")
+	}
+
+	return link
 }

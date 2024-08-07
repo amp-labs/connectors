@@ -1,0 +1,217 @@
+{
+  "success": true,
+  "total": 42,
+  "page_info": {
+    "start_cursor": "WyIwMDAwMDAwMC0wMDAwLTAwMDEtMDAwMC0wMDAwMDAwMDhlOTciXQ==",
+    "end_cursor": "WyIwMDAwMDAwMC0wMDAwLTAwMDEtMDAwMS0wMDAwMDAwMDhlOTciXQ==",
+    "has_previous_page": false,
+    "has_next_page": true
+  },
+  "data": [
+    {
+      "is_delete_protected": false,
+      "id": "00000000-0000-0001-0000-000000008e97",
+      "is_deleted": false,
+      "modified": "2023-03-23 14:20:54.529536+00:00",
+      "created": "2018-09-05 11:33:14.913457+00:00",
+      "owner": "https://eu-central.api.pipelinersales.com/api/v100/rest/spaces/fr_Myself/entities/Clients/00000000-0000-0000-0000-000000008e97",
+      "entity": 1,
+      "entity_api_name": null,
+      "name": "Lang_DefaultProfileAllUsers",
+      "owner_id": "00000000-0000-0000-0000-000000008e97",
+      "settings": {
+        "role": {
+          "show_my_items": true,
+          "show_my_shared_items": true,
+          "show_managing_unit_items": true
+        },
+        "view": {
+          "sort_by": "992f3eee-2bb5-0118-a9f4-2f20a9e9c908",
+          "group_by": "Account",
+          "sort_order": "Asc",
+          "grid_columns": [
+            {
+              "width": 1.12,
+              "frozen": true,
+              "pixels": false,
+              "field_id": "992f3eee-2bb5-0118-a9f4-2f20a9e9c908"
+            },
+            {
+              "width": 0.4,
+              "frozen": false,
+              "pixels": false,
+              "field_id": "3cb37831-f5ec-0346-7320-ce274046c16a"
+            },
+            {
+              "width": 1.12,
+              "frozen": false,
+              "pixels": false,
+              "field_id": "02626789-b040-011d-2257-c76ca967c633"
+            },
+            {
+              "width": 1.12,
+              "frozen": false,
+              "pixels": false,
+              "field_id": "80037c9c-d34a-0a26-88c7-b2c146634db1"
+            },
+            {
+              "width": 1.12,
+              "frozen": false,
+              "pixels": false,
+              "field_id": "6cd0d888-60cd-0917-ad07-7a2f23dfbea0"
+            },
+            {
+              "width": 1.12,
+              "frozen": false,
+              "pixels": false,
+              "field_id": "7fe1cd99-9698-091f-7a8f-8930ccb559d4"
+            }
+          ],
+          "show_card_value": true,
+          "show_card_labels": true,
+          "show_card_fitness": true,
+          "show_card_ranking": true,
+          "show_card_velocity": true,
+          "show_excluded_items": true,
+          "show_outside_target": true,
+          "show_unassigned_lead": true,
+          "bubble_chart_size_calculated_by": "UnweightedValue"
+        },
+        "filter": {
+          "operator": "And",
+          "is_custom": false,
+          "is_enabled": false,
+          "filter_main_box": {
+            "id": "4fd24d74-1e2b-4bd1-b6ba-6c8a4f895bb5",
+            "entity": "LeadOppty",
+            "filter_fields": []
+          },
+          "filter_sibling_boxes": []
+        },
+        "target": {
+          "goal": 1000000.0,
+          "target_source": "All",
+          "target_definition": null,
+          "target_value_type": "Weighted",
+          "show_target_on_top": true,
+          "target_period_compare": {
+            "period": "PreviousYear",
+            "period_custom_to": null,
+            "period_custom_from": null
+          },
+          "target_period_current": {
+            "period": "YearCurrent",
+            "period_custom_to": null,
+            "period_custom_from": null
+          },
+          "target_value_field_id": "6da56d81-0d6b-0c3c-301e-6dded539d3b9"
+        },
+        "sales_pipeline": [
+          "98baf008-2c96-0831-cb6d-0fa7a5660225"
+        ]
+      },
+      "share_mode": 1,
+      "use_lang": true,
+      "revision": 1521,
+      "pipelines": [
+        "98baf008-2c96-0831-cb6d-0fa7a5660225"
+      ]
+    },
+    {
+      "is_delete_protected": false,
+      "id": "00000000-0000-0001-0001-000000008e97",
+      "is_deleted": false,
+      "modified": "2023-03-09 09:33:51.509445+00:00",
+      "created": "2018-09-05 11:33:14.922086+00:00",
+      "owner": "https://eu-central.api.pipelinersales.com/api/v100/rest/spaces/fr_Myself/entities/Clients/00000000-0000-0000-0000-000000008e97",
+      "entity": 1,
+      "entity_api_name": null,
+      "name": "Lang_DefaultProfileMy",
+      "owner_id": "00000000-0000-0000-0000-000000008e97",
+      "settings": {
+        "role": {
+          "show_my_items": true,
+          "show_my_shared_items": false,
+          "show_managing_unit_items": false
+        },
+        "view": {
+          "sort_by": "992f3eee-2bb5-0118-a9f4-2f20a9e9c908",
+          "group_by": "Account",
+          "sort_order": "Asc",
+          "grid_columns": [
+            {
+              "width": 1.12,
+              "frozen": true,
+              "field_id": "992f3eee-2bb5-0118-a9f4-2f20a9e9c908"
+            },
+            {
+              "width": 0.4,
+              "field_id": "3cb37831-f5ec-0346-7320-ce274046c16a"
+            },
+            {
+              "width": 1.12,
+              "field_id": "02626789-b040-011d-2257-c76ca967c633"
+            },
+            {
+              "width": 1.12,
+              "field_id": "80037c9c-d34a-0a26-88c7-b2c146634db1"
+            },
+            {
+              "width": 1.12,
+              "field_id": "6cd0d888-60cd-0917-ad07-7a2f23dfbea0"
+            },
+            {
+              "width": 1.12,
+              "field_id": "7fe1cd99-9698-091f-7a8f-8930ccb559d4"
+            }
+          ],
+          "show_card_value": true,
+          "show_card_labels": false,
+          "show_card_fitness": false,
+          "show_card_ranking": false,
+          "show_card_velocity": false,
+          "show_excluded_items": true,
+          "show_outside_target": true,
+          "show_unassigned_lead": false,
+          "bubble_chart_size_calculated_by": "UnweightedValue"
+        },
+        "filter": {
+          "operator": "And",
+          "is_custom": false,
+          "is_enabled": false,
+          "filter_main_box": {
+            "id": "48c14a2a-a991-4437-91f8-7bfad6455c8d",
+            "entity": "LeadOppty",
+            "filter_fields": []
+          },
+          "filter_sibling_boxes": []
+        },
+        "target": {
+          "goal": 0,
+          "target_source": "All",
+          "target_value_type": "Weighted",
+          "target_period_compare": {
+            "period": "PreviousYear",
+            "period_custom_to": null,
+            "period_custom_from": null
+          },
+          "target_period_current": {
+            "period": "YearCurrent",
+            "period_custom_to": null,
+            "period_custom_from": null
+          },
+          "target_value_field_id": "6da56d81-0d6b-0c3c-301e-6dded539d3b9"
+        },
+        "sales_pipeline": [
+          "98baf008-2c96-0831-cb6d-0fa7a5660225"
+        ]
+      },
+      "share_mode": 1,
+      "use_lang": true,
+      "revision": 1242,
+      "pipelines": [
+        "98baf008-2c96-0831-cb6d-0fa7a5660225"
+      ]
+    }
+  ]
+}

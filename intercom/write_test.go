@@ -12,14 +12,16 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 	"github.com/go-test/deep"
 )
 
 func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 	t.Parallel()
 
-	responseInvalidSyntax := mockutils.DataFromFile(t, "write-invalid-json-syntax.json")
-	createArticle := mockutils.DataFromFile(t, "write-create-article.json")
+	responseInvalidSyntax := testutils.DataFromFile(t, "write-invalid-json-syntax.json")
+	createArticle := testutils.DataFromFile(t, "write-create-article.json")
 	messageForInvalidSyntax := "There was a problem in the JSON you submitted [ddf8bfe97056e23f5d2b1ed92627ad07]: " +
 		"logged with error code"
 
@@ -33,18 +35,14 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		expectedErrs []error
 	}{
 		{
-			name: "Write object must be included",
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusTeapot)
-			})),
+			name:         "Write object must be included",
+			server:       mockserver.Dummy(),
 			expectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
-			name:  "Mime response header expected",
-			input: common.WriteParams{ObjectName: "signals"},
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusTeapot)
-			})),
+			name:         "Mime response header expected",
+			input:        common.WriteParams{ObjectName: "signals"},
+			server:       mockserver.Dummy(),
 			expectedErrs: []error{interpreter.ErrMissingContentType},
 		},
 		{

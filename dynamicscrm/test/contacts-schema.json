@@ -1,0 +1,22 @@
+{
+  "@odata.context": "https://org5a07f924.api.crm.dynamics.com/api/data/v9.2/$metadata#EntityDefinitions(DisplayCollectionName)/$entity",
+  "MetadataId": "608861bc-50a4-4c5f-a02c-21fe1943e2cf",
+  "DisplayCollectionName": {
+    "LocalizedLabels": [
+      {
+        "Label": "Contacts",
+        "LanguageCode": 1033,
+        "IsManaged": true,
+        "MetadataId": "bb9709b3-2241-db11-898a-0007e9e17ebd",
+        "HasChanged": null
+      }
+    ],
+    "UserLocalizedLabel": {
+      "Label": "Contacts",
+      "LanguageCode": 1033,
+      "IsManaged": true,
+      "MetadataId": "bb9709b3-2241-db11-898a-0007e9e17ebd",
+      "HasChanged": null
+    }
+  }
+}

@@ -2,8 +2,10 @@ package mockutils
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 func RespondNoContentForMethod(w http.ResponseWriter, r *http.Request, methodName string) {
@@ -40,6 +42,20 @@ func RespondToHeader(w http.ResponseWriter, r *http.Request, header http.Header,
 				"code": "from test",
 				"message": "test server mismatching [%v] header"
 			}}`, missingHeader))
+	}
+}
+
+func RespondToBody(w http.ResponseWriter, r *http.Request, body string, onSuccess func()) {
+	if ok := bodiesMatch(r.Body, body); ok {
+		// if method is matching bodies
+		onSuccess()
+	} else {
+		w.WriteHeader(http.StatusBadRequest)
+		WriteBody(w, `{
+			"error": {
+				"code": "from test",
+				"message": "test server mismatching bodies"
+			}}`)
 	}
 }
 
@@ -117,6 +133,15 @@ func queryParamsAreSubset(superset, subset url.Values) (string, bool) {
 	return "", true
 }
 
+func bodiesMatch(reader io.ReadCloser, expected string) bool {
+	body, err := io.ReadAll(reader)
+	if err != nil {
+		return false
+	}
+
+	return string(body) == stringCleaner(expected, []string{"\n", "\t"})
+}
+
 func queryParamsMissing(superset url.Values, missing []string) (string, bool) {
 	for _, param := range missing {
 		if superset.Has(param) {
@@ -126,4 +151,21 @@ func queryParamsMissing(superset url.Values, missing []string) (string, bool) {
 	}
 
 	return "", true
+}
+
+func stringCleaner(text string, toRemove []string) string {
+	rules := make(map[string]string)
+	for _, remove := range toRemove {
+		rules[remove] = ""
+	}
+
+	return stringReplacer(text, rules)
+}
+
+func stringReplacer(text string, rules map[string]string) string {
+	for from, to := range rules {
+		text = strings.ReplaceAll(text, from, to)
+	}
+
+	return text
 }
