@@ -1,0 +1,9 @@
+[
+  {
+    "message": "Unable to create/update fields: MasterRecordId. Please check the security settings of this field and verify that it is read/write for your profile or permission set.",
+    "errorCode": "INVALID_FIELD_FOR_INSERT_UPDATE",
+    "fields": [
+      "MasterRecordId"
+    ]
+  }
+]

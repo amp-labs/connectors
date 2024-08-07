@@ -24,12 +24,27 @@ func (convertor) ArrayToMap(arr []*ajson.Node) ([]map[string]any, error) {
 			return nil, err
 		}
 
-		m, ok := data.(map[string]interface{})
+		m, ok := data.(map[string]any)
 		if !ok {
 			return nil, ErrNotObject
 		}
 
 		output = append(output, m)
+	}
+
+	return output, nil
+}
+
+func (convertor) ArrayToObjects(arr []*ajson.Node) ([]any, error) {
+	output := make([]any, 0, len(arr))
+
+	for _, v := range arr {
+		data, err := v.Unpack()
+		if err != nil {
+			return nil, err
+		}
+
+		output = append(output, data)
 	}
 
 	return output, nil
