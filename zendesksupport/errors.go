@@ -9,33 +9,23 @@ import (
 	"github.com/amp-labs/connectors/common/interpreter"
 )
 
-func (*Connector) interpretJSONError(res *http.Response, body []byte) error { //nolint:cyclop
-	formats := interpreter.NewFormatSwitch(
-		[]interpreter.FormatTemplate{
-			{
-				MustKeys: []string{"description"},
-				Template: &DescriptiveResponseError{},
-			}, {
-				MustKeys: []string{"status"},
-				Template: &StatusResponseError{},
-			}, {
-				MustKeys: nil,
-				Template: &MessageResponseError{},
-			},
-		}...,
-	)
+var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
+	[]interpreter.FormatTemplate{
+		{
+			MustKeys: []string{"description"},
+			Template: &DescriptiveResponseError{},
+		}, {
+			MustKeys: []string{"status"},
+			Template: &StatusResponseError{},
+		}, {
+			MustKeys: nil,
+			Template: &MessageResponseError{},
+		},
+	}...,
+)
 
-	schema := formats.ParseJSON(body)
-
-	return schema.CombineErr(statusCodeMapping(res, body))
-}
-
-func statusCodeMapping(res *http.Response, body []byte) error {
-	if res.StatusCode == http.StatusInternalServerError {
-		return common.ErrServer
-	}
-
-	return interpreter.DefaultStatusCodeMappingToErr(res, body)
+var statusCodeMapping = map[int]error{ // nolint:gochecknoglobals
+	http.StatusInternalServerError: common.ErrServer,
 }
 
 type DescriptiveResponseError struct {
