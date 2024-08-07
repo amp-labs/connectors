@@ -2,25 +2,18 @@ package dynamicscrm
 
 import (
 	"fmt"
-	"net/http"
 
 	"github.com/amp-labs/connectors/common/interpreter"
 )
 
-func (*Connector) interpretJSONError(res *http.Response, body []byte) error { //nolint:cyclop
-	formats := interpreter.NewFormatSwitch(
-		[]interpreter.FormatTemplate{
-			{
-				MustKeys: nil,
-				Template: &CRMResponseError{},
-			},
-		}...,
-	)
-
-	schema := formats.ParseJSON(body)
-
-	return schema.CombineErr(interpreter.DefaultStatusCodeMappingToErr(res, body))
-}
+var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
+	[]interpreter.FormatTemplate{
+		{
+			MustKeys: nil,
+			Template: &CRMResponseError{},
+		},
+	}...,
+)
 
 type CRMResponseError struct {
 	Err CRMError `json:"error"`
