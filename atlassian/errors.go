@@ -3,30 +3,23 @@ package atlassian
 import (
 	"errors"
 	"fmt"
-	"net/http"
 	"strings"
 	"time"
 
 	"github.com/amp-labs/connectors/common/interpreter"
 )
 
-func (*Connector) interpretJSONError(res *http.Response, body []byte) error { //nolint:cyclop
-	formats := interpreter.NewFormatSwitch(
-		[]interpreter.FormatTemplate{
-			{
-				MustKeys: []string{"status"},
-				Template: &ResponseStatusError{},
-			}, {
-				MustKeys: nil,
-				Template: &ResponseMessagesError{},
-			},
-		}...,
-	)
-
-	schema := formats.ParseJSON(body)
-
-	return schema.CombineErr(interpreter.DefaultStatusCodeMappingToErr(res, body))
-}
+var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
+	[]interpreter.FormatTemplate{
+		{
+			MustKeys: []string{"status"},
+			Template: &ResponseStatusError{},
+		}, {
+			MustKeys: nil,
+			Template: &ResponseMessagesError{},
+		},
+	}...,
+)
 
 type ResponseMessagesError struct {
 	ErrorMessages   []string          `json:"errorMessages"`
