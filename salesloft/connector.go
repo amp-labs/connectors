@@ -42,7 +42,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	// connector and its client must mirror base url and provide its own error parser
 	conn.setBaseURL(providerInfo.BaseURL)
 	conn.Client.HTTPClient.ErrorHandler = interpreter.ErrorHandler{
-		JSON: conn.interpretJSONError,
+		JSON: interpreter.NewFaultyResponder(errorFormats, statusCodeMapping),
 	}.Handle
 
 	return conn, nil
