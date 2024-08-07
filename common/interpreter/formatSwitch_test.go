@@ -9,11 +9,10 @@ func TestFormatSwitchParseJSON(t *testing.T) { //nolint:funlen
 	t.Parallel()
 
 	tests := []struct {
-		name        string
-		selector    *FormatSwitch
-		input       string
-		expected    error
-		expectedErr error
+		name     string
+		selector *FormatSwitch
+		input    string
+		expected error
 	}{
 		{
 			name:     "Missing templates produces unknown format",
@@ -80,16 +79,7 @@ func TestFormatSwitchParseJSON(t *testing.T) { //nolint:funlen
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			descriptor, err := tt.selector.ParseJSON([]byte(tt.input))
-			if err == nil {
-				if tt.expectedErr != nil {
-					t.Fatalf("%s: expected error: (%v), but got nothing", tt.name, tt.expectedErr)
-				}
-			} else {
-				if tt.expectedErr == nil {
-					t.Fatalf("%s: expected no errors, got: (%v)", tt.name, err)
-				}
-			}
+			descriptor := tt.selector.ParseJSON([]byte(tt.input))
 
 			output := descriptor.CombineErr(errors.New("base-from-test")) // nolint:goerr113
 

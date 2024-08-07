@@ -13,8 +13,7 @@ type FormatTemplate struct {
 	// MustKeys is a list of important keys that if all present will signify the match for Template.
 	MustKeys []string
 	// Template is a struct pointer which will be used to flush the data into.
-	// Must implement ErrorDescriptor.
-	Template any
+	Template ErrorDescriptor
 }
 
 // when all required keys are present in the payload it returns true.

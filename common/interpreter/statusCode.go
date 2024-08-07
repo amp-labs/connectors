@@ -7,7 +7,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 )
 
-var ErrEmptyResponse = errors.New("empty server response")
+var ErrEmptyResponse = errors.New("empty provider response")
 
 func DefaultStatusCodeMappingToErr(res *http.Response, body []byte) error { // nolint:cyclop
 	switch res.StatusCode {

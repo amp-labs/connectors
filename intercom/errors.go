@@ -41,10 +41,7 @@ func (*Connector) interpretJSONError(res *http.Response, body []byte) error {
 		}...,
 	)
 
-	schema, err := formats.ParseJSON(body)
-	if err != nil {
-		return err
-	}
+	schema := formats.ParseJSON(body)
 
 	return schema.CombineErr(statusCodeMapping(res, body))
 }

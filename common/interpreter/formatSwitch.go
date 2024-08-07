@@ -6,10 +6,7 @@ import (
 	"log/slog"
 )
 
-var (
-	ErrInvalidFormatExpectation = errors.New("used format template is not of valid type")
-	ErrUnknownResponseFormat    = errors.New("unknown response format")
-)
+var ErrUnknownResponseFormat = errors.New("unknown response format")
 
 // FormatSwitch allows to select the most appropriate format.
 // Switch will traverse every template stopping at the closest match, which best describes server response.
@@ -29,14 +26,14 @@ func NewFormatSwitch(templates ...FormatTemplate) *FormatSwitch {
 // If error response can be interpreted concisely and to the point, then great.
 // Otherwise, fallback and use whole response to build an error.
 // This strategy always exposes, never hides what the server sent us.
-func (s FormatSwitch) ParseJSON(data []byte) (ErrorDescriptor, error) { // nolint:ireturn
+func (s FormatSwitch) ParseJSON(data []byte) ErrorDescriptor { // nolint:ireturn
 	payload := make(map[string]any)
 	if err := json.Unmarshal(data, &payload); err != nil {
 		// The response was likely not valid JSON format.
 		// Handling this error by returning default error description.
 		return defaultErrorDescriptor{ // nolint:nilerr
 			responseData: data,
-		}, nil
+		}
 	}
 
 	for i := range s.templates {
@@ -47,20 +44,12 @@ func (s FormatSwitch) ParseJSON(data []byte) (ErrorDescriptor, error) { // nolin
 			// We found the perfect match.
 			if err := json.Unmarshal(data, &template.Template); err == nil {
 				// Successful parse.
-				descriptor, ok := (template.Template).(ErrorDescriptor)
-				if !ok {
-					// Template doesn't satisfy output type expectation of FormatSwitch.
-					// Connector implementation needs to fix this.
-					// To resolve this ensure every Template is of ErrorDescriptor type.
-					return nil, ErrInvalidFormatExpectation
-				}
-
-				return descriptor, nil
+				return template.Template
 			}
 
 			// Matched but couldn't parse. Did the server format change?
 			// We will continue searching for the closest template as fallback.
-			slog.Info("server error response format has changed")
+			slog.Info("provider error response format has changed")
 		}
 	}
 
@@ -68,7 +57,7 @@ func (s FormatSwitch) ParseJSON(data []byte) (ErrorDescriptor, error) { // nolin
 	// Default fallback.
 	return defaultErrorDescriptor{
 		responseData: data,
-	}, nil
+	}
 }
 
 type defaultErrorDescriptor struct {
