@@ -4,8 +4,9 @@ const Maxio Provider = "maxio"
 
 func init() {
 	SetInfo(Maxio, ProviderInfo{
-		AuthType: Basic,
-		BaseURL:  "https://{{.workspace}}.chargify.com",
+		DisplayName: "Maxio",
+		AuthType:    Basic,
+		BaseURL:     "https://{{.workspace}}.chargify.com",
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
@@ -19,5 +20,15 @@ func init() {
 			Write:     false,
 		},
 		PostAuthInfoNeeded: false,
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722328568/media/maxio_1722328567.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722328550/media/maxio_1722328549.svg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722328600/media/maxio_1722328599.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722328600/media/maxio_1722328599.svg",
+			},
+		},
 	})
 }

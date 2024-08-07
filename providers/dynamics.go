@@ -1,3 +1,4 @@
+// nolint:lll
 package providers
 
 const (
@@ -5,7 +6,7 @@ const (
 	DynamicsCRM             Provider = "dynamicsCRM"
 )
 
-func init() {
+func init() { // nolint:funlen
 	// Microsoft Dynamics 365 Business Central configuration
 	SetInfo(DynamicsBusinessCentral, ProviderInfo{
 		DisplayName: "Microsoft Dynamics Business Central",
@@ -19,6 +20,16 @@ func init() {
 			GrantType:                 AuthorizationCode,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
+			},
+		},
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722346320/media/dynamicsCRM_1722346320.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722346267/media/dynamicsCRM_1722346267.svg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722346298/media/dynamicsCRM_1722346297.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722346267/media/dynamicsCRM_1722346267.svg",
 			},
 		},
 		Support: Support{
@@ -52,6 +63,16 @@ func init() {
 				ScopesField: "scope",
 			},
 		},
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722346320/media/dynamicsCRM_1722346320.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722346267/media/dynamicsCRM_1722346267.svg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722346298/media/dynamicsCRM_1722346297.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722346267/media/dynamicsCRM_1722346267.svg",
+			},
+		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
@@ -60,9 +81,9 @@ func init() {
 				Delete: false,
 			},
 			Proxy:     true,
-			Read:      false,
+			Read:      true,
 			Subscribe: false,
-			Write:     false,
+			Write:     true,
 		},
 	})
 }

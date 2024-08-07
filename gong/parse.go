@@ -29,8 +29,8 @@ func getNextRecordsURL(node *ajson.Node) (string, error) {
 	return jsonquery.New(node, "records").StrWithDefault("cursor", "")
 }
 
-// getMarshaledData accepts a list of records and returns a list of structured data ([]ReadResultRow).
-func getMarshaledData(records []map[string]interface{}, fields []string) ([]common.ReadResultRow, error) {
+// getMarshalledData accepts a list of records and returns a list of structured data ([]ReadResultRow).
+func getMarshalledData(records []map[string]interface{}, fields []string) ([]common.ReadResultRow, error) {
 	data := make([]common.ReadResultRow, len(records))
 
 	for i, record := range records {

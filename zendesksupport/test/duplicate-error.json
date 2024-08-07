@@ -1,0 +1,12 @@
+{
+  "error": "RecordInvalid",
+  "description": "Record validation errors",
+  "details": {
+    "route.subdomain": [
+      {
+        "description": "Subdomain: nk2 has already been taken",
+        "error": "DuplicateValue"
+      }
+    ]
+  }
+}

@@ -4,8 +4,9 @@ const Dixa Provider = "dixa"
 
 func init() {
 	SetInfo(Dixa, ProviderInfo{
-		AuthType: ApiKey,
-		BaseURL:  "https://dev.dixa.io",
+		DisplayName: "Dixa",
+		AuthType:    ApiKey,
+		BaseURL:     "https://dev.dixa.io",
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Header,
 			Header: &ApiKeyOptsHeader{
@@ -24,6 +25,16 @@ func init() {
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
+		},
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722327729/media/dixa_1722327728.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722327706/media/dixa_1722327704.svg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722327746/media/dixa_1722327745.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722327746/media/dixa_1722327745.svg",
+			},
 		},
 	})
 }

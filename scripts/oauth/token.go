@@ -19,8 +19,8 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors/common/paramsbuilder"
+	"github.com/amp-labs/connectors/common/scanning"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/utils"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
 )
@@ -63,48 +63,48 @@ const (
 // No changes required below
 // ================================
 
-var registry = utils.NewCredentialsRegistry()
+var registry = scanning.NewRegistry()
 
-var readers = []utils.Reader{
-	&utils.JSONReader{
+var readers = []scanning.Reader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['clientId']",
-		CredKey:  "ClientId",
+		KeyName:  "ClientId",
 	},
-	&utils.JSONReader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['clientSecret']",
-		CredKey:  "ClientSecret",
+		KeyName:  "ClientSecret",
 	},
-	&utils.JSONReader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['scopes']",
-		CredKey:  "Scopes",
+		KeyName:  "Scopes",
 	},
-	&utils.JSONReader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['provider']",
-		CredKey:  "Provider",
+		KeyName:  "Provider",
 	},
-	&utils.JSONReader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['substitutions']",
-		CredKey:  "Substitutions",
+		KeyName:  "Substitutions",
 	},
-	&utils.JSONReader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['state']",
-		CredKey:  "State",
+		KeyName:  "State",
 	},
-	&utils.JSONReader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['userName']",
-		CredKey:  "UserName",
+		KeyName:  "UserName",
 	},
-	&utils.JSONReader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['password']",
-		CredKey:  "Password",
+		KeyName:  "Password",
 	},
 }
 
@@ -372,6 +372,16 @@ func setup() *OAuthApp {
 			AuthURL:   providerInfo.Oauth2Opts.AuthURL,
 			TokenURL:  providerInfo.Oauth2Opts.TokenURL,
 			AuthStyle: oauth2.AuthStyleAutoDetect,
+		}
+
+		var authCodeOptions []oauth2.AuthCodeOption
+
+		authURLParams := providerInfo.Oauth2Opts.AuthURLParams
+		if authURLParams != nil {
+			for k, v := range authURLParams {
+				option := oauth2.SetAuthURLParam(k, v)
+				app.Options = append(authCodeOptions, option)
+			}
 		}
 
 		return app

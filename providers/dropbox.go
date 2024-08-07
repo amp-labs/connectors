@@ -5,11 +5,13 @@ const (
 	DropboxSign Provider = "dropboxSign"
 )
 
+//nolint:all
 func init() {
 	// Dropbox configuration
 	SetInfo(Dropbox, ProviderInfo{
-		AuthType: Oauth2,
-		BaseURL:  "https://api.dropboxapi.com",
+		DisplayName: "Dropbox",
+		AuthType:    Oauth2,
+		BaseURL:     "https://api.dropboxapi.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://www.dropbox.com/oauth2/authorize",
@@ -19,6 +21,17 @@ func init() {
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField:      "scope",
 				ConsumerRefField: "account_id",
+			},
+		},
+		//nolint:lll
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722491962/media/Dropbox%20%20%20%20%20Provider%20%3D%20%22dropbox%22_1722491963.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722492220/media/Dropbox%20%20%20%20%20Provider%20%3D%20%22dropbox%22_1722492221.svg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722491962/media/Dropbox%20%20%20%20%20Provider%20%3D%20%22dropbox%22_1722491963.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722492197/media/Dropbox%20%20%20%20%20Provider%20%3D%20%22dropbox%22_1722492198.svg",
 			},
 		},
 		Support: Support{
@@ -45,6 +58,16 @@ func init() {
 			TokenURL:                  "https://app.hellosign.com/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
+		},
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722491962/media/Dropbox%20%20%20%20%20Provider%20%3D%20%22dropbox%22_1722491963.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722492220/media/Dropbox%20%20%20%20%20Provider%20%3D%20%22dropbox%22_1722492221.svg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722491962/media/Dropbox%20%20%20%20%20Provider%20%3D%20%22dropbox%22_1722491963.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722492197/media/Dropbox%20%20%20%20%20Provider%20%3D%20%22dropbox%22_1722492198.svg",
+			},
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{

@@ -5,8 +5,9 @@ const Braintree Provider = "braintree"
 func init() {
 	// Braintree Configuration
 	SetInfo(Braintree, ProviderInfo{
-		AuthType: Basic,
-		BaseURL:  "https://payments.sandbox.braintree-api.com/graphql",
+		DisplayName: "Braintree",
+		AuthType:    Basic,
+		BaseURL:     "https://payments.sandbox.braintree-api.com/graphql",
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
@@ -20,5 +21,15 @@ func init() {
 			Write:     false,
 		},
 		PostAuthInfoNeeded: false,
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722460381/media/braintree_1722460380.png",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722460341/media/braintree_1722460339.svg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722460381/media/braintree_1722460380.png",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722460360/media/braintree_1722460359.svg",
+			},
+		},
 	})
 }
