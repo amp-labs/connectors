@@ -62,9 +62,12 @@ type ObjectMetadataConnector interface {
 	ListObjectMetadata(ctx context.Context, objectNames []string) (*ListObjectMetadataResult, error)
 }
 
+// AuthMetadataConnector is an interface that extends the Connector interface with
+// the ability to retrieve metadata information about authentication.
 type AuthMetadataConnector interface {
 	Connector
 
+	// GetPostAuthInfo returns authentication metadata.
 	GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, error)
 }
 

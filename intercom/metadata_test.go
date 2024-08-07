@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/tools/scrapper"
 	"github.com/go-test/deep"
 )
@@ -25,27 +26,21 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		expectedErrs []error
 	}{
 		{
-			name:  "At least one object name must be queried",
-			input: nil,
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusTeapot)
-			})),
+			name:         "At least one object name must be queried",
+			input:        nil,
+			server:       mockserver.Dummy(),
 			expectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
-			name:  "Unknown object requested",
-			input: []string{"butterflies"},
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusTeapot)
-			})),
+			name:         "Unknown object requested",
+			input:        []string{"butterflies"},
+			server:       mockserver.Dummy(),
 			expectedErrs: []error{scrapper.ErrObjectNotFound},
 		},
 		{
-			name:  "Successfully describe one object with metadata",
-			input: []string{"help_centers"},
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusTeapot)
-			})),
+			name:   "Successfully describe one object with metadata",
+			input:  []string{"help_centers"},
+			server: mockserver.Dummy(),
 			expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"help_centers": {
@@ -66,11 +61,9 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			expectedErrs: nil,
 		},
 		{
-			name:  "Successfully describe multiple objects with metadata",
-			input: []string{"data_events", "teams"},
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusTeapot)
-			})),
+			name:   "Successfully describe multiple objects with metadata",
+			input:  []string{"data_events", "teams"},
+			server: mockserver.Dummy(),
 			expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"data_events": {

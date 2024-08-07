@@ -78,13 +78,15 @@ func CreateOAuth2ClientCredentialsClient(ctx context.Context, info *providers.Pr
 		// If you have your own HTTP client, you can use it here.
 		Client: http.DefaultClient,
 
-		OAuth2ClientCreds: &clientcredentials.Config{
-			ClientID:       opts.OAuth2ClientId,
-			ClientSecret:   opts.OAuth2ClientSecret,
-			TokenURL:       info.Oauth2Opts.TokenURL,
-			Scopes:         opts.Scopes,
-			EndpointParams: opts.EndpointParams,
-			AuthStyle:      oauth2.AuthStyleInParams,
+		OAuth2ClientCreds: &providers.OAuth2ClientCredentialsParams{
+			Config: &clientcredentials.Config{
+				ClientID:       opts.OAuth2ClientId,
+				ClientSecret:   opts.OAuth2ClientSecret,
+				TokenURL:       info.Oauth2Opts.TokenURL,
+				Scopes:         opts.Scopes,
+				EndpointParams: opts.EndpointParams,
+				AuthStyle:      oauth2.AuthStyleInParams,
+			},
 		},
 	})
 	if err != nil {

@@ -1,6 +1,8 @@
 package outreach
 
 import (
+	"encoding/json"
+
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/spyzhov/ajson"
@@ -23,20 +25,24 @@ func getNextRecordsURL(node *ajson.Node) (string, error) {
 
 // getRecords returns the records from the response.
 func getRecords(node *ajson.Node) ([]map[string]any, error) {
-	records, err := jsonquery.New(node).Array("data", false)
-	if err != nil {
+	var d Data
+
+	b := node.Source()
+	if err := json.Unmarshal(b, &d); err != nil {
 		return nil, err
 	}
 
-	return jsonquery.Convertor.ArrayToMap(records)
+	records := constructRecords(d)
+
+	return records, nil
 }
 
 func getTotalSize(node *ajson.Node) (int64, error) {
 	return jsonquery.New(node).ArraySize("data")
 }
 
-// getMarshaledData accepts a list of records and returns a list of structured data ([]ReadResultRow).
-func getMarshaledData(records []map[string]interface{}, fields []string) ([]common.ReadResultRow, error) {
+// getMarshalledData accepts a list of records and returns a list of structured data ([]ReadResultRow).
+func getMarshalledData(records []map[string]any, fields []string) ([]common.ReadResultRow, error) {
 	data := make([]common.ReadResultRow, len(records))
 
 	for i, record := range records {
@@ -47,4 +53,21 @@ func getMarshaledData(records []map[string]interface{}, fields []string) ([]comm
 	}
 
 	return data, nil
+}
+
+func constructRecords(d Data) []map[string]any {
+	records := make([]map[string]any, len(d.Data))
+
+	for i, record := range d.Data {
+		recordItems := make(map[string]any)
+		recordItems[idKey] = record.ID
+
+		for k, v := range record.Attributes {
+			recordItems[k] = v
+		}
+
+		records[i] = recordItems
+	}
+
+	return records
 }
