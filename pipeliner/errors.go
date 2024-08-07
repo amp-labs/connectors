@@ -8,30 +8,20 @@ import (
 	"github.com/amp-labs/connectors/common/interpreter"
 )
 
-func (*Connector) interpretJSONError(res *http.Response, body []byte) error { //nolint:cyclop
-	formats := interpreter.NewFormatSwitch(
-		[]interpreter.FormatTemplate{
-			{
-				MustKeys: []string{"code"},
-				Template: &ResponseWithCodeError{},
-			}, {
-				MustKeys: nil,
-				Template: &ResponseSimpleError{},
-			},
-		}...,
-	)
+var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
+	[]interpreter.FormatTemplate{
+		{
+			MustKeys: []string{"code"},
+			Template: &ResponseWithCodeError{},
+		}, {
+			MustKeys: nil,
+			Template: &ResponseSimpleError{},
+		},
+	}...,
+)
 
-	schema := formats.ParseJSON(body)
-
-	return schema.CombineErr(statusCodeMapping(res, body))
-}
-
-func statusCodeMapping(res *http.Response, body []byte) error {
-	if res.StatusCode == http.StatusUnprocessableEntity {
-		return common.ErrBadRequest
-	}
-
-	return interpreter.DefaultStatusCodeMappingToErr(res, body)
+var statusCodeMapping = map[int]error{ // nolint:gochecknoglobals
+	http.StatusUnprocessableEntity: common.ErrBadRequest,
 }
 
 // ResponseSimpleError occurs for Read method, invalid URL.
