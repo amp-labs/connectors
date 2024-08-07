@@ -1,0 +1,30 @@
+[
+  {
+    "id": "9e1477fd-54ef-41fe-b747-bc9e6a11a925",
+    "url": "https://first-proj.atlassian.net",
+    "name": "first-proj",
+    "scopes": [
+      "manage:jira-project",
+      "manage:jira-configuration",
+      "read:jira-work",
+      "manage:jira-webhook",
+      "write:jira-work",
+      "read:jira-user"
+    ],
+    "avatarUrl": "https://site-admin-avatar-cdn.prod.public.atl-paas.net/avatars/240/pencilmarker.png"
+  },
+  {
+    "id": "ebc887b2-7e61-4059-ab35-71f15cc16e12",
+    "url": "https://second-proj.atlassian.net",
+    "name": "second-proj",
+    "scopes": [
+      "manage:jira-project",
+      "manage:jira-configuration",
+      "read:jira-work",
+      "manage:jira-webhook",
+      "write:jira-work",
+      "read:jira-user"
+    ],
+    "avatarUrl": "https://site-admin-avatar-cdn.prod.public.atl-paas.net/avatars/240/rocket.png"
+  }
+]

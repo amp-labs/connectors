@@ -2,6 +2,7 @@ package hubspot
 
 import (
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -19,7 +20,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		conn = nil
 	})
 
-	params, err := parameters{}.FromOptions(opts...)
+	params, err := paramsbuilder.Apply(parameters{}, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +35,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		Client: &common.JSONHTTPClient{
 			HTTPClient: params.Client.Caller,
 		},
-		Module: params.Module.Suffix,
+		Module: params.Module.Name,
 	}
 
 	conn.setBaseURL(providerInfo.BaseURL)

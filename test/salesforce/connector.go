@@ -2,57 +2,23 @@ package salesforce
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
+	"github.com/amp-labs/connectors/common/scanning/credscanning"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/salesforce"
+	"github.com/amp-labs/connectors/test/utils"
 	testUtils "github.com/amp-labs/connectors/test/utils"
-	"github.com/amp-labs/connectors/utils"
+	"golang.org/x/oauth2"
 )
 
-func GetSalesforceConnector(ctx context.Context, filePath string) *salesforce.Connector {
-	registry := utils.NewCredentialsRegistry()
-
-	readers := []utils.Reader{
-		&utils.JSONReader{
-			FilePath: filePath,
-			JSONPath: "$.clientId",
-			CredKey:  utils.ClientId,
-		},
-		&utils.JSONReader{
-			FilePath: filePath,
-			JSONPath: "$.clientSecret",
-			CredKey:  utils.ClientSecret,
-		},
-		&utils.JSONReader{
-			FilePath: filePath,
-			JSONPath: "$.accessToken",
-			CredKey:  utils.AccessToken,
-		},
-		&utils.JSONReader{
-			FilePath: filePath,
-			JSONPath: "$.refreshToken",
-			CredKey:  utils.RefreshToken,
-		},
-		&utils.JSONReader{
-			FilePath: filePath,
-			JSONPath: "$.provider",
-			CredKey:  utils.Provider,
-		},
-		&utils.JSONReader{
-			FilePath: filePath,
-			JSONPath: "$.substitutions.workspace",
-			CredKey:  utils.WorkspaceRef,
-		},
-	}
-	_ = registry.AddReaders(readers...)
-
-	cfg := utils.SalesforceOAuthConfigFromRegistry(registry)
-	tok := utils.SalesforceOauthTokenFromRegistry(registry)
-	workspace := registry.MustString(utils.WorkspaceRef)
+func GetSalesforceConnector(ctx context.Context) *salesforce.Connector {
+	reader := getSalesforceJSONReader()
 
 	conn, err := salesforce.NewConnector(
-		salesforce.WithClient(ctx, http.DefaultClient, cfg, tok),
-		salesforce.WithWorkspace(workspace),
+		salesforce.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
+		salesforce.WithWorkspace(reader.Get(credscanning.Fields.Workspace)),
 	)
 	if err != nil {
 		testUtils.Fail("error creating connector", "error", err)
@@ -61,14 +27,29 @@ func GetSalesforceConnector(ctx context.Context, filePath string) *salesforce.Co
 	return conn
 }
 
-func GetSalesforceAccessToken(filePath string) string {
-	registry := utils.NewCredentialsRegistry()
+func getConfig(reader *credscanning.ProviderCredentials) *oauth2.Config {
+	workspace := reader.Get(credscanning.Fields.Workspace)
 
-	_ = registry.AddReaders(&utils.JSONReader{
-		FilePath: filePath,
-		JSONPath: "$.accessToken",
-		CredKey:  utils.AccessToken,
-	})
+	return &oauth2.Config{
+		ClientID:     reader.Get(credscanning.Fields.ClientId),
+		ClientSecret: reader.Get(credscanning.Fields.ClientSecret),
+		Endpoint: oauth2.Endpoint{
+			AuthURL:   fmt.Sprintf("https://%s.my.salesforce.com/services/oauth2/authorize", workspace),
+			TokenURL:  fmt.Sprintf("https://%s.my.salesforce.com/services/oauth2/token", workspace),
+			AuthStyle: oauth2.AuthStyleInParams,
+		},
+	}
+}
 
-	return registry.MustString(utils.AccessToken)
+func GetSalesforceAccessToken() string {
+	reader := getSalesforceJSONReader()
+
+	return reader.Get(credscanning.Fields.AccessToken)
+}
+
+func getSalesforceJSONReader() *credscanning.ProviderCredentials {
+	filePath := credscanning.LoadPath(providers.Salesforce)
+	reader := utils.MustCreateProvCredJSON(filePath, true, true)
+
+	return reader
 }

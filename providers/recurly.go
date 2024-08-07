@@ -20,5 +20,15 @@ func init() {
 			Write:     false,
 		},
 		PostAuthInfoNeeded: false,
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722066457/media/recurly_1722066456.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722066434/media/recurly_1722066433.svg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722066470/media/recurly_1722066469.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722066470/media/recurly_1722066469.svg",
+			},
+		},
 	})
 }

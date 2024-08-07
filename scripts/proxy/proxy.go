@@ -15,13 +15,13 @@ import (
 	"os"
 	"os/signal"
 	"strings"
-	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
+	"github.com/amp-labs/connectors/common/scanning"
+	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/connector"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/utils"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
 )
@@ -56,68 +56,68 @@ var (
 // Main (no changes needed)
 // ==============================
 
-var registry = utils.NewCredentialsRegistry()
+var registry = scanning.NewRegistry()
 
-var readers = []utils.Reader{
-	&utils.JSONReader{
+var readers = []scanning.Reader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['clientId']",
-		CredKey:  "ClientId",
+		KeyName:  "ClientId",
 	},
-	&utils.JSONReader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['clientSecret']",
-		CredKey:  "ClientSecret",
+		KeyName:  "ClientSecret",
 	},
-	&utils.JSONReader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['scopes']",
-		CredKey:  "Scopes",
+		KeyName:  "Scopes",
 	},
-	&utils.JSONReader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['provider']",
-		CredKey:  "Provider",
+		KeyName:  "Provider",
 	},
-	&utils.JSONReader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['substitutions']",
-		CredKey:  "Substitutions",
+		KeyName:  "Substitutions",
 	},
-	&utils.JSONReader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['accessToken']",
-		CredKey:  "AccessToken",
+		KeyName:  "AccessToken",
 	},
-	&utils.JSONReader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['refreshToken']",
-		CredKey:  "RefreshToken",
+		KeyName:  "RefreshToken",
 	},
-	&utils.JSONReader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['expiry']",
-		CredKey:  "Expiry",
+		KeyName:  "Expiry",
 	},
-	&utils.JSONReader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['expiryFormat']",
-		CredKey:  "ExpiryFormat",
+		KeyName:  "ExpiryFormat",
 	},
-	&utils.JSONReader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['apiKey']",
-		CredKey:  "ApiKey",
+		KeyName:  "ApiKey",
 	},
-	&utils.JSONReader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['userName']",
-		CredKey:  "UserName",
+		KeyName:  "UserName",
 	},
-	&utils.JSONReader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['password']",
-		CredKey:  "Password",
+		KeyName:  "Password",
 	},
 }
 
@@ -252,60 +252,13 @@ func createClientAuthParams(provider string) *ClientAuthParams {
 	}
 }
 
-// Some connectors may implement Refresh tokens, when it happens expiry must be provided alongside.
-// Library shouldn't attempt to refresh tokens if API doesn't support `refresh_token` grant type.
 func getTokensFromRegistry() *oauth2.Token {
-	accessToken := registry.MustString("AccessToken")
-	refreshToken, err := registry.GetString("RefreshToken")
-
-	if err != nil {
-		// we are working without refresh token
-		return &oauth2.Token{
-			AccessToken: accessToken,
-		}
-	}
-
-	// refresh token should be specified with expiry
-	atExpiry := registry.MustString("Expiry")
-	atExpiryTimeFormat := registry.MustString("ExpiryFormat")
-	expiry := parseAccessTokenExpiry(atExpiry, atExpiryTimeFormat)
-
-	return &oauth2.Token{
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
-		Expiry:       expiry, // required: will trigger reuse of refresh token
-	}
-}
-
-func parseAccessTokenExpiry(expiryStr, timeFormat string) time.Time {
-	formatEnums := map[string]string{
-		"Layout":      time.Layout,
-		"ANSIC":       time.ANSIC,
-		"UnixDate":    time.UnixDate,
-		"RubyDate":    time.RubyDate,
-		"RFC822":      time.RFC822,
-		"RFC822Z":     time.RFC822Z,
-		"RFC850":      time.RFC850,
-		"RFC1123":     time.RFC1123,
-		"RFC1123Z":    time.RFC1123Z,
-		"RFC3339":     time.RFC3339,
-		"RFC3339Nano": time.RFC3339Nano,
-		"Kitchen":     time.Kitchen,
-		"DateOnly":    time.DateOnly,
-	}
-
-	format, found := formatEnums[timeFormat]
-	if !found {
-		// specific format is specified instead of enum
-		format = timeFormat
-	}
-
-	expiry, err := time.Parse(format, expiryStr)
+	reader, err := credscanning.NewJSONProviderCredentials(DefaultCredsFile, true, false)
 	if err != nil {
 		panic(err)
 	}
 
-	return expiry
+	return reader.GetOauthToken()
 }
 
 func validateRequiredOAuth2Flags(provider, clientId, clientSecret string) {

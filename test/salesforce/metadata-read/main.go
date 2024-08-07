@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
-	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 
 	"github.com/amp-labs/connectors/common"
@@ -27,12 +27,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	filePath := os.Getenv("SALESFORCE_CRED_FILE")
-	if filePath == "" {
-		filePath = "./salesforce-creds.json"
-	}
-
-	conn := connTest.GetSalesforceConnector(ctx, filePath)
+	conn := connTest.GetSalesforceConnector(ctx)
 	defer utils.Close(conn)
 
 	response, err := conn.Read(ctx, common.ReadParams{
@@ -58,7 +53,7 @@ func main() {
 
 	data := sanitizeReadResponse(response.Data[0].Raw)
 
-	mismatchErr := mockutils.ValidateReadConformsMetadata(objectName, data, metadata)
+	mismatchErr := mockutils.ValidateReadConformsMetadata(strings.ToLower(objectName), data, metadata)
 	if mismatchErr != nil {
 		utils.Fail("schema and payload response have mismatching fields", "error", mismatchErr)
 	} else {

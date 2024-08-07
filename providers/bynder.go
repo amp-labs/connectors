@@ -4,7 +4,7 @@ const Bynder Provider = "bynder"
 
 func init() {
 	SetInfo(Bynder, ProviderInfo{
-		DisplayName: "bynder",
+		DisplayName: "Bynder",
 		AuthType:    Oauth2,
 		BaseURL:     "https://{{.workspace}}.bynder.com/api",
 		Oauth2Opts: &Oauth2Opts{
@@ -28,6 +28,16 @@ func init() {
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
+		},
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722329798/media/bynder_1722329797.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722329763/media/bynder_1722329761.svg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722329821/media/bynder_1722329820.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722329821/media/bynder_1722329820.svg",
+			},
 		},
 	})
 }

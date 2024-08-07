@@ -15,6 +15,16 @@ func init() {
 			},
 			DocsURL: "https://data.crunchbase.com/docs/getting-started",
 		},
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722327098/media/crunchbase_1722327097.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722327130/media/crunchbase_1722327129.svg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722327098/media/crunchbase_1722327097.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722327157/media/crunchbase_1722327157.svg",
+			},
+		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,

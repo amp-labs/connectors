@@ -85,6 +85,12 @@ var (
 
 	// ErrEmptyJSONHTTPResponse is returned when the JSONHTTPResponse is nil.
 	ErrEmptyJSONHTTPResponse = errors.New("empty json http response")
+
+	// ErrEmptyResponse is returned when the response body is empty.
+	ErrEmptyResponse = errors.New("empty response body")
+
+	// ErrRecordDataNotJSON is returned when the record data in WriteParams is not JSON.
+	ErrRecordDataNotJSON = errors.New("record data is not JSON")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.
@@ -150,9 +156,9 @@ type ReadResult struct {
 type ReadResultRow struct {
 	// Fields is a map of requested provider field names to values.
 	// All field names are in lowercase (eg: accountid, name, billingcityid)
-	Fields map[string]interface{} `json:"fields"`
+	Fields map[string]any `json:"fields"`
 	// Raw is the raw JSON response from the provider.
-	Raw map[string]interface{} `json:"raw"`
+	Raw map[string]any `json:"raw"`
 }
 
 // WriteResult is what's returned from writing data via the Write call.

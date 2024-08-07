@@ -3,11 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
-	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/handy"
 	"github.com/amp-labs/connectors/dynamicscrm"
 	connTest "github.com/amp-labs/connectors/test/dynamicscrm"
 	"github.com/amp-labs/connectors/test/utils"
@@ -40,12 +40,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	filePath := os.Getenv("MS_CRM_CRED_FILE")
-	if filePath == "" {
-		filePath = "./ms-crm-creds.json"
-	}
-
-	conn := connTest.GetMSDynamics365CRMConnector(ctx, filePath)
+	conn := connTest.GetMSDynamics365CRMConnector(ctx)
 	defer utils.Close(conn)
 
 	fmt.Println("> TEST Create/Update/Delete lead")
@@ -67,8 +62,8 @@ func main() {
 	leadID := fmt.Sprintf("%v", lead["leadid"])
 	fmt.Println("Updating some lead properties")
 	updateLead(ctx, conn, leadID, &LeadUploadPayload{
-		LastName:  mockutils.Pointers.Str(""),
-		FirstName: mockutils.Pointers.Str("Squidward"),
+		LastName:  handy.Pointers.Str(""),
+		FirstName: handy.Pointers.Str("Squidward"),
 	})
 	fmt.Println("View that lead has changed accordingly")
 

@@ -16,7 +16,7 @@ var (
 	userInfoURL = "https://account.docusign.com/oauth/userinfo" // nolint:gochecknoglobals
 )
 
-func (c *Connector) GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, error) { // nolint:cyclop
+func (c *Connector) GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, error) { // nolint:cyclop,funlen
 	resp, err := c.get(ctx, userInfoURL)
 	if err != nil {
 		return nil, err
@@ -66,7 +66,9 @@ func (c *Connector) GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, 
 
 		if baseURLWithoutHTTPS := strings.TrimPrefix(baseURIString, "https://"); baseURLWithoutHTTPS != baseURIString {
 			if parts := strings.SplitN(baseURLWithoutHTTPS, ".", 2); len(parts) > 1 { // nolint:gomnd
-				postAuthInfo.CatalogVars = &map[string]string{"server": parts[0]}
+				postAuthInfo.CatalogVars = AuthMetadataVars{
+					Server: parts[0],
+				}.AsMap()
 
 				return &postAuthInfo, nil
 			}

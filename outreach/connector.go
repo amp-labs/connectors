@@ -2,6 +2,7 @@ package outreach
 
 import (
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers"
 )
@@ -21,7 +22,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		conn = nil
 	})
 
-	params, err := parameters{}.FromOptions(opts...)
+	params, err := paramsbuilder.Apply(parameters{}, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -50,4 +51,13 @@ func (c *Connector) getApiURL(arg string) (*urlbuilder.URL, error) {
 func (c *Connector) setBaseURL(newURL string) {
 	c.BaseURL = newURL
 	c.Client.HTTPClient.Base = newURL
+}
+
+// Provider returns the connector provider.
+func (c *Connector) Provider() providers.Provider {
+	return providers.Outreach
+}
+
+func (c *Connector) String() string {
+	return c.Provider() + ".Connector"
 }
