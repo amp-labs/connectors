@@ -2,6 +2,7 @@ package providers
 
 const Guru Provider = "guru"
 
+// build check
 func init() {
 	// Guru API Key authentication
 	SetInfo(Guru, ProviderInfo{
