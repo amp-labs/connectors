@@ -7,7 +7,7 @@ require (
 	github.com/antchfx/xmlquery v1.4.1
 	github.com/brianvoe/gofakeit/v6 v6.28.0
 	github.com/gertd/go-pluralize v0.2.1
-	github.com/getkin/kin-openapi v0.126.0
+	github.com/getkin/kin-openapi v0.127.0
 	github.com/go-playground/validator v9.31.0+incompatible
 	github.com/go-test/deep v1.1.1
 	github.com/iancoleman/strcase v0.3.0
@@ -16,7 +16,7 @@ require (
 	github.com/spf13/viper v1.19.0
 	github.com/spyzhov/ajson v0.9.3
 	github.com/stretchr/testify v1.9.0
-	golang.org/x/oauth2 v0.21.0
+	golang.org/x/oauth2 v0.22.0
 )
 
 require (

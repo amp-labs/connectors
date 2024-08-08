@@ -15,6 +15,17 @@ func init() {
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 		},
+		//nolint:lll
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722403809/media/const%20AcuityScheduling%20Provider%20%3D%20%22acuityScheduling%22_1722403809.png",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722403830/media/const%20AcuityScheduling%20Provider%20%3D%20%22acuityScheduling%22_1722403830.svg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722403809/media/const%20AcuityScheduling%20Provider%20%3D%20%22acuityScheduling%22_1722403809.png",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722403830/media/const%20AcuityScheduling%20Provider%20%3D%20%22acuityScheduling%22_1722403830.svg",
+			},
+		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,

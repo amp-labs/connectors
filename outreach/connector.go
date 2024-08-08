@@ -52,3 +52,12 @@ func (c *Connector) setBaseURL(newURL string) {
 	c.BaseURL = newURL
 	c.Client.HTTPClient.Base = newURL
 }
+
+// Provider returns the connector provider.
+func (c *Connector) Provider() providers.Provider {
+	return providers.Outreach
+}
+
+func (c *Connector) String() string {
+	return c.Provider() + ".Connector"
+}

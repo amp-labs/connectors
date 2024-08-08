@@ -1,7 +1,6 @@
 package zendesksupport
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -10,52 +9,23 @@ import (
 	"github.com/amp-labs/connectors/common/interpreter"
 )
 
-func (*Connector) interpretJSONError(res *http.Response, body []byte) error { //nolint:cyclop
-	payload := make(map[string]any)
-	if err := json.Unmarshal(body, &payload); err != nil {
-		return fmt.Errorf("interpretJSONError general: %w %w", interpreter.ErrUnmarshal, err)
-	}
+var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
+	[]interpreter.FormatTemplate{
+		{
+			MustKeys: []string{"description"},
+			Template: func() interpreter.ErrorDescriptor { return &DescriptiveResponseError{} },
+		}, {
+			MustKeys: []string{"status"},
+			Template: func() interpreter.ErrorDescriptor { return &StatusResponseError{} },
+		}, {
+			MustKeys: nil,
+			Template: func() interpreter.ErrorDescriptor { return &MessageResponseError{} },
+		},
+	}...,
+)
 
-	var schema common.ErrorDescriptor
-
-	if _, ok := payload["description"]; schema == nil && ok {
-		apiError := &DescriptiveResponseError{}
-		if err := json.Unmarshal(body, &apiError); err != nil {
-			return fmt.Errorf(
-				"interpretJSONError DescriptiveResponseError: %w %w", interpreter.ErrUnmarshal, err)
-		}
-
-		schema = apiError
-	}
-
-	if _, ok := payload["status"]; schema == nil && ok {
-		apiError := &StatusResponseError{}
-		if err := json.Unmarshal(body, &apiError); err != nil {
-			return fmt.Errorf("interpretJSONError StatusResponseError: %w %w", interpreter.ErrUnmarshal, err)
-		}
-
-		schema = apiError
-	}
-
-	// default format
-	if schema == nil {
-		apiError := &MessageResponseError{}
-		if err := json.Unmarshal(body, &apiError); err != nil {
-			return fmt.Errorf("interpretJSONError MessageResponseError: %w %w", interpreter.ErrUnmarshal, err)
-		}
-
-		schema = apiError
-	}
-
-	return schema.CombineErr(statusCodeMapping(res, body))
-}
-
-func statusCodeMapping(res *http.Response, body []byte) error {
-	if res.StatusCode == http.StatusInternalServerError {
-		return common.ErrServer
-	}
-
-	return interpreter.DefaultStatusCodeMappingToErr(res, body)
+var statusCodeMapping = map[int]error{ // nolint:gochecknoglobals
+	http.StatusInternalServerError: common.ErrServer,
 }
 
 type DescriptiveResponseError struct {

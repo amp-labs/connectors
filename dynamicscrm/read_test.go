@@ -1,20 +1,19 @@
 package dynamicscrm
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"net/http/httptest"
-	"reflect"
-	"strings"
 	"testing"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
+	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
-	"github.com/go-test/deep"
 )
 
 func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
@@ -22,24 +21,23 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 
 	responseContactsGet := testutils.DataFromFile(t, "contacts-read.json")
 
-	tests := []struct {
-		name         string
-		input        common.ReadParams
-		server       *httptest.Server
-		connector    Connector
-		expected     *common.ReadResult
-		expectedErrs []error
-	}{
+	tests := []testroutines.Read{
 		{
-			name: "Mime response header expected",
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusTeapot)
-			})),
-			expectedErrs: []error{interpreter.ErrMissingContentType},
+			Name:         "Read object must be included",
+			Input:        common.ReadParams{},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
-			name: "Correct error message is understood from JSON response",
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			Name:         "Mime response header expected",
+			Input:        common.ReadParams{ObjectName: "contact"},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{interpreter.ErrMissingContentType},
+		},
+		{
+			Name:  "Correct error message is understood from JSON response",
+			Input: common.ReadParams{ObjectName: "contact"},
+			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusBadRequest)
 				mockutils.WriteBody(w, `{
@@ -49,55 +47,59 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 					}
 				}`)
 			})),
-			expectedErrs: []error{
+			ExpectedErrs: []error{
 				common.ErrBadRequest, errors.New("Resource not found for the segment 'conacs'"), // nolint:goerr113
 			},
 		},
 		{
-			name: "Incorrect key in payload",
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			Name:  "Incorrect key in payload",
+			Input: common.ReadParams{ObjectName: "contact"},
+			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
 				mockutils.WriteBody(w, `{
 					"garbage": {}
 				}`)
 			})),
-			expectedErrs: []error{jsonquery.ErrKeyNotFound},
+			ExpectedErrs: []error{jsonquery.ErrKeyNotFound},
 		},
 		{
-			name: "Incorrect data type in payload",
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			Name:  "Incorrect data type in payload",
+			Input: common.ReadParams{ObjectName: "contact"},
+			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
 				mockutils.WriteBody(w, `{
 					"value": {}
 				}`)
 			})),
-			expectedErrs: []error{jsonquery.ErrNotArray},
+			ExpectedErrs: []error{jsonquery.ErrNotArray},
 		},
 		{
-			name: "Next page cursor may be missing in payload",
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			Name:  "Next page cursor may be missing in payload",
+			Input: common.ReadParams{ObjectName: "contact"},
+			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
 				mockutils.WriteBody(w, `{
 					"value": []
 				}`)
 			})),
-			expected: &common.ReadResult{
+			Expected: &common.ReadResult{
 				Data: []common.ReadResultRow{},
 				Done: true,
 			},
-			expectedErrs: nil,
+			ExpectedErrs: nil,
 		},
 		{
-			name: "Successful read with 2 entries",
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			Name:  "Successful read with 2 entries",
+			Input: common.ReadParams{ObjectName: "contact"},
+			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
 				_, _ = w.Write(responseContactsGet)
 			})),
-			expected: &common.ReadResult{
+			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{},
@@ -125,19 +127,17 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				NextPage: "https://org5bd08fdd.api.crm.dynamics.com/api/data/v9.2/contacts?$select=fullname,emailaddress1,fax,familystatuscode&$skiptoken=%3Ccookie%20pagenumber=%222%22%20pagingcookie=%22%253ccookie%2520page%253d%25221%2522%253e%253ccontactid%2520last%253d%2522%257b9FD4A450-CB0C-EA11-A813-000D3A1B1223%257d%2522%2520first%253d%2522%257bCDCFA450-CB0C-EA11-A813-000D3A1B1223%257d%2522%2520%252f%253e%253c%252fcookie%253e%22%20istracking=%22False%22%20/%3E", // nolint:lll
 				Done:     false,
 			},
-			expectedErrs: nil,
+			ExpectedErrs: nil,
 		},
 		{
-			name: "Successful read with chosen fields",
-			input: common.ReadParams{
-				Fields: []string{"fullname", "fax"},
-			},
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			Name:  "Successful read with chosen fields",
+			Input: common.ReadParams{ObjectName: "contact", Fields: []string{"fullname", "fax"}},
+			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
 				_, _ = w.Write(responseContactsGet)
 			})),
-			expected: &common.ReadResult{
+			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
@@ -171,56 +171,34 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				NextPage: "https://org5bd08fdd.api.crm.dynamics.com/api/data/v9.2/contacts?$select=fullname,emailaddress1,fax,familystatuscode&$skiptoken=%3Ccookie%20pagenumber=%222%22%20pagingcookie=%22%253ccookie%2520page%253d%25221%2522%253e%253ccontactid%2520last%253d%2522%257b9FD4A450-CB0C-EA11-A813-000D3A1B1223%257d%2522%2520first%253d%2522%257bCDCFA450-CB0C-EA11-A813-000D3A1B1223%257d%2522%2520%252f%253e%253c%252fcookie%253e%22%20istracking=%22False%22%20/%3E", // nolint:lll
 				Done:     false,
 			},
-			expectedErrs: nil,
+			ExpectedErrs: nil,
 		},
 	}
 
 	for _, tt := range tests {
 		// nolint:varnamelen
 		tt := tt // rebind, omit loop side effects for parallel goroutine
-		t.Run(tt.name, func(t *testing.T) {
+		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			defer tt.server.Close()
-
-			ctx := context.Background()
-
-			connector, err := NewConnector(
-				WithAuthenticatedClient(http.DefaultClient),
-				WithWorkspace("test-workspace"),
-			)
-			if err != nil {
-				t.Fatalf("%s: error in test while constructing connector %v", tt.name, err)
-			}
-
-			// for testing we want to redirect calls to our mock server
-			connector.setBaseURL(tt.server.URL)
-
-			// start of tests
-			output, err := connector.Read(ctx, tt.input)
-			if err != nil {
-				if len(tt.expectedErrs) == 0 {
-					t.Fatalf("%s: expected no errors, got: (%v)", tt.name, err)
-				}
-			} else {
-				// check that missing error is what is expected
-				if len(tt.expectedErrs) != 0 {
-					t.Fatalf("%s: expected errors (%v), but got nothing", tt.name, tt.expectedErrs)
-				}
-			}
-
-			// check every error
-			for _, expectedErr := range tt.expectedErrs {
-				if !errors.Is(err, expectedErr) && !strings.Contains(err.Error(), expectedErr.Error()) {
-					t.Fatalf("%s: expected Error: (%v), got: (%v)", tt.name, expectedErr, err)
-				}
-			}
-
-			// compare desired output
-			if !reflect.DeepEqual(output, tt.expected) {
-				diff := deep.Equal(output, tt.expected)
-				t.Fatalf("%s:, \nexpected: (%v), \ngot: (%v), \ndiff: (%v)", tt.name, tt.expected, output, diff)
-			}
+			tt.Run(t, func() (connectors.ReadConnector, error) {
+				return constructTestConnector(tt.Server.URL)
+			})
 		})
 	}
+}
+
+func constructTestConnector(serverURL string) (*Connector, error) {
+	connector, err := NewConnector(
+		WithAuthenticatedClient(http.DefaultClient),
+		WithWorkspace("test-workspace"),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	// for testing we want to redirect calls to our mock server
+	connector.setBaseURL(serverURL)
+
+	return connector, nil
 }

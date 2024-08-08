@@ -1,7 +1,6 @@
 package intercom
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -29,53 +28,24 @@ Response example:
 
 var ErrUnknownErrorResponseFormat = errors.New("error response has unexpected format")
 
-func (*Connector) interpretJSONError(res *http.Response, body []byte) error { //nolint:cyclop
-	payload := make(map[string]any)
-	if err := json.Unmarshal(body, &payload); err != nil {
-		return fmt.Errorf("interpretJSONError general: %w %w", interpreter.ErrUnmarshal, err)
-	}
+var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
+	[]interpreter.FormatTemplate{
+		{
+			MustKeys: []string{"errors"},
+			Template: func() interpreter.ErrorDescriptor { return &ResponseListError{} },
+		}, {
+			MustKeys: nil,
+			Template: func() interpreter.ErrorDescriptor { return &ResponseSingleError{} },
+		},
+	}...,
+)
 
-	// now we can choose which error response Schema we expect
-	var schema common.ErrorDescriptor
-
-	if _, ok := payload["errors"]; ok {
-		apiError := &ResponseListError{}
-		if err := json.Unmarshal(body, &apiError); err != nil {
-			return fmt.Errorf("interpretJSONError ListError: %w %w", interpreter.ErrUnmarshal, err)
-		}
-
-		schema = apiError
-		if res.StatusCode == http.StatusUnprocessableEntity {
-			return schema.CombineErr(common.ErrBadRequest)
-		}
-	} else {
-		// default to simple response
-		apiError := &ResponseSingleError{}
-		if err := json.Unmarshal(body, &apiError); err != nil {
-			return fmt.Errorf("interpretJSONError SingleError: %w %w", interpreter.ErrUnmarshal, err)
-		}
-
-		schema = apiError
-	}
-
-	return schema.CombineErr(statusCodeMapping(res, body))
-}
-
-func statusCodeMapping(res *http.Response, body []byte) error {
-	switch res.StatusCode {
-	case http.StatusPaymentRequired:
-		return common.ErrBadRequest
-	case http.StatusNotAcceptable:
-		return common.ErrBadRequest
-	case http.StatusConflict:
-		return common.ErrBadRequest
-	case http.StatusUnsupportedMediaType:
-		return common.ErrBadRequest
-	case http.StatusUnprocessableEntity:
-		return common.ErrBadRequest
-	default:
-		return interpreter.DefaultStatusCodeMappingToErr(res, body)
-	}
+var statusCodeMapping = map[int]error{ // nolint:gochecknoglobals
+	http.StatusPaymentRequired:      common.ErrBadRequest,
+	http.StatusNotAcceptable:        common.ErrBadRequest,
+	http.StatusConflict:             common.ErrBadRequest,
+	http.StatusUnsupportedMediaType: common.ErrBadRequest,
+	http.StatusUnprocessableEntity:  common.ErrBadRequest,
 }
 
 type ResponseListError struct {

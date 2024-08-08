@@ -1,9 +1,7 @@
 package providers
 
 const (
-	Google         Provider = "google"
-	GoogleContacts Provider = "googleContacts"
-	GoogleAds      Provider = "googleAds"
+	Google Provider = "google"
 )
 
 //nolint:funlen

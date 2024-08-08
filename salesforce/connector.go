@@ -65,8 +65,8 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 
 	conn.setBaseURL(providerInfo.BaseURL)
 	conn.Client.HTTPClient.ErrorHandler = interpreter.ErrorHandler{
-		JSON: conn.interpretJSONError,
-		XML:  conn.interpretXMLError,
+		JSON: &interpreter.DirectFaultyResponder{Callback: conn.interpretJSONError},
+		XML:  &interpreter.DirectFaultyResponder{Callback: conn.interpretXMLError},
 	}.Handle
 
 	return conn, nil
