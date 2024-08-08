@@ -10,66 +10,29 @@ import (
 	"golang.org/x/oauth2"
 )
 
-type gongParams struct {
-	client *common.JSONHTTPClient
-	paramsbuilder.Workspace
-	paramsbuilder.APIModule
-	substitutions map[string]string
+// Option is a function which mutates the connector configuration.
+type Option = func(params *parameters)
+
+type parameters struct {
+	paramsbuilder.Client
 }
 
-type Option func(params *gongParams)
-
-func (params *gongParams) FromOptions(opts ...Option) (*gongParams, error) {
-	for _, opt := range opts {
-		opt(params)
-	}
-
-	return params, params.ValidateParams()
-}
-
-func (params *gongParams) ValidateParams() error {
+func (p parameters) ValidateParams() error {
 	return errors.Join(
-		params.Workspace.ValidateParams(),
+		p.Client.ValidateParams(),
 	)
 }
 
-func WithClient(ctx context.Context, client *http.Client, config *oauth2.Config, token *oauth2.Token,
+func WithClient(ctx context.Context, client *http.Client,
+	config *oauth2.Config, token *oauth2.Token, opts ...common.OAuthOption,
 ) Option {
-	return func(params *gongParams) {
-		oauthclient, err := common.NewOAuthHTTPClient(
-			ctx, common.WithOAuthClient(client),
-			common.WithOAuthConfig(config),
-			common.WithOAuthToken(token),
-		)
-		if err != nil {
-			panic(err)
-		}
-
-		WithAuthenticatedClient(oauthclient)(params)
-	}
-}
-
-func WithModule(module paramsbuilder.APIModule) Option {
-	return func(params *gongParams) {
-		params.APIModule = module
+	return func(params *parameters) {
+		params.WithOauthClient(ctx, client, config, token, opts...)
 	}
 }
 
 func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
-	return func(params *gongParams) {
-		params.client = &common.JSONHTTPClient{
-			HTTPClient: &common.HTTPClient{
-				Client:       client,
-				ErrorHandler: common.InterpretError,
-			},
-		}
+	return func(params *parameters) {
+		params.WithAuthenticatedClient(client)
 	}
-}
-
-func (params *gongParams) prepare() (*gongParams, error) {
-	if params.client == nil {
-		return nil, ErrMissingClient
-	}
-
-	return params, nil
 }

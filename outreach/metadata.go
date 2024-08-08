@@ -3,13 +3,19 @@ package outreach
 import (
 	"context"
 	"encoding/json"
-	"net/url"
 
 	"github.com/amp-labs/connectors/common"
 )
 
-type ObjectOKResponse struct {
-	Data []map[string]any `json:"data"`
+type Data struct {
+	Data []DataItem `json:"data"`
+}
+
+type DataItem struct {
+	Type          string         `json:"type"`
+	ID            int            `json:"id"`
+	Relationships map[string]any `json:"relationships"`
+	Attributes    map[string]any `json:"attributes"`
 }
 
 func (c *Connector) ListObjectMetadata(ctx context.Context,
@@ -27,12 +33,12 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 
 	for _, obj := range objectNames {
 		// Constructing the  request url.
-		objURL, err := url.JoinPath(c.BaseURL, obj)
+		url, err := c.getApiURL(obj)
 		if err != nil {
 			return nil, err
 		}
 
-		res, err := c.Client.Get(ctx, objURL)
+		res, err := c.Client.Get(ctx, url.String())
 		if err != nil {
 			objMetadata.Errors[obj] = err
 
@@ -41,7 +47,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 
 		// Check nil response body, to avoid panic.
 		if res == nil || res.Body == nil {
-			objMetadata.Errors[obj] = ErrEmptyResponse
+			objMetadata.Errors[obj] = common.ErrEmptyResponse
 
 			continue
 		}
@@ -63,17 +69,22 @@ func metadataMapper(body []byte) (common.ObjectMetadata, error) {
 		FieldsMap: make(map[string]string),
 	}
 
-	var response ObjectOKResponse
+	var response Data
 
 	err := json.Unmarshal(body, &response)
 	if err != nil {
 		return metadata, err
 	}
 
-	for _, dataMap := range response.Data {
-		for attr := range dataMap {
-			metadata.FieldsMap[attr] = attr
-		}
+	attributes := response.Data[0].Attributes
+	for k := range attributes {
+		metadata.FieldsMap[k] = k
+	}
+
+	// Append id in the metadata response. Only adds it, if available.
+	// 0 is not a valid id in outreach types. Id are read-only and starts at 1.
+	if response.Data[0].ID != 0 {
+		metadata.FieldsMap[idKey] = idKey
 	}
 
 	return metadata, nil

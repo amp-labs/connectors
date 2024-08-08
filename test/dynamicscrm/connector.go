@@ -2,56 +2,46 @@ package dynamicscrm
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
-	"github.com/amp-labs/connectors"
+	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/dynamicscrm"
-	testUtils "github.com/amp-labs/connectors/test/utils"
-	"github.com/amp-labs/connectors/utils"
+	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/test/utils"
+	"golang.org/x/oauth2"
 )
 
-func GetMSDynamics365CRMConnector(ctx context.Context, filePath string) *dynamicscrm.Connector {
-	registry := utils.NewCredentialsRegistry()
+func GetMSDynamics365CRMConnector(ctx context.Context) *dynamicscrm.Connector {
+	filePath := credscanning.LoadPath(providers.DynamicsCRM)
+	reader := utils.MustCreateProvCredJSON(filePath, true, true)
 
-	readers := []utils.Reader{
-		&utils.JSONReader{
-			FilePath: filePath,
-			JSONPath: "$.CLIENT_ID",
-			CredKey:  "clientId",
-		},
-		&utils.JSONReader{
-			FilePath: filePath,
-			JSONPath: "$.CLIENT_SECRET",
-			CredKey:  "clientSecret",
-		},
-		&utils.JSONReader{
-			FilePath: filePath,
-			JSONPath: "$.ACCESS_TOKEN",
-			CredKey:  "accessToken",
-		},
-		&utils.JSONReader{
-			FilePath: filePath,
-			JSONPath: "$.REFRESH_TOKEN",
-			CredKey:  "refreshToken",
-		},
-		&utils.JSONReader{
-			FilePath: filePath,
-			JSONPath: "$.PROVIDER",
-			CredKey:  "provider",
-		},
-	}
-	_ = registry.AddReaders(readers...)
-
-	cfg := utils.MSDynamics365CRMConfigFromRegistry(registry)
-	tok := utils.MSDynamics365CRMTokenFromRegistry(registry)
-
-	conn, err := connectors.DynamicsCRM(
-		dynamicscrm.WithClient(ctx, http.DefaultClient, cfg, tok),
-		dynamicscrm.WithWorkspace(utils.MSDynamics365CRMWorkspace),
+	conn, err := dynamicscrm.NewConnector(
+		dynamicscrm.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
+		dynamicscrm.WithWorkspace(reader.Get(credscanning.Fields.Workspace)),
 	)
+
 	if err != nil {
-		testUtils.Fail("error creating microsoft CRM connector", "error", err)
+		utils.Fail("error creating microsoft CRM connector", "error", err)
 	}
 
 	return conn
+}
+
+func getConfig(reader *credscanning.ProviderCredentials) *oauth2.Config {
+	return &oauth2.Config{
+		ClientID:     reader.Get(credscanning.Fields.ClientId),
+		ClientSecret: reader.Get(credscanning.Fields.ClientSecret),
+		RedirectURL:  "http://localhost:8080/callbacks/v1/oauth",
+		Endpoint: oauth2.Endpoint{
+			AuthURL:   "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+			TokenURL:  "https://login.microsoftonline.com/common/oauth2/v2.0/token",
+			AuthStyle: oauth2.AuthStyleInParams,
+		},
+		Scopes: []string{
+			fmt.Sprintf("https://%v.crm.dynamics.com/user_impersonation",
+				reader.Get(credscanning.Fields.Workspace)),
+			"offline_access",
+		},
+	}
 }

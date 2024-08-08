@@ -2,10 +2,11 @@ package dynamicscrm
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
+	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers"
 )
@@ -13,9 +14,8 @@ import (
 const apiVersion = "v9.2"
 
 type Connector struct {
-	BaseURL   string
-	Client    *common.JSONHTTPClient
-	XMLClient *common.XMLHTTPClient
+	BaseURL string
+	Client  *common.JSONHTTPClient
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
@@ -24,7 +24,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		conn = nil
 	})
 
-	params, err := parameters{}.FromOptions(opts...)
+	params, err := paramsbuilder.Apply(parameters{}, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -34,14 +34,9 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		Client: &common.JSONHTTPClient{
 			HTTPClient: httpClient,
 		},
-		XMLClient: &common.XMLHTTPClient{
-			HTTPClient: httpClient,
-		},
 	}
 
-	providerInfo, err := providers.ReadInfo(conn.Provider(), &map[string]string{
-		"workspace": params.Workspace.Name,
-	})
+	providerInfo, err := providers.ReadInfo(conn.Provider(), &params.Workspace)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +44,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	// connector and its client must mirror base url and provide its own error parser
 	conn.setBaseURL(providerInfo.BaseURL)
 	conn.Client.HTTPClient.ErrorHandler = interpreter.ErrorHandler{
-		JSON: conn.interpretJSONError,
+		JSON: interpreter.NewFaultyResponder(errorFormats, nil),
 	}.Handle
 
 	return conn, nil
@@ -64,16 +59,23 @@ func (c *Connector) String() string {
 }
 
 func (c *Connector) getURL(arg string) (*urlbuilder.URL, error) {
-	parts := []string{c.BaseURL, apiVersion, arg}
-	filtered := make([]string, 0)
+	return constructURL(c.BaseURL, apiVersion, arg)
+}
 
-	for _, part := range parts {
-		if len(part) != 0 {
-			filtered = append(filtered, part)
-		}
-	}
+func (c *Connector) getEntityDefinitionURL(arg naming.SingularString) (*urlbuilder.URL, error) {
+	// This endpoint returns schema of an object.
+	// Schema name must be singular.
+	path := fmt.Sprintf("EntityDefinitions(LogicalName='%v')", arg.String())
 
-	return constructURL(strings.Join(filtered, "/"))
+	return c.getURL(path)
+}
+
+func (c *Connector) getEntityAttributesURL(arg naming.SingularString) (*urlbuilder.URL, error) {
+	// This endpoint will describe attributes present on schema and its properties.
+	// Schema name must be singular.
+	path := fmt.Sprintf("EntityDefinitions(LogicalName='%v')/Attributes", arg.String())
+
+	return c.getURL(path)
 }
 
 func (c *Connector) setBaseURL(newURL string) {

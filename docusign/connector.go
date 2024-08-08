@@ -2,51 +2,43 @@ package docusign
 
 import (
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/providers"
 )
 
 type Connector struct {
-	ProviderInfo *providers.ProviderInfo
-	Client       *common.JSONHTTPClient
+	BaseURL string
+	Client  *common.JSONHTTPClient
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	defer func() {
-		if re := recover(); re != nil {
-			tmp, ok := re.(error)
-			if !ok {
-				panic(re)
-			}
+	defer common.PanicRecovery(func(cause error) {
+		outErr = cause
+		conn = nil
+	})
 
-			outErr = tmp
-			conn = nil
-		}
-	}()
-
-	params := &docusignParams{}
-	for _, opt := range opts {
-		opt(params)
-	}
-
-	var err error
-
-	params, err = params.prepare()
+	params, err := paramsbuilder.Apply(parameters{}, opts)
 	if err != nil {
 		return nil, err
 	}
 
 	conn = &Connector{
-		Client: params.client,
+		Client: &common.JSONHTTPClient{
+			HTTPClient: params.Client.Caller,
+		},
 	}
 
+	// Convert metadata map to model which knows how to do variable substitution.
+	authMetadata := NewAuthMetadataVars(params.Metadata.Map)
+
 	// Read provider info
-	conn.ProviderInfo, err = providers.ReadInfo(providers.Docusign, nil)
+	providerInfo, err := providers.ReadInfo(providers.Docusign, authMetadata)
 	if err != nil {
 		return nil, err
 	}
 
 	// Set the base URL
-	conn.Client.HTTPClient.Base = conn.ProviderInfo.BaseURL
+	conn.setBaseURL(providerInfo.BaseURL)
 
 	return conn, nil
 }
@@ -54,4 +46,9 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 // Provider returns the connector provider.
 func (c *Connector) Provider() providers.Provider {
 	return providers.Docusign
+}
+
+func (c *Connector) setBaseURL(newURL string) {
+	c.BaseURL = newURL
+	c.Client.HTTPClient.Base = newURL
 }

@@ -2,12 +2,9 @@ package docusign
 
 import (
 	"context"
-	"errors"
 
 	"github.com/amp-labs/connectors/common"
 )
-
-var ErrMissingClient = errors.New("JSON http client not set")
 
 // JSONHTTPClient returns the underlying JSON HTTP client.
 func (c *Connector) JSONHTTPClient() *common.JSONHTTPClient {

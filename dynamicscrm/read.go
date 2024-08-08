@@ -7,12 +7,17 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/spyzhov/ajson"
 )
 
 // nolint:lll
 // Microsoft API supports other capabilities like filtering, grouping, and sorting which we can potentially tap into later.
 // See https://learn.microsoft.com/en-us/power-apps/developer/data-platform/webapi/query-data-web-api#odata-query-options
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
+	if len(config.ObjectName) == 0 {
+		return nil, common.ErrMissingObjects
+	}
+
 	link, err := c.buildReadURL(config)
 	if err != nil {
 		return nil, err
@@ -33,7 +38,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		getTotalSize,
 		getRecords,
 		getNextRecordsURL,
-		getMarshaledData,
+		getMarshalledData,
 		config.Fields,
 	)
 }
@@ -62,4 +67,18 @@ func newPaginationHeader(pageSize int) common.Header {
 		Key:   "Prefer",
 		Value: fmt.Sprintf("odata.maxpagesize=%v", pageSize),
 	}
+}
+
+// Internal GET request, where we expect JSON payload.
+func (c *Connector) performGetRequest(ctx context.Context, url *urlbuilder.URL) (*ajson.Node, error) {
+	rsp, err := c.Client.Get(ctx, url.String())
+	if err != nil {
+		return nil, err
+	}
+
+	if rsp.Body == nil {
+		return nil, ErrObjectNotFound
+	}
+
+	return rsp.Body, nil
 }

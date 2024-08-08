@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/amp-labs/connectors"
+	"github.com/amp-labs/connectors/common/scanning"
 	"github.com/amp-labs/connectors/hubspot"
 	testUtils "github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/utils"
@@ -12,33 +12,33 @@ import (
 
 // GetHubspotConnector returns a Hubspot connector.
 func GetHubspotConnector(ctx context.Context, filePath string) *hubspot.Connector {
-	registry := utils.NewCredentialsRegistry()
+	registry := scanning.NewRegistry()
 
-	readers := []utils.Reader{
-		&utils.JSONReader{
+	readers := []scanning.Reader{
+		&scanning.JSONReader{
 			FilePath: filePath,
 			JSONPath: "$.CLIENT_ID",
-			CredKey:  "clientId",
+			KeyName:  "clientId",
 		},
-		&utils.JSONReader{
+		&scanning.JSONReader{
 			FilePath: filePath,
 			JSONPath: "$.CLIENT_SECRET",
-			CredKey:  "clientSecret",
+			KeyName:  "clientSecret",
 		},
-		&utils.JSONReader{
+		&scanning.JSONReader{
 			FilePath: filePath,
 			JSONPath: "$.REFRESH_TOKEN",
-			CredKey:  "refreshToken",
+			KeyName:  "refreshToken",
 		},
-		&utils.JSONReader{
+		&scanning.JSONReader{
 			FilePath: filePath,
 			JSONPath: "$.ACCESS_TOKEN",
-			CredKey:  "accessToken",
+			KeyName:  "accessToken",
 		},
-		&utils.JSONReader{
+		&scanning.JSONReader{
 			FilePath: filePath,
 			JSONPath: "$.PROVIDER",
-			CredKey:  "provider",
+			KeyName:  "provider",
 		},
 	}
 	registry.AddReaders(readers...)
@@ -46,7 +46,7 @@ func GetHubspotConnector(ctx context.Context, filePath string) *hubspot.Connecto
 	cfg := utils.HubspotOAuthConfigFromRegistry(registry)
 	tok := utils.HubspotOauthTokenFromRegistry(registry)
 
-	conn, err := connectors.Hubspot(
+	conn, err := hubspot.NewConnector(
 		hubspot.WithClient(ctx, http.DefaultClient, cfg, tok),
 		hubspot.WithModule(hubspot.ModuleCRM))
 	if err != nil {

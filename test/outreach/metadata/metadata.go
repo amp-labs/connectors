@@ -4,76 +4,23 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"net/http"
 
-	"github.com/amp-labs/connectors"
-	"github.com/amp-labs/connectors/outreach"
-	testUtils "github.com/amp-labs/connectors/test/utils"
-	"github.com/amp-labs/connectors/utils"
+	"github.com/amp-labs/connectors/test/outreach"
 )
-
-const (
-	DefaultCredsFile = "creds.json"
-)
-
-func GetOutreachConnector(ctx context.Context, filePath string) *outreach.Connector {
-	registry := utils.NewCredentialsRegistry()
-
-	readers := []utils.Reader{
-		&utils.JSONReader{
-			FilePath: filePath,
-			JSONPath: "$['clientId']",
-			CredKey:  "clientId",
-		},
-		&utils.JSONReader{
-			FilePath: filePath,
-			JSONPath: "$['clientSecret']",
-			CredKey:  "clientSecret",
-		},
-		&utils.JSONReader{
-			FilePath: filePath,
-			JSONPath: "$['refreshToken']",
-			CredKey:  "refreshToken",
-		},
-		&utils.JSONReader{
-			FilePath: filePath,
-			JSONPath: "$['accessToken']",
-			CredKey:  "accessToken",
-		},
-		&utils.JSONReader{
-			FilePath: filePath,
-			JSONPath: "$['provider']",
-			CredKey:  "provider",
-		},
-	}
-	registry.AddReaders(readers...)
-
-	cfg := utils.OutreachOAuthConfigFromRegistry(registry)
-	tok := utils.OutreachOauthTokenFromRegistry(registry)
-
-	conn, err := connectors.Outreach(
-		outreach.WithClient(ctx, http.DefaultClient, cfg, tok),
-	)
-	if err != nil {
-		testUtils.Fail("error creating outreach connector", "error", err)
-	}
-
-	return conn
-}
 
 func main() {
-	objects := []string{"emailAddresses", "users", "ladecima"}
+	objects := []string{"sequences"}
 
 	ctx := context.Background()
 
-	conn := GetOutreachConnector(ctx, "creds.json")
+	conn := outreach.GetOutreachConnector(ctx, "creds.json")
 
 	m, err := conn.ListObjectMetadata(ctx, objects)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("The Object-Metadata: %v\n", m.Result)
-
-	fmt.Printf("The Errors: %v\n", m.Errors)
+	// Print the results
+	fmt.Println("Results: ", m.Result)
+	fmt.Println("Errors: ", m.Errors)
 }

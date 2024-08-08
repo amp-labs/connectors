@@ -16,8 +16,9 @@ func init() {
 		User Privacy
 	*/
 	SetInfo(Amplitude, ProviderInfo{
-		AuthType: Basic,
-		BaseURL:  "https://amplitude.com",
+		DisplayName: "Amplitude",
+		AuthType:    Basic,
+		BaseURL:     "https://amplitude.com",
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
@@ -31,5 +32,15 @@ func init() {
 			Write:     false,
 		},
 		PostAuthInfoNeeded: false,
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722458409/media/amplitude_1722458408.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722458370/media/amplitude_1722458369.svg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722458435/media/amplitude_1722458435.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722458351/media/amplitude_1722458350.svg",
+			},
+		},
 	})
 }

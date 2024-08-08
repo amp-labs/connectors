@@ -1,15 +1,30 @@
 package gong
 
 import (
-	"errors"
+	"fmt"
+	"strings"
+
+	"github.com/amp-labs/connectors/common/interpreter"
 )
 
-var (
-	ErrMissingClient = errors.New("JSON http client not set")
-	ErrNotArray      = errors.New("results data is not an array")
-	ErrNotObject     = errors.New("record is not an object")
+var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
+	[]interpreter.FormatTemplate{
+		{
+			MustKeys: nil,
+			Template: &ResponseError{},
+		},
+	}...,
 )
 
-func (c *Connector) HandleError(err error) error {
-	return err
+type ResponseError struct {
+	RequestId string   `json:"requestId"`
+	Errors    []string `json:"errors"`
+}
+
+func (r ResponseError) CombineErr(base error) error {
+	if len(r.Errors) == 0 {
+		return base
+	}
+
+	return fmt.Errorf("%w: %v", base, strings.Join(r.Errors, ","))
 }

@@ -5,12 +5,15 @@ const Iterable Provider = "iterable"
 func init() {
 	// Iterable API Key authentication
 	SetInfo(Iterable, ProviderInfo{
-		AuthType: ApiKey,
-		BaseURL:  "https://api.iterable.com",
+		DisplayName: "Iterable",
+		AuthType:    ApiKey,
+		BaseURL:     "https://api.iterable.com",
 		ApiKeyOpts: &ApiKeyOpts{
-			Type:       InHeader,
-			HeaderName: "Api-Key",
-			DocsURL:    "https://app.iterable.com/settings/apiKeys",
+			AttachmentType: Header,
+			Header: &ApiKeyOptsHeader{
+				Name: "Api-Key",
+			},
+			DocsURL: "https://app.iterable.com/settings/apiKeys",
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -23,6 +26,16 @@ func init() {
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
+		},
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722065197/media/iterable_1722065196.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722065173/media/iterable_1722065172.svg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722065197/media/iterable_1722065196.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722065173/media/iterable_1722065172.svg",
+			},
 		},
 	})
 }

@@ -1,7 +1,6 @@
 package common
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -10,8 +9,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/amp-labs/connectors/common/xquery"
 	"github.com/go-playground/validator"
-	"github.com/subchen/go-xmldom"
 )
 
 const (
@@ -23,7 +22,6 @@ const (
 var (
 	//nolint:gochecknoglobals
 	validate          = validator.New()
-	ErrNoXMLRoot      = errors.New("xml document has no root")
 	ErrNotXMLChildren = errors.New("children must be of type 'XMLData' or 'XMLString'")
 	ErrNoSelfClosing  = errors.New("selfClosing cannot be true if children are not present")
 	ErrNoParens       = errors.New("value cannot contain < or >")
@@ -46,25 +44,31 @@ type XMLHTTPResponse struct {
 	Headers http.Header
 
 	// Body is the unmarshalled response body in XML form. Content is the same as bodyBytes
-	Body *xmldom.Document
-}
-
-func (r XMLHTTPResponse) GetRoot() (*xmldom.Node, error) {
-	if r.Body == nil || r.Body.Root == nil {
-		return nil, ErrNoXMLRoot
-	}
-
-	return r.Body.Root, nil
+	Body *xquery.XML
 }
 
 // Get makes a GET request to the given URL and returns the response body as a XML object.
 // If the response is not a 2xx, an error is returned. If the response is a 401, the caller should
 // refresh the access token and retry the request. If errorHandler is nil, then the default error
 // handler is used. If not, the caller can inject their own error handling logic.
-func (j *XMLHTTPClient) Get(ctx context.Context, url string, headers ...Header) (*XMLHTTPResponse, error) {
-	res, body, err := j.HTTPClient.Get(ctx, url, addAcceptXMLHeader(headers)...) //nolint:bodyclose
+func (c *XMLHTTPClient) Get(ctx context.Context, url string, headers ...Header) (*XMLHTTPResponse, error) {
+	res, body, err := c.HTTPClient.Get(ctx, url, addAcceptXMLHeader(headers)...) //nolint:bodyclose
 	if err != nil {
-		return nil, j.ErrorPostProcessor.handleError(err)
+		return nil, c.ErrorPostProcessor.handleError(err)
+	}
+
+	return parseXMLResponse(res, body)
+}
+
+// Post sends XML request and receives XML as a response.
+func (c *XMLHTTPClient) Post(ctx context.Context,
+	url string, node *xquery.XML, headers ...Header,
+) (*XMLHTTPResponse, error) {
+	data := []byte(node.RawXML())
+
+	res, body, err := c.HTTPClient.Post(ctx, url, data, addAcceptXMLHeader(headers)...) //nolint:bodyclose
+	if err != nil {
+		return nil, c.ErrorPostProcessor.handleError(err)
 	}
 
 	return parseXMLResponse(res, body)
@@ -84,13 +88,13 @@ func parseXMLResponse(res *http.Response, body []byte) (*XMLHTTPResponse, error)
 			return nil, fmt.Errorf("failed to parse content type: %w", err)
 		}
 
-		if mimeType != "application/xml" {
+		if mimeType != "application/xml" && mimeType != "text/xml" {
 			return nil, fmt.Errorf("%w: expected content type to be application/xml, got %s", ErrNotXML, mimeType)
 		}
 	}
 
 	// Unmarshall the response body into XML
-	xmlBody, err := xmldom.Parse(bytes.NewReader(body))
+	xmlBody, err := xquery.NewXML(body)
 	if err != nil {
 		return nil, NewHTTPStatusError(res.StatusCode, fmt.Errorf("failed to unmarshall response body into XML: %w", err))
 	}

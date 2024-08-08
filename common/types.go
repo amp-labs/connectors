@@ -65,11 +65,11 @@ var (
 	// ErrMissingRecordID is returned when resource id is missing in the request.
 	ErrMissingRecordID = errors.New("no object ID provided")
 
+	// ErrMissingFields is returned when no fields are provided for reading.
+	ErrMissingFields = errors.New("no fields provided in ReadParams")
+
 	// ErrInvalidPathJoin is returned when the path join is invalid.
 	ErrInvalidPathJoin = errors.New("invalid path join")
-
-	// ErrReadFile is returned when the path is invalid.
-	ErrReadFile = errors.New("failed to read file")
 
 	// ErrRequestFailed is returned when the request failed.
 	ErrRequestFailed = errors.New("request failed")
@@ -85,6 +85,12 @@ var (
 
 	// ErrEmptyJSONHTTPResponse is returned when the JSONHTTPResponse is nil.
 	ErrEmptyJSONHTTPResponse = errors.New("empty json http response")
+
+	// ErrEmptyResponse is returned when the response body is empty.
+	ErrEmptyResponse = errors.New("empty response body")
+
+	// ErrRecordDataNotJSON is returned when the record data in WriteParams is not JSON.
+	ErrRecordDataNotJSON = errors.New("record data is not JSON")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.
@@ -150,9 +156,9 @@ type ReadResult struct {
 type ReadResultRow struct {
 	// Fields is a map of requested provider field names to values.
 	// All field names are in lowercase (eg: accountid, name, billingcityid)
-	Fields map[string]interface{} `json:"fields"`
+	Fields map[string]any `json:"fields"`
 	// Raw is the raw JSON response from the provider.
-	Raw map[string]interface{} `json:"raw"`
+	Raw map[string]any `json:"raw"`
 }
 
 // WriteResult is what's returned from writing data via the Write call.
@@ -162,9 +168,9 @@ type WriteResult struct {
 	// RecordId is the ID of the written record.
 	RecordId string `json:"recordId,omitempty"` // optional
 	// Errors is list of error record returned by the API.
-	Errors []interface{} `json:"errors,omitempty"` // optional
+	Errors []any `json:"errors,omitempty"` // optional
 	// Data is a JSON node containing data about the properties that were updated.
-	Data map[string]interface{} `json:"data,omitempty"` // optional
+	Data map[string]any `json:"data,omitempty"` // optional
 }
 
 // DeleteResult is what's returned from deleting data via the Delete call.
