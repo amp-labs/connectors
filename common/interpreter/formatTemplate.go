@@ -12,8 +12,8 @@ type ErrorDescriptor interface {
 type FormatTemplate struct {
 	// MustKeys is a list of important keys that if all present will signify the match for Template.
 	MustKeys []string
-	// Template is a struct pointer which will be used to flush the data into.
-	Template ErrorDescriptor
+	// Template is a factory that returns a struct, which will be used to flush the data into.
+	Template func() ErrorDescriptor
 }
 
 // when all required keys are present in the payload it returns true.

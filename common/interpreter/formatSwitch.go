@@ -42,9 +42,10 @@ func (s FormatSwitch) ParseJSON(data []byte) ErrorDescriptor { // nolint:ireturn
 
 		if template.matches(payload) {
 			// We found the perfect match.
-			if err := json.Unmarshal(data, &template.Template); err == nil {
+			tmpl := template.Template()
+			if err := json.Unmarshal(data, &tmpl); err == nil {
 				// Successful parse.
-				return template.Template
+				return tmpl
 			}
 
 			// Matched but couldn't parse. Did the server format change?

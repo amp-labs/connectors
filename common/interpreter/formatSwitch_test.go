@@ -24,7 +24,7 @@ func TestFormatSwitchParseJSON(t *testing.T) { //nolint:funlen
 			name: "Successful single template",
 			selector: NewFormatSwitch(FormatTemplate{
 				MustKeys: nil,
-				Template: &sampleTestFormatStatus{},
+				Template: func() ErrorDescriptor { return &sampleTestFormatStatus{} },
 			}),
 			input:    `{"status": "bad request"}`,
 			expected: errTestResStatus,
@@ -33,10 +33,10 @@ func TestFormatSwitchParseJSON(t *testing.T) { //nolint:funlen
 			name: "Format order matters",
 			selector: NewFormatSwitch(FormatTemplate{
 				MustKeys: []string{"code"},
-				Template: &sampleTestFormatCode{},
+				Template: func() ErrorDescriptor { return &sampleTestFormatCode{} },
 			}, FormatTemplate{
 				MustKeys: []string{"status"},
-				Template: &sampleTestFormatStatus{},
+				Template: func() ErrorDescriptor { return &sampleTestFormatStatus{} },
 			}),
 			input:    `{"status": "bad request", "code": "251"}`,
 			expected: errTestResCode,
@@ -45,13 +45,13 @@ func TestFormatSwitchParseJSON(t *testing.T) { //nolint:funlen
 			name: "All keys must match for template to be selected",
 			selector: NewFormatSwitch(FormatTemplate{
 				MustKeys: []string{"code", "messages"},
-				Template: &sampleTestFormatCode{},
+				Template: func() ErrorDescriptor { return &sampleTestFormatCode{} },
 			}, FormatTemplate{
 				MustKeys: []string{"status", "type"},
-				Template: &sampleTestFormatStatus{},
+				Template: func() ErrorDescriptor { return &sampleTestFormatStatus{} },
 			}, FormatTemplate{
 				MustKeys: []string{"description"},
-				Template: &sampleTestFormatDescription{},
+				Template: func() ErrorDescriptor { return &sampleTestFormatDescription{} },
 			}),
 			input:    `{"status": "bad request", "description": "missing required field", "code": "251"}`,
 			expected: errTestResDescription,
@@ -60,13 +60,13 @@ func TestFormatSwitchParseJSON(t *testing.T) { //nolint:funlen
 			name: "No match defaults to unknown format conclusion",
 			selector: NewFormatSwitch(FormatTemplate{
 				MustKeys: []string{"code"},
-				Template: &sampleTestFormatCode{},
+				Template: func() ErrorDescriptor { return &sampleTestFormatCode{} },
 			}, FormatTemplate{
 				MustKeys: []string{"status"},
-				Template: &sampleTestFormatStatus{},
+				Template: func() ErrorDescriptor { return &sampleTestFormatStatus{} },
 			}, FormatTemplate{
 				MustKeys: []string{"description"},
-				Template: &sampleTestFormatDescription{},
+				Template: func() ErrorDescriptor { return &sampleTestFormatDescription{} },
 			}),
 			input:    `{}`,
 			expected: ErrUnknownResponseFormat,
