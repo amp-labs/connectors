@@ -32,7 +32,7 @@ func NewPluralStrings(list []string) PluralStrings {
 	return result
 }
 
-func (s PluralStrings) Plural() SingularStrings {
+func (s PluralStrings) Singular() SingularStrings {
 	result := make(SingularStrings, len(s))
 	for i, str := range s {
 		result[i] = str.Singular()

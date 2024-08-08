@@ -6,11 +6,24 @@ const (
 	CustomerJourneysTrack Provider = "customerJourneysTrack"
 )
 
-func init() {
+func init() { //nolint:funlen
 	SetInfo(CustomerDataPipelines, ProviderInfo{
-		AuthType: Basic,
-		BaseURL:  "https://cdp.customer.io/v1",
-		// DocsURL: https://customer.io/docs/api/cdp/#section/Authentication
+		DisplayName: "Customer.io Data Pipelines",
+		AuthType:    Basic,
+		BaseURL:     "https://cdp.customer.io/v1",
+		BasicOpts: &BasicAuthOpts{
+			DocsURL: "https://customer.io/docs/api/cdp/#section/Authentication",
+		},
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722349524/media/customerDataPipelines_1722349524.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722349458/media/customerDataPipelines_1722349458.svg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722349524/media/customerDataPipelines_1722349524.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722349482/media/customerDataPipelines_1722349482.svg",
+			},
+		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
@@ -26,8 +39,9 @@ func init() {
 	})
 
 	SetInfo(CustomerJourneysApp, ProviderInfo{
-		AuthType: ApiKey,
-		BaseURL:  "https://api.customer.io",
+		AuthType:    ApiKey,
+		DisplayName: "Customer.io Journeys App",
+		BaseURL:     "https://api.customer.io",
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Header,
 			Header: &ApiKeyOptsHeader{
@@ -35,6 +49,16 @@ func init() {
 				ValuePrefix: "Bearer ",
 			},
 			DocsURL: "https://customer.io/docs/api/app/#section/Authentication",
+		},
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722349524/media/customerDataPipelines_1722349524.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722349458/media/customerDataPipelines_1722349458.svg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722349524/media/customerDataPipelines_1722349524.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722349482/media/customerDataPipelines_1722349482.svg",
+			},
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -51,9 +75,22 @@ func init() {
 	})
 
 	SetInfo(CustomerJourneysTrack, ProviderInfo{
-		AuthType: Basic,
-		BaseURL:  "https://track.customer.io",
-		// DocsURL: https://customer.io/docs/api/track/#section/Authentication
+		DisplayName: "Customer.io Journeys Track",
+		AuthType:    Basic,
+		BaseURL:     "https://track.customer.io",
+		BasicOpts: &BasicAuthOpts{
+			DocsURL: "https://customer.io/docs/api/track/#section/Authentication",
+		},
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722349524/media/customerDataPipelines_1722349524.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722349458/media/customerDataPipelines_1722349458.svg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722349524/media/customerDataPipelines_1722349524.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722349482/media/customerDataPipelines_1722349482.svg",
+			},
+		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,

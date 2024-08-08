@@ -1,21 +1,19 @@
 package dynamicscrm
 
 import (
-	"encoding/json"
 	"fmt"
-	"net/http"
 
 	"github.com/amp-labs/connectors/common/interpreter"
 )
 
-func (*Connector) interpretJSONError(res *http.Response, body []byte) error { //nolint:cyclop
-	apiError := &CRMResponseError{}
-	if err := json.Unmarshal(body, &apiError); err != nil {
-		return fmt.Errorf("interpretJSONError: %w %w", interpreter.ErrUnmarshal, err)
-	}
-
-	return createError(interpreter.DefaultStatusCodeMappingToErr(res, body), apiError)
-}
+var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
+	[]interpreter.FormatTemplate{
+		{
+			MustKeys: nil,
+			Template: &CRMResponseError{},
+		},
+	}...,
+)
 
 type CRMResponseError struct {
 	Err CRMError `json:"error"`
@@ -33,9 +31,9 @@ type EnhancedCRMError struct {
 	InnerMessage string `json:"@Microsoft.PowerApps.CDS.InnerError.Message"` // nolint:tagliatelle
 }
 
-func createError(base error, response *CRMResponseError) error {
-	if len(response.Err.Message) > 0 {
-		return fmt.Errorf("%w: %s", base, response.Err.Message)
+func (r CRMResponseError) CombineErr(base error) error {
+	if len(r.Err.Message) > 0 {
+		return fmt.Errorf("%w: %s", base, r.Err.Message)
 	}
 
 	return base

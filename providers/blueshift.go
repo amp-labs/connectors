@@ -8,8 +8,19 @@ const (
 func init() {
 	// Blueshift configuration
 	SetInfo(Blueshift, ProviderInfo{
-		AuthType: Basic,
-		BaseURL:  "https://api.getblueshift.com/api",
+		DisplayName: "Blueshift",
+		AuthType:    Basic,
+		BaseURL:     "https://api.getblueshift.com/api",
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722324992/media/blueshift_1722324992.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722325053/media/blueshift_1722325053.svg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722324964/media/blueshift_1722324964.png",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722325021/media/blueshift_1722325020.svg",
+			},
+		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
@@ -17,7 +28,7 @@ func init() {
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -27,8 +38,19 @@ func init() {
 
 	// BlueshiftEU connfiguration
 	SetInfo(BlueshiftEU, ProviderInfo{
-		AuthType: Basic,
-		BaseURL:  "https://api.eu.getblueshift.com/api",
+		DisplayName: "Blueshift (EU)",
+		AuthType:    Basic,
+		BaseURL:     "https://api.eu.getblueshift.com/api",
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722324992/media/blueshift_1722324992.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722325053/media/blueshift_1722325053.svg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722324964/media/blueshift_1722324964.png",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722325021/media/blueshift_1722325020.svg",
+			},
+		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
@@ -36,7 +58,7 @@ func init() {
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,

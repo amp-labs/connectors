@@ -1,0 +1,190 @@
+{
+  "success": true,
+  "total": 42,
+  "page_info": {
+    "start_cursor": "WyIwMDAwMDAwMC0wMDAwLTAwMDMtMDAwMC0wMDAwMDAwMDhlOTciXQ==",
+    "end_cursor": "WyIwMDAwMDAwMC0wMDAwLTAwMDMtMDAwMS0wMDAwMDAwMDhlOTciXQ==",
+    "has_previous_page": true,
+    "has_next_page": true
+  },
+  "data": [
+    {
+      "is_delete_protected": false,
+      "id": "00000000-0000-0003-0000-000000008e97",
+      "is_deleted": false,
+      "modified": "2023-03-09 09:33:51.509445+00:00",
+      "created": "2018-09-05 11:33:15.041204+00:00",
+      "owner": "https://eu-central.api.pipelinersales.com/api/v100/rest/spaces/fr_Myself/entities/Clients/00000000-0000-0000-0000-000000008e97",
+      "entity": 3,
+      "entity_api_name": null,
+      "name": "Lang_DefaultProfileAllUsers",
+      "owner_id": "00000000-0000-0000-0000-000000008e97",
+      "settings": {
+        "role": {
+          "show_my_items": true,
+          "show_my_shared_items": true,
+          "show_managing_unit_items": true
+        },
+        "view": {
+          "sort_by": "992f3eee-2bb5-0118-a9f4-2f20a9e9c908",
+          "group_by": "Account",
+          "sort_order": "Asc",
+          "grid_columns": [
+            {
+              "width": 1,
+              "frozen": true,
+              "field_id": "992f3eee-2bb5-0118-a9f4-2f20a9e9c908"
+            },
+            {
+              "width": 1,
+              "field_id": "3cb37831-f5ec-0346-7320-ce274046c16a"
+            },
+            {
+              "width": 1,
+              "field_id": "02626789-b040-011d-2257-c76ca967c633"
+            },
+            {
+              "width": 1,
+              "field_id": "80037c9c-d34a-0a26-88c7-b2c146634db1"
+            },
+            {
+              "width": 1,
+              "field_id": "6cd0d888-60cd-0917-ad07-7a2f23dfbea0"
+            },
+            {
+              "width": 1,
+              "field_id": "7fe1cd99-9698-091f-7a8f-8930ccb559d4"
+            }
+          ],
+          "show_card_value": true,
+          "show_card_labels": false,
+          "show_card_fitness": false,
+          "show_card_ranking": false
+        },
+        "filter": {
+          "operator": "And",
+          "is_custom": false,
+          "is_enabled": false,
+          "filter_main_box": {
+            "id": "5a465038-93d5-4250-a95a-78f783071f25",
+            "entity": "LeadOppty",
+            "filter_fields": []
+          },
+          "filter_sibling_boxes": []
+        },
+        "target": {
+          "target_source": "All",
+          "target_period_compare": {
+            "period": "PreviousYear",
+            "period_custom_to": null,
+            "period_custom_from": null
+          },
+          "target_period_current": {
+            "period": "YearCurrent",
+            "period_custom_to": null,
+            "period_custom_from": null
+          },
+          "target_value_field_id": "6da56d81-0d6b-0c3c-301e-6dded539d3b9"
+        },
+        "sales_pipeline": [
+          "98baf008-2c96-0831-cb6d-0fa7a5660225"
+        ]
+      },
+      "share_mode": 1,
+      "use_lang": true,
+      "revision": 1242,
+      "pipelines": [
+        "98baf008-2c96-0831-cb6d-0fa7a5660225"
+      ]
+    },
+    {
+      "is_delete_protected": false,
+      "id": "00000000-0000-0003-0001-000000008e97",
+      "is_deleted": false,
+      "modified": "2023-03-09 09:33:51.509445+00:00",
+      "created": "2018-09-05 11:33:15.057711+00:00",
+      "owner": "https://eu-central.api.pipelinersales.com/api/v100/rest/spaces/fr_Myself/entities/Clients/00000000-0000-0000-0000-000000008e97",
+      "entity": 3,
+      "entity_api_name": null,
+      "name": "Lang_DefaultProfileMy",
+      "owner_id": "00000000-0000-0000-0000-000000008e97",
+      "settings": {
+        "role": {
+          "show_my_items": true,
+          "show_my_shared_items": false,
+          "show_managing_unit_items": false
+        },
+        "view": {
+          "sort_by": "992f3eee-2bb5-0118-a9f4-2f20a9e9c908",
+          "group_by": "Account",
+          "sort_order": "Asc",
+          "grid_columns": [
+            {
+              "width": 1,
+              "frozen": true,
+              "field_id": "992f3eee-2bb5-0118-a9f4-2f20a9e9c908"
+            },
+            {
+              "width": 1,
+              "field_id": "3cb37831-f5ec-0346-7320-ce274046c16a"
+            },
+            {
+              "width": 1,
+              "field_id": "02626789-b040-011d-2257-c76ca967c633"
+            },
+            {
+              "width": 1,
+              "field_id": "80037c9c-d34a-0a26-88c7-b2c146634db1"
+            },
+            {
+              "width": 1,
+              "field_id": "6cd0d888-60cd-0917-ad07-7a2f23dfbea0"
+            },
+            {
+              "width": 1,
+              "field_id": "7fe1cd99-9698-091f-7a8f-8930ccb559d4"
+            }
+          ],
+          "show_card_value": true,
+          "show_card_labels": false,
+          "show_card_fitness": false,
+          "show_card_ranking": false
+        },
+        "filter": {
+          "operator": "And",
+          "is_custom": false,
+          "is_enabled": false,
+          "filter_main_box": {
+            "id": "ece55745-2a91-435e-bd2a-d05eb02473cb",
+            "entity": "LeadOppty",
+            "filter_fields": []
+          },
+          "filter_sibling_boxes": []
+        },
+        "target": {
+          "target_source": "All",
+          "target_period_compare": {
+            "period": "PreviousYear",
+            "period_custom_to": null,
+            "period_custom_from": null
+          },
+          "target_period_current": {
+            "period": "YearCurrent",
+            "period_custom_to": null,
+            "period_custom_from": null
+          },
+          "target_value_field_id": "6da56d81-0d6b-0c3c-301e-6dded539d3b9"
+        },
+        "sales_pipeline": [
+          "98baf008-2c96-0831-cb6d-0fa7a5660225"
+        ]
+      },
+      "share_mode": 1,
+      "use_lang": true,
+      "revision": 1242,
+      "pipelines": [
+        "98baf008-2c96-0831-cb6d-0fa7a5660225"
+      ]
+    }
+  ]
+}

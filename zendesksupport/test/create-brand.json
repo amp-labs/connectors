@@ -1,0 +1,22 @@
+{
+  "brand": {
+    "url": "https://d3v-ampersand.zendesk.com/api/v2/brands/31207417638931.json",
+    "id": 31207417638931,
+    "name": "Nike",
+    "brand_url": "https://nkn2.zendesk.com",
+    "subdomain": "nkn2",
+    "host_mapping": null,
+    "has_help_center": false,
+    "help_center_state": "disabled",
+    "active": true,
+    "default": false,
+    "is_deleted": false,
+    "logo": null,
+    "ticket_form_ids": [
+      26363596576915
+    ],
+    "signature_template": null,
+    "created_at": "2024-07-10T17:14:09Z",
+    "updated_at": "2024-07-10T17:14:09Z"
+  }
+}
