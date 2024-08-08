@@ -15,12 +15,13 @@ import (
 	"os"
 	"os/signal"
 	"strings"
-	"time"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/paramsbuilder"
+	"github.com/amp-labs/connectors/common/scanning"
+	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/connector"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/utils"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
 )
@@ -55,68 +56,68 @@ var (
 // Main (no changes needed)
 // ==============================
 
-var registry = utils.NewCredentialsRegistry()
+var registry = scanning.NewRegistry()
 
-var readers = []utils.Reader{
-	&utils.JSONReader{
+var readers = []scanning.Reader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['clientId']",
-		CredKey:  "ClientId",
+		KeyName:  "ClientId",
 	},
-	&utils.JSONReader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['clientSecret']",
-		CredKey:  "ClientSecret",
+		KeyName:  "ClientSecret",
 	},
-	&utils.JSONReader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['scopes']",
-		CredKey:  "Scopes",
+		KeyName:  "Scopes",
 	},
-	&utils.JSONReader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['provider']",
-		CredKey:  "Provider",
+		KeyName:  "Provider",
 	},
-	&utils.JSONReader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['substitutions']",
-		CredKey:  "Substitutions",
+		KeyName:  "Substitutions",
 	},
-	&utils.JSONReader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['accessToken']",
-		CredKey:  "AccessToken",
+		KeyName:  "AccessToken",
 	},
-	&utils.JSONReader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['refreshToken']",
-		CredKey:  "RefreshToken",
+		KeyName:  "RefreshToken",
 	},
-	&utils.JSONReader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['expiry']",
-		CredKey:  "Expiry",
+		KeyName:  "Expiry",
 	},
-	&utils.JSONReader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['expiryFormat']",
-		CredKey:  "ExpiryFormat",
+		KeyName:  "ExpiryFormat",
 	},
-	&utils.JSONReader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['apiKey']",
-		CredKey:  "ApiKey",
+		KeyName:  "ApiKey",
 	},
-	&utils.JSONReader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['userName']",
-		CredKey:  "UserName",
+		KeyName:  "UserName",
 	},
-	&utils.JSONReader{
+	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['password']",
-		CredKey:  "Password",
+		KeyName:  "Password",
 	},
 }
 
@@ -137,13 +138,9 @@ func main() {
 		slog.Warn("no substitutions, ensure that the provider info doesn't have any {{variables}}")
 	}
 
-	// Cast the substitutions to a map[string]string
-	substitutionsMap := make(map[string]string)
-	for key, val := range substitutions {
-		substitutionsMap[key] = val.MustString()
-	}
+	catalogVariables := paramsbuilder.NewCatalogVariables(substitutions)
 
-	info, err := providers.ReadInfo(provider, &substitutionsMap)
+	info, err := providers.ReadInfo(provider, catalogVariables...)
 	if err != nil {
 		log.Fatalf("Error reading provider info: %v", err)
 	}
@@ -164,54 +161,54 @@ func main() {
 
 		switch info.Oauth2Opts.GrantType {
 		case providers.ClientCredentials:
-			mainOAuth2ClientCreds(ctx, provider, substitutionsMap)
+			mainOAuth2ClientCreds(ctx, provider, catalogVariables)
 		case providers.AuthorizationCode:
-			mainOAuth2AuthCode(ctx, provider, substitutionsMap)
+			mainOAuth2AuthCode(ctx, provider, catalogVariables)
 		case providers.Password:
 			// de facto, password grant acts as client credentials,
 			// even so access and refresh tokens were acquired differently.
-			mainOAuth2ClientCreds(ctx, provider, substitutionsMap)
+			mainOAuth2ClientCreds(ctx, provider, catalogVariables)
 		default:
 			log.Fatalf("Unsupported OAuth2 grant type: %s", info.Oauth2Opts.GrantType)
 		}
 	case providers.ApiKey:
-		mainApiKey(ctx, provider, substitutionsMap)
+		mainApiKey(ctx, provider, catalogVariables)
 	case providers.Basic:
-		mainBasic(ctx, provider, substitutionsMap)
+		mainBasic(ctx, provider, catalogVariables)
 	default:
 		log.Fatalf("Unsupported auth type: %s", info.AuthType)
 	}
 }
 
-func mainOAuth2ClientCreds(ctx context.Context, provider string, substitutions map[string]string) {
+func mainOAuth2ClientCreds(ctx context.Context, provider string, catalogVariables []paramsbuilder.CatalogVariable) {
 	params := createClientAuthParams(provider)
 	tokens := getTokensFromRegistry()
-	proxy := buildOAuth2AuthCodeProxy(ctx, provider, params.Scopes, params.ID, params.Secret, substitutions, tokens)
+	proxy := buildOAuth2AuthCodeProxy(ctx, provider, params.Scopes, params.ID, params.Secret, catalogVariables, tokens)
 	startProxy(ctx, proxy, DefaultPort)
 }
 
-func mainOAuth2AuthCode(ctx context.Context, provider string, substitutions map[string]string) {
+func mainOAuth2AuthCode(ctx context.Context, provider string, catalogVariables []paramsbuilder.CatalogVariable) {
 	params := createClientAuthParams(provider)
 	tokens := getTokensFromRegistry()
-	proxy := buildOAuth2AuthCodeProxy(ctx, provider, params.Scopes, params.ID, params.Secret, substitutions, tokens)
+	proxy := buildOAuth2AuthCodeProxy(ctx, provider, params.Scopes, params.ID, params.Secret, catalogVariables, tokens)
 	startProxy(ctx, proxy, DefaultPort)
 }
 
-func mainApiKey(ctx context.Context, provider string, substitutions map[string]string) {
+func mainApiKey(ctx context.Context, provider string, catalogVariables []paramsbuilder.CatalogVariable) {
 	apiKey := registry.MustString("ApiKey")
 	if apiKey == "" {
 		_, _ = fmt.Fprintln(os.Stderr, "api key from registry is empty")
 		os.Exit(1)
 	}
 
-	proxy := buildApiKeyProxy(ctx, provider, substitutions, apiKey)
+	proxy := buildApiKeyProxy(ctx, provider, catalogVariables, apiKey)
 	startProxy(ctx, proxy, DefaultPort)
 }
 
-func mainBasic(ctx context.Context, provider string, substitutions map[string]string) {
+func mainBasic(ctx context.Context, provider string, catalogVariables []paramsbuilder.CatalogVariable) {
 	params := createBasicParams()
 
-	proxy := buildBasicAuthProxy(ctx, provider, substitutions, params.User, params.Pass)
+	proxy := buildBasicAuthProxy(ctx, provider, catalogVariables, params.User, params.Pass)
 	startProxy(ctx, proxy, DefaultPort)
 }
 
@@ -255,59 +252,13 @@ func createClientAuthParams(provider string) *ClientAuthParams {
 	}
 }
 
-// Some connectors may implement Refresh tokens, when it happens expiry must be provided alongside.
-// Library shouldn't attempt to refresh tokens if API doesn't support `refresh_token` grant type.
 func getTokensFromRegistry() *oauth2.Token {
-	accessToken := registry.MustString("AccessToken")
-	refreshToken, err := registry.GetString("RefreshToken")
-	if err != nil {
-		// we are working without refresh token
-		return &oauth2.Token{
-			AccessToken: accessToken,
-		}
-	}
-
-	// refresh token should be specified with expiry
-	atExpiry := registry.MustString("Expiry")
-	atExpiryTimeFormat := registry.MustString("ExpiryFormat")
-	expiry := parseAccessTokenExpiry(atExpiry, atExpiryTimeFormat)
-
-	return &oauth2.Token{
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
-		Expiry:       expiry, // required: will trigger reuse of refresh token
-	}
-}
-
-func parseAccessTokenExpiry(expiryStr, timeFormat string) time.Time {
-	formatEnums := map[string]string{
-		"Layout":      time.Layout,
-		"ANSIC":       time.ANSIC,
-		"UnixDate":    time.UnixDate,
-		"RubyDate":    time.RubyDate,
-		"RFC822":      time.RFC822,
-		"RFC822Z":     time.RFC822Z,
-		"RFC850":      time.RFC850,
-		"RFC1123":     time.RFC1123,
-		"RFC1123Z":    time.RFC1123Z,
-		"RFC3339":     time.RFC3339,
-		"RFC3339Nano": time.RFC3339Nano,
-		"Kitchen":     time.Kitchen,
-		"DateOnly":    time.DateOnly,
-	}
-
-	format, found := formatEnums[timeFormat]
-	if !found {
-		// specific format is specified instead of enum
-		format = timeFormat
-	}
-
-	expiry, err := time.Parse(format, expiryStr)
+	reader, err := credscanning.NewJSONProviderCredentials(DefaultCredsFile, true, false)
 	if err != nil {
 		panic(err)
 	}
 
-	return expiry
+	return reader.GetOauthToken()
 }
 
 func validateRequiredOAuth2Flags(provider, clientId, clientSecret string) {
@@ -363,8 +314,8 @@ func startProxy(ctx context.Context, proxy *Proxy, port int) {
 	}
 }
 
-func buildOAuth2ClientCredentialsProxy(ctx context.Context, provider string, scopes []string, clientId, clientSecret string, substitutions map[string]string) *Proxy {
-	providerInfo := getProviderConfig(provider, substitutions)
+func buildOAuth2ClientCredentialsProxy(ctx context.Context, provider string, scopes []string, clientId, clientSecret string, catalogVariables []paramsbuilder.CatalogVariable) *Proxy {
+	providerInfo := getProviderConfig(provider, catalogVariables)
 	cfg := configureOAuthClientCredentials(clientId, clientSecret, scopes, providerInfo)
 	httpClient := setupOAuth2ClientCredentialsHttpClient(ctx, providerInfo, cfg)
 
@@ -376,8 +327,8 @@ func buildOAuth2ClientCredentialsProxy(ctx context.Context, provider string, sco
 	return newProxy(target, httpClient)
 }
 
-func buildApiKeyProxy(ctx context.Context, provider string, substitutions map[string]string, apiKey string) *Proxy {
-	providerInfo := getProviderConfig(provider, substitutions)
+func buildApiKeyProxy(ctx context.Context, provider string, catalogVariables []paramsbuilder.CatalogVariable, apiKey string) *Proxy {
+	providerInfo := getProviderConfig(provider, catalogVariables)
 	httpClient := setupApiKeyHttpClient(ctx, providerInfo, apiKey)
 
 	target, err := url.Parse(providerInfo.BaseURL)
@@ -388,8 +339,8 @@ func buildApiKeyProxy(ctx context.Context, provider string, substitutions map[st
 	return newProxy(target, httpClient)
 }
 
-func buildBasicAuthProxy(ctx context.Context, provider string, substitutions map[string]string, user, pass string) *Proxy {
-	providerInfo := getProviderConfig(provider, substitutions)
+func buildBasicAuthProxy(ctx context.Context, provider string, catalogVariables []paramsbuilder.CatalogVariable, user, pass string) *Proxy {
+	providerInfo := getProviderConfig(provider, catalogVariables)
 	httpClient := setupBasicAuthHttpClient(ctx, providerInfo, user, pass)
 
 	target, err := url.Parse(providerInfo.BaseURL)
@@ -400,8 +351,8 @@ func buildBasicAuthProxy(ctx context.Context, provider string, substitutions map
 	return newProxy(target, httpClient)
 }
 
-func buildOAuth2AuthCodeProxy(ctx context.Context, provider string, scopes []string, clientId, clientSecret string, substitutions map[string]string, tokens *oauth2.Token) *Proxy {
-	providerInfo := getProviderConfig(provider, substitutions)
+func buildOAuth2AuthCodeProxy(ctx context.Context, provider string, scopes []string, clientId, clientSecret string, catalogVariables []paramsbuilder.CatalogVariable, tokens *oauth2.Token) *Proxy {
+	providerInfo := getProviderConfig(provider, catalogVariables)
 	cfg := configureOAuthAuthCode(clientId, clientSecret, scopes, providerInfo)
 	httpClient := setupOAuth2AuthCodeHttpClient(ctx, providerInfo, cfg, tokens)
 
@@ -413,8 +364,8 @@ func buildOAuth2AuthCodeProxy(ctx context.Context, provider string, scopes []str
 	return newProxy(target, httpClient)
 }
 
-func getProviderConfig(provider string, substitutions map[string]string) *providers.ProviderInfo {
-	config, err := providers.ReadInfo(provider, &substitutions)
+func getProviderConfig(provider string, catalogVariables []paramsbuilder.CatalogVariable) *providers.ProviderInfo {
+	config, err := providers.ReadInfo(provider, catalogVariables...)
 	if err != nil {
 		panic(fmt.Errorf("%w: %s", err, provider))
 	}
@@ -462,8 +413,10 @@ func configureOAuthAuthCode(clientId, clientSecret string, scopes []string, prov
 
 func setupOAuth2ClientCredentialsHttpClient(ctx context.Context, prov *providers.ProviderInfo, cfg *clientcredentials.Config) common.AuthenticatedHTTPClient {
 	c, err := prov.NewClient(ctx, &providers.NewClientParams{
-		Debug:             *debug,
-		OAuth2ClientCreds: cfg,
+		Debug: *debug,
+		OAuth2ClientCreds: &providers.OAuth2ClientCredentialsParams{
+			Config: cfg,
+		},
 	})
 	if err != nil {
 		panic(err)

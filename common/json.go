@@ -56,7 +56,12 @@ func (j *JSONHTTPClient) Get(ctx context.Context, url string, headers ...Header)
 func (j *JSONHTTPClient) Post(ctx context.Context,
 	url string, reqBody any, headers ...Header,
 ) (*JSONHTTPResponse, error) {
-	res, body, err := j.HTTPClient.Post(ctx, url, reqBody, addAcceptJSONHeader(headers)...) //nolint:bodyclose
+	data, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, fmt.Errorf("request body is not valid JSON, body is %v:\n%w", reqBody, err)
+	}
+
+	res, body, err := j.HTTPClient.Post(ctx, url, data, addAcceptJSONHeader(headers)...) //nolint:bodyclose
 	if err != nil {
 		return nil, j.ErrorPostProcessor.handleError(err)
 	}
@@ -99,7 +104,12 @@ func (j *JSONHTTPClient) Delete(ctx context.Context, url string, headers ...Head
 func parseJSONResponse(res *http.Response, body []byte) (*JSONHTTPResponse, error) {
 	// empty response body should not be parsed as JSON since it will cause ajson to err
 	if len(body) == 0 {
-		return nil, nil //nolint:nilnil
+		return &JSONHTTPResponse{
+			bodyBytes: body,
+			Code:      res.StatusCode,
+			Headers:   res.Header,
+			Body:      nil,
+		}, nil
 	}
 	// Ensure the response is JSON
 	ct := res.Header.Get("Content-Type")

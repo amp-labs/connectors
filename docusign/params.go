@@ -10,24 +10,17 @@ import (
 	"golang.org/x/oauth2"
 )
 
-type Option func(params *parameters)
+type Option = func(params *parameters)
 
 type parameters struct {
 	paramsbuilder.Client
-}
-
-func (p parameters) FromOptions(opts ...Option) (*parameters, error) {
-	params := &p
-	for _, opt := range opts {
-		opt(params)
-	}
-
-	return params, params.ValidateParams()
+	paramsbuilder.Metadata
 }
 
 func (p parameters) ValidateParams() error {
 	return errors.Join(
 		p.Client.ValidateParams(),
+		p.Metadata.ValidateParams(),
 	)
 }
 
@@ -36,12 +29,19 @@ func WithClient(ctx context.Context, client *http.Client,
 	config *oauth2.Config, token *oauth2.Token, opts ...common.OAuthOption,
 ) Option {
 	return func(params *parameters) {
-		params.WithClient(ctx, client, config, token, opts...)
+		params.WithOauthClient(ctx, client, config, token, opts...)
 	}
 }
 
 func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
 	return func(params *parameters) {
 		params.WithAuthenticatedClient(client)
+	}
+}
+
+// WithMetadata sets authentication metadata expected by connector.
+func WithMetadata(metadata map[string]string) Option {
+	return func(params *parameters) {
+		params.WithMetadata(metadata, requiredMetadataFields)
 	}
 }

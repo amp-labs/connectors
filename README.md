@@ -42,19 +42,16 @@ To add a new basic connector that allows proxying through the ampersand platform
 
 ### Initialization
 
-**Note**: If your provider requires variables to be replaced in the catalog (providers.yaml), use the `WithCatalogSubstitutions` option to replace placeholders with actual values. 
-If you don't, the provider info will be incomplete and the connector will not work. 
+**Note**: If your provider requires variables to be replaced in the catalog (providers.yaml), there is a defined list of options that will replace placeholders with actual values. 
+Error message will indicate what options are missing. 
 
-For example, a provider may use `{{workspace}}` in an option (maybe in the base URL) which needs to be replaced with an actual customer instance name. In that case, you would initialize the connector like this:
+For example, a provider may use `{{.workspace}}` in the base URL which needs to be replaced with an actual customer instance name. In that case, you would initialize the connector like this:
 
 ```go
 conn, err := connector.NewConnector(
     providers.SomeProvider,
     connector.WithClient(context.Background(), http.DefaultClient, cfg, tok),
-    
-    // WithCatalogSubstitutions allows you to replace placeholders in the catalog (providers.yaml) with actual values.
-    connector.WithCatalogSubstitutions(map[string]string{
-		"workspace": "customer-instance-ref",
-	}),
+    connector.WithWorkspace(Workspace), // {{.workspace}}
 )
 ```
+This will **automatically** replace workspace catalog variable with an actual value that you have specified in the option.

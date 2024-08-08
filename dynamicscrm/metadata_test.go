@@ -1,204 +1,135 @@
 package dynamicscrm
 
 import (
-	"context"
-	"errors"
 	"net/http"
 	"net/http/httptest"
-	"reflect"
 	"strings"
 	"testing"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
-	"github.com/go-test/deep"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
+	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
 func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
-	fakeServerResp := mockutils.DataFromFile(t, "metadata.xml")
+	responseContactsSchema := testutils.DataFromFile(t, "contacts-schema.json")
+	// Attributes file is a shorter form of real Microsoft server response.
+	responseContactsAttributes := testutils.DataFromFile(t, "contacts-attributes.json")
 
-	tests := []struct {
-		name                string
-		input               []string
-		server              *httptest.Server
-		connector           Connector
-		expected            *common.ListObjectMetadataResult
-		expectedFieldsCount map[string]int // used instead of `expected` when response result is too big
-		expectedErrs        []error
-	}{
+	tests := []testroutines.Metadata{
 		{
-			name:  "At least one object name must be queried",
-			input: nil,
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusTeapot)
-			})),
-			expectedErrs: []error{common.ErrMissingObjects},
+			Name:         "At least one object name must be queried",
+			Input:        nil,
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
-			name:  "Mime response header expected",
-			input: []string{"msfp_surveyinvite"},
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusTeapot)
-			})),
-			expectedErrs: []error{interpreter.ErrMissingContentType},
+			Name:         "Mime response header expected",
+			Input:        []string{"accounts"},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{interpreter.ErrMissingContentType},
 		},
 		{
-			name:  "Missing XML response on status OK",
-			input: []string{"msfp_surveyinvite"},
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/xml")
+			Name:  "Schema endpoint is not available for object",
+			Input: []string{"butterflies"},
+			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
-				mockutils.WriteBody(w, "")
+				_, _ = w.Write([]byte{})
 			})),
-			expectedErrs: []error{common.ErrNotXML},
+			ExpectedErrs: []error{ErrObjectNotFound},
 		},
 		{
-			name:  "Server response without CRM Schema",
-			input: []string{"msfp_surveyinvite"},
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/xml")
+			Name:  "Attributes endpoint is not available for object",
+			Input: []string{"butterflies"},
+			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
-				mockutils.WriteBody(w, `
-				<?xml version="1.0" encoding="utf-8"?>
-				<edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx"></edmx:Edmx>`)
+				switch path := r.URL.Path; {
+				case strings.HasSuffix(path, "EntityDefinitions(LogicalName='butterfly')"):
+					_, _ = w.Write(responseContactsSchema)
+				default:
+					_, _ = w.Write([]byte{})
+				}
 			})),
-			expectedErrs: []error{ErrMissingSchema},
+			ExpectedErrs: []error{ErrObjectNotFound},
 		},
 		{
-			name:  "Object name cannot be found from server response",
-			input: []string{"msfp_surveyinvite"},
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/xml")
+			Name:  "Object doesn't have attributes",
+			Input: []string{"accounts"},
+			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
-				_, _ = w.Write(fakeServerResp)
+				switch path := r.URL.Path; {
+				case strings.HasSuffix(path, "EntityDefinitions(LogicalName='account')"):
+					_, _ = w.Write(responseContactsSchema)
+				case strings.HasSuffix(path, "EntityDefinitions(LogicalName='account')/Attributes"):
+					mockutils.WriteBody(w, `{"value":[]}`)
+				default:
+					_, _ = w.Write([]byte{})
+				}
 			})),
-			expectedErrs: []error{ErrObjectNotFound, errors.New("unknown entity msfp_surveyinvite")}, // nolint:goerr113
+			ExpectedErrs: []error{ErrObjectMissingAttributes},
 		},
 		{
-			name:  "Correctly list metadata for account leads and invite contact",
-			input: []string{"accountleads", "adx_invitation_invitecontacts"},
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/xml")
+			Name:  "Correctly list metadata for account leads and invite contact",
+			Input: []string{"contacts"},
+			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
-				_, _ = w.Write(fakeServerResp)
+				// server will be called 2 times
+				switch path := r.URL.Path; {
+				case strings.HasSuffix(path, "EntityDefinitions(LogicalName='contact')"):
+					_, _ = w.Write(responseContactsSchema)
+				case strings.HasSuffix(path, "EntityDefinitions(LogicalName='contact')/Attributes"):
+					_, _ = w.Write(responseContactsAttributes)
+				default:
+					_, _ = w.Write([]byte{})
+				}
 			})),
-			expected: &common.ListObjectMetadataResult{
+			Comparator: func(baseURL string, actual, expected *common.ListObjectMetadataResult) bool {
+				return mockutils.MetadataResultComparator.SubsetFields(actual, expected)
+			},
+			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
-					"accountleads": {
-						DisplayName: "accountleads",
+					"contacts": {
+						DisplayName: "contacts",
 						FieldsMap: map[string]string{
-							"accountid":                 "accountid",
-							"accountleadid":             "accountleadid",
-							"importsequencenumber":      "importsequencenumber",
-							"leadid":                    "leadid",
-							"name":                      "name",
-							"overriddencreatedon":       "overriddencreatedon",
-							"timezoneruleversionnumber": "timezoneruleversionnumber",
-							"utcconversiontimezonecode": "utcconversiontimezonecode",
-							"versionnumber":             "versionnumber",
-						},
-					},
-					"adx_invitation_invitecontacts": {
-						DisplayName: "adx_invitation_invitecontacts",
-						FieldsMap: map[string]string{
-							"adx_invitation_invitecontactsid": "adx_invitation_invitecontactsid",
-							"adx_invitationid":                "adx_invitationid",
-							"contactid":                       "contactid",
-							"versionnumber":                   "versionnumber",
+							// nice display names
+							"adx_publicprofilecopy":    "Public Profile Copy",
+							"adx_identity_newpassword": "New Password Input",
+							"department":               "Department",
+							"shippingmethodcode":       "Shipping Method",
+							"lastname":                 "Last Name",
+							// schema name was used for display
+							"leadsourcecodename": "LeadSourceCodeName",
+							// underscore prefixed fields
+							"_accountid_value": "Account",
+							"_createdby_value": "Created By",
 						},
 					},
 				},
 				Errors: nil,
 			},
-			expectedErrs: nil,
-		},
-		{
-			// In total phonecall will have 65 fields, where
-			// phonecall 		(has 7 fields) and inherits from
-			// activitypointer 	(has 58 fields), which in turn inherits from
-			// crmbaseentity 	(has 0 fields)
-			name:  "Correctly list metadata for phone calls including inherited fields",
-			input: []string{"phonecall", "activitypointer", "crmbaseentity"},
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/xml")
-				w.WriteHeader(http.StatusOK)
-				_, _ = w.Write(fakeServerResp)
-			})),
-			expectedFieldsCount: map[string]int{
-				"phonecall":       65,
-				"activitypointer": 58,
-				"crmbaseentity":   0,
-			},
-			expectedErrs: nil,
+			ExpectedErrs: nil,
 		},
 	}
 
 	for _, tt := range tests {
 		// nolint:varnamelen
 		tt := tt // rebind, omit loop side effects for parallel goroutine
-		t.Run(tt.name, func(t *testing.T) {
+		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			defer tt.server.Close()
-
-			connector, err := NewConnector(
-				WithAuthenticatedClient(http.DefaultClient),
-				WithWorkspace("test-workspace"),
-			)
-			if err != nil {
-				t.Fatalf("%s: error in test while constructing connector %v", tt.name, err)
-			}
-
-			// for testing we want to redirect calls to our mock server
-			connector.setBaseURL(tt.server.URL)
-
-			// start of tests
-			output, err := connector.ListObjectMetadata(context.Background(), tt.input)
-			if err != nil {
-				if len(tt.expectedErrs) == 0 {
-					t.Fatalf("%s: expected no errors, got: (%v)", tt.name, err)
-				}
-			} else {
-				// check that missing error is what is expected
-				if len(tt.expectedErrs) != 0 {
-					t.Fatalf("%s: expected errors (%v), but got nothing", tt.name, tt.expectedErrs)
-				}
-			}
-
-			// check every error
-			for _, expectedErr := range tt.expectedErrs {
-				if !errors.Is(err, expectedErr) && !strings.Contains(err.Error(), expectedErr.Error()) {
-					t.Fatalf("%s: expected Error: (%v), got: (%v)", tt.name, expectedErr, err)
-				}
-			}
-
-			// compare desired output
-			// there are 2 modes we can compare, by exact field values or matching quantity
-			if len(tt.expectedFieldsCount) != 0 {
-				// we are comparing if number of fields match under ListObjectMetadataResult.Result
-				for entityName, count := range tt.expectedFieldsCount {
-					entity, ok := output.Result[entityName]
-					if !ok {
-						t.Fatalf("%s: expected entity was missing: (%v)", tt.name, entityName)
-					}
-
-					got := len(entity.FieldsMap)
-					if got != count {
-						t.Fatalf("%s: expected entity '%v' to have (%v) fields got: (%v)",
-							tt.name, entityName, count, got)
-					}
-				}
-			} else { // nolint:gocritic
-				// usual comparison of ListObjectMetadataResult
-				if !reflect.DeepEqual(output, tt.expected) {
-					diff := deep.Equal(output, tt.expected)
-					t.Fatalf("%s:, \nexpected: (%v), \ngot: (%v), \ndiff: (%v)",
-						tt.name, tt.expected, output, diff)
-				}
-			}
+			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
+				return constructTestConnector(tt.Server.URL)
+			})
 		})
 	}
 }

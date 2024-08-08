@@ -1,0 +1,27 @@
+{
+  "success": true,
+  "data": {
+    "is_delete_protected": false,
+    "id": "0190978c-d6d1-de35-3f6d-7cf0a0e264db",
+    "is_deleted": false,
+    "modified": "2024-07-09 12:52:46.570569+00:00",
+    "created": "2024-07-09 12:51:48.050108+00:00",
+    "account": null,
+    "contact": "https://eu-central.api.pipelinersales.com/api/v100/rest/spaces/fr_Myself/entities/Contacts/0a31d4fd-1289-4326-ad1a-7dfa40c3ab48",
+    "custom_entity": null,
+    "lead": null,
+    "oppty": null,
+    "owner": "https://eu-central.api.pipelinersales.com/api/v100/rest/spaces/fr_Myself/entities/Clients/00000000-0000-0000-0000-000000008e97",
+    "project": null,
+    "quote": null,
+    "account_id": null,
+    "contact_id": "0a31d4fd-1289-4326-ad1a-7dfa40c3ab48",
+    "custom_entity_id": null,
+    "lead_oppty_id": null,
+    "note": "Task due 19th of July",
+    "owner_id": "00000000-0000-0000-0000-000000008e97",
+    "project_id": null,
+    "quote_id": null,
+    "revision": 1794
+  }
+}

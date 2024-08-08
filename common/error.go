@@ -45,11 +45,6 @@ func PanicRecovery(wrapup func(cause error)) {
 	}
 }
 
-// ErrorDescriptor enhances base error with extra message.
-type ErrorDescriptor interface {
-	CombineErr(base error) error
-}
-
 type ErrorPostProcessor struct {
 	Process func(err error) error
 }

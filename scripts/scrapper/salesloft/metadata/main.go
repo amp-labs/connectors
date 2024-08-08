@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"log"
+	"log/slog"
 	"sort"
 	"strings"
 
@@ -37,7 +38,7 @@ func main() {
 		createSchemas()
 	}
 
-	log.Println("Completed.")
+	slog.Info("Completed.")
 }
 
 func createIndex() {
