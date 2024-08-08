@@ -10,7 +10,7 @@ var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
 	[]interpreter.FormatTemplate{
 		{
 			MustKeys: nil,
-			Template: &CRMResponseError{},
+			Template: func() interpreter.ErrorDescriptor { return &CRMResponseError{} },
 		},
 	}...,
 )
