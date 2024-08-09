@@ -42,6 +42,7 @@ func init() { // nolint:funlen
 		},
 	})
 
+	// BLOCKED: refresh token seems to be one-time use.
 	SetInfo(ZendeskChat, ProviderInfo{
 		DisplayName: "Zendesk Chat",
 		AuthType:    Oauth2,
