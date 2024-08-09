@@ -42,14 +42,19 @@ func init() { // nolint:funlen
 		},
 	})
 
+	// BLOCKED: refresh token seems to be one-time use.
 	SetInfo(ZendeskChat, ProviderInfo{
 		DisplayName: "Zendesk Chat",
 		AuthType:    Oauth2,
-		BaseURL:     "https://www.zopim.com",
+
+		// Reference docs
+		// https://developer.zendesk.com/documentation/live-chat/getting-started/auth/
+
+		BaseURL: "https://{{.workspace}}.zendesk.com/api/v2/chat",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   "https://www.zopim.com/oauth2/authorizations/new?subdomain={{.workspace}}",
-			TokenURL:                  "https://www.zopim.com/oauth2/token",
+			AuthURL:                   "https://{{.workspace}}.zendesk.com/oauth2/chat/authorizations/new",
+			TokenURL:                  "https://{{.workspace}}.zendesk.com/oauth2/chat/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: true,
 		},
