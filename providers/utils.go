@@ -2,14 +2,13 @@
 package providers
 
 import (
-	"bytes"
 	"context"
-	"encoding/gob"
 	"errors"
 	"fmt"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/handy"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/go-playground/validator"
 	"golang.org/x/oauth2"
@@ -72,7 +71,7 @@ func (c CustomCatalog) ReadCatalog() (CatalogType, error) {
 		return nil, err
 	}
 
-	catalogCopy, err := clone[CatalogType](catalogInstance)
+	catalogCopy, err := handy.Clone[CatalogType](catalogInstance)
 	if err != nil {
 		return nil, err
 	}
@@ -131,7 +130,7 @@ func (c CustomCatalog) ReadInfo(provider Provider, vars ...paramsbuilder.Catalog
 	}
 
 	// Clone before modifying
-	providerInfo, err := clone[ProviderInfo](pInfo)
+	providerInfo, err := handy.Clone[ProviderInfo](pInfo)
 	if err != nil {
 		return nil, err
 	}
@@ -414,22 +413,4 @@ func createApiKeyHTTPClient( //nolint:ireturn
 	}
 
 	return nil, fmt.Errorf("%w: unsupported api key type %q", ErrClient, info.ApiKeyOpts.AttachmentType)
-}
-
-// clone uses gob to deep copy objects.
-func clone[T any](input T) (T, error) { // nolint:ireturn
-	var buf bytes.Buffer
-	enc := gob.NewEncoder(&buf)
-	dec := gob.NewDecoder(&buf)
-
-	if err := enc.Encode(input); err != nil {
-		return input, err
-	}
-
-	var clone T
-	if err := dec.Decode(&clone); err != nil {
-		return input, err
-	}
-
-	return clone, nil
 }
