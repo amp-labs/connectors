@@ -16,9 +16,11 @@ import (
 )
 
 var (
-	ErrCatalogNotFound  = errors.New("catalog not found")
-	ErrProviderNotFound = errors.New("provider not found")
-	ErrClient           = errors.New("client creation failed")
+	ErrCatalogNotFound                = errors.New("catalog not found")
+	ErrProviderNotFound               = errors.New("provider not found")
+	ErrClient                         = errors.New("client creation failed")
+	ErrRetrievingHeaderApiKeyName     = errors.New("provider information missing header name for API Key")
+	ErrRetrievingQueryParamApiKeyName = errors.New("provider information missing query parameter name for API Key")
 )
 
 type CatalogOption func(params *catalogParams)
@@ -413,4 +415,28 @@ func createApiKeyHTTPClient( //nolint:ireturn
 	}
 
 	return nil, fmt.Errorf("%w: unsupported api key type %q", ErrClient, info.ApiKeyOpts.AttachmentType)
+}
+
+func (i *ProviderInfo) GetApiKeyQueryParamName() (string, error) {
+	if i.ApiKeyOpts == nil || i.ApiKeyOpts.Query == nil || len(i.ApiKeyOpts.Query.Name) == 0 {
+		return "", ErrRetrievingQueryParamApiKeyName
+	}
+
+	return i.ApiKeyOpts.Query.Name, nil
+}
+
+func (i *ProviderInfo) GetApiKeyHeader(apiKey string) (string, string, error) {
+	if i.ApiKeyOpts == nil || i.ApiKeyOpts.Header == nil || len(i.ApiKeyOpts.Header.Name) == 0 {
+		return "", "", ErrRetrievingHeaderApiKeyName
+	}
+
+	headerName := i.ApiKeyOpts.Header.Name
+
+	headerValue := apiKey
+	if i.ApiKeyOpts.Header.ValuePrefix != "" {
+		// The prefix is non-empty, which means it is required.
+		headerValue = i.ApiKeyOpts.Header.ValuePrefix + apiKey
+	}
+
+	return headerName, headerValue, nil
 }
