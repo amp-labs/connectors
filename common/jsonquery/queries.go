@@ -10,9 +10,10 @@ import (
 //
 // Usage examples, where node is JSON parsed via ajson library:
 //
-//	->	Must get *int64:	jsonquery.New(node).Integer("num", false)
-//	->	Optional *string:	jsonquery.New(node).String("text", true)
-//	->	Nested array:		jsonquery.New(node, "your", "path", "to", "array").Array("list", false)
+//	->	Must get *int64:					jsonquery.New(node).Integer("num", false)
+//	->	Optional *string:					jsonquery.New(node).String("text", true)
+//	->	Nested array:						jsonquery.New(node, "your", "path", "to", "array").Array("list", false)
+//	->	Convert current obj to list:		jsonquery.New(node).Array("", false)
 type Query struct {
 	node *ajson.Node
 	zoom []string
@@ -26,6 +27,9 @@ func New(node *ajson.Node, zoom ...string) *Query {
 	}
 }
 
+// Object returns json object.
+// Optional argument set to false will create error in case of missing value.
+// Empty key is interpreter as "this", in other words current node.
 func (q *Query) Object(key string, optional bool) (*ajson.Node, error) {
 	node, err := q.getInnerKey(key, optional)
 	if err != nil {
@@ -47,6 +51,9 @@ func (q *Query) Object(key string, optional bool) (*ajson.Node, error) {
 	return node, nil
 }
 
+// Integer returns integer.
+// Optional argument set to false will create error in case of missing value.
+// Empty key is interpreter as "this", in other words current node.
 func (q *Query) Integer(key string, optional bool) (*int64, error) {
 	node, err := q.getInnerKey(key, optional)
 	if err != nil {
@@ -75,6 +82,9 @@ func (q *Query) Integer(key string, optional bool) (*int64, error) {
 	return &result, nil
 }
 
+// Str returns string.
+// Optional argument set to false will create error in case of missing value.
+// Empty key is interpreter as "this", in other words current node.
 func (q *Query) Str(key string, optional bool) (*string, error) {
 	node, err := q.getInnerKey(key, optional)
 	if err != nil {
@@ -97,6 +107,9 @@ func (q *Query) Str(key string, optional bool) (*string, error) {
 	return &txt, nil
 }
 
+// Bool returns boolean.
+// Optional argument set to false will create error in case of missing value.
+// Empty key is interpreter as "this", in other words current node.
 func (q *Query) Bool(key string, optional bool) (*bool, error) {
 	node, err := q.getInnerKey(key, optional)
 	if err != nil {
@@ -119,6 +132,9 @@ func (q *Query) Bool(key string, optional bool) (*bool, error) {
 	return &flag, nil
 }
 
+// Array returns list of nodes.
+// Optional argument set to false will create error in case of missing value.
+// Empty key is interpreter as "this", in other words current node.
 func (q *Query) Array(key string, optional bool) ([]*ajson.Node, error) {
 	node, err := q.getInnerKey(key, optional)
 	if err != nil {
@@ -141,6 +157,9 @@ func (q *Query) Array(key string, optional bool) ([]*ajson.Node, error) {
 	return arr, nil
 }
 
+// ArraySize returns the array size located under key.
+// It is assumed that array value must be not null and present.
+// Empty key is interpreter as "this", in other words current node.
 func (q *Query) ArraySize(key string) (int64, error) {
 	arr, err := q.Array(key, false)
 	if err != nil {

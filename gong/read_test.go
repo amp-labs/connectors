@@ -24,12 +24,19 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 
 	tests := []testroutines.Read{
 		{
+			Name:         "Read object must be included",
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingObjects},
+		},
+		{
 			Name:         "Mime response header expected",
+			Input:        common.ReadParams{ObjectName: "calls"},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{interpreter.ErrMissingContentType},
 		},
 		{
-			Name: "Incorrect key in payload",
+			Name:  "Incorrect key in payload",
+			Input: common.ReadParams{ObjectName: "calls"},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)

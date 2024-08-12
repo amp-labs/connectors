@@ -15,6 +15,11 @@ func (pointers) Bool(input bool) *bool {
 	return &input
 }
 
+// Int64 returns a pointer to the given integer.
+func (pointers) Int64(input int64) *int64 {
+	return &input
+}
+
 // IsTrue checks boolean pointer was set and is true.
 func (pointers) IsTrue(input *bool) bool {
 	if input == nil {

@@ -41,6 +41,16 @@ func (q *Query) getInnerKey(targetKey string, optional bool) (*ajson.Node, error
 		return nil, err
 	}
 
+	// Empty key means we are referencing current node.
+	if len(targetKey) == 0 {
+		targetNode := zoomed
+		if targetNode.IsNull() {
+			return nil, handleNullNode(targetKey, optional)
+		}
+
+		return targetNode, nil
+	}
+
 	if !zoomed.HasKey(targetKey) {
 		if optional {
 			// null value in payload is allowed
