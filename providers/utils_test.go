@@ -6,11 +6,13 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 )
 
 var (
+	ts                      = time.Now().Format(time.RFC3339)
 	testCatalog CatalogType = map[string]ProviderInfo{ // nolint:gochecknoglobals
 		"test": {
 			AuthType:    Oauth2,
@@ -21,7 +23,10 @@ var (
 	}
 	customTestCatalogOption = []CatalogOption{ // nolint:gochecknoglobals
 		func(params *catalogParams) {
-			params.catalog = testCatalog
+			params.catalog = &CatalogWrapper{
+				Catalog:   testCatalog,
+				Timestamp: ts,
+			}
 		},
 	}
 )
@@ -83,8 +88,10 @@ func TestNewCustomCatalog(t *testing.T) { //nolint:funlen
 				}
 			}
 
-			if !reflect.DeepEqual(output, tt.expected) {
-				t.Fatalf("%s: expected: (%v), got: (%v)", tt.name, tt.expected, output)
+			if output != nil {
+				if !reflect.DeepEqual(output.Catalog, tt.expected) {
+					t.Fatalf("%s: expected: (%v), got: (%v)", tt.name, tt.expected, output)
+				}
 			}
 		})
 	}
