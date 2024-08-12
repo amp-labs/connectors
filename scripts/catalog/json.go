@@ -27,14 +27,14 @@ const Timestamp = %q
 `
 
 func main() {
-	ts := time.Now().UTC().Format(time.RFC3339)
+	timestamp := time.Now().UTC().Format(time.RFC3339)
 
 	catalog, err := providers.ReadCatalog()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	catalog.Timestamp = ts
+	catalog.Timestamp = timestamp
 
 	bytes, err := json.Marshal(catalog)
 	if err != nil {
@@ -59,7 +59,7 @@ func main() {
 	}
 
 	timestampFile := "internal/generated/timestamp.go"
-	str = fmt.Sprintf(timestampFileContents, ts)
+	str = fmt.Sprintf(timestampFileContents, timestamp)
 
 	err = os.WriteFile(timestampFile, []byte(str), writePerm)
 	if err != nil {

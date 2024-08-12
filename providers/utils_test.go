@@ -12,7 +12,6 @@ import (
 )
 
 var (
-	ts                      = time.Now().Format(time.RFC3339)
 	testCatalog CatalogType = map[string]ProviderInfo{ // nolint:gochecknoglobals
 		"test": {
 			AuthType:    Oauth2,
@@ -25,7 +24,7 @@ var (
 		func(params *catalogParams) {
 			params.catalog = &CatalogWrapper{
 				Catalog:   testCatalog,
-				Timestamp: ts,
+				Timestamp: time.Now().Format(time.RFC3339),
 			}
 		},
 	}
