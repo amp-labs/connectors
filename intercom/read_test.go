@@ -1,21 +1,20 @@
 package intercom
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"net/http/httptest"
-	"reflect"
 	"strings"
 	"testing"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
+	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
-	"github.com/go-test/deep"
 )
 
 var testApiVersionHeader = http.Header{} // nolint:gochecknoglobals
@@ -35,56 +34,48 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseNotesFirstPage := testutils.DataFromFile(t, "read-notes-1-first-page.json")
 	responseNotesSecondPage := testutils.DataFromFile(t, "read-notes-2-last-page.json")
 
-	tests := []struct {
-		name         string
-		input        common.ReadParams
-		server       *httptest.Server
-		connector    Connector
-		comparator   func(serverURL string, actual, expected *common.ReadResult) bool // custom comparison
-		expected     *common.ReadResult
-		expectedErrs []error
-	}{
+	tests := []testroutines.Read{
 		{
-			name:         "Mime response header expected",
-			server:       mockserver.Dummy(),
-			expectedErrs: []error{interpreter.ErrMissingContentType},
+			Name:         "Mime response header expected",
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{interpreter.ErrMissingContentType},
 		},
 		{
-			name: "Correct error message is understood from JSON response",
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			Name: "Correct error message is understood from JSON response",
+			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusNotFound)
 				_, _ = w.Write(responseErrorFormat)
 			})),
-			expectedErrs: []error{
+			ExpectedErrs: []error{
 				common.ErrBadRequest, errors.New("parameter_invalid[Per Page is too big]"), // nolint:goerr113
 			},
 		},
 		{
-			name: "Incorrect key in payload",
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			Name: "Incorrect key in payload",
+			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
 				mockutils.WriteBody(w, `{
 					"garbage": {}
 				}`)
 			})),
-			expectedErrs: []error{jsonquery.ErrKeyNotFound},
+			ExpectedErrs: []error{jsonquery.ErrKeyNotFound},
 		},
 		{
-			name: "Incorrect data type in payload",
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			Name: "Incorrect data type in payload",
+			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
 				mockutils.WriteBody(w, `{
 					"data": {}
 				}`)
 			})),
-			expectedErrs: []error{jsonquery.ErrNotArray},
+			ExpectedErrs: []error{jsonquery.ErrNotArray},
 		},
 		{
-			name: "Next page cursor may be missing in payload",
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			Name: "Next page cursor may be missing in payload",
+			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
 				mockutils.WriteBody(w, `
@@ -93,99 +84,99 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				  "data": []
 				}`)
 			})),
-			expected: &common.ReadResult{
+			Expected: &common.ReadResult{
 				Data: []common.ReadResultRow{},
 				Done: true,
 			},
-			expectedErrs: nil,
+			ExpectedErrs: nil,
 		},
 		{
-			name: "API version header is passed as server request",
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			Name: "API version header is passed as server request",
+			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				mockutils.RespondToHeader(w, r, testApiVersionHeader, func() {
 					w.WriteHeader(http.StatusOK)
 					_, _ = w.Write(responseNotesSecondPage)
 				})
 			})),
-			comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
+			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
 				// response doesn't matter much, as soon as we don't have errors we are good
 				return actual.Done == expected.Done
 			},
-			expected:     &common.ReadResult{Done: true},
-			expectedErrs: nil,
+			Expected:     &common.ReadResult{Done: true},
+			ExpectedErrs: nil,
 		},
 		{
-			name: "Next page URL is resolved, when provided with a string",
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			Name: "Next page URL is resolved, when provided with a string",
+			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
 				_, _ = w.Write(responseNotesFirstPage)
 			})),
-			comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
+			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
 				return actual.NextPage.String() == expected.NextPage.String()
 			},
-			expected: &common.ReadResult{
+			Expected: &common.ReadResult{
 				NextPage: "https://api.intercom.io/contacts/6643703ffae7834d1792fd30/notes?per_page=2&page=2",
 			},
-			expectedErrs: nil,
+			ExpectedErrs: nil,
 		},
 		{
-			name: "Next page URL is inferred, when provided with an object",
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			Name: "Next page URL is inferred, when provided with an object",
+			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
 				_, _ = w.Write(responseContactsFirstPage)
 			})),
-			comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
+			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
 				expectedNextPage := strings.ReplaceAll(expected.NextPage.String(), "{{testServerURL}}", baseURL)
 				return actual.NextPage.String() == expectedNextPage // nolint:nlreturn
 			},
-			expected: &common.ReadResult{
+			Expected: &common.ReadResult{
 				NextPage: "{{testServerURL}}?per_page=60&starting_after=" +
 					"WzE3MTU2OTU2NzkwMDAsIjY2NDM3MDNmZmFlNzgzNGQxNzkyZmQzMCIsMl0=",
 			},
-			expectedErrs: nil,
+			ExpectedErrs: nil,
 		},
 		{
-			name: "Next page URL is empty, when provided with null object",
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			Name: "Next page URL is empty, when provided with null object",
+			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
 				_, _ = w.Write(responseNotesSecondPage)
 			})),
-			comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
+			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
 				return actual.NextPage.String() == expected.NextPage.String() &&
 					actual.Done == expected.Done
 			},
-			expected:     &common.ReadResult{NextPage: "", Done: true},
-			expectedErrs: nil,
+			Expected:     &common.ReadResult{NextPage: "", Done: true},
+			ExpectedErrs: nil,
 		},
 		{
-			name: "Next page URL is empty, when provided with missing object",
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			Name: "Next page URL is empty, when provided with missing object",
+			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
 				_, _ = w.Write(responseContactsThirdPage)
 			})),
-			comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
+			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
 				return actual.NextPage.String() == expected.NextPage.String() &&
 					actual.Done == expected.Done
 			},
-			expected:     &common.ReadResult{NextPage: "", Done: true},
-			expectedErrs: nil,
+			Expected:     &common.ReadResult{NextPage: "", Done: true},
+			ExpectedErrs: nil,
 		},
 		{
-			name: "Successful read with chosen fields",
-			input: common.ReadParams{
+			Name: "Successful read with chosen fields",
+			Input: common.ReadParams{
 				Fields: []string{"email", "name"},
 			},
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
 				_, _ = w.Write(responseContactsSecondPage)
 			})),
-			comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
+			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
 				expectedNextPage := strings.ReplaceAll(expected.NextPage.String(), "{{testServerURL}}", baseURL)
 				// custom comparison focuses on subset of fields to keep the test short
 				return mockutils.ReadResultComparator.SubsetFields(actual, expected) &&
@@ -193,7 +184,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					actual.NextPage.String() == expectedNextPage &&
 					actual.Done == expected.Done
 			},
-			expected: &common.ReadResult{
+			Expected: &common.ReadResult{
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
 						"name":  "Patrick",
@@ -214,25 +205,25 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					"Wy0xLCI2NjQzOWI5NDdiYjA5NWE2ODFmN2ZkOWUiLDNd",
 				Done: false,
 			},
-			expectedErrs: nil,
+			ExpectedErrs: nil,
 		},
 		{
-			name: "Successful read of named list",
-			input: common.ReadParams{
+			Name: "Successful read of named list",
+			Input: common.ReadParams{
 				Fields: []string{"state"},
 			},
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
 				_, _ = w.Write(responseReadConversations)
 			})),
-			comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
+			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
 				return mockutils.ReadResultComparator.SubsetFields(actual, expected) &&
 					actual.NextPage.String() == expected.NextPage.String() &&
 					actual.Done == expected.Done &&
 					actual.Rows == expected.Rows
 			},
-			expected: &common.ReadResult{
+			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
@@ -246,63 +237,33 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				NextPage: "",
 				Done:     true,
 			},
-			expectedErrs: nil,
+			ExpectedErrs: nil,
 		},
 	}
 
 	for _, tt := range tests {
 		// nolint:varnamelen
 		tt := tt // rebind, omit loop side effects for parallel goroutine
-		t.Run(tt.name, func(t *testing.T) {
+		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			defer tt.server.Close()
-
-			ctx := context.Background()
-
-			connector, err := NewConnector(
-				WithAuthenticatedClient(http.DefaultClient),
-			)
-			if err != nil {
-				t.Fatalf("%s: error in test while constructing connector %v", tt.name, err)
-			}
-
-			// for testing we want to redirect calls to our mock server
-			connector.setBaseURL(tt.server.URL)
-
-			// start of tests
-			output, err := connector.Read(ctx, tt.input)
-			if err != nil {
-				if len(tt.expectedErrs) == 0 {
-					t.Fatalf("%s: expected no errors, got: (%v)", tt.name, err)
-				}
-			} else {
-				// check that missing error is what is expected
-				if len(tt.expectedErrs) != 0 {
-					t.Fatalf("%s: expected errors (%v), but got nothing", tt.name, tt.expectedErrs)
-				}
-			}
-
-			// check every error
-			for _, expectedErr := range tt.expectedErrs {
-				if !errors.Is(err, expectedErr) && !strings.Contains(err.Error(), expectedErr.Error()) {
-					t.Fatalf("%s: expected Error: (%v), got: (%v)", tt.name, expectedErr, err)
-				}
-			}
-
-			// compare desired output
-			var ok bool
-			if tt.comparator == nil {
-				// default comparison is concerned about all fields
-				ok = reflect.DeepEqual(output, tt.expected)
-			} else {
-				ok = tt.comparator(tt.server.URL, output, tt.expected)
-			}
-
-			if !ok {
-				diff := deep.Equal(output, tt.expected)
-				t.Fatalf("%s:, \nexpected: (%v), \ngot: (%v), \ndiff: (%v)", tt.name, tt.expected, output, diff)
-			}
+			tt.Run(t, func() (connectors.ReadConnector, error) {
+				return constructTestConnector(tt.Server.URL)
+			})
 		})
 	}
+}
+
+func constructTestConnector(serverURL string) (*Connector, error) {
+	connector, err := NewConnector(
+		WithAuthenticatedClient(http.DefaultClient),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	// for testing we want to redirect calls to our mock server
+	connector.setBaseURL(serverURL)
+
+	return connector, nil
 }
