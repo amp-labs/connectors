@@ -2,14 +2,13 @@
 package providers
 
 import (
-	"bytes"
 	"context"
-	"encoding/gob"
 	"errors"
 	"fmt"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/handy"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/go-playground/validator"
 	"golang.org/x/oauth2"
@@ -25,24 +24,24 @@ var (
 type CatalogOption func(params *catalogParams)
 
 type catalogParams struct {
-	catalog CatalogType
+	catalog *CatalogWrapper
 }
 
 // WithCatalog is an option that can be used to override the default catalog.
-func WithCatalog(c CatalogType) CatalogOption {
+func WithCatalog(c *CatalogWrapper) CatalogOption {
 	return func(params *catalogParams) {
 		params.catalog = c
 	}
 }
 
 type CustomCatalog struct {
-	custom CatalogType
+	custom *CatalogWrapper
 }
 
 // NewCustomCatalog allows to apply modifiers on the base catalog, to tweak its content.
 // Just like the default catalog it supports reading data, resolves variable substitutions.
 func NewCustomCatalog(opts ...CatalogOption) CustomCatalog {
-	params := &catalogParams{catalog: catalog}
+	params := &catalogParams{catalog: getCatalog()}
 
 	for _, opt := range opts {
 		opt(params)
@@ -51,7 +50,7 @@ func NewCustomCatalog(opts ...CatalogOption) CustomCatalog {
 	return CustomCatalog{custom: params.catalog}
 }
 
-func (c CustomCatalog) catalog() (CatalogType, error) {
+func (c CustomCatalog) catalog() (*CatalogWrapper, error) {
 	if c.custom == nil {
 		// Null catalog was probably set via options.
 		// This is not allowed.
@@ -62,24 +61,24 @@ func (c CustomCatalog) catalog() (CatalogType, error) {
 }
 
 // ReadCatalog is used to get the catalog.
-func ReadCatalog(opts ...CatalogOption) (CatalogType, error) {
+func ReadCatalog(opts ...CatalogOption) (*CatalogWrapper, error) {
 	return NewCustomCatalog(opts...).ReadCatalog()
 }
 
-func (c CustomCatalog) ReadCatalog() (CatalogType, error) {
+func (c CustomCatalog) ReadCatalog() (*CatalogWrapper, error) {
 	catalogInstance, err := c.catalog()
 	if err != nil {
 		return nil, err
 	}
 
-	catalogCopy, err := clone[CatalogType](catalogInstance)
+	catalogCopy, err := handy.Clone[*CatalogWrapper](catalogInstance)
 	if err != nil {
 		return nil, err
 	}
 
 	// Validate the provider configuration
 	v := validator.New()
-	for provider, providerInfo := range catalogCopy {
+	for provider, providerInfo := range catalogCopy.Catalog {
 		if err := v.Struct(providerInfo); err != nil {
 			return nil, err
 		}
@@ -120,7 +119,7 @@ func (c CustomCatalog) ReadInfo(provider Provider, vars ...paramsbuilder.Catalog
 		return nil, err
 	}
 
-	pInfo, ok := catalogInstance[provider]
+	pInfo, ok := catalogInstance.Catalog[provider]
 	if !ok {
 		return nil, ErrProviderNotFound
 	}
@@ -131,7 +130,7 @@ func (c CustomCatalog) ReadInfo(provider Provider, vars ...paramsbuilder.Catalog
 	}
 
 	// Clone before modifying
-	providerInfo, err := clone[ProviderInfo](pInfo)
+	providerInfo, err := handy.Clone[ProviderInfo](pInfo)
 	if err != nil {
 		return nil, err
 	}
@@ -414,22 +413,4 @@ func createApiKeyHTTPClient( //nolint:ireturn
 	}
 
 	return nil, fmt.Errorf("%w: unsupported api key type %q", ErrClient, info.ApiKeyOpts.AttachmentType)
-}
-
-// clone uses gob to deep copy objects.
-func clone[T any](input T) (T, error) { // nolint:ireturn
-	var buf bytes.Buffer
-	enc := gob.NewEncoder(&buf)
-	dec := gob.NewDecoder(&buf)
-
-	if err := enc.Encode(input); err != nil {
-		return input, err
-	}
-
-	var clone T
-	if err := dec.Decode(&clone); err != nil {
-		return input, err
-	}
-
-	return clone, nil
 }

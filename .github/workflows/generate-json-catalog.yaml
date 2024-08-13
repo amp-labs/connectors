@@ -36,7 +36,7 @@ jobs:
         run: |
           git config --global user.email "devops@withampersand.com"
           git config --global user.name "Ampersand Ops"
-          git add internal/generated/catalog.json internal/generated/provider_count.go
+          git add internal/generated/catalog.json internal/generated
           git commit -m "[ampersand-ops] auto: update catalog"
           git remote set-url origin https://x-access-token:${{ secrets.AMPERSAND_OPS_PAT }}@github.com/${{ github.repository }}
           git push origin HEAD:main

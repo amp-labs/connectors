@@ -13,13 +13,13 @@ var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
 	[]interpreter.FormatTemplate{
 		{
 			MustKeys: []string{"description"},
-			Template: &DescriptiveResponseError{},
+			Template: func() interpreter.ErrorDescriptor { return &DescriptiveResponseError{} },
 		}, {
 			MustKeys: []string{"status"},
-			Template: &StatusResponseError{},
+			Template: func() interpreter.ErrorDescriptor { return &StatusResponseError{} },
 		}, {
 			MustKeys: nil,
-			Template: &MessageResponseError{},
+			Template: func() interpreter.ErrorDescriptor { return &MessageResponseError{} },
 		},
 	}...,
 )
