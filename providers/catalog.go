@@ -18,3 +18,10 @@ import (
 // off by a few (which isn't a big deal), it'll get corrected next time
 // the script runs. So don't worry about it.
 var catalog = make(CatalogType, generated.ProviderCount) // nolint:gochecknoglobals
+
+func getCatalog() *CatalogWrapper {
+	return &CatalogWrapper{
+		Catalog:   catalog,
+		Timestamp: generated.Timestamp,
+	}
+}

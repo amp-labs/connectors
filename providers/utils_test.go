@@ -6,6 +6,7 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 )
@@ -21,7 +22,10 @@ var (
 	}
 	customTestCatalogOption = []CatalogOption{ // nolint:gochecknoglobals
 		func(params *catalogParams) {
-			params.catalog = testCatalog
+			params.catalog = &CatalogWrapper{
+				Catalog:   testCatalog,
+				Timestamp: time.Now().Format(time.RFC3339),
+			}
 		},
 	}
 )
@@ -83,8 +87,10 @@ func TestNewCustomCatalog(t *testing.T) { //nolint:funlen
 				}
 			}
 
-			if !reflect.DeepEqual(output, tt.expected) {
-				t.Fatalf("%s: expected: (%v), got: (%v)", tt.name, tt.expected, output)
+			if output != nil {
+				if !reflect.DeepEqual(output.Catalog, tt.expected) {
+					t.Fatalf("%s: expected: (%v), got: (%v)", tt.name, tt.expected, output)
+				}
 			}
 		})
 	}
