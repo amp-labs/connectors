@@ -54,7 +54,7 @@ func createProviderCreds(
 		return nil, errors.Join(err, ErrProviderNotFound)
 	}
 
-	info, ok := catalog[providerName]
+	info, ok := catalog.Catalog[providerName]
 	if !ok {
 		return nil, ErrProviderNotFound
 	}
