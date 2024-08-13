@@ -68,7 +68,8 @@ func createSchemas() {
 	schemas := scrapper.NewObjectMetadataResult()
 
 	filteredListDocs := getFilteredListDocs(index)
-	for i, model := range filteredListDocs { // nolint:varnamelen
+	for i := range filteredListDocs { // nolint:varnamelen
+		model := filteredListDocs[i]
 		doc := scrapper.QueryHTML(model.URL)
 
 		// There are 2 unordered lists that describe response schema
@@ -81,7 +82,7 @@ func createSchemas() {
 					// Only the first most field represents top level fields of response payload
 					fieldName := property.Find(`strong`).First().Text()
 					if len(fieldName) != 0 {
-						schemas.Add(modelName, model.DisplayName, fieldName)
+						schemas.Add(modelName, model.DisplayName, fieldName, &model.URL)
 					}
 				})
 			})

@@ -60,6 +60,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							"id":         "id",
 							"name":       "name",
 							"order":      "order",
+							"active":     "active",
 							"updated_at": "updated_at",
 						},
 					},
