@@ -21,6 +21,7 @@ type FaultyResponseHandler interface {
 type ErrorHandler struct {
 	JSON FaultyResponseHandler
 	XML  FaultyResponseHandler
+	HTML FaultyResponseHandler
 }
 
 func (h ErrorHandler) Handle(res *http.Response, body []byte) error {
@@ -35,6 +36,10 @@ func (h ErrorHandler) Handle(res *http.Response, body []byte) error {
 
 	if h.XML != nil && (mediaType == "text/xml" || mediaType == "application/xml") {
 		return h.XML.HandleErrorResponse(res, body)
+	}
+
+	if h.HTML != nil && (mediaType == "text/html" || mediaType == "application/html") {
+		return h.HTML.HandleErrorResponse(res, body)
 	}
 
 	return common.InterpretError(res, body)
