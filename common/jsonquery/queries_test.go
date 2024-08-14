@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/amp-labs/connectors/common/handy"
 	"github.com/spyzhov/ajson"
 )
 
@@ -25,7 +26,7 @@ var testJSONData = `{
 			"display_time": "yesterday"
 		}}`
 
-func TestQuery_Integer(t *testing.T) { // nolint:funlen
+func TestQueryInteger(t *testing.T) { // nolint:funlen
 	t.Parallel()
 
 	j := helperCreateJSON(t, testJSONData) // nolint:varnamelen
@@ -84,7 +85,7 @@ func TestQuery_Integer(t *testing.T) { // nolint:funlen
 			input: inType{
 				key: "count",
 			},
-			expected: ptrInt64(38),
+			expected: handy.Pointers.Int64(38),
 		},
 		{
 			name: "Reaching for nested integer",
@@ -93,7 +94,16 @@ func TestQuery_Integer(t *testing.T) { // nolint:funlen
 				optional: false,
 				zoom:     []string{"payload", "notes", "body"},
 			},
-			expected: ptrInt64(359),
+			expected: handy.Pointers.Int64(359),
+		},
+		{
+			name: "Reaching for nested integer using self reference",
+			input: inType{
+				key:      "", // empty string acts as 'self'
+				optional: false,
+				zoom:     []string{"payload", "notes", "body", "amount"},
+			},
+			expected: handy.Pointers.Int64(359),
 		},
 		{
 			name: "Non existent zoom path is ok for optional integer",
@@ -170,7 +180,7 @@ func TestQueryString(t *testing.T) { // nolint:funlen
 			input: inType{
 				key: "text",
 			},
-			expected: ptrString("Hello World"),
+			expected: handy.Pointers.Str("Hello World"),
 		},
 		{
 			name: "Reaching for nested string",
@@ -179,7 +189,16 @@ func TestQueryString(t *testing.T) { // nolint:funlen
 				optional: false,
 				zoom:     []string{"payload", "notes", "body"},
 			},
-			expected: ptrString("Some notes"),
+			expected: handy.Pointers.Str("Some notes"),
+		},
+		{
+			name: "Reaching for nested string using self reference",
+			input: inType{
+				key:      "", // empty string acts as 'self'
+				optional: false,
+				zoom:     []string{"payload", "notes", "body", "text"},
+			},
+			expected: handy.Pointers.Str("Some notes"),
 		},
 		{
 			name: "Non existent zoom path is ok for optional string",
@@ -256,7 +275,7 @@ func TestQueryBool(t *testing.T) { // nolint:funlen
 			input: inType{
 				key: "inProgress",
 			},
-			expected: ptrBool(false),
+			expected: handy.Pointers.Bool(false),
 		},
 		{
 			name: "Reaching for nested bool",
@@ -265,7 +284,16 @@ func TestQueryBool(t *testing.T) { // nolint:funlen
 				optional: false,
 				zoom:     []string{"payload", "notes", "body"},
 			},
-			expected: ptrBool(true),
+			expected: handy.Pointers.Bool(true),
+		},
+		{
+			name: "Reaching for nested bool using self reference",
+			input: inType{
+				key:      "", // empty string acts as 'self'
+				optional: false,
+				zoom:     []string{"payload", "notes", "body", "purchased"},
+			},
+			expected: handy.Pointers.Bool(true),
 		},
 		{
 			name: "Non existent zoom path is ok for optional bool",
@@ -290,7 +318,7 @@ func TestQueryBool(t *testing.T) { // nolint:funlen
 	}
 }
 
-func TestQuery_Array(t *testing.T) { // nolint:funlen
+func TestQueryArray(t *testing.T) { // nolint:funlen
 	t.Parallel()
 
 	j := helperCreateJSON(t, testJSONData) // nolint:varnamelen
@@ -359,6 +387,15 @@ func TestQuery_Array(t *testing.T) { // nolint:funlen
 			expectedSize: 5,
 		},
 		{
+			name: "Reaching for nested array using self reference",
+			input: inType{
+				key:      "", // empty string acts as 'self'
+				optional: false,
+				zoom:     []string{"payload", "notes", "nested_arr"},
+			},
+			expectedSize: 5,
+		},
+		{
 			name: "Non existent zoom path is ok for optional arr",
 			input: inType{
 				key:      "street",
@@ -390,7 +427,7 @@ func TestQuery_Array(t *testing.T) { // nolint:funlen
 	}
 }
 
-func TestQuery_Object(t *testing.T) { // nolint:funlen
+func TestQueryObject(t *testing.T) { // nolint:funlen
 	t.Parallel()
 
 	j := helperCreateJSON(t, testJSONData) // nolint:varnamelen
@@ -435,6 +472,14 @@ func TestQuery_Object(t *testing.T) { // nolint:funlen
 			input: inType{
 				key:  "body",
 				zoom: []string{"payload", "notes"},
+			},
+			expectedErr: nil, // success
+		},
+		{
+			name: "Valid nested object using self reference",
+			input: inType{
+				key:  "", // empty string acts as 'self'
+				zoom: []string{"payload", "notes", "body"},
 			},
 			expectedErr: nil, // success
 		},
@@ -488,16 +533,4 @@ func assertJSONManagerOutput(t *testing.T, name string, expected any, expectedEr
 	if !reflect.DeepEqual(output, expected) {
 		t.Fatalf("%s: expected: (%v), got: (%v)", name, expected, output)
 	}
-}
-
-func ptrInt64(num int64) *int64 {
-	return &num
-}
-
-func ptrString(text string) *string {
-	return &text
-}
-
-func ptrBool(flag bool) *bool {
-	return &flag
 }
