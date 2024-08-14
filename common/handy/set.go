@@ -53,3 +53,10 @@ func (s Set[V]) Subtract(other Set[V]) []V {
 
 	return difference
 }
+
+// Has returns true if key is found in the set.
+func (s Set[T]) Has(key T) bool {
+	_, ok := s[key]
+
+	return ok
+}
