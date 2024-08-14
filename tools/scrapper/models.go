@@ -71,6 +71,9 @@ type ObjectMetadata struct {
 
 	// FieldsMap is a map of field names to field display names
 	FieldsMap map[string]string `json:"fields"`
+
+	// URL points to docs endpoint. Optional.
+	URL *string `json:"url,omitempty"`
 }
 
 func NewObjectMetadataResult() *ObjectMetadataResult {
@@ -79,12 +82,13 @@ func NewObjectMetadataResult() *ObjectMetadataResult {
 	}
 }
 
-func (r *ObjectMetadataResult) Add(objectName string, objectDisplayName string, fieldName string) {
+func (r *ObjectMetadataResult) Add(objectName, objectDisplayName, fieldName string, url *string) {
 	data, ok := r.Result[objectName]
 	if !ok {
 		data = ObjectMetadata{
 			DisplayName: objectDisplayName,
 			FieldsMap:   make(map[string]string),
+			URL:         url,
 		}
 		r.Result[objectName] = data
 	}

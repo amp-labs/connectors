@@ -9,7 +9,8 @@
         "name": "name",
         "order": "order",
         "updated_at": "updated_at"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/account-stages-index"
     },
     "account_tiers": {
       "displayName": "Account Tiers",
@@ -20,7 +21,8 @@
         "name": "name",
         "order": "order",
         "updated_at": "updated_at"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/account-tiers-index"
     },
     "accounts": {
       "displayName": "Accounts",
@@ -65,7 +67,8 @@
         "updated_at": "updated_at",
         "user_relationships": "user_relationships",
         "website": "website"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/accounts-index"
     },
     "action_details_call_instructions": {
       "displayName": "Call Instructions",
@@ -74,7 +77,8 @@
         "id": "id",
         "instructions": "instructions",
         "updated_at": "updated_at"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/action-details-call-instructions-index"
     },
     "actions": {
       "displayName": "Actions",
@@ -93,7 +97,8 @@
         "type": "type",
         "updated_at": "updated_at",
         "user": "user"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/actions-index"
     },
     "activities_calls": {
       "displayName": "Calls",
@@ -114,7 +119,8 @@
         "to": "to",
         "updated_at": "updated_at",
         "user": "user"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/activities-calls-index"
     },
     "activities_emails": {
       "displayName": "Emails",
@@ -146,7 +152,8 @@
         "updated_at": "updated_at",
         "user": "user",
         "view_tracking": "view_tracking"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/activities-emails-index"
     },
     "activity_histories": {
       "displayName": "Past Activities",
@@ -164,7 +171,8 @@
         "type": "type",
         "updated_at": "updated_at",
         "user_guid": "user_guid"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/activity-histories-index"
     },
     "bulk_jobs": {
       "displayName": "Bulk Jobs",
@@ -183,7 +191,8 @@
         "total": "total",
         "type": "type",
         "updated_at": "updated_at"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/bulk-jobs-index"
     },
     "bulk_jobs_job_data": {
       "displayName": "Job Data for a Bulk Job",
@@ -193,7 +202,8 @@
         "record": "record",
         "resource": "resource",
         "status": "status"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/bulk-jobs-job-data-index"
     },
     "bulk_jobs_results": {
       "displayName": "Job Data for a Completed Bulk Job.",
@@ -203,7 +213,8 @@
         "record": "record",
         "resource": "resource",
         "status": "status"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/bulk-jobs-results-index"
     },
     "cadence_memberships": {
       "displayName": "Cadence Memberships",
@@ -220,7 +231,8 @@
         "person_deleted": "person_deleted",
         "updated_at": "updated_at",
         "user": "user"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/cadence-memberships-index"
     },
     "cadences": {
       "displayName": "Cadences",
@@ -254,7 +266,8 @@
         "tags": "tags",
         "team_cadence": "team_cadence",
         "updated_at": "updated_at"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/cadences-index"
     },
     "calendar_events": {
       "displayName": "Calendar Events",
@@ -287,7 +300,8 @@
         "title": "title",
         "updated_at": "updated_at",
         "user_guid": "user_guid"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/calendar-events-index"
     },
     "call_data_records": {
       "displayName": "Call Data Records",
@@ -309,7 +323,8 @@
         "to": "to",
         "updated_at": "updated_at",
         "user": "user"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/call-data-records-index"
     },
     "call_dispositions": {
       "displayName": "Call Dispositions",
@@ -318,7 +333,8 @@
         "id": "id",
         "name": "name",
         "updated_at": "updated_at"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/call-dispositions-index"
     },
     "call_sentiments": {
       "displayName": "Call Sentiments",
@@ -327,7 +343,8 @@
         "id": "id",
         "name": "name",
         "updated_at": "updated_at"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/call-sentiments-index"
     },
     "crm_activities": {
       "displayName": "Crm Activities",
@@ -343,7 +360,8 @@
         "subject": "subject",
         "updated_at": "updated_at",
         "user": "user"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/crm-activities-index"
     },
     "crm_activity_fields": {
       "displayName": "Crm Activity Fields",
@@ -359,7 +377,8 @@
         "title": "title",
         "updated_at": "updated_at",
         "value": "value"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/crm-activity-fields-index"
     },
     "crm_users": {
       "displayName": "Crm Users",
@@ -372,7 +391,8 @@
         "name": "name",
         "updated_at": "updated_at",
         "user": "user"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/crm-users-index"
     },
     "custom_fields": {
       "displayName": "Custom Fields",
@@ -383,14 +403,16 @@
         "name": "name",
         "updated_at": "updated_at",
         "value_type": "value_type"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/custom-fields-index"
     },
     "custom_roles": {
       "displayName": "Custom Roles",
       "fields": {
         "id": "id",
         "name": "name"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/custom-roles-index"
     },
     "data_control_requests": {
       "displayName": "Requests",
@@ -402,7 +424,8 @@
         "request_type": "request_type",
         "team_id": "team_id",
         "user_guid": "user_guid"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/data-control-requests-index"
     },
     "email_template_attachments": {
       "displayName": "Email Template Attachments",
@@ -416,7 +439,8 @@
         "id": "id",
         "name": "name",
         "scanned": "scanned"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/email-template-attachments-index"
     },
     "email_templates": {
       "displayName": "Email Templates",
@@ -440,7 +464,8 @@
         "template_owner": "template_owner",
         "title": "title",
         "updated_at": "updated_at"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/email-templates-index"
     },
     "external_configurations": {
       "displayName": "Team Configurations",
@@ -451,7 +476,8 @@
         "object_type": "object_type",
         "source_id": "source_id",
         "source_type": "source_type"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/external-configurations-index"
     },
     "external_mappings": {
       "displayName": "Team Mappings",
@@ -464,7 +490,8 @@
         "object_id": "object_id",
         "object_type": "object_type",
         "tenant_id": "tenant_id"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/external-mappings-index"
     },
     "groups": {
       "displayName": "Groups",
@@ -473,7 +500,8 @@
         "id": "id",
         "name": "name",
         "parent_id": "parent_id"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/groups-index"
     },
     "imports": {
       "displayName": "Imports",
@@ -487,7 +515,8 @@
         "name": "name",
         "updated_at": "updated_at",
         "user_id": "user_id"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/imports-index"
     },
     "integrations_signals_registrations": {
       "displayName": "Signal Registrations",
@@ -503,7 +532,8 @@
         "integration_slug": "integration_slug",
         "owner_user_guid": "owner_user_guid",
         "type": "type"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/integrations-signals-registrations-index"
     },
     "integrations_signals_registrations_plays": {
       "displayName": "Play Registrations",
@@ -523,7 +553,8 @@
         "signal_registration": "signal_registration",
         "signal_type": "signal_type",
         "state": "state"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/integrations-signals-registrations-plays-index"
     },
     "meetings": {
       "displayName": "Meetings",
@@ -571,7 +602,8 @@
         "title": "title",
         "undo_completion_count": "undo_completion_count",
         "updated_at": "updated_at"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/meetings-index"
     },
     "notes": {
       "displayName": "Notes",
@@ -584,7 +616,8 @@
         "id": "id",
         "updated_at": "updated_at",
         "user": "user"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/notes-index"
     },
     "pending_emails": {
       "displayName": "Pending Emails",
@@ -592,7 +625,8 @@
         "id": "id",
         "mailbox": "mailbox",
         "mime_email_payload": "mime_email_payload"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/pending-emails-index"
     },
     "people": {
       "displayName": "People",
@@ -654,7 +688,8 @@
         "work_city": "work_city",
         "work_country": "work_country",
         "work_state": "work_state"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/people-index"
     },
     "person_stages": {
       "displayName": "Person Stages",
@@ -665,7 +700,8 @@
         "name": "name",
         "order": "order",
         "updated_at": "updated_at"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/person-stages-index"
     },
     "phone_number_assignments": {
       "displayName": "Phone Number Assignments",
@@ -673,7 +709,8 @@
         "id": "id",
         "number": "number",
         "user": "user"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/phone-number-assignments-index"
     },
     "phone_numbers_caller_ids": {
       "displayName": "Caller Ids",
@@ -682,7 +719,8 @@
         "display_name": "display_name",
         "person": "person",
         "title": "title"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/phone-numbers-caller-ids-index"
     },
     "saved_list_views": {
       "displayName": "Saved List Views",
@@ -693,7 +731,8 @@
         "shared": "shared",
         "view": "view",
         "view_params": "view_params"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/saved-list-views-index"
     },
     "steps": {
       "displayName": "Steps",
@@ -710,7 +749,8 @@
         "step_number": "step_number",
         "type": "type",
         "updated_at": "updated_at"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/steps-index"
     },
     "successes": {
       "displayName": "Successes",
@@ -728,14 +768,16 @@
         "success_window_started_at": "success_window_started_at",
         "updated_at": "updated_at",
         "user": "user"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/successes-index"
     },
     "tags": {
       "displayName": "Team Tags",
       "fields": {
         "id": "id",
         "name": "name"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/tags-index"
     },
     "tasks": {
       "displayName": "Tasks",
@@ -756,7 +798,8 @@
         "task_type": "task_type",
         "updated_at": "updated_at",
         "user": "user"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/tasks-index"
     },
     "team_template_attachments": {
       "displayName": "Team Template Attachments",
@@ -767,7 +810,8 @@
         "id": "id",
         "name": "name",
         "team_template": "team_template"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/team-template-attachments-index"
     },
     "team_templates": {
       "displayName": "Team Templates",
@@ -788,7 +832,8 @@
         "tags": "tags",
         "title": "title",
         "updated_at": "updated_at"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/team-templates-index"
     },
     "users": {
       "displayName": "Users",
@@ -797,7 +842,8 @@
         "guid": "guid",
         "id": "id",
         "name": "name"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/users-index"
     },
     "webhook_subscriptions": {
       "displayName": "Webhook Subscriptions",
@@ -809,7 +855,8 @@
         "id": "id",
         "tenant_id": "tenant_id",
         "user_guid": "user_guid"
-      }
+      },
+      "url": "https://developers.salesloft.com/docs/api/webhook-subscriptions-index"
     }
   }
 }

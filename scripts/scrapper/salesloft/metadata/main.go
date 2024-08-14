@@ -70,7 +70,8 @@ func createSchemas() {
 	schemas := scrapper.NewObjectMetadataResult()
 
 	filteredListDocs := getFilteredListDocs(index)
-	for i, model := range filteredListDocs { // nolint:varnamelen
+	for i := range filteredListDocs { // nolint:varnamelen
+		model := filteredListDocs[i]
 		doc := scrapper.QueryHTML(model.URL)
 
 		// There are 2 unordered lists that describe response schema
@@ -85,7 +86,7 @@ func createSchemas() {
 					if len(fieldName) != 0 {
 						newDisplayName, isList := handleDisplayName(model.DisplayName)
 						if isList {
-							schemas.Add(modelName, newDisplayName, fieldName)
+							schemas.Add(modelName, newDisplayName, fieldName, &model.URL)
 						}
 					}
 				})
