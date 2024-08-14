@@ -82,7 +82,7 @@ func (p *Client) WithApiKeyHeaderClient(
 		common.WithHeaderClient(client),
 	}
 
-	basicClient, err := common.NewApiKeyHeaderAuthHTTPClient(ctx,
+	apiKeyClient, err := common.NewApiKeyHeaderAuthHTTPClient(ctx,
 		headerName, headerValue,
 		append(options, opts...)...,
 	)
@@ -90,7 +90,7 @@ func (p *Client) WithApiKeyHeaderClient(
 		panic(err) // caught in NewConnector
 	}
 
-	p.WithAuthenticatedClient(basicClient)
+	p.WithAuthenticatedClient(apiKeyClient)
 }
 
 // WithApiKeyQueryParamClient option sets up client that utilises API Key authentication.
@@ -104,7 +104,7 @@ func (p *Client) WithApiKeyQueryParamClient(
 		common.WithQueryParamClient(client),
 	}
 
-	basicClient, err := common.NewApiKeyQueryParamAuthHTTPClient(ctx,
+	apiKeyClient, err := common.NewApiKeyQueryParamAuthHTTPClient(ctx,
 		queryParamName, apiKey,
 		append(options, opts...)...,
 	)
@@ -112,7 +112,7 @@ func (p *Client) WithApiKeyQueryParamClient(
 		panic(err) // caught in NewConnector
 	}
 
-	p.WithAuthenticatedClient(basicClient)
+	p.WithAuthenticatedClient(apiKeyClient)
 }
 
 // WithAuthenticatedClient sets up an HTTP client that uses your implementation of authentication.
