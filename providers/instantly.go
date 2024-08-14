@@ -6,7 +6,7 @@ func init() {
 	SetInfo(Instantly, ProviderInfo{
 		DisplayName: "Instantly",
 		AuthType:    ApiKey,
-		BaseURL:     "https://api.instantly.ai",
+		BaseURL:     "https://api.instantly.ai/api",
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Query,
 			Query: &ApiKeyOptsQuery{
