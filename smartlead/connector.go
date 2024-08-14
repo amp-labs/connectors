@@ -58,7 +58,6 @@ func (c *Connector) String() string {
 	return fmt.Sprintf("%s.Connector", c.Provider())
 }
 
-// nolint:unused
 func (c *Connector) getURL(arg string) (*urlbuilder.URL, error) {
 	return constructURL(c.BaseURL, apiVersion, arg)
 }

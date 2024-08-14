@@ -91,6 +91,9 @@ var (
 
 	// ErrRecordDataNotJSON is returned when the record data in WriteParams is not JSON.
 	ErrRecordDataNotJSON = errors.New("record data is not JSON")
+
+	// ErrObjectNotSupported is returned when operation is not supported for this object.
+	ErrOperationNotSupportedForObject = errors.New("operation is not supported for this object")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.
