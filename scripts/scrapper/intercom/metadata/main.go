@@ -19,6 +19,7 @@ const (
 	ModelIndexURL = "https://developers.intercom.com/docs/references/rest-api/api.intercom.io/Models/activity_log/"
 )
 
+// TODO this script got outdated with recent UI change.
 func main() {
 	// index will have URLs for every schema
 	createIndex()
@@ -74,12 +75,13 @@ func createSchemas() {
 	// Single GET methods to be discarded. Only match schemas that describe single item for LIST endpoint.
 	documents := getSchemasForListEndpoints(index)
 
-	for i, model := range documents {
+	for i := range documents {
+		model := documents[i]
 		doc := scrapper.QueryHTML(model.URL)
 
 		doc.Find(`.field-name`).Each(func(i int, s *goquery.Selection) {
 			name := s.Text()
-			schemas.Add(model.Name, model.DisplayName, name)
+			schemas.Add(model.Name, model.DisplayName, name, &model.URL)
 		})
 
 		log.Printf("Schemas completed %.2f%% [%v]\n", getPercentage(i, len(documents)), model.Name)

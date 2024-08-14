@@ -1,13 +1,13 @@
 {
   "meta": {
     "totalObjects": 48,
-    "collectedAt": "2024-06-10"
+    "collectedAt": "2024-08-13"
   },
   "queryParams": [
     {
       "name": "updated_at[gt]",
-      "frequency": 0.3125,
-      "totalObjects": 15,
+      "frequency": 0.3333,
+      "totalObjects": 16,
       "objects": [
         "account_stages",
         "accounts",
@@ -21,6 +21,7 @@
         "email_templates",
         "notes",
         "people",
+        "steps",
         "successes",
         "tasks",
         "team_templates"
@@ -28,8 +29,8 @@
     },
     {
       "name": "updated_at[gte]",
-      "frequency": 0.3125,
-      "totalObjects": 15,
+      "frequency": 0.3333,
+      "totalObjects": 16,
       "objects": [
         "account_stages",
         "accounts",
@@ -43,6 +44,7 @@
         "email_templates",
         "notes",
         "people",
+        "steps",
         "successes",
         "tasks",
         "team_templates"
@@ -50,8 +52,8 @@
     },
     {
       "name": "updated_at[lt]",
-      "frequency": 0.3125,
-      "totalObjects": 15,
+      "frequency": 0.3333,
+      "totalObjects": 16,
       "objects": [
         "account_stages",
         "accounts",
@@ -65,6 +67,7 @@
         "email_templates",
         "notes",
         "people",
+        "steps",
         "successes",
         "tasks",
         "team_templates"
@@ -72,8 +75,8 @@
     },
     {
       "name": "updated_at[lte]",
-      "frequency": 0.3125,
-      "totalObjects": 15,
+      "frequency": 0.3333,
+      "totalObjects": 16,
       "objects": [
         "account_stages",
         "accounts",
@@ -87,6 +90,7 @@
         "email_templates",
         "notes",
         "people",
+        "steps",
         "successes",
         "tasks",
         "team_templates"
@@ -206,6 +210,38 @@
       "totalObjects": 1,
       "objects": [
         "actions"
+      ]
+    },
+    {
+      "name": "include_counts_acted_on[gt]",
+      "frequency": 0.0208,
+      "totalObjects": 1,
+      "objects": [
+        "tasks"
+      ]
+    },
+    {
+      "name": "include_counts_acted_on[gte]",
+      "frequency": 0.0208,
+      "totalObjects": 1,
+      "objects": [
+        "tasks"
+      ]
+    },
+    {
+      "name": "include_counts_acted_on[lt]",
+      "frequency": 0.0208,
+      "totalObjects": 1,
+      "objects": [
+        "tasks"
+      ]
+    },
+    {
+      "name": "include_counts_acted_on[lte]",
+      "frequency": 0.0208,
+      "totalObjects": 1,
+      "objects": [
+        "tasks"
       ]
     },
     {
