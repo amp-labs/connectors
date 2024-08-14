@@ -11,6 +11,8 @@ import (
 	"github.com/amp-labs/connectors/salesloft/metadata"
 	"github.com/amp-labs/connectors/tools/scrapper"
 	"github.com/iancoleman/strcase"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 const (
@@ -81,7 +83,10 @@ func createSchemas() {
 					// Only the first most field represents top level fields of response payload
 					fieldName := property.Find(`strong`).First().Text()
 					if len(fieldName) != 0 {
-						schemas.Add(modelName, model.DisplayName, fieldName)
+						newDisplayName, isList := handleDisplayName(model.DisplayName)
+						if isList {
+							schemas.Add(modelName, newDisplayName, fieldName)
+						}
 					}
 				})
 			})
@@ -199,4 +204,44 @@ func must(err error) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+// List of exceptions:
+//   - Retrieve a list of Requests
+//   - Fetch current user
+//   - Fetch task counts
+//   - Fetch current team
+//
+// All display names have "List" word removed since display name is not an operation.
+// Any fetch operations are not list operations.
+// Those are the inconsistencies that Salesloft has in its docs.
+func handleDisplayName(name string) (displayName string, isListResource bool) {
+	if stripped, ok := strings.CutPrefix(name, "List "); ok {
+		return capitalizeFirstLetterEveryWord(stripped), true
+	} else {
+		// This one is special case. Just hard coded, mapped display name.
+		if name == "Retrieve a list of Requests" {
+			return "Requests", true
+		}
+
+		if ok = strings.HasPrefix(name, "Fetch "); ok {
+			return "", false
+		}
+	}
+
+	return name, true
+}
+
+func capitalizeFirstLetterEveryWord(text string) string {
+	caser := cases.Title(language.English)
+
+	text = caser.String(text)
+	for from, to := range map[string]string{
+		" For ": " for ",
+		" A ":   " a ",
+	} {
+		text = strings.ReplaceAll(text, from, to)
+	}
+
+	return text
 }

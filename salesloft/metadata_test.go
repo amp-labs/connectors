@@ -33,7 +33,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"bulk_jobs_results": {
-						DisplayName: "List job data for a completed bulk job.",
+						DisplayName: "Job Data for a Completed Bulk Job.",
 						FieldsMap: map[string]string{
 							"error":    "error",
 							"id":       "id",
@@ -54,17 +54,18 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"account_tiers": {
-						DisplayName: "List Account Tiers",
+						DisplayName: "Account Tiers",
 						FieldsMap: map[string]string{
 							"created_at": "created_at",
 							"id":         "id",
 							"name":       "name",
 							"order":      "order",
 							"updated_at": "updated_at",
+							"active":     "active",
 						},
 					},
 					"actions": {
-						DisplayName: "List actions",
+						DisplayName: "Actions",
 						FieldsMap: map[string]string{
 							"action_details":      "action_details",
 							"cadence":             "cadence",

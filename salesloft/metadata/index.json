@@ -176,6 +176,11 @@
       "url": "https://developers.salesloft.com/docs/api/cadence-memberships-show"
     },
     {
+      "name": "cadence-stats-show",
+      "displayName": "Fetch stats for a cadence",
+      "url": "https://developers.salesloft.com/docs/api/cadence-stats-show"
+    },
+    {
       "name": "cadences-index",
       "displayName": "List cadences",
       "url": "https://developers.salesloft.com/docs/api/cadences-index"
@@ -216,9 +221,49 @@
       "url": "https://developers.salesloft.com/docs/api/call-sentiments-index"
     },
     {
-      "name": "create-conversations-call",
-      "displayName": "Create Conversations Call",
-      "url": "https://developers.salesloft.com/docs/api/create-conversations-call"
+      "name": "conversations-calls-create",
+      "displayName": "Create a new call",
+      "url": "https://developers.salesloft.com/docs/api/conversations-calls-create"
+    },
+    {
+      "name": "conversations-find-all",
+      "displayName": "Fetch conversations",
+      "url": "https://developers.salesloft.com/docs/api/conversations-find-all"
+    },
+    {
+      "name": "conversations-find-one",
+      "displayName": "Fetch a conversation",
+      "url": "https://developers.salesloft.com/docs/api/conversations-find-one"
+    },
+    {
+      "name": "conversations-find-one-conversation-recording",
+      "displayName": "Fetch Conversation media",
+      "url": "https://developers.salesloft.com/docs/api/conversations-find-one-conversation-recording"
+    },
+    {
+      "name": "conversations-find-one-extensive",
+      "displayName": "Fetch an extensive conversation",
+      "url": "https://developers.salesloft.com/docs/api/conversations-find-one-extensive"
+    },
+    {
+      "name": "conversations-transcriptions-find-all-transcripts",
+      "displayName": "List Transcriptions",
+      "url": "https://developers.salesloft.com/docs/api/conversations-transcriptions-find-all-transcripts"
+    },
+    {
+      "name": "conversations-transcriptions-find-one-transcript",
+      "displayName": "Fetch a Transcription",
+      "url": "https://developers.salesloft.com/docs/api/conversations-transcriptions-find-one-transcript"
+    },
+    {
+      "name": "conversations-transcriptions-find-one-transcript-artifact",
+      "displayName": "Fetch a Transcription Artifact",
+      "url": "https://developers.salesloft.com/docs/api/conversations-transcriptions-find-one-transcript-artifact"
+    },
+    {
+      "name": "conversations-transcriptions-find-one-transcript-sentences",
+      "displayName": "Fetch a Transcription's sentences",
+      "url": "https://developers.salesloft.com/docs/api/conversations-transcriptions-find-one-transcript-sentences"
     },
     {
       "name": "crm-activities-index",
@@ -311,6 +356,11 @@
       "url": "https://developers.salesloft.com/docs/api/email-template-attachments-index"
     },
     {
+      "name": "email-templates-create",
+      "displayName": "Create Personal Email Template",
+      "url": "https://developers.salesloft.com/docs/api/email-templates-create"
+    },
+    {
       "name": "email-templates-index",
       "displayName": "List email templates",
       "url": "https://developers.salesloft.com/docs/api/email-templates-index"
@@ -321,9 +371,44 @@
       "url": "https://developers.salesloft.com/docs/api/email-templates-show"
     },
     {
+      "name": "email-templates-update",
+      "displayName": "Update Personal Email Template",
+      "url": "https://developers.salesloft.com/docs/api/email-templates-update"
+    },
+    {
+      "name": "external-configurations-create",
+      "displayName": "Create a configuration",
+      "url": "https://developers.salesloft.com/docs/api/external-configurations-create"
+    },
+    {
+      "name": "external-configurations-destroy",
+      "displayName": "Delete a configuration",
+      "url": "https://developers.salesloft.com/docs/api/external-configurations-destroy"
+    },
+    {
+      "name": "external-configurations-index",
+      "displayName": "List team configurations",
+      "url": "https://developers.salesloft.com/docs/api/external-configurations-index"
+    },
+    {
       "name": "external-emails-create",
       "displayName": "Create an External Email",
       "url": "https://developers.salesloft.com/docs/api/external-emails-create"
+    },
+    {
+      "name": "external-mappings-create",
+      "displayName": "Create a mapping",
+      "url": "https://developers.salesloft.com/docs/api/external-mappings-create"
+    },
+    {
+      "name": "external-mappings-destroy",
+      "displayName": "Delete a mapping",
+      "url": "https://developers.salesloft.com/docs/api/external-mappings-destroy"
+    },
+    {
+      "name": "external-mappings-index",
+      "displayName": "List team mappings",
+      "url": "https://developers.salesloft.com/docs/api/external-mappings-index"
     },
     {
       "name": "groups-create",
@@ -407,7 +492,7 @@
     },
     {
       "name": "integrations-signals-registrations-plays-show",
-      "displayName": "Show a Play Registration",
+      "displayName": "Fetch a Play Registration",
       "url": "https://developers.salesloft.com/docs/api/integrations-signals-registrations-plays-show"
     },
     {
@@ -666,6 +751,11 @@
       "url": "https://developers.salesloft.com/docs/api/team-template-attachments-index"
     },
     {
+      "name": "team-templates-create",
+      "displayName": "Create Team Email Template",
+      "url": "https://developers.salesloft.com/docs/api/team-templates-create"
+    },
+    {
       "name": "team-templates-index",
       "displayName": "List team templates",
       "url": "https://developers.salesloft.com/docs/api/team-templates-index"
@@ -674,6 +764,11 @@
       "name": "team-templates-show",
       "displayName": "Fetch a team template",
       "url": "https://developers.salesloft.com/docs/api/team-templates-show"
+    },
+    {
+      "name": "team-templates-update",
+      "displayName": "Update Team Email Template",
+      "url": "https://developers.salesloft.com/docs/api/team-templates-update"
     },
     {
       "name": "third-party-live-feed-items-create",
