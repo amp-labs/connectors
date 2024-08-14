@@ -48,6 +48,15 @@ func (u *URL) WithQueryParam(name, value string) {
 	u.queryParams[name] = []string{value}
 }
 
+func (u *URL) GetSingleQueryParam(name string) (string, bool) {
+	value, ok := u.queryParams[name]
+	if !ok || len(value) == 0 {
+		return "", false
+	}
+
+	return value[0], true
+}
+
 func (u *URL) RemoveQueryParam(name string) {
 	delete(u.queryParams, name)
 }
