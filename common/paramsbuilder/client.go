@@ -20,7 +20,13 @@ type Client struct {
 }
 
 func (p *Client) ValidateParams() error {
+	// http client must be defined.
 	if p.Caller == nil {
+		return ErrMissingClient
+	}
+
+	// authentication client should be present.
+	if p.Caller.Client == nil {
 		return ErrMissingClient
 	}
 
@@ -63,6 +69,50 @@ func (p *Client) WithBasicClient(
 	}
 
 	p.WithAuthenticatedClient(basicClient)
+}
+
+// WithApiKeyHeaderClient option sets up client that utilises API Key authentication.
+// Passed via Header.
+func (p *Client) WithApiKeyHeaderClient(
+	ctx context.Context, client *http.Client,
+	headerName, headerValue string,
+	opts ...common.HeaderAuthClientOption,
+) {
+	options := []common.HeaderAuthClientOption{
+		common.WithHeaderClient(client),
+	}
+
+	apiKeyClient, err := common.NewApiKeyHeaderAuthHTTPClient(ctx,
+		headerName, headerValue,
+		append(options, opts...)...,
+	)
+	if err != nil {
+		panic(err) // caught in NewConnector
+	}
+
+	p.WithAuthenticatedClient(apiKeyClient)
+}
+
+// WithApiKeyQueryParamClient option sets up client that utilises API Key authentication.
+// Passed via Query Param.
+func (p *Client) WithApiKeyQueryParamClient(
+	ctx context.Context, client *http.Client,
+	queryParamName, apiKey string,
+	opts ...common.QueryParamAuthClientOption,
+) {
+	options := []common.QueryParamAuthClientOption{
+		common.WithQueryParamClient(client),
+	}
+
+	apiKeyClient, err := common.NewApiKeyQueryParamAuthHTTPClient(ctx,
+		queryParamName, apiKey,
+		append(options, opts...)...,
+	)
+	if err != nil {
+		panic(err) // caught in NewConnector
+	}
+
+	p.WithAuthenticatedClient(apiKeyClient)
 }
 
 // WithAuthenticatedClient sets up an HTTP client that uses your implementation of authentication.
