@@ -22,20 +22,52 @@ type Option = func(params *parameters)
 type parameters struct { // TODO determine which parameters to preserve when instantiating this Connector
 	paramsbuilder.Client    // Always needed
 	paramsbuilder.Workspace // Only needed if workspace is a part of the base URL for the API
+	// TODO setupError is optional and depends if any With<Method> can fail.
+	// Error is set when any With<Method> fails, used for parameters validation.
+	setupError error
 }
 
 func (p parameters) ValidateParams() error {
+	if p.setupError != nil {
+		return p.setupError
+	}
+
 	return errors.Join(
 		p.Client.ValidateParams(),
 		p.Workspace.ValidateParams(),
 	)
 }
 
+// TODO use Oauth2 example or other
 func WithClient(ctx context.Context, client *http.Client,
 	config *oauth2.Config, token *oauth2.Token, opts ...common.OAuthOption,
 ) Option {
 	return func(params *parameters) {
-		params.WithClient(ctx, client, config, token, opts...)
+		params.WithOauthClient(ctx, client, config, token, opts...)
+	}
+}
+
+// TODO use API key example or other
+func WithClient(ctx context.Context, client *http.Client,
+	apiKey string,
+	opts ...common.QueryParamAuthClientOption,
+) Option {
+	return func(params *parameters) {
+		info, err := providers.ReadInfo(providers.{{ .Provider }})
+		if err != nil {
+			params.setupError = err
+
+			return
+		}
+
+		queryParam, err := info.GetApiKeyQueryParamName()
+		if err != nil {
+			params.setupError = err
+
+			return
+		}
+
+		params.WithApiKeyQueryParamClient(ctx, client, queryParam, apiKey, opts...)
 	}
 }
 

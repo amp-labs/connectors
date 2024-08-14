@@ -1,31 +1,25 @@
 package {{ .Package }}
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 )
 
-func (*Connector) interpretJSONError(res *http.Response, body []byte) error { //nolint:cyclop
-	var payload ResponseError
-	if err := json.Unmarshal(body, &payload); err != nil {
-		return fmt.Errorf("interpretJSONError general: %w %w", interpreter.ErrUnmarshal, err)
-	}
+var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
+	[]interpreter.FormatTemplate{
+		{
+			MustKeys: nil,
+			Template: func() interpreter.ErrorDescriptor { return &ResponseError{} },
+		},
+	}...,
+)
 
-	// TODO if error response from the server is not consistent consider using `common.ErrorDescriptor` interface
-	// see usages how it is used
-
-	return payload.CombineErr(statusCodeMapping(res, body))
-}
-
-func statusCodeMapping(res *http.Response, body []byte) error {
-	switch res.StatusCode { // nolint:gocritic
-	// TODO create mapping unique for this connector, the rest Status Codes will default to base handler
-	default:
-		return interpreter.DefaultStatusCodeMappingToErr(res, body)
-	}
+var statusCodeMapping = map[int]error{ // nolint:gochecknoglobals
+	// TODO add code mapping if any
+	http.StatusUnprocessableEntity: common.ErrBadRequest,
 }
 
 type ResponseError struct{}
