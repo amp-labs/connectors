@@ -12,15 +12,36 @@ import (
 var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
 	[]interpreter.FormatTemplate{
 		{
-			MustKeys: nil,
-			Template: func() interpreter.ErrorDescriptor { return &ResponseError{} },
+			MustKeys: []string{"message"},
+			Template: func() interpreter.ErrorDescriptor { return &ResponseMessageError{} },
+		}, {
+			MustKeys: []string{"error"},
+			Template: func() interpreter.ErrorDescriptor { return &ResponseBasicError{} },
 		},
 	}...,
 )
 
-type ResponseError struct{}
+type ResponseMessageError struct {
+	Message string `json:"message"`
+}
 
-func (r ResponseError) CombineErr(base error) error {
+func (r ResponseMessageError) CombineErr(base error) error {
+	if len(r.Message) != 0 {
+		return fmt.Errorf("%w: %s", base, r.Message)
+	}
+
+	return base
+}
+
+type ResponseBasicError struct {
+	Error string `json:"error"`
+}
+
+func (r ResponseBasicError) CombineErr(base error) error {
+	if len(r.Error) != 0 {
+		return fmt.Errorf("%w: %s", base, r.Error)
+	}
+
 	return base
 }
 

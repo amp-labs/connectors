@@ -12,7 +12,7 @@ func DumpJSON(v any, w io.Writer) {
 		Fail("error marshaling to JSON: %w", "error", err)
 	}
 
-	_, err = w.Write(bts)
+	_, err = w.Write(append(bts, []byte("\n")...))
 	if err != nil {
 		Fail("error writing to writer: %w", "error", err)
 	}
