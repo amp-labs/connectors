@@ -27,7 +27,7 @@ func main() {
 
 	for _, object := range objects {
 		for _, field := range object.Fields {
-			schemas.Add(aliases.Synonym(object.ObjectName), object.DisplayName, field)
+			schemas.Add(aliases.Synonym(object.ObjectName), object.DisplayName, field, nil)
 		}
 	}
 
