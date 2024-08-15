@@ -283,16 +283,11 @@ func (h *HTTPClient) sendRequest(req *http.Request) (*http.Response, []byte, err
 		return nil, nil, fmt.Errorf("error reading response body: %w", err)
 	}
 
-	// Check the response status code
-	if res.StatusCode < 200 || res.StatusCode > 299 {
-		if h.ErrorHandler != nil {
-			return nil, nil, h.ErrorHandler(res, body)
-		}
-
-		return nil, nil, InterpretError(res, body)
+	if h.ErrorHandler != nil {
+		return res, body, h.ErrorHandler(res, body)
 	}
 
-	return res, body, nil
+	return res, body, InterpretError(res, body)
 }
 
 // getURL returns the given URL if it is an absolute URL, or the given URL joined with the base URL.

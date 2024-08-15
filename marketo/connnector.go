@@ -31,7 +31,10 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 
 	conn = &Connector{
 		Client: &common.JSONHTTPClient{
-			HTTPClient: params.Client.Caller,
+			HTTPClient: &common.HTTPClient{
+				Client:       params.Caller.Client,
+				ErrorHandler: interpretError,
+			},
 		},
 		Module: params.Module.Name,
 	}

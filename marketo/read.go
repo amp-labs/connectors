@@ -20,9 +20,6 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	// Handle Response Level Errors.
-	// Inject an error handling when response is 200 OK.
-
 	return common.ParseResult(res, getTotalSize,
 		getRecords,
 		getNextRecordsURL,
