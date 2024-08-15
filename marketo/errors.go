@@ -29,28 +29,33 @@ func checkResponseLeverErr(body []byte) (bool, int, error) {
 		return false, 0, err
 	}
 
+	if len(resp.Errors) == 0 {
+		return false, 0, nil
+	}
+
 	code, err := strconv.Atoi(resp.Errors[0].Code)
 	if err != nil {
 		return false, 0, err
 	}
 
-	return len(resp.Errors) > 0, code, nil
+	return (len(resp.Errors) > 0), code, nil
 }
 
 // InterpretError interprets the given HTTP response (in a fairly straightforward
 // way) and returns an error that can be handled by the caller.
 func interpretError(res *http.Response, body []byte) error { //nolint:cyclop
 	// A must check.
-	if res.StatusCode < 200 || res.StatusCode > 299 {
+	if res.StatusCode <= 200 || res.StatusCode <= 299 {
 		erroneous, code, err := checkResponseLeverErr(body)
 		if err != nil {
 			return err
 		}
-		fmt.Println("Erroneous: ", erroneous)
 
-		// If response is 200 OK, but erroneous, we update the status code & continue with the switch cases.
+		// If response is 200 OK, but erroneous, we update the status code,
+		//  continue with the switch cases.
 		if erroneous {
 			statusCode := statusCodeMap(code)
+			fmt.Println("Mapped status code: ", statusCode)
 			res.StatusCode = statusCode
 		} else {
 			return nil

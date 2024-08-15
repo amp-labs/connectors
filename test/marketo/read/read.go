@@ -29,7 +29,7 @@ func testReadActivities(ctx context.Context) error {
 	conn := mk.GetMarketoConnector(ctx)
 
 	params := common.ReadParams{
-		ObjectName: "channels",
+		ObjectName: "channel",
 		Fields:     []string{"applicableProgramType", "id", "name"},
 		// Since:      time.Now(),
 	}
