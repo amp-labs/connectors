@@ -7,7 +7,6 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
-	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
 )
 
@@ -28,7 +27,7 @@ func (p parameters) ValidateParams() error {
 }
 
 func WithClient(ctx context.Context, client *http.Client,
-	config *clientcredentials.Config, token *oauth2.Token,
+	config *clientcredentials.Config,
 ) Option {
 	authClient := config.Client(ctx)
 
@@ -44,6 +43,7 @@ func WithModule(module paramsbuilder.APIModule) Option {
 	}
 }
 
+// WithWorkspace sets the marketo API instance to use for the connector. It's required.
 func WithWorkspace(workspace string) Option {
 	return func(params *parameters) {
 		params.WithWorkspace(workspace)
