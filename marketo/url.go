@@ -9,7 +9,7 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
-var restAPIPrefix string = "rest"
+var restAPIPrefix string = "rest" //nolint:gochecknoglobals
 
 func (c *Connector) getURL(params common.ReadParams) (*urlbuilder.URL, error) {
 	// make sure the object is in lowercase format.

@@ -8,7 +8,7 @@ import (
 
 // Read retrieves data based on the provided configuration parameters.
 //
-// This function executes a read operation using the given context and
+// This function executes a read operation using the given context and.
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
 	url, err := c.getURL(config)
 	if err != nil {
