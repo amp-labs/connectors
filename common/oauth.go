@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/clientcredentials"
 )
 
 type OAuthOption func(*oauthClientParams)
@@ -28,14 +29,16 @@ func NewOAuthHTTPClient(ctx context.Context, opts ...OAuthOption) (Authenticated
 	return newOAuthClient(ctx, params), nil
 }
 
-// oauthClientParams is the internal configuration for the oauth http client.
+// oauthClientParams is the internal configuration for the oauth2 http client.
 type oauthClientParams struct {
-	client       *http.Client
-	token        *oauth2.Token
-	config       *oauth2.Config
-	tokenSource  oauth2.TokenSource
-	tokenUpdated func(oldToken, newToken *oauth2.Token) error
-	debug        func(req *http.Request, rsp *http.Response)
+	client            *http.Client
+	token             *oauth2.Token
+	config            *oauth2.Config
+	clientCredsConfig *clientcredentials.Config
+	grantType         Oauth2OptsGrantType
+	tokenSource       oauth2.TokenSource
+	tokenUpdated      func(oldToken, newToken *oauth2.Token) error
+	debug             func(req *http.Request, rsp *http.Response)
 }
 
 // WithOAuthClient sets the http client to use for the connector. Its usage is optional.
@@ -58,6 +61,14 @@ func WithOAuthToken(token *oauth2.Token) OAuthOption {
 func WithOAuthConfig(config *oauth2.Config) OAuthOption {
 	return func(params *oauthClientParams) {
 		params.config = config
+	}
+}
+
+// WithOAuth2GrantType sets the oauth2 grant type to use for the connector.
+// It's required in two-legged OAuth 2.0.
+func WithOAuth2GrantType(grant Oauth2OptsGrantType) OAuthOption {
+	return func(params *oauthClientParams) {
+		params.grantType = grant
 	}
 }
 
@@ -97,7 +108,7 @@ func (p *oauthClientParams) prepare() (*oauthClientParams, error) {
 			return nil, ErrMissingRefreshToken
 		}
 
-		if p.config == nil {
+		if p.config == nil && p.clientCredsConfig == nil {
 			return nil, ErrMissingOauthConfig
 		}
 	}
@@ -105,12 +116,21 @@ func (p *oauthClientParams) prepare() (*oauthClientParams, error) {
 	return p, nil
 }
 
-// newHTTPClient returns a new http client for the connector, with automatic OAuth authentication.
+// newOAuthClient returns a new http client for the connector, with automatic OAuth authentication.
+// If no grantType provided in params, uses Authorization Code grannt type.
 func newOAuthClient(ctx context.Context, params *oauthClientParams) AuthenticatedHTTPClient { //nolint:ireturn
 	// This is how the key refresher accepts a custom http client
 	ctx = context.WithValue(ctx, oauth2.HTTPClient, params.client)
 
-	tokenSource := getTokenSource(ctx, params)
+	var tokenSource oauth2.TokenSource
+
+	switch params.grantType {
+	case ClientCredentials:
+		tokenSource = get2leggedTokenSource(ctx, params)
+	default:
+		tokenSource = getTokenSource(ctx, params)
+	}
+
 	if params.tokenUpdated != nil {
 		tokenSource = &observableTokenSource{
 			tokenUpdated: params.tokenUpdated,

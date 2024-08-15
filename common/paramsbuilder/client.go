@@ -7,6 +7,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/clientcredentials"
 )
 
 var ErrMissingClient = errors.New("http client not set")
@@ -37,6 +38,27 @@ func (p *Client) WithOauthClient(
 		common.WithOAuthClient(client),
 		common.WithOAuthConfig(config),
 		common.WithOAuthToken(token),
+	}
+
+	oauthClient, err := common.NewOAuthHTTPClient(ctx, append(options, opts...)...)
+	if err != nil {
+		panic(err) // caught in NewConnector
+	}
+
+	p.WithAuthenticatedClient(oauthClient)
+}
+
+// WithClientCredsClient option that sets up client that utilises Oauth2 2-legged configuration.
+func (p *Client) With2LeggedClient(
+	ctx context.Context, client *http.Client,
+	config *clientcredentials.Config, token *oauth2.Token,
+	opts ...common.OAuthOption,
+) {
+	options := []common.OAuthOption{
+		common.WithOAuthClient(client),
+		common.WithClientCredentialsConfig(config),
+		common.WithOAuthToken(token),
+		common.WithOAuth2GrantType(common.ClientCredentials),
 	}
 
 	oauthClient, err := common.NewOAuthHTTPClient(ctx, append(options, opts...)...)

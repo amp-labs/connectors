@@ -8,7 +8,6 @@ import (
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/salesforce"
-	"github.com/amp-labs/connectors/test/utils"
 	testUtils "github.com/amp-labs/connectors/test/utils"
 	"golang.org/x/oauth2"
 )
@@ -49,7 +48,7 @@ func GetSalesforceAccessToken() string {
 
 func getSalesforceJSONReader() *credscanning.ProviderCredentials {
 	filePath := credscanning.LoadPath(providers.Salesforce)
-	reader := utils.MustCreateProvCredJSON(filePath, true, true)
+	reader := testUtils.MustCreateProvCredJSON(filePath, true, true)
 
 	return reader
 }

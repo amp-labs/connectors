@@ -93,6 +93,8 @@ var (
 	ErrRecordDataNotJSON = errors.New("record data is not JSON")
 )
 
+type Oauth2OptsGrantType string
+
 // ReadParams defines how we are reading data from a SaaS API.
 type ReadParams struct {
 	// The name of the object we are reading, e.g. "Account"
