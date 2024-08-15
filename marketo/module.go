@@ -14,7 +14,7 @@ var Leads = paramsbuilder.APIModule{ //nolint: gochecknoglobals
 	Version: "v1",
 }
 
-// supportedModules represents currently working and supported modules within the Hubspot connector.
+// supportedModules represents currently working and supported modules within the Marketo connector.
 // Any added module should be appended here.
 var supportedModules = []paramsbuilder.APIModule{ // nolint: gochecknoglobals
 	Leads,
