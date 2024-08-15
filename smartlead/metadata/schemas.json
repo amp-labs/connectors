@@ -2,6 +2,7 @@
   "data": {
     "campaigns": {
       "displayName": "Campaigns",
+      "url": "https://api.smartlead.ai/reference/fetch-campaign-sequence-by-campaign-id",
       "fields": {
         "id": "ID",
         "user_id": "User ID",
@@ -24,6 +25,7 @@
     },
     "email-accounts": {
       "displayName": "Email Accounts",
+      "url": "https://api.smartlead.ai/reference/fetch-all-email-accounts-associated-to-a-user",
       "fields": {
         "id": "ID",
         "created_at": "Created at",
@@ -59,6 +61,7 @@
     },
     "leads": {
       "displayName": "Leads",
+      "url": "https://api.smartlead.ai/reference/fetch-lead-by-email-address",
       "fields": {
         "id": "ID",
         "first_name": "First name",
@@ -79,6 +82,7 @@
     },
     "client": {
       "displayName": "Clients",
+      "url": "https://api.smartlead.ai/reference/fetch-all-clients",
       "fields": {
         "id": "ID",
         "name": "Name",
