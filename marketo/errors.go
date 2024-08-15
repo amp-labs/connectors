@@ -55,7 +55,6 @@ func interpretError(res *http.Response, body []byte) error { //nolint:cyclop
 		//  continue with the switch cases.
 		if erroneous {
 			statusCode := statusCodeMap(code)
-			fmt.Println("Mapped status code: ", statusCode)
 			res.StatusCode = statusCode
 		} else {
 			return nil
