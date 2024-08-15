@@ -14,16 +14,9 @@ var Leads = paramsbuilder.APIModule{ //nolint: gochecknoglobals
 	Version: "v1",
 }
 
-// ModuleEmpty is used for proxying requests through.
-var ModuleEmpty = paramsbuilder.APIModule{ // nolint: gochecknoglobals
-	Label:   "",
-	Version: "",
-}
-
 // supportedModules represents currently working and supported modules within the Hubspot connector.
 // Any added module should be appended here.
 var supportedModules = []paramsbuilder.APIModule{ // nolint: gochecknoglobals
-	ModuleEmpty,
 	Leads,
 	Assets,
 }

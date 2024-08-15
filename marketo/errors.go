@@ -17,6 +17,7 @@ type Error struct {
 // retrieveInternalCode returns the first error code in marketo http response.
 func retrieveInternalCode(root *ajson.Node) (int, error) {
 	var errD Error
+
 	Errors, err := jsonquery.New(root).Array("errors", true)
 	if err != nil {
 		return 0, err
@@ -44,12 +45,12 @@ func checkResponseLeverErr(root *ajson.Node) (bool, error) {
 	return size > 0, nil
 }
 
-func ErrorHandler(resp *http.Response)
+// func ErrorHandler(resp *http.Response)
 
 // statusCodeMap maps the erroneous response from marketo, with a valid http status code.
 // The response body can be sent as is.
 // https://experienceleague.adobe.com/en/docs/marketo-developer/marketo/rest/error-codes
-func statusCodeMap(code int) int {
+func statusCodeMap(code int) int { //nolint:funlen
 	switch code {
 	case 502:
 		return http.StatusBadGateway

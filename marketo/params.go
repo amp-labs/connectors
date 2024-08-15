@@ -30,7 +30,6 @@ func (p parameters) ValidateParams() error {
 func WithClient(ctx context.Context, client *http.Client,
 	config *clientcredentials.Config, token *oauth2.Token,
 ) Option {
-
 	authClient := config.Client(ctx)
 
 	return func(params *parameters) {
@@ -41,7 +40,7 @@ func WithClient(ctx context.Context, client *http.Client,
 // WithModule sets the marketo API module to use for the connector. It's required.
 func WithModule(module paramsbuilder.APIModule) Option {
 	return func(params *parameters) {
-		params.WithModule(module, supportedModules, &ModuleEmpty)
+		params.WithModule(module, supportedModules, &Assets)
 	}
 }
 
