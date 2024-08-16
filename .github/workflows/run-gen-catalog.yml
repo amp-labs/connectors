@@ -1,0 +1,17 @@
+name: Update catalog types
+
+on:
+  repository_dispatch:
+    types: [run-gen-catalog] 
+
+jobs:
+  generate-catalog:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+
+      - name: Run make gen/catalog
+        working-directory: providers 
+        run: make gen/catalog
