@@ -11,7 +11,7 @@ import (
 // way) and returns an error that can be handled by the caller.
 func InterpretError(res *http.Response, body []byte) error { //nolint:cyclop
 	// A must check for customs, This  common error handler assumes 200 OK, can never be erroneous.
-	if res.StatusCode >= 200 || res.StatusCode <= 299 {
+	if res.StatusCode >= 200 && res.StatusCode <= 299 {
 		return nil
 	}
 

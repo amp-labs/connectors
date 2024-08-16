@@ -45,7 +45,7 @@ func checkResponseLeverErr(body []byte) (bool, int, error) {
 // way) and returns an error that can be handled by the caller.
 func interpretError(res *http.Response, body []byte) error { //nolint:cyclop
 	// A must check.
-	if res.StatusCode <= 200 || res.StatusCode <= 299 {
+	if res.StatusCode >= 200 && res.StatusCode <= 299 {
 		erroneous, code, err := checkResponseLeverErr(body)
 		if err != nil {
 			return err

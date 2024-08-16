@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	mk "github.com/amp-labs/connectors/test/marketo"
@@ -29,9 +30,9 @@ func testReadActivities(ctx context.Context) error {
 	conn := mk.GetMarketoConnector(ctx)
 
 	params := common.ReadParams{
-		ObjectName: "channel",
+		ObjectName: "channels",
 		Fields:     []string{"applicableProgramType", "id", "name"},
-		// Since:      time.Now(),
+		Since:      time.Now().Add(-720 * time.Hour),
 	}
 
 	res, err := conn.Read(ctx, params)
