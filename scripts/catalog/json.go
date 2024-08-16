@@ -70,17 +70,19 @@ func main() {
 	log.Printf("Catalog successfully written to: %s\n", tempFile)
 }
 
-// MarshalWithoutEscaping marshals an object into JSON without escaping HTML characters (e.g. <, >, &)
+// MarshalWithoutEscaping marshals an object into JSON without escaping HTML characters.
+// This helps preserve label values as is (&, <, >, etc) in the JSON output.
 func MarshalWithoutEscaping(v any) ([]byte, error) {
 	buffer := &bytes.Buffer{}
 	encoder := json.NewEncoder(buffer)
 	encoder.SetEscapeHTML(false)
+
 	err := encoder.Encode(v)
 	if err != nil {
 		return nil, err
 	}
 
-	// The Encode method adds a newline at the end, so we need to trim it
-	// Source: https://go.dev/src/encoding/json/stream.go (Line 215)
+	// The Encode method adds a newline at the end, so we need to trim it.
+	// Source: https://go.dev/src/encoding/json/stream.go#L215
 	return bytes.TrimSpace(buffer.Bytes()), nil
 }
