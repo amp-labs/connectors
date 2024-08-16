@@ -40,8 +40,5 @@ func init() {
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722481017/media/linkedIn_1722481016.svg",
 			},
 		},
-		Labels: &Labels{
-			LabelKeyClusterID: LabelValueClusterID,
-		},
 	})
 }

@@ -2,13 +2,13 @@ package providers
 
 import "strings"
 
-// Label keys
+// Label keys.
 const (
 	LabelPrimaryCategory     = "primary-category"
 	LabelSecondaryCategories = "secondary-categories"
 )
 
-// Label values (categories)
+// Label values (categories).
 const (
 	CategoryAdNetworks                  = "Ad Networks"
 	CategoryAI                          = "AI"
@@ -74,6 +74,6 @@ func list(labelValues ...string) string {
 	return strings.Join(labelValues, "|")
 }
 
-func unlist(listString string) []string {
+func unlist(listString string) []string { // nolint:unused
 	return strings.Split(listString, "|")
 }
