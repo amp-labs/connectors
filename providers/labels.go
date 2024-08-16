@@ -16,7 +16,6 @@ const (
 	CategoryAnalyticsBI                 = "Analytics & BI"
 	CategoryAppointmentScheduling       = "Appointment Scheduling"
 	CategoryBilling                     = "Billing"
-	CategoryCDP                         = "CDP"
 	CategoryCloudContentCollaboration   = "Cloud Content Collaboration"
 	CategoryCodeManagement              = "Code Management"
 	CategoryCommunication               = "Communication"
