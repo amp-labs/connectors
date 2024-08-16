@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -36,7 +37,7 @@ func main() {
 
 	catalog.Timestamp = timestamp
 
-	bytes, err := json.Marshal(catalog)
+	bytes, err := MarshalWithoutEscaping(catalog)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -67,4 +68,19 @@ func main() {
 	}
 
 	log.Printf("Catalog successfully written to: %s\n", tempFile)
+}
+
+// MarshalWithoutEscaping marshals an object into JSON without escaping HTML characters (e.g. <, >, &)
+func MarshalWithoutEscaping(v any) ([]byte, error) {
+	buffer := &bytes.Buffer{}
+	encoder := json.NewEncoder(buffer)
+	encoder.SetEscapeHTML(false)
+	err := encoder.Encode(v)
+	if err != nil {
+		return nil, err
+	}
+
+	// The Encode method adds a newline at the end, so we need to trim it
+	// Source: https://go.dev/src/encoding/json/stream.go (Line 215)
+	return bytes.TrimSpace(buffer.Bytes()), nil
 }
