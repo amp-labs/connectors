@@ -110,6 +110,9 @@ type CatalogWrapper struct {
 	Timestamp string `json:"timestamp" validate:"required"`
 }
 
+// Labels defines model for Labels.
+type Labels map[string]string
+
 // Media defines model for Media.
 type Media struct {
 	// DarkMode Media to be used in dark mode.
@@ -184,9 +187,10 @@ type ProviderInfo struct {
 	BasicOpts *BasicAuthOpts `json:"basicOpts,omitempty"`
 
 	// DisplayName The display name of the provider, if omitted, defaults to provider name.
-	DisplayName string `json:"displayName,omitempty"`
-	Media       *Media `json:"media,omitempty"`
-	Name        string `json:"name"`
+	DisplayName string  `json:"displayName,omitempty"`
+	Labels      *Labels `json:"labels,omitempty"`
+	Media       *Media  `json:"media,omitempty"`
+	Name        string  `json:"name"`
 
 	// Oauth2Opts Configuration for OAuth2.0. Must be provided if authType is oauth2.
 	Oauth2Opts *Oauth2Opts `json:"oauth2Opts,omitempty"`
