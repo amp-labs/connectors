@@ -12,7 +12,7 @@ func init() {
 			GrantType:                 AuthorizationCode, // There is also a s2s clientcredentials option.
 			AuthURL:                   "https://{{.workspace}}.auth.marketingcloudapis.com/v2/authorize",
 			TokenURL:                  "https://{{.workspace}}.auth.marketingcloudapis.com/v2/token",
-			ExplicitScopesRequired:    true,
+			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: true,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
