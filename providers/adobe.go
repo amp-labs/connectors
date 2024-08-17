@@ -1,12 +1,12 @@
 package providers
 
-const AdobeExperiencePlatform Provider = "adobeExperiencePlatform"
+const Adobe Provider = "adobe"
 
 //nolint:lll
 func init() {
-	// AdobeExperiencePlatform 2-legged auth
-	SetInfo(AdobeExperiencePlatform, ProviderInfo{
-		DisplayName: "Adobe Experience Platform",
+	// Adobe 2-legged auth
+	SetInfo(Adobe, ProviderInfo{
+		DisplayName: "Adobe",
 		AuthType:    Oauth2,
 		BaseURL:     "https://platform.adobe.io",
 		Oauth2Opts: &Oauth2Opts{
