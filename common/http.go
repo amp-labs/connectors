@@ -31,7 +31,7 @@ type HTTPClient struct {
 	Base         string                  // optional base URL. If not set, then all URLs must be absolute.
 	Client       AuthenticatedHTTPClient // underlying HTTP client. Required.
 	ErrorHandler ErrorHandler            // optional error handler. If not set, then the default error handler is used.
-	OKStatusErr  bool
+	OKStatusErr  bool                    // optional, If set true indicates 200OK http response may include errors.
 }
 
 // getURL returns the base prefixed URL.
@@ -290,10 +290,10 @@ func (h *HTTPClient) sendRequest(req *http.Request) (*http.Response, []byte, err
 
 	if res.StatusCode < 200 || res.StatusCode > 299 {
 		if h.ErrorHandler != nil {
-			return res, body, h.ErrorHandler(res, body)
+			return nil, nil, h.ErrorHandler(res, body)
 		}
 
-		return res, body, InterpretError(res, body)
+		return nil, nil, InterpretError(res, body)
 	}
 
 	return res, body, nil
