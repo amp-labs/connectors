@@ -7,11 +7,11 @@ func init() {
 	SetInfo(Mural, ProviderInfo{
 		DisplayName: "Mural",
 		AuthType:    Oauth2,
-		BaseURL:     "https://api.mural.co/api",
+		BaseURL:     "https://app.mural.co/api",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   "https://api.mural.co/oauth/authorize",
-			TokenURL:                  "https://api.mural.co/oauth/token",
+			AuthURL:                   "https://app.mural.co/api/public/v1/authorization/oauth2/",
+			TokenURL:                  "https://app.mural.co/api/public/v1/authorization/oauth2/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 			TokenMetadataFields: TokenMetadataFields{
