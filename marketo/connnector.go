@@ -34,6 +34,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 			HTTPClient: &common.HTTPClient{
 				Client:       params.Caller.Client,
 				ErrorHandler: interpretError,
+				OKStatusErr:  true,
 			},
 		},
 		Module: params.Module.Name,
