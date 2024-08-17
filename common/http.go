@@ -262,7 +262,7 @@ func makeDeleteRequest(ctx context.Context, url string, headers []Header) (*http
 }
 
 // sendRequest sends the given request and returns the response & response body.
-func (h *HTTPClient) sendRequest(req *http.Request) (*http.Response, []byte, error) {
+func (h *HTTPClient) sendRequest(req *http.Request) (*http.Response, []byte, error) { //nolint:cyclop
 	// Send the request
 	res, err := h.Client.Do(req)
 	if err != nil {
