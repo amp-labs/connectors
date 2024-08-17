@@ -17,7 +17,7 @@ const (
 	OAuth2ClientSecret = "<client secret>"
 )
 
-// Run this example with `go run adobe.go`
+// Run this example with `go run adobe.go`.
 func main() {
 	utils.Run(adobeAuthExample)
 }
@@ -57,7 +57,7 @@ func adobeAuthExample(ctx context.Context) error {
 
 // Create an auth connector with the Adobe provider.
 func createAuthConnector(ctx context.Context) *connector.Connector {
-	conn, err := connector.NewConnector(providers.AdobeExperiencePlatform,
+	conn, err := connector.NewConnector(providers.Adobe,
 		connector.WithAuthenticatedClient(createAuthenticatedHttpClient(ctx)))
 	if err != nil {
 		panic(err)
@@ -68,7 +68,7 @@ func createAuthConnector(ctx context.Context) *connector.Connector {
 
 // Create an OAuth2 authenticated HTTP client for Adobe.
 func createAuthenticatedHttpClient(ctx context.Context) common.AuthenticatedHTTPClient {
-	info, err := providers.ReadInfo(providers.AdobeExperiencePlatform, nil)
+	info, err := providers.ReadInfo(providers.Adobe, nil)
 	if err != nil {
 		panic(err)
 	}
