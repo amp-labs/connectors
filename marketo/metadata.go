@@ -3,6 +3,7 @@ package marketo
 import (
 	"context"
 	"encoding/json"
+	"errors"
 
 	"github.com/amp-labs/connectors/common"
 )
@@ -49,7 +50,11 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 
 		metadata, err := metadataMapper(resp.Body.Source())
 		if err != nil {
-			return nil, err
+			if errors.Is(err, common.ErrMetadataLoadFailure) {
+				objMetadata.Errors[obj] = common.ErrEmptyResponse
+			} else {
+				return nil, err
+			}
 		}
 
 		metadata.DisplayName = obj
@@ -71,7 +76,11 @@ func metadataMapper(body []byte) (common.ObjectMetadata, error) {
 		return metadata, err
 	}
 
-	// Using the first result data
+	if len(response.Result) == 0 {
+		return metadata, common.ErrMetadataLoadFailure
+	}
+
+	// Using the first result data to generate the metadata.
 	for k := range response.Result[0] {
 		metadata.FieldsMap[k] = k
 	}
