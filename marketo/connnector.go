@@ -1,8 +1,11 @@
 package marketo
 
 import (
+	"strings"
+
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -48,6 +51,13 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 func (c *Connector) setBaseURL(newURL string) {
 	c.BaseURL = newURL
 	c.Client.HTTPClient.Base = newURL
+}
+
+func (c *Connector) getApiURL(objName string) (*urlbuilder.URL, error) {
+	bURL := strings.Join([]string{restAPIPrefix, c.Module, objName}, "/")
+	bURL += ".json"
+
+	return constructURL(c.BaseURL, bURL)
 }
 
 // Provider returns the connector provider.

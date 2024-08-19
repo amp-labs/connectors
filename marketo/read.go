@@ -10,6 +10,7 @@ import (
 //
 // This function executes a read operation using the given context and.
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
+	// Check  if
 	url, err := c.getURL(config)
 	if err != nil {
 		return nil, err
