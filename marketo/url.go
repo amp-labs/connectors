@@ -2,6 +2,7 @@ package marketo
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
@@ -40,4 +41,11 @@ func constructURL(base string, path ...string) (*urlbuilder.URL, error) {
 	}
 
 	return link, nil
+}
+
+func updateURLWithID(url *urlbuilder.URL, id string) (*urlbuilder.URL, error) {
+	s, _ := strings.CutSuffix(url.String(), ".json")
+	s = s + id + ".json"
+
+	return constructURL(s)
 }

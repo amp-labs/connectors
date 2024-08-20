@@ -1,0 +1,53 @@
+package marketo
+
+import (
+	"context"
+	"fmt"
+
+	"github.com/amp-labs/connectors/common"
+)
+
+type writeResponse struct {
+	Result  []map[string]any `json:"result"`
+	Success bool             `json:"success"`
+	Errors  []map[string]any `json:"errors"`
+}
+
+// Write creates/updates records in marketo. Write currently supports operations to the leads API only.
+func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
+	var write common.WriteMethod
+
+	url, err := c.getApiURL(config.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	// prepares the updating data request.
+	if len(config.RecordId) > 0 {
+		url, err = updateURLWithID(url, config.RecordId)
+		if err != nil {
+			return nil, err
+		}
+
+		write = c.Client.Patch
+	} else {
+		// prepares the creating data request.
+		write = c.Client.Post
+	}
+
+	json, err := write(ctx, url.String(), config.RecordData)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := common.UnmarshalJSON[writeResponse](json)
+	if err != nil {
+		return nil, err
+	}
+
+	return &common.WriteResult{
+		Success:  resp.Success,
+		RecordId: fmt.Sprint(resp.Result[0]["id"]),
+		Data:     resp.Result[0],
+	}, nil
+}
