@@ -10,8 +10,8 @@ func init() {
 		BaseURL:     "https://api.brevo.com",
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722325743/media/brevo_1722325742.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722325614/media/brevo_1722325613.svg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1724169123/media/ee6ghjeiwzbxotryzif4.png",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1724169123/media/ee6ghjeiwzbxotryzif4.png",
 			},
 			Regular: &MediaTypeRegular{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722325743/media/brevo_1722325742.jpg",
