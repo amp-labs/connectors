@@ -21,8 +21,8 @@ func init() {
 		//nolint:lll
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722405162/media/const%20ServiceNow%20Provider%20%3D%20%22serviceNow%22_1722405162.svg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722405283/media/const%20ServiceNow%20Provider%20%3D%20%22serviceNow%22_1722405282.svg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1724169123/media/tn5f6xh2nbb3bops7bsn.png",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1724169123/media/tn5f6xh2nbb3bops7bsn.png",
 			},
 			Regular: &MediaTypeRegular{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722405162/media/const%20ServiceNow%20Provider%20%3D%20%22serviceNow%22_1722405162.svg",
