@@ -20,7 +20,7 @@ func init() { // nolint:funlen
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722102329/media/zendeskSupport_1722102328.svg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1724169124/media/wkaellrizizwvelbdl6r.png",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722102329/media/zendeskSupport_1722102328.svg",
 			},
 			Regular: &MediaTypeRegular{
