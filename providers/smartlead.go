@@ -16,7 +16,7 @@ func init() {
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1723475823/media/smartlead_1723475823.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1724169124/media/i3juury69prqfujshjly.png",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1723475838/media/smartlead_1723475837.svg",
 			},
 			Regular: &MediaTypeRegular{
