@@ -261,7 +261,7 @@ func makeDeleteRequest(ctx context.Context, url string, headers []Header) (*http
 }
 
 // sendRequest sends the given request and returns the response & response body.
-func (h *HTTPClient) sendRequest(req *http.Request) (*http.Response, []byte, error) { //nolint:cyclop
+func (h *HTTPClient) sendRequest(req *http.Request) (*http.Response, []byte, error) {
 	// Send the request
 	res, err := h.Client.Do(req)
 	if err != nil {
@@ -283,6 +283,7 @@ func (h *HTTPClient) sendRequest(req *http.Request) (*http.Response, []byte, err
 		return nil, nil, fmt.Errorf("error reading response body: %w", err)
 	}
 
+	// Check the response status code
 	if res.StatusCode < 200 || res.StatusCode > 299 {
 		if h.ErrorHandler != nil {
 			return nil, nil, h.ErrorHandler(res, body)
