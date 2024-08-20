@@ -13,7 +13,7 @@ type Error struct {
 	Message string `json:"message"`
 }
 
-type Respose struct {
+type Response struct {
 	Errors    []Error          `json:"errors"`
 	Result    []map[string]any `json:"result"`
 	RequestID string           `json:"requestId"`
@@ -23,7 +23,7 @@ type Respose struct {
 // checkResponseLeverErr reports wheather the response level error is available or not.
 // If available, returns the error code as well.
 func checkResponseLeverErr(body []byte) (bool, int, error) {
-	var resp Respose
+	var resp Response
 	if err := json.Unmarshal(body, &resp); err != nil {
 		return false, 0, err
 	}
