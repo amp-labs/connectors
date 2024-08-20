@@ -10,7 +10,7 @@ func init() {
 		BaseURL:     "https://api.intercom.io",
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722166109/media/intercom.com_1722166108.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1724169124/media/zscxf6amk8pu2ijejrw0.png",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722327671/media/intercom_1722327670.svg",
 			},
 			Regular: &MediaTypeRegular{
