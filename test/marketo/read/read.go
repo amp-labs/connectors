@@ -17,8 +17,7 @@ func main() {
 }
 
 func MainFn() int {
-
-	err := testReadActivities(context.Background())
+	err := testRead(context.Background())
 	if err != nil {
 		return 1
 	}
@@ -26,11 +25,11 @@ func MainFn() int {
 	return 0
 }
 
-func testReadActivities(ctx context.Context) error {
+func testRead(ctx context.Context) error {
 	conn := mk.GetMarketoConnector(ctx)
 
 	params := common.ReadParams{
-		ObjectName: "channel",
+		ObjectName: "channels",
 		Fields:     []string{"applicableProgramType", "id", "name"},
 		Since:      time.Now().Add(-720 * time.Hour),
 	}

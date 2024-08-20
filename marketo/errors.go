@@ -1,12 +1,11 @@
 package marketo
 
 import (
+	"bytes"
 	"encoding/json"
-	"fmt"
+	"io"
 	"net/http"
 	"strconv"
-
-	"github.com/amp-labs/connectors/common"
 )
 
 type Error struct {
@@ -41,112 +40,96 @@ func checkResponseLeverErr(body []byte) (bool, int, error) {
 	return (len(resp.Errors) > 0), code, nil
 }
 
-// InterpretError interprets the given HTTP response (in a fairly straightforward
-// way) and returns an error that can be handled by the caller.
-func interpretError(res *http.Response, body []byte) error { //nolint:cyclop
-	// A must check.
-	if res.StatusCode >= 200 && res.StatusCode <= 299 {
+func responseHandler(resp *http.Response) (*http.Response, error) { //nolint:cyclop
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode >= 200 && resp.StatusCode <= 299 {
 		erroneous, code, err := checkResponseLeverErr(body)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		// If response is 200 OK, but erroneous, we update the status code,
 		//  continue with the switch cases.
 		if erroneous {
 			statusCode := statusCodeMap(code)
-			res.StatusCode = statusCode
-		} else {
-			return nil
+			resp.StatusCode = statusCode
 		}
 	}
 
-	switch res.StatusCode {
-	case http.StatusUnauthorized:
-		// Access token invalid, refresh token and retry
-		return common.NewHTTPStatusError(res.StatusCode, fmt.Errorf("%w: %s", common.ErrAccessToken, string(body)))
-	case http.StatusForbidden:
-		// Forbidden, not retryable
-		return common.NewHTTPStatusError(res.StatusCode, fmt.Errorf("%w: %s", common.ErrForbidden, string(body)))
-	case http.StatusNotFound:
-		// Semantics are debatable (temporarily missing vs. permanently gone), but for now treat this as a retryable error
-		return common.NewHTTPStatusError(res.StatusCode, fmt.Errorf("%w: %s", common.ErrRetryable, string(body)))
-	case http.StatusTooManyRequests:
-		// Too many requests, retryable
-		return common.NewHTTPStatusError(res.StatusCode, fmt.Errorf("%w: %s", common.ErrRetryable, string(body)))
-	}
+	// reset body.
+	resp.Body = io.NopCloser(bytes.NewBuffer(body))
 
-	if res.StatusCode >= 400 && res.StatusCode < 500 {
-		return common.NewHTTPStatusError(res.StatusCode, fmt.Errorf("%w: %s", common.ErrCaller, string(body)))
-	} else if res.StatusCode >= 500 && res.StatusCode < 600 {
-		return common.NewHTTPStatusError(res.StatusCode, fmt.Errorf("%w: %s", common.ErrServer, string(body)))
-	}
-
-	return common.NewHTTPStatusError(res.StatusCode, fmt.Errorf("%w: %s", common.ErrUnknown, string(body)))
+	return resp, nil
 }
 
 // statusCodeMap maps the erroneous response from marketo, with a valid http status code.
 // The response body can be sent as is.
 // https://experienceleague.adobe.com/en/docs/marketo-developer/marketo/rest/error-codes
-func statusCodeMap(code int) int { //nolint:funlen,cyclop
+//
+// nolint
+func statusCodeMap(code int) int {
 	switch code {
-	case 502: //nolint:gomnd
+	case 502:
 		return http.StatusBadGateway
-	case 601: //nolint:gomnd
+	case 601:
 		return http.StatusUnauthorized
-	case 602: //nolint:gomnd
+	case 602:
 		return http.StatusUnauthorized // token Expired
-	case 603: //nolint:gomnd
+	case 603:
 		return http.StatusForbidden
-	case 604: //nolint:gomnd
+	case 604:
 		return http.StatusRequestTimeout
-	case 605: //nolint:gomnd
+	case 605:
 		return http.StatusMethodNotAllowed
-	case 606: //nolint:gomnd
+	case 606:
 		return http.StatusTooManyRequests
-	case 607: //nolint:gomnd
+	case 607:
 		return http.StatusTooManyRequests
-	case 608: //nolint:gomnd
+	case 608:
 		return http.StatusServiceUnavailable
-	case 609: //nolint:gomnd
+	case 609:
 		return http.StatusBadRequest
-	case 610: //nolint:gomnd
+	case 610:
 		return http.StatusNotFound
-	case 611: //nolint:gomnd
+	case 611:
 		return http.StatusInternalServerError
-	case 612: //nolint:gomnd
+	case 612:
 		return http.StatusUnsupportedMediaType
-	case 613: //nolint:gomnd
+	case 613:
 		return http.StatusBadRequest
-	case 614: //nolint:gomnd
+	case 614:
 		return http.StatusNotFound
-	case 615: //nolint:gomnd
+	case 615:
 		return http.StatusTooManyRequests
-	case 616: //nolint:gomnd
+	case 616:
 		return http.StatusForbidden
-	case 701: //nolint:gomnd
+	case 701:
 		return http.StatusBadRequest
-	case 702: //nolint:gomnd
+	case 702:
 		return http.StatusNotFound
-	case 703: //nolint:gomnd
+	case 703:
 		return http.StatusForbidden
-	case 704: //nolint:gomnd
+	case 704:
 		return http.StatusBadRequest
-	case 709: //nolint:gomnd
+	case 709:
 		return http.StatusConflict
-	case 710: //nolint:gomnd
+	case 710:
 		return http.StatusNotFound
-	case 711: //nolint:gomnd
+	case 711:
 		return http.StatusBadRequest
-	case 712: //nolint:gomnd
+	case 712:
 		return http.StatusBadRequest
-	case 713: //nolint:gomnd
+	case 713:
 		return http.StatusServiceUnavailable
-	case 714: //nolint:gomnd
+	case 714:
 		return http.StatusNotFound
-	case 718: //nolint:gomnd
+	case 718:
 		return http.StatusNotFound
-	case 719: //nolint:gomnd
+	case 719:
 		return http.StatusRequestTimeout
 	default:
 		return code

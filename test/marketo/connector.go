@@ -18,7 +18,7 @@ func GetMarketoConnector(ctx context.Context) *marketo.Connector {
 	conn, err := marketo.NewConnector(
 		marketo.WithClient(ctx, http.DefaultClient, getConfig(reader)),
 		marketo.WithWorkspace(reader.Get(credscanning.Fields.Workspace)),
-		marketo.WithModule(marketo.Assets),
+		marketo.WithModule(marketo.ModuleAssets),
 	)
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)

@@ -26,12 +26,14 @@ type Header struct {
 // to the error handler as arguments.
 type ErrorHandler func(rsp *http.Response, body []byte) error
 
+type ResponseHandler func(rsp *http.Response) (*http.Response, error)
+
 // HTTPClient is an HTTP client that handles OAuth access token refreshes.
 type HTTPClient struct {
-	Base         string                  // optional base URL. If not set, then all URLs must be absolute.
-	Client       AuthenticatedHTTPClient // underlying HTTP client. Required.
-	ErrorHandler ErrorHandler            // optional error handler. If not set, then the default error handler is used.
-	OKStatusErr  bool                    // optional, If set true indicates 200OK http response may include errors.
+	Base            string                  // optional base URL. If not set, then all URLs must be absolute.
+	Client          AuthenticatedHTTPClient // underlying HTTP client. Required.
+	ErrorHandler    ErrorHandler            // optional error handler. If not set, then the default error handler is used.
+	ResponseHandler ResponseHandler         // optional, Allows mutation of the http.Response from the Saas API response.
 }
 
 // getURL returns the base prefixed URL.
@@ -269,6 +271,14 @@ func (h *HTTPClient) sendRequest(req *http.Request) (*http.Response, []byte, err
 		return nil, nil, err
 	}
 
+	// Apply the ResponseHandler if provided
+	if h.ResponseHandler != nil {
+		res, err = h.ResponseHandler(res)
+		if err != nil {
+			return nil, nil, err
+		}
+	}
+
 	// Read the response body
 	body, err := io.ReadAll(res.Body)
 
@@ -284,10 +294,7 @@ func (h *HTTPClient) sendRequest(req *http.Request) (*http.Response, []byte, err
 		return nil, nil, fmt.Errorf("error reading response body: %w", err)
 	}
 
-	if h.OKStatusErr && (res.StatusCode >= 200 && res.StatusCode <= 299) {
-		return res, body, h.ErrorHandler(res, body)
-	}
-
+	// Check the response status code
 	if res.StatusCode < 200 || res.StatusCode > 299 {
 		if h.ErrorHandler != nil {
 			return nil, nil, h.ErrorHandler(res, body)

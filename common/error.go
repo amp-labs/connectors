@@ -9,7 +9,7 @@ import (
 
 // InterpretError interprets the given HTTP response (in a fairly straightforward
 // way) and returns an error that can be handled by the caller.
-func InterpretError(res *http.Response, body []byte) error { //nolint:cyclop
+func InterpretError(res *http.Response, body []byte) error {
 	switch res.StatusCode {
 	case http.StatusUnauthorized:
 		// Access token invalid, refresh token and retry
