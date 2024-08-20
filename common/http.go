@@ -26,11 +26,14 @@ type Header struct {
 // to the error handler as arguments.
 type ErrorHandler func(rsp *http.Response, body []byte) error
 
+type ResponseHandler func(rsp *http.Response) (*http.Response, error)
+
 // HTTPClient is an HTTP client that handles OAuth access token refreshes.
 type HTTPClient struct {
-	Base         string                  // optional base URL. If not set, then all URLs must be absolute.
-	Client       AuthenticatedHTTPClient // underlying HTTP client. Required.
-	ErrorHandler ErrorHandler            // optional error handler. If not set, then the default error handler is used.
+	Base            string                  // optional base URL. If not set, then all URLs must be absolute.
+	Client          AuthenticatedHTTPClient // underlying HTTP client. Required.
+	ErrorHandler    ErrorHandler            // optional error handler. If not set, then the default error handler is used.
+	ResponseHandler ResponseHandler         // optional, Allows mutation of the http.Response from the Saas API response.
 }
 
 // getURL returns the base prefixed URL.
@@ -261,11 +264,19 @@ func makeDeleteRequest(ctx context.Context, url string, headers []Header) (*http
 }
 
 // sendRequest sends the given request and returns the response & response body.
-func (h *HTTPClient) sendRequest(req *http.Request) (*http.Response, []byte, error) {
+func (h *HTTPClient) sendRequest(req *http.Request) (*http.Response, []byte, error) { //nolint:cyclop
 	// Send the request
 	res, err := h.Client.Do(req)
 	if err != nil {
 		return nil, nil, err
+	}
+
+	// Apply the ResponseHandler if provided
+	if h.ResponseHandler != nil {
+		res, err = h.ResponseHandler(res)
+		if err != nil {
+			return nil, nil, err
+		}
 	}
 
 	// Read the response body
