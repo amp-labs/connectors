@@ -21,7 +21,7 @@ func init() {
 		//nolint:lll
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722347433/media/const%20Webflow%20Provider%20%3D%20%22webflow%22_1722347433.svg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1724169124/media/uzen6vmatu35qsrc3zry.png",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722347649/media/const%20Webflow%20Provider%20%3D%20%22webflow%22_1722347650.jpg",
 			},
 			Regular: &MediaTypeRegular{
