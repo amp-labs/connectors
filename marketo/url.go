@@ -1,41 +1,8 @@
 package marketo
 
-import (
-	"fmt"
-	"strings"
-	"time"
-
-	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/urlbuilder"
-)
+import "github.com/amp-labs/connectors/common/urlbuilder"
 
 var restAPIPrefix string = "rest" //nolint:gochecknoglobals
-
-func (c *Connector) getURL(params common.ReadParams) (*urlbuilder.URL, error) {
-	// If NextPage is set, then we're reading the next page of results.
-	// The NextPage URL has all the necessary parameters.
-	if len(params.NextPage) > 0 {
-		return constructURL(params.NextPage.String())
-	}
-
-	bURL := strings.Join([]string{c.BaseURL, restAPIPrefix, c.Module, params.ObjectName}, "/")
-	bURL += ".json"
-
-	link, err := constructURL(bURL)
-	if err != nil {
-		return nil, err
-	}
-
-	// This affects  a very few number of objects.
-	// Leads, Deleted Leads, Lead Changes,
-	if !params.Since.IsZero() {
-		time := params.Since.Format(time.RFC3339)
-		fmtTime := fmt.Sprintf("%v", time)
-		link.WithQueryParam("sinceDatetime", fmtTime)
-	}
-
-	return link, nil
-}
 
 func constructURL(base string, path ...string) (*urlbuilder.URL, error) {
 	link, err := urlbuilder.New(base, path...)
