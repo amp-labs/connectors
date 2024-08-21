@@ -22,7 +22,7 @@ func init() {
 		//nolint:lll
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1724169124/media/bhgodfyuedaej5tk2v48.png",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1724222981/media/km0ht1t5bxff9f2bqgs0.png",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722407118/media/const%20%20%20%20Paddle%20%20%20Provider%20%3D%20%22paddle%22_1722407117.svg",
 			},
 			Regular: &MediaTypeRegular{
@@ -58,7 +58,7 @@ func init() {
 		//nolint:lll
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722407082/media/const%20%20%20%20Paddle%20%20%20Provider%20%3D%20%22paddle%22_1722407081.svg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1724222981/media/km0ht1t5bxff9f2bqgs0.png",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722407118/media/const%20%20%20%20Paddle%20%20%20Provider%20%3D%20%22paddle%22_1722407117.svg",
 			},
 			Regular: &MediaTypeRegular{
