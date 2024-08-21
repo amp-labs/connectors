@@ -51,21 +51,20 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:   "Successfully describe multiple objects with metadata",
-			Input:  []string{"data_events", "teams"},
+			Input:  []string{"segments", "teams"},
 			Server: mockserver.Dummy(),
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
-					"data_events": {
-						DisplayName: "Data Events",
+					"segments": {
+						DisplayName: "Segments",
 						FieldsMap: map[string]string{
-							"created_at":       "created_at",
-							"email":            "email",
-							"event_name":       "event_name",
-							"id":               "id",
-							"intercom_user_id": "intercom_user_id",
-							"metadata":         "metadata",
-							"type":             "type",
-							"user_id":          "user_id",
+							"count":       "count",
+							"created_at":  "created_at",
+							"id":          "id",
+							"name":        "name",
+							"person_type": "person_type",
+							"type":        "type",
+							"updated_at":  "updated_at",
 						},
 					},
 					"teams": {
