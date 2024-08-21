@@ -37,7 +37,7 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 	// If NextPage is set, then we're reading the next page of results.
 	// The NextPage URL has all the necessary parameters.
 	if len(config.NextPage) > 0 {
-		return constructURL(config.NextPage.String())
+		return urlbuilder.New(config.NextPage.String())
 	}
 
 	url, err := c.getApiURL(config.ObjectName)

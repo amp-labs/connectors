@@ -59,7 +59,7 @@ func (c *Connector) String() string {
 }
 
 func (c *Connector) getURL(arg string) (*urlbuilder.URL, error) {
-	return constructURL(c.BaseURL, apiVersion, arg)
+	return urlbuilder.New(c.BaseURL, apiVersion, arg)
 }
 
 func (c *Connector) setBaseURL(newURL string) {

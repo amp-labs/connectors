@@ -45,7 +45,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 }
 
 func (c *Connector) getApiURL(arg string) (*urlbuilder.URL, error) {
-	return constructURL(c.BaseURL, apiVersion, arg)
+	return urlbuilder.New(c.BaseURL, apiVersion, arg)
 }
 
 func (c *Connector) setBaseURL(newURL string) {

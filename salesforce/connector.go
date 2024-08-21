@@ -87,25 +87,25 @@ func (c *Connector) getRestApiURL(paths ...string) (*urlbuilder.URL, error) {
 		restAPISuffix, // scope URLs to API version
 	}, paths...)
 
-	return constructURL(c.BaseURL, parts...)
+	return urlbuilder.New(c.BaseURL, parts...)
 }
 
 func (c *Connector) getDomainURL(paths ...string) (*urlbuilder.URL, error) {
-	return constructURL(c.BaseURL, paths...)
+	return urlbuilder.New(c.BaseURL, paths...)
 }
 
 func (c *Connector) getSoapURL() (*urlbuilder.URL, error) {
-	return constructURL(c.BaseURL, "services/Soap/m", APIVersionSOAP())
+	return urlbuilder.New(c.BaseURL, "services/Soap/m", APIVersionSOAP())
 }
 
 // nolint: lll
 // https://developer.salesforce.com/docs/atlas.en-us.api_tooling.meta/api_tooling/tooling_api_objects_eventrelayconfig.htm?q=EventRelayConfig
 func (c *Connector) getURIPartEventRelayConfig(paths ...string) (*urlbuilder.URL, error) {
-	return constructURL(uriToolingEventRelayConfig, paths...)
+	return urlbuilder.New(uriToolingEventRelayConfig, paths...)
 }
 
 func (c *Connector) getURIPartSobjectsDescribe(objectName string) (*urlbuilder.URL, error) {
-	return constructURL(uriSobjects, objectName, "describe")
+	return urlbuilder.New(uriSobjects, objectName, "describe")
 }
 
 func (c *Connector) setBaseURL(newURL string) {
