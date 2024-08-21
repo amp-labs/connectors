@@ -45,8 +45,13 @@ func constructURL(base string, path ...string) (*urlbuilder.URL, error) {
 
 func updateURLWithID(url *urlbuilder.URL, id string) (*urlbuilder.URL, error) {
 	s := removeJSONSuffix(url.String())
-	s += id
-	s = addJSONSuffix(s)
+
+	url, err := constructURL(s, id)
+	if err != nil {
+		return nil, err
+	}
+
+	s = addJSONSuffix(url.String())
 
 	return constructURL(s)
 }
