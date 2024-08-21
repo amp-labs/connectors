@@ -22,7 +22,7 @@ func init() {
 		PostAuthInfoNeeded: false,
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1724169123/media/yrna2ica74nfjgxmkie0.png",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1724223755/media/dofc2atuowphyzyh3x4l.png",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1724169123/media/yrna2ica74nfjgxmkie0.png",
 			},
 			Regular: &MediaTypeRegular{

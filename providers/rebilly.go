@@ -18,7 +18,7 @@ func init() {
 		//nolint:lll
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722408171/media/const%20Rebilly%20Provider%20%3D%20%22rebilly%22_1722408170.png",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1724224447/media/noypybveuwpupubnizyo.png",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722408423/media/const%20Rebilly%20Provider%20%3D%20%22rebilly%22_1722408423.svg",
 			},
 			Regular: &MediaTypeRegular{

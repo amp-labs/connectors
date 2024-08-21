@@ -33,8 +33,8 @@ func init() {
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722059419/media/slack_1722059417.svg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722059283/media/slack_1722059282.svg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1724225856/media/wo2jw59mssz2pk1eczur.png",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1724225856/media/wo2jw59mssz2pk1eczur.png",
 			},
 			Regular: &MediaTypeRegular{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722059419/media/slack_1722059417.svg",

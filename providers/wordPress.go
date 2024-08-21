@@ -21,8 +21,8 @@ func init() {
 		//nolint:lll
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722346246/media/const%20WordPress%20Provider%20%3D%20%22wordPress%22_1722346246.svg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722346154/media/const%20WordPress%20Provider%20%3D%20%22wordPress%22_1722346154.svg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1724225616/media/jwc5dcjfheo0vpr8e1ga.png",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1724225616/media/jwc5dcjfheo0vpr8e1ga.png",
 			},
 			Regular: &MediaTypeRegular{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722346246/media/const%20WordPress%20Provider%20%3D%20%22wordPress%22_1722346246.svg",
