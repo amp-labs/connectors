@@ -32,8 +32,8 @@ func init() {
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722481032/media/linkedIn_1722481031.svg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722481000/media/linkedIn_1722480999.svg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1724225364/media/c2esjc2pb5o1qa9bwi0b.png",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1724225364/media/c2esjc2pb5o1qa9bwi0b.png",
 			},
 			Regular: &MediaTypeRegular{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722481059/media/linkedIn_1722481058.svg",
