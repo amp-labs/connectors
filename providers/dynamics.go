@@ -65,7 +65,7 @@ func init() { // nolint:funlen
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722346320/media/dynamicsCRM_1722346320.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1724169123/media/eajuugwekqardkcwf45c.png",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722346267/media/dynamicsCRM_1722346267.svg",
 			},
 			Regular: &MediaTypeRegular{
