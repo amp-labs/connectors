@@ -28,7 +28,7 @@ func init() {
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722330479/media/podium_1722330478.svg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1724222553/media/nxtssrgengo6pbbwqwd2.png",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722330479/media/podium_1722330478.svg",
 			},
 			Regular: &MediaTypeRegular{

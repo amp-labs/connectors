@@ -10,7 +10,7 @@ func init() {
 		BaseURL:     "https://api.notion.com",
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722329109/media/notion_1722329109.svg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1724225786/media/mk29sfwu7u7zqiv7jc1c.png",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722329086/media/notion_1722329085.svg",
 			},
 			Regular: &MediaTypeRegular{

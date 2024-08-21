@@ -22,7 +22,7 @@ func init() {
 		PostAuthInfoNeeded: false,
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722071714/media/geckoboard_1722071713.svg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1724225706/media/zr9qopmgehuupyuabn6k.png",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722071714/media/geckoboard_1722071713.svg",
 			},
 			Regular: &MediaTypeRegular{
