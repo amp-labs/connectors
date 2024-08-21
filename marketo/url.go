@@ -18,7 +18,7 @@ func (c *Connector) getURL(params common.ReadParams) (*urlbuilder.URL, error) {
 		return constructURL(params.NextPage.String())
 	}
 
-	link, err := c.getApiURL(params.ObjectName)
+	link, err := c.getAPIURL(params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
