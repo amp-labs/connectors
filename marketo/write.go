@@ -45,9 +45,21 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, err
 	}
 
+	if len(resp.Result) == 0 {
+		return nil, ErrEmptyResultResponse
+	}
+
+	id := resp.Result[0]["id"]
+
+	// By default the id is returned as a float64
+	id, ok := id.(float64)
+	if !ok || id == 0 {
+		return nil, common.ErrMissingRecordID
+	}
+
 	return &common.WriteResult{
 		Success:  resp.Success,
-		RecordId: fmt.Sprint(resp.Result[0]["id"]),
+		RecordId: fmt.Sprint(id),
 		Data:     resp.Result[0],
 	}, nil
 }

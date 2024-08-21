@@ -44,8 +44,17 @@ func constructURL(base string, path ...string) (*urlbuilder.URL, error) {
 }
 
 func updateURLWithID(url *urlbuilder.URL, id string) (*urlbuilder.URL, error) {
-	s, _ := strings.CutSuffix(url.String(), ".json")
-	s = s + id + ".json"
+	s := removeJSONSuffix(url.String())
+	s += id
+	s = addJSONSuffix(s)
 
 	return constructURL(s)
+}
+
+func removeJSONSuffix(s string) string {
+	return strings.TrimSuffix(s, ".json")
+}
+
+func addJSONSuffix(s string) string {
+	return s + ".json"
 }
