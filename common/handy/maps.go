@@ -16,3 +16,19 @@ func (m Map[K, V]) Keys() []K {
 func (m Map[K, V]) KeySet() Set[K] {
 	return NewSet(m.Keys())
 }
+
+func (m Map[K, V]) Has(key K) bool {
+	_, ok := m[key]
+
+	return ok
+}
+
+func (m Map[K, V]) Values() []V {
+	values := make([]V, 0, len(m))
+
+	for key := range m {
+		values = append(values, m[key])
+	}
+
+	return values
+}
