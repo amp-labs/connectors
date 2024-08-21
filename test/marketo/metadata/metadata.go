@@ -21,5 +21,4 @@ func main() {
 	// Print the results
 	fmt.Println("Results: ", m.Result)
 	fmt.Println("Errors: ", m.Errors)
-
 }

@@ -12,3 +12,23 @@ func (l Lists[T]) Add(kind string, objects ...T) {
 
 	l[kind] = append(l[kind], objects...)
 }
+
+// GetBucketNames returns names of lists, buckets they are in.
+// Example:
+//
+//	veggies: cucumber, tomato;
+//	fruits: pineapple;
+//
+// Will return veggies and fruits.
+func (l Lists[T]) GetBucketNames() []string {
+	result := make([]string, len(l))
+
+	index := 0
+
+	for name := range l {
+		result[index] = name
+		index++
+	}
+
+	return result
+}
