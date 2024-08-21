@@ -2,6 +2,7 @@ package marketo
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
@@ -40,4 +41,25 @@ func constructURL(base string, path ...string) (*urlbuilder.URL, error) {
 	}
 
 	return link, nil
+}
+
+func updateURLWithID(url *urlbuilder.URL, id string) (*urlbuilder.URL, error) {
+	s := removeJSONSuffix(url.String())
+
+	url, err := constructURL(s, id)
+	if err != nil {
+		return nil, err
+	}
+
+	s = addJSONSuffix(url.String())
+
+	return constructURL(s)
+}
+
+func removeJSONSuffix(s string) string {
+	return strings.TrimSuffix(s, ".json")
+}
+
+func addJSONSuffix(s string) string {
+	return s + ".json"
 }
