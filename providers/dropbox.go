@@ -26,7 +26,7 @@ func init() {
 		//nolint:lll
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722491962/media/Dropbox%20%20%20%20%20Provider%20%3D%20%22dropbox%22_1722491963.svg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1724223403/media/qoxime3z8bloqgzsvude.png",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722492220/media/Dropbox%20%20%20%20%20Provider%20%3D%20%22dropbox%22_1722492221.svg",
 			},
 			Regular: &MediaTypeRegular{
