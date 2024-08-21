@@ -57,7 +57,7 @@ func (c *Connector) Provider() providers.Provider {
 	return providers.Marketo
 }
 
-func (c *Connector) getApiURL(objName string) (*urlbuilder.URL, error) {
+func (c *Connector) getAPIURL(objName string) (*urlbuilder.URL, error) {
 	bURL := strings.Join([]string{restAPIPrefix, c.Module, objName}, "/")
 
 	if !strings.HasSuffix(objName, ".json") {
