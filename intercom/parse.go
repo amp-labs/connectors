@@ -98,19 +98,6 @@ func getNextPageStringURL(node *ajson.Node) (string, error) {
 	return *nextPage, nil
 }
 
-func getMarshalledData(records []map[string]interface{}, fields []string) ([]common.ReadResultRow, error) {
-	data := make([]common.ReadResultRow, len(records))
-
-	for i, record := range records {
-		data[i] = common.ReadResultRow{
-			Fields: common.ExtractLowercaseFieldsFromRaw(fields, record),
-			Raw:    record,
-		}
-	}
-
-	return data, nil
-}
-
 // The key that stores array in response payload will be dynamically figured out.
 // Ex: {"data": []} vs {"teams":[]} vs {"segments":[]}.
 func extractListFieldName(node *ajson.Node) (string, error) {

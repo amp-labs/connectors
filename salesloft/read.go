@@ -25,7 +25,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		getTotalSize,
 		getRecords,
 		makeNextRecordsURL(link),
-		getMarshalledData,
+		common.GetMarshaledData,
 		config.Fields,
 	)
 }

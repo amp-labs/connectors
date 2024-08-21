@@ -94,16 +94,3 @@ func getNextRecords(node *ajson.Node) (string, error) {
 
 	return strconv.FormatInt(nextStartIndex, 10), nil
 }
-
-func getMarshaledData(records []map[string]any, fields []string) ([]common.ReadResultRow, error) {
-	data := make([]common.ReadResultRow, len(records))
-
-	for i, record := range records {
-		data[i] = common.ReadResultRow{
-			Fields: common.ExtractLowercaseFieldsFromRaw(fields, record),
-			Raw:    record,
-		}
-	}
-
-	return data, nil
-}
