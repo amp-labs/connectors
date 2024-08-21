@@ -6,6 +6,12 @@ import (
 	"github.com/amp-labs/connectors/common/handy"
 )
 
+// This strategy prunes URL Path that should be omitted during Schema extraction.
+// It allows hard coded endpoint Path, as well as simple star rules focusing on matching prefix or suffix.
+// Ex:
+// Basic:	/v1/orders	- ignores this path
+// Suffix:	*/batch		- ignores paths ending with batch
+// Prefix:	/v2/*		- ignores paths starting with v2.
 type ignorePathStrategy struct {
 	ignoreEndpoints handy.Set[string]
 	prefixes        []string

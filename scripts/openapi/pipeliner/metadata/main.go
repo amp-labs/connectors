@@ -9,20 +9,34 @@ import (
 	"github.com/amp-labs/connectors/tools/scrapper"
 )
 
+var (
+	ignoreEndpoints = []string{ // nolint:gochecknoglobals
+		"*/batch-modify",
+		"*/batch-delete",
+		"/entities/Accounts/merge",
+	}
+	objectEndpoints = map[string]string{ // nolint:gochecknoglobals
+		// none
+	}
+	displayNameOverride = map[string]string{ // nolint:gochecknoglobals
+		// none
+	}
+)
+
 func main() {
 	explorer, err := openapi.FileManager.GetExplorer()
 	must(err)
 
-	aliases := api3.NewAliases(map[string]string{})
-
-	objects, err := explorer.GetBasicReadObjects("entities", aliases, api3.DataObjectCheck)
+	objects, err := explorer.GetBasicReadObjects(
+		ignoreEndpoints, objectEndpoints, displayNameOverride, api3.DataObjectCheck,
+	)
 	must(err)
 
 	schemas := scrapper.NewObjectMetadataResult()
 
 	for _, object := range objects {
 		for _, field := range object.Fields {
-			schemas.Add(aliases.Synonym(object.ObjectName), object.DisplayName, field, nil)
+			schemas.Add(object.ObjectName, object.DisplayName, field, nil)
 		}
 	}
 
