@@ -9,6 +9,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/marketo"
+	"github.com/brianvoe/gofakeit/v6"
 )
 
 func main() {
@@ -28,18 +29,15 @@ func testWrite(ctx context.Context) error {
 	conn := marketo.GetMarketoConnectorW(ctx)
 
 	params := common.WriteParams{
-		ObjectName: "opportunities",
+		ObjectName: "leads",
 		RecordData: map[string]any{
 			"input": []map[string]any{{
-				"marketoGUID": 0,
-				"seq":         0,
-				"reasons": []map[string]any{{
-					"code":    "mmmh",
-					"message": "I don't have one",
-				},
-				},
+				"email":     gofakeit.Email(),
+				"firstName": gofakeit.Name(),
 			},
 			},
+			"action":      "createOnly",
+			"lookupField": "email",
 		},
 	}
 
