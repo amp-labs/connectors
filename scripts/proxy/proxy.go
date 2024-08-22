@@ -182,8 +182,7 @@ func main() {
 
 func mainOAuth2ClientCreds(ctx context.Context, provider string, catalogVariables []paramsbuilder.CatalogVariable) {
 	params := createClientAuthParams(provider)
-	tokens := getTokensFromRegistry()
-	proxy := buildOAuth2AuthCodeProxy(ctx, provider, params.Scopes, params.ID, params.Secret, catalogVariables, tokens)
+	proxy := buildOAuth2ClientCredentialsProxy(ctx, provider, params.Scopes, params.ID, params.Secret, catalogVariables)
 	startProxy(ctx, proxy, DefaultPort)
 }
 
