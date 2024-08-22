@@ -37,9 +37,5 @@ func init() {
 			Subscribe: false,
 			Write:     false,
 		},
-		Labels: &Labels{
-			LabelPrimaryCategory:     CategoryProductivityCollaboration,
-			LabelSecondaryCategories: list(CategoryKnowledgeBase, CategoryProductManagement),
-		},
 	})
 }

@@ -23,7 +23,7 @@ func init() {
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -37,6 +37,9 @@ func init() {
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722461906/media/callRail_1722461906.jpg",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722461856/media/callRail_1722461853.svg",
 			},
+		},
+		Labels: &Labels{
+			LabelExperimental: LabelValueTrue,
 		},
 	})
 }
