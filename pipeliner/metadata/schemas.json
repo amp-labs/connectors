@@ -1,7 +1,7 @@
 {
   "data": {
     "AccountDataExRelations": {
-      "displayName": "AccountDataExRelations",
+      "displayName": "Account Data Ex Relations",
       "fields": {
         "account": "account",
         "account_id": "account_id",
@@ -17,7 +17,7 @@
       }
     },
     "AccountKPIs": {
-      "displayName": "AccountKPIs",
+      "displayName": "Account KPIs",
       "fields": {
         "account": "account",
         "account_id": "account_id",
@@ -38,7 +38,7 @@
       }
     },
     "AccountRelationLabels": {
-      "displayName": "AccountRelationLabels",
+      "displayName": "Account Relation Labels",
       "fields": {
         "account_relation": "account_relation",
         "account_relation_id": "account_relation_id",
@@ -53,7 +53,7 @@
       }
     },
     "AccountRelationTypes": {
-      "displayName": "AccountRelationTypes",
+      "displayName": "Account Relation Types",
       "fields": {
         "color": "color",
         "created": "created",
@@ -66,7 +66,7 @@
       }
     },
     "AccountRelations": {
-      "displayName": "AccountRelations",
+      "displayName": "Account Relations",
       "fields": {
         "account1": "account1",
         "account1_id": "account1_id",
@@ -81,7 +81,7 @@
       }
     },
     "AccountRoles": {
-      "displayName": "AccountRoles",
+      "displayName": "Account Roles",
       "fields": {
         "color": "color",
         "created": "created",
@@ -94,7 +94,7 @@
       }
     },
     "AccountSharingClientRelations": {
-      "displayName": "AccountSharingClientRelations",
+      "displayName": "Account Sharing Client Relations",
       "fields": {
         "account": "account",
         "account_id": "account_id",
@@ -110,7 +110,7 @@
       }
     },
     "AccountSharingSalesUnitRelations": {
-      "displayName": "AccountSharingSalesUnitRelations",
+      "displayName": "Account Sharing Sales Unit Relations",
       "fields": {
         "account": "account",
         "account_id": "account_id",
@@ -126,7 +126,7 @@
       }
     },
     "AccountSocialRelations": {
-      "displayName": "AccountSocialRelations",
+      "displayName": "Account Social Relations",
       "fields": {
         "angellist_url": "angellist_url",
         "created": "created",
@@ -163,7 +163,7 @@
       }
     },
     "AccountTypes": {
-      "displayName": "AccountTypes",
+      "displayName": "Account Types",
       "fields": {
         "can_change_readonly": "can_change_readonly",
         "created": "created",
@@ -250,7 +250,7 @@
       }
     },
     "ActivityComments": {
-      "displayName": "ActivityComments",
+      "displayName": "Activity Comments",
       "fields": {
         "activity_id": "activity_id",
         "appointment": "appointment",
@@ -267,7 +267,7 @@
       }
     },
     "ActivityDataExRelations": {
-      "displayName": "ActivityDataExRelations",
+      "displayName": "Activity Data Ex Relations",
       "fields": {
         "activity_id": "activity_id",
         "appointment": "appointment",
@@ -284,7 +284,7 @@
       }
     },
     "ActivityKPIs": {
-      "displayName": "ActivityKPIs",
+      "displayName": "Activity Kp Is",
       "fields": {
         "activity_id": "activity_id",
         "application_id": "application_id",
@@ -306,7 +306,7 @@
       }
     },
     "ActivityRelations": {
-      "displayName": "ActivityRelations",
+      "displayName": "Activity Relations",
       "fields": {
         "account": "account",
         "account_id": "account_id",
@@ -336,7 +336,7 @@
       }
     },
     "AllowedAccountTypes": {
-      "displayName": "AllowedAccountTypes",
+      "displayName": "Allowed Account Types",
       "fields": {
         "account_type": "account_type",
         "account_type_id": "account_type_id",
@@ -351,7 +351,7 @@
       }
     },
     "AllowedCompanyEmails": {
-      "displayName": "AllowedCompanyEmails",
+      "displayName": "Allowed Company Emails",
       "fields": {
         "company_email": "company_email",
         "company_email_id": "company_email_id",
@@ -366,7 +366,7 @@
       }
     },
     "AllowedCompanyPhones": {
-      "displayName": "AllowedCompanyPhones",
+      "displayName": "Allowed Company Phones",
       "fields": {
         "created": "created",
         "id": "id",
@@ -381,7 +381,7 @@
       }
     },
     "AllowedContactTypes": {
-      "displayName": "AllowedContactTypes",
+      "displayName": "Allowed Contact Types",
       "fields": {
         "contact_type": "contact_type",
         "contact_type_id": "contact_type_id",
@@ -396,7 +396,7 @@
       }
     },
     "AllowedLeadTypes": {
-      "displayName": "AllowedLeadTypes",
+      "displayName": "Allowed Lead Types",
       "fields": {
         "created": "created",
         "id": "id",
@@ -411,7 +411,7 @@
       }
     },
     "AllowedPipelines": {
-      "displayName": "AllowedPipelines",
+      "displayName": "Allowed Pipelines",
       "fields": {
         "access_step_documents": "access_step_documents",
         "created": "created",
@@ -427,7 +427,7 @@
       }
     },
     "AllowedQuoteTypes": {
-      "displayName": "AllowedQuoteTypes",
+      "displayName": "Allowed Quote Types",
       "fields": {
         "created": "created",
         "id": "id",
@@ -442,7 +442,7 @@
       }
     },
     "ApiAccesses": {
-      "displayName": "ApiAccesses",
+      "displayName": "Api Accesses",
       "fields": {
         "created": "created",
         "email": "email",
@@ -460,7 +460,7 @@
       }
     },
     "AppointmentClientInviteesRelations": {
-      "displayName": "AppointmentClientInviteesRelations",
+      "displayName": "Appointment Client Invitees Relations",
       "fields": {
         "appointment": "appointment",
         "appointment_id": "appointment_id",
@@ -476,7 +476,7 @@
       }
     },
     "AppointmentContactInviteesRelations": {
-      "displayName": "AppointmentContactInviteesRelations",
+      "displayName": "Appointment Contact Invitees Relations",
       "fields": {
         "appointment": "appointment",
         "appointment_id": "appointment_id",
@@ -496,7 +496,7 @@
       }
     },
     "AppointmentReminders": {
-      "displayName": "AppointmentReminders",
+      "displayName": "Appointment Reminders",
       "fields": {
         "appointment": "appointment",
         "appointment_id": "appointment_id",
@@ -514,7 +514,7 @@
       }
     },
     "AppointmentSchedules": {
-      "displayName": "AppointmentSchedules",
+      "displayName": "Appointment Schedules",
       "fields": {
         "additional_fields_data": "additional_fields_data",
         "appointment_description": "appointment_description",
@@ -560,7 +560,7 @@
       }
     },
     "AppointmentTypes": {
-      "displayName": "AppointmentTypes",
+      "displayName": "Appointment Types",
       "fields": {
         "can_change_readonly": "can_change_readonly",
         "created": "created",
@@ -637,7 +637,7 @@
       }
     },
     "ApprovalApprovers": {
-      "displayName": "ApprovalApprovers",
+      "displayName": "Approval Approvers",
       "fields": {
         "approval": "approval",
         "approval_id": "approval_id",
@@ -654,7 +654,7 @@
       }
     },
     "ApprovalProcessActivityLogLines": {
-      "displayName": "ApprovalProcessActivityLogLines",
+      "displayName": "Approval Process Activity Log Lines",
       "fields": {
         "approval": "approval",
         "approval_id": "approval_id",
@@ -672,7 +672,7 @@
       }
     },
     "ApprovalProcesses": {
-      "displayName": "ApprovalProcesses",
+      "displayName": "Approval Processes",
       "fields": {
         "activity_logs": "activity_logs",
         "created": "created",
@@ -755,7 +755,7 @@
       }
     },
     "ClientExcludedOppties": {
-      "displayName": "ClientExcludedOppties",
+      "displayName": "Client Excluded Oppties",
       "fields": {
         "created": "created",
         "id": "id",
@@ -771,7 +771,7 @@
       }
     },
     "ClientFavorites": {
-      "displayName": "ClientFavorites",
+      "displayName": "Client Favorites",
       "fields": {
         "account": "account",
         "account_id": "account_id",
@@ -804,7 +804,7 @@
       }
     },
     "ClientSettings": {
-      "displayName": "ClientSettings",
+      "displayName": "Client Settings",
       "fields": {
         "created": "created",
         "id": "id",
@@ -819,7 +819,7 @@
       }
     },
     "ClientStoryReads": {
-      "displayName": "ClientStoryReads",
+      "displayName": "Client Story Reads",
       "fields": {
         "activity_id": "activity_id",
         "appointment": "appointment",
@@ -883,7 +883,7 @@
       }
     },
     "CloudObjectFolders": {
-      "displayName": "CloudObjectFolders",
+      "displayName": "Cloud Object Folders",
       "fields": {
         "created": "created",
         "entity_api_name": "entity_api_name",
@@ -899,7 +899,7 @@
       }
     },
     "CloudObjectRelations": {
-      "displayName": "CloudObjectRelations",
+      "displayName": "Cloud Object Relations",
       "fields": {
         "account": "account",
         "account_id": "account_id",
@@ -945,7 +945,7 @@
       }
     },
     "CloudObjectStepRelations": {
-      "displayName": "CloudObjectStepRelations",
+      "displayName": "Cloud Object Step Relations",
       "fields": {
         "cloud_object": "cloud_object",
         "cloud_object_id": "cloud_object_id",
@@ -960,7 +960,7 @@
       }
     },
     "CloudObjectTemplates": {
-      "displayName": "CloudObjectTemplates",
+      "displayName": "Cloud Object Templates",
       "fields": {
         "application": "application",
         "application_id": "application_id",
@@ -985,7 +985,7 @@
       }
     },
     "CloudObjects": {
-      "displayName": "CloudObjects",
+      "displayName": "Cloud Objects",
       "fields": {
         "application": "application",
         "application_id": "application_id",
@@ -1010,7 +1010,7 @@
       }
     },
     "CompanyEmails": {
-      "displayName": "CompanyEmails",
+      "displayName": "Company Emails",
       "fields": {
         "created": "created",
         "email": "email",
@@ -1029,7 +1029,7 @@
       }
     },
     "ContactAccountAccountRoleRelations": {
-      "displayName": "ContactAccountAccountRoleRelations",
+      "displayName": "Contact Account Account Role Relations",
       "fields": {
         "account_role": "account_role",
         "account_role_id": "account_role_id",
@@ -1044,7 +1044,7 @@
       }
     },
     "ContactAccountRelations": {
-      "displayName": "ContactAccountRelations",
+      "displayName": "Contact Account Relations",
       "fields": {
         "account": "account",
         "account_id": "account_id",
@@ -1066,7 +1066,7 @@
       }
     },
     "ContactDataExRelations": {
-      "displayName": "ContactDataExRelations",
+      "displayName": "Contact Data Ex Relations",
       "fields": {
         "contact": "contact",
         "contact_id": "contact_id",
@@ -1082,7 +1082,7 @@
       }
     },
     "ContactKPIs": {
-      "displayName": "ContactKPIs",
+      "displayName": "Contact Kp Is",
       "fields": {
         "application_id": "application_id",
         "client": "client",
@@ -1103,7 +1103,7 @@
       }
     },
     "ContactRelationLabels": {
-      "displayName": "ContactRelationLabels",
+      "displayName": "Contact Relation Labels",
       "fields": {
         "contact_relation": "contact_relation",
         "contact_relation_id": "contact_relation_id",
@@ -1118,7 +1118,7 @@
       }
     },
     "ContactRelationTypes": {
-      "displayName": "ContactRelationTypes",
+      "displayName": "Contact Relation Types",
       "fields": {
         "color": "color",
         "created": "created",
@@ -1131,7 +1131,7 @@
       }
     },
     "ContactRelations": {
-      "displayName": "ContactRelations",
+      "displayName": "Contact Relations",
       "fields": {
         "contact1": "contact1",
         "contact1_id": "contact1_id",
@@ -1146,7 +1146,7 @@
       }
     },
     "ContactSharingClientRelations": {
-      "displayName": "ContactSharingClientRelations",
+      "displayName": "Contact Sharing Client Relations",
       "fields": {
         "client": "client",
         "client_id": "client_id",
@@ -1162,7 +1162,7 @@
       }
     },
     "ContactSharingSalesUnitRelations": {
-      "displayName": "ContactSharingSalesUnitRelations",
+      "displayName": "Contact Sharing Sales Unit Relations",
       "fields": {
         "contact": "contact",
         "contact_id": "contact_id",
@@ -1178,7 +1178,7 @@
       }
     },
     "ContactSocialRelations": {
-      "displayName": "ContactSocialRelations",
+      "displayName": "Contact Social Relations",
       "fields": {
         "angellist_url": "angellist_url",
         "created": "created",
@@ -1215,7 +1215,7 @@
       }
     },
     "ContactTypes": {
-      "displayName": "ContactTypes",
+      "displayName": "Contact Types",
       "fields": {
         "can_change_readonly": "can_change_readonly",
         "created": "created",
@@ -1310,7 +1310,7 @@
       }
     },
     "CurrencyExchangeRates": {
-      "displayName": "CurrencyExchangeRates",
+      "displayName": "Currency Exchange Rates",
       "fields": {
         "created": "created",
         "currency": "currency",
@@ -1326,7 +1326,7 @@
       }
     },
     "CurrencyExchangeRatesLists": {
-      "displayName": "CurrencyExchangeRatesLists",
+      "displayName": "Currency Exchange Rates Lists",
       "fields": {
         "created": "created",
         "currency_exchange_rates": "currency_exchange_rates",
@@ -1358,7 +1358,7 @@
       }
     },
     "DataRelations": {
-      "displayName": "DataRelations",
+      "displayName": "Data Relations",
       "fields": {
         "created": "created",
         "data": "data",
@@ -1375,7 +1375,7 @@
       }
     },
     "EmailContentSharingClientRelations": {
-      "displayName": "EmailContentSharingClientRelations",
+      "displayName": "Email Content Sharing Client Relations",
       "fields": {
         "client": "client",
         "client_id": "client_id",
@@ -1390,7 +1390,7 @@
       }
     },
     "EmailContentSharingSalesUnitRelations": {
-      "displayName": "EmailContentSharingSalesUnitRelations",
+      "displayName": "Email Content Sharing Sales Unit Relations",
       "fields": {
         "created": "created",
         "email": "email",
@@ -1405,7 +1405,7 @@
       }
     },
     "EmailEvents": {
-      "displayName": "EmailEvents",
+      "displayName": "Email Events",
       "fields": {
         "additional_data": "additional_data",
         "created": "created",
@@ -1420,7 +1420,7 @@
       }
     },
     "EmailSequenceActivityLogLines": {
-      "displayName": "EmailSequenceActivityLogLines",
+      "displayName": "Email Sequence Activity Log Lines",
       "fields": {
         "created": "created",
         "email_sequence_activity_log": "email_sequence_activity_log",
@@ -1436,7 +1436,7 @@
       }
     },
     "EmailSequenceActivityLogs": {
-      "displayName": "EmailSequenceActivityLogs",
+      "displayName": "Email Sequence Activity Logs",
       "fields": {
         "actor": "actor",
         "actor_id": "actor_id",
@@ -1459,7 +1459,7 @@
       }
     },
     "EmailSequenceEnrolleds": {
-      "displayName": "EmailSequenceEnrolleds",
+      "displayName": "Email Sequence Enrolleds",
       "fields": {
         "account": "account",
         "account_id": "account_id",
@@ -1496,7 +1496,7 @@
       }
     },
     "EmailSequences": {
-      "displayName": "EmailSequences",
+      "displayName": "Email Sequences",
       "fields": {
         "activity_logs": "activity_logs",
         "created": "created",
@@ -1519,7 +1519,7 @@
       }
     },
     "EmailTemplateFolders": {
-      "displayName": "EmailTemplateFolders",
+      "displayName": "Email Template Folders",
       "fields": {
         "created": "created",
         "id": "id",
@@ -1533,7 +1533,7 @@
       }
     },
     "EmailTemplateSharingClientRelations": {
-      "displayName": "EmailTemplateSharingClientRelations",
+      "displayName": "Email Template Sharing Client Relations",
       "fields": {
         "client": "client",
         "client_id": "client_id",
@@ -1549,7 +1549,7 @@
       }
     },
     "EmailTemplateSharingSalesUnitRelations": {
-      "displayName": "EmailTemplateSharingSalesUnitRelations",
+      "displayName": "Email Template Sharing Sales Unit Relations",
       "fields": {
         "created": "created",
         "email_template": "email_template",
@@ -1565,7 +1565,7 @@
       }
     },
     "EmailTemplates": {
-      "displayName": "EmailTemplates",
+      "displayName": "Email Templates",
       "fields": {
         "body": "body",
         "created": "created",
@@ -1669,7 +1669,7 @@
       }
     },
     "EntityFitnessIndicators": {
-      "displayName": "EntityFitnessIndicators",
+      "displayName": "Entity Fitness Indicators",
       "fields": {
         "created": "created",
         "description": "description",
@@ -1691,7 +1691,7 @@
       }
     },
     "EntityFitnesses": {
-      "displayName": "EntityFitnesses",
+      "displayName": "Entity Fitnesses",
       "fields": {
         "created": "created",
         "entity_type": "entity_type",
@@ -1709,7 +1709,7 @@
       }
     },
     "EntityHealths": {
-      "displayName": "EntityHealths",
+      "displayName": "Entity Healths",
       "fields": {
         "calculation_progress": "calculation_progress",
         "created": "created",
@@ -1725,7 +1725,7 @@
       }
     },
     "EntityScorings": {
-      "displayName": "EntityScorings",
+      "displayName": "Entity Scorings",
       "fields": {
         "created": "created",
         "entity_type": "entity_type",
@@ -1742,7 +1742,7 @@
       }
     },
     "FieldPermissions": {
-      "displayName": "FieldPermissions",
+      "displayName": "Field Permissions",
       "fields": {
         "created": "created",
         "field": "field",
@@ -1760,7 +1760,7 @@
       }
     },
     "FieldSequences": {
-      "displayName": "FieldSequences",
+      "displayName": "Field Sequences",
       "fields": {
         "created": "created",
         "id": "id",
@@ -1849,7 +1849,7 @@
       }
     },
     "FormViewSharingClientRelations": {
-      "displayName": "FormViewSharingClientRelations",
+      "displayName": "Form View Sharing Client Relations",
       "fields": {
         "client": "client",
         "client_id": "client_id",
@@ -1865,7 +1865,7 @@
       }
     },
     "FormViewSharingSalesUnitRelations": {
-      "displayName": "FormViewSharingSalesUnitRelations",
+      "displayName": "Form View Sharing Sales Unit Relations",
       "fields": {
         "created": "created",
         "form_view": "form_view",
@@ -1881,7 +1881,7 @@
       }
     },
     "FormViews": {
-      "displayName": "FormViews",
+      "displayName": "Form Views",
       "fields": {
         "account_type": "account_type",
         "account_type_id": "account_type_id",
@@ -1910,7 +1910,7 @@
       }
     },
     "GhostContactAccountAccountRoleRelations": {
-      "displayName": "GhostContactAccountAccountRoleRelations",
+      "displayName": "Ghost Contact Account Account Role Relations",
       "fields": {
         "account_role": "account_role",
         "account_role_id": "account_role_id",
@@ -1925,7 +1925,7 @@
       }
     },
     "GhostContactAccountRelations": {
-      "displayName": "GhostContactAccountRelations",
+      "displayName": "Ghost Contact Account Relations",
       "fields": {
         "account": "account",
         "account_id": "account_id",
@@ -1945,7 +1945,7 @@
       }
     },
     "GhostContacts": {
-      "displayName": "GhostContacts",
+      "displayName": "Ghost Contacts",
       "fields": {
         "created": "created",
         "id": "id",
@@ -1958,7 +1958,7 @@
       }
     },
     "GhostLeadOpptyContactRelations": {
-      "displayName": "GhostLeadOpptyContactRelations",
+      "displayName": "Ghost Lead Oppty Contact Relations",
       "fields": {
         "comment": "comment",
         "created": "created",
@@ -1979,7 +1979,7 @@
       }
     },
     "GhostLeadOpptyContactSalesRoleRelations": {
-      "displayName": "GhostLeadOpptyContactSalesRoleRelations",
+      "displayName": "Ghost Lead Oppty Contact Sales Role Relations",
       "fields": {
         "created": "created",
         "ghost_lead_oppty_contact_relation": "ghost_lead_oppty_contact_relation",
@@ -1994,7 +1994,7 @@
       }
     },
     "ImportMappingMasks": {
-      "displayName": "ImportMappingMasks",
+      "displayName": "Import Mapping Masks",
       "fields": {
         "created": "created",
         "entity_api_name": "entity_api_name",
@@ -2015,7 +2015,7 @@
       }
     },
     "InterfacePreviews": {
-      "displayName": "InterfacePreviews",
+      "displayName": "Interface Previews",
       "fields": {
         "account_type": "account_type",
         "account_type_id": "account_type_id",
@@ -2055,14 +2055,14 @@
       }
     },
     "LeadOppties": {
-      "displayName": "LeadOppties",
+      "displayName": "Lead Oppties",
       "fields": {
         "id": "id",
         "is_delete_protected": "is_delete_protected"
       }
     },
     "LeadOpptyAccountRelations": {
-      "displayName": "LeadOpptyAccountRelations",
+      "displayName": "Lead Oppty Account Relations",
       "fields": {
         "account": "account",
         "account_id": "account_id",
@@ -2079,7 +2079,7 @@
       }
     },
     "LeadOpptyContactGroupRelations": {
-      "displayName": "LeadOpptyContactGroupRelations",
+      "displayName": "Lead Oppty Contact Group Relations",
       "fields": {
         "color": "color",
         "created": "created",
@@ -2096,7 +2096,7 @@
       }
     },
     "LeadOpptyContactRelations": {
-      "displayName": "LeadOpptyContactRelations",
+      "displayName": "Lead Oppty Contact Relations",
       "fields": {
         "comment": "comment",
         "contact": "contact",
@@ -2119,7 +2119,7 @@
       }
     },
     "LeadOpptyContactSalesRoleRelations": {
-      "displayName": "LeadOpptyContactSalesRoleRelations",
+      "displayName": "Lead Oppty Contact Sales Role Relations",
       "fields": {
         "created": "created",
         "id": "id",
@@ -2134,7 +2134,7 @@
       }
     },
     "LeadOpptyDataExRelations": {
-      "displayName": "LeadOpptyDataExRelations",
+      "displayName": "Lead Oppty Data Ex Relations",
       "fields": {
         "created": "created",
         "data": "data",
@@ -2151,7 +2151,7 @@
       }
     },
     "LeadOpptyKPIs": {
-      "displayName": "LeadOpptyKPIs",
+      "displayName": "Lead Oppty Kp Is",
       "fields": {
         "application_id": "application_id",
         "client": "client",
@@ -2173,7 +2173,7 @@
       }
     },
     "LeadOpptySharingClientRelations": {
-      "displayName": "LeadOpptySharingClientRelations",
+      "displayName": "Lead Oppty Sharing Client Relations",
       "fields": {
         "client": "client",
         "client_id": "client_id",
@@ -2190,7 +2190,7 @@
       }
     },
     "LeadOpptySharingSalesUnitRelations": {
-      "displayName": "LeadOpptySharingSalesUnitRelations",
+      "displayName": "Lead Oppty Sharing Sales Unit Relations",
       "fields": {
         "created": "created",
         "id": "id",
@@ -2207,7 +2207,7 @@
       }
     },
     "LeadOpptyStepCheckListRelations": {
-      "displayName": "LeadOpptyStepCheckListRelations",
+      "displayName": "Lead Oppty Step Check List Relations",
       "fields": {
         "activity_id": "activity_id",
         "appointment": "appointment",
@@ -2235,7 +2235,7 @@
       }
     },
     "LeadProcesses": {
-      "displayName": "LeadProcesses",
+      "displayName": "Lead Processes",
       "fields": {
         "color": "color",
         "created": "created",
@@ -2250,7 +2250,7 @@
       }
     },
     "LeadTypes": {
-      "displayName": "LeadTypes",
+      "displayName": "Lead Types",
       "fields": {
         "can_change_readonly": "can_change_readonly",
         "created": "created",
@@ -2326,7 +2326,7 @@
       }
     },
     "MasterRights": {
-      "displayName": "MasterRights",
+      "displayName": "Master Rights",
       "fields": {
         "access_account_relation_types": "access_account_relation_types",
         "access_accounts": "access_accounts",
@@ -2467,7 +2467,7 @@
       }
     },
     "MemoComments": {
-      "displayName": "MemoComments",
+      "displayName": "Memo Comments",
       "fields": {
         "comment": "comment",
         "created": "created",
@@ -2509,7 +2509,7 @@
       }
     },
     "MessageRelations": {
-      "displayName": "MessageRelations",
+      "displayName": "Message Relations",
       "fields": {
         "account": "account",
         "account_id": "account_id",
@@ -2536,7 +2536,7 @@
       }
     },
     "MessageSharingClientRelations": {
-      "displayName": "MessageSharingClientRelations",
+      "displayName": "Message Sharing Client Relations",
       "fields": {
         "client": "client",
         "client_id": "client_id",
@@ -2552,7 +2552,7 @@
       }
     },
     "MessageSharingSalesUnitRelations": {
-      "displayName": "MessageSharingSalesUnitRelations",
+      "displayName": "Message Sharing Sales Unit Relations",
       "fields": {
         "created": "created",
         "email": "email",
@@ -2595,7 +2595,7 @@
       }
     },
     "OnlineFormActivityLogLines": {
-      "displayName": "OnlineFormActivityLogLines",
+      "displayName": "Online Form Activity Log Lines",
       "fields": {
         "created": "created",
         "executed_at": "executed_at",
@@ -2612,7 +2612,7 @@
       }
     },
     "OnlineFormDataExRelations": {
-      "displayName": "OnlineFormDataExRelations",
+      "displayName": "Online Form Data Ex Relations",
       "fields": {
         "created": "created",
         "data": "data",
@@ -2628,7 +2628,7 @@
       }
     },
     "OnlineFormRelations": {
-      "displayName": "OnlineFormRelations",
+      "displayName": "Online Form Relations",
       "fields": {
         "account": "account",
         "account_id": "account_id",
@@ -2653,7 +2653,7 @@
       }
     },
     "OnlineFormTypeEmailRelations": {
-      "displayName": "OnlineFormTypeEmailRelations",
+      "displayName": "Online Form Type Email Relations",
       "fields": {
         "account": "account",
         "account_id": "account_id",
@@ -2675,7 +2675,7 @@
       }
     },
     "OnlineFormTypes": {
-      "displayName": "OnlineFormTypes",
+      "displayName": "Online Form Types",
       "fields": {
         "activity_logs": "activity_logs",
         "auto_prefill_with_javascript": "auto_prefill_with_javascript",
@@ -2705,7 +2705,7 @@
       }
     },
     "OnlineForms": {
-      "displayName": "OnlineForms",
+      "displayName": "Online Forms",
       "fields": {
         "account_relations": "account_relations",
         "contact_relations": "contact_relations",
@@ -2799,7 +2799,7 @@
       }
     },
     "OpportunityTypes": {
-      "displayName": "OpportunityTypes",
+      "displayName": "Opportunity Types",
       "fields": {
         "can_change_readonly": "can_change_readonly",
         "created": "created",
@@ -2825,7 +2825,7 @@
       }
     },
     "OpptyProductRelationDataExRelations": {
-      "displayName": "OpptyProductRelationDataExRelations",
+      "displayName": "Oppty Product Relation Data Ex Relations",
       "fields": {
         "created": "created",
         "data": "data",
@@ -2841,7 +2841,7 @@
       }
     },
     "OpptyProductRelationRevenueSchedulePeriods": {
-      "displayName": "OpptyProductRelationRevenueSchedulePeriods",
+      "displayName": "Oppty Product Relation Revenue Schedule Periods",
       "fields": {
         "created": "created",
         "date": "date",
@@ -2857,7 +2857,7 @@
       }
     },
     "OpptyProductRelationRevenueSchedules": {
-      "displayName": "OpptyProductRelationRevenueSchedules",
+      "displayName": "Oppty Product Relation Revenue Schedules",
       "fields": {
         "cancelation_date": "cancelation_date",
         "created": "created",
@@ -2873,7 +2873,7 @@
       }
     },
     "OpptyProductRelationTypes": {
-      "displayName": "OpptyProductRelationTypes",
+      "displayName": "Oppty Product Relation Types",
       "fields": {
         "can_change_readonly": "can_change_readonly",
         "created": "created",
@@ -2893,7 +2893,7 @@
       }
     },
     "OpptyProductRelations": {
-      "displayName": "OpptyProductRelations",
+      "displayName": "Oppty Product Relations",
       "fields": {
         "amount": "amount",
         "comment": "comment",
@@ -2924,7 +2924,7 @@
       }
     },
     "OpptyRecurrences": {
-      "displayName": "OpptyRecurrences",
+      "displayName": "Oppty Recurrences",
       "fields": {
         "condition": "condition",
         "created": "created",
@@ -2949,7 +2949,7 @@
       }
     },
     "OpptyRevenueSchedulePeriods": {
-      "displayName": "OpptyRevenueSchedulePeriods",
+      "displayName": "Oppty Revenue Schedule Periods",
       "fields": {
         "created": "created",
         "date": "date",
@@ -2965,7 +2965,7 @@
       }
     },
     "OpptyRevenueSchedules": {
-      "displayName": "OpptyRevenueSchedules",
+      "displayName": "Oppty Revenue Schedules",
       "fields": {
         "cancelation_date": "cancelation_date",
         "created": "created",
@@ -2981,7 +2981,7 @@
       }
     },
     "ParentAccountRelationTypes": {
-      "displayName": "ParentAccountRelationTypes",
+      "displayName": "Parent Account Relation Types",
       "fields": {
         "child_label": "child_label",
         "created": "created",
@@ -3028,7 +3028,7 @@
       }
     },
     "ProcessActivityLogLines": {
-      "displayName": "ProcessActivityLogLines",
+      "displayName": "Process Activity Log Lines",
       "fields": {
         "created": "created",
         "executed_at": "executed_at",
@@ -3045,7 +3045,7 @@
       }
     },
     "ProcessActivityLogs": {
-      "displayName": "ProcessActivityLogs",
+      "displayName": "Process Activity Logs",
       "fields": {
         "actor": "actor",
         "actor_id": "actor_id",
@@ -3070,7 +3070,7 @@
       }
     },
     "ProcessTemplates": {
-      "displayName": "ProcessTemplates",
+      "displayName": "Process Templates",
       "fields": {
         "action_types": "action_types",
         "created": "created",
@@ -3109,7 +3109,7 @@
       }
     },
     "ProductCategories": {
-      "displayName": "ProductCategories",
+      "displayName": "Product Categories",
       "fields": {
         "created": "created",
         "id": "id",
@@ -3124,7 +3124,7 @@
       }
     },
     "ProductDataExRelations": {
-      "displayName": "ProductDataExRelations",
+      "displayName": "Product Data Ex Relations",
       "fields": {
         "created": "created",
         "data": "data",
@@ -3140,7 +3140,7 @@
       }
     },
     "ProductPipelineRelations": {
-      "displayName": "ProductPipelineRelations",
+      "displayName": "Product Pipeline Relations",
       "fields": {
         "created": "created",
         "id": "id",
@@ -3155,7 +3155,7 @@
       }
     },
     "ProductPriceListPrices": {
-      "displayName": "ProductPriceListPrices",
+      "displayName": "Product Price List Prices",
       "fields": {
         "created": "created",
         "currency": "currency",
@@ -3173,7 +3173,7 @@
       }
     },
     "ProductPriceLists": {
-      "displayName": "ProductPriceLists",
+      "displayName": "Product Price Lists",
       "fields": {
         "created": "created",
         "end_date": "end_date",
@@ -3188,7 +3188,7 @@
       }
     },
     "ProductTypes": {
-      "displayName": "ProductTypes",
+      "displayName": "Product Types",
       "fields": {
         "can_change_readonly": "can_change_readonly",
         "created": "created",
@@ -3234,7 +3234,7 @@
       }
     },
     "ProfileSharingClientRelations": {
-      "displayName": "ProfileSharingClientRelations",
+      "displayName": "Profile Sharing Client Relations",
       "fields": {
         "client": "client",
         "client_id": "client_id",
@@ -3249,7 +3249,7 @@
       }
     },
     "ProfileSharingSalesUnitRelations": {
-      "displayName": "ProfileSharingSalesUnitRelations",
+      "displayName": "Profile Sharing Sales Unit Relations",
       "fields": {
         "created": "created",
         "id": "id",
@@ -3284,7 +3284,7 @@
       }
     },
     "ProjectContactRelations": {
-      "displayName": "ProjectContactRelations",
+      "displayName": "Project Contact Relations",
       "fields": {
         "contact": "contact",
         "contact_id": "contact_id",
@@ -3300,7 +3300,7 @@
       }
     },
     "ProjectDataExRelations": {
-      "displayName": "ProjectDataExRelations",
+      "displayName": "Project Data Ex Relations",
       "fields": {
         "created": "created",
         "data": "data",
@@ -3316,7 +3316,7 @@
       }
     },
     "ProjectKPIs": {
-      "displayName": "ProjectKPIs",
+      "displayName": "Project Kp Is",
       "fields": {
         "application_id": "application_id",
         "client": "client",
@@ -3337,7 +3337,7 @@
       }
     },
     "ProjectObjectives": {
-      "displayName": "ProjectObjectives",
+      "displayName": "Project Objectives",
       "fields": {
         "created": "created",
         "id": "id",
@@ -3352,7 +3352,7 @@
       }
     },
     "ProjectSharingClientRelations": {
-      "displayName": "ProjectSharingClientRelations",
+      "displayName": "Project Sharing Client Relations",
       "fields": {
         "client": "client",
         "client_id": "client_id",
@@ -3368,7 +3368,7 @@
       }
     },
     "ProjectSharingSalesUnitRelations": {
-      "displayName": "ProjectSharingSalesUnitRelations",
+      "displayName": "Project Sharing Sales Unit Relations",
       "fields": {
         "created": "created",
         "id": "id",
@@ -3384,7 +3384,7 @@
       }
     },
     "ProjectTypes": {
-      "displayName": "ProjectTypes",
+      "displayName": "Project Types",
       "fields": {
         "can_change_readonly": "can_change_readonly",
         "created": "created",
@@ -3442,7 +3442,7 @@
       }
     },
     "QuoteAccountRelations": {
-      "displayName": "QuoteAccountRelations",
+      "displayName": "Quote Account Relations",
       "fields": {
         "account": "account",
         "account_id": "account_id",
@@ -3458,7 +3458,7 @@
       }
     },
     "QuoteContactRelations": {
-      "displayName": "QuoteContactRelations",
+      "displayName": "Quote Contact Relations",
       "fields": {
         "contact": "contact",
         "contact_id": "contact_id",
@@ -3474,7 +3474,7 @@
       }
     },
     "QuoteDataExRelations": {
-      "displayName": "QuoteDataExRelations",
+      "displayName": "Quote Data Ex Relations",
       "fields": {
         "created": "created",
         "data": "data",
@@ -3490,7 +3490,7 @@
       }
     },
     "QuoteKPIs": {
-      "displayName": "QuoteKPIs",
+      "displayName": "Quote Kp Is",
       "fields": {
         "application_id": "application_id",
         "client": "client",
@@ -3511,7 +3511,7 @@
       }
     },
     "QuoteProcesses": {
-      "displayName": "QuoteProcesses",
+      "displayName": "Quote Processes",
       "fields": {
         "color": "color",
         "created": "created",
@@ -3526,7 +3526,7 @@
       }
     },
     "QuoteSharingClientRelations": {
-      "displayName": "QuoteSharingClientRelations",
+      "displayName": "Quote Sharing Client Relations",
       "fields": {
         "client": "client",
         "client_id": "client_id",
@@ -3542,7 +3542,7 @@
       }
     },
     "QuoteSharingSalesUnitRelations": {
-      "displayName": "QuoteSharingSalesUnitRelations",
+      "displayName": "Quote Sharing Sales Unit Relations",
       "fields": {
         "created": "created",
         "id": "id",
@@ -3558,7 +3558,7 @@
       }
     },
     "QuoteTypes": {
-      "displayName": "QuoteTypes",
+      "displayName": "Quote Types",
       "fields": {
         "can_change_readonly": "can_change_readonly",
         "created": "created",
@@ -3637,7 +3637,7 @@
       }
     },
     "ReportFolders": {
-      "displayName": "ReportFolders",
+      "displayName": "Report Folders",
       "fields": {
         "created": "created",
         "id": "id",
@@ -3651,7 +3651,7 @@
       }
     },
     "ReportSchedules": {
-      "displayName": "ReportSchedules",
+      "displayName": "Report Schedules",
       "fields": {
         "created": "created",
         "documents": "documents",
@@ -3668,7 +3668,7 @@
       }
     },
     "ReportSharingClientRelations": {
-      "displayName": "ReportSharingClientRelations",
+      "displayName": "Report Sharing Client Relations",
       "fields": {
         "client": "client",
         "client_id": "client_id",
@@ -3684,7 +3684,7 @@
       }
     },
     "ReportSharingSalesUnitRelations": {
-      "displayName": "ReportSharingSalesUnitRelations",
+      "displayName": "Report Sharing Sales Unit Relations",
       "fields": {
         "created": "created",
         "id": "id",
@@ -3726,7 +3726,7 @@
       }
     },
     "SalesRoles": {
-      "displayName": "SalesRoles",
+      "displayName": "Sales Roles",
       "fields": {
         "color_code": "color_code",
         "created": "created",
@@ -3739,7 +3739,7 @@
       }
     },
     "SalesUnitClientRelations": {
-      "displayName": "SalesUnitClientRelations",
+      "displayName": "Sales Unit Client Relations",
       "fields": {
         "client": "client",
         "client_id": "client_id",
@@ -3755,7 +3755,7 @@
       }
     },
     "SalesUnits": {
-      "displayName": "SalesUnits",
+      "displayName": "Sales Units",
       "fields": {
         "created": "created",
         "id": "id",
@@ -3771,7 +3771,7 @@
       }
     },
     "StepChecklistSalesRoleRelations": {
-      "displayName": "StepChecklistSalesRoleRelations",
+      "displayName": "Step Checklist Sales Role Relations",
       "fields": {
         "created": "created",
         "id": "id",
@@ -3786,7 +3786,7 @@
       }
     },
     "StepChecklists": {
-      "displayName": "StepChecklists",
+      "displayName": "Step Checklists",
       "fields": {
         "activity_type_id": "activity_type_id",
         "appointment_type": "appointment_type",
@@ -3850,7 +3850,7 @@
       }
     },
     "TagRelations": {
-      "displayName": "TagRelations",
+      "displayName": "Tag Relations",
       "fields": {
         "account": "account",
         "account_id": "account_id",
@@ -3890,7 +3890,7 @@
       }
     },
     "TargetRelations": {
-      "displayName": "TargetRelations",
+      "displayName": "Target Relations",
       "fields": {
         "created": "created",
         "group_target": "group_target",
@@ -3929,7 +3929,7 @@
       }
     },
     "TaskRecurrences": {
-      "displayName": "TaskRecurrences",
+      "displayName": "Task Recurrences",
       "fields": {
         "created": "created",
         "day": "day",
@@ -3951,7 +3951,7 @@
       }
     },
     "TaskReminders": {
-      "displayName": "TaskReminders",
+      "displayName": "Task Reminders",
       "fields": {
         "created": "created",
         "id": "id",
@@ -3968,7 +3968,7 @@
       }
     },
     "TaskSharingClientRelations": {
-      "displayName": "TaskSharingClientRelations",
+      "displayName": "Task Sharing Client Relations",
       "fields": {
         "client": "client",
         "client_id": "client_id",
@@ -3984,7 +3984,7 @@
       }
     },
     "TaskSharingSalesUnitRelations": {
-      "displayName": "TaskSharingSalesUnitRelations",
+      "displayName": "Task Sharing Sales Unit Relations",
       "fields": {
         "created": "created",
         "id": "id",
@@ -4000,7 +4000,7 @@
       }
     },
     "TaskTypes": {
-      "displayName": "TaskTypes",
+      "displayName": "Task Types",
       "fields": {
         "can_change_readonly": "can_change_readonly",
         "created": "created",
@@ -4067,7 +4067,7 @@
       }
     },
     "TextMessageConversationRelationses": {
-      "displayName": "TextMessageConversationRelationses",
+      "displayName": "Text Message Conversation Relationses",
       "fields": {
         "account": "account",
         "account_id": "account_id",
@@ -4091,7 +4091,7 @@
       }
     },
     "TextMessageConversations": {
-      "displayName": "TextMessageConversations",
+      "displayName": "Text Message Conversations",
       "fields": {
         "account_relations": "account_relations",
         "contact_relations": "contact_relations",
@@ -4116,7 +4116,7 @@
       }
     },
     "TextMessages": {
-      "displayName": "TextMessages",
+      "displayName": "Text Messages",
       "fields": {
         "content": "content",
         "created": "created",
@@ -4209,7 +4209,7 @@
       }
     },
     "UnsubscribedPhones": {
-      "displayName": "UnsubscribedPhones",
+      "displayName": "Unsubscribed Phones",
       "fields": {
         "created": "created",
         "id": "id",
@@ -4221,7 +4221,7 @@
       }
     },
     "WebhookEvents": {
-      "displayName": "WebhookEvents",
+      "displayName": "Webhook Events",
       "fields": {
         "created": "created",
         "event": "event",
