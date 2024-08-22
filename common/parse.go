@@ -83,3 +83,16 @@ func ExtractLowercaseFieldsFromRaw(fields []string, record map[string]interface{
 
 	return out
 }
+
+func GetMarshaledData(records []map[string]any, fields []string) ([]ReadResultRow, error) {
+	data := make([]ReadResultRow, len(records))
+
+	for i, record := range records {
+		data[i] = ReadResultRow{
+			Fields: ExtractLowercaseFieldsFromRaw(fields, record),
+			Raw:    record,
+		}
+	}
+
+	return data, nil
+}

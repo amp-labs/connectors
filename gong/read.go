@@ -29,7 +29,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		makeGetTotalSize(config.ObjectName),
 		makeGetRecords(config.ObjectName),
 		getNextRecordsURL,
-		getMarshalledData,
+		common.GetMarshaledData,
 		config.Fields,
 	)
 }
