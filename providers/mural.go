@@ -14,9 +14,6 @@ func init() {
 			TokenURL:                  "https://app.mural.co/api/public/v1/authorization/oauth2/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
-			TokenMetadataFields: TokenMetadataFields{
-				ScopesField: "scope",
-			},
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
