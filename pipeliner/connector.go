@@ -58,7 +58,7 @@ func (c *Connector) String() string {
 }
 
 func (c *Connector) getURL(parts ...string) (*urlbuilder.URL, error) {
-	return constructURL(c.BaseURL, append([]string{
+	return urlbuilder.New(c.BaseURL, append([]string{
 		"api/v100/rest/spaces/", c.Workspace, "/entities",
 	}, parts...)...)
 }

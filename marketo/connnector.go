@@ -64,7 +64,7 @@ func (c *Connector) getAPIURL(objName string) (*urlbuilder.URL, error) {
 		bURL += ".json"
 	}
 
-	return constructURL(c.BaseURL, bURL)
+	return urlbuilder.New(c.BaseURL, bURL)
 }
 
 func (c *Connector) String() string {

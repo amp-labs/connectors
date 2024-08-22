@@ -78,13 +78,13 @@ func (c *Connector) getJiraRestApiURL(arg string) (*urlbuilder.URL, error) {
 		return nil, err
 	}
 
-	return constructURL(c.BaseURL, "ex/jira", cloudId, c.Module, arg)
+	return urlbuilder.New(c.BaseURL, "ex/jira", cloudId, c.Module, arg)
 }
 
 // URL allows to get list of sites associated with auth token.
 // https://developer.atlassian.com/cloud/confluence/oauth-2-3lo-apps/#3-1-get-the-cloudid-for-your-site
 func (c *Connector) getAccessibleSitesURL() (*urlbuilder.URL, error) {
-	return constructURL(c.BaseURL, "oauth/token/accessible-resources")
+	return urlbuilder.New(c.BaseURL, "oauth/token/accessible-resources")
 }
 
 func (c *Connector) setBaseURL(newURL string) {

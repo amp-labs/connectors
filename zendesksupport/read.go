@@ -35,7 +35,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error) {
 	if len(config.NextPage) != 0 {
 		// Next page
-		return constructURL(config.NextPage.String())
+		return urlbuilder.New(config.NextPage.String())
 	}
 
 	// First page
