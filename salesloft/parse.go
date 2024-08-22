@@ -66,16 +66,3 @@ func makeNextRecordsURL(reqLink *urlbuilder.URL) common.NextPageFunc {
 		return reqLink.String(), nil
 	}
 }
-
-func getMarshalledData(records []map[string]interface{}, fields []string) ([]common.ReadResultRow, error) {
-	data := make([]common.ReadResultRow, len(records))
-
-	for i, record := range records {
-		data[i] = common.ReadResultRow{
-			Fields: common.ExtractLowercaseFieldsFromRaw(fields, record),
-			Raw:    record,
-		}
-	}
-
-	return data, nil
-}

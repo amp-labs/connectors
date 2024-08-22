@@ -3,7 +3,6 @@ package salesforce
 import (
 	"errors"
 
-	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/spyzhov/ajson"
 )
@@ -36,17 +35,4 @@ func getRecords(node *ajson.Node) ([]map[string]any, error) {
 // getNextRecordsURL returns the URL for the next page of results.
 func getNextRecordsURL(node *ajson.Node) (string, error) {
 	return jsonquery.New(node).StrWithDefault("nextRecordsUrl", "")
-}
-
-func getMarshalledData(records []map[string]interface{}, fields []string) ([]common.ReadResultRow, error) {
-	data := make([]common.ReadResultRow, len(records))
-
-	for i, record := range records {
-		data[i] = common.ReadResultRow{
-			Fields: common.ExtractLowercaseFieldsFromRaw(fields, record),
-			Raw:    record,
-		}
-	}
-
-	return data, nil
 }

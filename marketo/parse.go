@@ -1,7 +1,6 @@
 package marketo
 
 import (
-	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/spyzhov/ajson"
 )
@@ -23,18 +22,4 @@ func getRecords(node *ajson.Node) ([]map[string]any, error) {
 
 func getTotalSize(node *ajson.Node) (int64, error) {
 	return jsonquery.New(node).ArraySize("result")
-}
-
-// getMarshalledData accepts a list of records and returns a list of structured data ([]ReadResultRow).
-func getMarshalledData(records []map[string]any, fields []string) ([]common.ReadResultRow, error) {
-	data := make([]common.ReadResultRow, len(records))
-
-	for i, record := range records {
-		data[i] = common.ReadResultRow{
-			Fields: common.ExtractLowercaseFieldsFromRaw(fields, record),
-			Raw:    record,
-		}
-	}
-
-	return data, nil
 }
