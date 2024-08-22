@@ -24,7 +24,7 @@ func init() { // nolint:funlen
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722102329/media/zendeskSupport_1722102328.svg",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722102362/media/zendeskSupport_1722102361.svg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1724364159/media/tmk9w2cxvmfxrms9qwjq.png",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722102362/media/zendeskSupport_1722102361.svg",
 			},
 		},
