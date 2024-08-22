@@ -21,7 +21,7 @@ func init() {
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722346580/media/calendly_1722346580.svg",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722346682/media/calendly_1722346682.png",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1724365119/media/gzqssdg62nudhokl9sms.png",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722346580/media/calendly_1722346580.svg",
 			},
 		},
