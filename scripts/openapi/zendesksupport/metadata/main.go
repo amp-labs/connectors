@@ -2,6 +2,7 @@ package main
 
 import (
 	"log/slog"
+	"strings"
 
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
 	"github.com/amp-labs/connectors/tools/scrapper"
@@ -60,7 +61,14 @@ var (
 )
 
 func main() {
-	explorer, err := openapi.FileManager.GetExplorer()
+	explorer, err := openapi.FileManager.GetExplorer(
+		api3.WithDisplayNamePostProcessors(
+			func(displayName string) string {
+				return strings.ReplaceAll(displayName, "_", " ")
+			},
+			api3.CapitalizeFirstLetterEveryWord,
+		),
+	)
 	must(err)
 
 	objects, err := explorer.GetBasicReadObjects(

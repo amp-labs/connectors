@@ -8,11 +8,10 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/salesloft/metadata"
 	"github.com/amp-labs/connectors/tools/scrapper"
 	"github.com/iancoleman/strcase"
-	"golang.org/x/text/cases"
-	"golang.org/x/text/language"
 )
 
 const (
@@ -218,7 +217,7 @@ func must(err error) {
 // Those are the inconsistencies that Salesloft has in its docs.
 func handleDisplayName(name string) (displayName string, isListResource bool) {
 	if stripped, ok := strings.CutPrefix(name, "List "); ok {
-		return capitalizeFirstLetterEveryWord(stripped), true
+		return naming.CapitalizeFirstLetterEveryWord(stripped), true
 	} else {
 		// This one is special case. Just hard coded, mapped display name.
 		if name == "Retrieve a list of Requests" {
@@ -231,18 +230,4 @@ func handleDisplayName(name string) (displayName string, isListResource bool) {
 	}
 
 	return name, true
-}
-
-func capitalizeFirstLetterEveryWord(text string) string {
-	caser := cases.Title(language.English)
-
-	text = caser.String(text)
-	for from, to := range map[string]string{
-		" For ": " for ",
-		" A ":   " a ",
-	} {
-		text = strings.ReplaceAll(text, from, to)
-	}
-
-	return text
 }

@@ -12,6 +12,7 @@ import (
 // relevant for connectors metadata extraction.
 type Explorer struct {
 	schema *Document
+	*parameters
 }
 
 // GetBasicReadObjects retrieves schemas that can be used by ListObjectMetadata.
@@ -27,7 +28,7 @@ func (e Explorer) GetBasicReadObjects(
 	schemas := make([]Schema, 0)
 
 	for _, path := range e.GetBasicPathItems(newIgnorePathStrategy(ignoreEndpoints), objectEndpoints) {
-		schema, found, err := path.RetrieveSchemaOperationGet(displayNameOverride, check)
+		schema, found, err := path.RetrieveSchemaOperationGet(displayNameOverride, check, e.displayPostProcessing)
 		if err != nil {
 			return nil, err
 		}
