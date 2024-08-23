@@ -14,7 +14,7 @@ func init() {
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722327671/media/intercom_1722327670.svg",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722166109/media/intercom.com_1722166108.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1724364085/media/srib8u1d8vgtik0j2fww.svg",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722327671/media/intercom_1722327670.svg",
 			},
 		},
