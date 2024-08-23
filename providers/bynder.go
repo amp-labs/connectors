@@ -35,7 +35,7 @@ func init() {
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722329763/media/bynder_1722329761.svg",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722329821/media/bynder_1722329820.svg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1724363929/media/wqzogvbxncn0hj6qpvfp.svg",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722329821/media/bynder_1722329820.svg",
 			},
 		},
