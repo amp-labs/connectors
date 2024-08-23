@@ -26,7 +26,7 @@ func init() {
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722320768/media/Docusign%20%20%20%20%20%20%20%20%20%20Provider%20%3D%20%22docusign%22_1722320768.svg",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722320728/media/Docusign%20%20%20%20%20%20%20%20%20%20Provider%20%3D%20%22docusign%22_1722320727.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1724365849/media/pkm52vsvwabjnbij4uiu.png",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722320864/media/Docusign%20%20%20%20%20%20%20%20%20%20Provider%20%3D%20%22docusign%22_1722320863.svg",
 			},
 		},

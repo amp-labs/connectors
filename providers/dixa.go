@@ -32,7 +32,7 @@ func init() {
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722327706/media/dixa_1722327704.svg",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722327746/media/dixa_1722327745.svg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1724367155/media/wrb7tnh66eaq0746rmqe.svg",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722327746/media/dixa_1722327745.svg",
 			},
 		},
