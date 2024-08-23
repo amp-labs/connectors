@@ -16,7 +16,7 @@ func NewOpenapiFileManager(openapi []byte) *OpenapiFileManager {
 	}
 }
 
-func (m OpenapiFileManager) GetExplorer() (*Explorer, error) {
+func (m OpenapiFileManager) GetExplorer(opts ...Option) (*Explorer, error) {
 	loader := openapi3.NewLoader()
 
 	data, err := loader.LoadFromData(m.openapi)
@@ -25,6 +25,9 @@ func (m OpenapiFileManager) GetExplorer() (*Explorer, error) {
 	}
 
 	return &Explorer{
-		schema: &Document{delegate: data},
+		schema: &Document{
+			delegate: data,
+		},
+		parameters: createParams(opts),
 	}, nil
 }

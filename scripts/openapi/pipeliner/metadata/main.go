@@ -7,6 +7,7 @@ import (
 	"github.com/amp-labs/connectors/pipeliner/openapi"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
 	"github.com/amp-labs/connectors/tools/scrapper"
+	"github.com/iancoleman/strcase"
 )
 
 var (
@@ -19,12 +20,26 @@ var (
 		// none
 	}
 	displayNameOverride = map[string]string{ // nolint:gochecknoglobals
-		// none
+		"AccountKPIs":   "Account KPIs",
+		"ActivityKPIs":  "Activity KPIs",
+		"ApiAccesses":   "API Accesses",
+		"ContactKPIs":   "Contact KPIs",
+		"LeadOpptyKPIs": "Lead Oppty KPIs",
+		"ProjectKPIs":   "Project KPIs",
+		"QuoteKPIs":     "Quote KPIs",
+		"Webresources":  "Web Resources",
 	}
 )
 
 func main() {
-	explorer, err := openapi.FileManager.GetExplorer()
+	explorer, err := openapi.FileManager.GetExplorer(
+		api3.WithDisplayNamePostProcessors(
+			func(displayName string) string {
+				// Camel case changed to space delimited.
+				return strcase.ToDelimited(displayName, ' ')
+			},
+			api3.CapitalizeFirstLetterEveryWord,
+		))
 	must(err)
 
 	objects, err := explorer.GetBasicReadObjects(

@@ -49,7 +49,7 @@ func (s Schema) String() string {
 }
 
 func (p PathItem) RetrieveSchemaOperationGet(
-	displayNameOverride map[string]string, check ObjectCheck,
+	displayNameOverride map[string]string, check ObjectCheck, displayProcessor DisplayNameProcessor,
 ) (*Schema, bool, error) {
 	operation := p.delegate.Get
 	if operation == nil {
@@ -66,6 +66,11 @@ func (p PathItem) RetrieveSchemaOperationGet(
 		displayName = schema.Title
 		if len(displayName) == 0 {
 			displayName = p.objectName
+		}
+
+		if displayProcessor != nil {
+			// Post process Display Names to have shared format.
+			displayName = displayProcessor(displayName)
 		}
 	}
 
