@@ -76,7 +76,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						},
 					},
 					"ticket_audits": {
-						DisplayName: "audits",
+						DisplayName: "Ticket Audits",
 						FieldsMap: map[string]string{
 							"author_id":  "author_id",
 							"created_at": "created_at",

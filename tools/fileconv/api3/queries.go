@@ -1,8 +1,11 @@
 package api3
 
 import (
+	"log/slog"
 	"sort"
 	"strings"
+
+	"github.com/amp-labs/connectors/common/handy"
 )
 
 // Explorer allows to traverse schema in most common ways
@@ -11,11 +14,20 @@ type Explorer struct {
 	schema *Document
 }
 
-func (e Explorer) GetBasicReadObjects(urlPrefix string, aliases Aliases, check ObjectCheck) ([]Schema, error) {
+// GetBasicReadObjects retrieves schemas that can be used by ListObjectMetadata.
+// objectEndpoints - optional map of Endpoint Path to ObjectName associated with it.
+// ignoreEndpoints - optional list of paths to ignore
+// displayNameOverride - optional map of ObjectName to DisplayName. This will override display name from OpenAPI doc.
+func (e Explorer) GetBasicReadObjects(
+	ignoreEndpoints []string,
+	objectEndpoints map[string]string,
+	displayNameOverride map[string]string,
+	check ObjectCheck,
+) ([]Schema, error) {
 	schemas := make([]Schema, 0)
 
-	for _, path := range e.GetBasicPathItems(urlPrefix) {
-		schema, found, err := path.RetrieveSchemaOperationGet(aliases, check)
+	for _, path := range e.GetBasicPathItems(newIgnorePathStrategy(ignoreEndpoints), objectEndpoints) {
+		schema, found, err := path.RetrieveSchemaOperationGet(displayNameOverride, check)
 		if err != nil {
 			return nil, err
 		}
@@ -34,39 +46,46 @@ func (e Explorer) GetBasicReadObjects(urlPrefix string, aliases Aliases, check O
 }
 
 // GetBasicPathItems returns path items where object name is a single word.
-func (e Explorer) GetBasicPathItems(urlPrefix string) []PathItem {
-	urlPrefix = formatPrefix(urlPrefix)
-
-	result := make([]PathItem, 0)
+func (e Explorer) GetBasicPathItems(
+	ignoreEndpoints *ignorePathStrategy, endpointResources map[string]string,
+) []PathItem {
+	items := handy.Map[string, PathItem]{}
 
 	for path, pathObj := range e.schema.GetPaths() {
-		if objectName, ok := strings.CutPrefix(path, urlPrefix); ok {
-			if !strings.Contains(objectName, "/") &&
-				!strings.Contains(objectName, "{") {
-				// as of now only single word objects are supported
-				// there should be no slashes, curly brackets - nested resources
-				result = append(result, PathItem{
-					name:     objectName,
-					fullName: path,
-					delegate: pathObj,
-				})
-			}
+		if ignoreEndpoints.Check(path) {
+			// Ignore this endpoint path.
+			continue
+		}
+
+		if strings.Contains(path, "{") {
+			// as of now only single word objects are supported
+			// there should be no slashes, curly brackets - nested resources
+			continue
+		}
+
+		objectName, ok := endpointResources[path]
+		if !ok {
+			// ObjectName is empty at this time.
+			// We need to do some processing to infer ObjectName from URL path.
+			// By default, the last URL part is the ObjectName describing this REST resource.
+			parts := strings.Split(path, "/")
+			objectName = parts[len(parts)-1]
+		}
+
+		if items.Has(objectName) {
+			slog.Warn("object name is not unique, ignoring",
+				"objectName", objectName,
+				"path", path,
+				"collidesWith", items[objectName].urlPath,
+			)
+		}
+
+		items[objectName] = PathItem{
+			objectName: objectName,
+			urlPath:    path,
+			delegate:   pathObj,
 		}
 	}
 
-	return result
-}
-
-func formatPrefix(prefix string) string {
-	// Prefix must start and end with slash.
-	// Whole prefix as a single slash passes this requirement.
-	if !strings.HasPrefix(prefix, "/") {
-		prefix = "/" + prefix
-	}
-
-	if !strings.HasSuffix(prefix, "/") {
-		prefix += "/"
-	}
-
-	return prefix
+	return items.Values()
 }

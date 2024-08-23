@@ -17,6 +17,16 @@
         "verb": "verb"
       }
     },
+    "attributes": {
+      "displayName": "attributes",
+      "fields": {
+        "created_at": "created_at",
+        "id": "id",
+        "name": "name",
+        "updated_at": "updated_at",
+        "url": "url"
+      }
+    },
     "audit_logs": {
       "displayName": "audit_logs",
       "fields": {
@@ -259,6 +269,21 @@
         "usage_7d": "usage_7d"
       }
     },
+    "monitored_twitter_handles": {
+      "displayName": "monitored_twitter_handles",
+      "fields": {
+        "allow_reply": "allow_reply",
+        "avatar_url": "avatar_url",
+        "brand_id": "brand_id",
+        "can_reply": "can_reply",
+        "created_at": "created_at",
+        "id": "id",
+        "name": "name",
+        "screen_name": "screen_name",
+        "twitter_user_id": "twitter_user_id",
+        "updated_at": "updated_at"
+      }
+    },
     "organization_fields": {
       "displayName": "organization_fields",
       "fields": {
@@ -416,7 +441,7 @@
       }
     },
     "satisfaction_reasons": {
-      "displayName": "reasons",
+      "displayName": "Satisfaction Rating Reasons",
       "fields": {
         "created_at": "created_at",
         "deleted_at": "deleted_at",
@@ -429,7 +454,7 @@
       }
     },
     "search": {
-      "displayName": "results",
+      "displayName": "Search Results",
       "fields": {
         "created_at": "created_at",
         "default": "default",
@@ -440,6 +465,16 @@
         "result_type": "result_type",
         "updated_at": "updated_at",
         "url": "url"
+      }
+    },
+    "session": {
+      "displayName": "session",
+      "fields": {
+        "authenticated_at": "authenticated_at",
+        "id": "id",
+        "last_seen_at": "last_seen_at",
+        "url": "url",
+        "user_id": "user_id"
       }
     },
     "sessions": {
@@ -548,7 +583,7 @@
       }
     },
     "ticket_audits": {
-      "displayName": "audits",
+      "displayName": "Ticket Audits",
       "fields": {
         "author_id": "author_id",
         "created_at": "created_at",
@@ -703,7 +738,7 @@
       }
     },
     "trigger_categories": {
-      "displayName": "trigger_categories",
+      "displayName": "Trigger Categories",
       "fields": {
         "active_count": "active_count",
         "created_at": "created_at",
