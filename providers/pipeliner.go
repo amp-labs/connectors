@@ -16,7 +16,7 @@ func init() {
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722409690/media/const%20Pipeliner%20Provider%20%3D%20%22pipeliner%22_1722409689.png",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722409690/media/const%20Pipeliner%20Provider%20%3D%20%22pipeliner%22_1722409689.png",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1724364763/media/kangvklxztgbivrseu5s.png",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722409690/media/const%20Pipeliner%20Provider%20%3D%20%22pipeliner%22_1722409689.png",
 			},
 		},
