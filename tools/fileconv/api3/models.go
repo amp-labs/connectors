@@ -3,6 +3,7 @@ package api3
 import (
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"strings"
 
@@ -27,9 +28,9 @@ func (s Document) GetPaths() map[string]*openapi3.PathItem {
 }
 
 type PathItem struct {
-	name     string
-	fullName string
-	delegate *openapi3.PathItem
+	objectName string
+	urlPath    string
+	delegate   *openapi3.PathItem
 }
 
 type Schema struct {
@@ -47,7 +48,9 @@ func (s Schema) String() string {
 	return fmt.Sprintf("%v=[%v]", s.ObjectName, strings.Join(s.Fields, ","))
 }
 
-func (p PathItem) RetrieveSchemaOperationGet(aliases Aliases, check ObjectCheck) (*Schema, bool, error) {
+func (p PathItem) RetrieveSchemaOperationGet(
+	displayNameOverride map[string]string, check ObjectCheck,
+) (*Schema, bool, error) {
 	operation := p.delegate.Get
 	if operation == nil {
 		return nil, false, nil
@@ -58,17 +61,18 @@ func (p PathItem) RetrieveSchemaOperationGet(aliases Aliases, check ObjectCheck)
 		return nil, false, nil
 	}
 
-	name := aliases.Synonym(p.name)
-	displayName := schema.Title
-
-	if len(displayName) == 0 {
-		displayName = name
+	displayName, ok := displayNameOverride[p.objectName]
+	if !ok {
+		displayName = schema.Title
+		if len(displayName) == 0 {
+			displayName = p.objectName
+		}
 	}
 
-	fields, err := extractFieldsFromArrayItem(name, schema, check)
+	fields, err := extractFieldsFromArrayItem(p.objectName, schema, check)
 
 	return &Schema{
-		ObjectName:  name,
+		ObjectName:  p.objectName,
 		DisplayName: displayName,
 		Fields:      fields,
 		Problem:     err,
@@ -76,6 +80,8 @@ func (p PathItem) RetrieveSchemaOperationGet(aliases Aliases, check ObjectCheck)
 }
 
 func extractFieldsFromArrayItem(objectName string, schema *openapi3.Schema, check ObjectCheck) ([]string, error) {
+	checkExpectationsOperationResponseSchema(schema)
+
 	definitions := []openapi3.Schemas{
 		schema.Properties,
 	}
@@ -86,12 +92,12 @@ func extractFieldsFromArrayItem(objectName string, schema *openapi3.Schema, chec
 
 	for _, definition := range definitions {
 		for name, nestedSchema := range definition {
-			if check(name, objectName) {
-				// Object was found.
-				// We interested in the schema of array type.
+			if items, ok := getItems(nestedSchema); ok {
+				// We are interested in the schema of array type.
 				// Those fields of an item are what we are after.
-				items := nestedSchema.Value.Items
-				if items != nil {
+				// Now ask the discriminator if this is the target List.
+				// It is possible that response has multiple arrays, that's why we are asking to resolve ambiguity.
+				if check(name, objectName) {
 					return extractFields(items.Value)
 				}
 			}
@@ -105,6 +111,18 @@ func extractFieldsFromArrayItem(objectName string, schema *openapi3.Schema, chec
 	}
 
 	return nil, fmt.Errorf("%w: object %v", ErrUnprocessableObject, objectName)
+}
+
+func getItems(schema *openapi3.SchemaRef) (*openapi3.SchemaRef, bool) {
+	if schema.Value == nil {
+		return nil, false
+	}
+
+	if schema.Value.Items == nil {
+		return nil, false
+	}
+
+	return schema.Value.Items, true
 }
 
 func extractSchema(operation *openapi3.Operation) *openapi3.Schema {
@@ -182,4 +200,34 @@ func extractFields(source *openapi3.Schema) ([]string, error) {
 	}
 
 	return combined.List(), nil
+}
+
+// This logs any concerns if any.
+// The OpenAPI extractor has some expectations that should hold true, otherwise the extraction
+// should be rethought to match the edge case.
+//
+// Operation response has a schema, it must be an object, and it should contain a field
+// that will hold Object of interest. That object is what connectors.ReadConnector returns via Read method.
+func checkExpectationsOperationResponseSchema(schema *openapi3.Schema) {
+	if schema.Type == nil {
+		slog.Warn("Schema definition has no type")
+
+		return
+	}
+
+	if len(*schema.Type) != 1 {
+		slog.Warn("Schema definition has multiple types")
+	}
+
+	found := false
+
+	for _, s := range *schema.Type {
+		if s == "object" {
+			found = true
+		}
+	}
+
+	if !found {
+		slog.Warn("Schema definition is not an object. Expected to be an object containing array of items.")
+	}
 }
