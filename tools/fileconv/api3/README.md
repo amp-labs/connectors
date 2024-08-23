@@ -37,3 +37,6 @@ if this is the correct response field that will hold your schema. Some common im
   * api3.IdenticalObjectCheck - expects data to be stored under the same name as object name. Ex: {"contacts":[...]}
   * api3.DataObjectCheck - expects schema to be returned under `data` field. Ex: {"data":[...]}
   * Your implementation can have exception or do combination of the two based on different objects.
+
+Additionally, Explorer can be configured to apply display name processing after data is extracted. For example, you can capitalize every word of display for better look.
+Edge cases should still be directly specified via **displayNameOverride** map.
