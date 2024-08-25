@@ -19,19 +19,6 @@ func init() {
 		DisplayName: "Amplitude",
 		AuthType:    Basic,
 		BaseURL:     "https://amplitude.com",
-		Support: Support{
-			BulkWrite: BulkWriteSupport{
-				Insert: false,
-				Update: false,
-				Upsert: false,
-				Delete: false,
-			},
-			Proxy:     false,
-			Read:      false,
-			Subscribe: false,
-			Write:     false,
-		},
-		PostAuthInfoNeeded: false,
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722458409/media/amplitude_1722458408.svg",
@@ -42,5 +29,18 @@ func init() {
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722458351/media/amplitude_1722458350.svg",
 			},
 		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     true,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
+		},
+		PostAuthInfoNeeded: false,
 	})
 }
