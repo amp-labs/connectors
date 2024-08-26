@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 
-	"github.com/amp-labs/connectors/pipeliner/metadata"
-	"github.com/amp-labs/connectors/pipeliner/openapi"
+	"github.com/amp-labs/connectors/providers/pipeliner/metadata"
+	"github.com/amp-labs/connectors/providers/pipeliner/openapi"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
 	"github.com/amp-labs/connectors/tools/scrapper"
 	"github.com/iancoleman/strcase"

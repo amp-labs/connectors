@@ -1,10 +1,10 @@
-package gong
+package salesloft
 
 import (
 	"context"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/gong/metadata"
+	"github.com/amp-labs/connectors/providers/salesloft/metadata"
 )
 
 func (c *Connector) ListObjectMetadata(

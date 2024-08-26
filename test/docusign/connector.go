@@ -5,19 +5,19 @@ import (
 	"net/http"
 
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
-	"github.com/amp-labs/connectors/docusign"
 	"github.com/amp-labs/connectors/providers"
+	docusign2 "github.com/amp-labs/connectors/providers/docusign"
 	"github.com/amp-labs/connectors/test/utils"
 	"golang.org/x/oauth2"
 )
 
-func GetDocusignConnector(ctx context.Context) *docusign.Connector {
+func GetDocusignConnector(ctx context.Context) *docusign2.Connector {
 	filePath := credscanning.LoadPath(providers.Docusign)
 	reader := utils.MustCreateProvCredJSON(filePath, true, false)
 
-	conn, err := docusign.NewConnector(
-		docusign.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
-		docusign.WithMetadata(map[string]string{
+	conn, err := docusign2.NewConnector(
+		docusign2.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
+		docusign2.WithMetadata(map[string]string{
 			// This value can be obtained by following this API reference.
 			// https://developers.docusign.com/platform/auth/reference/user-info
 			"server": "na3",

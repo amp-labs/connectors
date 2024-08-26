@@ -10,7 +10,7 @@ import (
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/examples/utils"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/salesforce"
+	salesforce2 "github.com/amp-labs/connectors/providers/salesforce"
 )
 
 const (
@@ -75,10 +75,10 @@ func salesforceDeepExample(ctx context.Context) error {
 }
 
 // Create a deep connector with the Salesforce provider.
-func createDeepConnector(ctx context.Context) *salesforce.Connector {
-	conn, err := salesforce.NewConnector(
-		salesforce.WithAuthenticatedClient(createAuthenticatedHttpClient(ctx)),
-		salesforce.WithWorkspace(Workspace))
+func createDeepConnector(ctx context.Context) *salesforce2.Connector {
+	conn, err := salesforce2.NewConnector(
+		salesforce2.WithAuthenticatedClient(createAuthenticatedHttpClient(ctx)),
+		salesforce2.WithWorkspace(Workspace))
 	if err != nil {
 		panic(err)
 	}

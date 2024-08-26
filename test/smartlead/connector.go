@@ -6,16 +6,16 @@ import (
 
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/smartlead"
+	smartlead2 "github.com/amp-labs/connectors/providers/smartlead"
 	"github.com/amp-labs/connectors/test/utils"
 )
 
-func GetSmartleadConnector(ctx context.Context) *smartlead.Connector {
+func GetSmartleadConnector(ctx context.Context) *smartlead2.Connector {
 	filePath := credscanning.LoadPath(providers.Smartlead)
 	reader := utils.MustCreateProvCredJSON(filePath, false, false)
 
-	conn, err := smartlead.NewConnector(
-		smartlead.WithClient(ctx, http.DefaultClient,
+	conn, err := smartlead2.NewConnector(
+		smartlead2.WithClient(ctx, http.DefaultClient,
 			reader.Get(credscanning.Fields.ApiKey),
 		),
 	)

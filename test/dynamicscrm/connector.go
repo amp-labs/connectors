@@ -6,19 +6,19 @@ import (
 	"net/http"
 
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
-	"github.com/amp-labs/connectors/dynamicscrm"
 	"github.com/amp-labs/connectors/providers"
+	dynamicscrm2 "github.com/amp-labs/connectors/providers/dynamicscrm"
 	"github.com/amp-labs/connectors/test/utils"
 	"golang.org/x/oauth2"
 )
 
-func GetMSDynamics365CRMConnector(ctx context.Context) *dynamicscrm.Connector {
+func GetMSDynamics365CRMConnector(ctx context.Context) *dynamicscrm2.Connector {
 	filePath := credscanning.LoadPath(providers.DynamicsCRM)
 	reader := utils.MustCreateProvCredJSON(filePath, true, true)
 
-	conn, err := dynamicscrm.NewConnector(
-		dynamicscrm.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
-		dynamicscrm.WithWorkspace(reader.Get(credscanning.Fields.Workspace)),
+	conn, err := dynamicscrm2.NewConnector(
+		dynamicscrm2.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
+		dynamicscrm2.WithWorkspace(reader.Get(credscanning.Fields.Workspace)),
 	)
 
 	if err != nil {

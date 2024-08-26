@@ -5,12 +5,12 @@ import (
 	"net/http"
 
 	"github.com/amp-labs/connectors/common/scanning"
-	"github.com/amp-labs/connectors/gong"
+	gong2 "github.com/amp-labs/connectors/providers/gong"
 	testUtils "github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/utils"
 )
 
-func GetGongConnector(ctx context.Context, filePath string) *gong.Connector {
+func GetGongConnector(ctx context.Context, filePath string) *gong2.Connector {
 	registry := scanning.NewRegistry()
 
 	readers := []scanning.Reader{
@@ -45,8 +45,8 @@ func GetGongConnector(ctx context.Context, filePath string) *gong.Connector {
 	cfg := utils.GongOAuthConfigFromRegistry(registry)
 	tok := utils.GongOauthTokenFromRegistry(registry)
 
-	conn, err := gong.NewConnector(
-		gong.WithClient(ctx, http.DefaultClient, cfg, tok),
+	conn, err := gong2.NewConnector(
+		gong2.WithClient(ctx, http.DefaultClient, cfg, tok),
 	)
 	if err != nil {
 		testUtils.Fail("error creating connector", "error", err)

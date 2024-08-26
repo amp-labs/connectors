@@ -6,11 +6,11 @@ import (
 	"os"
 
 	"github.com/amp-labs/connectors/common/scanning"
-	"github.com/amp-labs/connectors/salesforce"
+	salesforce2 "github.com/amp-labs/connectors/providers/salesforce"
 	"github.com/amp-labs/connectors/utils"
 )
 
-func Connector(ctx context.Context) (*salesforce.Connector, error) {
+func Connector(ctx context.Context) (*salesforce2.Connector, error) {
 	// assumes that this code is being run from the root of the project
 	// go run test/salesforce/bulkwrite/main.go
 	filePath := os.Getenv("SALESFORCE_CRED_FILE_PATH")
@@ -26,7 +26,7 @@ func Connector(ctx context.Context) (*salesforce.Connector, error) {
 	cfg := utils.SalesforceOAuthConfigFromRegistry(credentialsRegistry)
 	tok := utils.SalesforceOauthTokenFromRegistry(credentialsRegistry)
 
-	return salesforce.NewConnector(
-		salesforce.WithClient(ctx, http.DefaultClient, cfg, tok),
-		salesforce.WithWorkspace(salesforceWorkspace))
+	return salesforce2.NewConnector(
+		salesforce2.WithClient(ctx, http.DefaultClient, cfg, tok),
+		salesforce2.WithWorkspace(salesforceWorkspace))
 }

@@ -7,18 +7,18 @@ import (
 
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/salesforce"
+	salesforce2 "github.com/amp-labs/connectors/providers/salesforce"
 	"github.com/amp-labs/connectors/test/utils"
 	testUtils "github.com/amp-labs/connectors/test/utils"
 	"golang.org/x/oauth2"
 )
 
-func GetSalesforceConnector(ctx context.Context) *salesforce.Connector {
+func GetSalesforceConnector(ctx context.Context) *salesforce2.Connector {
 	reader := getSalesforceJSONReader()
 
-	conn, err := salesforce.NewConnector(
-		salesforce.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
-		salesforce.WithWorkspace(reader.Get(credscanning.Fields.Workspace)),
+	conn, err := salesforce2.NewConnector(
+		salesforce2.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
+		salesforce2.WithWorkspace(reader.Get(credscanning.Fields.Workspace)),
 	)
 	if err != nil {
 		testUtils.Fail("error creating connector", "error", err)

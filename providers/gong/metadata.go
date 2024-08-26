@@ -1,10 +1,10 @@
-package smartlead
+package gong
 
 import (
 	"context"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/smartlead/metadata"
+	"github.com/amp-labs/connectors/providers/gong/metadata"
 )
 
 func (c *Connector) ListObjectMetadata(

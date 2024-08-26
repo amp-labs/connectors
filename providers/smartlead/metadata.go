@@ -1,10 +1,10 @@
-package zendesksupport
+package smartlead
 
 import (
 	"context"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/zendesksupport/metadata"
+	"github.com/amp-labs/connectors/providers/smartlead/metadata"
 )
 
 func (c *Connector) ListObjectMetadata(

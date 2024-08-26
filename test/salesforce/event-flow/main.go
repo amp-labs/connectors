@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors/common/scanning"
-	"github.com/amp-labs/connectors/salesforce"
+	salesforce2 "github.com/amp-labs/connectors/providers/salesforce"
 	testUtils "github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/utils"
 )
@@ -40,9 +40,9 @@ func main() {
 	tok := utils.SalesforceOauthTokenFromRegistry(credentialsRegistry)
 	ctx := context.Background()
 
-	sfc, err := salesforce.NewConnector(
-		salesforce.WithClient(ctx, http.DefaultClient, cfg, tok),
-		salesforce.WithWorkspace(salesforceWorkspace))
+	sfc, err := salesforce2.NewConnector(
+		salesforce2.WithClient(ctx, http.DefaultClient, cfg, tok),
+		salesforce2.WithWorkspace(salesforceWorkspace))
 	if err != nil {
 		slog.Error("Error creating Salesforce connector", "error", err)
 
@@ -66,7 +66,7 @@ func main() {
 	testPE(sfc, ctx, namedCred, peName, uniqueString)
 }
 
-func testCDC(sfc *salesforce.Connector, ctx context.Context, creds salesforce.Credential, uniqueString string) {
+func testCDC(sfc *salesforce2.Connector, ctx context.Context, creds salesforce2.Credential, uniqueString string) {
 	fmt.Println("-----------------Testing Change Data Capture-----------------")
 
 	cdcChannel, err := TestCDCChannel(sfc, ctx, "TestCDCChannel"+uniqueString)
@@ -99,11 +99,11 @@ func testCDC(sfc *salesforce.Connector, ctx context.Context, creds salesforce.Cr
 		return
 	}
 
-	remoteResource := salesforce.GetRemoteResource(orgId, cdcChannel.FullName)
+	remoteResource := salesforce2.GetRemoteResource(orgId, cdcChannel.FullName)
 	printWithField("RemoteResource", "resource", remoteResource)
 }
 
-func testPE(sfc *salesforce.Connector, ctx context.Context, creds salesforce.Credential, eventName string, uniqueString string) {
+func testPE(sfc *salesforce2.Connector, ctx context.Context, creds salesforce2.Credential, eventName string, uniqueString string) {
 	fmt.Println("-----------------Testing Platform Event-----------------")
 
 	peChannel, err := TestPlatformEventChannel(sfc, ctx, "TestPEChannel"+uniqueString)
@@ -135,18 +135,18 @@ func testPE(sfc *salesforce.Connector, ctx context.Context, creds salesforce.Cre
 		return
 	}
 
-	remoteResource := salesforce.GetRemoteResource(orgId, peChannel.FullName)
+	remoteResource := salesforce2.GetRemoteResource(orgId, peChannel.FullName)
 	printWithField("RemoteResource", "resource", remoteResource)
 }
 
-func testPlatformEventChannelMembership(sfc *salesforce.Connector, ctx context.Context, peName string, channelName string, objectName string, uniqueString string) (*salesforce.EventChannelMember, error) {
+func testPlatformEventChannelMembership(sfc *salesforce2.Connector, ctx context.Context, peName string, channelName string, objectName string, uniqueString string) (*salesforce2.EventChannelMember, error) {
 	rawPEName := getRawPEName(objectName)
 
 	rawChannelName := getRawChannelNameFromChannel(channelName) // TODO FIXME
 
-	member := &salesforce.EventChannelMember{
+	member := &salesforce2.EventChannelMember{
 		FullName: getPEChannelMembershipName(rawChannelName, rawPEName),
-		Metadata: &salesforce.EventChannelMemberMetadata{
+		Metadata: &salesforce2.EventChannelMemberMetadata{
 			EventChannel:   getChannelName(rawChannelName),
 			SelectedEntity: peName,
 		},
@@ -164,13 +164,13 @@ func testPlatformEventChannelMembership(sfc *salesforce.Connector, ctx context.C
 	return newChannelMember, nil
 }
 
-func testChangeDataCaptureChannelMembership(sfc *salesforce.Connector, ctx context.Context, channelName string, objecName string) (*salesforce.EventChannelMember, error) {
+func testChangeDataCaptureChannelMembership(sfc *salesforce2.Connector, ctx context.Context, channelName string, objecName string) (*salesforce2.EventChannelMember, error) {
 	eventName := getCDCEventName(objecName)
 	rawChannelName := getRawChannelNameFromChannel(channelName)
 
-	member := &salesforce.EventChannelMember{
+	member := &salesforce2.EventChannelMember{
 		FullName: getCDCChannelMembershipName(rawChannelName, eventName),
-		Metadata: &salesforce.EventChannelMemberMetadata{
+		Metadata: &salesforce2.EventChannelMemberMetadata{
 			EventChannel:   getChannelName(rawChannelName),
 			SelectedEntity: eventName,
 		},
@@ -188,10 +188,10 @@ func testChangeDataCaptureChannelMembership(sfc *salesforce.Connector, ctx conte
 	return newChannelMember, nil
 }
 
-func TestCDCChannel(sfc *salesforce.Connector, ctx context.Context, channelName string) (*salesforce.EventChannel, error) {
-	channel := &salesforce.EventChannel{
+func TestCDCChannel(sfc *salesforce2.Connector, ctx context.Context, channelName string) (*salesforce2.EventChannel, error) {
+	channel := &salesforce2.EventChannel{
 		FullName: getChannelName(channelName),
-		Metadata: &salesforce.EventChannelMetadata{
+		Metadata: &salesforce2.EventChannelMetadata{
 			ChannelType: "data",
 			Label:       "Test change data capture Channel",
 		},
@@ -208,10 +208,10 @@ func TestCDCChannel(sfc *salesforce.Connector, ctx context.Context, channelName 
 	return newChannel, nil
 }
 
-func TestPlatformEventChannel(sfc *salesforce.Connector, ctx context.Context, channelName string) (*salesforce.EventChannel, error) {
-	channel := &salesforce.EventChannel{
+func TestPlatformEventChannel(sfc *salesforce2.Connector, ctx context.Context, channelName string) (*salesforce2.EventChannel, error) {
+	channel := &salesforce2.EventChannel{
 		FullName: getChannelName(channelName),
-		Metadata: &salesforce.EventChannelMetadata{
+		Metadata: &salesforce2.EventChannelMetadata{
 			ChannelType: "event",
 			Label:       "Test Event Channel",
 		},
@@ -229,10 +229,10 @@ func TestPlatformEventChannel(sfc *salesforce.Connector, ctx context.Context, ch
 	return newChannel, nil
 }
 
-func TestEventRelayConfig(sfc *salesforce.Connector, ctx context.Context, cred salesforce.Credential, channel *salesforce.EventChannel, uniqueString string) (*salesforce.EventRelayConfig, error) {
-	evtCfg := &salesforce.EventRelayConfig{
+func TestEventRelayConfig(sfc *salesforce2.Connector, ctx context.Context, cred salesforce2.Credential, channel *salesforce2.EventChannel, uniqueString string) (*salesforce2.EventRelayConfig, error) {
+	evtCfg := &salesforce2.EventRelayConfig{
 		FullName: "TestEventRelayConfig" + uniqueString,
-		Metadata: &salesforce.EventRelayConfigMetadata{
+		Metadata: &salesforce2.EventRelayConfigMetadata{
 			DestinationResourceName: cred.DestinationResourceName(),
 			EventChannel:            channel.FullName,
 		},
@@ -251,7 +251,7 @@ func TestEventRelayConfig(sfc *salesforce.Connector, ctx context.Context, cred s
 	return newEvtCfg, nil
 }
 
-func testOrganizationId(sfc *salesforce.Connector, ctx context.Context) (string, error) {
+func testOrganizationId(sfc *salesforce2.Connector, ctx context.Context) (string, error) {
 	fmt.Println("-----------------Testing Organization Id-----------------")
 
 	orgId, err := sfc.GetOrganizationId(ctx)
@@ -265,12 +265,12 @@ func testOrganizationId(sfc *salesforce.Connector, ctx context.Context) (string,
 	return orgId, nil
 }
 
-func TestCredentialsLegacy(sfc *salesforce.Connector, ctx context.Context, uniqueString string) (*salesforce.NamedCredential, error) {
+func TestCredentialsLegacy(sfc *salesforce2.Connector, ctx context.Context, uniqueString string) (*salesforce2.NamedCredential, error) {
 	fmt.Println("-----------------Testing Named Credential Legacy-----------------")
 
-	namedCred := &salesforce.NamedCredential{
+	namedCred := &salesforce2.NamedCredential{
 		FullName: "TestNamedCredentialLegacy" + uniqueString,
-		Metadata: &salesforce.NamedCredentialMetadata{
+		Metadata: &salesforce2.NamedCredentialMetadata{
 			GenerateAuthorizationHeader: true,
 			Label:                       "TestNamedCredentialLegacy" + uniqueString,
 

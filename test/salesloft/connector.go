@@ -5,12 +5,12 @@ import (
 	"net/http"
 
 	"github.com/amp-labs/connectors/common/scanning"
-	"github.com/amp-labs/connectors/salesloft"
+	salesloft2 "github.com/amp-labs/connectors/providers/salesloft"
 	testUtils "github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/utils"
 )
 
-func GetSalesloftConnector(ctx context.Context, filePath string) *salesloft.Connector {
+func GetSalesloftConnector(ctx context.Context, filePath string) *salesloft2.Connector {
 	registry := scanning.NewRegistry()
 
 	readers := []scanning.Reader{
@@ -45,8 +45,8 @@ func GetSalesloftConnector(ctx context.Context, filePath string) *salesloft.Conn
 	cfg := utils.SalesloftConfigFromRegistry(registry)
 	tok := utils.SalesloftTokenFromRegistry(registry)
 
-	conn, err := salesloft.NewConnector(
-		salesloft.WithClient(ctx, http.DefaultClient, cfg, tok),
+	conn, err := salesloft2.NewConnector(
+		salesloft2.WithClient(ctx, http.DefaultClient, cfg, tok),
 	)
 	if err != nil {
 		testUtils.Fail("error creating Salesloft connector", "error", err)

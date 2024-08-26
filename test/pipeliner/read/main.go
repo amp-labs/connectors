@@ -8,7 +8,7 @@ import (
 	"syscall"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/pipeliner"
+	"github.com/amp-labs/connectors/providers/pipeliner"
 	connTest "github.com/amp-labs/connectors/test/pipeliner"
 	"github.com/amp-labs/connectors/test/utils"
 )

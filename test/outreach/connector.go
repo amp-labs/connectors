@@ -5,12 +5,12 @@ import (
 	"net/http"
 
 	"github.com/amp-labs/connectors/common/scanning"
-	"github.com/amp-labs/connectors/outreach"
+	outreach2 "github.com/amp-labs/connectors/providers/outreach"
 	testUtils "github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/utils"
 )
 
-func GetOutreachConnector(ctx context.Context, filePath string) *outreach.Connector {
+func GetOutreachConnector(ctx context.Context, filePath string) *outreach2.Connector {
 	registry := scanning.NewRegistry()
 
 	readers := []scanning.Reader{
@@ -45,8 +45,8 @@ func GetOutreachConnector(ctx context.Context, filePath string) *outreach.Connec
 	cfg := utils.OutreachOAuthConfigFromRegistry(registry)
 	tok := utils.OutreachOauthTokenFromRegistry(registry)
 
-	conn, err := outreach.NewConnector(
-		outreach.WithClient(ctx, http.DefaultClient, cfg, tok),
+	conn, err := outreach2.NewConnector(
+		outreach2.WithClient(ctx, http.DefaultClient, cfg, tok),
 	)
 	if err != nil {
 		testUtils.Fail("error creating outreach connector", "error", err)
