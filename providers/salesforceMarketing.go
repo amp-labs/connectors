@@ -9,8 +9,7 @@ func init() {
 		AuthType:    Oauth2,
 		BaseURL:     "https://{{.workspace}}.rest.marketingcloudapis.com",
 		Oauth2Opts: &Oauth2Opts{
-			GrantType:                 AuthorizationCode, // There is also a s2s clientcredentials option.
-			AuthURL:                   "https://{{.workspace}}.auth.marketingcloudapis.com/v2/authorize",
+			GrantType:                 ClientCredentials,
 			TokenURL:                  "https://{{.workspace}}.auth.marketingcloudapis.com/v2/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: true,
