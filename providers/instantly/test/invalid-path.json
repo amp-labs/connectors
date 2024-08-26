@@ -1,0 +1,6 @@
+{
+    "message": "Route GET:/api/butterfly?api_key=<SENSITIVE_DATA> not found",
+    "error": "Not Found",
+    "statusCode": 404
+}
+
