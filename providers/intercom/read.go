@@ -21,7 +21,6 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 
 	return common.ParseResult(
 		rsp,
-		getTotalSize,
 		getRecords,
 		makeNextRecordsURL(link),
 		common.GetMarshaledData,

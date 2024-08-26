@@ -36,10 +36,6 @@ func getRecords(node *ajson.Node) ([]map[string]any, error) {
 	return records, nil
 }
 
-func getTotalSize(node *ajson.Node) (int64, error) {
-	return jsonquery.New(node).ArraySize("data")
-}
-
 func constructRecords(d Data) []map[string]any {
 	records := make([]map[string]any, len(d.Data))
 

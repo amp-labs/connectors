@@ -7,13 +7,11 @@ import (
 )
 
 type (
-	ListSizeFunc func(*ajson.Node) (int64, error)
 	NextPageFunc func(*ajson.Node) (string, error)
 	RecordsFunc  func(*ajson.Node) ([]map[string]any, error)
 )
 
 // ParseResult parses the response from a provider into a ReadResult. A 2xx return type is assumed.
-// The sizeFunc, recordsFunc, nextPageFunc, and marshalFunc are used to extract the relevant data from the response.
 // The sizeFunc returns the total number of records in the response.
 // The recordsFunc returns the records in the response.
 // The nextPageFunc returns the URL for the next page of results.
@@ -21,7 +19,6 @@ type (
 // The fields are used to populate ReadResultRow.Fields.
 func ParseResult(
 	resp *JSONHTTPResponse,
-	sizeFunc func(*ajson.Node) (int64, error),
 	recordsFunc func(*ajson.Node) ([]map[string]any, error),
 	nextPageFunc func(*ajson.Node) (string, error),
 	marshalFunc func([]map[string]any, []string) ([]ReadResultRow, error),
@@ -29,11 +26,6 @@ func ParseResult(
 ) (*ReadResult, error) {
 	if resp == nil {
 		return nil, ErrEmptyJSONHTTPResponse
-	}
-
-	totalSize, err := sizeFunc(resp.Body)
-	if err != nil {
-		return nil, err
 	}
 
 	records, err := recordsFunc(resp.Body)
@@ -54,7 +46,7 @@ func ParseResult(
 	}
 
 	return &ReadResult{
-		Rows:     totalSize,
+		Rows:     int64(len(marshaledData)),
 		Data:     marshaledData,
 		NextPage: NextPageToken(nextPage),
 		Done:     done,

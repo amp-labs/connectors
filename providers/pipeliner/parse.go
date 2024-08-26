@@ -5,10 +5,6 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-func getTotalSize(node *ajson.Node) (int64, error) {
-	return jsonquery.New(node).ArraySize("data")
-}
-
 func getRecords(node *ajson.Node) ([]map[string]any, error) {
 	arr, err := jsonquery.New(node).Array("data", false)
 	if err != nil {
