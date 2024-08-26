@@ -13,9 +13,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils"
 )
 
-var (
-	objectName = "contacts"
-)
+var objectName = "contacts"
 
 func main() {
 	// Handle Ctrl-C gracefully.

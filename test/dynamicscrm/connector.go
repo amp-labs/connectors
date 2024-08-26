@@ -20,7 +20,6 @@ func GetMSDynamics365CRMConnector(ctx context.Context) *dynamicscrm.Connector {
 		dynamicscrm.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
 		dynamicscrm.WithWorkspace(reader.Get(credscanning.Fields.Workspace)),
 	)
-
 	if err != nil {
 		utils.Fail("error creating microsoft CRM connector", "error", err)
 	}

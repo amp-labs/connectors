@@ -19,9 +19,7 @@ type NotesPayload struct {
 	ContactId string `json:"contact_id"`
 }
 
-var (
-	objectName = "Notes" // nolint: gochecknoglobals
-)
+var objectName = "Notes" // nolint: gochecknoglobals
 
 func main() {
 	// Handle Ctrl-C gracefully.
