@@ -9,12 +9,12 @@ import (
 )
 
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
-	link, err := c.buildReadURL(config)
+	url, err := c.buildReadURL(config)
 	if err != nil {
 		return nil, err
 	}
 
-	rsp, err := c.Client.Get(ctx, link.String())
+	rsp, err := c.Client.Get(ctx, url.String())
 	if err != nil {
 		return nil, err
 	}
@@ -30,17 +30,17 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 }
 
 func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error) {
-	link, err := c.getURL(config.ObjectName)
+	url, err := c.getURL(config.ObjectName)
 	if err != nil {
 		return nil, err
 	}
 
-	link.WithQueryParam("first", strconv.Itoa(DefaultPageSize))
+	url.WithQueryParam("first", strconv.Itoa(DefaultPageSize))
 
 	if len(config.NextPage) != 0 {
 		// Next page
-		link.WithQueryParam("after", config.NextPage.String())
+		url.WithQueryParam("after", config.NextPage.String())
 	}
 
-	return link, nil
+	return url, nil
 }

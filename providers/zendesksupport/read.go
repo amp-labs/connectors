@@ -12,12 +12,12 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, common.ErrMissingObjects
 	}
 
-	link, err := c.buildReadURL(config)
+	url, err := c.buildReadURL(config)
 	if err != nil {
 		return nil, err
 	}
 
-	rsp, err := c.Client.Get(ctx, link.String())
+	rsp, err := c.Client.Get(ctx, url.String())
 	if err != nil {
 		return nil, err
 	}
@@ -39,10 +39,10 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 	}
 
 	// First page
-	link, err := c.getURL(config.ObjectName)
+	url, err := c.getURL(config.ObjectName)
 	if err != nil {
 		return nil, err
 	}
 
-	return link, nil
+	return url, nil
 }

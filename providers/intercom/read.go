@@ -9,12 +9,12 @@ import (
 )
 
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
-	link, err := c.buildReadURL(config)
+	url, err := c.buildReadURL(config)
 	if err != nil {
 		return nil, err
 	}
 
-	rsp, err := c.Client.Get(ctx, link.String(), apiVersionHeader)
+	rsp, err := c.Client.Get(ctx, url.String(), apiVersionHeader)
 	if err != nil {
 		return nil, err
 	}
@@ -23,7 +23,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		rsp,
 		getTotalSize,
 		getRecords,
-		makeNextRecordsURL(link),
+		makeNextRecordsURL(url),
 		common.GetMarshaledData,
 		config.Fields,
 	)
@@ -36,12 +36,12 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 	}
 
 	// First page
-	link, err := c.getURL(config.ObjectName)
+	url, err := c.getURL(config.ObjectName)
 	if err != nil {
 		return nil, err
 	}
 
-	link.WithQueryParam("per_page", strconv.Itoa(DefaultPageSize))
+	url.WithQueryParam("per_page", strconv.Itoa(DefaultPageSize))
 
-	return link, nil
+	return url, nil
 }
