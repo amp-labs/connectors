@@ -38,7 +38,7 @@ Auth connectors allow you to proxy through requests to a SaaS provider via Amper
 
 #### Adding a new provider
 
-To add a new basic connector that allows proxying through the ampersand platform, you need to add a new entry to the `providers.yaml` file. The entry should have some required fields which are tagged with `validate: required` in the `providers/types.go` file.
+To add a new basic connector that allows proxying through the ampersand platform, you need to add a new file to the `providers` package.
 
 ### Initialization
 
