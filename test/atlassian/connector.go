@@ -6,22 +6,22 @@ import (
 
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/providers"
-	atlassian2 "github.com/amp-labs/connectors/providers/atlassian"
+	"github.com/amp-labs/connectors/providers/atlassian"
 	"github.com/amp-labs/connectors/test/utils"
 	"golang.org/x/oauth2"
 )
 
 const cloudId = "ebc887b2-7e61-4059-ab35-71f15cc16e12"
 
-func GetAtlassianConnector(ctx context.Context) *atlassian2.Connector {
+func GetAtlassianConnector(ctx context.Context) *atlassian.Connector {
 	filePath := credscanning.LoadPath(providers.Atlassian)
 	reader := utils.MustCreateProvCredJSON(filePath, true, true)
 
-	conn, err := atlassian2.NewConnector(
-		atlassian2.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
-		atlassian2.WithWorkspace(reader.Get(credscanning.Fields.Workspace)),
-		atlassian2.WithModule(atlassian2.ModuleJira),
-		atlassian2.WithMetadata(map[string]string{
+	conn, err := atlassian.NewConnector(
+		atlassian.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
+		atlassian.WithWorkspace(reader.Get(credscanning.Fields.Workspace)),
+		atlassian.WithModule(atlassian.ModuleJira),
+		atlassian.WithMetadata(map[string]string{
 			// This value can be obtained by following this API reference.
 			// https://developer.atlassian.com/cloud/confluence/oauth-2-3lo-apps/#3-1-get-the-cloudid-for-your-site
 			"cloudId": cloudId,

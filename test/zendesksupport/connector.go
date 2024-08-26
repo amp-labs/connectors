@@ -7,18 +7,18 @@ import (
 
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/providers"
-	zendesksupport2 "github.com/amp-labs/connectors/providers/zendesksupport"
+	"github.com/amp-labs/connectors/providers/zendesksupport"
 	"github.com/amp-labs/connectors/test/utils"
 	"golang.org/x/oauth2"
 )
 
-func GetZendeskSupportConnector(ctx context.Context) *zendesksupport2.Connector {
+func GetZendeskSupportConnector(ctx context.Context) *zendesksupport.Connector {
 	filePath := credscanning.LoadPath(providers.ZendeskSupport)
 	reader := utils.MustCreateProvCredJSON(filePath, true, true)
 
-	conn, err := zendesksupport2.NewConnector(
-		zendesksupport2.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
-		zendesksupport2.WithWorkspace(reader.Get(credscanning.Fields.Workspace)),
+	conn, err := zendesksupport.NewConnector(
+		zendesksupport.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
+		zendesksupport.WithWorkspace(reader.Get(credscanning.Fields.Workspace)),
 	)
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)

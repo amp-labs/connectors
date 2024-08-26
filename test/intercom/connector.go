@@ -5,12 +5,12 @@ import (
 	"net/http"
 
 	"github.com/amp-labs/connectors/common/scanning"
-	intercom2 "github.com/amp-labs/connectors/providers/intercom"
+	"github.com/amp-labs/connectors/providers/intercom"
 	testUtils "github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/utils"
 )
 
-func GetIntercomConnector(ctx context.Context, filePath string) *intercom2.Connector {
+func GetIntercomConnector(ctx context.Context, filePath string) *intercom.Connector {
 	registry := scanning.NewRegistry()
 
 	readers := []scanning.Reader{
@@ -35,8 +35,8 @@ func GetIntercomConnector(ctx context.Context, filePath string) *intercom2.Conne
 	cfg := utils.IntercomConfigFromRegistry(registry)
 	tok := utils.IntercomTokenFromRegistry(registry)
 
-	conn, err := intercom2.NewConnector(
-		intercom2.WithClient(ctx, http.DefaultClient, cfg, tok),
+	conn, err := intercom.NewConnector(
+		intercom.WithClient(ctx, http.DefaultClient, cfg, tok),
 	)
 	if err != nil {
 		testUtils.Fail("error creating Intercom connector", "error", err)
