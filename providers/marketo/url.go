@@ -23,11 +23,16 @@ func (c *Connector) getURL(params common.ReadParams) (*urlbuilder.URL, error) {
 	}
 
 	// The only objects in Assets API supporting this are: Emails, Programs, SmartCampaigns,SmartLists
-	if !params.Since.IsZero() && c.Module == ModuleAssets.String() {
-		t := params.Since.Format(time.RFC3339)
-		fmtTime := fmt.Sprintf("%v", t)
-		link.WithQueryParam("earliestUpdatedAt", fmtTime)
-		link.WithQueryParam("latestUpdatedAt", time.Now().Format(time.RFC3339))
+	if !params.Since.IsZero() {
+		switch c.Module {
+		case ModuleAssets.String():
+			t := params.Since.Format(time.RFC3339)
+			fmtTime := fmt.Sprintf("%v", t)
+			link.WithQueryParam("earliestUpdatedAt", fmtTime)
+			link.WithQueryParam("latestUpdatedAt", time.Now().Format(time.RFC3339))
+
+		default: // we currently don't support filtering in leads.
+		}
 	}
 
 	return link, nil

@@ -2,7 +2,7 @@
 
 Currently the Write connector supports Leads API only. 
 
-- The objects that we can write to currently are:
+The objects that we can write to currently are:
  - Companies
  - Leads
  - Named Account Lists
