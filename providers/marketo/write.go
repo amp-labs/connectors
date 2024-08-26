@@ -22,7 +22,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 
 	// prepares the updating data request.
 	if len(config.RecordId) > 0 {
-		url, err = updateURLWithID(url, config.RecordId)
+		url, err = updateURLPath(url, config.RecordId)
 		if err != nil {
 			return nil, err
 		}
