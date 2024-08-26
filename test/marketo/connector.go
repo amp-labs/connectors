@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
-	"github.com/amp-labs/connectors/marketo"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/marketo"
 	"github.com/amp-labs/connectors/test/utils"
 	"golang.org/x/oauth2/clientcredentials"
 )

@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/amp-labs/connectors/salesforce"
+	salesforce2 "github.com/amp-labs/connectors/providers/salesforce"
 	testUtils "github.com/amp-labs/connectors/test/utils"
 )
 
@@ -65,13 +65,13 @@ func main() { //nolint:funlen
 	}
 }
 
-func testBulkWrite(ctx context.Context, sfc *salesforce.Connector, filePath string) (string, error) {
+func testBulkWrite(ctx context.Context, sfc *salesforce2.Connector, filePath string) (string, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
 		return "", fmt.Errorf("error opening '%s': %w", filePath, err)
 	}
 
-	res, err := sfc.BulkWrite(ctx, salesforce.BulkOperationParams{
+	res, err := sfc.BulkWrite(ctx, salesforce2.BulkOperationParams{
 		ObjectName:      "Touchpoint__c",
 		ExternalIdField: "external_id__c",
 		CSVData:         file,
@@ -134,16 +134,16 @@ var testList = []testRunner{
 type testRunner struct {
 	filePath  string
 	testTitle string
-	fn        func(ctx context.Context, sfc *salesforce.Connector, filePath string) (string, error)
+	fn        func(ctx context.Context, sfc *salesforce2.Connector, filePath string) (string, error)
 }
 
-func testGetJobResultsForFile(ctx context.Context, sfc *salesforce.Connector, fileName string) (string, error) {
+func testGetJobResultsForFile(ctx context.Context, sfc *salesforce2.Connector, fileName string) (string, error) {
 	file, err := os.Open(fileName)
 	if err != nil {
 		return "", fmt.Errorf("error opening file: %w", err)
 	}
 
-	res, err := sfc.BulkWrite(ctx, salesforce.BulkOperationParams{
+	res, err := sfc.BulkWrite(ctx, salesforce2.BulkOperationParams{
 		ObjectName:      "Touchpoint__c",
 		ExternalIdField: "external_id__c",
 		CSVData:         file,

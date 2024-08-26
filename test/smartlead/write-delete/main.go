@@ -8,7 +8,7 @@ import (
 	"syscall"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/smartlead"
+	"github.com/amp-labs/connectors/providers/smartlead"
 	connTest "github.com/amp-labs/connectors/test/smartlead"
 	"github.com/amp-labs/connectors/test/utils"
 )

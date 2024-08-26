@@ -1,10 +1,10 @@
-package salesloft
+package pipeliner
 
 import (
 	"context"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/salesloft/metadata"
+	"github.com/amp-labs/connectors/providers/pipeliner/metadata"
 )
 
 func (c *Connector) ListObjectMetadata(

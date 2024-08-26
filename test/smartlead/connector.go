@@ -6,7 +6,7 @@ import (
 
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/smartlead"
+	"github.com/amp-labs/connectors/providers/smartlead"
 	"github.com/amp-labs/connectors/test/utils"
 )
 

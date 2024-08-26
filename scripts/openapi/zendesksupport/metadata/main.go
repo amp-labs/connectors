@@ -4,10 +4,10 @@ import (
 	"log/slog"
 	"strings"
 
+	"github.com/amp-labs/connectors/providers/zendesksupport/metadata"
+	"github.com/amp-labs/connectors/providers/zendesksupport/openapi"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
 	"github.com/amp-labs/connectors/tools/scrapper"
-	"github.com/amp-labs/connectors/zendesksupport/metadata"
-	"github.com/amp-labs/connectors/zendesksupport/openapi"
 )
 
 var (

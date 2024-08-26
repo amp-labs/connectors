@@ -10,7 +10,7 @@ import (
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/examples/utils"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/salesforce"
+	"github.com/amp-labs/connectors/providers/salesforce"
 )
 
 const (

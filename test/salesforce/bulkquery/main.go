@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/amp-labs/connectors/salesforce"
+	salesforce2 "github.com/amp-labs/connectors/providers/salesforce"
 	testUtils "github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/utils"
 )
@@ -78,9 +78,9 @@ func main() {
 	fmt.Println(string(body))
 }
 
-func getResultInLoop(ctx context.Context, sfc *salesforce.Connector, jobId string) (*salesforce.GetJobInfoResult, error) {
+func getResultInLoop(ctx context.Context, sfc *salesforce2.Connector, jobId string) (*salesforce2.GetJobInfoResult, error) {
 	done := false
-	var jobRes *salesforce.GetJobInfoResult
+	var jobRes *salesforce2.GetJobInfoResult
 	var err error
 
 	for !done {
@@ -99,8 +99,8 @@ func getResultInLoop(ctx context.Context, sfc *salesforce.Connector, jobId strin
 	return jobRes, nil
 }
 
-func isJobDone(jobRes *salesforce.GetJobInfoResult) bool {
-	return jobRes.State == salesforce.JobStateComplete || jobRes.State == salesforce.JobStateFailed || jobRes.State == salesforce.JobStateAborted
+func isJobDone(jobRes *salesforce2.GetJobInfoResult) bool {
+	return jobRes.State == salesforce2.JobStateComplete || jobRes.State == salesforce2.JobStateFailed || jobRes.State == salesforce2.JobStateAborted
 }
 
 func prettyPrint(s any) {

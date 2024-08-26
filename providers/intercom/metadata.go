@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/intercom/metadata"
+	"github.com/amp-labs/connectors/providers/intercom/metadata"
 )
 
 func (c *Connector) ListObjectMetadata(
