@@ -1,10 +1,10 @@
-package pipeliner
+package zendesksupport
 
 import (
 	"context"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/pipeliner/metadata"
+	"github.com/amp-labs/connectors/providers/zendesksupport/metadata"
 )
 
 func (c *Connector) ListObjectMetadata(

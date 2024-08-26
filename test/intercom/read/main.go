@@ -8,7 +8,7 @@ import (
 	"syscall"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/intercom"
+	"github.com/amp-labs/connectors/providers/intercom"
 	msTest "github.com/amp-labs/connectors/test/intercom"
 	"github.com/amp-labs/connectors/test/utils"
 )

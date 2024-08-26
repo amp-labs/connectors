@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/amp-labs/connectors/common/scanning"
-	"github.com/amp-labs/connectors/gong"
+	"github.com/amp-labs/connectors/providers/gong"
 	testUtils "github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/utils"
 )

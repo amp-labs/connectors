@@ -8,9 +8,9 @@ import (
 	"syscall"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers/zendesksupport"
 	"github.com/amp-labs/connectors/test/utils"
 	connTest "github.com/amp-labs/connectors/test/zendesksupport"
-	"github.com/amp-labs/connectors/zendesksupport"
 )
 
 var (

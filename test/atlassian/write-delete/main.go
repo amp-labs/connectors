@@ -6,8 +6,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/amp-labs/connectors/atlassian"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers/atlassian"
 	connTest "github.com/amp-labs/connectors/test/atlassian"
 	"github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/test/utils/mockutils"

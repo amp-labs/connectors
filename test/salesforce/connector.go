@@ -7,7 +7,7 @@ import (
 
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/salesforce"
+	"github.com/amp-labs/connectors/providers/salesforce"
 	"github.com/amp-labs/connectors/test/utils"
 	testUtils "github.com/amp-labs/connectors/test/utils"
 	"golang.org/x/oauth2"

@@ -7,8 +7,8 @@ package main
 import (
 	"log/slog"
 
-	"github.com/amp-labs/connectors/intercom/metadata"
-	"github.com/amp-labs/connectors/intercom/openapi"
+	"github.com/amp-labs/connectors/providers/intercom/metadata"
+	"github.com/amp-labs/connectors/providers/intercom/openapi"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
 	"github.com/amp-labs/connectors/tools/scrapper"
 )

@@ -7,8 +7,8 @@ import (
 
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/zendesksupport"
 	"github.com/amp-labs/connectors/test/utils"
-	"github.com/amp-labs/connectors/zendesksupport"
 	"golang.org/x/oauth2"
 )
 

@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
-	"github.com/amp-labs/connectors/docusign"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/docusign"
 	"github.com/amp-labs/connectors/test/utils"
 	"golang.org/x/oauth2"
 )

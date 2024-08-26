@@ -8,10 +8,10 @@ import (
 	"syscall"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers/zendesksupport"
 	"github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	connTest "github.com/amp-labs/connectors/test/zendesksupport"
-	"github.com/amp-labs/connectors/zendesksupport"
 	"github.com/brianvoe/gofakeit/v6"
 )
 
