@@ -17,11 +17,10 @@
 <br/>
 
 
-Add enterprise-grade
-integrations to your SaaS this week. Bi-directional and customer-configurable. 
+Add enterprise-grade integrations to your SaaS this week. Bi-directional and customer-configurable. 
 
 <div align="center">
-    <img src="https://mintlify.s3-us-west-1.amazonaws.com/ampersand-24eb5c1a/images/overview.png" alt="Ampersand Overview" width="100%">
+    <img src="https://res.cloudinary.com/dycvts6vp/image/upload/v1724756323/media/hqukkkmpk96zavslpmw5.png" alt="Ampersand Overview" width="100%">
 </div>
 
 
