@@ -1,3 +1,26 @@
+<br/>
+<div align="center">
+    <a href="https://www.buildwithfern.com/?utm_source=github&utm_medium=readme&utm_campaign=docs-starter-openapi&utm_content=logo">
+    <img src="https://res.cloudinary.com/dycvts6vp/image/upload/v1723671980/ampersand-logo-black_fwzpfw.svg" height="50" align="center" alt="Ampersand logo" >
+    </a>
+<br/>
+<br/><br/>
+
+
+<div align="center">
+
+[![Discord](https://img.shields.io/badge/Join%20The%20Community-black?logo=discord)](https://discord.gg/BWP4BpKHvf) [![Documentation](https://img.shields.io/badge/Read%20our%20Documentation-black?logo=book)](https://docs.withampersand.com)
+</div>
+
+</div>
+
+<br/>
+
+# Ampersand 
+
+Add enterprise-grade
+integrations to your SaaS this week. Bi-directional and customer-configurable. 
+
 # Ampersand Connectors
 
 This is a Go library that makes it easier to make API calls to SaaS products such as Salesforce and Hubspot. It handles constructing the correct API requests given desired objects and fields.
