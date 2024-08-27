@@ -1,3 +1,36 @@
+<br/>
+<div align="center">
+    <a href="https://www.buildwithfern.com/?utm_source=github&utm_medium=readme&utm_campaign=docs-starter-openapi&utm_content=logo">
+    <img src="https://res.cloudinary.com/dycvts6vp/image/upload/v1723671980/ampersand-logo-black_fwzpfw.svg" height="50" align="center" alt="Ampersand logo" >
+    </a>
+<br/>
+<br/><br/>
+
+
+<div align="center">
+
+[![Discord](https://img.shields.io/badge/Join%20The%20Community-black?logo=discord)](https://discord.gg/BWP4BpKHvf) [![Documentation](https://img.shields.io/badge/Read%20our%20Documentation-black?logo=book)](https://docs.withampersand.com)
+</div>
+
+</div>
+
+<br/>
+
+
+Add enterprise-grade integrations to your SaaS this week. Bi-directional and customer-configurable. 
+
+<div align="center">
+    <img src="https://res.cloudinary.com/dycvts6vp/image/upload/v1724756323/media/hqukkkmpk96zavslpmw5.png" alt="Ampersand Overview" width="100%">
+</div>
+
+
+Ampersand is a declarative platform for SaaS builders who are creating product integrations. It allow you to:
+
+* Read data from your customer’s SaaS
+* Write data to your customer’s SaaS
+* Coming soon: subscribe to events (creates, deletes, and field changes) in your customer’s SaaS
+
+
 # Ampersand Connectors
 
 This is a Go library that makes it easier to make API calls to SaaS products such as Salesforce and Hubspot. It handles constructing the correct API requests given desired objects and fields.
