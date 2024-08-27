@@ -16,10 +16,21 @@
 
 <br/>
 
-# Ampersand 
 
 Add enterprise-grade
 integrations to your SaaS this week. Bi-directional and customer-configurable. 
+
+<div align="center">
+    <img src="https://mintlify.s3-us-west-1.amazonaws.com/ampersand-24eb5c1a/images/overview.png" alt="Ampersand Overview" width="100%">
+</div>
+
+
+Ampersand is a declarative platform for SaaS builders who are creating product integrations. It allow you to:
+
+* Read data from your customer’s SaaS
+* Write data to your customer’s SaaS
+* Coming soon: subscribe to events (creates, deletes, and field changes) in your customer’s SaaS
+
 
 # Ampersand Connectors
 
