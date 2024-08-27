@@ -6,6 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers/atlassian"
 	connTest "github.com/amp-labs/connectors/test/atlassian"
@@ -108,9 +109,7 @@ func searchIssue(res *common.ReadResult, key, value string) map[string]any {
 
 func readIssue(ctx context.Context, conn *atlassian.Connector) *common.ReadResult {
 	res, err := conn.Read(ctx, common.ReadParams{
-		Fields: []string{
-			"id", "fields",
-		},
+		Fields: connectors.Fields("id", "fields"),
 	})
 	if err != nil {
 		utils.Fail("error reading from Atlassian", "error", err)

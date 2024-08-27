@@ -37,13 +37,13 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		},
 		{
 			Name:         "Mime response header expected",
-			Input:        common.ReadParams{ObjectName: "leads", Fields: []string{"Name"}},
+			Input:        common.ReadParams{ObjectName: "leads", Fields: connectors.Fields("Name")},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{interpreter.ErrMissingContentType},
 		},
 		{
 			Name:  "Correct error message is understood from JSON response",
-			Input: common.ReadParams{ObjectName: "leads", Fields: []string{"Name"}},
+			Input: common.ReadParams{ObjectName: "leads", Fields: connectors.Fields("Name")},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusBadRequest)
@@ -55,7 +55,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		},
 		{
 			Name:  "Incorrect key in payload",
-			Input: common.ReadParams{ObjectName: "leads", Fields: []string{"Name"}},
+			Input: common.ReadParams{ObjectName: "leads", Fields: connectors.Fields("Name")},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
@@ -67,7 +67,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		},
 		{
 			Name:  "Incorrect data type in payload",
-			Input: common.ReadParams{ObjectName: "leads", Fields: []string{"Name"}},
+			Input: common.ReadParams{ObjectName: "leads", Fields: connectors.Fields("Name")},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
@@ -79,7 +79,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		},
 		{
 			Name:  "Next page cursor may be missing in payload",
-			Input: common.ReadParams{ObjectName: "leads", Fields: []string{"Name"}},
+			Input: common.ReadParams{ObjectName: "leads", Fields: connectors.Fields("Name")},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
@@ -96,7 +96,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		},
 		{
 			Name:  "Next page URL is resolved, when provided with a string",
-			Input: common.ReadParams{ObjectName: "leads", Fields: []string{"City"}},
+			Input: common.ReadParams{ObjectName: "leads", Fields: connectors.Fields("City")},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
@@ -114,7 +114,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Name: "Successful read with chosen fields",
 			Input: common.ReadParams{
 				ObjectName: "contacts",
-				Fields:     []string{"Department", "AssistantName"},
+				Fields:     connectors.Fields("Department", "AssistantName"),
 			},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")

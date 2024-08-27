@@ -99,7 +99,7 @@ func makeFilterBody(config SearchParams) map[string]any {
 	}
 
 	if config.Fields != nil {
-		filterBody["properties"] = config.Fields
+		filterBody["properties"] = config.Fields.List()
 	}
 
 	return filterBody

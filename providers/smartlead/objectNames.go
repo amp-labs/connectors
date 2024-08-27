@@ -12,16 +12,16 @@ const (
 )
 
 // Supported object names can be found under schemas.json.
-var supportedObjectsByRead = handy.NewSet( //nolint:gochecknoglobals
+var supportedObjectsByRead = handy.NewSetFromList( //nolint:gochecknoglobals
 	metadata.Schemas.GetObjectNames(),
 )
 
-var supportedObjectsByWrite = handy.NewSet([]string{ //nolint:gochecknoglobals
+var supportedObjectsByWrite = handy.NewSet( //nolint:gochecknoglobals
 	objectNameCampaign,
 	objectNameEmailAccount,
 	objectNameClient,
-})
+)
 
-var supportedObjectsByDelete = handy.NewSet([]string{ //nolint:gochecknoglobals
+var supportedObjectsByDelete = handy.NewSet( //nolint:gochecknoglobals
 	objectNameCampaign,
-})
+)

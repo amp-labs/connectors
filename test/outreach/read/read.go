@@ -46,7 +46,7 @@ func testReadSequences(ctx context.Context, conn connectors.ReadConnector) error
 	config := connectors.ReadParams{
 		ObjectName: "sequences",
 		Since:      time.Now().Add(-720 * time.Hour),
-		Fields:     []string{"openCount", "description", "id"},
+		Fields:     connectors.Fields("openCount", "description", "id"),
 	}
 
 	result, err := conn.Read(ctx, config)
@@ -70,7 +70,7 @@ func testReadMailings(ctx context.Context, conn connectors.ReadConnector) error 
 	config := connectors.ReadParams{
 		ObjectName: "mailings",
 		Since:      time.Now().Add(-720 * time.Hour),
-		Fields:     []string{"bodyHtml", "errorReason", "id"},
+		Fields:     connectors.Fields("bodyHtml", "errorReason", "id"),
 	}
 
 	result, err := conn.Read(ctx, config)
@@ -94,7 +94,7 @@ func testReadProspects(ctx context.Context, conn connectors.ReadConnector) error
 	config := connectors.ReadParams{
 		ObjectName: "prospects",
 		Since:      time.Now().Add(-720 * time.Hour),
-		Fields:     []string{"addressCountry", "campaignName", "id"},
+		Fields:     connectors.Fields("addressCountry", "campaignName", "id"),
 	}
 
 	result, err := conn.Read(ctx, config)

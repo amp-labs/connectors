@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"github.com/amp-labs/connectors"
 	"log/slog"
 	"os"
 	"os/signal"
@@ -26,7 +27,7 @@ func main() {
 
 	res, err := conn.BulkRead(ctx, common.ReadParams{
 		ObjectName: "Account",
-		Fields:     []string{"Id", "Name"},
+		Fields:     connectors.Fields("Id", "Name"),
 	})
 	if err != nil {
 		utils.Fail("error bulk reading from Salesforce", "error", err)

@@ -15,7 +15,7 @@ var (
 	// Even though OpenAPI docs and official documentation say that some query parameters are required
 	// in practice you still can make an API call without any specified.
 	// Must include "calls" object.
-	queryParamFilterExceptions = handy.NewSet([]string{"calls"}) // nolint:gochecknoglobals
+	queryParamFilterExceptions = handy.NewSet("calls") // nolint:gochecknoglobals
 
 	ignoreEndpoints = []string{ // nolint:gochecknoglobals
 		"/v2/settings/scorecards",

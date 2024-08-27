@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"syscall"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers/intercom"
 	msTest "github.com/amp-labs/connectors/test/intercom"
@@ -73,9 +74,7 @@ func main() {
 func getAdminID(ctx context.Context, conn *intercom.Connector) string {
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "admins",
-		Fields: []string{
-			"id",
-		},
+		Fields:     connectors.Fields("id"),
 	})
 	if err != nil {
 		utils.Fail("error reading from Intercom", "error", err)
@@ -113,9 +112,7 @@ func searchArticles(res *common.ReadResult, key, value string) map[string]any {
 func readArticles(ctx context.Context, conn *intercom.Connector) *common.ReadResult {
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "articles",
-		Fields: []string{
-			"id", "title", "description", "author_id",
-		},
+		Fields:     connectors.Fields("id", "title", "description", "author_id"),
 	})
 	if err != nil {
 		utils.Fail("error reading from Intercom", "error", err)

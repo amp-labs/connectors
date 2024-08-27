@@ -38,19 +38,19 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:         "Unsupported object name",
-			Input:        common.ReadParams{ObjectName: "butterflies", Fields: []string{"id"}},
+			Input:        common.ReadParams{ObjectName: "butterflies", Fields: connectors.Fields("id")},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
 		},
 		{
 			Name:         "Mime response header expected",
-			Input:        common.ReadParams{ObjectName: "email-accounts", Fields: []string{"id"}},
+			Input:        common.ReadParams{ObjectName: "email-accounts", Fields: connectors.Fields("id")},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{interpreter.ErrMissingContentType},
 		},
 		{
 			Name:  "Correct error message is understood from HTML response",
-			Input: common.ReadParams{ObjectName: "email-accounts", Fields: []string{"id"}},
+			Input: common.ReadParams{ObjectName: "email-accounts", Fields: connectors.Fields("id")},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "text/html")
 				w.WriteHeader(http.StatusBadRequest)
@@ -63,7 +63,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:  "Incorrect data type in payload",
-			Input: common.ReadParams{ObjectName: "email-accounts", Fields: []string{"id"}},
+			Input: common.ReadParams{ObjectName: "email-accounts", Fields: connectors.Fields("id")},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
@@ -73,7 +73,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:  "Empty read response",
-			Input: common.ReadParams{ObjectName: "campaigns", Fields: []string{"id"}},
+			Input: common.ReadParams{ObjectName: "campaigns", Fields: connectors.Fields("id")},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
@@ -89,7 +89,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:  "Successful read with chosen fields",
-			Input: common.ReadParams{ObjectName: "campaigns", Fields: []string{"name", "status"}},
+			Input: common.ReadParams{ObjectName: "campaigns", Fields: connectors.Fields("name", "status")},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)

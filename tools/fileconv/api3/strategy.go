@@ -13,14 +13,14 @@ import (
 // Suffix:	*/batch		- ignores paths ending with batch
 // Prefix:	/v2/*		- ignores paths starting with v2.
 type ignorePathStrategy struct {
-	ignoreEndpoints handy.Set[string]
+	ignoreEndpoints handy.StringSet
 	prefixes        []string
 	suffixes        []string
 }
 
 func newIgnorePathStrategy(endpoints []string) *ignorePathStrategy {
 	result := &ignorePathStrategy{
-		ignoreEndpoints: handy.NewSet([]string{}),
+		ignoreEndpoints: handy.NewStringSet(),
 		prefixes:        make([]string, 0),
 		suffixes:        make([]string, 0),
 	}

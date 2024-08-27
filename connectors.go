@@ -6,6 +6,7 @@ import (
 	"io"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/handy"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -99,3 +100,5 @@ type (
 
 	ErrorWithStatus = common.HTTPStatusError
 )
+
+var Fields = handy.NewStringSet // nolint:gochecknoglobals

@@ -8,6 +8,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	mk "github.com/amp-labs/connectors/test/marketo"
 )
@@ -40,7 +41,7 @@ func testReadChannels(ctx context.Context) error {
 
 	params := common.ReadParams{
 		ObjectName: "channels",
-		Fields:     []string{"applicableProgramType", "id", "name"},
+		Fields:     connectors.Fields("applicableProgramType", "id", "name"),
 	}
 
 	res, err := conn.Read(ctx, params)
@@ -65,7 +66,7 @@ func testReadSmartCampaigns(ctx context.Context) error {
 
 	params := common.ReadParams{
 		ObjectName: "smartCampaigns",
-		Fields:     []string{"description", "id", "name"},
+		Fields:     connectors.Fields("description", "id", "name"),
 		Since:      time.Now().Add(-1800 * time.Hour),
 	}
 
@@ -91,7 +92,7 @@ func testReadCampaigns(ctx context.Context) error {
 
 	params := common.ReadParams{
 		ObjectName: "campaigns",
-		Fields:     []string{"createdAt", "id", "name"},
+		Fields:     connectors.Fields("createdAt", "id", "name"),
 		Since:      time.Now().Add(-1800 * time.Hour),
 	}
 

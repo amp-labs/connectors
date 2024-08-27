@@ -6,6 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers/pipeliner"
 	connTest "github.com/amp-labs/connectors/test/pipeliner"
@@ -85,9 +86,7 @@ func searchNotes(res *common.ReadResult, key, value string) map[string]any {
 func readNotes(ctx context.Context, conn *pipeliner.Connector) *common.ReadResult {
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: objectName,
-		Fields: []string{
-			"id", "view", "name",
-		},
+		Fields:     connectors.Fields("id", "view", "name"),
 	})
 	if err != nil {
 		utils.Fail("error reading from Pipeliner", "error", err)
@@ -99,7 +98,7 @@ func readNotes(ctx context.Context, conn *pipeliner.Connector) *common.ReadResul
 func getFirstObjectID(ctx context.Context, conn *pipeliner.Connector, name string) string {
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: name,
-		Fields:     []string{"id"},
+		Fields:     connectors.Fields("id"),
 	})
 	if err != nil {
 		utils.Fail("error reading from Pipeliner", "error", err)
