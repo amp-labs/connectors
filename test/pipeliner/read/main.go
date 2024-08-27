@@ -13,9 +13,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils"
 )
 
-var (
-	objectName = "Contacts" // nolint: gochecknoglobals
-)
+var objectName = "Contacts" // nolint: gochecknoglobals
 
 func main() {
 	// Handle Ctrl-C gracefully.

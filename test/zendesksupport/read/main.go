@@ -13,9 +13,7 @@ import (
 	connTest "github.com/amp-labs/connectors/test/zendesksupport"
 )
 
-var (
-	objectName = "users" // nolint: gochecknoglobals
-)
+var objectName = "users" // nolint: gochecknoglobals
 
 func main() {
 	// Handle Ctrl-C gracefully.

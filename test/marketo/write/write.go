@@ -31,10 +31,11 @@ func testWrite(ctx context.Context) error {
 	params := common.WriteParams{
 		ObjectName: "leads",
 		RecordData: map[string]any{
-			"input": []map[string]any{{
-				"email":     gofakeit.Email(),
-				"firstName": gofakeit.Name(),
-			},
+			"input": []map[string]any{
+				{
+					"email":     gofakeit.Email(),
+					"firstName": gofakeit.Name(),
+				},
 			},
 			"action":      "createOnly",
 			"lookupField": "email",

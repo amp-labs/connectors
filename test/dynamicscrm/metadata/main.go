@@ -12,9 +12,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils"
 )
 
-var (
-	objectName = "contacts"
-)
+var objectName = "contacts"
 
 // we want to compare fields returned by read and schema properties provided by metadata methods
 // they must match for all such objects

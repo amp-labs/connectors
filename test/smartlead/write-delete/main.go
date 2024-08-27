@@ -17,9 +17,7 @@ type campaignPayload struct {
 	Name string `json:"name,omitempty"`
 }
 
-var (
-	objectName = "campaigns" // nolint: gochecknoglobals
-)
+var objectName = "campaigns" // nolint: gochecknoglobals
 
 func main() {
 	// Handle Ctrl-C gracefully.
