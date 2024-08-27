@@ -47,6 +47,12 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: []error{common.ErrMissingFields},
 		},
 		{
+			Name:         "Unsupported object name",
+			Input:        common.ReadParams{ObjectName: "butterflies", Fields: []string{"id"}},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
+		},
+		{
 			Name:         "Mime response header expected",
 			Input:        common.ReadParams{ObjectName: "contacts", Fields: []string{"id"}},
 			Server:       mockserver.Dummy(),
@@ -108,7 +114,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		},
 		{
 			Name:  "API version header is passed as server request",
-			Input: common.ReadParams{ObjectName: "notes", Fields: []string{"id"}},
+			Input: common.ReadParams{ObjectName: "articles", Fields: []string{"id"}},
+			// notes is not supported for now, but its payload is good for testing
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				mockutils.RespondToHeader(w, r, testApiVersionHeader, func() {
@@ -125,7 +132,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		},
 		{
 			Name:  "Next page URL is resolved, when provided with a string",
-			Input: common.ReadParams{ObjectName: "notes", Fields: []string{"id"}},
+			Input: common.ReadParams{ObjectName: "articles", Fields: []string{"id"}},
+			// notes is not supported for now, but its payload is good for testing
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
@@ -159,7 +167,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		},
 		{
 			Name:  "Next page URL is empty, when provided with null object",
-			Input: common.ReadParams{ObjectName: "notes", Fields: []string{"id"}},
+			Input: common.ReadParams{ObjectName: "articles", Fields: []string{"id"}},
+			// notes is not supported for now, but its payload is good for testing
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)

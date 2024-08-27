@@ -38,6 +38,12 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: []error{common.ErrMissingFields},
 		},
 		{
+			Name:         "Unsupported object name",
+			Input:        common.ReadParams{ObjectName: "butterflies", Fields: []string{"id"}},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
+		},
+		{
 			Name:         "Mime response header expected",
 			Input:        common.ReadParams{ObjectName: "Profiles", Fields: []string{"id"}},
 			Server:       mockserver.Dummy(),

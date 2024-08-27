@@ -7,6 +7,7 @@ package main
 import (
 	"log/slog"
 
+	"github.com/amp-labs/connectors/providers/intercom"
 	"github.com/amp-labs/connectors/providers/intercom/metadata"
 	"github.com/amp-labs/connectors/providers/intercom/openapi"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
@@ -32,15 +33,6 @@ var (
 		"news_items":      "News Items",
 		"newsfeeds":       "Newsfeeds",
 	}
-	objectNameToResponseField = map[string]string{ // nolint:gochecknoglobals
-		"admins":        "admins",
-		"teams":         "teams",
-		"ticket_types":  "ticket_types",
-		"events":        "events",
-		"segments":      "segments",
-		"activity_logs": "activity_logs",
-		// the rest uses `data`
-	}
 )
 
 func main() {
@@ -48,7 +40,8 @@ func main() {
 	must(err)
 
 	objects, err := explorer.GetBasicReadObjects(
-		ignoreEndpoints, nil, displayNameOverride, IsResponseFieldAppropriate,
+		ignoreEndpoints, nil, displayNameOverride,
+		api3.CustomMappingObjectCheck(intercom.ObjectNameToResponseField),
 	)
 	must(err)
 
@@ -70,15 +63,6 @@ func main() {
 	must(metadata.FileManager.SaveSchemas(schemas))
 
 	slog.Info("Completed.")
-}
-
-func IsResponseFieldAppropriate(objectName, fieldName string) bool {
-	if responseFieldName, ok := objectNameToResponseField[objectName]; ok {
-		return fieldName == responseFieldName
-	}
-
-	// Other objects have items located under `data` response field.
-	return api3.DataObjectCheck(objectName, fieldName)
 }
 
 func must(err error) {
