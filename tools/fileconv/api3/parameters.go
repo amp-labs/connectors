@@ -3,6 +3,7 @@ package api3
 import (
 	"github.com/amp-labs/connectors/common/handy"
 	"github.com/amp-labs/connectors/common/naming"
+	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/iancoleman/strcase"
 )
 
@@ -56,8 +57,24 @@ func CamelCaseToSpaceSeparated(displayName string) string {
 	return strcase.ToDelimited(displayName, ' ')
 }
 
+// ParameterFilterGetMethod callback that filters REST operations based on endpoint parameters.
+type ParameterFilterGetMethod func(objectName string, operation *openapi3.Operation) bool
+
+// OnlyOptionalQueryParameters operation must include only optional query parameters.
+func OnlyOptionalQueryParameters(objectName string, operation *openapi3.Operation) bool {
+	for _, parameter := range operation.Parameters {
+		if parameter.Value.In == "query" && parameter.Value.Required {
+			// Operation should be ignored for metadata extraction.
+			return false
+		}
+	}
+
+	return true
+}
+
 type parameters struct {
 	displayPostProcessing DisplayNameProcessor
+	parameterFilter       ParameterFilterGetMethod
 }
 
 type Option = func(params *parameters)
@@ -81,5 +98,13 @@ func WithDisplayNamePostProcessors(processors ...DisplayNameProcessor) Option {
 
 			return displayName
 		}
+	}
+}
+
+// WithParameterFilterGetMethod adds custom callback to decide
+// if GET operation should be included based on parameters definitions.
+func WithParameterFilterGetMethod(parameterFilter ParameterFilterGetMethod) Option {
+	return func(params *parameters) {
+		params.parameterFilter = parameterFilter
 	}
 }
