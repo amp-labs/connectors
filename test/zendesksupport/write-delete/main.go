@@ -24,9 +24,7 @@ type brand struct {
 	Name      string `json:"name"`
 }
 
-var (
-	objectName = "brands" // nolint: gochecknoglobals
-)
+var objectName = "brands" // nolint: gochecknoglobals
 
 func main() {
 	// Handle Ctrl-C gracefully.

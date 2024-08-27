@@ -14,9 +14,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 )
 
-var (
-	objectName = "leads"
-)
+var objectName = "leads"
 
 type LeadCreatePayload struct {
 	LastName    string `json:"lastname,omitempty"`
