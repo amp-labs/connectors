@@ -39,12 +39,16 @@ func ParseResult(
 		return nil, err
 	}
 
-	done := nextPage == ""
-
 	marshaledData, err := marshalFunc(records, fields)
 	if err != nil {
 		return nil, err
 	}
+
+	// Next page doesn't exist if:
+	// * either there is no next page token,
+	// * or current page was empty.
+	// This will guarantee that Read is finite.
+	done := nextPage == "" || len(marshaledData) == 0
 
 	return &ReadResult{
 		Rows:     int64(len(marshaledData)),
