@@ -9,10 +9,6 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-func getTotalSize(node *ajson.Node) (int64, error) {
-	return jsonquery.New(node).ArraySize("issues")
-}
-
 /*
 Records cannot be returned as is from the API. Extra processing is described below.
  1. First of all, main properties are located under "fields" key.
@@ -68,10 +64,12 @@ func getRecords(node *ajson.Node) ([]map[string]any, error) {
 
 // Next starting page index is calculated base on current index and array size.
 func getNextRecords(node *ajson.Node) (string, error) {
-	size, err := getTotalSize(node)
+	records, err := getRecords(node)
 	if err != nil {
 		return "", err
 	}
+
+	size := int64(len(records))
 
 	if size == 0 {
 		// No elements returned for the current page.

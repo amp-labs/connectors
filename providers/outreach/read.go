@@ -25,7 +25,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	return common.ParseResult(res, getTotalSize,
+	return common.ParseResult(res,
 		getRecords,
 		getNextRecordsURL,
 		common.GetMarshaledData,

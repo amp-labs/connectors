@@ -19,10 +19,3 @@ func getRecords(node *ajson.Node) ([]map[string]any, error) {
 
 	return jsonquery.Convertor.ArrayToMap(result)
 }
-
-func getTotalSize(node *ajson.Node) (int64, error) {
-	// When there is no result value, it indicates [], we should ot error it.
-	size, _ := jsonquery.New(node).ArraySize("result")
-
-	return size, nil
-}

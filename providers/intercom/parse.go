@@ -32,15 +32,6 @@ Note:
 	=> `pages.next` can be null.
 	=> Sometimes array of objects is not stored at `data` but named after `type`.
 */
-func getTotalSize(node *ajson.Node) (int64, error) {
-	arrKey, err := extractListFieldName(node)
-	if err != nil {
-		return 0, err
-	}
-
-	return jsonquery.New(node).ArraySize(arrKey)
-}
-
 func getRecords(node *ajson.Node) ([]map[string]any, error) {
 	arrKey, err := extractListFieldName(node)
 	if err != nil {

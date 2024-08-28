@@ -114,20 +114,6 @@ func getRecords(node *ajson.Node) ([]map[string]interface{}, error) {
 	return out, nil
 }
 
-// getTotalSize returns the total number of records that match the query.
-func getTotalSize(node *ajson.Node) (int64, error) {
-	node, err := node.GetKey("results")
-	if err != nil {
-		return 0, err
-	}
-
-	if !node.IsArray() {
-		return 0, ErrNotArray
-	}
-
-	return int64(node.Size()), nil
-}
-
 // getMarshalledData accepts a list of records and returns a list of structured data ([]ReadResultRow).
 func getMarshalledData(records []map[string]interface{}, fields []string) ([]common.ReadResultRow, error) {
 	data := make([]common.ReadResultRow, len(records))
