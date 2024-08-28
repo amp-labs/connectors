@@ -13,8 +13,8 @@ import (
 )
 
 // QueryHTML this method can panic.
-func QueryHTML(link string) *goquery.Document { //nolint:gocritic
-	res, err := makeRequest(link)
+func QueryHTML(url string) *goquery.Document { //nolint:gocritic
+	res, err := makeRequest(url)
 	if err != nil {
 		log.Fatal(err)
 	}

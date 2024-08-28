@@ -55,14 +55,14 @@ func TestConstructURL(t *testing.T) {
 func createURLWithQuery(key string, values []string) *urlbuilder.URL {
 	value := strings.Join(values, ",")
 
-	link, err := constructURL("https://test")
+	url, err := constructURL("https://test")
 	if err != nil {
 		panic(fmt.Errorf("test is incorrect %w", err))
 	}
 
 	if len(key) != 0 {
-		link.WithQueryParam(key, value)
+		url.WithQueryParam(key, value)
 	}
 
-	return link
+	return url
 }

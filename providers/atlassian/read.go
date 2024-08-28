@@ -15,12 +15,12 @@ import (
 // * NextPage - to get next page which may have no elements left.
 // * Since - to scope the time frame, precision is in minutes.
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
-	link, err := c.buildReadURL(config)
+	url, err := c.buildReadURL(config)
 	if err != nil {
 		return nil, err
 	}
 
-	rsp, err := c.Client.Get(ctx, link.String())
+	rsp, err := c.Client.Get(ctx, url.String())
 	if err != nil {
 		return nil, err
 	}

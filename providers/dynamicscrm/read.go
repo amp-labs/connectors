@@ -18,14 +18,14 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, common.ErrMissingObjects
 	}
 
-	link, err := c.buildReadURL(config)
+	url, err := c.buildReadURL(config)
 	if err != nil {
 		return nil, err
 	}
 
 	// always include annotations header
 	// response will describe enums, foreign relationship, etc.
-	rsp, err := c.Client.Get(ctx, link.String(), newPaginationHeader(DefaultPageSize), common.Header{
+	rsp, err := c.Client.Get(ctx, url.String(), newPaginationHeader(DefaultPageSize), common.Header{
 		Key:   "Prefer",
 		Value: `odata.include-annotations="*"`,
 	})
@@ -49,16 +49,16 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 	}
 
 	// First page
-	link, err := c.getURL(config.ObjectName)
+	url, err := c.getURL(config.ObjectName)
 	if err != nil {
 		return nil, err
 	}
 
 	if len(config.Fields) != 0 {
-		link.WithQueryParam("$select", strings.Join(config.Fields, ","))
+		url.WithQueryParam("$select", strings.Join(config.Fields, ","))
 	}
 
-	return link, nil
+	return url, nil
 }
 
 func newPaginationHeader(pageSize int) common.Header {

@@ -9,17 +9,17 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
-var restAPIPrefix string = "rest" //nolint:gochecknoglobals
+var restAPIPrefix = "rest" //nolint:gochecknoglobals
 
 func (c *Connector) getURL(params common.ReadParams) (*urlbuilder.URL, error) {
-	link, err := c.getAPIURL(params.ObjectName)
+	url, err := c.getAPIURL(params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
 
 	// If NextPage is set, then we're reading the next page of results.
 	if len(params.NextPage) > 0 {
-		link.WithQueryParam("nextPageToken", params.NextPage.String())
+		url.WithQueryParam("nextPageToken", params.NextPage.String())
 	}
 
 	// The only objects in Assets API supporting this are: Emails, Programs, SmartCampaigns,SmartLists
@@ -28,14 +28,14 @@ func (c *Connector) getURL(params common.ReadParams) (*urlbuilder.URL, error) {
 		case ModuleAssets.String():
 			t := params.Since.Format(time.RFC3339)
 			fmtTime := fmt.Sprintf("%v", t)
-			link.WithQueryParam("earliestUpdatedAt", fmtTime)
-			link.WithQueryParam("latestUpdatedAt", time.Now().Format(time.RFC3339))
+			url.WithQueryParam("earliestUpdatedAt", fmtTime)
+			url.WithQueryParam("latestUpdatedAt", time.Now().Format(time.RFC3339))
 
 		default: // we currently don't support filtering in leads.
 		}
 	}
 
-	return link, nil
+	return url, nil
 }
 
 func updateURLPath(url *urlbuilder.URL, path string) (*urlbuilder.URL, error) {
