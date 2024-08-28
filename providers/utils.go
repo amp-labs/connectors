@@ -341,6 +341,12 @@ func createOAuth2ClientCredentialsHTTPClient( //nolint:ireturn
 	dbg bool,
 	cfg *OAuth2ClientCredentialsParams,
 ) (common.AuthenticatedHTTPClient, error) {
+	if _, ok := ctx.Value(oauth2.HTTPClient).(*http.Client); !ok {
+		if client != nil {
+			ctx = context.WithValue(ctx, oauth2.HTTPClient, client)
+		}
+	}
+
 	options := []common.OAuthOption{
 		common.WithOAuthClient(getClient(client)),
 		common.WithTokenSource(cfg.Config.TokenSource(ctx)),
