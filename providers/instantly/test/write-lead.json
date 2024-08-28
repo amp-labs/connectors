@@ -1,0 +1,12 @@
+{
+  "status": "success",
+  "total_sent": 1,
+  "leads_uploaded": 0,
+  "in_blocklist": 0,
+  "blocklist_used": null,
+  "already_in_campaign": 1,
+  "skipped_count": 0,
+  "invalid_email_count": 0,
+  "duplicate_email_count": 0,
+  "remaining_in_plan": 24999
+}
