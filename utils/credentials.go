@@ -21,6 +21,7 @@ var (
 	Username     = "username"
 	Password     = "password"
 	Region       = "region"
+	ApiKey       = "apiKey"
 )
 
 func SalesforceOAuthConfigFromRegistry(registry scanning.Registry) *oauth2.Config {
@@ -241,4 +242,10 @@ func GongOauthTokenFromRegistry(registry scanning.Registry) *oauth2.Token {
 	}
 
 	return tok
+}
+
+func ApolloAPIKeyFromRegistry(registry scanning.Registry) string {
+	apiKey := registry.MustString(ApiKey)
+
+	return apiKey
 }
