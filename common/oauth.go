@@ -211,6 +211,12 @@ func getTokenSource(ctx context.Context, params *oauthClientParams) oauth2.Token
 		return params.tokenSource
 	}
 
+	if _, ok := ctx.Value(oauth2.HTTPClient).(*http.Client); !ok {
+		if params.client != nil {
+			ctx = context.WithValue(ctx, oauth2.HTTPClient, params.client)
+		}
+	}
+
 	return params.config.TokenSource(ctx, params.token)
 }
 
