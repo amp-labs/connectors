@@ -11,12 +11,12 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, common.ErrMissingObjects
 	}
 
-	link, err := c.getURL(config.ObjectName)
+	url, err := c.getURL(config.ObjectName)
 	if err != nil {
 		return nil, err
 	}
 
-	rsp, err := c.Client.Get(ctx, link.String())
+	rsp, err := c.Client.Get(ctx, url.String())
 	if err != nil {
 		return nil, err
 	}

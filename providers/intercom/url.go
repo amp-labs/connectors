@@ -8,12 +8,12 @@ var intercomQueryEncodingExceptions = map[string]string{ //nolint:gochecknogloba
 }
 
 func constructURL(base string, path ...string) (*urlbuilder.URL, error) {
-	link, err := urlbuilder.New(base, path...)
+	url, err := urlbuilder.New(base, path...)
 	if err != nil {
 		return nil, err
 	}
 
-	link.AddEncodingExceptions(intercomQueryEncodingExceptions)
+	url.AddEncodingExceptions(intercomQueryEncodingExceptions)
 
-	return link, nil
+	return url, nil
 }

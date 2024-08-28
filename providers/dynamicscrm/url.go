@@ -10,12 +10,12 @@ var queryEncodingExceptions = map[string]string{ //nolint:gochecknoglobals
 }
 
 func constructURL(base string, path ...string) (*urlbuilder.URL, error) {
-	link, err := urlbuilder.New(base, path...)
+	url, err := urlbuilder.New(base, path...)
 	if err != nil {
 		return nil, err
 	}
 
-	link.AddEncodingExceptions(queryEncodingExceptions)
+	url.AddEncodingExceptions(queryEncodingExceptions)
 
-	return link, nil
+	return url, nil
 }
