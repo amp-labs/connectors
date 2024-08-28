@@ -5,7 +5,7 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
-var restAPIPrefix string = "v1"
+var restAPIPrefix string = "v1" //nolint:gochecknoglobals
 
 func (c *Connector) getURL(params common.ReadParams) (*urlbuilder.URL, error) {
 	link, err := c.getAPIURL(params.ObjectName)
@@ -13,7 +13,7 @@ func (c *Connector) getURL(params common.ReadParams) (*urlbuilder.URL, error) {
 		return nil, err
 	}
 
-	//If NextPage is set, then we're reading the next page of results.
+	// If NextPage is set, then we're reading the next page of results.
 	if len(params.NextPage) > 0 {
 		link.WithQueryParam("page", params.NextPage.String())
 	}

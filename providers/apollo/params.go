@@ -9,7 +9,7 @@ import (
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 )
 
-var headerName = "X-Api-Key"
+var headerName = "X-Api-Key" //nolint:gochecknoglobals
 
 type Option = func(params *parameters)
 
