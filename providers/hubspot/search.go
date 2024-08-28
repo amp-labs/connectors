@@ -29,7 +29,6 @@ func (c *Connector) Search(ctx context.Context, config SearchParams) (*common.Re
 
 	return common.ParseResult(
 		rsp,
-		getTotalSize,
 		getRecords,
 		getNextRecordsAfter,
 		getMarshalledData,

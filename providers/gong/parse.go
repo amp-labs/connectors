@@ -6,12 +6,6 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-func makeGetTotalSize(objectName string) common.ListSizeFunc {
-	return func(node *ajson.Node) (int64, error) {
-		return jsonquery.New(node).ArraySize(objectName)
-	}
-}
-
 func makeGetRecords(objectName string) common.RecordsFunc {
 	return func(node *ajson.Node) ([]map[string]any, error) {
 		// items are stored in array named after the API object
