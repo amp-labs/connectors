@@ -67,5 +67,9 @@ func makeSOQL(config common.ReadParams) string {
 		soql.Where("IsDeleted = true")
 	}
 
+	if config.Filter != "" {
+		soql.Where(config.Filter)
+	}
+
 	return soql.String()
 }
