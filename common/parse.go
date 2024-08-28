@@ -3,6 +3,7 @@ package common
 import (
 	"strings"
 
+	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 
@@ -87,4 +88,15 @@ func GetMarshaledData(records []map[string]any, fields []string) ([]ReadResultRo
 	}
 
 	return data, nil
+}
+
+func GetRecordsUnderJSONPath(jsonPath string) RecordsFunc {
+	return func(node *ajson.Node) ([]map[string]any, error) {
+		arr, err := jsonquery.New(node).Array(jsonPath, false)
+		if err != nil {
+			return nil, err
+		}
+
+		return jsonquery.Convertor.ArrayToMap(arr)
+	}
 }
