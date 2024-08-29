@@ -67,6 +67,8 @@ func makeSOQL(config common.ReadParams) string {
 		soql.Where("IsDeleted = true")
 	}
 
+	// TODO: When we support builder facing filters, we should escape the
+	// filter string to avoid SOQL injection.
 	if config.Filter != "" {
 		soql.Where(config.Filter)
 	}
