@@ -108,6 +108,9 @@ type ReadParams struct {
 	Since time.Time // optional, omit this to fetch all records
 	// Deleted is true if we want to read deleted records instead of active records.
 	Deleted bool // optional, defaults to false
+	// Filter is only supported for salesforce. It is a SOQL string that comes after the WHERE clause
+	// which will be used to filter the records.
+	Filter string // optional
 }
 
 // WriteParams defines how we are writing data to a SaaS API.
