@@ -21,7 +21,6 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	}
 
 	return common.ParseResult(res,
-		recordsSizeWrapperFunc(config.ObjectName),
 		recordsWrapperFunc(config.ObjectName),
 		getNextRecords,
 		common.GetMarshaledData,

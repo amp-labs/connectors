@@ -47,22 +47,3 @@ func recordsWrapperFunc(obj string) common.RecordsFunc {
 		return jsonquery.Convertor.ArrayToMap(result)
 	}
 }
-
-// rcordsWrapperFunc returns the records using the objectName dynamically.
-func recordsSizeWrapperFunc(obj string) common.ListSizeFunc {
-	return func(node *ajson.Node) (int64, error) {
-		result, err := jsonquery.New(node).Array(obj, true)
-		if err != nil {
-			return 0, err
-		}
-
-		rcds, err := jsonquery.Convertor.ArrayToMap(result)
-		if err != nil {
-			return 0, err
-		}
-
-		size := int64(len(rcds))
-
-		return size, nil
-	}
-}
