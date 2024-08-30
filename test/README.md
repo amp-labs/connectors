@@ -40,7 +40,7 @@ To apply this, set the environment variable `"<PROVIDER_NAME | to_upper_snake>" 
 
 
 ## File Content
-The file must have `provider` field. Other fields you can inferred by checking constructor in `test/<PROVIDER_NAME>/connector.go`.
+The file must have a `provider` field. Other required fields can be inferred by checking the constructor in `test/<PROVIDER_NAME>/connector.go`.
 If any required fields are missing, an error message will indicate the missing fields.
 
 File formats can be categorized into common authentication types. Below, you will find examples for each authentication category.
