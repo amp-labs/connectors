@@ -6,7 +6,9 @@ import (
 	"github.com/amp-labs/connectors/common"
 )
 
-// Delete removes object. As of now only removal of Tags are allowed.
+// Delete removes object. As of now only removal of Tags are allowed because
+// deletion of other object types require a request payload to be added
+// c.Client.Delete does not yet support this.
 func (c *Connector) Delete(ctx context.Context, config common.DeleteParams) (*common.DeleteResult, error) {
 	if len(config.ObjectName) == 0 {
 		return nil, common.ErrMissingObjects
