@@ -5,23 +5,10 @@ import (
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/handy"
 	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/spyzhov/ajson"
 )
-
-const (
-	objectNameCampaign = "campaigns"
-	objectEmailAccount = "email-accounts"
-	objectNameClient   = "client"
-)
-
-var supportedObjectsByWrite = handy.NewSet([]string{ //nolint:gochecknoglobals
-	objectNameCampaign,
-	objectEmailAccount,
-	objectNameClient,
-})
 
 // Write method allows to
 // * create campaigns
@@ -35,19 +22,19 @@ func (c *Connector) Write(
 		return nil, common.ErrMissingObjects
 	}
 
+	if !supportedObjectsByWrite.Has(config.ObjectName) {
+		return nil, common.ErrOperationNotSupportedForObject
+	}
+
 	url, err := c.getURL(config.ObjectName)
 	if err != nil {
 		return nil, err
 	}
 
-	if !supportedObjectsByWrite.Has(config.ObjectName) {
-		return nil, common.ErrOperationNotSupportedForObject
-	}
-
-	// Finish URL format according to ObjectName.
-	recordIdLocation, err := completeURLPath(config, url)
-	if err != nil {
-		return nil, err
+	if len(config.RecordId) == 0 {
+		constructURLPathCreate(config, url)
+	} else {
+		constructURLPathUpdate(config, url)
 	}
 
 	res, err := c.Client.Post(ctx, url.String(), config.RecordData)
@@ -62,58 +49,40 @@ func (c *Connector) Write(
 		}, nil
 	}
 
+	recordIdNodePath := recordIdPaths[config.ObjectName]
+
 	// write response was with payload
-	return constructWriteResult(res.Body, recordIdLocation)
+	return constructWriteResult(res.Body, recordIdNodePath)
 }
 
-// Maps common.WriteParams to URL format for that object.
-// In addition, returns field name where ID will be stored on successful response.
-func completeURLPath(config common.WriteParams, url *urlbuilder.URL) (string, error) {
-	if len(config.RecordId) == 0 {
-		return completeURLPathCreate(config, url)
-	}
-
-	return completeURLPathUpdate(config, url)
+var recordIdPaths = map[string]string{ // nolint:gochecknoglobals
+	objectNameCampaign:     "id",
+	objectNameEmailAccount: "emailAccountId",
+	objectNameClient:       "clientId",
 }
 
-func completeURLPathCreate(config common.WriteParams, url *urlbuilder.URL) (string, error) {
+func constructURLPathCreate(config common.WriteParams, url *urlbuilder.URL) {
 	switch config.ObjectName {
 	case objectNameCampaign:
 		// Create campaign.
 		// https://api.smartlead.ai/reference/create-campaign
 		url.AddPath("create")
-
-		return "id", nil
-	case objectEmailAccount:
+	case objectNameEmailAccount:
 		// Create account.
 		// https://api.smartlead.ai/reference/create-an-email-account
 		url.AddPath("save")
-
-		// ID is located under the same field for create/update operations.
-		return "emailAccountId", nil
 	case objectNameClient:
 		// Add new client to the system.
 		// https://api.smartlead.ai/reference/add-client-to-system-whitelabel-or-not
 		url.AddPath("save")
-
-		return "clientId", nil
-	default:
-		return "", common.ErrOperationNotSupportedForObject
 	}
 }
 
-func completeURLPathUpdate(config common.WriteParams, url *urlbuilder.URL) (string, error) {
-	switch config.ObjectName {
-	case objectEmailAccount:
+func constructURLPathUpdate(config common.WriteParams, url *urlbuilder.URL) {
+	if config.ObjectName == objectNameEmailAccount {
 		// Update account.
 		// https://api.smartlead.ai/reference/update-email-account
 		url.AddPath(config.RecordId)
-
-		// ID is located under the same field for create/update operations.
-		return "emailAccountId", nil
-	default:
-		// The code should be unreachable if checks before this function call were correct.
-		return "", common.ErrOperationNotSupportedForObject
 	}
 }
 

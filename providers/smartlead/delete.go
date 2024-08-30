@@ -4,12 +4,7 @@ import (
 	"context"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/handy"
 )
-
-var supportedObjectsByDelete = handy.NewSet([]string{ //nolint:gochecknoglobals
-	objectNameCampaign,
-})
 
 // Delete removes object. As of now only removal of Campaigns is allowed.
 func (c *Connector) Delete(ctx context.Context, config common.DeleteParams) (*common.DeleteResult, error) {

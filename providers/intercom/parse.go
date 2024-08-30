@@ -77,16 +77,7 @@ func makeNextRecordsURL(reqLink *urlbuilder.URL) common.NextPageFunc {
 
 // Some responses have full URL stored at `pages.next`.
 func getNextPageStringURL(node *ajson.Node) (string, error) {
-	nextPage, err := jsonquery.New(node, "pages").Str("next", true)
-	if err != nil {
-		return "", err
-	}
-
-	if nextPage == nil {
-		return "", nil
-	}
-
-	return *nextPage, nil
+	return jsonquery.New(node, "pages").StrWithDefault("next", "")
 }
 
 // The key that stores array in response payload will be dynamically figured out.
