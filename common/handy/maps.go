@@ -32,3 +32,29 @@ func (m Map[K, V]) Values() []V {
 
 	return values
 }
+
+// DefaultMap wrapper of the map that allows setting default return value on missing keys.
+type DefaultMap[K comparable, V any] struct {
+	// Map is a delegate.
+	// All methods are embedded which grants the same capabilities, plus default value.
+	Map[K, V]
+	// When key is not found this callback will be used to provide default value.
+	fallback func(key K) V
+}
+
+func NewDefaultMap[K comparable, V any](dict Map[K, V], fallback func(K) V) *DefaultMap[K, V] {
+	return &DefaultMap[K, V]{
+		Map:      dict,
+		fallback: fallback,
+	}
+}
+
+// Get method uses map with a fallback value.
+func (m DefaultMap[K, V]) Get(key K) V { // nolint:ireturn
+	value, ok := m.Map[key]
+	if ok {
+		return value
+	}
+
+	return m.fallback(key)
+}
