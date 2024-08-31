@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"os"
 	"strings"
 
@@ -12,8 +13,7 @@ import (
 )
 
 func main() {
-	mdata := make(map[string]any)
-
+	//  read the definitions in the specificatios files.
 	def, docA, err := constructDefinitions("./scripts/openapi/marketo/metadata/asset.json", 5) //nolint:gomnd
 	if err != nil {
 		panic(err)
@@ -24,21 +24,32 @@ func main() {
 		panic(err)
 	}
 
-	mp, err := generateMetadata(ldef, docL, mdata)
+	// Initializes an empty ObjectMetadata variable
+	objectMetadata := make(map[string]scrapper.ObjectMetadata)
+
+	// Add Lead metadata details
+	objectMetadata, err = generateMetadata(ldef, docL, objectMetadata)
 	if err != nil {
 		panic(err)
 	}
 
-	mp, err = generateMetadata(def, docA, mp)
+	// Adds Assets Metadata details to the same variable declared above.
+	objectMetadata, err = generateMetadata(def, docA, objectMetadata)
 	if err != nil {
 		panic(err)
 	}
 
-	mb, err := json.Marshal(mp)
+	// wrap objectMetadata in `data` to not break the scrapper API.
+	data := map[string]any{
+		"data": objectMetadata,
+	}
+
+	mb, err := json.Marshal(data)
 	if err != nil {
 		panic(err)
 	}
 
+	// Create a `schemas.json` file and Adds the metadata details to the file.
 	if err = writefile(mb); err != nil {
 		panic(err)
 	}
@@ -54,13 +65,13 @@ func writefile(b []byte) error {
 		return err
 	}
 
-	fmt.Println("Successfuly written metadatas to schemas.json")
+	slog.Info("Successfully generated the metadata, written them to schemas.json")
 
 	return nil
 }
 
 func constructDefinitions(file string, length int) (map[string]string, openapi2.T, error) {
-	var definitions = make(map[string]string)
+	definitions := make(map[string]string)
 
 	f, err := os.ReadFile(file)
 	if err != nil {
@@ -103,7 +114,9 @@ func cleanDefinitions(def string) string {
 	return s[len(s)-1]
 }
 
-func generateMetadata(objDefs map[string]string, doc openapi2.T, output map[string]any) (map[string]any, error) {
+func generateMetadata(objDefs map[string]string,
+	doc openapi2.T, objectMetadata map[string]scrapper.ObjectMetadata,
+) (map[string]scrapper.ObjectMetadata, error) {
 	for obj, dfn := range objDefs {
 		schemas := doc.Definitions[dfn].Value.Properties
 
@@ -120,36 +133,20 @@ func generateMetadata(objDefs map[string]string, doc openapi2.T, output map[stri
 
 		m := cleanDefinitions(r.Ref)
 		lschems := doc.Definitions[m].Value.Properties
-		var fields = make(map[string]string)
+
+		fields := make(map[string]string)
 
 		for k := range lschems {
 			fields[k] = k
 		}
 
-		output[obj] = fields
-	}
-
-	return output, nil
-}
-
-func format(m map[string]any) scrapper.ObjectMetadataResult {
-	var f = &scrapper.ObjectMetadataResult{}
-
-	var a = make(map[string]scrapper.ObjectMetadata)
-
-	for k, v := range m {
-		v, ok := v.(map[string]string)
-		if !ok {
-			panic(!ok)
+		om := scrapper.ObjectMetadata{
+			DisplayName: obj,
+			FieldsMap:   fields,
 		}
 
-		a[k] = scrapper.ObjectMetadata{
-			DisplayName: k,
-			FieldsMap:   v,
-		}
+		objectMetadata[obj] = om
 	}
 
-	f.Result = a
-
-	return *f
+	return objectMetadata, nil
 }
