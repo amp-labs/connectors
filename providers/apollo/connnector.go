@@ -56,7 +56,14 @@ func (c *Connector) Provider() providers.Provider {
 func (c *Connector) getAPIURL(objName string) (*urlbuilder.URL, error) {
 	relativePath := strings.Join([]string{restAPIPrefix, objName}, "/")
 
-	return urlbuilder.New(c.BaseURL, relativePath)
+	url, err := urlbuilder.New(c.BaseURL, relativePath)
+	if err != nil {
+		return nil, err
+	}
+
+	url.WithQueryParam("per_page", pageSize)
+
+	return url, nil
 }
 
 func (c *Connector) String() string {

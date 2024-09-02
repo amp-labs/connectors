@@ -48,3 +48,21 @@ func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
 		params.WithAuthenticatedClient(client)
 	}
 }
+
+func usesSearching(objectName string) bool {
+	return in(objectName, postSearchObjects, getSearchObjects)
+}
+
+func in(a string, b ...[]ObjectType) bool {
+	o := ObjectType(a)
+
+	for _, sl := range b {
+		for _, v := range sl {
+			if v == o {
+				return true
+			}
+		}
+	}
+
+	return false
+}

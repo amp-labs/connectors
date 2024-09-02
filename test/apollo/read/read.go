@@ -22,7 +22,17 @@ func MainFn() int {
 
 	conn := apollo.GetApolloConnector(ctx, "apollo-creds.json")
 
-	err := testReadContactStages(ctx, conn)
+	err := testReadContactsSearch(ctx, conn)
+	if err != nil {
+		return 1
+	}
+
+	err = testReadPeopleSearch(ctx, conn)
+	if err != nil {
+		return 1
+	}
+
+	err = testReadOpportunitiesSearch(ctx, conn)
 	if err != nil {
 		return 1
 	}
@@ -40,11 +50,60 @@ func MainFn() int {
 	return 0
 }
 
-func testReadContactStages(ctx context.Context, conn *ap.Connector) error {
+func testReadContactsSearch(ctx context.Context, conn *ap.Connector) error {
 
 	params := common.ReadParams{
-		ObjectName: "contact_stages",
-		Fields:     []string{"team_id", "id", "name"},
+		ObjectName: "contacts",
+		Fields:     []string{"id"},
+		NextPage:   "2",
+	}
+
+	res, err := conn.Read(ctx, params)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	// Print the results
+	jsonStr, err := json.MarshalIndent(res, "", "  ")
+	if err != nil {
+		return fmt.Errorf("error marshalling JSON: %w", err)
+	}
+
+	_, _ = os.Stdout.Write(jsonStr)
+	_, _ = os.Stdout.WriteString("\n")
+
+	return nil
+}
+
+func testReadOpportunitiesSearch(ctx context.Context, conn *ap.Connector) error {
+
+	params := common.ReadParams{
+		ObjectName: "opportunities",
+		Fields:     []string{"id"},
+	}
+
+	res, err := conn.Read(ctx, params)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	// Print the results
+	jsonStr, err := json.MarshalIndent(res, "", "  ")
+	if err != nil {
+		return fmt.Errorf("error marshalling JSON: %w", err)
+	}
+
+	_, _ = os.Stdout.Write(jsonStr)
+	_, _ = os.Stdout.WriteString("\n")
+
+	return nil
+}
+
+func testReadPeopleSearch(ctx context.Context, conn *ap.Connector) error {
+
+	params := common.ReadParams{
+		ObjectName: "mixed_people",
+		Fields:     []string{"id"},
 	}
 
 	res, err := conn.Read(ctx, params)

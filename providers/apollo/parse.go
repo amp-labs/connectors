@@ -47,3 +47,25 @@ func recordsWrapperFunc(obj string) common.RecordsFunc {
 		return jsonquery.Convertor.ArrayToMap(result)
 	}
 }
+
+func searchRecords(respKeys []string) common.RecordsFunc {
+	var records []map[string]any
+
+	return func(node *ajson.Node) ([]map[string]any, error) {
+		for _, v := range respKeys {
+			result, err := jsonquery.New(node).Array(v, true)
+			if err != nil {
+				return nil, err
+			}
+
+			rec, err := jsonquery.Convertor.ArrayToMap(result)
+			if err != nil {
+				return nil, err
+			}
+
+			records = append(records, rec...)
+		}
+
+		return records, nil
+	}
+}
