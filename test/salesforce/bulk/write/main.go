@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	salesforce2 "github.com/amp-labs/connectors/providers/salesforce"
+	"github.com/amp-labs/connectors/providers/salesforce"
 	testUtils "github.com/amp-labs/connectors/test/utils"
 )
 
@@ -65,13 +65,13 @@ func main() { //nolint:funlen
 	}
 }
 
-func testBulkWrite(ctx context.Context, sfc *salesforce2.Connector, filePath string) (string, error) {
+func testBulkWrite(ctx context.Context, sfc *salesforce.Connector, filePath string) (string, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
 		return "", fmt.Errorf("error opening '%s': %w", filePath, err)
 	}
 
-	res, err := sfc.BulkWrite(ctx, salesforce2.BulkOperationParams{
+	res, err := sfc.BulkWrite(ctx, salesforce.BulkOperationParams{
 		ObjectName:      "Touchpoint__c",
 		ExternalIdField: "external_id__c",
 		CSVData:         file,
@@ -110,22 +110,22 @@ func testBulkWrite(ctx context.Context, sfc *salesforce2.Connector, filePath str
 
 var testList = []testRunner{
 	{
-		filePath:  "./test/salesforce/bulkwrite/touchpoints_20231130.csv",
+		filePath:  "./test/salesforce/bulk/write/touchpoints_20231130.csv",
 		testTitle: "Testing Bulkwrite",
 		fn:        testBulkWrite,
 	},
 	{
-		filePath:  "./test/salesforce/bulkwrite/touchpoints_20231130.csv",
+		filePath:  "./test/salesforce/bulk/write/touchpoints_20231130.csv",
 		testTitle: "Testing SuccessResults",
 		fn:        testGetJobResultsForFile,
 	},
 	{
-		filePath:  "./test/salesforce/bulkwrite/touchpoints_partial_failure_20231228.csv",
+		filePath:  "./test/salesforce/bulk/write/touchpoints_partial_failure_20231228.csv",
 		testTitle: "Testing Partial Failure",
 		fn:        testGetJobResultsForFile,
 	},
 	{
-		filePath:  "./test/salesforce/bulkwrite/touchpoints_complete_failure_20231228.csv",
+		filePath:  "./test/salesforce/bulk/write/touchpoints_complete_failure_20231228.csv",
 		testTitle: "Testing Complete Failure",
 		fn:        testGetJobResultsForFile,
 	},
@@ -134,16 +134,16 @@ var testList = []testRunner{
 type testRunner struct {
 	filePath  string
 	testTitle string
-	fn        func(ctx context.Context, sfc *salesforce2.Connector, filePath string) (string, error)
+	fn        func(ctx context.Context, sfc *salesforce.Connector, filePath string) (string, error)
 }
 
-func testGetJobResultsForFile(ctx context.Context, sfc *salesforce2.Connector, fileName string) (string, error) {
+func testGetJobResultsForFile(ctx context.Context, sfc *salesforce.Connector, fileName string) (string, error) {
 	file, err := os.Open(fileName)
 	if err != nil {
 		return "", fmt.Errorf("error opening file: %w", err)
 	}
 
-	res, err := sfc.BulkWrite(ctx, salesforce2.BulkOperationParams{
+	res, err := sfc.BulkWrite(ctx, salesforce.BulkOperationParams{
 		ObjectName:      "Touchpoint__c",
 		ExternalIdField: "external_id__c",
 		CSVData:         file,
