@@ -71,10 +71,18 @@ func (c *Connector) Provider() providers.Provider {
 }
 
 func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common.ReadResult, error) {
+	if err := params.ValidateParams(); err != nil {
+		return nil, err
+	}
+
 	return c.read(ctx, params)
 }
 
 func (c *Connector) Write(ctx context.Context, params common.WriteParams) (*common.WriteResult, error) {
+	if err := params.ValidateParams(); err != nil {
+		return nil, err
+	}
+
 	return c.write(ctx, params)
 }
 
@@ -82,5 +90,9 @@ func (c *Connector) ListObjectMetadata(
 	ctx context.Context,
 	objectNames []string,
 ) (*common.ListObjectMetadataResult, error) {
+	if len(objectNames) == 0 {
+		return nil, common.ErrMissingObjects
+	}
+
 	return c.listObjectMetadata(ctx, objectNames)
 }
