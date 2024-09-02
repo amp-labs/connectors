@@ -15,6 +15,10 @@ import (
 // * NextPage - to get next page which may have no elements left.
 // * Since - to scope the time frame, precision is in minutes.
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
+	if len(config.ObjectName) == 0 {
+		return nil, common.ErrMissingObjects
+	}
+
 	url, err := c.buildReadURL(config)
 	if err != nil {
 		return nil, err
