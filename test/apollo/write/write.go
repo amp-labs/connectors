@@ -16,12 +16,19 @@ func main() {
 }
 
 func MainFn() int {
-	err := testCreatingOpportunities(context.Background())
+	ctx := context.Background()
+
+	err := testCreatingOpportunities(ctx)
 	if err != nil {
 		return 1
 	}
 
-	err = testUpdatingOpportunities(context.Background())
+	err = testUpdatingOpportunities(ctx)
+	if err != nil {
+		return 1
+	}
+
+	err = testCreatingAccounts(ctx)
 	if err != nil {
 		return 1
 	}
@@ -64,7 +71,7 @@ func testUpdatingOpportunities(ctx context.Context) error {
 
 	params := common.WriteParams{
 		ObjectName: "opportunities",
-		RecordId:   "66d19d6f0cb92801b3027306",
+		RecordId:   "66d573f1bb530101b230db6f",
 		RecordData: map[string]any{
 			"amount":               "250",
 			"opportunity_stage_id": "65b1974393794c0300d26dcf",
