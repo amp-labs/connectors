@@ -31,14 +31,20 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
-			Name:         "Mime response header expected",
+			Name:         "Write needs data payload",
 			Input:        common.WriteParams{ObjectName: "campaigns"},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingRecordData},
+		},
+		{
+			Name:         "Mime response header expected",
+			Input:        common.WriteParams{ObjectName: "campaigns", RecordData: "dummy"},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{interpreter.ErrMissingContentType},
 		},
 		{
 			Name:     "Unknown object name is not supported",
-			Input:    common.WriteParams{ObjectName: "orders"},
+			Input:    common.WriteParams{ObjectName: "orders", RecordData: "dummy"},
 			Server:   mockserver.Dummy(),
 			Expected: nil,
 			ExpectedErrs: []error{
@@ -47,7 +53,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "Update non-existent Email Account",
-			Input: common.WriteParams{ObjectName: "email-accounts", RecordId: "08037"},
+			Input: common.WriteParams{ObjectName: "email-accounts", RecordId: "08037", RecordData: "dummy"},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusNotFound)
@@ -60,7 +66,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "Invalid field when creating campaign",
-			Input: common.WriteParams{ObjectName: "campaigns"},
+			Input: common.WriteParams{ObjectName: "campaigns", RecordData: "dummy"},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusBadRequest)
@@ -73,7 +79,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "Create new email campaign",
-			Input: common.WriteParams{ObjectName: "campaigns"},
+			Input: common.WriteParams{ObjectName: "campaigns", RecordData: "dummy"},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				mockutils.RespondToMethod(w, r, "POST", func() {
@@ -91,7 +97,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "Create new client",
-			Input: common.WriteParams{ObjectName: "client"},
+			Input: common.WriteParams{ObjectName: "client", RecordData: "dummy"},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				mockutils.RespondToMethod(w, r, "POST", func() {
@@ -109,7 +115,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "Create new email account",
-			Input: common.WriteParams{ObjectName: "email-accounts"},
+			Input: common.WriteParams{ObjectName: "email-accounts", RecordData: "dummy"},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				mockutils.RespondToMethod(w, r, "POST", func() {

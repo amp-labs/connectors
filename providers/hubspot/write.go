@@ -19,6 +19,10 @@ type writeResponse struct {
 }
 
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
+	if err := config.ValidateParams(); err != nil {
+		return nil, err
+	}
+
 	var write common.WriteMethod
 
 	relativeURL := strings.Join([]string{"objects", config.ObjectName}, "/")

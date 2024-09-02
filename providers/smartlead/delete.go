@@ -8,12 +8,8 @@ import (
 
 // Delete removes object. As of now only removal of Campaigns is allowed.
 func (c *Connector) Delete(ctx context.Context, config common.DeleteParams) (*common.DeleteResult, error) {
-	if len(config.ObjectName) == 0 {
-		return nil, common.ErrMissingObjects
-	}
-
-	if len(config.RecordId) == 0 {
-		return nil, common.ErrMissingRecordID
+	if err := config.ValidateParams(); err != nil {
+		return nil, err
 	}
 
 	if !supportedObjectsByDelete.Has(config.ObjectName) {

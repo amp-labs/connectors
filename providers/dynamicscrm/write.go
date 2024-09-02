@@ -10,8 +10,8 @@ import (
 // Write data will be used to Create or Update entity.
 // Return: common.WriteResult, where only the Success flag will be set.
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
-	if len(config.ObjectName) == 0 {
-		return nil, common.ErrMissingObjects
+	if err := config.ValidateParams(); err != nil {
+		return nil, err
 	}
 
 	var resource string

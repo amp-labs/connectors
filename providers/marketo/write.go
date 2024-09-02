@@ -15,6 +15,10 @@ type writeResponse struct {
 
 // Write creates/updates records in marketo. Write currently supports operations to the leads API only.
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
+	if err := config.ValidateParams(); err != nil {
+		return nil, err
+	}
+
 	url, err := c.getAPIURL(config.ObjectName)
 	if err != nil {
 		return nil, err
@@ -47,7 +51,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 	// By default the id is returned as a float64
 	id, ok := id.(float64)
 	if !ok || id == 0 {
-		return nil, common.ErrMissingRecordID
+		return nil, common.ErrEmptyRecordIdResponse
 	}
 
 	return &common.WriteResult{
