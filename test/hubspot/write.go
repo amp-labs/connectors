@@ -2,56 +2,50 @@ package hubspot
 
 import (
 	"context"
+	"golang.org/x/oauth2"
 	"net/http"
 
-	"github.com/amp-labs/connectors/common/scanning"
+	"github.com/amp-labs/connectors/common/scanning/credscanning"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/hubspot"
-	testUtils "github.com/amp-labs/connectors/test/utils"
-	"github.com/amp-labs/connectors/utils"
+	"github.com/amp-labs/connectors/test/utils"
 )
 
 // GetHubspotConnector returns a Hubspot connector.
-func GetHubspotConnector(ctx context.Context, filePath string) *hubspot.Connector {
-	registry := scanning.NewRegistry()
-
-	readers := []scanning.Reader{
-		&scanning.JSONReader{
-			FilePath: filePath,
-			JSONPath: "$.CLIENT_ID",
-			KeyName:  "clientId",
-		},
-		&scanning.JSONReader{
-			FilePath: filePath,
-			JSONPath: "$.CLIENT_SECRET",
-			KeyName:  "clientSecret",
-		},
-		&scanning.JSONReader{
-			FilePath: filePath,
-			JSONPath: "$.REFRESH_TOKEN",
-			KeyName:  "refreshToken",
-		},
-		&scanning.JSONReader{
-			FilePath: filePath,
-			JSONPath: "$.ACCESS_TOKEN",
-			KeyName:  "accessToken",
-		},
-		&scanning.JSONReader{
-			FilePath: filePath,
-			JSONPath: "$.PROVIDER",
-			KeyName:  "provider",
-		},
-	}
-	registry.AddReaders(readers...)
-
-	cfg := utils.HubspotOAuthConfigFromRegistry(registry)
-	tok := utils.HubspotOauthTokenFromRegistry(registry)
+func GetHubspotConnector(ctx context.Context) *hubspot.Connector {
+	filePath := credscanning.LoadPath(providers.Hubspot)
+	reader := utils.MustCreateProvCredJSON(filePath, true, false)
 
 	conn, err := hubspot.NewConnector(
-		hubspot.WithClient(ctx, http.DefaultClient, cfg, tok),
+		hubspot.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
 		hubspot.WithModule(hubspot.ModuleCRM))
 	if err != nil {
-		testUtils.Fail("error creating hubspot connector", "error", err)
+		utils.Fail("error creating hubspot connector", "error", err)
 	}
 
 	return conn
+}
+
+func getConfig(reader *credscanning.ProviderCredentials) *oauth2.Config {
+	cfg := &oauth2.Config{
+		ClientID:     reader.Get(credscanning.Fields.ClientId),
+		ClientSecret: reader.Get(credscanning.Fields.ClientSecret),
+		RedirectURL:  "http://localhost:8080/callbacks/v1/oauth",
+		Endpoint: oauth2.Endpoint{
+			AuthURL:   "https://app.hubspot.com/oauth/authorize",
+			TokenURL:  "https://api.hubapi.com/oauth/v1/token",
+			AuthStyle: oauth2.AuthStyleInParams,
+		},
+		Scopes: []string{
+			"crm.objects.contacts.read",
+			"crm.objects.contacts.write",
+			"crm.objects.deals.read",
+			"crm.objects.line_items.read",
+			"oauth",
+			"crm.objects.companies.read",
+			"tickets",
+		},
+	}
+
+	return cfg
 }

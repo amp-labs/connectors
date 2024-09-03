@@ -21,6 +21,12 @@ var (
 	ApiKey       = "apiKey"
 )
 
+func ApolloAPIKeyFromRegistry(registry scanning.Registry) string {
+	apiKey := registry.MustString(ApiKey)
+
+	return apiKey
+}
+
 func SalesforceOAuthConfigFromRegistry(registry scanning.Registry) *oauth2.Config {
 	clientId := registry.MustString(ClientId)
 	clientSecret := registry.MustString(ClientSecret)
@@ -51,51 +57,4 @@ func SalesforceOauthTokenFromRegistry(registry scanning.Registry) *oauth2.Token 
 	}
 
 	return tok
-}
-
-func HubspotOauthTokenFromRegistry(registry scanning.Registry) *oauth2.Token {
-	accessToken := registry.MustString(AccessToken)
-	refreshToken := registry.MustString(RefreshToken)
-
-	tok := &oauth2.Token{
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
-		TokenType:    "bearer",
-		Expiry:       time.Now().Add(-1 * time.Hour), // just pretend it's expired already, whatever, it'll fetch a new one.
-	}
-
-	return tok
-}
-
-func HubspotOAuthConfigFromRegistry(registry scanning.Registry) *oauth2.Config {
-	clientId := registry.MustString(ClientId)
-	clientSecret := registry.MustString(ClientSecret)
-
-	cfg := &oauth2.Config{
-		ClientID:     clientId,
-		ClientSecret: clientSecret,
-		RedirectURL:  "http://localhost:8080/callbacks/v1/oauth",
-		Endpoint: oauth2.Endpoint{
-			AuthURL:   "https://app.hubspot.com/oauth/authorize",
-			TokenURL:  "https://api.hubapi.com/oauth/v1/token",
-			AuthStyle: oauth2.AuthStyleInParams,
-		},
-		Scopes: []string{
-			"crm.objects.contacts.read",
-			"crm.objects.contacts.write",
-			"crm.objects.deals.read",
-			"crm.objects.line_items.read",
-			"oauth",
-			"crm.objects.companies.read",
-			"tickets",
-		},
-	}
-
-	return cfg
-}
-
-func ApolloAPIKeyFromRegistry(registry scanning.Registry) string {
-	apiKey := registry.MustString(ApiKey)
-
-	return apiKey
 }
