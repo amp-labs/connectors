@@ -127,46 +127,6 @@ func SalesloftTokenFromRegistry(registry scanning.Registry) *oauth2.Token {
 	return tok
 }
 
-func OutreachOAuthConfigFromRegistry(registry scanning.Registry) *oauth2.Config {
-	clientId := registry.MustString(ClientId)
-	clientSecret := registry.MustString(ClientSecret)
-
-	cfg := &oauth2.Config{
-		ClientID:     clientId,
-		ClientSecret: clientSecret,
-		RedirectURL:  "https://dev-api.withampersand.com/callbacks/v1/oauth",
-		Endpoint: oauth2.Endpoint{
-			AuthURL:   "https://api.outreach.io/oauth/authorize",
-			TokenURL:  "https://api.outreach.io/oauth/token",
-			AuthStyle: oauth2.AuthStyleInParams,
-		},
-		Scopes: []string{
-			"users.all",
-			"accounts.read",
-			"calls.all",
-			"events.all",
-			"teams.all",
-		},
-	}
-
-	return cfg
-}
-
-func OutreachOauthTokenFromRegistry(registry scanning.Registry) *oauth2.Token {
-	accessToken := registry.MustString(AccessToken)
-	refreshToken := registry.MustString(RefreshToken)
-
-	tok := &oauth2.Token{
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
-		TokenType:    "bearer",
-		Expiry:       time.Now().Add(-1 * time.Hour), // just pretend it's expired already, whatever, it'll fetch a new one.
-	}
-
-	return tok
-}
-
-
 func ApolloAPIKeyFromRegistry(registry scanning.Registry) string {
 	apiKey := registry.MustString(ApiKey)
 

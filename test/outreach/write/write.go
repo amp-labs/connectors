@@ -3,31 +3,35 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"log"
 	"os"
+	"os/signal"
+	"syscall"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/test/outreach"
+	"github.com/amp-labs/connectors/providers/outreach"
+	connTest "github.com/amp-labs/connectors/test/outreach"
+	"github.com/amp-labs/connectors/test/utils"
 	"github.com/brianvoe/gofakeit/v6"
 )
 
-const (
-	DefaultCredsFile = "creds.json"
-)
-
 func main() {
-	var err error
+	// Handle Ctrl-C gracefully.
+	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer done()
 
-	outreach := outreach.GetOutreachConnector(context.Background(), DefaultCredsFile)
+	// Set up slog logging.
+	utils.SetupLogging()
 
-	err = testWriteConnector(context.Background(), outreach)
+	conn := connTest.GetOutreachConnector(ctx)
+	defer utils.Close(conn)
+
+	err := testWriteConnector(context.Background(), conn)
 	if err != nil {
-		log.Fatal(err)
+		utils.Fail("error writing to Outreach", "error", err)
 	}
 }
 
-func testWriteConnector(ctx context.Context, conn connectors.WriteConnector) error {
+func testWriteConnector(ctx context.Context, conn *outreach.Connector) error {
 	var err error
 
 	err = testCreateMailing(ctx, conn)
@@ -58,7 +62,7 @@ func testWriteConnector(ctx context.Context, conn connectors.WriteConnector) err
 	return nil
 }
 
-func testCreateEmailAddresses(ctx context.Context, conn connectors.WriteConnector) error {
+func testCreateEmailAddresses(ctx context.Context, conn *outreach.Connector) error {
 	config := common.WriteParams{
 		ObjectName: "emailAddresses",
 		RecordData: map[string]any{
@@ -87,7 +91,7 @@ func testCreateEmailAddresses(ctx context.Context, conn connectors.WriteConnecto
 	return nil
 }
 
-func testCreateProspects(ctx context.Context, conn connectors.WriteConnector) error {
+func testCreateProspects(ctx context.Context, conn *outreach.Connector) error {
 	config := common.WriteParams{
 		ObjectName: "prospects",
 		RecordData: map[string]any{
@@ -120,7 +124,7 @@ func testCreateProspects(ctx context.Context, conn connectors.WriteConnector) er
 	return nil
 }
 
-func testCreateMailing(ctx context.Context, conn connectors.WriteConnector) error {
+func testCreateMailing(ctx context.Context, conn *outreach.Connector) error {
 	config := common.WriteParams{
 		ObjectName: "mailings",
 		RecordData: map[string]any{
@@ -161,7 +165,7 @@ func testCreateMailing(ctx context.Context, conn connectors.WriteConnector) erro
 	return nil
 }
 
-func testCreateSequence(ctx context.Context, conn connectors.WriteConnector) error {
+func testCreateSequence(ctx context.Context, conn *outreach.Connector) error {
 	config := common.WriteParams{
 		ObjectName: "sequences",
 		RecordData: map[string]any{
@@ -189,7 +193,7 @@ func testCreateSequence(ctx context.Context, conn connectors.WriteConnector) err
 	return nil
 }
 
-func testUpdateEmailAddress(ctx context.Context, conn connectors.WriteConnector) error {
+func testUpdateEmailAddress(ctx context.Context, conn *outreach.Connector) error {
 	config := common.WriteParams{
 		ObjectName: "emailAddresses",
 		RecordId:   "5",

@@ -3,21 +3,27 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
+	"os/signal"
+	"syscall"
 
-	"github.com/amp-labs/connectors/test/outreach"
+	connTest "github.com/amp-labs/connectors/test/outreach"
+	"github.com/amp-labs/connectors/test/utils"
 )
 
 func main() {
-	objects := []string{"sequences"}
+	// Handle Ctrl-C gracefully.
+	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer done()
 
-	ctx := context.Background()
+	// Set up slog logging.
+	utils.SetupLogging()
 
-	conn := outreach.GetOutreachConnector(ctx, "creds.json")
+	conn := connTest.GetOutreachConnector(ctx)
+	defer utils.Close(conn)
 
-	m, err := conn.ListObjectMetadata(ctx, objects)
+	m, err := conn.ListObjectMetadata(ctx, []string{"sequences"})
 	if err != nil {
-		log.Fatal(err)
+		utils.Fail("error listing metadata for Outreach", "error", err)
 	}
 
 	// Print the results

@@ -3,36 +3,42 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"log"
+	"github.com/amp-labs/connectors/test/utils"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/amp-labs/connectors"
-	"github.com/amp-labs/connectors/test/outreach"
-)
-
-const (
-	DefaultCredsFile = "creds.json"
+	connTest "github.com/amp-labs/connectors/test/outreach"
 )
 
 func main() {
+	// Handle Ctrl-C gracefully.
+	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer done()
+
+	// Set up slog logging.
+	utils.SetupLogging()
+
+	conn := connTest.GetOutreachConnector(ctx)
+	defer utils.Close(conn)
+
 	var err error
 
-	conn := outreach.GetOutreachConnector(context.Background(), DefaultCredsFile)
-
-	err = testReadSequences(context.Background(), conn)
+	err = testReadSequences(ctx, conn)
 	if err != nil {
-		log.Fatal(err)
+		utils.Fail("error reading sequences", "error", err)
 	}
 
-	err = testReadMailings(context.Background(), conn)
+	err = testReadMailings(ctx, conn)
 	if err != nil {
-		log.Fatal(err)
+		utils.Fail("error reading mailings", "error", err)
 	}
 
-	err = testReadProspects(context.Background(), conn)
+	err = testReadProspects(ctx, conn)
 	if err != nil {
-		log.Fatal(err)
+		utils.Fail("error reading prospects", "error", err)
 	}
 }
 

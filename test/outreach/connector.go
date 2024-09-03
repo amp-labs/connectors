@@ -2,55 +2,47 @@ package outreach
 
 import (
 	"context"
+	"github.com/amp-labs/connectors/common/scanning/credscanning"
+	"github.com/amp-labs/connectors/providers"
+	"golang.org/x/oauth2"
 	"net/http"
 
-	"github.com/amp-labs/connectors/common/scanning"
 	"github.com/amp-labs/connectors/providers/outreach"
-	testUtils "github.com/amp-labs/connectors/test/utils"
-	"github.com/amp-labs/connectors/utils"
+	"github.com/amp-labs/connectors/test/utils"
 )
 
-func GetOutreachConnector(ctx context.Context, filePath string) *outreach.Connector {
-	registry := scanning.NewRegistry()
-
-	readers := []scanning.Reader{
-		&scanning.JSONReader{
-			FilePath: filePath,
-			JSONPath: "$['clientId']",
-			KeyName:  "clientId",
-		},
-		&scanning.JSONReader{
-			FilePath: filePath,
-			JSONPath: "$['clientSecret']",
-			KeyName:  "clientSecret",
-		},
-		&scanning.JSONReader{
-			FilePath: filePath,
-			JSONPath: "$['refreshToken']",
-			KeyName:  "refreshToken",
-		},
-		&scanning.JSONReader{
-			FilePath: filePath,
-			JSONPath: "$['accessToken']",
-			KeyName:  "accessToken",
-		},
-		&scanning.JSONReader{
-			FilePath: filePath,
-			JSONPath: "$['provider']",
-			KeyName:  "provider",
-		},
-	}
-	registry.AddReaders(readers...)
-
-	cfg := utils.OutreachOAuthConfigFromRegistry(registry)
-	tok := utils.OutreachOauthTokenFromRegistry(registry)
+func GetOutreachConnector(ctx context.Context) *outreach.Connector {
+	filePath := credscanning.LoadPath(providers.Outreach)
+	reader := utils.MustCreateProvCredJSON(filePath, true, false)
 
 	conn, err := outreach.NewConnector(
-		outreach.WithClient(ctx, http.DefaultClient, cfg, tok),
+		outreach.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
 	)
 	if err != nil {
-		testUtils.Fail("error creating outreach connector", "error", err)
+		utils.Fail("error creating outreach connector", "error", err)
 	}
 
 	return conn
+}
+
+func getConfig(reader *credscanning.ProviderCredentials) *oauth2.Config {
+	cfg := &oauth2.Config{
+		ClientID:     reader.Get(credscanning.Fields.ClientId),
+		ClientSecret: reader.Get(credscanning.Fields.ClientSecret),
+		RedirectURL:  "https://dev-api.withampersand.com/callbacks/v1/oauth",
+		Endpoint: oauth2.Endpoint{
+			AuthURL:   "https://api.outreach.io/oauth/authorize",
+			TokenURL:  "https://api.outreach.io/oauth/token",
+			AuthStyle: oauth2.AuthStyleInParams,
+		},
+		Scopes: []string{
+			"users.all",
+			"accounts.read",
+			"calls.all",
+			"events.all",
+			"teams.all",
+		},
+	}
+
+	return cfg
 }
