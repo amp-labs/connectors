@@ -166,35 +166,6 @@ func OutreachOauthTokenFromRegistry(registry scanning.Registry) *oauth2.Token {
 	return tok
 }
 
-func IntercomConfigFromRegistry(registry scanning.Registry) *oauth2.Config {
-	clientId := registry.MustString(ClientId)
-	clientSecret := registry.MustString(ClientSecret)
-
-	cfg := &oauth2.Config{
-		ClientID:     clientId,
-		ClientSecret: clientSecret,
-		RedirectURL:  "http://localhost:8080/callbacks/v1/oauth",
-		Endpoint: oauth2.Endpoint{
-			AuthURL:   "https://app.intercom.com/oauth",
-			TokenURL:  "https://api.intercom.io/auth/eagle/token",
-			AuthStyle: oauth2.AuthStyleInParams,
-		},
-		Scopes: []string{},
-	}
-
-	return cfg
-}
-
-func IntercomTokenFromRegistry(registry scanning.Registry) *oauth2.Token {
-	accessToken := registry.MustString(AccessToken)
-
-	tok := &oauth2.Token{
-		AccessToken: accessToken,
-		TokenType:   "bearer",
-	}
-
-	return tok
-}
 
 func ApolloAPIKeyFromRegistry(registry scanning.Registry) string {
 	apiKey := registry.MustString(ApiKey)

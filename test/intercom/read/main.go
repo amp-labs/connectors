@@ -21,12 +21,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	filePath := os.Getenv("INTERCOM_CRED_FILE")
-	if filePath == "" {
-		filePath = "./intercom-creds.json"
-	}
-
-	conn := msTest.GetIntercomConnector(ctx, filePath)
+	conn := msTest.GetIntercomConnector(ctx)
 	defer utils.Close(conn)
 
 	res, err := conn.Read(ctx, common.ReadParams{
