@@ -9,6 +9,9 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
+var per_page string = "per_page" //nolint:gochecknoglobals
+var pageSize string = "1"        //nolint:gochecknoglobals
+
 // ListObjectMetadata creates metadata of object via reading objects using Apollo API.
 func (c *Connector) ListObjectMetadata(ctx context.Context,
 	objectNames []string,
@@ -23,37 +26,43 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 		Errors: make(map[string]error),
 	}
 
-	for _, obj := range objectNames {
-		url, err := c.getAPIURL(obj)
+	// If the object uses searching, use the searching route
+
+	for _, objectName := range objectNames {
+		url, err := c.getAPIURL(objectName)
 		if err != nil {
 			return nil, err
 		}
 
+		// Limiting the response, so as we don't have to return 100 records of data
+		// when we just need 1.
+		url.WithQueryParam(per_page, pageSize)
+
 		resp, err := c.Client.Get(ctx, url.String())
 		if err != nil {
-			metadataResult.Errors[obj] = err
+			metadataResult.Errors[objectName] = err
 
 			continue
 		}
 
 		// Check nil response body, to avoid panic.
 		if resp == nil || resp.Body == nil {
-			metadataResult.Errors[obj] = common.ErrEmptyResponse
+			metadataResult.Errors[objectName] = common.ErrEmptyResponse
 
 			continue
 		}
 
-		metadata, err := parseMetadataFromResponse(resp, obj)
+		metadata, err := parseMetadataFromResponse(resp, objectName)
 		if err != nil {
 			if errors.Is(err, common.ErrMetadataLoadFailure) {
-				metadataResult.Errors[obj] = common.ErrEmptyResponse
+				metadataResult.Errors[objectName] = common.ErrEmptyResponse
 			} else {
 				return nil, err
 			}
 		}
 
-		metadata.DisplayName = obj
-		metadataResult.Result[obj] = metadata
+		metadata.DisplayName = objectName
+		metadataResult.Result[objectName] = metadata
 	}
 
 	return &metadataResult, nil
@@ -81,7 +90,7 @@ func parseMetadataFromResponse(resp *common.JSONHTTPResponse, obj string) (commo
 
 	objectResponnse := resultArr[0].MustObject()
 
-	// Using the first result data to generate the metadata.
+	// Using the result data to generate the metadata.
 	for k := range objectResponnse {
 		metadata.FieldsMap[k] = k
 	}
