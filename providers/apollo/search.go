@@ -7,9 +7,8 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
-// search uses POST method (GET for two objects[opportunities, tasks]) to read data
-// from the Apollo io API. It has a limit of 50,000 records. It's recommended to filter
-// the results so as to narrow down the results as much as possible.
+// search uses POST method to read data.It has a display limit of 50,000 records.
+// It's recommended to filter the results so as to narrow down the results as much as possible.
 func (c *Connector) search(ctx context.Context,
 	url *urlbuilder.URL, config common.ReadParams,
 ) (*common.ReadResult, error) {

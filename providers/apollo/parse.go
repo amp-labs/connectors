@@ -36,7 +36,7 @@ func getNextRecords(node *ajson.Node) (string, error) {
 	return nextPage, nil
 }
 
-// rcordsWrapperFunc returns the records using the objectName dynamically.
+// recordsWrapperFunc returns the records using the objectName dynamically.
 func recordsWrapperFunc(obj string) common.RecordsFunc {
 	return func(node *ajson.Node) ([]map[string]any, error) {
 		result, err := jsonquery.New(node).Array(obj, true)
@@ -48,6 +48,7 @@ func recordsWrapperFunc(obj string) common.RecordsFunc {
 	}
 }
 
+// searchRecords returns a function that parses the search requests response.
 func searchRecords(respKeys []string) common.RecordsFunc {
 	var records []map[string]any
 
