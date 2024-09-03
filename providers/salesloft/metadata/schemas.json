@@ -792,6 +792,7 @@
         "due_date": "due_date",
         "expires_after": "expires_after",
         "id": "id",
+        "opportunity": "opportunity",
         "person": "person",
         "remind_at": "remind_at",
         "subject": "subject",

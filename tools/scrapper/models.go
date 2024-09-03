@@ -7,6 +7,8 @@ import (
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/amp-labs/connectors/common/handy"
 )
 
 type ModelDocLinks []ModelDocLink
@@ -125,6 +127,40 @@ type queryParamObjectStats struct {
 	Objects      []string `json:"objects"`
 }
 
+// CalculateQueryParamStats produces statistics on objects and their query parameters.
+// queryParamRegistry - holds query parameter name to the list of object names that use it.
+func CalculateQueryParamStats(queryParamRegistry handy.Lists[string]) *QueryParamStats {
+	objects := handy.NewSet([]string{})
+	for _, objectNames := range queryParamRegistry {
+		objects.Add(objectNames)
+	}
+
+	totalUniqueObject := len(objects)
+
+	stats := NewQueryParamStats(totalUniqueObject)
+	queryParams := queryParamRegistry.GetBucketNames()
+
+	// sort query parameters, where most occurred come first
+	sort.SliceStable(queryParams, func(i, j int) bool {
+		a := queryParams[i]
+		b := queryParams[j]
+		l1 := len(queryParamRegistry[a])
+		l2 := len(queryParamRegistry[b])
+
+		if l1 == l2 {
+			return a < b
+		}
+
+		return l1 > l2
+	})
+
+	for _, queryParam := range queryParams {
+		stats.SaveParameterStats(queryParam, queryParamRegistry[queryParam])
+	}
+
+	return stats
+}
+
 func NewQueryParamStats(totalObjects int) *QueryParamStats {
 	return &QueryParamStats{
 		Meta: queryParamStatsMeta{
@@ -135,9 +171,12 @@ func NewQueryParamStats(totalObjects int) *QueryParamStats {
 	}
 }
 
-func (s *QueryParamStats) Add(queryParamName string, objectNames []string) {
+func (s *QueryParamStats) SaveParameterStats(queryParamName string, objectNames []string) {
 	num := len(objectNames)
 	freq := float64(num) / float64(s.Meta.TotalObjects)
+
+	sort.Strings(objectNames)
+
 	s.Data = append(s.Data, queryParamObjectStats{
 		Name:         queryParamName,
 		Frequency:    roundFloat(freq, 4), // nolint:gomnd
