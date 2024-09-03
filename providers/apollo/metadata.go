@@ -9,8 +9,10 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-var per_page string = "per_page" //nolint:gochecknoglobals
-var pageSize string = "1"        //nolint:gochecknoglobals
+var (
+	perPage  string = "per_page" //nolint:gochecknoglobals
+	pageSize string = "1"        //nolint:gochecknoglobals
+)
 
 // ListObjectMetadata creates metadata of object via reading objects using Apollo API.
 func (c *Connector) ListObjectMetadata(ctx context.Context,
@@ -36,7 +38,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 
 		// Limiting the response, so as we don't have to return 100 records of data
 		// when we just need 1.
-		url.WithQueryParam(per_page, pageSize)
+		url.WithQueryParam(perPage, pageSize)
 
 		resp, err := c.Client.Get(ctx, url.String())
 		if err != nil {
