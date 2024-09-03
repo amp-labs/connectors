@@ -12,9 +12,8 @@ import (
 	"github.com/amp-labs/connectors/providers/salesforce"
 	connTest "github.com/amp-labs/connectors/test/salesforce"
 	"github.com/amp-labs/connectors/test/salesforce/bulk"
-	testUtils "github.com/amp-labs/connectors/test/utils"
+	"github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/tools/fileconv"
-	"github.com/amp-labs/connectors/utils"
 )
 
 func main() {
@@ -23,10 +22,10 @@ func main() {
 	defer done()
 
 	// Set up slog logging.
-	testUtils.SetupLogging()
+	utils.SetupLogging()
 
 	conn := connTest.GetSalesforceConnector(ctx)
-	defer testUtils.Close(conn)
+	defer utils.Close(conn)
 
 	// We first create objects in Salesforce,
 	// and then we generate an in-memory CSV of the Salesforce IDs of the newly created objects,
@@ -61,11 +60,7 @@ func main() {
 
 	slog.Info("Bulk delete job done")
 
-	prettyPrint(deleteResult)
-}
-
-func prettyPrint(s any) {
-	fmt.Println(utils.PrettyFormatStruct(s))
+	utils.DumpJSON(deleteResult, os.Stdout)
 }
 
 func createObjects(ctx context.Context, conn *salesforce.Connector, filePath string) ([]byte, error) {
@@ -73,7 +68,7 @@ func createObjects(ctx context.Context, conn *salesforce.Connector, filePath str
 	if err != nil {
 		return nil, fmt.Errorf("error opening '%s': %w", filePath, err)
 	}
-	defer testUtils.Close(file)
+	defer utils.Close(file)
 
 	// Write the records to Salesforce, so that we can delete them later.
 	writeRes, err := conn.BulkWrite(ctx, salesforce.BulkOperationParams{
