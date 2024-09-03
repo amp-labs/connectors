@@ -12,14 +12,30 @@ import (
 	"github.com/getkin/kin-openapi/openapi3"
 )
 
+var (
+	// assets is a absolute path to the assets file from root of the project.
+	assets = "./scripts/openapi/marketo/metadata/asset.json" //nolint:gochecknoglobals
+	// leads is a absolute path to the leads file from root of the project.
+	leads = "./scripts/openapi/marketo/metadata/mapi.json" //nolint:gochecknoglobals
+
+	// schemas represents the file that holds the generated metadata.
+	// Creates it, if not available.
+	// This is be created at the root of the project.
+	schemas = "schemas.json" //nolint:gochecknoglobals
+)
+
 func main() {
-	//  read the definitions in the specificatios files.
-	def, docA, err := constructDefinitions("./scripts/openapi/marketo/metadata/asset.json", 5) //nolint:gomnd
+	//  read the definitions in the specification file.
+	// 5 represents the amount of substrings that will be generated
+	// when path of interest is split using `/`
+	def, docA, err := constructDefinitions(assets, 5) //nolint:gomnd
 	if err != nil {
 		panic(err)
 	}
 
-	ldef, docL, err := constructDefinitions("./scripts/openapi/marketo/metadata/mapi.json", 4) //nolint:gomnd
+	// 4 represents the amount of substrings that will be generated
+	// when path of interest is split using `/`
+	ldef, docL, err := constructDefinitions(leads, 4) //nolint:gomnd
 	if err != nil {
 		panic(err)
 	}
@@ -39,7 +55,7 @@ func main() {
 		panic(err)
 	}
 
-	// wrap objectMetadata in `data` to not break the scrapper API.
+	// wrap objectMetadata in `data` to not break the fileManager that reads the schema.
 	data := map[string]any{
 		"data": objectMetadata,
 	}
@@ -56,7 +72,7 @@ func main() {
 }
 
 func writefile(b []byte) error {
-	f, err := os.Create("schemas.json")
+	f, err := os.Create(schemas)
 	if err != nil {
 		return err
 	}
@@ -128,7 +144,7 @@ func generateMetadata(objDefs map[string]string,
 
 		r, ok := result.(*openapi3.Ref)
 		if !ok {
-			return nil, fmt.Errorf("failed the assertion, the response data type is not expected") //nolint:goerr113
+			return nil, fmt.Errorf("failed to convert the response type into an openapi3 type") //nolint:goerr113
 		}
 
 		m := cleanDefinitions(r.Ref)
