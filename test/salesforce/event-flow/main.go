@@ -4,96 +4,69 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	"net/http"
-	"os"
+	"os/signal"
 	"strconv"
 	"strings"
+	"syscall"
 	"time"
 
-	"github.com/amp-labs/connectors/common/scanning"
 	"github.com/amp-labs/connectors/providers/salesforce"
-	testUtils "github.com/amp-labs/connectors/test/utils"
-	"github.com/amp-labs/connectors/utils"
+	connTest "github.com/amp-labs/connectors/test/salesforce"
+	"github.com/amp-labs/connectors/test/utils"
 )
 
 func main() {
-	handler := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
-		Level: slog.LevelDebug,
-	})
+	// Handle Ctrl-C gracefully.
+	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer done()
 
-	logger := slog.New(handler)
-	slog.SetDefault(logger)
+	// Set up slog logging.
+	utils.SetupLogging()
 
-	// assumes that this code is being run from the root of the project
-	// go run test/salesforce/bulkwrite/main.go
-	filePath := os.Getenv("SALESFORCE_CRED_FILE_PATH")
-	if filePath == "" {
-		filePath = "./salesforce-creds.json"
-	}
-
-	ampConnectionSchemaReader := testUtils.JSONFileReaders(filePath)
-	credentialsRegistry := scanning.NewRegistry()
-	credentialsRegistry.AddReaders(ampConnectionSchemaReader...)
-	salesforceWorkspace := credentialsRegistry.MustString(utils.WorkspaceRef)
-
-	cfg := utils.SalesforceOAuthConfigFromRegistry(credentialsRegistry)
-	tok := utils.SalesforceOauthTokenFromRegistry(credentialsRegistry)
-	ctx := context.Background()
-
-	sfc, err := salesforce.NewConnector(
-		salesforce.WithClient(ctx, http.DefaultClient, cfg, tok),
-		salesforce.WithWorkspace(salesforceWorkspace))
-	if err != nil {
-		slog.Error("Error creating Salesforce connector", "error", err)
-
-		return
-	}
-
-	defer func() {
-		_ = sfc.Close()
-	}()
+	conn := connTest.GetSalesforceConnector(ctx)
+	defer utils.Close(conn)
 
 	uniqueString := strconv.Itoa(int(time.Now().UnixMilli()))
 
-	namedCred, err := TestCredentialsLegacy(sfc, ctx, uniqueString)
+	namedCred, err := TestCredentialsLegacy(conn, ctx, uniqueString)
 	if err != nil {
 		return
 	}
 
-	testCDC(sfc, ctx, namedCred, uniqueString)
+	testCDC(conn, ctx, namedCred, uniqueString)
 
 	peName := "Employee__e" // this should be created from UI
-	testPE(sfc, ctx, namedCred, peName, uniqueString)
+	testPE(conn, ctx, namedCred, peName, uniqueString)
 }
 
-func testCDC(sfc *salesforce.Connector, ctx context.Context, creds salesforce.Credential, uniqueString string) {
+func testCDC(conn *salesforce.Connector, ctx context.Context, creds salesforce.Credential, uniqueString string) {
 	fmt.Println("-----------------Testing Change Data Capture-----------------")
 
-	cdcChannel, err := TestCDCChannel(sfc, ctx, "TestCDCChannel"+uniqueString)
+	cdcChannel, err := TestCDCChannel(conn, ctx, "TestCDCChannel"+uniqueString)
 	if err != nil {
 		return
 	}
 
-	evtCfg, err := TestEventRelayConfig(sfc, ctx, creds, cdcChannel, "CDC_"+uniqueString)
+	evtCfg, err := TestEventRelayConfig(conn, ctx, creds, cdcChannel, "CDC_"+uniqueString)
 	if err != nil {
 		return
 	}
 
 	objectName := "Account"
 
-	_, err = testChangeDataCaptureChannelMembership(sfc, ctx, cdcChannel.FullName, objectName)
+	_, err = testChangeDataCaptureChannelMembership(conn, ctx, cdcChannel.FullName, objectName)
 	if err != nil {
 		return
 	}
 
-	if sfc.RunEventRelay(ctx, evtCfg) != nil {
+	if conn.RunEventRelay(ctx, evtCfg) != nil {
 		slog.Error("Error running event relay", "error", err)
 		return
 	}
 
 	slog.Info("Event relay config updated", "state", "RUN")
 
-	orgId, err := sfc.GetOrganizationId(ctx)
+	orgId, err := conn.GetOrganizationId(ctx)
 	if err != nil {
 		slog.Error("Failed to get orgId", "error", err)
 		return
@@ -103,33 +76,33 @@ func testCDC(sfc *salesforce.Connector, ctx context.Context, creds salesforce.Cr
 	printWithField("RemoteResource", "resource", remoteResource)
 }
 
-func testPE(sfc *salesforce.Connector, ctx context.Context, creds salesforce.Credential, eventName string, uniqueString string) {
+func testPE(conn *salesforce.Connector, ctx context.Context, creds salesforce.Credential, eventName string, uniqueString string) {
 	fmt.Println("-----------------Testing Platform Event-----------------")
 
-	peChannel, err := TestPlatformEventChannel(sfc, ctx, "TestPEChannel"+uniqueString)
+	peChannel, err := TestPlatformEventChannel(conn, ctx, "TestPEChannel"+uniqueString)
 	if err != nil {
 		return
 	}
 
-	evtCfg, err := TestEventRelayConfig(sfc, ctx, creds, peChannel, "PE_"+uniqueString)
+	evtCfg, err := TestEventRelayConfig(conn, ctx, creds, peChannel, "PE_"+uniqueString)
 	if err != nil {
 		return
 	}
 
 	objectName := "Account"
 
-	_, err = testPlatformEventChannelMembership(sfc, ctx, eventName, peChannel.FullName, objectName, uniqueString)
+	_, err = testPlatformEventChannelMembership(conn, ctx, eventName, peChannel.FullName, objectName, uniqueString)
 	if err != nil {
 		return
 	}
 
-	if sfc.RunEventRelay(ctx, evtCfg) != nil {
+	if conn.RunEventRelay(ctx, evtCfg) != nil {
 		return
 	}
 
 	slog.Info("Event relay config updated", "state", "RUN")
 
-	orgId, err := sfc.GetOrganizationId(ctx)
+	orgId, err := conn.GetOrganizationId(ctx)
 	if err != nil {
 		slog.Error("Failed to get orgId", "error", err)
 		return
@@ -139,7 +112,7 @@ func testPE(sfc *salesforce.Connector, ctx context.Context, creds salesforce.Cre
 	printWithField("RemoteResource", "resource", remoteResource)
 }
 
-func testPlatformEventChannelMembership(sfc *salesforce.Connector, ctx context.Context, peName string, channelName string, objectName string, uniqueString string) (*salesforce.EventChannelMember, error) {
+func testPlatformEventChannelMembership(conn *salesforce.Connector, ctx context.Context, peName string, channelName string, objectName string, uniqueString string) (*salesforce.EventChannelMember, error) {
 	rawPEName := getRawPEName(objectName)
 
 	rawChannelName := getRawChannelNameFromChannel(channelName) // TODO FIXME
@@ -152,7 +125,7 @@ func testPlatformEventChannelMembership(sfc *salesforce.Connector, ctx context.C
 		},
 	}
 
-	newChannelMember, err := sfc.CreateEventChannelMember(ctx, member)
+	newChannelMember, err := conn.CreateEventChannelMember(ctx, member)
 	if err != nil {
 		slog.Error("Error event channel member", "error", err)
 
@@ -164,7 +137,7 @@ func testPlatformEventChannelMembership(sfc *salesforce.Connector, ctx context.C
 	return newChannelMember, nil
 }
 
-func testChangeDataCaptureChannelMembership(sfc *salesforce.Connector, ctx context.Context, channelName string, objecName string) (*salesforce.EventChannelMember, error) {
+func testChangeDataCaptureChannelMembership(conn *salesforce.Connector, ctx context.Context, channelName string, objecName string) (*salesforce.EventChannelMember, error) {
 	eventName := getCDCEventName(objecName)
 	rawChannelName := getRawChannelNameFromChannel(channelName)
 
@@ -176,7 +149,7 @@ func testChangeDataCaptureChannelMembership(sfc *salesforce.Connector, ctx conte
 		},
 	}
 
-	newChannelMember, err := sfc.CreateEventChannelMember(ctx, member)
+	newChannelMember, err := conn.CreateEventChannelMember(ctx, member)
 	if err != nil {
 		slog.Error("Error event channel member", "error", err)
 
@@ -188,7 +161,7 @@ func testChangeDataCaptureChannelMembership(sfc *salesforce.Connector, ctx conte
 	return newChannelMember, nil
 }
 
-func TestCDCChannel(sfc *salesforce.Connector, ctx context.Context, channelName string) (*salesforce.EventChannel, error) {
+func TestCDCChannel(conn *salesforce.Connector, ctx context.Context, channelName string) (*salesforce.EventChannel, error) {
 	channel := &salesforce.EventChannel{
 		FullName: getChannelName(channelName),
 		Metadata: &salesforce.EventChannelMetadata{
@@ -197,7 +170,7 @@ func TestCDCChannel(sfc *salesforce.Connector, ctx context.Context, channelName 
 		},
 	}
 
-	newChannel, err := sfc.CreateEventChannel(ctx, channel)
+	newChannel, err := conn.CreateEventChannel(ctx, channel)
 	if err != nil {
 		slog.Error("Error creating data channel", "error", err)
 		return nil, err
@@ -208,7 +181,7 @@ func TestCDCChannel(sfc *salesforce.Connector, ctx context.Context, channelName 
 	return newChannel, nil
 }
 
-func TestPlatformEventChannel(sfc *salesforce.Connector, ctx context.Context, channelName string) (*salesforce.EventChannel, error) {
+func TestPlatformEventChannel(conn *salesforce.Connector, ctx context.Context, channelName string) (*salesforce.EventChannel, error) {
 	channel := &salesforce.EventChannel{
 		FullName: getChannelName(channelName),
 		Metadata: &salesforce.EventChannelMetadata{
@@ -217,7 +190,7 @@ func TestPlatformEventChannel(sfc *salesforce.Connector, ctx context.Context, ch
 		},
 	}
 
-	newChannel, err := sfc.CreateEventChannel(ctx, channel)
+	newChannel, err := conn.CreateEventChannel(ctx, channel)
 	if err != nil {
 		slog.Error("Error creating event channel", "error", err)
 
@@ -229,7 +202,7 @@ func TestPlatformEventChannel(sfc *salesforce.Connector, ctx context.Context, ch
 	return newChannel, nil
 }
 
-func TestEventRelayConfig(sfc *salesforce.Connector, ctx context.Context, cred salesforce.Credential, channel *salesforce.EventChannel, uniqueString string) (*salesforce.EventRelayConfig, error) {
+func TestEventRelayConfig(conn *salesforce.Connector, ctx context.Context, cred salesforce.Credential, channel *salesforce.EventChannel, uniqueString string) (*salesforce.EventRelayConfig, error) {
 	evtCfg := &salesforce.EventRelayConfig{
 		FullName: "TestEventRelayConfig" + uniqueString,
 		Metadata: &salesforce.EventRelayConfigMetadata{
@@ -238,7 +211,7 @@ func TestEventRelayConfig(sfc *salesforce.Connector, ctx context.Context, cred s
 		},
 	}
 
-	newEvtCfg, err := sfc.CreateEventRelayConfig(ctx, evtCfg)
+	newEvtCfg, err := conn.CreateEventRelayConfig(ctx, evtCfg)
 	if err != nil {
 		slog.Error("Error event relay config", "error", err)
 
@@ -251,10 +224,10 @@ func TestEventRelayConfig(sfc *salesforce.Connector, ctx context.Context, cred s
 	return newEvtCfg, nil
 }
 
-func testOrganizationId(sfc *salesforce.Connector, ctx context.Context) (string, error) {
+func testOrganizationId(conn *salesforce.Connector, ctx context.Context) (string, error) {
 	fmt.Println("-----------------Testing Organization Id-----------------")
 
-	orgId, err := sfc.GetOrganizationId(ctx)
+	orgId, err := conn.GetOrganizationId(ctx)
 	if err != nil {
 		slog.Error("Error querying org", "error", err)
 		return "", err
@@ -265,7 +238,7 @@ func testOrganizationId(sfc *salesforce.Connector, ctx context.Context) (string,
 	return orgId, nil
 }
 
-func TestCredentialsLegacy(sfc *salesforce.Connector, ctx context.Context, uniqueString string) (*salesforce.NamedCredential, error) {
+func TestCredentialsLegacy(conn *salesforce.Connector, ctx context.Context, uniqueString string) (*salesforce.NamedCredential, error) {
 	fmt.Println("-----------------Testing Named Credential Legacy-----------------")
 
 	namedCred := &salesforce.NamedCredential{
@@ -281,7 +254,7 @@ func TestCredentialsLegacy(sfc *salesforce.Connector, ctx context.Context, uniqu
 		},
 	}
 
-	newNamedCred, err := sfc.CreateNamedCredential(ctx, namedCred)
+	newNamedCred, err := conn.CreateNamedCredential(ctx, namedCred)
 	if err != nil {
 		slog.Error("Error named cred", "error", err)
 		return nil, err

@@ -68,7 +68,7 @@ func prettyPrint(s any) {
 	fmt.Println(utils.PrettyFormatStruct(s))
 }
 
-func createObjects(ctx context.Context, sfc *salesforce.Connector, filePath string) ([]byte, error) {
+func createObjects(ctx context.Context, conn *salesforce.Connector, filePath string) ([]byte, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
 		return nil, fmt.Errorf("error opening '%s': %w", filePath, err)
@@ -76,7 +76,7 @@ func createObjects(ctx context.Context, sfc *salesforce.Connector, filePath stri
 	defer testUtils.Close(file)
 
 	// Write the records to Salesforce, so that we can delete them later.
-	writeRes, err := sfc.BulkWrite(ctx, salesforce.BulkOperationParams{
+	writeRes, err := conn.BulkWrite(ctx, salesforce.BulkOperationParams{
 		ObjectName:      "Opportunity",
 		ExternalIdField: "external_id__c",
 		CSVData:         file,
@@ -89,12 +89,12 @@ func createObjects(ctx context.Context, sfc *salesforce.Connector, filePath stri
 	slog.Info("Preparing objects to delete", "res", writeRes)
 
 	// wait for the job to complete
-	_, err = bulk.GetResultInLoop(ctx, sfc, writeRes.JobId)
+	_, err = bulk.GetResultInLoop(ctx, conn, writeRes.JobId)
 	if err != nil {
 		return nil, fmt.Errorf("error getting bulk write job results: %w", err)
 	}
 
 	slog.Info("Records created, now deleting them.")
 
-	return bulk.GetRecordIDsForJob(ctx, sfc, writeRes.JobId)
+	return bulk.GetRecordIDsForJob(ctx, conn, writeRes.JobId)
 }
