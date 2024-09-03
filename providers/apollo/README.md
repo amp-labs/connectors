@@ -12,13 +12,15 @@ This connector has two ways of reading data:
     - opportunity_stages
 
 # Searching Supported Objects:
+    - opportunities
+    - users
+
+## The following Objects works with the Search Method:
     - mixed_people
     - mixed_companies
-    - opportunities
     - contacts
     - accounts
     - emailer_campaigns
-    - users
 
 The Search Endpoint has a display limit of 50,000 records. With the maximum page_size of 100 records, we can go up to 500 calls.
 

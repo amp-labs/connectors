@@ -17,10 +17,16 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 
 	// If the given object uses search endpoint for Reading,
 	// checks for the  method and makes the call.
+	// currently we do not support for routing the POST calls to Search method.
+	//
 	if usesSearching(config.ObjectName) {
-		url = url.AddPath(searchingPath)
-		if in(config.ObjectName, postSearchObjects) {
-			return c.search(ctx, url, config)
+		switch {
+		case in(config.ObjectName, postSearchObjects):
+			return nil, common.ErrOperationNotSupportedForObject
+		// Objects opportunities & users do not use the POST method
+		// The POST search reading limits do  not apply to them.
+		case in(config.ObjectName, getSearchObjects):
+			url.AddPath(searchingPath)
 		}
 	}
 

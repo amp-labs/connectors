@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"time"
 
 	"github.com/amp-labs/connectors/common"
 	ap "github.com/amp-labs/connectors/providers/apollo"
@@ -22,22 +21,47 @@ func MainFn() int {
 
 	conn := apollo.GetApolloConnector(ctx, "apollo-creds.json")
 
-	err := testReadOpportunitiesSearch(ctx, conn)
+	err := testReadContactsSearch(ctx, conn)
 	if err != nil {
 		return 1
 	}
 
-	err = testReadCustomFields(ctx, conn)
+	err = testReadPeopleSearch(ctx, conn)
 	if err != nil {
 		return 1
 	}
 
-	err = testReadEmailAccounts(ctx, conn)
+	err = testReadOpportunitiesSearch(ctx, conn)
 	if err != nil {
 		return 1
 	}
 
 	return 0
+}
+
+func testReadContactsSearch(ctx context.Context, conn *ap.Connector) error {
+
+	params := common.ReadParams{
+		ObjectName: "contacts",
+		Fields:     []string{"id"},
+		// NextPage:   "2",
+	}
+
+	res, err := conn.Search(ctx, params)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	// Print the results
+	jsonStr, err := json.MarshalIndent(res, "", "  ")
+	if err != nil {
+		return fmt.Errorf("error marshalling JSON: %w", err)
+	}
+
+	_, _ = os.Stdout.Write(jsonStr)
+	_, _ = os.Stdout.WriteString("\n")
+
+	return nil
 }
 
 func testReadOpportunitiesSearch(ctx context.Context, conn *ap.Connector) error {
@@ -47,7 +71,7 @@ func testReadOpportunitiesSearch(ctx context.Context, conn *ap.Connector) error 
 		Fields:     []string{"id"},
 	}
 
-	res, err := conn.Read(ctx, params)
+	res, err := conn.Search(ctx, params)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -64,40 +88,14 @@ func testReadOpportunitiesSearch(ctx context.Context, conn *ap.Connector) error 
 	return nil
 }
 
-func testReadEmailAccounts(ctx context.Context, conn *ap.Connector) error {
+func testReadPeopleSearch(ctx context.Context, conn *ap.Connector) error {
 
 	params := common.ReadParams{
-		ObjectName: "email_accounts",
-		Fields:     []string{"user_id", "id", "email"},
-		Since:      time.Now().Add(-1800 * time.Hour),
+		ObjectName: "mixed_people",
+		Fields:     []string{"id"},
 	}
 
-	res, err := conn.Read(ctx, params)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-
-	// Print the results
-	jsonStr, err := json.MarshalIndent(res, "", "  ")
-	if err != nil {
-		return fmt.Errorf("error marshalling JSON: %w", err)
-	}
-
-	_, _ = os.Stdout.Write(jsonStr)
-	_, _ = os.Stdout.WriteString("\n")
-
-	return nil
-}
-
-func testReadCustomFields(ctx context.Context, conn *ap.Connector) error {
-
-	params := common.ReadParams{
-		ObjectName: "typed_custom_fields",
-		Fields:     []string{"type", "id", "modality"},
-		Since:      time.Now().Add(-1800 * time.Hour),
-	}
-
-	res, err := conn.Read(ctx, params)
+	res, err := conn.Search(ctx, params)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
