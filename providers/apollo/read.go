@@ -17,7 +17,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 
 	// If the given object uses search endpoint for Reading,
 	// checks for the  method and makes the call.
-	// currently we do not support for routing the POST calls to Search method.
+	// currently we do not support routing to Search method.
 	//
 	if usesSearching(config.ObjectName) {
 		switch {
