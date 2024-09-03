@@ -94,39 +94,6 @@ func HubspotOAuthConfigFromRegistry(registry scanning.Registry) *oauth2.Config {
 	return cfg
 }
 
-func SalesloftConfigFromRegistry(registry scanning.Registry) *oauth2.Config {
-	clientId := registry.MustString(ClientId)
-	clientSecret := registry.MustString(ClientSecret)
-
-	cfg := &oauth2.Config{
-		ClientID:     clientId,
-		ClientSecret: clientSecret,
-		RedirectURL:  "http://localhost:8080/callbacks/v1/oauth",
-		Endpoint: oauth2.Endpoint{
-			AuthURL:   "https://accounts.salesloft.com/oauth/authorize",
-			TokenURL:  "https://accounts.salesloft.com/oauth/token",
-			AuthStyle: oauth2.AuthStyleInParams,
-		},
-		Scopes: []string{},
-	}
-
-	return cfg
-}
-
-func SalesloftTokenFromRegistry(registry scanning.Registry) *oauth2.Token {
-	accessToken := registry.MustString(AccessToken)
-	refreshToken := registry.MustString(RefreshToken)
-
-	tok := &oauth2.Token{
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
-		TokenType:    "bearer",
-		Expiry:       time.Now().Add(-1 * time.Hour), // just pretend it's expired already, whatever, it'll fetch a new one.
-	}
-
-	return tok
-}
-
 func ApolloAPIKeyFromRegistry(registry scanning.Registry) string {
 	apiKey := registry.MustString(ApiKey)
 
