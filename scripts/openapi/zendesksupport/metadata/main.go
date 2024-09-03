@@ -3,6 +3,7 @@ package main
 import (
 	"log/slog"
 
+	"github.com/amp-labs/connectors/common/handy"
 	"github.com/amp-labs/connectors/providers/zendesksupport"
 	"github.com/amp-labs/connectors/providers/zendesksupport/metadata"
 	"github.com/amp-labs/connectors/providers/zendesksupport/openapi"
@@ -86,6 +87,7 @@ func main() {
 	must(err)
 
 	schemas := scrapper.NewObjectMetadataResult()
+	registry := handy.Lists[string]{}
 
 	for _, object := range objects {
 		if object.Problem != nil {
@@ -98,9 +100,14 @@ func main() {
 		for _, field := range object.Fields {
 			schemas.Add(object.ObjectName, object.DisplayName, field, nil)
 		}
+
+		for _, queryParam := range object.QueryParams {
+			registry.Add(queryParam, object.ObjectName)
+		}
 	}
 
 	must(metadata.FileManager.SaveSchemas(schemas))
+	must(metadata.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
 
 	slog.Info("Completed.")
 }
