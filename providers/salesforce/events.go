@@ -221,7 +221,12 @@ func (c *Connector) getOrganization(ctx context.Context) (map[string]*ajson.Node
 		return nil, err
 	}
 
-	return resp.Body.GetObject()
+	body, ok := resp.Body()
+	if !ok {
+		return nil, fmt.Errorf("cannot get organization %w", common.ErrEmptyJSONHTTPResponse)
+	}
+
+	return body.GetObject()
 }
 
 func (c *Connector) GetOrganizationId(ctx context.Context) (string, error) {
@@ -266,6 +271,10 @@ func (c *Connector) postToSFAPI(ctx context.Context, body any, path string, enti
 	}
 
 	res, err := common.UnmarshalJSON[SFAPIResponseBody](resp)
+	if err != nil {
+		return nil, err
+	}
+
 	if res.Warnings != nil && len(res.Warnings) > 0 {
 		slog.Warn(entity, "warnings", res.Warnings)
 	}

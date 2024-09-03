@@ -10,8 +10,8 @@ import (
 )
 
 var (
-	perPage          string = "per_page" //nolint:gochecknoglobals
-	metadataPageSize string = "1"        //nolint:gochecknoglobals
+	perPage          = "per_page" //nolint:gochecknoglobals
+	metadataPageSize = "1"        //nolint:gochecknoglobals
 )
 
 // ListObjectMetadata creates metadata of object via reading objects using Apollo API.
@@ -46,54 +46,49 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 		}
 
 		// Check nil response body, to avoid panic.
-		if resp == nil || resp.Body == nil {
-			metadataResult.Errors[objectName] = common.ErrEmptyResponse
+		body, ok := resp.Body()
+		if !ok {
+			metadataResult.Errors[objectName] = common.ErrEmptyJSONHTTPResponse
 
 			continue
 		}
 
-		metadata, err := parseMetadataFromResponse(resp, objectName)
+		metadata, err := parseMetadataFromResponse(body, objectName)
 		if err != nil {
 			if errors.Is(err, common.ErrMetadataLoadFailure) {
-				metadataResult.Errors[objectName] = common.ErrEmptyResponse
+				metadataResult.Errors[objectName] = common.ErrMetadataLoadFailure
+
+				continue
 			} else {
 				return nil, err
 			}
 		}
 
 		metadata.DisplayName = objectName
-		metadataResult.Result[objectName] = metadata
+		metadataResult.Result[objectName] = *metadata
 	}
 
 	return &metadataResult, nil
 }
 
-func parseMetadataFromResponse(resp *common.JSONHTTPResponse, obj string) (common.ObjectMetadata, error) {
-	bb := resp.Body.Source()
-	if bb == nil {
-		return common.ObjectMetadata{}, common.ErrEmptyResponse
-	}
-
-	metadata := common.ObjectMetadata{
-		FieldsMap: make(map[string]string),
-	}
-
-	root, err := ajson.Unmarshal(bb)
+func parseMetadataFromResponse(body *ajson.Node, objectName string) (*common.ObjectMetadata, error) {
+	arr, err := jsonquery.New(body).Array(objectName, true)
 	if err != nil {
-		return common.ObjectMetadata{}, err
+		return nil, err
 	}
 
-	resultArr, err := jsonquery.New(root).Array(obj, true)
-	if err != nil {
-		return common.ObjectMetadata{}, err
+	fieldsMap := make(map[string]string)
+
+	if len(arr) != 0 {
+		objectResponse := arr[0].MustObject()
+
+		// Using the result data to generate the metadata.
+		for k := range objectResponse {
+			fieldsMap[k] = k
+		}
 	}
 
-	objectResponnse := resultArr[0].MustObject()
-
-	// Using the result data to generate the metadata.
-	for k := range objectResponnse {
-		metadata.FieldsMap[k] = k
-	}
-
-	return metadata, nil
+	return &common.ObjectMetadata{
+		FieldsMap: fieldsMap,
+	}, nil
 }

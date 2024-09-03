@@ -3,6 +3,7 @@ package common
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"mime"
 	"net/http"
@@ -18,6 +19,8 @@ type JSONHTTPClient struct {
 }
 
 // JSONHTTPResponse is a JSON response from an HTTP request.
+// Consider using Body to operate on ajson.Node or
+// Unmarshal into the struct of your choosing via UnmarshalJSON.
 type JSONHTTPResponse struct {
 	// bodyBytes is the raw response body. It's not JSON-unmarshalled.
 	// We keep it around so that we can unmarshal it into a struct later,
@@ -30,9 +33,20 @@ type JSONHTTPResponse struct {
 	// Headers are the HTTP headers of the response.
 	Headers http.Header
 
-	// Body is the JSON-unmarshalled response body. Aside from the fact
+	// body is the JSON-unmarshalled response body. Aside from the fact
 	// that it's JSON-unmarshalled, it's identical to bodyBytes.
-	Body *ajson.Node
+	// If there were no bytes this will be nil.
+	body *ajson.Node
+}
+
+// Body returns JSON node. If it is empty the flag will indicate so.
+// Empty response body is a special case and should be handled explicitly.
+func (j *JSONHTTPResponse) Body() (*ajson.Node, bool) {
+	if j.body == nil {
+		return nil, false
+	}
+
+	return j.body, true
 }
 
 // Get makes a GET request to the given URL and returns the response body as a JSON object.
@@ -104,11 +118,13 @@ func (j *JSONHTTPClient) Delete(ctx context.Context, url string, headers ...Head
 func parseJSONResponse(res *http.Response, body []byte) (*JSONHTTPResponse, error) {
 	// empty response body should not be parsed as JSON since it will cause ajson to err
 	if len(body) == 0 {
+		// Empty response. Both object and error are returned.
+		// Caller must check for error.
 		return &JSONHTTPResponse{
-			bodyBytes: body,
+			bodyBytes: make([]byte, 0),
 			Code:      res.StatusCode,
 			Headers:   res.Header,
-			Body:      nil,
+			body:      nil,
 		}, nil
 	}
 	// Ensure the response is JSON
@@ -137,7 +153,7 @@ func parseJSONResponse(res *http.Response, body []byte) (*JSONHTTPResponse, erro
 		bodyBytes: body,
 		Code:      res.StatusCode,
 		Headers:   res.Header,
-		Body:      jsonBody,
+		body:      jsonBody,
 	}, nil
 }
 
@@ -145,8 +161,13 @@ func parseJSONResponse(res *http.Response, body []byte) (*JSONHTTPResponse, erro
 func UnmarshalJSON[T any](rsp *JSONHTTPResponse) (*T, error) {
 	var data T
 
+	if len(rsp.bodyBytes) == 0 {
+		// Empty struct.
+		return &data, nil
+	}
+
 	if err := json.Unmarshal(rsp.bodyBytes, &data); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal response body into JSON: %w", err)
+		return nil, errors.Join(err, ErrFailedToUnmarshalBody)
 	}
 
 	return &data, nil

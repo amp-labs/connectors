@@ -32,7 +32,14 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, err
 	}
 
-	return constructWriteResult(json.Body, config.ObjectName)
+	body, ok := json.Body()
+	if !ok {
+		return &common.WriteResult{
+			Success: true,
+		}, nil
+	}
+
+	return constructWriteResult(body, config.ObjectName)
 }
 
 func constructWriteResult(body *ajson.Node, objName string) (*common.WriteResult, error) {

@@ -36,7 +36,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				w.WriteHeader(http.StatusOK)
 				mockutils.WriteBody(w, ``)
 			})),
-			ExpectedErrs: []error{ErrParsingMetadata},
+			ExpectedErrs: []error{common.ErrEmptyJSONHTTPResponse},
 		},
 		{
 			Name:  "Server response must have at least one field",

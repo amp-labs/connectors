@@ -36,14 +36,15 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, err
 	}
 
-	if res == nil || res.Body == nil {
+	body, ok := res.Body()
+	if !ok {
 		return &common.WriteResult{
 			Success: true,
 		}, nil
 	}
 
 	// Write response has a reference to the resource but no payload data.
-	return constructWriteResult(res.Body)
+	return constructWriteResult(body)
 }
 
 func constructWriteResult(body *ajson.Node) (*common.WriteResult, error) {

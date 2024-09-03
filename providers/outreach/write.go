@@ -2,7 +2,6 @@ package outreach
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"strconv"
 
@@ -55,9 +54,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, err
 	}
 
-	var response WriteResponse
-
-	err = json.Unmarshal(res.Body.Source(), &response)
+	response, err := common.UnmarshalJSON[WriteResponse](res)
 	if err != nil {
 		return nil, err
 	}
