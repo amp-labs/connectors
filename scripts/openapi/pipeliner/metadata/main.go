@@ -2,12 +2,12 @@ package main
 
 import (
 	"log"
+	"log/slog"
 
 	"github.com/amp-labs/connectors/providers/pipeliner/metadata"
 	"github.com/amp-labs/connectors/providers/pipeliner/openapi"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
 	"github.com/amp-labs/connectors/tools/scrapper"
-	"github.com/iancoleman/strcase"
 )
 
 var (
@@ -15,9 +15,6 @@ var (
 		"*/batch-modify",
 		"*/batch-delete",
 		"/entities/Accounts/merge",
-	}
-	objectEndpoints = map[string]string{ // nolint:gochecknoglobals
-		// none
 	}
 	displayNameOverride = map[string]string{ // nolint:gochecknoglobals
 		"AccountKPIs":   "Account KPIs",
@@ -34,22 +31,26 @@ var (
 func main() {
 	explorer, err := openapi.FileManager.GetExplorer(
 		api3.WithDisplayNamePostProcessors(
-			func(displayName string) string {
-				// Camel case changed to space delimited.
-				return strcase.ToDelimited(displayName, ' ')
-			},
+			api3.CamelCaseToSpaceSeparated,
 			api3.CapitalizeFirstLetterEveryWord,
 		))
 	must(err)
 
 	objects, err := explorer.GetBasicReadObjects(
-		ignoreEndpoints, objectEndpoints, displayNameOverride, api3.DataObjectCheck,
+		ignoreEndpoints, nil, displayNameOverride, api3.DataObjectCheck,
 	)
 	must(err)
 
 	schemas := scrapper.NewObjectMetadataResult()
 
 	for _, object := range objects {
+		if object.Problem != nil {
+			slog.Error("schema not extracted",
+				"objectName", object.ObjectName,
+				"error", object.Problem,
+			)
+		}
+
 		for _, field := range object.Fields {
 			schemas.Add(object.ObjectName, object.DisplayName, field, nil)
 		}

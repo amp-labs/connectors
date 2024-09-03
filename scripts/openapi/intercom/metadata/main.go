@@ -22,9 +22,6 @@ var (
 		"/conversations/search",
 		"/articles/search", // this one is similar to /articles
 	}
-	objectEndpoints = map[string]string{ // nolint:gochecknoglobals
-		// none
-	}
 	displayNameOverride = map[string]string{ // nolint:gochecknoglobals
 		"activity_logs":   "Activity Logs",
 		"data_attributes": "Data Attributes",
@@ -51,7 +48,7 @@ func main() {
 	must(err)
 
 	objects, err := explorer.GetBasicReadObjects(
-		ignoreEndpoints, objectEndpoints, displayNameOverride, IsResponseFieldAppropriate,
+		ignoreEndpoints, nil, displayNameOverride, IsResponseFieldAppropriate,
 	)
 	must(err)
 
@@ -75,13 +72,13 @@ func main() {
 	slog.Info("Completed.")
 }
 
-func IsResponseFieldAppropriate(fieldName, objectName string) bool {
+func IsResponseFieldAppropriate(objectName, fieldName string) bool {
 	if responseFieldName, ok := objectNameToResponseField[objectName]; ok {
 		return fieldName == responseFieldName
 	}
 
 	// Other objects have items located under `data` response field.
-	return api3.DataObjectCheck(fieldName, objectName)
+	return api3.DataObjectCheck(objectName, fieldName)
 }
 
 func must(err error) {
