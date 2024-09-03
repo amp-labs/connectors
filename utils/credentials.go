@@ -18,9 +18,6 @@ var (
 	ClientSecret = "clientSecret"
 	WorkspaceRef = "workspaceRef"
 	Provider     = "provider"
-	Username     = "username"
-	Password     = "password"
-	Region       = "region"
 	ApiKey       = "apiKey"
 )
 
@@ -194,51 +191,6 @@ func IntercomTokenFromRegistry(registry scanning.Registry) *oauth2.Token {
 	tok := &oauth2.Token{
 		AccessToken: accessToken,
 		TokenType:   "bearer",
-	}
-
-	return tok
-}
-
-func GongOAuthConfigFromRegistry(registry scanning.Registry) *oauth2.Config {
-	clientId := registry.MustString(ClientId)
-	clientSecret := registry.MustString(ClientSecret)
-
-	cfg := &oauth2.Config{
-		ClientID:     clientId,
-		ClientSecret: clientSecret,
-		RedirectURL:  "https://dev-api.withampersand.com/callbacks/v1/oauth",
-		Endpoint: oauth2.Endpoint{
-			AuthURL:   "https://app.gong.io/oauth2/authorize",
-			TokenURL:  "https://app.gong.io/oauth2/generate-customer-token",
-			AuthStyle: oauth2.AuthStyleInParams,
-		},
-		Scopes: []string{
-			"api:calls:read:basic",
-			"api:users:read",
-			"api:calls:create:basic",
-			"api:calls:read:basic",
-			"api:meetings:user:delete",
-			"api:meetings:user:update",
-			"api:logs:read",
-			"api:meetings:user:create",
-			"api:workspaces:read",
-		},
-	}
-
-	return cfg
-}
-
-func GongOauthTokenFromRegistry(registry scanning.Registry) *oauth2.Token {
-	accessToken := registry.MustString(AccessToken)
-	refreshToken := registry.MustString(RefreshToken)
-
-	expiry, _ := time.Parse(time.RFC822, "26 May 24 14:56 +0600")
-
-	tok := &oauth2.Token{
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
-		TokenType:    "bearer",
-		Expiry:       expiry,
 	}
 
 	return tok

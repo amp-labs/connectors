@@ -2,8 +2,7 @@ package main
 
 import (
 	"context"
-	"fmt"
-	"os"
+	"log/slog"
 	"os/signal"
 	"syscall"
 
@@ -25,12 +24,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	filePath := os.Getenv("GONG_CRED_FILE")
-	if filePath == "" {
-		filePath = "./gong-creds.json"
-	}
-
-	conn := connTest.GetGongConnector(ctx, filePath)
+	conn := connTest.GetGongConnector(ctx)
 	defer utils.Close(conn)
 
 	response, err := conn.Read(ctx, common.ReadParams{
@@ -51,12 +45,12 @@ func main() {
 		utils.Fail("error listing metadata for Gong", "error", err)
 	}
 
-	fmt.Println("Compare object metadata against endpoint response:")
+	slog.Info("Compare object metadata against endpoint response:")
 
 	mismatchErr := mockutils.ValidateReadConformsMetadata(objectName, response.Data[0].Raw, metadata)
 	if mismatchErr != nil {
 		utils.Fail("schema and payload response have mismatching fields", "error", mismatchErr)
 	} else {
-		fmt.Println("==> success fields match.")
+		slog.Info("==> success fields match.")
 	}
 }
