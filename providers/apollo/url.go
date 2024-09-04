@@ -6,8 +6,9 @@ import (
 )
 
 var (
-	restAPIPrefix string = "v1"  //nolint:gochecknoglobals
-	pageSize      string = "100" //nolint:gochecknoglobals
+	restAPIPrefix string = "v1"   //nolint:gochecknoglobals
+	pageQuery     string = "page" //nolint:gochecknoglobals
+	pageSize      string = "100"  //nolint:gochecknoglobals
 )
 
 func (c *Connector) getURL(params common.ReadParams) (*urlbuilder.URL, error) {
@@ -18,7 +19,7 @@ func (c *Connector) getURL(params common.ReadParams) (*urlbuilder.URL, error) {
 
 	// If NextPage is set, then we're reading the next page of results.
 	if len(params.NextPage) > 0 {
-		link.WithQueryParam("page", params.NextPage.String())
+		link.WithQueryParam(pageQuery, params.NextPage.String())
 	}
 
 	return link, nil
