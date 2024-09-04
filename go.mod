@@ -14,7 +14,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/viper v1.19.0
-	github.com/spyzhov/ajson v0.9.3
+	github.com/spyzhov/ajson v0.9.4
 	github.com/stretchr/testify v1.9.0
 	golang.org/x/oauth2 v0.23.0
 	golang.org/x/text v0.14.0
