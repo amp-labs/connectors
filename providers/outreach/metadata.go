@@ -7,6 +7,11 @@ import (
 	"github.com/amp-labs/connectors/common"
 )
 
+var (
+	metadataPageSize      string = "1"          //nolint:gochecknoglobals
+	metadataPageSizeQuery string = "page[size]" //nolint: gochecknoglobals
+)
+
 type Data struct {
 	Data []DataItem `json:"data"`
 }
@@ -37,6 +42,10 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 		if err != nil {
 			return nil, err
 		}
+
+		// Requesting a single record only
+		// As this if for generating metadata only.
+		url.WithQueryParam(metadataPageSizeQuery, metadataPageSize)
 
 		res, err := c.Client.Get(ctx, url.String())
 		if err != nil {
