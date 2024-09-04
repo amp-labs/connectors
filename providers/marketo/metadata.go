@@ -6,6 +6,7 @@ import (
 	"errors"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers/marketo/metadata"
 )
 
 type responseObject struct {
@@ -15,7 +16,8 @@ type responseObject struct {
 }
 
 // ListObjectMetadata creates metadata of object via reading objects using Marketo API.
-func (c *Connector) ListObjectMetadata(ctx context.Context,
+// If it fails to fretrieve the metadata, It tried using static schema file in metadata dir.
+func (c *Connector) ListObjectMetadata(ctx context.Context, //
 	objectNames []string,
 ) (*common.ListObjectMetadataResult, error) {
 	// Ensure that objectNames is not empty
@@ -36,23 +38,18 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 		}
 
 		resp, err := c.Client.Get(ctx, url.String())
-		if err != nil {
-			metadataResult.Errors[obj] = err
-
-			continue
-		}
-
-		// Check nil response body, to avoid panic.
-		if resp == nil || resp.Body == nil {
-			metadataResult.Errors[obj] = common.ErrEmptyResponse
+		if err != nil || resp == nil || resp.Body == nil {
+			runFallback(obj, &metadataResult)
 
 			continue
 		}
 
 		metadata, err := parseMetadataFromResponse(resp)
 		if err != nil {
-			if errors.Is(err, common.ErrMetadataLoadFailure) {
-				metadataResult.Errors[obj] = common.ErrEmptyResponse
+			if errors.Is(err, common.ErrEmptyResponse) {
+				runFallback(obj, &metadataResult)
+
+				continue
 			} else {
 				return nil, err
 			}
@@ -83,7 +80,7 @@ func parseMetadataFromResponse(resp *common.JSONHTTPResponse) (common.ObjectMeta
 	}
 
 	if len(response.Result) == 0 {
-		return metadata, common.ErrMetadataLoadFailure
+		return metadata, common.ErrEmptyResponse
 	}
 
 	// Using the first result data to generate the metadata.
@@ -92,4 +89,35 @@ func parseMetadataFromResponse(resp *common.JSONHTTPResponse) (common.ObjectMeta
 	}
 
 	return metadata, nil
+}
+
+func metadataFallback(objectName string) (*common.ObjectMetadata, error) {
+	schemas, err := metadata.FileManager.LoadSchemas()
+	if err != nil {
+		return nil, common.ErrMetadataLoadFailure
+	}
+
+	metadatResult, err := schemas.Select([]string{objectName})
+	if err != nil {
+		return nil, err
+	}
+
+	metadata := metadatResult.Result[objectName]
+
+	return &metadata, nil
+}
+
+func runFallback(obj string, res *common.ListObjectMetadataResult) *common.ListObjectMetadataResult { //nolint:unparam
+	// Try fallback function
+	metadata, err := metadataFallback(obj)
+	if err != nil {
+		res.Errors[obj] = err
+
+		return res
+	}
+
+	metadata.DisplayName = obj
+	res.Result[obj] = *metadata
+
+	return res
 }
