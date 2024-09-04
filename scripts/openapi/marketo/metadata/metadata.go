@@ -136,7 +136,7 @@ func generateMetadata(objDefs map[string]string,
 	for obj, dfn := range objDefs {
 		schemas := doc.Definitions[dfn].Value.Properties
 
-		// This is attached to the marketo
+		// Reading the item key that will contain the metadata keys.
 		result, err := schemas["result"].Value.JSONLookup("items")
 		if err != nil {
 			return nil, err
