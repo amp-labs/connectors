@@ -5,24 +5,8 @@ import (
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/handy"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
-
-const (
-	objectNameCampaigns = "campaigns"
-	objectNameAccounts  = "accounts"
-	objectNameEmails    = "emails"
-	objectNameTags      = "tags"
-)
-
-var supportedObjectsByRead = handy.NewSet([]string{ //nolint:gochecknoglobals
-	// Object Name	----------	API endpoint path
-	objectNameCampaigns, // campaign/list
-	objectNameAccounts,  // account/list
-	objectNameEmails,    // unibox/emails
-	objectNameTags,      // custom-tag
-})
 
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
 	if len(config.ObjectName) == 0 {
