@@ -8,6 +8,7 @@ import (
 var (
 	restAPIPrefix string = "v1"   //nolint:gochecknoglobals
 	pageQuery     string = "page" //nolint:gochecknoglobals
+	pageSize      string = "100"  //nolint:gochecknoglobals
 )
 
 func (c *Connector) getURL(params common.ReadParams) (*urlbuilder.URL, error) {
