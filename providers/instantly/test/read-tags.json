@@ -1,0 +1,24 @@
+{
+    "data": [
+        {
+            "id": "7e9196c1-2caf-44e2-b7a3-6c7c32a2f5b4",
+            "timestamp_created": "2024-08-14T17:45:40.571Z",
+            "timestamp_updated": "2024-08-14T17:45:40.571Z",
+            "organization_id": "803a064c-a636-49fe-bc45-5043da7a4ee7",
+            "label": "High Delivery 3",
+            "description": "High Delivery Accounts 3"
+        },
+        {
+            "id": "3b8c8265-fe9a-47c2-b9a3-c0406de65a66",
+            "timestamp_created": "2024-08-14T17:45:35.508Z",
+            "timestamp_updated": "2024-08-14T17:45:35.508Z",
+            "organization_id": "803a064c-a636-49fe-bc45-5043da7a4ee7",
+            "label": "High Delivery 2",
+            "description": "High Delivery Accounts 2"
+        }
+    ],
+    "total": 3,
+    "limit": 2,
+    "skip": 0
+}
+
