@@ -18,9 +18,7 @@ type tagsPayload struct {
 	Description string `json:"description"`
 }
 
-var (
-	objectName = "tags" // nolint: gochecknoglobals
-)
+var objectName = "tags" // nolint: gochecknoglobals
 
 func main() {
 	// Handle Ctrl-C gracefully.
