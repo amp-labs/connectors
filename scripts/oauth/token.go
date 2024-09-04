@@ -341,8 +341,7 @@ func setup() *OAuthApp {
 		}
 
 		// Determine the OAuth redirect URL.
-		// redirect := fmt.Sprintf("%s://localhost:%d%s", *proto, *port, *callback)
-		redirect := "https://staging-api.withampersand.com/callbacks/v1/oauth"
+		redirect := fmt.Sprintf("%s://localhost:%d%s", *proto, *port, *callback)
 
 		state, err := registry.GetString("State")
 		if err != nil {
