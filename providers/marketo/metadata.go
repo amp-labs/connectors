@@ -16,7 +16,8 @@ type responseObject struct {
 }
 
 // ListObjectMetadata creates metadata of object via reading objects using Marketo API.
-func (c *Connector) ListObjectMetadata(ctx context.Context, //nolint:funlen,cyclop
+// If it fails to fretrieve the metadata, It tried using static schema file in metadata dir.
+func (c *Connector) ListObjectMetadata(ctx context.Context, //
 	objectNames []string,
 ) (*common.ListObjectMetadataResult, error) {
 	// Ensure that objectNames is not empty
@@ -37,37 +38,8 @@ func (c *Connector) ListObjectMetadata(ctx context.Context, //nolint:funlen,cycl
 		}
 
 		resp, err := c.Client.Get(ctx, url.String())
-		if err != nil {
-			// Try fallback function
-			// Failed to retrieve metadata using the Read.
-			// Read from the statis schema file
-			metadata, err := metatadataFallback(obj)
-			if err != nil {
-				metadataResult.Errors[obj] = err
-
-				continue
-			}
-
-			metadata.DisplayName = obj
-			metadataResult.Result[obj] = *metadata
-
-			continue
-		}
-
-		// Check nil response body, to avoid panic.
-		if resp == nil || resp.Body == nil {
-			// Try fallback function
-			// Failed to retrieve metadata using the Read.
-			// Read from the statis schema file
-			metadata, err := metatadataFallback(obj)
-			if err != nil {
-				metadataResult.Errors[obj] = err
-
-				continue
-			}
-
-			metadata.DisplayName = obj
-			metadataResult.Result[obj] = *metadata
+		if err != nil || resp == nil || resp.Body == nil {
+			runFallback(obj, &metadataResult)
 
 			continue
 		}
@@ -75,18 +47,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context, //nolint:funlen,cycl
 		metadata, err := parseMetadataFromResponse(resp)
 		if err != nil {
 			if errors.Is(err, common.ErrEmptyResponse) {
-				// Try fallback function
-				// Failed to retrieve metadata using the Read.
-				// Read from the statis schema file
-				metadata, err := metatadataFallback(obj)
-				if err != nil {
-					metadataResult.Errors[obj] = err
-
-					continue
-				}
-
-				metadata.DisplayName = obj
-				metadataResult.Result[obj] = *metadata
+				runFallback(obj, &metadataResult)
 
 				continue
 			} else {
@@ -130,7 +91,7 @@ func parseMetadataFromResponse(resp *common.JSONHTTPResponse) (common.ObjectMeta
 	return metadata, nil
 }
 
-func metatadataFallback(objectName string) (*common.ObjectMetadata, error) {
+func metadataFallback(objectName string) (*common.ObjectMetadata, error) {
 	schemas, err := metadata.FileManager.LoadSchemas()
 	if err != nil {
 		return nil, common.ErrMetadataLoadFailure
@@ -144,4 +105,19 @@ func metatadataFallback(objectName string) (*common.ObjectMetadata, error) {
 	metadata := metadatResult.Result[objectName]
 
 	return &metadata, nil
+}
+
+func runFallback(obj string, res *common.ListObjectMetadataResult) *common.ListObjectMetadataResult { //nolint:unparam
+	// Try fallback function
+	metadata, err := metadataFallback(obj)
+	if err != nil {
+		res.Errors[obj] = err
+
+		return res
+	}
+
+	metadata.DisplayName = obj
+	res.Result[obj] = *metadata
+
+	return res
 }
