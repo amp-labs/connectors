@@ -24,3 +24,14 @@ This connector has two ways of reading data:
 
 The Search Endpoint has a display limit of 50,000 records. With the maximum page_size of 100 records, we can go up to 500 calls.
 
+
+No object supports filterinng and retrieving data from certain points in time. 
+
+
+# Apollo Write connector
+
+## Write Supported Objects
+    - accounts
+    - contacts
+    - opportunities
+    - 
