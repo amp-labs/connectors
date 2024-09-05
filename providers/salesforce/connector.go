@@ -108,6 +108,10 @@ func (c *Connector) getURIPartSobjectsDescribe(objectName string) (*urlbuilder.U
 	return urlbuilder.New(uriSobjects, objectName, "describe")
 }
 
+func (c *Connector) getURISobjects() (*urlbuilder.URL, error) {
+	return urlbuilder.New(uriSobjects)
+}
+
 func (c *Connector) setBaseURL(newURL string) {
 	c.BaseURL = newURL
 	c.Client.HTTPClient.Base = newURL
