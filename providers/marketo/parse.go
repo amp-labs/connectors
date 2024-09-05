@@ -21,7 +21,7 @@ func getRecords(node *ajson.Node) ([]map[string]any, error) {
 }
 
 func usesStandardId(object string) bool {
-	for _, v := range IdResponses {
+	for _, v := range IdResponseObjects {
 		if v == object {
 			return true
 		}
@@ -31,7 +31,7 @@ func usesStandardId(object string) bool {
 }
 
 func usesMarketoGUID(object string) bool {
-	for _, v := range marketoGUIDResponses {
+	for _, v := range marketoGUIDResponseObjects {
 		if v == object {
 			return true
 		}

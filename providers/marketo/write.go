@@ -40,7 +40,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 
 	return &common.WriteResult{
 		Success:  resp.Success,
-		RecordId: fmt.Sprint(recordId),
+		RecordId: recordId,
 		Data:     resp.Result[0],
 	}, nil
 }
