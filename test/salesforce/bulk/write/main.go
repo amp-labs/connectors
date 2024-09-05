@@ -2,182 +2,68 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"log/slog"
-	"os"
-	"sync"
-	"time"
+	"os/signal"
+	"syscall"
 
 	"github.com/amp-labs/connectors/providers/salesforce"
-	testUtils "github.com/amp-labs/connectors/test/utils"
+	connTest "github.com/amp-labs/connectors/test/salesforce"
+	"github.com/amp-labs/connectors/test/utils"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
-const (
-	testLineBreak = "\n=============================================\n"
-)
+// Pre-requisites:
+// (1)	Opportunity object must have ExternalID.
+// 		This means you need to add custom field and mark it as external ID.
+//		Steps:
+//			* Login to Salesforce
+//			* Open "Object Manager"
+//			* Search for "Opportunities"
+//			* Tab - "Fields & Relationships"
+//			* Click on "New", select "Text", click "Next
+//			* Give field "external_id" name (within API it will be known as "external_id__c")
+//			* Tick External ID box!
+//
 
-func main() { //nolint:funlen
-	fmt.Println("Testing Bulkwrite...")
+var tests = testutils.ParallelRunners[*salesforce.Connector]{
+	{
+		FilePath:  "opportunities.csv",
+		TestTitle: "Testing Bulk Write",
+		Function:  testBulkWriteOpportunity,
+	},
+	{
+		FilePath:  "opportunities.csv",
+		TestTitle: "Testing Success Results",
+		Function:  testGetJobResultsForFile,
+	},
+	{
+		// Failure due to invalid field: deserialize timestamp (CloseDate field)
+		FilePath:  "opportunities-partial-failure.csv",
+		TestTitle: "Testing Partial Failure",
+		Function:  testGetJobResultsForFile,
+	},
+	{
+		// Failure due to invalid field (StageName field)
+		FilePath:  "opportunities-complete-failure.csv",
+		TestTitle: "Testing Complete Failure",
+		Function:  testGetJobResultsForFile,
+	},
+}
 
-	handler := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
-		Level: slog.LevelDebug,
-	})
+func main() {
+	// Handle Ctrl-C gracefully.
+	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer done()
 
-	logger := slog.New(handler)
-	slog.SetDefault(logger)
+	// Set up slog logging.
+	utils.SetupLogging()
 
-	ctx := context.Background()
+	conn := connTest.GetSalesforceConnector(ctx)
+	defer utils.Close(conn)
 
-	sfc, err := testUtils.Connector(ctx)
-	if err != nil {
-		slog.Error("Error creating Salesforce connector", "error", err)
-
-		return
-	}
-
-	defer func() {
-		_ = sfc.Close()
-	}()
-
-	logs := make([]string, len(testList))
-
-	var wg sync.WaitGroup
-	for i, test := range testList {
-		wg.Add(1)
-
-		go func(test testRunner, idx int) {
-			defer wg.Done()
-
-			log, err := test.fn(ctx, sfc, test.filePath)
-			if err != nil {
-				logs[idx] = testLineBreak + test.testTitle + testLineBreak + "\n" + err.Error()
-			} else {
-				logs[idx] = testLineBreak + test.testTitle + testLineBreak + "\n" + log
-			}
-		}(test, i)
-	}
-
-	wg.Wait()
+	logs := tests.Run(ctx, conn)
 
 	for _, log := range logs {
 		fmt.Println(log)
 	}
-}
-
-func testBulkWrite(ctx context.Context, sfc *salesforce.Connector, filePath string) (string, error) {
-	file, err := os.Open(filePath)
-	if err != nil {
-		return "", fmt.Errorf("error opening '%s': %w", filePath, err)
-	}
-
-	res, err := sfc.BulkWrite(ctx, salesforce.BulkOperationParams{
-		ObjectName:      "Touchpoint__c",
-		ExternalIdField: "external_id__c",
-		CSVData:         file,
-		Mode:            "upsert",
-	})
-	if err != nil {
-		return "", fmt.Errorf("error bulk writing: %w", err)
-	}
-
-	bulkRes, err := json.MarshalIndent(res, "", "    ")
-	if err != nil {
-		return "", fmt.Errorf("error marshalling bulk result: %w", err)
-	}
-
-	log := ""
-	log += "Upload complete.\n"
-	log += string(bulkRes) + "\n"
-
-	time.Sleep(5 * time.Second)
-
-	jobInfo, err := sfc.GetJobInfo(ctx, res.JobId)
-	if err != nil {
-		return "", fmt.Errorf("error getting job info: %w", err)
-	}
-
-	jsonData, err := json.MarshalIndent(jobInfo, "", "    ")
-	if err != nil {
-		return "", fmt.Errorf("error marshalling job info: %w", err)
-	}
-
-	log += "Write Result\n"
-	log += string(jsonData) + "\n"
-
-	return log, nil
-}
-
-var testList = []testRunner{
-	{
-		filePath:  "./test/salesforce/bulk/write/touchpoints_20231130.csv",
-		testTitle: "Testing Bulkwrite",
-		fn:        testBulkWrite,
-	},
-	{
-		filePath:  "./test/salesforce/bulk/write/touchpoints_20231130.csv",
-		testTitle: "Testing SuccessResults",
-		fn:        testGetJobResultsForFile,
-	},
-	{
-		filePath:  "./test/salesforce/bulk/write/touchpoints_partial_failure_20231228.csv",
-		testTitle: "Testing Partial Failure",
-		fn:        testGetJobResultsForFile,
-	},
-	{
-		filePath:  "./test/salesforce/bulk/write/touchpoints_complete_failure_20231228.csv",
-		testTitle: "Testing Complete Failure",
-		fn:        testGetJobResultsForFile,
-	},
-}
-
-type testRunner struct {
-	filePath  string
-	testTitle string
-	fn        func(ctx context.Context, sfc *salesforce.Connector, filePath string) (string, error)
-}
-
-func testGetJobResultsForFile(ctx context.Context, sfc *salesforce.Connector, fileName string) (string, error) {
-	file, err := os.Open(fileName)
-	if err != nil {
-		return "", fmt.Errorf("error opening file: %w", err)
-	}
-
-	res, err := sfc.BulkWrite(ctx, salesforce.BulkOperationParams{
-		ObjectName:      "Touchpoint__c",
-		ExternalIdField: "external_id__c",
-		CSVData:         file,
-		Mode:            "upsert",
-	})
-	if err != nil {
-		return "", fmt.Errorf("error bulk writing: %w", err)
-	}
-
-	bulkRes, err := json.MarshalIndent(res, "", "    ")
-	if err != nil {
-		return "", fmt.Errorf("error marshalling bulk result: %w", err)
-	}
-
-	log := ""
-
-	log += "Upload complete.\n"
-	log += string(bulkRes) + "\n"
-
-	time.Sleep(10 * time.Second)
-
-	jobResults, err := sfc.GetJobResults(ctx, res.JobId)
-	if err != nil {
-		return "", fmt.Errorf("error getting job result: %w", err)
-	}
-
-	jsonData, err := json.MarshalIndent(jobResults, "", "    ")
-	if err != nil {
-		slog.Error("Error marshalling job result", "error", err)
-		return "", fmt.Errorf("error marshalling job result: %w", err)
-	}
-
-	log += "Write Result\n"
-	log += string(jsonData) + "\n"
-
-	return log, nil
 }

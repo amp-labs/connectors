@@ -3,20 +3,17 @@ package main
 import (
 	"bytes"
 	"context"
-	"encoding/csv"
 	"fmt"
-	connTest "github.com/amp-labs/connectors/test/salesforce"
-	"io"
-	"log"
 	"log/slog"
 	"os"
 	"os/signal"
-	"strings"
 	"syscall"
 
 	"github.com/amp-labs/connectors/providers/salesforce"
+	connTest "github.com/amp-labs/connectors/test/salesforce"
 	"github.com/amp-labs/connectors/test/salesforce/bulk"
 	testUtils "github.com/amp-labs/connectors/test/utils"
+	"github.com/amp-labs/connectors/tools/fileconv"
 	"github.com/amp-labs/connectors/utils"
 )
 
@@ -28,20 +25,24 @@ func main() {
 	// Set up slog logging.
 	testUtils.SetupLogging()
 
-	sfc := connTest.GetSalesforceConnector(ctx)
-	defer testUtils.Close(sfc)
+	conn := connTest.GetSalesforceConnector(ctx)
+	defer testUtils.Close(conn)
 
 	// We first create objects in Salesforce,
 	// and then we generate an in-memory CSV of the Salesforce IDs of the newly created objects,
-	// so that we can bulk-delete them."
-	objectCSVToDelete, err := createObjects(ctx, sfc)
+	// so that we can bulk-delete them.
+	// For convenience the same records are used that were created by write operation.
+	// This is sort of a cleanup with a demonstration of BulkDelete.
+	objectCSVToDelete, err := createObjects(ctx, conn,
+		fileconv.NewSiblingFileLocator().AbsPathTo("../write/opportunities.csv"),
+	)
 	if err != nil {
 		slog.Error("Error creating file to delete", "error", err)
 		return
 	}
 
-	deleteRes, err := sfc.BulkDelete(ctx, salesforce.BulkOperationParams{
-		ObjectName: "Touchpoint__c",
+	deleteRes, err := conn.BulkDelete(ctx, salesforce.BulkOperationParams{
+		ObjectName: "Opportunity",
 		CSVData:    bytes.NewReader(objectCSVToDelete),
 	})
 	if err != nil {
@@ -52,7 +53,7 @@ func main() {
 	slog.Info("Bulk delete job created", "res", deleteRes)
 
 	// Get delete results. waits for the job to complete
-	deleteResult, err := bulk.GetResultInLoop(ctx, sfc, deleteRes.JobId)
+	deleteResult, err := bulk.GetResultInLoop(ctx, conn, deleteRes.JobId)
 	if err != nil {
 		slog.Error("Error getting bulk delete job results", "error", err)
 		return
@@ -67,54 +68,19 @@ func prettyPrint(s any) {
 	fmt.Println(utils.PrettyFormatStruct(s))
 }
 
-func csvBytesToSlice(b []byte) ([]string, [][]string, error) {
-	reader := csv.NewReader(bytes.NewBuffer(b))
-
-	records := make([][]string, 0)
-
-	headers, err := reader.Read()
+func createObjects(ctx context.Context, sfc *salesforce.Connector, filePath string) ([]byte, error) {
+	file, err := os.Open(filePath)
 	if err != nil {
-		return nil, nil, fmt.Errorf("error reading CSV headers: %w", err)
+		return nil, fmt.Errorf("error opening '%s': %w", filePath, err)
 	}
-
-	for {
-		row, err := reader.Read()
-		if err != nil {
-			if err == io.EOF {
-				break
-			}
-
-			return nil, nil, fmt.Errorf("error reading CSV row: %w", err)
-		}
-
-		records = append(records, row)
-	}
-
-	return headers, records, nil
-}
-
-func createObjects(ctx context.Context, sfc *salesforce.Connector) ([]byte, error) {
-	testFilePath := "./test/salesforce/bulk/delete/touchpoints_for_bulkdelete_20240325.csv"
-
-	fileToWrite, err := os.Open(testFilePath)
-	if err != nil {
-		return nil, fmt.Errorf("error opening file: %w", err)
-	}
-
-	defer func() {
-		if fileToWrite != nil {
-			if closeErr := fileToWrite.Close(); closeErr != nil {
-				slog.Warn("unable to close file", "error", closeErr)
-			}
-		}
-	}()
+	defer testUtils.Close(file)
 
 	// Write the records to Salesforce, so that we can delete them later.
 	writeRes, err := sfc.BulkWrite(ctx, salesforce.BulkOperationParams{
-		ObjectName:      "Touchpoint__c",
+		ObjectName:      "Opportunity",
 		ExternalIdField: "external_id__c",
-		CSVData:         fileToWrite,
-		Mode:            "upsert",
+		CSVData:         file,
+		Mode:            salesforce.Upsert,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("error bulk writing to prepare bulk delete: %w", err)
@@ -130,79 +96,5 @@ func createObjects(ctx context.Context, sfc *salesforce.Connector) ([]byte, erro
 
 	slog.Info("Records created, now deleting them.")
 
-	return getIdsFromJobToDelete(ctx, sfc, writeRes.JobId)
-}
-
-func getIdsFromJobToDelete(ctx context.Context, sfc *salesforce.Connector, jobId string) ([]byte, error) {
-	// Get the successful results to get the ids to use for the deletion
-	successRes, err := sfc.GetSuccessfulJobResults(ctx, jobId)
-	if err != nil {
-		return nil, fmt.Errorf("error getting successfult write results: %w", err)
-	}
-
-	successBody, err := io.ReadAll(successRes.Body)
-	if err != nil {
-		return nil, fmt.Errorf("error reading success results body: %w", err)
-	}
-
-	defer func() {
-		if successRes != nil && successRes.Body != nil {
-			if closeErr := successRes.Body.Close(); closeErr != nil {
-				slog.Warn("unable to close response body", "error", closeErr)
-			}
-		}
-	}()
-
-	headers, rows, err := csvBytesToSlice(successBody)
-	if err != nil {
-		return nil, fmt.Errorf("error parsing CSV: %w", err)
-	}
-
-	// remove all columns except the id column
-	csvRecords, err := filterIds(headers, rows)
-	if err != nil {
-		return nil, fmt.Errorf("error filtering ids: %w", err)
-	}
-
-	var b []byte
-	buf := bytes.NewBuffer(b)
-	w := csv.NewWriter(buf)
-
-	for _, record := range csvRecords {
-		if err := w.Write(record); err != nil {
-			log.Fatalln("error writing record to csv:", err)
-		}
-	}
-
-	w.Flush()
-
-	if err := w.Error(); err != nil {
-		log.Fatalln(err)
-	}
-
-	return buf.Bytes(), nil
-}
-
-func filterIds(headers []string, rows [][]string) ([][]string, error) {
-	// filter ids
-	idIndex := -1
-
-	for i, header := range headers {
-		if header == "sf__Id" {
-			idIndex = i
-			break
-		}
-	}
-
-	if idIndex == -1 {
-		return nil, fmt.Errorf("sf__Id not found in successfulResults headers")
-	}
-
-	csvRecords := [][]string{{"id"}}
-
-	for _, row := range rows {
-		csvRecords = append(csvRecords, []string{strings.Trim(row[idIndex], " ")})
-	}
-
-	return csvRecords, nil
+	return bulk.GetRecordIDsForJob(ctx, sfc, writeRes.JobId)
 }
