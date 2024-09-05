@@ -13,11 +13,13 @@ type writeResponse struct {
 	Errors  []map[string]any `json:"errors"`
 }
 
-// IdResponses represents a list of objects that uses `id` as a unique field in the response.
+// IdResponseObjects represents a list of objects that uses `id` as a unique field in the response.
 var IdResponseObjects = []string{"leads", "companies", "salespersons"} //nolint:gochecknoglobals
 
-// marketoGUIDResponses represents a list of objects that uses `marketoGUID` as the unique field in the response.
-var marketoGUIDResponseObjects = []string{"namedAccountLists", "namedaccounts", "opportunities"} //nolint:gochecknoglobals
+// marketoGUIDResponseObjects represents a list of objects that uses `marketoGUID` as the unique field in the response.
+var marketoGUIDResponseObjects = []string{ //nolint:gochecknoglobals
+	"namedAccountLists", "namedaccounts", "opportunities",
+}
 
 func constructErrMessage(a any) (string, error) {
 	s, ok := a.([]map[string]any)
