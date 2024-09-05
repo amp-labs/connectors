@@ -19,3 +19,23 @@ func getRecords(node *ajson.Node) ([]map[string]any, error) {
 
 	return jsonquery.Convertor.ArrayToMap(result)
 }
+
+func usesStandardId(object string) bool {
+	for _, v := range IdResponses {
+		if v == object {
+			return true
+		}
+	}
+
+	return false
+}
+
+func usesMarketoGUID(object string) bool {
+	for _, v := range marketoGUIDResponses {
+		if v == object {
+			return true
+		}
+	}
+
+	return false
+}
