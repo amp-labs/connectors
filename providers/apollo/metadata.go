@@ -28,10 +28,8 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 		Errors: make(map[string]error),
 	}
 
-	// If the object uses searching, use the searching route
-
 	for _, objectName := range objectNames {
-		url, err := c.getAPIURL(objectName)
+		url, err := c.getAPIURL(objectName, readOp)
 		if err != nil {
 			return nil, err
 		}

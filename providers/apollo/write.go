@@ -13,11 +13,10 @@ import (
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
 	var write common.WriteMethod
 
-	url, err := c.getAPIURL(config.ObjectName)
+	url, err := c.getAPIURL(config.ObjectName, writeOp)
 	if err != nil {
 		return nil, err
 	}
-
 	// sets post as default
 	write = c.Client.Post
 
