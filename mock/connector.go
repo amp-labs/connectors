@@ -71,7 +71,7 @@ func (c *Connector) Provider() providers.Provider {
 }
 
 func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common.ReadResult, error) {
-	if err := params.ValidateParams(); err != nil {
+	if err := params.ValidateParams(true); err != nil {
 		return nil, err
 	}
 

@@ -15,7 +15,7 @@ import (
 // * NextPage - to get next page which may have no elements left.
 // * Since - to scope the time frame, precision is in minutes.
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
-	if err := config.ValidateParams(); err != nil {
+	if err := config.ValidateParams(true); err != nil {
 		return nil, err
 	}
 

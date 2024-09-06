@@ -15,7 +15,7 @@ import (
 // Microsoft API supports other capabilities like filtering, grouping, and sorting which we can potentially tap into later.
 // See https://learn.microsoft.com/en-us/power-apps/developer/data-platform/webapi/query-data-web-api#odata-query-options
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
-	if err := config.ValidateParams(); err != nil {
+	if err := config.ValidateParams(true); err != nil {
 		return nil, err
 	}
 

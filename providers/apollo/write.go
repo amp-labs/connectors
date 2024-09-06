@@ -11,6 +11,10 @@ import (
 
 // Write creates/updates records in apolllo.
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
+	if err := config.ValidateParams(); err != nil {
+		return nil, err
+	}
+
 	var write common.WriteMethod
 
 	url, err := c.getAPIURL(config.ObjectName, writeOp)

@@ -9,8 +9,8 @@ import (
 )
 
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
-	if len(config.ObjectName) == 0 {
-		return nil, common.ErrMissingObjects
+	if err := config.ValidateParams(true); err != nil {
+		return nil, err
 	}
 
 	if !supportedObjectsByRead.Has(config.ObjectName) {

@@ -15,7 +15,7 @@ import (
 // configuration parameters. It returns the nested Attributes values read results or an error
 // if the operation fails.
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
-	if err := config.ValidateParams(); err != nil {
+	if err := config.ValidateParams(true); err != nil {
 		return nil, err
 	}
 

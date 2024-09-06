@@ -10,7 +10,7 @@ import (
 // Read reads data from Salesforce. By default, it will read all rows (backfill). However, if Since is set,
 // it will read only rows that have been updated since the specified time.
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
-	if err := config.ValidateParams(); err != nil {
+	if err := config.ValidateParams(true); err != nil {
 		return nil, err
 	}
 

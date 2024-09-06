@@ -7,7 +7,7 @@ import (
 )
 
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
-	if err := config.ValidateParams(); err != nil {
+	if err := config.ValidateParams(true); err != nil {
 		return nil, err
 	}
 

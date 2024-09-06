@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/amp-labs/connectors/test/utils/csvgen"
 	"github.com/amp-labs/connectors/tools/fileconv"
 	"github.com/brianvoe/gofakeit/v6"
@@ -12,6 +13,7 @@ func main() {
 
 	records := make([][]string, size)
 	records[0] = []string{"Name", "StageName", "external_id__c", "CloseDate"}
+
 	for i := 1; i < size; i++ {
 		records[i] = []string{
 			gofakeit.Name(),

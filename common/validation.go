@@ -16,12 +16,12 @@ var (
 	ErrMissingFields = errors.New("no fields provided in ReadParams")
 )
 
-func (p ReadParams) ValidateParams() error {
+func (p ReadParams) ValidateParams(withRequiredFields bool) error {
 	if len(p.ObjectName) == 0 {
 		return ErrMissingObjects
 	}
 
-	if len(p.Fields) == 0 {
+	if withRequiredFields && len(p.Fields) == 0 {
 		return ErrMissingFields
 	}
 

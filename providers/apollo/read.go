@@ -10,6 +10,10 @@ import (
 //
 // This function executes a read operation using the given context and provided read parameters.
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
+	if err := config.ValidateParams(true); err != nil {
+		return nil, err
+	}
+
 	url, err := c.getAPIURL(config.ObjectName, readOp)
 	if err != nil {
 		return nil, err
