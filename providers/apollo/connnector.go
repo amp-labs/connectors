@@ -14,6 +14,8 @@ type Connector struct {
 	Client  *common.JSONHTTPClient
 }
 
+type operation string
+
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	defer common.PanicRecovery(func(cause error) {
 		outErr = cause
@@ -53,15 +55,31 @@ func (c *Connector) Provider() providers.Provider {
 	return providers.Apollo
 }
 
-func (c *Connector) getAPIURL(objName string) (*urlbuilder.URL, error) {
-	relativePath := strings.Join([]string{restAPIPrefix, objName}, "/")
+// getAPIURL builds the url we can write/read data from
+// Depending on the operation(read or write), some objects will need different endpoints.
+// That's the sole purpose of the variable ops.
+func (c *Connector) getAPIURL(objectName string, ops operation) (*urlbuilder.URL, error) {
+	relativePath := strings.Join([]string{restAPIPrefix, objectName}, "/")
 
 	url, err := urlbuilder.New(c.BaseURL, relativePath)
 	if err != nil {
 		return nil, err
 	}
 
-	url.WithQueryParam("per_page", pageSize)
+	// If the given object uses search endpoint for Reading,
+	// checks for the  method and makes the call.
+	// currently we do not support routing to Search method.
+	//
+	if usesSearching(objectName) && ops == readOp {
+		switch {
+		case in(objectName, postSearchObjects):
+			return nil, common.ErrOperationNotSupportedForObject
+		// Objects opportunities & users do not use the POST method
+		// The POST search reading limits do  not apply to them.
+		case in(objectName, getSearchObjects):
+			url.AddPath(searchingPath)
+		}
+	}
 
 	return url, nil
 }

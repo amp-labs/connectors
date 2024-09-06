@@ -12,7 +12,7 @@ import (
 // Using this as is may lead to that issue.
 func (c *Connector) Search(ctx context.Context, config common.ReadParams,
 ) (*common.ReadResult, error) {
-	url, err := c.getAPIURL(config.ObjectName)
+	url, err := c.getAPIURL(config.ObjectName, readOp)
 	if err != nil {
 		return nil, err
 	}
