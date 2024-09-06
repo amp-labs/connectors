@@ -10,10 +10,12 @@ import (
 //
 // This function executes a read operation using the given context and provided read parameters.
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
-	url, err := c.getReadURL(config.ObjectName)
+	url, err := c.getAPIURL(config.ObjectName, readOp)
 	if err != nil {
 		return nil, err
 	}
+
+	url.WithQueryParam(perPage, pageSize)
 
 	// If NextPage is set, then we're reading the next page of results.
 	if len(config.NextPage) > 0 {

@@ -1,8 +1,15 @@
 package apollo
 
-type ObjectType string
+var (
+	restAPIPrefix string    = "v1"     //nolint:gochecknoglobals
+	pageQuery     string    = "page"   //nolint:gochecknoglobals
+	pageSize      string    = "100"    //nolint:gochecknoglobals
+	searchingPath string    = "search" //nolint:gochecknoglobals
+	readOp        operation = "read"   //nolint:gochecknoglobals
+	writeOp       operation = "write"  //nolint:gochecknoglobals
+)
 
-var searchingPath string = "search" //nolint:gochecknoglobals
+type ObjectType string
 
 // postSearchObjects represents the objects that uses the searching endpoint,
 // POST method for requesting records.
