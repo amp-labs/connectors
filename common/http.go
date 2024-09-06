@@ -337,3 +337,22 @@ func addJSONContentTypeIfNotPresent(req *http.Request) *http.Request {
 
 	return req
 }
+
+func GetResponseBodyOnce(response *http.Response) []byte {
+	defer func() {
+		if response != nil && response.Body != nil {
+			if closeErr := response.Body.Close(); closeErr != nil {
+				slog.Warn("unable to close response body", "error", closeErr)
+			}
+		}
+	}()
+
+	body, err := io.ReadAll(response.Body)
+	if err != nil {
+		slog.Error("Error reading response body", "error", err)
+
+		return nil
+	}
+
+	return body
+}

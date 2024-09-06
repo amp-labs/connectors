@@ -48,13 +48,13 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 		return nil, err
 	}
 
-	url.WithQueryParam("q", makeSOQL(config))
+	url.WithQueryParam("q", makeSOQL(config).String())
 
 	return url, nil
 }
 
 // makeSOQL returns the SOQL query for the desired read operation.
-func makeSOQL(config common.ReadParams) string {
+func makeSOQL(config common.ReadParams) *soqlBuilder {
 	soql := (&soqlBuilder{}).SelectFields(config.Fields).From(config.ObjectName)
 
 	// If Since is not set, then we're doing a backfill. We read all rows (in pages)
@@ -72,5 +72,5 @@ func makeSOQL(config common.ReadParams) string {
 		soql.Where(config.Filter)
 	}
 
-	return soql.String()
+	return soql
 }
