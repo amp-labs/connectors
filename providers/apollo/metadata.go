@@ -28,12 +28,15 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 		Errors: make(map[string]error),
 	}
 
-	// If the object uses searching, use the searching route
-
 	for _, objectName := range objectNames {
 		url, err := c.getAPIURL(objectName)
 		if err != nil {
 			return nil, err
+		}
+
+		// If the object uses searching, use the searching route
+		if usesSearching(objectName) {
+			url = url.AddPath(searchingPath)
 		}
 
 		// Limiting the response, so as we don't have to return 100 records of data
