@@ -2,7 +2,6 @@ package marketo
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 
 	"github.com/amp-labs/connectors/common"
@@ -17,7 +16,7 @@ type responseObject struct {
 
 // ListObjectMetadata creates metadata of object via reading objects using Marketo API.
 // If it fails to fretrieve the metadata, It tried using static schema file in metadata dir.
-func (c *Connector) ListObjectMetadata(ctx context.Context, //
+func (c *Connector) ListObjectMetadata(ctx context.Context,
 	objectNames []string,
 ) (*common.ListObjectMetadataResult, error) {
 	// Ensure that objectNames is not empty
@@ -38,7 +37,13 @@ func (c *Connector) ListObjectMetadata(ctx context.Context, //
 		}
 
 		resp, err := c.Client.Get(ctx, url.String())
-		if err != nil || resp == nil || resp.Body == nil {
+		if err != nil {
+			runFallback(obj, &metadataResult)
+
+			continue
+		}
+
+		if _, ok := resp.Body(); !ok {
 			runFallback(obj, &metadataResult)
 
 			continue
@@ -46,7 +51,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context, //
 
 		metadata, err := parseMetadataFromResponse(resp)
 		if err != nil {
-			if errors.Is(err, common.ErrEmptyResponse) {
+			if errors.Is(err, common.ErrMetadataLoadFailure) {
 				runFallback(obj, &metadataResult)
 
 				continue
@@ -56,31 +61,24 @@ func (c *Connector) ListObjectMetadata(ctx context.Context, //
 		}
 
 		metadata.DisplayName = obj
-		metadataResult.Result[obj] = metadata
+		metadataResult.Result[obj] = *metadata
 	}
 
 	return &metadataResult, nil
 }
 
-func parseMetadataFromResponse(resp *common.JSONHTTPResponse) (common.ObjectMetadata, error) {
-	var response responseObject
-
-	bbytes := resp.Body.Source()
-	if bbytes == nil {
-		return common.ObjectMetadata{}, common.ErrEmptyResponse
-	}
-
-	metadata := common.ObjectMetadata{
-		FieldsMap: make(map[string]string),
-	}
-
-	err := json.Unmarshal(bbytes, &response)
+func parseMetadataFromResponse(resp *common.JSONHTTPResponse) (*common.ObjectMetadata, error) {
+	response, err := common.UnmarshalJSON[responseObject](resp)
 	if err != nil {
-		return metadata, err
+		return nil, err
 	}
 
 	if len(response.Result) == 0 {
-		return metadata, common.ErrEmptyResponse
+		return nil, common.ErrMetadataLoadFailure
+	}
+
+	metadata := &common.ObjectMetadata{
+		FieldsMap: make(map[string]string),
 	}
 
 	// Using the first result data to generate the metadata.

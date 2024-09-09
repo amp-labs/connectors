@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/amp-labs/connectors/common/handy"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 	"github.com/spyzhov/ajson"
 )
 
@@ -123,7 +124,7 @@ func TestQueryInteger(t *testing.T) { // nolint:funlen
 			t.Parallel()
 
 			output, err := New(j, tt.input.zoom...).Integer(tt.input.key, tt.input.optional)
-			assertJSONManagerOutput(t, tt.name, tt.expected, tt.expectedErr, output, err)
+			testutils.CheckOutputWithError(t, tt.name, tt.expected, tt.expectedErr, output, err)
 		})
 	}
 }
@@ -218,7 +219,7 @@ func TestQueryString(t *testing.T) { // nolint:funlen
 			t.Parallel()
 
 			output, err := New(j, tt.input.zoom...).Str(tt.input.key, tt.input.optional)
-			assertJSONManagerOutput(t, tt.name, tt.expected, tt.expectedErr, output, err)
+			testutils.CheckOutputWithError(t, tt.name, tt.expected, tt.expectedErr, output, err)
 		})
 	}
 }
@@ -313,7 +314,7 @@ func TestQueryBool(t *testing.T) { // nolint:funlen
 			t.Parallel()
 
 			output, err := New(j, tt.input.zoom...).Bool(tt.input.key, tt.input.optional)
-			assertJSONManagerOutput(t, tt.name, tt.expected, tt.expectedErr, output, err)
+			testutils.CheckOutputWithError(t, tt.name, tt.expected, tt.expectedErr, output, err)
 		})
 	}
 }
@@ -518,19 +519,4 @@ func helperCreateJSON(t *testing.T, text string) *ajson.Node {
 	}
 
 	return jsonBody
-}
-
-func assertJSONManagerOutput(t *testing.T, name string, expected any, expectedErr error,
-	output any, err error,
-) {
-	t.Helper()
-
-	// check for actual error value
-	if !errors.Is(err, expectedErr) {
-		t.Fatalf("%s: expected: (%v), got: (%v)", name, expectedErr, err)
-	}
-
-	if !reflect.DeepEqual(output, expected) {
-		t.Fatalf("%s: expected: (%v), got: (%v)", name, expected, output)
-	}
 }

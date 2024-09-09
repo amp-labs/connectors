@@ -41,7 +41,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
-				_, _ = w.Write([]byte{})
+				_, _ = w.Write(responseContactsSchema)
 			})),
 			ExpectedErrs: []error{ErrObjectNotFound},
 		},

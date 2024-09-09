@@ -2,7 +2,6 @@ package outreach
 
 import (
 	"context"
-	"encoding/json"
 
 	"github.com/amp-labs/connectors/common"
 )
@@ -45,35 +44,26 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 			continue
 		}
 
-		// Check nil response body, to avoid panic.
-		if res == nil || res.Body == nil {
-			objMetadata.Errors[obj] = common.ErrEmptyResponse
-
-			continue
-		}
-
-		metadata, err := metadataMapper(res.Body.Source())
+		metadata, err := metadataMapper(res)
 		if err != nil {
 			return nil, err
 		}
 
 		metadata.DisplayName = obj
-		objMetadata.Result[obj] = metadata
+		objMetadata.Result[obj] = *metadata
 	}
 
 	return &objMetadata, nil
 }
 
-func metadataMapper(body []byte) (common.ObjectMetadata, error) {
-	metadata := common.ObjectMetadata{
-		FieldsMap: make(map[string]string),
+func metadataMapper(resp *common.JSONHTTPResponse) (*common.ObjectMetadata, error) {
+	response, err := common.UnmarshalJSON[Data](resp)
+	if err != nil {
+		return nil, err
 	}
 
-	var response Data
-
-	err := json.Unmarshal(body, &response)
-	if err != nil {
-		return metadata, err
+	metadata := &common.ObjectMetadata{
+		FieldsMap: make(map[string]string),
 	}
 
 	attributes := response.Data[0].Attributes

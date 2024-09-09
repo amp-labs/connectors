@@ -22,7 +22,12 @@ func (c *Connector) ListObjectMetadata(ctx context.Context, _ []string) (*common
 		return nil, err
 	}
 
-	fields, err := c.parseFieldsJiraIssue(rsp.Body)
+	body, ok := rsp.Body()
+	if !ok {
+		return nil, errors.Join(ErrMissingMetadata, common.ErrEmptyJSONHTTPResponse)
+	}
+
+	fields, err := c.parseFieldsJiraIssue(body)
 	if err != nil {
 		return nil, errors.Join(ErrParsingMetadata, err)
 	}

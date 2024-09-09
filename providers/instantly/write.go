@@ -35,9 +35,11 @@ func (c *Connector) Write(
 	var write common.WriteMethod
 	if len(config.RecordId) == 0 {
 		write = c.Client.Post
+
 		constructURLPathCreate(config, url) // nolint:wsl
 	} else {
 		write = c.Client.Patch
+
 		constructURLPathUpdate(config, url)
 	}
 
@@ -46,7 +48,8 @@ func (c *Connector) Write(
 		return nil, err
 	}
 
-	if res == nil || res.Body == nil {
+	body, ok := res.Body()
+	if !ok {
 		// it is unlikely to have no payload
 		return &common.WriteResult{
 			Success: true,
@@ -56,7 +59,7 @@ func (c *Connector) Write(
 	recordIdNodePath := recordIdPaths[config.ObjectName]
 
 	// write response was with payload
-	return constructWriteResult(res.Body, recordIdNodePath)
+	return constructWriteResult(body, recordIdNodePath)
 }
 
 var recordIdPaths = map[string]*string{ // nolint:gochecknoglobals

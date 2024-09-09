@@ -40,7 +40,6 @@ func MainFn() int {
 }
 
 func testReadContactsSearch(ctx context.Context, conn *ap.Connector) error {
-
 	params := common.ReadParams{
 		ObjectName: "contacts",
 		Fields:     []string{"id"},
@@ -65,7 +64,6 @@ func testReadContactsSearch(ctx context.Context, conn *ap.Connector) error {
 }
 
 func testReadOpportunitiesSearch(ctx context.Context, conn *ap.Connector) error {
-
 	params := common.ReadParams{
 		ObjectName: "opportunities",
 		Fields:     []string{"id"},
@@ -89,7 +87,6 @@ func testReadOpportunitiesSearch(ctx context.Context, conn *ap.Connector) error 
 }
 
 func testReadPeopleSearch(ctx context.Context, conn *ap.Connector) error {
-
 	params := common.ReadParams{
 		ObjectName: "mixed_people",
 		Fields:     []string{"id"},

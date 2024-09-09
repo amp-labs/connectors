@@ -25,16 +25,17 @@ func ParseResult(
 	marshalFunc func([]map[string]any, []string) ([]ReadResultRow, error),
 	fields []string,
 ) (*ReadResult, error) {
-	if resp == nil {
+	body, ok := resp.Body()
+	if !ok {
 		return nil, ErrEmptyJSONHTTPResponse
 	}
 
-	records, err := recordsFunc(resp.Body)
+	records, err := recordsFunc(body)
 	if err != nil {
 		return nil, err
 	}
 
-	nextPage, err := nextPageFunc(resp.Body)
+	nextPage, err := nextPageFunc(body)
 	if err != nil {
 		return nil, err
 	}

@@ -86,14 +86,14 @@ var (
 	// ErrEmptyJSONHTTPResponse is returned when the JSONHTTPResponse is nil.
 	ErrEmptyJSONHTTPResponse = errors.New("empty json http response")
 
-	// ErrEmptyResponse is returned when the response body is empty.
-	ErrEmptyResponse = errors.New("empty response body")
-
 	// ErrRecordDataNotJSON is returned when the record data in WriteParams is not JSON.
 	ErrRecordDataNotJSON = errors.New("record data is not JSON")
 
-	// ErrObjectNotSupported is returned when operation is not supported for this object.
+	// ErrOperationNotSupportedForObject is returned when operation is not supported for this object.
 	ErrOperationNotSupportedForObject = errors.New("operation is not supported for this object")
+
+	// ErrFailedToUnmarshalBody is returned when response body cannot be marshalled into some type.
+	ErrFailedToUnmarshalBody = errors.New("failed to unmarshal response body")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.

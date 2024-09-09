@@ -2,6 +2,7 @@ package dynamicscrm
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -75,9 +76,10 @@ func (c *Connector) performGetRequest(ctx context.Context, url *urlbuilder.URL) 
 		return nil, err
 	}
 
-	if rsp.Body == nil {
-		return nil, ErrObjectNotFound
+	body, ok := rsp.Body()
+	if !ok {
+		return nil, errors.Join(ErrObjectNotFound, common.ErrEmptyJSONHTTPResponse)
 	}
 
-	return rsp.Body, nil
+	return body, nil
 }
