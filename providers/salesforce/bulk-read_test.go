@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
@@ -20,7 +21,7 @@ func TestBulkRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
 	responseUnknownObject := testutils.DataFromFile(t, "unknown-object.json")
-	responseAccount := testutils.DataFromFile(t, "bulk-read-launch-job-account.json")
+	responseAccount := testutils.DataFromFile(t, "bulk/read-launch-job-account.json")
 
 	tests := []bulkReadTestCase{
 		{
@@ -36,13 +37,13 @@ func TestBulkRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		},
 		{
 			Name:         "Mime response header expected",
-			Input:        common.ReadParams{ObjectName: "Orders", Fields: []string{"id"}},
+			Input:        common.ReadParams{ObjectName: "Orders", Fields: connectors.Fields("id")},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{interpreter.ErrMissingContentType},
 		},
 		{
 			Name:  "Correct error message is understood from JSON response",
-			Input: common.ReadParams{ObjectName: "Accout", Fields: []string{"id"}},
+			Input: common.ReadParams{ObjectName: "Accout", Fields: connectors.Fields("id")},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusBadRequest)
@@ -56,7 +57,7 @@ func TestBulkRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Name: "Launch bulk job with SOQL query",
 			Input: common.ReadParams{
 				ObjectName: "Account",
-				Fields:     []string{"Id", "Name"},
+				Fields:     connectors.Fields("Id", "Name"),
 			},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { //nolint:varnamelen
 				w.Header().Set("Content-Type", "application/json")
