@@ -4,11 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/amp-labs/connectors"
 	"log"
 	"os"
 	"time"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	ap "github.com/amp-labs/connectors/providers/apollo"
 	"github.com/amp-labs/connectors/test/apollo"

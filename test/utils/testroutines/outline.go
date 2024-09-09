@@ -10,23 +10,26 @@ import (
 	"github.com/go-test/deep"
 )
 
-// suiteOutline describes major components that are used to test any Connector methods.
-// It is universal and generic `V` value represents the data type of the expected output.
-type suiteOutline[V any] struct {
+// TestCase describes major components that are used to test any Connector methods.
+// It is universal and generic `Input` data type is what the tested method accepts,
+// while `Output` value represents the data type of the expected output.
+type TestCase[Input any, Output any] struct {
 	// Name of the test suite.
 	Name string
+	// Input passed to the tested method.
+	Input Input
 	// Mock Server which connector will call.
 	Server *httptest.Server
 	// Custom Comparator of how expected output agrees with actual output.
-	Comparator func(serverURL string, actual, expected *V) bool
+	Comparator func(serverURL string, actual, expected Output) bool
 	// Expected return value.
-	Expected *V
+	Expected Output
 	// ExpectedErrs is a list of errors that must be present in error output.
 	ExpectedErrs []error
 }
 
 // Validate checks if supplied input conforms to the test intention.
-func (o suiteOutline[V]) Validate(t *testing.T, err error, output *V) {
+func (o TestCase[Input, Output]) Validate(t *testing.T, err error, output Output) {
 	defer o.Server.Close()
 
 	// performs validation of error output using described test suite outline.
@@ -35,7 +38,7 @@ func (o suiteOutline[V]) Validate(t *testing.T, err error, output *V) {
 	o.checkValue(t, output)
 }
 
-func (o suiteOutline[V]) checkError(t *testing.T, err error) {
+func (o TestCase[Input, Output]) checkError(t *testing.T, err error) {
 	if err != nil {
 		if len(o.ExpectedErrs) == 0 {
 			t.Fatalf("%s: expected no errors, got: (%v)", o.Name, err)
@@ -55,7 +58,7 @@ func (o suiteOutline[V]) checkError(t *testing.T, err error) {
 	}
 }
 
-func (o suiteOutline[V]) checkValue(t *testing.T, output *V) {
+func (o TestCase[Input, Output]) checkValue(t *testing.T, output Output) {
 	// compare desired output
 	var ok bool
 	if o.Comparator == nil {
