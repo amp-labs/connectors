@@ -59,18 +59,6 @@ var (
 	// ErrNotImplemented is returned when a method is not implemented.
 	ErrNotImplemented = errors.New("not implemented")
 
-	// ErrMissingObjects is returned when no objects are provided in the request.
-	ErrMissingObjects = errors.New("no objects provided")
-
-	// ErrMissingRecordID is returned when resource id is missing in the request.
-	ErrMissingRecordID = errors.New("no object ID provided")
-
-	// ErrMissingFields is returned when no fields are provided for reading.
-	ErrMissingFields = errors.New("no fields provided in ReadParams")
-
-	// ErrInvalidPathJoin is returned when the path join is invalid.
-	ErrInvalidPathJoin = errors.New("invalid path join")
-
 	// ErrRequestFailed is returned when the request failed.
 	ErrRequestFailed = errors.New("request failed")
 
@@ -85,6 +73,9 @@ var (
 
 	// ErrEmptyJSONHTTPResponse is returned when the JSONHTTPResponse is nil.
 	ErrEmptyJSONHTTPResponse = errors.New("empty json http response")
+
+	// ErrEmptyRecordIdResponse is returned when the response body doesn't have record id.
+	ErrEmptyRecordIdResponse = errors.New("empty record id in response body")
 
 	// ErrRecordDataNotJSON is returned when the record data in WriteParams is not JSON.
 	ErrRecordDataNotJSON = errors.New("record data is not JSON")

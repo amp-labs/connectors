@@ -20,19 +20,24 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 	tests := []testroutines.Write{
 		{
 			Name:         "Write object must be included",
-			Input:        common.WriteParams{},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
-			Name:         "Mime response header expected",
+			Name:         "Write needs data payload",
 			Input:        common.WriteParams{ObjectName: "fax"},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingRecordData},
+		},
+		{
+			Name:         "Mime response header expected",
+			Input:        common.WriteParams{ObjectName: "fax", RecordData: "dummy"},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{interpreter.ErrMissingContentType},
 		},
 		{
 			Name:  "Correct error message is understood from JSON response",
-			Input: common.WriteParams{ObjectName: "fax"},
+			Input: common.WriteParams{ObjectName: "fax", RecordData: "dummy"},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusBadRequest)
@@ -50,7 +55,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "Write must act as a Create",
-			Input: common.WriteParams{ObjectName: "fax"},
+			Input: common.WriteParams{ObjectName: "fax", RecordData: "dummy"},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				mockutils.RespondNoContentForMethod(w, r, "POST")
@@ -59,8 +64,12 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			ExpectedErrs: nil,
 		},
 		{
-			Name:  "Write must act as an Update",
-			Input: common.WriteParams{ObjectName: "fax", RecordId: "dd2f7870-3fe8-ee11-a204-0022481f9e3c"},
+			Name: "Write must act as an Update",
+			Input: common.WriteParams{
+				ObjectName: "fax",
+				RecordId:   "dd2f7870-3fe8-ee11-a204-0022481f9e3c",
+				RecordData: "dummy",
+			},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				mockutils.RespondNoContentForMethod(w, r, "PATCH")

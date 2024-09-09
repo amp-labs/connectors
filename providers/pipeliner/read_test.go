@@ -26,13 +26,26 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 
 	tests := []testroutines.Read{
 		{
+			Name:         "Read object must be included",
+			Input:        common.ReadParams{},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingObjects},
+		},
+		{
+			Name:         "At least one field is requested",
+			Input:        common.ReadParams{ObjectName: "Profiles"},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingFields},
+		},
+		{
 			Name:         "Mime response header expected",
+			Input:        common.ReadParams{ObjectName: "Profiles", Fields: []string{"id"}},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{interpreter.ErrMissingContentType},
 		},
 		{
 			Name:  "Correct error message is understood from JSON response",
-			Input: common.ReadParams{ObjectName: "articles"},
+			Input: common.ReadParams{ObjectName: "Profiles", Fields: []string{"id"}},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusNotFound)
@@ -44,7 +57,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			},
 		},
 		{
-			Name: "Incorrect key in payload",
+			Name:  "Incorrect key in payload",
+			Input: common.ReadParams{ObjectName: "Profiles", Fields: []string{"id"}},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
@@ -55,7 +69,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: []error{jsonquery.ErrKeyNotFound},
 		},
 		{
-			Name: "Incorrect data type in payload",
+			Name:  "Incorrect data type in payload",
+			Input: common.ReadParams{ObjectName: "Profiles", Fields: []string{"id"}},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
@@ -66,7 +81,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: []error{jsonquery.ErrNotArray},
 		},
 		{
-			Name: "Next page cursor may be missing in payload",
+			Name:  "Next page cursor may be missing in payload",
+			Input: common.ReadParams{ObjectName: "Profiles", Fields: []string{"id"}},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
@@ -84,7 +100,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Next page URL is inferred, when provided with an object",
+			Name:  "Next page URL is inferred, when provided with an object",
+			Input: common.ReadParams{ObjectName: "Profiles", Fields: []string{"id"}},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
@@ -99,7 +116,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Next page URL is empty, when provided with null object",
+			Name:  "Next page URL is empty, when provided with null object",
+			Input: common.ReadParams{ObjectName: "Profiles", Fields: []string{"id"}},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
@@ -115,7 +133,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name: "Successful read with chosen fields",
 			Input: common.ReadParams{
-				Fields: []string{"name", "owner_id"},
+				ObjectName: "Profiles",
+				Fields:     []string{"name", "owner_id"},
 			},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")

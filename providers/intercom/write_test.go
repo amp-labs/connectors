@@ -30,14 +30,20 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
-			Name:         "Mime response header expected",
+			Name:         "Write needs data payload",
 			Input:        common.WriteParams{ObjectName: "signals"},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingRecordData},
+		},
+		{
+			Name:         "Mime response header expected",
+			Input:        common.WriteParams{ObjectName: "signals", RecordData: "dummy"},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{interpreter.ErrMissingContentType},
 		},
 		{
 			Name:  "Correct error message is understood from JSON response",
-			Input: common.WriteParams{ObjectName: "signals", RecordId: "22165"},
+			Input: common.WriteParams{ObjectName: "signals", RecordId: "22165", RecordData: "dummy"},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusUnprocessableEntity)
@@ -50,7 +56,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "Write must act as a Create",
-			Input: common.WriteParams{ObjectName: "signals"},
+			Input: common.WriteParams{ObjectName: "signals", RecordData: "dummy"},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				mockutils.RespondToMethod(w, r, "POST", func() {
@@ -62,7 +68,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "Write must act as an Update",
-			Input: common.WriteParams{ObjectName: "signals", RecordId: "22165"},
+			Input: common.WriteParams{ObjectName: "signals", RecordId: "22165", RecordData: "dummy"},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				mockutils.RespondToMethod(w, r, "PUT", func() {
@@ -74,7 +80,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "API version header is passed as server request on POST",
-			Input: common.WriteParams{ObjectName: "articles"},
+			Input: common.WriteParams{ObjectName: "articles", RecordData: "dummy"},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				mockutils.RespondToHeader(w, r, testApiVersionHeader, func() {
@@ -90,7 +96,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "Valid creation of an article",
-			Input: common.WriteParams{ObjectName: "articles"},
+			Input: common.WriteParams{ObjectName: "articles", RecordData: "dummy"},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				mockutils.RespondToMethod(w, r, "POST", func() {

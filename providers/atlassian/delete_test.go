@@ -11,6 +11,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
@@ -22,8 +23,13 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 
 	tests := []testroutines.Delete{
 		{
+			Name:         "Delete object must be included",
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingObjects},
+		},
+		{
 			Name:  "Write issue must include ID",
-			Input: common.DeleteParams{},
+			Input: common.DeleteParams{ObjectName: "issues"},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusTeapot)
 			})),
@@ -31,7 +37,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "Mime response header expected",
-			Input: common.DeleteParams{RecordId: "10010"},
+			Input: common.DeleteParams{ObjectName: "issues", RecordId: "10010"},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusTeapot)
 			})),
@@ -39,7 +45,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "Not found returned on removing missing entry",
-			Input: common.DeleteParams{RecordId: "10010"},
+			Input: common.DeleteParams{ObjectName: "issues", RecordId: "10010"},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusNotFound)
@@ -52,7 +58,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "Successful delete",
-			Input: common.DeleteParams{RecordId: "10010"},
+			Input: common.DeleteParams{ObjectName: "issues", RecordId: "10010"},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				mockutils.RespondNoContentForMethod(w, r, "DELETE")
@@ -87,7 +93,7 @@ func TestDeleteWithoutMetadata(t *testing.T) {
 		t.Fatal("failed to create connector")
 	}
 
-	_, err = connector.Delete(context.Background(), common.DeleteParams{RecordId: "123"})
+	_, err = connector.Delete(context.Background(), common.DeleteParams{ObjectName: "issues", RecordId: "123"})
 	if !errors.Is(err, ErrMissingCloudId) {
 		t.Fatalf("expected Delete method to complain about missing cloud id")
 	}

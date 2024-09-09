@@ -2,8 +2,9 @@ package testutils
 
 import (
 	"context"
-	"github.com/amp-labs/connectors/tools/fileconv"
 	"sync"
+
+	"github.com/amp-labs/connectors/tools/fileconv"
 )
 
 const testLineBreak = "\n=============================================\n"
@@ -35,6 +36,7 @@ func (r ParallelRunners[C]) Run(ctx context.Context, conn C) []string {
 			if err != nil {
 				logText = err.Error()
 			}
+
 			logs[idx] = formatLog(test.TestTitle, logText)
 		}(test, i)
 	}

@@ -52,7 +52,7 @@ func getInfoInLoop(
 	})
 }
 
-func GetRecordIDsForJob(ctx context.Context, conn *salesforce.Connector, jobId string)  ([]byte, error) {
+func GetRecordIDsForJob(ctx context.Context, conn *salesforce.Connector, jobId string) ([]byte, error) {
 	// Get the successful results to get the ids to use for the deletion
 	successRes, err := conn.GetSuccessfulJobResults(ctx, jobId)
 	if err != nil {

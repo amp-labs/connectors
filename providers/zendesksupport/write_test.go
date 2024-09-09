@@ -33,14 +33,20 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
-			Name:         "Mime response header expected",
+			Name:         "Write needs data payload",
 			Input:        common.WriteParams{ObjectName: "signals"},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingRecordData},
+		},
+		{
+			Name:         "Mime response header expected",
+			Input:        common.WriteParams{ObjectName: "signals", RecordData: "dummy"},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{interpreter.ErrMissingContentType},
 		},
 		{
 			Name:  "Missing write parameter",
-			Input: common.WriteParams{ObjectName: "brands"},
+			Input: common.WriteParams{ObjectName: "brands", RecordData: "dummy"},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusBadRequest)
@@ -53,7 +59,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "Record validation with single detail",
-			Input: common.WriteParams{ObjectName: "brands"},
+			Input: common.WriteParams{ObjectName: "brands", RecordData: "dummy"},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusBadRequest)
@@ -67,7 +73,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "Record validation with multiple details is split into dedicated errors",
-			Input: common.WriteParams{ObjectName: "brands"},
+			Input: common.WriteParams{ObjectName: "brands", RecordData: "dummy"},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusBadRequest)
@@ -83,7 +89,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "Write must act as a Create",
-			Input: common.WriteParams{ObjectName: "brands"},
+			Input: common.WriteParams{ObjectName: "brands", RecordData: "dummy"},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				mockutils.RespondToMethod(w, r, "POST", func() {
@@ -94,8 +100,12 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			ExpectedErrs: nil,
 		},
 		{
-			Name:  "Write must act as an Update",
-			Input: common.WriteParams{ObjectName: "brands", RecordId: "31207417638931"},
+			Name: "Write must act as an Update",
+			Input: common.WriteParams{
+				ObjectName: "brands",
+				RecordId:   "31207417638931",
+				RecordData: "dummy",
+			},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				mockutils.RespondToMethod(w, r, "PUT", func() {
@@ -107,7 +117,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "Valid creation of a brand",
-			Input: common.WriteParams{ObjectName: "brands"},
+			Input: common.WriteParams{ObjectName: "brands", RecordData: "dummy"},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				mockutils.RespondToMethod(w, r, "POST", func() {

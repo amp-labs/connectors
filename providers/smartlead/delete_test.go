@@ -23,7 +23,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 
 	tests := []testroutines.Delete{
 		{
-			Name:         "Write object must be included",
+			Name:         "Delete object must be included",
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingObjects},
 		},

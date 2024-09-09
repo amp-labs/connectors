@@ -4,10 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/amp-labs/connectors/providers/salesforce"
 	"log/slog"
 	"os"
 	"time"
+
+	"github.com/amp-labs/connectors/providers/salesforce"
 )
 
 func testGetJobResultsForFile(ctx context.Context, conn *salesforce.Connector, fileName string) (string, error) {

@@ -31,14 +31,20 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
-			Name:         "Mime response header expected",
+			Name:         "At least one field is requested",
 			Input:        common.ReadParams{ObjectName: "contact"},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingFields},
+		},
+		{
+			Name:         "Mime response header expected",
+			Input:        common.ReadParams{ObjectName: "contact", Fields: []string{"id"}},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{interpreter.ErrMissingContentType},
 		},
 		{
 			Name:  "Correct error message is understood from HTML response",
-			Input: common.ReadParams{ObjectName: "contact"},
+			Input: common.ReadParams{ObjectName: "contact", Fields: []string{"id"}},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "text/html")
 				w.WriteHeader(http.StatusBadRequest)
@@ -51,7 +57,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:  "Incorrect data type in payload",
-			Input: common.ReadParams{ObjectName: "contact"},
+			Input: common.ReadParams{ObjectName: "contact", Fields: []string{"id"}},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
@@ -61,7 +67,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:  "Empty read response",
-			Input: common.ReadParams{ObjectName: "campaigns"},
+			Input: common.ReadParams{ObjectName: "campaigns", Fields: []string{"id"}},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)

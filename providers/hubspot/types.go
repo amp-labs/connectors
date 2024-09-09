@@ -15,6 +15,18 @@ type SearchParams struct {
 	Fields []string // optional
 }
 
+func (p SearchParams) ValidateParams() error {
+	if len(p.ObjectName) == 0 {
+		return common.ErrMissingObjects
+	}
+
+	if len(p.Fields) == 0 {
+		return common.ErrMissingFields
+	}
+
+	return nil
+}
+
 type SortBy struct {
 	// The name of the field to sort by.
 	PropertyName string `json:"propertyName,omitempty"`

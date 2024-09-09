@@ -8,8 +8,8 @@ import (
 
 // Delete removes Jira issue.
 func (c *Connector) Delete(ctx context.Context, config common.DeleteParams) (*common.DeleteResult, error) {
-	if len(config.RecordId) == 0 {
-		return nil, common.ErrMissingRecordID
+	if err := config.ValidateParams(); err != nil {
+		return nil, err
 	}
 
 	url, err := c.getJiraRestApiURL("issue")

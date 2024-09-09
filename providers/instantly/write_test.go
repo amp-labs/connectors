@@ -35,14 +35,20 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
+			Name:         "Write needs data payload",
+			Input:        common.WriteParams{ObjectName: "notes"},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingRecordData},
+		},
+		{
 			Name:         "Mime response header expected",
-			Input:        common.WriteParams{ObjectName: "unibox-replies"},
+			Input:        common.WriteParams{ObjectName: "unibox-replies", RecordData: "dummy"},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{interpreter.ErrMissingContentType},
 		},
 		{
 			Name:     "Unknown object name is not supported",
-			Input:    common.WriteParams{ObjectName: "orders"},
+			Input:    common.WriteParams{ObjectName: "orders", RecordData: "dummy"},
 			Server:   mockserver.Dummy(),
 			Expected: nil,
 			ExpectedErrs: []error{
@@ -51,7 +57,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "Create Blocklist Entry",
-			Input: common.WriteParams{ObjectName: "blocklist-entries"},
+			Input: common.WriteParams{ObjectName: "blocklist-entries", RecordData: "dummy"},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				mockutils.RespondToMethod(w, r, "POST", func() {
@@ -69,7 +75,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "Create Unibox Reply",
-			Input: common.WriteParams{ObjectName: "unibox-replies"},
+			Input: common.WriteParams{ObjectName: "unibox-replies", RecordData: "dummy"},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				mockutils.RespondToMethod(w, r, "POST", func() {
@@ -88,7 +94,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 
 		{
 			Name:  "Invalid Lead creation",
-			Input: common.WriteParams{ObjectName: "leads"},
+			Input: common.WriteParams{ObjectName: "leads", RecordData: "dummy"},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusNotFound)
@@ -101,7 +107,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "Create Lead",
-			Input: common.WriteParams{ObjectName: "leads"},
+			Input: common.WriteParams{ObjectName: "leads", RecordData: "dummy"},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				mockutils.RespondToMethod(w, r, "POST", func() {
@@ -119,7 +125,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "Invalid Tag creation",
-			Input: common.WriteParams{ObjectName: "tags"},
+			Input: common.WriteParams{ObjectName: "tags", RecordData: "dummy"},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusNotFound)
@@ -132,7 +138,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "Create Tag acts as POST",
-			Input: common.WriteParams{ObjectName: "tags"},
+			Input: common.WriteParams{ObjectName: "tags", RecordData: "dummy"},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				mockutils.RespondToMethod(w, r, "POST", func() {
@@ -150,7 +156,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "Update tag acts as PATCH",
-			Input: common.WriteParams{ObjectName: "tags", RecordId: "885633"},
+			Input: common.WriteParams{ObjectName: "tags", RecordId: "885633", RecordData: "dummy"},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				mockutils.RespondToMethod(w, r, "PATCH", func() {

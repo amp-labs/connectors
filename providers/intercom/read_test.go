@@ -36,12 +36,25 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 
 	tests := []testroutines.Read{
 		{
+			Name:         "Read object must be included",
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingObjects},
+		},
+		{
+			Name:         "At least one field is requested",
+			Input:        common.ReadParams{ObjectName: "contacts"},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingFields},
+		},
+		{
 			Name:         "Mime response header expected",
+			Input:        common.ReadParams{ObjectName: "contacts", Fields: []string{"id"}},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{interpreter.ErrMissingContentType},
 		},
 		{
-			Name: "Correct error message is understood from JSON response",
+			Name:  "Correct error message is understood from JSON response",
+			Input: common.ReadParams{ObjectName: "contacts", Fields: []string{"id"}},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusNotFound)
@@ -52,7 +65,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			},
 		},
 		{
-			Name: "Incorrect key in payload",
+			Name:  "Incorrect key in payload",
+			Input: common.ReadParams{ObjectName: "contacts", Fields: []string{"id"}},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
@@ -63,7 +77,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: []error{jsonquery.ErrKeyNotFound},
 		},
 		{
-			Name: "Incorrect data type in payload",
+			Name:  "Incorrect data type in payload",
+			Input: common.ReadParams{ObjectName: "contacts", Fields: []string{"id"}},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
@@ -74,7 +89,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: []error{jsonquery.ErrNotArray},
 		},
 		{
-			Name: "Next page cursor may be missing in payload",
+			Name:  "Next page cursor may be missing in payload",
+			Input: common.ReadParams{ObjectName: "contacts", Fields: []string{"id"}},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
@@ -91,7 +107,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "API version header is passed as server request",
+			Name:  "API version header is passed as server request",
+			Input: common.ReadParams{ObjectName: "notes", Fields: []string{"id"}},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				mockutils.RespondToHeader(w, r, testApiVersionHeader, func() {
@@ -107,7 +124,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Next page URL is resolved, when provided with a string",
+			Name:  "Next page URL is resolved, when provided with a string",
+			Input: common.ReadParams{ObjectName: "notes", Fields: []string{"id"}},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
@@ -122,7 +140,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Next page URL is inferred, when provided with an object",
+			Name:  "Next page URL is inferred, when provided with an object",
+			Input: common.ReadParams{ObjectName: "contacts", Fields: []string{"id"}},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
@@ -133,13 +152,14 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				return actual.NextPage.String() == expectedNextPage // nolint:nlreturn
 			},
 			Expected: &common.ReadResult{
-				NextPage: "{{testServerURL}}?per_page=60&starting_after=" +
+				NextPage: "{{testServerURL}}/contacts?per_page=60&starting_after=" +
 					"WzE3MTU2OTU2NzkwMDAsIjY2NDM3MDNmZmFlNzgzNGQxNzkyZmQzMCIsMl0=",
 			},
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Next page URL is empty, when provided with null object",
+			Name:  "Next page URL is empty, when provided with null object",
+			Input: common.ReadParams{ObjectName: "notes", Fields: []string{"id"}},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
@@ -153,7 +173,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Next page URL is empty, when provided with missing object",
+			Name:  "Next page URL is empty, when provided with missing object",
+			Input: common.ReadParams{ObjectName: "contacts", Fields: []string{"id"}},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
@@ -169,7 +190,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name: "Successful read with chosen fields",
 			Input: common.ReadParams{
-				Fields: []string{"email", "name"},
+				ObjectName: "contacts",
+				Fields:     []string{"email", "name"},
 			},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
@@ -201,7 +223,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"updated_at": float64(1715706939),
 					},
 				}},
-				NextPage: "{{testServerURL}}?per_page=60&starting_after=" +
+				NextPage: "{{testServerURL}}/contacts?per_page=60&starting_after=" +
 					"Wy0xLCI2NjQzOWI5NDdiYjA5NWE2ODFmN2ZkOWUiLDNd",
 				Done: false,
 			},
@@ -210,7 +232,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name: "Successful read of named list",
 			Input: common.ReadParams{
-				Fields: []string{"state"},
+				ObjectName: "conversations",
+				Fields:     []string{"state"},
 			},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
