@@ -41,8 +41,13 @@ func adobeAuthExample(ctx context.Context) error {
 		return fmt.Errorf("unexpected status code: %d", response.Code)
 	}
 
+	body, ok := response.Body()
+	if !ok {
+		return fmt.Errorf("empty response: %w", common.ErrEmptyJSONHTTPResponse)
+	}
+
 	// The response body is already parsed (as JSON). You can access it like this:
-	nodes, err := response.Body.JSONPath("$.*.name")
+	nodes, err := body.JSONPath("$.*.name")
 	if err != nil {
 		return err
 	}

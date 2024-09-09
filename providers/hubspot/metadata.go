@@ -93,7 +93,12 @@ func (c *Connector) describeObject(ctx context.Context, objectName string) (*com
 		return nil, fmt.Errorf("error fetching HubSpot fields: %w", err)
 	}
 
-	rawResponse, err := ajson.Marshal(rsp.Body)
+	body, ok := rsp.Body()
+	if !ok {
+		return nil, fmt.Errorf("cannot get HubSpot fields %w", common.ErrEmptyJSONHTTPResponse)
+	}
+
+	rawResponse, err := ajson.Marshal(body)
 	if err != nil {
 		return nil, fmt.Errorf("error marshalling object metadata response into byte array: %w", err)
 	}

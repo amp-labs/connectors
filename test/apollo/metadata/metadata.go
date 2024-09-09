@@ -9,7 +9,6 @@ import (
 )
 
 func main() {
-
 	ctx := context.Background()
 
 	conn := apollo.GetApolloConnector(ctx, "apollo-creds.json")

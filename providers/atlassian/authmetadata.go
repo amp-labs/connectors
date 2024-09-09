@@ -64,11 +64,12 @@ func (c *Connector) retrieveCloudId(ctx context.Context) (string, error) {
 		return "", err
 	}
 
-	if res.Body == nil {
-		return "", common.ErrEmptyJSONHTTPResponse
+	body, ok := res.Body()
+	if !ok {
+		return "", errors.Join(ErrContainerNotFound, common.ErrEmptyJSONHTTPResponse)
 	}
 
-	arr, err := res.Body.GetArray()
+	arr, err := body.GetArray()
 	if err != nil {
 		return "", err
 	}

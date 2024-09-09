@@ -53,8 +53,13 @@ func salesforceAuthExample(ctx context.Context) error {
 		return fmt.Errorf("unexpected status code: %d", response.Code)
 	}
 
+	body, ok := response.Body()
+	if !ok {
+		return fmt.Errorf("cannot get limits %w", common.ErrEmptyJSONHTTPResponse)
+	}
+
 	// The response body is already parsed (as JSON). You can access it like this:
-	nodes, err := response.Body.JSONPath("$.MassEmail.Max")
+	nodes, err := body.JSONPath("$.MassEmail.Max")
 	if err != nil {
 		return err
 	}

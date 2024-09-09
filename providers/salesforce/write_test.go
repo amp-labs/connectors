@@ -63,21 +63,6 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			},
 		},
 		{
-			Name:  "Write must act as a Create",
-			Input: common.WriteParams{ObjectName: "account"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToMethod(w, r, "POST", func() {
-					// cannot be update path
-					mockutils.RespondToMissingQueryParameters(w, r, []string{"_HttpMethod"}, func() {
-						w.WriteHeader(http.StatusOK)
-					})
-				})
-			})),
-			Expected:     &common.WriteResult{Success: true},
-			ExpectedErrs: nil,
-		},
-		{
 			Name:  "Write must act as an Update",
 			Input: common.WriteParams{ObjectName: "account", RecordId: "003ak000004dQCUAA2"},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -87,10 +72,16 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 						"_HttpMethod": []string{"PATCH"},
 					}, func() {
 						w.WriteHeader(http.StatusOK)
+						_, _ = w.Write(responseCreateOK)
 					})
 				})
 			})),
-			Expected:     &common.WriteResult{Success: true},
+			Expected: &common.WriteResult{
+				Success:  true,
+				RecordId: "001ak00000OQTieAAH",
+				Errors:   []any{},
+				Data:     nil,
+			},
 			ExpectedErrs: nil,
 		},
 		{

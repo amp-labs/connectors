@@ -314,7 +314,12 @@ func (c *Connector) bulkOperation(
 		return nil, fmt.Errorf("createJob failed: %w", err)
 	}
 
-	resObject, err := res.Body.GetObject()
+	body, ok := res.Body() // nolint:varnamelen
+	if !ok {
+		return nil, fmt.Errorf("createJob failed: %w", common.ErrEmptyJSONHTTPResponse)
+	}
+
+	resObject, err := body.GetObject()
 	if err != nil {
 		return nil, fmt.Errorf(
 			"parsing result of createJob failed: %w",
@@ -358,7 +363,12 @@ func (c *Connector) bulkOperation(
 		return nil, fmt.Errorf("completeUpload failed: %w", err)
 	}
 
-	dataObject, err := data.Body.GetObject()
+	body, ok = data.Body()
+	if !ok {
+		return nil, fmt.Errorf("completeUpload failed: %w", common.ErrEmptyJSONHTTPResponse)
+	}
+
+	dataObject, err := body.GetObject()
 	if err != nil {
 		return nil, fmt.Errorf("parsing result of completeUpload failed: %w", errors.Join(err, common.ErrParseError))
 	}

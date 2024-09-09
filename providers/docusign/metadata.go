@@ -22,10 +22,15 @@ func (c *Connector) GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, 
 		return nil, err
 	}
 
+	body, ok := resp.Body()
+	if !ok {
+		return nil, errors.Join(ErrNoAccounts, common.ErrEmptyJSONHTTPResponse)
+	}
+
 	var postAuthInfo common.PostAuthInfo
 	postAuthInfo.RawResponse = resp
 
-	accounts, err := resp.Body.GetKey("accounts")
+	accounts, err := body.GetKey("accounts")
 	if err != nil {
 		return nil, err
 	}

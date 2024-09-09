@@ -37,7 +37,8 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, err
 	}
 
-	if res == nil || res.Body == nil {
+	body, ok := res.Body()
+	if !ok {
 		// it is unlikely to have no payload
 		return &common.WriteResult{
 			Success: true,
@@ -45,7 +46,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 	}
 
 	// write response was with payload
-	return constructWriteResult(config, res.Body)
+	return constructWriteResult(config, body)
 }
 
 func constructWriteResult(config common.WriteParams, body *ajson.Node) (*common.WriteResult, error) {

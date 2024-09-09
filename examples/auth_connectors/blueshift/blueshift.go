@@ -37,8 +37,13 @@ func blueshiftAuthExample(ctx context.Context) error {
 		return fmt.Errorf("unexpected status code: %d", response.Code)
 	}
 
+	body, ok := response.Body()
+	if !ok {
+		return fmt.Errorf("cannot get campaigns %w", common.ErrEmptyJSONHTTPResponse)
+	}
+
 	// The response body is already parsed (as JSON). You can access it like this:
-	nodes, err := response.Body.JSONPath("$.campaigns[0].name")
+	nodes, err := body.JSONPath("$.campaigns[0].name")
 	if err != nil {
 		return err
 	}

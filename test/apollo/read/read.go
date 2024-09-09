@@ -41,7 +41,6 @@ func MainFn() int {
 }
 
 func testReadOpportunitiesSearch(ctx context.Context, conn *ap.Connector) error {
-
 	params := common.ReadParams{
 		ObjectName: "opportunities",
 		Fields:     []string{"id"},
@@ -65,7 +64,6 @@ func testReadOpportunitiesSearch(ctx context.Context, conn *ap.Connector) error 
 }
 
 func testReadEmailAccounts(ctx context.Context, conn *ap.Connector) error {
-
 	params := common.ReadParams{
 		ObjectName: "email_accounts",
 		Fields:     []string{"user_id", "id", "email"},
@@ -90,7 +88,6 @@ func testReadEmailAccounts(ctx context.Context, conn *ap.Connector) error {
 }
 
 func testReadCustomFields(ctx context.Context, conn *ap.Connector) error {
-
 	params := common.ReadParams{
 		ObjectName: "typed_custom_fields",
 		Fields:     []string{"type", "id", "modality"},
