@@ -9,8 +9,8 @@ import (
 )
 
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
-	if len(config.ObjectName) == 0 {
-		return nil, common.ErrMissingObjects
+	if err := config.ValidateParams(); err != nil {
+		return nil, err
 	}
 
 	url, err := c.getURL(config.ObjectName)

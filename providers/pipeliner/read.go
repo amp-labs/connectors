@@ -9,6 +9,10 @@ import (
 )
 
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
+	if err := config.ValidateParams(true); err != nil {
+		return nil, err
+	}
+
 	url, err := c.buildReadURL(config)
 	if err != nil {
 		return nil, err

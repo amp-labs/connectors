@@ -13,6 +13,7 @@ func SaveCSV(filePath string, records [][]string) {
 	if err != nil {
 		utils.Fail("couldn't open file for writing", "error", err, "filePath", file)
 	}
+
 	defer func() {
 		if err := file.Close(); err != nil {
 			slog.Error("failed closing file", "error", err)

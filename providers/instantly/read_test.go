@@ -33,14 +33,20 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
-			Name:         "Mime response header expected",
+			Name:         "At least one field is requested",
 			Input:        common.ReadParams{ObjectName: "campaigns"},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingFields},
+		},
+		{
+			Name:         "Mime response header expected",
+			Input:        common.ReadParams{ObjectName: "campaigns", Fields: []string{"id"}},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{interpreter.ErrMissingContentType},
 		},
 		{
 			Name:     "Unknown object name is not supported",
-			Input:    common.ReadParams{ObjectName: "orders"},
+			Input:    common.ReadParams{ObjectName: "orders", Fields: []string{"id"}},
 			Server:   mockserver.Dummy(),
 			Expected: nil,
 			ExpectedErrs: []error{
@@ -49,7 +55,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		},
 		{
 			Name:  "Correct error message is understood from JSON response",
-			Input: common.ReadParams{ObjectName: "campaigns"},
+			Input: common.ReadParams{ObjectName: "campaigns", Fields: []string{"id"}},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusNotFound)
@@ -62,7 +68,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		},
 		{
 			Name:  "Incorrect key in payload",
-			Input: common.ReadParams{ObjectName: "emails"},
+			Input: common.ReadParams{ObjectName: "emails", Fields: []string{"id"}},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
@@ -74,7 +80,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		},
 		{
 			Name:  "Incorrect data type in payload",
-			Input: common.ReadParams{ObjectName: "emails"},
+			Input: common.ReadParams{ObjectName: "emails", Fields: []string{"id"}},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
@@ -89,6 +95,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Input: common.ReadParams{
 				ObjectName: "campaigns",
 				NextPage:   "test-placeholder?skip=700",
+				Fields:     []string{"id"},
 			},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
@@ -115,6 +122,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Name: "Current empty page signifies no next page",
 			Input: common.ReadParams{
 				ObjectName: "campaigns",
+				Fields:     []string{"id"},
 			},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")

@@ -14,6 +14,10 @@ import (
 // Update issue docs:
 // https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issues/#api-rest-api-3-issue-issueidorkey-put
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
+	if err := config.ValidateParams(); err != nil {
+		return nil, err
+	}
+
 	url, err := c.getJiraRestApiURL("issue")
 	if err != nil {
 		return nil, err

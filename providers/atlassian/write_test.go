@@ -25,14 +25,25 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 
 	tests := []testroutines.Write{
 		{
+			Name:         "Write object must be included",
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingObjects},
+		},
+		{
+			Name:         "Write needs data payload",
+			Input:        common.WriteParams{ObjectName: "issues"},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingRecordData},
+		},
+		{
 			Name:         "Mime response header expected",
-			Input:        common.WriteParams{},
+			Input:        common.WriteParams{ObjectName: "issues", RecordData: "dummy"},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{interpreter.ErrMissingContentType},
 		},
 		{
 			Name:  "Error missing project during write",
-			Input: common.WriteParams{RecordId: "10003"},
+			Input: common.WriteParams{ObjectName: "issues", RecordId: "10003", RecordData: "dummy"},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusBadRequest)
@@ -45,7 +56,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "Error missing issue type during write",
-			Input: common.WriteParams{RecordId: "10003"},
+			Input: common.WriteParams{ObjectName: "issues", RecordId: "10003", RecordData: "dummy"},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusBadRequest)
@@ -58,7 +69,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "Write must act as a Create",
-			Input: common.WriteParams{},
+			Input: common.WriteParams{ObjectName: "issues", RecordData: "dummy"},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				mockutils.RespondToMethod(w, r, "POST", func() {
@@ -70,7 +81,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "Write must act as an Update",
-			Input: common.WriteParams{RecordId: "10003"},
+			Input: common.WriteParams{ObjectName: "issues", RecordId: "10003", RecordData: "dummy"},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				mockutils.RespondToMethod(w, r, "PUT", func() {
@@ -82,7 +93,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "Valid creation of an Issue",
-			Input: common.WriteParams{ObjectName: "accounts"},
+			Input: common.WriteParams{ObjectName: "issues", RecordData: "dummy"},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				mockutils.RespondToMethod(w, r, "POST", func() {
@@ -128,7 +139,7 @@ func TestWriteWithoutMetadata(t *testing.T) {
 		t.Fatal("failed to create connector")
 	}
 
-	_, err = connector.Write(context.Background(), common.WriteParams{})
+	_, err = connector.Write(context.Background(), common.WriteParams{ObjectName: "issues", RecordData: "dummy"})
 	if !errors.Is(err, ErrMissingCloudId) {
 		t.Fatalf("expected Write method to complain about missing cloud id")
 	}

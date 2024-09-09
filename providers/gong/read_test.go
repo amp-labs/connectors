@@ -29,14 +29,20 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
-			Name:         "Mime response header expected",
+			Name:         "At least one field is requested",
 			Input:        common.ReadParams{ObjectName: "calls"},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingFields},
+		},
+		{
+			Name:         "Mime response header expected",
+			Input:        common.ReadParams{ObjectName: "calls", Fields: []string{"id"}},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{interpreter.ErrMissingContentType},
 		},
 		{
 			Name:  "Incorrect key in payload",
-			Input: common.ReadParams{ObjectName: "calls"},
+			Input: common.ReadParams{ObjectName: "calls", Fields: []string{"id"}},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
@@ -48,7 +54,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:  "Bad request handling test",
-			Input: common.ReadParams{ObjectName: "calls"},
+			Input: common.ReadParams{ObjectName: "calls", Fields: []string{"id"}},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusBadRequest)
@@ -65,7 +71,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:  "Records section is missing in the payload",
-			Input: common.ReadParams{ObjectName: "calls"},
+			Input: common.ReadParams{ObjectName: "calls", Fields: []string{"id"}},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
@@ -78,7 +84,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 
 		{
 			Name:  "currentPageSize may be missing in payload",
-			Input: common.ReadParams{ObjectName: "calls"},
+			Input: common.ReadParams{ObjectName: "calls", Fields: []string{"id"}},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
@@ -101,8 +107,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		},
 
 		{
-			Name:  "Successful read with 2 entries wihtout cursor/next page",
-			Input: common.ReadParams{ObjectName: "calls"},
+			Name:  "Successful read with 2 entries without cursor/next page",
+			Input: common.ReadParams{ObjectName: "calls", Fields: []string{"id"}},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
@@ -111,7 +117,9 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{{
-					Fields: map[string]any{},
+					Fields: map[string]any{
+						"id": "52947912500572621",
+					},
 					Raw: map[string]any{
 						"id":             "52947912500572621",
 						"clientUniqueId": "ce93bb26-de69-41e3-8a7f-43ea3714b9e8",
@@ -120,7 +128,9 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 						"workspaceId":    "1007648505208900737",
 					},
 				}, {
-					Fields: map[string]any{},
+					Fields: map[string]any{
+						"id": "137982752092261989",
+					},
 					Raw: map[string]any{
 						"id":             "137982752092261989",
 						"clientUniqueId": "f77501df-0c70-4c38-b565-a3a09fee14fb",
@@ -136,7 +146,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 
 		{
 			Name:  "Successful read with 2 entries and cursor for next page",
-			Input: common.ReadParams{ObjectName: "calls"},
+			Input: common.ReadParams{ObjectName: "calls", Fields: []string{"id"}},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
@@ -145,7 +155,9 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{{
-					Fields: map[string]any{},
+					Fields: map[string]any{
+						"id": "52947912500572621",
+					},
 					Raw: map[string]any{
 						"id":             "52947912500572621",
 						"clientUniqueId": "ce93bb26-de69-41e3-8a7f-43ea3714b9e8",
@@ -154,7 +166,9 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 						"workspaceId":    "1007648505208900737",
 					},
 				}, {
-					Fields: map[string]any{},
+					Fields: map[string]any{
+						"id": "137982752092261989",
+					},
 					Raw: map[string]any{
 						"id":             "137982752092261989",
 						"clientUniqueId": "f77501df-0c70-4c38-b565-a3a09fee14fb",
@@ -170,7 +184,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:  "Incorrect data type in payload",
-			Input: common.ReadParams{ObjectName: "calls"},
+			Input: common.ReadParams{ObjectName: "calls", Fields: []string{"id"}},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)

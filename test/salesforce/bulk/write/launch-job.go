@@ -4,10 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/amp-labs/connectors/providers/salesforce"
-	testUtils "github.com/amp-labs/connectors/test/utils"
 	"os"
 	"time"
+
+	"github.com/amp-labs/connectors/providers/salesforce"
+	testUtils "github.com/amp-labs/connectors/test/utils"
 )
 
 func testBulkWriteOpportunity(ctx context.Context, conn *salesforce.Connector, filePath string) (string, error) {
