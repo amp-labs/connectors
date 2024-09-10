@@ -25,6 +25,7 @@ func (c *Connector) Limits(ctx context.Context) (*LimitsResponse, error) {
 	return limits, nil
 }
 
+// nolint:tagliatelle
 type LimitsResponse struct {
 	ActiveScratchOrgs struct {
 		Max       int `json:"Max"`
