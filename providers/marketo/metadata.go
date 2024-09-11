@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers/marketo/metadata"
 )
 
@@ -34,6 +35,8 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 		if err != nil {
 			return nil, err
 		}
+
+		url = c.retrieveSingleRecordParameter(url)
 
 		resp, err := c.Client.Get(ctx, url.String())
 		if err != nil {
@@ -117,4 +120,15 @@ func runFallback(obj string, res *common.ListObjectMetadataResult) *common.ListO
 	res.Result[obj] = *metadata
 
 	return res
+}
+
+func (c *Connector) retrieveSingleRecordParameter(url *urlbuilder.URL) *urlbuilder.URL {
+	switch c.Module {
+	case ModuleAssets.String():
+		url.WithQueryParam(assetsQueryParameter, metadataPageSize)
+	case ModuleLeads.String():
+		url.WithQueryParam(leadsQueryParameter, metadataPageSize)
+	}
+
+	return url
 }
