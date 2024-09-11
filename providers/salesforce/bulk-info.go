@@ -32,8 +32,9 @@ func (c *Connector) ListIngestJobsInfo(ctx context.Context, jobIds ...string) ([
 	// To collect all the jobs we need to return
 	var jobsInfo []GetJobInfoResult
 
-	// If we have jobIds, we create a set to keep track of the matches we need to find.
-	// Each time we get a match, we remove it from the set. If the set is empty, we can break the loop.
+	// If we have jobIds, we create a set to keep track of the matches we need to find. Each time we get
+	// a match, we remove it from the set. If the set is empty, we can break the loop to save time and unnecessary
+	// pagination.
 	pending := handy.NewSet[string](jobIds)
 
 	// To keep track of pages
@@ -48,7 +49,7 @@ func (c *Connector) ListIngestJobsInfo(ctx context.Context, jobIds ...string) ([
 			)
 		}
 
-		result, err := common.UnmarshalJSON[ListIngestJobsResult](res)
+		response, err := common.UnmarshalJSON[ListIngestJobsResult](res)
 		if err != nil {
 			return nil, fmt.Errorf(
 				"failed to unmarshal list ingest jobs info: %w",
@@ -57,17 +58,16 @@ func (c *Connector) ListIngestJobsInfo(ctx context.Context, jobIds ...string) ([
 		}
 
 		// Add the jobs we need to the list (or all of them if we don't have a filter)
-		for _, job := range result.Records {
-			if len(jobIds) == 0 || contains[string](jobIds, job.Id) {
-				jobsInfo = append(jobsInfo, job)
+		for _, result := range response.Records {
+			if len(jobIds) == 0 || contains[string](jobIds, result.Id) {
+				jobsInfo = append(jobsInfo, result)
 
-				if len(jobIds) > 0 {
-					pending.Remove(job.Id)
-				}
+				// This is a no-op if we don't have jobIds, or if the job is not in the set.
+				pending.Remove(result.Id)
 			}
 		}
 
-		if result.Done {
+		if response.Done {
 			break
 		}
 
@@ -82,8 +82,8 @@ func (c *Connector) ListIngestJobsInfo(ctx context.Context, jobIds ...string) ([
 			return nil, err
 		}
 
-		// getDomainURL escapes some of the characters in the nextRecordsURL, using the URL directly
-		location = domain.String() + result.NextRecordsURL
+		// getDomainURL escapes some of the characters in the nextRecordsURL, so we use the URL directly
+		location = domain.String() + response.NextRecordsURL
 	}
 
 	return jobsInfo, nil
