@@ -37,7 +37,7 @@ func MainFn() int {
 }
 
 func testCreatingOpportunities(ctx context.Context) error {
-	conn := apollo.GetApolloConnector(ctx, "apollo-creds.json")
+	conn := apollo.GetApolloConnector(ctx)
 
 	params := common.WriteParams{
 		ObjectName: "opportunities",
@@ -67,7 +67,7 @@ func testCreatingOpportunities(ctx context.Context) error {
 }
 
 func testUpdatingOpportunities(ctx context.Context) error {
-	conn := apollo.GetApolloConnector(ctx, "apollo-creds.json")
+	conn := apollo.GetApolloConnector(ctx)
 
 	params := common.WriteParams{
 		ObjectName: "opportunities",
@@ -97,7 +97,7 @@ func testUpdatingOpportunities(ctx context.Context) error {
 }
 
 func testCreatingAccounts(ctx context.Context) error {
-	conn := apollo.GetApolloConnector(ctx, "apollo-creds.json")
+	conn := apollo.GetApolloConnector(ctx)
 
 	params := common.WriteParams{
 		ObjectName: "accounts",

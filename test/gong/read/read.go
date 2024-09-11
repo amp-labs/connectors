@@ -2,56 +2,35 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"log/slog"
 	"os"
+	"os/signal"
+	"syscall"
 
-	"github.com/amp-labs/connectors"
+	"github.com/amp-labs/connectors/common"
 	connTest "github.com/amp-labs/connectors/test/gong"
-	"github.com/joho/godotenv"
-)
-
-const (
-	DefaultCredsFile = "creds.json"
+	"github.com/amp-labs/connectors/test/utils"
 )
 
 func main() {
-	os.Exit(mainFn())
-}
+	// Handle Ctrl-C gracefully.
+	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer done()
 
-func mainFn() int {
-	handler := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
-		Level: slog.LevelDebug,
-	})
+	// Set up slog logging.
+	utils.SetupLogging()
 
-	logger := slog.New(handler)
-	slog.SetDefault(logger)
+	conn := connTest.GetGongConnector(ctx)
+	defer utils.Close(conn)
 
-	if err := godotenv.Load(); err != nil {
-		slog.Warn("No .env file provided")
-	}
-
-	conn := connTest.GetGongConnector(context.Background(), DefaultCredsFile)
-
-	config := connectors.ReadParams{
+	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "calls", // could be calls, users
 		Fields:     []string{"url"},
-	}
-
-	result, err := conn.Read(context.Background(), config)
+	})
 	if err != nil {
-		slog.Error("Error reading from Gong", "error", err)
-		return 1
+		utils.Fail("error reading from Gong", "error", err)
 	}
 
-	jsonStr, err := json.MarshalIndent(result, "", "  ")
-	if err != nil {
-		slog.Error("Marshalling Error", "error", err)
-		return 1
-	}
-
-	_, _ = os.Stdout.Write(jsonStr)
-	_, _ = os.Stdout.WriteString("\n")
-
-	return 0
+	slog.Info("Reading calls..")
+	utils.DumpJSON(res, os.Stdout)
 }

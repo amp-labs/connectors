@@ -11,7 +11,7 @@ import (
 func main() {
 	ctx := context.Background()
 
-	conn := apollo.GetApolloConnector(ctx, "apollo-creds.json")
+	conn := apollo.GetApolloConnector(ctx)
 
 	m, err := conn.ListObjectMetadata(ctx, []string{"opportunities", "contact_stages", "email_accounts", "typed_custom_fields", "opportunity_stages", "users"})
 	if err != nil {
