@@ -57,6 +57,7 @@ func constructId(objectName string, resp *writeResponse) (string, error) {
 		recordId = resp.Result[0]["id"]
 		// By default the recordId is returned as a float64
 		recordId, success = recordId.(float64)
+
 		err = checkErr(resp, recordId, success)
 		if err != nil {
 			return "", err
@@ -66,6 +67,7 @@ func constructId(objectName string, resp *writeResponse) (string, error) {
 		recordId = resp.Result[0]["marketoGUID"]
 		// By default the recordId is returned as a string
 		recordId, success = recordId.(string)
+
 		err = checkErr(resp, recordId, success)
 		if err != nil {
 			return "", err
