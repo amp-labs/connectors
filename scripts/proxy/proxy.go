@@ -47,9 +47,11 @@ import (
 // Remember to run the script in the same directory as the script.
 // go run proxy.go
 
-var (
+const (
 	DefaultCredsFile = "creds.json"
 	DefaultPort      = 4444
+
+	SubstitutionsFieldName = "Substitutions"
 )
 
 // ==============================
@@ -61,64 +63,20 @@ var registry = scanning.NewRegistry()
 var readers = []scanning.Reader{
 	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
-		JSONPath: "$['clientId']",
-		KeyName:  "ClientId",
-	},
-	&scanning.JSONReader{
-		FilePath: DefaultCredsFile,
-		JSONPath: "$['clientSecret']",
-		KeyName:  "ClientSecret",
-	},
-	&scanning.JSONReader{
-		FilePath: DefaultCredsFile,
-		JSONPath: "$['scopes']",
-		KeyName:  "Scopes",
-	},
-	&scanning.JSONReader{
-		FilePath: DefaultCredsFile,
-		JSONPath: "$['provider']",
-		KeyName:  "Provider",
-	},
-	&scanning.JSONReader{
-		FilePath: DefaultCredsFile,
 		JSONPath: "$['substitutions']",
-		KeyName:  "Substitutions",
+		KeyName:  SubstitutionsFieldName,
 	},
-	&scanning.JSONReader{
-		FilePath: DefaultCredsFile,
-		JSONPath: "$['accessToken']",
-		KeyName:  "AccessToken",
-	},
-	&scanning.JSONReader{
-		FilePath: DefaultCredsFile,
-		JSONPath: "$['refreshToken']",
-		KeyName:  "RefreshToken",
-	},
-	&scanning.JSONReader{
-		FilePath: DefaultCredsFile,
-		JSONPath: "$['expiry']",
-		KeyName:  "Expiry",
-	},
-	&scanning.JSONReader{
-		FilePath: DefaultCredsFile,
-		JSONPath: "$['expiryFormat']",
-		KeyName:  "ExpiryFormat",
-	},
-	&scanning.JSONReader{
-		FilePath: DefaultCredsFile,
-		JSONPath: "$['apiKey']",
-		KeyName:  "ApiKey",
-	},
-	&scanning.JSONReader{
-		FilePath: DefaultCredsFile,
-		JSONPath: "$['userName']",
-		KeyName:  "UserName",
-	},
-	&scanning.JSONReader{
-		FilePath: DefaultCredsFile,
-		JSONPath: "$['password']",
-		KeyName:  "Password",
-	},
+	credscanning.Fields.Provider.GetJSONReader(DefaultCredsFile),
+	credscanning.Fields.ClientId.GetJSONReader(DefaultCredsFile),
+	credscanning.Fields.ClientSecret.GetJSONReader(DefaultCredsFile),
+	credscanning.Fields.Scopes.GetJSONReader(DefaultCredsFile),
+	credscanning.Fields.AccessToken.GetJSONReader(DefaultCredsFile),
+	credscanning.Fields.RefreshToken.GetJSONReader(DefaultCredsFile),
+	credscanning.Fields.Expiry.GetJSONReader(DefaultCredsFile),
+	credscanning.Fields.ExpiryFormat.GetJSONReader(DefaultCredsFile),
+	credscanning.Fields.ApiKey.GetJSONReader(DefaultCredsFile),
+	credscanning.Fields.Username.GetJSONReader(DefaultCredsFile),
+	credscanning.Fields.Password.GetJSONReader(DefaultCredsFile),
 }
 
 var debug = flag.Bool("debug", false, "Enable debug logging")
@@ -131,9 +89,9 @@ func main() {
 		panic(err)
 	}
 
-	provider := registry.MustString("Provider")
+	provider := registry.MustString(credscanning.Fields.Provider.Name)
 
-	substitutions, err := registry.GetMap("Substitutions")
+	substitutions, err := registry.GetMap(SubstitutionsFieldName)
 	if err != nil {
 		slog.Warn("no substitutions, ensure that the provider info doesn't have any {{variables}}")
 	}
@@ -194,7 +152,7 @@ func mainOAuth2AuthCode(ctx context.Context, provider string, catalogVariables [
 }
 
 func mainApiKey(ctx context.Context, provider string, catalogVariables []paramsbuilder.CatalogVariable) {
-	apiKey := registry.MustString("ApiKey")
+	apiKey := registry.MustString(credscanning.Fields.ApiKey.Name)
 	if apiKey == "" {
 		_, _ = fmt.Fprintln(os.Stderr, "api key from registry is empty")
 		os.Exit(1)
@@ -212,8 +170,8 @@ func mainBasic(ctx context.Context, provider string, catalogVariables []paramsbu
 }
 
 func createBasicParams() *providers.BasicParams {
-	user := registry.MustString("UserName")
-	pass := registry.MustString("Password")
+	user := registry.MustString(credscanning.Fields.Username.Name)
+	pass := registry.MustString(credscanning.Fields.Password.Name)
 
 	if len(user)+len(pass) == 0 {
 		log.Fatalf("Missing username or password")
@@ -234,10 +192,10 @@ func createBasicParams() *providers.BasicParams {
 }
 
 func createClientAuthParams(provider string) *ClientAuthParams {
-	clientId := registry.MustString("ClientId")
-	clientSecret := registry.MustString("ClientSecret")
+	clientId := registry.MustString(credscanning.Fields.ClientId.Name)
+	clientSecret := registry.MustString(credscanning.Fields.ClientSecret.Name)
 
-	scopes, err := registry.GetString("Scopes")
+	scopes, err := registry.GetString(credscanning.Fields.Scopes.Name)
 	if err != nil {
 		slog.Warn("no scopes attached, ensure that the provider doesn't require scopes")
 	}

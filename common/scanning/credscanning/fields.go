@@ -29,6 +29,9 @@ var Fields = struct { // nolint:gochecknoglobals
 	ApiKey Field
 	// Catalog variables
 	Workspace Field
+	// Oauth2
+	State  Field
+	Scopes Field
 }{
 	Provider: Field{
 		Name:      "provider",
@@ -84,6 +87,16 @@ var Fields = struct { // nolint:gochecknoglobals
 		Name:      "workspace",
 		PathJSON:  "substitutions.workspace",
 		SuffixENV: "WORKSPACE",
+	},
+	State: Field{
+		Name:      "state",
+		PathJSON:  "state",
+		SuffixENV: "STATE",
+	},
+	Scopes: Field{
+		Name:      "scopes",
+		PathJSON:  "scopes",
+		SuffixENV: "SCOPES",
 	},
 }
 
