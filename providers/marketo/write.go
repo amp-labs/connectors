@@ -49,6 +49,7 @@ func constructId(objectName string, resp *writeResponse) (string, error) {
 	var (
 		recordId any
 		success  bool
+		err      error
 	)
 
 	switch {
@@ -56,29 +57,18 @@ func constructId(objectName string, resp *writeResponse) (string, error) {
 		recordId = resp.Result[0]["id"]
 		// By default the recordId is returned as a float64
 		recordId, success = recordId.(float64)
-		if !success || recordId == 0 {
-			// This means, there is a recordLevel error.
-			// We return the recordLevel Err to the client
-			message, err := constructErrMessage(resp.Result)
-			if err != nil {
-				return "", err
-			}
-
-			return "", errors.New(message) //nolint: goerr113
+		err = checkErr(resp, recordId, success)
+		if err != nil {
+			return "", err
 		}
 
 	case usesMarketoGUID(objectName):
 		recordId = resp.Result[0]["marketoGUID"]
-		// By default the recordId is returned as a float64
+		// By default the recordId is returned as a string
 		recordId, success = recordId.(string)
-		if !success || recordId == "" {
-			// This means, there is a recordLevel error.
-			message, err := constructErrMessage(resp.Result)
-			if err != nil {
-				return "", err
-			}
-
-			return "", errors.New(message) //nolint: goerr113
+		err = checkErr(resp, recordId, success)
+		if err != nil {
+			return "", err
 		}
 
 	default:
@@ -86,4 +76,18 @@ func constructId(objectName string, resp *writeResponse) (string, error) {
 	}
 
 	return fmt.Sprint(recordId), nil
+}
+
+func checkErr(resp *writeResponse, recordId any, success bool) (err error) {
+	if !success || recordId == "" || recordId == 0 {
+		// This means, there is a recordLevel error.
+		message, err := constructErrMessage(resp.Result)
+		if err != nil {
+			return err
+		}
+
+		return errors.New(message) //nolint: goerr113
+	}
+
+	return nil
 }
