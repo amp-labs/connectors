@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"os"
 	"os/signal"
 	"syscall"
 
@@ -29,12 +28,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	filePath := os.Getenv("SALESLOFT_CRED_FILE")
-	if filePath == "" {
-		filePath = "./salesloft-creds.json"
-	}
-
-	conn := msTest.GetSalesloftConnector(ctx, filePath)
+	conn := msTest.GetSalesloftConnector(ctx)
 	defer utils.Close(conn)
 
 	fmt.Println("> TEST Create/Update/Delete ListView")

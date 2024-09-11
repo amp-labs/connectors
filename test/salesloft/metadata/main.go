@@ -4,12 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/amp-labs/connectors/common"
-	msTest "github.com/amp-labs/connectors/test/salesloft"
+	connTest "github.com/amp-labs/connectors/test/salesloft"
 	"github.com/amp-labs/connectors/test/utils"
 )
 
@@ -25,12 +24,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	filePath := os.Getenv("SALESLOFT_CRED_FILE")
-	if filePath == "" {
-		filePath = "./salesloft-creds.json"
-	}
-
-	conn := msTest.GetSalesloftConnector(ctx, filePath)
+	conn := connTest.GetSalesloftConnector(ctx)
 	defer utils.Close(conn)
 
 	response, err := conn.Read(ctx, common.ReadParams{

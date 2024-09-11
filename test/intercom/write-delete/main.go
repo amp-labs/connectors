@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"os"
 	"os/signal"
 	"strconv"
 	"syscall"
@@ -28,12 +27,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	filePath := os.Getenv("INTERCOM_CRED_FILE")
-	if filePath == "" {
-		filePath = "./intercom-creds.json"
-	}
-
-	conn := msTest.GetIntercomConnector(ctx, filePath)
+	conn := msTest.GetIntercomConnector(ctx)
 	defer utils.Close(conn)
 
 	fmt.Println("> TEST Create/Update/Delete Article")
