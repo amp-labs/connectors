@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"log"
 	"log/slog"
 	"net/http"
@@ -57,6 +58,8 @@ const (
 
 	WaitBeforeExitSeconds    = 1
 	ReadHeaderTimeoutSeconds = 3
+
+	SubstitutionsFieldName = "Substitutions"
 )
 
 // ================================
@@ -68,44 +71,16 @@ var registry = scanning.NewRegistry()
 var readers = []scanning.Reader{
 	&scanning.JSONReader{
 		FilePath: DefaultCredsFile,
-		JSONPath: "$['clientId']",
-		KeyName:  "ClientId",
-	},
-	&scanning.JSONReader{
-		FilePath: DefaultCredsFile,
-		JSONPath: "$['clientSecret']",
-		KeyName:  "ClientSecret",
-	},
-	&scanning.JSONReader{
-		FilePath: DefaultCredsFile,
-		JSONPath: "$['scopes']",
-		KeyName:  "Scopes",
-	},
-	&scanning.JSONReader{
-		FilePath: DefaultCredsFile,
-		JSONPath: "$['provider']",
-		KeyName:  "Provider",
-	},
-	&scanning.JSONReader{
-		FilePath: DefaultCredsFile,
 		JSONPath: "$['substitutions']",
-		KeyName:  "Substitutions",
+		KeyName:  SubstitutionsFieldName,
 	},
-	&scanning.JSONReader{
-		FilePath: DefaultCredsFile,
-		JSONPath: "$['state']",
-		KeyName:  "State",
-	},
-	&scanning.JSONReader{
-		FilePath: DefaultCredsFile,
-		JSONPath: "$['userName']",
-		KeyName:  "UserName",
-	},
-	&scanning.JSONReader{
-		FilePath: DefaultCredsFile,
-		JSONPath: "$['password']",
-		KeyName:  "Password",
-	},
+	credscanning.Fields.Provider.GetJSONReader(DefaultCredsFile),
+	credscanning.Fields.ClientId.GetJSONReader(DefaultCredsFile),
+	credscanning.Fields.ClientSecret.GetJSONReader(DefaultCredsFile),
+	credscanning.Fields.Scopes.GetJSONReader(DefaultCredsFile),
+	credscanning.Fields.State.GetJSONReader(DefaultCredsFile),
+	credscanning.Fields.Username.GetJSONReader(DefaultCredsFile),
+	credscanning.Fields.Password.GetJSONReader(DefaultCredsFile),
 }
 
 // OAuthApp is a simple OAuth app that can be used to get an OAuth token.
@@ -295,12 +270,12 @@ func setup() *OAuthApp {
 		return nil
 	}
 
-	substitutions, err := registry.GetMap("Substitutions")
+	substitutions, err := registry.GetMap(SubstitutionsFieldName)
 	if err != nil {
 		slog.Warn("no substitutions, ensure that the provider info doesn't have any {{variables}}", err)
 	}
 
-	provider := registry.MustString("Provider")
+	provider := registry.MustString(credscanning.Fields.Provider.Name)
 
 	providerInfo, err := providers.ReadInfo(provider, paramsbuilder.NewCatalogVariables(substitutions)...)
 	if err != nil {
@@ -322,10 +297,10 @@ func setup() *OAuthApp {
 	}
 
 	// Get the OAuth scopes from the flag.
-	clientId := registry.MustString("ClientId")
-	clientSecret := registry.MustString("ClientSecret")
+	clientId := registry.MustString(credscanning.Fields.ClientId.Name)
+	clientSecret := registry.MustString(credscanning.Fields.ClientSecret.Name)
 
-	scopes, err := registry.GetString("Scopes")
+	scopes, err := registry.GetString(credscanning.Fields.Scopes.Name)
 	if err != nil {
 		slog.Warn("no scopes attached, ensure that the provider doesn't require scopes")
 	}
@@ -343,7 +318,7 @@ func setup() *OAuthApp {
 		// Determine the OAuth redirect URL.
 		redirect := fmt.Sprintf("%s://localhost:%d%s", *proto, *port, *callback)
 
-		state, err := registry.GetString("State")
+		state, err := registry.GetString(credscanning.Fields.State.Name)
 		if err != nil {
 			slog.Warn("no state attached, ensure that the provider doesn't require state")
 		}
@@ -386,7 +361,7 @@ func setup() *OAuthApp {
 
 		return app
 	case providers.ClientCredentials:
-		state, err := registry.GetString("State")
+		state, err := registry.GetString(credscanning.Fields.State.Name)
 		if err != nil {
 			slog.Warn("no state attached, ensure that the provider doesn't require state")
 		}
@@ -413,13 +388,13 @@ func setup() *OAuthApp {
 
 		return app
 	case providers.Password:
-		state, err := registry.GetString("State")
+		state, err := registry.GetString(credscanning.Fields.State.Name)
 		if err != nil {
 			slog.Warn("no state attached, ensure that the provider doesn't require state")
 		}
 
-		username := registry.MustString("UserName")
-		password := registry.MustString("Password")
+		username := registry.MustString(credscanning.Fields.Username.Name)
+		password := registry.MustString(credscanning.Fields.Password.Name)
 
 		app := &OAuthApp{
 			GrantType: providers.Password,
