@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/handy"
 )
 
 type ListIngestJobsResult struct {
@@ -18,29 +19,25 @@ type ListIngestJobsResult struct {
 // ListIngestJobsInfo returns information about Ingest Jobs. If jobIds are provided, only those jobs are returned.
 // It is possible to get information about all current ingest jobs by not providing any jobIds. Note that Salesforce
 // returns terminal state jobs from a maximum of 7 days ago.
+// nolint:funlen,cyclop
 func (c *Connector) ListIngestJobsInfo(ctx context.Context, jobIds ...string) ([]GetJobInfoResult, error) {
 	url, err := c.getRestApiURL("jobs/ingest")
 	if err != nil {
 		return nil, err
 	}
 
-	// If we have jobIds, we need to keep track of which ones have been matched, so we can break early
-	var jobMatched map[string]bool
-	if len(jobIds) > 0 {
-		jobMatched = make(map[string]bool)
-		for _, id := range jobIds {
-			jobMatched[id] = false
-		}
-	}
-
 	// Filters out BigObjects / BulkAPI v1 jobs
 	url.WithQueryParam("jobType", "V2Ingest")
 
+	// To collect all the jobs we need to return
+	var jobsInfo []GetJobInfoResult
+
+	// If we have jobIds, we create a set to keep track of the matches we need to find.
+	// Each time we get a match, we remove it from the set. If the set is empty, we can break the loop.
+	pending := handy.NewSet[string](jobIds)
+
 	// To keep track of pages
 	location := url.String()
-
-	// Collect all jobs
-	var jobsInfo []GetJobInfoResult
 
 	for {
 		res, err := c.Client.Get(ctx, location)
@@ -59,47 +56,34 @@ func (c *Connector) ListIngestJobsInfo(ctx context.Context, jobIds ...string) ([
 			)
 		}
 
+		// Add the jobs we need to the list (or all of them if we don't have a filter)
 		for _, job := range result.Records {
-			// If there's no filter, or the job is in the filter, add it to the list
 			if len(jobIds) == 0 || contains[string](jobIds, job.Id) {
 				jobsInfo = append(jobsInfo, job)
 
-				// Match it if we have a filter to help break early
 				if len(jobIds) > 0 {
-					jobMatched[job.Id] = true
+					pending.Remove(job.Id)
 				}
 			}
 		}
 
-		if !result.Done {
-			// If we have a filter, and all jobs have been matched, we can break early
-			if len(jobIds) > 0 {
-				allMatched := true
-
-				for _, matched := range jobMatched {
-					if !matched {
-						allMatched = false
-						break
-					}
-				}
-
-				if allMatched {
-					break
-				}
-			}
-
-			// Else, get the next page
-			domain, err := c.getDomainURL()
-			if err != nil {
-				return nil, err
-			}
-
-			// getDomainURL escapes some of the characters in the nextRecordsURL, using the URL directly
-			location = domain.String() + result.NextRecordsURL
-		} else {
-			// If we're done, break
+		if result.Done {
 			break
 		}
+
+		// If we aren't done yet, check if we have all the jobs we need
+		if len(jobIds) > 0 && pending.IsEmpty() {
+			break
+		}
+
+		// Else, get the next page
+		domain, err := c.getDomainURL()
+		if err != nil {
+			return nil, err
+		}
+
+		// getDomainURL escapes some of the characters in the nextRecordsURL, using the URL directly
+		location = domain.String() + result.NextRecordsURL
 	}
 
 	return jobsInfo, nil
@@ -233,15 +217,4 @@ func contains[T comparable](s []T, e T) bool {
 	}
 
 	return false
-}
-
-// all is a quick helper function to check if all elements in a slice satisfy a predicate.
-func all[T any](s []T, f func(T) bool) bool {
-	for _, a := range s {
-		if !f(a) {
-			return false
-		}
-	}
-
-	return true
 }
