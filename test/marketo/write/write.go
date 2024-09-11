@@ -19,12 +19,20 @@ func main() {
 func MainFn() int {
 	ctx := context.Background()
 
+	// Uses standard ids
 	err := testWriteLeads(ctx)
 	if err != nil {
 		return 1
 	}
 
+	// Uses marketoGUIDs
 	err = testWriteOpportunities(ctx)
+	if err != nil {
+		return 1
+	}
+
+	// Uses marketoGUIDs
+	err = testWriteOpportunitiesFail(ctx)
 	if err != nil {
 		return 1
 	}
@@ -75,7 +83,7 @@ func testWriteOpportunities(ctx context.Context) error {
 		RecordData: map[string]any{
 			"input": []map[string]any{
 				{
-					"externalopportunityid": gofakeit.RandomString([]string{"opportunity 1", "opportunity 2", "opportunity 3", "opportunity 4"}),
+					"externalopportunityid": gofakeit.RandomString([]string{"opportunity 01", "opportunity 02", "opportunity 03", "opportunity 04"}),
 				},
 			},
 			"action": "createOnly",
@@ -84,7 +92,39 @@ func testWriteOpportunities(ctx context.Context) error {
 
 	res, err := conn.Write(ctx, params)
 	if err != nil {
-		slog.Info(err.Error())
+		slog.Error(err.Error())
+	}
+
+	// Print the results
+	jsonStr, err := json.MarshalIndent(res, "", "  ")
+	if err != nil {
+		return fmt.Errorf("error marshalling JSON: %w", err)
+	}
+
+	_, _ = os.Stdout.Write(jsonStr)
+	_, _ = os.Stdout.WriteString("\n")
+
+	return nil
+}
+
+func testWriteOpportunitiesFail(ctx context.Context) error {
+	conn := marketo.GetMarketoConnectorW(ctx)
+
+	params := common.WriteParams{
+		ObjectName: "opportunities",
+		RecordData: map[string]any{
+			"input": []map[string]any{
+				{
+					"seq": 0,
+				},
+			},
+			"action": "createOnly",
+		},
+	}
+
+	res, err := conn.Write(ctx, params)
+	if err != nil {
+		slog.Error(err.Error())
 	}
 
 	// Print the results
