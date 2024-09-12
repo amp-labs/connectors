@@ -2,13 +2,13 @@ package intercom
 
 import (
 	"context"
-	"github.com/amp-labs/connectors/common/scanning/credscanning"
-	"github.com/amp-labs/connectors/providers"
-	"golang.org/x/oauth2"
 	"net/http"
 
+	"github.com/amp-labs/connectors/common/scanning/credscanning"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/intercom"
 	"github.com/amp-labs/connectors/test/utils"
+	"golang.org/x/oauth2"
 )
 
 func GetIntercomConnector(ctx context.Context) *intercom.Connector {
