@@ -26,5 +26,5 @@ func (r ResponseError) CombineErr(base error) error {
 		return base
 	}
 
-	return fmt.Errorf("%w: %v", base, strings.Join(r.Errors, ","))
+	return fmt.Errorf("%w: %v", base, strings.Join(r.Errors, ", "))
 }
