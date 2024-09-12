@@ -2,13 +2,13 @@ package hubspot
 
 import (
 	"context"
-	"golang.org/x/oauth2"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/hubspot"
 	"github.com/amp-labs/connectors/test/utils"
+	"golang.org/x/oauth2"
 )
 
 // GetHubspotConnector returns a Hubspot connector.
