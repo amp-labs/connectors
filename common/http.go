@@ -23,7 +23,7 @@ type Header struct {
 // ResponseDifferentiator acts as an arbiter, categorizing a response as successful or erroneous.
 // The former would be a happy path for HTTPClient,
 // the later would invoke ErrorHandler producing an error object.
-type ResponseDifferentiator func(rsp *http.Response) bool
+type ResponseDifferentiator func(rsp *http.Response, body []byte) (bool, error)
 
 // ErrorHandler allows the caller to inject their own HTTP error handling logic.
 // All non-2xx responses will be passed to the error handler. If the error handler
@@ -58,12 +58,12 @@ func (h *HTTPClient) getURL(url string) (string, error) {
 	return getURL(h.Base, url)
 }
 
-func (h *HTTPClient) isSuccessfulResponse(response *http.Response) bool {
+func (h *HTTPClient) isSuccessfulResponse(response *http.Response, body []byte) (bool, error) {
 	if h.ResponseDifferentiator != nil {
-		return h.ResponseDifferentiator(response)
+		return h.ResponseDifferentiator(response, body)
 	}
 
-	return handy.HTTP.IsStatus2XX(response)
+	return handy.HTTP.IsStatus2XX(response), nil
 }
 
 func (h *HTTPClient) handleError(response *http.Response, body []byte) error {
@@ -322,7 +322,12 @@ func (h *HTTPClient) sendRequest(req *http.Request) (*http.Response, []byte, err
 		return nil, nil, fmt.Errorf("error reading response body: %w", err)
 	}
 
-	if !h.isSuccessfulResponse(response) {
+	success, err := h.isSuccessfulResponse(response, body)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if !success {
 		return nil, nil, h.handleError(response, body)
 	}
 
