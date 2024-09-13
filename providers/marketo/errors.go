@@ -6,6 +6,8 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+
+	"github.com/amp-labs/connectors/internal/datautils"
 )
 
 type Error struct {
@@ -37,7 +39,7 @@ func checkResponseLeverErr(body []byte) (bool, int, error) {
 		return false, 0, err
 	}
 
-	return (len(resp.Errors) > 0), code, nil
+	return len(resp.Errors) > 0, code, nil
 }
 
 func responseHandler(resp *http.Response) (*http.Response, error) { //nolint:cyclop
@@ -46,7 +48,7 @@ func responseHandler(resp *http.Response) (*http.Response, error) { //nolint:cyc
 		return nil, err
 	}
 
-	if resp.StatusCode >= 200 && resp.StatusCode <= 299 {
+	if success := datautils.HTTP.IsStatus2XX(resp); !success {
 		erroneous, code, err := checkResponseLeverErr(body)
 		if err != nil {
 			return nil, err

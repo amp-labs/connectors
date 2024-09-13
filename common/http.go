@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common/logging"
+	"github.com/amp-labs/connectors/internal/datautils"
 )
 
 // Header is a key/value pair that can be added to a request.
@@ -69,6 +70,14 @@ func redactSensitiveHeaders(hdrs []Header) []Header {
 	}
 
 	return redacted
+}
+
+func (h *HTTPClient) handleError(response *http.Response, body []byte) error {
+	if h.ErrorHandler != nil {
+		return h.ErrorHandler(response, body)
+	}
+
+	return InterpretError(response, body)
 }
 
 // Get makes a GET request to the given URL and returns the response. If the response is not a 2xx,
@@ -321,44 +330,35 @@ func makeDeleteRequest(ctx context.Context, url string, headers []Header) (*http
 // sendRequest sends the given request and returns the response & response body.
 func (h *HTTPClient) sendRequest(req *http.Request) (*http.Response, []byte, error) { //nolint:cyclop
 	// Send the request
-	res, err := h.Client.Do(req)
+	response, err := h.Client.Do(req)
+	defer datautils.HTTP.BodyClose(response)
+
 	if err != nil {
 		return nil, nil, err
 	}
 
 	// Apply the ResponseHandler if provided
 	if h.ResponseHandler != nil {
-		res, err = h.ResponseHandler(res)
+		response, err = h.ResponseHandler(response)
+		defer datautils.HTTP.BodyClose(response)
+
 		if err != nil {
 			return nil, nil, err
 		}
 	}
 
 	// Read the response body
-	body, err := io.ReadAll(res.Body)
-
-	defer func() {
-		if res != nil && res.Body != nil {
-			if closeErr := res.Body.Close(); closeErr != nil {
-				slog.Warn("unable to close response body", "error", closeErr)
-			}
-		}
-	}()
-
+	body, err := io.ReadAll(response.Body)
 	if err != nil {
 		return nil, nil, fmt.Errorf("error reading response body: %w", err)
 	}
 
 	// Check the response status code
-	if res.StatusCode < 200 || res.StatusCode > 299 {
-		if h.ErrorHandler != nil {
-			return nil, nil, h.ErrorHandler(res, body)
-		}
-
-		return nil, nil, InterpretError(res, body)
+	if success := datautils.HTTP.IsStatus2XX(response); !success {
+		return nil, nil, h.handleError(response, body)
 	}
 
-	return res, body, nil
+	return response, body, nil
 }
 
 // getURL returns the given URL if it is an absolute URL, or the given URL joined with the base URL.
