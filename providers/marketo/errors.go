@@ -1,12 +1,11 @@
 package marketo
 
 import (
-	"bytes"
 	"encoding/json"
-	"io"
 	"net/http"
 	"strconv"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
@@ -42,30 +41,32 @@ func checkResponseLeverErr(body []byte) (bool, int, error) {
 	return len(resp.Errors) > 0, code, nil
 }
 
-func responseHandler(resp *http.Response) (*http.Response, error) { //nolint:cyclop
-	body, err := io.ReadAll(resp.Body)
+func isSuccessfulResponse(resp *http.Response, body []byte) (bool, error) {
+	if success := datautils.HTTP.IsStatus2XX(resp); success {
+		return true, nil
+	}
+
+	erroneous, _, err := checkResponseLeverErr(body)
 	if err != nil {
-		return nil, err
+		return false, err
 	}
 
-	if success := datautils.HTTP.IsStatus2XX(resp); !success {
-		erroneous, code, err := checkResponseLeverErr(body)
-		if err != nil {
-			return nil, err
-		}
+	return !erroneous, nil
+}
 
-		// If response is 200 OK, but erroneous, we update the status code,
-		//  continue with the switch cases.
-		if erroneous {
-			statusCode := statusCodeMap(code)
-			resp.StatusCode = statusCode
-		}
+func interpretError(res *http.Response, body []byte) error {
+	erroneous, code, err := checkResponseLeverErr(body)
+	if err != nil {
+		return err
 	}
 
-	// reset body.
-	resp.Body = io.NopCloser(bytes.NewBuffer(body))
+	// If response is 200 OK, but erroneous, we update the status code
+	if erroneous {
+		statusCode := statusCodeMap(code)
+		res.StatusCode = statusCode
+	}
 
-	return resp, nil
+	return common.InterpretError(res, body)
 }
 
 // statusCodeMap maps the erroneous response from marketo, with a valid http status code.
