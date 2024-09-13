@@ -21,6 +21,11 @@ type Header struct {
 	Value string `json:"value"`
 }
 
+// ResponseDifferentiator acts as an arbiter, categorizing a response as successful or erroneous.
+// The former would be a happy path for HTTPClient,
+// the later would invoke ErrorHandler producing an error object.
+type ResponseDifferentiator func(rsp *http.Response) bool
+
 // ErrorHandler allows the caller to inject their own HTTP error handling logic.
 // All non-2xx responses will be passed to the error handler. If the error handler
 // returns nil, then the error is ignored and the caller is responsible for handling
@@ -33,10 +38,20 @@ type ResponseHandler func(rsp *http.Response) (*http.Response, error)
 
 // HTTPClient is an HTTP client that handles OAuth access token refreshes.
 type HTTPClient struct {
-	Base            string                  // optional base URL. If not set, then all URLs must be absolute.
-	Client          AuthenticatedHTTPClient // underlying HTTP client. Required.
-	ErrorHandler    ErrorHandler            // optional error handler. If not set, then the default error handler is used.
-	ResponseHandler ResponseHandler         // optional, Allows mutation of the http.Response from the Saas API response.
+	// Base is optional URL base. If not set, then all URLs must be absolute.
+	Base string
+
+	// Client is required. It is underlying HTTP client, a delegate.
+	Client AuthenticatedHTTPClient
+
+	// ResponseDifferentiator is optional arbiter that decides if response is successful
+	// otherwise ErrorHandler should be called. By default, response with status 2xx is considered successful.
+	ResponseDifferentiator ResponseDifferentiator
+
+	// ErrorHandler is optional. If not ser the default response error handler is used.
+	ErrorHandler ErrorHandler
+
+	ResponseHandler ResponseHandler // optional, Allows mutation of the http.Response from the Saas API response.
 }
 
 // getURL returns the base prefixed URL.
@@ -70,6 +85,14 @@ func redactSensitiveHeaders(hdrs []Header) []Header {
 	}
 
 	return redacted
+}
+
+func (h *HTTPClient) isSuccessfulResponse(response *http.Response) bool {
+	if h.ResponseDifferentiator != nil {
+		return h.ResponseDifferentiator(response)
+	}
+
+	return handy.HTTP.IsStatus2XX(response)
 }
 
 func (h *HTTPClient) handleError(response *http.Response, body []byte) error {
@@ -353,8 +376,7 @@ func (h *HTTPClient) sendRequest(req *http.Request) (*http.Response, []byte, err
 		return nil, nil, fmt.Errorf("error reading response body: %w", err)
 	}
 
-	// Check the response status code
-	if success := datautils.HTTP.IsStatus2XX(response); !success {
+	if !h.isSuccessfulResponse(response) {
 		return nil, nil, h.handleError(response, body)
 	}
 
