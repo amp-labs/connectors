@@ -9,7 +9,7 @@ import (
 
 const OAuthIntrospectResource = "oauth-introspect"
 
-var ErrUnknownUrlResource = errors.New("unknown url resource")
+var ErrUnknownURLResource = errors.New("unknown URL resource")
 
 func (c *Connector) GetURL(resource string, _ map[string]any) (string, error) {
 	if resource == OAuthIntrospectResource {
@@ -21,5 +21,5 @@ func (c *Connector) GetURL(resource string, _ map[string]any) (string, error) {
 		return u.String(), nil
 	}
 
-	return "", fmt.Errorf("%w: %s", ErrUnknownUrlResource, resource)
+	return "", fmt.Errorf("%w: %s", ErrUnknownURLResource, resource)
 }

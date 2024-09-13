@@ -27,9 +27,9 @@ type Connector interface {
 	Provider() providers.Provider
 }
 
-// UrlConnector is an interface that extends the Connector interface with the ability to
+// URLConnector is an interface that extends the Connector interface with the ability to
 // retrieve URLs for resources.
-type UrlConnector interface {
+type URLConnector interface {
 	Connector
 
 	// GetURL returns the URL of some resource. The resource is provider-specific.
