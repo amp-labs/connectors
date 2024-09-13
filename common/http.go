@@ -33,8 +33,6 @@ type ResponseDifferentiator func(rsp *http.Response, body []byte) (bool, error)
 // to the error handler as arguments.
 type ErrorHandler func(rsp *http.Response, body []byte) error
 
-type ResponseHandler func(rsp *http.Response) (*http.Response, error)
-
 // HTTPClient is an HTTP client that handles OAuth access token refreshes.
 type HTTPClient struct {
 	// Base is optional URL base. If not set, then all URLs must be absolute.
@@ -49,8 +47,6 @@ type HTTPClient struct {
 
 	// ErrorHandler is optional. If not ser the default response error handler is used.
 	ErrorHandler ErrorHandler
-
-	ResponseHandler ResponseHandler // optional, Allows mutation of the http.Response from the Saas API response.
 }
 
 // getURL returns the base prefixed URL.
@@ -304,16 +300,6 @@ func (h *HTTPClient) sendRequest(req *http.Request) (*http.Response, []byte, err
 
 	if err != nil {
 		return nil, nil, err
-	}
-
-	// Apply the ResponseHandler if provided
-	if h.ResponseHandler != nil {
-		response, err = h.ResponseHandler(response)
-		defer handy.HTTP.BodyClose(response)
-
-		if err != nil {
-			return nil, nil, err
-		}
 	}
 
 	// Read the response body
