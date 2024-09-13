@@ -60,3 +60,12 @@ func (s Set[T]) Has(key T) bool {
 
 	return ok
 }
+
+// Remove will delete a key from the set.
+func (s Set[T]) Remove(key T) {
+	delete(s, key)
+}
+
+func (s Set[T]) IsEmpty() bool {
+	return len(s) == 0
+}
