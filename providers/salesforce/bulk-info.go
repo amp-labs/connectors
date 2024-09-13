@@ -40,6 +40,7 @@ func (c *Connector) ListIngestJobsInfo(ctx context.Context, jobIds ...string) ([
 
 	// To keep track of pages
 	location := url.String()
+
 	domain, err := c.getDomainURL()
 	if err != nil {
 		return nil, err
