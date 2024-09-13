@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"slices"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/handy"
@@ -39,6 +40,10 @@ func (c *Connector) ListIngestJobsInfo(ctx context.Context, jobIds ...string) ([
 
 	// To keep track of pages
 	location := url.String()
+	domain, err := c.getDomainURL()
+	if err != nil {
+		return nil, err
+	}
 
 	for {
 		res, err := c.Client.Get(ctx, location)
@@ -59,7 +64,7 @@ func (c *Connector) ListIngestJobsInfo(ctx context.Context, jobIds ...string) ([
 
 		// Add the jobs we need to the list (or all of them if we don't have a filter)
 		for _, result := range response.Records {
-			if len(jobIds) == 0 || contains[string](jobIds, result.Id) {
+			if len(jobIds) == 0 || slices.Contains(jobIds, result.Id) {
 				jobsInfo = append(jobsInfo, result)
 
 				// This is a no-op if we don't have jobIds, or if the job is not in the set.
@@ -74,12 +79,6 @@ func (c *Connector) ListIngestJobsInfo(ctx context.Context, jobIds ...string) ([
 		// If we aren't done yet, check if we have all the jobs we need
 		if len(jobIds) > 0 && pending.IsEmpty() {
 			break
-		}
-
-		// Else, get the next page
-		domain, err := c.getDomainURL()
-		if err != nil {
-			return nil, err
 		}
 
 		// getDomainURL escapes some of the characters in the nextRecordsURL, so we use the URL directly
@@ -206,15 +205,4 @@ func (c *Connector) GetSuccessfulJobResults(ctx context.Context, jobId string) (
 	// Get the connector's JSONHTTPClient, which is a special HTTPClient that handles JSON responses,
 	// and use it's underlying http.Client to make the request.
 	return c.Client.HTTPClient.Client.Do(req)
-}
-
-// contains is a quick helper function to check if a slice contains a specific element.
-func contains[T comparable](s []T, e T) bool {
-	for _, a := range s {
-		if a == e {
-			return true
-		}
-	}
-
-	return false
 }
