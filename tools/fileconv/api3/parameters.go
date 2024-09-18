@@ -1,6 +1,7 @@
 package api3
 
 import (
+	"github.com/amp-labs/connectors/common/handy"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/iancoleman/strcase"
 )
@@ -19,6 +20,27 @@ func IdenticalObjectCheck(objectName, fieldName string) bool {
 // Ex: requesting contacts or leads or users will return payload with {"data":[...]}.
 func DataObjectCheck(objectName, fieldName string) bool {
 	return fieldName == "data"
+}
+
+// CustomMappingObjectCheck builds ObjectCheck using mapping,
+// which knows exceptions and patterns to determine response field name.
+//
+// Ex:
+//
+//	CustomMappingObjectCheck(handy.NewDefaultMap(map[string]string{
+//			"orders":	"orders",
+//			"carts":	"carts",
+//			"coupons":	"coupons",
+//		}, func(key string) string { return "data" }))
+//
+// This can be understood as follows: orders, carts, coupons REST resources will be found under JSON response field
+// matching "it's name", while the rest will be located under "data" field.
+func CustomMappingObjectCheck(dict *handy.DefaultMap[string, string]) ObjectCheck {
+	return func(objectName, fieldName string) bool {
+		expected := dict.Get(objectName)
+
+		return fieldName == expected
+	}
 }
 
 // DisplayNameProcessor allows to format Display Names.
