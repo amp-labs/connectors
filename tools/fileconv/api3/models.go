@@ -37,6 +37,7 @@ type Schema struct {
 	ObjectName  string
 	DisplayName string
 	Fields      []string
+	QueryParams []string
 	Problem     error
 }
 
@@ -80,6 +81,7 @@ func (p PathItem) RetrieveSchemaOperationGet(
 		ObjectName:  p.objectName,
 		DisplayName: displayName,
 		Fields:      fields,
+		QueryParams: getQueryParameters(operation),
 		Problem:     err,
 	}, true, nil
 }
@@ -128,6 +130,18 @@ func getItems(schema *openapi3.SchemaRef) (*openapi3.SchemaRef, bool) {
 	}
 
 	return schema.Value.Items, true
+}
+
+func getQueryParameters(operation *openapi3.Operation) []string {
+	queryParams := make([]string, 0, len(operation.Parameters))
+
+	for _, parameter := range operation.Parameters {
+		if parameter.Value.In == "query" {
+			queryParams = append(queryParams, parameter.Value.Name)
+		}
+	}
+
+	return queryParams
 }
 
 func extractSchema(operation *openapi3.Operation) *openapi3.Schema {
