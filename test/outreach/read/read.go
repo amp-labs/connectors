@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"github.com/amp-labs/connectors/test/utils"
 	"os"
 	"os/signal"
 	"syscall"
@@ -11,6 +10,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	connTest "github.com/amp-labs/connectors/test/outreach"
+	"github.com/amp-labs/connectors/test/utils"
 )
 
 func main() {
