@@ -29,6 +29,7 @@ func main() {
 
 	response, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: objectName,
+		Fields:     []string{"firstName", "lastName", "emailAddress"},
 	})
 	if err != nil {
 		utils.Fail("error reading from Gong", "error", err)

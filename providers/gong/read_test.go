@@ -35,6 +35,12 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			ExpectedErrs: []error{common.ErrMissingFields},
 		},
 		{
+			Name:         "Unsupported object name",
+			Input:        common.ReadParams{ObjectName: "butterflies", Fields: []string{"id"}},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
+		},
+		{
 			Name:         "Mime response header expected",
 			Input:        common.ReadParams{ObjectName: "calls", Fields: []string{"id"}},
 			Server:       mockserver.Dummy(),
@@ -81,7 +87,6 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			})),
 			ExpectedErrs: []error{jsonquery.ErrKeyNotFound},
 		},
-
 		{
 			Name:  "currentPageSize may be missing in payload",
 			Input: common.ReadParams{ObjectName: "calls", Fields: []string{"id"}},
@@ -105,7 +110,6 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			},
 			ExpectedErrs: nil,
 		},
-
 		{
 			Name:  "Successful read with 2 entries without cursor/next page",
 			Input: common.ReadParams{ObjectName: "calls", Fields: []string{"id"}},
