@@ -28,7 +28,9 @@ func (e Explorer) GetBasicReadObjects(
 	schemas := make([]Schema, 0)
 
 	for _, path := range e.GetBasicPathItems(newIgnorePathStrategy(ignoreEndpoints), objectEndpoints) {
-		schema, found, err := path.RetrieveSchemaOperationGet(displayNameOverride, check, e.displayPostProcessing)
+		schema, found, err := path.RetrieveSchemaOperationGet(
+			displayNameOverride, check, e.displayPostProcessing, e.parameterFilter,
+		)
 		if err != nil {
 			return nil, err
 		}

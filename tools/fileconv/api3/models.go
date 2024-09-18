@@ -51,10 +51,19 @@ func (s Schema) String() string {
 
 func (p PathItem) RetrieveSchemaOperationGet(
 	displayNameOverride map[string]string, check ObjectCheck, displayProcessor DisplayNameProcessor,
+	parameterFilter ParameterFilterGetMethod,
 ) (*Schema, bool, error) {
 	operation := p.delegate.Get
 	if operation == nil {
 		return nil, false, nil
+	}
+
+	if parameterFilter != nil {
+		ok := parameterFilter(p.objectName, operation)
+		if !ok {
+			// Omit this schema. We only work with GET method without required parameters
+			return nil, false, nil
+		}
 	}
 
 	schema := extractSchema(operation)
