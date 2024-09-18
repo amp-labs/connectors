@@ -27,3 +27,6 @@ These scripts offer:
 * Control over which parts of the OpenAPI spec are relevant for processing.
 * Formatting options for display names.
 * Establishing relationship between Resource/Object Name and JSON field name, containing said object.
+* Generating queryParamStats.json, which helps in analyzing the most common query parameters, 
+identifying support for **Since** querying, and determining which objects use them. 
+**Note:** These files are ignored by Git and are only used for analysis.

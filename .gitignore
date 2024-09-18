@@ -133,3 +133,5 @@ bin/
 .env
 
 vendor/
+
+**/queryParamStats.json
