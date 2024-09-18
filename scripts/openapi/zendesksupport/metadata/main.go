@@ -3,6 +3,7 @@ package main
 import (
 	"log/slog"
 
+	"github.com/amp-labs/connectors/providers/zendesksupport"
 	"github.com/amp-labs/connectors/providers/zendesksupport/metadata"
 	"github.com/amp-labs/connectors/providers/zendesksupport/openapi"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
@@ -67,11 +68,6 @@ var (
 		"satisfaction_reasons": "Satisfaction Rating Reasons",
 		"ticket_audits":        "Ticket Audits",
 	}
-	objectNameToResponseField = map[string]string{ // nolint:gochecknoglobals
-		"ticket_audits":        "audits",
-		"search":               "results", // This is "/api/v2/search"
-		"satisfaction_reasons": "reasons",
-	}
 )
 
 func main() {
@@ -84,7 +80,8 @@ func main() {
 	must(err)
 
 	objects, err := explorer.GetBasicReadObjects(
-		ignoreEndpoints, nil, displayNameOverride, IsResponseFieldAppropriate,
+		ignoreEndpoints, nil, displayNameOverride,
+		api3.CustomMappingObjectCheck(zendesksupport.ObjectNameToResponseField),
 	)
 	must(err)
 
@@ -106,14 +103,6 @@ func main() {
 	must(metadata.FileManager.SaveSchemas(schemas))
 
 	slog.Info("Completed.")
-}
-
-func IsResponseFieldAppropriate(objectName, fieldName string) bool {
-	if responseFieldName, ok := objectNameToResponseField[objectName]; ok {
-		return fieldName == responseFieldName
-	}
-
-	return api3.IdenticalObjectCheck(objectName, fieldName)
 }
 
 func must(err error) {
