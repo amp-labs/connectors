@@ -4,7 +4,9 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"testing"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -108,6 +110,31 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				Data: []common.ReadResultRow{},
 				Done: true,
 			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Since parameter is reflected in query parameter",
+			Input: common.ReadParams{
+				ObjectName: "calls",
+				Fields:     []string{"id"},
+				Since: time.Date(2024, 9, 19, 4, 30, 45, 600,
+					time.FixedZone("UTC-8", -8*60*60)),
+			},
+			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusOK)
+				mockutils.RespondToQueryParameters(w, r, url.Values{
+					// Pacific time to UTC is achieved by adding 8 hours
+					"fromDateTime": []string{"2024-09-19T12:30:45Z"},
+				}, func() {
+					w.WriteHeader(http.StatusOK)
+					_, _ = w.Write(fakeServerResp)
+				})
+			})),
+			Comparator: func(serverURL string, actual, expected *common.ReadResult) bool {
+				return actual.Rows == expected.Rows
+			},
+			Expected:     &common.ReadResult{Rows: 2},
 			ExpectedErrs: nil,
 		},
 		{
