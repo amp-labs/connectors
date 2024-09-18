@@ -6,7 +6,7 @@ func init() {
 	SetInfo(Dovetail, ProviderInfo{
 		DisplayName: "Dovetail",
 		AuthType:    ApiKey,
-		BaseURL:     "https://dovetail.com",
+		BaseURL:     "https://dovetail.com/api",
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Header,
 			Header: &ApiKeyOptsHeader{
