@@ -2,7 +2,6 @@ package apollo
 
 import (
 	"context"
-	"errors"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/jsonquery"
@@ -55,13 +54,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 
 		metadata, err := parseMetadataFromResponse(body, objectName)
 		if err != nil {
-			if errors.Is(err, common.ErrMetadataLoadFailure) {
-				metadataResult.Errors[objectName] = common.ErrMetadataLoadFailure
-
-				continue
-			} else {
-				return nil, err
-			}
+			return nil, err
 		}
 
 		metadata.DisplayName = objectName
