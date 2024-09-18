@@ -102,7 +102,7 @@ func extractFieldsFromArrayItem(objectName string, schema *openapi3.Schema, chec
 				// Those fields of an item are what we are after.
 				// Now ask the discriminator if this is the target List.
 				// It is possible that response has multiple arrays, that's why we are asking to resolve ambiguity.
-				if check(name, objectName) {
+				if check(objectName, name) {
 					return extractFields(items.Value)
 				}
 			}
