@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"time"
+
+	"github.com/amp-labs/connectors/common/handy"
 )
 
 var (
@@ -92,7 +94,7 @@ type ReadParams struct {
 	// The name of the object we are reading, e.g. "Account"
 	ObjectName string // required
 	// The fields we are reading from the object, e.g. ["Id", "Name", "BillingCity"]
-	Fields []string // required, at least one field needed
+	Fields handy.StringSet // required, at least one field needed
 	// NextPage is an opaque token that can be used to get the next page of results.
 	NextPage NextPageToken // optional, only set this if you want to read the next page of results
 	// Since is a timestamp that can be used to get only records that have changed since that time.

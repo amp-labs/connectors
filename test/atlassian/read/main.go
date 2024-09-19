@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	connTest "github.com/amp-labs/connectors/test/atlassian"
 	"github.com/amp-labs/connectors/test/utils"
@@ -24,9 +25,7 @@ func main() {
 	defer utils.Close(conn)
 
 	res, err := conn.Read(ctx, common.ReadParams{
-		Fields: []string{
-			"id", "summary", "status",
-		},
+		Fields: connectors.Fields("id", "summary", "status"),
 		// Below is the example to get issues that were updated in the last 15 min.
 		// Since: time.Now().Add(-15 * time.Minute),
 	})

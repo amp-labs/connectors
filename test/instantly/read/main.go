@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/amp-labs/connectors"
 	"log/slog"
 	"os"
 	"os/signal"
@@ -29,9 +30,9 @@ func main() {
 
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: objectName,
-		Fields: []string{
+		Fields: connectors.Fields(
 			"name",
-		},
+		),
 	})
 	if err != nil {
 		utils.Fail("error reading from Instantly", "error", err)

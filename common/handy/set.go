@@ -1,11 +1,23 @@
 package handy
 
+// NewStringSet and StringSet are Aliases.
+var NewStringSet = NewSet[string] // nolint:gochecknoglobals
+type StringSet = Set[string]
+
 // Set data structure that can hold any type of data.
 type Set[T comparable] map[T]struct{}
 
-// NewSet creates a set from slice.
-func NewSet[V comparable](values []V) Set[V] {
-	result := make(Set[V])
+// NewSet creates a set from multiple values.
+func NewSet[V comparable](values ...V) Set[V] {
+	result := make(Set[V], len(values))
+	result.Add(values)
+
+	return result
+}
+
+// NewSetFromList creates a set from slice.
+func NewSetFromList[V comparable](values []V) Set[V] {
+	result := make(Set[V], len(values))
 	result.Add(values)
 
 	return result
@@ -25,9 +37,12 @@ func (s Set[T]) AddOne(value T) {
 
 // List returns unique set in a shape of a slice.
 func (s Set[T]) List() []T {
-	list := make([]T, 0)
+	list := make([]T, len(s))
+	index := 0
+
 	for v := range s {
-		list = append(list, v)
+		list[index] = v
+		index += 1
 	}
 
 	return list

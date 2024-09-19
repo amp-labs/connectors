@@ -8,6 +8,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	connTest "github.com/amp-labs/connectors/test/hubspot"
 	"github.com/amp-labs/connectors/test/utils"
@@ -59,7 +60,7 @@ func main() {
 
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "contacts",
-		Fields:     []string{"email", "phone", "company", "website", "lastname", "firstname"},
+		Fields:     connectors.Fields("email", "phone", "company", "website", "lastname", "firstname"),
 		NextPage:   "",
 		Since:      time.Now().Add(-5 * time.Minute),
 	})

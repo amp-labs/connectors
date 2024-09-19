@@ -7,6 +7,7 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers/zendesksupport"
 	"github.com/amp-labs/connectors/test/utils"
@@ -99,9 +100,7 @@ func searchBrands(res *common.ReadResult, key, value string) map[string]any {
 func readBrands(ctx context.Context, conn *zendesksupport.Connector) *common.ReadResult {
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: objectName,
-		Fields: []string{
-			"id", "view", "name",
-		},
+		Fields:     connectors.Fields("id", "view", "name"),
 	})
 	if err != nil {
 		utils.Fail("error reading from ZendeskSupport", "error", err)

@@ -6,6 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/handy"
 	"github.com/amp-labs/connectors/providers/dynamicscrm"
@@ -99,9 +100,9 @@ func searchLead(res *common.ReadResult, key, value string) map[string]any {
 func readLeads(ctx context.Context, conn *dynamicscrm.Connector) *common.ReadResult {
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: objectName,
-		Fields: []string{
+		Fields: connectors.Fields(
 			"leadid", "lastname", "firstname", "companyname", "subject",
-		},
+		),
 	})
 	if err != nil {
 		utils.Fail("error reading from microsoft CRM", "error", err)

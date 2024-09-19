@@ -1,6 +1,9 @@
 package hubspot
 
-import "github.com/amp-labs/connectors/common"
+import (
+	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/handy"
+)
 
 type SearchParams struct {
 	// The name of the object we are reading, e.g. "Account"
@@ -12,7 +15,7 @@ type SearchParams struct {
 	// FilterBy is the filter to apply to the search
 	FilterGroups []FilterGroup // optional
 	// Fields is the list of fields to return in the result.
-	Fields []string // optional
+	Fields handy.Set[string] // optional
 }
 
 func (p SearchParams) ValidateParams() error {

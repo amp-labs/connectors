@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"github.com/amp-labs/connectors"
 	"log/slog"
 	"os/signal"
 	"syscall"
@@ -29,7 +30,7 @@ func main() {
 
 	response, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: objectName,
-		Fields:     []string{"firstName", "lastName", "emailAddress"},
+		Fields:     connectors.Fields("firstName", "lastName", "emailAddress"),
 	})
 	if err != nil {
 		utils.Fail("error reading from Gong", "error", err)

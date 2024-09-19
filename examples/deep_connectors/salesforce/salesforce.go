@@ -46,7 +46,7 @@ func salesforceDeepExample(ctx context.Context) error {
 	// Make a read request to Salesforce
 	result, err := conn.Read(ctx, connectors.ReadParams{
 		ObjectName: "Contact",
-		Fields:     []string{"FirstName", "LastName", "Email"},
+		Fields:     connectors.Fields("FirstName", "LastName", "Email"),
 	})
 	if err != nil {
 		return err
@@ -59,7 +59,7 @@ func salesforceDeepExample(ctx context.Context) error {
 	for !result.Done {
 		result, err = conn.Read(ctx, connectors.ReadParams{
 			ObjectName: "Contact",
-			Fields:     []string{"FirstName", "LastName", "Email"},
+			Fields:     connectors.Fields("FirstName", "LastName", "Email"),
 			NextPage:   result.NextPage,
 		})
 		if err != nil {

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/amp-labs/connectors"
 	"log"
 	"os"
 
@@ -42,7 +43,7 @@ func MainFn() int {
 func testReadContactsSearch(ctx context.Context, conn *ap.Connector) error {
 	params := common.ReadParams{
 		ObjectName: "contacts",
-		Fields:     []string{"id"},
+		Fields:     connectors.Fields("id"),
 		// NextPage:   "2",
 	}
 
@@ -66,7 +67,7 @@ func testReadContactsSearch(ctx context.Context, conn *ap.Connector) error {
 func testReadOpportunitiesSearch(ctx context.Context, conn *ap.Connector) error {
 	params := common.ReadParams{
 		ObjectName: "opportunities",
-		Fields:     []string{"id"},
+		Fields:     connectors.Fields("id"),
 	}
 
 	res, err := conn.Search(ctx, params)
@@ -89,7 +90,7 @@ func testReadOpportunitiesSearch(ctx context.Context, conn *ap.Connector) error 
 func testReadPeopleSearch(ctx context.Context, conn *ap.Connector) error {
 	params := common.ReadParams{
 		ObjectName: "mixed_people",
-		Fields:     []string{"id"},
+		Fields:     connectors.Fields("id"),
 	}
 
 	res, err := conn.Search(ctx, params)

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/amp-labs/connectors"
 	"log"
 	"os"
 	"time"
@@ -43,7 +44,7 @@ func MainFn() int {
 func testReadOpportunitiesSearch(ctx context.Context, conn *ap.Connector) error {
 	params := common.ReadParams{
 		ObjectName: "opportunities",
-		Fields:     []string{"id"},
+		Fields:     connectors.Fields("id"),
 	}
 
 	res, err := conn.Read(ctx, params)
@@ -66,7 +67,7 @@ func testReadOpportunitiesSearch(ctx context.Context, conn *ap.Connector) error 
 func testReadEmailAccounts(ctx context.Context, conn *ap.Connector) error {
 	params := common.ReadParams{
 		ObjectName: "email_accounts",
-		Fields:     []string{"user_id", "id", "email"},
+		Fields:     connectors.Fields("user_id", "id", "email"),
 		Since:      time.Now().Add(-1800 * time.Hour),
 	}
 
@@ -90,7 +91,7 @@ func testReadEmailAccounts(ctx context.Context, conn *ap.Connector) error {
 func testReadCustomFields(ctx context.Context, conn *ap.Connector) error {
 	params := common.ReadParams{
 		ObjectName: "typed_custom_fields",
-		Fields:     []string{"type", "id", "modality"},
+		Fields:     connectors.Fields("type", "id", "modality"),
 		Since:      time.Now().Add(-1800 * time.Hour),
 	}
 

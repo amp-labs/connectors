@@ -3,6 +3,7 @@ package common
 import (
 	"strings"
 
+	"github.com/amp-labs/connectors/common/handy"
 	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/spyzhov/ajson"
 )
@@ -23,7 +24,7 @@ func ParseResult(
 	recordsFunc func(*ajson.Node) ([]map[string]any, error),
 	nextPageFunc func(*ajson.Node) (string, error),
 	marshalFunc func([]map[string]any, []string) ([]ReadResultRow, error),
-	fields []string,
+	fields handy.Set[string],
 ) (*ReadResult, error) {
 	body, ok := resp.Body()
 	if !ok {
@@ -40,7 +41,7 @@ func ParseResult(
 		return nil, err
 	}
 
-	marshaledData, err := marshalFunc(records, fields)
+	marshaledData, err := marshalFunc(records, fields.List())
 	if err != nil {
 		return nil, err
 	}

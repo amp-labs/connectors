@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers/zendesksupport"
 	"github.com/amp-labs/connectors/test/utils"
@@ -28,9 +29,7 @@ func main() {
 
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: objectName,
-		Fields: []string{
-			"name", "time_zone", "role",
-		},
+		Fields:     connectors.Fields("name", "time_zone", "role"),
 	})
 	if err != nil {
 		utils.Fail("error reading from Zendesk Support", "error", err)
