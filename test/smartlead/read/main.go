@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	connTest "github.com/amp-labs/connectors/test/smartlead"
 	"github.com/amp-labs/connectors/test/utils"
@@ -27,9 +28,7 @@ func main() {
 
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: objectName,
-		Fields: []string{
-			"name", "status", "user_id",
-		},
+		Fields:     connectors.Fields("name", "status", "user_id"),
 	})
 	if err != nil {
 		utils.Fail("error reading from Smartlead", "error", err)

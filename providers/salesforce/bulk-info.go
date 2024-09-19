@@ -36,7 +36,7 @@ func (c *Connector) ListIngestJobsInfo(ctx context.Context, jobIds ...string) ([
 	// If we have jobIds, we create a set to keep track of the matches we need to find. Each time we get
 	// a match, we remove it from the set. If the set is empty, we can break the loop to save time and unnecessary
 	// pagination.
-	pending := handy.NewSet[string](jobIds)
+	pending := handy.NewSetFromList(jobIds)
 
 	// To keep track of pages
 	location := url.String()

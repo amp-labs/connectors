@@ -7,6 +7,7 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	connTest "github.com/amp-labs/connectors/test/salesforce"
 	"github.com/amp-labs/connectors/test/utils"
@@ -30,7 +31,7 @@ func main() {
 
 	response, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: objectName,
-		Fields:     []string{"*"},
+		Fields:     connectors.Fields("*"),
 	})
 	if err != nil {
 		utils.Fail("error reading from Salesforce", "error", err)

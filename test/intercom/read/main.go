@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers/intercom"
 	msTest "github.com/amp-labs/connectors/test/intercom"
@@ -26,11 +27,11 @@ func main() {
 
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "conversations",
-		Fields: []string{
+		Fields: connectors.Fields(
 			"id",
 			"state",
 			"type",
-		},
+		),
 	})
 	if err != nil {
 		utils.Fail("error reading from Intercom", "error", err)

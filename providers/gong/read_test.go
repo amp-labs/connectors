@@ -36,19 +36,19 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:         "Unsupported object name",
-			Input:        common.ReadParams{ObjectName: "butterflies", Fields: []string{"id"}},
+			Input:        common.ReadParams{ObjectName: "butterflies", Fields: connectors.Fields("id")},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
 		},
 		{
 			Name:         "Mime response header expected",
-			Input:        common.ReadParams{ObjectName: "calls", Fields: []string{"id"}},
+			Input:        common.ReadParams{ObjectName: "calls", Fields: connectors.Fields("id")},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{interpreter.ErrMissingContentType},
 		},
 		{
 			Name:  "Incorrect key in payload",
-			Input: common.ReadParams{ObjectName: "calls", Fields: []string{"id"}},
+			Input: common.ReadParams{ObjectName: "calls", Fields: connectors.Fields("id")},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
@@ -60,7 +60,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:  "Bad request handling test",
-			Input: common.ReadParams{ObjectName: "calls", Fields: []string{"id"}},
+			Input: common.ReadParams{ObjectName: "calls", Fields: connectors.Fields("id")},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusBadRequest)
@@ -77,7 +77,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:  "Records section is missing in the payload",
-			Input: common.ReadParams{ObjectName: "calls", Fields: []string{"id"}},
+			Input: common.ReadParams{ObjectName: "calls", Fields: connectors.Fields("id")},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
@@ -89,7 +89,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:  "currentPageSize may be missing in payload",
-			Input: common.ReadParams{ObjectName: "calls", Fields: []string{"id"}},
+			Input: common.ReadParams{ObjectName: "calls", Fields: connectors.Fields("id")},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
@@ -112,7 +112,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:  "Successful read with 2 entries without cursor/next page",
-			Input: common.ReadParams{ObjectName: "calls", Fields: []string{"id"}},
+			Input: common.ReadParams{ObjectName: "calls", Fields: connectors.Fields("id")},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
@@ -150,7 +150,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 
 		{
 			Name:  "Successful read with 2 entries and cursor for next page",
-			Input: common.ReadParams{ObjectName: "calls", Fields: []string{"id"}},
+			Input: common.ReadParams{ObjectName: "calls", Fields: connectors.Fields("id")},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
@@ -188,7 +188,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:  "Incorrect data type in payload",
-			Input: common.ReadParams{ObjectName: "calls", Fields: []string{"id"}},
+			Input: common.ReadParams{ObjectName: "calls", Fields: connectors.Fields("id")},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)

@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers/dynamicscrm"
 	connTest "github.com/amp-labs/connectors/test/dynamicscrm"
@@ -28,9 +29,7 @@ func main() {
 
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: objectName,
-		Fields: []string{
-			"fullname", "emailaddress1", "fax",
-		},
+		Fields:     connectors.Fields("fullname", "emailaddress1", "fax"),
 	})
 	if err != nil {
 		utils.Fail("error reading from microsoft CRM", "error", err)

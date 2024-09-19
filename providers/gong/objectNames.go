@@ -6,6 +6,6 @@ import (
 )
 
 // Supported object names can be found under schemas.json.
-var supportedObjectsByRead = handy.NewSet( //nolint:gochecknoglobals
+var supportedObjectsByRead = handy.NewSetFromList( //nolint:gochecknoglobals
 	metadata.Schemas.GetObjectNames(),
 )

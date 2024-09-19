@@ -55,8 +55,9 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 		return nil, err
 	}
 
-	if len(config.Fields) != 0 {
-		url.WithQueryParam("$select", strings.Join(config.Fields, ","))
+	fields := config.Fields.List()
+	if len(fields) != 0 {
+		url.WithQueryParam("$select", strings.Join(fields, ","))
 	}
 
 	return url, nil
