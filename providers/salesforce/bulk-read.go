@@ -17,6 +17,10 @@ import (
 //		Deleted: true,
 //	})
 func (c *Connector) BulkRead(ctx context.Context, params common.ReadParams) (*GetJobInfoResult, error) {
+	if err := params.ValidateParams(true); err != nil {
+		return nil, err
+	}
+
 	soql := makeSOQL(params)
 	// Note: if params.Deleted is set to true query will return only removed items.
 
