@@ -2,12 +2,12 @@ package main
 
 import (
 	"context"
-	"github.com/amp-labs/connectors"
 	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	connTest "github.com/amp-labs/connectors/test/salesforce"
 	"github.com/amp-labs/connectors/test/salesforce/bulk"

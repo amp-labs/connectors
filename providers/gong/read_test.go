@@ -116,7 +116,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			Name: "Since parameter is reflected in query parameter",
 			Input: common.ReadParams{
 				ObjectName: "calls",
-				Fields:     []string{"id"},
+				Fields:     connectors.Fields("id"),
 				Since: time.Date(2024, 9, 19, 4, 30, 45, 600,
 					time.FixedZone("UTC-8", -8*60*60)),
 			},

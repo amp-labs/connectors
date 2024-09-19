@@ -2,11 +2,11 @@ package main
 
 import (
 	"context"
-	"github.com/amp-labs/connectors"
 	"log/slog"
 	"os/signal"
 	"syscall"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers/instantly"
 	connTest "github.com/amp-labs/connectors/test/instantly"
