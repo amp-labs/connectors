@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/handy"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
@@ -58,7 +59,7 @@ func makeSOQL(config common.ReadParams) *soqlBuilder {
 
 	// If Since is not set, then we're doing a backfill. We read all rows (in pages)
 	if !config.Since.IsZero() {
-		soql.Where("SystemModstamp > " + config.Since.Format("2006-01-02T15:04:05Z"))
+		soql.Where("SystemModstamp > " + handy.Time.FormatRFC3339inUTC(config.Since))
 	}
 
 	if config.Deleted {
