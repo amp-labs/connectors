@@ -8,9 +8,9 @@ import (
 
 // Connector is a Hubspot connector.
 type Connector struct {
-	Module  string
 	BaseURL string
 	Client  *common.JSONHTTPClient
+	Module  common.Module
 }
 
 // NewConnector returns a new Hubspot connector.
@@ -20,7 +20,9 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		conn = nil
 	})
 
-	params, err := paramsbuilder.Apply(parameters{}, opts)
+	params, err := paramsbuilder.Apply(parameters{}, opts,
+		WithModule(ModuleEmpty), // The module is resolved on behalf of the user if the option is missing.
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -35,7 +37,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		Client: &common.JSONHTTPClient{
 			HTTPClient: params.Client.Caller,
 		},
-		Module: params.Module.Name,
+		Module: params.Module.Selection,
 	}
 
 	conn.setBaseURL(providerInfo.BaseURL)
