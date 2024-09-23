@@ -11,7 +11,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	if !supportedObjectsByRead.Has(config.ObjectName) {
+	if !supportedObjectsByRead[c.Module.ID].Has(config.ObjectName) {
 		return nil, common.ErrOperationNotSupportedForObject
 	}
 
