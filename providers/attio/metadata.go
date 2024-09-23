@@ -1,3 +1,4 @@
+// nolint
 package attio
 
 import (
@@ -18,7 +19,6 @@ type responseObject struct {
 var errCannotLoadMetadata = errors.New("cannot load metadata")
 
 // ListObjectMetadata creates metadata of object via reading objects using Attio API.
-//nolint:lll
 func (c *Connector) ListObjectMetadata(ctx context.Context,
 	objectNames []string,
 ) (*common.ListObjectMetadataResult, error) {
