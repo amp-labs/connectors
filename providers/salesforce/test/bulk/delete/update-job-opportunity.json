@@ -1,0 +1,12 @@
+{
+  "id": "750ak000009BkrxAAC",
+  "operation": "delete",
+  "object": "Opportunity",
+  "createdById": "005ak000005hvjJAAQ",
+  "createdDate": "2024-09-09T20:41:31.000+0000",
+  "systemModstamp": "2024-09-09T20:41:31.000+0000",
+  "state": "UploadComplete",
+  "concurrencyMode": "Parallel",
+  "contentType": "CSV",
+  "apiVersion": 59.0
+}
