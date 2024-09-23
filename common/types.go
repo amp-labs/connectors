@@ -83,7 +83,10 @@ var (
 	ErrRecordDataNotJSON = errors.New("record data is not JSON")
 
 	// ErrOperationNotSupportedForObject is returned when operation is not supported for this object.
-	ErrOperationNotSupportedForObject = errors.New("operation is not supported for this object")
+	ErrOperationNotSupportedForObject = errors.New("operation is not supported for this object in this module")
+
+	// ErrResolvingURLPathForObject is returned when URL cannot be implied for object name.
+	ErrResolvingURLPathForObject = errors.New("cannot resolve URL path for given object name")
 
 	// ErrFailedToUnmarshalBody is returned when response body cannot be marshalled into some type.
 	ErrFailedToUnmarshalBody = errors.New("failed to unmarshal response body")
