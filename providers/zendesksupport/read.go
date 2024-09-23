@@ -26,7 +26,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	responseFieldName := ObjectNameToResponseField.Get(config.ObjectName)
+	responseFieldName := ObjectNameToResponseField[c.Module.ID].Get(config.ObjectName)
 
 	return common.ParseResult(
 		rsp,
@@ -44,10 +44,5 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 	}
 
 	// First page
-	url, err := c.getURL(config.ObjectName)
-	if err != nil {
-		return nil, err
-	}
-
-	return url, nil
+	return c.getURL(config.ObjectName)
 }
