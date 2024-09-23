@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"log/slog"
 	"strings"
@@ -85,7 +86,8 @@ func createSchemas() {
 					if len(fieldName) != 0 {
 						newDisplayName, isList := handleDisplayName(model.DisplayName)
 						if isList {
-							schemas.Add(modelName, newDisplayName, fieldName, &model.URL)
+							schemas.Add("", modelName,
+								newDisplayName, fieldName, fmt.Sprintf("/%v", modelName), &model.URL)
 						}
 					}
 				})
