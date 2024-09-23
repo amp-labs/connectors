@@ -13,6 +13,7 @@ import (
 type Connector struct {
 	BaseURL   string
 	Workspace string
+	Module    common.Module
 	Client    *common.JSONHTTPClient
 }
 
