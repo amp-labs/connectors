@@ -18,7 +18,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Print the results
+	// Print the results.
 	fmt.Println("Results: ", m.Result)
 	fmt.Println("Errors: ", m.Errors)
 }
