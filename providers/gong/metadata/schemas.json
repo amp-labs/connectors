@@ -1,57 +1,64 @@
 {
-  "data": {
-    "calls": {
-      "displayName": "Calls",
-      "fields": {
-        "calendarEventId": "calendarEventId",
-        "clientUniqueId": "clientUniqueId",
-        "customData": "customData",
-        "direction": "direction",
-        "duration": "duration",
-        "id": "id",
-        "isPrivate": "isPrivate",
-        "language": "language",
-        "media": "media",
-        "meetingUrl": "meetingUrl",
-        "primaryUserId": "primaryUserId",
-        "purpose": "purpose",
-        "scheduled": "scheduled",
-        "scope": "scope",
-        "sdrDisposition": "sdrDisposition",
-        "started": "started",
-        "system": "system",
-        "title": "title",
-        "url": "url",
-        "workspaceId": "workspaceId"
-      }
-    },
-    "users": {
-      "displayName": "Users",
-      "fields": {
-        "active": "active",
-        "created": "created",
-        "emailAddress": "emailAddress",
-        "emailAliases": "emailAliases",
-        "extension": "extension",
-        "firstName": "firstName",
-        "id": "id",
-        "lastName": "lastName",
-        "managerId": "managerId",
-        "meetingConsentPageUrl": "meetingConsentPageUrl",
-        "personalMeetingUrls": "personalMeetingUrls",
-        "phoneNumber": "phoneNumber",
-        "settings": "settings",
-        "spokenLanguages": "spokenLanguages",
-        "title": "title",
-        "trustedEmailAddress": "trustedEmailAddress"
-      }
-    },
-    "workspaces": {
-      "displayName": "Workspaces",
-      "fields": {
-        "description": "description",
-        "id": "id",
-        "name": "name"
+  "modules": {
+    "": {
+      "objects": {
+        "calls": {
+          "displayName": "Calls",
+          "urlPath": "/v2/calls",
+          "fields": {
+            "calendarEventId": "calendarEventId",
+            "clientUniqueId": "clientUniqueId",
+            "customData": "customData",
+            "direction": "direction",
+            "duration": "duration",
+            "id": "id",
+            "isPrivate": "isPrivate",
+            "language": "language",
+            "media": "media",
+            "meetingUrl": "meetingUrl",
+            "primaryUserId": "primaryUserId",
+            "purpose": "purpose",
+            "scheduled": "scheduled",
+            "scope": "scope",
+            "sdrDisposition": "sdrDisposition",
+            "started": "started",
+            "system": "system",
+            "title": "title",
+            "url": "url",
+            "workspaceId": "workspaceId"
+          }
+        },
+        "users": {
+          "displayName": "Users",
+          "urlPath": "/v2/users",
+          "fields": {
+            "active": "active",
+            "created": "created",
+            "emailAddress": "emailAddress",
+            "emailAliases": "emailAliases",
+            "extension": "extension",
+            "firstName": "firstName",
+            "id": "id",
+            "lastName": "lastName",
+            "managerId": "managerId",
+            "meetingConsentPageUrl": "meetingConsentPageUrl",
+            "personalMeetingUrls": "personalMeetingUrls",
+            "phoneNumber": "phoneNumber",
+            "settings": "settings",
+            "spokenLanguages": "spokenLanguages",
+            "title": "title",
+            "trustedEmailAddress": "trustedEmailAddress"
+          }
+        },
+        "workspaces": {
+          "displayName": "Workspaces",
+          "urlPath": "/v2/workspaces",
+          "fields": {
+            "description": "description",
+            "id": "id",
+            "name": "name"
+          }
+        }
       }
     }
   }
