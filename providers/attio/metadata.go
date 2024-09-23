@@ -52,10 +52,9 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 		} else {
 			metadata, err = parseMetadataFromResponse(resp)
 		}
-		
+
 		if err != nil {
 			if errors.Is(err, errCannotLoadMetadata) {
-
 				continue
 			} else {
 				return nil, err
