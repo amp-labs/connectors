@@ -146,6 +146,11 @@
       "url": "https://developers.salesloft.com/docs/api/bulk-reschedule-tasks-create"
     },
     {
+      "name": "cadence-bulk-memberships-create",
+      "displayName": "Create cadence memberships in bulk",
+      "url": "https://developers.salesloft.com/docs/api/cadence-bulk-memberships-create"
+    },
+    {
       "name": "cadence-exports-show",
       "displayName": "Export a cadence",
       "url": "https://developers.salesloft.com/docs/api/cadence-exports-show"
