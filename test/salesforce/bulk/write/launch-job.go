@@ -22,7 +22,7 @@ func testBulkWriteOpportunity(ctx context.Context, conn *salesforce.Connector, f
 		ObjectName:      "Opportunity",
 		ExternalIdField: "external_id__c",
 		CSVData:         file,
-		Mode:            salesforce.Upsert,
+		Mode:            salesforce.UpsertMode,
 	})
 	if err != nil {
 		return "", fmt.Errorf("error bulk writing: %w", err)
