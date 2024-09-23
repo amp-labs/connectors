@@ -41,16 +41,21 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 		resp, err := c.Client.Get(ctx, url.String())
 		if err != nil {
 			metadataResult.Errors[obj] = err
+
 			continue
 		}
+
 		var metadata *common.ObjectMetadata
 		if obj == "self" {
+			// Getting the metadata for self object in separate function
 			metadata, err = parseMetadataForSelfObject(resp)
 		} else {
 			metadata, err = parseMetadataFromResponse(resp)
 		}
+		
 		if err != nil {
 			if errors.Is(err, errCannotLoadMetadata) {
+
 				continue
 			} else {
 				return nil, err
@@ -91,15 +96,18 @@ func parseMetadataForSelfObject(resp *common.JSONHTTPResponse) (*common.ObjectMe
 	if !ok {
 		return nil, errCannotLoadMetadata
 	}
+
 	bodyBytes, err := ajson.Marshal(body)
 	if err != nil || len(bodyBytes) == 0 {
 		return nil, errCannotLoadMetadata
 	}
+
 	// Parse the JSON bytes into a map[string]interface{}
 	var responseMap map[string]interface{}
 	if err := json.Unmarshal(bodyBytes, &responseMap); err != nil {
 		return nil, err
 	}
+
 	fieldsMap := map[string]string{}
 	for k := range responseMap {
 		fieldsMap[k] = k
@@ -108,5 +116,4 @@ func parseMetadataForSelfObject(resp *common.JSONHTTPResponse) (*common.ObjectMe
 	return &common.ObjectMetadata{
 		FieldsMap: fieldsMap,
 	}, nil
-
 }
