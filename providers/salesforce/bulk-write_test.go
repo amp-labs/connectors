@@ -2,6 +2,7 @@ package salesforce
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -158,32 +159,7 @@ func TestBulkWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				CSVData:         strings.NewReader(""),
 				Mode:            UpsertMode,
 			},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { // nolint:varnamelen
-				w.Header().Set("Content-Type", "application/json")
-				switch path := r.URL.Path; {
-				case strings.HasSuffix(path, "/services/data/v59.0/jobs/ingest"):
-					// Create job if body matches.
-					mockutils.RespondToBody(w, r, bodyRequest, func() {
-						w.WriteHeader(http.StatusOK)
-						_, _ = w.Write(responseCreateJob)
-					})
-				case strings.HasSuffix(path, "/services/data/v59.0/jobs/ingest/750ak000009BWKLAA4/batches"):
-					// We expect CSV to be uploaded via this endpoint.
-					w.WriteHeader(http.StatusCreated)
-					_, _ = w.Write([]byte{})
-				case strings.HasSuffix(path, "/services/data/v59.0/jobs/ingest/750ak000009BWKLAA4"):
-					// Mark job Completed.
-					mockutils.RespondToMethod(w, r, "PATCH", func() {
-						mockutils.RespondToBody(w, r, `{"state":"UploadComplete"}`, func() {
-							w.WriteHeader(http.StatusOK)
-							mockutils.WriteBody(w, `{...]`) // deliberate failure
-						})
-					})
-				default:
-					w.WriteHeader(http.StatusInternalServerError)
-					_, _ = w.Write([]byte{})
-				}
-			})),
+			Server:       createBulkJobServer(bodyRequest, responseCreateJob, []byte(`{...]`), "750ak000009BWKLAA4"),
 			ExpectedErrs: []error{ErrUpdateJob},
 		},
 		{
@@ -194,32 +170,7 @@ func TestBulkWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				CSVData:         strings.NewReader(""),
 				Mode:            UpsertMode,
 			},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { // nolint:varnamelen
-				w.Header().Set("Content-Type", "application/json")
-				switch path := r.URL.Path; {
-				case strings.HasSuffix(path, "/services/data/v59.0/jobs/ingest"):
-					// Create job if body matches.
-					mockutils.RespondToBody(w, r, bodyRequest, func() {
-						w.WriteHeader(http.StatusOK)
-						_, _ = w.Write(responseCreateJob)
-					})
-				case strings.HasSuffix(path, "/services/data/v59.0/jobs/ingest/750ak000009BWKLAA4/batches"):
-					// We expect CSV to be uploaded via this endpoint.
-					w.WriteHeader(http.StatusCreated)
-					_, _ = w.Write([]byte{})
-				case strings.HasSuffix(path, "/services/data/v59.0/jobs/ingest/750ak000009BWKLAA4"):
-					// Mark job Completed.
-					mockutils.RespondToMethod(w, r, "PATCH", func() {
-						mockutils.RespondToBody(w, r, `{"state":"UploadComplete"}`, func() {
-							w.WriteHeader(http.StatusOK)
-							_, _ = w.Write(responseUpdateJob)
-						})
-					})
-				default:
-					w.WriteHeader(http.StatusInternalServerError)
-					_, _ = w.Write([]byte{})
-				}
-			})),
+			Server: createBulkJobServer(bodyRequest, responseCreateJob, responseUpdateJob, "750ak000009BWKLAA4"),
 			Expected: &BulkOperationResult{
 				State: "UploadComplete",
 				JobId: "750ak000009BWKLAA4",
@@ -239,6 +190,49 @@ func TestBulkWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			})
 		})
 	}
+}
+
+// This server knows how to respond to the following events:
+// * Job created for certain request body.
+// * CSV was uploaded using JobID.
+// * Updated Job status as upload completed.
+// Otherwise, responds with internal server error that will break the tests which is intended.
+func createBulkJobServer(
+	bodyRequest string,
+	responseCreateJob []byte,
+	responseUpdateJob []byte,
+	jobID string,
+) *httptest.Server {
+	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { // nolint:varnamelen
+		w.Header().Set("Content-Type", "application/json")
+
+		switch path := r.URL.Path; {
+		case strings.HasSuffix(path, "/services/data/v59.0/jobs/ingest"):
+			// Create job if body matches.
+			mockutils.RespondToBody(w, r, bodyRequest, func() {
+				w.WriteHeader(http.StatusOK)
+				_, _ = w.Write(responseCreateJob)
+			})
+
+		case strings.HasSuffix(path, fmt.Sprintf("/services/data/v59.0/jobs/ingest/%v/batches", jobID)):
+			// We expect CSV to be uploaded via this endpoint.
+			w.WriteHeader(http.StatusCreated)
+			_, _ = w.Write([]byte{})
+
+		case strings.HasSuffix(path, fmt.Sprintf("/services/data/v59.0/jobs/ingest/%v", jobID)):
+			// Mark job Completed.
+			mockutils.RespondToMethod(w, r, "PATCH", func() {
+				mockutils.RespondToBody(w, r, `{"state":"UploadComplete"}`, func() {
+					w.WriteHeader(http.StatusOK)
+					_, _ = w.Write(responseUpdateJob)
+				})
+			})
+
+		default:
+			w.WriteHeader(http.StatusInternalServerError)
+			_, _ = w.Write([]byte{})
+		}
+	}))
 }
 
 type (

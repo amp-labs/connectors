@@ -45,7 +45,7 @@ type BulkOperationParams struct {
 	ObjectName string // required
 
 	// The name of a field on the object which is an External ID. Provided in the case of upserts, not inserts
-	ExternalIdField string // required
+	ExternalIdField string
 
 	// The path to the CSV file we are writing
 	CSVData io.Reader // required
