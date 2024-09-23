@@ -14,7 +14,7 @@ import (
 func (c *Connector) BulkDelete(ctx context.Context, params BulkOperationParams) (*BulkOperationResult, error) {
 	body := map[string]any{
 		"object":    params.ObjectName,
-		"operation": Delete,
+		"operation": DeleteMode,
 	}
 
 	return c.bulkOperation(ctx, params, body)

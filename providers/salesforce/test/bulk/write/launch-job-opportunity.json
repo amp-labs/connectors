@@ -1,0 +1,16 @@
+{
+  "id" : "750ak000009BWKLAA4",
+  "operation" : "upsert",
+  "object" : "Opportunity",
+  "createdById" : "005ak000005hvjJAAQ",
+  "createdDate" : "2024-09-09T19:25:27.000+0000",
+  "systemModstamp" : "2024-09-09T19:25:27.000+0000",
+  "state" : "Open",
+  "externalIdFieldName" : "external_id__c",
+  "concurrencyMode" : "Parallel",
+  "contentType" : "CSV",
+  "apiVersion" : 59.0,
+  "contentUrl" : "services/data/v59.0/jobs/ingest/750ak000009BWKLAA4/batches",
+  "lineEnding" : "LF",
+  "columnDelimiter" : "COMMA"
+}
