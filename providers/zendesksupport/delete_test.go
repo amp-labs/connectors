@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/amp-labs/connectors"
@@ -56,7 +57,13 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			Input: common.DeleteParams{ObjectName: "brands", RecordId: "31207417638931"},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondNoContentForMethod(w, r, "DELETE")
+				switch path := r.URL.Path; {
+				case strings.HasSuffix(path, "/v2/brands/31207417638931"):
+					mockutils.RespondNoContentForMethod(w, r, "DELETE")
+				default:
+					w.WriteHeader(http.StatusInternalServerError)
+					_, _ = w.Write([]byte{})
+				}
 			})),
 			Expected:     &common.DeleteResult{Success: true},
 			ExpectedErrs: nil,
