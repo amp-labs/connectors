@@ -12,7 +12,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 )
 
-func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
+func TestListObjectMetadataZendeskSupportModule(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
 	tests := []testroutines.Metadata{
@@ -23,8 +23,8 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
-			Name:         "Unknown object requested",
-			Input:        []string{"butterflies"},
+			Name:         "Object coming from different module is unknown",
+			Input:        []string{"articles"},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{staticschema.ErrObjectNotFound},
 		},
@@ -102,6 +102,72 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 
 			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
 				return constructTestConnector(tt.Server.URL, ModuleTicketing)
+			})
+		})
+	}
+}
+
+func TestListObjectMetadataHelpCenterModule(t *testing.T) { // nolint:funlen,gocognit,cyclop
+	t.Parallel()
+
+	tests := []testroutines.Metadata{
+		{
+			Name:         "Object coming from different module is unknown",
+			Input:        []string{"brands"},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{staticschema.ErrObjectNotFound},
+		},
+		{
+			Name:   "Successfully describe one object with metadata",
+			Input:  []string{"articles"},
+			Server: mockserver.Dummy(),
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"articles": {
+						DisplayName: "Articles",
+						FieldsMap: map[string]string{
+							"author_id":           "author_id",
+							"body":                "body",
+							"comments_disabled":   "comments_disabled",
+							"content_tag_ids":     "content_tag_ids",
+							"created_at":          "created_at",
+							"draft":               "draft",
+							"edited_at":           "edited_at",
+							"html_url":            "html_url",
+							"id":                  "id",
+							"label_names":         "label_names",
+							"locale":              "locale",
+							"outdated":            "outdated",
+							"outdated_locales":    "outdated_locales",
+							"permission_group_id": "permission_group_id",
+							"position":            "position",
+							"promoted":            "promoted",
+							"section_id":          "section_id",
+							"source_locale":       "source_locale",
+							"title":               "title",
+							"updated_at":          "updated_at",
+							"url":                 "url",
+							"user_segment_id":     "user_segment_id",
+							"user_segment_ids":    "user_segment_ids",
+							"vote_count":          "vote_count",
+							"vote_sum":            "vote_sum",
+						},
+					},
+				},
+				Errors: nil,
+			},
+			ExpectedErrs: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		// nolint:varnamelen
+		tt := tt // rebind, omit loop side effects for parallel goroutine
+		t.Run(tt.Name, func(t *testing.T) {
+			t.Parallel()
+
+			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
+				return constructTestConnector(tt.Server.URL, ModuleHelpCenter)
 			})
 		})
 	}
