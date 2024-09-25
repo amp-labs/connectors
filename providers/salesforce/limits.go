@@ -17,7 +17,7 @@ func (c *Connector) Limits(ctx context.Context) (*LimitsResponse, error) {
 		return nil, err
 	}
 
-	limits, err := common.UnmarshalJSON[LimitsResponse](response)
+	return common.UnmarshalJSON[LimitsResponse](response)
 	if err != nil {
 		return nil, err
 	}
