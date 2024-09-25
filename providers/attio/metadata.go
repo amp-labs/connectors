@@ -3,11 +3,9 @@ package attio
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/spyzhov/ajson"
 )
 
 // This struct is used for when the response data having slice of data.
@@ -15,8 +13,6 @@ type responseObject struct {
 	Result []map[string]any `json:"data"`
 	// Other fields
 }
-
-var errCannotLoadMetadata = errors.New("cannot load metadata")
 
 // ListObjectMetadata creates metadata of object via reading objects using Attio API.
 func (c *Connector) ListObjectMetadata(ctx context.Context,
@@ -48,13 +44,13 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 		var metadata *common.ObjectMetadata
 		if obj == "self" {
 			// Getting the metadata for self object in separate function
-			metadata, err = parseMetadataForSelfObject(resp)
+			metadata, err = parseMetadataForSingleObject(resp)
 		} else {
 			metadata, err = parseMetadataFromResponse(resp)
 		}
 
 		if err != nil {
-			if errors.Is(err, errCannotLoadMetadata) {
+			if errors.Is(err, common.ErrMissingExpectedValues) {
 				continue
 			} else {
 				return nil, err
@@ -68,6 +64,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 	return &metadataResult, nil
 }
 
+// This function is used for slice of objects
 func parseMetadataFromResponse(resp *common.JSONHTTPResponse) (*common.ObjectMetadata, error) {
 	response, err := common.UnmarshalJSON[responseObject](resp)
 	if err != nil {
@@ -75,7 +72,7 @@ func parseMetadataFromResponse(resp *common.JSONHTTPResponse) (*common.ObjectMet
 	}
 
 	if len(response.Result) == 0 {
-		return nil, errCannotLoadMetadata
+		return nil, common.ErrMissingExpectedValues
 	}
 
 	metadata := &common.ObjectMetadata{
@@ -90,25 +87,19 @@ func parseMetadataFromResponse(resp *common.JSONHTTPResponse) (*common.ObjectMet
 	return metadata, nil
 }
 
-func parseMetadataForSelfObject(resp *common.JSONHTTPResponse) (*common.ObjectMetadata, error) {
-	body, ok := resp.Body()
-	if !ok {
-		return nil, errCannotLoadMetadata
-	}
-
-	bodyBytes, err := ajson.Marshal(body)
-	if err != nil || len(bodyBytes) == 0 {
-		return nil, errCannotLoadMetadata
-	}
-
-	// Parse the JSON bytes into a map[string]interface{}
-	var responseMap map[string]interface{}
-	if err := json.Unmarshal(bodyBytes, &responseMap); err != nil {
+// This function used for parse single object response
+func parseMetadataForSingleObject(resp *common.JSONHTTPResponse) (*common.ObjectMetadata, error) {
+	response, err := common.UnmarshalJSON[map[string]any](resp)
+	if err != nil {
 		return nil, err
 	}
 
+	if response == nil {
+		return nil, common.ErrMissingExpectedValues
+	}
+
 	fieldsMap := map[string]string{}
-	for k := range responseMap {
+	for k := range *(response) {
 		fieldsMap[k] = k
 	}
 

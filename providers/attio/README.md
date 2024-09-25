@@ -9,8 +9,9 @@ Attio API version : v2
 | Object | Resource |
 | :-------- | :------- | 
 | Objects  | objects  | 
-| Lists | lists | read |
+| Lists | lists |
 | Meta  | self |
 | Workspace members | workspace_members |
 | Webhooks | webhooks | 
 | Tasks  | tasks |
+| Notes  | notes |
