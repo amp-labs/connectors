@@ -5,6 +5,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/tools/scrapper"
@@ -28,19 +29,25 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:   "Successfully describe one object with metadata",
-			Input:  []string{"flows"},
+			Input:  []string{"calls"},
 			Server: mockserver.Dummy(),
+			Comparator: func(baseURL string, actual, expected *common.ListObjectMetadataResult) bool {
+				return mockutils.MetadataResultComparator.SubsetFields(actual, expected)
+			},
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
-					"flows": {
-						DisplayName: "List Gong Engage flows (/v2/flows)",
+					"calls": {
+						DisplayName: "Calls",
 						FieldsMap: map[string]string{
-							"id":           "id",
-							"name":         "name",
-							"folderId":     "folderId",
-							"folderName":   "folderName",
-							"visibility":   "visibility",
-							"creationDate": "creationDate",
+							"id":          "id",
+							"language":    "language",
+							"purpose":     "purpose",
+							"scheduled":   "scheduled",
+							"scope":       "scope",
+							"started":     "started",
+							"title":       "title",
+							"url":         "url",
+							"workspaceId": "workspaceId",
 						},
 					},
 				},
@@ -50,30 +57,29 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:   "Successfully describe multiple objects with metadata",
-			Input:  []string{"workspaces", "logs"},
+			Input:  []string{"workspaces", "users"},
 			Server: mockserver.Dummy(),
+			Comparator: func(baseURL string, actual, expected *common.ListObjectMetadataResult) bool {
+				return mockutils.MetadataResultComparator.SubsetFields(actual, expected)
+			},
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"workspaces": {
-						DisplayName: "List all company workspaces (/v2/workspaces)",
+						DisplayName: "Workspaces",
 						FieldsMap: map[string]string{
 							"id":          "id",
 							"name":        "name",
 							"description": "description",
 						},
 					},
-					"logs": {
-						DisplayName: "Retrieve logs data by type and time range (/v2/logs)",
+					"users": {
+						DisplayName: "Users",
 						FieldsMap: map[string]string{
-							"userId":                   "userId",
-							"userEmailAddress":         "userEmailAddress",
-							"userFullName":             "userFullName",
-							"impersonatorUserId":       "impersonatorUserId",
-							"impersonatorEmailAddress": "impersonatorEmailAddress",
-							"impersonatorFullName":     "impersonatorFullName",
-							"impersonatorCompanyId":    "impersonatorCompanyId",
-							"eventTime":                "eventTime",
-							"logRecord":                "logRecord",
+							"id":          "id",
+							"firstName":   "firstName",
+							"lastName":    "lastName",
+							"managerId":   "managerId",
+							"phoneNumber": "phoneNumber",
 						},
 					},
 				},

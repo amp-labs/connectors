@@ -6,6 +6,7 @@ import (
 	"io"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/handy"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -25,6 +26,22 @@ type Connector interface {
 
 	// Provider returns the connector provider.
 	Provider() providers.Provider
+}
+
+// URLConnector is an interface that extends the Connector interface with the ability to
+// retrieve URLs for resources.
+type URLConnector interface {
+	Connector
+
+	// GetURL returns the URL of some resource. The resource is provider-specific.
+	// The URL is returned as a string, or an error is returned if the URL cannot be
+	// retrieved. The precise meaning of the resource is provider-specific, and the
+	// caller should consult the provider's documentation for more information.
+	// The args parameter is a map of key-value pairs that can be used to customize
+	// the URL. The keys and values are provider-specific, and the caller should
+	// consult the provider's documentation for more information. Certain providers
+	// may ignore the args parameter entirely if it's unnecessary.
+	GetURL(resource string, args map[string]any) (string, error)
 }
 
 // ReadConnector is an interface that extends the Connector interface with read capabilities.
@@ -83,3 +100,5 @@ type (
 
 	ErrorWithStatus = common.HTTPStatusError
 )
+
+var Fields = handy.NewStringSet // nolint:gochecknoglobals

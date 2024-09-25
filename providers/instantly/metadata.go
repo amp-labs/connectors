@@ -15,10 +15,5 @@ func (c *Connector) ListObjectMetadata(
 		return nil, common.ErrMissingObjects
 	}
 
-	schemas, err := metadata.FileManager.LoadSchemas()
-	if err != nil {
-		return nil, common.ErrMetadataLoadFailure
-	}
-
-	return schemas.Select(objectNames)
+	return metadata.Schemas.Select(objectNames)
 }

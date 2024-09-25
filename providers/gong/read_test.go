@@ -4,7 +4,9 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"testing"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -35,14 +37,20 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			ExpectedErrs: []error{common.ErrMissingFields},
 		},
 		{
+			Name:         "Unsupported object name",
+			Input:        common.ReadParams{ObjectName: "butterflies", Fields: connectors.Fields("id")},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
+		},
+		{
 			Name:         "Mime response header expected",
-			Input:        common.ReadParams{ObjectName: "calls", Fields: []string{"id"}},
+			Input:        common.ReadParams{ObjectName: "calls", Fields: connectors.Fields("id")},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{interpreter.ErrMissingContentType},
 		},
 		{
 			Name:  "Incorrect key in payload",
-			Input: common.ReadParams{ObjectName: "calls", Fields: []string{"id"}},
+			Input: common.ReadParams{ObjectName: "calls", Fields: connectors.Fields("id")},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
@@ -54,7 +62,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:  "Bad request handling test",
-			Input: common.ReadParams{ObjectName: "calls", Fields: []string{"id"}},
+			Input: common.ReadParams{ObjectName: "calls", Fields: connectors.Fields("id")},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusBadRequest)
@@ -71,7 +79,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:  "Records section is missing in the payload",
-			Input: common.ReadParams{ObjectName: "calls", Fields: []string{"id"}},
+			Input: common.ReadParams{ObjectName: "calls", Fields: connectors.Fields("id")},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
@@ -81,10 +89,9 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			})),
 			ExpectedErrs: []error{jsonquery.ErrKeyNotFound},
 		},
-
 		{
 			Name:  "currentPageSize may be missing in payload",
-			Input: common.ReadParams{ObjectName: "calls", Fields: []string{"id"}},
+			Input: common.ReadParams{ObjectName: "calls", Fields: connectors.Fields("id")},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
@@ -105,10 +112,34 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			},
 			ExpectedErrs: nil,
 		},
-
+		{
+			Name: "Since parameter is reflected in query parameter",
+			Input: common.ReadParams{
+				ObjectName: "calls",
+				Fields:     connectors.Fields("id"),
+				Since: time.Date(2024, 9, 19, 4, 30, 45, 600,
+					time.FixedZone("UTC-8", -8*60*60)),
+			},
+			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusOK)
+				mockutils.RespondToQueryParameters(w, r, url.Values{
+					// Pacific time to UTC is achieved by adding 8 hours
+					"fromDateTime": []string{"2024-09-19T12:30:45Z"},
+				}, func() {
+					w.WriteHeader(http.StatusOK)
+					_, _ = w.Write(fakeServerResp)
+				})
+			})),
+			Comparator: func(serverURL string, actual, expected *common.ReadResult) bool {
+				return actual.Rows == expected.Rows
+			},
+			Expected:     &common.ReadResult{Rows: 2},
+			ExpectedErrs: nil,
+		},
 		{
 			Name:  "Successful read with 2 entries without cursor/next page",
-			Input: common.ReadParams{ObjectName: "calls", Fields: []string{"id"}},
+			Input: common.ReadParams{ObjectName: "calls", Fields: connectors.Fields("id")},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
@@ -146,7 +177,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 
 		{
 			Name:  "Successful read with 2 entries and cursor for next page",
-			Input: common.ReadParams{ObjectName: "calls", Fields: []string{"id"}},
+			Input: common.ReadParams{ObjectName: "calls", Fields: connectors.Fields("id")},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
@@ -184,7 +215,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:  "Incorrect data type in payload",
-			Input: common.ReadParams{ObjectName: "calls", Fields: []string{"id"}},
+			Input: common.ReadParams{ObjectName: "calls", Fields: connectors.Fields("id")},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)

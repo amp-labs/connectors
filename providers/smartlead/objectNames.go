@@ -1,6 +1,9 @@
 package smartlead
 
-import "github.com/amp-labs/connectors/common/handy"
+import (
+	"github.com/amp-labs/connectors/common/handy"
+	"github.com/amp-labs/connectors/providers/smartlead/metadata"
+)
 
 const (
 	objectNameCampaign     = "campaigns"
@@ -8,12 +11,17 @@ const (
 	objectNameClient       = "client"
 )
 
-var supportedObjectsByWrite = handy.NewSet([]string{ //nolint:gochecknoglobals
+// Supported object names can be found under schemas.json.
+var supportedObjectsByRead = handy.NewSetFromList( //nolint:gochecknoglobals
+	metadata.Schemas.GetObjectNames(),
+)
+
+var supportedObjectsByWrite = handy.NewSet( //nolint:gochecknoglobals
 	objectNameCampaign,
 	objectNameEmailAccount,
 	objectNameClient,
-})
+)
 
-var supportedObjectsByDelete = handy.NewSet([]string{ //nolint:gochecknoglobals
+var supportedObjectsByDelete = handy.NewSet( //nolint:gochecknoglobals
 	objectNameCampaign,
-})
+)

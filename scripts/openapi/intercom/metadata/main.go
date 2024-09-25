@@ -7,6 +7,8 @@ package main
 import (
 	"log/slog"
 
+	"github.com/amp-labs/connectors/common/handy"
+	"github.com/amp-labs/connectors/providers/intercom"
 	"github.com/amp-labs/connectors/providers/intercom/metadata"
 	"github.com/amp-labs/connectors/providers/intercom/openapi"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
@@ -22,9 +24,6 @@ var (
 		"/conversations/search",
 		"/articles/search", // this one is similar to /articles
 	}
-	objectEndpoints = map[string]string{ // nolint:gochecknoglobals
-		// none
-	}
 	displayNameOverride = map[string]string{ // nolint:gochecknoglobals
 		"activity_logs":   "Activity Logs",
 		"data_attributes": "Data Attributes",
@@ -35,15 +34,6 @@ var (
 		"news_items":      "News Items",
 		"newsfeeds":       "Newsfeeds",
 	}
-	objectNameToResponseField = map[string]string{ // nolint:gochecknoglobals
-		"admins":        "admins",
-		"teams":         "teams",
-		"ticket_types":  "ticket_types",
-		"events":        "events",
-		"segments":      "segments",
-		"activity_logs": "activity_logs",
-		// the rest uses `data`
-	}
 )
 
 func main() {
@@ -51,11 +41,13 @@ func main() {
 	must(err)
 
 	objects, err := explorer.GetBasicReadObjects(
-		ignoreEndpoints, objectEndpoints, displayNameOverride, IsResponseFieldAppropriate,
+		ignoreEndpoints, nil, displayNameOverride,
+		api3.CustomMappingObjectCheck(intercom.ObjectNameToResponseField),
 	)
 	must(err)
 
 	schemas := scrapper.NewObjectMetadataResult()
+	registry := handy.Lists[string]{}
 
 	for _, object := range objects {
 		if object.Problem != nil {
@@ -68,20 +60,16 @@ func main() {
 		for _, field := range object.Fields {
 			schemas.Add(object.ObjectName, object.DisplayName, field, nil)
 		}
+
+		for _, queryParam := range object.QueryParams {
+			registry.Add(queryParam, object.ObjectName)
+		}
 	}
 
 	must(metadata.FileManager.SaveSchemas(schemas))
+	must(metadata.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
 
 	slog.Info("Completed.")
-}
-
-func IsResponseFieldAppropriate(fieldName, objectName string) bool {
-	if responseFieldName, ok := objectNameToResponseField[objectName]; ok {
-		return fieldName == responseFieldName
-	}
-
-	// Other objects have items located under `data` response field.
-	return api3.DataObjectCheck(fieldName, objectName)
 }
 
 func must(err error) {

@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	connTest "github.com/amp-labs/connectors/test/gong"
 	"github.com/amp-labs/connectors/test/utils"
@@ -25,7 +26,7 @@ func main() {
 
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "calls", // could be calls, users
-		Fields:     []string{"url"},
+		Fields:     connectors.Fields("url"),
 	})
 	if err != nil {
 		utils.Fail("error reading from Gong", "error", err)

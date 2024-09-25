@@ -78,8 +78,9 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 func makeQueryValues(config common.ReadParams) string {
 	queryValues := url.Values{}
 
-	if len(config.Fields) != 0 {
-		queryValues.Add("properties", strings.Join(config.Fields, ","))
+	fields := config.Fields.List()
+	if len(fields) != 0 {
+		queryValues.Add("properties", strings.Join(fields, ","))
 	}
 
 	if config.Deleted {

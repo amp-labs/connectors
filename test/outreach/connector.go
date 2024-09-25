@@ -2,13 +2,13 @@ package outreach
 
 import (
 	"context"
-	"github.com/amp-labs/connectors/common/scanning/credscanning"
-	"github.com/amp-labs/connectors/providers"
-	"golang.org/x/oauth2"
 	"net/http"
 
+	"github.com/amp-labs/connectors/common/scanning/credscanning"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/outreach"
 	"github.com/amp-labs/connectors/test/utils"
+	"golang.org/x/oauth2"
 )
 
 func GetOutreachConnector(ctx context.Context) *outreach.Connector {

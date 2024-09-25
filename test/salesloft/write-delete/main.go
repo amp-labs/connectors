@@ -6,6 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers/salesloft"
 	msTest "github.com/amp-labs/connectors/test/salesloft"
@@ -86,9 +87,7 @@ func searchListView(res *common.ReadResult, key, value string) map[string]any {
 func readListViews(ctx context.Context, conn *salesloft.Connector) *common.ReadResult {
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "saved_list_views",
-		Fields: []string{
-			"id", "view", "name",
-		},
+		Fields:     connectors.Fields("id", "view", "name"),
 	})
 	if err != nil {
 		utils.Fail("error reading from Salesloft", "error", err)

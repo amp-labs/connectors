@@ -80,8 +80,17 @@ func getNextPageStringURL(node *ajson.Node) (string, error) {
 	return jsonquery.New(node, "pages").StrWithDefault("next", "")
 }
 
-// The key that stores array in response payload will be dynamically figured out.
-// Ex: {"data": []} vs {"teams":[]} vs {"segments":[]}.
+// Intercom returns a type field which tells us where the response array is located,
+// which is why we do not need to hardcode the mapping. If we need to override this at any point,
+// we can add the mapping here.
+//
+// Other connectors don't have the ability to infer field names programmatically, so they rely on hardcoded mappings.
+// In this case, the response field name will be dynamically determined using the value of the "type" field.
+// Ex:
+//
+//	{"type":"data", "data": []}
+//	{"type":"teams", "teams":[]}
+//	{"type":"segments", "segments":[]}
 func extractListFieldName(node *ajson.Node) (string, error) {
 	// default field at which list is stored
 	defaultFieldName := "data"

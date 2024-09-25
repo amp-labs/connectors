@@ -2,12 +2,13 @@ package gong
 
 import (
 	"context"
+	"net/http"
+
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/gong"
 	"github.com/amp-labs/connectors/test/utils"
 	"golang.org/x/oauth2"
-	"net/http"
 )
 
 func GetGongConnector(ctx context.Context) *gong.Connector {

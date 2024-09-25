@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"log"
 	"log/slog"
 	"net/http"
@@ -21,6 +20,7 @@ import (
 
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/scanning"
+	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/providers"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"

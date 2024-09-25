@@ -37,6 +37,7 @@ type Schema struct {
 	ObjectName  string
 	DisplayName string
 	Fields      []string
+	QueryParams []string
 	Problem     error
 }
 
@@ -50,10 +51,19 @@ func (s Schema) String() string {
 
 func (p PathItem) RetrieveSchemaOperationGet(
 	displayNameOverride map[string]string, check ObjectCheck, displayProcessor DisplayNameProcessor,
+	parameterFilter ParameterFilterGetMethod,
 ) (*Schema, bool, error) {
 	operation := p.delegate.Get
 	if operation == nil {
 		return nil, false, nil
+	}
+
+	if parameterFilter != nil {
+		ok := parameterFilter(p.objectName, operation)
+		if !ok {
+			// Omit this schema. We only work with GET method without required parameters
+			return nil, false, nil
+		}
 	}
 
 	schema := extractSchema(operation)
@@ -80,6 +90,7 @@ func (p PathItem) RetrieveSchemaOperationGet(
 		ObjectName:  p.objectName,
 		DisplayName: displayName,
 		Fields:      fields,
+		QueryParams: getQueryParameters(operation),
 		Problem:     err,
 	}, true, nil
 }
@@ -102,7 +113,7 @@ func extractFieldsFromArrayItem(objectName string, schema *openapi3.Schema, chec
 				// Those fields of an item are what we are after.
 				// Now ask the discriminator if this is the target List.
 				// It is possible that response has multiple arrays, that's why we are asking to resolve ambiguity.
-				if check(name, objectName) {
+				if check(objectName, name) {
 					return extractFields(items.Value)
 				}
 			}
@@ -128,6 +139,18 @@ func getItems(schema *openapi3.SchemaRef) (*openapi3.SchemaRef, bool) {
 	}
 
 	return schema.Value.Items, true
+}
+
+func getQueryParameters(operation *openapi3.Operation) []string {
+	queryParams := make([]string, 0, len(operation.Parameters))
+
+	for _, parameter := range operation.Parameters {
+		if parameter.Value.In == "query" {
+			queryParams = append(queryParams, parameter.Value.Name)
+		}
+	}
+
+	return queryParams
 }
 
 func extractSchema(operation *openapi3.Operation) *openapi3.Schema {

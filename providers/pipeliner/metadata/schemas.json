@@ -284,7 +284,7 @@
       }
     },
     "ActivityKPIs": {
-      "displayName": "Activity Kp Is",
+      "displayName": "Activity KPIs",
       "fields": {
         "activity_id": "activity_id",
         "application_id": "application_id",
@@ -442,7 +442,7 @@
       }
     },
     "ApiAccesses": {
-      "displayName": "Api Accesses",
+      "displayName": "API Accesses",
       "fields": {
         "created": "created",
         "email": "email",
@@ -1082,7 +1082,7 @@
       }
     },
     "ContactKPIs": {
-      "displayName": "Contact Kp Is",
+      "displayName": "Contact KPIs",
       "fields": {
         "application_id": "application_id",
         "client": "client",
@@ -2151,7 +2151,7 @@
       }
     },
     "LeadOpptyKPIs": {
-      "displayName": "Lead Oppty Kp Is",
+      "displayName": "Lead Oppty KPIs",
       "fields": {
         "application_id": "application_id",
         "client": "client",
@@ -3316,7 +3316,7 @@
       }
     },
     "ProjectKPIs": {
-      "displayName": "Project Kp Is",
+      "displayName": "Project KPIs",
       "fields": {
         "application_id": "application_id",
         "client": "client",
@@ -3490,7 +3490,7 @@
       }
     },
     "QuoteKPIs": {
-      "displayName": "Quote Kp Is",
+      "displayName": "Quote KPIs",
       "fields": {
         "application_id": "application_id",
         "client": "client",
@@ -4253,7 +4253,7 @@
       }
     },
     "Webresources": {
-      "displayName": "Webresources",
+      "displayName": "Web Resources",
       "fields": {
         "created": "created",
         "display_param": "display_param",

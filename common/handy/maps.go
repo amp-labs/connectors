@@ -14,7 +14,7 @@ func (m Map[K, V]) Keys() []K {
 }
 
 func (m Map[K, V]) KeySet() Set[K] {
-	return NewSet(m.Keys())
+	return NewSetFromList(m.Keys())
 }
 
 func (m Map[K, V]) Has(key K) bool {

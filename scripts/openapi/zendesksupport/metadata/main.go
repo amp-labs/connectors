@@ -2,8 +2,9 @@ package main
 
 import (
 	"log/slog"
-	"strings"
 
+	"github.com/amp-labs/connectors/common/handy"
+	"github.com/amp-labs/connectors/providers/zendesksupport"
 	"github.com/amp-labs/connectors/providers/zendesksupport/metadata"
 	"github.com/amp-labs/connectors/providers/zendesksupport/openapi"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
@@ -13,6 +14,7 @@ import (
 var (
 	ignoreEndpoints = []string{ // nolint:gochecknoglobals
 		// Wild rules.
+		"/api/lotus/*",
 		"*/create_many",
 		"*/update_many",
 		"*/destroy_many",
@@ -26,13 +28,20 @@ var (
 		"*/active",
 		"*/export",
 		"*/definitions",
-		// Complex Path.
+		"*/assignable",
+		// Complex Path with multiple slashes.
 		"/api/v2/channels/twitter/tickets",
 		"/api/v2/suspended_tickets/attachments",
-		"/api/v2/group_memberships/assignable",
 		"/api/v2/dynamic_content/items",
 		"/api/v2/slas/policies",
 		"/api/v2/macros/*",
+		"/api/v2/object_layouts/essentials_cards",
+		"/api/v2/locales/public",
+		"/api/v2/views/compact",
+		"/api/v2/locales/agent",
+		"/api/v2/group_slas/policies",
+		"/api/v2/slas/policies",
+		"/api/v2/routing/requirements/fulfilled",
 		// Resources with search.
 		"/api/v2/users/search",
 		"/api/v2/requests/search",
@@ -43,9 +52,16 @@ var (
 		// Not applicable.
 		"/api/v2/channels/voice/tickets", // only POST method for create.
 		"/api/v2/imports/tickets",        // only POST method for create.
-	}
-	objectEndpoints = map[string]string{ // nolint:gochecknoglobals
-		// Path: /api/v2/problems -> additionalProperties (this is a dictionary/map/free-form data structure)
+		"/api/v2/custom_objects/limits/object_limit",
+		"/api/v2/users/me/session/renew",
+		"/api/v2/locales/current",
+		"/api/v2/locales/detect_best_locale",
+		"/api/v2/brands/check_host_mapping",
+		"/api/v2/views/count_many",
+		"/api/v2/accounts/available",
+		"/api/v2/users/me",
+		"/api/v2/custom_objects/limits/record_limit",
+		"/api/v2/account/settings",
 	}
 	displayNameOverride = map[string]string{ // nolint:gochecknoglobals
 		"search":               "Search Results",
@@ -53,48 +69,47 @@ var (
 		"satisfaction_reasons": "Satisfaction Rating Reasons",
 		"ticket_audits":        "Ticket Audits",
 	}
-	objectNameToResponseField = map[string]string{ // nolint:gochecknoglobals
-		"ticket_audits":        "audits",
-		"search":               "results", // This is "/api/v2/search"
-		"satisfaction_reasons": "reasons",
-	}
 )
 
 func main() {
 	explorer, err := openapi.FileManager.GetExplorer(
 		api3.WithDisplayNamePostProcessors(
-			func(displayName string) string {
-				return strings.ReplaceAll(displayName, "_", " ")
-			},
+			api3.CamelCaseToSpaceSeparated,
 			api3.CapitalizeFirstLetterEveryWord,
 		),
 	)
 	must(err)
 
 	objects, err := explorer.GetBasicReadObjects(
-		ignoreEndpoints, objectEndpoints, displayNameOverride, IsResponseFieldAppropriate,
+		ignoreEndpoints, nil, displayNameOverride,
+		api3.CustomMappingObjectCheck(zendesksupport.ObjectNameToResponseField),
 	)
 	must(err)
 
 	schemas := scrapper.NewObjectMetadataResult()
+	registry := handy.Lists[string]{}
 
 	for _, object := range objects {
+		if object.Problem != nil {
+			slog.Error("schema not extracted",
+				"objectName", object.ObjectName,
+				"error", object.Problem,
+			)
+		}
+
 		for _, field := range object.Fields {
 			schemas.Add(object.ObjectName, object.DisplayName, field, nil)
+		}
+
+		for _, queryParam := range object.QueryParams {
+			registry.Add(queryParam, object.ObjectName)
 		}
 	}
 
 	must(metadata.FileManager.SaveSchemas(schemas))
+	must(metadata.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
 
 	slog.Info("Completed.")
-}
-
-func IsResponseFieldAppropriate(fieldName, objectName string) bool {
-	if responseFieldName, ok := objectNameToResponseField[objectName]; ok {
-		return fieldName == responseFieldName
-	}
-
-	return api3.IdenticalObjectCheck(fieldName, objectName)
 }
 
 func must(err error) {

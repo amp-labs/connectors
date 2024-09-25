@@ -40,3 +40,26 @@ if this is the correct response field that will hold your schema. Some common im
 
 Additionally, Explorer can be configured to apply display name processing after data is extracted. For example, you can capitalize every word of display for better look.
 Edge cases should still be directly specified via **displayNameOverride** map.
+
+
+### Configuration
+
+The OpenAPI schema explorer can be configured to tailor the handling of edge cases. 
+```go
+openapi.FileManager.GetExplorer(
+    api3.WithDisplayNamePostProcessors(
+        api3.CamelCaseToSpaceSeparated,
+        api3.CapitalizeFirstLetterEveryWord,
+    )
+    api3.WithParameterFilterGetMethod(
+        api3.OnlyOptionalQueryParameters        		
+    )
+)
+```
+**Display Name.**
+You can define a chained formatters of display name. For example: 
+first, convert camel case into space-separated words; then, capitalize the first letters.
+Of course, a single method will suffice, but chained processors allow for better composition of out-of-the-box utility methods.
+
+**Parameter Filter.**
+Some GET methods can be ignored based on the endpoint's input parameters. For example, retain endpoints that have exclusively optional query parameters.
