@@ -18,11 +18,6 @@ func (c *Connector) Limits(ctx context.Context) (*LimitsResponse, error) {
 	}
 
 	return common.UnmarshalJSON[LimitsResponse](response)
-	if err != nil {
-		return nil, err
-	}
-
-	return limits, nil
 }
 
 // nolint:tagliatelle
