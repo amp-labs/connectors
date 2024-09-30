@@ -1,0 +1,22 @@
+{
+  "id" : "750ak000009Bq9OAAS",
+  "operation" : "upsert",
+  "object" : "Opportunity",
+  "createdById" : "005ak000005hvjJAAQ",
+  "createdDate" : "2024-09-09T21:32:31.000+0000",
+  "systemModstamp" : "2024-09-09T21:32:36.000+0000",
+  "state" : "InProgress",
+  "externalIdFieldName" : "external_id__c",
+  "concurrencyMode" : "Parallel",
+  "contentType" : "CSV",
+  "apiVersion" : 59.0,
+  "jobType" : "V2Ingest",
+  "lineEnding" : "LF",
+  "columnDelimiter" : "COMMA",
+  "numberRecordsProcessed" : 2000,
+  "numberRecordsFailed" : 0,
+  "retries" : 0,
+  "totalProcessingTime" : 0,
+  "apiActiveProcessingTime" : 1820,
+  "apexProcessingTime" : 0
+}
