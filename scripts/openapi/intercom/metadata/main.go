@@ -47,7 +47,7 @@ func main() {
 	must(err)
 
 	schemas := scrapper.NewObjectMetadataResult()
-	registry := handy.Lists[string]{}
+	registry := handy.NamedLists[string]{}
 
 	for _, object := range objects {
 		if object.Problem != nil {

@@ -36,7 +36,7 @@ func DataObjectCheck(objectName, fieldName string) bool {
 //
 // This can be understood as follows: orders, carts, coupons REST resources will be found under JSON response field
 // matching "it's name", while the rest will be located under "data" field.
-func CustomMappingObjectCheck(dict *handy.DefaultMap[string, string]) ObjectCheck {
+func CustomMappingObjectCheck(dict handy.DefaultMap[string, string]) ObjectCheck {
 	return func(objectName, fieldName string) bool {
 		expected := dict.Get(objectName)
 
