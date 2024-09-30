@@ -1,0 +1,23 @@
+{
+  "id" : "750ak000009E1YXAA0",
+  "operation" : "upsert",
+  "object" : "Opportunity",
+  "createdById" : "005ak000005hvjJAAQ",
+  "createdDate" : "2024-09-10T13:57:45.000+0000",
+  "systemModstamp" : "2024-09-10T13:57:50.000+0000",
+  "state" : "Failed",
+  "externalIdFieldName" : "external_id__c",
+  "concurrencyMode" : "Parallel",
+  "contentType" : "CSV",
+  "apiVersion" : 59.0,
+  "jobType" : "V2Ingest",
+  "lineEnding" : "LF",
+  "columnDelimiter" : "COMMA",
+  "numberRecordsProcessed" : 0,
+  "numberRecordsFailed" : 0,
+  "retries" : 0,
+  "totalProcessingTime" : 0,
+  "apiActiveProcessingTime" : 0,
+  "apexProcessingTime" : 0,
+  "errorMessage" : "InvalidBatch : Field name not found : StageName_invalid_field_on_purpose"
+}
