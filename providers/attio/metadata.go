@@ -3,7 +3,6 @@ package attio
 
 import (
 	"context"
-	"errors"
 
 	"github.com/amp-labs/connectors/common"
 )
@@ -37,24 +36,14 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 		resp, err := c.Client.Get(ctx, url.String())
 		if err != nil {
 			metadataResult.Errors[obj] = err
-
 			continue
 		}
 
 		var metadata *common.ObjectMetadata
-		if obj == "self" {
-			// Getting the metadata for self object in separate function
-			metadata, err = parseMetadataForSingleObject(resp)
-		} else {
-			metadata, err = parseMetadataFromResponse(resp)
-		}
-
+		metadata, err = parseMetadataFromResponse(resp)
 		if err != nil {
-			if errors.Is(err, common.ErrMissingExpectedValues) {
-				continue
-			} else {
-				return nil, err
-			}
+			metadataResult.Errors[obj] = err
+			continue
 		}
 
 		metadata.DisplayName = obj
@@ -85,25 +74,4 @@ func parseMetadataFromResponse(resp *common.JSONHTTPResponse) (*common.ObjectMet
 	}
 
 	return metadata, nil
-}
-
-// This function used for parse single object response
-func parseMetadataForSingleObject(resp *common.JSONHTTPResponse) (*common.ObjectMetadata, error) {
-	response, err := common.UnmarshalJSON[map[string]any](resp)
-	if err != nil {
-		return nil, err
-	}
-
-	if response == nil {
-		return nil, common.ErrMissingExpectedValues
-	}
-
-	fieldsMap := map[string]string{}
-	for k := range *(response) {
-		fieldsMap[k] = k
-	}
-
-	return &common.ObjectMetadata{
-		FieldsMap: fieldsMap,
-	}, nil
 }

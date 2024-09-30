@@ -3,9 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
-	"log/slog"
 
 	"github.com/amp-labs/connectors/test/attio"
+	"github.com/amp-labs/connectors/test/utils"
 )
 
 func main() {
@@ -13,9 +13,9 @@ func main() {
 
 	conn := attio.GetAttioConnector(ctx)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"objects", "lists", "self", "workspace_members", "webhooks", "tasks", "notes"})
+	m, err := conn.ListObjectMetadata(ctx, []string{"objects", "lists", "workspace_members", "webhooks", "tasks", "notes"})
 	if err != nil {
-		slog.Error(err.Error())
+		utils.Fail(err.Error())
 	}
 
 	// Print the results.

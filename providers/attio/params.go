@@ -29,3 +29,9 @@ func WithClient(ctx context.Context, client *http.Client,
 		params.WithOauthClient(ctx, client, config, token, opts...)
 	}
 }
+
+func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
+	return func(params *parameters) {
+		params.WithAuthenticatedClient(client)
+	}
+}

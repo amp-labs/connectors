@@ -6,12 +6,11 @@ Below is an exhaustive list of the supported Objects in the Attio deep connector
 
 Attio API version : v2
 
-| Object | Resource |
+| Object | Resource | Method
 | :-------- | :------- | 
-| Objects  | objects  | 
-| Lists | lists |
-| Meta  | self |
-| Workspace members | workspace_members |
-| Webhooks | webhooks | 
-| Tasks  | tasks |
-| Notes  | notes |
+| Objects  | objects | read
+| Lists | lists | read
+| Workspace members | workspace_members | read
+| Webhooks | webhooks | read
+| Tasks  | tasks | read
+| Notes  | notes | read
