@@ -176,8 +176,10 @@ func (t *oauth2Transport) RoundTrip(req *http.Request) (*http.Response, error) {
 		}()
 	}
 
-	var token *oauth2.Token
-	var err error
+	var (
+		token *oauth2.Token
+		err   error
+	)
 
 	srcCtx, ok := t.Source.(TokenSourceContext)
 	if ok {
