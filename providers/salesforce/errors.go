@@ -5,11 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/xquery"
-	"golang.org/x/oauth2"
 )
 
 var ErrCannotReadMetadata = errors.New("cannot read object metadata, it is possible you don't have the correct permissions set") // nolint:lll
@@ -64,20 +62,6 @@ func (c *Connector) interpretJSONError(res *http.Response, body []byte) error { 
 
 	// No known errors, just do the normal error handling logic
 	return common.InterpretError(res, body)
-}
-
-func handleError(err error) error {
-	var urlErr *url.Error
-	if errors.As(err, &urlErr) {
-		var oauthErr *oauth2.RetrieveError
-		if urlErr != nil && errors.As(urlErr.Err, &oauthErr) {
-			if oauthErr.ErrorCode == "invalid_grant" {
-				return errors.Join(common.ErrInvalidGrant, err)
-			}
-		}
-	}
-
-	return err
 }
 
 func (c *Connector) interpretXMLError(res *http.Response, body []byte) error {

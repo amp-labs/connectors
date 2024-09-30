@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"net/url"
+
+	"golang.org/x/oauth2"
 )
 
 // InterpretError interprets the given HTTP response (in a fairly straightforward
@@ -49,10 +52,21 @@ type ErrorPostProcessor struct {
 	Process func(err error) error
 }
 
+// This is the main gateway method that handles errors produced
+//   - by http clients JSON, XML, etc.;
+//   - by underlying oauth2 library;
+//
+// Otherwise if the connector has configured a callback it will be called to get
+// better error explanation.
 func (p ErrorPostProcessor) handleError(err error) error {
 	if err == nil {
 		return nil
 	}
+
+	// Errors may originate from different sources and libraries.
+	// Here, we monitor specific errors of interest and enhance them with synonymous errors
+	// that can be used in conditional logic by the end caller.
+	err = transformOauth2LibraryError(err)
 
 	switch {
 	case errors.Is(err, ErrAccessToken):
@@ -72,4 +86,22 @@ func (p ErrorPostProcessor) handleError(err error) error {
 
 		return err
 	}
+}
+
+// By default, errors coming from Oauth2 library are mapped here.
+// Any future errors that need to be converted to the in-house errors should be added here.
+// One important and widespread error is InvalidGrant which happens on invalid refresh token.
+func transformOauth2LibraryError(err error) error {
+	var urlErr *url.Error
+	if errors.As(err, &urlErr) {
+		var oauthErr *oauth2.RetrieveError
+		if urlErr != nil && errors.As(urlErr.Err, &oauthErr) {
+			if oauthErr.ErrorCode == "invalid_grant" {
+				return errors.Join(ErrInvalidGrant, err)
+			}
+		}
+	}
+
+	// otherwise, output is the same as input
+	return err
 }
