@@ -129,7 +129,7 @@ type queryParamObjectStats struct {
 
 // CalculateQueryParamStats produces statistics on objects and their query parameters.
 // queryParamRegistry - holds query parameter name to the list of object names that use it.
-func CalculateQueryParamStats(queryParamRegistry handy.Lists[string]) *QueryParamStats {
+func CalculateQueryParamStats(queryParamRegistry handy.NamedLists[string]) *QueryParamStats {
 	objects := handy.NewStringSet()
 	for _, objectNames := range queryParamRegistry {
 		objects.Add(objectNames)
@@ -138,7 +138,7 @@ func CalculateQueryParamStats(queryParamRegistry handy.Lists[string]) *QueryPara
 	totalUniqueObject := len(objects)
 
 	stats := NewQueryParamStats(totalUniqueObject)
-	queryParams := queryParamRegistry.GetBucketNames()
+	queryParams := queryParamRegistry.GetBuckets()
 
 	// sort query parameters, where most occurred come first
 	sort.SliceStable(queryParams, func(i, j int) bool {

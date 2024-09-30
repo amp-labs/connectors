@@ -101,7 +101,7 @@ func createQueryParamStats() {
 	index, err := metadata.FileManager.LoadIndex()
 	must(err)
 
-	registry := handy.Lists[string]{}
+	registry := handy.NamedLists[string]{}
 
 	filteredListDocs := getFilteredListDocs(index)
 	numObjects := len(filteredListDocs)
