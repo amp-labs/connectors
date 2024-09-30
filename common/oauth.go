@@ -189,7 +189,7 @@ func cloneRequest(r *http.Request) *http.Request {
 		r2.Header[k] = append([]string(nil), s...)
 	}
 
-	return r2
+	return r2.WithContext(r.Context())
 }
 
 func cloneResponse(r *http.Response) *http.Response {
