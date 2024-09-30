@@ -276,6 +276,33 @@ type observableTokenSource struct {
 	tokenSource  oauth2.TokenSource
 }
 
+func (w *observableTokenSource) TokenContext(ctx context.Context) (*oauth2.Token, error) {
+	w.mut.Lock()
+	defer w.mut.Unlock()
+
+	var (
+		tok *oauth2.Token
+		err error
+	)
+
+	srcCtx, ok := w.tokenSource.(TokenSourceContext)
+	if ok {
+		tok, err = srcCtx.TokenContext(ctx)
+	} else {
+		tok, err = w.tokenSource.Token()
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	if err := w.Observe(tok); err != nil {
+		return nil, err
+	}
+
+	return tok, nil
+}
+
 func (w *observableTokenSource) Token() (*oauth2.Token, error) {
 	w.mut.Lock()
 	defer w.mut.Unlock()
@@ -285,15 +312,23 @@ func (w *observableTokenSource) Token() (*oauth2.Token, error) {
 		return nil, err
 	}
 
+	if err := w.Observe(tok); err != nil {
+		return nil, err
+	}
+
+	return tok, nil
+}
+
+func (w *observableTokenSource) Observe(tok *oauth2.Token) error {
 	if w.HasChanged(tok) {
 		if err := w.tokenUpdated(w.lastKnown, tok); err != nil {
-			return nil, err
+			return err
 		}
 
 		w.lastKnown = tok
 	}
 
-	return tok, nil
+	return nil
 }
 
 func (w *observableTokenSource) HasChanged(tok *oauth2.Token) bool {
