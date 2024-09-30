@@ -8,6 +8,21 @@ import (
 	"golang.org/x/oauth2"
 )
 
+// TokenSourceContext is an interface that extends the oauth2.TokenSource interface
+// with a context. This is useful for token sources that need to be aware of the
+// context in which they are being called. The use of this interface is optional,
+// but if the token source conforms to it, then the context version of the Token
+// method will be called instead of the normal one.
+type TokenSourceContext interface {
+	oauth2.TokenSource
+
+	// TokenContext returns a token or an error.
+	// Token must be safe for concurrent use by multiple goroutines.
+	// The returned Token must not be modified.
+	// Similar semantics to oauth2.TokenSource, but with a context.
+	TokenContext(ctx context.Context) (*oauth2.Token, error)
+}
+
 type OAuthOption func(*oauthClientParams)
 
 // NewOAuthHTTPClient returns a new http client, with automatic OAuth authentication. Specifically
@@ -161,7 +176,16 @@ func (t *oauth2Transport) RoundTrip(req *http.Request) (*http.Response, error) {
 		}()
 	}
 
-	token, err := t.Source.Token()
+	var token *oauth2.Token
+	var err error
+
+	srcCtx, ok := t.Source.(TokenSourceContext)
+	if ok {
+		token, err = srcCtx.TokenContext(req.Context())
+	} else {
+		token, err = t.Source.Token()
+	}
+
 	if err != nil {
 		return nil, err
 	}
