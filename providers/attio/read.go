@@ -34,7 +34,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams, QueryPar
 
 	return common.ParseResult(
 		rsp,
-		recordsWrapperFunc("data"),
+		common.GetRecordsUnderJSONPath("data"),
 		dummyNextPageFunc,
 		common.GetMarshaledData,
 		config.Fields,

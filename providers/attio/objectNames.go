@@ -13,7 +13,6 @@ const (
 )
 
 var supportedObjectsByRead = handy.NewSet( //nolint:gochecknoglobals
-	// Object Name	----------	API endpoint path
 	objectNameObjects,
 	objectNameLists,
 	objectNameWorkspacemembers,
