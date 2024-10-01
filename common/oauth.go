@@ -35,6 +35,7 @@ type oauthClientParams struct {
 	config       *oauth2.Config
 	tokenSource  oauth2.TokenSource
 	tokenUpdated func(oldToken, newToken *oauth2.Token) error
+	unauthorized func(token *oauth2.Token, req *http.Request, rsp *http.Response) (*http.Response, error)
 	debug        func(req *http.Request, rsp *http.Response)
 }
 
@@ -66,6 +67,17 @@ func WithOAuthConfig(config *oauth2.Config) OAuthOption {
 func WithOAuthDebug(f func(req *http.Request, rsp *http.Response)) OAuthOption {
 	return func(params *oauthClientParams) {
 		params.debug = f
+	}
+}
+
+// WithOAuthUnauthorizedHandler sets the function to call whenever the response is 401 unauthorized.
+// This is useful for handling the case where the server has invalidated the token, and the client
+// needs to forcefully refresh. It's optional.
+func WithOAuthUnauthorizedHandler(
+	f func(token *oauth2.Token, req *http.Request, rsp *http.Response) (*http.Response, error),
+) OAuthOption {
+	return func(params *oauthClientParams) {
+		params.unauthorized = f
 	}
 }
 
@@ -123,17 +135,19 @@ func newOAuthClient(ctx context.Context, params *oauthClientParams) Authenticate
 	// whenever the current one expires.
 	return &http.Client{
 		Transport: &oauth2Transport{
-			Source: tokenSource,
-			Base:   params.client.Transport,
-			Debug:  params.debug,
+			Source:       tokenSource,
+			Base:         params.client.Transport,
+			Debug:        params.debug,
+			Unauthorized: params.unauthorized,
 		},
 	}
 }
 
 type oauth2Transport struct {
-	Source oauth2.TokenSource
-	Base   http.RoundTripper
-	Debug  func(req *http.Request, rsp *http.Response)
+	Source       oauth2.TokenSource
+	Base         http.RoundTripper
+	Debug        func(req *http.Request, rsp *http.Response)
+	Unauthorized func(token *oauth2.Token, req *http.Request, rsp *http.Response) (*http.Response, error)
 }
 
 func (t *oauth2Transport) RoundTrip(req *http.Request) (*http.Response, error) {
@@ -165,6 +179,15 @@ func (t *oauth2Transport) RoundTrip(req *http.Request) (*http.Response, error) {
 
 	if t.Debug != nil {
 		t.Debug(req2, cloneResponse(rsp))
+	}
+
+	// Certain providers return 401 when the token has been invalidated.
+	// This may indicate that the token needs to be forcefully refreshed.
+	// Since this is per-provider, the caller can provide a custom handler.
+	if rsp.StatusCode == http.StatusUnauthorized {
+		if t.Unauthorized != nil {
+			return t.Unauthorized(token, req2, rsp)
+		}
 	}
 
 	return rsp, nil
