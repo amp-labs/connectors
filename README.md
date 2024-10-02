@@ -9,7 +9,7 @@
 
 <div align="center">
 
-[![Discord](https://img.shields.io/badge/Join%20The%20Community-black?logo=discord)](https://discord.gg/BWP4BpKHvf) [![Documentation](https://img.shields.io/badge/Read%20our%20Documentation-black?logo=book)](https://docs.withampersand.com)
+[![Star us on GitHub](https://img.shields.io/github/stars/amp-labs/connectors?color=FFD700&label=Stars&logo=Github)](https://github.com/amp-labs/connectors) [![Discord](https://img.shields.io/badge/Join%20The%20Community-black?logo=discord)](https://discord.gg/BWP4BpKHvf) [![Documentation](https://img.shields.io/badge/Read%20our%20Documentation-black?logo=book)](https://docs.withampersand.com) ![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg) <img src="https://img.shields.io/static/v1?label=license&message=MIT&color=white" alt="License">
 </div>
 
 </div>
@@ -17,21 +17,36 @@
 <br/>
 
 
-Add enterprise-grade integrations to your SaaS this week. Bi-directional and customer-configurable. 
-
 <div align="center">
     <img src="https://res.cloudinary.com/dycvts6vp/image/upload/v1724756323/media/hqukkkmpk96zavslpmw5.png" alt="Ampersand Overview" width="100%">
 </div>
 
+# Overview
 
-Ampersand is a declarative platform for SaaS builders who are creating product integrations. It allow you to:
+[Ampersand](https://withampersand.com/trk=readme-github) is a declarative platform for SaaS builders who are creating product integrations. It allow you to:
 
 * Read data from your customer’s SaaS
 * Write data to your customer’s SaaS
 * Coming soon: subscribe to events (creates, deletes, and field changes) in your customer’s SaaS
 
 
-# Ampersand Connectors
+The key components include:
+
+- Manifest file: an amp.yaml file, where you define all your integrations: API to connect to, objects and fields you want to read or write, and configuration options you’d like to expose to your customers.
+
+- Ampersand server: a managed service that keeps track of each of your customer’s configurations, and makes the appropriate API calls to your customer’s SaaS, while optimizing for cost, handling retries and error message parsing.
+
+- Embeddable UI components with Ampersand, you can embed set-up, configuration, and management UIs that allow your end users to customize and manage their integrations.
+
+- Dashboard: our dashboard allows you to monitor and troubleshoot your customers’ integrations.
+
+
+Add enterprise-grade integrations to your SaaS this week. Bi-directional and customer-configurable.
+
+**[Get started now](https://dashboard.withampersand.com/sign-up?trk=readme-github).**q
+
+
+## Ampersand Connectors
 
 This is a Go library that makes it easier to make API calls to SaaS products such as Salesforce and Hubspot. It handles constructing the correct API requests given desired objects and fields.
 
@@ -69,7 +84,7 @@ client, err := salesforce.NewConnector(
 
 Auth connectors allow you to proxy through requests to a SaaS provider via Ampersand. 
 
-#### Adding a new provider
+### Adding a new provider
 
 To add a new basic connector that allows proxying through the ampersand platform, you need to add a new file to the `providers` package.
 
@@ -88,3 +103,11 @@ conn, err := connector.NewConnector(
 )
 ```
 This will **automatically** replace workspace catalog variable with an actual value that you have specified in the option.
+
+## Contributors
+
+Thankful to the OSS community for making Ampersand better every day.
+
+<a href="https://github.com/amp-labs/connectors/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=amp-labs/connectors" />
+</a>
