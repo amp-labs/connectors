@@ -43,7 +43,7 @@ The key components include:
 
 Add enterprise-grade integrations to your SaaS this week. Bi-directional and customer-configurable.
 
-**[Get started now](https://dashboard.withampersand.com/sign-up?trk=readme-github).**q
+**[Get started now](https://dashboard.withampersand.com/sign-up?trk=readme-github)**
 
 
 ## Ampersand Connectors
