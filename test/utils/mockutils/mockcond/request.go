@@ -21,6 +21,18 @@ func Method(methodName string) Check {
 	}
 }
 
+func MethodPOST() Check {
+	return Method("POST")
+}
+
+func MethodPUT() Check {
+	return Method("PUT")
+}
+
 func MethodPATCH() Check {
 	return Method("PATCH")
+}
+
+func MethodDELETE() Check {
+	return Method("DELETE")
 }
