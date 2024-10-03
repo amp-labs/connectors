@@ -20,3 +20,10 @@ var supportedObjectsByRead = handy.NewSet( //nolint:gochecknoglobals
 	objectNameTasks,
 	objectNameNotes,
 )
+
+var supportedObjectsByWrite = handy.NewSet( //nolint:gochecknoglobals
+	objectNameObjects,
+	objectNameLists,
+	objectNameTasks,
+	objectNameNotes,
+)
