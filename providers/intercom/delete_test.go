@@ -9,7 +9,7 @@ import (
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
-	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -54,12 +54,14 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Successful delete",
 			Input: common.DeleteParams{ObjectName: "articles", RecordId: "9333415"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToHeader(w, r, testApiVersionHeader, func() {
-					mockutils.RespondNoContentForMethod(w, r, "DELETE")
-				})
-			})),
+			Server: mockserver.Reactive{
+				Setup: mockserver.ContentJSON(),
+				Condition: mockcond.And{
+					mockcond.MethodDELETE(),
+					mockcond.Header(testApiVersionHeader),
+				},
+				OnSuccess: mockserver.Response(http.StatusNoContent),
+			}.Server(),
 			Expected:     &common.DeleteResult{Success: true},
 			ExpectedErrs: nil,
 		},
