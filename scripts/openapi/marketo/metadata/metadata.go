@@ -3,10 +3,12 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"log/slog"
 	"os"
 	"strings"
 
+	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/handy"
+	"github.com/amp-labs/connectors/providers/marketo/metadata"
 	"github.com/amp-labs/connectors/tools/scrapper"
 	"github.com/getkin/kin-openapi/openapi2"
 	"github.com/getkin/kin-openapi/openapi3"
@@ -17,11 +19,6 @@ var (
 	assets = "./scripts/openapi/marketo/metadata/asset.json" //nolint:gochecknoglobals
 	// leads is a absolute path to the leads file from root of the project.
 	leads = "./scripts/openapi/marketo/metadata/mapi.json" //nolint:gochecknoglobals
-
-	// schemas represents the file that holds the generated metadata.
-	// Creates it, if not available.
-	// This is be created at the root of the project.
-	schemas = "schemas.json" //nolint:gochecknoglobals
 )
 
 func main() {
@@ -29,61 +26,31 @@ func main() {
 	// 5 represents the amount of substrings that will be generated
 	// when path of interest is split using `/`
 	def, docA, err := constructDefinitions(assets, 5) //nolint:gomnd
-	if err != nil {
-		panic(err)
-	}
+	handy.Must(err)
 
 	// 4 represents the amount of substrings that will be generated
 	// when path of interest is split using `/`
 	ldef, docL, err := constructDefinitions(leads, 4) //nolint:gomnd
-	if err != nil {
-		panic(err)
-	}
+	handy.Must(err)
 
 	// Initializes an empty ObjectMetadata variable
 	objectMetadata := make(map[string]scrapper.ObjectMetadata)
 
 	// Add Lead metadata details
 	objectMetadata, err = generateMetadata(ldef, docL, objectMetadata)
-	if err != nil {
-		panic(err)
-	}
+	handy.Must(err)
 
 	// Adds Assets Metadata details to the same variable declared above.
 	objectMetadata, err = generateMetadata(def, docA, objectMetadata)
-	if err != nil {
-		panic(err)
-	}
+	handy.Must(err)
 
-	// wrap objectMetadata in `data` to not break the fileManager that reads the schema.
-	data := map[string]any{
-		"data": objectMetadata,
-	}
-
-	mb, err := json.Marshal(data)
-	if err != nil {
-		panic(err)
-	}
-
-	// Create a `schemas.json` file and Adds the metadata details to the file.
-	if err = writefile(mb); err != nil {
-		panic(err)
-	}
-}
-
-func writefile(b []byte) error {
-	f, err := os.Create(schemas)
-	if err != nil {
-		return err
-	}
-
-	if _, err := f.Write(b); err != nil {
-		return err
-	}
-
-	slog.Info("Successfully generated the metadata, written them to schemas.json")
-
-	return nil
+	handy.Must(metadata.FileManager.SaveSchemas(&scrapper.ObjectMetadataResult{
+		Modules: map[common.ModuleID]scrapper.Module{
+			"": {
+				Objects: objectMetadata,
+			},
+		},
+	}))
 }
 
 func constructDefinitions(file string, length int) (map[string]string, openapi2.T, error) {
@@ -158,6 +125,7 @@ func generateMetadata(objDefs map[string]string,
 
 		om := scrapper.ObjectMetadata{
 			DisplayName: obj,
+			URLPath:     fmt.Sprintf("/%v", obj),
 			FieldsMap:   fields,
 		}
 

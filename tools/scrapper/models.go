@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/handy"
 )
 
@@ -63,51 +64,93 @@ func (r *ModelURLRegistry) Sort() {
 }
 
 type ObjectMetadataResult struct {
-	// Result is a map of object names to object metadata
-	Result map[string]ObjectMetadata `json:"data"`
+	// Modules is a map of object names to object metadata
+	Modules map[common.ModuleID]Module `json:"modules"`
+}
+
+type Module struct {
+	Objects map[string]ObjectMetadata `json:"objects"`
 }
 
 type ObjectMetadata struct {
 	// Provider's display name for the object
 	DisplayName string `json:"displayName"`
 
+	// This is the endpoint URLPath to this REST API resource/object.
+	// It can be used to make request to "list objects".
+	URLPath string `json:"urlPath"`
+
 	// FieldsMap is a map of field names to field display names
 	FieldsMap map[string]string `json:"fields"`
 
-	// URL points to docs endpoint. Optional.
-	URL *string `json:"url,omitempty"`
+	// DocsURL points to docs endpoint. Optional.
+	DocsURL *string `json:"docs,omitempty"`
 }
 
 func NewObjectMetadataResult() *ObjectMetadataResult {
 	return &ObjectMetadataResult{
-		Result: make(map[string]ObjectMetadata),
+		Modules: make(map[common.ModuleID]Module),
 	}
 }
 
-func (r *ObjectMetadataResult) Add(objectName, objectDisplayName, fieldName string, url *string) {
-	data, ok := r.Result[objectName]
+func (r *ObjectMetadataResult) Add(
+	moduleID common.ModuleID,
+	objectName, objectDisplayName, fieldName, urlPath string,
+	docsURL *string,
+) {
+	module := r.getModule(moduleID)
+
+	data, ok := module.Objects[objectName]
 	if !ok {
 		data = ObjectMetadata{
 			DisplayName: objectDisplayName,
+			URLPath:     urlPath,
 			FieldsMap:   make(map[string]string),
-			URL:         url,
+			DocsURL:     docsURL,
 		}
-		r.Result[objectName] = data
+		module.Objects[objectName] = data
 	}
 
 	data.FieldsMap[fieldName] = fieldName
 }
 
-func (r *ObjectMetadataResult) GetObjectNames() []string {
-	names := make([]string, len(r.Result))
-	index := 0
-
-	for key := range r.Result {
-		names[index] = key
-		index += 1
+func (r *ObjectMetadataResult) getModule(moduleID common.ModuleID) Module {
+	module, ok := r.Modules[moduleID]
+	if !ok {
+		// new module
+		module = Module{
+			Objects: make(map[string]ObjectMetadata),
+		}
+		r.Modules[moduleID] = module
 	}
 
-	return names
+	return module
+}
+
+// GetObjectNames provides a registry of object names grouped by module.
+func (r *ObjectMetadataResult) GetObjectNames() handy.UniqueLists[common.ModuleID, string] {
+	moduleObjectNames := make(handy.UniqueLists[common.ModuleID, string])
+
+	for key, value := range r.Modules {
+		names := handy.NewStringSet()
+		for name := range value.Objects {
+			names.AddOne(name)
+		}
+
+		moduleObjectNames[key] = names
+	}
+
+	return moduleObjectNames
+}
+
+// LookupURLPath will give you the URL path for the object located under the module.
+func (r *ObjectMetadataResult) LookupURLPath(moduleID common.ModuleID, objectName string) (string, error) {
+	path := r.Modules[moduleID].Objects[objectName].URLPath
+	if len(path) == 0 {
+		return "", common.ErrResolvingURLPathForObject
+	}
+
+	return path, nil
 }
 
 type QueryParamStats struct {
