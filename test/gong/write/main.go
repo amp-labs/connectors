@@ -87,5 +87,6 @@ func createUniqueID() string {
 	minV := 1
 	maxV := 10000
 	uniqueID := strconv.Itoa(rand.Intn(maxV-minV+1) + minV)
+
 	return uniqueID
 }
