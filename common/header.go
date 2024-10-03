@@ -46,6 +46,17 @@ func WithHeaders(headers ...Header) HeaderAuthClientOption {
 	}
 }
 
+// WithHeaderUnauthorizedHandler sets the function to call whenever the response is 401 unauthorized.
+// This is useful for handling the case where the server has invalidated the credentials, and the client
+// needs to refresh. It's optional.
+func WithHeaderUnauthorizedHandler(
+	f func(hdrs []Header, req *http.Request, rsp *http.Response) (*http.Response, error),
+) HeaderAuthClientOption {
+	return func(params *headerClientParams) {
+		params.unauthorized = f
+	}
+}
+
 // WithDynamicHeaders sets a function that will be called on every request to
 // get additional headers to use. Use this for things like time-based tokens
 // or loading headers from some external authority.
@@ -61,6 +72,7 @@ type headerClientParams struct {
 	headers        []Header
 	dynamicHeaders func() ([]Header, error)
 	debug          func(req *http.Request, rsp *http.Response)
+	unauthorized   func(hdrs []Header, req *http.Request, rsp *http.Response) (*http.Response, error)
 }
 
 func (p *headerClientParams) prepare() *headerClientParams {
@@ -78,6 +90,7 @@ func newHeaderAuthClient(_ context.Context, params *headerClientParams) Authenti
 		headers:        params.headers,
 		dynamicHeaders: params.dynamicHeaders,
 		debug:          params.debug,
+		unauthorized:   params.unauthorized,
 	}
 }
 
@@ -86,6 +99,7 @@ type headerAuthClient struct {
 	headers        []Header
 	dynamicHeaders func() ([]Header, error)
 	debug          func(req *http.Request, rsp *http.Response)
+	unauthorized   func(hdrs []Header, req *http.Request, rsp *http.Response) (*http.Response, error)
 }
 
 func (c *headerAuthClient) Do(req *http.Request) (*http.Response, error) {
@@ -114,6 +128,15 @@ func (c *headerAuthClient) Do(req *http.Request) (*http.Response, error) {
 
 	if c.debug != nil {
 		c.debug(req, cloneResponse(rsp))
+	}
+
+	// Certain providers return 401 when the credentials has been invalidated.
+	// This may indicate that the credentials needs to be forcefully refreshed.
+	// Since this is per-provider, the caller can provide a custom handler.
+	if rsp.StatusCode == http.StatusUnauthorized {
+		if c.unauthorized != nil {
+			return c.unauthorized(c.headers, req, rsp)
+		}
 	}
 
 	return rsp, nil
