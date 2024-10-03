@@ -9,7 +9,7 @@ import (
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
-	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -80,13 +80,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Create new email campaign",
 			Input: common.WriteParams{ObjectName: "campaigns", RecordData: "dummy"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToMethod(w, r, "POST", func() {
-					w.WriteHeader(http.StatusOK)
-					_, _ = w.Write(responseCampaign)
-				})
-			})),
+			Server: mockserver.Reactive{
+				Setup:     mockserver.ContentJSON(),
+				Condition: mockcond.MethodPOST(),
+				OnSuccess: mockserver.Response(http.StatusOK, responseCampaign),
+			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "552906",
@@ -98,13 +96,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Create new client",
 			Input: common.WriteParams{ObjectName: "client", RecordData: "dummy"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToMethod(w, r, "POST", func() {
-					w.WriteHeader(http.StatusCreated)
-					_, _ = w.Write(responseClient)
-				})
-			})),
+			Server: mockserver.Reactive{
+				Setup:     mockserver.ContentJSON(),
+				Condition: mockcond.MethodPOST(),
+				OnSuccess: mockserver.Response(http.StatusOK, responseClient),
+			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "18402",
@@ -116,13 +112,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Create new email account",
 			Input: common.WriteParams{ObjectName: "email-accounts", RecordData: "dummy"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToMethod(w, r, "POST", func() {
-					w.WriteHeader(http.StatusOK)
-					_, _ = w.Write(responseAccount)
-				})
-			})),
+			Server: mockserver.Reactive{
+				Setup:     mockserver.ContentJSON(),
+				Condition: mockcond.MethodPOST(),
+				OnSuccess: mockserver.Response(http.StatusOK, responseAccount),
+			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "2849",

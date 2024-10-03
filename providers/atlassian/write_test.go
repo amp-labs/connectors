@@ -11,6 +11,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -70,37 +71,33 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Write must act as a Create",
 			Input: common.WriteParams{ObjectName: "issues", RecordData: "dummy"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToMethod(w, r, "POST", func() {
-					w.WriteHeader(http.StatusOK)
-				})
-			})),
+			Server: mockserver.Reactive{
+				Setup:     mockserver.ContentJSON(),
+				Condition: mockcond.MethodPOST(),
+				OnSuccess: mockserver.Response(http.StatusOK),
+			}.Server(),
 			Expected:     &common.WriteResult{Success: true},
 			ExpectedErrs: nil,
 		},
 		{
 			Name:  "Write must act as an Update",
 			Input: common.WriteParams{ObjectName: "issues", RecordId: "10003", RecordData: "dummy"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToMethod(w, r, "PUT", func() {
-					w.WriteHeader(http.StatusNoContent)
-				})
-			})),
+			Server: mockserver.Reactive{
+				Setup:     mockserver.ContentJSON(),
+				Condition: mockcond.MethodPUT(),
+				OnSuccess: mockserver.Response(http.StatusNoContent),
+			}.Server(),
 			Expected:     &common.WriteResult{Success: true},
 			ExpectedErrs: nil,
 		},
 		{
 			Name:  "Valid creation of an Issue",
 			Input: common.WriteParams{ObjectName: "issues", RecordData: "dummy"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToMethod(w, r, "POST", func() {
-					w.WriteHeader(http.StatusOK)
-					_, _ = w.Write(createIssueResponse)
-				})
-			})),
+			Server: mockserver.Reactive{
+				Setup:     mockserver.ContentJSON(),
+				Condition: mockcond.MethodPOST(),
+				OnSuccess: mockserver.Response(http.StatusOK, createIssueResponse),
+			}.Server(),
 			Comparator: func(serverURL string, actual, expected *common.WriteResult) bool {
 				return mockutils.WriteResultComparator.SubsetData(actual, expected)
 			},

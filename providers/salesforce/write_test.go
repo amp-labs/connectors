@@ -11,6 +11,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -93,13 +94,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Valid creation of account",
 			Input: common.WriteParams{ObjectName: "accounts", RecordData: "dummy"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToMethod(w, r, "POST", func() {
-					w.WriteHeader(http.StatusOK)
-					_, _ = w.Write(responseCreateOK)
-				})
-			})),
+			Server: mockserver.Reactive{
+				Setup:     mockserver.ContentJSON(),
+				Condition: mockcond.MethodPOST(),
+				OnSuccess: mockserver.Response(http.StatusOK, responseCreateOK),
+			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "001ak00000OQTieAAH",
@@ -111,13 +110,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "OK Response, but with errors field",
 			Input: common.WriteParams{ObjectName: "accounts", RecordData: "dummy"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToMethod(w, r, "POST", func() {
-					w.WriteHeader(http.StatusOK)
-					_, _ = w.Write(responseOKWithErrors)
-				})
-			})),
+			Server: mockserver.Reactive{
+				Setup:     mockserver.ContentJSON(),
+				Condition: mockcond.MethodPOST(),
+				OnSuccess: mockserver.Response(http.StatusOK, responseOKWithErrors),
+			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  false,
 				RecordId: "001RM000003oLruYAE",
