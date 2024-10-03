@@ -12,6 +12,7 @@ import (
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -116,13 +117,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Name:  "API version header is passed as server request",
 			Input: common.ReadParams{ObjectName: "articles", Fields: connectors.Fields("id")},
 			// notes is not supported for now, but its payload is good for testing
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToHeader(w, r, testApiVersionHeader, func() {
-					w.WriteHeader(http.StatusOK)
-					_, _ = w.Write(responseNotesSecondPage)
-				})
-			})),
+			Server: mockserver.Reactive{
+				Setup:     mockserver.ContentJSON(),
+				Condition: mockcond.Header(testApiVersionHeader),
+				OnSuccess: mockserver.Response(http.StatusOK, responseNotesSecondPage),
+			}.Server(),
 			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
 				// response doesn't matter much, as soon as we don't have errors we are good
 				return actual.Done == expected.Done
