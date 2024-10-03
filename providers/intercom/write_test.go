@@ -80,27 +80,14 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			ExpectedErrs: nil,
 		},
 		{
-			Name:  "API version header is passed as server request on POST",
-			Input: common.WriteParams{ObjectName: "articles", RecordData: "dummy"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToHeader(w, r, testApiVersionHeader, func() {
-					w.WriteHeader(http.StatusOK)
-					_, _ = w.Write(createArticle)
-				})
-			})),
-			Comparator: func(serverURL string, actual, expected *common.WriteResult) bool {
-				return actual.Success == expected.Success
-			},
-			Expected:     &common.WriteResult{Success: true},
-			ExpectedErrs: nil,
-		},
-		{
-			Name:  "Valid creation of an article",
+			Name:  "Valid creation of an article when API version header is passed",
 			Input: common.WriteParams{ObjectName: "articles", RecordData: "dummy"},
 			Server: mockserver.Reactive{
-				Setup:     mockserver.ContentJSON(),
-				Condition: mockcond.MethodPOST(),
+				Setup: mockserver.ContentJSON(),
+				Condition: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Header(testApiVersionHeader),
+				},
 				OnSuccess: mockserver.Response(http.StatusOK, createArticle),
 			}.Server(),
 			Comparator: func(serverURL string, actual, expected *common.WriteResult) bool {
