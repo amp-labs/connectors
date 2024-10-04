@@ -9,6 +9,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -44,17 +45,15 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Successfully describe one object with metadata",
 			Input: []string{"Organization"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToBody(w, r, `{"allOrNone":false,"compositeRequest":[{
+			Server: mockserver.Reactive{
+				Setup: mockserver.ContentJSON(),
+				Condition: mockcond.Body(`{"allOrNone":false,"compositeRequest":[{
 					"referenceId":"Organization",
 					"method":"GET",
 					"url":"/services/data/v59.0/sobjects/Organization/describe"
-				}]}`, func() {
-					w.WriteHeader(http.StatusOK)
-					_, _ = w.Write(responseOrgMeta)
-				})
-			})),
+				}]}`),
+				OnSuccess: mockserver.Response(http.StatusOK, responseOrgMeta),
+			}.Server(),
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"organization": {

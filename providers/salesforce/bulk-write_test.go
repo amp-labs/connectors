@@ -136,20 +136,14 @@ func TestBulkWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				CSVData:         strings.NewReader(""),
 				Mode:            UpsertMode,
 			},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { // nolint:varnamelen
-				w.Header().Set("Content-Type", "application/json")
-				switch path := r.URL.Path; {
-				case strings.HasSuffix(path, "/services/data/v59.0/jobs/ingest"):
-					// Create job if body matches.
-					mockutils.RespondToBody(w, r, bodyRequest, func() {
-						w.WriteHeader(http.StatusOK)
-						_, _ = w.Write(responseCreateJob)
-					})
-				default:
-					w.WriteHeader(http.StatusInternalServerError) // will be returned for CSV upload
-					_, _ = w.Write([]byte{})
-				}
-			})),
+			Server: mockserver.Reactive{
+				Setup: mockserver.ContentJSON(),
+				Condition: mockcond.And{
+					mockcond.PathSuffix("/services/data/v59.0/jobs/ingest"),
+					mockcond.Body(bodyRequest),
+				},
+				OnSuccess: mockserver.Response(http.StatusOK, responseCreateJob),
+			}.Server(),
 			ExpectedErrs: []error{ErrCSVUploadFailure},
 		},
 		{
