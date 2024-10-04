@@ -3,7 +3,6 @@ package zendesksupport
 import (
 	"errors"
 	"net/http"
-	"net/http/httptest"
 	"testing"
 
 	"github.com/amp-labs/connectors"
@@ -41,11 +40,10 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Internal server error in response",
 			Input: common.DeleteParams{ObjectName: "brands", RecordId: "31207417638931"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusInternalServerError)
-				_, _ = w.Write(responseServerError)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusInternalServerError, responseServerError),
+			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrServer,
 				errors.New("Internal Server Error"), // nolint:goerr113

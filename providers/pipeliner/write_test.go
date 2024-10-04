@@ -3,7 +3,6 @@ package pipeliner
 import (
 	"errors"
 	"net/http"
-	"net/http/httptest"
 	"testing"
 
 	"github.com/amp-labs/connectors"
@@ -49,11 +48,10 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 				RecordId:   "019097b8-a5f4-ca93-62c5-5a25c58afa63",
 				RecordData: "dummy",
 			},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusUnprocessableEntity)
-				_, _ = w.Write(responseCreateFailedValidation)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusUnprocessableEntity, responseCreateFailedValidation),
+			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
 				errors.New( // nolint:goerr113
@@ -68,11 +66,10 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 				RecordId:   "019097b8-a5f4-ca93-62c5-5a25c58afa63",
 				RecordData: "dummy",
 			},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusBadRequest)
-				_, _ = w.Write(responseCreateInvalidBody)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusBadRequest, responseCreateInvalidBody),
+			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
 				errors.New("Missing or invalid JSON data."), // nolint:goerr113
