@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"net/http"
-	"net/http/httptest"
 	"testing"
 
 	"github.com/amp-labs/connectors"
@@ -28,29 +27,24 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
-			Name:  "Write issue must include ID",
-			Input: common.DeleteParams{ObjectName: "issues"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusTeapot)
-			})),
+			Name:         "Write issue must include ID",
+			Input:        common.DeleteParams{ObjectName: "issues"},
+			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingRecordID},
 		},
 		{
-			Name:  "Mime response header expected",
-			Input: common.DeleteParams{ObjectName: "issues", RecordId: "10010"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusTeapot)
-			})),
+			Name:         "Mime response header expected",
+			Input:        common.DeleteParams{ObjectName: "issues", RecordId: "10010"},
+			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{interpreter.ErrMissingContentType},
 		},
 		{
 			Name:  "Not found returned on removing missing entry",
 			Input: common.DeleteParams{ObjectName: "issues", RecordId: "10010"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusNotFound)
-				_, _ = w.Write(responseErrorFormat)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusNotFound, responseErrorFormat),
+			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
 				errors.New("Issue does not exist or you do not have permission to see it"), // nolint:goerr113
