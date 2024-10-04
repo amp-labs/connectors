@@ -4,7 +4,6 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
-	"net/url"
 	"strings"
 	"testing"
 	"time"
@@ -14,6 +13,7 @@ import (
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -219,13 +219,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name:  "Successful read accounts without since query",
 			Input: common.ReadParams{ObjectName: "accounts", Fields: connectors.Fields("id")},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToMissingQueryParameters(w, r, []string{"updated_at[gte]"}, func() {
-					w.WriteHeader(http.StatusOK)
-					_, _ = w.Write(responseListAccounts)
-				})
-			})),
+			Server: mockserver.Reactive{
+				Setup:     mockserver.ContentJSON(),
+				Condition: mockcond.QueryParamsMissing("updated_at[gte]"),
+				OnSuccess: mockserver.Response(http.StatusOK, responseListAccounts),
+			}.Server(),
 			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
 				return actual.Rows == expected.Rows
 			},
@@ -241,15 +239,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Since:      accountsSince,
 				Fields:     connectors.Fields("id"),
 			},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToQueryParameters(w, r, url.Values{
-					"updated_at[gte]": []string{"2024-06-07T10:51:20.851224-04:00"},
-				}, func() {
-					w.WriteHeader(http.StatusOK)
-					_, _ = w.Write(responseListAccountsSince)
-				})
-			})),
+			Server: mockserver.Reactive{
+				Setup:     mockserver.ContentJSON(),
+				Condition: mockcond.QueryParam("updated_at[gte]", "2024-06-07T10:51:20.851224-04:00"),
+				OnSuccess: mockserver.Response(http.StatusOK, responseListAccountsSince),
+			}.Server(),
 			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
 				return actual.Rows == expected.Rows
 			},
