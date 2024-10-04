@@ -3,7 +3,6 @@ package salesforce
 import (
 	"context"
 	"net/http"
-	"net/http/httptest"
 	"strings"
 	"testing"
 
@@ -35,10 +34,10 @@ func TestBulkDelete(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name:  "Read object must be included",
 			Input: BulkOperationParams{},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusNoContent)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusNoContent),
+			}.Server(),
 			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
 		{

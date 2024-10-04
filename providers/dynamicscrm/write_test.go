@@ -3,13 +3,11 @@ package dynamicscrm
 import (
 	"errors"
 	"net/http"
-	"net/http/httptest"
 	"testing"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
-	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -39,16 +37,15 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Correct error message is understood from JSON response",
 			Input: common.WriteParams{ObjectName: "fax", RecordData: "dummy"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusBadRequest)
-				mockutils.WriteBody(w, `{
+			Server: mockserver.Fixed{
+				Setup: mockserver.ContentJSON(),
+				Always: mockserver.ResponseString(http.StatusBadRequest, `{
 					"error": {
 						"code": "0x80060888",
 						"message":"Resource not found for the segment 'conacs'."
 					}
-				}`)
-			})),
+				}`),
+			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
 				errors.New("Resource not found for the segment 'conacs'"), // nolint:goerr113

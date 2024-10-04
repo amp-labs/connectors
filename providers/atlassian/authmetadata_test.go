@@ -11,7 +11,6 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
-	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 	"github.com/go-test/deep"
@@ -38,22 +37,20 @@ func TestGetPostAuthInfo(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintid
 		},
 		{
 			name: "Response should be an array",
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				mockutils.WriteBody(w, `{}`)
-			})),
+			server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.ResponseString(http.StatusOK, `{}`),
+			}.Server(),
 			expectedErrs: []error{
 				ErrDiscoveryFailure,
 			},
 		},
 		{
 			name: "Empty container list, missing cloud id",
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				mockutils.WriteBody(w, `[]`)
-			})),
+			server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.ResponseString(http.StatusOK, `[]`),
+			}.Server(),
 			expectedErrs: []error{
 				ErrContainerNotFound,
 				ErrDiscoveryFailure,
@@ -61,12 +58,11 @@ func TestGetPostAuthInfo(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintid
 		},
 		{
 			name: "Workspace is matched against container, success locating cloud id",
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
+			server: mockserver.Fixed{
+				Setup: mockserver.ContentJSON(),
 				// response file has workspace that we set up in the constructor
-				_, _ = w.Write(responseCloudID)
-			})),
+				Always: mockserver.Response(http.StatusOK, responseCloudID),
+			}.Server(),
 			expected: &common.PostAuthInfo{
 				CatalogVars: &map[string]string{
 					"cloudId": "ebc887b2-7e61-4059-ab35-71f15cc16e12",

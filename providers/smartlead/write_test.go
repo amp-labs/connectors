@@ -3,7 +3,6 @@ package smartlead
 import (
 	"errors"
 	"net/http"
-	"net/http/httptest"
 	"testing"
 
 	"github.com/amp-labs/connectors"
@@ -54,11 +53,10 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Update non-existent Email Account",
 			Input: common.WriteParams{ObjectName: "email-accounts", RecordId: "08037", RecordData: "dummy"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusNotFound)
-				_, _ = w.Write(responseAccountMissingErr)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusNotFound, responseAccountMissingErr),
+			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
 				errors.New("Email account not found!"), // nolint:goerr113
@@ -67,11 +65,10 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Invalid field when creating campaign",
 			Input: common.WriteParams{ObjectName: "campaigns", RecordData: "dummy"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusBadRequest)
-				_, _ = w.Write(responseCampaignInvalidFieldErr)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusBadRequest, responseCampaignInvalidFieldErr),
+			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
 				errors.New(`"clinet_id" is not allowed`), // nolint:goerr113
