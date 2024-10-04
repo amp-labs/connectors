@@ -5,7 +5,6 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
-	"net/url"
 	"testing"
 	"time"
 
@@ -14,6 +13,7 @@ import (
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -196,20 +196,16 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Fields:     connectors.Fields("id"),
 				Since:      time.Now().Add(-5 * time.Minute),
 			},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				mockutils.RespondToQueryParameters(w, r, url.Values{
-					// server was asked to get issues that occurred in the last 5 min
-					"jql": []string{`updated > "-5m"`},
-				}, func() {
-					mockutils.WriteBody(w, `
+			Server: mockserver.Reactive{
+				Setup: mockserver.ContentJSON(),
+				// server was asked to get issues that occurred in the last 5 min
+				Condition: mockcond.QueryParam("jql", `updated > "-5m"`),
+				OnSuccess: mockserver.ResponseString(http.StatusOK, `
 					{
 					  "startAt": 0,
 					  "issues": [{"fields":{}, "id": "0"}]
-					}`)
-				})
-			})),
+					}`),
+			}.Server(),
 			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
 				return actual.Rows == expected.Rows
 			},
@@ -225,22 +221,18 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Fields:     connectors.Fields("id"),
 				NextPage:   "17",
 			},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				mockutils.RespondToQueryParameters(w, r, url.Values{
-					"startAt": []string{"17"},
-				}, func() {
-					mockutils.WriteBody(w, `
+			Server: mockserver.Reactive{
+				Setup:     mockserver.ContentJSON(),
+				Condition: mockcond.QueryParam("startAt", "17"),
+				OnSuccess: mockserver.ResponseString(http.StatusOK, `
 					{
 					  "startAt": 17,
 					  "issues": [
 						{"fields":{}, "id": "0"},
 						{"fields":{}, "id": "1"},
 						{"fields":{}, "id": "2"}
-					]}`)
-				})
-			})),
+					]}`),
+			}.Server(),
 			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
 				return actual.Rows == expected.Rows
 			},

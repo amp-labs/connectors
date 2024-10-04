@@ -4,7 +4,6 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
-	"net/url"
 	"testing"
 	"time"
 
@@ -13,6 +12,7 @@ import (
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -120,17 +120,12 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				Since: time.Date(2024, 9, 19, 4, 30, 45, 600,
 					time.FixedZone("UTC-8", -8*60*60)),
 			},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				mockutils.RespondToQueryParameters(w, r, url.Values{
-					// Pacific time to UTC is achieved by adding 8 hours
-					"fromDateTime": []string{"2024-09-19T12:30:45Z"},
-				}, func() {
-					w.WriteHeader(http.StatusOK)
-					_, _ = w.Write(fakeServerResp)
-				})
-			})),
+			Server: mockserver.Reactive{
+				Setup: mockserver.ContentJSON(),
+				// Pacific time to UTC is achieved by adding 8 hours
+				Condition: mockcond.QueryParam("fromDateTime", "2024-09-19T12:30:45Z"),
+				OnSuccess: mockserver.Response(http.StatusOK, fakeServerResp),
+			}.Server(),
 			Comparator: func(serverURL string, actual, expected *common.ReadResult) bool {
 				return actual.Rows == expected.Rows
 			},
