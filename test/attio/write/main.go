@@ -46,6 +46,11 @@ func MainFn() int {
 		return 1
 	}
 
+	err = testWebhooks(ctx)
+	if err != nil {
+		return 1
+	}
+
 	return 0
 }
 
@@ -108,8 +113,8 @@ func testLists(ctx context.Context) error {
 		RecordData: map[string]any{
 			"data": map[string]interface{}{
 				"workspace_access": "full-access",
-				"name":             "enterprise Investing",
-				"api_slug":         "enterprise_investing",
+				"name":             "Marketing",
+				"api_slug":         "marketing_1",
 				"parent_object":    "companies",
 				"workspace_member_access": []map[string]string{
 					{
@@ -238,6 +243,65 @@ func testTasks(ctx context.Context) error {
 			},
 		},
 		RecordId: writeRes.Data["id"].(map[string]interface{})["task_id"].(string),
+	}
+
+	writeres, err := Write(ctx, conn, updateParams)
+	if err != nil {
+		fmt.Println("ERR: ", err)
+		return err
+	}
+
+	if err := constructResponse(writeres); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func testWebhooks(ctx context.Context) error {
+	conn := attio.GetAttioConnector(ctx)
+
+	slog.Info("Creating the webhooks")
+	writeParams := common.WriteParams{
+		ObjectName: "webhooks",
+		RecordData: map[string]any{
+			"data": map[string]any{
+				"target_url": "https://f87a-117-216-131-16.ngrok-free.app",
+				"subscriptions": []map[string]any{
+					{
+						"event_type": "note.deleted",
+						"filter":     nil,
+					},
+				},
+			},
+		},
+		RecordId: "",
+	}
+
+	writeRes, err := Write(ctx, conn, writeParams)
+	if err != nil {
+		fmt.Println("ERR: ", err)
+		return err
+	}
+
+	if err := constructResponse(writeRes); err != nil {
+		return err
+	}
+
+	slog.Info("Updating the webhooks")
+	updateParams := common.WriteParams{
+		ObjectName: "webhooks",
+		RecordData: map[string]any{
+			"data": map[string]any{
+				"subscriptions": []map[string]any{
+					{
+						"event_type": "note.created",
+						"filter":     nil,
+					},
+				},
+			},
+		},
+		RecordId: writeRes.Data["id"].(map[string]interface{})["webhook_id"].(string),
 	}
 
 	writeres, err := Write(ctx, conn, updateParams)

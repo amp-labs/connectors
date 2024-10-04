@@ -2,15 +2,15 @@
 
 
 ## Supported Objects 
-Below is an exhaustive list of the supported Objects in the Attio deep connector with their endpoint resources(ObjectName).
+Below is an exhaustive list of objects & methods supported on the objects
 
 Attio API version : v2
 
 | Object | Resource | Method
 | :-------- | :------- | 
-| Objects  | objects | read
-| Lists | lists | read
+| Objects  | objects | read and write
+| Lists | lists | read and write
 | Workspace members | workspace_members | read
-| Webhooks | webhooks | read
-| Tasks  | tasks | read
-| Notes  | notes | read
+| Webhooks | webhooks | read and write
+| Tasks  | tasks | read and write
+| Notes  | notes | read and write

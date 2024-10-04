@@ -3,11 +3,19 @@ package attio
 
 import (
 	"context"
+	"errors"
 
 	"github.com/amp-labs/connectors/common"
 )
 
-// Write creates/updates records in marketo. Write currently supports operations to the leads API only.
+var ErrEmptyResultResponse = errors.New("writing reponded with an empty result")
+
+type writeResponse struct {
+	Success bool           `json:"success"`
+	Data    map[string]any `json:"data"`
+}
+
+// Write creates/updates records in attio. Write currently supports operations to the leads API only.
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
 	if err := config.ValidateParams(); err != nil {
 		return nil, err
@@ -44,9 +52,6 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, err
 	}
 
-	if len(resp.Data) == 0 {
-		return nil, ErrEmptyResultResponse
-	}
 	if res.Code == 200 {
 		resp.Success = true
 	}

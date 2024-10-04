@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	apiVersion = "/v2"
+	apiVersion = "v2"
 )
 
 type Connector struct {
@@ -27,16 +27,16 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		return nil, err
 	}
 
-	// Read provider info
-	providerInfo, err := providers.ReadInfo(providers.Attio)
-	if err != nil {
-		return nil, err
-	}
-
 	conn = &Connector{
 		Client: &common.JSONHTTPClient{
 			HTTPClient: params.Client.Caller,
 		},
+	}
+
+	// Read provider info
+	providerInfo, err := providers.ReadInfo(conn.Provider())
+	if err != nil {
+		return nil, err
 	}
 
 	conn.setBaseURL(providerInfo.BaseURL)

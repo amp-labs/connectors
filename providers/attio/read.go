@@ -5,9 +5,14 @@ import (
 	"context"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/spyzhov/ajson"
 )
 
-func (c *Connector) Read(ctx context.Context, config common.ReadParams, QueryParam map[string]string) (*common.ReadResult, error) {
+var dummyNextPageFunc = func(*ajson.Node) (string, error) {
+	return "", nil
+}
+
+func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
 	if err := config.ValidateParams(true); err != nil {
 		return nil, err
 	}
@@ -21,11 +26,8 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams, QueryPar
 		return nil, err
 	}
 
-	for key, val := range QueryParam {
-		if val != "" {
-			url.WithQueryParam(key, val)
-		}
-	}
+	url.WithQueryParam("limit", "1")
+	url.WithQueryParam("offset", "0")
 
 	rsp, err := c.Client.Get(ctx, url.String())
 	if err != nil {

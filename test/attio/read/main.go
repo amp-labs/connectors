@@ -62,7 +62,7 @@ func testReadObjects(ctx context.Context, conn *ap.Connector) error {
 		Fields:     connectors.Fields(""),
 	}
 
-	res, err := conn.Read(ctx, params, nil)
+	res, err := conn.Read(ctx, params)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -85,7 +85,7 @@ func testReadLists(ctx context.Context, conn *ap.Connector) error {
 		Fields:     connectors.Fields(""),
 	}
 
-	res, err := conn.Read(ctx, params, nil)
+	res, err := conn.Read(ctx, params)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -107,7 +107,7 @@ func testReadWorkspacemembers(ctx context.Context, conn *ap.Connector) error {
 		ObjectName: "workspace_members",
 		Fields:     connectors.Fields(""),
 	}
-	res, err := conn.Read(ctx, params, nil)
+	res, err := conn.Read(ctx, params)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -130,12 +130,7 @@ func testReadWebhooks(ctx context.Context, conn *ap.Connector) error {
 		Fields:     connectors.Fields(""),
 	}
 
-	queryparam := make(map[string]string, 0)
-
-	queryparam["limit"] = "10"
-	queryparam["offset"] = "0"
-
-	res, err := conn.Read(ctx, params, queryparam)
+	res, err := conn.Read(ctx, params)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -157,13 +152,8 @@ func testReadTasks(ctx context.Context, conn *ap.Connector) error {
 		ObjectName: "tasks",
 		Fields:     connectors.Fields(""),
 	}
-	queryparam := make(map[string]string, 0)
 
-	queryparam["limit"] = "10"
-	queryparam["offset"] = "0"
-	queryparam["sort"] = "created_at:asc"
-
-	res, err := conn.Read(ctx, params, queryparam)
+	res, err := conn.Read(ctx, params)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -186,12 +176,7 @@ func testReadNotes(ctx context.Context, conn *ap.Connector) error {
 		Fields:     connectors.Fields(""),
 	}
 
-	queryparam := make(map[string]string, 0)
-
-	queryparam["limit"] = "10"
-	queryparam["offset"] = "0"
-
-	res, err := conn.Read(ctx, params, queryparam)
+	res, err := conn.Read(ctx, params)
 	if err != nil {
 		log.Fatal(err.Error())
 	}

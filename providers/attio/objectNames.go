@@ -26,4 +26,5 @@ var supportedObjectsByWrite = handy.NewSet( //nolint:gochecknoglobals
 	objectNameLists,
 	objectNameTasks,
 	objectNameNotes,
+	objectNameWebhooks,
 )
