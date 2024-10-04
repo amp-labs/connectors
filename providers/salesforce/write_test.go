@@ -4,13 +4,11 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
-	"net/url"
 	"testing"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
-	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -72,17 +70,14 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Write must act as an Update",
 			Input: common.WriteParams{ObjectName: "account", RecordId: "003ak000004dQCUAA2", RecordData: "dummy"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToMethod(w, r, "POST", func() {
-					mockutils.RespondToQueryParameters(w, r, url.Values{
-						"_HttpMethod": []string{"PATCH"},
-					}, func() {
-						w.WriteHeader(http.StatusOK)
-						_, _ = w.Write(responseCreateOK)
-					})
-				})
-			})),
+			Server: mockserver.Reactive{
+				Setup: mockserver.ContentJSON(),
+				Condition: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.QueryParam("_HttpMethod", "PATCH"),
+				},
+				OnSuccess: mockserver.Response(http.StatusOK, responseCreateOK),
+			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "001ak00000OQTieAAH",
