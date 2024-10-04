@@ -30,10 +30,10 @@ func TestJobInfo(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name:  "Request fails due to internal server error",
 			Input: "",
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusInternalServerError)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusInternalServerError),
+			}.Server(),
 			ExpectedErrs: []error{common.ErrRequestFailed},
 		},
 		{
@@ -169,11 +169,10 @@ func TestJobResults(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name:  "Complete failure with descriptive message",
 			Input: "750ak000009E1YXAA0",
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { // nolint:varnamelen
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				_, _ = w.Write(responseJobCompleteFailure)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseJobCompleteFailure),
+			}.Server(),
 			Comparator: testJobResultsComparator,
 			Expected: &JobResults{
 				JobId:          "750ak000009E1YXAA0",
@@ -188,11 +187,10 @@ func TestJobResults(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name:  "Successful info parsed from JobCompleted response",
 			Input: "750ak000009BWKLAA4",
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { // nolint:varnamelen
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				_, _ = w.Write(responseJobSuccess)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseJobSuccess),
+			}.Server(),
 			Comparator: testJobResultsComparator,
 			Expected: &JobResults{
 				JobId:          "750ak000009BWKLAA4",

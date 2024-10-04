@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"net/http"
-	"net/http/httptest"
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
@@ -52,11 +51,10 @@ func TestBulkQuery(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				query:          "",
 				includeDeleted: false,
 			},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusBadRequest)
-				_, _ = w.Write(responseUnknownObject)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusBadRequest, responseUnknownObject),
+			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest, errors.New("sObject type 'Accout' is not supported"), // nolint:goerr113
 			},
