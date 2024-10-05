@@ -235,3 +235,9 @@ type PostAuthInfo struct {
 	CatalogVars *map[string]string
 	RawResponse *JSONHTTPResponse
 }
+
+type SupportedObject struct {
+	// Object Name.
+	Name        string
+	DisplayName string
+}

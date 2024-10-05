@@ -88,6 +88,15 @@ type AuthMetadataConnector interface {
 	GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, error)
 }
 
+// SupportConnector is an interface that extends the Connector interface with
+// the ability to retrieve supported Objects.
+type SupportConnector interface {
+	Connector
+
+	// GetSupportedObjects returns description on what objects are supported by connector.
+	GetSupportedObjects(ctx context.Context) ([]common.SupportedObject, error)
+}
+
 // We re-export the following types so that they can be used by consumers of this library.
 type (
 	ReadParams               = common.ReadParams
