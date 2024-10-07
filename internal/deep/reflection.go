@@ -34,6 +34,10 @@ func ExtractCatalogVariables(structure any) ([]paramsbuilder.CatalogVariable, er
 			value = value.Addr()
 		}
 
+		if !value.CanInterface() {
+			continue
+		}
+
 		a := value.Interface()
 		catalogVar, ok := a.(paramsbuilder.CatalogVariable)
 		if ok {
@@ -57,6 +61,10 @@ func ExtractHTTPClient(structure any) (*common.HTTPClient, error) {
 
 	for i := 0; i < v.NumField(); i++ {
 		value := v.Field(i)
+
+		if !value.CanInterface() {
+			continue
+		}
 
 		a := value.Interface()
 		client, ok := a.(paramsbuilder.Client)

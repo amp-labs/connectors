@@ -1,11 +1,10 @@
 package salesforce
 
 import (
-	"github.com/amp-labs/connectors/common/paramsbuilder"
-	"github.com/amp-labs/connectors/internal/deep"
-
 	"github.com/amp-labs/connectors/common/interpreter"
+	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/deep"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -18,7 +17,6 @@ const (
 	uriToolingEventRelayConfig = "tooling/sobjects/EventRelayConfig"
 )
 
-// Connector is a Salesforce connector.
 type Connector struct {
 	deep.Clients
 	deep.EmptyCloser
@@ -29,7 +27,6 @@ type parameters struct {
 	paramsbuilder.Workspace
 }
 
-// NewConnector returns a new Salesforce connector.
 func NewConnector(opts ...Option) (*Connector, error) {
 	return deep.Connector[Connector, parameters](providers.Salesforce, interpreter.ErrorHandler{
 		JSON: &interpreter.DirectFaultyResponder{Callback: interpretJSONError},

@@ -1,59 +1,30 @@
 package apollo
 
 import (
+	"github.com/amp-labs/connectors/common/interpreter"
+	"github.com/amp-labs/connectors/common/paramsbuilder"
+	"github.com/amp-labs/connectors/internal/deep"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers"
 )
 
 type Connector struct {
-	BaseURL string
-	Client  *common.JSONHTTPClient
+	deep.Clients
+	deep.EmptyCloser
+}
+
+type parameters struct {
+	paramsbuilder.Client
+}
+
+func NewConnector(opts ...Option) (*Connector, error) {
+	return deep.Connector[Connector, parameters](providers.Apollo, interpreter.ErrorHandler{}).Build(opts)
 }
 
 type operation string
-
-func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	defer common.PanicRecovery(func(cause error) {
-		outErr = cause
-		conn = nil
-	})
-
-	params, err := paramsbuilder.Apply(parameters{}, opts)
-	if err != nil {
-		return nil, err
-	}
-
-	providerInfo, err := providers.ReadInfo(providers.Apollo)
-	if err != nil {
-		return nil, err
-	}
-
-	conn = &Connector{
-		Client: &common.JSONHTTPClient{
-			HTTPClient: &common.HTTPClient{
-				Client: params.Caller.Client,
-			},
-		},
-	}
-
-	conn.setBaseURL(providerInfo.BaseURL)
-
-	return conn, nil
-}
-
-func (c *Connector) setBaseURL(newURL string) {
-	c.BaseURL = newURL
-	c.Client.HTTPClient.Base = newURL
-}
-
-// Provider returns the connector provider.
-func (c *Connector) Provider() providers.Provider {
-	return providers.Apollo
-}
 
 // getAPIURL builds the url we can write/read data from
 // Depending on the operation(read or write), some objects will need different endpoints.
@@ -61,7 +32,7 @@ func (c *Connector) Provider() providers.Provider {
 func (c *Connector) getAPIURL(objectName string, ops operation) (*urlbuilder.URL, error) {
 	relativePath := strings.Join([]string{restAPIPrefix, objectName}, "/")
 
-	url, err := urlbuilder.New(c.BaseURL, relativePath)
+	url, err := urlbuilder.New(c.BaseURL(), relativePath)
 	if err != nil {
 		return nil, err
 	}
@@ -82,8 +53,4 @@ func (c *Connector) getAPIURL(objectName string, ops operation) (*urlbuilder.URL
 	}
 
 	return url, nil
-}
-
-func (c *Connector) String() string {
-	return c.Provider() + ".Connector"
 }

@@ -22,7 +22,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	rsp, err := c.Client.Get(ctx, url.String(), apiVersionHeader)
+	rsp, err := c.JSON.Get(ctx, url.String(), apiVersionHeader)
 	if err != nil {
 		return nil, err
 	}

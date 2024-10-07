@@ -6,15 +6,10 @@ import (
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"golang.org/x/oauth2"
 )
 
 type Option = func(params *parameters)
-
-type parameters struct {
-	paramsbuilder.Client
-}
 
 func (p parameters) ValidateParams() error {
 	return errors.Join(

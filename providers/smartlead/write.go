@@ -37,7 +37,7 @@ func (c *Connector) Write(
 		constructURLPathUpdate(config, url)
 	}
 
-	res, err := c.Client.Post(ctx, url.String(), config.RecordData)
+	res, err := c.JSON.Post(ctx, url.String(), config.RecordData)
 	if err != nil {
 		return nil, err
 	}

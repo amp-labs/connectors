@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"golang.org/x/oauth2"
 )
 
@@ -17,12 +16,6 @@ const (
 
 // Option is a function which mutates the connector configuration.
 type Option = func(params *parameters)
-
-// parameters MS CRM supports auth client, workspace, etc. by delegation.
-type parameters struct {
-	paramsbuilder.Client
-	paramsbuilder.Workspace
-}
 
 func (p parameters) ValidateParams() error {
 	return errors.Join(
