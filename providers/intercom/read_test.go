@@ -149,7 +149,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
 				expectedNextPage := strings.ReplaceAll(expected.NextPage.String(), "{{testServerURL}}", baseURL)
-				return actual.NextPage.String() == expectedNextPage // nolint:nlreturn
+				a := actual.NextPage.String()
+				b := expectedNextPage
+				c := a == b
+				return c // nolint:nlreturn
 			},
 			Expected: &common.ReadResult{
 				NextPage: "{{testServerURL}}/contacts?per_page=60&starting_after=" +
@@ -283,7 +286,7 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 	}
 
 	// for testing we want to redirect calls to our mock server
-	connector.setBaseURL(serverURL)
+	connector.WithBaseURL(serverURL)
 
 	return connector, nil
 }

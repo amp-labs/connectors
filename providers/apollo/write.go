@@ -22,13 +22,13 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, err
 	}
 	// sets post as default
-	write = c.Client.Post
+	write = c.JSON.Post
 
 	// prepares the updating data request.
 	if len(config.RecordId) > 0 {
 		url = url.AddPath(config.RecordId)
 
-		write = c.Client.Patch
+		write = c.JSON.Patch
 	}
 
 	json, err := write(ctx, url.String(), config.RecordData)

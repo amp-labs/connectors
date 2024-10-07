@@ -30,12 +30,7 @@ Visual example of what will happen to each property:
 		}
 	}
 */
-func getRecords(node *ajson.Node) ([]map[string]any, error) {
-	arr, err := jsonquery.New(node).Array("issues", false)
-	if err != nil {
-		return nil, err
-	}
-
+func flattenRecords(arr []*ajson.Node) ([]map[string]any, error) {
 	list := make([]map[string]any, len(arr))
 
 	for index, item := range arr {
@@ -64,12 +59,11 @@ func getRecords(node *ajson.Node) ([]map[string]any, error) {
 
 // Next starting page index is calculated base on current index and array size.
 func getNextRecords(node *ajson.Node) (string, error) {
-	records, err := getRecords(node)
+	// TODO should we know that we are dealing with issues object?
+	size, err := jsonquery.New(node).ArraySize("issues")
 	if err != nil {
 		return "", err
 	}
-
-	size := int64(len(records))
 
 	if size == 0 {
 		// No elements returned for the current page.

@@ -25,7 +25,7 @@ func createError(baseErr error, sfErr jsonError) error {
 	return baseErr
 }
 
-func (c *Connector) interpretJSONError(res *http.Response, body []byte) error { // nolint:cyclop
+func interpretJSONError(res *http.Response, body []byte) error { // nolint:cyclop
 	var errs []jsonError
 	if err := json.Unmarshal(body, &errs); err != nil {
 		return fmt.Errorf("json.Unmarshal failed: %w", err)
@@ -64,7 +64,7 @@ func (c *Connector) interpretJSONError(res *http.Response, body []byte) error { 
 	return common.InterpretError(res, body)
 }
 
-func (c *Connector) interpretXMLError(res *http.Response, body []byte) error {
+func interpretXMLError(res *http.Response, body []byte) error {
 	xml, err := xquery.NewXML(body)
 	if err != nil {
 		// Response body cannot be understood in the form of valid XML structure.

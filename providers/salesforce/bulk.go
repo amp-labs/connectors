@@ -126,7 +126,7 @@ func (c *Connector) createJob(ctx context.Context, body map[string]any) (*common
 		return nil, err
 	}
 
-	return c.Client.Post(ctx, location.String(), body)
+	return c.JSON.Post(ctx, location.String(), body)
 }
 
 // https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/upload_job_data.htm
@@ -144,7 +144,7 @@ func (c *Connector) uploadCSV(ctx context.Context, jobId string, csvData io.Read
 		)
 	}
 
-	return c.Client.PutCSV(ctx, location.String(), data)
+	return c.JSON.PutCSV(ctx, location.String(), data)
 }
 
 // https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/close_job.htm
@@ -154,7 +154,7 @@ func (c *Connector) completeUpload(ctx context.Context, jobId string) (*common.J
 		return nil, err
 	}
 
-	return c.Client.Patch(ctx, location.String(), map[string]any{
+	return c.JSON.Patch(ctx, location.String(), map[string]any{
 		"state": JobStateUploadComplete,
 	})
 }
@@ -173,7 +173,7 @@ func (c *Connector) getFailedJobResults(ctx context.Context, jobId string) (*htt
 
 	// Get the connector's JSONHTTPClient, which is a special HTTPClient that handles JSON responses,
 	// and use it's underlying http.Client to make the request.
-	return c.Client.HTTPClient.Client.Do(req)
+	return c.JSON.HTTPClient.Client.Do(req)
 }
 
 //nolint:funlen,cyclop

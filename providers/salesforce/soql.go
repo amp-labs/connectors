@@ -3,6 +3,9 @@ package salesforce
 import (
 	"fmt"
 	"strings"
+
+	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/handy"
 )
 
 // soqlBuilder builder of Salesforce Object Query Language.
@@ -59,4 +62,26 @@ func (s *soqlBuilder) String() string {
 	}
 
 	return query
+}
+
+// makeSOQL returns the SOQL query for the desired read operation.
+func makeSOQL(config common.ReadParams) *soqlBuilder {
+	soql := (&soqlBuilder{}).SelectFields(config.Fields.List()).From(config.ObjectName)
+
+	// If Since is not set, then we're doing a backfill. We read all rows (in pages)
+	if !config.Since.IsZero() {
+		soql.Where("SystemModstamp > " + handy.Time.FormatRFC3339inUTC(config.Since))
+	}
+
+	if config.Deleted {
+		soql.Where("IsDeleted = true")
+	}
+
+	// TODO: When we support builder facing filters, we should escape the
+	// filter string to avoid SOQL injection.
+	if config.Filter != "" {
+		soql.Where(config.Filter)
+	}
+
+	return soql
 }

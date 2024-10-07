@@ -13,7 +13,7 @@ var ErrUnknownURLResource = errors.New("unknown URL resource")
 
 func (c *Connector) GetURL(resource string, _ map[string]any) (string, error) {
 	if resource == OAuthIntrospectResource {
-		u, err := urlbuilder.New(c.BaseURL, "/services/oauth2/introspect")
+		u, err := urlbuilder.New(c.BaseURL(), "/services/oauth2/introspect")
 		if err != nil {
 			return "", err
 		}

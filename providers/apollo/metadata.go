@@ -37,7 +37,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 		// when we just need 1.
 		url.WithQueryParam(perPage, metadataPageSize)
 
-		resp, err := c.Client.Get(ctx, url.String())
+		resp, err := c.JSON.Get(ctx, url.String())
 		if err != nil {
 			metadataResult.Errors[objectName] = err
 

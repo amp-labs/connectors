@@ -3,101 +3,149 @@ package atlassian
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
+	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/deep"
+	"github.com/amp-labs/connectors/internal/deep/dpobjects"
+	"github.com/amp-labs/connectors/internal/deep/dpread"
+	"github.com/amp-labs/connectors/internal/deep/dpvars"
+	"github.com/amp-labs/connectors/internal/deep/dpwrite"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/spyzhov/ajson"
 )
 
-// ErrMissingCloudId happens when cloud id was not provided via WithMetadata.
-var ErrMissingCloudId = errors.New("connector missing cloud id")
+var (
+	// ErrMissingCloudId happens when cloud id was not provided via WithMetadata.
+	ErrMissingCloudId = errors.New("connector missing cloud id")
+
+	ErrUnexpectedBuilder = errors.New("unexpected URLResolver type")
+)
 
 type Connector struct {
-	Client  *common.JSONHTTPClient
-	BaseURL string
-	Module  common.Module
-	// workspace is used to find cloud ID.
-	workspace string
-	cloudId   string
+	Data dpvars.ConnectorData[parameters, *AuthMetadataVars]
+	deep.Clients
+	deep.EmptyCloser
+	deep.Reader
+	// Write will either create or update a Jira issue.
+	// Create issue docs:
+	// https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issues/#api-rest-api-3-issue-post
+	// Update issue docs:
+	// https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issues/#api-rest-api-3-issue-issueidorkey-put
+	deep.Writer
+	deep.Remover
+
+	urlBuilder *customURLBuilder
 }
 
-func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	defer common.PanicRecovery(func(cause error) {
-		outErr = cause
-		conn = nil
-	})
+type parameters struct {
+	paramsbuilder.Client
+	paramsbuilder.Workspace
+	paramsbuilder.Module
+	paramsbuilder.Metadata
+}
 
-	params, err := paramsbuilder.Apply(parameters{}, opts,
-		WithModule(ModuleEmpty), // The module is resolved on behalf of the user if the option is missing.
-	)
-	if err != nil {
-		return nil, err
+func NewConnector(opts ...Option) (*Connector, error) { //nolint:funlen
+	constructor := func(
+		clients *deep.Clients,
+		closer *deep.EmptyCloser,
+		data *dpvars.ConnectorData[parameters, *AuthMetadataVars],
+		urlResolver dpobjects.URLResolver,
+		reader *deep.Reader,
+		writer *deep.Writer,
+		remover *deep.Remover,
+	) (*Connector, error) {
+		builder, ok := urlResolver.(*customURLBuilder)
+		if !ok {
+			return nil, ErrUnexpectedBuilder
+		}
+
+		return &Connector{
+			Data:        *data,
+			Clients:     *clients,
+			EmptyCloser: *closer,
+			Reader:      *reader,
+			Writer:      *writer,
+			Remover:     *remover,
+			urlBuilder:  builder,
+		}, nil
 	}
-
-	httpClient := params.Client.Caller
-	conn = &Connector{
-		Client: &common.JSONHTTPClient{
-			HTTPClient: httpClient,
-		},
-		workspace: params.Workspace.Name,
-		Module:    params.Module.Selection,
-	}
-
-	// Convert metadata map to model.
-	authMetadata := NewAuthMetadataVars(params.Metadata.Map)
-	conn.cloudId = authMetadata.CloudId
-
-	// Read provider info
-	providerInfo, err := providers.ReadInfo(conn.Provider())
-	if err != nil {
-		return nil, err
-	}
-
-	// connector and its client must mirror base url and provide its own error parser
-	conn.setBaseURL(providerInfo.BaseURL)
-	conn.Client.HTTPClient.ErrorHandler = interpreter.ErrorHandler{
+	errorHandler := interpreter.ErrorHandler{
 		JSON: interpreter.NewFaultyResponder(errorFormats, nil),
-	}.Handle
+	}
+	firstPage := dpread.FirstPageBuilder{
+		Build: func(config common.ReadParams, url *urlbuilder.URL) (*urlbuilder.URL, error) {
+			if !config.Since.IsZero() {
+				// Read URL supports time scoping. common.ReadParams.Since is used to get relative time frame.
+				// Here is an API example on how to request issues that were updated in the last 30 minutes.
+				// search?jql=updated > "-30m"
+				// The reason we use minutes is that it is the most granular API permits.
+				diff := time.Since(config.Since)
 
-	return conn, nil
-}
+				minutes := int64(diff.Minutes())
+				if minutes > 0 {
+					url.WithQueryParam("jql", fmt.Sprintf(`updated > "-%vm"`, minutes))
+				}
+			}
 
-func (c *Connector) Provider() providers.Provider {
-	return providers.Atlassian
-}
+			return url, nil
+		},
+	}
+	nextPage := dpread.NextPageBuilder{
+		Build: func(config common.ReadParams, url *urlbuilder.URL, node *ajson.Node) (string, error) {
+			startAt, err := getNextRecords(node)
+			if err != nil {
+				return "", err
+			}
 
-func (c *Connector) String() string {
-	return fmt.Sprintf("%s.Connector[%s]", c.Provider(), c.Module)
-}
+			if len(startAt) != 0 {
+				url.WithQueryParam("startAt", startAt)
 
-// URL format follows structure applicable to Oauth2 Atlassian apps.
-// https://developer.atlassian.com/cloud/jira/platform/rest/v2/intro/#other-integrations
-func (c *Connector) getJiraRestApiURL(arg string) (*urlbuilder.URL, error) {
-	cloudId, err := c.getCloudId()
-	if err != nil {
-		return nil, err
+				return url.String(), nil
+			}
+
+			return "", nil
+		},
+	}
+	readObjectLocator := dpread.ResponseLocator{
+		Locate: func(config common.ReadParams, node *ajson.Node) string {
+			return "issues"
+		},
+		Process: flattenRecords,
+	}
+	writeResultBuilder := dpwrite.ResponseBuilder{
+		Build: func(config common.WriteParams, body *ajson.Node) (*common.WriteResult, error) {
+			recordID, err := jsonquery.New(body).Str("id", false)
+			if err != nil {
+				return nil, err
+			}
+
+			return &common.WriteResult{
+				Success:  true,
+				RecordId: *recordID,
+				Errors:   nil,
+				Data:     nil,
+			}, nil
+		},
 	}
 
-	return urlbuilder.New(c.BaseURL, "ex/jira", cloudId, c.Module.Path(), arg)
-}
-
-// URL allows to get list of sites associated with auth token.
-// https://developer.atlassian.com/cloud/confluence/oauth-2-3lo-apps/#3-1-get-the-cloudid-for-your-site
-func (c *Connector) getAccessibleSitesURL() (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.BaseURL, "oauth/token/accessible-resources")
-}
-
-func (c *Connector) setBaseURL(newURL string) {
-	c.BaseURL = newURL
-	c.Client.HTTPClient.Base = newURL
-}
-
-func (c *Connector) getCloudId() (string, error) {
-	if len(c.cloudId) == 0 {
-		return "", ErrMissingCloudId
+	options := []Option{
+		// TODO provide default options in a better way
+		WithModule(ModuleEmpty), // The module is resolved on behalf of the user if the option is missing.
 	}
+	options = append(options, opts...)
 
-	return c.cloudId, nil
+	return deep.ExtendedConnector[Connector, parameters, *AuthMetadataVars](
+		constructor, providers.Atlassian, &AuthMetadataVars{}, options,
+		errorHandler,
+		customURLBuilder{},
+		firstPage,
+		nextPage,
+		readObjectLocator,
+		writeResultBuilder,
+	)
 }

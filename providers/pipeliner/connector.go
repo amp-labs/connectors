@@ -1,67 +1,136 @@
 package pipeliner
 
 import (
+	"strconv"
+
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
+	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/deep"
+	"github.com/amp-labs/connectors/internal/deep/dpmetadata"
+	"github.com/amp-labs/connectors/internal/deep/dpobjects"
+	"github.com/amp-labs/connectors/internal/deep/dpread"
+	"github.com/amp-labs/connectors/internal/deep/dpvars"
+	"github.com/amp-labs/connectors/internal/deep/dpwrite"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/pipeliner/metadata"
+	"github.com/spyzhov/ajson"
 )
 
 type Connector struct {
-	BaseURL   string
-	Workspace string
-	Client    *common.JSONHTTPClient
+	Data dpvars.ConnectorData[parameters, *dpvars.EmptyMetadataVariables]
+	deep.Clients
+	deep.EmptyCloser
+	deep.Reader
+	deep.Writer
+	deep.StaticMetadata
+	deep.Remover
 }
 
-func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	defer common.PanicRecovery(func(cause error) {
-		outErr = cause
-		conn = nil
-	})
+type parameters struct {
+	paramsbuilder.Client
+	paramsbuilder.Workspace
+}
 
-	params, err := paramsbuilder.Apply(parameters{}, opts)
-	if err != nil {
-		return nil, err
+func NewConnector(opts ...Option) (conn *Connector, outErr error) { //nolint:funlen
+	constructor := func(
+		clients *deep.Clients,
+		closer *deep.EmptyCloser,
+		data *dpvars.ConnectorData[parameters, *dpvars.EmptyMetadataVariables],
+		reader *deep.Reader,
+		writer *deep.Writer,
+		metadata *deep.StaticMetadata,
+		remover *deep.Remover,
+	) *Connector {
+		return &Connector{
+			Data:           *data,
+			Clients:        *clients,
+			EmptyCloser:    *closer,
+			Reader:         *reader,
+			Writer:         *writer,
+			StaticMetadata: *metadata,
+			Remover:        *remover,
+		}
 	}
-
-	httpClient := params.Client.Caller
-	conn = &Connector{
-		Client: &common.JSONHTTPClient{
-			HTTPClient: httpClient,
-		},
-		Workspace: params.Workspace.Name,
-	}
-
-	providerInfo, err := providers.ReadInfo(conn.Provider())
-	if err != nil {
-		return nil, err
-	}
-
-	// connector and its client must mirror base url and provide its own error parser
-	conn.setBaseURL(providerInfo.BaseURL)
-	conn.Client.HTTPClient.ErrorHandler = interpreter.ErrorHandler{
+	errorHandler := interpreter.ErrorHandler{
 		JSON: interpreter.NewFaultyResponder(errorFormats, statusCodeMapping),
-	}.Handle
+	}
+	meta := dpmetadata.SchemaHolder{
+		Metadata: metadata.Schemas,
+	}
+	firstPage := dpread.FirstPageBuilder{
+		Build: func(config common.ReadParams, url *urlbuilder.URL) (*urlbuilder.URL, error) {
+			url.WithQueryParam("first", strconv.Itoa(DefaultPageSize))
 
-	return conn, nil
-}
+			return url, nil
+		},
+	}
+	nextPage := dpread.NextPageBuilder{
+		Build: func(config common.ReadParams, url *urlbuilder.URL, node *ajson.Node) (string, error) {
+			after, err := jsonquery.New(node, "page_info").StrWithDefault("end_cursor", "")
+			if err != nil {
+				return "", err
+			}
 
-func (c *Connector) Provider() providers.Provider {
-	return providers.Pipeliner
-}
+			if len(after) != 0 {
+				url.WithQueryParam("after", after)
 
-func (c *Connector) String() string {
-	return c.Provider() + ".Connector"
-}
+				return url.String(), nil
+			}
 
-func (c *Connector) getURL(parts ...string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.BaseURL, append([]string{
-		"api/v100/rest/spaces/", c.Workspace, "/entities",
-	}, parts...)...)
-}
+			return "", nil
+		},
+	}
+	readObjectLocator := dpread.ResponseLocator{
+		Locate: func(config common.ReadParams, node *ajson.Node) string {
+			return "data"
+		},
+	}
+	objectSupport := dpobjects.Registry{
+		Read: supportedObjectsByRead,
+	}
+	writeResultBuilder := dpwrite.ResponseBuilder{
+		Build: func(config common.WriteParams, body *ajson.Node) (*common.WriteResult, error) {
+			success, err := jsonquery.New(body).Bool("success", false)
+			if err != nil {
+				return nil, err
+			}
 
-func (c *Connector) setBaseURL(newURL string) {
-	c.BaseURL = newURL
-	c.Client.HTTPClient.Base = newURL
+			nested, err := jsonquery.New(body).Object("data", false)
+			if err != nil {
+				return nil, err
+			}
+
+			recordID, err := jsonquery.New(nested).StrWithDefault("id", "")
+			if err != nil {
+				return nil, err
+			}
+
+			data, err := jsonquery.Convertor.ObjectToMap(nested)
+			if err != nil {
+				return nil, err
+			}
+
+			return &common.WriteResult{
+				Success:  *success,
+				RecordId: recordID,
+				Errors:   nil,
+				Data:     data,
+			}, nil
+		},
+	}
+
+	return deep.Connector[Connector, parameters](constructor, providers.Atlassian, opts,
+		errorHandler,
+		meta,
+		customURLBuilder{},
+		firstPage,
+		nextPage,
+		readObjectLocator,
+		objectSupport,
+		dpwrite.RequestPostPatch{},
+		writeResultBuilder,
+	)
 }

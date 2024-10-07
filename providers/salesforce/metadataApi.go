@@ -30,7 +30,7 @@ func (c *Connector) CreateMetadata(ctx context.Context, data []byte, accessToken
 		return "", err
 	}
 
-	resp, err := c.XMLClient.Post(ctx, url.String(), body, getSOAPHeaders()...)
+	resp, err := c.XML.Post(ctx, url.String(), body, getSOAPHeaders()...)
 	if err != nil {
 		return "", errors.Join(ErrCreateMetadata, err)
 	}
