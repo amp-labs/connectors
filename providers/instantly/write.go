@@ -34,11 +34,11 @@ func (c *Connector) Write(
 
 	var write common.WriteMethod
 	if len(config.RecordId) == 0 {
-		write = c.Client.Post
+		write = c.JSON.Post
 
 		constructURLPathCreate(config, url) // nolint:wsl
 	} else {
-		write = c.Client.Patch
+		write = c.JSON.Patch
 
 		constructURLPathUpdate(config, url)
 	}

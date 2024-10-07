@@ -26,7 +26,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 
 	// always include annotations header
 	// response will describe enums, foreign relationship, etc.
-	rsp, err := c.Client.Get(ctx, url.String(), newPaginationHeader(DefaultPageSize), common.Header{
+	rsp, err := c.JSON.Get(ctx, url.String(), newPaginationHeader(DefaultPageSize), common.Header{
 		Key:   "Prefer",
 		Value: `odata.include-annotations="*"`,
 	})
@@ -72,7 +72,7 @@ func newPaginationHeader(pageSize int) common.Header {
 
 // Internal GET request, where we expect JSON payload.
 func (c *Connector) performGetRequest(ctx context.Context, url *urlbuilder.URL) (*ajson.Node, error) {
-	rsp, err := c.Client.Get(ctx, url.String())
+	rsp, err := c.JSON.Get(ctx, url.String())
 	if err != nil {
 		return nil, err
 	}

@@ -6,16 +6,11 @@ import (
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/paramsbuilder"
 )
 
 var headerName = "X-Api-Key" //nolint:gochecknoglobals
 
 type Option = func(params *parameters)
-
-type parameters struct {
-	paramsbuilder.Client
-}
 
 func (p parameters) ValidateParams() error {
 	return errors.Join(
