@@ -22,7 +22,7 @@ type Switch struct {
 
 // Server creates mock server that will produce different response based on conditionals.
 func (c Switch) Server() *httptest.Server {
-	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return NewServer(func(w http.ResponseWriter, r *http.Request) {
 		// Common setup is optional.
 		if c.Setup != nil {
 			c.Setup(w, r)
@@ -47,7 +47,7 @@ func (c Switch) Server() *httptest.Server {
 		// Default fail behaviour.
 		w.WriteHeader(http.StatusInternalServerError)
 		mockutils.WriteBody(w, `{"error": {"message": "condition failed"}}`)
-	}))
+	})
 }
 
 // Case is one possible route a mock server can take if condition is satisfied.
