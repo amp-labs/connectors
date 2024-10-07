@@ -41,7 +41,7 @@ func (c *Connector) ListObjectMetadata(
 	}
 
 	// Make the request
-	result, err := c.Client.Post(
+	result, err := c.JSON.Post(
 		ctx,
 		compositeRequestEndpoint.String(),
 		compositeRequest{
