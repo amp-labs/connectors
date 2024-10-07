@@ -15,7 +15,7 @@ type writeResponse struct {
 	Data    map[string]any `json:"data"`
 }
 
-// Write creates/updates records in attio. Write currently supports operations to the leads API only.
+// Write creates/updates records in attio.
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
 	if err := config.ValidateParams(); err != nil {
 		return nil, err
@@ -32,11 +32,10 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 
 	var write common.WriteMethod
 	if len(config.RecordId) == 0 {
-		// writing to the entity without id means
-		// that we are extending 'List' resource and creating a new record
+		// writing to the entity without id means creating a new record
 		write = c.Client.Post
 	} else {
-		// only put is supported for updating 'Single' resource
+		// updating resource by patch method
 		write = c.Client.Patch
 
 		url.AddPath(config.RecordId)

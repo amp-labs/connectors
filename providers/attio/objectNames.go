@@ -12,7 +12,7 @@ const (
 	objectNameNotes            = "notes"
 )
 
-var supportedObjectsByRead = handy.NewSet( //nolint:gochecknoglobals
+var supportedObjectsByRead = handy.NewSet(
 	objectNameObjects,
 	objectNameLists,
 	objectNameWorkspacemembers,
@@ -21,7 +21,7 @@ var supportedObjectsByRead = handy.NewSet( //nolint:gochecknoglobals
 	objectNameNotes,
 )
 
-var supportedObjectsByWrite = handy.NewSet( //nolint:gochecknoglobals
+var supportedObjectsByWrite = handy.NewSet(
 	objectNameObjects,
 	objectNameLists,
 	objectNameTasks,

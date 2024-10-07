@@ -9,8 +9,7 @@ import (
 
 // This struct is used for when the response data having slice of data.
 type responseObject struct {
-	Result []map[string]any `json:"data"`
-	// Other fields
+	Data []map[string]any `json:"data"`
 }
 
 // ListObjectMetadata creates metadata of object via reading objects using Attio API.
@@ -60,7 +59,7 @@ func parseMetadataFromResponse(resp *common.JSONHTTPResponse) (*common.ObjectMet
 		return nil, err
 	}
 
-	if len(response.Result) == 0 {
+	if len(response.Data) == 0 {
 		return nil, common.ErrMissingExpectedValues
 	}
 
@@ -69,7 +68,7 @@ func parseMetadataFromResponse(resp *common.JSONHTTPResponse) (*common.ObjectMet
 	}
 
 	// Using the first result data to generate the metadata.
-	for k := range response.Result[0] {
+	for k := range response.Data[0] {
 		metadata.FieldsMap[k] = k
 	}
 
