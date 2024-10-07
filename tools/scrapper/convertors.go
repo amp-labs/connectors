@@ -10,6 +10,10 @@ import (
 var ErrObjectNotFound = errors.New("object not found")
 
 func (r *ObjectMetadataResult) Select(objectNames []string) (*common.ListObjectMetadataResult, error) {
+	if len(objectNames) == 0 {
+		return nil, common.ErrMissingObjects
+	}
+
 	list := &common.ListObjectMetadataResult{
 		Result: make(map[string]common.ObjectMetadata),
 		Errors: nil,

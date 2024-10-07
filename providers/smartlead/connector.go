@@ -1,12 +1,12 @@
 package smartlead
 
 import (
-	"github.com/amp-labs/connectors/internal/deep"
-
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/deep"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/smartlead/metadata"
 )
 
 const apiVersion = "v1"
@@ -14,6 +14,7 @@ const apiVersion = "v1"
 type Connector struct {
 	deep.Clients
 	deep.EmptyCloser
+	deep.StaticMetadata
 }
 
 type parameters struct {
@@ -26,6 +27,8 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	return deep.Connector[Connector, parameters](providers.Smartlead, interpreter.ErrorHandler{
 		JSON: interpreter.NewFaultyResponder(errorFormats, nil),
 		HTML: &interpreter.DirectFaultyResponder{Callback: interpretHTMLError},
+	}).Setup(func(conn *Connector) {
+		conn.StaticMetadata = deep.NewStaticMetadata(metadata.Schemas)
 	}).Build(opts)
 }
 
