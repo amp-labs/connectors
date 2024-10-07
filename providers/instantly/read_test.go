@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/http/httptest"
 	"strings"
 	"testing"
 
@@ -94,7 +93,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				NextPage:   "test-placeholder?skip=700",
 				Fields:     connectors.Fields("id"),
 			},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			Server: mockserver.NewServer(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
 				// Create fake response big enough to conclude that next page exists.
@@ -104,7 +103,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				}
 				data := fmt.Sprintf("[%v]", strings.Join(manyCampaigns, ","))
 				mockutils.WriteBody(w, data)
-			})),
+			}),
 			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
 				return actual.NextPage.String() == expected.NextPage.String() &&
 					actual.Done == expected.Done
