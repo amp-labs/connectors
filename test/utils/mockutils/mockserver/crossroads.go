@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 
-	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 )
 
@@ -46,7 +45,7 @@ func (c Switch) Server() *httptest.Server {
 
 		// Default fail behaviour.
 		w.WriteHeader(http.StatusInternalServerError)
-		mockutils.WriteBody(w, `{"error": {"message": "condition failed"}}`)
+		_, _ = w.Write([]byte(`{"error": {"message": "condition failed"}}`))
 	})
 }
 
