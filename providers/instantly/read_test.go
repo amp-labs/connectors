@@ -102,7 +102,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					manyCampaigns[i] = "{}"
 				}
 				data := fmt.Sprintf("[%v]", strings.Join(manyCampaigns, ","))
-				mockutils.WriteBody(w, data)
+				_, _ = w.Write([]byte(data))
 			}),
 			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
 				return actual.NextPage.String() == expected.NextPage.String() &&
