@@ -11,11 +11,10 @@ import (
 type responseObject struct {
 	Result  []map[string]any `json:"result"`
 	Success bool             `json:"success"`
-	// Other fields
 }
 
-// ListObjectMetadata creates metadata of object via reading objects using Marketo API.
-// If it fails to fretrieve the metadata, It tried using static schema file in metadata dir.
+// ListObjectMetadata creates metadata of object via reading object using Marketo API.
+// If it fails to retrieve the metadata, It retries using marketo's OpenAPI schema files.
 func (c *Connector) ListObjectMetadata(ctx context.Context,
 	objectNames []string,
 ) (*common.ListObjectMetadataResult, error) {

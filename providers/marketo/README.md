@@ -1,6 +1,8 @@
-# Write connnector
+# Marketo Connector
 
-Currently the Write connector supports Leads API only. 
+The connector currently supports Leads API only.
+
+# Write connnector
 
 The objects that we can write to currently are:
  - Companies
@@ -9,3 +11,10 @@ The objects that we can write to currently are:
  - Named Accounts
  - Opportunites
  - SalesPerson
+
+ # Read connector
+
+The obects that we can read currently are:
+- Campaigns
+- Custom Objects
+- Lists
