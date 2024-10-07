@@ -25,7 +25,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		url.WithQueryParam("_HttpMethod", "PATCH")
 	}
 
-	rsp, err := c.Client.Post(ctx, url.String(), config.RecordData)
+	rsp, err := c.JSON.Post(ctx, url.String(), config.RecordData)
 	if err != nil {
 		return nil, err
 	}

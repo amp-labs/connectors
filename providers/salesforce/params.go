@@ -6,18 +6,11 @@ import (
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"golang.org/x/oauth2"
 )
 
 // Option is a function which mutates the salesforce connector configuration.
 type Option = func(params *parameters)
-
-// parameters is the internal configuration for the salesforce connector.
-type parameters struct {
-	paramsbuilder.Client
-	paramsbuilder.Workspace
-}
 
 func (p parameters) ValidateParams() error {
 	return errors.Join(

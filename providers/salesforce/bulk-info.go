@@ -47,7 +47,7 @@ func (c *Connector) ListIngestJobsInfo(ctx context.Context, jobIds ...string) ([
 	}
 
 	for {
-		res, err := c.Client.Get(ctx, location)
+		res, err := c.JSON.Get(ctx, location)
 		if err != nil {
 			return nil, fmt.Errorf(
 				"failed to list ingest jobs info: %w",
@@ -98,7 +98,7 @@ func (c *Connector) GetBulkQueryInfo(ctx context.Context, jobId string) (*GetJob
 		return nil, err
 	}
 
-	res, err := c.Client.Get(ctx, location.String())
+	res, err := c.JSON.Get(ctx, location.String())
 	if err != nil {
 		return nil, fmt.Errorf(
 			"failed to get bulk query info for job '%s': %w",
@@ -130,7 +130,7 @@ func (c *Connector) GetBulkQueryResults(ctx context.Context, jobId string) (*htt
 
 	// Get the connector's JSONHTTPClient, which is a special HTTPClient that handles JSON responses,
 	// and use it's underlying http.Client to make the request.
-	return c.Client.HTTPClient.Client.Do(req)
+	return c.JSON.HTTPClient.Client.Do(req)
 }
 
 // GetJobInfo returns information status about an Ingest Job,
@@ -142,7 +142,7 @@ func (c *Connector) GetJobInfo(ctx context.Context, jobId string) (*GetJobInfoRe
 		return nil, err
 	}
 
-	rsp, err := c.Client.Get(ctx, location.String())
+	rsp, err := c.JSON.Get(ctx, location.String())
 	if err != nil {
 		return nil, fmt.Errorf("getGetInfo failed: %w", errors.Join(err, common.ErrRequestFailed))
 	}
@@ -205,5 +205,5 @@ func (c *Connector) GetSuccessfulJobResults(ctx context.Context, jobId string) (
 
 	// Get the connector's JSONHTTPClient, which is a special HTTPClient that handles JSON responses,
 	// and use it's underlying http.Client to make the request.
-	return c.Client.HTTPClient.Client.Do(req)
+	return c.JSON.HTTPClient.Client.Do(req)
 }
