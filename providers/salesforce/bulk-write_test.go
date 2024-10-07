@@ -11,6 +11,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -203,36 +204,30 @@ func createBulkJobServer(
 	responseUpdateJob []byte,
 	jobID string,
 ) *httptest.Server {
-	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { // nolint:varnamelen
-		w.Header().Set("Content-Type", "application/json")
-
-		switch path := r.URL.Path; {
-		case strings.HasSuffix(path, "/services/data/v59.0/jobs/ingest"):
-			// Create job if body matches.
-			mockutils.RespondToBody(w, r, bodyRequest, func() {
-				w.WriteHeader(http.StatusOK)
-				_, _ = w.Write(responseCreateJob)
-			})
-
-		case strings.HasSuffix(path, fmt.Sprintf("/services/data/v59.0/jobs/ingest/%v/batches", jobID)):
-			// We expect CSV to be uploaded via this endpoint.
-			w.WriteHeader(http.StatusCreated)
-			_, _ = w.Write([]byte{})
-
-		case strings.HasSuffix(path, fmt.Sprintf("/services/data/v59.0/jobs/ingest/%v", jobID)):
-			// Mark job Completed.
-			mockutils.RespondToMethod(w, r, "PATCH", func() {
-				mockutils.RespondToBody(w, r, `{"state":"UploadComplete"}`, func() {
-					w.WriteHeader(http.StatusOK)
-					_, _ = w.Write(responseUpdateJob)
-				})
-			})
-
-		default:
-			w.WriteHeader(http.StatusInternalServerError)
-			_, _ = w.Write([]byte{})
-		}
-	}))
+	return mockserver.Crossroad{
+		Setup: mockserver.ContentJSON(),
+		Paths: []mockserver.Path{
+			{ // Create job if body matches.
+				Condition: mockcond.And{
+					mockcond.PathSuffix("/services/data/v59.0/jobs/ingest"),
+					mockcond.Body(bodyRequest),
+				},
+				OnSuccess: mockserver.Response(http.StatusOK, responseCreateJob),
+			},
+			{ // We expect CSV to be uploaded via this endpoint.
+				Condition: mockcond.PathSuffix(fmt.Sprintf("/services/data/v59.0/jobs/ingest/%v/batches", jobID)),
+				OnSuccess: mockserver.Response(http.StatusCreated, []byte{}),
+			},
+			{ // Mark job Completed.
+				Condition: mockcond.And{
+					mockcond.MethodPATCH(),
+					mockcond.PathSuffix(fmt.Sprintf("/services/data/v59.0/jobs/ingest/%v", jobID)),
+					mockcond.Body(`{"state":"UploadComplete"}`),
+				},
+				OnSuccess: mockserver.Response(http.StatusOK, responseUpdateJob),
+			},
+		},
+	}.Server()
 }
 
 type (
