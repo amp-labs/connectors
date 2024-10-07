@@ -3,7 +3,6 @@ package pipeliner
 import (
 	"errors"
 	"net/http"
-	"net/http/httptest"
 	"testing"
 
 	"github.com/amp-labs/connectors"
@@ -52,11 +51,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name:  "Correct error message is understood from JSON response",
 			Input: common.ReadParams{ObjectName: "Profiles", Fields: connectors.Fields("id")},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusNotFound)
-				_, _ = w.Write(responseNotFound)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusNotFound, responseNotFound),
+			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
 				errors.New("The requested URL was not found on the server"), // nolint:goerr113
@@ -65,40 +63,37 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name:  "Incorrect key in payload",
 			Input: common.ReadParams{ObjectName: "Profiles", Fields: connectors.Fields("id")},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				mockutils.WriteBody(w, `{
+			Server: mockserver.Fixed{
+				Setup: mockserver.ContentJSON(),
+				Always: mockserver.ResponseString(http.StatusOK, `{
 					"garbage": {}
-				}`)
-			})),
+				}`),
+			}.Server(),
 			ExpectedErrs: []error{jsonquery.ErrKeyNotFound},
 		},
 		{
 			Name:  "Incorrect data type in payload",
 			Input: common.ReadParams{ObjectName: "Profiles", Fields: connectors.Fields("id")},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				mockutils.WriteBody(w, `{
+			Server: mockserver.Fixed{
+				Setup: mockserver.ContentJSON(),
+				Always: mockserver.ResponseString(http.StatusOK, `{
 					"data": {}
-				}`)
-			})),
+				}`),
+			}.Server(),
 			ExpectedErrs: []error{jsonquery.ErrNotArray},
 		},
 		{
 			Name:  "Next page cursor may be missing in payload",
 			Input: common.ReadParams{ObjectName: "Profiles", Fields: connectors.Fields("id")},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				mockutils.WriteBody(w, `
+			Server: mockserver.Fixed{
+				Setup: mockserver.ContentJSON(),
+				Always: mockserver.ResponseString(http.StatusOK, `
 				{
 				  "success": true,
 				  "total": 0,
 				  "data": []
-				}`)
-			})),
+				}`),
+			}.Server(),
 			Expected: &common.ReadResult{
 				Data: []common.ReadResultRow{},
 				Done: true,
@@ -108,11 +103,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name:  "Next page URL is inferred, when provided with an object",
 			Input: common.ReadParams{ObjectName: "Profiles", Fields: connectors.Fields("id")},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				_, _ = w.Write(responseProfilesFirstPage)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseProfilesFirstPage),
+			}.Server(),
 			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
 				return actual.NextPage.String() == expected.NextPage.String() // nolint:nlreturn
 			},
@@ -124,11 +118,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name:  "Next page URL is empty, when provided with null object",
 			Input: common.ReadParams{ObjectName: "Profiles", Fields: connectors.Fields("id")},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				_, _ = w.Write(responseProfilesLastPage)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseProfilesLastPage),
+			}.Server(),
 			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
 				return actual.NextPage.String() == expected.NextPage.String() &&
 					actual.Done == expected.Done
@@ -142,11 +135,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				ObjectName: "Profiles",
 				Fields:     connectors.Fields("name", "owner_id"),
 			},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				_, _ = w.Write(responseProfilesSecondPage)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseProfilesSecondPage),
+			}.Server(),
 			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
 				// custom comparison focuses on subset of fields to keep the test short
 				return mockutils.ReadResultComparator.SubsetFields(actual, expected) &&
