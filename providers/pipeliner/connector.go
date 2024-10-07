@@ -2,6 +2,8 @@ package pipeliner
 
 import (
 	"fmt"
+	"github.com/amp-labs/connectors/internal/deep"
+	"github.com/amp-labs/connectors/providers/pipeliner/metadata"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
@@ -14,6 +16,7 @@ type Connector struct {
 	BaseURL   string
 	Workspace string
 	Client    *common.JSONHTTPClient
+	deep.StaticMetadata
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
@@ -45,6 +48,8 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	conn.Client.HTTPClient.ErrorHandler = interpreter.ErrorHandler{
 		JSON: interpreter.NewFaultyResponder(errorFormats, statusCodeMapping),
 	}.Handle
+
+	conn.StaticMetadata = deep.NewStaticMetadata(metadata.Schemas)
 
 	return conn, nil
 }

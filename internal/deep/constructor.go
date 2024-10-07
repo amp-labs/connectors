@@ -11,6 +11,7 @@ import (
 type ConnectorBuilder[C any, P paramsbuilder.ParamAssurance] struct {
 	provider     providers.Provider
 	errorHandler interpreter.ErrorHandler
+	setup        func(conn *C)
 }
 
 func Connector[C any, P paramsbuilder.ParamAssurance](
@@ -22,7 +23,13 @@ func Connector[C any, P paramsbuilder.ParamAssurance](
 	}
 }
 
-func (b ConnectorBuilder[C, P]) Build(opts []func(params *P)) (conn *C, outErr error) {
+func (b *ConnectorBuilder[C, P]) Setup(setup func(conn *C)) *ConnectorBuilder[C, P] {
+	b.setup = setup
+
+	return b
+}
+
+func (b *ConnectorBuilder[C, P]) Build(opts []func(params *P)) (conn *C, outErr error) {
 	defer common.PanicRecovery(func(cause error) {
 		outErr = cause
 		conn = nil
@@ -51,6 +58,10 @@ func (b ConnectorBuilder[C, P]) Build(opts []func(params *P)) (conn *C, outErr e
 	}
 
 	a.CopyFrom(clients)
+
+	if b.setup != nil {
+		b.setup(connector)
+	}
 
 	return connector, nil
 }
