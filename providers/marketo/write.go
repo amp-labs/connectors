@@ -29,8 +29,11 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, err
 	}
 
+	// This should never happen(and won't).
+	// But it's checked so as to avoid panics in accesing Result Array.
+	// The rest WriteReults are zero valued.
 	if len(resp.Result) == 0 {
-		return nil, ErrEmptyResultResponse
+		return &common.WriteResult{Success: true}, nil
 	}
 
 	recordId, err := constructId(config.ObjectName, resp)
@@ -65,7 +68,7 @@ func constructId(objectName string, resp *writeResponse) (string, error) {
 
 	case usesMarketoGUID(objectName):
 		recordId = resp.Result[0]["marketoGUID"]
-		// By default the recordId is returned as a string
+		// By default the marketoGUID is returned as a string
 		recordId, success = recordId.(string)
 
 		err = checkErr(resp, recordId, success)
@@ -82,7 +85,8 @@ func constructId(objectName string, resp *writeResponse) (string, error) {
 
 func checkErr(resp *writeResponse, recordId any, success bool) (err error) {
 	if !success || recordId == "" || recordId == 0 {
-		// This means, there is a recordLevel error.
+		// This means there is a recordLevel error.
+		// We construct the error and send it back to the client.
 		message, err := constructErrMessage(resp.Result)
 		if err != nil {
 			return err

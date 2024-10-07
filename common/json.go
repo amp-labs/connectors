@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"mime"
 	"net/http"
+	"strings"
 
 	"github.com/spyzhov/ajson"
 )
@@ -186,4 +187,13 @@ func addAcceptJSONHeader(headers []Header) []Header {
 	}
 
 	return append(headers, Header{Key: "Accept", Value: "application/json"})
+}
+
+// AddJSONSuffix adds the suffix ".json" to an objectName.
+func AddJSONSuffix(objectName string) string {
+	if !strings.HasSuffix(objectName, ".json") {
+		objectName += ".json"
+	}
+
+	return objectName
 }

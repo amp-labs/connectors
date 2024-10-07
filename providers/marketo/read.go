@@ -6,9 +6,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 )
 
-// Read retrieves data based on the provided configuration parameters.
-//
-// This function executes a read operation using the given context and.
+// Read retrieves data based on the provided common.ReadParams configuration parameters.
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
 	if err := config.ValidateParams(true); err != nil {
 		return nil, err
