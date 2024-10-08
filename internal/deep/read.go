@@ -56,7 +56,15 @@ func (r *Reader) Read(ctx context.Context, config common.ReadParams) (*common.Re
 		rsp,
 		common.GetRecordsUnderJSONPath(r.readObjectLocator.Locate(config)),
 		func(node *ajson.Node) (string, error) {
-			return r.nextPageBuilder.Build(config, url, node)
+			nextURL, err := r.nextPageBuilder.Build(config, url, node)
+			if err != nil {
+				return "", err
+			}
+			if nextURL == nil {
+				return "", nil
+			}
+
+			return nextURL.String(), nil
 		},
 		common.GetMarshaledData,
 		config.Fields,
@@ -75,17 +83,29 @@ func (r *Reader) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error)
 		return nil, err
 	}
 
-	return r.firstPageBuilder.Build(config, url), nil
+	return r.firstPageBuilder.Build(config, url)
 }
 
 type FirstPageBuilder struct {
-	Build func(config common.ReadParams, url *urlbuilder.URL) *urlbuilder.URL
+	Build func(config common.ReadParams, url *urlbuilder.URL) (*urlbuilder.URL, error)
+}
+
+func (b FirstPageBuilder) Satisfies() Dependency {
+	return Dependency{Constructor: returner(b)}
 }
 
 type NextPageBuilder struct {
-	Build func(config common.ReadParams, previousPage *urlbuilder.URL, node *ajson.Node) (string, error)
+	Build func(config common.ReadParams, previousPage *urlbuilder.URL, node *ajson.Node) (*urlbuilder.URL, error)
+}
+
+func (b NextPageBuilder) Satisfies() Dependency {
+	return Dependency{Constructor: returner(b)}
 }
 
 type ReadObjectLocator struct {
 	Locate func(config common.ReadParams) string
+}
+
+func (l ReadObjectLocator) Satisfies() Dependency {
+	return Dependency{Constructor: returner(l)}
 }
