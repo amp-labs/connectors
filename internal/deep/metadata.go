@@ -11,8 +11,8 @@ type StaticMetadata struct {
 	static scrapper.ObjectMetadataResult
 }
 
-func NewStaticMetadata(static *scrapper.ObjectMetadataResult) StaticMetadata {
-	return StaticMetadata{static: *static}
+func NewStaticMetadata(static *scrapper.ObjectMetadataResult) *StaticMetadata {
+	return &StaticMetadata{static: *static}
 }
 
 func (c *StaticMetadata) ListObjectMetadata(

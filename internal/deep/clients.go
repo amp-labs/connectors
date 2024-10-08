@@ -16,33 +16,34 @@ type Clients struct {
 	XML        *common.XMLHTTPClient
 }
 
-func (c *Clients) CopyFrom(other *Clients) {
-	c.provider = other.provider
-	c.httpClient = other.httpClient
-	c.JSON = other.JSON
-	c.XML = other.XML
+func newClients[P paramsbuilder.ParamAssurance](
+	provider providers.Provider,
+	errorHandler interpreter.ErrorHandler,
+	opts []func(params *P),
+) (clients *Clients, outErr error) {
+	defer common.PanicRecovery(func(cause error) {
+		outErr = cause
+		clients = nil
+	})
+
+	var paramsTemplate P
+
+	params, err := paramsbuilder.Apply(paramsTemplate, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	clients, err = internalNewClients(provider, params)
+	if err != nil {
+		return nil, err
+	}
+
+	clients.WithErrorHandler(errorHandler)
+
+	return clients, nil
 }
 
-// Provider returns the connector provider.
-func (c *Clients) Provider() providers.Provider {
-	return c.provider
-}
-
-// String returns a string representation of the connector, which is useful for logging / debugging.
-func (c *Clients) String() string {
-	return fmt.Sprintf("%s.Connector", c.Provider())
-}
-
-// JSONHTTPClient returns the underlying JSON HTTP client.
-func (c *Clients) JSONHTTPClient() *common.JSONHTTPClient {
-	return c.JSON
-}
-
-func (c *Clients) HTTPClient() *common.HTTPClient {
-	return c.httpClient
-}
-
-func newClients(provider providers.Provider, parameters any) (*Clients, error) {
+func internalNewClients(provider providers.Provider, parameters any) (*Clients, error) {
 	catalogVariables := paramsbuilder.ExtractCatalogVariables(parameters)
 	providerInfo, err := providers.ReadInfo(provider, catalogVariables...)
 	if err != nil {
@@ -68,6 +69,25 @@ func newClients(provider providers.Provider, parameters any) (*Clients, error) {
 			HTTPClient: client,
 		},
 	}, nil
+}
+
+// Provider returns the connector provider.
+func (c *Clients) Provider() providers.Provider {
+	return c.provider
+}
+
+// String returns a string representation of the connector, which is useful for logging / debugging.
+func (c *Clients) String() string {
+	return fmt.Sprintf("%s.Connector", c.Provider())
+}
+
+// JSONHTTPClient returns the underlying JSON HTTP client.
+func (c *Clients) JSONHTTPClient() *common.JSONHTTPClient {
+	return c.JSON
+}
+
+func (c *Clients) HTTPClient() *common.HTTPClient {
+	return c.httpClient
 }
 
 func (c *Clients) BaseURL() string {

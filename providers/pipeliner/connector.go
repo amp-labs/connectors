@@ -16,7 +16,7 @@ type Connector struct {
 	BaseURL   string
 	Workspace string
 	Client    *common.JSONHTTPClient
-	deep.StaticMetadata
+	*deep.StaticMetadata
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {

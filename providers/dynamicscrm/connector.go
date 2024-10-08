@@ -2,7 +2,6 @@ package dynamicscrm
 
 import (
 	"fmt"
-
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
@@ -14,8 +13,8 @@ import (
 const apiVersion = "v9.2"
 
 type Connector struct {
-	deep.Clients
-	deep.EmptyCloser
+	*deep.Clients
+	*deep.EmptyCloser
 }
 
 type parameters struct {
@@ -24,9 +23,19 @@ type parameters struct {
 }
 
 func NewConnector(opts ...Option) (*Connector, error) {
-	return deep.Connector[Connector, parameters](providers.DynamicsCRM, interpreter.ErrorHandler{
+	constructor := func(
+		clients *deep.Clients,
+		closer *deep.EmptyCloser) *Connector {
+		return &Connector{
+			Clients:     clients,
+			EmptyCloser: closer,
+		}
+	}
+	errorHandler := interpreter.ErrorHandler{
 		JSON: interpreter.NewFaultyResponder(errorFormats, nil),
-	}).Build(opts)
+	}
+
+	return deep.Connector[Connector, parameters](constructor, providers.DynamicsCRM, &errorHandler, opts)
 }
 
 func (c *Connector) getURL(arg string) (*urlbuilder.URL, error) {
