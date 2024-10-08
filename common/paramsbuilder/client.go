@@ -11,12 +11,20 @@ import (
 
 var ErrMissingClient = errors.New("http client not set")
 
+type ClientHolder interface {
+	GiveClient() *Client
+}
+
 // Client params sets up authenticated proxy HTTP client.
 // There are many types of authentication, where only one must be chosen. Ex: oauth2.
 type Client struct {
 	// Caller is an HTTP client that knows how to make authenticated requests.
 	// It also knows how to handle authentication and API response errors.
 	Caller *common.HTTPClient
+}
+
+func (p *Client) GiveClient() *Client {
+	return p
 }
 
 func (p *Client) ValidateParams() error {

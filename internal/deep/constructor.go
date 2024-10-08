@@ -42,14 +42,14 @@ func (b *ConnectorBuilder[C, P]) Build(opts []func(params *P)) (conn *C, outErr 
 		return nil, err
 	}
 
-	clients, err := internalNewClients(b.provider, params)
+	clients, err := newClients(b.provider, params)
 	if err != nil {
 		return nil, err
 	}
 
 	clients.WithErrorHandler(b.errorHandler)
 
-	// TODO everything from this line till the end of method is concerned about
+	// TODO everything from this line till the end of method I am concerned about
 	// Dependency Injection
 	// Connector which is build using composition must self wire
 	// The starting values are either coming from

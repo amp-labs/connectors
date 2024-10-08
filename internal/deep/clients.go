@@ -1,9 +1,11 @@
 package deep
 
 import (
+	"errors"
 	"fmt"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
+	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -40,32 +42,30 @@ func (c *Clients) HTTPClient() *common.HTTPClient {
 	return c.httpClient
 }
 
-func internalNewClients(provider providers.Provider, parameters any) (*Clients, error) {
-	httpClient, err := ExtractHTTPClient(parameters)
+func newClients(provider providers.Provider, parameters any) (*Clients, error) {
+	catalogVariables := paramsbuilder.ExtractCatalogVariables(parameters)
+	providerInfo, err := providers.ReadInfo(provider, catalogVariables...)
 	if err != nil {
 		return nil, err
 	}
 
-	catalogsVars, err := ExtractCatalogVariables(parameters)
-	if err != nil {
-		return nil, err
+	clientHolder, ok := parameters.(paramsbuilder.ClientHolder)
+	if !ok {
+		// TODO complain that parameters doesn't hold HTTP client
+		return nil, errors.New("not good")
 	}
+	client := clientHolder.GiveClient().Caller
 
-	providerInfo, err := providers.ReadInfo(provider, catalogsVars...)
-	if err != nil {
-		return nil, err
-	}
-
-	httpClient.Base = providerInfo.BaseURL
+	client.Base = providerInfo.BaseURL
 
 	return &Clients{
 		provider:   provider,
-		httpClient: httpClient,
+		httpClient: client,
 		JSON: &common.JSONHTTPClient{
-			HTTPClient: httpClient,
+			HTTPClient: client,
 		},
 		XML: &common.XMLHTTPClient{
-			HTTPClient: httpClient,
+			HTTPClient: client,
 		},
 	}, nil
 }

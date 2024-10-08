@@ -7,6 +7,10 @@ import (
 
 var ErrNoSupportedModule = errors.New("no supported module was chosen")
 
+type ModuleHolder interface {
+	GiveModule() *Module
+}
+
 // Module represents a sub-product of a provider.
 // This is relevant where there are several APIs for different sub-products, and the APIs
 // are versioned differently or have different ways of constructing URLs and requests for reading/writing.
@@ -18,6 +22,10 @@ type Module struct {
 	supported []APIModule
 	// If user supplied unsupported module it will use this fallback.
 	fallback *APIModule
+}
+
+func (p *Module) GiveModule() *Module {
+	return p
 }
 
 func (p *Module) ValidateParams() error {
