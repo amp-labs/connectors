@@ -17,6 +17,7 @@ type Connector struct {
 	*deep.Clients
 	*deep.EmptyCloser
 	*deep.StaticMetadata
+	*deep.Remover
 }
 
 type parameters struct {
@@ -27,21 +28,33 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	constructor := func(
 		clients *deep.Clients,
 		closer *deep.EmptyCloser,
-		staticMetadata *deep.StaticMetadata) *Connector {
+		staticMetadata *deep.StaticMetadata,
+		remover *deep.Remover) *Connector {
 		return &Connector{
 			Clients:        clients,
 			EmptyCloser:    closer,
 			StaticMetadata: staticMetadata,
+			Remover:        remover,
 		}
 	}
 	errorHandler := interpreter.ErrorHandler{
 		JSON: interpreter.NewFaultyResponder(errorFormats, statusCodeMapping),
+	}
+	urlResolver := &deep.DirectURLResolver{
+		Resolve: func(baseURL, objectName string) (*urlbuilder.URL, error) {
+			return urlbuilder.New(baseURL, apiVersion, objectName)
+		},
 	}
 
 	return deep.Connector[Connector, parameters](constructor, providers.Salesloft, &errorHandler, opts,
 		deep.Dependency{
 			Constructor: func() *scrapper.ObjectMetadataResult {
 				return metadata.Schemas
+			},
+		},
+		deep.Dependency{
+			Constructor: func() deep.URLResolver {
+				return urlResolver
 			},
 		},
 	)
