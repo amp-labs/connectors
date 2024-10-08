@@ -49,6 +49,13 @@ func (b *ConnectorBuilder[C, P]) Build(opts []func(params *P)) (conn *C, outErr 
 
 	clients.WithErrorHandler(b.errorHandler)
 
+	// TODO everything from this line till the end of method is concerned about
+	// Dependency Injection
+	// Connector which is build using composition must self wire
+	// The starting values are either coming from
+	// * options which produce params, which in turn are converted to some objects
+	// * Setup some values could be coming from the implementor of deep connector rather than end user (aka options)
+
 	var connectorTemplate C
 	connector := &connectorTemplate
 
