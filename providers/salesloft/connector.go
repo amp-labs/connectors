@@ -2,19 +2,19 @@ package salesloft
 
 import (
 	"errors"
-	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/jsonquery"
-	"github.com/amp-labs/connectors/common/paramsbuilder"
-	"github.com/amp-labs/connectors/internal/deep"
-	"github.com/amp-labs/connectors/providers/salesloft/metadata"
-	"github.com/amp-labs/connectors/tools/scrapper"
-	"github.com/spyzhov/ajson"
 	"strconv"
 	"time"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
+	"github.com/amp-labs/connectors/common/jsonquery"
+	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/deep"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/salesloft/metadata"
+	"github.com/amp-labs/connectors/tools/scrapper"
+	"github.com/spyzhov/ajson"
 )
 
 const apiVersion = "v2"
@@ -23,7 +23,7 @@ type Connector struct {
 	deep.Clients
 	deep.EmptyCloser
 	deep.Reader
-	//deep.Writer // TODO create writer
+	deep.Writer
 	deep.StaticMetadata
 	deep.Remover
 }
@@ -37,15 +37,17 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		clients *deep.Clients,
 		closer *deep.EmptyCloser,
 		reader *deep.Reader,
+		writer *deep.Writer,
 		staticMetadata *deep.StaticMetadata,
 		remover *deep.Remover) *Connector {
 
-		reader.SupportedReadObjects = &supportedObjectsByRead // TODO dependency in some way
+		reader.SupportedReadObjects = &supportedObjectsByRead // TODO express as dependency (SupportedObjectByOperation)
 
 		return &Connector{
 			Clients:        *clients,
 			EmptyCloser:    *closer,
 			Reader:         *reader,
+			Writer:         *writer,
 			StaticMetadata: *staticMetadata,
 			Remover:        *remover,
 		}
@@ -102,6 +104,37 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			return urlbuilder.New(baseURL, apiVersion, objectName)
 		},
 	}
+	writeResultBuilder := deep.WriteResultBuilder{
+		Build: func(config common.WriteParams, body *ajson.Node) (*common.WriteResult, error) {
+			nested, err := jsonquery.New(body).Object("data", false)
+			if err != nil {
+				return nil, err
+			}
+
+			rawID, err := jsonquery.New(nested).Integer("id", true)
+			if err != nil {
+				return nil, err
+			}
+
+			recordID := ""
+			if rawID != nil {
+				// optional
+				recordID = strconv.FormatInt(*rawID, 10)
+			}
+
+			data, err := jsonquery.Convertor.ObjectToMap(nested)
+			if err != nil {
+				return nil, err
+			}
+
+			return &common.WriteResult{
+				Success:  true,
+				RecordId: recordID,
+				Errors:   nil,
+				Data:     data,
+			}, nil
+		},
+	}
 
 	return deep.Connector[Connector, parameters](constructor, providers.Salesloft, &errorHandler, opts,
 		deep.Dependency{
@@ -113,9 +146,6 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		firstPage,
 		nextPage,
 		readObjectLocator,
+		writeResultBuilder,
 	)
-}
-
-func (c *Connector) getURL(arg string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.BaseURL(), apiVersion, arg)
 }

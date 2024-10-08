@@ -69,6 +69,11 @@ func Connector[C any, P paramsbuilder.ParamAssurance](
 			Constructor: NewReader,
 		},
 		{
+			// Connector that creates new records or updates existing.
+			// TODO describe dependencies
+			Constructor: NewWriter,
+		},
+		{
 			// Connector may serve ListObjectMetadata from static file.
 			// Note: this requires another dependency of *scrapper.ObjectMetadataResult.
 			Constructor: NewStaticMetadata,
