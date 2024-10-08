@@ -6,14 +6,14 @@ import (
 )
 
 type Remover struct {
-	*Clients
-	URLResolver
+	clients     Clients
+	urlResolver URLResolver
 }
 
-func NewRemover(clients *Clients, resolver URLResolver) *Remover {
+func NewRemover(clients *Clients, resolver *URLResolver) *Remover {
 	return &Remover{
-		Clients:     clients,
-		URLResolver: resolver,
+		clients:     *clients,
+		urlResolver: *resolver,
 	}
 }
 
@@ -22,14 +22,14 @@ func (r *Remover) Delete(ctx context.Context, config common.DeleteParams) (*comm
 		return nil, err
 	}
 
-	url, err := r.URLResolver.ResolveURL(r.BaseURL(), config.ObjectName)
+	url, err := r.urlResolver.Resolve(r.clients.BaseURL(), config.ObjectName)
 	if err != nil {
 		return nil, err
 	}
 
 	url.AddPath(config.RecordId)
 
-	_, err = r.JSON.Delete(ctx, url.String())
+	_, err = r.clients.JSON.Delete(ctx, url.String())
 	if err != nil {
 		return nil, err
 	}
