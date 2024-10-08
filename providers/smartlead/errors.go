@@ -45,7 +45,7 @@ func (r ResponseBasicError) CombineErr(base error) error {
 	return base
 }
 
-func (c *Connector) interpretHTMLError(res *http.Response, body []byte) error {
+func interpretHTMLError(res *http.Response, body []byte) error {
 	base := interpreter.DefaultStatusCodeMappingToErr(res, body)
 
 	document, err := goquery.NewDocumentFromReader(bytes.NewReader(body))

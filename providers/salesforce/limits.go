@@ -12,7 +12,7 @@ func (c *Connector) Limits(ctx context.Context) (*LimitsResponse, error) {
 		return nil, err
 	}
 
-	response, err := c.Client.Get(ctx, url.String())
+	response, err := c.JSON.Get(ctx, url.String())
 	if err != nil {
 		return nil, err
 	}

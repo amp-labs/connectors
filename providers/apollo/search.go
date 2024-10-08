@@ -30,7 +30,7 @@ func (c *Connector) Search(ctx context.Context, config common.ReadParams,
 	// API sorts by the last activity or creation date timestamp.
 	// So need to change the param details here.
 
-	json, err := c.Client.Post(ctx, url.String(), []byte{})
+	json, err := c.JSON.Post(ctx, url.String(), []byte{})
 	if err != nil {
 		return nil, err
 	}

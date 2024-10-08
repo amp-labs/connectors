@@ -20,11 +20,11 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 	if len(config.RecordId) == 0 {
 		// writing to the entity without id means
 		// that we are extending 'List' resource and creating a new record
-		write = c.Client.Post
+		write = c.JSON.Post
 		resource = config.ObjectName
 	} else {
 		// only patch is supported for updating 'Single' resource
-		write = c.Client.Patch
+		write = c.JSON.Patch
 		// resource id is passed via brackets in OData spec
 		resource = fmt.Sprintf("%s(%s)", config.ObjectName, config.RecordId)
 	}
