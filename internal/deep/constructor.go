@@ -63,6 +63,11 @@ func Connector[C any, P paramsbuilder.ParamAssurance](
 			Constructor: NewStaticMetadata,
 		},
 		{
+			// Connector may allow record deletion.
+			// TODO describe dependencies
+			Constructor: NewRemover,
+		},
+		{
 			// This is the main constructor which will get all dependencies resolved.
 			// It is possible that not all dependencies are needed, this list is exhaustive,
 			// which describes all the building blocks that Deep connector may have.
