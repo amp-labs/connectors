@@ -8,6 +8,10 @@ import (
 	"go.uber.org/dig"
 )
 
+type Requirement interface {
+	Satisfies() Dependency
+}
+
 type Dependency struct {
 	Constructor any
 }
@@ -16,15 +20,17 @@ func (d Dependency) apply(container *dig.Container) error {
 	return container.Provide(d.Constructor)
 }
 
+// Connector
+// TODO document that it can be a constructor or Dependency object (maybe we want to support DI tagging)
 func Connector[C any, P paramsbuilder.ParamAssurance](
 	connectorConstructor any,
 	provider providers.Provider,
 	errorHandler *interpreter.ErrorHandler,
 	options []func(params *P),
-	dependencies ...Dependency,
+	dependencies ...any,
 ) (*C, error) {
 
-	core := []Dependency{
+	deps := []Dependency{
 		{
 			// Connector must have Provider name
 			Constructor: func() providers.Provider {
@@ -80,9 +86,18 @@ func Connector[C any, P paramsbuilder.ParamAssurance](
 		},
 	}
 
+	for _, dep := range dependencies {
+		if d, ok := dep.(Dependency); ok {
+			deps = append(deps, d)
+		}
+		if r, ok := dep.(Requirement); ok {
+			deps = append(deps, r.Satisfies())
+		}
+	}
+
 	var err error
 	container := dig.New()
-	for _, dependency := range append(core, dependencies...) {
+	for _, dependency := range deps {
 		err = errors.Join(err, dependency.apply(container))
 	}
 
