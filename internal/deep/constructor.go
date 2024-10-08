@@ -2,73 +2,91 @@ package deep
 
 import (
 	"errors"
-	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/providers"
+	"go.uber.org/dig"
 )
 
-type ConnectorBuilder[C any, P paramsbuilder.ParamAssurance] struct {
-	provider     providers.Provider
-	errorHandler interpreter.ErrorHandler
-	setup        func(conn *C)
+type Dependency struct {
+	Constructor any
+}
+
+func (d Dependency) apply(container *dig.Container) error {
+	return container.Provide(d.Constructor)
 }
 
 func Connector[C any, P paramsbuilder.ParamAssurance](
+	connectorConstructor any,
 	provider providers.Provider,
-	errorHandler interpreter.ErrorHandler) *ConnectorBuilder[C, P] {
-	return &ConnectorBuilder[C, P]{
-		provider:     provider,
-		errorHandler: errorHandler,
+	errorHandler *interpreter.ErrorHandler,
+	options []func(params *P),
+	dependencies ...Dependency,
+) (*C, error) {
+
+	core := []Dependency{
+		{
+			// Connector must have Provider name
+			Constructor: func() providers.Provider {
+				return provider
+			},
+		},
+		{
+			// Connector is configured using options.
+			Constructor: func() []func(params *P) {
+				return options
+			},
+		},
+		{
+			// HTTP clients use error handler.
+			Constructor: func() interpreter.ErrorHandler {
+				if errorHandler == nil {
+					return interpreter.ErrorHandler{}
+				}
+
+				return *errorHandler
+			},
+		},
+		{
+			// Connector may choose to be empty closer.
+			Constructor: func() *EmptyCloser {
+				return &EmptyCloser{}
+			},
+		},
+		{
+			// Connector will have HTTP clients which can be implied from parameters "P".
+			Constructor: newClients[P],
+		},
+		{
+			// Connector may serve ListObjectMetadata from static file.
+			// Note: this requires another dependency of *scrapper.ObjectMetadataResult.
+			Constructor: NewStaticMetadata,
+		},
+		{
+			// This is the main constructor which will get all dependencies resolved.
+			// It is possible that not all dependencies are needed, this list is exhaustive,
+			// which describes all the building blocks that Deep connector may have.
+			Constructor: connectorConstructor,
+		},
 	}
+
+	var err error
+	container := dig.New()
+	for _, dependency := range append(core, dependencies...) {
+		err = errors.Join(err, dependency.apply(container))
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return resolveDependencies[C](container)
 }
 
-func (b *ConnectorBuilder[C, P]) Setup(setup func(conn *C)) *ConnectorBuilder[C, P] {
-	b.setup = setup
-
-	return b
-}
-
-func (b *ConnectorBuilder[C, P]) Build(opts []func(params *P)) (conn *C, outErr error) {
-	defer common.PanicRecovery(func(cause error) {
-		outErr = cause
-		conn = nil
+func resolveDependencies[T any](container *dig.Container) (*T, error) {
+	var result *T
+	err := container.Invoke(func(builder *T) {
+		result = builder
 	})
-
-	var paramsTemplate P
-
-	params, err := paramsbuilder.Apply(paramsTemplate, opts)
-	if err != nil {
-		return nil, err
-	}
-
-	clients, err := newClients(b.provider, params)
-	if err != nil {
-		return nil, err
-	}
-
-	clients.WithErrorHandler(b.errorHandler)
-
-	// TODO everything from this line till the end of method I am concerned about
-	// Dependency Injection
-	// Connector which is build using composition must self wire
-	// The starting values are either coming from
-	// * options which produce params, which in turn are converted to some objects
-	// * Setup some values could be coming from the implementor of deep connector rather than end user (aka options)
-
-	var connectorTemplate C
-	connector := &connectorTemplate
-
-	a, ok := any(connector).(Assignable[Clients])
-	if !ok {
-		return nil, errors.New("there is no clients field to attach connector to")
-	}
-
-	a.CopyFrom(clients)
-
-	if b.setup != nil {
-		b.setup(connector)
-	}
-
-	return connector, nil
+	return result, err
 }

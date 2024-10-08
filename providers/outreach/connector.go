@@ -1,7 +1,6 @@
 package outreach
 
 import (
-	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/deep"
@@ -13,8 +12,8 @@ const (
 )
 
 type Connector struct {
-	deep.Clients
-	deep.EmptyCloser
+	*deep.Clients
+	*deep.EmptyCloser
 }
 
 type parameters struct {
@@ -22,8 +21,16 @@ type parameters struct {
 }
 
 func NewConnector(opts ...Option) (*Connector, error) {
-	return deep.Connector[Connector, parameters](providers.Outreach, interpreter.ErrorHandler{}).Build(opts)
+	constructor := func(clients *deep.Clients, closer *deep.EmptyCloser) *Connector {
+		return &Connector{
+			Clients:        clients,
+			EmptyCloser:    closer,
+		}
+	}
+
+	return deep.Connector[Connector, parameters](constructor, providers.Outreach, nil, opts)
 }
+
 
 func (c *Connector) getApiURL(arg string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(c.BaseURL(), apiVersion, arg)

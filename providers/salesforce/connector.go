@@ -18,8 +18,8 @@ const (
 )
 
 type Connector struct {
-	deep.Clients
-	deep.EmptyCloser
+	*deep.Clients
+	*deep.EmptyCloser
 }
 
 type parameters struct {
@@ -28,10 +28,18 @@ type parameters struct {
 }
 
 func NewConnector(opts ...Option) (*Connector, error) {
-	return deep.Connector[Connector, parameters](providers.Salesforce, interpreter.ErrorHandler{
+	constructor := func(clients *deep.Clients, closer *deep.EmptyCloser) *Connector {
+		return &Connector{
+			Clients:     clients,
+			EmptyCloser: closer,
+		}
+	}
+	errorHandler := interpreter.ErrorHandler{
 		JSON: &interpreter.DirectFaultyResponder{Callback: interpretJSONError},
 		XML:  &interpreter.DirectFaultyResponder{Callback: interpretXMLError},
-	}).Build(opts)
+	}
+
+	return deep.Connector[Connector, parameters](constructor, providers.Salesforce, &errorHandler, opts)
 }
 
 func APIVersionSOAP() string {
