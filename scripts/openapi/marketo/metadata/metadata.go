@@ -2,14 +2,12 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log/slog"
 	"os"
 	"strings"
 
 	"github.com/amp-labs/connectors/tools/scrapper"
 	"github.com/getkin/kin-openapi/openapi2"
-	"github.com/getkin/kin-openapi/openapi3"
 )
 
 var (
@@ -44,16 +42,10 @@ func main() {
 	objectMetadata := make(map[string]scrapper.ObjectMetadata)
 
 	// Add Lead metadata details
-	objectMetadata, err = generateMetadata(ldef, docL, objectMetadata)
-	if err != nil {
-		panic(err)
-	}
+	objectMetadata = generateMetadata(ldef, docL, objectMetadata)
 
 	// Adds Assets Metadata details to the same variable declared above.
-	objectMetadata, err = generateMetadata(def, docA, objectMetadata)
-	if err != nil {
-		panic(err)
-	}
+	objectMetadata = generateMetadata(def, docA, objectMetadata)
 
 	// wrap objectMetadata in `data` to not break the fileManager that reads the schema.
 	data := map[string]any{
@@ -132,22 +124,14 @@ func cleanDefinitions(def string) string {
 
 func generateMetadata(objDefs map[string]string,
 	doc openapi2.T, objectMetadata map[string]scrapper.ObjectMetadata,
-) (map[string]scrapper.ObjectMetadata, error) {
+) map[string]scrapper.ObjectMetadata {
 	for obj, dfn := range objDefs {
-		schemas := doc.Definitions[dfn].Value.Properties
+		schem := doc.Definitions[dfn].Value.Properties
 
 		// Reading the item key that will contain the metadata keys.
-		result, err := schemas["result"].Value.JSONLookup("items")
-		if err != nil {
-			return nil, err
-		}
+		result := schem["result"].Value.Items
 
-		r, ok := result.(*openapi3.Ref)
-		if !ok {
-			return nil, fmt.Errorf("failed to convert the response type into an openapi3 type") //nolint:goerr113
-		}
-
-		m := cleanDefinitions(r.Ref)
+		m := cleanDefinitions(result.Ref)
 		lschems := doc.Definitions[m].Value.Properties
 
 		fields := make(map[string]string)
@@ -164,5 +148,5 @@ func generateMetadata(objDefs map[string]string,
 		objectMetadata[obj] = om
 	}
 
-	return objectMetadata, nil
+	return objectMetadata
 }
