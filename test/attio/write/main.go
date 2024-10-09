@@ -22,7 +22,6 @@ func main() {
 }
 
 func MainFn() int {
-
 	ctx := context.Background()
 
 	err := testObjects(ctx)

@@ -18,36 +18,34 @@ func main() {
 }
 
 func MainFn() int {
-	ctx := context.Background()
+	conn := attio.GetAttioConnector(context.Background())
 
-	conn := attio.GetAttioConnector(ctx)
-
-	err := testReadObjects(ctx, conn)
+	err := testReadObjects(context.Background(), conn)
 	if err != nil {
 		return 1
 	}
 
-	err = testReadLists(ctx, conn)
+	err = testReadLists(context.Background(), conn)
 	if err != nil {
 		return 1
 	}
 
-	err = testReadWorkspacemembers(ctx, conn)
+	err = testReadWorkspacemembers(context.Background(), conn)
 	if err != nil {
 		return 1
 	}
 
-	err = testReadWebhooks(ctx, conn)
+	err = testReadWebhooks(context.Background(), conn)
 	if err != nil {
 		return 1
 	}
 
-	err = testReadTasks(ctx, conn)
+	err = testReadTasks(context.Background(), conn)
 	if err != nil {
 		return 1
 	}
 
-	err = testReadNotes(ctx, conn)
+	err = testReadNotes(context.Background(), conn)
 	if err != nil {
 		return 1
 	}
