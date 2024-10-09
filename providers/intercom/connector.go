@@ -1,15 +1,13 @@
 package intercom
 
 import (
-	"github.com/amp-labs/connectors/internal/deep"
-	"github.com/amp-labs/connectors/providers/intercom/metadata"
-	"github.com/amp-labs/connectors/tools/scrapper"
-
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/deep"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/intercom/metadata"
 )
 
 const apiVersion = "2.11"
@@ -43,13 +41,12 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	errorHandler := interpreter.ErrorHandler{
 		JSON: interpreter.NewFaultyResponder(errorFormats, statusCodeMapping),
 	}
+	meta := deep.StaticMetadataHolder{
+		Metadata: metadata.Schemas,
+	}
 
 	return deep.Connector[Connector, parameters](constructor, providers.Intercom, &errorHandler, opts,
-		deep.Dependency{
-			Constructor: func() *scrapper.ObjectMetadataResult {
-				return metadata.Schemas
-			},
-		},
+		meta,
 	)
 }
 

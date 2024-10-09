@@ -67,5 +67,8 @@ type WriteResultBuilder struct {
 }
 
 func (b WriteResultBuilder) Satisfies() Dependency {
-	return Dependency{Constructor: returner(b)}
+	return Dependency{
+		ID:          "writeResultBuilder",
+		Constructor: returner(b),
+	}
 }

@@ -91,7 +91,10 @@ type FirstPageBuilder struct {
 }
 
 func (b FirstPageBuilder) Satisfies() Dependency {
-	return Dependency{Constructor: returner(b)}
+	return Dependency{
+		ID:          "firstPageBuilder",
+		Constructor: returner(b),
+	}
 }
 
 type NextPageBuilder struct {
@@ -99,7 +102,10 @@ type NextPageBuilder struct {
 }
 
 func (b NextPageBuilder) Satisfies() Dependency {
-	return Dependency{Constructor: returner(b)}
+	return Dependency{
+		ID:          "nextPageBuilder",
+		Constructor: returner(b),
+	}
 }
 
 type ReadObjectLocator struct {
@@ -107,5 +113,8 @@ type ReadObjectLocator struct {
 }
 
 func (l ReadObjectLocator) Satisfies() Dependency {
-	return Dependency{Constructor: returner(l)}
+	return Dependency{
+		ID:          "readObjectLocator",
+		Constructor: returner(l),
+	}
 }

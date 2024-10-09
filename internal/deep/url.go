@@ -7,7 +7,10 @@ type URLResolver struct {
 }
 
 func (r URLResolver) Satisfies() Dependency {
-	return Dependency{Constructor: returner(r)}
+	return Dependency{
+		ID:          "urlResolver",
+		Constructor: returner(r),
+	}
 }
 
 func returner[T any](self T) func() *T {

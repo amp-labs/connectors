@@ -13,7 +13,6 @@ import (
 	"github.com/amp-labs/connectors/internal/deep"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/salesloft/metadata"
-	"github.com/amp-labs/connectors/tools/scrapper"
 	"github.com/spyzhov/ajson"
 )
 
@@ -135,13 +134,12 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			}, nil
 		},
 	}
+	meta := deep.StaticMetadataHolder{
+		Metadata: metadata.Schemas,
+	}
 
 	return deep.Connector[Connector, parameters](constructor, providers.Salesloft, &errorHandler, opts,
-		deep.Dependency{
-			Constructor: func() *scrapper.ObjectMetadataResult {
-				return metadata.Schemas
-			},
-		},
+		meta,
 		urlResolver,
 		firstPage,
 		nextPage,

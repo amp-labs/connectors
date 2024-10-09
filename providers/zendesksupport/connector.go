@@ -7,7 +7,6 @@ import (
 	"github.com/amp-labs/connectors/internal/deep"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/zendesksupport/metadata"
-	"github.com/amp-labs/connectors/tools/scrapper"
 )
 
 const apiVersion = "v2"
@@ -37,13 +36,12 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	errorHandler := interpreter.ErrorHandler{
 		JSON: interpreter.NewFaultyResponder(errorFormats, statusCodeMapping),
 	}
+	meta := deep.StaticMetadataHolder{
+		Metadata: metadata.Schemas,
+	}
 
 	return deep.Connector[Connector, parameters](constructor, providers.ZendeskSupport, &errorHandler, opts,
-		deep.Dependency{
-			Constructor: func() *scrapper.ObjectMetadataResult {
-				return metadata.Schemas
-			},
-		},
+		meta,
 	)
 }
 

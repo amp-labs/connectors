@@ -49,7 +49,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		JSON: interpreter.NewFaultyResponder(errorFormats, statusCodeMapping),
 	}.Handle
 
-	conn.StaticMetadata = deep.NewStaticMetadata(metadata.Schemas)
+	conn.StaticMetadata = deep.NewStaticMetadata(&deep.StaticMetadataHolder{Metadata: metadata.Schemas})
 
 	return conn, nil
 }

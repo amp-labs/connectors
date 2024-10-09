@@ -7,7 +7,6 @@ import (
 	"github.com/amp-labs/connectors/internal/deep"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/gong/metadata"
-	"github.com/amp-labs/connectors/tools/scrapper"
 )
 
 const ApiVersion = "v2"
@@ -36,13 +35,12 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	errorHandler := interpreter.ErrorHandler{
 		JSON: interpreter.NewFaultyResponder(errorFormats, nil),
 	}
+	meta := deep.StaticMetadataHolder{
+		Metadata: metadata.Schemas,
+	}
 
 	return deep.Connector[Connector, parameters](constructor, providers.Gong, &errorHandler, opts,
-		deep.Dependency{
-			Constructor: func() *scrapper.ObjectMetadataResult {
-				return metadata.Schemas
-			},
-		},
+		meta,
 	)
 }
 

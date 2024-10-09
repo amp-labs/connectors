@@ -7,16 +7,29 @@ import (
 )
 
 type StaticMetadata struct {
-	// TODO scrapper package should be renamed
-	static scrapper.ObjectMetadataResult
+	holder StaticMetadataHolder
 }
 
-func NewStaticMetadata(static *scrapper.ObjectMetadataResult) *StaticMetadata {
-	return &StaticMetadata{static: *static}
+func NewStaticMetadata(holder *StaticMetadataHolder) *StaticMetadata {
+	return &StaticMetadata{
+		holder: *holder,
+	}
 }
 
 func (c *StaticMetadata) ListObjectMetadata(
 	ctx context.Context, objectNames []string,
 ) (*common.ListObjectMetadataResult, error) {
-	return c.static.Select(objectNames)
+	return c.holder.Metadata.Select(objectNames)
+}
+
+type StaticMetadataHolder struct {
+	// TODO scrapper package should be renamed
+	Metadata *scrapper.ObjectMetadataResult
+}
+
+func (h StaticMetadataHolder) Satisfies() Dependency {
+	return Dependency{
+		ID:          "staticMetadataHolder",
+		Constructor: returner(h),
+	}
 }
