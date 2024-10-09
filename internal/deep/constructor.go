@@ -8,9 +8,20 @@ import (
 	"go.uber.org/dig"
 )
 
-// Connector
-// TODO document that it can be a constructor or Dependency object (maybe we want to support DI tagging)
 func Connector[C any, P paramsbuilder.ParamAssurance](
+	connectorConstructor any,
+	provider providers.Provider,
+	options []func(params *P),
+	reqs ...requirements.Requirement,
+) (*C, error) {
+	reqs = append(reqs, EmptyMetadataVariables{})
+
+	return ExtendedConnector[C, P, EmptyMetadataVariables](connectorConstructor, provider, options, reqs...)
+}
+
+// ExtendedConnector
+// TODO document that it can be a constructor or Dependency object (maybe we want to support DI tagging)
+func ExtendedConnector[C any, P paramsbuilder.ParamAssurance, D MetadataVariables](
 	connectorConstructor any,
 	provider providers.Provider,
 	options []func(params *P),
@@ -50,10 +61,12 @@ func Connector[C any, P paramsbuilder.ParamAssurance](
 		Parameters[P]{}.Satisfies(),
 		EmptyObjectRegistry{}.Satisfies(),
 		PostPutWriteRequestBuilder{}.Satisfies(),
+		ConnectorDescriptor[P, D]{}.Satisfies(),
+		CatalogVariables[P, D]{}.Satisfies(),
 		{
 			// Connector will have HTTP clients which can be implied from parameters "P".
 			ID:          "clients",
-			Constructor: newClients[P],
+			Constructor: newClients[P, D],
 		},
 		{
 			// Connector that lists Objects.

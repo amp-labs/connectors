@@ -7,7 +7,6 @@ import (
 
 type Parameters[P paramsbuilder.ParamAssurance] struct {
 	Params      any
-	CatalogVars []paramsbuilder.CatalogVariable
 }
 
 func newParametersHolder[P paramsbuilder.ParamAssurance](
@@ -20,13 +19,8 @@ func newParametersHolder[P paramsbuilder.ParamAssurance](
 		return nil, err
 	}
 
-	// Parameters may have fields that count as Catalog variables.
-	// They are stored separately for quick access.
-	catalogVariables := paramsbuilder.ExtractCatalogVariables(parameters)
-
 	return &Parameters[P]{
 		Params:      parameters,
-		CatalogVars: catalogVariables,
 	}, nil
 }
 

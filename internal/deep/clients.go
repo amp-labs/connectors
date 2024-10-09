@@ -16,9 +16,10 @@ type Clients struct {
 	XML        *common.XMLHTTPClient
 }
 
-func newClients[P paramsbuilder.ParamAssurance](
+func newClients[P paramsbuilder.ParamAssurance, D MetadataVariables](
 	provider providers.Provider,
 	parameters *Parameters[P],
+	catalogVars *CatalogVariables[P, D],
 	errorHandler *interpreter.ErrorHandler,
 ) (*Clients, error) {
 	clientHolder, ok := parameters.Params.(paramsbuilder.ClientHolder)
@@ -28,7 +29,7 @@ func newClients[P paramsbuilder.ParamAssurance](
 	}
 	client := clientHolder.GiveClient().Caller
 
-	providerInfo, err := providers.ReadInfo(provider, parameters.CatalogVars...)
+	providerInfo, err := providers.ReadInfo(provider, catalogVars.List...)
 	if err != nil {
 		return nil, err
 	}
