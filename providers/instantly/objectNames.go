@@ -1,6 +1,9 @@
 package instantly
 
-import "github.com/amp-labs/connectors/common/handy"
+import (
+	"github.com/amp-labs/connectors/common/handy"
+	"github.com/amp-labs/connectors/internal/deep"
+)
 
 const (
 	objectNameCampaigns        = "campaigns"
@@ -33,3 +36,27 @@ var supportedObjectsByDelete = handy.NewSet( //nolint:gochecknoglobals
 	// https://developer.instantly.ai/tags/delete-a-tag
 	objectNameTags,
 )
+
+var objectResolver = handy.Map[string, deep.ObjectData]{
+	// https://developer.instantly.ai/campaign-1/list-campaigns
+	// Empty string of data location means the response is an array itself holding what we need.
+	objectNameCampaigns: {
+		URLPath:  "campaign/list",
+		NodePath: "",
+	},
+	// https://developer.instantly.ai/account/list-accounts
+	objectNameAccounts: {
+		URLPath:  "account/list",
+		NodePath: "accounts",
+	},
+	// https://developer.instantly.ai/unibox/emails-or-list
+	objectNameEmails: {
+		URLPath:  "unibox/emails",
+		NodePath: "data",
+	},
+	// https://developer.instantly.ai/tags/list-tags
+	objectNameTags: {
+		URLPath:  "custom-tag",
+		NodePath: "data",
+	},
+}

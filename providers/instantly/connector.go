@@ -1,20 +1,24 @@
 package instantly
 
 import (
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/deep"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/instantly/metadata"
+	"github.com/spyzhov/ajson"
+	"strconv"
 )
 
 const apiVersion = "v1"
 
 type Connector struct {
-	*deep.Clients
-	*deep.EmptyCloser
-	*deep.StaticMetadata
+	deep.Clients
+	deep.EmptyCloser
+	deep.Reader
+	deep.StaticMetadata
 }
 
 type parameters struct {
@@ -27,11 +31,13 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	constructor := func(
 		clients *deep.Clients,
 		closer *deep.EmptyCloser,
+		reader *deep.Reader,
 		staticMetadata *deep.StaticMetadata) *Connector {
 		return &Connector{
-			Clients:        clients,
-			EmptyCloser:    closer,
-			StaticMetadata: staticMetadata,
+			Clients:        *clients,
+			EmptyCloser:    *closer,
+			Reader:         *reader,
+			StaticMetadata: *staticMetadata,
 		}
 	}
 	errorHandler := interpreter.ErrorHandler{
@@ -40,10 +46,58 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	meta := deep.StaticMetadataHolder{
 		Metadata: metadata.Schemas,
 	}
+	urlResolver := deep.URLResolver{
+		Resolve: func(baseURL, objectName string) (*urlbuilder.URL, error) {
+			path := objectResolver[objectName].URLPath
+
+			return urlbuilder.New(baseURL, apiVersion, path)
+		},
+	}
+	firstPage := deep.FirstPageBuilder{
+		Build: func(config common.ReadParams, url *urlbuilder.URL) (*urlbuilder.URL, error) {
+			url.WithQueryParam("skip", "0")
+			url.WithQueryParam("limit", strconv.Itoa(DefaultPageSize))
+
+			return url, nil
+		},
+	}
+	nextPage := deep.NextPageBuilder{
+		Build: func(config common.ReadParams, previousPage *urlbuilder.URL, node *ajson.Node) (*urlbuilder.URL, error) {
+			previousStart := 0
+
+			skipQP, ok := previousPage.GetFirstQueryParam("skip")
+			if ok {
+				// Try to use previous "skip" parameter to determine the next skip.
+				skipNum, err := strconv.Atoi(skipQP)
+				if err == nil {
+					previousStart = skipNum
+				}
+			}
+
+			nextStart := previousStart + DefaultPageSize
+			previousPage.WithQueryParam("limit", strconv.Itoa(DefaultPageSize))
+			previousPage.WithQueryParam("skip", strconv.Itoa(nextStart))
+
+			return previousPage, nil
+		},
+	}
+	readObjectLocator := deep.ReadObjectLocator{
+		Locate: func(config common.ReadParams) string {
+			return objectResolver[config.ObjectName].NodePath
+		},
+	}
+	objectManager := deep.ObjectRegistry{
+		Read: supportedObjectsByRead,
+	}
 
 	return deep.Connector[Connector, parameters](constructor, providers.Instantly, opts,
 		meta,
 		errorHandler,
+		urlResolver,
+		firstPage,
+		nextPage,
+		readObjectLocator,
+		objectManager,
 	)
 }
 

@@ -61,3 +61,8 @@ func (e EmptyObjectRegistry) IsReadSupported(string) bool {
 func (e EmptyObjectRegistry) IsWriteSupported(string) bool {
 	return true
 }
+
+type ObjectData struct {
+	URLPath  string
+	NodePath string
+}
