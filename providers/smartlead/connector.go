@@ -18,6 +18,7 @@ type Connector struct {
 	deep.EmptyCloser
 	deep.Reader
 	deep.StaticMetadata
+	deep.Remover
 }
 
 type parameters struct {
@@ -31,12 +32,14 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		clients *deep.Clients,
 		closer *deep.EmptyCloser,
 		reader *deep.Reader,
-		staticMetadata *deep.StaticMetadata) *Connector {
+		staticMetadata *deep.StaticMetadata,
+		remover *deep.Remover) *Connector {
 		return &Connector{
 			Clients:        *clients,
 			EmptyCloser:    *closer,
 			Reader:         *reader,
 			StaticMetadata: *staticMetadata,
+			Remover:        *remover,
 		}
 	}
 	errorHandler := interpreter.ErrorHandler{
@@ -52,6 +55,8 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			switch method {
 			case deep.ReadMethod:
 				path = objectName
+			case deep.DeleteMethod:
+				path = objectName
 			}
 
 			return urlbuilder.New(baseURL, apiVersion, path)
@@ -59,6 +64,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	}
 	objectManager := deep.ObjectRegistry{
 		Read:   supportedObjectsByRead,
+		Delete: supportedObjectsByDelete,
 	}
 	firstPage := deep.FirstPageBuilder{
 		Build: func(config common.ReadParams, url *urlbuilder.URL) (*urlbuilder.URL, error) {

@@ -23,5 +23,7 @@ var supportedObjectsByWrite = handy.NewSet( //nolint:gochecknoglobals
 )
 
 var supportedObjectsByDelete = handy.NewSet( //nolint:gochecknoglobals
+	// Removing campaign is the only to be supported at this time.
+	// https://api.smartlead.ai/reference/delete-campaign
 	objectNameCampaign,
 )
