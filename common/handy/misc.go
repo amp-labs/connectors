@@ -5,3 +5,9 @@ func Must(err error) {
 		panic(err)
 	}
 }
+
+func Returner[T any](self T) func() *T {
+	return func() *T {
+		return &self
+	}
+}

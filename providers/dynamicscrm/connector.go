@@ -35,7 +35,9 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		JSON: interpreter.NewFaultyResponder(errorFormats, nil),
 	}
 
-	return deep.Connector[Connector, parameters](constructor, providers.DynamicsCRM, &errorHandler, opts)
+	return deep.Connector[Connector, parameters](constructor, providers.DynamicsCRM, opts,
+		errorHandler,
+	)
 }
 
 func (c *Connector) getURL(arg string) (*urlbuilder.URL, error) {

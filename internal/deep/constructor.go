@@ -3,6 +3,7 @@ package deep
 import (
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
+	"github.com/amp-labs/connectors/internal/deep/requirements"
 	"github.com/amp-labs/connectors/providers"
 	"go.uber.org/dig"
 )
@@ -12,12 +13,11 @@ import (
 func Connector[C any, P paramsbuilder.ParamAssurance](
 	connectorConstructor any,
 	provider providers.Provider,
-	errorHandler *interpreter.ErrorHandler,
 	options []func(params *P),
-	requirements ...Requirement,
+	reqs ...requirements.Requirement,
 ) (*C, error) {
 
-	deps := NewDependencies([]Dependency{
+	deps := requirements.NewDependencies([]requirements.Dependency{
 		{
 			// Connector must have Provider name
 			ID: "provider",
@@ -36,11 +36,8 @@ func Connector[C any, P paramsbuilder.ParamAssurance](
 			// HTTP clients use error handler.
 			ID: "errorHandler",
 			Constructor: func() interpreter.ErrorHandler {
-				if errorHandler == nil {
-					return interpreter.ErrorHandler{}
-				}
-
-				return *errorHandler
+				// Empty by default.
+				return interpreter.ErrorHandler{}
 			},
 		},
 		{
@@ -88,12 +85,12 @@ func Connector[C any, P paramsbuilder.ParamAssurance](
 		},
 	})
 
-	for _, requirement := range requirements {
-		deps.add(requirement.Satisfies())
+	for _, requirement := range reqs {
+		deps.Add(requirement.Satisfies())
 	}
 
 	container := dig.New()
-	if err := deps.apply(container); err != nil {
+	if err := deps.Apply(container); err != nil {
 		return nil, err
 	}
 

@@ -27,7 +27,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		}
 	}
 
-	return deep.Connector[Connector, parameters](constructor, providers.Apollo, nil, opts)
+	return deep.Connector[Connector, parameters](constructor, providers.Apollo, opts)
 }
 
 type operation string

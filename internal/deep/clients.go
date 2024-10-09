@@ -18,7 +18,7 @@ type Clients struct {
 
 func newClients[P paramsbuilder.ParamAssurance](
 	provider providers.Provider,
-	errorHandler interpreter.ErrorHandler,
+	errorHandler *interpreter.ErrorHandler,
 	opts []func(params *P),
 ) (clients *Clients, outErr error) {
 	defer common.PanicRecovery(func(cause error) {
@@ -98,6 +98,6 @@ func (c *Clients) WithBaseURL(newURL string) {
 	c.httpClient.Base = newURL
 }
 
-func (c *Clients) WithErrorHandler(handler interpreter.ErrorHandler) {
+func (c *Clients) WithErrorHandler(handler *interpreter.ErrorHandler) {
 	c.httpClient.ErrorHandler = handler.Handle
 }

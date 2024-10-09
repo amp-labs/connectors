@@ -138,12 +138,13 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		Metadata: metadata.Schemas,
 	}
 
-	return deep.Connector[Connector, parameters](constructor, providers.Salesloft, &errorHandler, opts,
+	return deep.Connector[Connector, parameters](constructor, providers.Salesloft, opts,
 		meta,
 		urlResolver,
 		firstPage,
 		nextPage,
 		readObjectLocator,
 		writeResultBuilder,
+		errorHandler,
 	)
 }

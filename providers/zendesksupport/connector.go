@@ -40,8 +40,9 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		Metadata: metadata.Schemas,
 	}
 
-	return deep.Connector[Connector, parameters](constructor, providers.ZendeskSupport, &errorHandler, opts,
+	return deep.Connector[Connector, parameters](constructor, providers.ZendeskSupport, opts,
 		meta,
+		errorHandler,
 	)
 }
 

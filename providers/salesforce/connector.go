@@ -39,7 +39,9 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		XML:  &interpreter.DirectFaultyResponder{Callback: interpretXMLError},
 	}
 
-	return deep.Connector[Connector, parameters](constructor, providers.Salesforce, &errorHandler, opts)
+	return deep.Connector[Connector, parameters](constructor, providers.Salesforce, opts,
+		errorHandler,
+	)
 }
 
 func APIVersionSOAP() string {

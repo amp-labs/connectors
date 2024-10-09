@@ -2,6 +2,7 @@ package deep
 
 import (
 	"context"
+	"github.com/amp-labs/connectors/internal/deep/requirements"
 	"github.com/spyzhov/ajson"
 
 	"github.com/amp-labs/connectors/common"
@@ -90,10 +91,10 @@ type FirstPageBuilder struct {
 	Build func(config common.ReadParams, url *urlbuilder.URL) (*urlbuilder.URL, error)
 }
 
-func (b FirstPageBuilder) Satisfies() Dependency {
-	return Dependency{
+func (b FirstPageBuilder) Satisfies() requirements.Dependency {
+	return requirements.Dependency{
 		ID:          "firstPageBuilder",
-		Constructor: returner(b),
+		Constructor: handy.Returner(b),
 	}
 }
 
@@ -101,10 +102,10 @@ type NextPageBuilder struct {
 	Build func(config common.ReadParams, previousPage *urlbuilder.URL, node *ajson.Node) (*urlbuilder.URL, error)
 }
 
-func (b NextPageBuilder) Satisfies() Dependency {
-	return Dependency{
+func (b NextPageBuilder) Satisfies() requirements.Dependency {
+	return requirements.Dependency{
 		ID:          "nextPageBuilder",
-		Constructor: returner(b),
+		Constructor: handy.Returner(b),
 	}
 }
 
@@ -112,9 +113,9 @@ type ReadObjectLocator struct {
 	Locate func(config common.ReadParams) string
 }
 
-func (l ReadObjectLocator) Satisfies() Dependency {
-	return Dependency{
+func (l ReadObjectLocator) Satisfies() requirements.Dependency {
+	return requirements.Dependency{
 		ID:          "readObjectLocator",
-		Constructor: returner(l),
+		Constructor: handy.Returner(l),
 	}
 }

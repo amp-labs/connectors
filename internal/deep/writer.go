@@ -3,6 +3,8 @@ package deep
 import (
 	"context"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/handy"
+	"github.com/amp-labs/connectors/internal/deep/requirements"
 	"github.com/spyzhov/ajson"
 )
 
@@ -10,7 +12,7 @@ type Writer struct {
 	urlResolver   URLResolver
 	resultBuilder WriteResultBuilder
 
-	clients       Clients
+	clients Clients
 }
 
 func NewWriter(clients *Clients,
@@ -66,9 +68,9 @@ type WriteResultBuilder struct {
 	Build func(config common.WriteParams, body *ajson.Node) (*common.WriteResult, error)
 }
 
-func (b WriteResultBuilder) Satisfies() Dependency {
-	return Dependency{
+func (b WriteResultBuilder) Satisfies() requirements.Dependency {
+	return requirements.Dependency{
 		ID:          "writeResultBuilder",
-		Constructor: returner(b),
+		Constructor: handy.Returner(b),
 	}
 }

@@ -41,8 +41,9 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		Metadata: metadata.Schemas,
 	}
 
-	return deep.Connector[Connector, parameters](constructor, providers.Instantly, &errorHandler, opts,
+	return deep.Connector[Connector, parameters](constructor, providers.Instantly, opts,
 		meta,
+		errorHandler,
 	)
 }
 

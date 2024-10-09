@@ -28,9 +28,8 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		}
 	}
 
-	return deep.Connector[Connector, parameters](constructor, providers.Outreach, nil, opts)
+	return deep.Connector[Connector, parameters](constructor, providers.Outreach, opts)
 }
-
 
 func (c *Connector) getApiURL(arg string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(c.BaseURL(), apiVersion, arg)

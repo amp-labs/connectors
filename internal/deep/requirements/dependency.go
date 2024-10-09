@@ -1,4 +1,4 @@
-package deep
+package requirements
 
 import (
 	"errors"
@@ -30,11 +30,11 @@ func NewDependencies(deps []Dependency) Dependencies {
 	return result
 }
 
-func (d Dependencies) add(dep Dependency) {
+func (d Dependencies) Add(dep Dependency) {
 	d[dep.ID] = dep
 }
 
-func (d Dependencies) apply(container *dig.Container) error {
+func (d Dependencies) Apply(container *dig.Container) error {
 	var err error
 	for _, dep := range d {
 		err = errors.Join(err, dep.apply(container))

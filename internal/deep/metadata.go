@@ -3,6 +3,8 @@ package deep
 import (
 	"context"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/handy"
+	"github.com/amp-labs/connectors/internal/deep/requirements"
 	"github.com/amp-labs/connectors/tools/scrapper"
 )
 
@@ -27,9 +29,9 @@ type StaticMetadataHolder struct {
 	Metadata *scrapper.ObjectMetadataResult
 }
 
-func (h StaticMetadataHolder) Satisfies() Dependency {
-	return Dependency{
+func (h StaticMetadataHolder) Satisfies() requirements.Dependency {
+	return requirements.Dependency{
 		ID:          "staticMetadataHolder",
-		Constructor: returner(h),
+		Constructor: handy.Returner(h),
 	}
 }
