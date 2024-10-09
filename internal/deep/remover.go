@@ -28,7 +28,7 @@ func (r *Remover) Delete(ctx context.Context, config common.DeleteParams) (*comm
 		return nil, common.ErrOperationNotSupportedForObject
 	}
 
-	url, err := r.urlResolver.Resolve(r.clients.BaseURL(), config.ObjectName)
+	url, err := r.urlResolver.Resolve(DeleteMethod, r.clients.BaseURL(), config.ObjectName)
 	if err != nil {
 		return nil, err
 	}

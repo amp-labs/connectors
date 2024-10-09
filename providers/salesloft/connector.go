@@ -96,7 +96,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		},
 	}
 	urlResolver := deep.URLResolver{
-		Resolve: func(baseURL, objectName string) (*urlbuilder.URL, error) {
+		Resolve: func(method deep.Method, baseURL, objectName string) (*urlbuilder.URL, error) {
 			return urlbuilder.New(baseURL, apiVersion, objectName)
 		},
 	}

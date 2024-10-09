@@ -2,12 +2,11 @@ package deep
 
 import (
 	"context"
-	"github.com/amp-labs/connectors/internal/deep/requirements"
-	"github.com/spyzhov/ajson"
-
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/handy"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/deep/requirements"
+	"github.com/spyzhov/ajson"
 )
 
 type Reader struct {
@@ -81,7 +80,7 @@ func (r *Reader) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error)
 	}
 
 	// First page
-	url, err := r.urlResolver.Resolve(r.clients.BaseURL(), config.ObjectName)
+	url, err := r.urlResolver.Resolve(ReadMethod, r.clients.BaseURL(), config.ObjectName)
 	if err != nil {
 		return nil, err
 	}

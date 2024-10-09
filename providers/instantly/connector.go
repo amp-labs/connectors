@@ -3,6 +3,7 @@ package instantly
 import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
+	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/deep"
@@ -18,6 +19,11 @@ type Connector struct {
 	deep.Clients
 	deep.EmptyCloser
 	deep.Reader
+	// Write method allows to
+	// * create campaigns
+	// * create/update email-accounts
+	// * create client
+	deep.Writer
 	deep.StaticMetadata
 	// Delete removes object. As of now only removal of Tags are allowed because
 	// deletion of other object types require a request payload to be added
@@ -36,12 +42,14 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		clients *deep.Clients,
 		closer *deep.EmptyCloser,
 		reader *deep.Reader,
+		writer *deep.Writer,
 		staticMetadata *deep.StaticMetadata,
 		remover *deep.Remover) *Connector {
 		return &Connector{
 			Clients:        *clients,
 			EmptyCloser:    *closer,
 			Reader:         *reader,
+			Writer:         *writer,
 			StaticMetadata: *staticMetadata,
 			Remover:        *remover,
 		}
@@ -53,8 +61,18 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		Metadata: metadata.Schemas,
 	}
 	urlResolver := deep.URLResolver{
-		Resolve: func(baseURL, objectName string) (*urlbuilder.URL, error) {
-			path := objectResolver[objectName].URLPath
+		Resolve: func(method deep.Method, baseURL, objectName string) (*urlbuilder.URL, error) {
+			var path string
+			switch method {
+			case deep.ReadMethod:
+				path = readObjects[objectName].URLPath
+			case deep.CreateMethod:
+				path = createObjects[objectName]
+			case deep.UpdateMethod:
+				path = updateObjects[objectName]
+			case deep.DeleteMethod:
+				path = deleteObjects[objectName]
+			}
 
 			return urlbuilder.New(baseURL, apiVersion, path)
 		},
@@ -89,12 +107,41 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	}
 	readObjectLocator := deep.ReadObjectLocator{
 		Locate: func(config common.ReadParams) string {
-			return objectResolver[config.ObjectName].NodePath
+			return readObjects[config.ObjectName].NodePath
 		},
 	}
 	objectManager := deep.ObjectRegistry{
 		Read:   supportedObjectsByRead,
+		Write:  supportedObjectsByWrite,
 		Delete: supportedObjectsByDelete,
+	}
+	writeResultBuilder := deep.WriteResultBuilder{
+		Build: func(config common.WriteParams, body *ajson.Node) (*common.WriteResult, error) {
+			recordIdNodePath := writeResponseRecordIdPaths[config.ObjectName]
+
+			if recordIdNodePath == nil {
+				// ID is not present inside response. Therefore, empty.
+				return &common.WriteResult{
+					Success:  true,
+					RecordId: "",
+					Errors:   nil,
+					Data:     nil,
+				}, nil
+			}
+
+			// ID is integer that is always stored under different field name.
+			recordID, err := jsonquery.New(body).Str(*recordIdNodePath, false)
+			if err != nil {
+				return nil, err
+			}
+
+			return &common.WriteResult{
+				Success:  true,
+				RecordId: *recordID,
+				Errors:   nil,
+				Data:     nil,
+			}, nil
+		},
 	}
 
 	return deep.Connector[Connector, parameters](constructor, providers.Instantly, opts,
@@ -105,11 +152,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		nextPage,
 		readObjectLocator,
 		objectManager,
+		deep.PostPatchWriteRequestBuilder{},
+		writeResultBuilder,
 	)
-}
-
-func (c *Connector) getURL(parts ...string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.BaseURL(), append([]string{
-		apiVersion,
-	}, parts...)...)
 }

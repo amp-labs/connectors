@@ -6,8 +6,17 @@ import (
 	"github.com/amp-labs/connectors/internal/deep/requirements"
 )
 
+type Method string
+
+const (
+	ReadMethod   Method = "READ"
+	CreateMethod Method = "CREATE"
+	UpdateMethod Method = "UPDATE"
+	DeleteMethod Method = "DELETE"
+)
+
 type URLResolver struct {
-	Resolve func(baseURL, objectName string) (*urlbuilder.URL, error)
+	Resolve func(method Method, baseURL, objectName string) (*urlbuilder.URL, error)
 }
 
 func (r URLResolver) Satisfies() requirements.Dependency {

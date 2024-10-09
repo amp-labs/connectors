@@ -42,7 +42,12 @@ func (w *Writer) Write(ctx context.Context, config common.WriteParams) (*common.
 		return nil, common.ErrOperationNotSupportedForObject
 	}
 
-	url, err := w.urlResolver.Resolve(w.clients.BaseURL(), config.ObjectName)
+	method := CreateMethod
+	if len(config.RecordId) != 0 {
+		method = UpdateMethod
+	}
+
+	url, err := w.urlResolver.Resolve(method, w.clients.BaseURL(), config.ObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -126,6 +131,21 @@ func (b PostWriteRequestBuilder) Satisfies() requirements.Dependency {
 	}
 }
 
+type PostPatchWriteRequestBuilder struct{
+	simplePostWriteRequest
+	simplePatchWriteRequest
+}
+
+var _ WriteRequestBuilder = PostPatchWriteRequestBuilder{}
+
+func (b PostPatchWriteRequestBuilder) Satisfies() requirements.Dependency {
+	return requirements.Dependency{
+		ID:          "writeRequestBuilder",
+		Constructor: handy.Returner(b),
+		Interface:   new(WriteRequestBuilder),
+	}
+}
+
 type simplePostWriteRequest struct{}
 
 func (simplePostWriteRequest) MakeCreateRequest(
@@ -147,4 +167,13 @@ type simpleNoopUpdateRequest struct{}
 func (simpleNoopUpdateRequest) MakeUpdateRequest(
 	string, string, *urlbuilder.URL, Clients) (common.WriteMethod, []common.Header) {
 	return nil, nil
+}
+
+type simplePatchWriteRequest struct{}
+
+func (simplePatchWriteRequest) MakeUpdateRequest(
+	objectName string, recordID string, url *urlbuilder.URL, clients Clients) (common.WriteMethod, []common.Header) {
+	url.AddPath(recordID)
+
+	return clients.JSON.Patch, nil
 }

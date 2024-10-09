@@ -15,29 +15,13 @@ const (
 	objectNameUniboxReplies    = "unibox-replies"
 )
 
-var supportedObjectsByRead = handy.NewSet( //nolint:gochecknoglobals
-	// Object Name	----------	API endpoint path
-	objectNameCampaigns, // campaign/list
-	objectNameAccounts,  // account/list
-	objectNameEmails,    // unibox/emails
-	objectNameTags,      // custom-tag
+var (
+	supportedObjectsByRead   = readObjects.KeySet()                                 //nolint:gochecknoglobals
+	supportedObjectsByWrite  = handy.MergeSets(createObjects.KeySet(), updateObjects.KeySet()) //nolint:gochecknoglobals
+	supportedObjectsByDelete = deleteObjects.KeySet()                               //nolint:gochecknoglobals
 )
 
-var supportedObjectsByWrite = handy.NewSet( //nolint:gochecknoglobals
-	// Object Name	----------	API endpoint path
-	objectNameTags,             // custom-tag
-	objectNameLeads,            // lead/add
-	objectNameBlocklistEntries, // blocklist/add/entries
-	objectNameUniboxReplies,    // unibox/emails/reply
-)
-
-var supportedObjectsByDelete = handy.NewSet( //nolint:gochecknoglobals
-	// Delete tag.
-	// https://developer.instantly.ai/tags/delete-a-tag
-	objectNameTags,
-)
-
-var objectResolver = handy.Map[string, deep.ObjectData]{
+var readObjects = handy.Map[string, deep.ObjectData]{
 	// https://developer.instantly.ai/campaign-1/list-campaigns
 	// Empty string of data location means the response is an array itself holding what we need.
 	objectNameCampaigns: {
@@ -59,4 +43,38 @@ var objectResolver = handy.Map[string, deep.ObjectData]{
 		URLPath:  "custom-tag",
 		NodePath: "data",
 	},
+}
+
+var createObjects = handy.Map[string, string]{
+	// Add lead to campaign.
+	// https://developer.instantly.ai/campaign/add-leads-to-a-campaign
+	objectNameLeads: "lead/add",
+	// Add blocklist entry.
+	// https://developer.instantly.ai/blocklist/add-entries-to-blocklist
+	objectNameBlocklistEntries: "blocklist/add/entries",
+	// Create message - unibox reply.
+	// https://developer.instantly.ai/unibox/send-reply
+	objectNameUniboxReplies: "unibox/emails/reply",
+	// Create tag.
+	// https://developer.instantly.ai/tags/create-a-new-tag
+	objectNameTags: "custom-tag",
+}
+
+var updateObjects = handy.Map[string, string]{
+	// Update tag.
+	// https://developer.instantly.ai/tags/update-tag
+	objectNameTags: "custom-tag",
+}
+
+var deleteObjects = handy.Map[string, string]{
+	// Delete tag.
+	// https://developer.instantly.ai/tags/delete-a-tag
+	objectNameTags: "custom-tag",
+}
+
+var writeResponseRecordIdPaths = map[string]*string{ // nolint:gochecknoglobals
+	objectNameLeads:            nil, // ID is not returned for Leads.
+	objectNameBlocklistEntries: handy.Pointers.Str("blocklist_id"),
+	objectNameUniboxReplies:    handy.Pointers.Str("message_id"),
+	objectNameTags:             handy.Pointers.Str("id"),
 }
