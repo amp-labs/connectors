@@ -42,16 +42,10 @@ func main() {
 	objectMetadata := make(map[string]scrapper.ObjectMetadata)
 
 	// Add Lead metadata details
-	objectMetadata, err = generateMetadata(ldef, docL, objectMetadata)
-	if err != nil {
-		panic(err)
-	}
+	objectMetadata = generateMetadata(ldef, docL, objectMetadata)
 
 	// Adds Assets Metadata details to the same variable declared above.
-	objectMetadata, err = generateMetadata(def, docA, objectMetadata)
-	if err != nil {
-		panic(err)
-	}
+	objectMetadata = generateMetadata(def, docA, objectMetadata)
 
 	// wrap objectMetadata in `data` to not break the fileManager that reads the schema.
 	data := map[string]any{
@@ -130,7 +124,7 @@ func cleanDefinitions(def string) string {
 
 func generateMetadata(objDefs map[string]string,
 	doc openapi2.T, objectMetadata map[string]scrapper.ObjectMetadata,
-) (map[string]scrapper.ObjectMetadata, error) {
+) map[string]scrapper.ObjectMetadata {
 	for obj, dfn := range objDefs {
 		schem := doc.Definitions[dfn].Value.Properties
 
@@ -154,5 +148,5 @@ func generateMetadata(objDefs map[string]string,
 		objectMetadata[obj] = om
 	}
 
-	return objectMetadata, nil
+	return objectMetadata
 }
