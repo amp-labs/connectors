@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"strings"
 	"testing"
 	"time"
 
@@ -183,6 +184,15 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				w.WriteHeader(http.StatusOK)
 				_, _ = w.Write(fakeServerResp2)
 			})),
+			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
+				expectedNextPage := strings.ReplaceAll(expected.NextPage.String(), "{{testServerURL}}", baseURL)
+
+				return mockutils.ReadResultComparator.SubsetFields(actual, expected) &&
+					mockutils.ReadResultComparator.SubsetRaw(actual, expected) &&
+					actual.NextPage.String() == expectedNextPage &&
+					actual.Rows == expected.Rows &&
+					actual.Done == expected.Done
+			},
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{{
@@ -208,7 +218,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 						"workspaceId":    "1007648505208900737",
 					},
 				}},
-				NextPage: "eyJhbGciOiJIUzI1NiJ9.eyJjYWxsSWQiOjQ5NTM3MDc2MDE3NzYyMzgzNjAsInRvdGFsIjoxNzksInBhZ2VOdW1iZXIiOjAsInBhZ2VTaXplIjoxMDAsInRpbWUiOiIyMDIyLTA5LTEzVDA5OjMwOjAwWiIsImV4cCI6MTcxNjYyNjE0Nn0.o6SIJZFyjlxDC8m3HJM_TBn39M6WakXpbMXFXX3Iy9I", // nolint:lll
+				NextPage: "{{testServerURL}}/v2/calls?cursor=eyJhbGciOiJIUzI1NiJ9.eyJjYWxsSWQiOjQ5NTM3MDc2MDE3NzYyMzgzNjAsInRvdGFsIjoxNzksInBhZ2VOdW1iZXIiOjAsInBhZ2VTaXplIjoxMDAsInRpbWUiOiIyMDIyLTA5LTEzVDA5OjMwOjAwWiIsImV4cCI6MTcxNjYyNjE0Nn0.o6SIJZFyjlxDC8m3HJM_TBn39M6WakXpbMXFXX3Iy9I", // nolint:lll
 				Done:     false,
 			},
 			ExpectedErrs: nil,
