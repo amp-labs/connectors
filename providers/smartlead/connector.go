@@ -3,12 +3,14 @@ package smartlead
 import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
+	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/deep"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/smartlead/metadata"
 	"github.com/spyzhov/ajson"
+	"strconv"
 )
 
 const apiVersion = "v1"
@@ -17,6 +19,11 @@ type Connector struct {
 	deep.Clients
 	deep.EmptyCloser
 	deep.Reader
+	// Write method allows to
+	// * create campaigns
+	// * create/update email-accounts
+	// * create client
+	deep.Writer
 	deep.StaticMetadata
 	deep.Remover
 }
@@ -32,12 +39,14 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		clients *deep.Clients,
 		closer *deep.EmptyCloser,
 		reader *deep.Reader,
+		writer *deep.Writer,
 		staticMetadata *deep.StaticMetadata,
 		remover *deep.Remover) *Connector {
 		return &Connector{
 			Clients:        *clients,
 			EmptyCloser:    *closer,
 			Reader:         *reader,
+			Writer:         *writer,
 			StaticMetadata: *staticMetadata,
 			Remover:        *remover,
 		}
@@ -55,6 +64,10 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			switch method {
 			case deep.ReadMethod:
 				path = objectName
+			case deep.CreateMethod:
+				path = createObjects[objectName]
+			case deep.UpdateMethod:
+				path = updateObjects[objectName]
 			case deep.DeleteMethod:
 				path = objectName
 			}
@@ -64,6 +77,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	}
 	objectManager := deep.ObjectRegistry{
 		Read:   supportedObjectsByRead,
+		Write:  supportedObjectsByWrite,
 		Delete: supportedObjectsByDelete,
 	}
 	firstPage := deep.FirstPageBuilder{
@@ -83,6 +97,30 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			return ""
 		},
 	}
+	writeResultBuilder := deep.WriteResultBuilder{
+		Build: func(config common.WriteParams, body *ajson.Node) (*common.WriteResult, error) {
+			recordIdNodePath := writeResponseRecordIdPaths[config.ObjectName]
+
+			// ID is integer that is always stored under different field name.
+			rawID, err := jsonquery.New(body).Integer(recordIdNodePath, true)
+			if err != nil {
+				return nil, err
+			}
+
+			recordID := ""
+			if rawID != nil {
+				// optional
+				recordID = strconv.FormatInt(*rawID, 10)
+			}
+
+			return &common.WriteResult{
+				Success:  true,
+				RecordId: recordID,
+				Errors:   nil,
+				Data:     nil,
+			}, nil
+		},
+	}
 
 	return deep.Connector[Connector, parameters](constructor, providers.Smartlead, opts,
 		meta,
@@ -92,9 +130,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		firstPage,
 		nextPage,
 		readObjectLocator,
+		writeResultBuilder,
+		deep.PostPostWriteRequestBuilder{},
 	)
-}
-
-func (c *Connector) getURL(arg string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.BaseURL(), apiVersion, arg)
 }

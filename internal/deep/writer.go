@@ -102,8 +102,8 @@ type WriteRequestBuilder interface {
 }
 
 type PostPutWriteRequestBuilder struct {
-	simplePostWriteRequest
-	simplePutWriteRequest
+	simplePostCreateRequest
+	simplePutUpdateRequest
 }
 
 var _ WriteRequestBuilder = PostPutWriteRequestBuilder{}
@@ -117,7 +117,7 @@ func (b PostPutWriteRequestBuilder) Satisfies() requirements.Dependency {
 }
 
 type PostWriteRequestBuilder struct{
-	simplePostWriteRequest
+	simplePostCreateRequest
 	simpleNoopUpdateRequest
 }
 
@@ -132,8 +132,8 @@ func (b PostWriteRequestBuilder) Satisfies() requirements.Dependency {
 }
 
 type PostPatchWriteRequestBuilder struct{
-	simplePostWriteRequest
-	simplePatchWriteRequest
+	simplePostCreateRequest
+	simplePatchUpdateRequest
 }
 
 var _ WriteRequestBuilder = PostPatchWriteRequestBuilder{}
@@ -146,16 +146,31 @@ func (b PostPatchWriteRequestBuilder) Satisfies() requirements.Dependency {
 	}
 }
 
-type simplePostWriteRequest struct{}
+type PostPostWriteRequestBuilder struct{
+	simplePostCreateRequest
+	simplePostUpdateRequest
+}
 
-func (simplePostWriteRequest) MakeCreateRequest(
+var _ WriteRequestBuilder = PostPostWriteRequestBuilder{}
+
+func (b PostPostWriteRequestBuilder) Satisfies() requirements.Dependency {
+	return requirements.Dependency{
+		ID:          "writeRequestBuilder",
+		Constructor: handy.Returner(b),
+		Interface:   new(WriteRequestBuilder),
+	}
+}
+
+type simplePostCreateRequest struct{}
+
+func (simplePostCreateRequest) MakeCreateRequest(
 	objectName string, url *urlbuilder.URL, clients Clients) (common.WriteMethod, []common.Header) {
 	return clients.JSON.Post, nil
 }
 
-type simplePutWriteRequest struct{}
+type simplePutUpdateRequest struct{}
 
-func (simplePutWriteRequest) MakeUpdateRequest(
+func (simplePutUpdateRequest) MakeUpdateRequest(
 	objectName string, recordID string, url *urlbuilder.URL, clients Clients) (common.WriteMethod, []common.Header) {
 	url.AddPath(recordID)
 
@@ -169,11 +184,20 @@ func (simpleNoopUpdateRequest) MakeUpdateRequest(
 	return nil, nil
 }
 
-type simplePatchWriteRequest struct{}
+type simplePatchUpdateRequest struct{}
 
-func (simplePatchWriteRequest) MakeUpdateRequest(
+func (simplePatchUpdateRequest) MakeUpdateRequest(
 	objectName string, recordID string, url *urlbuilder.URL, clients Clients) (common.WriteMethod, []common.Header) {
 	url.AddPath(recordID)
 
 	return clients.JSON.Patch, nil
+}
+
+type simplePostUpdateRequest struct{}
+
+func (simplePostUpdateRequest) MakeUpdateRequest(
+	objectName string, recordID string, url *urlbuilder.URL, clients Clients) (common.WriteMethod, []common.Header) {
+	url.AddPath(recordID)
+
+	return clients.JSON.Post, nil
 }

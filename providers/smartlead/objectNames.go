@@ -11,19 +11,42 @@ const (
 	objectNameClient       = "client"
 )
 
-// Supported object names can be found under schemas.json.
-var supportedObjectsByRead = handy.NewSetFromList( //nolint:gochecknoglobals
-	metadata.Schemas.GetObjectNames(),
+var (
+	// Supported object names can be found under schemas.json.
+	supportedObjectsByRead = handy.NewSetFromList( //nolint:gochecknoglobals
+		metadata.Schemas.GetObjectNames(),
+	)
+	supportedObjectsByWrite  = handy.MergeSets(createObjects.KeySet(), updateObjects.KeySet()) //nolint:gochecknoglobals
+	supportedObjectsByDelete = deleteObjects.KeySet()                                          //nolint:gochecknoglobals
 )
 
-var supportedObjectsByWrite = handy.NewSet( //nolint:gochecknoglobals
-	objectNameCampaign,
-	objectNameEmailAccount,
-	objectNameClient,
-)
+var createObjects = handy.Map[string, string]{
+	// Create campaign.
+	// https://api.smartlead.ai/reference/create-campaign
+	objectNameCampaign: objectNameCampaign + "/create",
+	// Create account.
+	// https://api.smartlead.ai/reference/create-an-email-account
+	objectNameEmailAccount: objectNameCampaign + "/save",
+	// Add new client to the system.
+	// https://api.smartlead.ai/reference/add-client-to-system-whitelabel-or-not
+	objectNameClient: objectNameClient + "/save",
+}
 
-var supportedObjectsByDelete = handy.NewSet( //nolint:gochecknoglobals
+var updateObjects = handy.Map[string, string]{
+	// Update account.
+	// https://api.smartlead.ai/reference/update-email-account
+	// It uses POST with RecordID.
+	objectNameEmailAccount: objectNameEmailAccount,
+}
+
+var deleteObjects = handy.Map[string, string]{
 	// Removing campaign is the only to be supported at this time.
 	// https://api.smartlead.ai/reference/delete-campaign
-	objectNameCampaign,
-)
+	objectNameCampaign: objectNameCampaign,
+}
+
+var writeResponseRecordIdPaths = map[string]string{ // nolint:gochecknoglobals
+	objectNameCampaign:     "id",
+	objectNameEmailAccount: "emailAccountId",
+	objectNameClient:       "clientId",
+}
