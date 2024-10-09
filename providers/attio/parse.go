@@ -17,6 +17,7 @@ func makeNextRecordsURL(reqLink *urlbuilder.URL) common.NextPageFunc {
 
 		previousStart := 0
 
+		// Extract the data key value from the response.
 		value := node.MustObject()["data"].MustArray()
 
 		if (url.Query().Has("limit") || url.Query().Has("offset")) && len(value) != 0 {
