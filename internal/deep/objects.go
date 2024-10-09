@@ -9,13 +9,15 @@ type ObjectManager interface {
 	requirements.Requirement
 
 	IsReadSupported(objectName string) bool
+	IsWriteSupported(objectName string) bool
 }
 
 var _ ObjectManager = ObjectRegistry{}
 var _ ObjectManager = EmptyObjectRegistry{}
 
 type ObjectRegistry struct {
-	Read handy.Set[string]
+	Read  handy.Set[string]
+	Write handy.Set[string]
 }
 
 func (o ObjectRegistry) Satisfies() requirements.Dependency {
@@ -27,7 +29,19 @@ func (o ObjectRegistry) Satisfies() requirements.Dependency {
 }
 
 func (o ObjectRegistry) IsReadSupported(objectName string) bool {
+	if len(o.Read) == 0 {
+		return true
+	}
+
 	return o.Read.Has(objectName)
+}
+
+func (o ObjectRegistry) IsWriteSupported(objectName string) bool {
+	if len(o.Write) == 0 {
+		return true
+	}
+
+	return o.Write.Has(objectName)
 }
 
 type EmptyObjectRegistry struct{}
@@ -41,5 +55,9 @@ func (e EmptyObjectRegistry) Satisfies() requirements.Dependency {
 }
 
 func (e EmptyObjectRegistry) IsReadSupported(string) bool {
+	return true
+}
+
+func (e EmptyObjectRegistry) IsWriteSupported(string) bool {
 	return true
 }

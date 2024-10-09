@@ -48,6 +48,7 @@ func Connector[C any, P paramsbuilder.ParamAssurance](
 			},
 		},
 		EmptyObjectRegistry{}.Satisfies(),
+		PostPutWriteRequestBuilder{}.Satisfies(),
 		{
 			// Connector will have HTTP clients which can be implied from parameters "P".
 			ID:          "clients",

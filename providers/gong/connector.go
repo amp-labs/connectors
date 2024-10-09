@@ -19,6 +19,7 @@ type Connector struct {
 	deep.Clients
 	deep.EmptyCloser
 	deep.Reader
+	deep.Writer
 	deep.StaticMetadata
 }
 
@@ -31,11 +32,13 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		clients *deep.Clients,
 		closer *deep.EmptyCloser,
 		reader *deep.Reader,
+		writer *deep.Writer,
 		staticMetadata *deep.StaticMetadata) *Connector {
 		return &Connector{
 			Clients:        *clients,
 			EmptyCloser:    *closer,
 			Reader:         *reader,
+			Writer:         *writer,
 			StaticMetadata: *staticMetadata,
 		}
 	}
@@ -46,7 +49,8 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		Metadata: metadata.Schemas,
 	}
 	objectManager := deep.ObjectRegistry{
-		Read: supportedObjectsByRead,
+		Read:  supportedObjectsByRead,
+		Write: supportedObjectsByWrite,
 	}
 	urlResolver := deep.URLResolver{
 		Resolve: func(baseURL, objectName string) (*urlbuilder.URL, error) {
@@ -87,6 +91,21 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			return config.ObjectName
 		},
 	}
+	writeResultBuilder := deep.WriteResultBuilder{
+		Build: func(config common.WriteParams, body *ajson.Node) (*common.WriteResult, error) {
+			recordID, err := jsonquery.New(body).Str("callId", false)
+			if err != nil {
+				return nil, err
+			}
+
+			return &common.WriteResult{
+				Success:  true,
+				RecordId: *recordID,
+				Errors:   nil,
+				Data:     nil,
+			}, nil
+		},
+	}
 
 	return deep.Connector[Connector, parameters](constructor, providers.Gong, opts,
 		meta,
@@ -96,9 +115,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		firstPage,
 		nextPage,
 		readObjectLocator,
+		deep.PostWriteRequestBuilder{},
+		writeResultBuilder,
 	)
-}
-
-func (c *Connector) getURL(arg string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.BaseURL(), ApiVersion, arg)
 }
