@@ -19,12 +19,11 @@ func (c *Connector) GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, 
 		return nil, errors.Join(ErrDiscoveryFailure, err)
 	}
 
-	c.cloudId = cloudId
+	c.Data.Metadata.CloudID = cloudId
+	variables := c.Data.Metadata.ToMap()
 
 	return &common.PostAuthInfo{
-		CatalogVars: AuthMetadataVars{
-			CloudId: cloudId,
-		}.AsMap(),
+		CatalogVars: &variables,
 		RawResponse: nil,
 	}, nil
 }
@@ -59,7 +58,7 @@ func (c *Connector) retrieveCloudId(ctx context.Context) (string, error) {
 		return "", err
 	}
 
-	res, err := c.Client.Get(ctx, url.String())
+	res, err := c.Clients.JSON.Get(ctx, url.String())
 	if err != nil {
 		return "", err
 	}
@@ -80,7 +79,7 @@ func (c *Connector) retrieveCloudId(ctx context.Context) (string, error) {
 			return "", err
 		}
 
-		if *workspaceName == c.workspace {
+		if *workspaceName == c.Data.Workspace {
 			// names match, select this container.
 			cloudId, err := jsonquery.New(item).Str("id", false)
 			if err != nil {

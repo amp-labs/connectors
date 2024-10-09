@@ -5,7 +5,7 @@ import (
 	"github.com/amp-labs/connectors/internal/deep/requirements"
 )
 
-type ConnectorDescriptor[P paramsbuilder.ParamAssurance, D MetadataVariables] struct {
+type ConnectorData[P paramsbuilder.ParamAssurance, D MetadataVariables] struct {
 	Workspace string
 	Module    string
 	Metadata  D
@@ -14,33 +14,33 @@ type ConnectorDescriptor[P paramsbuilder.ParamAssurance, D MetadataVariables] st
 func newConnectorDescriptor[P paramsbuilder.ParamAssurance, D MetadataVariables](
 	parameters *Parameters[P],
 	metadataVariables MetadataVariables,
-) *ConnectorDescriptor[P, D] {
+) *ConnectorData[P, D] {
 
-	descr := new(ConnectorDescriptor[P, D])
+	data := new(ConnectorData[P, D])
 
 	if holder, ok := parameters.Params.(paramsbuilder.WorkspaceHolder); ok {
 		workspace := holder.GiveWorkspace()
-		descr.Workspace = workspace.Name
+		data.Workspace = workspace.Name
 	}
 
 	if holder, ok := parameters.Params.(paramsbuilder.ModuleHolder); ok {
 		module := holder.GiveModule()
-		descr.Module = module.Name
+		data.Module = module.Name
 	}
 
-	if holder, ok := parameters.Params.(paramsbuilder.Metadata); ok {
+	if holder, ok := parameters.Params.(paramsbuilder.MetadataHolder); ok {
 		metadata := holder.GiveMetadata()
 		metadataVariables.FromMap(metadata.Map)
-		descr.Metadata, ok = metadataVariables.(D)
+		data.Metadata, ok = metadataVariables.(D)
 		if !ok {
 			// TODO return an error, connector descriptor should have the same type as metadata variables.
 		}
 	}
 
-	return descr
+	return data
 }
 
-func (c ConnectorDescriptor[P, D]) Satisfies() requirements.Dependency {
+func (c ConnectorData[P, D]) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
 		ID:          "connectorDescriptor",
 		Constructor: newConnectorDescriptor[P, D],

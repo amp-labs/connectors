@@ -8,8 +8,8 @@ import (
 
 type MetadataVariables interface {
 	requirements.Requirement
-	ToMap() map[string]string
 	FromMap(map[string]string)
+	ToMap() map[string]string
 	GetSubstitutionPlans() []paramsbuilder.SubstitutionPlan
 }
 
@@ -25,12 +25,12 @@ func (e EmptyMetadataVariables) Satisfies() requirements.Dependency {
 	}
 }
 
-func (e EmptyMetadataVariables) ToMap() map[string]string {
-	return nil
-}
-
 func (e EmptyMetadataVariables) FromMap(m map[string]string) {
 	// no-op
+}
+
+func (e EmptyMetadataVariables) ToMap() map[string]string {
+	return nil
 }
 
 func (e EmptyMetadataVariables) GetSubstitutionPlans() []paramsbuilder.SubstitutionPlan {

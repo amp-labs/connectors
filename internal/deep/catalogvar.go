@@ -11,7 +11,7 @@ type CatalogVariables[P paramsbuilder.ParamAssurance, D MetadataVariables] struc
 
 func newCatalogVariables[P paramsbuilder.ParamAssurance, D MetadataVariables](
 	parameters *Parameters[P],
-	descriptor *ConnectorDescriptor[P, D],
+	descriptor *ConnectorData[P, D],
 ) *CatalogVariables[P, D] {
 	variables := paramsbuilder.ExtractCatalogVariables(parameters.Params)
 

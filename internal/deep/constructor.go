@@ -14,9 +14,9 @@ func Connector[C any, P paramsbuilder.ParamAssurance](
 	options []func(params *P),
 	reqs ...requirements.Requirement,
 ) (*C, error) {
-	reqs = append(reqs, EmptyMetadataVariables{})
-
-	return ExtendedConnector[C, P, EmptyMetadataVariables](connectorConstructor, provider, options, reqs...)
+	return ExtendedConnector[C, P, EmptyMetadataVariables](
+		connectorConstructor, provider, EmptyMetadataVariables{}, options, reqs...,
+	)
 }
 
 // ExtendedConnector
@@ -24,6 +24,7 @@ func Connector[C any, P paramsbuilder.ParamAssurance](
 func ExtendedConnector[C any, P paramsbuilder.ParamAssurance, D MetadataVariables](
 	connectorConstructor any,
 	provider providers.Provider,
+	metadataVariables D,
 	options []func(params *P),
 	reqs ...requirements.Requirement,
 ) (*C, error) {
@@ -61,7 +62,8 @@ func ExtendedConnector[C any, P paramsbuilder.ParamAssurance, D MetadataVariable
 		Parameters[P]{}.Satisfies(),
 		EmptyObjectRegistry{}.Satisfies(),
 		PostPutWriteRequestBuilder{}.Satisfies(),
-		ConnectorDescriptor[P, D]{}.Satisfies(),
+		metadataVariables.Satisfies(),
+		ConnectorData[P, D]{}.Satisfies(),
 		CatalogVariables[P, D]{}.Satisfies(),
 		{
 			// Connector will have HTTP clients which can be implied from parameters "P".
