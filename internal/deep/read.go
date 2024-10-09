@@ -15,22 +15,24 @@ type Reader struct {
 	firstPageBuilder  FirstPageBuilder
 	nextPageBuilder   NextPageBuilder
 	readObjectLocator ReadObjectLocator
+	objectManager     ObjectManager
 
-	clients              Clients
-	SupportedReadObjects *handy.Set[string] // TODO maybe this should be a dependency
+	clients Clients
 }
 
 func NewReader(clients *Clients,
 	resolver *URLResolver,
 	firstPageBuilder *FirstPageBuilder,
 	nextPageBuilder *NextPageBuilder,
-	objectLocator *ReadObjectLocator) *Reader {
+	objectLocator *ReadObjectLocator,
+	objectManager ObjectManager) *Reader {
 	return &Reader{
-		clients:           *clients,
 		urlResolver:       *resolver,
 		firstPageBuilder:  *firstPageBuilder,
 		nextPageBuilder:   *nextPageBuilder,
 		readObjectLocator: *objectLocator,
+		objectManager:     objectManager,
+		clients:           *clients,
 	}
 }
 
@@ -39,7 +41,7 @@ func (r *Reader) Read(ctx context.Context, config common.ReadParams) (*common.Re
 		return nil, err
 	}
 
-	if r.SupportedReadObjects != nil && !r.SupportedReadObjects.Has(config.ObjectName) {
+	if !r.objectManager.IsReadSupported(config.ObjectName) {
 		return nil, common.ErrOperationNotSupportedForObject
 	}
 

@@ -12,9 +12,9 @@ import (
 const ApiVersion = "v2"
 
 type Connector struct {
-	*deep.Clients
-	*deep.EmptyCloser
-	*deep.StaticMetadata
+	deep.Clients
+	deep.EmptyCloser
+	deep.StaticMetadata
 }
 
 type parameters struct {
@@ -27,9 +27,9 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		closer *deep.EmptyCloser,
 		staticMetadata *deep.StaticMetadata) *Connector {
 		return &Connector{
-			Clients:        clients,
-			EmptyCloser:    closer,
-			StaticMetadata: staticMetadata,
+			Clients:        *clients,
+			EmptyCloser:    *closer,
+			StaticMetadata: *staticMetadata,
 		}
 	}
 	errorHandler := interpreter.ErrorHandler{

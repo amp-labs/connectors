@@ -13,10 +13,16 @@ type Requirement interface {
 type Dependency struct {
 	ID          string
 	Constructor any
+	Interface   any
 }
 
 func (d Dependency) apply(container *dig.Container) error {
-	return container.Provide(d.Constructor)
+	var options []dig.ProvideOption
+	if d.Interface != nil {
+		options = append(options, dig.As(d.Interface))
+	}
+
+	return container.Provide(d.Constructor, options...)
 }
 
 type Dependencies handy.Map[string, Dependency]

@@ -39,9 +39,6 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		writer *deep.Writer,
 		staticMetadata *deep.StaticMetadata,
 		remover *deep.Remover) *Connector {
-
-		reader.SupportedReadObjects = &supportedObjectsByRead // TODO express as dependency (SupportedObjectByOperation)
-
 		return &Connector{
 			Clients:        *clients,
 			EmptyCloser:    *closer,
@@ -137,6 +134,9 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	meta := deep.StaticMetadataHolder{
 		Metadata: metadata.Schemas,
 	}
+	objectManager := deep.ObjectRegistry{
+		Read: supportedObjectsByRead,
+	}
 
 	return deep.Connector[Connector, parameters](constructor, providers.Salesloft, opts,
 		meta,
@@ -146,5 +146,6 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		readObjectLocator,
 		writeResultBuilder,
 		errorHandler,
+		objectManager,
 	)
 }
