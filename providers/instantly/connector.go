@@ -19,6 +19,10 @@ type Connector struct {
 	deep.EmptyCloser
 	deep.Reader
 	deep.StaticMetadata
+	// Delete removes object. As of now only removal of Tags are allowed because
+	// deletion of other object types require a request payload to be added
+	// c.Client.Delete does not yet support this.
+	deep.Remover
 }
 
 type parameters struct {
@@ -32,12 +36,14 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		clients *deep.Clients,
 		closer *deep.EmptyCloser,
 		reader *deep.Reader,
-		staticMetadata *deep.StaticMetadata) *Connector {
+		staticMetadata *deep.StaticMetadata,
+		remover *deep.Remover) *Connector {
 		return &Connector{
 			Clients:        *clients,
 			EmptyCloser:    *closer,
 			Reader:         *reader,
 			StaticMetadata: *staticMetadata,
+			Remover:        *remover,
 		}
 	}
 	errorHandler := interpreter.ErrorHandler{
@@ -87,7 +93,8 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		},
 	}
 	objectManager := deep.ObjectRegistry{
-		Read: supportedObjectsByRead,
+		Read:   supportedObjectsByRead,
+		Delete: supportedObjectsByDelete,
 	}
 
 	return deep.Connector[Connector, parameters](constructor, providers.Instantly, opts,

@@ -10,14 +10,16 @@ type ObjectManager interface {
 
 	IsReadSupported(objectName string) bool
 	IsWriteSupported(objectName string) bool
+	IsDeleteSupported(objectName string) bool
 }
 
 var _ ObjectManager = ObjectRegistry{}
 var _ ObjectManager = EmptyObjectRegistry{}
 
 type ObjectRegistry struct {
-	Read  handy.Set[string]
-	Write handy.Set[string]
+	Read   handy.Set[string]
+	Write  handy.Set[string]
+	Delete handy.Set[string]
 }
 
 func (o ObjectRegistry) Satisfies() requirements.Dependency {
@@ -44,6 +46,14 @@ func (o ObjectRegistry) IsWriteSupported(objectName string) bool {
 	return o.Write.Has(objectName)
 }
 
+func (o ObjectRegistry) IsDeleteSupported(objectName string) bool {
+	if len(o.Delete) == 0 {
+		return true
+	}
+
+	return o.Delete.Has(objectName)
+}
+
 type EmptyObjectRegistry struct{}
 
 func (e EmptyObjectRegistry) Satisfies() requirements.Dependency {
@@ -59,6 +69,10 @@ func (e EmptyObjectRegistry) IsReadSupported(string) bool {
 }
 
 func (e EmptyObjectRegistry) IsWriteSupported(string) bool {
+	return true
+}
+
+func (e EmptyObjectRegistry) IsDeleteSupported(string) bool {
 	return true
 }
 

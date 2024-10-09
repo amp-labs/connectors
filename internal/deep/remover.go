@@ -6,20 +6,26 @@ import (
 )
 
 type Remover struct {
-	clients     Clients
-	urlResolver URLResolver
+	clients       Clients
+	urlResolver   URLResolver
+	objectManager ObjectManager
 }
 
-func NewRemover(clients *Clients, resolver *URLResolver) *Remover {
+func NewRemover(clients *Clients, resolver *URLResolver, objectManager ObjectManager) *Remover {
 	return &Remover{
-		clients:     *clients,
-		urlResolver: *resolver,
+		clients:       *clients,
+		urlResolver:   *resolver,
+		objectManager: objectManager,
 	}
 }
 
 func (r *Remover) Delete(ctx context.Context, config common.DeleteParams) (*common.DeleteResult, error) {
 	if err := config.ValidateParams(); err != nil {
 		return nil, err
+	}
+
+	if !r.objectManager.IsDeleteSupported(config.ObjectName) {
+		return nil, common.ErrOperationNotSupportedForObject
 	}
 
 	url, err := r.urlResolver.Resolve(r.clients.BaseURL(), config.ObjectName)
