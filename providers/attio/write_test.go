@@ -14,7 +14,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
-func TestWrite(t *testing.T) {
+func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
 	responseObject := testutils.DataFromFile(t, "write_objects.json")
@@ -364,6 +364,7 @@ func TestWrite(t *testing.T) {
 	}
 
 	for _, tt := range tests {
+		// nolint:varnamelen
 		tt := tt
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()

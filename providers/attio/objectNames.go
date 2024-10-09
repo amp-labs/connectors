@@ -1,4 +1,3 @@
-// nolint
 package attio
 
 import "github.com/amp-labs/connectors/common/handy"
@@ -12,7 +11,7 @@ const (
 	objectNameNotes            = "notes"
 )
 
-var supportedObjectsByRead = handy.NewSet(
+var supportedObjectsByRead = handy.NewSet( //nolint:gochecknoglobals
 	objectNameObjects,
 	objectNameLists,
 	objectNameWorkspacemembers,
@@ -21,9 +20,15 @@ var supportedObjectsByRead = handy.NewSet(
 	objectNameNotes,
 )
 
-var supportedObjectsByWrite = handy.NewSet(
+var supportedObjectsByWrite = handy.NewSet( //nolint:gochecknoglobals
 	objectNameObjects,
 	objectNameLists,
+	objectNameTasks,
+	objectNameNotes,
+	objectNameWebhooks,
+)
+
+var supportLimitAndOffset = handy.NewSet( //nolint:gochecknoglobals
 	objectNameTasks,
 	objectNameNotes,
 	objectNameWebhooks,

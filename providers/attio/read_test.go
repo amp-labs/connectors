@@ -15,7 +15,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
-func TestRead(t *testing.T) {
+func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
 	responseObjects := testutils.DataFromFile(t, "objects.json")
@@ -321,6 +321,7 @@ func TestRead(t *testing.T) {
 	}
 
 	for _, tt := range tests {
+		// nolint:varnamelen
 		tt := tt // rebind, omit loop side effects for parallel goroutine
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
