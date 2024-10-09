@@ -47,6 +47,7 @@ func Connector[C any, P paramsbuilder.ParamAssurance](
 				return &EmptyCloser{}
 			},
 		},
+		Parameters[P]{}.Satisfies(),
 		EmptyObjectRegistry{}.Satisfies(),
 		PostPutWriteRequestBuilder{}.Satisfies(),
 		{

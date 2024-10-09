@@ -18,48 +18,24 @@ type Clients struct {
 
 func newClients[P paramsbuilder.ParamAssurance](
 	provider providers.Provider,
+	parameters *Parameters[P],
 	errorHandler *interpreter.ErrorHandler,
-	opts []func(params *P),
-) (clients *Clients, outErr error) {
-	defer common.PanicRecovery(func(cause error) {
-		outErr = cause
-		clients = nil
-	})
-
-	var paramsTemplate P
-
-	params, err := paramsbuilder.Apply(paramsTemplate, opts)
-	if err != nil {
-		return nil, err
-	}
-
-	clients, err = internalNewClients(provider, params)
-	if err != nil {
-		return nil, err
-	}
-
-	clients.WithErrorHandler(errorHandler)
-
-	return clients, nil
-}
-
-func internalNewClients(provider providers.Provider, parameters any) (*Clients, error) {
-	catalogVariables := paramsbuilder.ExtractCatalogVariables(parameters)
-	providerInfo, err := providers.ReadInfo(provider, catalogVariables...)
-	if err != nil {
-		return nil, err
-	}
-
-	clientHolder, ok := parameters.(paramsbuilder.ClientHolder)
+) (*Clients, error) {
+	clientHolder, ok := parameters.Params.(paramsbuilder.ClientHolder)
 	if !ok {
 		// TODO complain that parameters doesn't hold HTTP client
 		return nil, errors.New("not good")
 	}
 	client := clientHolder.GiveClient().Caller
 
+	providerInfo, err := providers.ReadInfo(provider, parameters.CatalogVars...)
+	if err != nil {
+		return nil, err
+	}
+
 	client.Base = providerInfo.BaseURL
 
-	return &Clients{
+	clients := &Clients{
 		provider:   provider,
 		httpClient: client,
 		JSON: &common.JSONHTTPClient{
@@ -68,7 +44,11 @@ func internalNewClients(provider providers.Provider, parameters any) (*Clients, 
 		XML: &common.XMLHTTPClient{
 			HTTPClient: client,
 		},
-	}, nil
+	}
+
+	clients.WithErrorHandler(errorHandler)
+
+	return clients, nil
 }
 
 // Provider returns the connector provider.
