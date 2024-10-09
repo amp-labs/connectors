@@ -4,7 +4,6 @@ package attio
 import (
 	"net/http"
 	"net/http/httptest"
-	"net/url"
 	"testing"
 
 	"github.com/amp-labs/connectors"
@@ -186,17 +185,11 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:  "Read list of all notes",
-			Input: common.ReadParams{ObjectName: "notes", Fields: connectors.Fields("")},
+			Input: common.ReadParams{ObjectName: "notes", Fields: connectors.Fields(""), NextPage: "test?limit=10"},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
-				mockutils.RespondToQueryParameters(w, r, url.Values{
-					"limit":  []string{"1"},
-					"offset": []string{"0"},
-				}, func() {
-					w.WriteHeader(http.StatusOK)
-					_, _ = w.Write(responseNotes)
-				})
+				_, _ = w.Write(responseNotes)
 			})),
 			Expected: &common.ReadResult{
 				Rows: 1,
@@ -219,24 +212,18 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					},
 				},
 				},
-				NextPage: "",
-				Done:     true,
+				NextPage: "test?limit=10&offset=10",
+				Done:     false,
 			},
 			ExpectedErrs: nil,
 		},
 		{
 			Name:  "Read list of all tasks",
-			Input: common.ReadParams{ObjectName: "tasks", Fields: connectors.Fields("")},
+			Input: common.ReadParams{ObjectName: "tasks", Fields: connectors.Fields(""), NextPage: "test?limit=10"},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
-				mockutils.RespondToQueryParameters(w, r, url.Values{
-					"limit":  []string{"1"},
-					"offset": []string{"0"},
-				}, func() {
-					w.WriteHeader(http.StatusOK)
-					_, _ = w.Write(responseTasks)
-				})
+				_, _ = w.Write(responseTasks)
 			})),
 			Expected: &common.ReadResult{
 				Rows: 1,
@@ -265,24 +252,18 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					},
 				},
 				},
-				NextPage: "",
-				Done:     true,
+				NextPage: "test?limit=10&offset=10",
+				Done:     false,
 			},
 			ExpectedErrs: nil,
 		},
 		{
 			Name:  "Read list of all webhooks",
-			Input: common.ReadParams{ObjectName: "webhooks", Fields: connectors.Fields("")},
+			Input: common.ReadParams{ObjectName: "webhooks", Fields: connectors.Fields(""), NextPage: "test?limit=10"},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
-				mockutils.RespondToQueryParameters(w, r, url.Values{
-					"limit":  []string{"1"},
-					"offset": []string{"0"},
-				}, func() {
-					w.WriteHeader(http.StatusOK)
-					_, _ = w.Write(responseWebhooks)
-				})
+				_, _ = w.Write(responseWebhooks)
 			})),
 			Expected: &common.ReadResult{
 				Rows: 1,
@@ -313,8 +294,8 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					},
 				},
 				},
-				NextPage: "",
-				Done:     true,
+				NextPage: "test?limit=10&offset=10",
+				Done:     false,
 			},
 			ExpectedErrs: nil,
 		},
@@ -322,7 +303,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 
 	for _, tt := range tests {
 		// nolint:varnamelen
-		tt := tt // rebind, omit loop side effects for parallel goroutine
+		tt := tt // rebind, omit loop side effects for parallel goroutine.
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 

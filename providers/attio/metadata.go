@@ -34,6 +34,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 		resp, err := c.Client.Get(ctx, url.String())
 		if err != nil {
 			metadataResult.Errors[obj] = err
+
 			continue
 		}
 
@@ -41,6 +42,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 		metadata, err = parseMetadataFromResponse(resp)
 		if err != nil {
 			metadataResult.Errors[obj] = err
+
 			continue
 		}
 
@@ -51,7 +53,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 	return &metadataResult, nil
 }
 
-// This function is used for slice of objects
+// This function is used for slice of objects.
 func parseMetadataFromResponse(resp *common.JSONHTTPResponse) (*common.ObjectMetadata, error) {
 	response, err := common.UnmarshalJSON[responseObject](resp)
 	if err != nil {

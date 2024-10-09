@@ -10,12 +10,14 @@ import (
 
 func makeNextRecordsURL(reqLink *urlbuilder.URL) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
+		value := node.MustObject()["data"].MustArray()
 		previousStart := 0
 		url, err := reqLink.ToURL()
 		if err != nil {
-			return "", nil
+			return "", err
 		}
-		if url.Query().Has("limit") || url.Query().Has("offset") {
+
+		if (url.Query().Has("limit") || url.Query().Has("offset")) && len(value) != 0 {
 
 			offsetQP, ok := reqLink.GetFirstQueryParam("offset")
 			if ok {

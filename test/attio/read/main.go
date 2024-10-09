@@ -66,7 +66,7 @@ func testReadObjects(ctx context.Context, conn *ap.Connector) error {
 		log.Fatal(err.Error())
 	}
 
-	// Print the results
+	// Print the results.
 	jsonStr, err := json.MarshalIndent(res, "", "  ")
 	if err != nil {
 		return fmt.Errorf("error marshalling JSON: %w", err)
@@ -89,7 +89,7 @@ func testReadLists(ctx context.Context, conn *ap.Connector) error {
 		log.Fatal(err.Error())
 	}
 
-	// Print the results
+	// Print the results.
 	jsonStr, err := json.MarshalIndent(res, "", "  ")
 	if err != nil {
 		return fmt.Errorf("error marshalling JSON: %w", err)
@@ -111,7 +111,7 @@ func testReadWorkspacemembers(ctx context.Context, conn *ap.Connector) error {
 		log.Fatal(err.Error())
 	}
 
-	// Print the results
+	// Print the results.
 	jsonStr, err := json.MarshalIndent(res, "", "  ")
 	if err != nil {
 		return fmt.Errorf("error marshalling JSON: %w", err)
@@ -134,7 +134,7 @@ func testReadWebhooks(ctx context.Context, conn *ap.Connector) error {
 		log.Fatal(err.Error())
 	}
 
-	// Print the results
+	// Print the results.
 	jsonStr, err := json.MarshalIndent(res, "", "  ")
 	if err != nil {
 		return fmt.Errorf("error marshalling JSON: %w", err)
@@ -157,7 +157,7 @@ func testReadTasks(ctx context.Context, conn *ap.Connector) error {
 		log.Fatal(err.Error())
 	}
 
-	// Print the results
+	// Print the results.
 	jsonStr, err := json.MarshalIndent(res, "", "  ")
 	if err != nil {
 		return fmt.Errorf("error marshalling JSON: %w", err)
@@ -180,7 +180,7 @@ func testReadNotes(ctx context.Context, conn *ap.Connector) error {
 		log.Fatal(err.Error())
 	}
 
-	// Print the results
+	// Print the results.
 	jsonStr, err := json.MarshalIndent(res, "", "  ")
 	if err != nil {
 		return fmt.Errorf("error marshalling JSON: %w", err)

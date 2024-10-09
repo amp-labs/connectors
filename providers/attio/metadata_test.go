@@ -139,7 +139,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 
 	for _, tt := range tests {
 		// nolint:varnamelen
-		tt := tt // rebind, omit loop side effects for parallel goroutine
+		tt := tt // rebind, omit loop side effects for parallel goroutine.
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
@@ -157,7 +157,7 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 	if err != nil {
 		return nil, err
 	}
-	// for testing we want to redirect calls to our mock server
+	// for testing we want to redirect calls to our mock server.
 	connector.setBaseURL(serverURL)
 
 	return connector, nil

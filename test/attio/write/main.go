@@ -325,7 +325,7 @@ func Write(ctx context.Context, conn *ap.Connector, payload common.WriteParams) 
 	return res, nil
 }
 
-// unmarshal the write response
+// unmarshal the write response.
 func constructResponse(res *common.WriteResult) error {
 	jsonStr, err := json.MarshalIndent(res, "", " ")
 	if err != nil {
