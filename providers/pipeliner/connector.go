@@ -19,6 +19,7 @@ type Connector struct {
 	deep.EmptyCloser
 	deep.Reader
 	deep.StaticMetadata
+	deep.Remover
 }
 
 type parameters struct {
@@ -34,14 +35,14 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		reader *deep.Reader,
 		//writer *deep.Writer,
 		metadata *deep.StaticMetadata,
-		//remover *deep.Remover
-	) *Connector {
+		remover *deep.Remover) *Connector {
 		return &Connector{
 			Data:           *data,
 			Clients:        *clients,
 			EmptyCloser:    *closer,
 			Reader:         *reader,
 			StaticMetadata: *metadata,
+			Remover:        *remover,
 		}
 	}
 	errorHandler := interpreter.ErrorHandler{
