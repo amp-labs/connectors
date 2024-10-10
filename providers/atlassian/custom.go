@@ -7,12 +7,14 @@ import (
 	"github.com/amp-labs/connectors/internal/deep/requirements"
 )
 
+var _ deep.URLResolver = URLBuilder{}
+
 func newURLBuilder(
 	data *deep.ConnectorData[parameters, *AuthMetadataVars],
 	clients *deep.Clients,
 ) *URLBuilder {
 	return &URLBuilder{
-		data: data,
+		data:    data,
 		clients: clients,
 	}
 }
@@ -24,6 +26,8 @@ type URLBuilder struct {
 
 func (f URLBuilder) FindURL(method deep.Method, baseURL, objectName string) (*urlbuilder.URL, error) {
 	switch method {
+	case deep.ReadMethod:
+		return f.getJiraRestApiURL("search")
 	case deep.DeleteMethod:
 		return f.getJiraRestApiURL("issue")
 	}

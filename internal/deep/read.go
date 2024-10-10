@@ -2,8 +2,10 @@ package deep
 
 import (
 	"context"
+	"errors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/handy"
+	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/deep/requirements"
 	"github.com/spyzhov/ajson"
@@ -54,20 +56,20 @@ func (r *Reader) Read(ctx context.Context, config common.ReadParams) (*common.Re
 		return nil, err
 	}
 
+	recordsFunc, err := r.readObjectLocator.getRecordsFunc(config)
+	if err != nil {
+		return nil, err
+	}
+
+	nextPageFunc, err := r.nextPageBuilder.getNextPageFunc(config, url)
+	if err != nil {
+		return nil, err
+	}
+
 	return common.ParseResult(
 		rsp,
-		common.GetRecordsUnderJSONPath(r.readObjectLocator.Locate(config)),
-		func(node *ajson.Node) (string, error) {
-			nextURL, err := r.nextPageBuilder.Build(config, url, node)
-			if err != nil {
-				return "", err
-			}
-			if nextURL == nil {
-				return "", nil
-			}
-
-			return nextURL.String(), nil
-		},
+		recordsFunc,
+		nextPageFunc,
 		common.GetMarshaledData,
 		config.Fields,
 	)
@@ -85,11 +87,20 @@ func (r *Reader) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error)
 		return nil, err
 	}
 
-	return r.firstPageBuilder.Build(config, url)
+	return r.firstPageBuilder.produceURL(config, url)
 }
 
 type FirstPageBuilder struct {
 	Build func(config common.ReadParams, url *urlbuilder.URL) (*urlbuilder.URL, error)
+}
+
+func (b FirstPageBuilder) produceURL(config common.ReadParams, url *urlbuilder.URL) (*urlbuilder.URL, error) {
+	if b.Build == nil {
+		// TODO error
+		return nil, errors.New("build method cannot be empty")
+	}
+
+	return b.Build(config, url)
 }
 
 func (b FirstPageBuilder) Satisfies() requirements.Dependency {
@@ -103,6 +114,25 @@ type NextPageBuilder struct {
 	Build func(config common.ReadParams, previousPage *urlbuilder.URL, node *ajson.Node) (*urlbuilder.URL, error)
 }
 
+func (b NextPageBuilder) getNextPageFunc(config common.ReadParams, url *urlbuilder.URL) (common.NextPageFunc, error) {
+	if b.Build == nil {
+		// TODO error
+		return nil, errors.New("build method cannot be empty")
+	}
+
+	return func(node *ajson.Node) (string, error) {
+		nextURL, err := b.Build(config, url, node)
+		if err != nil {
+			return "", err
+		}
+		if nextURL == nil {
+			return "", nil
+		}
+
+		return nextURL.String(), nil
+	}, nil
+}
+
 func (b NextPageBuilder) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
 		ID:          "nextPageBuilder",
@@ -111,7 +141,33 @@ func (b NextPageBuilder) Satisfies() requirements.Dependency {
 }
 
 type ReadObjectLocator struct {
+	// Locate should return the fieldName where desired list of Objects is located.
 	Locate func(config common.ReadParams) string
+	// FlattenRecords is optional and will be used after list was located and extra processing is needed.
+	// The desired fields could be nested
+	FlattenRecords func(arr []*ajson.Node) ([]map[string]any, error)
+}
+
+func (l ReadObjectLocator) getRecordsFunc(config common.ReadParams) (common.RecordsFunc, error) {
+	if l.Locate == nil {
+		// TODO error
+		return nil, errors.New("locate method cannot be empty")
+	}
+
+	fieldName := l.Locate(config)
+
+	if l.FlattenRecords == nil {
+		return common.GetRecordsUnderJSONPath(fieldName), nil
+	}
+
+	return func(node *ajson.Node) ([]map[string]any, error) {
+		arr, err := jsonquery.New(node).Array(fieldName, false)
+		if err != nil {
+			return nil, err
+		}
+
+		return l.FlattenRecords(arr)
+	}, nil
 }
 
 func (l ReadObjectLocator) Satisfies() requirements.Dependency {

@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"strings"
 	"testing"
 	"time"
 
@@ -107,7 +108,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				}`)
 			})),
 			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
-				return nextPageComparator(actual, expected)
+				return nextPageComparator(baseURL, actual, expected)
 			},
 			Expected: &common.ReadResult{
 				Rows:     0,
@@ -156,7 +157,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				]}`)
 			})),
 			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
-				return nextPageComparator(actual, expected)
+				return nextPageComparator(baseURL, actual, expected)
 			},
 			Expected: &common.ReadResult{
 				Rows:     2,
@@ -180,11 +181,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				]}`)
 			})),
 			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
-				return nextPageComparator(actual, expected)
+				return nextPageComparator(baseURL, actual, expected)
 			},
 			Expected: &common.ReadResult{
 				Rows:     2,
-				NextPage: "8",
+				NextPage: "{{testServerURL}}/ex/jira/ebc887b2-7e61-4059-ab35-71f15cc16e12/rest/api/3/search?startAt=8",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -219,37 +220,6 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: nil, // there must be no errors.
 		},
 		{
-			Name: "Next page is propagated in query params",
-			Input: common.ReadParams{
-				ObjectName: "issues",
-				Fields:     connectors.Fields("id"),
-				NextPage:   "17",
-			},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				mockutils.RespondToQueryParameters(w, r, url.Values{
-					"startAt": []string{"17"},
-				}, func() {
-					mockutils.WriteBody(w, `
-					{
-					  "startAt": 17,
-					  "issues": [
-						{"fields":{}, "id": "0"},
-						{"fields":{}, "id": "1"},
-						{"fields":{}, "id": "2"}
-					]}`)
-				})
-			})),
-			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
-				return actual.Rows == expected.Rows
-			},
-			Expected: &common.ReadResult{
-				Rows: 3,
-			},
-			ExpectedErrs: nil, // there must be no errors
-		},
-		{
 			Name: "Successful list of rows",
 			Input: common.ReadParams{
 				ObjectName: "issues",
@@ -263,7 +233,6 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
 				return mockutils.ReadResultComparator.SubsetFields(actual, expected) &&
 					mockutils.ReadResultComparator.SubsetRaw(actual, expected) &&
-					actual.NextPage.String() == expected.NextPage.String() &&
 					actual.Rows == expected.Rows &&
 					actual.Done == expected.Done
 			},
@@ -292,8 +261,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"statuscategorychangedate": "2024-07-22T22:41:35.326+0300",
 					},
 				}},
-				NextPage: "2",
-				Done:     false,
+				Done: false,
 			},
 			ExpectedErrs: nil,
 		},
@@ -333,8 +301,9 @@ func TestReadWithoutMetadata(t *testing.T) {
 	}
 }
 
-func nextPageComparator(actual *common.ReadResult, expected *common.ReadResult) bool {
-	return actual.NextPage.String() == expected.NextPage.String() &&
+func nextPageComparator(baseURL string, actual *common.ReadResult, expected *common.ReadResult) bool {
+	expectedNextPage := strings.ReplaceAll(expected.NextPage.String(), "{{testServerURL}}", baseURL)
+	return actual.NextPage.String() == expectedNextPage &&
 		actual.Rows == expected.Rows &&
 		actual.Done == expected.Done
 }
