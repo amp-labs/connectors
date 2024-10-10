@@ -3,6 +3,7 @@ package atlassian
 import (
 	"errors"
 	"fmt"
+	"github.com/amp-labs/connectors/internal/deep/dpobjects"
 	"github.com/amp-labs/connectors/internal/deep/dpvars"
 	"time"
 
@@ -47,7 +48,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		clients *deep.Clients,
 		closer *deep.EmptyCloser,
 		data *dpvars.ConnectorData[parameters, *AuthMetadataVars],
-		urlResolver deep.ObjectURLResolver,
+		urlResolver dpobjects.ObjectURLResolver,
 		reader *deep.Reader,
 		writer *deep.Writer,
 		remover *deep.Remover,

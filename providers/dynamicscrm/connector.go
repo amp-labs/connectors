@@ -2,6 +2,7 @@ package dynamicscrm
 
 import (
 	"fmt"
+	"github.com/amp-labs/connectors/internal/deep/dpobjects"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
@@ -93,8 +94,8 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			return "value"
 		},
 	}
-	objectURLResolver := deep.SingleURLFormat{
-		Produce: func(method deep.Method, baseURL, objectName string) (*urlbuilder.URL, error) {
+	objectURLResolver := dpobjects.SingleURLFormat{
+		Produce: func(method dpobjects.Method, baseURL, objectName string) (*urlbuilder.URL, error) {
 			// Despite the "Method" type the relationship between objectName and
 			// URL path is that it must be in singular word case.
 			// Ex: objectName=Orders, then url will be http://base/v9.2/Order

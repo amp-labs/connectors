@@ -2,6 +2,7 @@ package salesloft
 
 import (
 	"errors"
+	"github.com/amp-labs/connectors/internal/deep/dpobjects"
 	"strconv"
 	"time"
 
@@ -96,8 +97,8 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			return "data"
 		},
 	}
-	objectURLResolver := deep.SingleURLFormat{
-		Produce: func(method deep.Method, baseURL, objectName string) (*urlbuilder.URL, error) {
+	objectURLResolver := dpobjects.SingleURLFormat{
+		Produce: func(method dpobjects.Method, baseURL, objectName string) (*urlbuilder.URL, error) {
 			return urlbuilder.New(baseURL, apiVersion, objectName)
 		},
 	}
@@ -135,7 +136,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	meta := deep.StaticMetadataHolder{
 		Metadata: metadata.Schemas,
 	}
-	objectSupport := deep.ObjectSupport{
+	objectSupport := dpobjects.ObjectSupport{
 		Read: supportedObjectsByRead,
 	}
 

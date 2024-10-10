@@ -4,11 +4,12 @@ import (
 	"errors"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/deep"
+	"github.com/amp-labs/connectors/internal/deep/dpobjects"
 	"github.com/amp-labs/connectors/internal/deep/dpvars"
 	"github.com/amp-labs/connectors/internal/deep/requirements"
 )
 
-var _ deep.ObjectURLResolver = customURLBuilder{}
+var _ dpobjects.ObjectURLResolver = customURLBuilder{}
 
 func newURLBuilder(
 	data *dpvars.ConnectorData[parameters, *AuthMetadataVars],
@@ -25,15 +26,15 @@ type customURLBuilder struct {
 	clients *deep.Clients
 }
 
-func (f customURLBuilder) FindURL(method deep.Method, baseURL, objectName string) (*urlbuilder.URL, error) {
+func (f customURLBuilder) FindURL(method dpobjects.Method, baseURL, objectName string) (*urlbuilder.URL, error) {
 	switch method {
-	case deep.ReadMethod:
+	case dpobjects.ReadMethod:
 		return f.getJiraRestApiURL("search")
-	case deep.CreateMethod:
+	case dpobjects.CreateMethod:
 		fallthrough
-	case deep.UpdateMethod:
+	case dpobjects.UpdateMethod:
 		return f.getJiraRestApiURL("issue")
-	case deep.DeleteMethod:
+	case dpobjects.DeleteMethod:
 		return f.getJiraRestApiURL("issue")
 	}
 
@@ -62,7 +63,7 @@ func (f customURLBuilder) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
 		ID:          "objectUrlResolver",
 		Constructor: newURLBuilder,
-		Interface:   new(deep.ObjectURLResolver),
+		Interface:   new(dpobjects.ObjectURLResolver),
 	}
 }
 

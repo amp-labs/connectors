@@ -3,6 +3,7 @@ package deep
 import (
 	"context"
 	"errors"
+	"github.com/amp-labs/connectors/internal/deep/dpobjects"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/handy"
@@ -13,11 +14,11 @@ import (
 )
 
 type Reader struct {
-	urlResolver       ObjectURLResolver
-	pageStartBuilder  PaginationStartBuilder
+	urlResolver      dpobjects.ObjectURLResolver
+	pageStartBuilder PaginationStartBuilder
 	nextPageBuilder   NextPageBuilder
 	readObjectLocator ReadObjectLocator
-	objectManager     ObjectManager
+	objectManager     dpobjects.ObjectManager
 	requestBuilder    ReadRequestBuilder
 	headerSupplements HeaderSupplements
 
@@ -25,11 +26,11 @@ type Reader struct {
 }
 
 func NewReader(clients *Clients,
-	resolver ObjectURLResolver,
+	resolver dpobjects.ObjectURLResolver,
 	pageStartBuilder PaginationStartBuilder,
 	nextPageBuilder *NextPageBuilder,
 	objectLocator *ReadObjectLocator,
-	objectManager ObjectManager,
+	objectManager dpobjects.ObjectManager,
 	requestBuilder ReadRequestBuilder,
 	headerSupplements *HeaderSupplements,
 ) *Reader {
@@ -93,7 +94,7 @@ func (r *Reader) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error)
 	}
 
 	// First page
-	url, err := r.urlResolver.FindURL(ReadMethod, r.clients.BaseURL(), config.ObjectName)
+	url, err := r.urlResolver.FindURL(dpobjects.ReadMethod, r.clients.BaseURL(), config.ObjectName)
 	if err != nil {
 		return nil, err
 	}

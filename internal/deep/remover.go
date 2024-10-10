@@ -2,6 +2,7 @@ package deep
 
 import (
 	"context"
+	"github.com/amp-labs/connectors/internal/deep/dpobjects"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/handy"
@@ -10,16 +11,16 @@ import (
 )
 
 type Remover struct {
-	clients           Clients
-	urlResolver       ObjectURLResolver
-	objectManager     ObjectManager
-	requestBuilder    RemoveRequestBuilder
+	clients       Clients
+	urlResolver    dpobjects.ObjectURLResolver
+	objectManager  dpobjects.ObjectManager
+	requestBuilder RemoveRequestBuilder
 	headerSupplements HeaderSupplements
 }
 
 func NewRemover(clients *Clients,
-	resolver ObjectURLResolver,
-	objectManager ObjectManager,
+	resolver dpobjects.ObjectURLResolver,
+	objectManager dpobjects.ObjectManager,
 	requestBuilder RemoveRequestBuilder,
 	headerSupplements *HeaderSupplements,
 ) *Remover {
@@ -41,7 +42,7 @@ func (r *Remover) Delete(ctx context.Context, config common.DeleteParams) (*comm
 		return nil, common.ErrOperationNotSupportedForObject
 	}
 
-	url, err := r.urlResolver.FindURL(DeleteMethod, r.clients.BaseURL(), config.ObjectName)
+	url, err := r.urlResolver.FindURL(dpobjects.DeleteMethod, r.clients.BaseURL(), config.ObjectName)
 	if err != nil {
 		return nil, err
 	}

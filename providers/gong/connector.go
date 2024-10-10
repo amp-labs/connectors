@@ -8,6 +8,7 @@ import (
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/deep"
+	"github.com/amp-labs/connectors/internal/deep/dpobjects"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/gong/metadata"
 	"github.com/spyzhov/ajson"
@@ -49,12 +50,12 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	meta := deep.StaticMetadataHolder{
 		Metadata: metadata.Schemas,
 	}
-	objectSupport := deep.ObjectSupport{
+	objectSupport := dpobjects.ObjectSupport{
 		Read:  supportedObjectsByRead,
 		Write: supportedObjectsByWrite,
 	}
-	objectURLResolver := deep.SingleURLFormat{
-		Produce: func(method deep.Method, baseURL, objectName string) (*urlbuilder.URL, error) {
+	objectURLResolver := dpobjects.SingleURLFormat{
+		Produce: func(method dpobjects.Method, baseURL, objectName string) (*urlbuilder.URL, error) {
 			return urlbuilder.New(baseURL, ApiVersion, objectName)
 		},
 	}

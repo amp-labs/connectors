@@ -3,6 +3,7 @@ package deep
 import (
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
+	"github.com/amp-labs/connectors/internal/deep/dpobjects"
 	"github.com/amp-labs/connectors/internal/deep/dpvars"
 	"github.com/amp-labs/connectors/internal/deep/requirements"
 	"github.com/amp-labs/connectors/providers"
@@ -60,7 +61,7 @@ func ExtendedConnector[C any, P paramsbuilder.ParamAssurance, D dpvars.MetadataV
 			},
 		},
 		dpvars.Parameters[P]{}.Satisfies(),
-		EmptyObjectRegistry{}.Satisfies(),
+		dpobjects.EmptyObjectRegistry{}.Satisfies(),
 		PostPutWriteRequestBuilder{}.Satisfies(),
 		metadataVariables.Satisfies(),
 		dpvars.ConnectorData[P, D]{}.Satisfies(),

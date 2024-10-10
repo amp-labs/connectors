@@ -2,7 +2,7 @@ package instantly
 
 import (
 	"github.com/amp-labs/connectors/common/handy"
-	"github.com/amp-labs/connectors/internal/deep"
+	"github.com/amp-labs/connectors/internal/deep/dpobjects"
 )
 
 const (
@@ -21,7 +21,7 @@ var (
 	supportedObjectsByDelete = deleteObjects.KeySet()                                          //nolint:gochecknoglobals
 )
 
-var readObjects = handy.Map[string, deep.ObjectData]{
+var readObjects = handy.Map[string, dpobjects.ObjectData]{
 	// https://developer.instantly.ai/campaign-1/list-campaigns
 	// Empty string of data location means the response is an array itself holding what we need.
 	objectNameCampaigns: {

@@ -1,6 +1,7 @@
 package pipeliner
 
 import (
+	"github.com/amp-labs/connectors/internal/deep/dpobjects"
 	"github.com/amp-labs/connectors/internal/deep/dpvars"
 	"strconv"
 
@@ -84,7 +85,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 			return "data"
 		},
 	}
-	objectSupport := deep.ObjectSupport{
+	objectSupport := dpobjects.ObjectSupport{
 		Read: supportedObjectsByRead,
 	}
 	writeResultBuilder := deep.WriteResultBuilder{

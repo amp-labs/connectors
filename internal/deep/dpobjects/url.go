@@ -1,4 +1,4 @@
-package deep
+package dpobjects
 
 import (
 	"github.com/amp-labs/connectors/common/handy"

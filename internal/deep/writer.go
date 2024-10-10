@@ -3,6 +3,7 @@ package deep
 import (
 	"context"
 	"errors"
+	"github.com/amp-labs/connectors/internal/deep/dpobjects"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/handy"
@@ -12,20 +13,20 @@ import (
 )
 
 type Writer struct {
-	urlResolver       ObjectURLResolver
-	resultBuilder     WriteResultBuilder
-	objectManager     ObjectManager
-	requestBuilder    WriteRequestBuilder
+	urlResolver   dpobjects.ObjectURLResolver
+	resultBuilder  WriteResultBuilder
+	objectManager  dpobjects.ObjectManager
+	requestBuilder WriteRequestBuilder
 	headerSupplements HeaderSupplements
 
 	clients Clients
 }
 
 func NewWriter(clients *Clients,
-	resolver ObjectURLResolver,
+	resolver dpobjects.ObjectURLResolver,
 	requestBuilder WriteRequestBuilder,
 	resultBuilder *WriteResultBuilder,
-	objectManager ObjectManager,
+	objectManager dpobjects.ObjectManager,
 	headerSupplements *HeaderSupplements,
 ) *Writer {
 	return &Writer{
@@ -47,9 +48,9 @@ func (w *Writer) Write(ctx context.Context, config common.WriteParams) (*common.
 		return nil, common.ErrOperationNotSupportedForObject
 	}
 
-	method := CreateMethod
+	method := dpobjects.CreateMethod
 	if len(config.RecordId) != 0 {
-		method = UpdateMethod
+		method = dpobjects.UpdateMethod
 	}
 
 	url, err := w.urlResolver.FindURL(method, w.clients.BaseURL(), config.ObjectName)

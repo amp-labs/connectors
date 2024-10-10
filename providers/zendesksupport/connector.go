@@ -1,6 +1,7 @@
 package zendesksupport
 
 import (
+	"github.com/amp-labs/connectors/internal/deep/dpobjects"
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
@@ -55,12 +56,12 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	meta := deep.StaticMetadataHolder{
 		Metadata: metadata.Schemas,
 	}
-	objectURLResolver := deep.SingleURLFormat{
-		Produce: func(method deep.Method, baseURL, objectName string) (*urlbuilder.URL, error) {
+	objectURLResolver := dpobjects.SingleURLFormat{
+		Produce: func(method dpobjects.Method, baseURL, objectName string) (*urlbuilder.URL, error) {
 			return urlbuilder.New(baseURL, apiVersion, objectName)
 		},
 	}
-	objectSupport := deep.ObjectSupport{
+	objectSupport := dpobjects.ObjectSupport{
 		Read: supportedObjectsByRead,
 	}
 	nextPage := deep.NextPageBuilder{

@@ -1,6 +1,7 @@
 package smartlead
 
 import (
+	"github.com/amp-labs/connectors/internal/deep/dpobjects"
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
@@ -60,24 +61,24 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	meta := deep.StaticMetadataHolder{
 		Metadata: metadata.Schemas,
 	}
-	objectURLResolver := deep.SingleURLFormat{
-		Produce: func(method deep.Method, baseURL, objectName string) (*urlbuilder.URL, error) {
+	objectURLResolver := dpobjects.SingleURLFormat{
+		Produce: func(method dpobjects.Method, baseURL, objectName string) (*urlbuilder.URL, error) {
 			var path string
 			switch method {
-			case deep.ReadMethod:
+			case dpobjects.ReadMethod:
 				path = objectName
-			case deep.CreateMethod:
+			case dpobjects.CreateMethod:
 				path = createObjects[objectName]
-			case deep.UpdateMethod:
+			case dpobjects.UpdateMethod:
 				path = updateObjects[objectName]
-			case deep.DeleteMethod:
+			case dpobjects.DeleteMethod:
 				path = objectName
 			}
 
 			return urlbuilder.New(baseURL, apiVersion, path)
 		},
 	}
-	objectSupport := deep.ObjectSupport{
+	objectSupport := dpobjects.ObjectSupport{
 		Read:   supportedObjectsByRead,
 		Write:  supportedObjectsByWrite,
 		Delete: supportedObjectsByDelete,

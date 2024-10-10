@@ -2,6 +2,7 @@ package salesforce
 
 import (
 	"errors"
+	"github.com/amp-labs/connectors/internal/deep/dpobjects"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
@@ -52,14 +53,14 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		JSON: &interpreter.DirectFaultyResponder{Callback: interpretJSONError},
 		XML:  &interpreter.DirectFaultyResponder{Callback: interpretXMLError},
 	}
-	objectURLResolver := deep.SingleURLFormat{
-		Produce: func(method deep.Method, baseURL, objectName string) (*urlbuilder.URL, error) {
+	objectURLResolver := dpobjects.SingleURLFormat{
+		Produce: func(method dpobjects.Method, baseURL, objectName string) (*urlbuilder.URL, error) {
 			switch method {
-			case deep.ReadMethod:
+			case dpobjects.ReadMethod:
 				return urlbuilder.New(baseURL, restAPISuffix, "query")
-			case deep.CreateMethod:
+			case dpobjects.CreateMethod:
 				return urlbuilder.New(baseURL, restAPISuffix, "sobjects", objectName)
-			case deep.UpdateMethod:
+			case dpobjects.UpdateMethod:
 				url, err := urlbuilder.New(baseURL, restAPISuffix, "sobjects", objectName)
 				if err != nil {
 					return nil, err
