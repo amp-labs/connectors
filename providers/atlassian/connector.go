@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
+	"github.com/amp-labs/connectors/common/jsonquery"
+	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/deep"
 	"github.com/amp-labs/connectors/providers"
@@ -20,7 +22,20 @@ type Connector struct {
 	deep.Clients
 	deep.EmptyCloser
 	deep.Reader
+	// Write will either create or update a Jira issue.
+	// Create issue docs:
+	// https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issues/#api-rest-api-3-issue-post
+	// Update issue docs:
+	// https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issues/#api-rest-api-3-issue-issueidorkey-put
+	deep.Writer
 	deep.Remover
+}
+
+type parameters struct {
+	paramsbuilder.Client
+	paramsbuilder.Workspace
+	paramsbuilder.Module
+	paramsbuilder.Metadata
 }
 
 func NewConnector(opts ...Option) (*Connector, error) {
@@ -29,12 +44,14 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		closer *deep.EmptyCloser,
 		data *deep.ConnectorData[parameters, *AuthMetadataVars],
 		reader *deep.Reader,
+		writer *deep.Writer,
 		remover *deep.Remover) *Connector {
 		return &Connector{
 			Data:        *data,
 			Clients:     *clients,
 			EmptyCloser: *closer,
 			Reader:      *reader,
+			Writer:      *writer,
 			Remover:     *remover,
 		}
 	}
@@ -81,30 +98,29 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		},
 		FlattenRecords: flattenRecords,
 	}
+	writeResultBuilder := deep.WriteResultBuilder{
+		Build: func(config common.WriteParams, body *ajson.Node) (*common.WriteResult, error) {
+			recordID, err := jsonquery.New(body).Str("id", false)
+			if err != nil {
+				return nil, err
+			}
+
+			return &common.WriteResult{
+				Success:  true,
+				RecordId: *recordID,
+				Errors:   nil,
+				Data:     nil,
+			}, nil
+		},
+	}
 
 	return deep.ExtendedConnector[Connector, parameters, *AuthMetadataVars](
 		constructor, providers.Atlassian, &AuthMetadataVars{}, opts,
 		errorHandler,
-		URLBuilder{},
+		customURLBuilder{},
 		firstPage,
 		nextPage,
 		readObjectLocator,
+		writeResultBuilder,
 	)
-}
-
-// URL format follows structure applicable to Oauth2 Atlassian apps.
-// https://developer.atlassian.com/cloud/jira/platform/rest/v2/intro/#other-integrations
-func (c *Connector) getJiraRestApiURL(arg string) (*urlbuilder.URL, error) {
-	cloudId, err := getCloudId(c.Data.Metadata)
-	if err != nil {
-		return nil, err
-	}
-
-	return urlbuilder.New(c.Clients.BaseURL(), "ex/jira", cloudId, c.Data.Module, arg)
-}
-
-// URL allows to get list of sites associated with auth token.
-// https://developer.atlassian.com/cloud/confluence/oauth-2-3lo-apps/#3-1-get-the-cloudid-for-your-site
-func (c *Connector) getAccessibleSitesURL() (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.Clients.BaseURL(), "oauth/token/accessible-resources")
 }
