@@ -10,21 +10,18 @@ var _ deep.URLResolver = customURLBuilder{}
 
 func newURLBuilder(
 	data *deep.ConnectorData[parameters, *deep.EmptyMetadataVariables],
-	clients *deep.Clients,
 ) *customURLBuilder {
 	return &customURLBuilder{
 		data:    data,
-		clients: clients,
 	}
 }
 
 type customURLBuilder struct {
 	data    *deep.ConnectorData[parameters, *deep.EmptyMetadataVariables]
-	clients *deep.Clients
 }
 
 func (f customURLBuilder) FindURL(method deep.Method, baseURL, objectName string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(f.clients.BaseURL(),
+	return urlbuilder.New(baseURL,
 		"api/v100/rest/spaces/", f.data.Workspace, "/entities", objectName)
 }
 

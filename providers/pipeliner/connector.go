@@ -18,6 +18,7 @@ type Connector struct {
 	deep.Clients
 	deep.EmptyCloser
 	deep.Reader
+	deep.Writer
 	deep.StaticMetadata
 	deep.Remover
 }
@@ -33,7 +34,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		closer *deep.EmptyCloser,
 		data *deep.ConnectorData[parameters, *deep.EmptyMetadataVariables],
 		reader *deep.Reader,
-		//writer *deep.Writer,
+		writer *deep.Writer,
 		metadata *deep.StaticMetadata,
 		remover *deep.Remover) *Connector {
 		return &Connector{
@@ -41,6 +42,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 			Clients:        *clients,
 			EmptyCloser:    *closer,
 			Reader:         *reader,
+			Writer:         *writer,
 			StaticMetadata: *metadata,
 			Remover:        *remover,
 		}
@@ -82,6 +84,36 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	objectManager := deep.ObjectRegistry{
 		Read: supportedObjectsByRead,
 	}
+	writeResultBuilder := deep.WriteResultBuilder{
+		Build: func(config common.WriteParams, body *ajson.Node) (*common.WriteResult, error) {
+			success, err := jsonquery.New(body).Bool("success", false)
+			if err != nil {
+				return nil, err
+			}
+
+			nested, err := jsonquery.New(body).Object("data", false)
+			if err != nil {
+				return nil, err
+			}
+
+			recordID, err := jsonquery.New(nested).StrWithDefault("id", "")
+			if err != nil {
+				return nil, err
+			}
+
+			data, err := jsonquery.Convertor.ObjectToMap(nested)
+			if err != nil {
+				return nil, err
+			}
+
+			return &common.WriteResult{
+				Success:  *success,
+				RecordId: recordID,
+				Errors:   nil,
+				Data:     data,
+			}, nil
+		},
+	}
 
 	return deep.Connector[Connector, parameters](constructor, providers.Atlassian, opts,
 		errorHandler,
@@ -91,11 +123,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		nextPage,
 		readObjectLocator,
 		objectManager,
+		deep.PostPatchWriteRequestBuilder{},
+		writeResultBuilder,
 	)
-}
-
-func (c *Connector) getURL(parts ...string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.BaseURL(), append([]string{
-		"api/v100/rest/spaces/", c.Data.Workspace, "/entities",
-	}, parts...)...)
 }
