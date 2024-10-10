@@ -52,8 +52,8 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		Read:  supportedObjectsByRead,
 		Write: supportedObjectsByWrite,
 	}
-	urlResolver := deep.URLResolver{
-		Resolve: func(method deep.Method, baseURL, objectName string) (*urlbuilder.URL, error) {
+	urlResolver := deep.SingleURLFormat{
+		Produce: func(method deep.Method, baseURL, objectName string) (*urlbuilder.URL, error) {
 			return urlbuilder.New(baseURL, ApiVersion, objectName)
 		},
 	}

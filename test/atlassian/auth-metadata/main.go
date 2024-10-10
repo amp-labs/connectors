@@ -27,8 +27,9 @@ func main() {
 		utils.Fail("error obtaining auth info", "error", err)
 	}
 
-	metadata := atlassian.NewAuthMetadataVars(*info.CatalogVars)
-	cloudId := metadata.CloudId
+	metadata := atlassian.NewAuthMetadataVars()
+	metadata.FromMap(*info.CatalogVars)
+	cloudId := metadata.CloudID
 
 	if len(cloudId) == 0 {
 		utils.Fail("missing cloud id in post authentication metadata")

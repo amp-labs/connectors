@@ -28,7 +28,7 @@ func (v *AuthMetadataVars) GetSubstitutionPlans() []paramsbuilder.SubstitutionPl
 	return nil
 }
 
-func newAuthMetadataVars() *AuthMetadataVars {
+func NewAuthMetadataVars() *AuthMetadataVars {
 	return &AuthMetadataVars{CloudID: ""}
 }
 
@@ -37,7 +37,7 @@ var _ deep.MetadataVariables = &AuthMetadataVars{}
 func (v *AuthMetadataVars) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
 		ID:          "metadataVariables",
-		Constructor: newAuthMetadataVars,
+		Constructor: NewAuthMetadataVars,
 		Interface:   new(deep.MetadataVariables),
 	}
 }

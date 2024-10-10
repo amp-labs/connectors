@@ -15,13 +15,25 @@ const (
 	DeleteMethod Method = "DELETE"
 )
 
-type URLResolver struct {
-	Resolve func(method Method, baseURL, objectName string) (*urlbuilder.URL, error)
+type URLResolver interface {
+	requirements.Requirement
+	FindURL(method Method, baseURL, objectName string) (*urlbuilder.URL, error)
 }
 
-func (r URLResolver) Satisfies() requirements.Dependency {
+type SingleURLFormat struct {
+	Produce func(method Method, baseURL, objectName string) (*urlbuilder.URL, error)
+}
+
+func (r SingleURLFormat) FindURL(method Method, baseURL, objectName string) (*urlbuilder.URL, error) {
+	return r.Produce(method, baseURL, objectName)
+}
+
+var _ URLResolver = SingleURLFormat{}
+
+func (r SingleURLFormat) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
 		ID:          "urlResolver",
 		Constructor: handy.Returner(r),
+		Interface:   new(URLResolver),
 	}
 }

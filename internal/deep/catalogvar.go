@@ -11,12 +11,12 @@ type CatalogVariables[P paramsbuilder.ParamAssurance, D MetadataVariables] struc
 
 func newCatalogVariables[P paramsbuilder.ParamAssurance, D MetadataVariables](
 	parameters *Parameters[P],
-	descriptor *ConnectorData[P, D],
+	data *ConnectorData[P, D],
 ) *CatalogVariables[P, D] {
 	variables := paramsbuilder.ExtractCatalogVariables(parameters.Params)
 
 	// Sometimes connector metadata holds CatalogVariables, collect them here.
-	plans := descriptor.Metadata.GetSubstitutionPlans()
+	plans := data.Metadata.GetSubstitutionPlans()
 	for _, plan := range plans {
 		variables = append(variables, &paramsbuilder.CustomCatalogVariable{
 			Plan: plan,

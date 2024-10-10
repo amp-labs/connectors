@@ -60,8 +60,8 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	meta := deep.StaticMetadataHolder{
 		Metadata: metadata.Schemas,
 	}
-	urlResolver := deep.URLResolver{
-		Resolve: func(method deep.Method, baseURL, objectName string) (*urlbuilder.URL, error) {
+	urlResolver := deep.SingleURLFormat{
+		Produce: func(method deep.Method, baseURL, objectName string) (*urlbuilder.URL, error) {
 			var path string
 			switch method {
 			case deep.ReadMethod:

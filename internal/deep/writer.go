@@ -11,8 +11,8 @@ import (
 )
 
 type Writer struct {
-	urlResolver    URLResolver
-	resultBuilder  WriteResultBuilder
+	urlResolver   URLResolver
+	resultBuilder WriteResultBuilder
 	objectManager  ObjectManager
 	requestBuilder WriteRequestBuilder
 
@@ -20,12 +20,12 @@ type Writer struct {
 }
 
 func NewWriter(clients *Clients,
-	resolver *URLResolver,
+	resolver URLResolver,
 	requestBuilder WriteRequestBuilder,
 	resultBuilder *WriteResultBuilder,
 	objectManager ObjectManager) *Writer {
 	return &Writer{
-		urlResolver:    *resolver,
+		urlResolver:    resolver,
 		resultBuilder:  *resultBuilder,
 		objectManager:  objectManager,
 		requestBuilder: requestBuilder,
@@ -47,7 +47,7 @@ func (w *Writer) Write(ctx context.Context, config common.WriteParams) (*common.
 		method = UpdateMethod
 	}
 
-	url, err := w.urlResolver.Resolve(method, w.clients.BaseURL(), config.ObjectName)
+	url, err := w.urlResolver.FindURL(method, w.clients.BaseURL(), config.ObjectName)
 	if err != nil {
 		return nil, err
 	}

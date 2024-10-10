@@ -11,10 +11,10 @@ type Remover struct {
 	objectManager ObjectManager
 }
 
-func NewRemover(clients *Clients, resolver *URLResolver, objectManager ObjectManager) *Remover {
+func NewRemover(clients *Clients, resolver URLResolver, objectManager ObjectManager) *Remover {
 	return &Remover{
 		clients:       *clients,
-		urlResolver:   *resolver,
+		urlResolver:   resolver,
 		objectManager: objectManager,
 	}
 }
@@ -28,7 +28,7 @@ func (r *Remover) Delete(ctx context.Context, config common.DeleteParams) (*comm
 		return nil, common.ErrOperationNotSupportedForObject
 	}
 
-	url, err := r.urlResolver.Resolve(DeleteMethod, r.clients.BaseURL(), config.ObjectName)
+	url, err := r.urlResolver.FindURL(DeleteMethod, r.clients.BaseURL(), config.ObjectName)
 	if err != nil {
 		return nil, err
 	}

@@ -15,17 +15,20 @@ type Connector struct {
 	Data deep.ConnectorData[parameters, *AuthMetadataVars]
 	deep.Clients
 	deep.EmptyCloser
+	deep.Remover
 }
 
 func NewConnector(opts ...Option) (*Connector, error) {
 	constructor := func(
 		clients *deep.Clients,
 		closer *deep.EmptyCloser,
-		data *deep.ConnectorData[parameters, *AuthMetadataVars]) *Connector {
+		data *deep.ConnectorData[parameters, *AuthMetadataVars],
+		remover *deep.Remover) *Connector {
 		return &Connector{
 			Clients:     *clients,
 			EmptyCloser: *closer,
 			Data:        *data,
+			Remover:     *remover,
 		}
 	}
 	errorHandler := interpreter.ErrorHandler{
@@ -35,6 +38,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	return deep.ExtendedConnector[Connector, parameters, *AuthMetadataVars](
 		constructor, providers.Atlassian, &AuthMetadataVars{}, opts,
 		errorHandler,
+		URLBuilder{},
 	)
 }
 
@@ -53,12 +57,4 @@ func (c *Connector) getJiraRestApiURL(arg string) (*urlbuilder.URL, error) {
 // https://developer.atlassian.com/cloud/confluence/oauth-2-3lo-apps/#3-1-get-the-cloudid-for-your-site
 func (c *Connector) getAccessibleSitesURL() (*urlbuilder.URL, error) {
 	return urlbuilder.New(c.Clients.BaseURL(), "oauth/token/accessible-resources")
-}
-
-func getCloudId(vars *AuthMetadataVars) (string, error) {
-	if len(vars.CloudID) == 0 {
-		return "", ErrMissingCloudId
-	}
-
-	return vars.CloudID, nil
 }

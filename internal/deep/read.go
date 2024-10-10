@@ -20,13 +20,13 @@ type Reader struct {
 }
 
 func NewReader(clients *Clients,
-	resolver *URLResolver,
+	resolver URLResolver,
 	firstPageBuilder *FirstPageBuilder,
 	nextPageBuilder *NextPageBuilder,
 	objectLocator *ReadObjectLocator,
 	objectManager ObjectManager) *Reader {
 	return &Reader{
-		urlResolver:       *resolver,
+		urlResolver:       resolver,
 		firstPageBuilder:  *firstPageBuilder,
 		nextPageBuilder:   *nextPageBuilder,
 		readObjectLocator: *objectLocator,
@@ -80,7 +80,7 @@ func (r *Reader) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error)
 	}
 
 	// First page
-	url, err := r.urlResolver.Resolve(ReadMethod, r.clients.BaseURL(), config.ObjectName)
+	url, err := r.urlResolver.FindURL(ReadMethod, r.clients.BaseURL(), config.ObjectName)
 	if err != nil {
 		return nil, err
 	}
