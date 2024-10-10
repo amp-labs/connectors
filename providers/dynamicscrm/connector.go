@@ -3,14 +3,12 @@ package dynamicscrm
 import (
 	"fmt"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/handy"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/deep"
-	"github.com/amp-labs/connectors/internal/deep/requirements"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/spyzhov/ajson"
 	"strings"
@@ -26,6 +24,7 @@ type Connector struct {
 	// See https://learn.microsoft.com/en-us/power-apps/developer/data-platform/webapi/query-data-web-api#odata-query-options
 	deep.Reader
 	deep.Writer
+	deep.Remover
 }
 
 type parameters struct {
@@ -38,12 +37,14 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		clients *deep.Clients,
 		closer *deep.EmptyCloser,
 		reader *deep.Reader,
-		writer *deep.Writer) *Connector {
+		writer *deep.Writer,
+		remover *deep.Remover) *Connector {
 		return &Connector{
 			Clients:     *clients,
 			EmptyCloser: *closer,
 			Reader:      *reader,
 			Writer:      *writer,
+			Remover:     *remover,
 		}
 	}
 	errorHandler := interpreter.ErrorHandler{
@@ -92,7 +93,12 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	}
 	urlResolver := deep.SingleURLFormat{
 		Produce: func(method deep.Method, baseURL, objectName string) (*urlbuilder.URL, error) {
-			return constructURL(baseURL, apiVersion, objectName)
+			// Despite the "Method" type the relationship between objectName and
+			// URL path is that it must be in singular word case.
+			// Ex: objectName=Orders, then url will be http://base/v9.2/Order
+			path := naming.NewSingularString(objectName)
+
+			return constructURL(baseURL, apiVersion, path.String())
 		},
 	}
 	writeResultBuilder := deep.WriteResultBuilder{
@@ -114,48 +120,6 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		urlResolver,
 		customWriterRequestBuilder{},
 		writeResultBuilder,
+		customRemoveRequestBuilder{},
 	)
-}
-
-var _ deep.WriteRequestBuilder = customWriterRequestBuilder{}
-
-type customWriterRequestBuilder struct {
-	deep.SimplePostCreateRequest
-}
-
-func (b customWriterRequestBuilder) Satisfies() requirements.Dependency {
-	return requirements.Dependency{
-		ID:          "writeRequestBuilder",
-		Constructor: handy.Returner(b),
-		Interface:   new(deep.WriteRequestBuilder),
-	}
-}
-
-func (customWriterRequestBuilder) MakeUpdateRequest(
-	objectName string, recordID string, url *urlbuilder.URL, clients deep.Clients) (common.WriteMethod, []common.Header) {
-	// Microsoft doesn't add IDs as a separate URI part.
-	// It is in format: .../Orders(123)
-	url.RawAddToPath(fmt.Sprintf("(%v)", recordID))
-
-	return clients.JSON.Patch, nil
-}
-
-func (c *Connector) getURL(arg string) (*urlbuilder.URL, error) {
-	return constructURL(c.BaseURL(), apiVersion, arg)
-}
-
-func (c *Connector) getEntityDefinitionURL(arg naming.SingularString) (*urlbuilder.URL, error) {
-	// This endpoint returns schema of an object.
-	// Schema name must be singular.
-	path := fmt.Sprintf("EntityDefinitions(LogicalName='%v')", arg.String())
-
-	return c.getURL(path)
-}
-
-func (c *Connector) getEntityAttributesURL(arg naming.SingularString) (*urlbuilder.URL, error) {
-	// This endpoint will describe attributes present on schema and its properties.
-	// Schema name must be singular.
-	path := fmt.Sprintf("EntityDefinitions(LogicalName='%v')/Attributes", arg.String())
-
-	return c.getURL(path)
 }

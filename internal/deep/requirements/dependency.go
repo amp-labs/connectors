@@ -13,7 +13,7 @@ type Requirement interface {
 type Dependency struct {
 	ID          string
 	Constructor any
-	Interface   any
+	Interface   any // TODO interface should be implied based on ID
 }
 
 func (d Dependency) apply(container *dig.Container) error {

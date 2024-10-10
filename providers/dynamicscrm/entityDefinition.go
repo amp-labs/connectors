@@ -3,6 +3,7 @@ package dynamicscrm
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/jsonquery"
@@ -63,4 +64,24 @@ func (c *Connector) performGetRequest(ctx context.Context, url *urlbuilder.URL) 
 	}
 
 	return body, nil
+}
+
+func (c *Connector) getEntityDefinitionURL(arg naming.SingularString) (*urlbuilder.URL, error) {
+	// This endpoint returns schema of an object.
+	// Schema name must be singular.
+	path := fmt.Sprintf("EntityDefinitions(LogicalName='%v')", arg.String())
+
+	return c.getURL(path)
+}
+
+func (c *Connector) getEntityAttributesURL(arg naming.SingularString) (*urlbuilder.URL, error) {
+	// This endpoint will describe attributes present on schema and its properties.
+	// Schema name must be singular.
+	path := fmt.Sprintf("EntityDefinitions(LogicalName='%v')/Attributes", arg.String())
+
+	return c.getURL(path)
+}
+
+func (c *Connector) getURL(arg string) (*urlbuilder.URL, error) {
+	return constructURL(c.BaseURL(), apiVersion, arg)
 }
