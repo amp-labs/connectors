@@ -47,7 +47,7 @@ func (r *Remover) Delete(ctx context.Context, config common.DeleteParams) (*comm
 	}
 
 	deleteMethod, headers := r.requestBuilder.MakeDeleteRequest(config.ObjectName, config.RecordId, r.clients)
-	headers = append(headers, r.headerSupplements.Delete...)
+	headers = append(headers, r.headerSupplements.DeleteHeaders()...)
 
 	_, err = deleteMethod(ctx, url, nil, headers...)
 	if err != nil {
