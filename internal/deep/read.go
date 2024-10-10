@@ -17,6 +17,7 @@ type Reader struct {
 	nextPageBuilder   NextPageBuilder
 	readObjectLocator ReadObjectLocator
 	objectManager     ObjectManager
+	requestBuilder    ReadRequestBuilder
 
 	clients Clients
 }
@@ -26,7 +27,8 @@ func NewReader(clients *Clients,
 	firstPageBuilder *FirstPageBuilder,
 	nextPageBuilder *NextPageBuilder,
 	objectLocator *ReadObjectLocator,
-	objectManager ObjectManager) *Reader {
+	objectManager ObjectManager,
+	requestBuilder ReadRequestBuilder) *Reader {
 	return &Reader{
 		urlResolver:       resolver,
 		firstPageBuilder:  *firstPageBuilder,
@@ -34,6 +36,7 @@ func NewReader(clients *Clients,
 		readObjectLocator: *objectLocator,
 		objectManager:     objectManager,
 		clients:           *clients,
+		requestBuilder:    requestBuilder,
 	}
 }
 
@@ -51,7 +54,9 @@ func (r *Reader) Read(ctx context.Context, config common.ReadParams) (*common.Re
 		return nil, err
 	}
 
-	rsp, err := r.clients.JSON.Get(ctx, url.String())
+	read, headers := r.requestBuilder.MakeReadRequest(config.ObjectName, r.clients)
+
+	rsp, err := read(ctx, url, nil, headers...)
 	if err != nil {
 		return nil, err
 	}
@@ -111,7 +116,7 @@ func (b FirstPageBuilder) Satisfies() requirements.Dependency {
 }
 
 type NextPageBuilder struct {
-	Build func(config common.ReadParams, previousPage *urlbuilder.URL, node *ajson.Node) (*urlbuilder.URL, error)
+	Build func(config common.ReadParams, previousPage *urlbuilder.URL, node *ajson.Node) (string, error)
 }
 
 func (b NextPageBuilder) getNextPageFunc(config common.ReadParams, url *urlbuilder.URL) (common.NextPageFunc, error) {
@@ -121,15 +126,7 @@ func (b NextPageBuilder) getNextPageFunc(config common.ReadParams, url *urlbuild
 	}
 
 	return func(node *ajson.Node) (string, error) {
-		nextURL, err := b.Build(config, url, node)
-		if err != nil {
-			return "", err
-		}
-		if nextURL == nil {
-			return "", nil
-		}
-
-		return nextURL.String(), nil
+		return b.Build(config, url, node)
 	}, nil
 }
 
@@ -175,4 +172,59 @@ func (l ReadObjectLocator) Satisfies() requirements.Dependency {
 		ID:          "readObjectLocator",
 		Constructor: handy.Returner(l),
 	}
+}
+
+type ReadRequestBuilder interface {
+	requirements.Requirement
+
+	MakeReadRequest(objectName string, clients Clients) (common.ReadMethod, []common.Header)
+}
+
+var _ ReadRequestBuilder = GetRequestBuilder{}
+
+type GetRequestBuilder struct {
+	simpleGetReadRequest
+}
+
+func (b GetRequestBuilder) Satisfies() requirements.Dependency {
+	return requirements.Dependency{
+		ID:          "readRequestBuilder",
+		Constructor: handy.Returner(b),
+		Interface:   new(ReadRequestBuilder),
+	}
+}
+
+var _ ReadRequestBuilder = GetWithHeadersRequestBuilder{}
+
+type GetWithHeadersRequestBuilder struct {
+	delegate simpleGetReadRequest
+	Headers  []common.Header
+}
+
+func (b GetWithHeadersRequestBuilder) MakeReadRequest(
+	objectName string, clients Clients) (common.ReadMethod, []common.Header) {
+	method, _ := b.delegate.MakeReadRequest(objectName, clients)
+
+	return method, b.Headers
+}
+
+func (b GetWithHeadersRequestBuilder) Satisfies() requirements.Dependency {
+	return requirements.Dependency{
+		ID:          "readRequestBuilder",
+		Constructor: handy.Returner(b),
+		Interface:   new(ReadRequestBuilder),
+	}
+}
+
+type simpleGetReadRequest struct{}
+
+func (simpleGetReadRequest) MakeReadRequest(
+	objectName string, clients Clients) (common.ReadMethod, []common.Header) {
+	// Wrapper around GET without request body.
+
+	return func(ctx context.Context, url *urlbuilder.URL,
+		body any, headers ...common.Header,
+	) (*common.JSONHTTPResponse, error) {
+		return clients.JSON.Get(ctx, url.String(), headers...)
+	}, nil
 }

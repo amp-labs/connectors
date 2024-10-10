@@ -86,9 +86,9 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		},
 	}
 	nextPage := deep.NextPageBuilder{
-		Build: func(config common.ReadParams, previousPage *urlbuilder.URL, node *ajson.Node) (*urlbuilder.URL, error) {
+		Build: func(config common.ReadParams, previousPage *urlbuilder.URL, node *ajson.Node) (string, error) {
 			// Pagination is not supported for this provider.
-			return nil, nil
+			return "", nil
 		},
 	}
 	readObjectLocator := deep.ReadObjectLocator{

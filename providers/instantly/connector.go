@@ -86,7 +86,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		},
 	}
 	nextPage := deep.NextPageBuilder{
-		Build: func(config common.ReadParams, previousPage *urlbuilder.URL, node *ajson.Node) (*urlbuilder.URL, error) {
+		Build: func(config common.ReadParams, previousPage *urlbuilder.URL, node *ajson.Node) (string, error) {
 			previousStart := 0
 
 			skipQP, ok := previousPage.GetFirstQueryParam("skip")
@@ -102,7 +102,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			previousPage.WithQueryParam("limit", strconv.Itoa(DefaultPageSize))
 			previousPage.WithQueryParam("skip", strconv.Itoa(nextStart))
 
-			return previousPage, nil
+			return previousPage.String(), nil
 		},
 	}
 	readObjectLocator := deep.ReadObjectLocator{

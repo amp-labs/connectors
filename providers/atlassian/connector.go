@@ -81,19 +81,19 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		},
 	}
 	nextPage := deep.NextPageBuilder{
-		Build: func(config common.ReadParams, previousPage *urlbuilder.URL, node *ajson.Node) (*urlbuilder.URL, error) {
+		Build: func(config common.ReadParams, previousPage *urlbuilder.URL, node *ajson.Node) (string, error) {
 			startAt, err := getNextRecords(node)
 			if err != nil {
-				return nil, err
+				return "", err
 			}
 
 			if len(startAt) != 0 {
 				previousPage.WithQueryParam("startAt", startAt)
 
-				return previousPage, nil
+				return previousPage.String(), nil
 			}
 
-			return nil, nil
+			return "", nil
 		},
 	}
 	readObjectLocator := deep.ReadObjectLocator{

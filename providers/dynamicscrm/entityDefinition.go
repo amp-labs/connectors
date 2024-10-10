@@ -4,8 +4,10 @@ import (
 	"context"
 	"errors"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/spyzhov/ajson"
 )
 
@@ -46,4 +48,19 @@ func getObjectDisplayName(item *ajson.Node, objectName naming.SingularString) (s
 	}
 
 	return displayName, nil
+}
+
+// Internal GET request, where we expect JSON payload.
+func (c *Connector) performGetRequest(ctx context.Context, url *urlbuilder.URL) (*ajson.Node, error) {
+	rsp, err := c.JSON.Get(ctx, url.String())
+	if err != nil {
+		return nil, err
+	}
+
+	body, ok := rsp.Body()
+	if !ok {
+		return nil, errors.Join(ErrObjectNotFound, common.ErrEmptyJSONHTTPResponse)
+	}
+
+	return body, nil
 }

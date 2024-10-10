@@ -68,26 +68,26 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		},
 	}
 	nextPage := deep.NextPageBuilder{
-		Build: func(config common.ReadParams, previousPage *urlbuilder.URL, node *ajson.Node) (*urlbuilder.URL, error) {
+		Build: func(config common.ReadParams, previousPage *urlbuilder.URL, node *ajson.Node) (string, error) {
 			nextPageNum, err := jsonquery.New(node, "metadata", "paging").Integer("next_page", true)
 			if err != nil {
 				if errors.Is(err, jsonquery.ErrKeyNotFound) {
 					// list resource doesn't support pagination, hence no next page
-					return nil, nil
+					return "", nil
 				}
 
-				return nil, err
+				return "", err
 			}
 
 			if nextPageNum == nil {
 				// next page doesn't exist
-				return nil, nil
+				return "", nil
 			}
 
 			// use request URL to infer the next page URL
 			previousPage.WithQueryParam("page", strconv.FormatInt(*nextPageNum, 10))
 
-			return previousPage, nil
+			return previousPage.String(), nil
 		},
 	}
 	readObjectLocator := deep.ReadObjectLocator{
