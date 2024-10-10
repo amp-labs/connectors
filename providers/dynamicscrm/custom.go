@@ -3,6 +3,7 @@ package dynamicscrm
 import (
 	"context"
 	"fmt"
+	"github.com/amp-labs/connectors/internal/deep/dpremove"
 	"github.com/amp-labs/connectors/internal/deep/dprequests"
 
 	"github.com/amp-labs/connectors/common"
@@ -13,8 +14,8 @@ import (
 )
 
 var (
-	_ deep.WriteRequestBuilder  = customWriterRequestBuilder{}
-	_ deep.RemoveRequestBuilder = customRemoveRequestBuilder{}
+	_ deep.WriteRequestBuilder      = customWriterRequestBuilder{}
+	_ dpremove.RemoveRequestBuilder = customRemoveRequestBuilder{}
 )
 
 type customWriterRequestBuilder struct {
@@ -57,6 +58,6 @@ func (b customRemoveRequestBuilder) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
 		ID:          "removeRequestBuilder",
 		Constructor: handy.Returner(b),
-		Interface:   new(deep.RemoveRequestBuilder),
+		Interface:   new(dpremove.RemoveRequestBuilder),
 	}
 }

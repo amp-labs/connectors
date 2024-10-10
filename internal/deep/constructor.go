@@ -5,6 +5,7 @@ import (
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/internal/deep/dpobjects"
 	"github.com/amp-labs/connectors/internal/deep/dpread"
+	"github.com/amp-labs/connectors/internal/deep/dpremove"
 	"github.com/amp-labs/connectors/internal/deep/dprequests"
 	"github.com/amp-labs/connectors/internal/deep/dpvars"
 	"github.com/amp-labs/connectors/internal/deep/requirements"
@@ -69,7 +70,7 @@ func ExtendedConnector[C any, P paramsbuilder.ParamAssurance, D dpvars.MetadataV
 		dpvars.ConnectorData[P, D]{}.Satisfies(),
 		dpvars.CatalogVariables[P, D]{}.Satisfies(),
 		dpread.GetRequestBuilder{}.Satisfies(),
-		DeleteRequestBuilder{}.Satisfies(),
+		dpremove.DeleteRequestBuilder{}.Satisfies(),
 		dprequests.HeaderSupplements{}.Satisfies(),
 		dpread.DefaultPageBuilder{}.Satisfies(),
 		{

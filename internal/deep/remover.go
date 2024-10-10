@@ -2,27 +2,25 @@ package deep
 
 import (
 	"context"
-	"github.com/amp-labs/connectors/internal/deep/dpobjects"
-	"github.com/amp-labs/connectors/internal/deep/dprequests"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/handy"
-	"github.com/amp-labs/connectors/common/urlbuilder"
-	"github.com/amp-labs/connectors/internal/deep/requirements"
+	"github.com/amp-labs/connectors/internal/deep/dpobjects"
+	"github.com/amp-labs/connectors/internal/deep/dpremove"
+	"github.com/amp-labs/connectors/internal/deep/dprequests"
 )
 
 type Remover struct {
 	clients           dprequests.Clients
-	urlResolver       dpobjects.ObjectURLResolver
-	objectManager     dpobjects.ObjectManager
-	requestBuilder    RemoveRequestBuilder
 	headerSupplements dprequests.HeaderSupplements
+	objectManager     dpobjects.ObjectManager
+	urlResolver       dpobjects.ObjectURLResolver
+	requestBuilder    dpremove.RemoveRequestBuilder
 }
 
 func NewRemover(clients *dprequests.Clients,
 	resolver dpobjects.ObjectURLResolver,
 	objectManager dpobjects.ObjectManager,
-	requestBuilder RemoveRequestBuilder,
+	requestBuilder dpremove.RemoveRequestBuilder,
 	headerSupplements *dprequests.HeaderSupplements,
 ) *Remover {
 	return &Remover{
@@ -58,38 +56,5 @@ func (r *Remover) Delete(ctx context.Context, config common.DeleteParams) (*comm
 
 	return &common.DeleteResult{
 		Success: true,
-	}, nil
-}
-
-type RemoveRequestBuilder interface {
-	requirements.ConnectorComponent
-
-	MakeDeleteRequest(objectName, recordID string, clients dprequests.Clients) (common.DeleteMethod, []common.Header)
-}
-
-var _ RemoveRequestBuilder = DeleteRequestBuilder{}
-
-type DeleteRequestBuilder struct {
-	simpleRemoveDeleteRequest
-}
-
-func (b DeleteRequestBuilder) Satisfies() requirements.Dependency {
-	return requirements.Dependency{
-		ID:          "removeRequestBuilder",
-		Constructor: handy.Returner(b),
-		Interface:   new(RemoveRequestBuilder),
-	}
-}
-
-type simpleRemoveDeleteRequest struct{}
-
-func (simpleRemoveDeleteRequest) MakeDeleteRequest(objectName, recordID string, clients dprequests.Clients) (common.DeleteMethod, []common.Header) {
-	// Wrapper around DELETE without request body.
-	return func(ctx context.Context, url *urlbuilder.URL,
-		body any, headers ...common.Header,
-	) (*common.JSONHTTPResponse, error) {
-		url.AddPath(recordID)
-
-		return clients.JSON.Delete(ctx, url.String(), headers...)
 	}, nil
 }
