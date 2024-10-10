@@ -1,0 +1,28 @@
+{
+    "data": {
+    "assignees": [
+     {
+      "referenced_actor_id": "67af46e4-a450-4fee-a1d1-39729b3af771",
+      "referenced_actor_type": "workspace-member"
+     }
+    ],
+    "content_plaintext": "view summary",
+    "created_at": "2024-10-04T10:03:04.216000000Z",
+    "created_by_actor": {
+     "id": "00bcd19c-9a89-467f-bf61-4e1a7f8b8754",
+     "type": "api-token"
+    },
+    "deadline_at": "2023-10-04T15:00:00.000000000Z",
+    "id": {
+     "task_id": "b38142c7-00f6-4d92-813e-7b0f689a5873",
+     "workspace_id": "0d4d7fa2-d6e8-4a61-a7dc-e178405ff3c6"
+    },
+    "is_completed": false,
+    "linked_records": [
+     {
+      "target_object_id": "f4df082c-b46e-43e4-a747-f7918b487f44",
+      "target_record_id": "ec902ed9-aab7-4347-8e26-dca240ffba08"
+     }
+    ]
+   }
+}

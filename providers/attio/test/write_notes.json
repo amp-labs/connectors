@@ -1,0 +1,17 @@
+{
+    "data": {
+    "content_plaintext": "summary",
+    "created_at": "2024-10-04T10:03:03.347000000Z",
+    "created_by_actor": {
+     "id": "00bcd19c-9a89-467f-bf61-4e1a7f8b8754",
+     "type": "api-token"
+    },
+    "id": {
+     "note_id": "126e58a5-5e3f-4644-89ff-6474e97fcecd",
+     "workspace_id": "0d4d7fa2-d6e8-4a61-a7dc-e178405ff3c6"
+    },
+    "parent_object": "companies",
+    "parent_record_id": "ec902ed9-aab7-4347-8e26-dca240ffba08",
+    "title": "Call summary"
+   }
+}
