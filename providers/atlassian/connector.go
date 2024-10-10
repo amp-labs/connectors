@@ -29,6 +29,8 @@ type Connector struct {
 	// https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issues/#api-rest-api-3-issue-issueidorkey-put
 	deep.Writer
 	deep.Remover
+
+	urlBuilder *customURLBuilder
 }
 
 type parameters struct {
@@ -43,6 +45,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		clients *deep.Clients,
 		closer *deep.EmptyCloser,
 		data *deep.ConnectorData[parameters, *AuthMetadataVars],
+		urlResolver deep.URLResolver,
 		reader *deep.Reader,
 		writer *deep.Writer,
 		remover *deep.Remover) *Connector {
@@ -53,6 +56,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			Reader:      *reader,
 			Writer:      *writer,
 			Remover:     *remover,
+			urlBuilder:  urlResolver.(*customURLBuilder),
 		}
 	}
 	errorHandler := interpreter.ErrorHandler{

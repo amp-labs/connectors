@@ -53,7 +53,7 @@ func (c *Connector) GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, 
 //
 // ].
 func (c *Connector) retrieveCloudId(ctx context.Context) (string, error) {
-	url, err := c.getAccessibleSitesURL()
+	url, err := c.urlBuilder.getAccessibleSitesURL()
 	if err != nil {
 		return "", err
 	}
