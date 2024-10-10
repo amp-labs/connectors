@@ -1,6 +1,7 @@
 package pipeliner
 
 import (
+	"github.com/amp-labs/connectors/internal/deep/dpmetadata"
 	"github.com/amp-labs/connectors/internal/deep/dpobjects"
 	"github.com/amp-labs/connectors/internal/deep/dpread"
 	"github.com/amp-labs/connectors/internal/deep/dprequests"
@@ -57,7 +58,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	errorHandler := interpreter.ErrorHandler{
 		JSON: interpreter.NewFaultyResponder(errorFormats, statusCodeMapping),
 	}
-	meta := deep.StaticMetadataHolder{
+	meta := dpmetadata.StaticMetadataHolder{
 		Metadata: metadata.Schemas,
 	}
 	firstPage := dpread.FirstPageBuilder{

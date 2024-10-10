@@ -8,6 +8,7 @@ import (
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/deep"
+	"github.com/amp-labs/connectors/internal/deep/dpmetadata"
 	"github.com/amp-labs/connectors/internal/deep/dpobjects"
 	"github.com/amp-labs/connectors/internal/deep/dpread"
 	"github.com/amp-labs/connectors/internal/deep/dprequests"
@@ -50,7 +51,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	errorHandler := interpreter.ErrorHandler{
 		JSON: interpreter.NewFaultyResponder(errorFormats, nil),
 	}
-	meta := deep.StaticMetadataHolder{
+	meta := dpmetadata.StaticMetadataHolder{
 		Metadata: metadata.Schemas,
 	}
 	objectSupport := dpobjects.ObjectSupport{
