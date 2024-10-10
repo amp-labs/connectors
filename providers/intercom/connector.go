@@ -25,6 +25,7 @@ type Connector struct {
 	deep.Clients
 	deep.EmptyCloser
 	deep.Reader
+	deep.Writer
 	deep.StaticMetadata
 }
 
@@ -37,12 +38,14 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		clients *deep.Clients,
 		closer *deep.EmptyCloser,
 		reader *deep.Reader,
+		writer *deep.Writer,
 		staticMetadata *deep.StaticMetadata,
 	) *Connector {
 		return &Connector{
 			Clients:        *clients,
 			EmptyCloser:    *closer,
 			Reader:         *reader,
+			Writer:         *writer,
 			StaticMetadata: *staticMetadata,
 		}
 	}
@@ -115,6 +118,26 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			return extractListFieldName(node)
 		},
 	}
+	writeResultBuilder := deep.WriteResultBuilder{
+		Build: func(config common.WriteParams, body *ajson.Node) (*common.WriteResult, error) {
+			recordID, err := jsonquery.New(body).StrWithDefault("id", "")
+			if err != nil {
+				return nil, err
+			}
+
+			data, err := jsonquery.Convertor.ObjectToMap(body)
+			if err != nil {
+				return nil, err
+			}
+
+			return &common.WriteResult{
+				Success:  true,
+				RecordId: recordID,
+				Errors:   nil,
+				Data:     data,
+			}, nil
+		},
+	}
 
 	return deep.Connector[Connector, parameters](constructor, providers.Intercom, opts,
 		meta,
@@ -125,6 +148,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		firstPage,
 		nextPage,
 		readObjectLocator,
+		writeResultBuilder,
 	)
 }
 
