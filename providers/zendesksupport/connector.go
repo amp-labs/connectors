@@ -24,7 +24,9 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		conn = nil
 	})
 
-	params, err := paramsbuilder.Apply(parameters{}, opts)
+	params, err := paramsbuilder.Apply(parameters{}, opts,
+		WithModule(ModuleTicketing), // The module is resolved on behalf of the user if the option is missing.
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -34,6 +36,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		Client: &common.JSONHTTPClient{
 			HTTPClient: httpClient,
 		},
+		Module: params.Module.Selection,
 	}
 
 	providerInfo, err := providers.ReadInfo(conn.Provider(), &params.Workspace)
