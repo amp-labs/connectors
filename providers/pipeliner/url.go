@@ -3,13 +3,14 @@ package pipeliner
 import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/deep"
+	"github.com/amp-labs/connectors/internal/deep/dpvars"
 	"github.com/amp-labs/connectors/internal/deep/requirements"
 )
 
 var _ deep.ObjectURLResolver = customURLBuilder{}
 
 func newURLBuilder(
-	data *deep.ConnectorData[parameters, *deep.EmptyMetadataVariables],
+	data *dpvars.ConnectorData[parameters, *dpvars.EmptyMetadataVariables],
 ) *customURLBuilder {
 	return &customURLBuilder{
 		data: data,
@@ -17,7 +18,7 @@ func newURLBuilder(
 }
 
 type customURLBuilder struct {
-	data *deep.ConnectorData[parameters, *deep.EmptyMetadataVariables]
+	data *dpvars.ConnectorData[parameters, *dpvars.EmptyMetadataVariables]
 }
 
 func (f customURLBuilder) FindURL(method deep.Method, baseURL, objectName string) (*urlbuilder.URL, error) {

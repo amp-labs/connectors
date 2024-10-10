@@ -1,6 +1,7 @@
 package pipeliner
 
 import (
+	"github.com/amp-labs/connectors/internal/deep/dpvars"
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
@@ -15,7 +16,7 @@ import (
 )
 
 type Connector struct {
-	Data deep.ConnectorData[parameters, *deep.EmptyMetadataVariables]
+	Data dpvars.ConnectorData[parameters, *dpvars.EmptyMetadataVariables]
 	deep.Clients
 	deep.EmptyCloser
 	deep.Reader
@@ -33,7 +34,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	constructor := func(
 		clients *deep.Clients,
 		closer *deep.EmptyCloser,
-		data *deep.ConnectorData[parameters, *deep.EmptyMetadataVariables],
+		data *dpvars.ConnectorData[parameters, *dpvars.EmptyMetadataVariables],
 		reader *deep.Reader,
 		writer *deep.Writer,
 		metadata *deep.StaticMetadata,

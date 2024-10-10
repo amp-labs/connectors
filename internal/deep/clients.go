@@ -3,10 +3,10 @@ package deep
 import (
 	"errors"
 	"fmt"
-
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
+	"github.com/amp-labs/connectors/internal/deep/dpvars"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -17,10 +17,10 @@ type Clients struct {
 	XML        *common.XMLHTTPClient
 }
 
-func newClients[P paramsbuilder.ParamAssurance, D MetadataVariables](
+func newClients[P paramsbuilder.ParamAssurance, D dpvars.MetadataVariables](
 	provider providers.Provider,
-	parameters *Parameters[P],
-	catalogVars *CatalogVariables[P, D],
+	parameters *dpvars.Parameters[P],
+	catalogVars *dpvars.CatalogVariables[P, D],
 	errorHandler *interpreter.ErrorHandler,
 ) (*Clients, error) {
 	clientHolder, ok := parameters.Params.(paramsbuilder.ClientHolder)

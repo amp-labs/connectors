@@ -3,6 +3,7 @@ package deep
 import (
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
+	"github.com/amp-labs/connectors/internal/deep/dpvars"
 	"github.com/amp-labs/connectors/internal/deep/requirements"
 	"github.com/amp-labs/connectors/providers"
 	"go.uber.org/dig"
@@ -14,14 +15,14 @@ func Connector[C any, P paramsbuilder.ParamAssurance](
 	options []func(params *P),
 	reqs ...requirements.ConnectorComponent,
 ) (*C, error) {
-	return ExtendedConnector[C, P, *EmptyMetadataVariables](
-		connectorConstructor, provider, &EmptyMetadataVariables{}, options, reqs...,
+	return ExtendedConnector[C, P, *dpvars.EmptyMetadataVariables](
+		connectorConstructor, provider, &dpvars.EmptyMetadataVariables{}, options, reqs...,
 	)
 }
 
 // ExtendedConnector
 // TODO document that it can be a constructor or Dependency object (maybe we want to support DI tagging).
-func ExtendedConnector[C any, P paramsbuilder.ParamAssurance, D MetadataVariables](
+func ExtendedConnector[C any, P paramsbuilder.ParamAssurance, D dpvars.MetadataVariables](
 	connectorConstructor any,
 	provider providers.Provider,
 	metadataVariables D,
@@ -58,12 +59,12 @@ func ExtendedConnector[C any, P paramsbuilder.ParamAssurance, D MetadataVariable
 				return &EmptyCloser{}
 			},
 		},
-		Parameters[P]{}.Satisfies(),
+		dpvars.Parameters[P]{}.Satisfies(),
 		EmptyObjectRegistry{}.Satisfies(),
 		PostPutWriteRequestBuilder{}.Satisfies(),
 		metadataVariables.Satisfies(),
-		ConnectorData[P, D]{}.Satisfies(),
-		CatalogVariables[P, D]{}.Satisfies(),
+		dpvars.ConnectorData[P, D]{}.Satisfies(),
+		dpvars.CatalogVariables[P, D]{}.Satisfies(),
 		GetRequestBuilder{}.Satisfies(),
 		DeleteRequestBuilder{}.Satisfies(),
 		HeaderSupplements{}.Satisfies(),

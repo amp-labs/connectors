@@ -1,4 +1,4 @@
-package deep
+package dpvars
 
 import (
 	"github.com/amp-labs/connectors/common/paramsbuilder"

@@ -2,16 +2,16 @@ package atlassian
 
 import (
 	"errors"
-
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/deep"
+	"github.com/amp-labs/connectors/internal/deep/dpvars"
 	"github.com/amp-labs/connectors/internal/deep/requirements"
 )
 
 var _ deep.ObjectURLResolver = customURLBuilder{}
 
 func newURLBuilder(
-	data *deep.ConnectorData[parameters, *AuthMetadataVars],
+	data *dpvars.ConnectorData[parameters, *AuthMetadataVars],
 	clients *deep.Clients,
 ) *customURLBuilder {
 	return &customURLBuilder{
@@ -21,7 +21,7 @@ func newURLBuilder(
 }
 
 type customURLBuilder struct {
-	data    *deep.ConnectorData[parameters, *AuthMetadataVars]
+	data    *dpvars.ConnectorData[parameters, *AuthMetadataVars]
 	clients *deep.Clients
 }
 

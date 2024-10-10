@@ -3,6 +3,7 @@ package atlassian
 import (
 	"errors"
 	"fmt"
+	"github.com/amp-labs/connectors/internal/deep/dpvars"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
@@ -19,7 +20,7 @@ import (
 var ErrMissingCloudId = errors.New("connector missing cloud id")
 
 type Connector struct {
-	Data deep.ConnectorData[parameters, *AuthMetadataVars]
+	Data dpvars.ConnectorData[parameters, *AuthMetadataVars]
 	deep.Clients
 	deep.EmptyCloser
 	deep.Reader
@@ -45,7 +46,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	constructor := func(
 		clients *deep.Clients,
 		closer *deep.EmptyCloser,
-		data *deep.ConnectorData[parameters, *AuthMetadataVars],
+		data *dpvars.ConnectorData[parameters, *AuthMetadataVars],
 		urlResolver deep.ObjectURLResolver,
 		reader *deep.Reader,
 		writer *deep.Writer,

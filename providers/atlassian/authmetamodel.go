@@ -2,7 +2,7 @@ package atlassian
 
 import (
 	"github.com/amp-labs/connectors/common/paramsbuilder"
-	"github.com/amp-labs/connectors/internal/deep"
+	"github.com/amp-labs/connectors/internal/deep/dpvars"
 	"github.com/amp-labs/connectors/internal/deep/requirements"
 )
 
@@ -32,12 +32,12 @@ func NewAuthMetadataVars() *AuthMetadataVars {
 	return &AuthMetadataVars{CloudID: ""}
 }
 
-var _ deep.MetadataVariables = &AuthMetadataVars{}
+var _ dpvars.MetadataVariables = &AuthMetadataVars{}
 
 func (v *AuthMetadataVars) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
 		ID:          "metadataVariables",
 		Constructor: NewAuthMetadataVars,
-		Interface:   new(deep.MetadataVariables),
+		Interface:   new(dpvars.MetadataVariables),
 	}
 }
