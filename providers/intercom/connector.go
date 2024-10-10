@@ -18,9 +18,9 @@ var apiVersionHeader = common.Header{ // nolint:gochecknoglobals
 }
 
 type Connector struct {
-	*deep.Clients
-	*deep.EmptyCloser
-	*deep.StaticMetadata
+	deep.Clients
+	deep.EmptyCloser
+	deep.StaticMetadata
 }
 
 type parameters struct {
@@ -34,9 +34,9 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		staticMetadata *deep.StaticMetadata,
 	) *Connector {
 		return &Connector{
-			Clients:        clients,
-			EmptyCloser:    closer,
-			StaticMetadata: staticMetadata,
+			Clients:        *clients,
+			EmptyCloser:    *closer,
+			StaticMetadata: *staticMetadata,
 		}
 	}
 	errorHandler := interpreter.ErrorHandler{
@@ -45,10 +45,16 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	meta := deep.StaticMetadataHolder{
 		Metadata: metadata.Schemas,
 	}
+	headerSupplements := deep.HeaderSupplements{
+		All: []common.Header{
+			apiVersionHeader,
+		},
+	}
 
 	return deep.Connector[Connector, parameters](constructor, providers.Intercom, opts,
 		meta,
 		errorHandler,
+		headerSupplements,
 	)
 }
 

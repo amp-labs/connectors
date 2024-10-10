@@ -10,22 +10,25 @@ import (
 )
 
 type Remover struct {
-	clients        Clients
-	urlResolver    URLResolver
-	objectManager  ObjectManager
-	requestBuilder RemoveRequestBuilder
+	clients           Clients
+	urlResolver       URLResolver
+	objectManager     ObjectManager
+	requestBuilder    RemoveRequestBuilder
+	headerSupplements HeaderSupplements
 }
 
 func NewRemover(clients *Clients,
 	resolver URLResolver,
 	objectManager ObjectManager,
 	requestBuilder RemoveRequestBuilder,
+	headerSupplements *HeaderSupplements,
 ) *Remover {
 	return &Remover{
-		clients:        *clients,
-		urlResolver:    resolver,
-		objectManager:  objectManager,
-		requestBuilder: requestBuilder,
+		clients:           *clients,
+		urlResolver:       resolver,
+		objectManager:     objectManager,
+		requestBuilder:    requestBuilder,
+		headerSupplements: *headerSupplements,
 	}
 }
 
@@ -44,6 +47,7 @@ func (r *Remover) Delete(ctx context.Context, config common.DeleteParams) (*comm
 	}
 
 	deleteMethod, headers := r.requestBuilder.MakeDeleteRequest(config.ObjectName, config.RecordId, r.clients)
+	headers = append(headers, r.headerSupplements.Delete...)
 
 	_, err = deleteMethod(ctx, url, nil, headers...)
 	if err != nil {

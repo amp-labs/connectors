@@ -12,10 +12,11 @@ import (
 )
 
 type Writer struct {
-	urlResolver    URLResolver
-	resultBuilder  WriteResultBuilder
-	objectManager  ObjectManager
-	requestBuilder WriteRequestBuilder
+	urlResolver       URLResolver
+	resultBuilder     WriteResultBuilder
+	objectManager     ObjectManager
+	requestBuilder    WriteRequestBuilder
+	headerSupplements HeaderSupplements
 
 	clients Clients
 }
@@ -25,13 +26,15 @@ func NewWriter(clients *Clients,
 	requestBuilder WriteRequestBuilder,
 	resultBuilder *WriteResultBuilder,
 	objectManager ObjectManager,
+	headerSupplements *HeaderSupplements,
 ) *Writer {
 	return &Writer{
-		urlResolver:    resolver,
-		resultBuilder:  *resultBuilder,
-		objectManager:  objectManager,
-		requestBuilder: requestBuilder,
-		clients:        *clients,
+		urlResolver:       resolver,
+		resultBuilder:     *resultBuilder,
+		objectManager:     objectManager,
+		requestBuilder:    requestBuilder,
+		headerSupplements: *headerSupplements,
+		clients:           *clients,
 	}
 }
 
@@ -59,12 +62,14 @@ func (w *Writer) Write(ctx context.Context, config common.WriteParams) (*common.
 	var headers []common.Header
 	if len(config.RecordId) == 0 {
 		write, headers = w.requestBuilder.MakeCreateRequest(config.ObjectName, url, w.clients)
+		headers = append(headers, w.headerSupplements.CreateHeaders()...)
 	} else {
 		write, headers = w.requestBuilder.MakeUpdateRequest(config.ObjectName, config.RecordId, url, w.clients)
 		if write == nil {
 			// TODO need a better error
 			return nil, errors.New("update is not supported for this object")
 		}
+		headers = append(headers, w.headerSupplements.UpdateHeaders()...)
 	}
 
 	res, err := write(ctx, url.String(), config.RecordData, headers...)

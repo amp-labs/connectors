@@ -76,8 +76,8 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			return "", nil
 		},
 	}
-	readRequestBuilder := deep.GetWithHeadersRequestBuilder{
-		Headers: []common.Header{
+	headerSupplements := deep.HeaderSupplements{
+		Read: []common.Header{
 			{
 				Key:   "Prefer",
 				Value: fmt.Sprintf("odata.maxpagesize=%v", DefaultPageSize),
@@ -117,7 +117,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		errorHandler,
 		firstPage,
 		nextPage,
-		readRequestBuilder,
+		headerSupplements,
 		readObjectLocator,
 		urlResolver,
 		customWriterRequestBuilder{},

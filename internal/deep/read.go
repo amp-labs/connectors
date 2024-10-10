@@ -19,6 +19,7 @@ type Reader struct {
 	readObjectLocator ReadObjectLocator
 	objectManager     ObjectManager
 	requestBuilder    ReadRequestBuilder
+	headerSupplements HeaderSupplements
 
 	clients Clients
 }
@@ -30,6 +31,7 @@ func NewReader(clients *Clients,
 	objectLocator *ReadObjectLocator,
 	objectManager ObjectManager,
 	requestBuilder ReadRequestBuilder,
+	headerSupplements *HeaderSupplements,
 ) *Reader {
 	return &Reader{
 		urlResolver:       resolver,
@@ -37,8 +39,9 @@ func NewReader(clients *Clients,
 		nextPageBuilder:   *nextPageBuilder,
 		readObjectLocator: *objectLocator,
 		objectManager:     objectManager,
-		clients:           *clients,
 		requestBuilder:    requestBuilder,
+		headerSupplements: *headerSupplements,
+		clients:           *clients,
 	}
 }
 
@@ -57,6 +60,7 @@ func (r *Reader) Read(ctx context.Context, config common.ReadParams) (*common.Re
 	}
 
 	read, headers := r.requestBuilder.MakeReadRequest(config.ObjectName, r.clients)
+	headers = append(headers, r.headerSupplements.ReadHeaders()...)
 
 	rsp, err := read(ctx, url, nil, headers...)
 	if err != nil {
