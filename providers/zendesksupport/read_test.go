@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/amp-labs/connectors"
@@ -16,7 +17,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
-func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
+func TestReadZendeskSupportModule(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
 	responseErrorFormat := testutils.DataFromFile(t, "resource-not-found.json")
@@ -36,6 +37,12 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Input:        common.ReadParams{ObjectName: "triggers"},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingFields},
+		},
+		{
+			Name:         "Object coming from different module is unknown",
+			Input:        common.ReadParams{ObjectName: "user_segments", Fields: connectors.Fields("id")},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
 		},
 		{
 			Name:         "Mime response header expected",
@@ -131,7 +138,12 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
-				_, _ = w.Write(responseReadTickets)
+				switch path := r.URL.Path; {
+				case strings.HasSuffix(path, "/v2/tickets"):
+					_, _ = w.Write(responseReadTickets)
+				default:
+					_, _ = w.Write([]byte{})
+				}
 			})),
 			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
 				// custom comparison focuses on subset of fields to keep the test short
@@ -175,9 +187,76 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	}
 }
 
-func constructTestConnector(
-	serverURL string, moduleID common.ModuleID, // nolint:unparam
-) (*Connector, error) {
+func TestReadHelpCenterModule(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
+	t.Parallel()
+
+	responseReadPosts := testutils.DataFromFile(t, "read-posts.json")
+
+	tests := []testroutines.Read{
+		{
+			Name:         "Object coming from different module is unknown",
+			Input:        common.ReadParams{ObjectName: "triggers", Fields: connectors.Fields("id")},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
+		},
+		{
+			Name: "Successful read with chosen fields",
+			Input: common.ReadParams{
+				ObjectName: "posts",
+				Fields:     connectors.Fields("title", "topic_id", "status"),
+			},
+			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusOK)
+				switch path := r.URL.Path; {
+				case strings.HasSuffix(path, "/v2/community/posts"):
+					_, _ = w.Write(responseReadPosts)
+				default:
+					_, _ = w.Write([]byte{})
+				}
+			})),
+			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
+				// custom comparison focuses on subset of fields to keep the test short
+				return mockutils.ReadResultComparator.SubsetFields(actual, expected) &&
+					mockutils.ReadResultComparator.SubsetRaw(actual, expected) &&
+					actual.NextPage.String() == expected.NextPage.String() &&
+					actual.Done == expected.Done
+			},
+			Expected: &common.ReadResult{
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"title":    "How do I get around the community?",
+						"topic_id": float64(27980065395091),
+						"status":   "none",
+					},
+					Raw: map[string]any{
+						"id":         float64(27980065413139),
+						"created_at": "2024-04-01T13:01:11Z",
+						"updated_at": "2024-04-01T13:01:11Z",
+					},
+				}},
+				NextPage: "https://d3v-ampersand.zendesk.com" +
+					"/api/v2/help_center/community/posts.json?page=2&per_page=30",
+				Done: false,
+			},
+			ExpectedErrs: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		// nolint:varnamelen
+		tt := tt // rebind, omit loop side effects for parallel goroutine
+		t.Run(tt.Name, func(t *testing.T) {
+			t.Parallel()
+
+			tt.Run(t, func() (connectors.ReadConnector, error) {
+				return constructTestConnector(tt.Server.URL, ModuleHelpCenter)
+			})
+		})
+	}
+}
+
+func constructTestConnector(serverURL string, moduleID common.ModuleID) (*Connector, error) {
 	connector, err := NewConnector(
 		WithAuthenticatedClient(http.DefaultClient),
 		WithWorkspace("test-workspace"),
