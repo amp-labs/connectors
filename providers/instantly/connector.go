@@ -112,7 +112,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			return readObjects[config.ObjectName].NodePath
 		},
 	}
-	objectManager := deep.ObjectRegistry{
+	objectSupport := deep.ObjectSupport{
 		Read:   supportedObjectsByRead,
 		Write:  supportedObjectsByWrite,
 		Delete: supportedObjectsByDelete,
@@ -153,7 +153,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		firstPage,
 		nextPage,
 		readObjectLocator,
-		objectManager,
+		objectSupport,
 		deep.PostPatchWriteRequestBuilder{},
 		writeResultBuilder,
 	)

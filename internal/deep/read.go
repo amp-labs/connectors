@@ -13,9 +13,9 @@ import (
 )
 
 type Reader struct {
-	urlResolver       ObjectURLResolver
-	firstPageBuilder  FirstPageBuilder
-	nextPageBuilder   NextPageBuilder
+	urlResolver      ObjectURLResolver
+	pageStartBuilder PaginationStartBuilder
+	nextPageBuilder  NextPageBuilder
 	readObjectLocator ReadObjectLocator
 	objectManager     ObjectManager
 	requestBuilder    ReadRequestBuilder
@@ -26,7 +26,7 @@ type Reader struct {
 
 func NewReader(clients *Clients,
 	resolver ObjectURLResolver,
-	firstPageBuilder *FirstPageBuilder,
+	pageStartBuilder PaginationStartBuilder,
 	nextPageBuilder *NextPageBuilder,
 	objectLocator *ReadObjectLocator,
 	objectManager ObjectManager,
@@ -35,7 +35,7 @@ func NewReader(clients *Clients,
 ) *Reader {
 	return &Reader{
 		urlResolver:       resolver,
-		firstPageBuilder:  *firstPageBuilder,
+		pageStartBuilder:  pageStartBuilder,
 		nextPageBuilder:   *nextPageBuilder,
 		readObjectLocator: *objectLocator,
 		objectManager:     objectManager,
@@ -98,14 +98,21 @@ func (r *Reader) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error)
 		return nil, err
 	}
 
-	return r.firstPageBuilder.produceURL(config, url)
+	return r.pageStartBuilder.FirstPage(config, url)
 }
+
+type PaginationStartBuilder interface {
+	requirements.Requirement
+	FirstPage(config common.ReadParams, url *urlbuilder.URL) (*urlbuilder.URL, error)
+}
+
+var _ PaginationStartBuilder = FirstPageBuilder{}
 
 type FirstPageBuilder struct {
 	Build func(config common.ReadParams, url *urlbuilder.URL) (*urlbuilder.URL, error)
 }
 
-func (b FirstPageBuilder) produceURL(config common.ReadParams, url *urlbuilder.URL) (*urlbuilder.URL, error) {
+func (b FirstPageBuilder) FirstPage(config common.ReadParams, url *urlbuilder.URL) (*urlbuilder.URL, error) {
 	if b.Build == nil {
 		// TODO error
 		return nil, errors.New("build method cannot be empty")
@@ -116,9 +123,26 @@ func (b FirstPageBuilder) produceURL(config common.ReadParams, url *urlbuilder.U
 
 func (b FirstPageBuilder) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
-		ID:          "firstPageBuilder",
+		ID:          "paginationStartBuilder",
 		Constructor: handy.Returner(b),
+		Interface:   new(PaginationStartBuilder),
 	}
+}
+
+var _ PaginationStartBuilder = DefaultPageBuilder{}
+
+type DefaultPageBuilder struct {}
+
+func (b DefaultPageBuilder) Satisfies() requirements.Dependency {
+	return requirements.Dependency{
+		ID:          "paginationStartBuilder",
+		Constructor: handy.Returner(b),
+		Interface:   new(PaginationStartBuilder),
+	}
+}
+
+func (b DefaultPageBuilder) FirstPage(config common.ReadParams, url *urlbuilder.URL) (*urlbuilder.URL, error) {
+	return url, nil
 }
 
 type NextPageBuilder struct {

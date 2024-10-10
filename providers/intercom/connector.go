@@ -63,7 +63,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			apiVersionHeader,
 		},
 	}
-	objectManager := deep.ObjectRegistry{
+	objectSupport := deep.ObjectSupport{
 		Read: supportedObjectsByRead,
 	}
 	objectURLResolver := deep.SingleURLFormat{
@@ -146,7 +146,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		meta,
 		errorHandler,
 		headerSupplements,
-		objectManager,
+		objectSupport,
 		objectURLResolver,
 		firstPage,
 		nextPage,

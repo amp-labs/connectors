@@ -14,17 +14,17 @@ type ObjectManager interface {
 }
 
 var (
-	_ ObjectManager = ObjectRegistry{}
+	_ ObjectManager = ObjectSupport{}
 	_ ObjectManager = EmptyObjectRegistry{}
 )
 
-type ObjectRegistry struct {
+type ObjectSupport struct {
 	Read   handy.Set[string]
 	Write  handy.Set[string]
 	Delete handy.Set[string]
 }
 
-func (o ObjectRegistry) Satisfies() requirements.Dependency {
+func (o ObjectSupport) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
 		ID:          "objectRegistry",
 		Constructor: handy.Returner(o),
@@ -32,7 +32,7 @@ func (o ObjectRegistry) Satisfies() requirements.Dependency {
 	}
 }
 
-func (o ObjectRegistry) IsReadSupported(objectName string) bool {
+func (o ObjectSupport) IsReadSupported(objectName string) bool {
 	if len(o.Read) == 0 {
 		return true
 	}
@@ -40,7 +40,7 @@ func (o ObjectRegistry) IsReadSupported(objectName string) bool {
 	return o.Read.Has(objectName)
 }
 
-func (o ObjectRegistry) IsWriteSupported(objectName string) bool {
+func (o ObjectSupport) IsWriteSupported(objectName string) bool {
 	if len(o.Write) == 0 {
 		return true
 	}
@@ -48,7 +48,7 @@ func (o ObjectRegistry) IsWriteSupported(objectName string) bool {
 	return o.Write.Has(objectName)
 }
 
-func (o ObjectRegistry) IsDeleteSupported(objectName string) bool {
+func (o ObjectSupport) IsDeleteSupported(objectName string) bool {
 	if len(o.Delete) == 0 {
 		return true
 	}

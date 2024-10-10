@@ -135,7 +135,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	meta := deep.StaticMetadataHolder{
 		Metadata: metadata.Schemas,
 	}
-	objectManager := deep.ObjectRegistry{
+	objectSupport := deep.ObjectSupport{
 		Read: supportedObjectsByRead,
 	}
 
@@ -147,6 +147,6 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		readObjectLocator,
 		writeResultBuilder,
 		errorHandler,
-		objectManager,
+		objectSupport,
 	)
 }

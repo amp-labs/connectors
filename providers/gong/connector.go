@@ -49,7 +49,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	meta := deep.StaticMetadataHolder{
 		Metadata: metadata.Schemas,
 	}
-	objectManager := deep.ObjectRegistry{
+	objectSupport := deep.ObjectSupport{
 		Read:  supportedObjectsByRead,
 		Write: supportedObjectsByWrite,
 	}
@@ -110,7 +110,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	return deep.Connector[Connector, parameters](constructor, providers.Gong, opts,
 		meta,
 		errorHandler,
-		objectManager,
+		objectSupport,
 		objectURLResolver,
 		firstPage,
 		nextPage,

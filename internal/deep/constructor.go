@@ -67,6 +67,7 @@ func ExtendedConnector[C any, P paramsbuilder.ParamAssurance, D MetadataVariable
 		GetRequestBuilder{}.Satisfies(),
 		DeleteRequestBuilder{}.Satisfies(),
 		HeaderSupplements{}.Satisfies(),
+		DefaultPageBuilder{}.Satisfies(),
 		{
 			// Connector will have HTTP clients which can be implied from parameters "P".
 			ID:          "clients",

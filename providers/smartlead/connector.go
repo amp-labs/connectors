@@ -77,7 +77,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			return urlbuilder.New(baseURL, apiVersion, path)
 		},
 	}
-	objectManager := deep.ObjectRegistry{
+	objectSupport := deep.ObjectSupport{
 		Read:   supportedObjectsByRead,
 		Write:  supportedObjectsByWrite,
 		Delete: supportedObjectsByDelete,
@@ -128,7 +128,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		meta,
 		errorHandler,
 		objectURLResolver,
-		objectManager,
+		objectSupport,
 		firstPage,
 		nextPage,
 		readObjectLocator,

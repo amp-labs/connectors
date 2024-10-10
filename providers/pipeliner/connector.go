@@ -83,7 +83,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 			return "data"
 		},
 	}
-	objectManager := deep.ObjectRegistry{
+	objectSupport := deep.ObjectSupport{
 		Read: supportedObjectsByRead,
 	}
 	writeResultBuilder := deep.WriteResultBuilder{
@@ -124,7 +124,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		firstPage,
 		nextPage,
 		readObjectLocator,
-		objectManager,
+		objectSupport,
 		deep.PostPatchWriteRequestBuilder{},
 		writeResultBuilder,
 	)
