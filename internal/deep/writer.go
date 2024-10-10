@@ -102,7 +102,7 @@ func (b WriteResultBuilder) Satisfies() requirements.Dependency {
 }
 
 type WriteRequestBuilder interface {
-	requirements.Requirement
+	requirements.ConnectorComponent
 
 	MakeCreateRequest(
 		objectName string, url *urlbuilder.URL, clients Clients) (common.WriteMethod, []common.Header)

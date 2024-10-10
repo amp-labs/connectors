@@ -60,7 +60,7 @@ func (r *Remover) Delete(ctx context.Context, config common.DeleteParams) (*comm
 }
 
 type RemoveRequestBuilder interface {
-	requirements.Requirement
+	requirements.ConnectorComponent
 
 	MakeDeleteRequest(objectName, recordID string, clients Clients) (common.DeleteMethod, []common.Header)
 }

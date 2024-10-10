@@ -6,7 +6,7 @@ import (
 )
 
 type ObjectManager interface {
-	requirements.Requirement
+	requirements.ConnectorComponent
 
 	IsReadSupported(objectName string) bool
 	IsWriteSupported(objectName string) bool

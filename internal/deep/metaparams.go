@@ -6,7 +6,7 @@ import (
 )
 
 type MetadataVariables interface {
-	requirements.Requirement
+	requirements.ConnectorComponent
 	FromMap(map[string]string)
 	ToMap() map[string]string
 	GetSubstitutionPlans() []paramsbuilder.SubstitutionPlan

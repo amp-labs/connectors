@@ -12,7 +12,7 @@ func Connector[C any, P paramsbuilder.ParamAssurance](
 	connectorConstructor any,
 	provider providers.Provider,
 	options []func(params *P),
-	reqs ...requirements.Requirement,
+	reqs ...requirements.ConnectorComponent,
 ) (*C, error) {
 	return ExtendedConnector[C, P, *EmptyMetadataVariables](
 		connectorConstructor, provider, &EmptyMetadataVariables{}, options, reqs...,
@@ -26,7 +26,7 @@ func ExtendedConnector[C any, P paramsbuilder.ParamAssurance, D MetadataVariable
 	provider providers.Provider,
 	metadataVariables D,
 	options []func(params *P),
-	reqs ...requirements.Requirement,
+	reqs ...requirements.ConnectorComponent,
 ) (*C, error) {
 	deps := requirements.NewDependencies([]requirements.Dependency{
 		{

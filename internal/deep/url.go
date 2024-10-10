@@ -16,7 +16,7 @@ const (
 )
 
 type ObjectURLResolver interface {
-	requirements.Requirement
+	requirements.ConnectorComponent
 	FindURL(method Method, baseURL, objectName string) (*urlbuilder.URL, error)
 }
 

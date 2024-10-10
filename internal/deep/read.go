@@ -102,7 +102,7 @@ func (r *Reader) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error)
 }
 
 type PaginationStartBuilder interface {
-	requirements.Requirement
+	requirements.ConnectorComponent
 	FirstPage(config common.ReadParams, url *urlbuilder.URL) (*urlbuilder.URL, error)
 }
 
@@ -205,7 +205,7 @@ func (l ReadObjectLocator) Satisfies() requirements.Dependency {
 }
 
 type ReadRequestBuilder interface {
-	requirements.Requirement
+	requirements.ConnectorComponent
 
 	MakeReadRequest(objectName string, clients Clients) (common.ReadMethod, []common.Header)
 }
