@@ -1,74 +1,100 @@
 package pipeliner
 
 import (
-	"fmt"
-	"github.com/amp-labs/connectors/internal/deep"
-	"github.com/amp-labs/connectors/providers/pipeliner/metadata"
-
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
+	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/deep"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/pipeliner/metadata"
+	"github.com/spyzhov/ajson"
+	"strconv"
 )
 
 type Connector struct {
-	BaseURL   string
-	Workspace string
-	Client    *common.JSONHTTPClient
-	*deep.StaticMetadata
+	Data deep.ConnectorData[parameters, *deep.EmptyMetadataVariables]
+	deep.Clients
+	deep.EmptyCloser
+	deep.Reader
+	deep.StaticMetadata
+}
+
+type parameters struct {
+	paramsbuilder.Client
+	paramsbuilder.Workspace
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	defer common.PanicRecovery(func(cause error) {
-		outErr = cause
-		conn = nil
-	})
-
-	params, err := paramsbuilder.Apply(parameters{}, opts)
-	if err != nil {
-		return nil, err
+	constructor := func(
+		clients *deep.Clients,
+		closer *deep.EmptyCloser,
+		data *deep.ConnectorData[parameters, *deep.EmptyMetadataVariables],
+		reader *deep.Reader,
+		//writer *deep.Writer,
+		metadata *deep.StaticMetadata,
+		//remover *deep.Remover
+	) *Connector {
+		return &Connector{
+			Data:           *data,
+			Clients:        *clients,
+			EmptyCloser:    *closer,
+			Reader:         *reader,
+			StaticMetadata: *metadata,
+		}
 	}
-
-	httpClient := params.Client.Caller
-	conn = &Connector{
-		Client: &common.JSONHTTPClient{
-			HTTPClient: httpClient,
-		},
-		Workspace: params.Workspace.Name,
-	}
-
-	providerInfo, err := providers.ReadInfo(conn.Provider())
-	if err != nil {
-		return nil, err
-	}
-
-	// connector and its client must mirror base url and provide its own error parser
-	conn.setBaseURL(providerInfo.BaseURL)
-	conn.Client.HTTPClient.ErrorHandler = interpreter.ErrorHandler{
+	errorHandler := interpreter.ErrorHandler{
 		JSON: interpreter.NewFaultyResponder(errorFormats, statusCodeMapping),
-	}.Handle
+	}
+	meta := deep.StaticMetadataHolder{
+		Metadata: metadata.Schemas,
+	}
+	firstPage := deep.FirstPageBuilder{
+		Build: func(config common.ReadParams, url *urlbuilder.URL) (*urlbuilder.URL, error) {
+			url.WithQueryParam("first", strconv.Itoa(DefaultPageSize))
 
-	conn.StaticMetadata = deep.NewStaticMetadata(&deep.StaticMetadataHolder{Metadata: metadata.Schemas})
+			return url, nil
+		},
+	}
+	nextPage := deep.NextPageBuilder{
+		Build: func(config common.ReadParams, previousPage *urlbuilder.URL, node *ajson.Node) (*urlbuilder.URL, error) {
+			after, err := jsonquery.New(node, "page_info").StrWithDefault("end_cursor", "")
+			if err != nil {
+				return nil, err
+			}
 
-	return conn, nil
-}
+			if len(after) != 0 {
+				previousPage.WithQueryParam("after", after)
 
-func (c *Connector) Provider() providers.Provider {
-	return providers.Pipeliner
-}
+				return previousPage, nil
+			}
 
-func (c *Connector) String() string {
-	return fmt.Sprintf("%s.Connector", c.Provider())
+			return nil, nil
+		},
+	}
+	readObjectLocator := deep.ReadObjectLocator{
+		Locate: func(config common.ReadParams) string {
+			return "data"
+		},
+	}
+	objectManager := deep.ObjectRegistry{
+		Read: supportedObjectsByRead,
+	}
+
+	return deep.Connector[Connector, parameters](constructor, providers.Atlassian, opts,
+		errorHandler,
+		meta,
+		customURLBuilder{},
+		firstPage,
+		nextPage,
+		readObjectLocator,
+		objectManager,
+	)
 }
 
 func (c *Connector) getURL(parts ...string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.BaseURL, append([]string{
-		"api/v100/rest/spaces/", c.Workspace, "/entities",
+	return urlbuilder.New(c.BaseURL(), append([]string{
+		"api/v100/rest/spaces/", c.Data.Workspace, "/entities",
 	}, parts...)...)
-}
-
-func (c *Connector) setBaseURL(newURL string) {
-	c.BaseURL = newURL
-	c.Client.HTTPClient.Base = newURL
 }

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/amp-labs/connectors"
@@ -114,10 +115,12 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				_, _ = w.Write(responseProfilesFirstPage)
 			})),
 			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
-				return actual.NextPage.String() == expected.NextPage.String() // nolint:nlreturn
+				expectedNextPage := strings.ReplaceAll(expected.NextPage.String(), "{{testServerURL}}", baseURL)
+
+				return actual.NextPage.String() == expectedNextPage
 			},
 			Expected: &common.ReadResult{
-				NextPage: "WyIwMDAwMDAwMC0wMDAwLTAwMDEtMDAwMS0wMDAwMDAwMDhlOTciXQ==",
+				NextPage: "{{testServerURL}}/api/v100/rest/spaces/test-workspace/entities/Profiles?after=WyIwMDAwMDAwMC0wMDAwLTAwMDEtMDAwMS0wMDAwMDAwMDhlOTciXQ%3D%3D&first=100",
 			},
 			ExpectedErrs: nil,
 		},
@@ -151,7 +154,6 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				// custom comparison focuses on subset of fields to keep the test short
 				return mockutils.ReadResultComparator.SubsetFields(actual, expected) &&
 					mockutils.ReadResultComparator.SubsetRaw(actual, expected) &&
-					actual.NextPage.String() == expected.NextPage.String() &&
 					actual.Done == expected.Done
 			},
 			Expected: &common.ReadResult{
@@ -180,8 +182,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"is_deleted": false,
 					},
 				}},
-				NextPage: "WyIwMDAwMDAwMC0wMDAwLTAwMDMtMDAwMS0wMDAwMDAwMDhlOTciXQ==",
-				Done:     false,
+				Done: false,
 			},
 			ExpectedErrs: nil,
 		},
@@ -210,7 +211,7 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 	}
 
 	// for testing we want to redirect calls to our mock server
-	connector.setBaseURL(serverURL)
+	connector.WithBaseURL(serverURL)
 
 	return connector, nil
 }

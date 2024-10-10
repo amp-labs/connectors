@@ -14,8 +14,8 @@ func Connector[C any, P paramsbuilder.ParamAssurance](
 	options []func(params *P),
 	reqs ...requirements.Requirement,
 ) (*C, error) {
-	return ExtendedConnector[C, P, EmptyMetadataVariables](
-		connectorConstructor, provider, EmptyMetadataVariables{}, options, reqs...,
+	return ExtendedConnector[C, P, *EmptyMetadataVariables](
+		connectorConstructor, provider, &EmptyMetadataVariables{}, options, reqs...,
 	)
 }
 
