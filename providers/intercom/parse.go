@@ -1,10 +1,10 @@
 package intercom
 
 import (
-	"github.com/amp-labs/connectors/common/naming"
 	"strings"
 
 	"github.com/amp-labs/connectors/common/jsonquery"
+	"github.com/amp-labs/connectors/common/naming"
 	"github.com/spyzhov/ajson"
 )
 

@@ -22,7 +22,7 @@ func (s HeaderSupplements) Satisfies() requirements.Dependency {
 }
 
 func (s HeaderSupplements) ReadHeaders() []common.Header {
-	result := make([]common.Header, 0, len(s.All) + len(s.Read))
+	result := make([]common.Header, 0, len(s.All)+len(s.Read))
 
 	result = append(result, s.All...)
 	result = append(result, s.Read...)
@@ -31,7 +31,7 @@ func (s HeaderSupplements) ReadHeaders() []common.Header {
 }
 
 func (s HeaderSupplements) CreateHeaders() []common.Header {
-	result := make([]common.Header, 0, len(s.All) + len(s.Create))
+	result := make([]common.Header, 0, len(s.All)+len(s.Create))
 
 	result = append(result, s.All...)
 	result = append(result, s.Create...)
@@ -40,7 +40,7 @@ func (s HeaderSupplements) CreateHeaders() []common.Header {
 }
 
 func (s HeaderSupplements) UpdateHeaders() []common.Header {
-	result := make([]common.Header, 0, len(s.All) + len(s.Update))
+	result := make([]common.Header, 0, len(s.All)+len(s.Update))
 
 	result = append(result, s.All...)
 	result = append(result, s.Update...)
@@ -49,7 +49,7 @@ func (s HeaderSupplements) UpdateHeaders() []common.Header {
 }
 
 func (s HeaderSupplements) DeleteHeaders() []common.Header {
-	result := make([]common.Header, 0, len(s.All) + len(s.Delete))
+	result := make([]common.Header, 0, len(s.All)+len(s.Delete))
 
 	result = append(result, s.All...)
 	result = append(result, s.Delete...)

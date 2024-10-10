@@ -13,9 +13,9 @@ import (
 )
 
 type Reader struct {
-	urlResolver      ObjectURLResolver
-	pageStartBuilder PaginationStartBuilder
-	nextPageBuilder  NextPageBuilder
+	urlResolver       ObjectURLResolver
+	pageStartBuilder  PaginationStartBuilder
+	nextPageBuilder   NextPageBuilder
 	readObjectLocator ReadObjectLocator
 	objectManager     ObjectManager
 	requestBuilder    ReadRequestBuilder
@@ -131,7 +131,7 @@ func (b FirstPageBuilder) Satisfies() requirements.Dependency {
 
 var _ PaginationStartBuilder = DefaultPageBuilder{}
 
-type DefaultPageBuilder struct {}
+type DefaultPageBuilder struct{}
 
 func (b DefaultPageBuilder) Satisfies() requirements.Dependency {
 	return requirements.Dependency{

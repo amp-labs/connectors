@@ -1,6 +1,8 @@
 package zendesksupport
 
 import (
+	"strconv"
+
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/jsonquery"
@@ -11,7 +13,6 @@ import (
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/zendesksupport/metadata"
 	"github.com/spyzhov/ajson"
-	"strconv"
 )
 
 const apiVersion = "v2"

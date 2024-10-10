@@ -69,6 +69,7 @@ func (w *Writer) Write(ctx context.Context, config common.WriteParams) (*common.
 			// TODO need a better error
 			return nil, errors.New("update is not supported for this object")
 		}
+
 		headers = append(headers, w.headerSupplements.UpdateHeaders()...)
 	}
 
