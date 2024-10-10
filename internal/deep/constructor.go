@@ -8,6 +8,7 @@ import (
 	"github.com/amp-labs/connectors/internal/deep/dpremove"
 	"github.com/amp-labs/connectors/internal/deep/dprequests"
 	"github.com/amp-labs/connectors/internal/deep/dpvars"
+	"github.com/amp-labs/connectors/internal/deep/dpwrite"
 	"github.com/amp-labs/connectors/internal/deep/requirements"
 	"github.com/amp-labs/connectors/providers"
 	"go.uber.org/dig"
@@ -65,7 +66,7 @@ func ExtendedConnector[C any, P paramsbuilder.ParamAssurance, D dpvars.MetadataV
 		},
 		dpvars.Parameters[P]{}.Satisfies(),
 		dpobjects.EmptyObjectRegistry{}.Satisfies(),
-		PostPutWriteRequestBuilder{}.Satisfies(),
+		dpwrite.PostPutWriteRequestBuilder{}.Satisfies(),
 		metadataVariables.Satisfies(),
 		dpvars.ConnectorData[P, D]{}.Satisfies(),
 		dpvars.CatalogVariables[P, D]{}.Satisfies(),

@@ -5,6 +5,7 @@ import (
 	"github.com/amp-labs/connectors/internal/deep/dpread"
 	"github.com/amp-labs/connectors/internal/deep/dprequests"
 	"github.com/amp-labs/connectors/internal/deep/dpvars"
+	"github.com/amp-labs/connectors/internal/deep/dpwrite"
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
@@ -90,7 +91,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	objectSupport := dpobjects.ObjectSupport{
 		Read: supportedObjectsByRead,
 	}
-	writeResultBuilder := deep.WriteResultBuilder{
+	writeResultBuilder := dpwrite.WriteResultBuilder{
 		Build: func(config common.WriteParams, body *ajson.Node) (*common.WriteResult, error) {
 			success, err := jsonquery.New(body).Bool("success", false)
 			if err != nil {
@@ -129,7 +130,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		nextPage,
 		readObjectLocator,
 		objectSupport,
-		deep.PostPatchWriteRequestBuilder{},
+		dpwrite.PostPatchWriteRequestBuilder{},
 		writeResultBuilder,
 	)
 }

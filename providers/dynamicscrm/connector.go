@@ -5,6 +5,7 @@ import (
 	"github.com/amp-labs/connectors/internal/deep/dpobjects"
 	"github.com/amp-labs/connectors/internal/deep/dpread"
 	"github.com/amp-labs/connectors/internal/deep/dprequests"
+	"github.com/amp-labs/connectors/internal/deep/dpwrite"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
@@ -106,7 +107,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			return constructURL(baseURL, apiVersion, path.String())
 		},
 	}
-	writeResultBuilder := deep.WriteResultBuilder{
+	writeResultBuilder := dpwrite.WriteResultBuilder{
 		Build: func(config common.WriteParams, body *ajson.Node) (*common.WriteResult, error) {
 			// Neither Post nor Patch return any response data on successful completion
 			// Both complete with 204 NoContent

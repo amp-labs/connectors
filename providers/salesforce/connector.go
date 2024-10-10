@@ -5,6 +5,7 @@ import (
 	"github.com/amp-labs/connectors/internal/deep/dpobjects"
 	"github.com/amp-labs/connectors/internal/deep/dpread"
 	"github.com/amp-labs/connectors/internal/deep/dprequests"
+	"github.com/amp-labs/connectors/internal/deep/dpwrite"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
@@ -97,7 +98,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			return "records"
 		},
 	}
-	writeResultBuilder := deep.WriteResultBuilder{
+	writeResultBuilder := dpwrite.WriteResultBuilder{
 		Build: writeResultBuild,
 	}
 
@@ -107,7 +108,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		firstPage,
 		nextPage,
 		readObjectLocator,
-		deep.PostPostWriteRequestBuilder{},
+		dpwrite.PostPostWriteRequestBuilder{},
 		writeResultBuilder,
 	)
 }

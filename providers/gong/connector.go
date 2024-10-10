@@ -11,6 +11,7 @@ import (
 	"github.com/amp-labs/connectors/internal/deep/dpobjects"
 	"github.com/amp-labs/connectors/internal/deep/dpread"
 	"github.com/amp-labs/connectors/internal/deep/dprequests"
+	"github.com/amp-labs/connectors/internal/deep/dpwrite"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/gong/metadata"
 	"github.com/spyzhov/ajson"
@@ -94,7 +95,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			return config.ObjectName
 		},
 	}
-	writeResultBuilder := deep.WriteResultBuilder{
+	writeResultBuilder := dpwrite.WriteResultBuilder{
 		Build: func(config common.WriteParams, body *ajson.Node) (*common.WriteResult, error) {
 			recordID, err := jsonquery.New(body).Str("callId", false)
 			if err != nil {
@@ -118,7 +119,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		firstPage,
 		nextPage,
 		readObjectLocator,
-		deep.PostWriteRequestBuilder{},
+		dpwrite.PostWriteRequestBuilder{},
 		writeResultBuilder,
 	)
 }

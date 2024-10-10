@@ -5,6 +5,7 @@ import (
 	"github.com/amp-labs/connectors/internal/deep/dpobjects"
 	"github.com/amp-labs/connectors/internal/deep/dpread"
 	"github.com/amp-labs/connectors/internal/deep/dprequests"
+	"github.com/amp-labs/connectors/internal/deep/dpwrite"
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
@@ -125,7 +126,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			return extractListFieldName(node)
 		},
 	}
-	writeResultBuilder := deep.WriteResultBuilder{
+	writeResultBuilder := dpwrite.WriteResultBuilder{
 		Build: func(config common.WriteParams, body *ajson.Node) (*common.WriteResult, error) {
 			recordID, err := jsonquery.New(body).StrWithDefault("id", "")
 			if err != nil {

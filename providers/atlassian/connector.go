@@ -7,6 +7,7 @@ import (
 	"github.com/amp-labs/connectors/internal/deep/dpread"
 	"github.com/amp-labs/connectors/internal/deep/dprequests"
 	"github.com/amp-labs/connectors/internal/deep/dpvars"
+	"github.com/amp-labs/connectors/internal/deep/dpwrite"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
@@ -108,7 +109,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		},
 		FlattenRecords: flattenRecords,
 	}
-	writeResultBuilder := deep.WriteResultBuilder{
+	writeResultBuilder := dpwrite.WriteResultBuilder{
 		Build: func(config common.WriteParams, body *ajson.Node) (*common.WriteResult, error) {
 			recordID, err := jsonquery.New(body).Str("id", false)
 			if err != nil {
