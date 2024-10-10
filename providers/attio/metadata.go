@@ -39,6 +39,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 		}
 
 		var metadata *common.ObjectMetadata
+
 		metadata, err = parseMetadataFromResponse(resp)
 		if err != nil {
 			metadataResult.Errors[obj] = err

@@ -8,7 +8,6 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-// nolint
 func makeNextRecordsURL(reqLink *urlbuilder.URL) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
 		url, err := reqLink.ToURL()

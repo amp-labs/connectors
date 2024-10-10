@@ -104,6 +104,7 @@ func testReadWorkspacemembers(ctx context.Context, conn *ap.Connector) error {
 		ObjectName: "workspace_members",
 		Fields:     connectors.Fields(""),
 	}
+
 	res, err := conn.Read(ctx, params)
 	if err != nil {
 		log.Fatal(err.Error())

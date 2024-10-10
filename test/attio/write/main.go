@@ -56,6 +56,7 @@ func testObjects(ctx context.Context) error {
 	conn := attio.GetAttioConnector(ctx)
 
 	slog.Info("Creating the object")
+
 	params := common.WriteParams{
 		ObjectName: "objects",
 		RecordData: map[string]interface{}{
@@ -71,6 +72,7 @@ func testObjects(ctx context.Context) error {
 	writeRes, err := Write(ctx, conn, params)
 	if err != nil {
 		fmt.Println("ERR: ", err)
+
 		return err
 	}
 
@@ -92,6 +94,7 @@ func testObjects(ctx context.Context) error {
 	updateres, err := Write(ctx, conn, updateparams)
 	if err != nil {
 		fmt.Println("ERR: ", err)
+
 		return err
 	}
 
@@ -106,6 +109,7 @@ func testLists(ctx context.Context) error {
 	conn := attio.GetAttioConnector(ctx)
 
 	slog.Info("Creating the list")
+
 	writeParams := common.WriteParams{
 		ObjectName: "lists",
 		RecordData: map[string]any{
@@ -128,6 +132,7 @@ func testLists(ctx context.Context) error {
 	writeRes, err := Write(ctx, conn, writeParams)
 	if err != nil {
 		fmt.Println("ERR: ", err)
+
 		return err
 	}
 
@@ -149,6 +154,7 @@ func testLists(ctx context.Context) error {
 	writeres, err := Write(ctx, conn, updateParams)
 	if err != nil {
 		fmt.Println("ERR: ", err)
+
 		return err
 	}
 
@@ -163,6 +169,7 @@ func testNotes(ctx context.Context) error {
 	conn := attio.GetAttioConnector(ctx)
 
 	slog.Info("Creating the notes")
+
 	writeParams := common.WriteParams{
 		ObjectName: "notes",
 		RecordData: map[string]any{
@@ -180,6 +187,7 @@ func testNotes(ctx context.Context) error {
 	writeRes, err := Write(ctx, conn, writeParams)
 	if err != nil {
 		fmt.Println("ERR: ", err)
+
 		return err
 	}
 
@@ -194,6 +202,7 @@ func testTasks(ctx context.Context) error {
 	conn := attio.GetAttioConnector(ctx)
 
 	slog.Info("Creating the task")
+
 	writeParams := common.WriteParams{
 		ObjectName: "tasks",
 		RecordData: map[string]any{
@@ -225,6 +234,7 @@ func testTasks(ctx context.Context) error {
 	writeRes, err := Write(ctx, conn, writeParams)
 	if err != nil {
 		fmt.Println("ERR: ", err)
+
 		return err
 	}
 
@@ -246,6 +256,7 @@ func testTasks(ctx context.Context) error {
 	writeres, err := Write(ctx, conn, updateParams)
 	if err != nil {
 		fmt.Println("ERR: ", err)
+
 		return err
 	}
 
@@ -260,6 +271,7 @@ func testWebhooks(ctx context.Context) error {
 	conn := attio.GetAttioConnector(ctx)
 
 	slog.Info("Creating the webhooks")
+
 	writeParams := common.WriteParams{
 		ObjectName: "webhooks",
 		RecordData: map[string]any{
@@ -279,6 +291,7 @@ func testWebhooks(ctx context.Context) error {
 	writeRes, err := Write(ctx, conn, writeParams)
 	if err != nil {
 		fmt.Println("ERR: ", err)
+
 		return err
 	}
 
@@ -305,6 +318,7 @@ func testWebhooks(ctx context.Context) error {
 	writeres, err := Write(ctx, conn, updateParams)
 	if err != nil {
 		fmt.Println("ERR: ", err)
+
 		return err
 	}
 
