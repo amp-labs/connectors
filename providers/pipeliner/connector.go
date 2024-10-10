@@ -4,7 +4,6 @@ import (
 	"github.com/amp-labs/connectors/internal/deep/dpmetadata"
 	"github.com/amp-labs/connectors/internal/deep/dpobjects"
 	"github.com/amp-labs/connectors/internal/deep/dpread"
-	"github.com/amp-labs/connectors/internal/deep/dprequests"
 	"github.com/amp-labs/connectors/internal/deep/dpvars"
 	"github.com/amp-labs/connectors/internal/deep/dpwrite"
 	"strconv"
@@ -22,7 +21,7 @@ import (
 
 type Connector struct {
 	Data dpvars.ConnectorData[parameters, *dpvars.EmptyMetadataVariables]
-	dprequests.Clients
+	deep.Clients
 	deep.EmptyCloser
 	deep.Reader
 	deep.Writer
@@ -37,7 +36,7 @@ type parameters struct {
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	constructor := func(
-		clients *dprequests.Clients,
+		clients *deep.Clients,
 		closer *deep.EmptyCloser,
 		data *dpvars.ConnectorData[parameters, *dpvars.EmptyMetadataVariables],
 		reader *deep.Reader,

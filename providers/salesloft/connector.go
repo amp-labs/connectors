@@ -24,7 +24,7 @@ import (
 const apiVersion = "v2"
 
 type Connector struct {
-	dprequests.Clients
+	deep.Clients
 	deep.EmptyCloser
 	deep.Reader
 	deep.Writer
@@ -38,7 +38,7 @@ type parameters struct {
 
 func NewConnector(opts ...Option) (*Connector, error) {
 	constructor := func(
-		clients *dprequests.Clients,
+		clients *deep.Clients,
 		closer *deep.EmptyCloser,
 		reader *deep.Reader,
 		writer *deep.Writer,

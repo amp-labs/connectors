@@ -25,7 +25,7 @@ var ErrMissingCloudId = errors.New("connector missing cloud id")
 
 type Connector struct {
 	Data dpvars.ConnectorData[parameters, *AuthMetadataVars]
-	dprequests.Clients
+	deep.Clients
 	deep.EmptyCloser
 	deep.Reader
 	// Write will either create or update a Jira issue.
@@ -48,7 +48,7 @@ type parameters struct {
 
 func NewConnector(opts ...Option) (*Connector, error) {
 	constructor := func(
-		clients *dprequests.Clients,
+		clients *deep.Clients,
 		closer *deep.EmptyCloser,
 		data *dpvars.ConnectorData[parameters, *AuthMetadataVars],
 		urlResolver dpobjects.ObjectURLResolver,

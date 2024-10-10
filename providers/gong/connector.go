@@ -11,7 +11,6 @@ import (
 	"github.com/amp-labs/connectors/internal/deep/dpmetadata"
 	"github.com/amp-labs/connectors/internal/deep/dpobjects"
 	"github.com/amp-labs/connectors/internal/deep/dpread"
-	"github.com/amp-labs/connectors/internal/deep/dprequests"
 	"github.com/amp-labs/connectors/internal/deep/dpwrite"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/gong/metadata"
@@ -21,7 +20,7 @@ import (
 const ApiVersion = "v2"
 
 type Connector struct {
-	dprequests.Clients
+	deep.Clients
 	deep.EmptyCloser
 	deep.Reader
 	deep.Writer
@@ -34,7 +33,7 @@ type parameters struct {
 
 func NewConnector(opts ...Option) (*Connector, error) {
 	constructor := func(
-		clients *dprequests.Clients,
+		clients *deep.Clients,
 		closer *deep.EmptyCloser,
 		reader *deep.Reader,
 		writer *deep.Writer,

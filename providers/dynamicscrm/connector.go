@@ -22,7 +22,7 @@ import (
 const apiVersion = "v9.2"
 
 type Connector struct {
-	dprequests.Clients
+	deep.Clients
 	deep.EmptyCloser
 	// nolint:lll
 	// Microsoft API supports other capabilities like filtering, grouping, and sorting which we can potentially tap into later.
@@ -39,7 +39,7 @@ type parameters struct {
 
 func NewConnector(opts ...Option) (*Connector, error) {
 	constructor := func(
-		clients *dprequests.Clients,
+		clients *deep.Clients,
 		closer *deep.EmptyCloser,
 		reader *deep.Reader,
 		writer *deep.Writer,

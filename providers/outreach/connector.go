@@ -4,7 +4,6 @@ import (
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/deep"
-	"github.com/amp-labs/connectors/internal/deep/dprequests"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -13,8 +12,8 @@ const (
 )
 
 type Connector struct {
-	*dprequests.Clients
-	*deep.EmptyCloser
+	deep.Clients
+	deep.EmptyCloser
 }
 
 type parameters struct {
@@ -22,10 +21,10 @@ type parameters struct {
 }
 
 func NewConnector(opts ...Option) (*Connector, error) {
-	constructor := func(clients *dprequests.Clients, closer *deep.EmptyCloser) *Connector {
+	constructor := func(clients *deep.Clients, closer *deep.EmptyCloser) *Connector {
 		return &Connector{
-			Clients:     clients,
-			EmptyCloser: closer,
+			Clients:     *clients,
+			EmptyCloser: *closer,
 		}
 	}
 
