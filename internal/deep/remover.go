@@ -12,14 +12,14 @@ import (
 )
 
 type Remover struct {
-	clients           Clients
+	clients           dprequests.Clients
 	urlResolver       dpobjects.ObjectURLResolver
 	objectManager     dpobjects.ObjectManager
 	requestBuilder    RemoveRequestBuilder
 	headerSupplements dprequests.HeaderSupplements
 }
 
-func NewRemover(clients *Clients,
+func NewRemover(clients *dprequests.Clients,
 	resolver dpobjects.ObjectURLResolver,
 	objectManager dpobjects.ObjectManager,
 	requestBuilder RemoveRequestBuilder,
@@ -64,7 +64,7 @@ func (r *Remover) Delete(ctx context.Context, config common.DeleteParams) (*comm
 type RemoveRequestBuilder interface {
 	requirements.ConnectorComponent
 
-	MakeDeleteRequest(objectName, recordID string, clients Clients) (common.DeleteMethod, []common.Header)
+	MakeDeleteRequest(objectName, recordID string, clients dprequests.Clients) (common.DeleteMethod, []common.Header)
 }
 
 var _ RemoveRequestBuilder = DeleteRequestBuilder{}
@@ -83,7 +83,7 @@ func (b DeleteRequestBuilder) Satisfies() requirements.Dependency {
 
 type simpleRemoveDeleteRequest struct{}
 
-func (simpleRemoveDeleteRequest) MakeDeleteRequest(objectName, recordID string, clients Clients) (common.DeleteMethod, []common.Header) {
+func (simpleRemoveDeleteRequest) MakeDeleteRequest(objectName, recordID string, clients dprequests.Clients) (common.DeleteMethod, []common.Header) {
 	// Wrapper around DELETE without request body.
 	return func(ctx context.Context, url *urlbuilder.URL,
 		body any, headers ...common.Header,

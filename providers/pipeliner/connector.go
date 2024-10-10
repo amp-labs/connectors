@@ -2,6 +2,8 @@ package pipeliner
 
 import (
 	"github.com/amp-labs/connectors/internal/deep/dpobjects"
+	"github.com/amp-labs/connectors/internal/deep/dpread"
+	"github.com/amp-labs/connectors/internal/deep/dprequests"
 	"github.com/amp-labs/connectors/internal/deep/dpvars"
 	"strconv"
 
@@ -18,7 +20,7 @@ import (
 
 type Connector struct {
 	Data dpvars.ConnectorData[parameters, *dpvars.EmptyMetadataVariables]
-	deep.Clients
+	dprequests.Clients
 	deep.EmptyCloser
 	deep.Reader
 	deep.Writer
@@ -33,7 +35,7 @@ type parameters struct {
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	constructor := func(
-		clients *deep.Clients,
+		clients *dprequests.Clients,
 		closer *deep.EmptyCloser,
 		data *dpvars.ConnectorData[parameters, *dpvars.EmptyMetadataVariables],
 		reader *deep.Reader,
@@ -57,14 +59,14 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	meta := deep.StaticMetadataHolder{
 		Metadata: metadata.Schemas,
 	}
-	firstPage := deep.FirstPageBuilder{
+	firstPage := dpread.FirstPageBuilder{
 		Build: func(config common.ReadParams, url *urlbuilder.URL) (*urlbuilder.URL, error) {
 			url.WithQueryParam("first", strconv.Itoa(DefaultPageSize))
 
 			return url, nil
 		},
 	}
-	nextPage := deep.NextPageBuilder{
+	nextPage := dpread.NextPageBuilder{
 		Build: func(config common.ReadParams, previousPage *urlbuilder.URL, node *ajson.Node) (string, error) {
 			after, err := jsonquery.New(node, "page_info").StrWithDefault("end_cursor", "")
 			if err != nil {
@@ -80,7 +82,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 			return "", nil
 		},
 	}
-	readObjectLocator := deep.ReadObjectLocator{
+	readObjectLocator := dpread.ReadObjectLocator{
 		Locate: func(config common.ReadParams, node *ajson.Node) string {
 			return "data"
 		},

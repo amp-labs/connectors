@@ -3,6 +3,8 @@ package salesforce
 import (
 	"errors"
 	"github.com/amp-labs/connectors/internal/deep/dpobjects"
+	"github.com/amp-labs/connectors/internal/deep/dpread"
+	"github.com/amp-labs/connectors/internal/deep/dprequests"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
@@ -24,7 +26,7 @@ const (
 )
 
 type Connector struct {
-	deep.Clients
+	dprequests.Clients
 	deep.EmptyCloser
 	deep.Reader
 	deep.Writer
@@ -37,7 +39,7 @@ type parameters struct {
 
 func NewConnector(opts ...Option) (*Connector, error) {
 	constructor := func(
-		clients *deep.Clients,
+		clients *dprequests.Clients,
 		closer *deep.EmptyCloser,
 		reader *deep.Reader,
 		writer *deep.Writer,
@@ -75,7 +77,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			return nil, errors.New("cannot match URL for object")
 		},
 	}
-	firstPage := deep.FirstPageBuilder{
+	firstPage := dpread.FirstPageBuilder{
 		Build: func(config common.ReadParams, url *urlbuilder.URL) (*urlbuilder.URL, error) {
 			// Read reads data from Salesforce. By default, it will read all rows (backfill). However, if Since is set,
 			// it will read only rows that have been updated since the specified time.
@@ -85,12 +87,12 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			return url, nil
 		},
 	}
-	nextPage := deep.NextPageBuilder{
+	nextPage := dpread.NextPageBuilder{
 		Build: func(config common.ReadParams, previousPage *urlbuilder.URL, node *ajson.Node) (string, error) {
 			return jsonquery.New(node).StrWithDefault("nextRecordsUrl", "")
 		},
 	}
-	readObjectLocator := deep.ReadObjectLocator{
+	readObjectLocator := dpread.ReadObjectLocator{
 		Locate: func(config common.ReadParams, node *ajson.Node) string {
 			return "records"
 		},

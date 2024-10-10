@@ -9,6 +9,8 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/deep"
 	"github.com/amp-labs/connectors/internal/deep/dpobjects"
+	"github.com/amp-labs/connectors/internal/deep/dpread"
+	"github.com/amp-labs/connectors/internal/deep/dprequests"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/gong/metadata"
 	"github.com/spyzhov/ajson"
@@ -17,7 +19,7 @@ import (
 const ApiVersion = "v2"
 
 type Connector struct {
-	deep.Clients
+	dprequests.Clients
 	deep.EmptyCloser
 	deep.Reader
 	deep.Writer
@@ -30,7 +32,7 @@ type parameters struct {
 
 func NewConnector(opts ...Option) (*Connector, error) {
 	constructor := func(
-		clients *deep.Clients,
+		clients *dprequests.Clients,
 		closer *deep.EmptyCloser,
 		reader *deep.Reader,
 		writer *deep.Writer,
@@ -59,7 +61,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			return urlbuilder.New(baseURL, ApiVersion, objectName)
 		},
 	}
-	firstPage := deep.FirstPageBuilder{
+	firstPage := dpread.FirstPageBuilder{
 		Build: func(config common.ReadParams, url *urlbuilder.URL) (*urlbuilder.URL, error) {
 			if !config.Since.IsZero() {
 				// This time format is RFC3339 but in UTC only.
@@ -71,7 +73,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			return url, nil
 		},
 	}
-	nextPage := deep.NextPageBuilder{
+	nextPage := dpread.NextPageBuilder{
 		Build: func(config common.ReadParams, previousPage *urlbuilder.URL, node *ajson.Node) (string, error) {
 			nextPageCursor, err := jsonquery.New(node, "records").StrWithDefault("cursor", "")
 			if err != nil {
@@ -87,7 +89,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			return "", nil
 		},
 	}
-	readObjectLocator := deep.ReadObjectLocator{
+	readObjectLocator := dpread.ReadObjectLocator{
 		Locate: func(config common.ReadParams, node *ajson.Node) string {
 			return config.ObjectName
 		},

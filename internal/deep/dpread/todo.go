@@ -1,107 +1,16 @@
-package deep
+package dpread
 
 import (
 	"context"
 	"errors"
-	"github.com/amp-labs/connectors/internal/deep/dpobjects"
-	"github.com/amp-labs/connectors/internal/deep/dprequests"
-
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/handy"
 	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/deep/dprequests"
 	"github.com/amp-labs/connectors/internal/deep/requirements"
 	"github.com/spyzhov/ajson"
 )
-
-type Reader struct {
-	urlResolver       dpobjects.ObjectURLResolver
-	pageStartBuilder  PaginationStartBuilder
-	nextPageBuilder   NextPageBuilder
-	readObjectLocator ReadObjectLocator
-	objectManager     dpobjects.ObjectManager
-	requestBuilder    ReadRequestBuilder
-	headerSupplements dprequests.HeaderSupplements
-
-	clients Clients
-}
-
-func NewReader(clients *Clients,
-	resolver dpobjects.ObjectURLResolver,
-	pageStartBuilder PaginationStartBuilder,
-	nextPageBuilder *NextPageBuilder,
-	objectLocator *ReadObjectLocator,
-	objectManager dpobjects.ObjectManager,
-	requestBuilder ReadRequestBuilder,
-	headerSupplements *dprequests.HeaderSupplements,
-) *Reader {
-	return &Reader{
-		urlResolver:       resolver,
-		pageStartBuilder:  pageStartBuilder,
-		nextPageBuilder:   *nextPageBuilder,
-		readObjectLocator: *objectLocator,
-		objectManager:     objectManager,
-		requestBuilder:    requestBuilder,
-		headerSupplements: *headerSupplements,
-		clients:           *clients,
-	}
-}
-
-func (r *Reader) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
-	if err := config.ValidateParams(true); err != nil {
-		return nil, err
-	}
-
-	if !r.objectManager.IsReadSupported(config.ObjectName) {
-		return nil, common.ErrOperationNotSupportedForObject
-	}
-
-	url, err := r.buildReadURL(config)
-	if err != nil {
-		return nil, err
-	}
-
-	read, headers := r.requestBuilder.MakeReadRequest(config.ObjectName, r.clients)
-	headers = append(headers, r.headerSupplements.ReadHeaders()...)
-
-	rsp, err := read(ctx, url, nil, headers...)
-	if err != nil {
-		return nil, err
-	}
-
-	recordsFunc, err := r.readObjectLocator.getRecordsFunc(config)
-	if err != nil {
-		return nil, err
-	}
-
-	nextPageFunc, err := r.nextPageBuilder.getNextPageFunc(config, url)
-	if err != nil {
-		return nil, err
-	}
-
-	return common.ParseResult(
-		rsp,
-		recordsFunc,
-		nextPageFunc,
-		common.GetMarshaledData,
-		config.Fields,
-	)
-}
-
-func (r *Reader) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error) {
-	if len(config.NextPage) != 0 {
-		// Next page
-		return urlbuilder.New(config.NextPage.String())
-	}
-
-	// First page
-	url, err := r.urlResolver.FindURL(dpobjects.ReadMethod, r.clients.BaseURL(), config.ObjectName)
-	if err != nil {
-		return nil, err
-	}
-
-	return r.pageStartBuilder.FirstPage(config, url)
-}
 
 type PaginationStartBuilder interface {
 	requirements.ConnectorComponent
@@ -151,7 +60,7 @@ type NextPageBuilder struct {
 	Build func(config common.ReadParams, previousPage *urlbuilder.URL, node *ajson.Node) (string, error)
 }
 
-func (b NextPageBuilder) getNextPageFunc(config common.ReadParams, url *urlbuilder.URL) (common.NextPageFunc, error) {
+func (b NextPageBuilder) GetNextPageFunc(config common.ReadParams, url *urlbuilder.URL) (common.NextPageFunc, error) {
 	if b.Build == nil {
 		// TODO error
 		return nil, errors.New("build method cannot be empty")
@@ -177,7 +86,7 @@ type ReadObjectLocator struct {
 	FlattenRecords func(arr []*ajson.Node) ([]map[string]any, error)
 }
 
-func (l ReadObjectLocator) getRecordsFunc(config common.ReadParams) (common.RecordsFunc, error) {
+func (l ReadObjectLocator) GetRecordsFunc(config common.ReadParams) (common.RecordsFunc, error) {
 	if l.Locate == nil {
 		// TODO error
 		return nil, errors.New("locate method cannot be empty")
@@ -209,7 +118,7 @@ func (l ReadObjectLocator) Satisfies() requirements.Dependency {
 type ReadRequestBuilder interface {
 	requirements.ConnectorComponent
 
-	MakeReadRequest(objectName string, clients Clients) (common.ReadMethod, []common.Header)
+	MakeReadRequest(objectName string, clients dprequests.Clients) (common.ReadMethod, []common.Header)
 }
 
 var _ ReadRequestBuilder = GetRequestBuilder{}
@@ -234,7 +143,7 @@ type GetWithHeadersRequestBuilder struct {
 }
 
 func (b GetWithHeadersRequestBuilder) MakeReadRequest(
-	objectName string, clients Clients,
+	objectName string, clients dprequests.Clients,
 ) (common.ReadMethod, []common.Header) {
 	method, _ := b.delegate.MakeReadRequest(objectName, clients)
 
@@ -252,7 +161,7 @@ func (b GetWithHeadersRequestBuilder) Satisfies() requirements.Dependency {
 type simpleGetReadRequest struct{}
 
 func (simpleGetReadRequest) MakeReadRequest(
-	objectName string, clients Clients,
+	objectName string, clients dprequests.Clients,
 ) (common.ReadMethod, []common.Header) {
 	// Wrapper around GET without request body.
 	return func(ctx context.Context, url *urlbuilder.URL,

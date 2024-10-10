@@ -2,6 +2,8 @@ package smartlead
 
 import (
 	"github.com/amp-labs/connectors/internal/deep/dpobjects"
+	"github.com/amp-labs/connectors/internal/deep/dpread"
+	"github.com/amp-labs/connectors/internal/deep/dprequests"
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
@@ -18,7 +20,7 @@ import (
 const apiVersion = "v1"
 
 type Connector struct {
-	deep.Clients
+	dprequests.Clients
 	deep.EmptyCloser
 	deep.Reader
 	// Write method allows to
@@ -38,7 +40,7 @@ type parameters struct {
 
 func NewConnector(opts ...Option) (*Connector, error) {
 	constructor := func(
-		clients *deep.Clients,
+		clients *dprequests.Clients,
 		closer *deep.EmptyCloser,
 		reader *deep.Reader,
 		writer *deep.Writer,
@@ -83,18 +85,18 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		Write:  supportedObjectsByWrite,
 		Delete: supportedObjectsByDelete,
 	}
-	firstPage := deep.FirstPageBuilder{
+	firstPage := dpread.FirstPageBuilder{
 		Build: func(config common.ReadParams, url *urlbuilder.URL) (*urlbuilder.URL, error) {
 			return url, nil
 		},
 	}
-	nextPage := deep.NextPageBuilder{
+	nextPage := dpread.NextPageBuilder{
 		Build: func(config common.ReadParams, previousPage *urlbuilder.URL, node *ajson.Node) (string, error) {
 			// Pagination is not supported for this provider.
 			return "", nil
 		},
 	}
-	readObjectLocator := deep.ReadObjectLocator{
+	readObjectLocator := dpread.ReadObjectLocator{
 		Locate: func(config common.ReadParams, node *ajson.Node) string {
 			// The response is already an array. Empty string signifies to look "here" for array.
 			return ""

@@ -3,8 +3,8 @@ package atlassian
 import (
 	"errors"
 	"github.com/amp-labs/connectors/common/urlbuilder"
-	"github.com/amp-labs/connectors/internal/deep"
 	"github.com/amp-labs/connectors/internal/deep/dpobjects"
+	"github.com/amp-labs/connectors/internal/deep/dprequests"
 	"github.com/amp-labs/connectors/internal/deep/dpvars"
 	"github.com/amp-labs/connectors/internal/deep/requirements"
 )
@@ -13,7 +13,7 @@ var _ dpobjects.ObjectURLResolver = customURLBuilder{}
 
 func newURLBuilder(
 	data *dpvars.ConnectorData[parameters, *AuthMetadataVars],
-	clients *deep.Clients,
+	clients *dprequests.Clients,
 ) *customURLBuilder {
 	return &customURLBuilder{
 		data:    data,
@@ -23,7 +23,7 @@ func newURLBuilder(
 
 type customURLBuilder struct {
 	data    *dpvars.ConnectorData[parameters, *AuthMetadataVars]
-	clients *deep.Clients
+	clients *dprequests.Clients
 }
 
 func (f customURLBuilder) FindURL(method dpobjects.Method, baseURL, objectName string) (*urlbuilder.URL, error) {

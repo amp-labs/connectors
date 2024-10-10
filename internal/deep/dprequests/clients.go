@@ -1,4 +1,4 @@
-package deep
+package dprequests
 
 import (
 	"errors"
@@ -17,7 +17,7 @@ type Clients struct {
 	XML        *common.XMLHTTPClient
 }
 
-func newClients[P paramsbuilder.ParamAssurance, D dpvars.MetadataVariables](
+func NewClients[P paramsbuilder.ParamAssurance, D dpvars.MetadataVariables](
 	provider providers.Provider,
 	parameters *dpvars.Parameters[P],
 	catalogVars *dpvars.CatalogVariables[P, D],

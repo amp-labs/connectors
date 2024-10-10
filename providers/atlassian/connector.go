@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/amp-labs/connectors/internal/deep/dpobjects"
+	"github.com/amp-labs/connectors/internal/deep/dpread"
+	"github.com/amp-labs/connectors/internal/deep/dprequests"
 	"github.com/amp-labs/connectors/internal/deep/dpvars"
 	"time"
 
@@ -22,7 +24,7 @@ var ErrMissingCloudId = errors.New("connector missing cloud id")
 
 type Connector struct {
 	Data dpvars.ConnectorData[parameters, *AuthMetadataVars]
-	deep.Clients
+	dprequests.Clients
 	deep.EmptyCloser
 	deep.Reader
 	// Write will either create or update a Jira issue.
@@ -45,7 +47,7 @@ type parameters struct {
 
 func NewConnector(opts ...Option) (*Connector, error) {
 	constructor := func(
-		clients *deep.Clients,
+		clients *dprequests.Clients,
 		closer *deep.EmptyCloser,
 		data *dpvars.ConnectorData[parameters, *AuthMetadataVars],
 		urlResolver dpobjects.ObjectURLResolver,
@@ -66,7 +68,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	errorHandler := interpreter.ErrorHandler{
 		JSON: interpreter.NewFaultyResponder(errorFormats, nil),
 	}
-	firstPage := deep.FirstPageBuilder{
+	firstPage := dpread.FirstPageBuilder{
 		Build: func(config common.ReadParams, url *urlbuilder.URL) (*urlbuilder.URL, error) {
 			if !config.Since.IsZero() {
 				// Read URL supports time scoping. common.ReadParams.Since is used to get relative time frame.
@@ -84,7 +86,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			return url, nil
 		},
 	}
-	nextPage := deep.NextPageBuilder{
+	nextPage := dpread.NextPageBuilder{
 		Build: func(config common.ReadParams, previousPage *urlbuilder.URL, node *ajson.Node) (string, error) {
 			startAt, err := getNextRecords(node)
 			if err != nil {
@@ -100,7 +102,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			return "", nil
 		},
 	}
-	readObjectLocator := deep.ReadObjectLocator{
+	readObjectLocator := dpread.ReadObjectLocator{
 		Locate: func(config common.ReadParams, node *ajson.Node) string {
 			return "issues"
 		},

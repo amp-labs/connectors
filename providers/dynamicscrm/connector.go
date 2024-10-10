@@ -3,6 +3,7 @@ package dynamicscrm
 import (
 	"fmt"
 	"github.com/amp-labs/connectors/internal/deep/dpobjects"
+	"github.com/amp-labs/connectors/internal/deep/dpread"
 	"github.com/amp-labs/connectors/internal/deep/dprequests"
 	"strings"
 
@@ -20,7 +21,7 @@ import (
 const apiVersion = "v9.2"
 
 type Connector struct {
-	deep.Clients
+	dprequests.Clients
 	deep.EmptyCloser
 	// nolint:lll
 	// Microsoft API supports other capabilities like filtering, grouping, and sorting which we can potentially tap into later.
@@ -37,7 +38,7 @@ type parameters struct {
 
 func NewConnector(opts ...Option) (*Connector, error) {
 	constructor := func(
-		clients *deep.Clients,
+		clients *dprequests.Clients,
 		closer *deep.EmptyCloser,
 		reader *deep.Reader,
 		writer *deep.Writer,
@@ -54,7 +55,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	errorHandler := interpreter.ErrorHandler{
 		JSON: interpreter.NewFaultyResponder(errorFormats, nil),
 	}
-	firstPage := deep.FirstPageBuilder{
+	firstPage := dpread.FirstPageBuilder{
 		Build: func(config common.ReadParams, url *urlbuilder.URL) (*urlbuilder.URL, error) {
 			fields := config.Fields.List()
 			if len(fields) != 0 {
@@ -64,7 +65,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			return url, nil
 		},
 	}
-	nextPage := deep.NextPageBuilder{
+	nextPage := dpread.NextPageBuilder{
 		Build: func(config common.ReadParams, previousPage *urlbuilder.URL, node *ajson.Node) (string, error) {
 			nextLink, err := jsonquery.New(node).StrWithDefault("@odata.nextLink", "")
 			if err != nil {
@@ -90,7 +91,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			},
 		},
 	}
-	readObjectLocator := deep.ReadObjectLocator{
+	readObjectLocator := dpread.ReadObjectLocator{
 		Locate: func(config common.ReadParams, node *ajson.Node) string {
 			return "value"
 		},

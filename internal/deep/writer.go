@@ -20,10 +20,10 @@ type Writer struct {
 	requestBuilder    WriteRequestBuilder
 	headerSupplements dprequests.HeaderSupplements
 
-	clients Clients
+	clients dprequests.Clients
 }
 
-func NewWriter(clients *Clients,
+func NewWriter(clients *dprequests.Clients,
 	resolver dpobjects.ObjectURLResolver,
 	requestBuilder WriteRequestBuilder,
 	resultBuilder *WriteResultBuilder,
@@ -107,9 +107,9 @@ type WriteRequestBuilder interface {
 	requirements.ConnectorComponent
 
 	MakeCreateRequest(
-		objectName string, url *urlbuilder.URL, clients Clients) (common.WriteMethod, []common.Header)
+		objectName string, url *urlbuilder.URL, clients dprequests.Clients) (common.WriteMethod, []common.Header)
 	MakeUpdateRequest(
-		objectName, recordID string, url *urlbuilder.URL, clients Clients) (common.WriteMethod, []common.Header)
+		objectName, recordID string, url *urlbuilder.URL, clients dprequests.Clients) (common.WriteMethod, []common.Header)
 }
 
 type PostPutWriteRequestBuilder struct {
@@ -175,7 +175,7 @@ func (b PostPostWriteRequestBuilder) Satisfies() requirements.Dependency {
 type SimplePostCreateRequest struct{}
 
 func (SimplePostCreateRequest) MakeCreateRequest(
-	objectName string, url *urlbuilder.URL, clients Clients,
+	objectName string, url *urlbuilder.URL, clients dprequests.Clients,
 ) (common.WriteMethod, []common.Header) {
 	return clients.JSON.Post, nil
 }
@@ -183,7 +183,7 @@ func (SimplePostCreateRequest) MakeCreateRequest(
 type simplePutUpdateRequest struct{}
 
 func (simplePutUpdateRequest) MakeUpdateRequest(
-	objectName string, recordID string, url *urlbuilder.URL, clients Clients,
+	objectName string, recordID string, url *urlbuilder.URL, clients dprequests.Clients,
 ) (common.WriteMethod, []common.Header) {
 	url.AddPath(recordID)
 
@@ -193,7 +193,7 @@ func (simplePutUpdateRequest) MakeUpdateRequest(
 type simpleNoopUpdateRequest struct{}
 
 func (simpleNoopUpdateRequest) MakeUpdateRequest(
-	string, string, *urlbuilder.URL, Clients,
+	string, string, *urlbuilder.URL, dprequests.Clients,
 ) (common.WriteMethod, []common.Header) {
 	return nil, nil
 }
@@ -201,7 +201,7 @@ func (simpleNoopUpdateRequest) MakeUpdateRequest(
 type SimplePatchUpdateRequest struct{}
 
 func (SimplePatchUpdateRequest) MakeUpdateRequest(
-	objectName string, recordID string, url *urlbuilder.URL, clients Clients,
+	objectName string, recordID string, url *urlbuilder.URL, clients dprequests.Clients,
 ) (common.WriteMethod, []common.Header) {
 	url.AddPath(recordID)
 
@@ -211,7 +211,7 @@ func (SimplePatchUpdateRequest) MakeUpdateRequest(
 type SimplePostUpdateRequest struct{}
 
 func (SimplePostUpdateRequest) MakeUpdateRequest(
-	objectName string, recordID string, url *urlbuilder.URL, clients Clients,
+	objectName string, recordID string, url *urlbuilder.URL, clients dprequests.Clients,
 ) (common.WriteMethod, []common.Header) {
 	url.AddPath(recordID)
 

@@ -3,6 +3,7 @@ package dynamicscrm
 import (
 	"context"
 	"fmt"
+	"github.com/amp-labs/connectors/internal/deep/dprequests"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/handy"
@@ -21,7 +22,7 @@ type customWriterRequestBuilder struct {
 }
 
 func (customWriterRequestBuilder) MakeUpdateRequest(
-	objectName, recordID string, url *urlbuilder.URL, clients deep.Clients,
+	objectName, recordID string, url *urlbuilder.URL, clients dprequests.Clients,
 ) (common.WriteMethod, []common.Header) {
 	// Microsoft doesn't add IDs as a separate URI part.
 	// It is in format: .../Orders(123)
@@ -40,7 +41,7 @@ func (b customWriterRequestBuilder) Satisfies() requirements.Dependency {
 
 type customRemoveRequestBuilder struct{}
 
-func (b customRemoveRequestBuilder) MakeDeleteRequest(objectName, recordID string, clients deep.Clients) (common.DeleteMethod, []common.Header) {
+func (b customRemoveRequestBuilder) MakeDeleteRequest(objectName, recordID string, clients dprequests.Clients) (common.DeleteMethod, []common.Header) {
 	// Wrapper around DELETE without request body.
 	return func(ctx context.Context, url *urlbuilder.URL,
 		body any, headers ...common.Header,

@@ -1,6 +1,7 @@
 package apollo
 
 import (
+	"github.com/amp-labs/connectors/internal/deep/dprequests"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
@@ -11,7 +12,7 @@ import (
 )
 
 type Connector struct {
-	*deep.Clients
+	*dprequests.Clients
 	*deep.EmptyCloser
 }
 
@@ -20,7 +21,7 @@ type parameters struct {
 }
 
 func NewConnector(opts ...Option) (*Connector, error) {
-	constructor := func(clients *deep.Clients, closer *deep.EmptyCloser) *Connector {
+	constructor := func(clients *dprequests.Clients, closer *deep.EmptyCloser) *Connector {
 		return &Connector{
 			Clients:     clients,
 			EmptyCloser: closer,

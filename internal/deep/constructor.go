@@ -4,6 +4,7 @@ import (
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/internal/deep/dpobjects"
+	"github.com/amp-labs/connectors/internal/deep/dpread"
 	"github.com/amp-labs/connectors/internal/deep/dprequests"
 	"github.com/amp-labs/connectors/internal/deep/dpvars"
 	"github.com/amp-labs/connectors/internal/deep/requirements"
@@ -67,14 +68,14 @@ func ExtendedConnector[C any, P paramsbuilder.ParamAssurance, D dpvars.MetadataV
 		metadataVariables.Satisfies(),
 		dpvars.ConnectorData[P, D]{}.Satisfies(),
 		dpvars.CatalogVariables[P, D]{}.Satisfies(),
-		GetRequestBuilder{}.Satisfies(),
+		dpread.GetRequestBuilder{}.Satisfies(),
 		DeleteRequestBuilder{}.Satisfies(),
 		dprequests.HeaderSupplements{}.Satisfies(),
-		DefaultPageBuilder{}.Satisfies(),
+		dpread.DefaultPageBuilder{}.Satisfies(),
 		{
 			// Connector will have HTTP clients which can be implied from parameters "P".
 			ID:          "clients",
-			Constructor: newClients[P, D],
+			Constructor: dprequests.NewClients[P, D],
 		},
 		{
 			// Connector that lists Objects.

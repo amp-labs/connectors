@@ -2,6 +2,8 @@ package instantly
 
 import (
 	"github.com/amp-labs/connectors/internal/deep/dpobjects"
+	"github.com/amp-labs/connectors/internal/deep/dpread"
+	"github.com/amp-labs/connectors/internal/deep/dprequests"
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
@@ -18,7 +20,7 @@ import (
 const apiVersion = "v1"
 
 type Connector struct {
-	deep.Clients
+	dprequests.Clients
 	deep.EmptyCloser
 	deep.Reader
 	// Write method allows to
@@ -41,7 +43,7 @@ type parameters struct {
 
 func NewConnector(opts ...Option) (*Connector, error) {
 	constructor := func(
-		clients *deep.Clients,
+		clients *dprequests.Clients,
 		closer *deep.EmptyCloser,
 		reader *deep.Reader,
 		writer *deep.Writer,
@@ -80,7 +82,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			return urlbuilder.New(baseURL, apiVersion, path)
 		},
 	}
-	firstPage := deep.FirstPageBuilder{
+	firstPage := dpread.FirstPageBuilder{
 		Build: func(config common.ReadParams, url *urlbuilder.URL) (*urlbuilder.URL, error) {
 			url.WithQueryParam("skip", "0")
 			url.WithQueryParam("limit", strconv.Itoa(DefaultPageSize))
@@ -88,7 +90,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			return url, nil
 		},
 	}
-	nextPage := deep.NextPageBuilder{
+	nextPage := dpread.NextPageBuilder{
 		Build: func(config common.ReadParams, previousPage *urlbuilder.URL, node *ajson.Node) (string, error) {
 			previousStart := 0
 
@@ -108,7 +110,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			return previousPage.String(), nil
 		},
 	}
-	readObjectLocator := deep.ReadObjectLocator{
+	readObjectLocator := dpread.ReadObjectLocator{
 		Locate: func(config common.ReadParams, node *ajson.Node) string {
 			return readObjects[config.ObjectName].NodePath
 		},
