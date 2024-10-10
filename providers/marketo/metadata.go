@@ -37,13 +37,13 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 
 		resp, err := c.Client.Get(ctx, url.String())
 		if err != nil {
-			runFallback(obj, &metadataResult)
+			runFallback(c.Module.ID, obj, &metadataResult)
 
 			continue
 		}
 
 		if _, ok := resp.Body(); !ok {
-			runFallback(obj, &metadataResult)
+			runFallback(c.Module.ID, obj, &metadataResult)
 
 			continue
 		}
@@ -51,7 +51,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 		data, err := parseMetadataFromResponse(resp)
 		if err != nil {
 			if errors.Is(err, common.ErrMissingExpectedValues) {
-				runFallback(obj, &metadataResult)
+				runFallback(c.Module.ID, obj, &metadataResult)
 
 				continue
 			} else {
@@ -88,8 +88,8 @@ func parseMetadataFromResponse(resp *common.JSONHTTPResponse) (*common.ObjectMet
 	return data, nil
 }
 
-func metadataFallback(objectName string) (*common.ObjectMetadata, error) {
-	metadatResult, err := metadata.Schemas.Select([]string{objectName})
+func metadataFallback(moduleID common.ModuleID, objectName string) (*common.ObjectMetadata, error) {
+	metadatResult, err := metadata.Schemas.Select(moduleID, []string{objectName})
 	if err != nil {
 		return nil, err
 	}
@@ -99,9 +99,11 @@ func metadataFallback(objectName string) (*common.ObjectMetadata, error) {
 	return &data, nil
 }
 
-func runFallback(obj string, res *common.ListObjectMetadataResult) *common.ListObjectMetadataResult { //nolint:unparam
+func runFallback(
+	moduleID common.ModuleID, obj string, res *common.ListObjectMetadataResult,
+) *common.ListObjectMetadataResult { //nolint:unparam
 	// Try fallback function
-	data, err := metadataFallback(obj)
+	data, err := metadataFallback(moduleID, obj)
 	if err != nil {
 		res.Errors[obj] = err
 
