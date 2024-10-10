@@ -17,4 +17,3 @@ func (h StaticMetadataHolder) Satisfies() requirements.Dependency {
 		Constructor: handy.Returner(h),
 	}
 }
-

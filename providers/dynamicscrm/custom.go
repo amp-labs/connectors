@@ -3,13 +3,13 @@ package dynamicscrm
 import (
 	"context"
 	"fmt"
-	"github.com/amp-labs/connectors/internal/deep/dpremove"
-	"github.com/amp-labs/connectors/internal/deep/dprequests"
-	"github.com/amp-labs/connectors/internal/deep/dpwrite"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/handy"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/deep/dpremove"
+	"github.com/amp-labs/connectors/internal/deep/dprequests"
+	"github.com/amp-labs/connectors/internal/deep/dpwrite"
 	"github.com/amp-labs/connectors/internal/deep/requirements"
 )
 

@@ -2,6 +2,7 @@ package dpremove
 
 import (
 	"context"
+
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/handy"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -41,4 +42,3 @@ func (simpleRemoveDeleteRequest) MakeDeleteRequest(objectName, recordID string, 
 		return clients.JSON.Delete(ctx, url.String(), headers...)
 	}, nil
 }
-

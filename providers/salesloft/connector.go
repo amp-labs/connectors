@@ -2,11 +2,6 @@ package salesloft
 
 import (
 	"errors"
-	"github.com/amp-labs/connectors/internal/deep/dpmetadata"
-	"github.com/amp-labs/connectors/internal/deep/dpobjects"
-	"github.com/amp-labs/connectors/internal/deep/dpread"
-	"github.com/amp-labs/connectors/internal/deep/dprequests"
-	"github.com/amp-labs/connectors/internal/deep/dpwrite"
 	"strconv"
 	"time"
 
@@ -16,6 +11,10 @@ import (
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/deep"
+	"github.com/amp-labs/connectors/internal/deep/dpmetadata"
+	"github.com/amp-labs/connectors/internal/deep/dpobjects"
+	"github.com/amp-labs/connectors/internal/deep/dpread"
+	"github.com/amp-labs/connectors/internal/deep/dpwrite"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/salesloft/metadata"
 	"github.com/spyzhov/ajson"

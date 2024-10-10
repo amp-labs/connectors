@@ -1,7 +1,6 @@
 package apollo
 
 import (
-	"github.com/amp-labs/connectors/internal/deep/dprequests"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"

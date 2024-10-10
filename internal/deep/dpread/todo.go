@@ -3,6 +3,7 @@ package dpread
 import (
 	"context"
 	"errors"
+
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/handy"
 	"github.com/amp-labs/connectors/common/jsonquery"

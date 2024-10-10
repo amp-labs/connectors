@@ -3,11 +3,11 @@ package deep
 import (
 	"context"
 	"errors"
+
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/deep/dpobjects"
 	"github.com/amp-labs/connectors/internal/deep/dprequests"
 	"github.com/amp-labs/connectors/internal/deep/dpwrite"
-
-	"github.com/amp-labs/connectors/common"
 )
 
 type Writer struct {

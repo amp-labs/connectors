@@ -3,11 +3,6 @@ package atlassian
 import (
 	"errors"
 	"fmt"
-	"github.com/amp-labs/connectors/internal/deep/dpobjects"
-	"github.com/amp-labs/connectors/internal/deep/dpread"
-	"github.com/amp-labs/connectors/internal/deep/dprequests"
-	"github.com/amp-labs/connectors/internal/deep/dpvars"
-	"github.com/amp-labs/connectors/internal/deep/dpwrite"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
@@ -16,6 +11,10 @@ import (
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/deep"
+	"github.com/amp-labs/connectors/internal/deep/dpobjects"
+	"github.com/amp-labs/connectors/internal/deep/dpread"
+	"github.com/amp-labs/connectors/internal/deep/dpvars"
+	"github.com/amp-labs/connectors/internal/deep/dpwrite"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/spyzhov/ajson"
 )
