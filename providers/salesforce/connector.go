@@ -2,6 +2,7 @@ package salesforce
 
 import (
 	"errors"
+
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/jsonquery"

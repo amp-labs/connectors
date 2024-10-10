@@ -2,9 +2,10 @@ package salesforce
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/handy"
-	"strings"
 )
 
 // soqlBuilder builder of Salesforce Object Query Language.
