@@ -3,6 +3,7 @@ package deep
 import (
 	"errors"
 	"fmt"
+
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
@@ -27,6 +28,7 @@ func newClients[P paramsbuilder.ParamAssurance, D MetadataVariables](
 		// TODO complain that parameters doesn't hold HTTP client
 		return nil, errors.New("not good")
 	}
+
 	client := clientHolder.GiveClient().Caller
 
 	providerInfo, err := providers.ReadInfo(provider, catalogVars.List...)

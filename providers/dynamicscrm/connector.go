@@ -2,6 +2,8 @@ package dynamicscrm
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/jsonquery"
@@ -11,7 +13,6 @@ import (
 	"github.com/amp-labs/connectors/internal/deep"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/spyzhov/ajson"
-	"strings"
 )
 
 const apiVersion = "v9.2"
@@ -38,7 +39,8 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		closer *deep.EmptyCloser,
 		reader *deep.Reader,
 		writer *deep.Writer,
-		remover *deep.Remover) *Connector {
+		remover *deep.Remover,
+	) *Connector {
 		return &Connector{
 			Clients:     *clients,
 			EmptyCloser: *closer,

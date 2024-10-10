@@ -66,7 +66,7 @@ func ExtractCatalogVariables(parameters any) []CatalogVariable {
 }
 
 // CustomCatalogVariable is a variable that can be created on the fly. Just specify the plan of what
-// should be replaced with what data, it implements CatalogVariable
+// should be replaced with what data, it implements CatalogVariable.
 type CustomCatalogVariable struct {
 	Plan SubstitutionPlan
 }

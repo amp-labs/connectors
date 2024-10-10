@@ -2,6 +2,7 @@ package atlassian
 
 import (
 	"errors"
+
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/deep"
 	"github.com/amp-labs/connectors/internal/deep/requirements"

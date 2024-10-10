@@ -28,6 +28,7 @@ func MergeSets[V comparable](first, second Set[V]) Set[V] {
 	for element := range first {
 		result.AddOne(element)
 	}
+
 	for element := range second {
 		result.AddOne(element)
 	}

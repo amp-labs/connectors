@@ -2,6 +2,7 @@ package deep
 
 import (
 	"context"
+
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/handy"
 	"github.com/amp-labs/connectors/internal/deep/requirements"

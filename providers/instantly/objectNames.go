@@ -16,9 +16,9 @@ const (
 )
 
 var (
-	supportedObjectsByRead   = readObjects.KeySet()                                 //nolint:gochecknoglobals
+	supportedObjectsByRead   = readObjects.KeySet()                                            //nolint:gochecknoglobals
 	supportedObjectsByWrite  = handy.MergeSets(createObjects.KeySet(), updateObjects.KeySet()) //nolint:gochecknoglobals
-	supportedObjectsByDelete = deleteObjects.KeySet()                               //nolint:gochecknoglobals
+	supportedObjectsByDelete = deleteObjects.KeySet()                                          //nolint:gochecknoglobals
 )
 
 var readObjects = handy.Map[string, deep.ObjectData]{

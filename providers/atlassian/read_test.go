@@ -303,6 +303,7 @@ func TestReadWithoutMetadata(t *testing.T) {
 
 func nextPageComparator(baseURL string, actual *common.ReadResult, expected *common.ReadResult) bool {
 	expectedNextPage := strings.ReplaceAll(expected.NextPage.String(), "{{testServerURL}}", baseURL)
+
 	return actual.NextPage.String() == expectedNextPage &&
 		actual.Rows == expected.Rows &&
 		actual.Done == expected.Done

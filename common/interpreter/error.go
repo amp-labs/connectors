@@ -3,11 +3,11 @@ package interpreter
 import (
 	"errors"
 	"fmt"
-	"github.com/amp-labs/connectors/common/handy"
 	"mime"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/handy"
 	"github.com/amp-labs/connectors/internal/deep/requirements"
 )
 

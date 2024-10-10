@@ -33,7 +33,8 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		closer *deep.EmptyCloser,
 		reader *deep.Reader,
 		writer *deep.Writer,
-		staticMetadata *deep.StaticMetadata) *Connector {
+		staticMetadata *deep.StaticMetadata,
+	) *Connector {
 		return &Connector{
 			Clients:        *clients,
 			EmptyCloser:    *closer,
@@ -59,7 +60,6 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	}
 	firstPage := deep.FirstPageBuilder{
 		Build: func(config common.ReadParams, url *urlbuilder.URL) (*urlbuilder.URL, error) {
-
 			if !config.Since.IsZero() {
 				// This time format is RFC3339 but in UTC only.
 				// See calls or users object for query parameter requirements.

@@ -6,7 +6,7 @@ import (
 )
 
 type Parameters[P paramsbuilder.ParamAssurance] struct {
-	Params      any
+	Params any
 }
 
 func newParametersHolder[P paramsbuilder.ParamAssurance](
@@ -14,13 +14,14 @@ func newParametersHolder[P paramsbuilder.ParamAssurance](
 ) (*Parameters[P], error) {
 	// Apply option functions to produce final parameters instance.
 	var paramsTemplate P
+
 	parameters, err := paramsbuilder.Apply(paramsTemplate, opts)
 	if err != nil {
 		return nil, err
 	}
 
 	return &Parameters[P]{
-		Params:      parameters,
+		Params: parameters,
 	}, nil
 }
 

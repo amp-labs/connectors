@@ -23,8 +23,8 @@ type parameters struct {
 func NewConnector(opts ...Option) (*Connector, error) {
 	constructor := func(clients *deep.Clients, closer *deep.EmptyCloser) *Connector {
 		return &Connector{
-			Clients:        clients,
-			EmptyCloser:    closer,
+			Clients:     clients,
+			EmptyCloser: closer,
 		}
 	}
 

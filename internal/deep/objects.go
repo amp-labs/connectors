@@ -13,8 +13,10 @@ type ObjectManager interface {
 	IsDeleteSupported(objectName string) bool
 }
 
-var _ ObjectManager = ObjectRegistry{}
-var _ ObjectManager = EmptyObjectRegistry{}
+var (
+	_ ObjectManager = ObjectRegistry{}
+	_ ObjectManager = EmptyObjectRegistry{}
+)
 
 type ObjectRegistry struct {
 	Read   handy.Set[string]

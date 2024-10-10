@@ -3,10 +3,10 @@ package atlassian
 import (
 	"context"
 	"errors"
-	"github.com/amp-labs/connectors/common/jsonquery"
-	"github.com/spyzhov/ajson"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/jsonquery"
+	"github.com/spyzhov/ajson"
 )
 
 // ListObjectMetadata lists builtin and custom fields.

@@ -38,7 +38,8 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		reader *deep.Reader,
 		writer *deep.Writer,
 		staticMetadata *deep.StaticMetadata,
-		remover *deep.Remover) *Connector {
+		remover *deep.Remover,
+	) *Connector {
 		return &Connector{
 			Clients:        *clients,
 			EmptyCloser:    *closer,

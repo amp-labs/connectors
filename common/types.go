@@ -4,10 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/amp-labs/connectors/common/urlbuilder"
 	"time"
 
 	"github.com/amp-labs/connectors/common/handy"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
 var (

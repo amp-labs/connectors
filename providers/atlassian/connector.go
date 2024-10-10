@@ -3,6 +3,8 @@ package atlassian
 import (
 	"errors"
 	"fmt"
+	"time"
+
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/jsonquery"
@@ -11,7 +13,6 @@ import (
 	"github.com/amp-labs/connectors/internal/deep"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/spyzhov/ajson"
-	"time"
 )
 
 // ErrMissingCloudId happens when cloud id was not provided via WithMetadata.
@@ -48,7 +49,8 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		urlResolver deep.URLResolver,
 		reader *deep.Reader,
 		writer *deep.Writer,
-		remover *deep.Remover) *Connector {
+		remover *deep.Remover,
+	) *Connector {
 		return &Connector{
 			Data:        *data,
 			Clients:     *clients,

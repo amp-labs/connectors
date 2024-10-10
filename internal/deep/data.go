@@ -15,7 +15,6 @@ func newConnectorDescriptor[P paramsbuilder.ParamAssurance, D MetadataVariables]
 	parameters *Parameters[P],
 	metadataVariables MetadataVariables,
 ) *ConnectorData[P, D] {
-
 	data := new(ConnectorData[P, D])
 
 	if holder, ok := parameters.Params.(paramsbuilder.WorkspaceHolder); ok {
@@ -31,6 +30,7 @@ func newConnectorDescriptor[P paramsbuilder.ParamAssurance, D MetadataVariables]
 	if holder, ok := parameters.Params.(paramsbuilder.MetadataHolder); ok {
 		metadata := holder.GiveMetadata()
 		metadataVariables.FromMap(metadata.Map)
+
 		data.Metadata, ok = metadataVariables.(D)
 		if !ok {
 			// TODO return an error, connector descriptor should have the same type as metadata variables.

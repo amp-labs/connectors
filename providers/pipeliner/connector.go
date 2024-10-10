@@ -1,6 +1,8 @@
 package pipeliner
 
 import (
+	"strconv"
+
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/jsonquery"
@@ -10,7 +12,6 @@ import (
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/pipeliner/metadata"
 	"github.com/spyzhov/ajson"
-	"strconv"
 )
 
 type Connector struct {
@@ -36,7 +37,8 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		reader *deep.Reader,
 		writer *deep.Writer,
 		metadata *deep.StaticMetadata,
-		remover *deep.Remover) *Connector {
+		remover *deep.Remover,
+	) *Connector {
 		return &Connector{
 			Data:           *data,
 			Clients:        *clients,

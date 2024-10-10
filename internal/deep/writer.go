@@ -3,6 +3,7 @@ package deep
 import (
 	"context"
 	"errors"
+
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/handy"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -11,8 +12,8 @@ import (
 )
 
 type Writer struct {
-	urlResolver   URLResolver
-	resultBuilder WriteResultBuilder
+	urlResolver    URLResolver
+	resultBuilder  WriteResultBuilder
 	objectManager  ObjectManager
 	requestBuilder WriteRequestBuilder
 
@@ -23,7 +24,8 @@ func NewWriter(clients *Clients,
 	resolver URLResolver,
 	requestBuilder WriteRequestBuilder,
 	resultBuilder *WriteResultBuilder,
-	objectManager ObjectManager) *Writer {
+	objectManager ObjectManager,
+) *Writer {
 	return &Writer{
 		urlResolver:    resolver,
 		resultBuilder:  *resultBuilder,
@@ -53,6 +55,7 @@ func (w *Writer) Write(ctx context.Context, config common.WriteParams) (*common.
 	}
 
 	var write common.WriteMethod
+
 	var headers []common.Header
 	if len(config.RecordId) == 0 {
 		write, headers = w.requestBuilder.MakeCreateRequest(config.ObjectName, url, w.clients)
@@ -116,7 +119,7 @@ func (b PostPutWriteRequestBuilder) Satisfies() requirements.Dependency {
 	}
 }
 
-type PostWriteRequestBuilder struct{
+type PostWriteRequestBuilder struct {
 	SimplePostCreateRequest
 	simpleNoopUpdateRequest
 }
@@ -131,7 +134,7 @@ func (b PostWriteRequestBuilder) Satisfies() requirements.Dependency {
 	}
 }
 
-type PostPatchWriteRequestBuilder struct{
+type PostPatchWriteRequestBuilder struct {
 	SimplePostCreateRequest
 	SimplePatchUpdateRequest
 }
@@ -146,7 +149,7 @@ func (b PostPatchWriteRequestBuilder) Satisfies() requirements.Dependency {
 	}
 }
 
-type PostPostWriteRequestBuilder struct{
+type PostPostWriteRequestBuilder struct {
 	SimplePostCreateRequest
 	SimplePostUpdateRequest
 }
@@ -164,14 +167,16 @@ func (b PostPostWriteRequestBuilder) Satisfies() requirements.Dependency {
 type SimplePostCreateRequest struct{}
 
 func (SimplePostCreateRequest) MakeCreateRequest(
-	objectName string, url *urlbuilder.URL, clients Clients) (common.WriteMethod, []common.Header) {
+	objectName string, url *urlbuilder.URL, clients Clients,
+) (common.WriteMethod, []common.Header) {
 	return clients.JSON.Post, nil
 }
 
 type simplePutUpdateRequest struct{}
 
 func (simplePutUpdateRequest) MakeUpdateRequest(
-	objectName string, recordID string, url *urlbuilder.URL, clients Clients) (common.WriteMethod, []common.Header) {
+	objectName string, recordID string, url *urlbuilder.URL, clients Clients,
+) (common.WriteMethod, []common.Header) {
 	url.AddPath(recordID)
 
 	return clients.JSON.Put, nil
@@ -180,14 +185,16 @@ func (simplePutUpdateRequest) MakeUpdateRequest(
 type simpleNoopUpdateRequest struct{}
 
 func (simpleNoopUpdateRequest) MakeUpdateRequest(
-	string, string, *urlbuilder.URL, Clients) (common.WriteMethod, []common.Header) {
+	string, string, *urlbuilder.URL, Clients,
+) (common.WriteMethod, []common.Header) {
 	return nil, nil
 }
 
 type SimplePatchUpdateRequest struct{}
 
 func (SimplePatchUpdateRequest) MakeUpdateRequest(
-	objectName string, recordID string, url *urlbuilder.URL, clients Clients) (common.WriteMethod, []common.Header) {
+	objectName string, recordID string, url *urlbuilder.URL, clients Clients,
+) (common.WriteMethod, []common.Header) {
 	url.AddPath(recordID)
 
 	return clients.JSON.Patch, nil
@@ -196,7 +203,8 @@ func (SimplePatchUpdateRequest) MakeUpdateRequest(
 type SimplePostUpdateRequest struct{}
 
 func (SimplePostUpdateRequest) MakeUpdateRequest(
-	objectName string, recordID string, url *urlbuilder.URL, clients Clients) (common.WriteMethod, []common.Header) {
+	objectName string, recordID string, url *urlbuilder.URL, clients Clients,
+) (common.WriteMethod, []common.Header) {
 	url.AddPath(recordID)
 
 	return clients.JSON.Post, nil

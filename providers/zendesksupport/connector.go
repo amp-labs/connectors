@@ -26,7 +26,8 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	constructor := func(
 		clients *deep.Clients,
 		closer *deep.EmptyCloser,
-		staticMetadata *deep.StaticMetadata) *Connector {
+		staticMetadata *deep.StaticMetadata,
+	) *Connector {
 		return &Connector{
 			Clients:        clients,
 			EmptyCloser:    closer,

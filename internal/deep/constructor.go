@@ -20,7 +20,7 @@ func Connector[C any, P paramsbuilder.ParamAssurance](
 }
 
 // ExtendedConnector
-// TODO document that it can be a constructor or Dependency object (maybe we want to support DI tagging)
+// TODO document that it can be a constructor or Dependency object (maybe we want to support DI tagging).
 func ExtendedConnector[C any, P paramsbuilder.ParamAssurance, D MetadataVariables](
 	connectorConstructor any,
 	provider providers.Provider,
@@ -28,7 +28,6 @@ func ExtendedConnector[C any, P paramsbuilder.ParamAssurance, D MetadataVariable
 	options []func(params *P),
 	reqs ...requirements.Requirement,
 ) (*C, error) {
-
 	deps := requirements.NewDependencies([]requirements.Dependency{
 		{
 			// Connector must have Provider name
@@ -122,5 +121,6 @@ func resolveDependencies[T any](container *dig.Container) (*T, error) {
 	err := container.Invoke(func(builder *T) {
 		result = builder
 	})
+
 	return result, err
 }

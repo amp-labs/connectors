@@ -12,12 +12,12 @@ func newURLBuilder(
 	data *deep.ConnectorData[parameters, *deep.EmptyMetadataVariables],
 ) *customURLBuilder {
 	return &customURLBuilder{
-		data:    data,
+		data: data,
 	}
 }
 
 type customURLBuilder struct {
-	data    *deep.ConnectorData[parameters, *deep.EmptyMetadataVariables]
+	data *deep.ConnectorData[parameters, *deep.EmptyMetadataVariables]
 }
 
 func (f customURLBuilder) FindURL(method deep.Method, baseURL, objectName string) (*urlbuilder.URL, error) {

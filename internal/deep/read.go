@@ -3,6 +3,7 @@ package deep
 import (
 	"context"
 	"errors"
+
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/handy"
 	"github.com/amp-labs/connectors/common/jsonquery"
@@ -28,7 +29,8 @@ func NewReader(clients *Clients,
 	nextPageBuilder *NextPageBuilder,
 	objectLocator *ReadObjectLocator,
 	objectManager ObjectManager,
-	requestBuilder ReadRequestBuilder) *Reader {
+	requestBuilder ReadRequestBuilder,
+) *Reader {
 	return &Reader{
 		urlResolver:       resolver,
 		firstPageBuilder:  *firstPageBuilder,
@@ -202,7 +204,8 @@ type GetWithHeadersRequestBuilder struct {
 }
 
 func (b GetWithHeadersRequestBuilder) MakeReadRequest(
-	objectName string, clients Clients) (common.ReadMethod, []common.Header) {
+	objectName string, clients Clients,
+) (common.ReadMethod, []common.Header) {
 	method, _ := b.delegate.MakeReadRequest(objectName, clients)
 
 	return method, b.Headers
@@ -219,9 +222,9 @@ func (b GetWithHeadersRequestBuilder) Satisfies() requirements.Dependency {
 type simpleGetReadRequest struct{}
 
 func (simpleGetReadRequest) MakeReadRequest(
-	objectName string, clients Clients) (common.ReadMethod, []common.Header) {
+	objectName string, clients Clients,
+) (common.ReadMethod, []common.Header) {
 	// Wrapper around GET without request body.
-
 	return func(ctx context.Context, url *urlbuilder.URL,
 		body any, headers ...common.Header,
 	) (*common.JSONHTTPResponse, error) {

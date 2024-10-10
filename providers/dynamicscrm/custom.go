@@ -3,6 +3,7 @@ package dynamicscrm
 import (
 	"context"
 	"fmt"
+
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/handy"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -10,15 +11,18 @@ import (
 	"github.com/amp-labs/connectors/internal/deep/requirements"
 )
 
-var _ deep.WriteRequestBuilder = customWriterRequestBuilder{}
-var _ deep.RemoveRequestBuilder = customRemoveRequestBuilder{}
+var (
+	_ deep.WriteRequestBuilder  = customWriterRequestBuilder{}
+	_ deep.RemoveRequestBuilder = customRemoveRequestBuilder{}
+)
 
 type customWriterRequestBuilder struct {
 	deep.SimplePostCreateRequest
 }
 
 func (customWriterRequestBuilder) MakeUpdateRequest(
-	objectName, recordID string, url *urlbuilder.URL, clients deep.Clients) (common.WriteMethod, []common.Header) {
+	objectName, recordID string, url *urlbuilder.URL, clients deep.Clients,
+) (common.WriteMethod, []common.Header) {
 	// Microsoft doesn't add IDs as a separate URI part.
 	// It is in format: .../Orders(123)
 	url.RawAddToPath(fmt.Sprintf("(%v)", recordID))
@@ -34,11 +38,10 @@ func (b customWriterRequestBuilder) Satisfies() requirements.Dependency {
 	}
 }
 
-type customRemoveRequestBuilder struct {}
+type customRemoveRequestBuilder struct{}
 
 func (b customRemoveRequestBuilder) MakeDeleteRequest(objectName, recordID string, clients deep.Clients) (common.DeleteMethod, []common.Header) {
 	// Wrapper around DELETE without request body.
-
 	return func(ctx context.Context, url *urlbuilder.URL,
 		body any, headers ...common.Header,
 	) (*common.JSONHTTPResponse, error) {

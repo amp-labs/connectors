@@ -2,6 +2,7 @@ package deep
 
 import (
 	"context"
+
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/handy"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -18,7 +19,8 @@ type Remover struct {
 func NewRemover(clients *Clients,
 	resolver URLResolver,
 	objectManager ObjectManager,
-	requestBuilder RemoveRequestBuilder) *Remover {
+	requestBuilder RemoveRequestBuilder,
+) *Remover {
 	return &Remover{
 		clients:        *clients,
 		urlResolver:    resolver,
@@ -73,11 +75,10 @@ func (b DeleteRequestBuilder) Satisfies() requirements.Dependency {
 	}
 }
 
-type simpleRemoveDeleteRequest struct {}
+type simpleRemoveDeleteRequest struct{}
 
 func (simpleRemoveDeleteRequest) MakeDeleteRequest(objectName, recordID string, clients Clients) (common.DeleteMethod, []common.Header) {
 	// Wrapper around DELETE without request body.
-
 	return func(ctx context.Context, url *urlbuilder.URL,
 		body any, headers ...common.Header,
 	) (*common.JSONHTTPResponse, error) {

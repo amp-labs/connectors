@@ -1,6 +1,8 @@
 package smartlead
 
 import (
+	"strconv"
+
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/jsonquery"
@@ -10,7 +12,6 @@ import (
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/smartlead/metadata"
 	"github.com/spyzhov/ajson"
-	"strconv"
 )
 
 const apiVersion = "v1"
@@ -41,7 +42,8 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		reader *deep.Reader,
 		writer *deep.Writer,
 		staticMetadata *deep.StaticMetadata,
-		remover *deep.Remover) *Connector {
+		remover *deep.Remover,
+	) *Connector {
 		return &Connector{
 			Clients:        *clients,
 			EmptyCloser:    *closer,
