@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/amp-labs/connectors/internal/deep/dpobjects"
+	"github.com/amp-labs/connectors/internal/deep/dprequests"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/handy"
@@ -13,11 +14,11 @@ import (
 )
 
 type Writer struct {
-	urlResolver   dpobjects.ObjectURLResolver
-	resultBuilder  WriteResultBuilder
-	objectManager  dpobjects.ObjectManager
-	requestBuilder WriteRequestBuilder
-	headerSupplements HeaderSupplements
+	urlResolver       dpobjects.ObjectURLResolver
+	resultBuilder     WriteResultBuilder
+	objectManager     dpobjects.ObjectManager
+	requestBuilder    WriteRequestBuilder
+	headerSupplements dprequests.HeaderSupplements
 
 	clients Clients
 }
@@ -27,7 +28,7 @@ func NewWriter(clients *Clients,
 	requestBuilder WriteRequestBuilder,
 	resultBuilder *WriteResultBuilder,
 	objectManager dpobjects.ObjectManager,
-	headerSupplements *HeaderSupplements,
+	headerSupplements *dprequests.HeaderSupplements,
 ) *Writer {
 	return &Writer{
 		urlResolver:       resolver,

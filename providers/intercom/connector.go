@@ -3,6 +3,7 @@ package intercom
 import (
 	"errors"
 	"github.com/amp-labs/connectors/internal/deep/dpobjects"
+	"github.com/amp-labs/connectors/internal/deep/dprequests"
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
@@ -60,7 +61,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	meta := deep.StaticMetadataHolder{
 		Metadata: metadata.Schemas,
 	}
-	headerSupplements := deep.HeaderSupplements{
+	headerSupplements := dprequests.HeaderSupplements{
 		All: []common.Header{
 			apiVersionHeader,
 		},

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/amp-labs/connectors/internal/deep/dpobjects"
+	"github.com/amp-labs/connectors/internal/deep/dprequests"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/handy"
@@ -14,13 +15,13 @@ import (
 )
 
 type Reader struct {
-	urlResolver      dpobjects.ObjectURLResolver
-	pageStartBuilder PaginationStartBuilder
+	urlResolver       dpobjects.ObjectURLResolver
+	pageStartBuilder  PaginationStartBuilder
 	nextPageBuilder   NextPageBuilder
 	readObjectLocator ReadObjectLocator
 	objectManager     dpobjects.ObjectManager
 	requestBuilder    ReadRequestBuilder
-	headerSupplements HeaderSupplements
+	headerSupplements dprequests.HeaderSupplements
 
 	clients Clients
 }
@@ -32,7 +33,7 @@ func NewReader(clients *Clients,
 	objectLocator *ReadObjectLocator,
 	objectManager dpobjects.ObjectManager,
 	requestBuilder ReadRequestBuilder,
-	headerSupplements *HeaderSupplements,
+	headerSupplements *dprequests.HeaderSupplements,
 ) *Reader {
 	return &Reader{
 		urlResolver:       resolver,

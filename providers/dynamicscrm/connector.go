@@ -3,6 +3,7 @@ package dynamicscrm
 import (
 	"fmt"
 	"github.com/amp-labs/connectors/internal/deep/dpobjects"
+	"github.com/amp-labs/connectors/internal/deep/dprequests"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
@@ -77,7 +78,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			return "", nil
 		},
 	}
-	headerSupplements := deep.HeaderSupplements{
+	headerSupplements := dprequests.HeaderSupplements{
 		Read: []common.Header{
 			{
 				Key:   "Prefer",

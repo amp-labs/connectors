@@ -3,6 +3,7 @@ package deep
 import (
 	"context"
 	"github.com/amp-labs/connectors/internal/deep/dpobjects"
+	"github.com/amp-labs/connectors/internal/deep/dprequests"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/handy"
@@ -11,18 +12,18 @@ import (
 )
 
 type Remover struct {
-	clients       Clients
-	urlResolver    dpobjects.ObjectURLResolver
-	objectManager  dpobjects.ObjectManager
-	requestBuilder RemoveRequestBuilder
-	headerSupplements HeaderSupplements
+	clients           Clients
+	urlResolver       dpobjects.ObjectURLResolver
+	objectManager     dpobjects.ObjectManager
+	requestBuilder    RemoveRequestBuilder
+	headerSupplements dprequests.HeaderSupplements
 }
 
 func NewRemover(clients *Clients,
 	resolver dpobjects.ObjectURLResolver,
 	objectManager dpobjects.ObjectManager,
 	requestBuilder RemoveRequestBuilder,
-	headerSupplements *HeaderSupplements,
+	headerSupplements *dprequests.HeaderSupplements,
 ) *Remover {
 	return &Remover{
 		clients:           *clients,

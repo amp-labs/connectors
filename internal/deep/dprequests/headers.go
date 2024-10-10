@@ -1,4 +1,4 @@
-package deep
+package dprequests
 
 import (
 	"github.com/amp-labs/connectors/common"
