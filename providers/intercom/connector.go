@@ -1,13 +1,17 @@
 package intercom
 
 import (
+	"errors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
+	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/deep"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/intercom/metadata"
+	"github.com/spyzhov/ajson"
+	"strconv"
 )
 
 const apiVersion = "2.11"
@@ -20,6 +24,7 @@ var apiVersionHeader = common.Header{ // nolint:gochecknoglobals
 type Connector struct {
 	deep.Clients
 	deep.EmptyCloser
+	deep.Reader
 	deep.StaticMetadata
 }
 
@@ -31,11 +36,13 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	constructor := func(
 		clients *deep.Clients,
 		closer *deep.EmptyCloser,
+		reader *deep.Reader,
 		staticMetadata *deep.StaticMetadata,
 	) *Connector {
 		return &Connector{
 			Clients:        *clients,
 			EmptyCloser:    *closer,
+			Reader:         *reader,
 			StaticMetadata: *staticMetadata,
 		}
 	}
@@ -50,14 +57,87 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			apiVersionHeader,
 		},
 	}
+	objectManager := deep.ObjectRegistry{
+		Read: supportedObjectsByRead,
+	}
+	objectURLResolver := deep.SingleURLFormat{
+		Produce: func(method deep.Method, baseURL, objectName string) (*urlbuilder.URL, error) {
+			url, err := urlbuilder.New(baseURL, objectName)
+			if err != nil {
+				return nil, err
+			}
+
+			// Intercom pagination cursor sometimes ends with `=`.
+			url.AddEncodingExceptions(map[string]string{ //nolint:gochecknoglobals
+				"%3D": "=",
+			})
+
+			return url, nil
+		},
+	}
+	firstPage := deep.FirstPageBuilder{
+		Build: func(config common.ReadParams, url *urlbuilder.URL) (*urlbuilder.URL, error) {
+			url.WithQueryParam("per_page", strconv.Itoa(DefaultPageSize))
+
+			return url, nil
+		},
+	}
+	nextPage := deep.NextPageBuilder{
+		Build: func(config common.ReadParams, previousPage *urlbuilder.URL, node *ajson.Node) (string, error) {
+			next, err := jsonquery.New(node, "pages").StrWithDefault("next", "")
+			if err == nil {
+				return next, nil
+			}
+
+			if !errors.Is(err, jsonquery.ErrNotString) {
+				// response from server doesn't meet any format that we expect
+				return "", err
+			}
+
+			// Probably, we are dealing with an object under `pages.next`
+			startingAfter, err := jsonquery.New(node, "pages", "next").Str("starting_after", true)
+			if err != nil {
+				return "", err
+			}
+
+			if startingAfter == nil {
+				// next page doesn't exist
+				return "", nil
+			}
+
+			previousPage.WithQueryParam("starting_after", *startingAfter)
+
+			return previousPage.String(), nil
+		},
+	}
+	readObjectLocator := deep.ReadObjectLocator{
+		Locate: func(config common.ReadParams, node *ajson.Node) string {
+			return extractListFieldName(node)
+		},
+	}
 
 	return deep.Connector[Connector, parameters](constructor, providers.Intercom, opts,
 		meta,
 		errorHandler,
 		headerSupplements,
+		objectManager,
+		objectURLResolver,
+		firstPage,
+		nextPage,
+		readObjectLocator,
 	)
 }
 
-func (c *Connector) getURL(arg string) (*urlbuilder.URL, error) {
-	return constructURL(c.BaseURL(), arg)
+func (c *Connector) getURL(objectName string) (*urlbuilder.URL, error) {
+	url, err := urlbuilder.New(c.Clients.BaseURL(), objectName)
+	if err != nil {
+		return nil, err
+	}
+
+	// Intercom pagination cursor sometimes ends with `=`.
+	url.AddEncodingExceptions(map[string]string{ //nolint:gochecknoglobals
+		"%3D": "=",
+	})
+
+	return url, nil
 }

@@ -12,7 +12,7 @@ import (
 )
 
 type Writer struct {
-	urlResolver       URLResolver
+	urlResolver       ObjectURLResolver
 	resultBuilder     WriteResultBuilder
 	objectManager     ObjectManager
 	requestBuilder    WriteRequestBuilder
@@ -22,7 +22,7 @@ type Writer struct {
 }
 
 func NewWriter(clients *Clients,
-	resolver URLResolver,
+	resolver ObjectURLResolver,
 	requestBuilder WriteRequestBuilder,
 	resultBuilder *WriteResultBuilder,
 	objectManager ObjectManager,

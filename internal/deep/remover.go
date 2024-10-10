@@ -11,14 +11,14 @@ import (
 
 type Remover struct {
 	clients           Clients
-	urlResolver       URLResolver
+	urlResolver       ObjectURLResolver
 	objectManager     ObjectManager
 	requestBuilder    RemoveRequestBuilder
 	headerSupplements HeaderSupplements
 }
 
 func NewRemover(clients *Clients,
-	resolver URLResolver,
+	resolver ObjectURLResolver,
 	objectManager ObjectManager,
 	requestBuilder RemoveRequestBuilder,
 	headerSupplements *HeaderSupplements,

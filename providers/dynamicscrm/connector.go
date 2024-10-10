@@ -89,11 +89,11 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		},
 	}
 	readObjectLocator := deep.ReadObjectLocator{
-		Locate: func(config common.ReadParams) string {
+		Locate: func(config common.ReadParams, node *ajson.Node) string {
 			return "value"
 		},
 	}
-	urlResolver := deep.SingleURLFormat{
+	objectURLResolver := deep.SingleURLFormat{
 		Produce: func(method deep.Method, baseURL, objectName string) (*urlbuilder.URL, error) {
 			// Despite the "Method" type the relationship between objectName and
 			// URL path is that it must be in singular word case.
@@ -119,7 +119,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		nextPage,
 		headerSupplements,
 		readObjectLocator,
-		urlResolver,
+		objectURLResolver,
 		customWriterRequestBuilder{},
 		writeResultBuilder,
 		customRemoveRequestBuilder{},

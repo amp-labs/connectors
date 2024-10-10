@@ -8,7 +8,7 @@ import (
 	"github.com/amp-labs/connectors/internal/deep/requirements"
 )
 
-var _ deep.URLResolver = customURLBuilder{}
+var _ deep.ObjectURLResolver = customURLBuilder{}
 
 func newURLBuilder(
 	data *deep.ConnectorData[parameters, *AuthMetadataVars],
@@ -60,9 +60,9 @@ func (f customURLBuilder) getAccessibleSitesURL() (*urlbuilder.URL, error) {
 
 func (f customURLBuilder) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
-		ID:          "urlResolver",
+		ID:          "objectUrlResolver",
 		Constructor: newURLBuilder,
-		Interface:   new(deep.URLResolver),
+		Interface:   new(deep.ObjectURLResolver),
 	}
 }
 

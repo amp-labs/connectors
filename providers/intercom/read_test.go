@@ -157,7 +157,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			})),
 			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
 				expectedNextPage := strings.ReplaceAll(expected.NextPage.String(), "{{testServerURL}}", baseURL)
-				return actual.NextPage.String() == expectedNextPage // nolint:nlreturn
+				a := actual.NextPage.String()
+				b := expectedNextPage
+				c := a == b
+				return c // nolint:nlreturn
 			},
 			Expected: &common.ReadResult{
 				NextPage: "{{testServerURL}}/contacts?per_page=60&starting_after=" +

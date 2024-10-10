@@ -15,7 +15,7 @@ const (
 	DeleteMethod Method = "DELETE"
 )
 
-type URLResolver interface {
+type ObjectURLResolver interface {
 	requirements.Requirement
 	FindURL(method Method, baseURL, objectName string) (*urlbuilder.URL, error)
 }
@@ -28,12 +28,12 @@ func (r SingleURLFormat) FindURL(method Method, baseURL, objectName string) (*ur
 	return r.Produce(method, baseURL, objectName)
 }
 
-var _ URLResolver = SingleURLFormat{}
+var _ ObjectURLResolver = SingleURLFormat{}
 
 func (r SingleURLFormat) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
-		ID:          "urlResolver",
+		ID:          "objectUrlResolver",
 		Constructor: handy.Returner(r),
-		Interface:   new(URLResolver),
+		Interface:   new(ObjectURLResolver),
 	}
 }

@@ -13,7 +13,7 @@ import (
 )
 
 type Reader struct {
-	urlResolver       URLResolver
+	urlResolver       ObjectURLResolver
 	firstPageBuilder  FirstPageBuilder
 	nextPageBuilder   NextPageBuilder
 	readObjectLocator ReadObjectLocator
@@ -25,7 +25,7 @@ type Reader struct {
 }
 
 func NewReader(clients *Clients,
-	resolver URLResolver,
+	resolver ObjectURLResolver,
 	firstPageBuilder *FirstPageBuilder,
 	nextPageBuilder *NextPageBuilder,
 	objectLocator *ReadObjectLocator,
@@ -145,7 +145,7 @@ func (b NextPageBuilder) Satisfies() requirements.Dependency {
 
 type ReadObjectLocator struct {
 	// Locate should return the fieldName where desired list of Objects is located.
-	Locate func(config common.ReadParams) string
+	Locate func(config common.ReadParams, node *ajson.Node) string
 	// FlattenRecords is optional and will be used after list was located and extra processing is needed.
 	// The desired fields could be nested
 	FlattenRecords func(arr []*ajson.Node) ([]map[string]any, error)
@@ -157,19 +157,19 @@ func (l ReadObjectLocator) getRecordsFunc(config common.ReadParams) (common.Reco
 		return nil, errors.New("locate method cannot be empty")
 	}
 
-	fieldName := l.Locate(config)
-
-	if l.FlattenRecords == nil {
-		return common.GetRecordsUnderJSONPath(fieldName), nil
-	}
-
 	return func(node *ajson.Node) ([]map[string]any, error) {
+		fieldName := l.Locate(config, node)
+
 		arr, err := jsonquery.New(node).Array(fieldName, false)
 		if err != nil {
 			return nil, err
 		}
 
-		return l.FlattenRecords(arr)
+		if l.FlattenRecords != nil {
+			return l.FlattenRecords(arr)
+		}
+
+		return jsonquery.Convertor.ArrayToMap(arr)
 	}, nil
 }
 

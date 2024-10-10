@@ -53,7 +53,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		Read:  supportedObjectsByRead,
 		Write: supportedObjectsByWrite,
 	}
-	urlResolver := deep.SingleURLFormat{
+	objectURLResolver := deep.SingleURLFormat{
 		Produce: func(method deep.Method, baseURL, objectName string) (*urlbuilder.URL, error) {
 			return urlbuilder.New(baseURL, ApiVersion, objectName)
 		},
@@ -87,7 +87,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		},
 	}
 	readObjectLocator := deep.ReadObjectLocator{
-		Locate: func(config common.ReadParams) string {
+		Locate: func(config common.ReadParams, node *ajson.Node) string {
 			return config.ObjectName
 		},
 	}
@@ -111,7 +111,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		meta,
 		errorHandler,
 		objectManager,
-		urlResolver,
+		objectURLResolver,
 		firstPage,
 		nextPage,
 		readObjectLocator,

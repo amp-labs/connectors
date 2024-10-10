@@ -92,11 +92,11 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		},
 	}
 	readObjectLocator := deep.ReadObjectLocator{
-		Locate: func(config common.ReadParams) string {
+		Locate: func(config common.ReadParams, node *ajson.Node) string {
 			return "data"
 		},
 	}
-	urlResolver := deep.SingleURLFormat{
+	objectURLResolver := deep.SingleURLFormat{
 		Produce: func(method deep.Method, baseURL, objectName string) (*urlbuilder.URL, error) {
 			return urlbuilder.New(baseURL, apiVersion, objectName)
 		},
@@ -141,7 +141,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 
 	return deep.Connector[Connector, parameters](constructor, providers.Salesloft, opts,
 		meta,
-		urlResolver,
+		objectURLResolver,
 		firstPage,
 		nextPage,
 		readObjectLocator,

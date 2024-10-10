@@ -46,7 +46,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		clients *deep.Clients,
 		closer *deep.EmptyCloser,
 		data *deep.ConnectorData[parameters, *AuthMetadataVars],
-		urlResolver deep.URLResolver,
+		urlResolver deep.ObjectURLResolver,
 		reader *deep.Reader,
 		writer *deep.Writer,
 		remover *deep.Remover,
@@ -99,7 +99,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		},
 	}
 	readObjectLocator := deep.ReadObjectLocator{
-		Locate: func(config common.ReadParams) string {
+		Locate: func(config common.ReadParams, node *ajson.Node) string {
 			return "issues"
 		},
 		FlattenRecords: flattenRecords,

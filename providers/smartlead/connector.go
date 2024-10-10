@@ -60,7 +60,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	meta := deep.StaticMetadataHolder{
 		Metadata: metadata.Schemas,
 	}
-	urlResolver := deep.SingleURLFormat{
+	objectURLResolver := deep.SingleURLFormat{
 		Produce: func(method deep.Method, baseURL, objectName string) (*urlbuilder.URL, error) {
 			var path string
 			switch method {
@@ -94,7 +94,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		},
 	}
 	readObjectLocator := deep.ReadObjectLocator{
-		Locate: func(config common.ReadParams) string {
+		Locate: func(config common.ReadParams, node *ajson.Node) string {
 			// The response is already an array. Empty string signifies to look "here" for array.
 			return ""
 		},
@@ -127,7 +127,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	return deep.Connector[Connector, parameters](constructor, providers.Smartlead, opts,
 		meta,
 		errorHandler,
-		urlResolver,
+		objectURLResolver,
 		objectManager,
 		firstPage,
 		nextPage,

@@ -79,7 +79,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		},
 	}
 	readObjectLocator := deep.ReadObjectLocator{
-		Locate: func(config common.ReadParams) string {
+		Locate: func(config common.ReadParams, node *ajson.Node) string {
 			return "data"
 		},
 	}
