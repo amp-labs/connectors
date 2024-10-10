@@ -1,6 +1,7 @@
 package salesforce
 
 import (
+	"errors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/jsonquery"
@@ -24,6 +25,7 @@ type Connector struct {
 	deep.Clients
 	deep.EmptyCloser
 	deep.Reader
+	deep.Writer
 }
 
 type parameters struct {
@@ -36,11 +38,13 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		clients *deep.Clients,
 		closer *deep.EmptyCloser,
 		reader *deep.Reader,
+		writer *deep.Writer,
 	) *Connector {
 		return &Connector{
 			Clients:     *clients,
 			EmptyCloser: *closer,
 			Reader:      *reader,
+			Writer:      *writer,
 		}
 	}
 	errorHandler := interpreter.ErrorHandler{
@@ -49,13 +53,24 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	}
 	objectURLResolver := deep.SingleURLFormat{
 		Produce: func(method deep.Method, baseURL, objectName string) (*urlbuilder.URL, error) {
-			var path string
 			switch method {
 			case deep.ReadMethod:
-				path = "query"
+				return urlbuilder.New(baseURL, restAPISuffix, "query")
+			case deep.CreateMethod:
+				return urlbuilder.New(baseURL, restAPISuffix, "sobjects", objectName)
+			case deep.UpdateMethod:
+				url, err := urlbuilder.New(baseURL, restAPISuffix, "sobjects", objectName)
+				if err != nil {
+					return nil, err
+				}
+				// Salesforce allows PATCH method which will act as Update.
+				url.WithQueryParam("_HttpMethod", "PATCH")
+
+				return url, nil
 			}
 
-			return urlbuilder.New(baseURL, restAPISuffix, path)
+			// TODO general error
+			return nil, errors.New("cannot match URL for object")
 		},
 	}
 	firstPage := deep.FirstPageBuilder{
@@ -78,6 +93,9 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			return "records"
 		},
 	}
+	writeResultBuilder := deep.WriteResultBuilder{
+		Build: writeResultBuild,
+	}
 
 	return deep.Connector[Connector, parameters](constructor, providers.Salesforce, opts,
 		errorHandler,
@@ -85,6 +103,8 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		firstPage,
 		nextPage,
 		readObjectLocator,
+		deep.PostPostWriteRequestBuilder{},
+		writeResultBuilder,
 	)
 }
 
@@ -116,4 +136,44 @@ func (c *Connector) getURIPartEventRelayConfig(path string) (*urlbuilder.URL, er
 
 func (c *Connector) getURIPartSobjectsDescribe(objectName string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(uriSobjects, objectName, "describe")
+}
+
+func writeResultBuild(config common.WriteParams, body *ajson.Node) (*common.WriteResult, error) {
+	recordID, err := jsonquery.New(body).Str("id", false)
+	if err != nil {
+		return nil, err
+	}
+
+	errorsList, err := getErrors(body)
+	if err != nil {
+		return nil, err
+	}
+
+	success, err := jsonquery.New(body).Bool("success", false)
+	if err != nil {
+		return nil, err
+	}
+
+	// Salesforce does not return record data upon successful write so we do not populate
+	// the corresponding result field
+	return &common.WriteResult{
+		RecordId: *recordID,
+		Errors:   errorsList,
+		Success:  *success,
+	}, nil
+}
+
+// getErrors returns the errors from the response.
+func getErrors(node *ajson.Node) ([]any, error) {
+	arr, err := jsonquery.New(node).Array("errors", true)
+	if err != nil {
+		return nil, err
+	}
+
+	objects, err := jsonquery.Convertor.ArrayToObjects(arr)
+	if err != nil {
+		return nil, err
+	}
+
+	return objects, nil
 }
