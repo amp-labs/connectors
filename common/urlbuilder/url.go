@@ -125,6 +125,13 @@ func (u *URL) AddPath(paths ...string) *URL {
 	return u
 }
 
+func (u *URL) RawAddToPath(data string) *URL {
+	u.delegate.Path = u.delegate.Path + data
+	u.delegate.RawPath = u.delegate.Path
+
+	return u
+}
+
 func cleanTrailingSlashes(link string) string {
 	found := true
 	for found {

@@ -102,7 +102,7 @@ type WriteRequestBuilder interface {
 }
 
 type PostPutWriteRequestBuilder struct {
-	simplePostCreateRequest
+	SimplePostCreateRequest
 	simplePutUpdateRequest
 }
 
@@ -117,7 +117,7 @@ func (b PostPutWriteRequestBuilder) Satisfies() requirements.Dependency {
 }
 
 type PostWriteRequestBuilder struct{
-	simplePostCreateRequest
+	SimplePostCreateRequest
 	simpleNoopUpdateRequest
 }
 
@@ -132,8 +132,8 @@ func (b PostWriteRequestBuilder) Satisfies() requirements.Dependency {
 }
 
 type PostPatchWriteRequestBuilder struct{
-	simplePostCreateRequest
-	simplePatchUpdateRequest
+	SimplePostCreateRequest
+	SimplePatchUpdateRequest
 }
 
 var _ WriteRequestBuilder = PostPatchWriteRequestBuilder{}
@@ -147,8 +147,8 @@ func (b PostPatchWriteRequestBuilder) Satisfies() requirements.Dependency {
 }
 
 type PostPostWriteRequestBuilder struct{
-	simplePostCreateRequest
-	simplePostUpdateRequest
+	SimplePostCreateRequest
+	SimplePostUpdateRequest
 }
 
 var _ WriteRequestBuilder = PostPostWriteRequestBuilder{}
@@ -161,9 +161,9 @@ func (b PostPostWriteRequestBuilder) Satisfies() requirements.Dependency {
 	}
 }
 
-type simplePostCreateRequest struct{}
+type SimplePostCreateRequest struct{}
 
-func (simplePostCreateRequest) MakeCreateRequest(
+func (SimplePostCreateRequest) MakeCreateRequest(
 	objectName string, url *urlbuilder.URL, clients Clients) (common.WriteMethod, []common.Header) {
 	return clients.JSON.Post, nil
 }
@@ -184,18 +184,18 @@ func (simpleNoopUpdateRequest) MakeUpdateRequest(
 	return nil, nil
 }
 
-type simplePatchUpdateRequest struct{}
+type SimplePatchUpdateRequest struct{}
 
-func (simplePatchUpdateRequest) MakeUpdateRequest(
+func (SimplePatchUpdateRequest) MakeUpdateRequest(
 	objectName string, recordID string, url *urlbuilder.URL, clients Clients) (common.WriteMethod, []common.Header) {
 	url.AddPath(recordID)
 
 	return clients.JSON.Patch, nil
 }
 
-type simplePostUpdateRequest struct{}
+type SimplePostUpdateRequest struct{}
 
-func (simplePostUpdateRequest) MakeUpdateRequest(
+func (SimplePostUpdateRequest) MakeUpdateRequest(
 	objectName string, recordID string, url *urlbuilder.URL, clients Clients) (common.WriteMethod, []common.Header) {
 	url.AddPath(recordID)
 

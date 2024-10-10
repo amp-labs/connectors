@@ -3,12 +3,14 @@ package dynamicscrm
 import (
 	"fmt"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/handy"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/deep"
+	"github.com/amp-labs/connectors/internal/deep/requirements"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/spyzhov/ajson"
 	"strings"
@@ -23,6 +25,7 @@ type Connector struct {
 	// Microsoft API supports other capabilities like filtering, grouping, and sorting which we can potentially tap into later.
 	// See https://learn.microsoft.com/en-us/power-apps/developer/data-platform/webapi/query-data-web-api#odata-query-options
 	deep.Reader
+	deep.Writer
 }
 
 type parameters struct {
@@ -34,11 +37,13 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	constructor := func(
 		clients *deep.Clients,
 		closer *deep.EmptyCloser,
-		reader *deep.Reader) *Connector {
+		reader *deep.Reader,
+		writer *deep.Writer) *Connector {
 		return &Connector{
 			Clients:     *clients,
 			EmptyCloser: *closer,
 			Reader:      *reader,
+			Writer:      *writer,
 		}
 	}
 	errorHandler := interpreter.ErrorHandler{
@@ -90,6 +95,15 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			return constructURL(baseURL, apiVersion, objectName)
 		},
 	}
+	writeResultBuilder := deep.WriteResultBuilder{
+		Build: func(config common.WriteParams, body *ajson.Node) (*common.WriteResult, error) {
+			// Neither Post nor Patch return any response data on successful completion
+			// Both complete with 204 NoContent
+			return &common.WriteResult{
+				Success: true,
+			}, nil
+		},
+	}
 
 	return deep.Connector[Connector, parameters](constructor, providers.DynamicsCRM, opts,
 		errorHandler,
@@ -98,7 +112,32 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		readRequestBuilder,
 		readObjectLocator,
 		urlResolver,
+		customWriterRequestBuilder{},
+		writeResultBuilder,
 	)
+}
+
+var _ deep.WriteRequestBuilder = customWriterRequestBuilder{}
+
+type customWriterRequestBuilder struct {
+	deep.SimplePostCreateRequest
+}
+
+func (b customWriterRequestBuilder) Satisfies() requirements.Dependency {
+	return requirements.Dependency{
+		ID:          "writeRequestBuilder",
+		Constructor: handy.Returner(b),
+		Interface:   new(deep.WriteRequestBuilder),
+	}
+}
+
+func (customWriterRequestBuilder) MakeUpdateRequest(
+	objectName string, recordID string, url *urlbuilder.URL, clients deep.Clients) (common.WriteMethod, []common.Header) {
+	// Microsoft doesn't add IDs as a separate URI part.
+	// It is in format: .../Orders(123)
+	url.RawAddToPath(fmt.Sprintf("(%v)", recordID))
+
+	return clients.JSON.Patch, nil
 }
 
 func (c *Connector) getURL(arg string) (*urlbuilder.URL, error) {

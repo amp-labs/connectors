@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/amp-labs/connectors"
@@ -72,7 +73,13 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondNoContentForMethod(w, r, "PATCH")
+				switch path := r.URL.Path; {
+				case strings.HasSuffix(path, "/fax(dd2f7870-3fe8-ee11-a204-0022481f9e3c)"):
+					mockutils.RespondNoContentForMethod(w, r, "PATCH")
+				default:
+					w.WriteHeader(http.StatusInternalServerError)
+					_, _ = w.Write([]byte{})
+				}
 			})),
 			Expected:     &common.WriteResult{Success: true},
 			ExpectedErrs: nil,
