@@ -3,37 +3,38 @@ package deep
 import (
 	"context"
 	"errors"
-	"github.com/amp-labs/connectors/internal/deep/requirements"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/deep/dpobjects"
 	"github.com/amp-labs/connectors/internal/deep/dprequests"
 	"github.com/amp-labs/connectors/internal/deep/dpwrite"
+	"github.com/amp-labs/connectors/internal/deep/requirements"
 )
 
 type Writer struct {
 	clients           dprequests.Clients
 	headerSupplements dprequests.HeaderSupplements
-	objectManager     dpobjects.Support
+	support           dpobjects.Support
 	urlResolver       dpobjects.URLResolver
-	requestBuilder    dpwrite.WriteRequestBuilder
-	resultBuilder     dpwrite.WriteResultBuilder
+	requester         dpwrite.Requester
+	responder         dpwrite.Responder
 }
 
-func newWriter(clients *dprequests.Clients,
-	resolver dpobjects.URLResolver,
-	requestBuilder dpwrite.WriteRequestBuilder,
-	resultBuilder *dpwrite.WriteResultBuilder,
-	objectManager dpobjects.Support,
+func newWriter(
+	clients *dprequests.Clients,
 	headerSupplements *dprequests.HeaderSupplements,
+	support dpobjects.Support,
+	urlResolver dpobjects.URLResolver,
+	requester dpwrite.Requester,
+	responder dpwrite.Responder,
 ) *Writer {
 	return &Writer{
-		urlResolver:       resolver,
-		resultBuilder:     *resultBuilder,
-		objectManager:     objectManager,
-		requestBuilder:    requestBuilder,
-		headerSupplements: *headerSupplements,
 		clients:           *clients,
+		headerSupplements: *headerSupplements,
+		support:           support,
+		urlResolver:       urlResolver,
+		requester:         requester,
+		responder:         responder,
 	}
 }
 
@@ -42,7 +43,7 @@ func (w Writer) Write(ctx context.Context, config common.WriteParams) (*common.W
 		return nil, err
 	}
 
-	if !w.objectManager.IsWriteSupported(config.ObjectName) {
+	if !w.support.IsWriteSupported(config.ObjectName) {
 		return nil, common.ErrOperationNotSupportedForObject
 	}
 
@@ -60,10 +61,10 @@ func (w Writer) Write(ctx context.Context, config common.WriteParams) (*common.W
 
 	var headers []common.Header
 	if len(config.RecordId) == 0 {
-		write, headers = w.requestBuilder.MakeCreateRequest(config.ObjectName, url, w.clients)
+		write, headers = w.requester.MakeCreateRequest(config.ObjectName, url, w.clients)
 		headers = append(headers, w.headerSupplements.CreateHeaders()...)
 	} else {
-		write, headers = w.requestBuilder.MakeUpdateRequest(config.ObjectName, config.RecordId, url, w.clients)
+		write, headers = w.requester.MakeUpdateRequest(config.ObjectName, config.RecordId, url, w.clients)
 		if write == nil {
 			// TODO need a better error
 			return nil, errors.New("update is not supported for this object")
@@ -86,7 +87,7 @@ func (w Writer) Write(ctx context.Context, config common.WriteParams) (*common.W
 	}
 
 	// write response was with payload
-	return w.resultBuilder.Build(config, body)
+	return w.responder.CreateWriteResult(config, body)
 }
 
 func (w Writer) Satisfies() requirements.Dependency {

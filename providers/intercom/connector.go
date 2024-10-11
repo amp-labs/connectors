@@ -127,7 +127,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			return extractListFieldName(node)
 		},
 	}
-	writeResultBuilder := dpwrite.WriteResultBuilder{
+	writeResultBuilder := dpwrite.ResponseBuilder{
 		Build: func(config common.WriteParams, body *ajson.Node) (*common.WriteResult, error) {
 			recordID, err := jsonquery.New(body).StrWithDefault("id", "")
 			if err != nil {

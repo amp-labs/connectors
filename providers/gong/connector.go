@@ -95,7 +95,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			return config.ObjectName
 		},
 	}
-	writeResultBuilder := dpwrite.WriteResultBuilder{
+	writeResultBuilder := dpwrite.ResponseBuilder{
 		Build: func(config common.WriteParams, body *ajson.Node) (*common.WriteResult, error) {
 			recordID, err := jsonquery.New(body).Str("callId", false)
 			if err != nil {

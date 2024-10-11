@@ -108,7 +108,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		},
 		Process: flattenRecords,
 	}
-	writeResultBuilder := dpwrite.WriteResultBuilder{
+	writeResultBuilder := dpwrite.ResponseBuilder{
 		Build: func(config common.WriteParams, body *ajson.Node) (*common.WriteResult, error) {
 			recordID, err := jsonquery.New(body).Str("id", false)
 			if err != nil {

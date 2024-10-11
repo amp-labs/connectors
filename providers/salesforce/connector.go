@@ -97,7 +97,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			return "records"
 		},
 	}
-	writeResultBuilder := dpwrite.WriteResultBuilder{
+	writeResultBuilder := dpwrite.ResponseBuilder{
 		Build: writeResultBuild,
 	}
 

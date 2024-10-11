@@ -121,7 +121,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		Write:  supportedObjectsByWrite,
 		Delete: supportedObjectsByDelete,
 	}
-	writeResultBuilder := dpwrite.WriteResultBuilder{
+	writeResultBuilder := dpwrite.ResponseBuilder{
 		Build: func(config common.WriteParams, body *ajson.Node) (*common.WriteResult, error) {
 			recordIdNodePath := writeResponseRecordIdPaths[config.ObjectName]
 

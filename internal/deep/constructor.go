@@ -81,7 +81,10 @@ func ExtendedConnector[C any, P paramsbuilder.ParamAssurance, D dpvars.MetadataV
 		EmptyCloser{}.Satisfies(),
 
 		// READ
-		// TODO description
+		// Default behaviour:
+		//  -> first page is not changes and uses what dpobjects.URLResolver has given.
+		//  -> next page is empty, hence no pagination
+		//  -> read is done using GET operation.
 		// *Reader is available as constructor argument.
 		Reader{}.Satisfies(),
 		dpread.FirstPageBuilder{}.Satisfies(),
@@ -89,18 +92,24 @@ func ExtendedConnector[C any, P paramsbuilder.ParamAssurance, D dpvars.MetadataV
 		dpread.RequestGet{}.Satisfies(),
 
 		// WRITE
-		// TODO description
+		// Default behaviour:
+		//  -> create is done using POST operation.
+		//  -> update is done using PUT operation.
+		//  -> write response is not parsed and returns success.
 		// *Writer is available as constructor argument.
 		Writer{}.Satisfies(),
 		dpwrite.PostPutWriteRequestBuilder{}.Satisfies(),
+		dpwrite.ResponseBuilder{}.Satisfies(),
 
 		// METADATA
-		// TODO description
+		// Default behaviour:
+		//  -> expects dpmetadata.SchemaHolder.
 		// *StaticMetadata is available as constructor argument.
 		StaticMetadata{}.Satisfies(),
 
 		// DELETE
-		// TODO description
+		// Default behaviour:
+		//  -> remove is done using DELETE operation.
 		// *Remover is available as constructor argument.
 		Remover{}.Satisfies(),
 		dpremove.RequestDelete{}.Satisfies(),

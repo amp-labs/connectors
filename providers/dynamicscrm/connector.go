@@ -107,7 +107,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			return constructURL(baseURL, apiVersion, path.String())
 		},
 	}
-	writeResultBuilder := dpwrite.WriteResultBuilder{
+	writeResultBuilder := dpwrite.ResponseBuilder{
 		Build: func(config common.WriteParams, body *ajson.Node) (*common.WriteResult, error) {
 			// Neither Post nor Patch return any response data on successful completion
 			// Both complete with 204 NoContent

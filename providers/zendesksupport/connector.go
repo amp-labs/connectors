@@ -77,7 +77,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			return ObjectNameToResponseField.Get(config.ObjectName)
 		},
 	}
-	writeResultBuilder := dpwrite.WriteResultBuilder{
+	writeResultBuilder := dpwrite.ResponseBuilder{
 		Build: func(config common.WriteParams, body *ajson.Node) (*common.WriteResult, error) {
 			nested, err := jsonquery.New(body).Object(config.ObjectName, true)
 			if err != nil {

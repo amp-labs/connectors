@@ -6,41 +6,18 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/deep/dprequests"
 	"github.com/amp-labs/connectors/internal/deep/requirements"
-	"github.com/spyzhov/ajson"
 )
-
-type WriteResultBuilder struct {
-	Build func(config common.WriteParams, body *ajson.Node) (*common.WriteResult, error)
-}
-
-func (b WriteResultBuilder) Satisfies() requirements.Dependency {
-	return requirements.Dependency{
-		ID:          requirements.WriteResultBuilder,
-		Constructor: handy.PtrReturner(b),
-	}
-}
-
-type WriteRequestBuilder interface {
-	requirements.ConnectorComponent
-
-	MakeCreateRequest(
-		objectName string, url *urlbuilder.URL, clients dprequests.Clients) (common.WriteMethod, []common.Header)
-	MakeUpdateRequest(
-		objectName, recordID string, url *urlbuilder.URL, clients dprequests.Clients) (common.WriteMethod, []common.Header)
-}
 
 type PostPutWriteRequestBuilder struct {
 	SimplePostCreateRequest
 	simplePutUpdateRequest
 }
 
-var _ WriteRequestBuilder = PostPutWriteRequestBuilder{}
-
 func (b PostPutWriteRequestBuilder) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
 		ID:          requirements.WriteRequestBuilder,
 		Constructor: handy.PtrReturner(b),
-		Interface:   new(WriteRequestBuilder),
+		Interface:   new(Requester),
 	}
 }
 
@@ -49,13 +26,11 @@ type PostWriteRequestBuilder struct {
 	simpleNoopUpdateRequest
 }
 
-var _ WriteRequestBuilder = PostWriteRequestBuilder{}
-
 func (b PostWriteRequestBuilder) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
 		ID:          requirements.WriteRequestBuilder,
 		Constructor: handy.PtrReturner(b),
-		Interface:   new(WriteRequestBuilder),
+		Interface:   new(Requester),
 	}
 }
 
@@ -64,13 +39,11 @@ type PostPatchWriteRequestBuilder struct {
 	SimplePatchUpdateRequest
 }
 
-var _ WriteRequestBuilder = PostPatchWriteRequestBuilder{}
-
 func (b PostPatchWriteRequestBuilder) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
 		ID:          requirements.WriteRequestBuilder,
 		Constructor: handy.PtrReturner(b),
-		Interface:   new(WriteRequestBuilder),
+		Interface:   new(Requester),
 	}
 }
 
@@ -79,13 +52,11 @@ type PostPostWriteRequestBuilder struct {
 	SimplePostUpdateRequest
 }
 
-var _ WriteRequestBuilder = PostPostWriteRequestBuilder{}
-
 func (b PostPostWriteRequestBuilder) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
 		ID:          requirements.WriteRequestBuilder,
 		Constructor: handy.PtrReturner(b),
-		Interface:   new(WriteRequestBuilder),
+		Interface:   new(Requester),
 	}
 }
 

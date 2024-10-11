@@ -91,7 +91,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	objectSupport := dpobjects.Registry{
 		Read: supportedObjectsByRead,
 	}
-	writeResultBuilder := dpwrite.WriteResultBuilder{
+	writeResultBuilder := dpwrite.ResponseBuilder{
 		Build: func(config common.WriteParams, body *ajson.Node) (*common.WriteResult, error) {
 			success, err := jsonquery.New(body).Bool("success", false)
 			if err != nil {

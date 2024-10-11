@@ -105,7 +105,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			return urlbuilder.New(baseURL, apiVersion, objectName)
 		},
 	}
-	writeResultBuilder := dpwrite.WriteResultBuilder{
+	writeResultBuilder := dpwrite.ResponseBuilder{
 		Build: func(config common.WriteParams, body *ajson.Node) (*common.WriteResult, error) {
 			nested, err := jsonquery.New(body).Object("data", false)
 			if err != nil {
