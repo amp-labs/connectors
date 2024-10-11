@@ -130,7 +130,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		nextPage,
 		readObjectLocator,
 		objectSupport,
-		dpwrite.PostPatchWriteRequestBuilder{},
+		dpwrite.RequestPostPatch{},
 		writeResultBuilder,
 	)
 }

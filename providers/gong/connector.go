@@ -119,7 +119,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		firstPage,
 		nextPage,
 		readObjectLocator,
-		dpwrite.PostWriteRequestBuilder{},
+		dpwrite.RequestPostNoop{},
 		writeResultBuilder,
 	)
 }

@@ -8,69 +8,41 @@ import (
 	"github.com/amp-labs/connectors/internal/deep/requirements"
 )
 
-type PostPutWriteRequestBuilder struct {
-	SimplePostCreateRequest
-	simplePutUpdateRequest
+// RequestPostPut does write, where create uses POST, update uses PUT.
+type RequestPostPut struct {
+	CreateViaPost
+	UpdateViaPut
 }
 
-func (b PostPutWriteRequestBuilder) Satisfies() requirements.Dependency {
-	return requirements.Dependency{
-		ID:          requirements.WriteRequestBuilder,
-		Constructor: handy.PtrReturner(b),
-		Interface:   new(Requester),
-	}
+// RequestPostNoop does write, where create uses POST, without update support.
+type RequestPostNoop struct {
+	CreateViaPost
+	UpdateNoop
 }
 
-type PostWriteRequestBuilder struct {
-	SimplePostCreateRequest
-	simpleNoopUpdateRequest
+// RequestPostPatch does write, where create uses POST, update uses PATCH.
+type RequestPostPatch struct {
+	CreateViaPost
+	UpdateViaPatch
 }
 
-func (b PostWriteRequestBuilder) Satisfies() requirements.Dependency {
-	return requirements.Dependency{
-		ID:          requirements.WriteRequestBuilder,
-		Constructor: handy.PtrReturner(b),
-		Interface:   new(Requester),
-	}
+// RequestPostPost does write, where create uses POST, update uses POST.
+type RequestPostPost struct {
+	CreateViaPost
+	UpdateViaPost
 }
 
-type PostPatchWriteRequestBuilder struct {
-	SimplePostCreateRequest
-	SimplePatchUpdateRequest
-}
+type CreateViaPost struct{}
 
-func (b PostPatchWriteRequestBuilder) Satisfies() requirements.Dependency {
-	return requirements.Dependency{
-		ID:          requirements.WriteRequestBuilder,
-		Constructor: handy.PtrReturner(b),
-		Interface:   new(Requester),
-	}
-}
-
-type PostPostWriteRequestBuilder struct {
-	SimplePostCreateRequest
-	SimplePostUpdateRequest
-}
-
-func (b PostPostWriteRequestBuilder) Satisfies() requirements.Dependency {
-	return requirements.Dependency{
-		ID:          requirements.WriteRequestBuilder,
-		Constructor: handy.PtrReturner(b),
-		Interface:   new(Requester),
-	}
-}
-
-type SimplePostCreateRequest struct{}
-
-func (SimplePostCreateRequest) MakeCreateRequest(
+func (CreateViaPost) MakeCreateRequest(
 	objectName string, url *urlbuilder.URL, clients dprequests.Clients,
 ) (common.WriteMethod, []common.Header) {
 	return clients.JSON.Post, nil
 }
 
-type simplePutUpdateRequest struct{}
+type UpdateViaPut struct{}
 
-func (simplePutUpdateRequest) MakeUpdateRequest(
+func (UpdateViaPut) MakeUpdateRequest(
 	objectName string, recordID string, url *urlbuilder.URL, clients dprequests.Clients,
 ) (common.WriteMethod, []common.Header) {
 	url.AddPath(recordID)
@@ -78,17 +50,17 @@ func (simplePutUpdateRequest) MakeUpdateRequest(
 	return clients.JSON.Put, nil
 }
 
-type simpleNoopUpdateRequest struct{}
+type UpdateNoop struct{}
 
-func (simpleNoopUpdateRequest) MakeUpdateRequest(
+func (UpdateNoop) MakeUpdateRequest(
 	string, string, *urlbuilder.URL, dprequests.Clients,
 ) (common.WriteMethod, []common.Header) {
 	return nil, nil
 }
 
-type SimplePatchUpdateRequest struct{}
+type UpdateViaPatch struct{}
 
-func (SimplePatchUpdateRequest) MakeUpdateRequest(
+func (UpdateViaPatch) MakeUpdateRequest(
 	objectName string, recordID string, url *urlbuilder.URL, clients dprequests.Clients,
 ) (common.WriteMethod, []common.Header) {
 	url.AddPath(recordID)
@@ -96,12 +68,44 @@ func (SimplePatchUpdateRequest) MakeUpdateRequest(
 	return clients.JSON.Patch, nil
 }
 
-type SimplePostUpdateRequest struct{}
+type UpdateViaPost struct{}
 
-func (SimplePostUpdateRequest) MakeUpdateRequest(
+func (UpdateViaPost) MakeUpdateRequest(
 	objectName string, recordID string, url *urlbuilder.URL, clients dprequests.Clients,
 ) (common.WriteMethod, []common.Header) {
 	url.AddPath(recordID)
 
 	return clients.JSON.Post, nil
+}
+
+func (b RequestPostPut) Satisfies() requirements.Dependency {
+	return requirements.Dependency{
+		ID:          requirements.WriteRequestBuilder,
+		Constructor: handy.PtrReturner(b),
+		Interface:   new(Requester),
+	}
+}
+
+func (b RequestPostNoop) Satisfies() requirements.Dependency {
+	return requirements.Dependency{
+		ID:          requirements.WriteRequestBuilder,
+		Constructor: handy.PtrReturner(b),
+		Interface:   new(Requester),
+	}
+}
+
+func (b RequestPostPatch) Satisfies() requirements.Dependency {
+	return requirements.Dependency{
+		ID:          requirements.WriteRequestBuilder,
+		Constructor: handy.PtrReturner(b),
+		Interface:   new(Requester),
+	}
+}
+
+func (b RequestPostPost) Satisfies() requirements.Dependency {
+	return requirements.Dependency{
+		ID:          requirements.WriteRequestBuilder,
+		Constructor: handy.PtrReturner(b),
+		Interface:   new(Requester),
+	}
 }

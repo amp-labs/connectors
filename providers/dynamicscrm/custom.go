@@ -19,7 +19,7 @@ var (
 )
 
 type customWriterRequestBuilder struct {
-	dpwrite.SimplePostCreateRequest
+	dpwrite.CreateViaPost
 }
 
 func (customWriterRequestBuilder) MakeUpdateRequest(

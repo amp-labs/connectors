@@ -125,6 +125,6 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		objectSupport,
 		readObjectLocator,
 		writeResultBuilder,
-		dpwrite.PostPostWriteRequestBuilder{},
+		dpwrite.RequestPostPost{},
 	)
 }

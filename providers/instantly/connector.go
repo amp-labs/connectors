@@ -158,7 +158,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		nextPage,
 		readObjectLocator,
 		objectSupport,
-		dpwrite.PostPatchWriteRequestBuilder{},
+		dpwrite.RequestPostPatch{},
 		writeResultBuilder,
 	)
 }

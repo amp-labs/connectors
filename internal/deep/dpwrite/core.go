@@ -10,10 +10,10 @@ import (
 
 var (
 	// Implementations.
-	_ Requester = PostPutWriteRequestBuilder{}
-	_ Requester = PostWriteRequestBuilder{}
-	_ Requester = PostPatchWriteRequestBuilder{}
-	_ Requester = PostPostWriteRequestBuilder{}
+	_ Requester = RequestPostPut{}
+	_ Requester = RequestPostNoop{}
+	_ Requester = RequestPostPatch{}
+	_ Requester = RequestPostPost{}
 	_ Responder = ResponseBuilder{}
 )
 

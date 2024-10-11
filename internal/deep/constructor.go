@@ -99,7 +99,7 @@ func ExtendedConnector[C any, P paramsbuilder.ParamAssurance, D dpvars.MetadataV
 		//  -> write response is not parsed and returns success.
 		// *Writer is available as constructor argument.
 		Writer{}.Satisfies(),
-		dpwrite.PostPutWriteRequestBuilder{}.Satisfies(),
+		dpwrite.RequestPostPut{}.Satisfies(),
 		dpwrite.ResponseBuilder{}.Satisfies(),
 
 		// METADATA
