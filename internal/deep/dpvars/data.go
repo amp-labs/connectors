@@ -1,9 +1,14 @@
 package dpvars
 
 import (
+	"errors"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/internal/deep/requirements"
 )
+
+// InvalidMetadataVariableType it is returned when generics used by connector implementor didn't match of what
+// is circulating among connector component dependencies. deep.Connector should receive matching MetadataVariables.
+var InvalidMetadataVariableType = errors.New("injected metadata variables do not match connector type")
 
 // ConnectorData is a concrete representation of connector parameters and paramsbuilder.Metadata.
 // You can specify this connector component as an argument to the connector constructor.
@@ -16,7 +21,7 @@ type ConnectorData[P paramsbuilder.ParamAssurance, D MetadataVariables] struct {
 func newConnectorDescriptor[P paramsbuilder.ParamAssurance, D MetadataVariables](
 	parameters *Parameters[P],
 	metadataVariables MetadataVariables,
-) *ConnectorData[P, D] {
+) (*ConnectorData[P, D], error) {
 	data := new(ConnectorData[P, D])
 
 	if holder, ok := parameters.Params.(paramsbuilder.WorkspaceHolder); ok {
@@ -35,11 +40,11 @@ func newConnectorDescriptor[P paramsbuilder.ParamAssurance, D MetadataVariables]
 
 		data.Metadata, ok = metadataVariables.(D)
 		if !ok {
-			// TODO return an error, connector descriptor should have the same type as metadata variables.
+			return nil, InvalidMetadataVariableType
 		}
 	}
 
-	return data
+	return data, nil
 }
 
 func (c ConnectorData[P, D]) Satisfies() requirements.Dependency {

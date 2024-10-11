@@ -10,6 +10,9 @@ import (
 	"github.com/amp-labs/connectors/providers"
 )
 
+// MissingHTTPClient happens when connector parameters didn't include paramsbuilder.Client.
+var MissingHTTPClient = errors.New("connector parameters are missing HTTP client")
+
 // Clients holds primary information about connector and HTTP client which is used
 // to make JSON or XML requests.
 // Error processing can be customized using interpreter.ErrorHandler connector component.
@@ -28,8 +31,7 @@ func NewClients[P paramsbuilder.ParamAssurance, D dpvars.MetadataVariables](
 ) (*Clients, error) {
 	clientHolder, ok := parameters.Params.(paramsbuilder.ClientHolder)
 	if !ok {
-		// TODO complain that parameters doesn't hold HTTP client
-		return nil, errors.New("not good")
+		return nil, MissingHTTPClient
 	}
 
 	client := clientHolder.GiveClient().Caller

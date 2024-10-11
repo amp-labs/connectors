@@ -11,6 +11,8 @@ import (
 	"github.com/amp-labs/connectors/internal/deep/requirements"
 )
 
+var UpdateNotSupported = errors.New("object doesn't support update")
+
 // Writer is a major connector component which provides Write functionality.
 // Embed this into connector struct.
 // Provide dpobjects.URLResolver into deep.Connector.
@@ -69,8 +71,7 @@ func (w Writer) Write(ctx context.Context, config common.WriteParams) (*common.W
 	} else {
 		write, headers = w.requester.MakeUpdateRequest(config.ObjectName, config.RecordId, url, w.clients)
 		if write == nil {
-			// TODO need a better error
-			return nil, errors.New("update is not supported for this object")
+			return nil, UpdateNotSupported
 		}
 
 		headers = append(headers, w.headerSupplements.UpdateHeaders()...)

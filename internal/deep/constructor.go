@@ -14,6 +14,8 @@ import (
 	"go.uber.org/dig"
 )
 
+// Connector
+// TODO documentation. !!!! THIS IS THE MOST CRUCIAL METHOD !!!!
 func Connector[C any, P paramsbuilder.ParamAssurance](
 	connectorConstructor any,
 	provider providers.Provider,
@@ -25,8 +27,8 @@ func Connector[C any, P paramsbuilder.ParamAssurance](
 	)
 }
 
-// ExtendedConnector
-// TODO document that it can be a constructor or Dependency object (maybe we want to support DI tagging).
+// ExtendedConnector is the same connector builder as Connector method.
+// TODO documentation.
 func ExtendedConnector[C any, P paramsbuilder.ParamAssurance, D dpvars.MetadataVariables](
 	connectorConstructor any,
 	provider providers.Provider,
@@ -136,6 +138,8 @@ func ExtendedConnector[C any, P paramsbuilder.ParamAssurance, D dpvars.MetadataV
 	return resolveDependencies[C](container)
 }
 
+// Tries to invoke connector constructor. The dig.Container will have dependencies that will be injected.
+// Produces connector of a specified T type.
 func resolveDependencies[T any](container *dig.Container) (*T, error) {
 	var result *T
 	err := container.Invoke(func(builder *T) {
