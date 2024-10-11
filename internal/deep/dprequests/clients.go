@@ -10,6 +10,9 @@ import (
 	"github.com/amp-labs/connectors/providers"
 )
 
+// Clients holds primary information about connector and HTTP client which is used
+// to make JSON or XML requests.
+// Error processing can be customized using interpreter.ErrorHandler connector component.
 type Clients struct {
 	provider   providers.Provider
 	httpClient *common.HTTPClient

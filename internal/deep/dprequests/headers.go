@@ -6,6 +6,9 @@ import (
 	"github.com/amp-labs/connectors/internal/deep/requirements"
 )
 
+// HeaderSupplements is a list of constant headers that should be attached while performing operation.
+// All field includes headers that are shared across all calls.
+// This headers will be picked up by deep.Reader, deep.Writer, deep.Remover.
 type HeaderSupplements struct {
 	All    []common.Header
 	Read   []common.Header
