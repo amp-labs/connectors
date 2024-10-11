@@ -2,6 +2,7 @@ package deep
 
 import (
 	"context"
+	"github.com/amp-labs/connectors/internal/deep/requirements"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -21,7 +22,7 @@ type Reader struct {
 	requestBuilder    dpread.ReadRequestBuilder
 }
 
-func NewReader(clients *dprequests.Clients,
+func newReader(clients *dprequests.Clients,
 	resolver dpobjects.ObjectURLResolver,
 	pageStartBuilder dpread.PaginationStartBuilder,
 	nextPageBuilder *dpread.NextPageBuilder,
@@ -42,7 +43,7 @@ func NewReader(clients *dprequests.Clients,
 	}
 }
 
-func (r *Reader) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
+func (r Reader) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
 	if err := config.ValidateParams(true); err != nil {
 		return nil, err
 	}
@@ -83,7 +84,7 @@ func (r *Reader) Read(ctx context.Context, config common.ReadParams) (*common.Re
 	)
 }
 
-func (r *Reader) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error) {
+func (r Reader) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error) {
 	if len(config.NextPage) != 0 {
 		// Next page
 		return urlbuilder.New(config.NextPage.String())
@@ -96,4 +97,11 @@ func (r *Reader) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error)
 	}
 
 	return r.pageStartBuilder.FirstPage(config, url)
+}
+
+func (r Reader) Satisfies() requirements.Dependency {
+	return requirements.Dependency{
+		ID:          "reader",
+		Constructor: newReader,
+	}
 }

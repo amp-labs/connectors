@@ -2,6 +2,7 @@ package deep
 
 import (
 	"context"
+	"github.com/amp-labs/connectors/internal/deep/requirements"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/deep/dpobjects"
@@ -17,7 +18,7 @@ type Remover struct {
 	requestBuilder    dpremove.RemoveRequestBuilder
 }
 
-func NewRemover(clients *dprequests.Clients,
+func newRemover(clients *dprequests.Clients,
 	resolver dpobjects.ObjectURLResolver,
 	objectManager dpobjects.ObjectManager,
 	requestBuilder dpremove.RemoveRequestBuilder,
@@ -32,7 +33,7 @@ func NewRemover(clients *dprequests.Clients,
 	}
 }
 
-func (r *Remover) Delete(ctx context.Context, config common.DeleteParams) (*common.DeleteResult, error) {
+func (r Remover) Delete(ctx context.Context, config common.DeleteParams) (*common.DeleteResult, error) {
 	if err := config.ValidateParams(); err != nil {
 		return nil, err
 	}
@@ -57,4 +58,11 @@ func (r *Remover) Delete(ctx context.Context, config common.DeleteParams) (*comm
 	return &common.DeleteResult{
 		Success: true,
 	}, nil
+}
+
+func (r Remover) Satisfies() requirements.Dependency {
+	return requirements.Dependency{
+		ID:          "remover",
+		Constructor: newRemover,
+	}
 }

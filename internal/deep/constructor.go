@@ -32,11 +32,13 @@ func ExtendedConnector[C any, P paramsbuilder.ParamAssurance, D dpvars.MetadataV
 	provider providers.Provider,
 	metadataVariables D,
 	options []func(params *P),
-	reqs ...requirements.ConnectorComponent,
+	components ...requirements.ConnectorComponent,
 ) (*C, error) {
-	deps := requirements.NewDependencies([]requirements.Dependency{
+
+	// This is a default list of dependencies available for a "connectorConstructor" to pick up.
+	dependencies := requirements.NewDependencies([]requirements.Dependency{
 		{
-			// Connector must have Provider name
+			// Connector must have Provider name.
 			ID: "provider",
 			Constructor: func() providers.Provider {
 				return provider
@@ -49,60 +51,59 @@ func ExtendedConnector[C any, P paramsbuilder.ParamAssurance, D dpvars.MetadataV
 				return options
 			},
 		},
-		{
-			// HTTP clients use error handler.
-			ID: "errorHandler",
-			Constructor: func() interpreter.ErrorHandler {
-				// Empty by default.
-				return interpreter.ErrorHandler{}
-			},
-		},
-		{
-			// Connector may choose to be empty closer.
-			ID: "closer",
-			Constructor: func() *EmptyCloser {
-				return &EmptyCloser{}
-			},
-		},
-		dpvars.Parameters[P]{}.Satisfies(),
-		dpobjects.EmptyObjectRegistry{}.Satisfies(),
-		dpwrite.PostPutWriteRequestBuilder{}.Satisfies(),
+		// Metadata Variables hold connector specific data fields.
+		// They are inferred from parameters
 		metadataVariables.Satisfies(),
+
+		// Options are realized into parameters.
+		// Some parameters can be catalog or metadata variables.
+		dpvars.Parameters[P]{}.Satisfies(),
 		dpvars.ConnectorData[P, D]{}.Satisfies(),
 		dpvars.CatalogVariables[P, D]{}.Satisfies(),
-		dpread.GetRequestBuilder{}.Satisfies(),
-		dpremove.DeleteRequestBuilder{}.Satisfies(),
-		dprequests.HeaderSupplements{}.Satisfies(),
-		dpread.DefaultPageBuilder{}.Satisfies(),
+
+		// Every connector makes requests. Clients holds authenticated HTTP clients
+		// capable of doing JSON, XML calls. It needs parameters, catalog vars for proper setup.
+		// ErrorHandler would parse error response depending on media type.
+		// HeaderSupplements is used to attach headers when performing said requests.
 		{
-			// Connector will have HTTP clients which can be implied from parameters "P".
 			ID:          "clients",
 			Constructor: dprequests.NewClients[P, D],
 		},
-		{
-			// Connector that lists Objects.
-			// TODO describe dependencies
-			ID:          "reader",
-			Constructor: NewReader,
-		},
-		{
-			// Connector that creates new records or updates existing.
-			// TODO describe dependencies
-			ID:          "writer",
-			Constructor: NewWriter,
-		},
-		{
-			// Connector may serve ListObjectMetadata from static file.
-			// Note: this requires another dependency of *scrapper.ObjectMetadataResult.
-			ID:          "staticMetadata",
-			Constructor: NewStaticMetadata,
-		},
-		{
-			// Connector may allow record deletion.
-			// TODO describe dependencies
-			ID:          "remover",
-			Constructor: NewRemover,
-		},
+		interpreter.ErrorHandler{}.Satisfies(),
+		dprequests.HeaderSupplements{}.Satisfies(),
+
+		// Guards against unsupported objects.
+		// By default, every object would reach Reader, Writer, etc.
+		dpobjects.EmptyObjectRegistry{}.Satisfies(),
+
+		// Most connectors do no-op on close.
+		// *EmptyCloser is available as constructor argument.
+		EmptyCloser{}.Satisfies(),
+
+		// READ
+		// TODO description
+		// *Reader is available as constructor argument.
+		Reader{}.Satisfies(),
+		dpread.GetRequestBuilder{}.Satisfies(),
+		dpread.DefaultPageBuilder{}.Satisfies(),
+
+		// WRITE
+		// TODO description
+		// *Writer is available as constructor argument.
+		Writer{}.Satisfies(),
+		dpwrite.PostPutWriteRequestBuilder{}.Satisfies(),
+
+		// METADATA
+		// TODO description
+		// *StaticMetadata is available as constructor argument.
+		StaticMetadata{}.Satisfies(),
+
+		// DELETE
+		// TODO description
+		// *Remover is available as constructor argument.
+		Remover{}.Satisfies(),
+		dpremove.DeleteRequestBuilder{}.Satisfies(),
+
 		{
 			// This is the main constructor which will get all dependencies resolved.
 			// It is possible that not all dependencies are needed, this list is exhaustive,
@@ -112,12 +113,12 @@ func ExtendedConnector[C any, P paramsbuilder.ParamAssurance, D dpvars.MetadataV
 		},
 	})
 
-	for _, requirement := range reqs {
-		deps.Add(requirement.Satisfies())
+	for _, component := range components {
+		dependencies.Add(component.Satisfies())
 	}
 
 	container := dig.New()
-	if err := deps.Apply(container); err != nil {
+	if err := dependencies.Apply(container); err != nil {
 		return nil, err
 	}
 

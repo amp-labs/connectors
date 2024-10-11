@@ -3,6 +3,7 @@ package deep
 import (
 	"context"
 	"errors"
+	"github.com/amp-labs/connectors/internal/deep/requirements"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/deep/dpobjects"
@@ -19,7 +20,7 @@ type Writer struct {
 	resultBuilder     dpwrite.WriteResultBuilder
 }
 
-func NewWriter(clients *dprequests.Clients,
+func newWriter(clients *dprequests.Clients,
 	resolver dpobjects.ObjectURLResolver,
 	requestBuilder dpwrite.WriteRequestBuilder,
 	resultBuilder *dpwrite.WriteResultBuilder,
@@ -36,7 +37,7 @@ func NewWriter(clients *dprequests.Clients,
 	}
 }
 
-func (w *Writer) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
+func (w Writer) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
 	if err := config.ValidateParams(); err != nil {
 		return nil, err
 	}
@@ -86,4 +87,11 @@ func (w *Writer) Write(ctx context.Context, config common.WriteParams) (*common.
 
 	// write response was with payload
 	return w.resultBuilder.Build(config, body)
+}
+
+func (w Writer) Satisfies() requirements.Dependency {
+	return requirements.Dependency{
+		ID:          "writer",
+		Constructor: newWriter,
+	}
 }

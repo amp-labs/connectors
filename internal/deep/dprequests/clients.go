@@ -3,7 +3,6 @@ package dprequests
 import (
 	"errors"
 	"fmt"
-
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
