@@ -103,7 +103,7 @@ func ExtendedConnector[C any, P paramsbuilder.ParamAssurance, D dpvars.MetadataV
 		// TODO description
 		// *Remover is available as constructor argument.
 		Remover{}.Satisfies(),
-		dpremove.DeleteRequestBuilder{}.Satisfies(),
+		dpremove.RequestDelete{}.Satisfies(),
 
 		{
 			// This is the main constructor which will get all dependencies resolved.

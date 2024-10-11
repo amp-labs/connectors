@@ -9,6 +9,7 @@ import (
 )
 
 var (
+	// Implementations.
 	_ PaginationStart = FirstPageBuilder{}
 	_ PaginationStep  = NextPageBuilder{}
 	_ Requester       = RequestGet{}

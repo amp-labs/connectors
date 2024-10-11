@@ -15,13 +15,13 @@ type Remover struct {
 	headerSupplements dprequests.HeaderSupplements
 	objectManager     dpobjects.Support
 	urlResolver       dpobjects.URLResolver
-	requestBuilder    dpremove.RemoveRequestBuilder
+	requestBuilder    dpremove.Requester
 }
 
 func newRemover(clients *dprequests.Clients,
 	resolver dpobjects.URLResolver,
 	objectManager dpobjects.Support,
-	requestBuilder dpremove.RemoveRequestBuilder,
+	requestBuilder dpremove.Requester,
 	headerSupplements *dprequests.HeaderSupplements,
 ) *Remover {
 	return &Remover{

@@ -14,8 +14,8 @@ import (
 )
 
 var (
-	_ dpwrite.WriteRequestBuilder   = customWriterRequestBuilder{}
-	_ dpremove.RemoveRequestBuilder = customRemoveRequestBuilder{}
+	_ dpwrite.WriteRequestBuilder = customWriterRequestBuilder{}
+	_ dpremove.Requester          = customRemoveRequestBuilder{}
 )
 
 type customWriterRequestBuilder struct {
@@ -58,6 +58,6 @@ func (b customRemoveRequestBuilder) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
 		ID:          requirements.RemoveRequestBuilder,
 		Constructor: handy.PtrReturner(b),
-		Interface:   new(dpremove.RemoveRequestBuilder),
+		Interface:   new(dpremove.Requester),
 	}
 }
