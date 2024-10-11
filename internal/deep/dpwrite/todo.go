@@ -16,7 +16,7 @@ type WriteResultBuilder struct {
 func (b WriteResultBuilder) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
 		ID:          requirements.WriteResultBuilder,
-		Constructor: handy.Returner(b),
+		Constructor: handy.PtrReturner(b),
 	}
 }
 
@@ -39,7 +39,7 @@ var _ WriteRequestBuilder = PostPutWriteRequestBuilder{}
 func (b PostPutWriteRequestBuilder) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
 		ID:          requirements.WriteRequestBuilder,
-		Constructor: handy.Returner(b),
+		Constructor: handy.PtrReturner(b),
 		Interface:   new(WriteRequestBuilder),
 	}
 }
@@ -54,7 +54,7 @@ var _ WriteRequestBuilder = PostWriteRequestBuilder{}
 func (b PostWriteRequestBuilder) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
 		ID:          requirements.WriteRequestBuilder,
-		Constructor: handy.Returner(b),
+		Constructor: handy.PtrReturner(b),
 		Interface:   new(WriteRequestBuilder),
 	}
 }
@@ -69,7 +69,7 @@ var _ WriteRequestBuilder = PostPatchWriteRequestBuilder{}
 func (b PostPatchWriteRequestBuilder) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
 		ID:          requirements.WriteRequestBuilder,
-		Constructor: handy.Returner(b),
+		Constructor: handy.PtrReturner(b),
 		Interface:   new(WriteRequestBuilder),
 	}
 }
@@ -84,7 +84,7 @@ var _ WriteRequestBuilder = PostPostWriteRequestBuilder{}
 func (b PostPostWriteRequestBuilder) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
 		ID:          requirements.WriteRequestBuilder,
-		Constructor: handy.Returner(b),
+		Constructor: handy.PtrReturner(b),
 		Interface:   new(WriteRequestBuilder),
 	}
 }

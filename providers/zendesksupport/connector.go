@@ -56,23 +56,23 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	errorHandler := interpreter.ErrorHandler{
 		JSON: interpreter.NewFaultyResponder(errorFormats, statusCodeMapping),
 	}
-	meta := dpmetadata.StaticMetadataHolder{
+	meta := dpmetadata.SchemaHolder{
 		Metadata: metadata.Schemas,
 	}
-	objectURLResolver := dpobjects.SingleURLFormat{
+	objectURLResolver := dpobjects.URLFormat{
 		Produce: func(method dpobjects.Method, baseURL, objectName string) (*urlbuilder.URL, error) {
 			return urlbuilder.New(baseURL, apiVersion, objectName)
 		},
 	}
-	objectSupport := dpobjects.ObjectSupport{
+	objectSupport := dpobjects.Registry{
 		Read: supportedObjectsByRead,
 	}
 	nextPage := dpread.NextPageBuilder{
-		Build: func(config common.ReadParams, previousPage *urlbuilder.URL, node *ajson.Node) (string, error) {
+		Build: func(config common.ReadParams, url *urlbuilder.URL, node *ajson.Node) (string, error) {
 			return jsonquery.New(node, "links").StrWithDefault("next", "")
 		},
 	}
-	readObjectLocator := dpread.ReadObjectLocator{
+	readObjectLocator := dpread.ResponseLocator{
 		Locate: func(config common.ReadParams, node *ajson.Node) string {
 			return ObjectNameToResponseField.Get(config.ObjectName)
 		},

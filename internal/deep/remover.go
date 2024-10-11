@@ -13,14 +13,14 @@ import (
 type Remover struct {
 	clients           dprequests.Clients
 	headerSupplements dprequests.HeaderSupplements
-	objectManager     dpobjects.ObjectManager
-	urlResolver       dpobjects.ObjectURLResolver
+	objectManager     dpobjects.Support
+	urlResolver       dpobjects.URLResolver
 	requestBuilder    dpremove.RemoveRequestBuilder
 }
 
 func newRemover(clients *dprequests.Clients,
-	resolver dpobjects.ObjectURLResolver,
-	objectManager dpobjects.ObjectManager,
+	resolver dpobjects.URLResolver,
+	objectManager dpobjects.Support,
 	requestBuilder dpremove.RemoveRequestBuilder,
 	headerSupplements *dprequests.HeaderSupplements,
 ) *Remover {
@@ -62,7 +62,7 @@ func (r Remover) Delete(ctx context.Context, config common.DeleteParams) (*commo
 
 func (r Remover) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
-		ID:         requirements.Remover,
+		ID:          requirements.Remover,
 		Constructor: newRemover,
 	}
 }

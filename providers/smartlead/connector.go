@@ -23,6 +23,7 @@ const apiVersion = "v1"
 type Connector struct {
 	deep.Clients
 	deep.EmptyCloser
+	// Pagination is not supported for this provider.
 	deep.Reader
 	// Write method allows to
 	// * create campaigns
@@ -61,10 +62,10 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		JSON: interpreter.NewFaultyResponder(errorFormats, nil),
 		HTML: &interpreter.DirectFaultyResponder{Callback: interpretHTMLError},
 	}
-	meta := dpmetadata.StaticMetadataHolder{
+	meta := dpmetadata.SchemaHolder{
 		Metadata: metadata.Schemas,
 	}
-	objectURLResolver := dpobjects.SingleURLFormat{
+	objectURLResolver := dpobjects.URLFormat{
 		Produce: func(method dpobjects.Method, baseURL, objectName string) (*urlbuilder.URL, error) {
 			var path string
 			switch method {
@@ -81,23 +82,12 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			return urlbuilder.New(baseURL, apiVersion, path)
 		},
 	}
-	objectSupport := dpobjects.ObjectSupport{
+	objectSupport := dpobjects.Registry{
 		Read:   supportedObjectsByRead,
 		Write:  supportedObjectsByWrite,
 		Delete: supportedObjectsByDelete,
 	}
-	firstPage := dpread.FirstPageBuilder{
-		Build: func(config common.ReadParams, url *urlbuilder.URL) (*urlbuilder.URL, error) {
-			return url, nil
-		},
-	}
-	nextPage := dpread.NextPageBuilder{
-		Build: func(config common.ReadParams, previousPage *urlbuilder.URL, node *ajson.Node) (string, error) {
-			// Pagination is not supported for this provider.
-			return "", nil
-		},
-	}
-	readObjectLocator := dpread.ReadObjectLocator{
+	readObjectLocator := dpread.ResponseLocator{
 		Locate: func(config common.ReadParams, node *ajson.Node) string {
 			// The response is already an array. Empty string signifies to look "here" for array.
 			return ""
@@ -133,8 +123,6 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		errorHandler,
 		objectURLResolver,
 		objectSupport,
-		firstPage,
-		nextPage,
 		readObjectLocator,
 		writeResultBuilder,
 		dpwrite.PostPostWriteRequestBuilder{},

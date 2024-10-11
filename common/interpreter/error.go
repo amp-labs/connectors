@@ -50,6 +50,6 @@ func (h ErrorHandler) Handle(res *http.Response, body []byte) error {
 func (h ErrorHandler) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
 		ID:          requirements.ErrorHandler,
-		Constructor: handy.Returner(h),
+		Constructor: handy.PtrReturner(h),
 	}
 }

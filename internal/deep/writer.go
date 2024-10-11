@@ -14,17 +14,17 @@ import (
 type Writer struct {
 	clients           dprequests.Clients
 	headerSupplements dprequests.HeaderSupplements
-	objectManager     dpobjects.ObjectManager
-	urlResolver       dpobjects.ObjectURLResolver
+	objectManager     dpobjects.Support
+	urlResolver       dpobjects.URLResolver
 	requestBuilder    dpwrite.WriteRequestBuilder
 	resultBuilder     dpwrite.WriteResultBuilder
 }
 
 func newWriter(clients *dprequests.Clients,
-	resolver dpobjects.ObjectURLResolver,
+	resolver dpobjects.URLResolver,
 	requestBuilder dpwrite.WriteRequestBuilder,
 	resultBuilder *dpwrite.WriteResultBuilder,
-	objectManager dpobjects.ObjectManager,
+	objectManager dpobjects.Support,
 	headerSupplements *dprequests.HeaderSupplements,
 ) *Writer {
 	return &Writer{

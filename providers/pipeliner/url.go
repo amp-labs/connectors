@@ -7,7 +7,7 @@ import (
 	"github.com/amp-labs/connectors/internal/deep/requirements"
 )
 
-var _ dpobjects.ObjectURLResolver = customURLBuilder{}
+var _ dpobjects.URLResolver = customURLBuilder{}
 
 func newURLBuilder(
 	data *dpvars.ConnectorData[parameters, *dpvars.EmptyMetadataVariables],
@@ -30,6 +30,6 @@ func (f customURLBuilder) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
 		ID:          requirements.ObjectURLResolver,
 		Constructor: newURLBuilder,
-		Interface:   new(dpobjects.ObjectURLResolver),
+		Interface:   new(dpobjects.URLResolver),
 	}
 }

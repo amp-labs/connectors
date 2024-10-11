@@ -57,7 +57,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	errorHandler := interpreter.ErrorHandler{
 		JSON: interpreter.NewFaultyResponder(errorFormats, statusCodeMapping),
 	}
-	meta := dpmetadata.StaticMetadataHolder{
+	meta := dpmetadata.SchemaHolder{
 		Metadata: metadata.Schemas,
 	}
 	firstPage := dpread.FirstPageBuilder{
@@ -68,27 +68,27 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		},
 	}
 	nextPage := dpread.NextPageBuilder{
-		Build: func(config common.ReadParams, previousPage *urlbuilder.URL, node *ajson.Node) (string, error) {
+		Build: func(config common.ReadParams, url *urlbuilder.URL, node *ajson.Node) (string, error) {
 			after, err := jsonquery.New(node, "page_info").StrWithDefault("end_cursor", "")
 			if err != nil {
 				return "", err
 			}
 
 			if len(after) != 0 {
-				previousPage.WithQueryParam("after", after)
+				url.WithQueryParam("after", after)
 
-				return previousPage.String(), nil
+				return url.String(), nil
 			}
 
 			return "", nil
 		},
 	}
-	readObjectLocator := dpread.ReadObjectLocator{
+	readObjectLocator := dpread.ResponseLocator{
 		Locate: func(config common.ReadParams, node *ajson.Node) string {
 			return "data"
 		},
 	}
-	objectSupport := dpobjects.ObjectSupport{
+	objectSupport := dpobjects.Registry{
 		Read: supportedObjectsByRead,
 	}
 	writeResultBuilder := dpwrite.WriteResultBuilder{

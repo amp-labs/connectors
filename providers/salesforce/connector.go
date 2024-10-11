@@ -55,7 +55,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		JSON: &interpreter.DirectFaultyResponder{Callback: interpretJSONError},
 		XML:  &interpreter.DirectFaultyResponder{Callback: interpretXMLError},
 	}
-	objectURLResolver := dpobjects.SingleURLFormat{
+	objectURLResolver := dpobjects.URLFormat{
 		Produce: func(method dpobjects.Method, baseURL, objectName string) (*urlbuilder.URL, error) {
 			switch method {
 			case dpobjects.ReadMethod:
@@ -88,11 +88,11 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		},
 	}
 	nextPage := dpread.NextPageBuilder{
-		Build: func(config common.ReadParams, previousPage *urlbuilder.URL, node *ajson.Node) (string, error) {
+		Build: func(config common.ReadParams, url *urlbuilder.URL, node *ajson.Node) (string, error) {
 			return jsonquery.New(node).StrWithDefault("nextRecordsUrl", "")
 		},
 	}
-	readObjectLocator := dpread.ReadObjectLocator{
+	readObjectLocator := dpread.ResponseLocator{
 		Locate: func(config common.ReadParams, node *ajson.Node) string {
 			return "records"
 		},

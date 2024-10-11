@@ -25,7 +25,7 @@ type DeleteRequestBuilder struct {
 func (b DeleteRequestBuilder) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
 		ID:          requirements.RemoveRequestBuilder,
-		Constructor: handy.Returner(b),
+		Constructor: handy.PtrReturner(b),
 		Interface:   new(RemoveRequestBuilder),
 	}
 }

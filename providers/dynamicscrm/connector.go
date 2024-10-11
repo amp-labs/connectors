@@ -67,7 +67,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		},
 	}
 	nextPage := dpread.NextPageBuilder{
-		Build: func(config common.ReadParams, previousPage *urlbuilder.URL, node *ajson.Node) (string, error) {
+		Build: func(config common.ReadParams, url *urlbuilder.URL, node *ajson.Node) (string, error) {
 			nextLink, err := jsonquery.New(node).StrWithDefault("@odata.nextLink", "")
 			if err != nil {
 				return "", err
@@ -92,12 +92,12 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			},
 		},
 	}
-	readObjectLocator := dpread.ReadObjectLocator{
+	readObjectLocator := dpread.ResponseLocator{
 		Locate: func(config common.ReadParams, node *ajson.Node) string {
 			return "value"
 		},
 	}
-	objectURLResolver := dpobjects.SingleURLFormat{
+	objectURLResolver := dpobjects.URLFormat{
 		Produce: func(method dpobjects.Method, baseURL, objectName string) (*urlbuilder.URL, error) {
 			// Despite the "Method" type the relationship between objectName and
 			// URL path is that it must be in singular word case.

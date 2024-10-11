@@ -50,14 +50,14 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	errorHandler := interpreter.ErrorHandler{
 		JSON: interpreter.NewFaultyResponder(errorFormats, nil),
 	}
-	meta := dpmetadata.StaticMetadataHolder{
+	meta := dpmetadata.SchemaHolder{
 		Metadata: metadata.Schemas,
 	}
-	objectSupport := dpobjects.ObjectSupport{
+	objectSupport := dpobjects.Registry{
 		Read:  supportedObjectsByRead,
 		Write: supportedObjectsByWrite,
 	}
-	objectURLResolver := dpobjects.SingleURLFormat{
+	objectURLResolver := dpobjects.URLFormat{
 		Produce: func(method dpobjects.Method, baseURL, objectName string) (*urlbuilder.URL, error) {
 			return urlbuilder.New(baseURL, ApiVersion, objectName)
 		},
@@ -75,22 +75,22 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		},
 	}
 	nextPage := dpread.NextPageBuilder{
-		Build: func(config common.ReadParams, previousPage *urlbuilder.URL, node *ajson.Node) (string, error) {
+		Build: func(config common.ReadParams, url *urlbuilder.URL, node *ajson.Node) (string, error) {
 			nextPageCursor, err := jsonquery.New(node, "records").StrWithDefault("cursor", "")
 			if err != nil {
 				return "", err
 			}
 
 			if len(nextPageCursor) != 0 {
-				previousPage.WithQueryParam("cursor", nextPageCursor)
+				url.WithQueryParam("cursor", nextPageCursor)
 
-				return previousPage.String(), nil
+				return url.String(), nil
 			}
 
 			return "", nil
 		},
 	}
-	readObjectLocator := dpread.ReadObjectLocator{
+	readObjectLocator := dpread.ResponseLocator{
 		Locate: func(config common.ReadParams, node *ajson.Node) string {
 			return config.ObjectName
 		},

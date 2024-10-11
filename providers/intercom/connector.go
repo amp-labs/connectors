@@ -61,7 +61,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	errorHandler := interpreter.ErrorHandler{
 		JSON: interpreter.NewFaultyResponder(errorFormats, statusCodeMapping),
 	}
-	meta := dpmetadata.StaticMetadataHolder{
+	meta := dpmetadata.SchemaHolder{
 		Metadata: metadata.Schemas,
 	}
 	headerSupplements := dprequests.HeaderSupplements{
@@ -69,10 +69,10 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			apiVersionHeader,
 		},
 	}
-	objectSupport := dpobjects.ObjectSupport{
+	objectSupport := dpobjects.Registry{
 		Read: supportedObjectsByRead,
 	}
-	objectURLResolver := dpobjects.SingleURLFormat{
+	objectURLResolver := dpobjects.URLFormat{
 		Produce: func(method dpobjects.Method, baseURL, objectName string) (*urlbuilder.URL, error) {
 			url, err := urlbuilder.New(baseURL, objectName)
 			if err != nil {
@@ -95,7 +95,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		},
 	}
 	nextPage := dpread.NextPageBuilder{
-		Build: func(config common.ReadParams, previousPage *urlbuilder.URL, node *ajson.Node) (string, error) {
+		Build: func(config common.ReadParams, url *urlbuilder.URL, node *ajson.Node) (string, error) {
 			next, err := jsonquery.New(node, "pages").StrWithDefault("next", "")
 			if err == nil {
 				return next, nil
@@ -117,12 +117,12 @@ func NewConnector(opts ...Option) (*Connector, error) {
 				return "", nil
 			}
 
-			previousPage.WithQueryParam("starting_after", *startingAfter)
+			url.WithQueryParam("starting_after", *startingAfter)
 
-			return previousPage.String(), nil
+			return url.String(), nil
 		},
 	}
-	readObjectLocator := dpread.ReadObjectLocator{
+	readObjectLocator := dpread.ResponseLocator{
 		Locate: func(config common.ReadParams, node *ajson.Node) string {
 			return extractListFieldName(node)
 		},

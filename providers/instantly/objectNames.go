@@ -21,7 +21,7 @@ var (
 	supportedObjectsByDelete = deleteObjects.KeySet()                                          //nolint:gochecknoglobals
 )
 
-var readObjects = handy.Map[string, dpobjects.ObjectData]{
+var readObjects = dpobjects.Map{
 	// https://developer.instantly.ai/campaign-1/list-campaigns
 	// Empty string of data location means the response is an array itself holding what we need.
 	objectNameCampaigns: {

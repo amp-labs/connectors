@@ -6,14 +6,15 @@ import (
 	"github.com/amp-labs/connectors/tools/scrapper"
 )
 
-type StaticMetadataHolder struct {
-	// TODO scrapper package should be renamed
+// SchemaHolder holds static metadata which was loaded from file.
+// This holder can provide its data to connector components.
+type SchemaHolder struct {
 	Metadata *scrapper.ObjectMetadataResult
 }
 
-func (h StaticMetadataHolder) Satisfies() requirements.Dependency {
+func (h SchemaHolder) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
 		ID:          requirements.StaticMetadataHolder,
-		Constructor: handy.Returner(h),
+		Constructor: handy.PtrReturner(h),
 	}
 }

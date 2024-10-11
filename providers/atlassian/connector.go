@@ -50,7 +50,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		clients *deep.Clients,
 		closer *deep.EmptyCloser,
 		data *dpvars.ConnectorData[parameters, *AuthMetadataVars],
-		urlResolver dpobjects.ObjectURLResolver,
+		urlResolver dpobjects.URLResolver,
 		reader *deep.Reader,
 		writer *deep.Writer,
 		remover *deep.Remover,
@@ -87,26 +87,26 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		},
 	}
 	nextPage := dpread.NextPageBuilder{
-		Build: func(config common.ReadParams, previousPage *urlbuilder.URL, node *ajson.Node) (string, error) {
+		Build: func(config common.ReadParams, url *urlbuilder.URL, node *ajson.Node) (string, error) {
 			startAt, err := getNextRecords(node)
 			if err != nil {
 				return "", err
 			}
 
 			if len(startAt) != 0 {
-				previousPage.WithQueryParam("startAt", startAt)
+				url.WithQueryParam("startAt", startAt)
 
-				return previousPage.String(), nil
+				return url.String(), nil
 			}
 
 			return "", nil
 		},
 	}
-	readObjectLocator := dpread.ReadObjectLocator{
+	readObjectLocator := dpread.ResponseLocator{
 		Locate: func(config common.ReadParams, node *ajson.Node) string {
 			return "issues"
 		},
-		FlattenRecords: flattenRecords,
+		Process: flattenRecords,
 	}
 	writeResultBuilder := dpwrite.WriteResultBuilder{
 		Build: func(config common.WriteParams, body *ajson.Node) (*common.WriteResult, error) {

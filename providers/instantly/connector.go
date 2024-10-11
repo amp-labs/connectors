@@ -63,10 +63,10 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	errorHandler := interpreter.ErrorHandler{
 		JSON: interpreter.NewFaultyResponder(errorFormats, nil),
 	}
-	meta := dpmetadata.StaticMetadataHolder{
+	meta := dpmetadata.SchemaHolder{
 		Metadata: metadata.Schemas,
 	}
-	objectURLResolver := dpobjects.SingleURLFormat{
+	objectURLResolver := dpobjects.URLFormat{
 		Produce: func(method dpobjects.Method, baseURL, objectName string) (*urlbuilder.URL, error) {
 			var path string
 			switch method {
@@ -92,10 +92,10 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		},
 	}
 	nextPage := dpread.NextPageBuilder{
-		Build: func(config common.ReadParams, previousPage *urlbuilder.URL, node *ajson.Node) (string, error) {
+		Build: func(config common.ReadParams, url *urlbuilder.URL, node *ajson.Node) (string, error) {
 			previousStart := 0
 
-			skipQP, ok := previousPage.GetFirstQueryParam("skip")
+			skipQP, ok := url.GetFirstQueryParam("skip")
 			if ok {
 				// Try to use previous "skip" parameter to determine the next skip.
 				skipNum, err := strconv.Atoi(skipQP)
@@ -105,18 +105,18 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			}
 
 			nextStart := previousStart + DefaultPageSize
-			previousPage.WithQueryParam("limit", strconv.Itoa(DefaultPageSize))
-			previousPage.WithQueryParam("skip", strconv.Itoa(nextStart))
+			url.WithQueryParam("limit", strconv.Itoa(DefaultPageSize))
+			url.WithQueryParam("skip", strconv.Itoa(nextStart))
 
-			return previousPage.String(), nil
+			return url.String(), nil
 		},
 	}
-	readObjectLocator := dpread.ReadObjectLocator{
+	readObjectLocator := dpread.ResponseLocator{
 		Locate: func(config common.ReadParams, node *ajson.Node) string {
 			return readObjects[config.ObjectName].NodePath
 		},
 	}
-	objectSupport := dpobjects.ObjectSupport{
+	objectSupport := dpobjects.Registry{
 		Read:   supportedObjectsByRead,
 		Write:  supportedObjectsByWrite,
 		Delete: supportedObjectsByDelete,

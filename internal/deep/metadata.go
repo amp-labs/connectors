@@ -9,10 +9,10 @@ import (
 )
 
 type StaticMetadata struct {
-	holder dpmetadata.StaticMetadataHolder
+	holder dpmetadata.SchemaHolder
 }
 
-func newStaticMetadata(holder *dpmetadata.StaticMetadataHolder) *StaticMetadata {
+func newStaticMetadata(holder *dpmetadata.SchemaHolder) *StaticMetadata {
 	return &StaticMetadata{holder: *holder}
 }
 

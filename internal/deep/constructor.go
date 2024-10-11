@@ -74,7 +74,7 @@ func ExtendedConnector[C any, P paramsbuilder.ParamAssurance, D dpvars.MetadataV
 
 		// Guards against unsupported objects.
 		// By default, every object would reach Reader, Writer, etc.
-		dpobjects.EmptyObjectRegistry{}.Satisfies(),
+		dpobjects.Registry{}.Satisfies(),
 
 		// Most connectors do no-op on close.
 		// *EmptyCloser is available as constructor argument.
@@ -84,8 +84,9 @@ func ExtendedConnector[C any, P paramsbuilder.ParamAssurance, D dpvars.MetadataV
 		// TODO description
 		// *Reader is available as constructor argument.
 		Reader{}.Satisfies(),
-		dpread.GetRequestBuilder{}.Satisfies(),
-		dpread.DefaultPageBuilder{}.Satisfies(),
+		dpread.FirstPageBuilder{}.Satisfies(),
+		dpread.NextPageBuilder{}.Satisfies(),
+		dpread.RequestGet{}.Satisfies(),
 
 		// WRITE
 		// TODO description

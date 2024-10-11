@@ -35,7 +35,7 @@ func (customWriterRequestBuilder) MakeUpdateRequest(
 func (b customWriterRequestBuilder) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
 		ID:          requirements.WriteRequestBuilder,
-		Constructor: handy.Returner(b),
+		Constructor: handy.PtrReturner(b),
 		Interface:   new(dpwrite.WriteRequestBuilder),
 	}
 }
@@ -57,7 +57,7 @@ func (b customRemoveRequestBuilder) MakeDeleteRequest(objectName, recordID strin
 func (b customRemoveRequestBuilder) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
 		ID:          requirements.RemoveRequestBuilder,
-		Constructor: handy.Returner(b),
+		Constructor: handy.PtrReturner(b),
 		Interface:   new(dpremove.RemoveRequestBuilder),
 	}
 }

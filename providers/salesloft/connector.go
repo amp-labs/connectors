@@ -73,7 +73,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		},
 	}
 	nextPage := dpread.NextPageBuilder{
-		Build: func(config common.ReadParams, previousPage *urlbuilder.URL, node *ajson.Node) (string, error) {
+		Build: func(config common.ReadParams, url *urlbuilder.URL, node *ajson.Node) (string, error) {
 			nextPageNum, err := jsonquery.New(node, "metadata", "paging").Integer("next_page", true)
 			if err != nil {
 				if errors.Is(err, jsonquery.ErrKeyNotFound) {
@@ -90,17 +90,17 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			}
 
 			// use request URL to infer the next page URL
-			previousPage.WithQueryParam("page", strconv.FormatInt(*nextPageNum, 10))
+			url.WithQueryParam("page", strconv.FormatInt(*nextPageNum, 10))
 
-			return previousPage.String(), nil
+			return url.String(), nil
 		},
 	}
-	readObjectLocator := dpread.ReadObjectLocator{
+	readObjectLocator := dpread.ResponseLocator{
 		Locate: func(config common.ReadParams, node *ajson.Node) string {
 			return "data"
 		},
 	}
-	objectURLResolver := dpobjects.SingleURLFormat{
+	objectURLResolver := dpobjects.URLFormat{
 		Produce: func(method dpobjects.Method, baseURL, objectName string) (*urlbuilder.URL, error) {
 			return urlbuilder.New(baseURL, apiVersion, objectName)
 		},
@@ -136,10 +136,10 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			}, nil
 		},
 	}
-	meta := dpmetadata.StaticMetadataHolder{
+	meta := dpmetadata.SchemaHolder{
 		Metadata: metadata.Schemas,
 	}
-	objectSupport := dpobjects.ObjectSupport{
+	objectSupport := dpobjects.Registry{
 		Read: supportedObjectsByRead,
 	}
 

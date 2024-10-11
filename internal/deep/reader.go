@@ -3,6 +3,7 @@ package deep
 import (
 	"context"
 	"github.com/amp-labs/connectors/internal/deep/requirements"
+	"github.com/spyzhov/ajson"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -14,65 +15,65 @@ import (
 type Reader struct {
 	clients           dprequests.Clients
 	headerSupplements dprequests.HeaderSupplements
-	objectManager     dpobjects.ObjectManager
-	urlResolver       dpobjects.ObjectURLResolver
-	pageStartBuilder  dpread.PaginationStartBuilder
-	nextPageBuilder   dpread.NextPageBuilder
-	readObjectLocator dpread.ReadObjectLocator
-	requestBuilder    dpread.ReadRequestBuilder
+	objectSupport     dpobjects.Support
+	urlResolver       dpobjects.URLResolver
+	firstPage         dpread.PaginationStart
+	nextPage          dpread.PaginationStep
+	requester         dpread.Requester
+	responder         dpread.Responder
 }
 
-func newReader(clients *dprequests.Clients,
-	resolver dpobjects.ObjectURLResolver,
-	pageStartBuilder dpread.PaginationStartBuilder,
-	nextPageBuilder *dpread.NextPageBuilder,
-	objectLocator *dpread.ReadObjectLocator,
-	objectManager dpobjects.ObjectManager,
-	requestBuilder dpread.ReadRequestBuilder,
+func newReader(
+	clients *dprequests.Clients,
 	headerSupplements *dprequests.HeaderSupplements,
+	objectManager dpobjects.Support,
+	resolver dpobjects.URLResolver,
+	firstPage dpread.PaginationStart,
+	nextPage dpread.PaginationStep,
+	requester dpread.Requester,
+	responder dpread.Responder,
 ) *Reader {
 	return &Reader{
-		urlResolver:       resolver,
-		pageStartBuilder:  pageStartBuilder,
-		nextPageBuilder:   *nextPageBuilder,
-		readObjectLocator: *objectLocator,
-		objectManager:     objectManager,
-		requestBuilder:    requestBuilder,
-		headerSupplements: *headerSupplements,
 		clients:           *clients,
+		headerSupplements: *headerSupplements,
+		objectSupport:     objectManager,
+		urlResolver:       resolver,
+		firstPage:         firstPage,
+		nextPage:          nextPage,
+		requester:         requester,
+		responder:         responder,
 	}
 }
 
-func (r Reader) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
+func (reader Reader) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
 	if err := config.ValidateParams(true); err != nil {
 		return nil, err
 	}
 
-	if !r.objectManager.IsReadSupported(config.ObjectName) {
+	if !reader.objectSupport.IsReadSupported(config.ObjectName) {
 		return nil, common.ErrOperationNotSupportedForObject
 	}
 
-	url, err := r.buildReadURL(config)
+	url, err := reader.buildReadURL(config)
 	if err != nil {
 		return nil, err
 	}
 
-	read, headers := r.requestBuilder.MakeReadRequest(config.ObjectName, r.clients)
-	headers = append(headers, r.headerSupplements.ReadHeaders()...)
+	read, headers := reader.requester.MakeReadRequest(config.ObjectName, reader.clients)
+	headers = append(headers, reader.headerSupplements.ReadHeaders()...)
 
 	rsp, err := read(ctx, url, nil, headers...)
 	if err != nil {
 		return nil, err
 	}
 
-	recordsFunc, err := r.readObjectLocator.GetRecordsFunc(config)
+	recordsFunc, err := reader.responder.GetRecordsFunc(config)
 	if err != nil {
 		return nil, err
 	}
 
-	nextPageFunc, err := r.nextPageBuilder.GetNextPageFunc(config, url)
-	if err != nil {
-		return nil, err
+	nextPageFunc := func(node *ajson.Node) (string, error) {
+		return reader.nextPage.NextPage(config, url, node)
 	}
 
 	return common.ParseResult(
@@ -84,22 +85,22 @@ func (r Reader) Read(ctx context.Context, config common.ReadParams) (*common.Rea
 	)
 }
 
-func (r Reader) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error) {
+func (reader Reader) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error) {
 	if len(config.NextPage) != 0 {
 		// Next page
 		return urlbuilder.New(config.NextPage.String())
 	}
 
 	// First page
-	url, err := r.urlResolver.FindURL(dpobjects.ReadMethod, r.clients.BaseURL(), config.ObjectName)
+	url, err := reader.urlResolver.FindURL(dpobjects.ReadMethod, reader.clients.BaseURL(), config.ObjectName)
 	if err != nil {
 		return nil, err
 	}
 
-	return r.pageStartBuilder.FirstPage(config, url)
+	return reader.firstPage.FirstPage(config, url)
 }
 
-func (r Reader) Satisfies() requirements.Dependency {
+func (reader Reader) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
 		ID:          requirements.Reader,
 		Constructor: newReader,

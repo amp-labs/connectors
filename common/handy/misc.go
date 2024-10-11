@@ -6,7 +6,7 @@ func Must(err error) {
 	}
 }
 
-func Returner[T any](self T) func() *T {
+func PtrReturner[T any](self T) func() *T {
 	return func() *T {
 		return &self
 	}
