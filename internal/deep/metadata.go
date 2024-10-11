@@ -8,6 +8,9 @@ import (
 	"github.com/amp-labs/connectors/internal/deep/requirements"
 )
 
+// StaticMetadata is a major connector component that serves ListObjectMetadata using locally loaded schema.
+// Embed this into connector struct.
+// Provide *dpmetadata.SchemaHolder into deep.Connector.
 type StaticMetadata struct {
 	holder dpmetadata.SchemaHolder
 }

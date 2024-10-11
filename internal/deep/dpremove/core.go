@@ -17,4 +17,3 @@ type Requester interface {
 
 	MakeDeleteRequest(objectName, recordID string, clients dprequests.Clients) (common.DeleteMethod, []common.Header)
 }
-

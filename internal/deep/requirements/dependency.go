@@ -33,7 +33,7 @@ type ConnectorComponent interface {
 type Dependency struct {
 	ID          ComponentID
 	Constructor any
-	Interface   any // TODO interface should be implied based on ID
+	Interface   any
 }
 
 // Makes itself available to dig.Container.

@@ -12,6 +12,9 @@ import (
 	"github.com/amp-labs/connectors/internal/deep/dprequests"
 )
 
+// Reader is a major connector component which provides Read functionality.
+// Embed this into connector struct.
+// Provide dpobjects.URLResolver into deep.Connector.
 type Reader struct {
 	clients           dprequests.Clients
 	headerSupplements dprequests.HeaderSupplements

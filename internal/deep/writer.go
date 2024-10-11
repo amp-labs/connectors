@@ -11,6 +11,9 @@ import (
 	"github.com/amp-labs/connectors/internal/deep/requirements"
 )
 
+// Writer is a major connector component which provides Write functionality.
+// Embed this into connector struct.
+// Provide dpobjects.URLResolver into deep.Connector.
 type Writer struct {
 	clients           dprequests.Clients
 	headerSupplements dprequests.HeaderSupplements

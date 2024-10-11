@@ -10,6 +10,9 @@ import (
 	"github.com/amp-labs/connectors/internal/deep/dprequests"
 )
 
+// Remover is a major connector component which provides Delete functionality.
+// Embed this into connector struct.
+// Provide dpobjects.URLResolver into deep.Connector.
 type Remover struct {
 	clients           dprequests.Clients
 	headerSupplements dprequests.HeaderSupplements

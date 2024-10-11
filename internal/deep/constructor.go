@@ -90,6 +90,7 @@ func ExtendedConnector[C any, P paramsbuilder.ParamAssurance, D dpvars.MetadataV
 		dpread.FirstPageBuilder{}.Satisfies(),
 		dpread.NextPageBuilder{}.Satisfies(),
 		dpread.RequestGet{}.Satisfies(),
+		dpread.ResponseLocator{}.Satisfies(),
 
 		// WRITE
 		// Default behaviour:
