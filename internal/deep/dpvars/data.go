@@ -5,6 +5,8 @@ import (
 	"github.com/amp-labs/connectors/internal/deep/requirements"
 )
 
+// ConnectorData is a concrete representation of connector parameters and paramsbuilder.Metadata.
+// You can specify this connector component as an argument to the connector constructor.
 type ConnectorData[P paramsbuilder.ParamAssurance, D MetadataVariables] struct {
 	Workspace string
 	Module    string

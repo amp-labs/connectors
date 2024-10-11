@@ -5,6 +5,8 @@ import (
 	"github.com/amp-labs/connectors/internal/deep/requirements"
 )
 
+// CatalogVariables holds list of catalog variables that can be used to fill in catalog provider template.
+// These variables come from connector parameters.
 type CatalogVariables[P paramsbuilder.ParamAssurance, D MetadataVariables] struct {
 	List []paramsbuilder.CatalogVariable
 }

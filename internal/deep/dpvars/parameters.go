@@ -5,6 +5,9 @@ import (
 	"github.com/amp-labs/connectors/internal/deep/requirements"
 )
 
+// Parameters is a connector component that holds parameters,
+// making them available for injection into constructor.
+// They are used by the "dpvars" package.
 type Parameters[P paramsbuilder.ParamAssurance] struct {
 	Params any
 }
