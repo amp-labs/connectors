@@ -32,7 +32,7 @@ var _ ObjectURLResolver = SingleURLFormat{}
 
 func (r SingleURLFormat) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
-		ID:          "objectUrlResolver",
+		ID:          requirements.ObjectURLResolver,
 		Constructor: handy.Returner(r),
 		Interface:   new(ObjectURLResolver),
 	}

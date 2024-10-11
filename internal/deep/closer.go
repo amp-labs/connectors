@@ -10,7 +10,7 @@ func (EmptyCloser) Close() error {
 
 func (c EmptyCloser) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
-		ID: "closer",
+		ID: requirements.Closer,
 		Constructor: func() *EmptyCloser {
 			return &EmptyCloser{}
 		},

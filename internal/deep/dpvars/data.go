@@ -42,7 +42,7 @@ func newConnectorDescriptor[P paramsbuilder.ParamAssurance, D MetadataVariables]
 
 func (c ConnectorData[P, D]) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
-		ID:          "connectorDescriptor",
+		ID:          requirements.ConnectorData,
 		Constructor: newConnectorDescriptor[P, D],
 	}
 }

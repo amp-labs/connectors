@@ -26,7 +26,7 @@ type ObjectSupport struct {
 
 func (o ObjectSupport) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
-		ID:          "objectRegistry",
+		ID:          requirements.ObjectRegistry,
 		Constructor: handy.Returner(o),
 		Interface:   new(ObjectManager),
 	}
@@ -60,7 +60,7 @@ type EmptyObjectRegistry struct{}
 
 func (e EmptyObjectRegistry) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
-		ID:          "objectRegistry",
+		ID:          requirements.ObjectRegistry,
 		Constructor: handy.Returner(e),
 		Interface:   new(ObjectManager),
 	}

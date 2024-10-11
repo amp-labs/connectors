@@ -62,7 +62,7 @@ func (r Remover) Delete(ctx context.Context, config common.DeleteParams) (*commo
 
 func (r Remover) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
-		ID:          "remover",
+		ID:         requirements.Remover,
 		Constructor: newRemover,
 	}
 }

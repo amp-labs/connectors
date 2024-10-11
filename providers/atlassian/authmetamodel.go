@@ -36,7 +36,7 @@ var _ dpvars.MetadataVariables = &AuthMetadataVars{}
 
 func (v *AuthMetadataVars) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
-		ID:          "metadataVariables",
+		ID:          requirements.MetadataVariables,
 		Constructor: NewAuthMetadataVars,
 		Interface:   new(dpvars.MetadataVariables),
 	}

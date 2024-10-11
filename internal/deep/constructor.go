@@ -39,14 +39,14 @@ func ExtendedConnector[C any, P paramsbuilder.ParamAssurance, D dpvars.MetadataV
 	dependencies := requirements.NewDependencies([]requirements.Dependency{
 		{
 			// Connector must have Provider name.
-			ID: "provider",
+			ID: requirements.Provider,
 			Constructor: func() providers.Provider {
 				return provider
 			},
 		},
 		{
 			// Connector is configured using options.
-			ID: "options",
+			ID: requirements.Options,
 			Constructor: func() []func(params *P) {
 				return options
 			},
@@ -66,7 +66,7 @@ func ExtendedConnector[C any, P paramsbuilder.ParamAssurance, D dpvars.MetadataV
 		// ErrorHandler would parse error response depending on media type.
 		// HeaderSupplements is used to attach headers when performing said requests.
 		{
-			ID:          "clients",
+			ID:          requirements.Clients,
 			Constructor: dprequests.NewClients[P, D],
 		},
 		interpreter.ErrorHandler{}.Satisfies(),
@@ -108,7 +108,7 @@ func ExtendedConnector[C any, P paramsbuilder.ParamAssurance, D dpvars.MetadataV
 			// This is the main constructor which will get all dependencies resolved.
 			// It is possible that not all dependencies are needed, this list is exhaustive,
 			// which describes all the building blocks that Deep connector may have.
-			ID:          "connector",
+			ID:          requirements.Connector,
 			Constructor: connectorConstructor,
 		},
 	})

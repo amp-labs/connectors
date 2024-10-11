@@ -18,7 +18,7 @@ var _ MetadataVariables = &EmptyMetadataVariables{}
 
 func (e *EmptyMetadataVariables) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
-		ID: "metadataVariables",
+		ID: requirements.MetadataVariables,
 		Constructor: func() *EmptyMetadataVariables {
 			return &EmptyMetadataVariables{}
 		},

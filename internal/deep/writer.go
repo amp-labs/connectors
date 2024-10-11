@@ -91,7 +91,7 @@ func (w Writer) Write(ctx context.Context, config common.WriteParams) (*common.W
 
 func (w Writer) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
-		ID:          "writer",
+		ID:          requirements.Writer,
 		Constructor: newWriter,
 	}
 }

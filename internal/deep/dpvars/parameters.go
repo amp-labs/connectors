@@ -27,7 +27,7 @@ func newParametersHolder[P paramsbuilder.ParamAssurance](
 
 func (p Parameters[P]) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
-		ID:          "parameters",
+		ID:          requirements.Parameters,
 		Constructor: newParametersHolder[P],
 	}
 }

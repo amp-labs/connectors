@@ -62,7 +62,7 @@ func (f customURLBuilder) getAccessibleSitesURL() (*urlbuilder.URL, error) {
 
 func (f customURLBuilder) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
-		ID:          "objectUrlResolver",
+		ID:          requirements.ObjectURLResolver,
 		Constructor: newURLBuilder,
 		Interface:   new(dpobjects.ObjectURLResolver),
 	}

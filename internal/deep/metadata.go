@@ -24,7 +24,7 @@ func (c StaticMetadata) ListObjectMetadata(
 
 func (c StaticMetadata) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
-		ID:          "staticMetadata",
+		ID:          requirements.StaticMetadata,
 		Constructor: newStaticMetadata,
 	}
 }

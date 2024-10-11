@@ -49,7 +49,7 @@ func (h ErrorHandler) Handle(res *http.Response, body []byte) error {
 
 func (h ErrorHandler) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
-		ID:          "errorHandler",
+		ID:          requirements.ErrorHandler,
 		Constructor: handy.Returner(h),
 	}
 }

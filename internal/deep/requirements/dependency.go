@@ -16,7 +16,7 @@ import (
 //
 // Major component is a template with default behaviour, some steps in the implementation would need customization,
 // which is achieved through ConnectorComponent, representing those steps.
-// This structure uses the Abstract Design Pattern via dependency injection.
+// This structure uses the Template Design Pattern via dependency injection.
 //
 // ConnectorComponent may need multiple other ConnectorComponents,
 // they are wired automatically by matching Dependency definition.
@@ -31,7 +31,7 @@ type ConnectorComponent interface {
 // Dependency holds a factory which produces instances of certain type.
 // It creates instances associated with ID.
 type Dependency struct {
-	ID          string
+	ID          ComponentID
 	Constructor any
 	Interface   any // TODO interface should be implied based on ID
 }
@@ -47,7 +47,7 @@ func (d Dependency) apply(container *dig.Container) error {
 }
 
 // Dependencies is a map indexed by Dependency.ID.
-type Dependencies handy.Map[string, Dependency]
+type Dependencies handy.Map[ComponentID, Dependency]
 
 // NewDependencies is a constructor that expects input to be in order.
 // Any duplicates will be eliminated, which means the last in order would win, others ignored.

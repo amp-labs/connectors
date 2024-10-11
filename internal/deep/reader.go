@@ -101,7 +101,7 @@ func (r Reader) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error) 
 
 func (r Reader) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
-		ID:          "reader",
+		ID:          requirements.Reader,
 		Constructor: newReader,
 	}
 }

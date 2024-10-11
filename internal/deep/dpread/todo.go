@@ -35,7 +35,7 @@ func (b FirstPageBuilder) FirstPage(config common.ReadParams, url *urlbuilder.UR
 
 func (b FirstPageBuilder) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
-		ID:          "paginationStartBuilder",
+		ID:          requirements.PaginationStartBuilder,
 		Constructor: handy.Returner(b),
 		Interface:   new(PaginationStartBuilder),
 	}
@@ -47,7 +47,7 @@ type DefaultPageBuilder struct{}
 
 func (b DefaultPageBuilder) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
-		ID:          "paginationStartBuilder",
+		ID:          requirements.PaginationStartBuilder,
 		Constructor: handy.Returner(b),
 		Interface:   new(PaginationStartBuilder),
 	}
@@ -74,7 +74,7 @@ func (b NextPageBuilder) GetNextPageFunc(config common.ReadParams, url *urlbuild
 
 func (b NextPageBuilder) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
-		ID:          "nextPageBuilder",
+		ID:          requirements.NextPageBuilder,
 		Constructor: handy.Returner(b),
 	}
 }
@@ -111,7 +111,7 @@ func (l ReadObjectLocator) GetRecordsFunc(config common.ReadParams) (common.Reco
 
 func (l ReadObjectLocator) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
-		ID:          "readObjectLocator",
+		ID:          requirements.ReadObjectLocator,
 		Constructor: handy.Returner(l),
 	}
 }
@@ -130,7 +130,7 @@ type GetRequestBuilder struct {
 
 func (b GetRequestBuilder) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
-		ID:          "readRequestBuilder",
+		ID:          requirements.ReadRequestBuilder,
 		Constructor: handy.Returner(b),
 		Interface:   new(ReadRequestBuilder),
 	}
@@ -153,7 +153,7 @@ func (b GetWithHeadersRequestBuilder) MakeReadRequest(
 
 func (b GetWithHeadersRequestBuilder) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
-		ID:          "readRequestBuilder",
+		ID:          requirements.ReadRequestBuilder,
 		Constructor: handy.Returner(b),
 		Interface:   new(ReadRequestBuilder),
 	}

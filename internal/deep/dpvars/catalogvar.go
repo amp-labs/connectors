@@ -30,7 +30,7 @@ func newCatalogVariables[P paramsbuilder.ParamAssurance, D MetadataVariables](
 
 func (c CatalogVariables[P, D]) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
-		ID:          "catalogVariables",
+		ID:          requirements.CatalogVariables,
 		Constructor: newCatalogVariables[P, D],
 	}
 }

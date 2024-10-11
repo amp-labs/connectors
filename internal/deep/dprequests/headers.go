@@ -16,7 +16,7 @@ type HeaderSupplements struct {
 
 func (s HeaderSupplements) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
-		ID:          "headerSupplements",
+		ID:          requirements.HeaderSupplements,
 		Constructor: handy.Returner(s),
 	}
 }

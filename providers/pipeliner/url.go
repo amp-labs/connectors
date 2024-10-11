@@ -28,7 +28,7 @@ func (f customURLBuilder) FindURL(method dpobjects.Method, baseURL, objectName s
 
 func (f customURLBuilder) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
-		ID:          "objectUrlResolver",
+		ID:          requirements.ObjectURLResolver,
 		Constructor: newURLBuilder,
 		Interface:   new(dpobjects.ObjectURLResolver),
 	}

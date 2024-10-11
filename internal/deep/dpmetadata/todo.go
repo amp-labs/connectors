@@ -13,7 +13,7 @@ type StaticMetadataHolder struct {
 
 func (h StaticMetadataHolder) Satisfies() requirements.Dependency {
 	return requirements.Dependency{
-		ID:          "staticMetadataHolder",
+		ID:          requirements.StaticMetadataHolder,
 		Constructor: handy.Returner(h),
 	}
 }
