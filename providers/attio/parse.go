@@ -16,7 +16,7 @@ func makeNextRecordsURL(reqLink *urlbuilder.URL) common.NextPageFunc {
 		// Extract the data key value from the response.
 		value, err := jsonquery.New(node).Array("data", false)
 		if err != nil {
-			return "", nil
+			return "", err
 		}
 
 		if (reqLink.HasQueryParam("limit") || reqLink.HasQueryParam("offset")) && len(value) != 0 {
@@ -36,6 +36,7 @@ func makeNextRecordsURL(reqLink *urlbuilder.URL) common.NextPageFunc {
 
 			return reqLink.String(), nil
 		}
+
 		return "", nil
 	}
 }
