@@ -18,6 +18,7 @@ const (
 	Reader               ComponentID = "reader"
 	Writer               ComponentID = "writer"
 	StaticMetadata       ComponentID = "staticMetadata"
+	Remover              ComponentID = "remover"
 	ReadObjectLocator    ComponentID = "readObjectLocator"
 	NextPageBuilder      ComponentID = "nextPageBuilder"
 	WriteResultBuilder   ComponentID = "writeResultBuilder"
@@ -32,4 +33,5 @@ const (
 	ReadRequestBuilder     ComponentID = "readRequestBuilder"
 	WriteRequestBuilder    ComponentID = "writeRequestBuilder"
 	MetadataVariables      ComponentID = "metadataVariables"
+	RemoveRequestBuilder   ComponentID = "removeRequestBuilder"
 )

@@ -5,6 +5,7 @@ import (
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/internal/deep/dpobjects"
 	"github.com/amp-labs/connectors/internal/deep/dpread"
+	"github.com/amp-labs/connectors/internal/deep/dpremove"
 	"github.com/amp-labs/connectors/internal/deep/dprequests"
 	"github.com/amp-labs/connectors/internal/deep/dpvars"
 	"github.com/amp-labs/connectors/internal/deep/dpwrite"
@@ -160,6 +161,13 @@ func ExtendedConnector[C any, P paramsbuilder.ParamAssurance, D dpvars.MetadataV
 		//  -> expects dpmetadata.SchemaHolder.
 		// *StaticMetadata is available as constructor argument.
 		StaticMetadata{}.Satisfies(),
+
+		// DELETE
+		// Default behaviour:
+		//  -> remove is done using DELETE operation.
+		// *Remover is available as constructor argument.
+		Remover{}.Satisfies(),
+		dpremove.RequestDelete{}.Satisfies(),
 
 		{
 			// This is the main constructor which will get all dependencies resolved.
