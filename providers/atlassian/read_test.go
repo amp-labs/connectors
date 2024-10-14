@@ -107,9 +107,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				  "issues": []
 				}`)
 			})),
-			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
-				return nextPageComparator(baseURL, actual, expected)
-			},
+			Comparator: nextPageComparator,
 			Expected: &common.ReadResult{
 				Rows:     0,
 				NextPage: "",
@@ -156,9 +154,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					{"fields":{}, "id": "1"}
 				]}`)
 			})),
-			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
-				return nextPageComparator(baseURL, actual, expected)
-			},
+			Comparator: nextPageComparator,
 			Expected: &common.ReadResult{
 				Rows:     2,
 				NextPage: "",
@@ -180,9 +176,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					{"fields":{}, "id": "1"}
 				]}`)
 			})),
-			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
-				return nextPageComparator(baseURL, actual, expected)
-			},
+			Comparator: nextPageComparator,
 			Expected: &common.ReadResult{
 				Rows:     2,
 				NextPage: "{{testServerURL}}/ex/jira/ebc887b2-7e61-4059-ab35-71f15cc16e12/rest/api/3/search?startAt=8",

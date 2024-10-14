@@ -29,7 +29,7 @@ func Connector[C any, P paramsbuilder.ParamAssurance](
 
 // ExtendedConnector is the same connector builder as Connector method.
 // TODO documentation.
-func ExtendedConnector[C any, P paramsbuilder.ParamAssurance, D dpvars.MetadataVariables](
+func ExtendedConnector[C any, P paramsbuilder.ParamAssurance, D dpvars.MetadataVariables]( //nolint:funlen
 	connectorConstructor any,
 	provider providers.Provider,
 	metadataVariables D,
@@ -141,6 +141,7 @@ func ExtendedConnector[C any, P paramsbuilder.ParamAssurance, D dpvars.MetadataV
 // Produces connector of a specified T type.
 func resolveDependencies[T any](container *dig.Container) (*T, error) {
 	var result *T
+
 	err := container.Invoke(func(builder *T) {
 		result = builder
 	})

@@ -42,7 +42,9 @@ func (b customWriterRequestBuilder) Satisfies() requirements.Dependency {
 
 type customRemoveRequestBuilder struct{}
 
-func (b customRemoveRequestBuilder) MakeDeleteRequest(objectName, recordID string, clients dprequests.Clients) (common.DeleteMethod, []common.Header) {
+func (b customRemoveRequestBuilder) MakeDeleteRequest(
+	objectName, recordID string, clients dprequests.Clients,
+) (common.DeleteMethod, []common.Header) {
 	// Wrapper around DELETE without request body.
 	return func(ctx context.Context, url *urlbuilder.URL,
 		body any, headers ...common.Header,

@@ -34,7 +34,7 @@ type parameters struct {
 	paramsbuilder.Workspace
 }
 
-func NewConnector(opts ...Option) (conn *Connector, outErr error) {
+func NewConnector(opts ...Option) (conn *Connector, outErr error) { //nolint:funlen
 	constructor := func(
 		clients *deep.Clients,
 		closer *deep.EmptyCloser,

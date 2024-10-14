@@ -40,7 +40,7 @@ type parameters struct {
 	paramsbuilder.Client
 }
 
-func NewConnector(opts ...Option) (*Connector, error) {
+func NewConnector(opts ...Option) (*Connector, error) { //nolint:funlen
 	constructor := func(
 		clients *deep.Clients,
 		closer *deep.EmptyCloser,
@@ -159,18 +159,4 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		readObjectLocator,
 		writeResultBuilder,
 	)
-}
-
-func (c *Connector) getURL(objectName string) (*urlbuilder.URL, error) {
-	url, err := urlbuilder.New(c.Clients.BaseURL(), objectName)
-	if err != nil {
-		return nil, err
-	}
-
-	// Intercom pagination cursor sometimes ends with `=`.
-	url.AddEncodingExceptions(map[string]string{ //nolint:gochecknoglobals
-		"%3D": "=",
-	})
-
-	return url, nil
 }

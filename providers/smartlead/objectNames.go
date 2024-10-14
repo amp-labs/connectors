@@ -20,7 +20,7 @@ var (
 	supportedObjectsByDelete = deleteObjects.KeySet()                                          //nolint:gochecknoglobals
 )
 
-var createObjects = handy.Map[string, string]{
+var createObjects = handy.Map[string, string]{ //nolint:gochecknoglobals
 	// Create campaign.
 	// https://api.smartlead.ai/reference/create-campaign
 	objectNameCampaign: objectNameCampaign + "/create",
@@ -32,14 +32,14 @@ var createObjects = handy.Map[string, string]{
 	objectNameClient: objectNameClient + "/save",
 }
 
-var updateObjects = handy.Map[string, string]{
+var updateObjects = handy.Map[string, string]{ // nolint:gochecknoglobals
 	// Update account.
 	// https://api.smartlead.ai/reference/update-email-account
 	// It uses POST with RecordID.
 	objectNameEmailAccount: objectNameEmailAccount,
 }
 
-var deleteObjects = handy.Map[string, string]{
+var deleteObjects = handy.Map[string, string]{ //nolint:gochecknoglobals
 	// Removing campaign is the only to be supported at this time.
 	// https://api.smartlead.ai/reference/delete-campaign
 	objectNameCampaign: objectNameCampaign,

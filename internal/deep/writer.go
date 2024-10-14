@@ -11,7 +11,7 @@ import (
 	"github.com/amp-labs/connectors/internal/deep/requirements"
 )
 
-var UpdateNotSupported = errors.New("object doesn't support update")
+var ErrUpdateNotSupported = errors.New("object doesn't support update")
 
 // Writer is a major connector component which provides Write functionality.
 // Embed this into connector struct.
@@ -71,7 +71,7 @@ func (w Writer) Write(ctx context.Context, config common.WriteParams) (*common.W
 	} else {
 		write, headers = w.requester.MakeUpdateRequest(config.ObjectName, config.RecordId, url, w.clients)
 		if write == nil {
-			return nil, UpdateNotSupported
+			return nil, ErrUpdateNotSupported
 		}
 
 		headers = append(headers, w.headerSupplements.UpdateHeaders()...)

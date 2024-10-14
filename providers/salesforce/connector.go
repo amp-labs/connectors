@@ -1,8 +1,6 @@
 package salesforce
 
 import (
-	"errors"
-
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/jsonquery"
@@ -37,7 +35,7 @@ type parameters struct {
 	paramsbuilder.Workspace
 }
 
-func NewConnector(opts ...Option) (*Connector, error) {
+func NewConnector(opts ...Option) (*Connector, error) { //nolint:funlen
 	constructor := func(
 		clients *deep.Clients,
 		closer *deep.EmptyCloser,
@@ -71,10 +69,12 @@ func NewConnector(opts ...Option) (*Connector, error) {
 				url.WithQueryParam("_HttpMethod", "PATCH")
 
 				return url, nil
+			case dpobjects.DeleteMethod:
+				// Operation is not supported.
+				fallthrough
+			default:
+				return nil, dpobjects.ErrNoMatchingURL
 			}
-
-			// TODO general error
-			return nil, errors.New("cannot match URL for object")
 		},
 	}
 	firstPage := dpread.FirstPageBuilder{

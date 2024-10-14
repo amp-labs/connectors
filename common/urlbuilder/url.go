@@ -126,7 +126,7 @@ func (u *URL) AddPath(paths ...string) *URL {
 }
 
 func (u *URL) RawAddToPath(data string) *URL {
-	u.delegate.Path = u.delegate.Path + data
+	u.delegate.Path += data
 	u.delegate.RawPath = u.delegate.Path
 
 	return u

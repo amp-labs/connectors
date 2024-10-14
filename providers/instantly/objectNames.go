@@ -21,7 +21,7 @@ var (
 	supportedObjectsByDelete = deleteObjects.KeySet()                                          //nolint:gochecknoglobals
 )
 
-var readObjects = dpobjects.Map{
+var readObjects = dpobjects.Map{ //nolint:gochecknoglobals
 	// https://developer.instantly.ai/campaign-1/list-campaigns
 	// Empty string of data location means the response is an array itself holding what we need.
 	objectNameCampaigns: {
@@ -45,7 +45,7 @@ var readObjects = dpobjects.Map{
 	},
 }
 
-var createObjects = handy.Map[string, string]{
+var createObjects = handy.Map[string, string]{ //nolint:gochecknoglobals
 	// Add lead to campaign.
 	// https://developer.instantly.ai/campaign/add-leads-to-a-campaign
 	objectNameLeads: "lead/add",
@@ -60,13 +60,13 @@ var createObjects = handy.Map[string, string]{
 	objectNameTags: "custom-tag",
 }
 
-var updateObjects = handy.Map[string, string]{
+var updateObjects = handy.Map[string, string]{ //nolint:gochecknoglobals
 	// Update tag.
 	// https://developer.instantly.ai/tags/update-tag
 	objectNameTags: "custom-tag",
 }
 
-var deleteObjects = handy.Map[string, string]{
+var deleteObjects = handy.Map[string, string]{ //nolint:gochecknoglobals
 	// Delete tag.
 	// https://developer.instantly.ai/tags/delete-a-tag
 	objectNameTags: "custom-tag",

@@ -19,8 +19,12 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-// ErrMissingCloudId happens when cloud id was not provided via WithMetadata.
-var ErrMissingCloudId = errors.New("connector missing cloud id")
+var (
+	// ErrMissingCloudId happens when cloud id was not provided via WithMetadata.
+	ErrMissingCloudId = errors.New("connector missing cloud id")
+
+	ErrUnexpectedBuilder = errors.New("unexpected URLResolver type")
+)
 
 type Connector struct {
 	Data dpvars.ConnectorData[parameters, *AuthMetadataVars]
@@ -45,7 +49,7 @@ type parameters struct {
 	paramsbuilder.Metadata
 }
 
-func NewConnector(opts ...Option) (*Connector, error) {
+func NewConnector(opts ...Option) (*Connector, error) { //nolint:funlen
 	constructor := func(
 		clients *deep.Clients,
 		closer *deep.EmptyCloser,
@@ -54,7 +58,12 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		reader *deep.Reader,
 		writer *deep.Writer,
 		remover *deep.Remover,
-	) *Connector {
+	) (*Connector, error) {
+		builder, ok := urlResolver.(*customURLBuilder)
+		if !ok {
+			return nil, ErrUnexpectedBuilder
+		}
+
 		return &Connector{
 			Data:        *data,
 			Clients:     *clients,
@@ -62,8 +71,8 @@ func NewConnector(opts ...Option) (*Connector, error) {
 			Reader:      *reader,
 			Writer:      *writer,
 			Remover:     *remover,
-			urlBuilder:  urlResolver.(*customURLBuilder),
-		}
+			urlBuilder:  builder,
+		}, nil
 	}
 	errorHandler := interpreter.ErrorHandler{
 		JSON: interpreter.NewFaultyResponder(errorFormats, nil),

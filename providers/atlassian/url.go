@@ -1,8 +1,6 @@
 package atlassian
 
 import (
-	"errors"
-
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/deep/dpobjects"
 	"github.com/amp-labs/connectors/internal/deep/dprequests"
@@ -37,10 +35,9 @@ func (f customURLBuilder) FindURL(method dpobjects.Method, baseURL, objectName s
 		return f.getJiraRestApiURL("issue")
 	case dpobjects.DeleteMethod:
 		return f.getJiraRestApiURL("issue")
+	default:
+		return nil, dpobjects.ErrNoMatchingURL
 	}
-
-	// TODO should be a general error handled by `deep` package
-	return nil, errors.New("URL cannot be resolved")
 }
 
 // URL format follows structure applicable to Oauth2 Atlassian apps.

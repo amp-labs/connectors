@@ -120,7 +120,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				return actual.NextPage.String() == expectedNextPage
 			},
 			Expected: &common.ReadResult{
-				NextPage: "{{testServerURL}}/api/v100/rest/spaces/test-workspace/entities/Profiles?after=WyIwMDAwMDAwMC0wMDAwLTAwMDEtMDAwMS0wMDAwMDAwMDhlOTciXQ%3D%3D&first=100",
+				NextPage: "{{testServerURL}}/api/v100/rest/spaces/test-workspace/entities/Profiles?after=WyIwMDAwMDAwMC0wMDAwLTAwMDEtMDAwMS0wMDAwMDAwMDhlOTciXQ%3D%3D&first=100", //nolint:lll
 			},
 			ExpectedErrs: nil,
 		},
