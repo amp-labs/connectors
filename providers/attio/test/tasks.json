@@ -1,0 +1,25 @@
+{
+    "data": [
+        {
+            "id": {
+                "workspace_id": "0d4d7fa2-d6e8-4a61-a7dc-e178405ff3c6",
+                "task_id": "4a585693-fa14-4ead-9e19-cc9251df59be"
+            },
+            "content_plaintext": "Follow up on current software solutions",
+            "is_completed": false,
+            "deadline_at": "2023-01-01T15:00:00.000000000Z",
+            "linked_records": [],
+            "assignees": [
+                {
+                    "referenced_actor_type": "workspace-member",
+                    "referenced_actor_id": "67af46e4-a450-4fee-a1d1-39729b3af771"
+                }
+            ],
+            "created_by_actor": {
+                "type": "api-token",
+                "id": "53b1e97a-08d6-4d2e-856d-5371bb6f4052"
+            },
+            "created_at": "2024-09-23T11:04:07.647000000Z"
+        }
+    ]
+}
