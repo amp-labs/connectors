@@ -75,6 +75,24 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			},
 		},
 		{
+			Name:  "Update email Account uses POST method",
+			Input: common.WriteParams{ObjectName: "email-accounts", RecordId: "2849", RecordData: "dummy"},
+			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("Content-Type", "application/json")
+				mockutils.RespondToMethod(w, r, "POST", func() {
+					w.WriteHeader(http.StatusOK)
+					_, _ = w.Write(responseAccount)
+				})
+			})),
+			Expected: &common.WriteResult{
+				Success:  true,
+				RecordId: "2849",
+				Errors:   nil,
+				Data:     nil,
+			},
+			ExpectedErrs: nil,
+		},
+		{
 			Name:  "Create new email campaign",
 			Input: common.WriteParams{ObjectName: "campaigns", RecordData: "dummy"},
 			Server: mockserver.Conditional{
