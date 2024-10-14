@@ -4,23 +4,22 @@ import (
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/spyzhov/ajson"
 )
 
 func makeNextRecordsURL(reqLink *urlbuilder.URL) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
-		url, err := reqLink.ToURL()
-		if err != nil {
-			return "", err
-		}
-
 		previousStart := 0
 
 		// Extract the data key value from the response.
-		value := node.MustObject()["data"].MustArray()
+		value, err := jsonquery.New(node).Array("data", false)
+		if err != nil {
+			return "", nil
+		}
 
-		if (url.Query().Has("limit") || url.Query().Has("offset")) && len(value) != 0 {
+		if (reqLink.HasQueryParam("limit") || reqLink.HasQueryParam("offset")) && len(value) != 0 {
 			offsetQP, ok := reqLink.GetFirstQueryParam("offset")
 			if ok {
 				// Try to use previous "offset" parameter to determine the next offset.
@@ -36,8 +35,7 @@ func makeNextRecordsURL(reqLink *urlbuilder.URL) common.NextPageFunc {
 			reqLink.WithQueryParam("offset", strconv.Itoa(nextStart))
 
 			return reqLink.String(), nil
-		} else {
-			return "", nil
 		}
+		return "", nil
 	}
 }
