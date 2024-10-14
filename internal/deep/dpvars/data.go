@@ -50,7 +50,7 @@ func newConnectorDescriptor[P paramsbuilder.ParamAssurance, D MetadataVariables]
 
 	if holder, ok := parameters.Params.(paramsbuilder.ModuleHolder); ok {
 		module := holder.GiveModule()
-		data.Module = module.Name
+		data.Module = module.Selection.Path()
 	}
 
 	if holder, ok := parameters.Params.(paramsbuilder.MetadataHolder); ok {
