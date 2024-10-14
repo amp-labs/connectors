@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors/common/handy"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
 var (
@@ -177,6 +178,9 @@ type DeleteResult struct {
 	// Success is true if deletion succeeded.
 	Success bool `json:"success"`
 }
+
+// ReadMethod is signature for any HTTP method that performs reading.
+type ReadMethod func(context.Context, *urlbuilder.URL, any, ...Header) (*JSONHTTPResponse, error)
 
 // WriteMethod is signature for any HTTP method that performs write modifications.
 // Ex: Post/Put/Patch.
