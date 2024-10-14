@@ -7,6 +7,7 @@ import (
 	"github.com/amp-labs/connectors/internal/deep/dpread"
 	"github.com/amp-labs/connectors/internal/deep/dprequests"
 	"github.com/amp-labs/connectors/internal/deep/dpvars"
+	"github.com/amp-labs/connectors/internal/deep/dpwrite"
 	"github.com/amp-labs/connectors/internal/deep/requirements"
 	"github.com/amp-labs/connectors/providers"
 	"go.uber.org/dig"
@@ -143,6 +144,16 @@ func ExtendedConnector[C any, P paramsbuilder.ParamAssurance, D dpvars.MetadataV
 		dpread.NextPageBuilder{}.Satisfies(),
 		dpread.RequestGet{}.Satisfies(),
 		dpread.ResponseLocator{}.Satisfies(),
+
+		// WRITE
+		// Default behaviour:
+		//  -> create is done using POST operation.
+		//  -> update is done using PUT operation.
+		//  -> write response is not parsed and returns success.
+		// *Writer is available as constructor argument.
+		Writer{}.Satisfies(),
+		dpwrite.RequestPostPut{}.Satisfies(),
+		dpwrite.ResponseBuilder{}.Satisfies(),
 
 		{
 			// This is the main constructor which will get all dependencies resolved.

@@ -5,19 +5,21 @@ type ComponentID string
 
 // Single implementation.
 const (
-	Connector         ComponentID = "connector"
-	Provider          ComponentID = "provider"
-	Options           ComponentID = "options"
-	Parameters        ComponentID = "parameters"
-	CatalogVariables  ComponentID = "catalogVariables"
-	ConnectorData     ComponentID = "connectorData"
-	ErrorHandler      ComponentID = "errorHandler"
-	HeaderSupplements ComponentID = "headerSupplements"
-	Clients           ComponentID = "clients"
-	Closer            ComponentID = "closer"
-	Reader            ComponentID = "reader"
-	ReadObjectLocator ComponentID = "readObjectLocator"
-	NextPageBuilder   ComponentID = "nextPageBuilder"
+	Connector          ComponentID = "connector"
+	Provider           ComponentID = "provider"
+	Options            ComponentID = "options"
+	Parameters         ComponentID = "parameters"
+	CatalogVariables   ComponentID = "catalogVariables"
+	ConnectorData      ComponentID = "connectorData"
+	ErrorHandler       ComponentID = "errorHandler"
+	HeaderSupplements  ComponentID = "headerSupplements"
+	Clients            ComponentID = "clients"
+	Closer             ComponentID = "closer"
+	Reader             ComponentID = "reader"
+	Writer             ComponentID = "writer"
+	ReadObjectLocator  ComponentID = "readObjectLocator"
+	NextPageBuilder    ComponentID = "nextPageBuilder"
+	WriteResultBuilder ComponentID = "writeResultBuilder"
 )
 
 // Multiple Implementations.
@@ -26,5 +28,6 @@ const (
 	ObjectURLResolver      ComponentID = "objectUrlResolver"
 	PaginationStartBuilder ComponentID = "paginationStartBuilder"
 	ReadRequestBuilder     ComponentID = "readRequestBuilder"
+	WriteRequestBuilder    ComponentID = "writeRequestBuilder"
 	MetadataVariables      ComponentID = "metadataVariables"
 )
