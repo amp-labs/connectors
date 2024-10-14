@@ -1,0 +1,12 @@
+{
+    "data": {
+  "api_slug": "deal",
+  "created_at": "2024-10-04T10:01:42.878000000Z",        
+  "id": {
+   "object_id": "bf012982-06a9-47f7-9e87-07dc4945d502",  
+   "workspace_id": "0d4d7fa2-d6e8-4a61-a7dc-e178405ff3c6"
+  },
+  "plural_noun": "Dealss",
+  "singular_noun": "Deals"
+ }
+}

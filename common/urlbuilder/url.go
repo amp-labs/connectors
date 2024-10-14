@@ -133,3 +133,7 @@ func cleanTrailingSlashes(link string) string {
 
 	return link
 }
+
+func (u *URL) HasQueryParam(name string) bool {
+	return u.queryParams.Has(name)
+}

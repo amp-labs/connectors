@@ -1,0 +1,28 @@
+{
+    "data": [
+        {
+            "id": {
+                "workspace_id": "0d4d7fa2-d6e8-4a61-a7dc-e178405ff3c6",
+                "workspace_member_id": "67af46e4-a450-4fee-a1d1-39729b3af771"
+            },
+            "first_name": "Integration",
+            "last_name": "User",
+            "avatar_url": null,
+            "email_address": "integration.user@withampersand.com",
+            "access_level": "admin",
+            "created_at": "2024-09-17T11:41:21.779000000Z"
+        },
+        {
+            "id": {
+                "workspace_id": "0d4d7fa2-d6e8-4a61-a7dc-e178405ff3c6",
+                "workspace_member_id": "cc3821aa-f738-42c0-a739-7b6de755e5f1"
+            },
+            "first_name": "Sanjay Kanth",
+            "last_name": "A",
+            "avatar_url": "https://lh3.googleusercontent.com/a/ACg8ocL0Zwi9XArWL-GgYiUqPoDMKS1p1AQuQPPHVMQr0V023Ox_fYY=s96-c",
+            "email_address": "sanjaykanth.a@mitrahsoft.com",
+            "access_level": "admin",
+            "created_at": "2024-09-17T12:17:11.682000000Z"
+        }
+    ]
+}
