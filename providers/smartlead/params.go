@@ -6,19 +6,11 @@ import (
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/providers"
 )
 
 // Option is a function which mutates the connector configuration.
 type Option = func(params *parameters)
-
-// parameters surface options by delegation.
-type parameters struct {
-	paramsbuilder.Client
-	// Error is set when any With<Method> fails, used for parameters validation.
-	setupError error
-}
 
 func (p parameters) ValidateParams() error {
 	if p.setupError != nil {
