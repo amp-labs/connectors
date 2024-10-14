@@ -2,14 +2,14 @@ package deep
 
 import (
 	"context"
-	"github.com/amp-labs/connectors/internal/deep/requirements"
-	"github.com/spyzhov/ajson"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/deep/dpobjects"
 	"github.com/amp-labs/connectors/internal/deep/dpread"
 	"github.com/amp-labs/connectors/internal/deep/dprequests"
+	"github.com/amp-labs/connectors/internal/deep/requirements"
+	"github.com/spyzhov/ajson"
 )
 
 // Reader is a major connector component which provides Read functionality.

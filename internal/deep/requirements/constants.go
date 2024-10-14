@@ -3,7 +3,7 @@ package requirements
 // ComponentID represents unique identifier of a component which serves one concrete role in connector implementation.
 type ComponentID string
 
-// Single implementation
+// Single implementation.
 const (
 	Connector            ComponentID = "connector"
 	Provider             ComponentID = "provider"
@@ -25,7 +25,7 @@ const (
 	StaticMetadataHolder ComponentID = "staticMetadataHolder"
 )
 
-// Multiple Implementations
+// Multiple Implementations.
 const (
 	ObjectRegistry         ComponentID = "objectRegistry"
 	ObjectURLResolver      ComponentID = "objectUrlResolver"

@@ -37,7 +37,7 @@ const (
 // Ex: object: orders, GET /orders, POST /cart/finalize
 //
 // The goal of this interface is to achieve:
-// * ObjectName ==> URL
+// * ObjectName ==> URL.
 type URLResolver interface {
 	requirements.ConnectorComponent
 

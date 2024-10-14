@@ -36,7 +36,6 @@ func ExtendedConnector[C any, P paramsbuilder.ParamAssurance, D dpvars.MetadataV
 	options []func(params *P),
 	components ...requirements.ConnectorComponent,
 ) (*C, error) {
-
 	// This is a default list of dependencies available for a "connectorConstructor" to pick up.
 	dependencies := requirements.NewDependencies([]requirements.Dependency{
 		{

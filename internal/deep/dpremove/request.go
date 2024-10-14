@@ -2,6 +2,7 @@ package dpremove
 
 import (
 	"context"
+
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/handy"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -17,7 +18,6 @@ type RequestDelete struct {
 }
 
 func (d RequestDelete) MakeDeleteRequest(objectName, recordID string, clients dprequests.Clients) (common.DeleteMethod, []common.Header) {
-
 	var headers []common.Header
 	if d.MakeHeaders != nil {
 		headers = d.MakeHeaders(objectName, clients)

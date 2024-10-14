@@ -2,6 +2,7 @@ package dpvars
 
 import (
 	"errors"
+
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/internal/deep/requirements"
 )

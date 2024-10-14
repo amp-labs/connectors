@@ -2,12 +2,12 @@ package deep
 
 import (
 	"context"
-	"github.com/amp-labs/connectors/internal/deep/requirements"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/deep/dpobjects"
 	"github.com/amp-labs/connectors/internal/deep/dpremove"
 	"github.com/amp-labs/connectors/internal/deep/dprequests"
+	"github.com/amp-labs/connectors/internal/deep/requirements"
 )
 
 // Remover is a major connector component which provides Delete functionality.

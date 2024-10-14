@@ -5,10 +5,8 @@ import (
 	"github.com/amp-labs/connectors/internal/deep/requirements"
 )
 
-var (
-	// Implementations.
-	_ MetadataVariables = &EmptyMetadataVariables{}
-)
+// Implementations.
+var _ MetadataVariables = &EmptyMetadataVariables{}
 
 // MetadataVariables is a connector component which holds parsed paramsbuilder.Metadata.
 // In case you need to define custom connector data you should implement this interface.
