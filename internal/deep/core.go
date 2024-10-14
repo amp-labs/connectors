@@ -155,6 +155,12 @@ func ExtendedConnector[C any, P paramsbuilder.ParamAssurance, D dpvars.MetadataV
 		dpwrite.RequestPostPut{}.Satisfies(),
 		dpwrite.ResponseBuilder{}.Satisfies(),
 
+		// METADATA
+		// Default behaviour:
+		//  -> expects dpmetadata.SchemaHolder.
+		// *StaticMetadata is available as constructor argument.
+		StaticMetadata{}.Satisfies(),
+
 		{
 			// This is the main constructor which will get all dependencies resolved.
 			// It is possible that not all dependencies are needed, this list is exhaustive,
