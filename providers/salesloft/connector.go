@@ -28,6 +28,7 @@ type Connector struct {
 	deep.Reader
 	deep.Writer
 	deep.StaticMetadata
+	deep.Remover
 }
 
 func constructor(
@@ -36,6 +37,7 @@ func constructor(
 	reader *deep.Reader,
 	writer *deep.Writer,
 	staticMetadata *deep.StaticMetadata,
+	remover *deep.Remover,
 ) *Connector {
 	return &Connector{
 		Clients:        *clients,
@@ -43,6 +45,7 @@ func constructor(
 		Reader:         *reader,
 		Writer:         *writer,
 		StaticMetadata: *staticMetadata,
+		Remover:        *remover,
 	}
 }
 
@@ -156,7 +159,3 @@ var (
 		Metadata: metadata.Schemas,
 	}
 )
-
-func (c *Connector) getURL(arg string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.BaseURL(), apiVersion, arg)
-}
