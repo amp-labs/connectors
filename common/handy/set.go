@@ -23,6 +23,19 @@ func NewSetFromList[V comparable](values []V) Set[V] {
 	return result
 }
 
+func MergeSets[V comparable](first, second Set[V]) Set[V] {
+	result := NewSet[V]()
+	for element := range first {
+		result.AddOne(element)
+	}
+
+	for element := range second {
+		result.AddOne(element)
+	}
+
+	return result
+}
+
 // Add will add a list of values to the unique set. Repetitions will be omitted.
 func (s Set[T]) Add(values []T) {
 	for _, value := range values {
