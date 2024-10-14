@@ -10,6 +10,10 @@ var (
 	ErrIncorrectMetadataParamUsage = errors.New("metadata parameter must have required fields")
 )
 
+type MetadataHolder interface {
+	GiveMetadata() *Metadata
+}
+
 // Metadata params sets metadata describing authentication information.
 type Metadata struct {
 	// Map is a registry of metadata values that are needed for connector to function.
@@ -17,6 +21,10 @@ type Metadata struct {
 	// Connector implementation makes a decision on what fields must be supplied in metadata map by the user.
 	// Any missing or empty fields will result into error constructing a connector.
 	requiredKeys []string
+}
+
+func (p *Metadata) GiveMetadata() *Metadata {
+	return p
 }
 
 func (p *Metadata) ValidateParams() error {
