@@ -7,7 +7,7 @@ import (
 
 var (
 	// Implementations.
-	_ Support     = Registry{}
+	_ Support     = SupportRegistry{}
 	_ URLResolver = URLFormat{}
 )
 

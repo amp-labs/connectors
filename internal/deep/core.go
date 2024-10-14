@@ -119,7 +119,9 @@ func ExtendedConnector[C any, P paramsbuilder.ParamAssurance, D dpvars.MetadataV
 
 		// Guards against unsupported objects.
 		// By default, every object would reach Reader, Writer, etc.
-		dpobjects.Registry{}.Satisfies(),
+		dpobjects.SupportRegistry{
+			AllowAllObjects: true,
+		}.Satisfies(),
 
 		// Most major connector components make API calls and therefore rely on URLFormat.
 		// It finds URL associated with the Object.
