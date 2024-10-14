@@ -7,6 +7,8 @@ import (
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/handy"
+	"github.com/amp-labs/connectors/internal/deep/requirements"
 )
 
 var ErrMissingContentType = errors.New("mime.ParseMediaType failed")
@@ -43,4 +45,11 @@ func (h ErrorHandler) Handle(res *http.Response, body []byte) error {
 	}
 
 	return common.InterpretError(res, body)
+}
+
+func (h ErrorHandler) Satisfies() requirements.Dependency {
+	return requirements.Dependency{
+		ID:          requirements.ErrorHandler,
+		Constructor: handy.PtrReturner(h),
+	}
 }
