@@ -27,7 +27,8 @@ func main() {
 		utils.Fail("error obtaining auth info", "error", err)
 	}
 
-	metadata := atlassian.NewAuthMetadataVars(*info.CatalogVars)
+	metadata := atlassian.NewAuthMetadataVars()
+	metadata.FromMap(*info.CatalogVars)
 	cloudId := metadata.CloudId
 
 	if len(cloudId) == 0 {
