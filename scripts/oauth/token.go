@@ -316,7 +316,8 @@ func setup() *OAuthApp {
 		}
 
 		// Determine the OAuth redirect URL.
-		redirect := fmt.Sprintf("%s://localhost:%d%s", *proto, *port, *callback)
+		// redirect := fmt.Sprintf("%s://localhost:%d%s", *proto, *port, *callback)
+		redirect := "https://dev-api.withampersand.com/callbacks/v1/oauth/wewe"
 
 		state, err := registry.GetString(credscanning.Fields.State.Name)
 		if err != nil {
