@@ -3,6 +3,8 @@ package deep
 import (
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
+	"github.com/amp-labs/connectors/internal/deep/dpobjects"
+	"github.com/amp-labs/connectors/internal/deep/dpread"
 	"github.com/amp-labs/connectors/internal/deep/dprequests"
 	"github.com/amp-labs/connectors/internal/deep/dpvars"
 	"github.com/amp-labs/connectors/internal/deep/requirements"
@@ -113,10 +115,32 @@ func ExtendedConnector[C any, P paramsbuilder.ParamAssurance, D dpvars.MetadataV
 			Constructor: dprequests.NewClients[P, D],
 		},
 		interpreter.ErrorHandler{}.Satisfies(),
+		dprequests.HeaderSupplements{}.Satisfies(),
+
+		// Guards against unsupported objects.
+		// By default, every object would reach Reader, Writer, etc.
+		dpobjects.Registry{}.Satisfies(),
+
+		// Most major connector components make API calls and therefore rely on URLFormat.
+		// It finds URL associated with the Object.
+		// By default, errors out
+		dpobjects.URLFormat{}.Satisfies(),
 
 		// Most connectors do no-op on close.
 		// *EmptyCloser is available as constructor argument.
 		EmptyCloser{}.Satisfies(),
+
+		// READ
+		// Default behaviour:
+		//  -> first page is not changes and uses what dpobjects.URLResolver has given.
+		//  -> next page is empty, hence no pagination
+		//  -> read is done using GET operation.
+		// *Reader is available as constructor argument.
+		Reader{}.Satisfies(),
+		dpread.FirstPageBuilder{}.Satisfies(),
+		dpread.NextPageBuilder{}.Satisfies(),
+		dpread.RequestGet{}.Satisfies(),
+		dpread.ResponseLocator{}.Satisfies(),
 
 		{
 			// This is the main constructor which will get all dependencies resolved.
