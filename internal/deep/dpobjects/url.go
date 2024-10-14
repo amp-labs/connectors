@@ -8,6 +8,7 @@ import (
 	"github.com/amp-labs/connectors/internal/deep/requirements"
 )
 
+// ErrNoMatchingURL is returned when Object is unknown, and we cannot match it with provider API.
 var ErrNoMatchingURL = errors.New("cannot match URL for object")
 
 // URLFormat creates URL using custom callback.
@@ -16,6 +17,7 @@ type URLFormat struct {
 }
 
 func (r URLFormat) FindURL(method Method, baseURL, objectName string) (*urlbuilder.URL, error) {
+	// Default behaviour. Callback is required.
 	if r.Produce == nil {
 		return nil, ErrNoMatchingURL
 	}

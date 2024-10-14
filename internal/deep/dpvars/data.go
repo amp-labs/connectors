@@ -13,6 +13,24 @@ var ErrInvalidMetadataVariableType = errors.New("injected metadata variables do 
 
 // ConnectorData is a concrete representation of connector parameters and paramsbuilder.Metadata.
 // You can specify this connector component as an argument to the connector constructor.
+// By default, metadata is dpvars.EmptyMetadataVariables, which is an empty holder.
+// If deep connector has defined a concrete metadata type which actually holds some data, you should use that type.
+// Ex:
+//
+// (default) - connector or custom component by default should inject ConnectorData with empty metadata type.
+//
+//			type Connector struct {
+//				Data dpvars.ConnectorData[parameters, *dpvars.EmptyMetadataVariables]
+//				deep.Clients
+//	 		...
+//			}
+//
+// (inject with custom metadata) - your custom component now holds reference to ConnectorData.
+//
+//	func someConnectorComponentConstructor(
+//		data *dpvars.ConnectorData[parameters, *CustomMetadataVariables], ... ) *myConnectorComponent {
+//		return &myConnectorComponent{data:data}
+//	}
 type ConnectorData[P paramsbuilder.ParamAssurance, D MetadataVariables] struct {
 	Workspace string
 	Module    string

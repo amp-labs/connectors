@@ -14,21 +14,67 @@ import (
 	"go.uber.org/dig"
 )
 
-// Connector
-// TODO documentation. !!!! THIS IS THE MOST CRUCIAL METHOD !!!!
+// Connector is the main method to build deep connectors.
+// It accepts constructor method and connector components.
+// This procedure builds dependency tree and provides them by constructor injections.
+// Your connector constructor will therefore receive any requirements.ConnectorComponent passed by arguments.
+//
+// Ex:
+//
+// (connector constructor)
+//
+//	 	constructor := func(
+//			clients *deep.Clients,
+//			closer *deep.EmptyCloser,
+//			reader *deep.Reader,
+//			writer *deep.Writer,
+//			staticMetadata *deep.StaticMetadata,
+//			remover *deep.Remover,
+//			// Any custom requirements.ConnectorComponent can be injected here
+//		) *Connector {
+//			return &Connector{
+//				Clients:        *clients,
+//				EmptyCloser:    *closer,
+//				Reader:         *reader,
+//				Writer:         *writer,
+//				StaticMetadata: *staticMetadata,
+//				Remover:        *remover,
+//			}
+//		}
+//
+// (putting everything together)
+//
+//	 deep.Connector[Connector, parameters](constructor, providers.Salesforce, opts,
+//			errorHandler,
+//			objectURLResolver,
+//			firstPage,
+//			nextPage,
+//			...
+//			// Custom requirements.ConnectorComponent are passed here
+//			// to be available for all ConnectorComponent constructors
+//		)
+//
+// List of connector components, will be injected resembling "Template Design Pattern" using "uber dig" package.
+// Ex: To build Connector, it needs Reader, which in turn needs Clients, and the last depends on Parameters.
+// One by one will be built ultimately resolving Connector constructor.
+//
+// You can replace default connector components by implementing requirements.ConnectorComponent interface.
+// It must return the same requirements.Dependency ID to act as override.
 func Connector[C any, P paramsbuilder.ParamAssurance](
 	connectorConstructor any,
 	provider providers.Provider,
 	options []func(params *P),
-	reqs ...requirements.ConnectorComponent,
+	components ...requirements.ConnectorComponent,
 ) (*C, error) {
 	return ExtendedConnector[C, P, *dpvars.EmptyMetadataVariables](
-		connectorConstructor, provider, &dpvars.EmptyMetadataVariables{}, options, reqs...,
+		connectorConstructor, provider, &dpvars.EmptyMetadataVariables{}, options, components...,
 	)
 }
 
 // ExtendedConnector is the same connector builder as Connector method.
-// TODO documentation.
+// The main difference is introduction of concrete dpvars.MetadataVariables type.
+// Connector may have additional metadata stored in the struct.
+// You can define arbitrary holder of this data using this builder: ExtendedConnector.
 func ExtendedConnector[C any, P paramsbuilder.ParamAssurance, D dpvars.MetadataVariables]( //nolint:funlen
 	connectorConstructor any,
 	provider providers.Provider,
@@ -76,6 +122,11 @@ func ExtendedConnector[C any, P paramsbuilder.ParamAssurance, D dpvars.MetadataV
 		// Guards against unsupported objects.
 		// By default, every object would reach Reader, Writer, etc.
 		dpobjects.Registry{}.Satisfies(),
+
+		// Most major connector components make API calls and therefore rely on URLFormat.
+		// It finds URL associated with the Object.
+		// By default, errors out
+		dpobjects.URLFormat{}.Satisfies(),
 
 		// Most connectors do no-op on close.
 		// *EmptyCloser is available as constructor argument.
