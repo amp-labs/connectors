@@ -5,7 +5,7 @@ const ProductBoard Provider = "productBoard"
 func init() {
 	// ProductBoard Configuration
 	SetInfo(ProductBoard, ProviderInfo{
-		DisplayName: "Product Board",
+		DisplayName: "Productboard",
 		AuthType:    Oauth2,
 		BaseURL:     "https://api.productboard.com",
 		Oauth2Opts: &Oauth2Opts{
