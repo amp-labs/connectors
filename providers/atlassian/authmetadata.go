@@ -21,10 +21,12 @@ func (c *Connector) GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, 
 
 	c.cloudId = cloudId
 
+	vars := (&AuthMetadataVars{
+		CloudId: cloudId,
+	}).ToMap()
+
 	return &common.PostAuthInfo{
-		CatalogVars: AuthMetadataVars{
-			CloudId: cloudId,
-		}.AsMap(),
+		CatalogVars: &vars,
 		RawResponse: nil,
 	}, nil
 }

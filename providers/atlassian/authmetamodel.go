@@ -1,5 +1,11 @@
 package atlassian
 
+import (
+	"github.com/amp-labs/connectors/common/substitutions/catalogreplacer"
+	"github.com/amp-labs/connectors/internal/deep/dpvars"
+	"github.com/amp-labs/connectors/internal/deep/requirements"
+)
+
 const cloudIdKey = "cloudId"
 
 // AuthMetadataVars is a complete list of authentication metadata associated with connector.
@@ -8,16 +14,30 @@ type AuthMetadataVars struct {
 	CloudId string
 }
 
-// NewAuthMetadataVars parses map into the model.
-func NewAuthMetadataVars(dictionary map[string]string) *AuthMetadataVars {
-	return &AuthMetadataVars{
-		CloudId: dictionary[cloudIdKey],
+func (v *AuthMetadataVars) FromMap(dictionary map[string]string) {
+	v.CloudId = dictionary[cloudIdKey]
+}
+
+func (v *AuthMetadataVars) ToMap() map[string]string {
+	return map[string]string{
+		cloudIdKey: v.CloudId,
 	}
 }
 
-// AsMap converts model back to the map.
-func (v AuthMetadataVars) AsMap() *map[string]string {
-	return &map[string]string{
-		cloudIdKey: v.CloudId,
+func (v *AuthMetadataVars) GetSubstitutionPlans() []catalogreplacer.SubstitutionPlan {
+	return nil
+}
+
+func NewAuthMetadataVars() *AuthMetadataVars {
+	return &AuthMetadataVars{CloudId: ""}
+}
+
+var _ dpvars.MetadataVariables = &AuthMetadataVars{}
+
+func (v *AuthMetadataVars) Satisfies() requirements.Dependency {
+	return requirements.Dependency{
+		ID:          requirements.MetadataVariables,
+		Constructor: NewAuthMetadataVars,
+		Interface:   new(dpvars.MetadataVariables),
 	}
 }

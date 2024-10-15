@@ -1,7 +1,7 @@
 package dpvars
 
 import (
-	"github.com/amp-labs/connectors/common/paramsbuilder"
+	"github.com/amp-labs/connectors/common/substitutions/catalogreplacer"
 	"github.com/amp-labs/connectors/internal/deep/requirements"
 )
 
@@ -21,5 +21,5 @@ type MetadataVariables interface {
 	ToMap() map[string]string
 
 	// GetSubstitutionPlans returns list of catalog substitutions, should catalog require additional metadata.
-	GetSubstitutionPlans() []paramsbuilder.SubstitutionPlan
+	GetSubstitutionPlans() []catalogreplacer.SubstitutionPlan
 }
