@@ -61,8 +61,6 @@ func constructor(
 
 type parameters struct {
 	paramsbuilder.Client
-	// Error is set when any With<Method> fails, used for parameters validation.
-	setupError error
 }
 
 func NewConnector(opts ...Option) (*Connector, error) {
