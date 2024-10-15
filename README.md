@@ -36,7 +36,7 @@ The key components include:
 
 - Ampersand server: a managed service that keeps track of each of your customer’s configurations, and makes the appropriate API calls to your customer’s SaaS, while optimizing for cost, handling retries and error message parsing.
 
-- Embeddable UI components with Ampersand, you can embed set-up, configuration, and management UIs that allow your end users to customize and manage their integrations.
+- Embeddable UI components: You can embed set-up, configuration, and management UIs that allow your end users to customize and manage their integrations.
 
 - Dashboard: Provides deep observability into customer integrations, allowing you to monitor & troubleshoot with logs
 
