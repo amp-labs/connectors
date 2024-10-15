@@ -2,35 +2,17 @@ package paramsbuilder
 
 import (
 	"context"
-	"errors"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers"
 	"golang.org/x/oauth2"
 )
-
-var ErrMissingClient = errors.New("http client not set")
 
 // Client params sets up authenticated proxy HTTP client.
 // There are many types of authentication, where only one must be chosen. Ex: oauth2.
 type Client struct {
-	// Caller is an HTTP client that knows how to make authenticated requests.
-	// It also knows how to handle authentication and API response errors.
-	Caller *common.HTTPClient
-}
-
-func (p *Client) ValidateParams() error {
-	// http client must be defined.
-	if p.Caller == nil {
-		return ErrMissingClient
-	}
-
-	// authentication client should be present.
-	if p.Caller.Client == nil {
-		return ErrMissingClient
-	}
-
-	return nil
+	AuthClient
 }
 
 // WithOauthClient option that sets up client that utilises Oauth2 authentication.
@@ -75,9 +57,19 @@ func (p *Client) WithBasicClient(
 // Passed via Header.
 func (p *Client) WithApiKeyHeaderClient(
 	ctx context.Context, client *http.Client,
-	headerName, headerValue string,
+	provider providers.Provider, apiKey string,
 	opts ...common.HeaderAuthClientOption,
 ) {
+	info, err := providers.ReadInfo(provider)
+	if err != nil {
+		panic(err)
+	}
+
+	headerName, headerValue, err := info.GetApiKeyHeader(apiKey)
+	if err != nil {
+		panic(err)
+	}
+
 	options := []common.HeaderAuthClientOption{
 		common.WithHeaderClient(client),
 	}
@@ -97,9 +89,19 @@ func (p *Client) WithApiKeyHeaderClient(
 // Passed via Query Param.
 func (p *Client) WithApiKeyQueryParamClient(
 	ctx context.Context, client *http.Client,
-	queryParamName, apiKey string,
+	provider providers.Provider, apiKey string,
 	opts ...common.QueryParamAuthClientOption,
 ) {
+	info, err := providers.ReadInfo(provider)
+	if err != nil {
+		panic(err)
+	}
+
+	queryParamName, err := info.GetApiKeyQueryParamName()
+	if err != nil {
+		panic(err)
+	}
+
 	options := []common.QueryParamAuthClientOption{
 		common.WithQueryParamClient(client),
 	}
@@ -113,12 +115,4 @@ func (p *Client) WithApiKeyQueryParamClient(
 	}
 
 	p.WithAuthenticatedClient(apiKeyClient)
-}
-
-// WithAuthenticatedClient sets up an HTTP client that uses your implementation of authentication.
-func (p *Client) WithAuthenticatedClient(client common.AuthenticatedHTTPClient) {
-	p.Caller = &common.HTTPClient{
-		Client:       client,
-		ErrorHandler: common.InterpretError,
-	}
 }

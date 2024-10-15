@@ -21,15 +21,9 @@ type Option = func(params *parameters)
 // parameters surface options by delegation.
 type parameters struct {
 	paramsbuilder.Client
-	// Error is set when any With<Method> fails, used for parameters validation.
-	setupError error
 }
 
 func (p parameters) ValidateParams() error {
-	if p.setupError != nil {
-		return p.setupError
-	}
-
 	return errors.Join(
 		p.Client.ValidateParams(),
 	)
@@ -40,21 +34,7 @@ func WithClient(ctx context.Context, client *http.Client,
 	opts ...common.QueryParamAuthClientOption,
 ) Option {
 	return func(params *parameters) {
-		info, err := providers.ReadInfo(providers.Instantly)
-		if err != nil {
-			params.setupError = err
-
-			return
-		}
-
-		queryParam, err := info.GetApiKeyQueryParamName()
-		if err != nil {
-			params.setupError = err
-
-			return
-		}
-
-		params.WithApiKeyQueryParamClient(ctx, client, queryParam, apiKey, opts...)
+		params.WithApiKeyQueryParamClient(ctx, client, providers.Instantly, apiKey, opts...)
 	}
 }
 
