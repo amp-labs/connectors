@@ -38,7 +38,7 @@ The key components include:
 
 - Embeddable UI components with Ampersand, you can embed set-up, configuration, and management UIs that allow your end users to customize and manage their integrations.
 
-- Dashboard: our dashboard allows you to monitor and troubleshoot your customers’ integrations.
+- Dashboard: Provides deep observability into customer integrations, allowing you to monitor & troubleshoot with logs
 
 
 Add enterprise-grade integrations to your SaaS this week. Bi-directional and customer-configurable.
