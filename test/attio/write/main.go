@@ -81,6 +81,7 @@ func testObjects(ctx context.Context) error {
 	}
 
 	slog.Info("Updating the object")
+
 	updateparams := common.WriteParams{
 		ObjectName: "objects",
 		RecordData: map[string]interface{}{
@@ -141,6 +142,7 @@ func testLists(ctx context.Context) error {
 	}
 
 	slog.Info("Updating the list")
+
 	updateParams := common.WriteParams{
 		ObjectName: "lists",
 		RecordData: map[string]any{
@@ -243,6 +245,7 @@ func testTasks(ctx context.Context) error {
 	}
 
 	slog.Info("Updating the tasks")
+
 	updateParams := common.WriteParams{
 		ObjectName: "tasks",
 		RecordData: map[string]any{
@@ -300,6 +303,7 @@ func testWebhooks(ctx context.Context) error {
 	}
 
 	slog.Info("Updating the webhooks")
+
 	updateParams := common.WriteParams{
 		ObjectName: "webhooks",
 		RecordData: map[string]any{
