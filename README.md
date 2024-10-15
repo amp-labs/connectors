@@ -32,7 +32,7 @@
 
 The key components include:
 
-- Manifest file: an amp.yaml file, where you define all your integrations: API to connect to, objects and fields you want to read or write, and configuration options you’d like to expose to your customers.
+- Manifest file (`amp.yaml`): Define all your integrations, the APIs to connect to, the objects and fields for reading or writing, and the configuration options you want to expose to your customers.
 
 - Ampersand server: a managed service that keeps track of each of your customer’s configurations, and makes the appropriate API calls to your customer’s SaaS, while optimizing for cost, handling retries and error message parsing.
 
