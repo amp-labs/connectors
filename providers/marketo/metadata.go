@@ -48,9 +48,9 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 			continue
 		}
 
-		metadata, err := parseMetadataFromResponse(resp)
+		data, err := parseMetadataFromResponse(resp)
 		if err != nil {
-			if errors.Is(err, common.ErrMetadataLoadFailure) {
+			if errors.Is(err, common.ErrMissingExpectedValues) {
 				runFallback(obj, &metadataResult)
 
 				continue
@@ -59,8 +59,8 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 			}
 		}
 
-		metadata.DisplayName = obj
-		metadataResult.Result[obj] = *metadata
+		data.DisplayName = obj
+		metadataResult.Result[obj] = *data
 	}
 
 	return &metadataResult, nil
@@ -73,48 +73,43 @@ func parseMetadataFromResponse(resp *common.JSONHTTPResponse) (*common.ObjectMet
 	}
 
 	if len(response.Result) == 0 {
-		return nil, common.ErrMetadataLoadFailure
+		return nil, common.ErrMissingExpectedValues
 	}
 
-	metadata := &common.ObjectMetadata{
+	data := &common.ObjectMetadata{
 		FieldsMap: make(map[string]string),
 	}
 
 	// Using the first result data to generate the metadata.
 	for k := range response.Result[0] {
-		metadata.FieldsMap[k] = k
+		data.FieldsMap[k] = k
 	}
 
-	return metadata, nil
+	return data, nil
 }
 
 func metadataFallback(objectName string) (*common.ObjectMetadata, error) {
-	schemas, err := metadata.FileManager.LoadSchemas()
-	if err != nil {
-		return nil, common.ErrMetadataLoadFailure
-	}
-
-	metadatResult, err := schemas.Select([]string{objectName})
+	metadatResult, err := metadata.Schemas.Select([]string{objectName})
 	if err != nil {
 		return nil, err
 	}
 
-	metadata := metadatResult.Result[objectName]
+	data := metadatResult.Result[objectName]
 
-	return &metadata, nil
+	return &data, nil
 }
 
 func runFallback(obj string, res *common.ListObjectMetadataResult) *common.ListObjectMetadataResult { //nolint:unparam
 	// Try fallback function
-	metadata, err := metadataFallback(obj)
+	data, err := metadataFallback(obj)
 	if err != nil {
 		res.Errors[obj] = err
 
 		return res
 	}
 
-	metadata.DisplayName = obj
-	res.Result[obj] = *metadata
+	data.DisplayName = obj
+	res.Result[obj] = *data
 
 	return res
 }

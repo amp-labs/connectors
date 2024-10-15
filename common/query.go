@@ -29,6 +29,17 @@ func NewQueryParamAuthHTTPClient( //nolint:ireturn
 	return newQueryParamAuthClient(ctx, params.prepare()), nil
 }
 
+// WithQueryParamUnauthorizedHandler sets the function to call whenever the response is 401 unauthorized.
+// This is useful for handling the case where the server has invalidated the credentials, and the client
+// needs to refresh. It's optional.
+func WithQueryParamUnauthorizedHandler(
+	f func(params []QueryParam, req *http.Request, rsp *http.Response) (*http.Response, error),
+) QueryParamAuthClientOption {
+	return func(params *queryParamClientParams) {
+		params.unauthorized = f
+	}
+}
+
 // WithQueryParamClient sets the http client to use for the connector. Its usage is optional.
 func WithQueryParamClient(client *http.Client) QueryParamAuthClientOption {
 	return func(params *queryParamClientParams) {
@@ -52,9 +63,10 @@ func WithQueryParamDebug(f func(req *http.Request, rsp *http.Response)) QueryPar
 
 // queryParamClientParams is the internal configuration for the oauth http client.
 type queryParamClientParams struct {
-	client *http.Client
-	params []QueryParam
-	debug  func(req *http.Request, rsp *http.Response)
+	client       *http.Client
+	params       []QueryParam
+	debug        func(req *http.Request, rsp *http.Response)
+	unauthorized func(params []QueryParam, req *http.Request, rsp *http.Response) (*http.Response, error)
 }
 
 func (p *queryParamClientParams) prepare() *queryParamClientParams {
@@ -71,16 +83,18 @@ func newQueryParamAuthClient( //nolint:ireturn
 	params *queryParamClientParams,
 ) AuthenticatedHTTPClient {
 	return &queryParamAuthClient{
-		client: params.client,
-		params: params.params,
-		debug:  params.debug,
+		client:       params.client,
+		params:       params.params,
+		debug:        params.debug,
+		unauthorized: params.unauthorized,
 	}
 }
 
 type queryParamAuthClient struct {
-	client *http.Client
-	params []QueryParam
-	debug  func(req *http.Request, rsp *http.Response)
+	client       *http.Client
+	params       []QueryParam
+	debug        func(req *http.Request, rsp *http.Response)
+	unauthorized func(params []QueryParam, req *http.Request, rsp *http.Response) (*http.Response, error)
 }
 
 func (c *queryParamAuthClient) Do(req *http.Request) (*http.Response, error) {
@@ -101,6 +115,15 @@ func (c *queryParamAuthClient) Do(req *http.Request) (*http.Response, error) {
 
 	if c.debug != nil {
 		c.debug(req, cloneResponse(rsp))
+	}
+
+	// Certain providers return 401 when the credentials has been invalidated.
+	// This may indicate that the credentials needs to be forcefully refreshed.
+	// Since this is per-provider, the caller can provide a custom handler.
+	if rsp.StatusCode == http.StatusUnauthorized {
+		if c.unauthorized != nil {
+			return c.unauthorized(c.params, req, rsp)
+		}
 	}
 
 	return rsp, nil

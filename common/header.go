@@ -46,11 +46,33 @@ func WithHeaders(headers ...Header) HeaderAuthClientOption {
 	}
 }
 
+// WithHeaderUnauthorizedHandler sets the function to call whenever the response is 401 unauthorized.
+// This is useful for handling the case where the server has invalidated the credentials, and the client
+// needs to refresh. It's optional.
+func WithHeaderUnauthorizedHandler(
+	f func(hdrs []Header, req *http.Request, rsp *http.Response) (*http.Response, error),
+) HeaderAuthClientOption {
+	return func(params *headerClientParams) {
+		params.unauthorized = f
+	}
+}
+
+// WithDynamicHeaders sets a function that will be called on every request to
+// get additional headers to use. Use this for things like time-based tokens
+// or loading headers from some external authority.
+func WithDynamicHeaders(f func() ([]Header, error)) HeaderAuthClientOption {
+	return func(params *headerClientParams) {
+		params.dynamicHeaders = f
+	}
+}
+
 // oauthClientParams is the internal configuration for the oauth http client.
 type headerClientParams struct {
-	client  *http.Client
-	headers []Header
-	debug   func(req *http.Request, rsp *http.Response)
+	client         *http.Client
+	headers        []Header
+	dynamicHeaders func() ([]Header, error)
+	debug          func(req *http.Request, rsp *http.Response)
+	unauthorized   func(hdrs []Header, req *http.Request, rsp *http.Response) (*http.Response, error)
 }
 
 func (p *headerClientParams) prepare() *headerClientParams {
@@ -64,16 +86,20 @@ func (p *headerClientParams) prepare() *headerClientParams {
 // newHTTPClient returns a new http client for the connector, with automatic OAuth authentication.
 func newHeaderAuthClient(_ context.Context, params *headerClientParams) AuthenticatedHTTPClient { //nolint:ireturn
 	return &headerAuthClient{
-		client:  params.client,
-		headers: params.headers,
-		debug:   params.debug,
+		client:         params.client,
+		headers:        params.headers,
+		dynamicHeaders: params.dynamicHeaders,
+		debug:          params.debug,
+		unauthorized:   params.unauthorized,
 	}
 }
 
 type headerAuthClient struct {
-	client  *http.Client
-	headers []Header
-	debug   func(req *http.Request, rsp *http.Response)
+	client         *http.Client
+	headers        []Header
+	dynamicHeaders func() ([]Header, error)
+	debug          func(req *http.Request, rsp *http.Response)
+	unauthorized   func(hdrs []Header, req *http.Request, rsp *http.Response) (*http.Response, error)
 }
 
 func (c *headerAuthClient) Do(req *http.Request) (*http.Response, error) {
@@ -84,6 +110,17 @@ func (c *headerAuthClient) Do(req *http.Request) (*http.Response, error) {
 		req.Header.Add(header.Key, header.Value)
 	}
 
+	if c.dynamicHeaders != nil {
+		hdrs, err := c.dynamicHeaders()
+		if err != nil {
+			return nil, err
+		}
+
+		for _, header := range hdrs {
+			req.Header.Add(header.Key, header.Value)
+		}
+	}
+
 	rsp, err := c.client.Do(req)
 	if err != nil {
 		return rsp, err
@@ -91,6 +128,15 @@ func (c *headerAuthClient) Do(req *http.Request) (*http.Response, error) {
 
 	if c.debug != nil {
 		c.debug(req, cloneResponse(rsp))
+	}
+
+	// Certain providers return 401 when the credentials has been invalidated.
+	// This may indicate that the credentials needs to be forcefully refreshed.
+	// Since this is per-provider, the caller can provide a custom handler.
+	if rsp.StatusCode == http.StatusUnauthorized {
+		if c.unauthorized != nil {
+			return c.unauthorized(c.headers, req, rsp)
+		}
 	}
 
 	return rsp, nil

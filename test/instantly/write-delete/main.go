@@ -6,6 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers/instantly"
 	connTest "github.com/amp-labs/connectors/test/instantly"
@@ -80,9 +81,9 @@ func searchTags(res *common.ReadResult, key, value string) map[string]any {
 func readTags(ctx context.Context, conn *instantly.Connector) *common.ReadResult {
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: objectName,
-		Fields: []string{
+		Fields: connectors.Fields(
 			"id", "view", "name",
-		},
+		),
 	})
 	if err != nil {
 		utils.Fail("error reading from Instantly", "error", err)

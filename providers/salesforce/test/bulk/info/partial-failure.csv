@@ -1,0 +1,2 @@
+"sf__Id","sf__Error",Name,StageName,external_id__c,CloseDate
+"","INVALID_FIELD:Failed to deserialize field at col 3. Due to, '2003-04-987654321987654321' is not a valid value for the type xsd:date:CloseDate --","Noemi Miller","GENERATED","external-id-3","2003-04-987654321987654321"

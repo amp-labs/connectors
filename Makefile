@@ -1,9 +1,13 @@
 # ====================
 # Formatting & linting
 # ====================
+# Lint checking consists of two parts: "golangci-lint" and "gci". Both should be used together.
+# "gci" may still flag issues even if the golangci-lint check passes.
+# Therefore, if any files need formatting, they will be printed, and the final exit code will be
+# successful only if no such files exist.
 .PHONY: lint
 lint:
-	golangci-lint run -c .golangci.yml
+	golangci-lint run -c .golangci.yml && (gci list . | sed 's/^/BadFormat: /'; [ $$(gci list . | wc -c) -eq 0 ])
 
 # Run a few autoformatters and print out unfixable errors
 # PRE-REQUISITES: install linters, see https://ampersand.slab.com/posts/engineering-onboarding-guide-environment-set-up-9v73t3l8#huik9-install-linters

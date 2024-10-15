@@ -3,6 +3,7 @@ package common
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 )
@@ -12,6 +13,9 @@ import (
 // Currently done on JSONHTTPClient, but we might need a separate CSVHTTPClient instead
   // Research and see if there is a better way to do this
 */
+
+// ErrMissingCSVData is returned when no CSV data was given for the upload.
+var ErrMissingCSVData = errors.New("no CSV data provided")
 
 func (j *JSONHTTPClient) PutCSV(ctx context.Context, url string, reqBody []byte, headers ...Header) ([]byte, error) {
 	fullURL, err := j.HTTPClient.getURL(url)

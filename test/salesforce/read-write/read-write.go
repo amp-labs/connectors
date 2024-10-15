@@ -55,7 +55,7 @@ func testReadConnector(ctx context.Context, conn connectors.ReadConnector) error
 	// Read some data from Salesforce
 	res, err := conn.Read(ctx, connectors.ReadParams{
 		ObjectName: "Account",
-		Fields:     []string{"Id", "Name", "BillingCity", "IsDeleted"},
+		Fields:     connectors.Fields("Id", "Name", "BillingCity", "IsDeleted"),
 	})
 	if err != nil {
 		return fmt.Errorf("error reading from Salesforce: %w", err)

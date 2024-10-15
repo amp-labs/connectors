@@ -14,7 +14,7 @@ func (m Map[K, V]) Keys() []K {
 }
 
 func (m Map[K, V]) KeySet() Set[K] {
-	return NewSet(m.Keys())
+	return NewSetFromList(m.Keys())
 }
 
 func (m Map[K, V]) Has(key K) bool {
@@ -42,8 +42,8 @@ type DefaultMap[K comparable, V any] struct {
 	fallback func(key K) V
 }
 
-func NewDefaultMap[K comparable, V any](dict Map[K, V], fallback func(K) V) *DefaultMap[K, V] {
-	return &DefaultMap[K, V]{
+func NewDefaultMap[K comparable, V any](dict Map[K, V], fallback func(K) V) DefaultMap[K, V] {
+	return DefaultMap[K, V]{
 		Map:      dict,
 		fallback: fallback,
 	}
@@ -56,5 +56,11 @@ func (m DefaultMap[K, V]) Get(key K) V { // nolint:ireturn
 		return value
 	}
 
-	return m.fallback(key)
+	if m.fallback != nil {
+		return m.fallback(key)
+	}
+
+	var empty V
+
+	return empty
 }

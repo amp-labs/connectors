@@ -8,6 +8,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	ap "github.com/amp-labs/connectors/providers/apollo"
 	"github.com/amp-labs/connectors/test/apollo"
@@ -43,7 +44,7 @@ func MainFn() int {
 func testReadOpportunitiesSearch(ctx context.Context, conn *ap.Connector) error {
 	params := common.ReadParams{
 		ObjectName: "opportunities",
-		Fields:     []string{"id"},
+		Fields:     connectors.Fields("id"),
 	}
 
 	res, err := conn.Read(ctx, params)
@@ -66,7 +67,7 @@ func testReadOpportunitiesSearch(ctx context.Context, conn *ap.Connector) error 
 func testReadEmailAccounts(ctx context.Context, conn *ap.Connector) error {
 	params := common.ReadParams{
 		ObjectName: "email_accounts",
-		Fields:     []string{"user_id", "id", "email"},
+		Fields:     connectors.Fields("user_id", "id", "email"),
 		Since:      time.Now().Add(-1800 * time.Hour),
 	}
 
@@ -90,7 +91,7 @@ func testReadEmailAccounts(ctx context.Context, conn *ap.Connector) error {
 func testReadCustomFields(ctx context.Context, conn *ap.Connector) error {
 	params := common.ReadParams{
 		ObjectName: "typed_custom_fields",
-		Fields:     []string{"type", "id", "modality"},
+		Fields:     connectors.Fields("type", "id", "modality"),
 		Since:      time.Now().Add(-1800 * time.Hour),
 	}
 

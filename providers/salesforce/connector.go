@@ -46,15 +46,9 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	conn = &Connector{
 		Client: &common.JSONHTTPClient{
 			HTTPClient: httpClient,
-			ErrorPostProcessor: common.ErrorPostProcessor{
-				Process: handleError,
-			},
 		},
 		XMLClient: &common.XMLHTTPClient{
 			HTTPClient: httpClient,
-			ErrorPostProcessor: common.ErrorPostProcessor{
-				Process: handleError,
-			},
 		},
 	}
 

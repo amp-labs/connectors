@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers/salesloft"
 	msTest "github.com/amp-labs/connectors/test/salesloft"
@@ -26,10 +27,7 @@ func main() {
 
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "people",
-		Fields: []string{
-			"display_name",
-			"email_address",
-		},
+		Fields:     connectors.Fields("display_name", "email_address"),
 	})
 	if err != nil {
 		utils.Fail("error reading from Salesloft", "error", err)

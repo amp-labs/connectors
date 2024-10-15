@@ -123,8 +123,8 @@ func (f Field) GetENVReader(providerName string) *scanning.EnvReader {
 
 func getFields(info providers.ProviderInfo,
 	withRequiredAccessToken, withRequiredWorkspace bool,
-) (handy.Lists[Field], error) {
-	lists := handy.Lists[Field]{}
+) (handy.NamedLists[Field], error) {
+	lists := handy.NamedLists[Field]{}
 	requiredType := "required"
 	optionalType := "optional"
 

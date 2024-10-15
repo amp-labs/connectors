@@ -12,6 +12,10 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
+	if !supportedObjectsByRead.Has(config.ObjectName) {
+		return nil, common.ErrOperationNotSupportedForObject
+	}
+
 	url, err := c.buildReadURL(config)
 	if err != nil {
 		return nil, err
@@ -22,9 +26,11 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
+	responseFieldName := ObjectNameToResponseField.Get(config.ObjectName)
+
 	return common.ParseResult(
 		rsp,
-		common.GetRecordsUnderJSONPath(config.ObjectName),
+		common.GetRecordsUnderJSONPath(responseFieldName),
 		getNextRecordsURL,
 		common.GetMarshaledData,
 		config.Fields,
