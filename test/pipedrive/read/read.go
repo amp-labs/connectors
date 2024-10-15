@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log/slog"
 	"os"
 	"os/signal"
@@ -31,7 +30,7 @@ func main() {
 	}
 
 	if err := readDeals(ctx, conn); err != nil {
-		fmt.Println(err)
+		slog.Error(err.Error())
 	}
 
 	if err := readLeads(ctx, conn); err != nil {
