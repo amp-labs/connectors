@@ -8,8 +8,6 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
-type Resp struct{}
-
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
 	if err := config.ValidateParams(true); err != nil {
 		return nil, err
