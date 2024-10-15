@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log/slog"
 	"os"
 	"os/signal"
@@ -29,9 +30,9 @@ func main() {
 		slog.Error(err.Error())
 	}
 
-	// if err := readDeals(ctx, conn); err != nil {
-	// 	fmt.Println(err)
-	// }
+	if err := readDeals(ctx, conn); err != nil {
+		fmt.Println(err)
+	}
 
 	if err := readLeads(ctx, conn); err != nil {
 		slog.Error(err.Error())
@@ -63,29 +64,29 @@ func readActivities(ctx context.Context, conn connectors.ReadConnector) error {
 	return nil
 }
 
-// func readDeals(ctx context.Context, conn connectors.ReadConnector) error {
-// 	config := connectors.ReadParams{
-// 		ObjectName: "deals",
-// 		Since:      time.Now().Add(-720 * time.Hour),
-// 		Fields:     connectors.Fields("duration", "start_time", "has_recording", "id"),
-// 	}
+func readDeals(ctx context.Context, conn connectors.ReadConnector) error {
+	config := connectors.ReadParams{
+		ObjectName: "deals",
+		Since:      time.Now().Add(-720 * time.Hour),
+		Fields:     connectors.Fields("duration", "start_time", "has_recording", "id"),
+	}
 
-// 	result, err := conn.Read(ctx, config)
-// 	if err != nil {
-// 		return err
-// 	}
+	result, err := conn.Read(ctx, config)
+	if err != nil {
+		return err
+	}
 
-// 	// Print the results
-// 	jsonStr, err := json.MarshalIndent(result, "", "  ")
-// 	if err != nil {
-// 		return err
-// 	}
+	// Print the results
+	jsonStr, err := json.MarshalIndent(result, "", "  ")
+	if err != nil {
+		return err
+	}
 
-// 	_, _ = os.Stdout.Write(jsonStr)
-// 	_, _ = os.Stdout.WriteString("\n")
+	_, _ = os.Stdout.Write(jsonStr)
+	_, _ = os.Stdout.WriteString("\n")
 
-// 	return nil
-// }
+	return nil
+}
 
 func readLeads(ctx context.Context, conn connectors.ReadConnector) error {
 	config := connectors.ReadParams{
