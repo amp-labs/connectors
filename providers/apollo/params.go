@@ -7,9 +7,8 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
+	"github.com/amp-labs/connectors/providers"
 )
-
-var headerName = "X-Api-Key" //nolint:gochecknoglobals
 
 type Option = func(params *parameters)
 
@@ -28,19 +27,9 @@ func WithClient(
 	apiKey string,
 	opts ...common.HeaderAuthClientOption,
 ) Option {
-	options := []common.HeaderAuthClientOption{
-		common.WithHeaderClient(client),
+	return func(params *parameters) {
+		params.WithApiKeyHeaderClient(ctx, client, providers.Apollo, apiKey, opts...)
 	}
-
-	apiKeyClient, err := common.NewApiKeyHeaderAuthHTTPClient(ctx,
-		headerName, apiKey,
-		append(options, opts...)...,
-	)
-	if err != nil {
-		panic(err) // caught in NewConnector
-	}
-
-	return WithAuthenticatedClient(apiKeyClient)
 }
 
 func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
