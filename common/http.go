@@ -50,7 +50,6 @@ func (h *HTTPClient) Get(ctx context.Context, url string, headers ...Header) (*h
 	if err != nil {
 		return nil, nil, err
 	}
-
 	// Make the request, get the response body
 	res, body, err := h.httpGet(ctx, fullURL, headers) //nolint:bodyclose
 	if err != nil {
@@ -92,6 +91,7 @@ func (h *HTTPClient) Patch(ctx context.Context,
 	if err != nil {
 		return nil, nil, err
 	}
+
 	// Make the request, get the response body
 	res, body, err := h.httpPatch(ctx, fullURL, headers, reqBody) //nolint:bodyclose
 	if err != nil {

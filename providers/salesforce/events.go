@@ -216,7 +216,7 @@ func (c *Connector) RunEventRelay(ctx context.Context, cfg *EventRelayConfig) er
 // nolint: lll
 // https://developer.salesforce.com/docs/atlas.en-us.chatterapi.meta/chatterapi/connect_responses_organization.htm?q=organization
 func (c *Connector) getOrganization(ctx context.Context) (map[string]*ajson.Node, error) {
-	resp, err := c.Client.Get(ctx, "connect/organization")
+	resp, err := c.Client.Get(ctx, restAPISuffix+"/connect/organization")
 	if err != nil {
 		return nil, err
 	}
