@@ -73,7 +73,7 @@ func testCDC(conn *salesforce.Connector, ctx context.Context, creds salesforce.C
 	printWithField("RemoteResource", "resource", remoteResource)
 }
 
-func testChangeDataCaptureChannelMembership(sfc *salesforce.Connector, ctx context.Context, channelName string, objecName string) (*salesforce.EventChannelMember, error) {
+func testChangeDataCaptureChannelMembership(conn *salesforce.Connector, ctx context.Context, channelName string, objecName string) (*salesforce.EventChannelMember, error) {
 	eventName := getCDCEventName(objecName)
 	rawChannelName := getRawChannelNameFromChannel(channelName)
 
@@ -85,7 +85,7 @@ func testChangeDataCaptureChannelMembership(sfc *salesforce.Connector, ctx conte
 		},
 	}
 
-	newChannelMember, err := sfc.CreateEventChannelMember(ctx, member)
+	newChannelMember, err := conn.CreateEventChannelMember(ctx, member)
 	if err != nil {
 		slog.Error("Error event channel member", "error", err)
 
