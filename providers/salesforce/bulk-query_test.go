@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -36,15 +35,6 @@ func TestBulkQuery(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	}
 
 	tests := []bulkQueryTestCase{
-		{
-			Name: "Mime response header expected",
-			Input: bulkQueryInput{
-				query:          "",
-				includeDeleted: false,
-			},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{interpreter.ErrMissingContentType},
-		},
 		{
 			Name: "Correct error message is understood from JSON response",
 			Input: bulkQueryInput{

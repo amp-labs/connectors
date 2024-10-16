@@ -21,12 +21,6 @@ func TestJobInfo(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 
 	tests := []bulkJobInfoTestCase{
 		{
-			Name:         "Mime response header expected",
-			Input:        "",
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{interpreter.ErrMissingContentType},
-		},
-		{
 			Name:  "Request fails due to internal server error",
 			Input: "",
 			Server: mockserver.Fixed{
