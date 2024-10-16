@@ -26,7 +26,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		return nil, err
 	}
 
-	// Read provider info
+	// Read marketo provider's details.
 	providerInfo, err := providers.ReadInfo(providers.Marketo, &params.Workspace)
 	if err != nil {
 		return nil, err
@@ -58,11 +58,8 @@ func (c *Connector) Provider() providers.Provider {
 }
 
 func (c *Connector) getAPIURL(objName string) (*urlbuilder.URL, error) {
+	objName = common.AddSuffixIfNotExists(objName, ".json")
 	bURL := strings.Join([]string{restAPIPrefix, c.Module, objName}, "/")
-
-	if !strings.HasSuffix(objName, ".json") {
-		bURL += ".json"
-	}
 
 	return urlbuilder.New(c.BaseURL, bURL)
 }
