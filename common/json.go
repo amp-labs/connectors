@@ -189,11 +189,11 @@ func addAcceptJSONHeader(headers []Header) []Header {
 	return append(headers, Header{Key: "Accept", Value: "application/json"})
 }
 
-// AddJSONSuffix adds the suffix ".json" to an objectName.
-func AddJSONSuffix(objectName string) string {
-	if !strings.HasSuffix(objectName, ".json") {
-		objectName += ".json"
+// AddSuffixIfNotExists appends the suffix  to the provided string.
+func AddSuffixIfNotExists(str string, suffix string) string {
+	if !strings.HasSuffix(str, suffix) {
+		str += suffix
 	}
 
-	return objectName
+	return str
 }

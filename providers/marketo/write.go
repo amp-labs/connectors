@@ -29,9 +29,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, err
 	}
 
-	// This should(will) never happen.
-	// But it's checked so as to avoid panics in accesing Result Array(incase the above happens).
-	// The rest WriteResults fields are zero valued.
+	// In case of an empty result, we return a zero-valued WriteResult.
 	if len(resp.Result) == 0 {
 		return &common.WriteResult{Success: true}, nil
 	}

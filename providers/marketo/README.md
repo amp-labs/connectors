@@ -2,19 +2,16 @@
 
 The connector currently supports Leads API only.
 
-# Write connnector
+# Supported Objects
 
-The objects that we can write to currently are:
- - Companies
- - Leads
- - Named Account Lists
- - Named Accounts
- - Opportunites
- - SalesPerson
-
- # Read connector
-
-The obects that we can read currently are:
-- Campaigns
-- Custom Objects
-- Lists
+| Object | Resource | Method |
+| :-------- | :------- | :-------- |
+| Companies | companies | Write |
+| Leads | leads | Write |
+| Named Account Lists | namedAccountLists | Write |
+| Named Accounts | namedaccounts | Write |
+| Opportunities | opportunities | Write |
+| Sales Person | salespersons | Write |
+| Campaigns | campaigns | Read |
+| Custom Objects | customobjects | Read |
+| Lists | lists | Read |
