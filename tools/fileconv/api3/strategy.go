@@ -6,23 +6,30 @@ import (
 	"github.com/amp-labs/connectors/common/handy"
 )
 
-// This strategy prunes URL Path that should be omitted during Schema extraction.
+// This strategy prunes URL Path that should be omitted or included during Schema extraction.
 // It allows hard coded endpoint Path, as well as simple star rules focusing on matching prefix or suffix.
+// First mode ignore endpoints and those matching suffixes, prefixes,
+// otherwise, only those that match the rules, will be used.
+//
 // Ex:
 // Basic:	/v1/orders	- ignores this path
 // Suffix:	*/batch		- ignores paths ending with batch
 // Prefix:	/v2/*		- ignores paths starting with v2.
 type ignorePathStrategy struct {
-	ignoreEndpoints handy.StringSet
-	prefixes        []string
-	suffixes        []string
+	endpoints handy.StringSet
+	prefixes  []string
+	suffixes  []string
+	// ignore flag determines the mode.
+	// It changes how we answer questions: Do we "ignore", or do we "include" given endpoint?
+	ignore bool
 }
 
-func newIgnorePathStrategy(endpoints []string) *ignorePathStrategy {
+func newIgnorePathStrategy(endpoints []string, ignore bool) *ignorePathStrategy {
 	result := &ignorePathStrategy{
-		ignoreEndpoints: handy.NewStringSet(),
-		prefixes:        make([]string, 0),
-		suffixes:        make([]string, 0),
+		endpoints: handy.NewStringSet(),
+		prefixes:  make([]string, 0),
+		suffixes:  make([]string, 0),
+		ignore:    ignore,
 	}
 
 	for _, endpoint := range endpoints {
@@ -31,7 +38,7 @@ func newIgnorePathStrategy(endpoints []string) *ignorePathStrategy {
 		} else if rule, ok = strings.CutSuffix(endpoint, "*"); ok {
 			result.prefixes = append(result.prefixes, rule)
 		} else {
-			result.ignoreEndpoints.AddOne(endpoint)
+			result.endpoints.AddOne(endpoint)
 		}
 	}
 
@@ -40,21 +47,21 @@ func newIgnorePathStrategy(endpoints []string) *ignorePathStrategy {
 
 // Check will return true if URL path should be ignored.
 func (s ignorePathStrategy) Check(path string) bool {
-	if s.ignoreEndpoints.Has(path) {
-		return true
+	if s.endpoints.Has(path) {
+		return s.ignore
 	}
 
 	for _, prefix := range s.prefixes {
 		if strings.HasPrefix(path, prefix) {
-			return true
+			return s.ignore
 		}
 	}
 
 	for _, suffix := range s.suffixes {
 		if strings.HasSuffix(path, suffix) {
-			return true
+			return s.ignore
 		}
 	}
 
-	return false
+	return !s.ignore
 }
