@@ -1,0 +1,115 @@
+{
+  "type": "conversation.list",
+  "pages": {
+    "type": "pages",
+    "next": {
+      "page": 2,
+      "starting_after": "WzE3MjY3NTIxNDUwMDAsNSwyXQ=="
+    },
+    "page": 1,
+    "per_page": 1,
+    "total_pages": 2
+  },
+  "total_count": 2,
+  "conversations": [
+    {
+      "type": "conversation",
+      "id": "5",
+      "created_at": 1726752048,
+      "updated_at": 1726752145,
+      "waiting_since": null,
+      "snoozed_until": null,
+      "source": {
+        "type": "conversation",
+        "id": "2416030620",
+        "delivered_as": "customer_initiated",
+        "subject": "",
+        "body": "<p>wwww</p>",
+        "author": {
+          "type": "user",
+          "id": "66eaf772c864ff5de8d2e180",
+          "name": "CK",
+          "email": "ck@gmail.com"
+        },
+        "attachments": [],
+        "url": "http://localhost:5173/",
+        "redacted": false
+      },
+      "contacts": {
+        "type": "contact.list",
+        "contacts": [
+          {
+            "type": "contact",
+            "id": "66eaf772c864ff5de8d2e180",
+            "external_id": "951357"
+          }
+        ]
+      },
+      "first_contact_reply": {
+        "created_at": 1726752048,
+        "type": "conversation",
+        "url": "http://localhost:5173/"
+      },
+      "admin_assignee_id": null,
+      "team_assignee_id": null,
+      "open": true,
+      "state": "open",
+      "read": true,
+      "tags": {
+        "type": "tag.list",
+        "tags": []
+      },
+      "priority": "not_priority",
+      "sla_applied": null,
+      "statistics": {
+        "type": "conversation_statistics",
+        "time_to_assignment": null,
+        "time_to_admin_reply": 96,
+        "time_to_first_close": null,
+        "time_to_last_close": null,
+        "median_time_to_reply": 31,
+        "first_contact_reply_at": 1726752049,
+        "first_assignment_at": null,
+        "first_admin_reply_at": 1726752145,
+        "first_close_at": null,
+        "last_assignment_at": null,
+        "last_assignment_admin_reply_at": null,
+        "last_contact_reply_at": 1726752114,
+        "last_admin_reply_at": 1726752145,
+        "last_close_at": null,
+        "last_closed_by_id": null,
+        "count_reopens": 0,
+        "count_assignments": 0,
+        "count_conversation_parts": 7
+      },
+      "conversation_rating": null,
+      "teammates": {
+        "type": "admin.list",
+        "admins": [
+          {
+            "type": "admin",
+            "id": "7387622"
+          }
+        ]
+      },
+      "title": "What is return policy?",
+      "custom_attributes": {
+        "Copilot used": false
+      },
+      "topics": {
+        "type": "topic.list",
+        "topics": [],
+        "total_count": 0
+      },
+      "ticket": null,
+      "linked_objects": {
+        "type": "list",
+        "data": [],
+        "total_count": 0,
+        "has_more": false
+      },
+      "ai_agent": null,
+      "ai_agent_participated": false
+    }
+  ]
+}
