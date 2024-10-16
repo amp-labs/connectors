@@ -20,10 +20,9 @@ func TestErrorHandler(t *testing.T) { //nolint:funlen
 	var (
 		// These errors imitate what each error handler would return after response is parsed.
 		// NOTE: we are not interested in parsing itself, rather that the right branches are visited.
-		ErrCustomUnknownMedia = errors.New("custom unknown media parsing")
-		ErrCustomJSON         = errors.New("custom JSON error response")
-		ErrCustomXML          = errors.New("custom XML error response")
-		ErrCustomHTML         = errors.New("custom HTML error response")
+		ErrCustomJSON = errors.New("custom JSON error response")
+		ErrCustomXML  = errors.New("custom XML error response")
+		ErrCustomHTML = errors.New("custom HTML error response")
 	)
 
 	tests := []struct {
@@ -33,21 +32,10 @@ func TestErrorHandler(t *testing.T) { //nolint:funlen
 		expectedErr []error
 	}{
 		{
-			name:    "Missing media type is handled using default fallback",
-			server:  mockserver.Dummy(), // no media
-			handler: ErrorHandler{},
-			expectedErr: []error{
-				ErrUnparseableHTTPResponse,
-				common.ErrCaller,
-			},
-		},
-		{
-			name:   "Missing media type is handled using UnknownMedia handler",
-			server: mockserver.Dummy(), // no media
-			handler: ErrorHandler{
-				UnknownMedia: handlerReturningError(ErrCustomUnknownMedia),
-			},
-			expectedErr: []error{ErrCustomUnknownMedia},
+			name:        "Missing media type is handled using default fallback",
+			server:      mockserver.Dummy(), // no media
+			handler:     ErrorHandler{},
+			expectedErr: []error{common.ErrCaller},
 		},
 		{
 			name: "JSON response is handled using default fallback",
