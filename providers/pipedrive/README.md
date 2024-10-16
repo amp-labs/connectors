@@ -35,11 +35,8 @@ Pipedrive API version : v1
 | Pipelines  | pipelines | Read |
 | Products | products | Read |
 | Product Fields | productFields | Read |
-| Projects | projects | Read |
-| Project Templates | projectTemplates | Read |
 | Roles | roles | Read | 
 | Stages | stages | Read |
-| Tasks | tasks | Read |
 | Users | users | Read |
 | User Connections | userConnections | Read |
 | User Settings | userSettings | Read |
