@@ -10,9 +10,7 @@ import (
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
-	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 	"github.com/go-test/deep"
 )
@@ -28,14 +26,6 @@ func TestGetPostAuthInfo(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintid
 		expected     *common.PostAuthInfo
 		expectedErrs []error
 	}{
-		{
-			name:   "Mime response header expected",
-			server: mockserver.Dummy(),
-			expectedErrs: []error{
-				interpreter.ErrMissingContentType,
-				ErrDiscoveryFailure,
-			},
-		},
 		{
 			name: "Response should be an array",
 			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
