@@ -40,7 +40,7 @@ func main() {
 	explorer, err := openapi.FileManager.GetExplorer()
 	must(err)
 
-	objects, err := explorer.GetBasicReadObjects(
+	objects, err := explorer.ReadObjectsGet(
 		ignoreEndpoints, nil, displayNameOverride,
 		api3.CustomMappingObjectCheck(intercom.ObjectNameToResponseField),
 	)

@@ -61,7 +61,7 @@ func main() {
 	)
 	must(err)
 
-	objects, err := explorer.GetBasicReadObjects(
+	objects, err := explorer.ReadObjectsGet(
 		ignoreEndpoints, nil, nil, api3.IdenticalObjectCheck,
 	)
 	must(err)

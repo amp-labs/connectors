@@ -15,20 +15,44 @@ type Explorer struct {
 	*parameters
 }
 
-// GetBasicReadObjects retrieves schemas that can be used by ListObjectMetadata.
+// ReadObjectsGet retrieves schemas that can be used by ListObjectMetadata.
 // objectEndpoints - optional map of Endpoint Path to ObjectName associated with it.
 // ignoreEndpoints - optional list of paths to ignore
 // displayNameOverride - optional map of ObjectName to DisplayName. This will override display name from OpenAPI doc.
-func (e Explorer) GetBasicReadObjects(
+func (e Explorer) ReadObjectsGet(
 	ignoreEndpoints []string,
 	objectEndpoints map[string]string,
 	displayNameOverride map[string]string,
 	check ObjectCheck,
-) ([]Schema, error) {
-	schemas := make([]Schema, 0)
+) (Schemas, error) {
+	return e.ReadObjects("GET", ignoreEndpoints, true, objectEndpoints, displayNameOverride, check)
+}
 
-	for _, path := range e.GetBasicPathItems(newIgnorePathStrategy(ignoreEndpoints), objectEndpoints) {
-		schema, found, err := path.RetrieveSchemaOperationGet(
+// SearchObjectsPost is the same as ReadObjectsGet but retrieves schemas for endpoints that perform reading via POST.
+func (e Explorer) SearchObjectsPost(
+	fromEndpoints []string,
+	objectEndpoints map[string]string,
+	displayNameOverride map[string]string,
+	check ObjectCheck,
+) (Schemas, error) {
+	return e.ReadObjects("POST", fromEndpoints, false, objectEndpoints, displayNameOverride, check)
+}
+
+// ReadObjects has 2 reading modes.
+// One ignores the provided list of endpoints (ignore=true).
+// The other scopes the search to just the list of endpoints (ignore=false).
+func (e Explorer) ReadObjects(
+	operationName string,
+	endpoints []string,
+	ignore bool,
+	objectEndpoints map[string]string,
+	displayNameOverride map[string]string,
+	check ObjectCheck,
+) (Schemas, error) {
+	schemas := make(Schemas, 0)
+
+	for _, path := range e.GetPathItems(newIgnorePathStrategy(endpoints, ignore), objectEndpoints) {
+		schema, found, err := path.RetrieveSchemaOperation(operationName,
 			displayNameOverride, check, e.displayPostProcessing, e.parameterFilter,
 		)
 		if err != nil {
@@ -48,8 +72,8 @@ func (e Explorer) GetBasicReadObjects(
 	return schemas, nil
 }
 
-// GetBasicPathItems returns path items where object name is a single word.
-func (e Explorer) GetBasicPathItems(
+// GetPathItems returns path items where object name is a single word.
+func (e Explorer) GetPathItems(
 	ignoreEndpoints *ignorePathStrategy, endpointResources map[string]string,
 ) []PathItem {
 	items := handy.Map[string, PathItem]{}
