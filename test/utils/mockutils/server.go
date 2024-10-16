@@ -1,10 +1,12 @@
 package mockutils
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
+	"reflect"
 	"strings"
 )
 
@@ -139,7 +141,31 @@ func bodiesMatch(reader io.ReadCloser, expected string) bool {
 		return false
 	}
 
-	return string(body) == stringCleaner(expected, []string{"\n", "\t"})
+	textEquals := textBodyMatch(body, expected)
+	jsonEquals := jsonBodyMatch(body, expected)
+
+	return textEquals || jsonEquals
+}
+
+func textBodyMatch(actual []byte, expected string) bool {
+	first := stringCleaner(string(actual), []string{"\n", "\t"})
+	second := stringCleaner(expected, []string{"\n", "\t"})
+
+	return first == second
+}
+
+func jsonBodyMatch(actual []byte, expected string) bool {
+	first := make(map[string]any)
+	if err := json.Unmarshal(actual, &first); err != nil {
+		return false
+	}
+
+	second := make(map[string]any)
+	if err := json.Unmarshal([]byte(expected), &second); err != nil {
+		return false
+	}
+
+	return reflect.DeepEqual(first, second)
 }
 
 func queryParamsMissing(superset url.Values, missing []string) (string, bool) {
