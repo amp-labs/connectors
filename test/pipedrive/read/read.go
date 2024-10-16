@@ -67,7 +67,7 @@ func readDeals(ctx context.Context, conn connectors.ReadConnector) error {
 	config := connectors.ReadParams{
 		ObjectName: "deals",
 		Since:      time.Now().Add(-720 * time.Hour),
-		Fields:     connectors.Fields("duration", "start_time", "has_recording", "id"),
+		Fields:     connectors.Fields("close_time", "id"),
 	}
 
 	result, err := conn.Read(ctx, config)

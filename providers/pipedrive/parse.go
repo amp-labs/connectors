@@ -1,7 +1,6 @@
 package pipedrive
 
 import (
-	"encoding/json"
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
@@ -32,34 +31,4 @@ func nextRecordsURL(url *urlbuilder.URL) common.NextPageFunc {
 
 		return "", nil
 	}
-}
-
-// getRecords returns the records from the response.
-func getRecords(node *ajson.Node) ([]map[string]any, error) {
-	var d responseData
-
-	b := node.Source()
-	if err := json.Unmarshal(b, &d); err != nil {
-		return nil, err
-	}
-
-	records := constructRecords(d)
-
-	return records, nil
-}
-
-func constructRecords(d responseData) []map[string]any {
-	records := make([]map[string]any, len(d.Data))
-
-	for i, record := range d.Data {
-		recordItems := make(map[string]any)
-
-		for k, v := range record {
-			recordItems[k] = v
-		}
-
-		records[i] = recordItems
-	}
-
-	return records
 }
