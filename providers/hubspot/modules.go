@@ -1,24 +1,27 @@
 package hubspot
 
 import (
-	"github.com/amp-labs/connectors/common/paramsbuilder"
+	"github.com/amp-labs/connectors/common"
 )
 
-// ModuleCRM is the module used for accessing standard CRM objects.
-var ModuleCRM = paramsbuilder.APIModule{ // nolint: gochecknoglobals
-	Label:   "crm",
-	Version: "v3",
-}
-
-// ModuleEmpty is used for proxying requests through.
-var ModuleEmpty = paramsbuilder.APIModule{ // nolint: gochecknoglobals
-	Label:   "",
-	Version: "",
-}
+const (
+	// ModuleEmpty is used for proxying requests through.
+	ModuleEmpty common.ModuleID = ""
+	// ModuleCRM is the module used for accessing standard CRM objects.
+	ModuleCRM common.ModuleID = "CRM"
+)
 
 // supportedModules represents currently working and supported modules within the Hubspot connector.
 // Any added module should be appended added here.
-var supportedModules = []paramsbuilder.APIModule{ // nolint: gochecknoglobals
-	ModuleEmpty,
-	ModuleCRM,
+var supportedModules = common.Modules{ // nolint: gochecknoglobals
+	ModuleEmpty: {
+		ID:      ModuleEmpty,
+		Label:   "",
+		Version: "",
+	},
+	ModuleCRM: {
+		ID:      ModuleCRM,
+		Label:   "crm",
+		Version: "v3",
+	},
 }
