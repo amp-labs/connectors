@@ -21,6 +21,7 @@ var (
 		"/me",
 		"/tickets/search",
 		"/contacts/search",
+		"/companies/scroll", // covered by companies
 		"/conversations/search",
 		"/articles/search", // this one is similar to /articles
 	}
@@ -34,18 +35,36 @@ var (
 		"news_items":      "News Items",
 		"newsfeeds":       "Newsfeeds",
 	}
+	searchEndpoints = []string{ // nolint:gochecknoglobals
+		"*/search",
+	}
+	searchObjectEndpoints = map[string]string{ // nolint:gochecknoglobals
+		"/contacts/search":      "contacts",
+		"/conversations/search": "conversations",
+		"/articles/search":      "articles",
+		"/tickets/search":       "tickets",
+	}
 )
 
 func main() {
 	explorer, err := openapi.FileManager.GetExplorer()
 	must(err)
 
-	objects, err := explorer.ReadObjectsGet(
+	readObjects, err := explorer.ReadObjectsGet(
 		api3.NewDenyPathStrategy(ignoreEndpoints),
 		nil, displayNameOverride,
 		api3.CustomMappingObjectCheck(intercom.ObjectNameToResponseField),
 	)
 	must(err)
+
+	searchObjects, err := explorer.ReadObjectsPost(
+		api3.NewAllowPathStrategy(searchEndpoints),
+		searchObjectEndpoints, displayNameOverride,
+		api3.CustomMappingObjectCheck(intercom.ObjectNameToResponseField),
+	)
+	must(err)
+
+	objects := searchObjects.Combine(readObjects)
 
 	schemas := scrapper.NewObjectMetadataResult()
 	registry := handy.NamedLists[string]{}

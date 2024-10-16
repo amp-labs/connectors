@@ -144,21 +144,32 @@
     "conversations": {
       "displayName": "Conversations",
       "fields": {
-        "body": "body",
-        "cover_image_url": "cover_image_url",
+        "admin_assignee_id": "admin_assignee_id",
+        "ai_agent": "ai_agent",
+        "ai_agent_participated": "ai_agent_participated",
+        "contacts": "contacts",
+        "conversation_parts": "conversation_parts",
+        "conversation_rating": "conversation_rating",
         "created_at": "created_at",
-        "deliver_silently": "deliver_silently",
+        "custom_attributes": "custom_attributes",
+        "first_contact_reply": "first_contact_reply",
         "id": "id",
-        "labels": "labels",
-        "name": "name",
-        "newsfeed_assignments": "newsfeed_assignments",
-        "reactions": "reactions",
-        "sender_id": "sender_id",
+        "linked_objects": "linked_objects",
+        "open": "open",
+        "priority": "priority",
+        "read": "read",
+        "sla_applied": "sla_applied",
+        "snoozed_until": "snoozed_until",
+        "source": "source",
         "state": "state",
+        "statistics": "statistics",
+        "tags": "tags",
+        "team_assignee_id": "team_assignee_id",
+        "teammates": "teammates",
         "title": "title",
         "type": "type",
         "updated_at": "updated_at",
-        "workspace_id": "workspace_id"
+        "waiting_since": "waiting_since"
       }
     },
     "data_attributes": {
@@ -327,6 +338,30 @@
         "type": "type",
         "updated_at": "updated_at",
         "workspace_id": "workspace_id"
+      }
+    },
+    "tickets": {
+      "displayName": "Ticket List",
+      "fields": {
+        "admin_assignee_id": "admin_assignee_id",
+        "category": "category",
+        "contacts": "contacts",
+        "created_at": "created_at",
+        "id": "id",
+        "is_shared": "is_shared",
+        "linked_objects": "linked_objects",
+        "open": "open",
+        "snoozed_until": "snoozed_until",
+        "team_assignee_id": "team_assignee_id",
+        "ticket_attributes": "ticket_attributes",
+        "ticket_id": "ticket_id",
+        "ticket_parts": "ticket_parts",
+        "ticket_state": "ticket_state",
+        "ticket_state_external_label": "ticket_state_external_label",
+        "ticket_state_internal_label": "ticket_state_internal_label",
+        "ticket_type": "ticket_type",
+        "type": "type",
+        "updated_at": "updated_at"
       }
     }
   }
