@@ -2,7 +2,6 @@ package interpreter
 
 import (
 	"errors"
-	"fmt"
 	"mime"
 	"net/http"
 
@@ -18,16 +17,22 @@ type FaultyResponseHandler interface {
 
 // ErrorHandler invokes a function that matches response media type with parse error, ex: JSON<->JsonParserMethod
 // otherwise defaults to general error interpretation.
+// UnknownMedia is a special handler that is used in case Content-Type is unavailable.
+// Fallback on the other side is such a handler that will be invoked when media type is known but no handler exists.
 type ErrorHandler struct {
-	JSON FaultyResponseHandler
-	XML  FaultyResponseHandler
-	HTML FaultyResponseHandler
+	JSON         FaultyResponseHandler
+	XML          FaultyResponseHandler
+	HTML         FaultyResponseHandler
+	UnknownMedia FaultyResponseHandler
+	Fallback     FaultyResponseHandler
 }
 
-func (h ErrorHandler) Handle(res *http.Response, body []byte) error {
+func (h ErrorHandler) Handle(res *http.Response, body []byte) error { // nolint:cyclop
 	mediaType, _, err := mime.ParseMediaType(res.Header.Get("Content-Type"))
-	if err != nil {
-		return fmt.Errorf("%w: %w", ErrMissingContentType, err)
+	if err != nil && h.UnknownMedia != nil {
+		// Media type is unknown, therefore we cannot select appropriate response handler.
+		// Therefore, using fallback.
+		return h.UnknownMedia.HandleErrorResponse(res, body)
 	}
 
 	if h.JSON != nil && mediaType == "application/json" {
@@ -42,5 +47,10 @@ func (h ErrorHandler) Handle(res *http.Response, body []byte) error {
 		return h.HTML.HandleErrorResponse(res, body)
 	}
 
+	if h.Fallback != nil {
+		return h.Fallback.HandleErrorResponse(res, body)
+	}
+
+	// Default fallback.
 	return common.InterpretError(res, body)
 }
