@@ -24,7 +24,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	}
 
 	return common.ParseResult(resp,
-		getRecords,
+		common.GetRecordsUnderJSONPath("data"),
 		nextRecordsURL(url),
 		common.GetMarshaledData,
 		config.Fields,
@@ -38,12 +38,13 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 		return urlbuilder.New(config.NextPage.String())
 	}
 
-	url, err := c.getApiURL(config.ObjectName)
+	url, err := c.getAPIURL(config.ObjectName)
 	if err != nil {
 		return nil, err
 	}
 
 	// begin fetching objects at provided start date
+	// Supporting objects are: Activities & Notes only.
 	if !config.Since.IsZero() {
 		startDate := config.Since.Format(time.DateOnly)
 		url.WithQueryParam("start_date", startDate)
