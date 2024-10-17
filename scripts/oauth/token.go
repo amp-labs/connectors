@@ -272,7 +272,7 @@ func setup() *OAuthApp {
 
 	substitutions, err := registry.GetMap(SubstitutionsFieldName)
 	if err != nil {
-		slog.Warn("no substitutions, ensure that the provider info doesn't have any {{variables}}", err)
+		slog.Warn("no substitutions, ensure that the provider info doesn't have any variables", slog.String("error: ", err.Error()))
 	}
 
 	provider := registry.MustString(credscanning.Fields.Provider.Name)
