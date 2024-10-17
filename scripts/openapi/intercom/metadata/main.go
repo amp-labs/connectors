@@ -34,6 +34,7 @@ var (
 		"segments":        "Segments",
 		"news_items":      "News Items",
 		"newsfeeds":       "Newsfeeds",
+		"tickets":         "Tickets",
 	}
 	searchEndpoints = []string{ // nolint:gochecknoglobals
 		"*/search",

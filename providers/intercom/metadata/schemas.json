@@ -256,30 +256,6 @@
         "workspace_id": "workspace_id"
       }
     },
-    "scroll": {
-      "displayName": "Company Scroll",
-      "fields": {
-        "app_id": "app_id",
-        "company_id": "company_id",
-        "created_at": "created_at",
-        "custom_attributes": "custom_attributes",
-        "id": "id",
-        "industry": "industry",
-        "last_request_at": "last_request_at",
-        "monthly_spend": "monthly_spend",
-        "name": "name",
-        "plan": "plan",
-        "remote_created_at": "remote_created_at",
-        "segments": "segments",
-        "session_count": "session_count",
-        "size": "size",
-        "tags": "tags",
-        "type": "type",
-        "updated_at": "updated_at",
-        "user_count": "user_count",
-        "website": "website"
-      }
-    },
     "segments": {
       "displayName": "Segments",
       "fields": {
@@ -341,7 +317,7 @@
       }
     },
     "tickets": {
-      "displayName": "Ticket List",
+      "displayName": "Tickets",
       "fields": {
         "admin_assignee_id": "admin_assignee_id",
         "category": "category",

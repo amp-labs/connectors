@@ -5,8 +5,11 @@ import (
 	"github.com/amp-labs/connectors/providers/intercom/metadata"
 )
 
+// Tickets is a special object which cannot be READ using GET.
+// Full read and incremental read are done for tickets using POST search.
+const ticketsObjectName = "tickets"
+
 // Supported object names can be found under schemas.json.
-// NOTE: tickets can be queried only by using non-empty `Since` parameter.
 var supportedObjectsByRead = handy.NewSetFromList( //nolint:gochecknoglobals
 	metadata.Schemas.GetObjectNames(),
 )
@@ -38,13 +41,14 @@ var objectNameToURLPath = handy.NewDefaultMap(map[string]string{ //nolint:gochec
 	return obj
 })
 
+// nolint:gomnd
 var incrementalSearchObjectPagination = handy.NewDefaultMap(map[string]int{ //nolint:gochecknoglobals
 	// https://developers.intercom.com/docs/references/rest-api/api.intercom.io/conversations/searchconversations
-	"conversations": 150, // nolint:gomnd
+	"conversations": 150,
 	// https://developers.intercom.com/docs/references/rest-api/api.intercom.io/contacts/searchcontacts
-	"contacts": 50, // nolint:gomnd
+	"contacts": 50,
 	// https://developers.intercom.com/docs/references/rest-api/api.intercom.io/tickets/searchtickets
-	"tickets": 150, // nolint:gomnd
+	ticketsObjectName: 150,
 }, func(k string) int {
 	return DefaultPageSize
 })
