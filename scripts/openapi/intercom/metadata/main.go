@@ -34,6 +34,7 @@ var (
 		"segments":        "Segments",
 		"news_items":      "News Items",
 		"newsfeeds":       "Newsfeeds",
+		"tickets":         "Tickets",
 	}
 	searchEndpoints = []string{ // nolint:gochecknoglobals
 		"*/search",
@@ -58,9 +59,10 @@ func main() {
 	)
 	must(err)
 
-	searchObjects, err := explorer.ReadObjectPost(
+	searchObjects, err := explorer.ReadObjectsPost(
 		&api3.PathMatchingStrategy{
 			AllowPaths: searchEndpoints,
+			Strict:     true,
 		}, searchObjectEndpoints, displayNameOverride,
 		api3.CustomMappingObjectCheck(intercom.ObjectNameToResponseField),
 	)

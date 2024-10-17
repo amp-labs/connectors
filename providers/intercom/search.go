@@ -15,12 +15,13 @@ import (
 func (c *Connector) readViaSearch(
 	ctx context.Context, config common.ReadParams,
 ) (*common.JSONHTTPResponse, *urlbuilder.URL, error, bool) {
-	if config.Since.IsZero() {
-		// Search is only relevant when we do incremental reading.
+	if !incrementalSearchObjectPagination.Has(config.ObjectName) {
 		return nil, nil, nil, false
 	}
 
-	if !incrementalSearchObjectPagination.Has(config.ObjectName) {
+	if config.Since.IsZero() && config.ObjectName != ticketsObjectName {
+		// Search is only relevant when we do incremental reading.
+		// Tickets is an exception. We can do full read only via POST.
 		return nil, nil, nil, false
 	}
 
@@ -43,6 +44,28 @@ func (c *Connector) readViaSearch(
 }
 
 func (c *Connector) createSearchPayload(params common.ReadParams) (*searchReqPayload, error) {
+	if params.Since.IsZero() && params.ObjectName == ticketsObjectName {
+		// Perform full read for tickets using POST query.
+		// This is a hack, query is designed to return all objects.
+		return &searchReqPayload{
+			Query: searchQuery{
+				Operator: "OR",
+				Value: []searchQueryValue{{
+					Field:    "open",
+					Operator: "=",
+					Value:    "true",
+				}, {
+					Field:    "open",
+					Operator: "=",
+					Value:    "false",
+				}},
+			},
+			Pagination: searchPagination{
+				PerPage: incrementalSearchObjectPagination.Get(params.ObjectName),
+			},
+		}, nil
+	}
+
 	url, err := urlbuilder.New(params.NextPage.String())
 	if err != nil {
 		return nil, err
