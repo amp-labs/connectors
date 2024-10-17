@@ -11,7 +11,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/xquery"
-	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 	"github.com/go-test/deep"
 )
@@ -44,18 +44,18 @@ func TestCreateMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			name:  "Server responded with empty body",
 			input: request,
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusOK)
-			})),
+			server: mockserver.Fixed{
+				Always: mockserver.Response(http.StatusOK),
+			}.Server(),
 			expectedErrs: []error{common.ErrNotXML},
 		},
 		{
 			name:  "Error token expired is understood",
 			input: request,
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusInternalServerError) // 500 is what real server returns
-				mockutils.WriteBody(w, tokenExpiredResponse.RawXML())
-			})),
+			server: mockserver.Fixed{
+				// 500 is what real server returns
+				Always: mockserver.ResponseString(http.StatusInternalServerError, tokenExpiredResponse.RawXML()),
+			}.Server(),
 			expectedErrs: []error{
 				common.ErrAccessToken,
 				errors.New("INVALID_SESSION_ID"), // nolint:goerr113
@@ -64,10 +64,9 @@ func TestCreateMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			name:  "Successful response given valid request",
 			input: request,
-			server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusOK)
-				mockutils.WriteBody(w, successResponse.RawXML())
-			})),
+			server: mockserver.Fixed{
+				Always: mockserver.ResponseString(http.StatusOK, successResponse.RawXML()),
+			}.Server(),
 			expected:     successResponse.RawXML(),
 			expectedErrs: nil,
 		},

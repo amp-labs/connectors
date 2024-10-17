@@ -2,14 +2,13 @@ package dynamicscrm
 
 import (
 	"net/http"
-	"net/http/httptest"
-	"strings"
 	"testing"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -38,61 +37,53 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Schema endpoint is not available for object",
 			Input: []string{"butterflies"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				_, _ = w.Write(responseContactsSchema)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseContactsSchema),
+			}.Server(),
 			ExpectedErrs: []error{ErrObjectNotFound},
 		},
 		{
 			Name:  "Attributes endpoint is not available for object",
 			Input: []string{"butterflies"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				switch path := r.URL.Path; {
-				case strings.HasSuffix(path, "EntityDefinitions(LogicalName='butterfly')"):
-					_, _ = w.Write(responseContactsSchema)
-				default:
-					_, _ = w.Write([]byte{})
-				}
-			})),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.PathSuffix("EntityDefinitions(LogicalName='butterfly')"),
+				Then:  mockserver.Response(http.StatusOK, responseContactsSchema),
+				Else:  mockserver.Response(http.StatusOK, []byte{}),
+			}.Server(),
 			ExpectedErrs: []error{ErrObjectNotFound},
 		},
 		{
 			Name:  "Object doesn't have attributes",
 			Input: []string{"accounts"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				switch path := r.URL.Path; {
-				case strings.HasSuffix(path, "EntityDefinitions(LogicalName='account')"):
-					_, _ = w.Write(responseContactsSchema)
-				case strings.HasSuffix(path, "EntityDefinitions(LogicalName='account')/Attributes"):
-					mockutils.WriteBody(w, `{"value":[]}`)
-				default:
-					_, _ = w.Write([]byte{})
-				}
-			})),
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{{
+					If:   mockcond.PathSuffix("EntityDefinitions(LogicalName='account')"),
+					Then: mockserver.Response(http.StatusOK, responseContactsSchema),
+				}, {
+					If:   mockcond.PathSuffix("EntityDefinitions(LogicalName='account')/Attributes"),
+					Then: mockserver.ResponseString(http.StatusOK, `{"value":[]}`),
+				}},
+				Default: mockserver.Response(http.StatusOK, []byte{}),
+			}.Server(),
 			ExpectedErrs: []error{ErrObjectMissingAttributes},
 		},
 		{
 			Name:  "Correctly list metadata for account leads and invite contact",
 			Input: []string{"contacts"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				// server will be called 2 times
-				switch path := r.URL.Path; {
-				case strings.HasSuffix(path, "EntityDefinitions(LogicalName='contact')"):
-					_, _ = w.Write(responseContactsSchema)
-				case strings.HasSuffix(path, "EntityDefinitions(LogicalName='contact')/Attributes"):
-					_, _ = w.Write(responseContactsAttributes)
-				default:
-					_, _ = w.Write([]byte{})
-				}
-			})),
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{{
+					If:   mockcond.PathSuffix("EntityDefinitions(LogicalName='contact')"),
+					Then: mockserver.Response(http.StatusOK, responseContactsSchema),
+				}, {
+					If:   mockcond.PathSuffix("EntityDefinitions(LogicalName='contact')/Attributes"),
+					Then: mockserver.Response(http.StatusOK, responseContactsAttributes),
+				}},
+				Default: mockserver.Response(http.StatusOK, []byte{}),
+			}.Server(),
 			Comparator: func(baseURL string, actual, expected *common.ListObjectMetadataResult) bool {
 				return mockutils.MetadataResultComparator.SubsetFields(actual, expected)
 			},

@@ -3,12 +3,12 @@ package attio
 
 import (
 	"net/http"
-	"net/http/httptest"
 	"testing"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -33,28 +33,28 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Successfully describe multiple object with metadata",
 			Input: []string{"objects", "lists", "workspace_members", "notes", "webhooks", "tasks"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				// Simulating different behavior based on URL path
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				switch r.URL.Path {
-				case "/v2/objects":
-					_, _ = w.Write(objectresponse)
-				case "/v2/lists":
-					_, _ = w.Write(listresponse)
-				case "/v2/workspace_members":
-					_, _ = w.Write(workspacemembersresponse)
-				case "/v2/notes":
-					_, _ = w.Write(notesresponse)
-				case "/v2/tasks":
-					_, _ = w.Write(tasksresponse)
-				case "/v2/webhooks":
-					_, _ = w.Write(webhooksresponse)
-				default:
-					// Return 400 for any unexpected paths
-					http.Error(w, "Invalid URL", http.StatusBadRequest)
-				}
-			})),
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{{
+					If:   mockcond.PathSuffix("/v2/objects"),
+					Then: mockserver.Response(http.StatusOK, objectresponse),
+				}, {
+					If:   mockcond.PathSuffix("/v2/lists"),
+					Then: mockserver.Response(http.StatusOK, listresponse),
+				}, {
+					If:   mockcond.PathSuffix("/v2/workspace_members"),
+					Then: mockserver.Response(http.StatusOK, workspacemembersresponse),
+				}, {
+					If:   mockcond.PathSuffix("/v2/notes"),
+					Then: mockserver.Response(http.StatusOK, notesresponse),
+				}, {
+					If:   mockcond.PathSuffix("/v2/tasks"),
+					Then: mockserver.Response(http.StatusOK, tasksresponse),
+				}, {
+					If:   mockcond.PathSuffix("/v2/webhooks"),
+					Then: mockserver.Response(http.StatusOK, webhooksresponse),
+				}},
+			}.Server(),
 			Comparator: func(baseURL string, actual, expected *common.ListObjectMetadataResult) bool {
 				return mockutils.MetadataResultComparator.SubsetFields(actual, expected)
 			},
