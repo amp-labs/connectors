@@ -23,7 +23,7 @@
 
 # Overview
 
-[Ampersand](https://withampersand.com/trk=readme-github) is a declarative platform for SaaS builders who are creating product integrations. It allows you to:
+[Ampersand](https://withampersand.com?trk=readme-github) is a declarative platform for SaaS builders who are creating product integrations. It allows you to:
 
 * Read data from your customer’s SaaS
 * Write data to your customer’s SaaS
