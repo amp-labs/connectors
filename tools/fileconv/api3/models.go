@@ -41,6 +41,21 @@ type Schema struct {
 	Problem     error
 }
 
+type Schemas []Schema
+
+func (s Schemas) Combine(others Schemas) Schemas {
+	registry := handy.Map[string, Schema]{}
+	for _, schema := range append(s, others...) {
+		_, found := registry[schema.ObjectName]
+
+		if !found || len(schema.Fields) != 0 {
+			registry[schema.ObjectName] = schema
+		}
+	}
+
+	return registry.Values()
+}
+
 func (s Schema) String() string {
 	if s.Problem != nil {
 		return fmt.Sprintf("    {%v}    ", s.ObjectName)
@@ -49,11 +64,12 @@ func (s Schema) String() string {
 	return fmt.Sprintf("%v=[%v]", s.ObjectName, strings.Join(s.Fields, ","))
 }
 
-func (p PathItem) RetrieveSchemaOperationGet(
+func (p PathItem) RetrieveSchemaOperation(
+	operationName string,
 	displayNameOverride map[string]string, check ObjectCheck, displayProcessor DisplayNameProcessor,
 	parameterFilter ParameterFilterGetMethod,
 ) (*Schema, bool, error) {
-	operation := p.delegate.Get
+	operation := p.selectOperation(operationName)
 	if operation == nil {
 		return nil, false, nil
 	}
@@ -93,6 +109,19 @@ func (p PathItem) RetrieveSchemaOperationGet(
 		QueryParams: getQueryParameters(operation),
 		Problem:     err,
 	}, true, nil
+}
+
+func (p PathItem) selectOperation(operationName string) *openapi3.Operation {
+	switch operationName {
+	case "POST":
+		return p.delegate.Post
+	case "PUT":
+		return p.delegate.Put
+	case "PATCH":
+		return p.delegate.Patch
+	default:
+		return p.delegate.Get
+	}
 }
 
 func extractFieldsFromArrayItem(objectName string, schema *openapi3.Schema, check ObjectCheck) ([]string, error) {
