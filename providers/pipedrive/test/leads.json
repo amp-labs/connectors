@@ -1,0 +1,35 @@
+{
+    "success": true,
+    "data": [
+        {
+            "id": "8ba414d0-8ad8-11ef-9e9e-07879dd74146",
+            "title": "Ampersand lead",
+            "owner_id": 20580207,
+            "creator_id": 20580207,
+            "label_ids": [],
+            "value": null,
+            "expected_close_date": null,
+            "person_id": 2,
+            "organization_id": 2,
+            "is_archived": false,
+            "source_name": "Manually created",
+            "origin": "ManuallyCreated",
+            "origin_id": null,
+            "channel": null,
+            "channel_id": null,
+            "was_seen": true,
+            "next_activity_id": null,
+            "add_time": "2024-10-15T09:33:33.213Z",
+            "update_time": "2024-10-15T09:33:33.213Z",
+            "visible_to": "3",
+            "cc_email": "integrationuser-sandbox2+13313052+leadif7ZKQ7mhWz28LivD9BmE3@pipedrivemail.com"
+        }
+    ],
+    "additional_data": {
+        "pagination": {
+            "start": 0,
+            "limit": 100,
+            "more_items_in_collection": false
+        }
+    }
+}
