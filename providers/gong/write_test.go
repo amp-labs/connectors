@@ -61,10 +61,10 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Valid creation of a call",
 			Input: common.WriteParams{ObjectName: "calls", RecordData: "dummy"},
-			Server: mockserver.Reactive{
-				Setup:     mockserver.ContentJSON(),
-				Condition: mockcond.MethodPOST(),
-				OnSuccess: mockserver.Response(http.StatusOK, responseCreateCall),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPOST(),
+				Then:  mockserver.Response(http.StatusOK, responseCreateCall),
 			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,

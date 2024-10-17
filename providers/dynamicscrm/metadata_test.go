@@ -46,43 +46,43 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Attributes endpoint is not available for object",
 			Input: []string{"butterflies"},
-			Server: mockserver.Reactive{
-				Setup:     mockserver.ContentJSON(),
-				Condition: mockcond.PathSuffix("EntityDefinitions(LogicalName='butterfly')"),
-				OnSuccess: mockserver.Response(http.StatusOK, responseContactsSchema),
-				OnFailure: mockserver.Response(http.StatusOK, []byte{}),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.PathSuffix("EntityDefinitions(LogicalName='butterfly')"),
+				Then:  mockserver.Response(http.StatusOK, responseContactsSchema),
+				Else:  mockserver.Response(http.StatusOK, []byte{}),
 			}.Server(),
 			ExpectedErrs: []error{ErrObjectNotFound},
 		},
 		{
 			Name:  "Object doesn't have attributes",
 			Input: []string{"accounts"},
-			Server: mockserver.Crossroad{
+			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
-				Paths: []mockserver.Path{{
-					Condition: mockcond.PathSuffix("EntityDefinitions(LogicalName='account')"),
-					OnSuccess: mockserver.Response(http.StatusOK, responseContactsSchema),
+				Cases: []mockserver.Case{{
+					If:   mockcond.PathSuffix("EntityDefinitions(LogicalName='account')"),
+					Then: mockserver.Response(http.StatusOK, responseContactsSchema),
 				}, {
-					Condition: mockcond.PathSuffix("EntityDefinitions(LogicalName='account')/Attributes"),
-					OnSuccess: mockserver.ResponseString(http.StatusOK, `{"value":[]}`),
+					If:   mockcond.PathSuffix("EntityDefinitions(LogicalName='account')/Attributes"),
+					Then: mockserver.ResponseString(http.StatusOK, `{"value":[]}`),
 				}},
-				OnFailure: mockserver.Response(http.StatusOK, []byte{}),
+				Default: mockserver.Response(http.StatusOK, []byte{}),
 			}.Server(),
 			ExpectedErrs: []error{ErrObjectMissingAttributes},
 		},
 		{
 			Name:  "Correctly list metadata for account leads and invite contact",
 			Input: []string{"contacts"},
-			Server: mockserver.Crossroad{
+			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
-				Paths: []mockserver.Path{{
-					Condition: mockcond.PathSuffix("EntityDefinitions(LogicalName='contact')"),
-					OnSuccess: mockserver.Response(http.StatusOK, responseContactsSchema),
+				Cases: []mockserver.Case{{
+					If:   mockcond.PathSuffix("EntityDefinitions(LogicalName='contact')"),
+					Then: mockserver.Response(http.StatusOK, responseContactsSchema),
 				}, {
-					Condition: mockcond.PathSuffix("EntityDefinitions(LogicalName='contact')/Attributes"),
-					OnSuccess: mockserver.Response(http.StatusOK, responseContactsAttributes),
+					If:   mockcond.PathSuffix("EntityDefinitions(LogicalName='contact')/Attributes"),
+					Then: mockserver.Response(http.StatusOK, responseContactsAttributes),
 				}},
-				OnFailure: mockserver.Response(http.StatusOK, []byte{}),
+				Default: mockserver.Response(http.StatusOK, []byte{}),
 			}.Server(),
 			Comparator: func(baseURL string, actual, expected *common.ListObjectMetadataResult) bool {
 				return mockutils.MetadataResultComparator.SubsetFields(actual, expected)

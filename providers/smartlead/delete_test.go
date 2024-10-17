@@ -61,10 +61,10 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Successful delete",
 			Input: common.DeleteParams{ObjectName: "campaigns", RecordId: "782647"},
-			Server: mockserver.Reactive{
-				Setup:     mockserver.ContentJSON(),
-				Condition: mockcond.MethodDELETE(),
-				OnSuccess: mockserver.Response(http.StatusOK, responseCampaign),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodDELETE(),
+				Then:  mockserver.Response(http.StatusOK, responseCampaign),
 			}.Server(),
 			Expected:     &common.DeleteResult{Success: true},
 			ExpectedErrs: nil,

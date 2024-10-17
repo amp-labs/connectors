@@ -33,26 +33,26 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Successfully describe multiple object with metadata",
 			Input: []string{"objects", "lists", "workspace_members", "notes", "webhooks", "tasks"},
-			Server: mockserver.Crossroad{
+			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
-				Paths: []mockserver.Path{{
-					Condition: mockcond.PathSuffix("/v2/objects"),
-					OnSuccess: mockserver.Response(http.StatusOK, objectresponse),
+				Cases: []mockserver.Case{{
+					If:   mockcond.PathSuffix("/v2/objects"),
+					Then: mockserver.Response(http.StatusOK, objectresponse),
 				}, {
-					Condition: mockcond.PathSuffix("/v2/lists"),
-					OnSuccess: mockserver.Response(http.StatusOK, listresponse),
+					If:   mockcond.PathSuffix("/v2/lists"),
+					Then: mockserver.Response(http.StatusOK, listresponse),
 				}, {
-					Condition: mockcond.PathSuffix("/v2/workspace_members"),
-					OnSuccess: mockserver.Response(http.StatusOK, workspacemembersresponse),
+					If:   mockcond.PathSuffix("/v2/workspace_members"),
+					Then: mockserver.Response(http.StatusOK, workspacemembersresponse),
 				}, {
-					Condition: mockcond.PathSuffix("/v2/notes"),
-					OnSuccess: mockserver.Response(http.StatusOK, notesresponse),
+					If:   mockcond.PathSuffix("/v2/notes"),
+					Then: mockserver.Response(http.StatusOK, notesresponse),
 				}, {
-					Condition: mockcond.PathSuffix("/v2/tasks"),
-					OnSuccess: mockserver.Response(http.StatusOK, tasksresponse),
+					If:   mockcond.PathSuffix("/v2/tasks"),
+					Then: mockserver.Response(http.StatusOK, tasksresponse),
 				}, {
-					Condition: mockcond.PathSuffix("/v2/webhooks"),
-					OnSuccess: mockserver.Response(http.StatusOK, webhooksresponse),
+					If:   mockcond.PathSuffix("/v2/webhooks"),
+					Then: mockserver.Response(http.StatusOK, webhooksresponse),
 				}},
 			}.Server(),
 			Comparator: func(baseURL string, actual, expected *common.ListObjectMetadataResult) bool {

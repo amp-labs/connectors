@@ -17,11 +17,11 @@ type Fixed struct {
 
 // Server creates mock server.
 func (f Fixed) Server() *httptest.Server {
-	return Reactive{
+	return Conditional{
 		Setup: f.Setup,
-		Condition: mockcond.Check(func(w http.ResponseWriter, r *http.Request) bool {
+		If: mockcond.Check(func(w http.ResponseWriter, r *http.Request) bool {
 			return true
 		}),
-		OnSuccess: f.Always,
+		Then: f.Always,
 	}.Server()
 }

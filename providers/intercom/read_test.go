@@ -112,10 +112,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Name:  "API version header is passed as server request",
 			Input: common.ReadParams{ObjectName: "articles", Fields: connectors.Fields("id")},
 			// notes is not supported for now, but its payload is good for testing
-			Server: mockserver.Reactive{
-				Setup:     mockserver.ContentJSON(),
-				Condition: mockcond.Header(testApiVersionHeader),
-				OnSuccess: mockserver.Response(http.StatusOK, responseNotesSecondPage),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Header(testApiVersionHeader),
+				Then:  mockserver.Response(http.StatusOK, responseNotesSecondPage),
 			}.Server(),
 			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
 				// response doesn't matter much, as soon as we don't have errors we are good

@@ -54,10 +54,10 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Write must act as a Create",
 			Input: common.WriteParams{ObjectName: "fax", RecordData: "dummy"},
-			Server: mockserver.Reactive{
-				Setup:     mockserver.ContentJSON(),
-				Condition: mockcond.MethodPOST(),
-				OnSuccess: mockserver.Response(http.StatusNoContent),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPOST(),
+				Then:  mockserver.Response(http.StatusNoContent),
 			}.Server(),
 			Expected:     &common.WriteResult{Success: true},
 			ExpectedErrs: nil,
@@ -69,10 +69,10 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 				RecordId:   "dd2f7870-3fe8-ee11-a204-0022481f9e3c",
 				RecordData: "dummy",
 			},
-			Server: mockserver.Reactive{
-				Setup:     mockserver.ContentJSON(),
-				Condition: mockcond.MethodPATCH(),
-				OnSuccess: mockserver.Response(http.StatusNoContent),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPATCH(),
+				Then:  mockserver.Response(http.StatusNoContent),
 			}.Server(),
 			Expected:     &common.WriteResult{Success: true},
 			ExpectedErrs: nil,

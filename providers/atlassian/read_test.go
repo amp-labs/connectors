@@ -186,11 +186,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Fields:     connectors.Fields("id"),
 				Since:      time.Now().Add(-5 * time.Minute),
 			},
-			Server: mockserver.Reactive{
+			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				// server was asked to get issues that occurred in the last 5 min
-				Condition: mockcond.QueryParam("jql", `updated > "-5m"`),
-				OnSuccess: mockserver.ResponseString(http.StatusOK, `
+				If: mockcond.QueryParam("jql", `updated > "-5m"`),
+				Then: mockserver.ResponseString(http.StatusOK, `
 					{
 					  "startAt": 0,
 					  "issues": [{"fields":{}, "id": "0"}]
@@ -211,10 +211,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Fields:     connectors.Fields("id"),
 				NextPage:   "17",
 			},
-			Server: mockserver.Reactive{
-				Setup:     mockserver.ContentJSON(),
-				Condition: mockcond.QueryParam("startAt", "17"),
-				OnSuccess: mockserver.ResponseString(http.StatusOK, `
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.QueryParam("startAt", "17"),
+				Then: mockserver.ResponseString(http.StatusOK, `
 					{
 					  "startAt": 17,
 					  "issues": [

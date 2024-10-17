@@ -56,10 +56,10 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Write must act as a Create",
 			Input: common.WriteParams{ObjectName: "signals", RecordData: "dummy"},
-			Server: mockserver.Reactive{
-				Setup:     mockserver.ContentJSON(),
-				Condition: mockcond.MethodPOST(),
-				OnSuccess: mockserver.Response(http.StatusOK),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPOST(),
+				Then:  mockserver.Response(http.StatusOK),
 			}.Server(),
 			Expected:     &common.WriteResult{Success: true},
 			ExpectedErrs: nil,
@@ -67,12 +67,12 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Write must act as an Update",
 			Input: common.WriteParams{ObjectName: "signals", RecordId: "22165", RecordData: "dummy"},
-			Server: mockserver.Reactive{
+			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				Condition: mockcond.And{
+				If: mockcond.And{
 					mockcond.MethodPUT(),
 				},
-				OnSuccess: mockserver.Response(http.StatusOK),
+				Then: mockserver.Response(http.StatusOK),
 			}.Server(),
 			Expected:     &common.WriteResult{Success: true},
 			ExpectedErrs: nil,
@@ -80,13 +80,13 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Valid creation of an article when API version header is passed",
 			Input: common.WriteParams{ObjectName: "articles", RecordData: "dummy"},
-			Server: mockserver.Reactive{
+			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				Condition: mockcond.And{
+				If: mockcond.And{
 					mockcond.MethodPOST(),
 					mockcond.Header(testApiVersionHeader),
 				},
-				OnSuccess: mockserver.Response(http.StatusOK, createArticle),
+				Then: mockserver.Response(http.StatusOK, createArticle),
 			}.Server(),
 			Comparator: func(serverURL string, actual, expected *common.WriteResult) bool {
 				return mockutils.WriteResultComparator.SubsetData(actual, expected)

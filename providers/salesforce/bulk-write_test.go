@@ -132,13 +132,13 @@ func TestBulkWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				CSVData:         strings.NewReader(""),
 				Mode:            UpsertMode,
 			},
-			Server: mockserver.Reactive{
+			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				Condition: mockcond.And{
+				If: mockcond.And{
 					mockcond.PathSuffix("/services/data/v59.0/jobs/ingest"),
 					mockcond.Body(bodyRequest),
 				},
-				OnSuccess: mockserver.Response(http.StatusOK, responseCreateJob),
+				Then: mockserver.Response(http.StatusOK, responseCreateJob),
 			}.Server(),
 			ExpectedErrs: []error{ErrCSVUploadFailure},
 		},

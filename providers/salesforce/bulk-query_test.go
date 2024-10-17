@@ -81,15 +81,15 @@ func TestBulkQuery(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				query:          "SELECT Id,Name,BillingCity FROM Account",
 				includeDeleted: true,
 			},
-			Server: mockserver.Reactive{
+			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				Condition: mockcond.And{
+				If: mockcond.And{
 					mockcond.PathSuffix("/services/data/v59.0/jobs/query"),
 					mockcond.Body(`{
 						"operation":"queryAll",
 						"query":"SELECT Id,Name,BillingCity FROM Account"}`),
 				},
-				OnSuccess: mockserver.Response(http.StatusOK, responseAccount),
+				Then: mockserver.Response(http.StatusOK, responseAccount),
 			}.Server(),
 			Expected:     account,
 			ExpectedErrs: nil,
