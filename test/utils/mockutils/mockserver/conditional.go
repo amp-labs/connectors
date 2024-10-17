@@ -9,6 +9,7 @@ import (
 )
 
 // Conditional is a server recipe that describes how mock server should react when conditions are met.
+// It is equivalent to If() Then{} Else{}.
 type Conditional struct {
 	// Setup is optional handler, where common http.ResponseWrite configuration takes place.
 	Setup http.HandlerFunc
