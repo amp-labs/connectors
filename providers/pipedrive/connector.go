@@ -62,6 +62,8 @@ func (c *Connector) setBaseURL(newURL string) {
 	c.Client.HTTPClient.Base = newURL
 }
 
+// getAPIURL constructs a specific object's resource URL in the format
+// "{{baseURL}}/{{version}}/{{objectName}}".
 func (c *Connector) getAPIURL(arg string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(c.BaseURL, apiVersion, arg)
 }

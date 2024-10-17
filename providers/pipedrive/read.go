@@ -8,6 +8,8 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
+// Read retrieves data based on the provided read parameters.
+// https://developers.pipedrive.com/docs/api/v1
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
 	if err := config.ValidateParams(true); err != nil {
 		return nil, err
