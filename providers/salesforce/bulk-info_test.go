@@ -38,10 +38,10 @@ func TestJobInfo(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name:  "Correct endpoint is invoked",
 			Input: "750ak000009Bq9OAAS",
-			Server: mockserver.Reactive{
-				Setup:     mockserver.ContentJSON(),
-				Condition: mockcond.PathSuffix("/services/data/v59.0/jobs/ingest/750ak000009Bq9OAAS"),
-				OnSuccess: mockserver.Response(http.StatusOK, responseJobInProgress),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.PathSuffix("/services/data/v59.0/jobs/ingest/750ak000009Bq9OAAS"),
+				Then:  mockserver.Response(http.StatusOK, responseJobInProgress),
 			}.Server(),
 			Comparator: testConciseJobInfoComparator,
 			Expected: &GetJobInfoResult{
@@ -76,10 +76,10 @@ func TestGetBulkQueryInfo(t *testing.T) { // nolint:dupl
 		{
 			Name:  "Requesting BulkQuery information invokes correct endpoint",
 			Input: "750ak000009AVi5AAG",
-			Server: mockserver.Reactive{
-				Setup:     mockserver.ContentJSON(),
-				Condition: mockcond.PathSuffix("/services/data/v59.0/jobs/query/750ak000009AVi5AAG"),
-				OnSuccess: mockserver.Response(http.StatusOK, responseAccount),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.PathSuffix("/services/data/v59.0/jobs/query/750ak000009AVi5AAG"),
+				Then:  mockserver.Response(http.StatusOK, responseAccount),
 			}.Server(),
 			Comparator: testConciseJobInfoComparator,
 			Expected: &GetJobInfoResult{
@@ -117,14 +117,14 @@ func TestJobResults(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name:  "Partial failure is parsed",
 			Input: "750ak000009Dl5bAAC",
-			Server: mockserver.Crossroad{
+			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
-				Paths: []mockserver.Path{{
-					Condition: mockcond.PathSuffix("/services/data/v59.0/jobs/ingest/750ak000009Dl5bAAC"),
-					OnSuccess: mockserver.Response(http.StatusOK, responseJobPartialFailure),
+				Cases: []mockserver.Case{{
+					If:   mockcond.PathSuffix("/services/data/v59.0/jobs/ingest/750ak000009Dl5bAAC"),
+					Then: mockserver.Response(http.StatusOK, responseJobPartialFailure),
 				}, {
-					Condition: mockcond.PathSuffix("/services/data/v59.0/jobs/ingest/750ak000009Dl5bAAC/failedResults"),
-					OnSuccess: mockserver.Response(http.StatusOK, responseJobPartialFailureDescribed),
+					If:   mockcond.PathSuffix("/services/data/v59.0/jobs/ingest/750ak000009Dl5bAAC/failedResults"),
+					Then: mockserver.Response(http.StatusOK, responseJobPartialFailureDescribed),
 				}},
 			}.Server(),
 			Comparator: testJobResultsComparator,
@@ -205,10 +205,10 @@ func TestGetSuccessfulJobResults(t *testing.T) { // nolint:dupl
 			// this guards against unexpected URL changes
 			Name:  "GetSuccessfulJobResults - endpoint is invoked",
 			Input: "750ak000009Dl5bAAC",
-			Server: mockserver.Reactive{
-				Setup:     mockserver.ContentJSON(),
-				Condition: mockcond.PathSuffix("/services/data/v59.0/jobs/ingest/750ak000009Dl5bAAC/successfulResults"),
-				OnSuccess: mockserver.Response(http.StatusOK, []byte{}),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.PathSuffix("/services/data/v59.0/jobs/ingest/750ak000009Dl5bAAC/successfulResults"),
+				Then:  mockserver.Response(http.StatusOK, []byte{}),
 			}.Server(),
 			Comparator:   statusCodeComparator,
 			Expected:     &http.Response{StatusCode: http.StatusOK},
@@ -237,10 +237,10 @@ func TestGetBulkQueryResults(t *testing.T) { // nolint:dupl
 			// this guards against unexpected URL changes
 			Name:  "GetBulkQueryResults - endpoint is invoked",
 			Input: "750ak000009Dl5bAAC",
-			Server: mockserver.Reactive{
-				Setup:     mockserver.ContentJSON(),
-				Condition: mockcond.PathSuffix("/services/data/v59.0/jobs/query/750ak000009Dl5bAAC/results"),
-				OnSuccess: mockserver.Response(http.StatusOK, []byte{}),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.PathSuffix("/services/data/v59.0/jobs/query/750ak000009Dl5bAAC/results"),
+				Then:  mockserver.Response(http.StatusOK, []byte{}),
 			}.Server(),
 			Comparator:   statusCodeComparator,
 			Expected:     &http.Response{StatusCode: http.StatusOK},

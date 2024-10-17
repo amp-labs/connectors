@@ -55,10 +55,10 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Write must act as a Create",
 			Input: common.WriteParams{ObjectName: "signals", RecordData: "dummy"},
-			Server: mockserver.Reactive{
-				Setup:     mockserver.ContentJSON(),
-				Condition: mockcond.MethodPOST(),
-				OnSuccess: mockserver.Response(http.StatusOK),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPOST(),
+				Then:  mockserver.Response(http.StatusOK),
 			}.Server(),
 			Expected:     &common.WriteResult{Success: true},
 			ExpectedErrs: nil,
@@ -66,12 +66,12 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Write must act as an Update",
 			Input: common.WriteParams{ObjectName: "signals", RecordId: "22165", RecordData: "dummy"},
-			Server: mockserver.Reactive{
+			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				Condition: mockcond.And{
+				If: mockcond.And{
 					mockcond.MethodPUT(),
 				},
-				OnSuccess: mockserver.Response(http.StatusOK),
+				Then: mockserver.Response(http.StatusOK),
 			}.Server(),
 			Expected:     &common.WriteResult{Success: true},
 			ExpectedErrs: nil,
@@ -79,10 +79,10 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Valid creation of account",
 			Input: common.WriteParams{ObjectName: "accounts", RecordData: "dummy"},
-			Server: mockserver.Reactive{
-				Setup:     mockserver.ContentJSON(),
-				Condition: mockcond.MethodPOST(),
-				OnSuccess: mockserver.Response(http.StatusOK, createAccountRes),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPOST(),
+				Then:  mockserver.Response(http.StatusOK, createAccountRes),
 			}.Server(),
 			Comparator: func(serverURL string, actual, expected *common.WriteResult) bool {
 				return mockutils.WriteResultComparator.SubsetData(actual, expected)
@@ -104,10 +104,10 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Valid creation of a task",
 			Input: common.WriteParams{ObjectName: "tasks", RecordData: "dummy"},
-			Server: mockserver.Reactive{
-				Setup:     mockserver.ContentJSON(),
-				Condition: mockcond.MethodPOST(),
-				OnSuccess: mockserver.Response(http.StatusOK, createTaskRes),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPOST(),
+				Then:  mockserver.Response(http.StatusOK, createTaskRes),
 			}.Server(),
 			Comparator: func(serverURL string, actual, expected *common.WriteResult) bool {
 				return mockutils.WriteResultComparator.SubsetData(actual, expected)
@@ -127,10 +127,10 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Valid update of Saved List View",
 			Input: common.WriteParams{ObjectName: "saved_list_views", RecordId: "22463", RecordData: "dummy"},
-			Server: mockserver.Reactive{
-				Setup:     mockserver.ContentJSON(),
-				Condition: mockcond.MethodPUT(),
-				OnSuccess: mockserver.ResponseString(http.StatusOK, `{"data":{"id":22463,"view":"companies",
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPUT(),
+				Then: mockserver.ResponseString(http.StatusOK, `{"data":{"id":22463,"view":"companies",
 					"name":"Hierarchy overview","view_params":{},"is_default":false,"shared":false}}`),
 			}.Server(),
 			Comparator: func(serverURL string, actual, expected *common.WriteResult) bool {

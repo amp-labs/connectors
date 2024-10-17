@@ -67,13 +67,13 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Write must act as an Update",
 			Input: common.WriteParams{ObjectName: "account", RecordId: "003ak000004dQCUAA2", RecordData: "dummy"},
-			Server: mockserver.Reactive{
+			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				Condition: mockcond.And{
+				If: mockcond.And{
 					mockcond.MethodPOST(),
 					mockcond.QueryParam("_HttpMethod", "PATCH"),
 				},
-				OnSuccess: mockserver.Response(http.StatusOK, responseCreateOK),
+				Then: mockserver.Response(http.StatusOK, responseCreateOK),
 			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,
@@ -86,10 +86,10 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Valid creation of account",
 			Input: common.WriteParams{ObjectName: "accounts", RecordData: "dummy"},
-			Server: mockserver.Reactive{
-				Setup:     mockserver.ContentJSON(),
-				Condition: mockcond.MethodPOST(),
-				OnSuccess: mockserver.Response(http.StatusOK, responseCreateOK),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPOST(),
+				Then:  mockserver.Response(http.StatusOK, responseCreateOK),
 			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,
@@ -102,10 +102,10 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "OK Response, but with errors field",
 			Input: common.WriteParams{ObjectName: "accounts", RecordData: "dummy"},
-			Server: mockserver.Reactive{
-				Setup:     mockserver.ContentJSON(),
-				Condition: mockcond.MethodPOST(),
-				OnSuccess: mockserver.Response(http.StatusOK, responseOKWithErrors),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPOST(),
+				Then:  mockserver.Response(http.StatusOK, responseOKWithErrors),
 			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  false,

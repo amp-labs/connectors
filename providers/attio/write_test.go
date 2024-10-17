@@ -45,10 +45,10 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Create objects as POST",
 			Input: common.WriteParams{ObjectName: "objects", RecordData: "dummy"},
-			Server: mockserver.Reactive{
-				Setup:     mockserver.ContentJSON(),
-				Condition: mockcond.MethodPOST(),
-				OnSuccess: mockserver.Response(http.StatusOK, responseObj),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPOST(),
+				Then:  mockserver.Response(http.StatusOK, responseObj),
 			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,
@@ -70,10 +70,10 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Update objects as PATCH",
 			Input: common.WriteParams{ObjectName: "objects", RecordId: "bf012982-06a9-47f7-9e87-07dc4945d502", RecordData: "dummy"},
-			Server: mockserver.Reactive{
-				Setup:     mockserver.ContentJSON(),
-				Condition: mockcond.MethodPATCH(),
-				OnSuccess: mockserver.Response(http.StatusOK, responseObj),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPATCH(),
+				Then:  mockserver.Response(http.StatusOK, responseObj),
 			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,
@@ -95,10 +95,10 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Create lists as POST",
 			Input: common.WriteParams{ObjectName: "lists", RecordData: "dummy"},
-			Server: mockserver.Reactive{
-				Setup:     mockserver.ContentJSON(),
-				Condition: mockcond.MethodPOST(),
-				OnSuccess: mockserver.Response(http.StatusOK, listResponse),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPOST(),
+				Then:  mockserver.Response(http.StatusOK, listResponse),
 			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,
@@ -133,10 +133,10 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Update lists as PATCH",
 			Input: common.WriteParams{ObjectName: "lists", RecordId: "e09a041c-0555-4bb2-8f6e-997bfc9b54e8", RecordData: "dummy"},
-			Server: mockserver.Reactive{
-				Setup:     mockserver.ContentJSON(),
-				Condition: mockcond.MethodPATCH(),
-				OnSuccess: mockserver.Response(http.StatusOK, listResponse),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPATCH(),
+				Then:  mockserver.Response(http.StatusOK, listResponse),
 			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,
@@ -171,10 +171,10 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Create notes as POST",
 			Input: common.WriteParams{ObjectName: "notes", RecordData: "dummy"},
-			Server: mockserver.Reactive{
-				Setup:     mockserver.ContentJSON(),
-				Condition: mockcond.MethodPOST(),
-				OnSuccess: mockserver.Response(http.StatusOK, notesresponse),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPOST(),
+				Then:  mockserver.Response(http.StatusOK, notesresponse),
 			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,
@@ -201,10 +201,10 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Create tasks as POST",
 			Input: common.WriteParams{ObjectName: "tasks", RecordData: "dummy"},
-			Server: mockserver.Reactive{
-				Setup:     mockserver.ContentJSON(),
-				Condition: mockcond.MethodPOST(),
-				OnSuccess: mockserver.Response(http.StatusOK, tasksResponse),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPOST(),
+				Then:  mockserver.Response(http.StatusOK, tasksResponse),
 			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,
@@ -242,10 +242,10 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Update tasks as PATCH",
 			Input: common.WriteParams{ObjectName: "tasks", RecordId: "bf012982-06a9-47f7-9e87-07dc4945d502", RecordData: "dummy"},
-			Server: mockserver.Reactive{
-				Setup:     mockserver.ContentJSON(),
-				Condition: mockcond.MethodPATCH(),
-				OnSuccess: mockserver.Response(http.StatusOK, tasksResponse),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPATCH(),
+				Then:  mockserver.Response(http.StatusOK, tasksResponse),
 			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,
@@ -283,10 +283,10 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Create webhooks as POST",
 			Input: common.WriteParams{ObjectName: "webhooks", RecordData: "dummy"},
-			Server: mockserver.Reactive{
-				Setup:     mockserver.ContentJSON(),
-				Condition: mockcond.MethodPOST(),
-				OnSuccess: mockserver.Response(http.StatusOK, webhookResponse),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPOST(),
+				Then:  mockserver.Response(http.StatusOK, webhookResponse),
 			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,
@@ -314,10 +314,10 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Update webhooks as PATCH",
 			Input: common.WriteParams{ObjectName: "webhooks", RecordId: "7e5209b8-bd4e-41d9-bbcd-2f9bab7d4030", RecordData: "dummy"},
-			Server: mockserver.Reactive{
-				Setup:     mockserver.ContentJSON(),
-				Condition: mockcond.MethodPATCH(),
-				OnSuccess: mockserver.Response(http.StatusOK, webhookResponse),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPATCH(),
+				Then:  mockserver.Response(http.StatusOK, webhookResponse),
 			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,

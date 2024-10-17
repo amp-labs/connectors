@@ -42,14 +42,14 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Successfully describe one object with metadata",
 			Input: []string{"Organization"},
-			Server: mockserver.Reactive{
+			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				Condition: mockcond.Body(`{"allOrNone":false,"compositeRequest":[{
+				If: mockcond.Body(`{"allOrNone":false,"compositeRequest":[{
 					"referenceId":"Organization",
 					"method":"GET",
 					"url":"/services/data/v59.0/sobjects/Organization/describe"
 				}]}`),
-				OnSuccess: mockserver.Response(http.StatusOK, responseOrgMeta),
+				Then: mockserver.Response(http.StatusOK, responseOrgMeta),
 			}.Server(),
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{

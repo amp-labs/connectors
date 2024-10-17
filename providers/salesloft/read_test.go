@@ -210,10 +210,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name:  "Successful read accounts without since query",
 			Input: common.ReadParams{ObjectName: "accounts", Fields: connectors.Fields("id")},
-			Server: mockserver.Reactive{
-				Setup:     mockserver.ContentJSON(),
-				Condition: mockcond.QueryParamsMissing("updated_at[gte]"),
-				OnSuccess: mockserver.Response(http.StatusOK, responseListAccounts),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.QueryParamsMissing("updated_at[gte]"),
+				Then:  mockserver.Response(http.StatusOK, responseListAccounts),
 			}.Server(),
 			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
 				return actual.Rows == expected.Rows
@@ -230,10 +230,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Since:      accountsSince,
 				Fields:     connectors.Fields("id"),
 			},
-			Server: mockserver.Reactive{
-				Setup:     mockserver.ContentJSON(),
-				Condition: mockcond.QueryParam("updated_at[gte]", "2024-06-07T10:51:20.851224-04:00"),
-				OnSuccess: mockserver.Response(http.StatusOK, responseListAccountsSince),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.QueryParam("updated_at[gte]", "2024-06-07T10:51:20.851224-04:00"),
+				Then:  mockserver.Response(http.StatusOK, responseListAccountsSince),
 			}.Server(),
 			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
 				return actual.Rows == expected.Rows

@@ -61,13 +61,13 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Successful delete",
 			Input: common.DeleteParams{ObjectName: "tags", RecordId: "5043"},
-			Server: mockserver.Reactive{
+			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				Condition: mockcond.And{
+				If: mockcond.And{
 					mockcond.MethodDELETE(),
 					mockcond.PathSuffix("custom-tag/5043"),
 				},
-				OnSuccess: mockserver.Response(http.StatusOK, responseTag),
+				Then: mockserver.Response(http.StatusOK, responseTag),
 			}.Server(),
 			Expected:     &common.DeleteResult{Success: true},
 			ExpectedErrs: nil,

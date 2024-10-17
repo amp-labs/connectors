@@ -57,10 +57,10 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Create Blocklist Entry",
 			Input: common.WriteParams{ObjectName: "blocklist-entries", RecordData: "dummy"},
-			Server: mockserver.Reactive{
-				Setup:     mockserver.ContentJSON(),
-				Condition: mockcond.MethodPOST(),
-				OnSuccess: mockserver.Response(http.StatusOK, responseBlocklistEntry),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPOST(),
+				Then:  mockserver.Response(http.StatusOK, responseBlocklistEntry),
 			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,
@@ -73,10 +73,10 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Create Unibox Reply",
 			Input: common.WriteParams{ObjectName: "unibox-replies", RecordData: "dummy"},
-			Server: mockserver.Reactive{
-				Setup:     mockserver.ContentJSON(),
-				Condition: mockcond.MethodPOST(),
-				OnSuccess: mockserver.Response(http.StatusOK, responseReply),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPOST(),
+				Then:  mockserver.Response(http.StatusOK, responseReply),
 			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,
@@ -102,10 +102,10 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Create Lead",
 			Input: common.WriteParams{ObjectName: "leads", RecordData: "dummy"},
-			Server: mockserver.Reactive{
-				Setup:     mockserver.ContentJSON(),
-				Condition: mockcond.MethodPOST(),
-				OnSuccess: mockserver.Response(http.StatusOK, responseLead),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPOST(),
+				Then:  mockserver.Response(http.StatusOK, responseLead),
 			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,
@@ -130,10 +130,10 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Create Tag acts as POST",
 			Input: common.WriteParams{ObjectName: "tags", RecordData: "dummy"},
-			Server: mockserver.Reactive{
-				Setup:     mockserver.ContentJSON(),
-				Condition: mockcond.MethodPOST(),
-				OnSuccess: mockserver.Response(http.StatusOK, responseTag),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPOST(),
+				Then:  mockserver.Response(http.StatusOK, responseTag),
 			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,
@@ -146,10 +146,10 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Update tag acts as PATCH",
 			Input: common.WriteParams{ObjectName: "tags", RecordId: "885633", RecordData: "dummy"},
-			Server: mockserver.Reactive{
-				Setup:     mockserver.ContentJSON(),
-				Condition: mockcond.MethodPATCH(),
-				OnSuccess: mockserver.Response(http.StatusOK, responseTag),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPATCH(),
+				Then:  mockserver.Response(http.StatusOK, responseTag),
 			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,
