@@ -49,7 +49,6 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 			return nil, err
 		}
 
-		metadata.DisplayName = obj
 		objMetadata.Result[obj] = *metadata
 	}
 
@@ -73,6 +72,8 @@ func metadataMapper(resp *common.JSONHTTPResponse, obj string) (*common.ObjectMe
 	if len(response.Data) == 0 {
 		return metadata.Schemas.SelectOne(obj)
 	}
+
+	mdt.DisplayName = obj
 
 	// Looping on the first index of the response data.
 	fields := response.Data[0]
