@@ -11,6 +11,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -62,31 +63,22 @@ func TestBulkQuery(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				common.ErrBadRequest, errors.New("sObject type 'Accout' is not supported"), // nolint:goerr113
 			},
 		},
-		// TODO fix this test, it has Intermittent Failures
-		//{
-		//	Name: "Launch bulk job with SOQL query",
-		//	Input: bulkQueryInput{
-		//		query:          "SELECT Id,Name,BillingCity FROM Account",
-		//		includeDeleted: false,
-		//	},
-		//	Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { //nolint:varnamelen
-		//		w.Header().Set("Content-Type", "application/json")
-		//		w.WriteHeader(http.StatusOK)
-		//		switch path := r.URL.Path; {
-		//		case strings.HasSuffix(path, "/services/data/v59.0/jobs/query"):
-		//			mockutils.RespondToBody(w, r, `{
-		//				"operation":"query",
-		//				"query":"SELECT Id,Name,BillingCity FROM Account"}`,
-		//				func() {
-		//					_, _ = w.Write(responseAccount)
-		//				})
-		//		default:
-		//			_, _ = w.Write([]byte{})
-		//		}
-		//	})),
-		//	Expected:     account,
-		//	ExpectedErrs: nil,
-		// },
+		{
+			Name: "Launch bulk job with SOQL query",
+			Input: bulkQueryInput{
+				query:          "SELECT Id,Name,BillingCity FROM Account",
+				includeDeleted: false,
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.Body(`{
+					"operation":"query",
+					"query":"SELECT Id,Name,BillingCity FROM Account"}`),
+				Then: mockserver.Response(http.StatusOK, responseAccount),
+			}.Server(),
+			Expected:     account,
+			ExpectedErrs: nil,
+		},
 		{
 			Name: "Include deleted items using Query All",
 			Input: bulkQueryInput{
