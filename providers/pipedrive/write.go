@@ -13,6 +13,8 @@ type writeResponse struct {
 	// Other fields.
 }
 
+// Write creates or updates records in a pipedriver account.
+// https://developers.pipedrive.com/docs/api/v1
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
 	if err := config.ValidateParams(); err != nil {
 		return nil, err
