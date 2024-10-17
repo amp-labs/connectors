@@ -63,7 +63,7 @@ func (c *Connector) setBaseURL(newURL string) {
 }
 
 // getAPIURL constructs a specific object's resource URL in the format
-// "{{baseURL}}/{{version}}/{{objectName}}".
+// `{{baseURL}}/{{version}}/{{objectName}}`.
 func (c *Connector) getAPIURL(arg string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(c.BaseURL, apiVersion, arg)
 }
