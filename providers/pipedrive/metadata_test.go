@@ -16,6 +16,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
 	zeroRecords := testutils.DataFromFile(t, "zero-records.json")
+	success := testutils.DataFromFile(t, "currencies.json")
 
 	tests := []testroutines.Metadata{
 		{
@@ -26,16 +27,16 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:  "A success API Response",
-			Input: []string{"currencies", "filters"},
+			Input: []string{"currencies"},
 			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
-				_, _ = w.Write([]byte(zeroRecords))
+				_, _ = w.Write([]byte(success))
 			})),
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"currencies": {
-						DisplayName: "Currencies",
+						DisplayName: "currencies",
 						FieldsMap: map[string]string{
 							"active_flag":    "active_flag",
 							"code":           "code",
@@ -46,23 +47,10 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							"symbol":         "symbol",
 						},
 					},
-					"filters": {
-						DisplayName: "Filters",
-						FieldsMap: map[string]string{
-							"active_flag":    "active_flag",
-							"add_time":       "add_time",
-							"custom_view_id": "custom_view_id",
-							"id":             "id",
-							"name":           "name",
-							"type":           "type",
-							"update_time":    "update_time",
-							"user_id":        "user_id",
-							"visible_to":     "visible_to",
-						},
-					},
 				},
 				Errors: map[string]error{},
 			},
+			ExpectedErrs: nil,
 		},
 		{
 			Name:  "Zero records returned from server",
