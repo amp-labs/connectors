@@ -1,0 +1,90 @@
+{
+    "success": true,
+    "data": [
+        {
+            "id": 2,
+            "company_id": 13313052,
+            "user_id": 20580207,
+            "done": false,
+            "type": "call",
+            "reference_type": null,
+            "reference_id": null,
+            "conference_meeting_client": null,
+            "conference_meeting_url": null,
+            "due_date": "2024-10-30",
+            "due_time": "",
+            "duration": "",
+            "busy_flag": false,
+            "add_time": "2024-10-16 12:16:02",
+            "marked_as_done_time": "",
+            "last_notification_time": null,
+            "last_notification_user_id": null,
+            "notification_language_id": null,
+            "subject": "I usually can't come up with words",
+            "public_description": "Demo activity",
+            "calendar_sync_include_context": null,
+            "location": "Dar es salaam",
+            "org_id": null,
+            "person_id": null,
+            "deal_id": null,
+            "lead_id": null,
+            "active_flag": true,
+            "update_time": "2024-10-16 12:16:02",
+            "update_user_id": null,
+            "source_timezone": null,
+            "rec_rule": null,
+            "rec_rule_extension": null,
+            "rec_master_activity_id": null,
+            "conference_meeting_id": null,
+            "original_start_time": null,
+            "private": false,
+            "priority": null,
+            "note": null,
+            "created_by_user_id": 20580207,
+            "location_subpremise": null,
+            "location_street_number": null,
+            "location_route": null,
+            "location_sublocality": null,
+            "location_locality": null,
+            "location_admin_area_level_1": null,
+            "location_admin_area_level_2": null,
+            "location_country": null,
+            "location_postal_code": null,
+            "location_formatted_address": null,
+            "attendees": null,
+            "participants": null,
+            "series": null,
+            "is_recurring": null,
+            "org_name": null,
+            "person_name": null,
+            "deal_title": null,
+            "lead_title": null,
+            "owner_name": "Integration User",
+            "person_dropbox_bcc": null,
+            "deal_dropbox_bcc": null,
+            "assigned_to_user_id": 20580207,
+            "type_name": "Call",
+            "lead": null
+        }
+    ],
+    "additional_data": {
+        "pagination": {
+            "start": 0,
+            "limit": 1,
+            "more_items_in_collection": true,
+            "next_start": 1
+        }
+    },
+    "related_objects": {
+        "user": {
+            "20580207": {
+                "id": 20580207,
+                "name": "Integration User",
+                "email": "integration.user+pipedrive@withampersand.com",
+                "has_pic": 0,
+                "pic_hash": null,
+                "active_flag": true
+            }
+        }
+    }
+}
