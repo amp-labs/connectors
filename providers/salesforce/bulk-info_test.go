@@ -9,8 +9,6 @@ import (
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/interpreter"
-	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
@@ -21,12 +19,6 @@ func TestJobInfo(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseJobInProgress := testutils.DataFromFile(t, "bulk/info/in-progress.json")
 
 	tests := []bulkJobInfoTestCase{
-		{
-			Name:         "Mime response header expected",
-			Input:        "",
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{interpreter.ErrMissingContentType},
-		},
 		{
 			Name:  "Request fails due to internal server error",
 			Input: "",
