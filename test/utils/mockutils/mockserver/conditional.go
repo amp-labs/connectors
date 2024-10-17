@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 
-	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 )
 
@@ -22,41 +21,15 @@ type Conditional struct {
 }
 
 // Server creates mock server that will produce different response based on conditionals.
-func (c Conditional) Server() *httptest.Server {
-	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Common setup is optional.
-		if c.Setup != nil {
-			c.Setup(w, r)
-		}
-
-		c.apply(w, r)
-	}))
-}
-
-// Apply will try to resolve conditions and find respective scenario to execute.
-// If check condition is satisfied Then is executed, otherwise Else.
-// There is a default behaviour for each leaf case.
-func (c Conditional) apply(w http.ResponseWriter, r *http.Request) {
-	if c.If.EvaluateCondition(w, r) {
-		if c.Then != nil {
-			c.Then(w, r)
-
-			return
-		}
-
-		// Default success behaviour.
-		w.WriteHeader(http.StatusNoContent)
-
-		return
-	}
-
-	if c.Else != nil {
-		c.Else(w, r)
-
-		return
-	}
-
-	// Default fail behaviour.
-	w.WriteHeader(http.StatusInternalServerError)
-	mockutils.WriteBody(w, `{"error": {"message": "condition failed"}}`)
+func (re Conditional) Server() *httptest.Server {
+	// Reactive server is a simpler version of a Switch with one possible successful route.
+	// This acts as syntactic sugar.
+	return Switch{
+		Setup: re.Setup,
+		Cases: []Case{{
+			If:   re.If,
+			Then: re.Then,
+		}},
+		Default: re.Else,
+	}.Server()
 }
