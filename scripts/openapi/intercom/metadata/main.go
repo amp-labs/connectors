@@ -41,7 +41,9 @@ func main() {
 	must(err)
 
 	objects, err := explorer.ReadObjectsGet(
-		ignoreEndpoints, nil, displayNameOverride,
+		&api3.PathMatchingStrategy{
+			DenyPaths: ignoreEndpoints,
+		}, nil, displayNameOverride,
 		api3.CustomMappingObjectCheck(intercom.ObjectNameToResponseField),
 	)
 	must(err)

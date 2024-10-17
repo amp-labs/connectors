@@ -38,7 +38,9 @@ func main() {
 	must(err)
 
 	objects, err := explorer.ReadObjectsGet(
-		ignoreEndpoints, nil, displayNameOverride, api3.DataObjectCheck,
+		&api3.PathMatchingStrategy{
+			DenyPaths: ignoreEndpoints,
+		}, nil, displayNameOverride, api3.DataObjectCheck,
 	)
 	must(err)
 
