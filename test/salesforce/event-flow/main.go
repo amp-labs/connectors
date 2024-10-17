@@ -34,9 +34,6 @@ func main() {
 	}
 
 	testCDC(conn, ctx, namedCred, uniqueString)
-
-	peName := "Employee__e" // this should be created from UI
-	testPE(conn, ctx, namedCred, peName, uniqueString)
 }
 
 func testCDC(conn *salesforce.Connector, ctx context.Context, creds salesforce.Credential, uniqueString string) {
@@ -74,67 +71,6 @@ func testCDC(conn *salesforce.Connector, ctx context.Context, creds salesforce.C
 
 	remoteResource := salesforce.GetRemoteResource(orgId, cdcChannel.FullName)
 	printWithField("RemoteResource", "resource", remoteResource)
-}
-
-func testPE(conn *salesforce.Connector, ctx context.Context, creds salesforce.Credential, eventName string, uniqueString string) {
-	fmt.Println("-----------------Testing Platform Event-----------------")
-
-	peChannel, err := TestPlatformEventChannel(conn, ctx, "TestPEChannel"+uniqueString)
-	if err != nil {
-		return
-	}
-
-	evtCfg, err := TestEventRelayConfig(conn, ctx, creds, peChannel, "PE_"+uniqueString)
-	if err != nil {
-		return
-	}
-
-	objectName := "Account"
-
-	_, err = testPlatformEventChannelMembership(conn, ctx, eventName, peChannel.FullName, objectName, uniqueString)
-	if err != nil {
-		return
-	}
-
-	if conn.RunEventRelay(ctx, evtCfg) != nil {
-		return
-	}
-
-	slog.Info("Event relay config updated", "state", "RUN")
-
-	orgId, err := conn.GetOrganizationId(ctx)
-	if err != nil {
-		slog.Error("Failed to get orgId", "error", err)
-		return
-	}
-
-	remoteResource := salesforce.GetRemoteResource(orgId, peChannel.FullName)
-	printWithField("RemoteResource", "resource", remoteResource)
-}
-
-func testPlatformEventChannelMembership(conn *salesforce.Connector, ctx context.Context, peName string, channelName string, objectName string, uniqueString string) (*salesforce.EventChannelMember, error) {
-	rawPEName := getRawPEName(objectName)
-
-	rawChannelName := getRawChannelNameFromChannel(channelName) // TODO FIXME
-
-	member := &salesforce.EventChannelMember{
-		FullName: getPEChannelMembershipName(rawChannelName, rawPEName),
-		Metadata: &salesforce.EventChannelMemberMetadata{
-			EventChannel:   getChannelName(rawChannelName),
-			SelectedEntity: peName,
-		},
-	}
-
-	newChannelMember, err := conn.CreateEventChannelMember(ctx, member)
-	if err != nil {
-		slog.Error("Error event channel member", "error", err)
-
-		return nil, err
-	}
-
-	printWithField("Event channel membership created", "member", newChannelMember)
-
-	return newChannelMember, nil
 }
 
 func testChangeDataCaptureChannelMembership(conn *salesforce.Connector, ctx context.Context, channelName string, objecName string) (*salesforce.EventChannelMember, error) {
@@ -248,7 +184,7 @@ func TestCredentialsLegacy(conn *salesforce.Connector, ctx context.Context, uniq
 			Label:                       "TestNamedCredentialLegacy" + uniqueString,
 
 			// below are legacy fields
-			Endpoint:      "arn:aws:us-east-2:381491976069",
+			Endpoint:      "arn:aws:US-EAST-2:381491976069",
 			PrincipalType: "NamedUser",
 			Protocol:      "NoAuthentication",
 		},
