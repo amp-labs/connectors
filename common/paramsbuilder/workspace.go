@@ -4,9 +4,17 @@ import "errors"
 
 var ErrMissingWorkspace = errors.New("missing workspace name")
 
+type WorkspaceHolder interface {
+	GiveWorkspace() *Workspace
+}
+
 // Workspace params sets up varying workspace name.
 type Workspace struct {
 	Name string
+}
+
+func (p *Workspace) GiveWorkspace() *Workspace {
+	return p
 }
 
 func (p *Workspace) ValidateParams() error {
