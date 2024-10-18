@@ -18,6 +18,7 @@ func Response(status int, data ...[]byte) http.HandlerFunc {
 		if len(data) == 1 {
 			_, _ = w.Write(data[0])
 		}
+
 		if len(data) > 1 {
 			// The test author made a mistake.
 			panic("at most one response body can be returned by mockserver")
