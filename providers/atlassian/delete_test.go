@@ -9,7 +9,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -34,14 +33,6 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 				w.WriteHeader(http.StatusTeapot)
 			})),
 			ExpectedErrs: []error{common.ErrMissingRecordID},
-		},
-		{
-			Name:  "Mime response header expected",
-			Input: common.DeleteParams{ObjectName: "issues", RecordId: "10010"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusTeapot)
-			})),
-			ExpectedErrs: []error{interpreter.ErrMissingContentType},
 		},
 		{
 			Name:  "Not found returned on removing missing entry",

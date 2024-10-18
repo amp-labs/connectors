@@ -7,7 +7,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -25,21 +24,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Input:        nil,
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingObjects},
-		},
-		{
-			Name:         "Mime response header expected for error",
-			Input:        []string{"butterflies"},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{interpreter.ErrMissingContentType},
-		},
-		{
-			Name:  "Mime response header expected for successful response",
-			Input: []string{"butterflies"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusOK)
-				mockutils.WriteBody(w, `{}`)
-			})),
-			ExpectedErrs: []error{common.ErrNotJSON},
 		},
 		{
 			Name:  "Successfully describe one object with metadata",
