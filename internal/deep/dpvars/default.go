@@ -1,7 +1,7 @@
 package dpvars
 
 import (
-	"github.com/amp-labs/connectors/common/paramsbuilder"
+	"github.com/amp-labs/connectors/common/substitutions/catalogreplacer"
 	"github.com/amp-labs/connectors/internal/deep/requirements"
 )
 
@@ -17,7 +17,7 @@ func (e *EmptyMetadataVariables) ToMap() map[string]string {
 	return nil
 }
 
-func (e *EmptyMetadataVariables) GetSubstitutionPlans() []paramsbuilder.SubstitutionPlan {
+func (e *EmptyMetadataVariables) GetSubstitutionPlans() []catalogreplacer.SubstitutionPlan {
 	return nil
 }
 

@@ -2,13 +2,14 @@ package dpvars
 
 import (
 	"github.com/amp-labs/connectors/common/paramsbuilder"
+	"github.com/amp-labs/connectors/common/substitutions/catalogreplacer"
 	"github.com/amp-labs/connectors/internal/deep/requirements"
 )
 
 // CatalogVariables holds list of catalog variables that can be used to fill in catalog provider template.
 // These variables come from connector parameters.
 type CatalogVariables[P paramsbuilder.ParamAssurance, D MetadataVariables] struct {
-	List []paramsbuilder.CatalogVariable
+	List []catalogreplacer.CatalogVariable
 }
 
 func newCatalogVariables[P paramsbuilder.ParamAssurance, D MetadataVariables](
@@ -20,7 +21,7 @@ func newCatalogVariables[P paramsbuilder.ParamAssurance, D MetadataVariables](
 	// Sometimes connector metadata holds CatalogVariables, collect them here.
 	plans := data.Metadata.GetSubstitutionPlans()
 	for _, plan := range plans {
-		variables = append(variables, &paramsbuilder.CustomCatalogVariable{
+		variables = append(variables, &catalogreplacer.CustomCatalogVariable{
 			Plan: plan,
 		})
 	}

@@ -46,7 +46,8 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	}
 
 	// Convert metadata map to model.
-	authMetadata := NewAuthMetadataVars(params.Metadata.Map)
+	authMetadata := NewAuthMetadataVars()
+	authMetadata.FromMap(params.Metadata.Map)
 	conn.cloudId = authMetadata.CloudId
 
 	// Read provider info
