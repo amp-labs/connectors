@@ -17,7 +17,7 @@ var ErrMissingCloudId = errors.New("connector missing cloud id")
 type Connector struct {
 	Client  *common.JSONHTTPClient
 	BaseURL string
-	Module  string
+	Module  common.Module
 	// workspace is used to find cloud ID.
 	workspace string
 	cloudId   string
@@ -29,7 +29,9 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		conn = nil
 	})
 
-	params, err := paramsbuilder.Apply(parameters{}, opts)
+	params, err := paramsbuilder.Apply(parameters{}, opts,
+		WithModule(ModuleEmpty), // The module is resolved on behalf of the user if the option is missing.
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +42,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 			HTTPClient: httpClient,
 		},
 		workspace: params.Workspace.Name,
-		Module:    params.Module.Name,
+		Module:    params.Module.Selection,
 	}
 
 	// Convert metadata map to model.
@@ -78,7 +80,7 @@ func (c *Connector) getJiraRestApiURL(arg string) (*urlbuilder.URL, error) {
 		return nil, err
 	}
 
-	return urlbuilder.New(c.BaseURL, "ex/jira", cloudId, c.Module, arg)
+	return urlbuilder.New(c.BaseURL, "ex/jira", cloudId, c.Module.Path(), arg)
 }
 
 // URL allows to get list of sites associated with auth token.

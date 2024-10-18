@@ -1,22 +1,34 @@
 package marketo
 
-import "github.com/amp-labs/connectors/common/paramsbuilder"
+import (
+	"github.com/amp-labs/connectors/common"
+)
 
-// ModuleAssets is the module/API used for accessing assets objects.
-var ModuleAssets = paramsbuilder.APIModule{ // nolint: gochecknoglobals
-	Label:   "asset",
-	Version: "v1",
-}
-
-// ModuleLeads is the module/API used for accessing leads objects.
-var ModuleLeads = paramsbuilder.APIModule{ //nolint: gochecknoglobals
-	Label:   "",
-	Version: "v1",
-}
+const (
+	// ModuleEmpty is used for proxying requests through.
+	ModuleEmpty common.ModuleID = ""
+	// ModuleAssets is the module/API used for accessing assets objects.
+	ModuleAssets common.ModuleID = "assets"
+	// ModuleLeads is the module/API used for accessing leads objects.
+	ModuleLeads common.ModuleID = "leads"
+)
 
 // supportedModules represents currently working and supported modules within the Marketo connector.
 // Any added module should be appended here.
-var supportedModules = []paramsbuilder.APIModule{ // nolint: gochecknoglobals
-	ModuleLeads,
-	ModuleAssets,
+var supportedModules = common.Modules{ // nolint: gochecknoglobals
+	ModuleEmpty: {
+		ID:      ModuleEmpty,
+		Label:   "",
+		Version: "",
+	},
+	ModuleAssets: {
+		ID:      ModuleAssets,
+		Label:   "asset",
+		Version: "v1",
+	},
+	ModuleLeads: {
+		ID:      ModuleLeads,
+		Label:   "",
+		Version: "v1",
+	},
 }
