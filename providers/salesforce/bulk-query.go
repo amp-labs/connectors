@@ -40,7 +40,7 @@ func (c *Connector) BulkQuery(
 		return nil, err
 	}
 
-	res, err := c.Client.Post(ctx, location.String(), jobBody)
+	res, err := c.JSON.Post(ctx, location.String(), jobBody)
 	if err != nil {
 		return nil, fmt.Errorf("bulk query failed: %w", err)
 	}
