@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"log/slog"
 	"strings"
@@ -9,6 +10,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/amp-labs/connectors/common/handy"
 	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers/salesloft/metadata"
 	"github.com/amp-labs/connectors/tools/scrapper"
 	"github.com/iancoleman/strcase"
@@ -66,7 +68,7 @@ func createSchemas() {
 	index, err := metadata.FileManager.LoadIndex()
 	must(err)
 
-	schemas := scrapper.NewObjectMetadataResult()
+	schemas := staticschema.NewMetadata()
 
 	filteredListDocs := getFilteredListDocs(index)
 	for i := range filteredListDocs { // nolint:varnamelen
@@ -85,7 +87,8 @@ func createSchemas() {
 					if len(fieldName) != 0 {
 						newDisplayName, isList := handleDisplayName(model.DisplayName)
 						if isList {
-							schemas.Add(modelName, newDisplayName, fieldName, &model.URL)
+							schemas.Add("", modelName,
+								newDisplayName, fieldName, fmt.Sprintf("/%v", modelName), &model.URL)
 						}
 					}
 				})
