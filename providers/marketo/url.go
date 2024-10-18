@@ -23,8 +23,8 @@ func (c *Connector) getURL(params common.ReadParams) (*urlbuilder.URL, error) {
 
 	// The only objects in Assets API supporting this are: Emails, Programs, SmartCampaigns,SmartLists
 	if !params.Since.IsZero() {
-		switch c.Module {
-		case ModuleAssets.String():
+		switch c.Module.ID {
+		case ModuleAssets:
 			t := params.Since.Format(time.RFC3339)
 			fmtTime := fmt.Sprintf("%v", t)
 			url.WithQueryParam("earliestUpdatedAt", fmtTime)
