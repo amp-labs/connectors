@@ -10,9 +10,7 @@ const (
 )
 
 // Supported object names can be found under schemas.json.
-var supportedObjectsByRead = handy.NewSetFromList( //nolint:gochecknoglobals
-	metadata.Schemas.GetObjectNames(),
-)
+var supportedObjectsByRead = metadata.Schemas.ObjectNames() //nolint:gochecknoglobals
 
 var supportedObjectsByWrite = handy.NewSet( //nolint:gochecknoglobals
 	objectNameCalls,
