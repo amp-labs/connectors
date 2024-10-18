@@ -8,7 +8,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 )
 
-var ErrMissingContentType = errors.New("mime.ParseMediaType failed")
+var ErrUnparseableHTTPResponse = errors.New("unparseable HTTP response")
 
 // FaultyResponseHandler used to parse erroneous response.
 type FaultyResponseHandler interface {
@@ -27,10 +27,16 @@ type ErrorHandler struct {
 
 func (h ErrorHandler) Handle(res *http.Response, body []byte) error { // nolint:cyclop
 	mediaType, _, err := mime.ParseMediaType(res.Header.Get("Content-Type"))
-	if err != nil && h.UnknownMedia != nil {
+	if err != nil {
 		// Media type is unknown, therefore we cannot select appropriate response handler.
 		// Therefore, using fallback.
-		return h.UnknownMedia.HandleErrorResponse(res, body)
+		if h.UnknownMedia != nil {
+			return h.UnknownMedia.HandleErrorResponse(res, body)
+		}
+
+		err = common.InterpretError(res, body)
+
+		return errors.Join(ErrUnparseableHTTPResponse, err)
 	}
 
 	if h.JSON != nil && mediaType == "application/json" {
