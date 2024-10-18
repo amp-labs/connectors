@@ -66,5 +66,4 @@ func main() {
 
 	fmt.Println("Reading conversations (SecondPage)..")
 	utils.DumpJSON(res, os.Stdout)
-
 }
