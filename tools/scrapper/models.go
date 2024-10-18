@@ -62,54 +62,6 @@ func (r *ModelURLRegistry) Sort() {
 	})
 }
 
-type ObjectMetadataResult struct {
-	// Result is a map of object names to object metadata
-	Result map[string]ObjectMetadata `json:"data"`
-}
-
-type ObjectMetadata struct {
-	// Provider's display name for the object
-	DisplayName string `json:"displayName"`
-
-	// FieldsMap is a map of field names to field display names
-	FieldsMap map[string]string `json:"fields"`
-
-	// URL points to docs endpoint. Optional.
-	URL *string `json:"url,omitempty"`
-}
-
-func NewObjectMetadataResult() *ObjectMetadataResult {
-	return &ObjectMetadataResult{
-		Result: make(map[string]ObjectMetadata),
-	}
-}
-
-func (r *ObjectMetadataResult) Add(objectName, objectDisplayName, fieldName string, url *string) {
-	data, ok := r.Result[objectName]
-	if !ok {
-		data = ObjectMetadata{
-			DisplayName: objectDisplayName,
-			FieldsMap:   make(map[string]string),
-			URL:         url,
-		}
-		r.Result[objectName] = data
-	}
-
-	data.FieldsMap[fieldName] = fieldName
-}
-
-func (r *ObjectMetadataResult) GetObjectNames() []string {
-	names := make([]string, len(r.Result))
-	index := 0
-
-	for key := range r.Result {
-		names[index] = key
-		index += 1
-	}
-
-	return names
-}
-
 type QueryParamStats struct {
 	Meta queryParamStatsMeta     `json:"meta"`
 	Data []queryParamObjectStats `json:"queryParams"`
