@@ -6,6 +6,8 @@ import (
 	"errors"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/jsonquery"
+	"github.com/amp-labs/connectors/common/naming"
 )
 
 var ErrEmptyResultResponse = errors.New("writing reponded with an empty result")
@@ -51,12 +53,30 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, err
 	}
 
-	if res.Code == 200 {
-		resp.Success = true
+	objectIdData, ok := resp.Data["id"]
+	if !ok {
+		return nil, jsonquery.ErrKeyNotFound
+	}
+
+	recordID, err := GetRecordID(config.ObjectName, objectIdData.(map[string]interface{}))
+	if err != nil {
+		return nil, err
 	}
 
 	return &common.WriteResult{
-		Success: resp.Success,
-		Data:    resp.Data,
+		Success:  true,
+		RecordId: recordID,
+		Data:     resp.Data,
+		Errors:   nil,
 	}, nil
+}
+
+func GetRecordID(objName string, data map[string]interface{}) (string, error) {
+	obj := naming.NewSingularString(objName)
+
+	if value, ok := data[obj.String()+"_id"]; ok {
+		return value.(string), nil
+	}
+
+	return "", jsonquery.ErrKeyNotFound
 }
