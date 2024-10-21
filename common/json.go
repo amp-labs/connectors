@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"mime"
 	"net/http"
+	"strings"
 
 	"github.com/spyzhov/ajson"
 )
@@ -186,4 +187,13 @@ func addAcceptJSONHeader(headers []Header) []Header {
 	}
 
 	return append(headers, Header{Key: "Accept", Value: "application/json"})
+}
+
+// AddSuffixIfNotExists appends the suffix  to the provided string.
+func AddSuffixIfNotExists(str string, suffix string) string {
+	if !strings.HasSuffix(str, suffix) {
+		str += suffix
+	}
+
+	return str
 }

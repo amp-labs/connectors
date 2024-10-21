@@ -5,8 +5,6 @@ import (
 	"fmt"
 )
 
-var ErrEmptyResultResponse = errors.New("writing reponded with an empty result")
-
 type writeResponse struct {
 	Result  []map[string]any `json:"result"`
 	Success bool             `json:"success"`
