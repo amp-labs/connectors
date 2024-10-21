@@ -8,14 +8,10 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/common/naming"
+	"github.com/spyzhov/ajson"
 )
 
 var ErrEmptyResultResponse = errors.New("writing reponded with an empty result")
-
-type writeResponse struct {
-	Success bool           `json:"success"`
-	Data    map[string]any `json:"data"`
-}
 
 // Write creates/updates records in attio.
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
@@ -48,35 +44,44 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, err
 	}
 
-	resp, err := common.UnmarshalJSON[writeResponse](res)
+	body, ok := res.Body()
+	if !ok {
+		return &common.WriteResult{
+			Success: true,
+		}, nil
+	}
+
+	// Write response has a reference to the resource but no payload data.
+	return constructWriteResult(config.ObjectName, body)
+}
+
+func constructWriteResult(objName string, body *ajson.Node) (*common.WriteResult, error) {
+	obj := naming.NewSingularString(objName)
+
+	objectResponse, err := jsonquery.New(body).Object("data", false)
 	if err != nil {
 		return nil, err
 	}
 
-	objectIdData, ok := resp.Data["id"]
-	if !ok {
-		return nil, jsonquery.ErrKeyNotFound
+	value, err := jsonquery.New(objectResponse).Object("id", false)
+	if err != nil {
+		return nil, err
 	}
 
-	recordID, err := GetRecordID(config.ObjectName, objectIdData.(map[string]interface{}))
+	recordID, err := jsonquery.New(value).Str(obj.String()+"_id", false)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := jsonquery.Convertor.ObjectToMap(objectResponse)
 	if err != nil {
 		return nil, err
 	}
 
 	return &common.WriteResult{
 		Success:  true,
-		RecordId: recordID,
-		Data:     resp.Data,
+		RecordId: *recordID,
 		Errors:   nil,
+		Data:     response,
 	}, nil
-}
-
-func GetRecordID(objName string, data map[string]interface{}) (string, error) {
-	obj := naming.NewSingularString(objName)
-
-	if value, ok := data[obj.String()+"_id"]; ok {
-		return value.(string), nil
-	}
-
-	return "", jsonquery.ErrKeyNotFound
 }
