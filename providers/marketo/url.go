@@ -1,7 +1,6 @@
 package marketo
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
@@ -25,8 +24,7 @@ func (c *Connector) getURL(params common.ReadParams) (*urlbuilder.URL, error) {
 	if !params.Since.IsZero() {
 		switch c.Module.ID {
 		case ModuleAssets:
-			t := params.Since.Format(time.RFC3339)
-			fmtTime := fmt.Sprintf("%v", t)
+			fmtTime := params.Since.Format(time.RFC3339)
 			url.WithQueryParam("earliestUpdatedAt", fmtTime)
 			url.WithQueryParam("latestUpdatedAt", time.Now().Format(time.RFC3339))
 

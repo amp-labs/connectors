@@ -1,8 +1,6 @@
 package salesforce
 
 import (
-	"fmt"
-
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
@@ -73,7 +71,7 @@ func (c *Connector) Provider() providers.Provider {
 
 // String returns a string representation of the connector, which is useful for logging / debugging.
 func (c *Connector) String() string {
-	return fmt.Sprintf("%s.Connector", c.Provider())
+	return c.Provider() + ".Connector"
 }
 
 func (c *Connector) getRestApiURL(paths ...string) (*urlbuilder.URL, error) {

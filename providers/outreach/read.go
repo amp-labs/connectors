@@ -2,7 +2,6 @@ package outreach
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
@@ -52,8 +51,8 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 	// If Since is not set, then we're doing a backfill. We read all rows (in pages)
 	// If Since is present, we turn it into the format the Outreach API expects
 	if !config.Since.IsZero() {
-		time := config.Since.Format(time.DateOnly)
-		fmtTime := fmt.Sprintf("%s..inf", time)
+		t := config.Since.Format(time.DateOnly)
+		fmtTime := t + "..inf"
 		url.WithQueryParam("filter[updatedAt]", fmtTime)
 	}
 

@@ -55,7 +55,7 @@ func (c *Connector) Provider() providers.Provider {
 }
 
 func (c *Connector) String() string {
-	return fmt.Sprintf("%s.Connector", c.Provider())
+	return c.Provider() + ".Connector"
 }
 
 func (c *Connector) getURL(arg string) (*urlbuilder.URL, error) {
