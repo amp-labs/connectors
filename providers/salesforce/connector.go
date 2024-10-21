@@ -14,7 +14,7 @@ const (
 	version                    = versionPrefix + apiVersion
 	restAPISuffix              = "/services/data/" + version
 	uriSobjects                = restAPISuffix + "/sobjects"
-	uriToolingEventRelayConfig = "tooling/sobjects/EventRelayConfig"
+	uriToolingEventRelayConfig = restAPISuffix + "/tooling/sobjects/EventRelayConfig"
 )
 
 // Connector is a Salesforce connector.
@@ -93,7 +93,7 @@ func (c *Connector) getSoapURL() (*urlbuilder.URL, error) {
 // nolint: lll
 // https://developer.salesforce.com/docs/atlas.en-us.api_tooling.meta/api_tooling/tooling_api_objects_eventrelayconfig.htm?q=EventRelayConfig
 func (c *Connector) getURIPartEventRelayConfig(paths ...string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(restAPISuffix+"/"+uriToolingEventRelayConfig, paths...)
+	return urlbuilder.New(uriToolingEventRelayConfig, paths...)
 }
 
 func (c *Connector) getURIPartSobjectsDescribe(objectName string) (*urlbuilder.URL, error) {
