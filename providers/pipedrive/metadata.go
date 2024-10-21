@@ -13,6 +13,8 @@ type responseData struct {
 	// Other fields unrelated to metadata generation.
 }
 
+// ListObjectMetadata returns metadata for an object by sampling an object from Pipedrive's API.
+// If that fails, it generates object metadata by parsing Pipedrive's OpenAPI files.
 func (c *Connector) ListObjectMetadata(ctx context.Context,
 	objectNames []string,
 ) (*common.ListObjectMetadataResult, error) {
