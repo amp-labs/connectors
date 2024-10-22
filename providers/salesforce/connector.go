@@ -14,7 +14,7 @@ const (
 	version                    = versionPrefix + apiVersion
 	restAPISuffix              = "/services/data/" + version
 	uriSobjects                = restAPISuffix + "/sobjects"
-	uriToolingEventRelayConfig = "tooling/sobjects/EventRelayConfig"
+	uriToolingEventRelayConfig = restAPISuffix + "/tooling/sobjects/EventRelayConfig"
 )
 
 // Connector is a Salesforce connector.
