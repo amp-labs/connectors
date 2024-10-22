@@ -3,14 +3,12 @@ package instantly
 import (
 	"errors"
 	"net/http"
-	"net/http/httptest"
-	"strings"
 	"testing"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
-	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -51,11 +49,10 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Cannot remove missing tag",
 			Input: common.DeleteParams{ObjectName: "tags", RecordId: "5043"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusNotFound)
-				_, _ = w.Write(responseNotFoundErr)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusNotFound, responseNotFoundErr),
+			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
 				errors.New(`Not Found`), // nolint:goerr113
@@ -64,18 +61,14 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Successful delete",
 			Input: common.DeleteParams{ObjectName: "tags", RecordId: "5043"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToMethod(w, r, "DELETE", func() {
-					if strings.HasSuffix(r.URL.Path, "custom-tag/5043") {
-						w.WriteHeader(http.StatusOK)
-						_, _ = w.Write(responseTag)
-					} else {
-						w.WriteHeader(http.StatusBadRequest)
-						_, _ = w.Write([]byte{})
-					}
-				})
-			})),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodDELETE(),
+					mockcond.PathSuffix("custom-tag/5043"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseTag),
+			}.Server(),
 			Expected:     &common.DeleteResult{Success: true},
 			ExpectedErrs: nil,
 		},

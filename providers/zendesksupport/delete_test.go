@@ -3,13 +3,12 @@ package zendesksupport
 import (
 	"errors"
 	"net/http"
-	"net/http/httptest"
 	"testing"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
-	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -41,11 +40,10 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Internal server error in response",
 			Input: common.DeleteParams{ObjectName: "brands", RecordId: "31207417638931"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusInternalServerError)
-				_, _ = w.Write(responseServerError)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusInternalServerError, responseServerError),
+			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrServer,
 				errors.New("Internal Server Error"), // nolint:goerr113
@@ -54,10 +52,11 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Successful delete",
 			Input: common.DeleteParams{ObjectName: "brands", RecordId: "31207417638931"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondNoContentForMethod(w, r, "DELETE")
-			})),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodDELETE(),
+				Then:  mockserver.Response(http.StatusNoContent),
+			}.Server(),
 			Expected:     &common.DeleteResult{Success: true},
 			ExpectedErrs: nil,
 		},

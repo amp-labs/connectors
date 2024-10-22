@@ -3,8 +3,6 @@ package salesloft
 import (
 	"errors"
 	"net/http"
-	"net/http/httptest"
-	"net/url"
 	"strings"
 	"testing"
 	"time"
@@ -14,6 +12,7 @@ import (
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -57,13 +56,12 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name:  "Correct error message is understood from JSON response",
 			Input: common.ReadParams{ObjectName: "users", Fields: connectors.Fields("id")},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusNotFound)
-				mockutils.WriteBody(w, `{
+			Server: mockserver.Fixed{
+				Setup: mockserver.ContentJSON(),
+				Always: mockserver.ResponseString(http.StatusNotFound, `{
 					"error": "Not Found"
-				}`)
-			})),
+				}`),
+			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest, errors.New("Not Found"), // nolint:goerr113
 			},
@@ -71,35 +69,32 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name:  "Incorrect key in payload",
 			Input: common.ReadParams{ObjectName: "users", Fields: connectors.Fields("id")},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				mockutils.WriteBody(w, `{
+			Server: mockserver.Fixed{
+				Setup: mockserver.ContentJSON(),
+				Always: mockserver.ResponseString(http.StatusOK, `{
 					"garbage": {}
-				}`)
-			})),
+				}`),
+			}.Server(),
 			ExpectedErrs: []error{jsonquery.ErrKeyNotFound},
 		},
 		{
 			Name:  "Incorrect data type in payload",
 			Input: common.ReadParams{ObjectName: "users", Fields: connectors.Fields("id")},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				mockutils.WriteBody(w, `{
+			Server: mockserver.Fixed{
+				Setup: mockserver.ContentJSON(),
+				Always: mockserver.ResponseString(http.StatusOK, `{
 					"data": {}
-				}`)
-			})),
+				}`),
+			}.Server(),
 			ExpectedErrs: []error{jsonquery.ErrNotArray},
 		},
 		{
 			Name:  "Next page cursor may be missing in payload",
 			Input: common.ReadParams{ObjectName: "users", Fields: connectors.Fields("id")},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				_, _ = w.Write(responseEmptyRead)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseEmptyRead),
+			}.Server(),
 			Expected: &common.ReadResult{
 				Data: []common.ReadResultRow{},
 				Done: true,
@@ -109,11 +104,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name:  "Next page URL is correctly inferred",
 			Input: common.ReadParams{ObjectName: "people", Fields: connectors.Fields("id")},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				_, _ = w.Write(responseListPeople)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseListPeople),
+			}.Server(),
 			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
 				expectedNextPage := strings.ReplaceAll(expected.NextPage.String(), "{{testServerURL}}", baseURL)
 				return actual.NextPage.String() == expectedNextPage // nolint:nlreturn
@@ -126,11 +120,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name:  "Successful read with 25 entries, checking one row",
 			Input: common.ReadParams{ObjectName: "people", Fields: connectors.Fields("id")},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				_, _ = w.Write(responseListPeople)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseListPeople),
+			}.Server(),
 			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
 				return mockutils.ReadResultComparator.SubsetRaw(actual, expected) &&
 					actual.Done == expected.Done &&
@@ -158,11 +151,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				ObjectName: "people",
 				Fields:     connectors.Fields("email_address", "person_company_website"),
 			},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				_, _ = w.Write(responseListPeople)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseListPeople),
+			}.Server(),
 			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
 				return mockutils.ReadResultComparator.SubsetFields(actual, expected) &&
 					mockutils.ReadResultComparator.SubsetRaw(actual, expected)
@@ -189,11 +181,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				ObjectName: "users",
 				Fields:     connectors.Fields("email", "guid"),
 			},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				_, _ = w.Write(responseListUsers)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseListUsers),
+			}.Server(),
 			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
 				return mockutils.ReadResultComparator.SubsetFields(actual, expected) &&
 					mockutils.ReadResultComparator.SubsetRaw(actual, expected)
@@ -219,13 +210,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name:  "Successful read accounts without since query",
 			Input: common.ReadParams{ObjectName: "accounts", Fields: connectors.Fields("id")},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToMissingQueryParameters(w, r, []string{"updated_at[gte]"}, func() {
-					w.WriteHeader(http.StatusOK)
-					_, _ = w.Write(responseListAccounts)
-				})
-			})),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.QueryParamsMissing("updated_at[gte]"),
+				Then:  mockserver.Response(http.StatusOK, responseListAccounts),
+			}.Server(),
 			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
 				return actual.Rows == expected.Rows
 			},
@@ -241,15 +230,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Since:      accountsSince,
 				Fields:     connectors.Fields("id"),
 			},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToQueryParameters(w, r, url.Values{
-					"updated_at[gte]": []string{"2024-06-07T10:51:20.851224-04:00"},
-				}, func() {
-					w.WriteHeader(http.StatusOK)
-					_, _ = w.Write(responseListAccountsSince)
-				})
-			})),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.QueryParam("updated_at[gte]", "2024-06-07T10:51:20.851224-04:00"),
+				Then:  mockserver.Response(http.StatusOK, responseListAccountsSince),
+			}.Server(),
 			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
 				return actual.Rows == expected.Rows
 			},

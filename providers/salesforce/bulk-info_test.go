@@ -3,13 +3,12 @@ package salesforce
 import (
 	"context"
 	"net/http"
-	"net/http/httptest"
 	"reflect"
-	"strings"
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -30,26 +29,20 @@ func TestJobInfo(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name:  "Request fails due to internal server error",
 			Input: "",
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusInternalServerError)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusInternalServerError),
+			}.Server(),
 			ExpectedErrs: []error{common.ErrRequestFailed},
 		},
 		{
 			Name:  "Correct endpoint is invoked",
 			Input: "750ak000009Bq9OAAS",
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { // nolint:varnamelen
-				w.Header().Set("Content-Type", "application/json")
-				switch path := r.URL.Path; {
-				case strings.HasSuffix(path, "/services/data/v59.0/jobs/ingest/750ak000009Bq9OAAS"):
-					w.WriteHeader(http.StatusOK)
-					_, _ = w.Write(responseJobInProgress)
-				default:
-					w.WriteHeader(http.StatusInternalServerError)
-					_, _ = w.Write([]byte{})
-				}
-			})),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.PathSuffix("/services/data/v59.0/jobs/ingest/750ak000009Bq9OAAS"),
+				Then:  mockserver.Response(http.StatusOK, responseJobInProgress),
+			}.Server(),
 			Comparator: testConciseJobInfoComparator,
 			Expected: &GetJobInfoResult{
 				Id:          "750ak000009Bq9OAAS",
@@ -83,17 +76,11 @@ func TestGetBulkQueryInfo(t *testing.T) { // nolint:dupl
 		{
 			Name:  "Requesting BulkQuery information invokes correct endpoint",
 			Input: "750ak000009AVi5AAG",
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { // nolint:varnamelen
-				w.Header().Set("Content-Type", "application/json")
-				switch path := r.URL.Path; {
-				case strings.HasSuffix(path, "/services/data/v59.0/jobs/query/750ak000009AVi5AAG"):
-					w.WriteHeader(http.StatusOK)
-					_, _ = w.Write(responseAccount)
-				default:
-					w.WriteHeader(http.StatusInternalServerError)
-					_, _ = w.Write([]byte{})
-				}
-			})),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.PathSuffix("/services/data/v59.0/jobs/query/750ak000009AVi5AAG"),
+				Then:  mockserver.Response(http.StatusOK, responseAccount),
+			}.Server(),
 			Comparator: testConciseJobInfoComparator,
 			Expected: &GetJobInfoResult{
 				Id:          "750ak000009AVi5AAG",
@@ -130,22 +117,16 @@ func TestJobResults(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name:  "Partial failure is parsed",
 			Input: "750ak000009Dl5bAAC",
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { // nolint:varnamelen
-				w.Header().Set("Content-Type", "application/json")
-				switch path := r.URL.Path; {
-				case strings.HasSuffix(path, "/services/data/v59.0/jobs/ingest/750ak000009Dl5bAAC"):
-					w.WriteHeader(http.StatusOK)
-					_, _ = w.Write(responseJobPartialFailure)
-
-				case strings.HasSuffix(path, "/services/data/v59.0/jobs/ingest/750ak000009Dl5bAAC/failedResults"):
-					w.WriteHeader(http.StatusOK)
-					_, _ = w.Write(responseJobPartialFailureDescribed)
-
-				default:
-					w.WriteHeader(http.StatusInternalServerError)
-					_, _ = w.Write([]byte{})
-				}
-			})),
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{{
+					If:   mockcond.PathSuffix("/services/data/v59.0/jobs/ingest/750ak000009Dl5bAAC"),
+					Then: mockserver.Response(http.StatusOK, responseJobPartialFailure),
+				}, {
+					If:   mockcond.PathSuffix("/services/data/v59.0/jobs/ingest/750ak000009Dl5bAAC/failedResults"),
+					Then: mockserver.Response(http.StatusOK, responseJobPartialFailureDescribed),
+				}},
+			}.Server(),
 			Comparator: testJobResultsComparator,
 			Expected: &JobResults{
 				JobId: "750ak000009Dl5bAAC",
@@ -169,11 +150,10 @@ func TestJobResults(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name:  "Complete failure with descriptive message",
 			Input: "750ak000009E1YXAA0",
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { // nolint:varnamelen
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				_, _ = w.Write(responseJobCompleteFailure)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseJobCompleteFailure),
+			}.Server(),
 			Comparator: testJobResultsComparator,
 			Expected: &JobResults{
 				JobId:          "750ak000009E1YXAA0",
@@ -188,11 +168,10 @@ func TestJobResults(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name:  "Successful info parsed from JobCompleted response",
 			Input: "750ak000009BWKLAA4",
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { // nolint:varnamelen
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				_, _ = w.Write(responseJobSuccess)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseJobSuccess),
+			}.Server(),
 			Comparator: testJobResultsComparator,
 			Expected: &JobResults{
 				JobId:          "750ak000009BWKLAA4",
@@ -226,18 +205,11 @@ func TestGetSuccessfulJobResults(t *testing.T) { // nolint:dupl
 			// this guards against unexpected URL changes
 			Name:  "GetSuccessfulJobResults - endpoint is invoked",
 			Input: "750ak000009Dl5bAAC",
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				switch path := r.URL.Path; {
-				case strings.HasSuffix(path,
-					"/services/data/v59.0/jobs/ingest/750ak000009Dl5bAAC/successfulResults"):
-					w.WriteHeader(http.StatusOK)
-					_, _ = w.Write([]byte{})
-				default:
-					w.WriteHeader(http.StatusInternalServerError)
-					_, _ = w.Write([]byte{})
-				}
-			})),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.PathSuffix("/services/data/v59.0/jobs/ingest/750ak000009Dl5bAAC/successfulResults"),
+				Then:  mockserver.Response(http.StatusOK, []byte{}),
+			}.Server(),
 			Comparator:   statusCodeComparator,
 			Expected:     &http.Response{StatusCode: http.StatusOK},
 			ExpectedErrs: nil, // we expect no errors
@@ -265,18 +237,11 @@ func TestGetBulkQueryResults(t *testing.T) { // nolint:dupl
 			// this guards against unexpected URL changes
 			Name:  "GetBulkQueryResults - endpoint is invoked",
 			Input: "750ak000009Dl5bAAC",
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				switch path := r.URL.Path; {
-				case strings.HasSuffix(path,
-					"/services/data/v59.0/jobs/query/750ak000009Dl5bAAC/results"):
-					w.WriteHeader(http.StatusOK)
-					_, _ = w.Write([]byte{})
-				default:
-					w.WriteHeader(http.StatusInternalServerError)
-					_, _ = w.Write([]byte{})
-				}
-			})),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.PathSuffix("/services/data/v59.0/jobs/query/750ak000009Dl5bAAC/results"),
+				Then:  mockserver.Response(http.StatusOK, []byte{}),
+			}.Server(),
 			Comparator:   statusCodeComparator,
 			Expected:     &http.Response{StatusCode: http.StatusOK},
 			ExpectedErrs: nil, // we expect no errors

@@ -3,14 +3,12 @@ package salesforce
 import (
 	"errors"
 	"net/http"
-	"net/http/httptest"
-	"net/url"
 	"testing"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
-	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -45,11 +43,10 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Error response understood for creating with unknown field",
 			Input: common.WriteParams{ObjectName: "account", RecordId: "003ak000004dQCUAA2", RecordData: "dummy"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusBadRequest)
-				_, _ = w.Write(responseUnknownField)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusBadRequest, responseUnknownField),
+			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
 				errors.New("No such column 'AccountNumer' on sobject of type Account"), // nolint:goerr113
@@ -58,11 +55,10 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Error response understood for updating reserved field",
 			Input: common.WriteParams{ObjectName: "account", RecordId: "003ak000004dQCUAA2", RecordData: "dummy"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusBadRequest)
-				_, _ = w.Write(responseInvalidFieldUpsert)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusBadRequest, responseInvalidFieldUpsert),
+			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
 				errors.New("Unable to create/update fields: MasterRecordId"), // nolint:goerr113
@@ -71,17 +67,14 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Write must act as an Update",
 			Input: common.WriteParams{ObjectName: "account", RecordId: "003ak000004dQCUAA2", RecordData: "dummy"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToMethod(w, r, "POST", func() {
-					mockutils.RespondToQueryParameters(w, r, url.Values{
-						"_HttpMethod": []string{"PATCH"},
-					}, func() {
-						w.WriteHeader(http.StatusOK)
-						_, _ = w.Write(responseCreateOK)
-					})
-				})
-			})),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.QueryParam("_HttpMethod", "PATCH"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseCreateOK),
+			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "001ak00000OQTieAAH",
@@ -93,13 +86,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Valid creation of account",
 			Input: common.WriteParams{ObjectName: "accounts", RecordData: "dummy"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToMethod(w, r, "POST", func() {
-					w.WriteHeader(http.StatusOK)
-					_, _ = w.Write(responseCreateOK)
-				})
-			})),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPOST(),
+				Then:  mockserver.Response(http.StatusOK, responseCreateOK),
+			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "001ak00000OQTieAAH",
@@ -111,13 +102,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "OK Response, but with errors field",
 			Input: common.WriteParams{ObjectName: "accounts", RecordData: "dummy"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToMethod(w, r, "POST", func() {
-					w.WriteHeader(http.StatusOK)
-					_, _ = w.Write(responseOKWithErrors)
-				})
-			})),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPOST(),
+				Then:  mockserver.Response(http.StatusOK, responseOKWithErrors),
+			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  false,
 				RecordId: "001RM000003oLruYAE",

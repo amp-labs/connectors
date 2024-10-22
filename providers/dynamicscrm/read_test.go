@@ -3,14 +3,12 @@ package dynamicscrm
 import (
 	"errors"
 	"net/http"
-	"net/http/httptest"
 	"testing"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/jsonquery"
-	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -42,16 +40,15 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Correct error message is understood from JSON response",
 			Input: common.ReadParams{ObjectName: "contact", Fields: connectors.Fields("id")},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusBadRequest)
-				mockutils.WriteBody(w, `{
+			Server: mockserver.Fixed{
+				Setup: mockserver.ContentJSON(),
+				Always: mockserver.ResponseString(http.StatusBadRequest, `{
 					"error": {
 						"code": "0x80060888",
 						"message":"Resource not found for the segment 'conacs'."
 					}
-				}`)
-			})),
+				}`),
+			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest, errors.New("Resource not found for the segment 'conacs'"), // nolint:goerr113
 			},
@@ -59,37 +56,34 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Incorrect key in payload",
 			Input: common.ReadParams{ObjectName: "contact", Fields: connectors.Fields("id")},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				mockutils.WriteBody(w, `{
+			Server: mockserver.Fixed{
+				Setup: mockserver.ContentJSON(),
+				Always: mockserver.ResponseString(http.StatusOK, `{
 					"garbage": {}
-				}`)
-			})),
+				}`),
+			}.Server(),
 			ExpectedErrs: []error{jsonquery.ErrKeyNotFound},
 		},
 		{
 			Name:  "Incorrect data type in payload",
 			Input: common.ReadParams{ObjectName: "contact", Fields: connectors.Fields("id")},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				mockutils.WriteBody(w, `{
+			Server: mockserver.Fixed{
+				Setup: mockserver.ContentJSON(),
+				Always: mockserver.ResponseString(http.StatusOK, `{
 					"value": {}
-				}`)
-			})),
+				}`),
+			}.Server(),
 			ExpectedErrs: []error{jsonquery.ErrNotArray},
 		},
 		{
 			Name:  "Next page cursor may be missing in payload",
 			Input: common.ReadParams{ObjectName: "contact", Fields: connectors.Fields("id")},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				mockutils.WriteBody(w, `{
+			Server: mockserver.Fixed{
+				Setup: mockserver.ContentJSON(),
+				Always: mockserver.ResponseString(http.StatusOK, `{
 					"value": []
-				}`)
-			})),
+				}`),
+			}.Server(),
 			Expected: &common.ReadResult{
 				Data: []common.ReadResultRow{},
 				Done: true,
@@ -99,11 +93,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Successful read with chosen fields",
 			Input: common.ReadParams{ObjectName: "contact", Fields: connectors.Fields("fullname", "fax")},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				_, _ = w.Write(responseContactsGet)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseContactsGet),
+			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{{

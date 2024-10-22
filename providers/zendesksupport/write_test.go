@@ -3,13 +3,13 @@ package zendesksupport
 import (
 	"errors"
 	"net/http"
-	"net/http/httptest"
 	"testing"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -47,11 +47,10 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Missing write parameter",
 			Input: common.WriteParams{ObjectName: "brands", RecordData: "dummy"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusBadRequest)
-				_, _ = w.Write(responseMissingParameterError)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusBadRequest, responseMissingParameterError),
+			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
 				errors.New("Parameter brands is required"), // nolint:goerr113
@@ -60,11 +59,10 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Record validation with single detail",
 			Input: common.WriteParams{ObjectName: "brands", RecordData: "dummy"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusBadRequest)
-				_, _ = w.Write(responseDuplicateError)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusBadRequest, responseDuplicateError),
+			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
 				errors.New("[RecordInvalid]Record validation errors"),               // nolint:goerr113
@@ -74,11 +72,10 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Record validation with multiple details is split into dedicated errors",
 			Input: common.WriteParams{ObjectName: "brands", RecordData: "dummy"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusBadRequest)
-				_, _ = w.Write(responseRecordValidationError)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusBadRequest, responseRecordValidationError),
+			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
 				errors.New("[RecordInvalid]Record validation errors"),        // nolint:goerr113
@@ -90,12 +87,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Write must act as a Create",
 			Input: common.WriteParams{ObjectName: "brands", RecordData: "dummy"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToMethod(w, r, "POST", func() {
-					w.WriteHeader(http.StatusOK)
-				})
-			})),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPOST(),
+				Then:  mockserver.Response(http.StatusOK),
+			}.Server(),
 			Expected:     &common.WriteResult{Success: true},
 			ExpectedErrs: nil,
 		},
@@ -106,25 +102,22 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 				RecordId:   "31207417638931",
 				RecordData: "dummy",
 			},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToMethod(w, r, "PUT", func() {
-					w.WriteHeader(http.StatusOK)
-				})
-			})),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPUT(),
+				Then:  mockserver.Response(http.StatusOK),
+			}.Server(),
 			Expected:     &common.WriteResult{Success: true},
 			ExpectedErrs: nil,
 		},
 		{
 			Name:  "Valid creation of a brand",
 			Input: common.WriteParams{ObjectName: "brands", RecordData: "dummy"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToMethod(w, r, "POST", func() {
-					w.WriteHeader(http.StatusOK)
-					_, _ = w.Write(createBrand)
-				})
-			})),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPOST(),
+				Then:  mockserver.Response(http.StatusOK, createBrand),
+			}.Server(),
 			Comparator: func(serverURL string, actual, expected *common.WriteResult) bool {
 				return mockutils.WriteResultComparator.SubsetData(actual, expected)
 			},

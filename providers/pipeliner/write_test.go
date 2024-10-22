@@ -3,13 +3,13 @@ package pipeliner
 import (
 	"errors"
 	"net/http"
-	"net/http/httptest"
 	"testing"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -48,11 +48,10 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 				RecordId:   "019097b8-a5f4-ca93-62c5-5a25c58afa63",
 				RecordData: "dummy",
 			},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusUnprocessableEntity)
-				_, _ = w.Write(responseCreateFailedValidation)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusUnprocessableEntity, responseCreateFailedValidation),
+			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
 				errors.New( // nolint:goerr113
@@ -67,11 +66,10 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 				RecordId:   "019097b8-a5f4-ca93-62c5-5a25c58afa63",
 				RecordData: "dummy",
 			},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusBadRequest)
-				_, _ = w.Write(responseCreateInvalidBody)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusBadRequest, responseCreateInvalidBody),
+			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
 				errors.New("Missing or invalid JSON data."), // nolint:goerr113
@@ -80,12 +78,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Write must act as a Create",
 			Input: common.WriteParams{ObjectName: "notes", RecordData: "dummy"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToMethod(w, r, "POST", func() {
-					w.WriteHeader(http.StatusOK)
-				})
-			})),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPOST(),
+				Then:  mockserver.Response(http.StatusOK),
+			}.Server(),
 			Expected:     &common.WriteResult{Success: true},
 			ExpectedErrs: nil,
 		},
@@ -96,25 +93,22 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 				RecordId:   "019097b8-a5f4-ca93-62c5-5a25c58afa63",
 				RecordData: "dummy",
 			},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToMethod(w, r, "PATCH", func() {
-					w.WriteHeader(http.StatusOK)
-				})
-			})),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPATCH(),
+				Then:  mockserver.Response(http.StatusOK),
+			}.Server(),
 			Expected:     &common.WriteResult{Success: true},
 			ExpectedErrs: nil,
 		},
 		{
 			Name:  "Valid creation of a note",
 			Input: common.WriteParams{ObjectName: "notes", RecordData: "dummy"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToMethod(w, r, "POST", func() {
-					w.WriteHeader(http.StatusOK)
-					_, _ = w.Write(responseCreateNote)
-				})
-			})),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPOST(),
+				Then:  mockserver.Response(http.StatusOK, responseCreateNote),
+			}.Server(),
 			Comparator: func(serverURL string, actual, expected *common.WriteResult) bool {
 				return mockutils.WriteResultComparator.SubsetData(actual, expected)
 			},
@@ -137,13 +131,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 				RecordId:   "019097b8-a5f4-ca93-62c5-5a25c58afa63",
 				RecordData: "dummy",
 			},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToMethod(w, r, "PATCH", func() {
-					w.WriteHeader(http.StatusOK)
-					_, _ = w.Write(responseUpdateNote)
-				})
-			})),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPATCH(),
+				Then:  mockserver.Response(http.StatusOK, responseUpdateNote),
+			}.Server(),
 			Comparator: func(serverURL string, actual, expected *common.WriteResult) bool {
 				return mockutils.WriteResultComparator.SubsetData(actual, expected)
 			},

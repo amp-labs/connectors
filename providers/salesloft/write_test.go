@@ -3,13 +3,13 @@ package salesloft
 import (
 	"errors"
 	"net/http"
-	"net/http/httptest"
 	"testing"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -43,11 +43,10 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Correct error message is understood from JSON response",
 			Input: common.WriteParams{ObjectName: "signals", RecordId: "22165", RecordData: "dummy"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusUnprocessableEntity)
-				_, _ = w.Write(listSchema)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusUnprocessableEntity, listSchema),
+			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
 				errors.New("no Signal Registration found for integration id 5167 and given type"), // nolint:goerr113
@@ -56,37 +55,35 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Write must act as a Create",
 			Input: common.WriteParams{ObjectName: "signals", RecordData: "dummy"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToMethod(w, r, "POST", func() {
-					w.WriteHeader(http.StatusOK)
-				})
-			})),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPOST(),
+				Then:  mockserver.Response(http.StatusOK),
+			}.Server(),
 			Expected:     &common.WriteResult{Success: true},
 			ExpectedErrs: nil,
 		},
 		{
 			Name:  "Write must act as an Update",
 			Input: common.WriteParams{ObjectName: "signals", RecordId: "22165", RecordData: "dummy"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToMethod(w, r, "PUT", func() {
-					w.WriteHeader(http.StatusOK)
-				})
-			})),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPUT(),
+				},
+				Then: mockserver.Response(http.StatusOK),
+			}.Server(),
 			Expected:     &common.WriteResult{Success: true},
 			ExpectedErrs: nil,
 		},
 		{
 			Name:  "Valid creation of account",
 			Input: common.WriteParams{ObjectName: "accounts", RecordData: "dummy"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToMethod(w, r, "POST", func() {
-					w.WriteHeader(http.StatusOK)
-					_, _ = w.Write(createAccountRes)
-				})
-			})),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPOST(),
+				Then:  mockserver.Response(http.StatusOK, createAccountRes),
+			}.Server(),
 			Comparator: func(serverURL string, actual, expected *common.WriteResult) bool {
 				return mockutils.WriteResultComparator.SubsetData(actual, expected)
 			},
@@ -107,13 +104,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Valid creation of a task",
 			Input: common.WriteParams{ObjectName: "tasks", RecordData: "dummy"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToMethod(w, r, "POST", func() {
-					w.WriteHeader(http.StatusOK)
-					_, _ = w.Write(createTaskRes)
-				})
-			})),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPOST(),
+				Then:  mockserver.Response(http.StatusOK, createTaskRes),
+			}.Server(),
 			Comparator: func(serverURL string, actual, expected *common.WriteResult) bool {
 				return mockutils.WriteResultComparator.SubsetData(actual, expected)
 			},
@@ -132,14 +127,12 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Valid update of Saved List View",
 			Input: common.WriteParams{ObjectName: "saved_list_views", RecordId: "22463", RecordData: "dummy"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToMethod(w, r, "PUT", func() {
-					w.WriteHeader(http.StatusOK)
-					mockutils.WriteBody(w, `{"data":{"id":22463,"view":"companies",
-							"name":"Hierarchy overview","view_params":{},"is_default":false,"shared":false}}`)
-				})
-			})),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPUT(),
+				Then: mockserver.ResponseString(http.StatusOK, `{"data":{"id":22463,"view":"companies",
+					"name":"Hierarchy overview","view_params":{},"is_default":false,"shared":false}}`),
+			}.Server(),
 			Comparator: func(serverURL string, actual, expected *common.WriteResult) bool {
 				return mockutils.WriteResultComparator.SubsetData(actual, expected)
 			},

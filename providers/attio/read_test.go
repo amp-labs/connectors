@@ -3,12 +3,10 @@ package attio
 
 import (
 	"net/http"
-	"net/http/httptest"
 	"testing"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -45,11 +43,10 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "An Empty response",
 			Input: common.ReadParams{ObjectName: "webhooks", Fields: connectors.Fields("")},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				mockutils.WriteBody(w, `{"data":[]}`)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.ResponseString(http.StatusOK, `{"data":[]}`),
+			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 0,
 				Data: []common.ReadResultRow{},
@@ -60,11 +57,10 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Read list of all objects",
 			Input: common.ReadParams{ObjectName: "objects", Fields: connectors.Fields("")},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				_, _ = w.Write(responseObjects)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseObjects),
+			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{{
@@ -100,11 +96,10 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Read list of all lists",
 			Input: common.ReadParams{ObjectName: "lists", Fields: connectors.Fields("")},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				_, _ = w.Write(responseLists)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseLists),
+			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -142,11 +137,10 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Read list of all workspace members",
 			Input: common.ReadParams{ObjectName: "workspace_members", Fields: connectors.Fields("")},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				_, _ = w.Write(responseWorkspace)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseWorkspace),
+			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{{
@@ -186,11 +180,10 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Read list of all notes",
 			Input: common.ReadParams{ObjectName: "notes", Fields: connectors.Fields(""), NextPage: "test?limit=10"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				_, _ = w.Write(responseNotes)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseNotes),
+			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -220,11 +213,10 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Read list of all tasks",
 			Input: common.ReadParams{ObjectName: "tasks", Fields: connectors.Fields(""), NextPage: "test?limit=10"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				_, _ = w.Write(responseTasks)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseTasks),
+			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -260,11 +252,10 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Read list of all webhooks",
 			Input: common.ReadParams{ObjectName: "webhooks", Fields: connectors.Fields(""), NextPage: "test?limit=10"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				_, _ = w.Write(responseWebhooks)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseWebhooks),
+			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
