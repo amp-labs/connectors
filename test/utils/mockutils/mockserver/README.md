@@ -1,50 +1,57 @@
 # Description
 
-This folder contains utility methods used to mock API calls made by connector to provider APIs.
-Several common mock server structures are provided to check the request and select the desired response.
+This folder contains utility methods to mock API calls made by connectors to provider APIs. 
+It offers several types of mock servers to simulate different scenarios by evaluating incoming 
+requests and returning appropriate responses.
 
-There are multiple `mockservers`: 
-* Dummy
-* Fixed
-* Conditional(equivalent to If)
-* Switch
+## Mock Servers
+The package provides multiple mock server types:
+* **Dummy**: always returns a predefined status.
+* **Fixed**: returns a fixed response regardless of the request.
+* **Conditional**: (equivalent to `if`) returns responses based on request conditions.
+* **Switch**: matches requests against multiple conditions and selects the first matching response.
 
-# Mocks without this package
+# Without this package
 
-A mock server without using this package would look as follows:
+A typical mock server setup without using this package would look like:
 ```go
 Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write(data)
 })),
 ```
-This logic can become more complex for sophisticated connectors, where some may make multiple API calls, 
-many request conditions to be met. Common use cases are summarized below.
+For more complex connectors, this approach becomes unwieldy. 
+A connector may make multiple API calls, each requiring specific request conditions to be met.
+This package simplifies such scenarios.
 
-# Examples
+# Usage Examples
 
-## Dummy
+## Dummy Mock Server
 
+This mock server always returns StatusTeapot. It’s useful for tests that don’t yet need to handle API calls.
 ```go
 Server: mockserver.Dummy()
 ```
-Mockserver will consistently return `StatusTeapot`.
-Consider this when the test doesn't yet require handling API calls.
 
-## Fixed
+## Fixed Mock Server
 
+This server will always return a 200 status code with a predefined response (in this case, customers).
+It’s ideal for simple tests that only need a static response.
 ```go
 Server: mockserver.Fixed{
 	Setup:  mockserver.ContentJSON(),
 	Always: mockserver.Response(http.StatusOK, customers),
 }.Server(),
 ```
-Mockserver will always return customers data as response body with status 200.
-This is the simplest server, focused on returning a status code and/or some dummy data.
 
-## Conditional
+## Conditional Mock Server
 
+This mock server returns a 200 status code along with response data (e.g., indicating a job was created) 
+only if the conditions are met. The conditions in this example require that both the URL path and the request 
+body match expected values. If the conditions are not met, an optional Else clause can specify a default response 
+(otherwise the server defaults to a 500 status with a failure message).
+This is highly useful to ensure that requests are constructed properly by the connector with respect to provider APIs.
 ```go
 Server: mockserver.Conditional{
 	Setup: mockserver.ContentJSON(),
@@ -56,15 +63,13 @@ Server: mockserver.Conditional{
     Else: mockserver.Response(http.StatusOK, []byte{})
 }.Server(),
 ```
-Mockserver will return a status of 200 along with response data to indicate that a job was created, 
-but only if a condition is met. The condition is nested: both the request URL path suffix
-and the request body data must match the expected values for the condition to evaluate to true.
-Note: The else case is optional. If omitted, it defaults to a status of 500 with a JSON message, causing the test to fail.
 
-This is the most useful mock server. The test ensures that the deep connector builds requests according 
-to our expectations by providing a list of checks that the HTTP request must satisfy.
+## Switch Mock Server
 
-## Switch
+This mock server behaves like a Go switch statement, evaluating multiple cases and returning the response 
+for the first matching condition. In this example, it selects the response based on the request URL path, 
+with a default response if no cases match.
+This is particularly useful when a connector makes multiple API calls, each requiring a different response.
 
 ```go
 Server: mockserver.Switch{
@@ -79,9 +84,3 @@ Server: mockserver.Switch{
 	Default: mockserver.Response(http.StatusOK, []byte{}),
 }.Server(),
 ```
-Mockserver behaves differently based on the request bodies. In the example above,
-it makes its judgment based on the request URL path. The first matching condition will trigger the then clause.
-The check progresses from the first case to the last, resembling a Go switch statement.
-
-Consider using this when the connector makes multiple API calls, and you want to respond differently to each.
-The default can serve as a safeguard, returning a response that will ensure the connector fails the test.

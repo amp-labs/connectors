@@ -2,58 +2,85 @@
 
 This package is used by `mockserver` it provides common HTTP request checks.
 
-# Conditions
+## Key Features
+* Validate HTTP request properties (method, headers, query parameters, body, etc.).
+* Combine simple conditions into complex, nested conditional expressions.
+* Extendable by implementing custom conditions.
 
-## Simple
+# Usage
 
-These conditions ask if HTTP request matches a criteria.
-You can create custom condition by implementing `mockcond.Condition` interface.
+## Simple Conditions
+
+Simple conditions check if an HTTP request meets specific criteria.
+You can create your own custom conditions by implementing the `mockcond.Condition` interface.
 
 ### Examples
 
-Request URL path must match a string.
+Match a specific URL path suffix:
 ```go
 If:   mockcond.PathSuffix("/v2/tasks"),
 ```
 
-Request method must be POST.
+Ensure the request method is POST:
 ```go
 If:    mockcond.MethodPOST(),
 ```
 
-Request must have `startAt` query parameter with value `"17"`.
+Check for a query parameter with a specific value:
 ```go
 If:    mockcond.QueryParam("startAt", "17"),
 ```
 
-Request must NOT have query parameter.
+Ensure a query parameter is missing:
 ```go
 If:    mockcond.QueryParamsMissing("updated_at[gte]"),
 ```
 
-Request must have header.
+Check for a specific header:
 ```go
 If:    mockcond.Header(testApiVersionHeader),
 ```
 
-Request body data must be exact as expected text.
+Match the exact request body content:
 ```go
 If:    mockcond.Body(bodyRequest),
 ```
 
-## Complex
+## Complex Conditions
 
-Conditions can be joined and nested using `and` with `or` clauses. 
-They themselves act as a condition, and therefore they can be stacked in multiple levels
-resembling `()` brackets in conditionals. Ex: (cond1 and (cond2 or cond3))
+You can combine conditions using logical operators like `And` & `Or`. 
+These operators allow for nested conditions, enabling you to create complex validation expressions 
+that resemble logical conditionals in code.
 
 
 ### Examples
 
-Request must have header and be a DELETE method.
+Check for a header and ensure the method is DELETE:
 ```go
 If: mockcond.And{
 	mockcond.MethodDELETE(),
 	mockcond.Header(testApiVersionHeader),
 },
+```
+Match a specific URL path suffix for either GET or POST methods: 
+```go
+If: mockcond.And{
+    mockcond.PathSuffix("/api/resource"),
+    mockcond.Or{
+        mockcond.MethodGET(),
+        mockcond.MethodPOST(),
+    },
+},
+```
+
+## Custom Conditions
+You can create custom conditions by implementing the `mockcond.Condition` interface to suit your specific requirements.
+Here is a basic example of how to create a custom condition:
+```go
+type CustomCondition struct {}
+
+func (c CustomCondition) EvaluateCondition(w http.ResponseWriter, r *http.Request) bool {
+	// Implementation goes here. 
+	return true
+}
 ```
