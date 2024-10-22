@@ -186,6 +186,9 @@ type ReadMethod func(context.Context, *urlbuilder.URL, any, ...Header) (*JSONHTT
 // Ex: Post/Put/Patch.
 type WriteMethod func(context.Context, string, any, ...Header) (*JSONHTTPResponse, error)
 
+// DeleteMethod is signature for any HTTP method that performs removing.
+type DeleteMethod func(context.Context, *urlbuilder.URL, any, ...Header) (*JSONHTTPResponse, error)
+
 // NewHTTPStatusError creates a new error with the given HTTP status.
 func NewHTTPStatusError(status int, err error) error {
 	if status < 1 || status > 599 {
