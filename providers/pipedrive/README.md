@@ -11,33 +11,37 @@ Pipedrive API version : v1
 
 | Object | Resource | Method |
 | :-------- | :------- | :-------- |
-| Activities | activities | Read |
+| Activities | activities | Read, Write |
 | Activity Fields | activityFields | Read |
-| Activity Types | activityTypes | Read |
-| Call Logs | callLogs | Read |
+| Activity Types | activityTypes | Read, Write |
+| Call Logs | callLogs | Read, Write |
+| Channels | channel| Write |
 | Currencies | currencies| Read |
-| Deals | deals | Read |
-| Deal Fields | dealFields| Read |
-| Files | files | Read |
-| Filters | filters | Read |
-| Leads | leads| Read |
-| Lead Labels | leadLabels | Read |
+| Deals | deals | Read, Write |
+| Deal Fields | dealFields| Read,Write |
+| Files | files | Read,Write |
+| Filters | filters | Read,Write |
+| Goals | goals | Write|
+| Leads | leads| Read,Write |
+| Lead Labels | leadLabels | Read,Write |
 | Lead Sources | leadSources | Read |
-| Legacy Teams | legacyTeams | Read |
-| Notes | notes | Read |
+| Legacy Teams | legacyTeams | Read,Write |
+| Notes | notes | Read,Write |
 | Note Fields | noteFields | Read |
-| Organizations | organizations | Read |
+| Organizations | organizations | Read,Write |
 | Organization Fields | organizationFields | Read, Write |
-| Organization Relationships | organizationRelationships | Read |
+| Organization Relationships | organizationRelationships | Read,Write |
 | Permission Sets | permissionSets | Read |
-| Persons |  persons | Read |
-| Person Fields | personFields | Read |
-| Pipelines  | pipelines | Read |
-| Products | products | Read |
-| Product Fields | productFields | Read |
-| Roles | roles | Read | 
-| Stages | stages | Read |
-| Users | users | Read |
+| Persons |  persons | Read,Write |
+| Person Fields | personFields | Read,Write |
+| Pipelines  | pipelines | Read,Write |
+| Products | products | Read,Write |
+| Projects | projects | Write |
+| Product Fields | productFields | Read,Write |
+| Roles | roles | Read,Write | 
+| Stages | stages | Read,Write |
+| Tasks | tasks | Write |
+| Users | users | Read,Write |
 | User Connections | userConnections | Read |
 | User Settings | userSettings | Read |
-| Webhooks | webhooks | Read |
+| Webhooks | webhooks | Read,Write |
