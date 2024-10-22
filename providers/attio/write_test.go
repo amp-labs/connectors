@@ -55,7 +55,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			})),
 			Expected: &common.WriteResult{
 				Success:  true,
-				RecordId: "",
+				RecordId: "bf012982-06a9-47f7-9e87-07dc4945d502",
 				Errors:   nil,
 				Data: map[string]any{
 					"api_slug":   "deal",
@@ -82,7 +82,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			})),
 			Expected: &common.WriteResult{
 				Success:  true,
-				RecordId: "",
+				RecordId: "bf012982-06a9-47f7-9e87-07dc4945d502",
 				Errors:   nil,
 				Data: map[string]any{
 					"api_slug":   "deal",
@@ -109,7 +109,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			})),
 			Expected: &common.WriteResult{
 				Success:  true,
-				RecordId: "",
+				RecordId: "e09a041c-0555-4bb2-8f6e-997bfc9b54e8",
 				Errors:   nil,
 				Data: map[string]any{
 					"api_slug":   "sales_investing",
@@ -149,7 +149,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			})),
 			Expected: &common.WriteResult{
 				Success:  true,
-				RecordId: "",
+				RecordId: "e09a041c-0555-4bb2-8f6e-997bfc9b54e8",
 				Errors:   nil,
 				Data: map[string]any{
 					"api_slug":   "sales_investing",
@@ -189,7 +189,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			})),
 			Expected: &common.WriteResult{
 				Success:  true,
-				RecordId: "",
+				RecordId: "126e58a5-5e3f-4644-89ff-6474e97fcecd",
 				Errors:   nil,
 				Data: map[string]any{
 					"content_plaintext": "summary",
@@ -221,7 +221,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			})),
 			Expected: &common.WriteResult{
 				Success:  true,
-				RecordId: "",
+				RecordId: "b38142c7-00f6-4d92-813e-7b0f689a5873",
 				Errors:   nil,
 				Data: map[string]any{
 					"assignees": []any{
@@ -264,7 +264,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			})),
 			Expected: &common.WriteResult{
 				Success:  true,
-				RecordId: "",
+				RecordId: "b38142c7-00f6-4d92-813e-7b0f689a5873",
 				Errors:   nil,
 				Data: map[string]any{
 					"assignees": []any{
@@ -307,7 +307,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			})),
 			Expected: &common.WriteResult{
 				Success:  true,
-				RecordId: "",
+				RecordId: "7e5209b8-bd4e-41d9-bbcd-2f9bab7d4030",
 				Errors:   nil,
 				Data: map[string]any{
 					"created_at": "2024-10-04T10:05:01.173000000Z",
@@ -340,7 +340,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			})),
 			Expected: &common.WriteResult{
 				Success:  true,
-				RecordId: "",
+				RecordId: "7e5209b8-bd4e-41d9-bbcd-2f9bab7d4030",
 				Errors:   nil,
 				Data: map[string]any{
 					"created_at": "2024-10-04T10:05:01.173000000Z",
