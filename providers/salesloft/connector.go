@@ -13,6 +13,7 @@ import (
 	"github.com/amp-labs/connectors/internal/deep"
 	"github.com/amp-labs/connectors/internal/deep/dpobjects"
 	"github.com/amp-labs/connectors/internal/deep/dpread"
+	"github.com/amp-labs/connectors/internal/deep/dpwrite"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/spyzhov/ajson"
 )
@@ -23,17 +24,20 @@ type Connector struct {
 	deep.Clients
 	deep.EmptyCloser
 	deep.Reader
+	deep.Writer
 }
 
 func constructor(
 	clients *deep.Clients,
 	closer *deep.EmptyCloser,
 	reader *deep.Reader,
+	writer *deep.Writer,
 ) *Connector {
 	return &Connector{
 		Clients:     *clients,
 		EmptyCloser: *closer,
 		Reader:      *reader,
+		Writer:      *writer,
 	}
 }
 
@@ -49,6 +53,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		readFirstPage,
 		readNextPage,
 		readResponse,
+		writeResponse,
 	)
 }
 
@@ -63,7 +68,8 @@ var (
 		},
 	}
 	objectSupport = dpobjects.SupportRegistry{ //nolint:gochecknoglobals
-		Read: supportedObjectsByRead,
+		Read:            supportedObjectsByRead,
+		AllowAllObjects: true,
 	}
 	readFirstPage = dpread.FirstPageBuilder{ //nolint:gochecknoglobals
 		Build: func(config common.ReadParams, url *urlbuilder.URL) (*urlbuilder.URL, error) {
@@ -107,6 +113,37 @@ var (
 	readResponse = dpread.ResponseLocator{ //nolint:gochecknoglobals
 		Locate: func(config common.ReadParams, node *ajson.Node) string {
 			return "data"
+		},
+	}
+	writeResponse = dpwrite.ResponseBuilder{ //nolint:gochecknoglobals
+		Build: func(config common.WriteParams, body *ajson.Node) (*common.WriteResult, error) {
+			nested, err := jsonquery.New(body).Object("data", false)
+			if err != nil {
+				return nil, err
+			}
+
+			rawID, err := jsonquery.New(nested).Integer("id", true)
+			if err != nil {
+				return nil, err
+			}
+
+			recordID := ""
+			if rawID != nil {
+				// optional
+				recordID = strconv.FormatInt(*rawID, 10)
+			}
+
+			data, err := jsonquery.Convertor.ObjectToMap(nested)
+			if err != nil {
+				return nil, err
+			}
+
+			return &common.WriteResult{
+				Success:  true,
+				RecordId: recordID,
+				Errors:   nil,
+				Data:     data,
+			}, nil
 		},
 	}
 )
