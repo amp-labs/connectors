@@ -20,29 +20,29 @@ type Explorer struct {
 // make 2 calls as they will have different arguments in particular PathMatchingStrategy,
 // and then Combine two lists of schemas.
 func (e Explorer) ReadObjectsGet(
-	matchingStrategy PathMatcherStrategy,
+	pathMatcher PathMatcher,
 	objectEndpoints map[string]string,
 	displayNameOverride map[string]string,
 	check ObjectCheck,
 ) (Schemas, error) {
-	return e.ReadObjects("GET", matchingStrategy, objectEndpoints, displayNameOverride, check)
+	return e.ReadObjects("GET", pathMatcher, objectEndpoints, displayNameOverride, check)
 }
 
 // ReadObjectsPost is the same as ReadObjectsGet but retrieves schemas for endpoints that perform reading via POST.
 func (e Explorer) ReadObjectsPost(
-	matchingStrategy PathMatcherStrategy,
+	pathMatcher PathMatcher,
 	objectEndpoints map[string]string,
 	displayNameOverride map[string]string,
 	check ObjectCheck,
 ) (Schemas, error) {
-	return e.ReadObjects("POST", matchingStrategy, objectEndpoints, displayNameOverride, check)
+	return e.ReadObjects("POST", pathMatcher, objectEndpoints, displayNameOverride, check)
 }
 
 // ReadObjects will explore OpenAPI file returning list of Schemas.
 // See every parameter for detailed customization.
 //
 // operationName - under which REST operation the schema resides. Ex: GET - list reading, POST - search reading.
-// pathMatchingStrategy - guides which URL paths to include in search or to ignore. Should be exhaustive list.
+// pathMatcher - guides which URL paths to include in search or to ignore.
 // objectEndpoints - URL path mapped to ObjectName.
 // Ex: 	/customer/orders -> orders.
 //
@@ -56,14 +56,12 @@ func (e Explorer) ReadObjectsPost(
 //	the implementation indicates that schema will be located under `data`.
 func (e Explorer) ReadObjects(
 	operationName string,
-	matchingStrategy PathMatcherStrategy,
+	pathMatcher PathMatcher,
 	objectEndpoints map[string]string,
 	displayNameOverride map[string]string,
 	check ObjectCheck,
 ) (Schemas, error) {
 	schemas := make(Schemas, 0)
-
-	pathMatcher := matchingStrategy.GivePathMatcher()
 
 	for _, path := range e.GetPathItems(pathMatcher, objectEndpoints) {
 		schema, found, err := path.RetrieveSchemaOperation(operationName,

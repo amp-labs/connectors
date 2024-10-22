@@ -62,9 +62,8 @@ func main() {
 	must(err)
 
 	objects, err := explorer.ReadObjectsGet(
-		&api3.DenyPathStrategy{
-			Paths: ignoreEndpoints,
-		}, nil, nil, api3.IdenticalObjectCheck,
+		api3.NewDenyPathStrategy(ignoreEndpoints),
+		nil, nil, api3.IdenticalObjectCheck,
 	)
 	must(err)
 

@@ -67,9 +67,8 @@ func main() {
 	}
 
 	objects, err := explorer.ReadObjectsGet(
-		&api3.DenyPathStrategy{
-			Paths: ignoreEndpoints,
-		}, nil, displayName,
+		api3.NewDenyPathStrategy(ignoreEndpoints),
+		nil, displayName,
 		api3.DataObjectCheck)
 	if err != nil {
 		log.Fatalln(err)
