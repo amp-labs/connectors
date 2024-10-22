@@ -21,7 +21,8 @@ type ParamAssurance interface {
 // as they are applied last and therefore take higher precedence.
 func Apply[P ParamAssurance](params P,
 	opts []func(params *P),
-	defaultOpts ...func(params *P)) (paramsOut *P, outErr error) {
+	defaultOpts ...func(params *P),
+) (paramsOut *P, outErr error) {
 	defer common.PanicRecovery(func(cause error) {
 		// Options may have calls to panic().
 		// We allow this and recover by converting it to normal error.
