@@ -270,13 +270,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Since:      time.Unix(1726674883, 0),
 			},
 			// notes is not supported for now, but its payload is good for testing
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToBody(w, r, string(requestSearchConversations), func() {
-					w.WriteHeader(http.StatusOK)
-					_, _ = w.Write(responseSearchConversations)
-				})
-			})),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.BodyBytes(requestSearchConversations),
+				Then:  mockserver.Response(http.StatusOK, responseSearchConversations),
+			}.Server(),
 			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
 				expectedNextPage := strings.ReplaceAll(expected.NextPage.String(), "{{testServerURL}}", baseURL)
 
