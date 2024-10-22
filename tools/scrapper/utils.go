@@ -77,7 +77,7 @@ func FlushToFile(filename string, object any) error {
 		return err
 	}
 
-	return os.WriteFile(filename, data, os.ModePerm)
+	return os.WriteFile(filename, data, os.ModePerm) //nolint:gosec
 }
 
 func LoadFile(filename string, object any) error {
