@@ -81,8 +81,8 @@ func main() {
 	must(err)
 
 	objects, err := explorer.ReadObjectsGet(
-		&api3.PathMatchingStrategy{
-			DenyPaths: ignoreEndpoints,
+		&api3.DenyPathStrategy{
+			Paths: ignoreEndpoints,
 		}, nil, displayNameOverride,
 		api3.CustomMappingObjectCheck(zendesksupport.ObjectNameToResponseField),
 	)
