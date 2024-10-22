@@ -30,3 +30,21 @@ func (r *ObjectMetadataResult) Select(objectNames []string) (*common.ListObjectM
 
 	return list, nil
 }
+
+// SelectOne reads one object metadata from the static file.
+func (r *ObjectMetadataResult) SelectOne(objectName string) (*common.ObjectMetadata, error) {
+	mtd := common.ObjectMetadata{
+		FieldsMap: make(map[string]string),
+	}
+
+	if v, ok := r.Result[objectName]; ok {
+		mtd = common.ObjectMetadata{
+			DisplayName: v.DisplayName,
+			FieldsMap:   v.FieldsMap,
+		}
+	} else {
+		return nil, fmt.Errorf("%w: unknown object [%v]", ErrObjectNotFound, objectName)
+	}
+
+	return &mtd, nil
+}

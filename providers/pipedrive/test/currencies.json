@@ -1,0 +1,13 @@
+{
+  "success":false,
+  "data":[{
+      "active_flag": "active_flag",
+      "code": "code",
+      "decimal_points": "decimal_points",
+      "id": "id",
+      "is_custom_flag": "is_custom_flag",
+      "name": "name",
+      "symbol": "symbol"
+    }
+  ]
+}
