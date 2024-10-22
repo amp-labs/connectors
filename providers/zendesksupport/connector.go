@@ -1,65 +1,134 @@
 package zendesksupport
 
 import (
+	"strconv"
+
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
+	"github.com/amp-labs/connectors/common/jsonquery"
+	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/deep"
+	"github.com/amp-labs/connectors/internal/deep/dpmetadata"
+	"github.com/amp-labs/connectors/internal/deep/dpobjects"
+	"github.com/amp-labs/connectors/internal/deep/dpread"
+	"github.com/amp-labs/connectors/internal/deep/dpwrite"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/zendesksupport/metadata"
+	"github.com/spyzhov/ajson"
 )
 
 const apiVersion = "v2"
 
 type Connector struct {
-	BaseURL string
-	Client  *common.JSONHTTPClient
+	deep.Clients
+	deep.EmptyCloser
+	deep.Reader
+	deep.Writer
+	deep.StaticMetadata
+	deep.Remover
 }
 
-func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	defer common.PanicRecovery(func(cause error) {
-		outErr = cause
-		conn = nil
-	})
+type parameters struct {
+	paramsbuilder.Client
+	paramsbuilder.Workspace
+}
 
-	params, err := paramsbuilder.Apply(parameters{}, opts)
-	if err != nil {
-		return nil, err
+func NewConnector(opts ...Option) (*Connector, error) { //nolint:funlen
+	constructor := func(
+		clients *deep.Clients,
+		closer *deep.EmptyCloser,
+		reader *deep.Reader,
+		writer *deep.Writer,
+		remover *deep.Remover,
+		staticMetadata *deep.StaticMetadata,
+	) *Connector {
+		return &Connector{
+			Clients:        *clients,
+			EmptyCloser:    *closer,
+			Reader:         *reader,
+			Writer:         *writer,
+			StaticMetadata: *staticMetadata,
+			Remover:        *remover,
+		}
 	}
+	errorHandler := interpreter.ErrorHandler{
+		JSON: interpreter.NewFaultyResponder(errorFormats, statusCodeMapping),
+	}
+	meta := dpmetadata.SchemaHolder{
+		Metadata: metadata.Schemas,
+	}
+	objectURLResolver := dpobjects.URLFormat{
+		Produce: func(method dpobjects.Method, baseURL, objectName string) (*urlbuilder.URL, error) {
+			return urlbuilder.New(baseURL, apiVersion, objectName)
+		},
+	}
+	objectSupport := dpobjects.Registry{
+		Read: supportedObjectsByRead,
+	}
+	nextPage := dpread.NextPageBuilder{
+		Build: func(config common.ReadParams, url *urlbuilder.URL, node *ajson.Node) (string, error) {
+			return jsonquery.New(node, "links").StrWithDefault("next", "")
+		},
+	}
+	readObjectLocator := dpread.ResponseLocator{
+		Locate: func(config common.ReadParams, node *ajson.Node) string {
+			return ObjectNameToResponseField.Get(config.ObjectName)
+		},
+	}
+	writeResultBuilder := dpwrite.ResponseBuilder{
+		Build: func(config common.WriteParams, body *ajson.Node) (*common.WriteResult, error) {
+			nested, err := jsonquery.New(body).Object(config.ObjectName, true)
+			if err != nil {
+				return nil, err
+			}
 
-	httpClient := params.Client.Caller
-	conn = &Connector{
-		Client: &common.JSONHTTPClient{
-			HTTPClient: httpClient,
+			if nested == nil {
+				// Field should be in singular form. Either one will be matched.
+				// This one is NOT optional.
+				nested, err = jsonquery.New(body).Object(
+					naming.NewSingularString(config.ObjectName).String(),
+					false,
+				)
+				if err != nil {
+					return nil, err
+				}
+			}
+			// nested node now must be not null, carry on
+
+			rawID, err := jsonquery.New(nested).Integer("id", true)
+			if err != nil {
+				return nil, err
+			}
+
+			recordID := ""
+			if rawID != nil {
+				// optional
+				recordID = strconv.FormatInt(*rawID, 10)
+			}
+
+			data, err := jsonquery.Convertor.ObjectToMap(nested)
+			if err != nil {
+				return nil, err
+			}
+
+			return &common.WriteResult{
+				Success:  true,
+				RecordId: recordID,
+				Errors:   nil,
+				Data:     data,
+			}, nil
 		},
 	}
 
-	providerInfo, err := providers.ReadInfo(conn.Provider(), &params.Workspace)
-	if err != nil {
-		return nil, err
-	}
-
-	// connector and its client must mirror base url and provide its own error parser
-	conn.setBaseURL(providerInfo.BaseURL)
-	conn.Client.HTTPClient.ErrorHandler = interpreter.ErrorHandler{
-		JSON: interpreter.NewFaultyResponder(errorFormats, statusCodeMapping),
-	}.Handle
-
-	return conn, nil
-}
-
-func (c *Connector) Provider() providers.Provider {
-	return providers.ZendeskSupport
-}
-
-func (c *Connector) String() string {
-	return c.Provider() + ".Connector"
-}
-
-func (c *Connector) getURL(arg string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.BaseURL, apiVersion, arg)
-}
-
-func (c *Connector) setBaseURL(newURL string) {
-	c.BaseURL = newURL
-	c.Client.HTTPClient.Base = newURL
+	return deep.Connector[Connector, parameters](constructor, providers.ZendeskSupport, opts,
+		meta,
+		errorHandler,
+		objectURLResolver,
+		objectSupport,
+		nextPage,
+		readObjectLocator,
+		writeResultBuilder,
+	)
 }

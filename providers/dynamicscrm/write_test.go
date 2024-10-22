@@ -3,6 +3,8 @@ package dynamicscrm
 import (
 	"errors"
 	"net/http"
+	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/amp-labs/connectors"
@@ -71,8 +73,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.MethodPATCH(),
-				Then:  mockserver.Response(http.StatusNoContent),
+				If: mockcond.And{
+					mockcond.MethodPATCH(),
+					mockcond.PathSuffix("/fax(dd2f7870-3fe8-ee11-a204-0022481f9e3c)"),
+				},
+				Then: mockserver.Response(http.StatusNoContent),
 			}.Server(),
 			Expected:     &common.WriteResult{Success: true},
 			ExpectedErrs: nil,

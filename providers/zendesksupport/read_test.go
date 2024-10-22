@@ -177,7 +177,7 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 	}
 
 	// for testing we want to redirect calls to our mock server
-	connector.setBaseURL(serverURL)
+	connector.WithBaseURL(serverURL)
 
 	return connector, nil
 }
