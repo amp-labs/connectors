@@ -25,15 +25,15 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		return nil, err
 	}
 
-	providerInfo, err := providers.ReadInfo(providers.Zoho)
-	if err != nil {
-		return nil, err
-	}
-
 	conn = &Connector{
 		Client: &common.JSONHTTPClient{
 			HTTPClient: params.Client.Caller,
 		},
+	}
+
+	providerInfo, err := providers.ReadInfo(conn.Provider())
+	if err != nil {
+		return nil, err
 	}
 
 	conn.setBaseURL(providerInfo.BaseURL)
@@ -48,7 +48,7 @@ func (c *Connector) setBaseURL(newURL string) {
 
 // Provider returns the connector provider.
 func (c *Connector) Provider() providers.Provider {
-	return providers.Marketo
+	return providers.Zoho
 }
 
 func (c *Connector) getAPIURL(prefix string) (*urlbuilder.URL, error) {
