@@ -49,21 +49,21 @@ var (
 
 func main() {
 	explorer, err := openapi.FileManager.GetExplorer()
-	must(err)
+	handy.Must(err)
 
 	readObjects, err := explorer.ReadObjectsGet(
 		api3.NewDenyPathStrategy(ignoreEndpoints),
 		nil, displayNameOverride,
 		api3.CustomMappingObjectCheck(intercom.ObjectNameToResponseField),
 	)
-	must(err)
+	handy.Must(err)
 
 	searchObjects, err := explorer.ReadObjectsPost(
 		api3.NewAllowPathStrategy(searchEndpoints),
 		searchObjectEndpoints, displayNameOverride,
 		api3.CustomMappingObjectCheck(intercom.ObjectNameToResponseField),
 	)
-	must(err)
+	handy.Must(err)
 
 	objects := searchObjects.Combine(readObjects)
 
@@ -87,14 +87,8 @@ func main() {
 		}
 	}
 
-	must(metadata.FileManager.SaveSchemas(schemas))
-	must(metadata.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
+	handy.Must(metadata.FileManager.SaveSchemas(schemas))
+	handy.Must(metadata.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
 
 	slog.Info("Completed.")
-}
-
-func must(err error) {
-	if err != nil {
-		panic(err)
-	}
 }
