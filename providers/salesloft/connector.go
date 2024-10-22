@@ -11,10 +11,12 @@ import (
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/deep"
+	"github.com/amp-labs/connectors/internal/deep/dpmetadata"
 	"github.com/amp-labs/connectors/internal/deep/dpobjects"
 	"github.com/amp-labs/connectors/internal/deep/dpread"
 	"github.com/amp-labs/connectors/internal/deep/dpwrite"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/salesloft/metadata"
 	"github.com/spyzhov/ajson"
 )
 
@@ -25,6 +27,7 @@ type Connector struct {
 	deep.EmptyCloser
 	deep.Reader
 	deep.Writer
+	deep.StaticMetadata
 }
 
 func constructor(
@@ -32,12 +35,14 @@ func constructor(
 	closer *deep.EmptyCloser,
 	reader *deep.Reader,
 	writer *deep.Writer,
+	staticMetadata *deep.StaticMetadata,
 ) *Connector {
 	return &Connector{
-		Clients:     *clients,
-		EmptyCloser: *closer,
-		Reader:      *reader,
-		Writer:      *writer,
+		Clients:        *clients,
+		EmptyCloser:    *closer,
+		Reader:         *reader,
+		Writer:         *writer,
+		StaticMetadata: *staticMetadata,
 	}
 }
 
@@ -54,6 +59,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		readNextPage,
 		readResponse,
 		writeResponse,
+		metadataSchema,
 	)
 }
 
@@ -145,6 +151,9 @@ var (
 				Data:     data,
 			}, nil
 		},
+	}
+	metadataSchema = dpmetadata.SchemaHolder{ //nolint:gochecknoglobals
+		Metadata: metadata.Schemas,
 	}
 )
 
