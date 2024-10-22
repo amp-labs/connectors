@@ -62,6 +62,6 @@ func (c *Connector) setBaseURL(newURL string) {
 	c.Client.HTTPClient.Base = newURL
 }
 
-func (c *Connector) getApiURL(arg string) (*urlbuilder.URL, error) {
+func (c *Connector) getAPIURL(arg string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(c.BaseURL, apiVersion, arg)
 }
