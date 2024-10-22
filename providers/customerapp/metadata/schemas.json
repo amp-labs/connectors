@@ -1,0 +1,217 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "/v1",
+      "objects": {
+        "activities": {
+          "displayName": "Activities",
+          "path": "/activities",
+          "fields": {
+            "customer_id": "customer_id",
+            "customer_identifiers": "customer_identifiers",
+            "data": "data",
+            "delivery_id": "delivery_id",
+            "delivery_type": "delivery_type",
+            "id": "id",
+            "timestamp": "timestamp",
+            "type": "type"
+          }
+        },
+        "broadcasts": {
+          "displayName": "Broadcasts",
+          "path": "/broadcasts",
+          "fields": {
+            "actions": "actions",
+            "active": "active",
+            "created": "created",
+            "deduplicate_id": "deduplicate_id",
+            "first_started": "first_started",
+            "id": "id",
+            "msg_template_ids": "msg_template_ids",
+            "name": "name",
+            "state": "state",
+            "tags": "tags",
+            "type": "type",
+            "updated": "updated"
+          }
+        },
+        "collections": {
+          "displayName": "Collections",
+          "path": "/collections",
+          "fields": {
+            "bytes": "bytes",
+            "created_at": "created_at",
+            "id": "id",
+            "name": "name",
+            "rows": "rows",
+            "schema": "schema",
+            "updated_at": "updated_at"
+          }
+        },
+        "exports": {
+          "displayName": "Exports",
+          "path": "/exports",
+          "fields": {
+            "created_at": "created_at",
+            "deduplicate_id": "deduplicate_id",
+            "description": "description",
+            "downloads": "downloads",
+            "failed": "failed",
+            "id": "id",
+            "status": "status",
+            "total": "total",
+            "type": "type",
+            "updated_at": "updated_at",
+            "user_email": "user_email",
+            "user_id": "user_id"
+          }
+        },
+        "messages": {
+          "displayName": "Messages",
+          "path": "/messages",
+          "fields": {
+            "action_id": "action_id",
+            "broadcast_id": "broadcast_id",
+            "campaign_id": "campaign_id",
+            "content_id": "content_id",
+            "created": "created",
+            "customer_id": "customer_id",
+            "customer_identifiers": "customer_identifiers",
+            "deduplicate_id": "deduplicate_id",
+            "failure_message": "failure_message",
+            "forgotten": "forgotten",
+            "id": "id",
+            "message_template_id": "message_template_id",
+            "metrics": "metrics",
+            "newsletter_id": "newsletter_id",
+            "parent_action_id": "parent_action_id",
+            "recipient": "recipient",
+            "subject": "subject",
+            "trigger_event_id": "trigger_event_id",
+            "type": "type"
+          }
+        },
+        "newsletters": {
+          "displayName": "Newsletters",
+          "path": "/newsletters",
+          "fields": {
+            "content_ids": "content_ids",
+            "created": "created",
+            "deduplicate_id": "deduplicate_id",
+            "id": "id",
+            "name": "name",
+            "recipient_segment_ids": "recipient_segment_ids",
+            "sent_at": "sent_at",
+            "subscription_topic_id": "subscription_topic_id",
+            "tags": "tags",
+            "type": "type",
+            "updated": "updated"
+          }
+        },
+        "object_types": {
+          "displayName": "Object Types",
+          "path": "/object_types",
+          "fields": {
+            "enabled": "enabled",
+            "icon": "icon",
+            "id": "id",
+            "name": "name",
+            "singular_name": "singular_name",
+            "singular_slug": "singular_slug",
+            "slug": "slug"
+          }
+        },
+        "reporting_webhooks": {
+          "displayName": "Reporting Webhooks",
+          "path": "/reporting_webhooks",
+          "fields": {
+            "disabled": "disabled",
+            "endpoint": "endpoint",
+            "events": "events",
+            "full_resolution": "full_resolution",
+            "id": "id",
+            "name": "name",
+            "with_content": "with_content"
+          }
+        },
+        "segments": {
+          "displayName": "Segments",
+          "path": "/segments",
+          "fields": {
+            "deduplicate_id": "deduplicate_id",
+            "description": "description",
+            "id": "id",
+            "name": "name",
+            "progress": "progress",
+            "state": "state",
+            "tags": "tags",
+            "type": "type"
+          }
+        },
+        "sender_identities": {
+          "displayName": "Sender Identities",
+          "path": "/sender_identities",
+          "fields": {
+            "address": "address",
+            "auto_generated": "auto_generated",
+            "deduplicate_id": "deduplicate_id",
+            "email": "email",
+            "id": "id",
+            "name": "name",
+            "template_type": "template_type"
+          }
+        },
+        "snippets": {
+          "displayName": "Snippets",
+          "path": "/snippets",
+          "fields": {
+            "name": "name",
+            "updated_at": "updated_at",
+            "value": "value"
+          }
+        },
+        "subscription_topics": {
+          "displayName": "Subscription Topics",
+          "path": "/subscription_topics",
+          "fields": {
+            "description": "description",
+            "id": "id",
+            "identifier": "identifier",
+            "name": "name",
+            "subscribed_by_default": "subscribed_by_default"
+          }
+        },
+        "transactional": {
+          "displayName": "Transactional",
+          "path": "/transactional",
+          "fields": {
+            "created_at": "created_at",
+            "description": "description",
+            "hide_message_body": "hide_message_body",
+            "id": "id",
+            "link_tracking": "link_tracking",
+            "name": "name",
+            "open_tracking": "open_tracking",
+            "queue_drafts": "queue_drafts",
+            "send_to_unsubscribed": "send_to_unsubscribed",
+            "updated_at": "updated_at"
+          }
+        },
+        "workspaces": {
+          "displayName": "Workspaces",
+          "path": "/workspaces",
+          "fields": {
+            "billable_messages_sent": "billable_messages_sent",
+            "id": "id",
+            "messages_sent": "messages_sent",
+            "name": "name",
+            "object_types": "object_types",
+            "objects": "objects",
+            "people": "people"
+          }
+        }
+      }
+    }
+  }
+}
