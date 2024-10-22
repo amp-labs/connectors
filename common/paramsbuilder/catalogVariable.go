@@ -50,3 +50,29 @@ func NewCatalogVariables[V substitutions.RegistryValue](registry substitutions.R
 
 	return result
 }
+
+// ExtractCatalogVariables accepts any struct that embeds one or multiple CatalogVariables.
+// It will try to explore all known implementors of CatalogVariable and return them.
+func ExtractCatalogVariables(parameters any) []CatalogVariable {
+	var catalogsVars []CatalogVariable
+
+	// Workspace is the only known CatalogVariable
+	if workspaceHolder, ok := parameters.(WorkspaceHolder); ok {
+		workspace := workspaceHolder.GiveWorkspace()
+		catalogsVars = append(catalogsVars, workspace)
+	}
+
+	return catalogsVars
+}
+
+// CustomCatalogVariable is a variable that can be created on the fly. Just specify the plan of what
+// should be replaced with what data, it implements CatalogVariable.
+type CustomCatalogVariable struct {
+	Plan SubstitutionPlan
+}
+
+var _ CatalogVariable = CustomCatalogVariable{}
+
+func (c CustomCatalogVariable) GetSubstitutionPlan() SubstitutionPlan {
+	return c.Plan
+}
