@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"net/http"
-	"net/http/httptest"
 	"testing"
 
 	"github.com/amp-labs/connectors"
@@ -31,21 +30,19 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Server response must include array",
 			Input: []string{"butterflies"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				mockutils.WriteBody(w, ``)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.ResponseString(http.StatusOK, ""),
+			}.Server(),
 			ExpectedErrs: []error{common.ErrEmptyJSONHTTPResponse},
 		},
 		{
 			Name:  "Server response must have at least one field",
 			Input: []string{"butterflies"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				mockutils.WriteBody(w, `[]`)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.ResponseString(http.StatusOK, `[]`),
+			}.Server(),
 			ExpectedErrs: []error{
 				ErrMissingMetadata,
 				ErrParsingMetadata,
@@ -54,31 +51,28 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Field response must have identifier",
 			Input: []string{"butterflies"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				mockutils.WriteBody(w, `[{}]`)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.ResponseString(http.StatusOK, `[{}]`),
+			}.Server(),
 			ExpectedErrs: []error{ErrParsingMetadata},
 		},
 		{
 			Name:  "Field response must have display name",
 			Input: []string{"butterflies"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				mockutils.WriteBody(w, `[{"id": "issuerestriction"}]`)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.ResponseString(http.StatusOK, `[{"id": "issuerestriction"}]`),
+			}.Server(),
 			ExpectedErrs: []error{ErrParsingMetadata},
 		},
 		{
 			Name:  "Successfully describe Issue metadata",
 			Input: []string{},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				_, _ = w.Write(responseIssueSchema)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseIssueSchema),
+			}.Server(),
 			Comparator: func(baseURL string, actual, expected *common.ListObjectMetadataResult) bool {
 				return mockutils.MetadataResultComparator.SubsetFields(actual, expected)
 			},

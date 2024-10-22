@@ -3,12 +3,11 @@ package attio
 
 import (
 	"net/http"
-	"net/http/httptest"
 	"testing"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -17,7 +16,7 @@ import (
 func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
-	responseObject := testutils.DataFromFile(t, "write_objects.json")
+	responseObj := testutils.DataFromFile(t, "write_objects.json")
 	listResponse := testutils.DataFromFile(t, "write_lists.json")
 	notesresponse := testutils.DataFromFile(t, "write_notes.json")
 	tasksResponse := testutils.DataFromFile(t, "write_tasks.json")
@@ -46,13 +45,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Create objects as POST",
 			Input: common.WriteParams{ObjectName: "objects", RecordData: "dummy"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToMethod(w, r, "POST", func() {
-					w.WriteHeader(http.StatusOK)
-					_, _ = w.Write(responseObject)
-				})
-			})),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPOST(),
+				Then:  mockserver.Response(http.StatusOK, responseObj),
+			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "bf012982-06a9-47f7-9e87-07dc4945d502",
@@ -73,13 +70,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Update objects as PATCH",
 			Input: common.WriteParams{ObjectName: "objects", RecordId: "bf012982-06a9-47f7-9e87-07dc4945d502", RecordData: "dummy"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToMethod(w, r, "PATCH", func() {
-					w.WriteHeader(http.StatusOK)
-					_, _ = w.Write(responseObject)
-				})
-			})),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPATCH(),
+				Then:  mockserver.Response(http.StatusOK, responseObj),
+			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "bf012982-06a9-47f7-9e87-07dc4945d502",
@@ -100,13 +95,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Create lists as POST",
 			Input: common.WriteParams{ObjectName: "lists", RecordData: "dummy"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToMethod(w, r, "POST", func() {
-					w.WriteHeader(http.StatusOK)
-					_, _ = w.Write(listResponse)
-				})
-			})),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPOST(),
+				Then:  mockserver.Response(http.StatusOK, listResponse),
+			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "e09a041c-0555-4bb2-8f6e-997bfc9b54e8",
@@ -140,13 +133,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Update lists as PATCH",
 			Input: common.WriteParams{ObjectName: "lists", RecordId: "e09a041c-0555-4bb2-8f6e-997bfc9b54e8", RecordData: "dummy"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToMethod(w, r, "PATCH", func() {
-					w.WriteHeader(http.StatusOK)
-					_, _ = w.Write(listResponse)
-				})
-			})),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPATCH(),
+				Then:  mockserver.Response(http.StatusOK, listResponse),
+			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "e09a041c-0555-4bb2-8f6e-997bfc9b54e8",
@@ -180,13 +171,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Create notes as POST",
 			Input: common.WriteParams{ObjectName: "notes", RecordData: "dummy"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToMethod(w, r, "POST", func() {
-					w.WriteHeader(http.StatusOK)
-					_, _ = w.Write(notesresponse)
-				})
-			})),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPOST(),
+				Then:  mockserver.Response(http.StatusOK, notesresponse),
+			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "126e58a5-5e3f-4644-89ff-6474e97fcecd",
@@ -212,13 +201,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Create tasks as POST",
 			Input: common.WriteParams{ObjectName: "tasks", RecordData: "dummy"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToMethod(w, r, "POST", func() {
-					w.WriteHeader(http.StatusOK)
-					_, _ = w.Write(tasksResponse)
-				})
-			})),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPOST(),
+				Then:  mockserver.Response(http.StatusOK, tasksResponse),
+			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "b38142c7-00f6-4d92-813e-7b0f689a5873",
@@ -255,13 +242,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Update tasks as PATCH",
 			Input: common.WriteParams{ObjectName: "tasks", RecordId: "bf012982-06a9-47f7-9e87-07dc4945d502", RecordData: "dummy"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToMethod(w, r, "PATCH", func() {
-					w.WriteHeader(http.StatusOK)
-					_, _ = w.Write(tasksResponse)
-				})
-			})),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPATCH(),
+				Then:  mockserver.Response(http.StatusOK, tasksResponse),
+			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "b38142c7-00f6-4d92-813e-7b0f689a5873",
@@ -298,13 +283,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Create webhooks as POST",
 			Input: common.WriteParams{ObjectName: "webhooks", RecordData: "dummy"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToMethod(w, r, "POST", func() {
-					w.WriteHeader(http.StatusOK)
-					_, _ = w.Write(webhookResponse)
-				})
-			})),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPOST(),
+				Then:  mockserver.Response(http.StatusOK, webhookResponse),
+			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "7e5209b8-bd4e-41d9-bbcd-2f9bab7d4030",
@@ -331,13 +314,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Update webhooks as PATCH",
 			Input: common.WriteParams{ObjectName: "webhooks", RecordId: "7e5209b8-bd4e-41d9-bbcd-2f9bab7d4030", RecordData: "dummy"},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				mockutils.RespondToMethod(w, r, "PATCH", func() {
-					w.WriteHeader(http.StatusOK)
-					_, _ = w.Write(webhookResponse)
-				})
-			})),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPATCH(),
+				Then:  mockserver.Response(http.StatusOK, webhookResponse),
+			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "7e5209b8-bd4e-41d9-bbcd-2f9bab7d4030",

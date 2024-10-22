@@ -3,7 +3,6 @@ package pipedrive
 import (
 	"fmt"
 	"net/http"
-	"net/http/httptest"
 	"testing"
 
 	"github.com/amp-labs/connectors"
@@ -27,11 +26,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		"error_info":"Please check developers.pipedrive.com"
 	}`
 
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write(nextPageTest)
-	}))
+	server := mockserver.Fixed{
+		Setup:  mockserver.ContentJSON(),
+		Always: mockserver.Response(http.StatusOK, nextPageTest),
+	}.Server()
 
 	tests := []testroutines.Read{
 		{
@@ -125,17 +123,16 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					},
 				},
 				Done:     false,
-				NextPage: common.NextPageToken(fmt.Sprintf("%s/v1/activities?start=1", server.URL)),
+				NextPage: common.NextPageToken(server.URL + "/v1/activities?start=1"),
 			},
 		},
 		{
 			Name:  "Not Found Resource or Higher Suite Resource",
 			Input: common.ReadParams{ObjectName: "activitiess", Fields: connectors.Fields("id")},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusForbidden)
-				mockutils.WriteBody(w, ErrResponseBody)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.ResponseString(http.StatusForbidden, ErrResponseBody),
+			}.Server(),
 			ExpectedErrs: []error{common.NewHTTPStatusError(http.StatusForbidden,
 				fmt.Errorf("%w: %s", common.ErrForbidden, ErrResponseBody))},
 			Expected: nil,
@@ -146,11 +143,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				ObjectName: "leads",
 				Fields:     connectors.Fields("channel", "id", "origin", "title"),
 			},
-			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				_, _ = w.Write(leads)
-			})),
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, leads),
+			}.Server(),
 			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
 				// custom comparison focuses on subset of fields to keep the test short
 				return mockutils.ReadResultComparator.SubsetFields(actual, expected) &&
