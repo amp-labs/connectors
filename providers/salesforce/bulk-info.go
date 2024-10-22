@@ -21,7 +21,7 @@ type ListIngestJobsResult struct {
 // It is possible to get information about all current ingest jobs by not providing any jobIds. Note that Salesforce
 // returns terminal state jobs from a maximum of 7 days ago.
 // nolint:funlen,cyclop
-func (c *Connector) ListIngestJobsInfo(ctx context.Context, jobIds ...string) ([]GetJobInfoResult, error) {
+func (c *Connector) ListIngestJobsInfo(ctx context.Context, jobIDs ...string) ([]GetJobInfoResult, error) {
 	url, err := c.getRestApiURL("jobs/ingest")
 	if err != nil {
 		return nil, err
@@ -36,7 +36,7 @@ func (c *Connector) ListIngestJobsInfo(ctx context.Context, jobIds ...string) ([
 	// If we have jobIds, we create a set to keep track of the matches we need to find. Each time we get
 	// a match, we remove it from the set. If the set is empty, we can break the loop to save time and unnecessary
 	// pagination.
-	pending := handy.NewSetFromList(jobIds)
+	pending := handy.NewSetFromList(jobIDs)
 
 	// To keep track of pages
 	location := url.String()
@@ -65,7 +65,7 @@ func (c *Connector) ListIngestJobsInfo(ctx context.Context, jobIds ...string) ([
 
 		// Add the jobs we need to the list (or all of them if we don't have a filter)
 		for _, result := range response.Records {
-			if len(jobIds) == 0 || slices.Contains(jobIds, result.Id) {
+			if len(jobIDs) == 0 || slices.Contains(jobIDs, result.Id) {
 				jobsInfo = append(jobsInfo, result)
 
 				// This is a no-op if we don't have jobIds, or if the job is not in the set.
@@ -78,7 +78,7 @@ func (c *Connector) ListIngestJobsInfo(ctx context.Context, jobIds ...string) ([
 		}
 
 		// If we aren't done yet, check if we have all the jobs we need
-		if len(jobIds) > 0 && pending.IsEmpty() {
+		if len(jobIDs) > 0 && pending.IsEmpty() {
 			break
 		}
 

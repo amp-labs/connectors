@@ -1,7 +1,7 @@
 package apollo
 
 import (
-	"fmt"
+	"strconv"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/jsonquery"
@@ -29,7 +29,7 @@ func getNextRecords(node *ajson.Node) (string, error) {
 		}
 
 		if page < *totalPages {
-			nextPage = fmt.Sprint(page + 1)
+			nextPage = strconv.FormatInt(page+1, 10)
 		}
 	}
 
