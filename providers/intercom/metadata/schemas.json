@@ -1,343 +1,367 @@
 {
-  "data": {
-    "activity_logs": {
-      "displayName": "Activity Logs",
-      "fields": {
-        "activity_description": "activity_description",
-        "activity_type": "activity_type",
-        "created_at": "created_at",
-        "id": "id",
-        "metadata": "metadata",
-        "performed_by": "performed_by"
-      }
-    },
-    "admins": {
-      "displayName": "Admins",
-      "fields": {
-        "avatar": "avatar",
-        "away_mode_enabled": "away_mode_enabled",
-        "away_mode_reassign": "away_mode_reassign",
-        "email": "email",
-        "has_inbox_seat": "has_inbox_seat",
-        "id": "id",
-        "job_title": "job_title",
-        "name": "name",
-        "team_ids": "team_ids",
-        "team_priority_level": "team_priority_level",
-        "type": "type"
-      }
-    },
-    "articles": {
-      "displayName": "Articles",
-      "fields": {
-        "author_id": "author_id",
-        "body": "body",
-        "created_at": "created_at",
-        "default_locale": "default_locale",
-        "description": "description",
-        "id": "id",
-        "parent_id": "parent_id",
-        "parent_ids": "parent_ids",
-        "parent_type": "parent_type",
-        "state": "state",
-        "title": "title",
-        "translated_content": "translated_content",
-        "type": "type",
-        "updated_at": "updated_at",
-        "url": "url",
-        "workspace_id": "workspace_id"
-      }
-    },
-    "collections": {
-      "displayName": "Collections",
-      "fields": {
-        "created_at": "created_at",
-        "default_locale": "default_locale",
-        "description": "description",
-        "help_center_id": "help_center_id",
-        "icon": "icon",
-        "id": "id",
-        "name": "name",
-        "order": "order",
-        "parent_id": "parent_id",
-        "translated_content": "translated_content",
-        "updated_at": "updated_at",
-        "url": "url",
-        "workspace_id": "workspace_id"
-      }
-    },
-    "companies": {
-      "displayName": "Companies",
-      "fields": {
-        "app_id": "app_id",
-        "company_id": "company_id",
-        "created_at": "created_at",
-        "custom_attributes": "custom_attributes",
-        "id": "id",
-        "industry": "industry",
-        "last_request_at": "last_request_at",
-        "monthly_spend": "monthly_spend",
-        "name": "name",
-        "plan": "plan",
-        "remote_created_at": "remote_created_at",
-        "segments": "segments",
-        "session_count": "session_count",
-        "size": "size",
-        "tags": "tags",
-        "type": "type",
-        "updated_at": "updated_at",
-        "user_count": "user_count",
-        "website": "website"
-      }
-    },
-    "contacts": {
-      "displayName": "Contacts",
-      "fields": {
-        "android_app_name": "android_app_name",
-        "android_app_version": "android_app_version",
-        "android_device": "android_device",
-        "android_last_seen_at": "android_last_seen_at",
-        "android_os_version": "android_os_version",
-        "android_sdk_version": "android_sdk_version",
-        "avatar": "avatar",
-        "browser": "browser",
-        "browser_language": "browser_language",
-        "browser_version": "browser_version",
-        "companies": "companies",
-        "created_at": "created_at",
-        "custom_attributes": "custom_attributes",
-        "email": "email",
-        "email_domain": "email_domain",
-        "external_id": "external_id",
-        "formatted_phone": "formatted_phone",
-        "has_hard_bounced": "has_hard_bounced",
-        "id": "id",
-        "ios_app_name": "ios_app_name",
-        "ios_app_version": "ios_app_version",
-        "ios_device": "ios_device",
-        "ios_last_seen_at": "ios_last_seen_at",
-        "ios_os_version": "ios_os_version",
-        "ios_sdk_version": "ios_sdk_version",
-        "language_override": "language_override",
-        "last_contacted_at": "last_contacted_at",
-        "last_email_clicked_at": "last_email_clicked_at",
-        "last_email_opened_at": "last_email_opened_at",
-        "last_replied_at": "last_replied_at",
-        "last_seen_at": "last_seen_at",
-        "location": "location",
-        "marked_email_as_spam": "marked_email_as_spam",
-        "name": "name",
-        "notes": "notes",
-        "os": "os",
-        "owner_id": "owner_id",
-        "phone": "phone",
-        "role": "role",
-        "signed_up_at": "signed_up_at",
-        "social_profiles": "social_profiles",
-        "tags": "tags",
-        "type": "type",
-        "unsubscribed_from_emails": "unsubscribed_from_emails",
-        "updated_at": "updated_at",
-        "workspace_id": "workspace_id"
-      }
-    },
-    "conversations": {
-      "displayName": "Conversations",
-      "fields": {
-        "admin_assignee_id": "admin_assignee_id",
-        "ai_agent": "ai_agent",
-        "ai_agent_participated": "ai_agent_participated",
-        "contacts": "contacts",
-        "conversation_parts": "conversation_parts",
-        "conversation_rating": "conversation_rating",
-        "created_at": "created_at",
-        "custom_attributes": "custom_attributes",
-        "first_contact_reply": "first_contact_reply",
-        "id": "id",
-        "linked_objects": "linked_objects",
-        "open": "open",
-        "priority": "priority",
-        "read": "read",
-        "sla_applied": "sla_applied",
-        "snoozed_until": "snoozed_until",
-        "source": "source",
-        "state": "state",
-        "statistics": "statistics",
-        "tags": "tags",
-        "team_assignee_id": "team_assignee_id",
-        "teammates": "teammates",
-        "title": "title",
-        "type": "type",
-        "updated_at": "updated_at",
-        "waiting_since": "waiting_since"
-      }
-    },
-    "data_attributes": {
-      "displayName": "Data Attributes",
-      "fields": {
-        "admin_id": "admin_id",
-        "api_writable": "api_writable",
-        "archived": "archived",
-        "created_at": "created_at",
-        "custom": "custom",
-        "data_type": "data_type",
-        "description": "description",
-        "full_name": "full_name",
-        "id": "id",
-        "label": "label",
-        "messenger_writable": "messenger_writable",
-        "model": "model",
-        "name": "name",
-        "options": "options",
-        "type": "type",
-        "ui_writable": "ui_writable",
-        "updated_at": "updated_at"
-      }
-    },
-    "events": {
-      "displayName": "Data Event Summary",
-      "fields": {
-        "count": "count",
-        "description": "description",
-        "first": "first",
-        "last": "last",
-        "name": "name"
-      }
-    },
-    "help_centers": {
-      "displayName": "Help Centers",
-      "fields": {
-        "created_at": "created_at",
-        "display_name": "display_name",
-        "id": "id",
-        "identifier": "identifier",
-        "updated_at": "updated_at",
-        "website_turned_on": "website_turned_on",
-        "workspace_id": "workspace_id"
-      }
-    },
-    "news_items": {
-      "displayName": "News Items",
-      "fields": {
-        "body": "body",
-        "cover_image_url": "cover_image_url",
-        "created_at": "created_at",
-        "deliver_silently": "deliver_silently",
-        "id": "id",
-        "labels": "labels",
-        "name": "name",
-        "newsfeed_assignments": "newsfeed_assignments",
-        "reactions": "reactions",
-        "sender_id": "sender_id",
-        "state": "state",
-        "title": "title",
-        "type": "type",
-        "updated_at": "updated_at",
-        "workspace_id": "workspace_id"
-      }
-    },
-    "newsfeeds": {
-      "displayName": "Newsfeeds",
-      "fields": {
-        "body": "body",
-        "cover_image_url": "cover_image_url",
-        "created_at": "created_at",
-        "deliver_silently": "deliver_silently",
-        "id": "id",
-        "labels": "labels",
-        "name": "name",
-        "newsfeed_assignments": "newsfeed_assignments",
-        "reactions": "reactions",
-        "sender_id": "sender_id",
-        "state": "state",
-        "title": "title",
-        "type": "type",
-        "updated_at": "updated_at",
-        "workspace_id": "workspace_id"
-      }
-    },
-    "segments": {
-      "displayName": "Segments",
-      "fields": {
-        "count": "count",
-        "created_at": "created_at",
-        "id": "id",
-        "name": "name",
-        "person_type": "person_type",
-        "type": "type",
-        "updated_at": "updated_at"
-      }
-    },
-    "subscription_types": {
-      "displayName": "Subscription Types",
-      "fields": {
-        "consent_type": "consent_type",
-        "content_types": "content_types",
-        "default_translation": "default_translation",
-        "id": "id",
-        "state": "state",
-        "translations": "translations",
-        "type": "type"
-      }
-    },
-    "tags": {
-      "displayName": "Tags",
-      "fields": {
-        "applied_at": "applied_at",
-        "applied_by": "applied_by",
-        "id": "id",
-        "name": "name",
-        "type": "type"
-      }
-    },
-    "teams": {
-      "displayName": "Teams",
-      "fields": {
-        "admin_ids": "admin_ids",
-        "admin_priority_level": "admin_priority_level",
-        "id": "id",
-        "name": "name",
-        "type": "type"
-      }
-    },
-    "ticket_types": {
-      "displayName": "Ticket Types",
-      "fields": {
-        "archived": "archived",
-        "category": "category",
-        "created_at": "created_at",
-        "description": "description",
-        "icon": "icon",
-        "id": "id",
-        "name": "name",
-        "ticket_type_attributes": "ticket_type_attributes",
-        "type": "type",
-        "updated_at": "updated_at",
-        "workspace_id": "workspace_id"
-      }
-    },
-    "tickets": {
-      "displayName": "Tickets",
-      "fields": {
-        "admin_assignee_id": "admin_assignee_id",
-        "category": "category",
-        "contacts": "contacts",
-        "created_at": "created_at",
-        "id": "id",
-        "is_shared": "is_shared",
-        "linked_objects": "linked_objects",
-        "open": "open",
-        "snoozed_until": "snoozed_until",
-        "team_assignee_id": "team_assignee_id",
-        "ticket_attributes": "ticket_attributes",
-        "ticket_id": "ticket_id",
-        "ticket_parts": "ticket_parts",
-        "ticket_state": "ticket_state",
-        "ticket_state_external_label": "ticket_state_external_label",
-        "ticket_state_internal_label": "ticket_state_internal_label",
-        "ticket_type": "ticket_type",
-        "type": "type",
-        "updated_at": "updated_at"
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "",
+      "objects": {
+        "activity_logs": {
+          "displayName": "Activity Logs",
+          "path": "/admins/activity_logs",
+          "fields": {
+            "activity_description": "activity_description",
+            "activity_type": "activity_type",
+            "created_at": "created_at",
+            "id": "id",
+            "metadata": "metadata",
+            "performed_by": "performed_by"
+          }
+        },
+        "admins": {
+          "displayName": "Admins",
+          "path": "/admins",
+          "fields": {
+            "avatar": "avatar",
+            "away_mode_enabled": "away_mode_enabled",
+            "away_mode_reassign": "away_mode_reassign",
+            "email": "email",
+            "has_inbox_seat": "has_inbox_seat",
+            "id": "id",
+            "job_title": "job_title",
+            "name": "name",
+            "team_ids": "team_ids",
+            "team_priority_level": "team_priority_level",
+            "type": "type"
+          }
+        },
+        "articles": {
+          "displayName": "Articles",
+          "path": "/articles",
+          "fields": {
+            "author_id": "author_id",
+            "body": "body",
+            "created_at": "created_at",
+            "default_locale": "default_locale",
+            "description": "description",
+            "id": "id",
+            "parent_id": "parent_id",
+            "parent_ids": "parent_ids",
+            "parent_type": "parent_type",
+            "state": "state",
+            "title": "title",
+            "translated_content": "translated_content",
+            "type": "type",
+            "updated_at": "updated_at",
+            "url": "url",
+            "workspace_id": "workspace_id"
+          }
+        },
+        "collections": {
+          "displayName": "Collections",
+          "path": "/help_center/collections",
+          "fields": {
+            "created_at": "created_at",
+            "default_locale": "default_locale",
+            "description": "description",
+            "help_center_id": "help_center_id",
+            "icon": "icon",
+            "id": "id",
+            "name": "name",
+            "order": "order",
+            "parent_id": "parent_id",
+            "translated_content": "translated_content",
+            "updated_at": "updated_at",
+            "url": "url",
+            "workspace_id": "workspace_id"
+          }
+        },
+        "companies": {
+          "displayName": "Companies",
+          "path": "/companies",
+          "fields": {
+            "app_id": "app_id",
+            "company_id": "company_id",
+            "created_at": "created_at",
+            "custom_attributes": "custom_attributes",
+            "id": "id",
+            "industry": "industry",
+            "last_request_at": "last_request_at",
+            "monthly_spend": "monthly_spend",
+            "name": "name",
+            "plan": "plan",
+            "remote_created_at": "remote_created_at",
+            "segments": "segments",
+            "session_count": "session_count",
+            "size": "size",
+            "tags": "tags",
+            "type": "type",
+            "updated_at": "updated_at",
+            "user_count": "user_count",
+            "website": "website"
+          }
+        },
+        "contacts": {
+          "displayName": "Contacts",
+          "path": "/contacts",
+          "fields": {
+            "android_app_name": "android_app_name",
+            "android_app_version": "android_app_version",
+            "android_device": "android_device",
+            "android_last_seen_at": "android_last_seen_at",
+            "android_os_version": "android_os_version",
+            "android_sdk_version": "android_sdk_version",
+            "avatar": "avatar",
+            "browser": "browser",
+            "browser_language": "browser_language",
+            "browser_version": "browser_version",
+            "companies": "companies",
+            "created_at": "created_at",
+            "custom_attributes": "custom_attributes",
+            "email": "email",
+            "email_domain": "email_domain",
+            "external_id": "external_id",
+            "formatted_phone": "formatted_phone",
+            "has_hard_bounced": "has_hard_bounced",
+            "id": "id",
+            "ios_app_name": "ios_app_name",
+            "ios_app_version": "ios_app_version",
+            "ios_device": "ios_device",
+            "ios_last_seen_at": "ios_last_seen_at",
+            "ios_os_version": "ios_os_version",
+            "ios_sdk_version": "ios_sdk_version",
+            "language_override": "language_override",
+            "last_contacted_at": "last_contacted_at",
+            "last_email_clicked_at": "last_email_clicked_at",
+            "last_email_opened_at": "last_email_opened_at",
+            "last_replied_at": "last_replied_at",
+            "last_seen_at": "last_seen_at",
+            "location": "location",
+            "marked_email_as_spam": "marked_email_as_spam",
+            "name": "name",
+            "notes": "notes",
+            "os": "os",
+            "owner_id": "owner_id",
+            "phone": "phone",
+            "role": "role",
+            "signed_up_at": "signed_up_at",
+            "social_profiles": "social_profiles",
+            "tags": "tags",
+            "type": "type",
+            "unsubscribed_from_emails": "unsubscribed_from_emails",
+            "updated_at": "updated_at",
+            "workspace_id": "workspace_id"
+          }
+        },
+        "conversations": {
+          "displayName": "Conversations",
+          "path": "/conversations/search",
+          "fields": {
+            "admin_assignee_id": "admin_assignee_id",
+            "ai_agent": "ai_agent",
+            "ai_agent_participated": "ai_agent_participated",
+            "contacts": "contacts",
+            "conversation_parts": "conversation_parts",
+            "conversation_rating": "conversation_rating",
+            "created_at": "created_at",
+            "custom_attributes": "custom_attributes",
+            "first_contact_reply": "first_contact_reply",
+            "id": "id",
+            "linked_objects": "linked_objects",
+            "open": "open",
+            "priority": "priority",
+            "read": "read",
+            "sla_applied": "sla_applied",
+            "snoozed_until": "snoozed_until",
+            "source": "source",
+            "state": "state",
+            "statistics": "statistics",
+            "tags": "tags",
+            "team_assignee_id": "team_assignee_id",
+            "teammates": "teammates",
+            "title": "title",
+            "type": "type",
+            "updated_at": "updated_at",
+            "waiting_since": "waiting_since"
+          }
+        },
+        "data_attributes": {
+          "displayName": "Data Attributes",
+          "path": "/data_attributes",
+          "fields": {
+            "admin_id": "admin_id",
+            "api_writable": "api_writable",
+            "archived": "archived",
+            "created_at": "created_at",
+            "custom": "custom",
+            "data_type": "data_type",
+            "description": "description",
+            "full_name": "full_name",
+            "id": "id",
+            "label": "label",
+            "messenger_writable": "messenger_writable",
+            "model": "model",
+            "name": "name",
+            "options": "options",
+            "type": "type",
+            "ui_writable": "ui_writable",
+            "updated_at": "updated_at"
+          }
+        },
+        "events": {
+          "displayName": "Data Event Summary",
+          "path": "/events",
+          "fields": {
+            "count": "count",
+            "description": "description",
+            "first": "first",
+            "last": "last",
+            "name": "name"
+          }
+        },
+        "help_centers": {
+          "displayName": "Help Centers",
+          "path": "/help_center/help_centers",
+          "fields": {
+            "created_at": "created_at",
+            "display_name": "display_name",
+            "id": "id",
+            "identifier": "identifier",
+            "updated_at": "updated_at",
+            "website_turned_on": "website_turned_on",
+            "workspace_id": "workspace_id"
+          }
+        },
+        "news_items": {
+          "displayName": "News Items",
+          "path": "/news/news_items",
+          "fields": {
+            "body": "body",
+            "cover_image_url": "cover_image_url",
+            "created_at": "created_at",
+            "deliver_silently": "deliver_silently",
+            "id": "id",
+            "labels": "labels",
+            "name": "name",
+            "newsfeed_assignments": "newsfeed_assignments",
+            "reactions": "reactions",
+            "sender_id": "sender_id",
+            "state": "state",
+            "title": "title",
+            "type": "type",
+            "updated_at": "updated_at",
+            "workspace_id": "workspace_id"
+          }
+        },
+        "newsfeeds": {
+          "displayName": "Newsfeeds",
+          "path": "/news/newsfeeds",
+          "fields": {
+            "body": "body",
+            "cover_image_url": "cover_image_url",
+            "created_at": "created_at",
+            "deliver_silently": "deliver_silently",
+            "id": "id",
+            "labels": "labels",
+            "name": "name",
+            "newsfeed_assignments": "newsfeed_assignments",
+            "reactions": "reactions",
+            "sender_id": "sender_id",
+            "state": "state",
+            "title": "title",
+            "type": "type",
+            "updated_at": "updated_at",
+            "workspace_id": "workspace_id"
+          }
+        },
+        "segments": {
+          "displayName": "Segments",
+          "path": "/segments",
+          "fields": {
+            "count": "count",
+            "created_at": "created_at",
+            "id": "id",
+            "name": "name",
+            "person_type": "person_type",
+            "type": "type",
+            "updated_at": "updated_at"
+          }
+        },
+        "subscription_types": {
+          "displayName": "Subscription Types",
+          "path": "/subscription_types",
+          "fields": {
+            "consent_type": "consent_type",
+            "content_types": "content_types",
+            "default_translation": "default_translation",
+            "id": "id",
+            "state": "state",
+            "translations": "translations",
+            "type": "type"
+          }
+        },
+        "tags": {
+          "displayName": "Tags",
+          "path": "/tags",
+          "fields": {
+            "applied_at": "applied_at",
+            "applied_by": "applied_by",
+            "id": "id",
+            "name": "name",
+            "type": "type"
+          }
+        },
+        "teams": {
+          "displayName": "Teams",
+          "path": "/teams",
+          "fields": {
+            "admin_ids": "admin_ids",
+            "admin_priority_level": "admin_priority_level",
+            "id": "id",
+            "name": "name",
+            "type": "type"
+          }
+        },
+        "ticket_types": {
+          "displayName": "Ticket Types",
+          "path": "/ticket_types",
+          "fields": {
+            "archived": "archived",
+            "category": "category",
+            "created_at": "created_at",
+            "description": "description",
+            "icon": "icon",
+            "id": "id",
+            "name": "name",
+            "ticket_type_attributes": "ticket_type_attributes",
+            "type": "type",
+            "updated_at": "updated_at",
+            "workspace_id": "workspace_id"
+          }
+        },
+        "tickets": {
+          "displayName": "Tickets",
+          "path": "/tickets/search",
+          "fields": {
+            "admin_assignee_id": "admin_assignee_id",
+            "category": "category",
+            "contacts": "contacts",
+            "created_at": "created_at",
+            "id": "id",
+            "is_shared": "is_shared",
+            "linked_objects": "linked_objects",
+            "open": "open",
+            "snoozed_until": "snoozed_until",
+            "team_assignee_id": "team_assignee_id",
+            "ticket_attributes": "ticket_attributes",
+            "ticket_id": "ticket_id",
+            "ticket_parts": "ticket_parts",
+            "ticket_state": "ticket_state",
+            "ticket_state_external_label": "ticket_state_external_label",
+            "ticket_state_internal_label": "ticket_state_internal_label",
+            "ticket_type": "ticket_type",
+            "type": "type",
+            "updated_at": "updated_at"
+          }
+        }
       }
     }
   }

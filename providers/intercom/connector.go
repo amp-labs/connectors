@@ -17,6 +17,7 @@ var apiVersionHeader = common.Header{ // nolint:gochecknoglobals
 
 type Connector struct {
 	BaseURL string
+	Module  common.Module
 	Client  *common.JSONHTTPClient
 }
 
