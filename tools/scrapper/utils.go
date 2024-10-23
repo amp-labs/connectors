@@ -71,15 +71,6 @@ func makeRequest(sourceURL string) (*http.Response, error) {
 	return res, nil
 }
 
-func FlushToFile(filename string, object any) error {
-	data, err := json.MarshalIndent(object, "", "  ")
-	if err != nil {
-		return err
-	}
-
-	return os.WriteFile(filename, data, os.ModePerm) //nolint:gosec
-}
-
 func LoadFile(filename string, object any) error {
 	data, err := os.ReadFile(filename)
 	if err != nil {

@@ -7,9 +7,14 @@ import (
 	"github.com/amp-labs/connectors/common/handy"
 )
 
-// ErrInvalidModuleDeclaration occurs when the identifier used for map indexing in Modules
-// does not match the module's ID.
-var ErrInvalidModuleDeclaration = errors.New("supported modules are not correctly defined")
+var (
+	// ErrInvalidModuleDeclaration occurs when the identifier used for map indexing in Modules
+	// does not match the module's ID.
+	ErrInvalidModuleDeclaration = errors.New("supported modules are not correctly defined")
+
+	// ErrMissingModule can be returned when connector cannot resolve ModuleID.
+	ErrMissingModule = errors.New("module not found")
+)
 
 type ModuleID string
 
