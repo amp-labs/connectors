@@ -16,10 +16,11 @@ const (
 type Connector struct {
 	BaseURL string
 	Client  *common.JSONHTTPClient
+	Module  common.Module
 }
 
-// NewConnector constructs the Pipedriver Connector and returns it, Fails
-// if any of the require fields are not instantiated.
+// NewConnector constructs the Pipedrive Connector and returns it, Fails
+// if any of the required fields are not instantiated.
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	defer common.PanicRecovery(func(cause error) {
 		outErr = cause
