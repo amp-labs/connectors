@@ -1,8 +1,6 @@
 package zohocrm
 
 import (
-	"strconv"
-
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -34,20 +32,12 @@ func getNextRecordsURL(url *urlbuilder.URL) common.NextPageFunc {
 		}
 
 		if *more {
-			nextPageToken, err := jsonquery.New(node, "info").Str("next_page_token", true)
+			pageToken, err := jsonquery.New(node, "info").Str("next_page_token", true)
 			if err != nil {
 				return "", err
 			}
 
-			currPage, err := jsonquery.New(node, "info").Integer("page", false)
-			if err != nil {
-				return "", err
-			}
-
-			nextPage := *currPage + 1
-
-			url.WithQueryParam("page_token", *nextPageToken)
-			url.WithQueryParam("page", strconv.FormatInt(nextPage, 10))
+			url.WithQueryParam("page_token", *pageToken)
 
 			return url.String(), nil
 		}
