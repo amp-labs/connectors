@@ -25,7 +25,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	responseFieldName := ObjectNameToResponseField.Get(config.ObjectName)
+	responseFieldName := ObjectNameToReadResponseField.Get(config.ObjectName)
 
 	return common.ParseResult(res,
 		common.GetOptionalRecordsUnderJSONPath(responseFieldName),
