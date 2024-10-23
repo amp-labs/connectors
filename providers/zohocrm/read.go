@@ -28,14 +28,9 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	fields := strings.Join(config.Fields.List(), ",")
 	url.WithQueryParam("fields", fields)
 
-	// Add the `If-Modified-Since` header if provided.
-	// All Objects(Modules in Zoho terms) supports this.
-	modHeader := common.Header{
-		Key:   "If-Modified-Since",
-		Value: config.Since.Format(time.RFC3339),
-	}
+	modHeader := modificationHeaders(config)
 
-	res, err := c.Client.Get(ctx, url.String(), modHeader)
+	res, err := c.Client.Get(ctx, url.String(), modHeader...)
 	if err != nil {
 		return nil, err
 	}
@@ -46,4 +41,19 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		common.GetMarshaledData,
 		config.Fields,
 	)
+}
+
+func modificationHeaders(config common.ReadParams) []common.Header {
+	// Add the `If-Modified-Since` header if provided.
+	// All Objects(or Modules in ZohoCRM terms) supports this.
+	if !config.Since.IsZero() {
+		modHeader := common.Header{
+			Key:   "If-Modified-Since",
+			Value: config.Since.Format(time.RFC3339),
+		}
+
+		return []common.Header{modHeader}
+	}
+
+	return []common.Header{}
 }
