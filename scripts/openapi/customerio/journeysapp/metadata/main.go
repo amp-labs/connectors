@@ -32,7 +32,7 @@ func main() {
 
 	objects, err := explorer.GetBasicReadObjects(
 		ignoreEndpoints, nil, displayNameOverride,
-		api3.CustomMappingObjectCheck(customerapp.ObjectNameToResponseField),
+		api3.CustomMappingObjectCheck(customerapp.ObjectNameToReadResponseField),
 	)
 	must(err)
 
