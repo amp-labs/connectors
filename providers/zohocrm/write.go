@@ -2,7 +2,6 @@ package zohocrm
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
@@ -67,7 +66,13 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		write = c.Client.Post
 	}
 
-	resp, err := write(ctx, url.String(), config.RecordData)
+	// ZohoCRM requires everything to be wrapped in a "data" object.
+	// RecordData should be a list of map[string]any
+	body := map[string]any{
+		"data": config.RecordData,
+	}
+
+	resp, err := write(ctx, url.String(), body)
 	if err != nil {
 		return nil, err
 	}
@@ -77,9 +82,19 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, err
 	}
 
+	var errors []any
+
+	// Looping in the response data to see if there is
+	// an error in any of the record Responses.
+	for _, r := range response.Data {
+		if r["code"] != "SUCCESS" {
+			errors = append(errors, r)
+		}
+	}
+
 	return &common.WriteResult{
-		Success:  true,
-		RecordId: fmt.Sprint("id"),
-		Data:     response.Data[0],
+		Success: true,
+		Data:    response.Data[0],
+		Errors:  errors,
 	}, nil
 }
