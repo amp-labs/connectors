@@ -15,7 +15,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
-func TestWrite(t *testing.T) { // nolint:funlen,cyclop
+func TestWriteZendeskSupportModule(t *testing.T) { // nolint:funlen,cyclop
 	t.Parallel()
 
 	// server-error.json occurs when trying to Create object without payload name.
@@ -39,8 +39,14 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			ExpectedErrs: []error{common.ErrMissingRecordData},
 		},
 		{
-			Name:         "Mime response header expected",
+			Name:         "Unsupported object name",
 			Input:        common.WriteParams{ObjectName: "signals", RecordData: "dummy"},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrResolvingURLPathForObject},
+		},
+		{
+			Name:         "Mime response header expected",
+			Input:        common.WriteParams{ObjectName: "brands", RecordData: "dummy"},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{interpreter.ErrMissingContentType},
 		},
@@ -115,8 +121,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			Input: common.WriteParams{ObjectName: "brands", RecordData: "dummy"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.MethodPOST(),
-				Then:  mockserver.Response(http.StatusOK, createBrand),
+				If: mockcond.And{
+					mockcond.PathSuffix("/v2/brands"),
+					mockcond.MethodPOST(),
+				},
+				Then: mockserver.Response(http.StatusOK, createBrand),
 			}.Server(),
 			Comparator: func(serverURL string, actual, expected *common.WriteResult) bool {
 				return mockutils.WriteResultComparator.SubsetData(actual, expected)
@@ -146,6 +155,53 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 
 			tt.Run(t, func() (connectors.WriteConnector, error) {
 				return constructTestConnector(tt.Server.URL, ModuleTicketing)
+			})
+		})
+	}
+}
+
+func TestWriteHelpCenterModule(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
+	t.Parallel()
+
+	responseCreatePost := testutils.DataFromFile(t, "write-post.json")
+
+	tests := []testroutines.Write{
+		{
+			Name:  "Creating a help center post invokes correct endpoint",
+			Input: common.WriteParams{ObjectName: "posts", RecordData: "dummy"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.PathSuffix("/v2/community/posts"),
+					mockcond.MethodPOST(),
+				},
+				Then: mockserver.Response(http.StatusOK, responseCreatePost),
+			}.Server(),
+			Comparator: func(serverURL string, actual, expected *common.WriteResult) bool {
+				return mockutils.WriteResultComparator.SubsetData(actual, expected)
+			},
+			Expected: &common.WriteResult{
+				Success:  true,
+				RecordId: "33507191590803",
+				Errors:   nil,
+				Data: map[string]any{
+					"id":      float64(33507191590803),
+					"title":   "Help!",
+					"details": "My printer is on fire!",
+				},
+			},
+			ExpectedErrs: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		// nolint:varnamelen
+		tt := tt // rebind, omit loop side effects for parallel goroutine
+		t.Run(tt.Name, func(t *testing.T) {
+			t.Parallel()
+
+			tt.Run(t, func() (connectors.WriteConnector, error) {
+				return constructTestConnector(tt.Server.URL, ModuleHelpCenter)
 			})
 		})
 	}
