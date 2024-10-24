@@ -58,7 +58,7 @@ func readContacts(ctx context.Context, conn connectors.ReadConnector) error {
 		return err
 	}
 
-	fmt.Println(jsonStr)
+	fmt.Println(string(jsonStr))
 
 	return nil
 }
@@ -81,7 +81,7 @@ func readDeals(ctx context.Context, conn connectors.ReadConnector) error {
 		return err
 	}
 
-	fmt.Println(jsonStr)
+	fmt.Println(string(jsonStr))
 
 	return nil
 }
@@ -104,7 +104,7 @@ func readLeads(ctx context.Context, conn connectors.ReadConnector) error {
 		return err
 	}
 
-	fmt.Println(jsonStr)
+	fmt.Println(string(jsonStr))
 
 	return nil
 }
