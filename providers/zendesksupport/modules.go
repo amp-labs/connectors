@@ -2,11 +2,10 @@ package zendesksupport
 
 import (
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers/zendesksupport/metadata"
 )
 
 const (
-	// ModuleEmpty is used for proxying requests through.
-	ModuleEmpty common.ModuleID = ""
 	// ModuleTicketing is used for proxying requests through.
 	// https://developer.zendesk.com/api-reference/ticketing/introduction/
 	ModuleTicketing common.ModuleID = "ticketing"
@@ -16,21 +15,5 @@ const (
 )
 
 // SupportedModules represents currently working and supported modules within the Zendesk connector.
-// Any added module should be appended here.
-var SupportedModules = common.Modules{ // nolint: gochecknoglobals
-	ModuleEmpty: {
-		ID:      ModuleEmpty,
-		Label:   "",
-		Version: "",
-	},
-	ModuleTicketing: {
-		ID:      ModuleTicketing,
-		Label:   "",
-		Version: "",
-	},
-	ModuleHelpCenter: {
-		ID:      ModuleHelpCenter,
-		Label:   "",
-		Version: "",
-	},
-}
+// Modules are added to schema.json file using OpenAPI script.
+var SupportedModules = metadata.Schemas.ModuleRegistry() // nolint: gochecknoglobals
