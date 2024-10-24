@@ -1,6 +1,10 @@
 package paramsbuilder
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/amp-labs/connectors/common/substitutions/catalogreplacer"
+)
 
 var ErrMissingWorkspace = errors.New("missing workspace name")
 
@@ -23,9 +27,9 @@ func (p *Workspace) WithWorkspace(workspaceRef string) {
 
 // GetSubstitutionPlan of the workspace describes how to insert its value into string templates.
 // This makes Workspace parameter a catalog variable.
-func (p *Workspace) GetSubstitutionPlan() SubstitutionPlan {
-	return SubstitutionPlan{
-		From: variableWorkspace,
+func (p *Workspace) GetSubstitutionPlan() catalogreplacer.SubstitutionPlan {
+	return catalogreplacer.SubstitutionPlan{
+		From: catalogreplacer.VariableWorkspace,
 		To:   p.Name,
 	}
 }
