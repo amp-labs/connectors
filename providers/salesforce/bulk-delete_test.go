@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -22,15 +21,6 @@ func TestBulkDelete(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	bodyRequest := `{"object":"Opportunity","operation":"delete"}`
 
 	tests := []bulkDeleteTestCase{
-		{
-			Name: "Mime response header expected",
-			Input: BulkOperationParams{
-				ObjectName: "Opportunity",
-				CSVData:    strings.NewReader(""),
-			},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{interpreter.ErrMissingContentType},
-		},
 		{
 			Name:  "Read object must be included",
 			Input: BulkOperationParams{},

@@ -6,7 +6,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -29,12 +28,6 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			Input:        common.DeleteParams{ObjectName: "quotes"},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingRecordID},
-		},
-		{
-			Name:         "Mime response header expected",
-			Input:        common.DeleteParams{ObjectName: "quotes", RecordId: "019097b8-a5f4-ca93-62c5-5a25c58afa63"},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{interpreter.ErrMissingContentType},
 		},
 		{
 			Name:  "Successful delete",

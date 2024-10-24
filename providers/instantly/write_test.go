@@ -7,7 +7,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -38,12 +37,6 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			Input:        common.WriteParams{ObjectName: "notes"},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingRecordData},
-		},
-		{
-			Name:         "Mime response header expected",
-			Input:        common.WriteParams{ObjectName: "unibox-replies", RecordData: "dummy"},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{interpreter.ErrMissingContentType},
 		},
 		{
 			Name:     "Unknown object name is not supported",

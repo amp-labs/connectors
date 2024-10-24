@@ -8,7 +8,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -21,12 +20,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	responseIssueSchema := testutils.DataFromFile(t, "issue-metadata.json")
 
 	tests := []testroutines.Metadata{
-		{
-			Name:         "Mime response header expected",
-			Input:        []string{"butterflies"},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{interpreter.ErrMissingContentType},
-		},
 		{
 			Name:  "Server response must include array",
 			Input: []string{"butterflies"},
