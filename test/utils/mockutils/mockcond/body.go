@@ -2,13 +2,20 @@ package mockcond
 
 import (
 	"bytes"
+	"encoding/json"
 	"io"
 	"net/http"
+	"reflect"
 	"strings"
 )
 
+// BodyBytes returns a check expecting body to match template bytes.
+func BodyBytes(expected []byte) Check {
+	return Body(string(expected))
+}
+
 // Body returns a check expecting body to match template text.
-func Body(expectedBody string) Check {
+func Body(expected string) Check {
 	return func(w http.ResponseWriter, r *http.Request) bool {
 		reader := r.Body
 
@@ -17,15 +24,35 @@ func Body(expectedBody string) Check {
 			return false
 		}
 
-		r.Body.Close()
+		_ = r.Body.Close()
 		r.Body = io.NopCloser(bytes.NewBuffer(body))
 
-		a := stringCleaner(string(body), []string{"\n", "\t"})
-		b := stringCleaner(expectedBody, []string{"\n", "\t"})
-		match := a == b
+		textEquals := textBodyMatch(body, expected)
+		jsonEquals := jsonBodyMatch(body, expected)
 
-		return match
+		return textEquals || jsonEquals
 	}
+}
+
+func jsonBodyMatch(actual []byte, expected string) bool {
+	first := make(map[string]any)
+	if err := json.Unmarshal(actual, &first); err != nil {
+		return false
+	}
+
+	second := make(map[string]any)
+	if err := json.Unmarshal([]byte(expected), &second); err != nil {
+		return false
+	}
+
+	return reflect.DeepEqual(first, second)
+}
+
+func textBodyMatch(actual []byte, expected string) bool {
+	first := stringCleaner(string(actual), []string{"\n", "\t"})
+	second := stringCleaner(expected, []string{"\n", "\t"})
+
+	return first == second
 }
 
 func stringCleaner(text string, toRemove []string) string {
