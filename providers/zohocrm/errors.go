@@ -8,30 +8,28 @@ import (
 )
 
 /*
-The normal standard response from ZohoCRM look like this:
+doc: https://www.zoho.com/crm/developer/docs/api/v6/get-records.html
+
+The normal standard response from ZohoCRM when Reading Records look like this:
 {
 	"data": [{...}, {...}],
 	"info": {...}
 }
 */
 
-// responseHandler wraps the http.StatusNotModified response into http.StatusOK
-// and sends back an empty data field response.
 func responseHandler(resp *http.Response) (*http.Response, error) { //nolint:cyclop
-	// responseData represents data we will send back when the response status code 304.
-	responseData := map[string]any{
-		"data": []any{},
-		"info": map[string]any{
-			"page":         1,
-			"more_records": false,
-		},
-	}
-
-	// When the ZohoCRM API responds with 304 status code,
-	// this indicates there is no data modified since the modification time provided.
-	// We modify the response to return 200, And an empty data field response.
+	// When there is no new record after the specified time `since`, ZohoCRM returns `304 Status Not Modified`.
+	// Then we wrap this response to 200 Status Okay with empty array data.
 	if resp.StatusCode == http.StatusNotModified {
 		// Build an empty Response Result (Mimicking ZohoResponse with empty data)
+		responseData := map[string]any{
+			"data": []any{},
+			"info": map[string]any{
+				"page":         1,
+				"more_records": false,
+			},
+		}
+
 		data, err := json.Marshal(responseData)
 		if err != nil {
 			return nil, err

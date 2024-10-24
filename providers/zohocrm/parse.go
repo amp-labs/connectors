@@ -8,7 +8,10 @@ import (
 )
 
 /*
-   "data": {...},
+	doc: https://www.zoho.com/crm/developer/docs/api/v6/get-records.html
+	Response Sample:
+
+   "data": [{...}, {...}],
    "info": {
         "call": false,
         "per_page": 5,
@@ -26,12 +29,12 @@ import (
 
 func getNextRecordsURL(url *urlbuilder.URL) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
-		more, err := jsonquery.New(node, "info").Bool("more_records", false)
+		hasMoreRecords, err := jsonquery.New(node, "info").Bool("more_records", false)
 		if err != nil {
 			return "", err
 		}
 
-		if *more {
+		if *hasMoreRecords {
 			pageToken, err := jsonquery.New(node, "info").Str("next_page_token", true)
 			if err != nil {
 				return "", err

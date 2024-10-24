@@ -8,6 +8,7 @@ import (
 )
 
 // Read retrieves data based on the provided common.ReadParams configuration parameters.
+// ref: https://www.zoho.com/crm/developer/docs/api/v6/get-records.html
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
 	if err := config.ValidateParams(true); err != nil {
 		return nil, err
@@ -18,9 +19,9 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	modHeaders := constructHeader(config, url)
+	headers := constructHeaders(config, url)
 
-	res, err := c.Client.Get(ctx, url.String(), modHeaders...)
+	res, err := c.Client.Get(ctx, url.String(), headers...)
 	if err != nil {
 		return nil, err
 	}
@@ -33,7 +34,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	)
 }
 
-func constructHeader(config common.ReadParams, url *urlbuilder.URL) []common.Header {
+func constructHeaders(config common.ReadParams, url *urlbuilder.URL) []common.Header {
 	// Retrieve the since from the url.
 	since, ok := url.GetFirstQueryParam("since")
 	if !ok {

@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log/slog"
-	"os"
 	"os/signal"
 	"syscall"
 	"time"
@@ -58,8 +58,7 @@ func readContacts(ctx context.Context, conn connectors.ReadConnector) error {
 		return err
 	}
 
-	_, _ = os.Stdout.Write(jsonStr)
-	_, _ = os.Stdout.WriteString("\n")
+	fmt.Println(jsonStr)
 
 	return nil
 }
@@ -82,8 +81,7 @@ func readDeals(ctx context.Context, conn connectors.ReadConnector) error {
 		return err
 	}
 
-	_, _ = os.Stdout.Write(jsonStr)
-	_, _ = os.Stdout.WriteString("\n")
+	fmt.Println(jsonStr)
 
 	return nil
 }
@@ -106,8 +104,7 @@ func readLeads(ctx context.Context, conn connectors.ReadConnector) error {
 		return err
 	}
 
-	_, _ = os.Stdout.Write(jsonStr)
-	_, _ = os.Stdout.WriteString("\n")
+	fmt.Println(jsonStr)
 
 	return nil
 }
