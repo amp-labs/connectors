@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -31,6 +32,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseContactsSecondPage := testutils.DataFromFile(t, "read-contacts-2-second-page.json")
 	responseContactsThirdPage := testutils.DataFromFile(t, "read-contacts-3-last-page.json")
 	responseReadConversations := testutils.DataFromFile(t, "read-conversations.json")
+	requestSearchConversations := testutils.DataFromFile(t, "read-search-conversations-request.json")
+	responseSearchConversations := testutils.DataFromFile(t, "read-search-conversations.json")
 	responseNotesFirstPage := testutils.DataFromFile(t, "read-notes-1-first-page.json")
 	responseNotesSecondPage := testutils.DataFromFile(t, "read-notes-2-last-page.json")
 
@@ -256,6 +259,46 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				}},
 				NextPage: "",
 				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Incremental read of conversations via search",
+			Input: common.ReadParams{
+				ObjectName: "conversations",
+				Fields:     connectors.Fields("id", "state", "title"),
+				Since:      time.Unix(1726674883, 0),
+			},
+			// notes is not supported for now, but its payload is good for testing
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.BodyBytes(requestSearchConversations),
+				Then:  mockserver.Response(http.StatusOK, responseSearchConversations),
+			}.Server(),
+			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
+				expectedNextPage := strings.ReplaceAll(expected.NextPage.String(), "{{testServerURL}}", baseURL)
+
+				return mockutils.ReadResultComparator.SubsetFields(actual, expected) &&
+					mockutils.ReadResultComparator.SubsetRaw(actual, expected) &&
+					actual.NextPage.String() == expectedNextPage &&
+					actual.Done == expected.Done
+			},
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"id":    "5",
+						"state": "open",
+						"title": "What is return policy?",
+					},
+					Raw: map[string]any{
+						"ai_agent_participated": false,
+						"created_at":            float64(1726752048),
+						"updated_at":            float64(1726752145),
+					},
+				}},
+				NextPage: "{{testServerURL}}/conversations/search?starting_after=WzE3MjY3NTIxNDUwMDAsNSwyXQ==",
+				Done:     false,
 			},
 			ExpectedErrs: nil,
 		},
