@@ -11,6 +11,7 @@ func init() {
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://accounts.zoho.com/oauth/v2/auth",
+			AuthURLParams:             map[string]string{"access_type": "offline"},
 			TokenURL:                  "https://accounts.zoho.com/oauth/v2/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
