@@ -6,9 +6,7 @@ import (
 )
 
 // Supported object names can be found under schemas.json.
-var supportedObjectsByRead = handy.NewSetFromList( //nolint:gochecknoglobals
-	metadata.Schemas.GetObjectNames(),
-)
+var supportedObjectsByRead = metadata.Schemas.ObjectNames() //nolint:gochecknoglobals
 
 // ObjectNameToResponseField maps ObjectName to the response field name which contains that object.
 var ObjectNameToResponseField = handy.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals

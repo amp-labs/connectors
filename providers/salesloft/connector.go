@@ -12,6 +12,7 @@ const apiVersion = "v2"
 
 type Connector struct {
 	BaseURL string
+	Module  common.Module
 	Client  *common.JSONHTTPClient
 }
 

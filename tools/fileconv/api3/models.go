@@ -38,6 +38,7 @@ type Schema struct {
 	DisplayName string
 	Fields      []string
 	QueryParams []string
+	URLPath     string
 	Problem     error
 }
 
@@ -107,6 +108,7 @@ func (p PathItem) RetrieveSchemaOperation(
 		DisplayName: displayName,
 		Fields:      fields,
 		QueryParams: getQueryParameters(operation),
+		URLPath:     p.urlPath,
 		Problem:     err,
 	}, true, nil
 }

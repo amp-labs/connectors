@@ -1,395 +1,431 @@
 {
-  "data": {
-    "activities": {
-      "displayName": "activities",
-      "fields": {
-        "activityDate": "activityDate",
-        "activityTypeId": "activityTypeId",
-        "attributes": "attributes",
-        "campaignId": "campaignId",
-        "id": "id",
-        "leadId": "leadId",
-        "marketoGUID": "marketoGUID",
-        "primaryAttributeValue": "primaryAttributeValue",
-        "primaryAttributeValueId": "primaryAttributeValueId"
-      }
-    },
-    "campaigns": {
-      "displayName": "campaigns",
-      "fields": {
-        "active": "active",
-        "createdAt": "createdAt",
-        "description": "description",
-        "id": "id",
-        "name": "name",
-        "programId": "programId",
-        "programName": "programName",
-        "type": "type",
-        "updatedAt": "updatedAt",
-        "workspaceName": "workspaceName"
-      }
-    },
-    "channels": {
-      "displayName": "channels",
-      "fields": {
-        "applicableProgramType": "applicableProgramType",
-        "createdAt": "createdAt",
-        "id": "id",
-        "name": "name",
-        "progressionStatuses": "progressionStatuses",
-        "updatedAt": "updatedAt"
-      }
-    },
-    "companies": {
-      "displayName": "companies",
-      "fields": {
-        "id": "id",
-        "reasons": "reasons",
-        "seq": "seq",
-        "status": "status"
-      }
-    },
-    "customobjects": {
-      "displayName": "customobjects",
-      "fields": {
-        "apiName": "apiName",
-        "createdAt": "createdAt",
-        "dedupeFields": "dedupeFields",
-        "description": "description",
-        "displayName": "displayName",
-        "fields": "fields",
-        "idField": "idField",
-        "pluralName": "pluralName",
-        "relationships": "relationships",
-        "searchableFields": "searchableFields",
-        "state": "state",
-        "updatedAt": "updatedAt",
-        "version": "version"
-      }
-    },
-    "emailTemplates": {
-      "displayName": "emailTemplates",
-      "fields": {
-        "createdAt": "createdAt",
-        "description": "description",
-        "folder": "folder",
-        "id": "id",
-        "name": "name",
-        "status": "status",
-        "updatedAt": "updatedAt",
-        "url": "url",
-        "version": "version",
-        "workspace": "workspace"
-      }
-    },
-    "emails": {
-      "displayName": "emails",
-      "fields": {
-        "autoCopyToText": "autoCopyToText",
-        "ccFields": "ccFields",
-        "createdAt": "createdAt",
-        "description": "description",
-        "folder": "folder",
-        "fromEmail": "fromEmail",
-        "fromName": "fromName",
-        "id": "id",
-        "name": "name",
-        "operational": "operational",
-        "preHeader": "preHeader",
-        "publishToMSI": "publishToMSI",
-        "replyEmail": "replyEmail",
-        "status": "status",
-        "subject": "subject",
-        "template": "template",
-        "textOnly": "textOnly",
-        "updatedAt": "updatedAt",
-        "url": "url",
-        "version": "version",
-        "webView": "webView",
-        "workspace": "workspace"
-      }
-    },
-    "files": {
-      "displayName": "files",
-      "fields": {
-        "createdAt": "createdAt",
-        "description": "description",
-        "folder": "folder",
-        "id": "id",
-        "mimeType": "mimeType",
-        "name": "name",
-        "size": "size",
-        "updatedAt": "updatedAt",
-        "url": "url"
-      }
-    },
-    "folders": {
-      "displayName": "folders",
-      "fields": {
-        "accessZoneId": "accessZoneId",
-        "createdAt": "createdAt",
-        "description": "description",
-        "folderId": "folderId",
-        "folderType": "folderType",
-        "id": "id",
-        "isArchive": "isArchive",
-        "isSystem": "isSystem",
-        "name": "name",
-        "parent": "parent",
-        "path": "path",
-        "updatedAt": "updatedAt",
-        "url": "url",
-        "workspace": "workspace"
-      }
-    },
-    "forms": {
-      "displayName": "forms",
-      "fields": {
-        "buttonLabel": "buttonLabel",
-        "buttonLocation": "buttonLocation",
-        "createdAt": "createdAt",
-        "description": "description",
-        "folder": "folder",
-        "fontFamily": "fontFamily",
-        "fontSize": "fontSize",
-        "id": "id",
-        "knownVisitor": "knownVisitor",
-        "labelPosition": "labelPosition",
-        "language": "language",
-        "locale": "locale",
-        "name": "name",
-        "progressiveProfiling": "progressiveProfiling",
-        "status": "status",
-        "thankYouList": "thankYouList",
-        "theme": "theme",
-        "updatedAt": "updatedAt",
-        "url": "url",
-        "waitingLabel": "waitingLabel"
-      }
-    },
-    "landingPageDomains": {
-      "displayName": "landingPageDomains",
-      "fields": { "hostname": "hostname", "type": "type" }
-    },
-    "landingPageTemplates": {
-      "displayName": "landingPageTemplates",
-      "fields": {
-        "createdAt": "createdAt",
-        "description": "description",
-        "enableMunchkin": "enableMunchkin",
-        "folder": "folder",
-        "id": "id",
-        "name": "name",
-        "status": "status",
-        "templateType": "templateType",
-        "updatedAt": "updatedAt",
-        "url": "url",
-        "workspace": "workspace"
-      }
-    },
-    "landingPages": {
-      "displayName": "landingPages",
-      "fields": {
-        "URL": "URL",
-        "computedUrl": "computedUrl",
-        "createdAt": "createdAt",
-        "customHeadHTML": "customHeadHTML",
-        "description": "description",
-        "facebookOgTags": "facebookOgTags",
-        "folder": "folder",
-        "formPrefill": "formPrefill",
-        "id": "id",
-        "keywords": "keywords",
-        "mobileEnabled": "mobileEnabled",
-        "name": "name",
-        "robots": "robots",
-        "status": "status",
-        "template": "template",
-        "title": "title",
-        "updatedAt": "updatedAt",
-        "workspace": "workspace"
-      }
-    },
-    "leads": {
-      "displayName": "leads",
-      "fields": {
-        "id": "id",
-        "membership": "membership",
-        "reason": "reason",
-        "status": "status"
-      }
-    },
-    "lists": {
-      "displayName": "lists",
-      "fields": {
-        "createdAt": "createdAt",
-        "description": "description",
-        "id": "id",
-        "name": "name",
-        "programName": "programName",
-        "updatedAt": "updatedAt",
-        "workspaceName": "workspaceName"
-      }
-    },
-    "namedAccountLists": {
-      "displayName": "namedAccountLists",
-      "fields": {
-        "createdAt": "createdAt",
-        "marketoGUID": "marketoGUID",
-        "name": "name",
-        "reasons": "reasons",
-        "seq": "seq",
-        "status": "status",
-        "type": "type",
-        "updateable": "updateable",
-        "updatedAt": "updatedAt"
-      }
-    },
-    "namedaccounts": {
-      "displayName": "namedaccounts",
-      "fields": {
-        "marketoGUID": "marketoGUID",
-        "reasons": "reasons",
-        "seq": "seq",
-        "status": "status"
-      }
-    },
-    "opportunities": {
-      "displayName": "opportunities",
-      "fields": {
-        "marketoGUID": "marketoGUID",
-        "reasons": "reasons",
-        "seq": "seq"
-      }
-    },
-    "programs": {
-      "displayName": "programs",
-      "fields": {
-        "channel": "channel",
-        "createdAt": "createdAt",
-        "description": "description",
-        "folder": "folder",
-        "id": "id",
-        "name": "name",
-        "sfdcId": "sfdcId",
-        "sfdcName": "sfdcName",
-        "status": "status",
-        "type": "type",
-        "updatedAt": "updatedAt",
-        "url": "url",
-        "workspace": "workspace"
-      }
-    },
-    "redirectRules": {
-      "displayName": "redirectRules",
-      "fields": {
-        "createdAt": "createdAt",
-        "hostname": "hostname",
-        "id": "id",
-        "redirectFrom": "redirectFrom",
-        "redirectFromUrl": "redirectFromUrl",
-        "redirectTo": "redirectTo",
-        "redirectToUrl": "redirectToUrl",
-        "updatedAt": "updatedAt"
-      }
-    },
-    "salespersons": {
-      "displayName": "salespersons",
-      "fields": {
-        "id": "id",
-        "reasons": "reasons",
-        "seq": "seq",
-        "status": "status"
-      }
-    },
-    "segmentation": {
-      "displayName": "segmentation",
-      "fields": {
-        "createdAt": "createdAt",
-        "description": "description",
-        "folder": "folder",
-        "id": "id",
-        "name": "name",
-        "status": "status",
-        "updatedAt": "updatedAt",
-        "url": "url",
-        "workspace": "workspace"
-      }
-    },
-    "smartCampaigns": {
-      "displayName": "smartCampaigns",
-      "fields": {
-        "computedUrl": "computedUrl",
-        "createdAt": "createdAt",
-        "description": "description",
-        "flowId": "flowId",
-        "folder": "folder",
-        "id": "id",
-        "isActive": "isActive",
-        "isCommunicationLimitEnabled": "isCommunicationLimitEnabled",
-        "isRequestable": "isRequestable",
-        "isSystem": "isSystem",
-        "maxMembers": "maxMembers",
-        "name": "name",
-        "parentProgramId": "parentProgramId",
-        "qualificationRuleInterval": "qualificationRuleInterval",
-        "qualificationRuleType": "qualificationRuleType",
-        "qualificationRuleUnit": "qualificationRuleUnit",
-        "recurrence": "recurrence",
-        "smartListId": "smartListId",
-        "status": "status",
-        "type": "type",
-        "updatedAt": "updatedAt",
-        "workspace": "workspace"
-      }
-    },
-    "smartLists": {
-      "displayName": "smartLists",
-      "fields": {
-        "createdAt": "createdAt",
-        "description": "description",
-        "folder": "folder",
-        "id": "id",
-        "name": "name",
-        "updatedAt": "updatedAt",
-        "url": "url",
-        "workspace": "workspace"
-      }
-    },
-    "snippets": {
-      "displayName": "snippets",
-      "fields": {
-        "createdAt": "createdAt",
-        "description": "description",
-        "folder": "folder",
-        "id": "id",
-        "name": "name",
-        "status": "status",
-        "updatedAt": "updatedAt",
-        "url": "url",
-        "workspace": "workspace"
-      }
-    },
-    "staticLists": {
-      "displayName": "staticLists",
-      "fields": {
-        "computedUrl": "computedUrl",
-        "createdAt": "createdAt",
-        "description": "description",
-        "folder": "folder",
-        "id": "id",
-        "name": "name",
-        "updatedAt": "updatedAt",
-        "url": "url",
-        "workspace": "workspace"
-      }
-    },
-    "tagTypes": {
-      "displayName": "tagTypes",
-      "fields": {
-        "applicableProgramTypes": "applicableProgramTypes",
-        "required": "required",
-        "tagType": "tagType"
+  "modules": {
+    "root": {
+      "id": "",
+      "path": "",
+      "objects": {
+        "activities": {
+          "displayName": "activities",
+          "path": "/activities",
+          "fields": {
+            "activityDate": "activityDate",
+            "activityTypeId": "activityTypeId",
+            "attributes": "attributes",
+            "campaignId": "campaignId",
+            "id": "id",
+            "leadId": "leadId",
+            "marketoGUID": "marketoGUID",
+            "primaryAttributeValue": "primaryAttributeValue",
+            "primaryAttributeValueId": "primaryAttributeValueId"
+          }
+        },
+        "campaigns": {
+          "displayName": "campaigns",
+          "path": "/campaigns",
+          "fields": {
+            "active": "active",
+            "createdAt": "createdAt",
+            "description": "description",
+            "id": "id",
+            "name": "name",
+            "programId": "programId",
+            "programName": "programName",
+            "type": "type",
+            "updatedAt": "updatedAt",
+            "workspaceName": "workspaceName"
+          }
+        },
+        "channels": {
+          "displayName": "channels",
+          "path": "/channels",
+          "fields": {
+            "applicableProgramType": "applicableProgramType",
+            "createdAt": "createdAt",
+            "id": "id",
+            "name": "name",
+            "progressionStatuses": "progressionStatuses",
+            "updatedAt": "updatedAt"
+          }
+        },
+        "companies": {
+          "displayName": "companies",
+          "path": "/companies",
+          "fields": {
+            "id": "id",
+            "reasons": "reasons",
+            "seq": "seq",
+            "status": "status"
+          }
+        },
+        "customobjects": {
+          "displayName": "customobjects",
+          "path": "/customobjects",
+          "fields": {
+            "apiName": "apiName",
+            "createdAt": "createdAt",
+            "dedupeFields": "dedupeFields",
+            "description": "description",
+            "displayName": "displayName",
+            "fields": "fields",
+            "idField": "idField",
+            "pluralName": "pluralName",
+            "relationships": "relationships",
+            "searchableFields": "searchableFields",
+            "state": "state",
+            "updatedAt": "updatedAt",
+            "version": "version"
+          }
+        },
+        "emailTemplates": {
+          "displayName": "emailTemplates",
+          "path": "/emailTemplates",
+          "fields": {
+            "createdAt": "createdAt",
+            "description": "description",
+            "folder": "folder",
+            "id": "id",
+            "name": "name",
+            "status": "status",
+            "updatedAt": "updatedAt",
+            "url": "url",
+            "version": "version",
+            "workspace": "workspace"
+          }
+        },
+        "emails": {
+          "displayName": "emails",
+          "path": "/emails",
+          "fields": {
+            "autoCopyToText": "autoCopyToText",
+            "ccFields": "ccFields",
+            "createdAt": "createdAt",
+            "description": "description",
+            "folder": "folder",
+            "fromEmail": "fromEmail",
+            "fromName": "fromName",
+            "id": "id",
+            "name": "name",
+            "operational": "operational",
+            "preHeader": "preHeader",
+            "publishToMSI": "publishToMSI",
+            "replyEmail": "replyEmail",
+            "status": "status",
+            "subject": "subject",
+            "template": "template",
+            "textOnly": "textOnly",
+            "updatedAt": "updatedAt",
+            "url": "url",
+            "version": "version",
+            "webView": "webView",
+            "workspace": "workspace"
+          }
+        },
+        "files": {
+          "displayName": "files",
+          "path": "/files",
+          "fields": {
+            "createdAt": "createdAt",
+            "description": "description",
+            "folder": "folder",
+            "id": "id",
+            "mimeType": "mimeType",
+            "name": "name",
+            "size": "size",
+            "updatedAt": "updatedAt",
+            "url": "url"
+          }
+        },
+        "folders": {
+          "displayName": "folders",
+          "path": "/folders",
+          "fields": {
+            "accessZoneId": "accessZoneId",
+            "createdAt": "createdAt",
+            "description": "description",
+            "folderId": "folderId",
+            "folderType": "folderType",
+            "id": "id",
+            "isArchive": "isArchive",
+            "isSystem": "isSystem",
+            "name": "name",
+            "parent": "parent",
+            "path": "path",
+            "updatedAt": "updatedAt",
+            "url": "url",
+            "workspace": "workspace"
+          }
+        },
+        "forms": {
+          "displayName": "forms",
+          "path": "/forms",
+          "fields": {
+            "buttonLabel": "buttonLabel",
+            "buttonLocation": "buttonLocation",
+            "createdAt": "createdAt",
+            "description": "description",
+            "folder": "folder",
+            "fontFamily": "fontFamily",
+            "fontSize": "fontSize",
+            "id": "id",
+            "knownVisitor": "knownVisitor",
+            "labelPosition": "labelPosition",
+            "language": "language",
+            "locale": "locale",
+            "name": "name",
+            "progressiveProfiling": "progressiveProfiling",
+            "status": "status",
+            "thankYouList": "thankYouList",
+            "theme": "theme",
+            "updatedAt": "updatedAt",
+            "url": "url",
+            "waitingLabel": "waitingLabel"
+          }
+        },
+        "landingPageDomains": {
+          "displayName": "landingPageDomains",
+          "path": "/landingPageDomains",
+          "fields": {
+            "hostname": "hostname",
+            "type": "type"
+          }
+        },
+        "landingPageTemplates": {
+          "displayName": "landingPageTemplates",
+          "path": "/landingPageTemplates",
+          "fields": {
+            "createdAt": "createdAt",
+            "description": "description",
+            "enableMunchkin": "enableMunchkin",
+            "folder": "folder",
+            "id": "id",
+            "name": "name",
+            "status": "status",
+            "templateType": "templateType",
+            "updatedAt": "updatedAt",
+            "url": "url",
+            "workspace": "workspace"
+          }
+        },
+        "landingPages": {
+          "displayName": "landingPages",
+          "path": "/landingPages",
+          "fields": {
+            "URL": "URL",
+            "computedUrl": "computedUrl",
+            "createdAt": "createdAt",
+            "customHeadHTML": "customHeadHTML",
+            "description": "description",
+            "facebookOgTags": "facebookOgTags",
+            "folder": "folder",
+            "formPrefill": "formPrefill",
+            "id": "id",
+            "keywords": "keywords",
+            "mobileEnabled": "mobileEnabled",
+            "name": "name",
+            "robots": "robots",
+            "status": "status",
+            "template": "template",
+            "title": "title",
+            "updatedAt": "updatedAt",
+            "workspace": "workspace"
+          }
+        },
+        "leads": {
+          "displayName": "leads",
+          "path": "/leads",
+          "fields": {
+            "id": "id",
+            "membership": "membership",
+            "reason": "reason",
+            "status": "status"
+          }
+        },
+        "lists": {
+          "displayName": "lists",
+          "path": "/lists",
+          "fields": {
+            "createdAt": "createdAt",
+            "description": "description",
+            "id": "id",
+            "name": "name",
+            "programName": "programName",
+            "updatedAt": "updatedAt",
+            "workspaceName": "workspaceName"
+          }
+        },
+        "namedAccountLists": {
+          "displayName": "namedAccountLists",
+          "path": "/namedAccountLists",
+          "fields": {
+            "createdAt": "createdAt",
+            "marketoGUID": "marketoGUID",
+            "name": "name",
+            "reasons": "reasons",
+            "seq": "seq",
+            "status": "status",
+            "type": "type",
+            "updateable": "updateable",
+            "updatedAt": "updatedAt"
+          }
+        },
+        "namedaccounts": {
+          "displayName": "namedaccounts",
+          "path": "/namedaccounts",
+          "fields": {
+            "marketoGUID": "marketoGUID",
+            "reasons": "reasons",
+            "seq": "seq",
+            "status": "status"
+          }
+        },
+        "opportunities": {
+          "displayName": "opportunities",
+          "path": "/opportunities",
+          "fields": {
+            "marketoGUID": "marketoGUID",
+            "reasons": "reasons",
+            "seq": "seq"
+          }
+        },
+        "programs": {
+          "displayName": "programs",
+          "path": "/programs",
+          "fields": {
+            "channel": "channel",
+            "createdAt": "createdAt",
+            "description": "description",
+            "folder": "folder",
+            "id": "id",
+            "name": "name",
+            "sfdcId": "sfdcId",
+            "sfdcName": "sfdcName",
+            "status": "status",
+            "type": "type",
+            "updatedAt": "updatedAt",
+            "url": "url",
+            "workspace": "workspace"
+          }
+        },
+        "redirectRules": {
+          "displayName": "redirectRules",
+          "path": "/redirectRules",
+          "fields": {
+            "createdAt": "createdAt",
+            "hostname": "hostname",
+            "id": "id",
+            "redirectFrom": "redirectFrom",
+            "redirectFromUrl": "redirectFromUrl",
+            "redirectTo": "redirectTo",
+            "redirectToUrl": "redirectToUrl",
+            "updatedAt": "updatedAt"
+          }
+        },
+        "salespersons": {
+          "displayName": "salespersons",
+          "path": "/salespersons",
+          "fields": {
+            "id": "id",
+            "reasons": "reasons",
+            "seq": "seq",
+            "status": "status"
+          }
+        },
+        "segmentation": {
+          "displayName": "segmentation",
+          "path": "/segmentation",
+          "fields": {
+            "createdAt": "createdAt",
+            "description": "description",
+            "folder": "folder",
+            "id": "id",
+            "name": "name",
+            "status": "status",
+            "updatedAt": "updatedAt",
+            "url": "url",
+            "workspace": "workspace"
+          }
+        },
+        "smartCampaigns": {
+          "displayName": "smartCampaigns",
+          "path": "/smartCampaigns",
+          "fields": {
+            "computedUrl": "computedUrl",
+            "createdAt": "createdAt",
+            "description": "description",
+            "flowId": "flowId",
+            "folder": "folder",
+            "id": "id",
+            "isActive": "isActive",
+            "isCommunicationLimitEnabled": "isCommunicationLimitEnabled",
+            "isRequestable": "isRequestable",
+            "isSystem": "isSystem",
+            "maxMembers": "maxMembers",
+            "name": "name",
+            "parentProgramId": "parentProgramId",
+            "qualificationRuleInterval": "qualificationRuleInterval",
+            "qualificationRuleType": "qualificationRuleType",
+            "qualificationRuleUnit": "qualificationRuleUnit",
+            "recurrence": "recurrence",
+            "smartListId": "smartListId",
+            "status": "status",
+            "type": "type",
+            "updatedAt": "updatedAt",
+            "workspace": "workspace"
+          }
+        },
+        "smartLists": {
+          "displayName": "smartLists",
+          "path": "/smartLists",
+          "fields": {
+            "createdAt": "createdAt",
+            "description": "description",
+            "folder": "folder",
+            "id": "id",
+            "name": "name",
+            "updatedAt": "updatedAt",
+            "url": "url",
+            "workspace": "workspace"
+          }
+        },
+        "snippets": {
+          "displayName": "snippets",
+          "path": "/snippets",
+          "fields": {
+            "createdAt": "createdAt",
+            "description": "description",
+            "folder": "folder",
+            "id": "id",
+            "name": "name",
+            "status": "status",
+            "updatedAt": "updatedAt",
+            "url": "url",
+            "workspace": "workspace"
+          }
+        },
+        "staticLists": {
+          "displayName": "staticLists",
+          "path": "/staticLists",
+          "fields": {
+            "computedUrl": "computedUrl",
+            "createdAt": "createdAt",
+            "description": "description",
+            "folder": "folder",
+            "id": "id",
+            "name": "name",
+            "updatedAt": "updatedAt",
+            "url": "url",
+            "workspace": "workspace"
+          }
+        },
+        "tagTypes": {
+          "displayName": "tagTypes",
+          "path": "/tagTypes",
+          "fields": {
+            "applicableProgramTypes": "applicableProgramTypes",
+            "required": "required",
+            "tagType": "tagType"
+          }
+        }
       }
     }
   }

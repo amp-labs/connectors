@@ -1,863 +1,916 @@
 {
-  "data": {
-    "account_stages": {
-      "displayName": "Account Stages",
-      "fields": {
-        "active": "active",
-        "created_at": "created_at",
-        "id": "id",
-        "name": "name",
-        "order": "order",
-        "updated_at": "updated_at"
-      },
-      "url": "https://developers.salesloft.com/docs/api/account-stages-index"
-    },
-    "account_tiers": {
-      "displayName": "Account Tiers",
-      "fields": {
-        "active": "active",
-        "created_at": "created_at",
-        "id": "id",
-        "name": "name",
-        "order": "order",
-        "updated_at": "updated_at"
-      },
-      "url": "https://developers.salesloft.com/docs/api/account-tiers-index"
-    },
-    "accounts": {
-      "displayName": "Accounts",
-      "fields": {
-        "account_tier": "account_tier",
-        "archived_at": "archived_at",
-        "city": "city",
-        "company_stage": "company_stage",
-        "company_type": "company_type",
-        "conversational_name": "conversational_name",
-        "country": "country",
-        "counts": "counts",
-        "created_at": "created_at",
-        "creator": "creator",
-        "crm_id": "crm_id",
-        "crm_object_type": "crm_object_type",
-        "crm_url": "crm_url",
-        "custom_fields": "custom_fields",
-        "description": "description",
-        "do_not_contact": "do_not_contact",
-        "domain": "domain",
-        "founded": "founded",
-        "id": "id",
-        "industry": "industry",
-        "last_contacted_at": "last_contacted_at",
-        "last_contacted_by": "last_contacted_by",
-        "last_contacted_person": "last_contacted_person",
-        "last_contacted_type": "last_contacted_type",
-        "linkedin_url": "linkedin_url",
-        "locale": "locale",
-        "name": "name",
-        "owner": "owner",
-        "owner_crm_id": "owner_crm_id",
-        "phone": "phone",
-        "postal_code": "postal_code",
-        "revenue_range": "revenue_range",
-        "size": "size",
-        "state": "state",
-        "street": "street",
-        "tags": "tags",
-        "twitter_handle": "twitter_handle",
-        "updated_at": "updated_at",
-        "user_relationships": "user_relationships",
-        "website": "website"
-      },
-      "url": "https://developers.salesloft.com/docs/api/accounts-index"
-    },
-    "action_details_call_instructions": {
-      "displayName": "Call Instructions",
-      "fields": {
-        "created_at": "created_at",
-        "id": "id",
-        "instructions": "instructions",
-        "updated_at": "updated_at"
-      },
-      "url": "https://developers.salesloft.com/docs/api/action-details-call-instructions-index"
-    },
-    "actions": {
-      "displayName": "Actions",
-      "fields": {
-        "action_details": "action_details",
-        "cadence": "cadence",
-        "created_at": "created_at",
-        "due": "due",
-        "due_on": "due_on",
-        "id": "id",
-        "multitouch_group_id": "multitouch_group_id",
-        "person": "person",
-        "status": "status",
-        "step": "step",
-        "task": "task",
-        "type": "type",
-        "updated_at": "updated_at",
-        "user": "user"
-      },
-      "url": "https://developers.salesloft.com/docs/api/actions-index"
-    },
-    "activities_calls": {
-      "displayName": "Calls",
-      "fields": {
-        "action": "action",
-        "cadence": "cadence",
-        "called_person": "called_person",
-        "created_at": "created_at",
-        "crm_activity": "crm_activity",
-        "disposition": "disposition",
-        "duration": "duration",
-        "id": "id",
-        "note": "note",
-        "recordings": "recordings",
-        "sentiment": "sentiment",
-        "step": "step",
-        "task": "task",
-        "to": "to",
-        "updated_at": "updated_at",
-        "user": "user"
-      },
-      "url": "https://developers.salesloft.com/docs/api/activities-calls-index"
-    },
-    "activities_emails": {
-      "displayName": "Emails",
-      "fields": {
-        "action": "action",
-        "additional_recipients": "additional_recipients",
-        "body": "body",
-        "bounced": "bounced",
-        "cadence": "cadence",
-        "click_tracking": "click_tracking",
-        "counts": "counts",
-        "created_at": "created_at",
-        "crm_activity": "crm_activity",
-        "draft_with_ai": "draft_with_ai",
-        "email_template": "email_template",
-        "error_message": "error_message",
-        "headers": "headers",
-        "id": "id",
-        "mailing": "mailing",
-        "personalization": "personalization",
-        "recipient": "recipient",
-        "recipient_email_address": "recipient_email_address",
-        "send_after": "send_after",
-        "sent_at": "sent_at",
-        "status": "status",
-        "step": "step",
-        "subject": "subject",
-        "task": "task",
-        "updated_at": "updated_at",
-        "user": "user",
-        "view_tracking": "view_tracking"
-      },
-      "url": "https://developers.salesloft.com/docs/api/activities-emails-index"
-    },
-    "activity_histories": {
-      "displayName": "Past Activities",
-      "fields": {
-        "created_at": "created_at",
-        "dynamic_data": "dynamic_data",
-        "failed_dynamic_resources": "failed_dynamic_resources",
-        "id": "id",
-        "occurred_at": "occurred_at",
-        "pinned_at": "pinned_at",
-        "resource_id": "resource_id",
-        "resource_type": "resource_type",
-        "static_data": "static_data",
-        "tags": "tags",
-        "type": "type",
-        "updated_at": "updated_at",
-        "user_guid": "user_guid"
-      },
-      "url": "https://developers.salesloft.com/docs/api/activity-histories-index"
-    },
-    "bulk_jobs": {
-      "displayName": "Bulk Jobs",
-      "fields": {
-        "created_at": "created_at",
-        "errors": "errors",
-        "finished_at": "finished_at",
-        "id": "id",
-        "marked_ready_at": "marked_ready_at",
-        "name": "name",
-        "processed": "processed",
-        "ready_to_execute": "ready_to_execute",
-        "scopes": "scopes",
-        "started_at": "started_at",
-        "state": "state",
-        "total": "total",
-        "type": "type",
-        "updated_at": "updated_at"
-      },
-      "url": "https://developers.salesloft.com/docs/api/bulk-jobs-index"
-    },
-    "bulk_jobs_job_data": {
-      "displayName": "Job Data for a Bulk Job",
-      "fields": {
-        "error": "error",
-        "id": "id",
-        "record": "record",
-        "resource": "resource",
-        "status": "status"
-      },
-      "url": "https://developers.salesloft.com/docs/api/bulk-jobs-job-data-index"
-    },
-    "bulk_jobs_results": {
-      "displayName": "Job Data for a Completed Bulk Job.",
-      "fields": {
-        "error": "error",
-        "id": "id",
-        "record": "record",
-        "resource": "resource",
-        "status": "status"
-      },
-      "url": "https://developers.salesloft.com/docs/api/bulk-jobs-results-index"
-    },
-    "cadence_memberships": {
-      "displayName": "Cadence Memberships",
-      "fields": {
-        "added_at": "added_at",
-        "cadence": "cadence",
-        "counts": "counts",
-        "created_at": "created_at",
-        "current_state": "current_state",
-        "currently_on_cadence": "currently_on_cadence",
-        "id": "id",
-        "latest_action": "latest_action",
-        "person": "person",
-        "person_deleted": "person_deleted",
-        "updated_at": "updated_at",
-        "user": "user"
-      },
-      "url": "https://developers.salesloft.com/docs/api/cadence-memberships-index"
-    },
-    "cadences": {
-      "displayName": "Cadences",
-      "fields": {
-        "added_stage": "added_stage",
-        "archived": "archived",
-        "archived_at": "archived_at",
-        "archived_by": "archived_by",
-        "bounced_stage": "bounced_stage",
-        "cadence_framework_id": "cadence_framework_id",
-        "cadence_function": "cadence_function",
-        "cadence_priority": "cadence_priority",
-        "counts": "counts",
-        "created_at": "created_at",
-        "creator": "creator",
-        "current_state": "current_state",
-        "draft": "draft",
-        "external_identifier": "external_identifier",
-        "finished_stage": "finished_stage",
-        "groups": "groups",
-        "id": "id",
-        "latest_active_date": "latest_active_date",
-        "name": "name",
-        "opt_out_link_included": "opt_out_link_included",
-        "override_contact_restrictions": "override_contact_restrictions",
-        "owner": "owner",
-        "remove_bounces_enabled": "remove_bounces_enabled",
-        "remove_replies_enabled": "remove_replies_enabled",
-        "replied_stage": "replied_stage",
-        "shared": "shared",
-        "tags": "tags",
-        "team_cadence": "team_cadence",
-        "updated_at": "updated_at"
-      },
-      "url": "https://developers.salesloft.com/docs/api/cadences-index"
-    },
-    "calendar_events": {
-      "displayName": "Calendar Events",
-      "fields": {
-        "all_day": "all_day",
-        "attendees": "attendees",
-        "body_html": "body_html",
-        "busy": "busy",
-        "calendar_id": "calendar_id",
-        "canceled_at": "canceled_at",
-        "conference_data": "conference_data",
-        "created_at": "created_at",
-        "creator": "creator",
-        "description": "description",
-        "end_time": "end_time",
-        "extended_properties": "extended_properties",
-        "html_link": "html_link",
-        "i_cal_uid": "i_cal_uid",
-        "id": "id",
-        "last_occurrence_at": "last_occurrence_at",
-        "location": "location",
-        "organizer": "organizer",
-        "provider": "provider",
-        "recurrence": "recurrence",
-        "recurring": "recurring",
-        "recurring_interval": "recurring_interval",
-        "start_time": "start_time",
-        "status": "status",
-        "tenant_id": "tenant_id",
-        "title": "title",
-        "updated_at": "updated_at",
-        "user_guid": "user_guid"
-      },
-      "url": "https://developers.salesloft.com/docs/api/calendar-events-index"
-    },
-    "call_data_records": {
-      "displayName": "Call Data Records",
-      "fields": {
-        "call": "call",
-        "call_type": "call_type",
-        "call_uuid": "call_uuid",
-        "called_person": "called_person",
-        "created_at": "created_at",
-        "dialer_recording": "dialer_recording",
-        "direction": "direction",
-        "duration": "duration",
-        "ended_at": "ended_at",
-        "from": "from",
-        "id": "id",
-        "recording": "recording",
-        "started_at": "started_at",
-        "status": "status",
-        "to": "to",
-        "updated_at": "updated_at",
-        "user": "user"
-      },
-      "url": "https://developers.salesloft.com/docs/api/call-data-records-index"
-    },
-    "call_dispositions": {
-      "displayName": "Call Dispositions",
-      "fields": {
-        "created_at": "created_at",
-        "id": "id",
-        "name": "name",
-        "updated_at": "updated_at"
-      },
-      "url": "https://developers.salesloft.com/docs/api/call-dispositions-index"
-    },
-    "call_sentiments": {
-      "displayName": "Call Sentiments",
-      "fields": {
-        "created_at": "created_at",
-        "id": "id",
-        "name": "name",
-        "updated_at": "updated_at"
-      },
-      "url": "https://developers.salesloft.com/docs/api/call-sentiments-index"
-    },
-    "crm_activities": {
-      "displayName": "Crm Activities",
-      "fields": {
-        "activity_type": "activity_type",
-        "created_at": "created_at",
-        "crm_id": "crm_id",
-        "custom_crm_fields": "custom_crm_fields",
-        "description": "description",
-        "error": "error",
-        "id": "id",
-        "person": "person",
-        "subject": "subject",
-        "updated_at": "updated_at",
-        "user": "user"
-      },
-      "url": "https://developers.salesloft.com/docs/api/crm-activities-index"
-    },
-    "crm_activity_fields": {
-      "displayName": "Crm Activity Fields",
-      "fields": {
-        "created_at": "created_at",
-        "crm_object_type": "crm_object_type",
-        "field": "field",
-        "field_type": "field_type",
-        "id": "id",
-        "picklist_values": "picklist_values",
-        "salesforce_object_type": "salesforce_object_type",
-        "source": "source",
-        "title": "title",
-        "updated_at": "updated_at",
-        "value": "value"
-      },
-      "url": "https://developers.salesloft.com/docs/api/crm-activity-fields-index"
-    },
-    "crm_users": {
-      "displayName": "Crm Users",
-      "fields": {
-        "created_at": "created_at",
-        "crm_id": "crm_id",
-        "first_name": "first_name",
-        "id": "id",
-        "last_name": "last_name",
-        "name": "name",
-        "updated_at": "updated_at",
-        "user": "user"
-      },
-      "url": "https://developers.salesloft.com/docs/api/crm-users-index"
-    },
-    "custom_fields": {
-      "displayName": "Custom Fields",
-      "fields": {
-        "created_at": "created_at",
-        "field_type": "field_type",
-        "id": "id",
-        "name": "name",
-        "updated_at": "updated_at",
-        "value_type": "value_type"
-      },
-      "url": "https://developers.salesloft.com/docs/api/custom-fields-index"
-    },
-    "custom_roles": {
-      "displayName": "Custom Roles",
-      "fields": {
-        "id": "id",
-        "name": "name"
-      },
-      "url": "https://developers.salesloft.com/docs/api/custom-roles-index"
-    },
-    "data_control_requests": {
-      "displayName": "Requests",
-      "fields": {
-        "dry_run": "dry_run",
-        "events": "events",
-        "id": "id",
-        "metadata": "metadata",
-        "request_type": "request_type",
-        "team_id": "team_id",
-        "user_guid": "user_guid"
-      },
-      "url": "https://developers.salesloft.com/docs/api/data-control-requests-index"
-    },
-    "email_template_attachments": {
-      "displayName": "Email Template Attachments",
-      "fields": {
-        "attachment_content_type": "attachment_content_type",
-        "attachment_file_size": "attachment_file_size",
-        "attachment_fingerprint": "attachment_fingerprint",
-        "attachment_id": "attachment_id",
-        "download_url": "download_url",
-        "email_template": "email_template",
-        "id": "id",
-        "name": "name",
-        "scanned": "scanned"
-      },
-      "url": "https://developers.salesloft.com/docs/api/email-template-attachments-index"
-    },
-    "email_templates": {
-      "displayName": "Email Templates",
-      "fields": {
-        "_links": "_links",
-        "archived_at": "archived_at",
-        "body": "body",
-        "body_preview": "body_preview",
-        "cadence_template": "cadence_template",
-        "click_tracking_enabled": "click_tracking_enabled",
-        "counts": "counts",
-        "created_at": "created_at",
-        "groups": "groups",
-        "id": "id",
-        "last_used_at": "last_used_at",
-        "open_tracking_enabled": "open_tracking_enabled",
-        "shared": "shared",
-        "subject": "subject",
-        "tags": "tags",
-        "team_template": "team_template",
-        "template_owner": "template_owner",
-        "title": "title",
-        "updated_at": "updated_at"
-      },
-      "url": "https://developers.salesloft.com/docs/api/email-templates-index"
-    },
-    "external_configurations": {
-      "displayName": "Team Configurations",
-      "fields": {
-        "deleted": "deleted",
-        "external_type": "external_type",
-        "id": "id",
-        "object_type": "object_type",
-        "source_id": "source_id",
-        "source_type": "source_type"
-      },
-      "url": "https://developers.salesloft.com/docs/api/external-configurations-index"
-    },
-    "external_mappings": {
-      "displayName": "Team Mappings",
-      "fields": {
-        "deleted": "deleted",
-        "external_id": "external_id",
-        "external_type": "external_type",
-        "id": "id",
-        "inserted_at": "inserted_at",
-        "object_id": "object_id",
-        "object_type": "object_type",
-        "tenant_id": "tenant_id"
-      },
-      "url": "https://developers.salesloft.com/docs/api/external-mappings-index"
-    },
-    "groups": {
-      "displayName": "Groups",
-      "fields": {
-        "accessible_groups": "accessible_groups",
-        "id": "id",
-        "name": "name",
-        "parent_id": "parent_id"
-      },
-      "url": "https://developers.salesloft.com/docs/api/groups-index"
-    },
-    "imports": {
-      "displayName": "Imports",
-      "fields": {
-        "created_at": "created_at",
-        "current_people_count": "current_people_count",
-        "errors_list": "errors_list",
-        "id": "id",
-        "import_type": "import_type",
-        "imported_people_count": "imported_people_count",
-        "name": "name",
-        "updated_at": "updated_at",
-        "user_id": "user_id"
-      },
-      "url": "https://developers.salesloft.com/docs/api/imports-index"
-    },
-    "integrations_signals_registrations": {
-      "displayName": "Signal Registrations",
-      "fields": {
-        "attribution": "attribution",
-        "created_at": "created_at",
-        "data_shape": "data_shape",
-        "description": "description",
-        "globally_installed_at": "globally_installed_at",
-        "id": "id",
-        "indicators": "indicators",
-        "integration": "integration",
-        "integration_slug": "integration_slug",
-        "owner_user_guid": "owner_user_guid",
-        "type": "type"
-      },
-      "url": "https://developers.salesloft.com/docs/api/integrations-signals-registrations-index"
-    },
-    "integrations_signals_registrations_plays": {
-      "displayName": "Play Registrations",
-      "fields": {
-        "attributes": "attributes",
-        "created_at": "created_at",
-        "description": "description",
-        "enabled_at": "enabled_at",
-        "id": "id",
-        "identifier": "identifier",
-        "indicators": "indicators",
-        "integration": "integration",
-        "label": "label",
-        "name": "name",
-        "owner_tenant_id": "owner_tenant_id",
-        "owner_user_guid": "owner_user_guid",
-        "signal_registration": "signal_registration",
-        "signal_type": "signal_type",
-        "state": "state"
-      },
-      "url": "https://developers.salesloft.com/docs/api/integrations-signals-registrations-plays-index"
-    },
-    "meetings": {
-      "displayName": "Meetings",
-      "fields": {
-        "account_id": "account_id",
-        "all_day": "all_day",
-        "attendees": "attendees",
-        "booked_by_meetings_settings": "booked_by_meetings_settings",
-        "booked_by_user": "booked_by_user",
-        "cadence": "cadence",
-        "calendar_id": "calendar_id",
-        "calendar_type": "calendar_type",
-        "canceled_at": "canceled_at",
-        "created_at": "created_at",
-        "crm": "crm",
-        "crm_custom_fields": "crm_custom_fields",
-        "crm_references": "crm_references",
-        "description": "description",
-        "end_time": "end_time",
-        "event_id": "event_id",
-        "event_source": "event_source",
-        "guests": "guests",
-        "i_cal_uid": "i_cal_uid",
-        "id": "id",
-        "last_occurrence_at": "last_occurrence_at",
-        "location": "location",
-        "meeting_type": "meeting_type",
-        "meeting_type_id": "meeting_type_id",
-        "no_show": "no_show",
-        "owned_by_meetings_settings": "owned_by_meetings_settings",
-        "owned_by_user": "owned_by_user",
-        "person": "person",
-        "recipient_email": "recipient_email",
-        "recipient_name": "recipient_name",
-        "recurrence": "recurrence",
-        "recurring": "recurring",
-        "recurring_interval": "recurring_interval",
-        "reschedule_guid": "reschedule_guid",
-        "reschedule_status": "reschedule_status",
-        "start_time": "start_time",
-        "status": "status",
-        "step": "step",
-        "strict_attribution": "strict_attribution",
-        "task_id": "task_id",
-        "title": "title",
-        "undo_completion_count": "undo_completion_count",
-        "updated_at": "updated_at"
-      },
-      "url": "https://developers.salesloft.com/docs/api/meetings-index"
-    },
-    "notes": {
-      "displayName": "Notes",
-      "fields": {
-        "associated_type": "associated_type",
-        "associated_with": "associated_with",
-        "call": "call",
-        "content": "content",
-        "created_at": "created_at",
-        "id": "id",
-        "updated_at": "updated_at",
-        "user": "user"
-      },
-      "url": "https://developers.salesloft.com/docs/api/notes-index"
-    },
-    "pending_emails": {
-      "displayName": "Pending Emails",
-      "fields": {
-        "id": "id",
-        "mailbox": "mailbox",
-        "mime_email_payload": "mime_email_payload"
-      },
-      "url": "https://developers.salesloft.com/docs/api/pending-emails-index"
-    },
-    "people": {
-      "displayName": "People",
-      "fields": {
-        "account": "account",
-        "account_crm_id": "account_crm_id",
-        "bouncing": "bouncing",
-        "cadences": "cadences",
-        "city": "city",
-        "contact_restrictions": "contact_restrictions",
-        "country": "country",
-        "counts": "counts",
-        "created_at": "created_at",
-        "crm_id": "crm_id",
-        "crm_object_type": "crm_object_type",
-        "crm_url": "crm_url",
-        "custom_fields": "custom_fields",
-        "display_name": "display_name",
-        "do_not_contact": "do_not_contact",
-        "email_address": "email_address",
-        "eu_resident": "eu_resident",
-        "first_name": "first_name",
-        "full_email_address": "full_email_address",
-        "home_phone": "home_phone",
-        "id": "id",
-        "import": "import",
-        "job_seniority": "job_seniority",
-        "last_completed_step": "last_completed_step",
-        "last_completed_step_cadence": "last_completed_step_cadence",
-        "last_contacted_at": "last_contacted_at",
-        "last_contacted_by": "last_contacted_by",
-        "last_contacted_type": "last_contacted_type",
-        "last_name": "last_name",
-        "last_replied_at": "last_replied_at",
-        "linkedin_url": "linkedin_url",
-        "locale": "locale",
-        "locale_utc_offset": "locale_utc_offset",
-        "mobile_phone": "mobile_phone",
-        "most_recent_cadence": "most_recent_cadence",
-        "owner": "owner",
-        "owner_crm_id": "owner_crm_id",
-        "person_company_industry": "person_company_industry",
-        "person_company_name": "person_company_name",
-        "person_company_website": "person_company_website",
-        "person_stage": "person_stage",
-        "personal_email_address": "personal_email_address",
-        "personal_website": "personal_website",
-        "phone": "phone",
-        "phone_extension": "phone_extension",
-        "secondary_email_address": "secondary_email_address",
-        "starred": "starred",
-        "state": "state",
-        "success_count": "success_count",
-        "tags": "tags",
-        "title": "title",
-        "twitter_handle": "twitter_handle",
-        "untouched": "untouched",
-        "updated_at": "updated_at",
-        "work_city": "work_city",
-        "work_country": "work_country",
-        "work_state": "work_state"
-      },
-      "url": "https://developers.salesloft.com/docs/api/people-index"
-    },
-    "person_stages": {
-      "displayName": "Person Stages",
-      "fields": {
-        "active": "active",
-        "created_at": "created_at",
-        "id": "id",
-        "name": "name",
-        "order": "order",
-        "updated_at": "updated_at"
-      },
-      "url": "https://developers.salesloft.com/docs/api/person-stages-index"
-    },
-    "phone_number_assignments": {
-      "displayName": "Phone Number Assignments",
-      "fields": {
-        "id": "id",
-        "number": "number",
-        "user": "user"
-      },
-      "url": "https://developers.salesloft.com/docs/api/phone-number-assignments-index"
-    },
-    "phone_numbers_caller_ids": {
-      "displayName": "Caller Ids",
-      "fields": {
-        "account_name": "account_name",
-        "display_name": "display_name",
-        "person": "person",
-        "title": "title"
-      },
-      "url": "https://developers.salesloft.com/docs/api/phone-numbers-caller-ids-index"
-    },
-    "saved_list_views": {
-      "displayName": "Saved List Views",
-      "fields": {
-        "id": "id",
-        "is_default": "is_default",
-        "name": "name",
-        "shared": "shared",
-        "view": "view",
-        "view_params": "view_params"
-      },
-      "url": "https://developers.salesloft.com/docs/api/saved-list-views-index"
-    },
-    "steps": {
-      "displayName": "Steps",
-      "fields": {
-        "cadence": "cadence",
-        "created_at": "created_at",
-        "day": "day",
-        "details": "details",
-        "disabled": "disabled",
-        "display_name": "display_name",
-        "id": "id",
-        "multitouch_enabled": "multitouch_enabled",
-        "name": "name",
-        "step_number": "step_number",
-        "type": "type",
-        "updated_at": "updated_at"
-      },
-      "url": "https://developers.salesloft.com/docs/api/steps-index"
-    },
-    "successes": {
-      "displayName": "Successes",
-      "fields": {
-        "counts": "counts",
-        "created_at": "created_at",
-        "id": "id",
-        "latest_action": "latest_action",
-        "latest_cadence": "latest_cadence",
-        "latest_call": "latest_call",
-        "latest_email": "latest_email",
-        "latest_step": "latest_step",
-        "person": "person",
-        "succeeded_at": "succeeded_at",
-        "success_window_started_at": "success_window_started_at",
-        "updated_at": "updated_at",
-        "user": "user"
-      },
-      "url": "https://developers.salesloft.com/docs/api/successes-index"
-    },
-    "tags": {
-      "displayName": "Team Tags",
-      "fields": {
-        "id": "id",
-        "name": "name"
-      },
-      "url": "https://developers.salesloft.com/docs/api/tags-index"
-    },
-    "tasks": {
-      "displayName": "Tasks",
-      "fields": {
-        "completed_at": "completed_at",
-        "completed_by": "completed_by",
-        "created_at": "created_at",
-        "created_by_user": "created_by_user",
-        "current_state": "current_state",
-        "description": "description",
-        "due_at": "due_at",
-        "due_date": "due_date",
-        "expires_after": "expires_after",
-        "id": "id",
-        "opportunity": "opportunity",
-        "person": "person",
-        "remind_at": "remind_at",
-        "subject": "subject",
-        "task_type": "task_type",
-        "updated_at": "updated_at",
-        "user": "user"
-      },
-      "url": "https://developers.salesloft.com/docs/api/tasks-index"
-    },
-    "team_template_attachments": {
-      "displayName": "Team Template Attachments",
-      "fields": {
-        "attachment_file_size": "attachment_file_size",
-        "attachment_id": "attachment_id",
-        "download_url": "download_url",
-        "id": "id",
-        "name": "name",
-        "team_template": "team_template"
-      },
-      "url": "https://developers.salesloft.com/docs/api/team-template-attachments-index"
-    },
-    "team_templates": {
-      "displayName": "Team Templates",
-      "fields": {
-        "_links": "_links",
-        "archived_at": "archived_at",
-        "body": "body",
-        "body_preview": "body_preview",
-        "click_tracking_enabled": "click_tracking_enabled",
-        "counts": "counts",
-        "created_at": "created_at",
-        "id": "id",
-        "last_modified_at": "last_modified_at",
-        "last_modified_user": "last_modified_user",
-        "last_used_at": "last_used_at",
-        "open_tracking_enabled": "open_tracking_enabled",
-        "subject": "subject",
-        "tags": "tags",
-        "title": "title",
-        "updated_at": "updated_at"
-      },
-      "url": "https://developers.salesloft.com/docs/api/team-templates-index"
-    },
-    "users": {
-      "displayName": "Users",
-      "fields": {
-        "email": "email",
-        "guid": "guid",
-        "id": "id",
-        "name": "name"
-      },
-      "url": "https://developers.salesloft.com/docs/api/users-index"
-    },
-    "webhook_subscriptions": {
-      "displayName": "Webhook Subscriptions",
-      "fields": {
-        "callback_token": "callback_token",
-        "callback_url": "callback_url",
-        "enabled": "enabled",
-        "event_type": "event_type",
-        "id": "id",
-        "tenant_id": "tenant_id",
-        "user_guid": "user_guid"
-      },
-      "url": "https://developers.salesloft.com/docs/api/webhook-subscriptions-index"
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "",
+      "objects": {
+        "account_stages": {
+          "displayName": "Account Stages",
+          "path": "/account_stages",
+          "fields": {
+            "active": "active",
+            "created_at": "created_at",
+            "id": "id",
+            "name": "name",
+            "order": "order",
+            "updated_at": "updated_at"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/account-stages-index"
+        },
+        "account_tiers": {
+          "displayName": "Account Tiers",
+          "path": "/account_tiers",
+          "fields": {
+            "active": "active",
+            "created_at": "created_at",
+            "id": "id",
+            "name": "name",
+            "order": "order",
+            "updated_at": "updated_at"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/account-tiers-index"
+        },
+        "accounts": {
+          "displayName": "Accounts",
+          "path": "/accounts",
+          "fields": {
+            "account_tier": "account_tier",
+            "archived_at": "archived_at",
+            "city": "city",
+            "company_stage": "company_stage",
+            "company_type": "company_type",
+            "conversational_name": "conversational_name",
+            "country": "country",
+            "counts": "counts",
+            "created_at": "created_at",
+            "creator": "creator",
+            "crm_id": "crm_id",
+            "crm_object_type": "crm_object_type",
+            "crm_url": "crm_url",
+            "custom_fields": "custom_fields",
+            "description": "description",
+            "do_not_contact": "do_not_contact",
+            "domain": "domain",
+            "founded": "founded",
+            "id": "id",
+            "industry": "industry",
+            "last_contacted_at": "last_contacted_at",
+            "last_contacted_by": "last_contacted_by",
+            "last_contacted_person": "last_contacted_person",
+            "last_contacted_type": "last_contacted_type",
+            "linkedin_url": "linkedin_url",
+            "locale": "locale",
+            "name": "name",
+            "owner": "owner",
+            "owner_crm_id": "owner_crm_id",
+            "phone": "phone",
+            "postal_code": "postal_code",
+            "revenue_range": "revenue_range",
+            "size": "size",
+            "state": "state",
+            "street": "street",
+            "tags": "tags",
+            "twitter_handle": "twitter_handle",
+            "updated_at": "updated_at",
+            "user_relationships": "user_relationships",
+            "website": "website"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/accounts-index"
+        },
+        "action_details_call_instructions": {
+          "displayName": "Call Instructions",
+          "path": "/action_details_call_instructions",
+          "fields": {
+            "created_at": "created_at",
+            "id": "id",
+            "instructions": "instructions",
+            "updated_at": "updated_at"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/action-details-call-instructions-index"
+        },
+        "actions": {
+          "displayName": "Actions",
+          "path": "/actions",
+          "fields": {
+            "action_details": "action_details",
+            "cadence": "cadence",
+            "created_at": "created_at",
+            "due": "due",
+            "due_on": "due_on",
+            "id": "id",
+            "multitouch_group_id": "multitouch_group_id",
+            "person": "person",
+            "status": "status",
+            "step": "step",
+            "task": "task",
+            "type": "type",
+            "updated_at": "updated_at",
+            "user": "user"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/actions-index"
+        },
+        "activities_calls": {
+          "displayName": "Calls",
+          "path": "/activities_calls",
+          "fields": {
+            "action": "action",
+            "cadence": "cadence",
+            "called_person": "called_person",
+            "created_at": "created_at",
+            "crm_activity": "crm_activity",
+            "disposition": "disposition",
+            "duration": "duration",
+            "id": "id",
+            "note": "note",
+            "recordings": "recordings",
+            "sentiment": "sentiment",
+            "step": "step",
+            "task": "task",
+            "to": "to",
+            "updated_at": "updated_at",
+            "user": "user"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/activities-calls-index"
+        },
+        "activities_emails": {
+          "displayName": "Emails",
+          "path": "/activities_emails",
+          "fields": {
+            "action": "action",
+            "additional_recipients": "additional_recipients",
+            "body": "body",
+            "bounced": "bounced",
+            "cadence": "cadence",
+            "click_tracking": "click_tracking",
+            "counts": "counts",
+            "created_at": "created_at",
+            "crm_activity": "crm_activity",
+            "draft_with_ai": "draft_with_ai",
+            "email_template": "email_template",
+            "error_message": "error_message",
+            "headers": "headers",
+            "id": "id",
+            "mailing": "mailing",
+            "personalization": "personalization",
+            "recipient": "recipient",
+            "recipient_email_address": "recipient_email_address",
+            "send_after": "send_after",
+            "sent_at": "sent_at",
+            "status": "status",
+            "step": "step",
+            "subject": "subject",
+            "task": "task",
+            "updated_at": "updated_at",
+            "user": "user",
+            "view_tracking": "view_tracking"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/activities-emails-index"
+        },
+        "activity_histories": {
+          "displayName": "Past Activities",
+          "path": "/activity_histories",
+          "fields": {
+            "created_at": "created_at",
+            "dynamic_data": "dynamic_data",
+            "failed_dynamic_resources": "failed_dynamic_resources",
+            "id": "id",
+            "occurred_at": "occurred_at",
+            "pinned_at": "pinned_at",
+            "resource_id": "resource_id",
+            "resource_type": "resource_type",
+            "static_data": "static_data",
+            "tags": "tags",
+            "type": "type",
+            "updated_at": "updated_at",
+            "user_guid": "user_guid"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/activity-histories-index"
+        },
+        "bulk_jobs": {
+          "displayName": "Bulk Jobs",
+          "path": "/bulk_jobs",
+          "fields": {
+            "created_at": "created_at",
+            "errors": "errors",
+            "finished_at": "finished_at",
+            "id": "id",
+            "marked_ready_at": "marked_ready_at",
+            "name": "name",
+            "processed": "processed",
+            "ready_to_execute": "ready_to_execute",
+            "scopes": "scopes",
+            "started_at": "started_at",
+            "state": "state",
+            "total": "total",
+            "type": "type",
+            "updated_at": "updated_at"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/bulk-jobs-index"
+        },
+        "bulk_jobs_job_data": {
+          "displayName": "Job Data for a Bulk Job",
+          "path": "/bulk_jobs_job_data",
+          "fields": {
+            "error": "error",
+            "id": "id",
+            "record": "record",
+            "resource": "resource",
+            "status": "status"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/bulk-jobs-job-data-index"
+        },
+        "bulk_jobs_results": {
+          "displayName": "Job Data for a Completed Bulk Job.",
+          "path": "/bulk_jobs_results",
+          "fields": {
+            "error": "error",
+            "id": "id",
+            "record": "record",
+            "resource": "resource",
+            "status": "status"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/bulk-jobs-results-index"
+        },
+        "cadence_memberships": {
+          "displayName": "Cadence Memberships",
+          "path": "/cadence_memberships",
+          "fields": {
+            "added_at": "added_at",
+            "cadence": "cadence",
+            "counts": "counts",
+            "created_at": "created_at",
+            "current_state": "current_state",
+            "currently_on_cadence": "currently_on_cadence",
+            "id": "id",
+            "latest_action": "latest_action",
+            "person": "person",
+            "person_deleted": "person_deleted",
+            "updated_at": "updated_at",
+            "user": "user"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/cadence-memberships-index"
+        },
+        "cadences": {
+          "displayName": "Cadences",
+          "path": "/cadences",
+          "fields": {
+            "added_stage": "added_stage",
+            "archived": "archived",
+            "archived_at": "archived_at",
+            "archived_by": "archived_by",
+            "bounced_stage": "bounced_stage",
+            "cadence_framework_id": "cadence_framework_id",
+            "cadence_function": "cadence_function",
+            "cadence_priority": "cadence_priority",
+            "counts": "counts",
+            "created_at": "created_at",
+            "creator": "creator",
+            "current_state": "current_state",
+            "draft": "draft",
+            "external_identifier": "external_identifier",
+            "finished_stage": "finished_stage",
+            "groups": "groups",
+            "id": "id",
+            "latest_active_date": "latest_active_date",
+            "name": "name",
+            "opt_out_link_included": "opt_out_link_included",
+            "override_contact_restrictions": "override_contact_restrictions",
+            "owner": "owner",
+            "remove_bounces_enabled": "remove_bounces_enabled",
+            "remove_replies_enabled": "remove_replies_enabled",
+            "replied_stage": "replied_stage",
+            "shared": "shared",
+            "tags": "tags",
+            "team_cadence": "team_cadence",
+            "updated_at": "updated_at"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/cadences-index"
+        },
+        "calendar_events": {
+          "displayName": "Calendar Events",
+          "path": "/calendar_events",
+          "fields": {
+            "all_day": "all_day",
+            "attendees": "attendees",
+            "body_html": "body_html",
+            "busy": "busy",
+            "calendar_id": "calendar_id",
+            "canceled_at": "canceled_at",
+            "conference_data": "conference_data",
+            "created_at": "created_at",
+            "creator": "creator",
+            "description": "description",
+            "end_time": "end_time",
+            "extended_properties": "extended_properties",
+            "html_link": "html_link",
+            "i_cal_uid": "i_cal_uid",
+            "id": "id",
+            "last_occurrence_at": "last_occurrence_at",
+            "location": "location",
+            "organizer": "organizer",
+            "provider": "provider",
+            "recurrence": "recurrence",
+            "recurring": "recurring",
+            "recurring_interval": "recurring_interval",
+            "start_time": "start_time",
+            "status": "status",
+            "tenant_id": "tenant_id",
+            "title": "title",
+            "updated_at": "updated_at",
+            "user_guid": "user_guid"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/calendar-events-index"
+        },
+        "call_data_records": {
+          "displayName": "Call Data Records",
+          "path": "/call_data_records",
+          "fields": {
+            "call": "call",
+            "call_type": "call_type",
+            "call_uuid": "call_uuid",
+            "called_person": "called_person",
+            "created_at": "created_at",
+            "dialer_recording": "dialer_recording",
+            "direction": "direction",
+            "duration": "duration",
+            "ended_at": "ended_at",
+            "from": "from",
+            "id": "id",
+            "recording": "recording",
+            "started_at": "started_at",
+            "status": "status",
+            "to": "to",
+            "updated_at": "updated_at",
+            "user": "user"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/call-data-records-index"
+        },
+        "call_dispositions": {
+          "displayName": "Call Dispositions",
+          "path": "/call_dispositions",
+          "fields": {
+            "created_at": "created_at",
+            "id": "id",
+            "name": "name",
+            "updated_at": "updated_at"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/call-dispositions-index"
+        },
+        "call_sentiments": {
+          "displayName": "Call Sentiments",
+          "path": "/call_sentiments",
+          "fields": {
+            "created_at": "created_at",
+            "id": "id",
+            "name": "name",
+            "updated_at": "updated_at"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/call-sentiments-index"
+        },
+        "crm_activities": {
+          "displayName": "Crm Activities",
+          "path": "/crm_activities",
+          "fields": {
+            "activity_type": "activity_type",
+            "created_at": "created_at",
+            "crm_id": "crm_id",
+            "custom_crm_fields": "custom_crm_fields",
+            "description": "description",
+            "error": "error",
+            "id": "id",
+            "person": "person",
+            "subject": "subject",
+            "updated_at": "updated_at",
+            "user": "user"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/crm-activities-index"
+        },
+        "crm_activity_fields": {
+          "displayName": "Crm Activity Fields",
+          "path": "/crm_activity_fields",
+          "fields": {
+            "created_at": "created_at",
+            "crm_object_type": "crm_object_type",
+            "field": "field",
+            "field_type": "field_type",
+            "id": "id",
+            "picklist_values": "picklist_values",
+            "salesforce_object_type": "salesforce_object_type",
+            "source": "source",
+            "title": "title",
+            "updated_at": "updated_at",
+            "value": "value"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/crm-activity-fields-index"
+        },
+        "crm_users": {
+          "displayName": "Crm Users",
+          "path": "/crm_users",
+          "fields": {
+            "created_at": "created_at",
+            "crm_id": "crm_id",
+            "first_name": "first_name",
+            "id": "id",
+            "last_name": "last_name",
+            "name": "name",
+            "updated_at": "updated_at",
+            "user": "user"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/crm-users-index"
+        },
+        "custom_fields": {
+          "displayName": "Custom Fields",
+          "path": "/custom_fields",
+          "fields": {
+            "created_at": "created_at",
+            "field_type": "field_type",
+            "id": "id",
+            "name": "name",
+            "updated_at": "updated_at",
+            "value_type": "value_type"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/custom-fields-index"
+        },
+        "custom_roles": {
+          "displayName": "Custom Roles",
+          "path": "/custom_roles",
+          "fields": {
+            "id": "id",
+            "name": "name"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/custom-roles-index"
+        },
+        "data_control_requests": {
+          "displayName": "Requests",
+          "path": "/data_control_requests",
+          "fields": {
+            "dry_run": "dry_run",
+            "events": "events",
+            "id": "id",
+            "metadata": "metadata",
+            "request_type": "request_type",
+            "team_id": "team_id",
+            "user_guid": "user_guid"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/data-control-requests-index"
+        },
+        "email_template_attachments": {
+          "displayName": "Email Template Attachments",
+          "path": "/email_template_attachments",
+          "fields": {
+            "attachment_content_type": "attachment_content_type",
+            "attachment_file_size": "attachment_file_size",
+            "attachment_fingerprint": "attachment_fingerprint",
+            "attachment_id": "attachment_id",
+            "download_url": "download_url",
+            "email_template": "email_template",
+            "id": "id",
+            "name": "name",
+            "scanned": "scanned"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/email-template-attachments-index"
+        },
+        "email_templates": {
+          "displayName": "Email Templates",
+          "path": "/email_templates",
+          "fields": {
+            "_links": "_links",
+            "archived_at": "archived_at",
+            "body": "body",
+            "body_preview": "body_preview",
+            "cadence_template": "cadence_template",
+            "click_tracking_enabled": "click_tracking_enabled",
+            "counts": "counts",
+            "created_at": "created_at",
+            "groups": "groups",
+            "id": "id",
+            "last_used_at": "last_used_at",
+            "open_tracking_enabled": "open_tracking_enabled",
+            "shared": "shared",
+            "subject": "subject",
+            "tags": "tags",
+            "team_template": "team_template",
+            "template_owner": "template_owner",
+            "title": "title",
+            "updated_at": "updated_at"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/email-templates-index"
+        },
+        "external_configurations": {
+          "displayName": "Team Configurations",
+          "path": "/external_configurations",
+          "fields": {
+            "deleted": "deleted",
+            "external_type": "external_type",
+            "id": "id",
+            "object_type": "object_type",
+            "source_id": "source_id",
+            "source_type": "source_type"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/external-configurations-index"
+        },
+        "external_mappings": {
+          "displayName": "Team Mappings",
+          "path": "/external_mappings",
+          "fields": {
+            "deleted": "deleted",
+            "external_id": "external_id",
+            "external_type": "external_type",
+            "id": "id",
+            "inserted_at": "inserted_at",
+            "object_id": "object_id",
+            "object_type": "object_type",
+            "tenant_id": "tenant_id"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/external-mappings-index"
+        },
+        "groups": {
+          "displayName": "Groups",
+          "path": "/groups",
+          "fields": {
+            "accessible_groups": "accessible_groups",
+            "id": "id",
+            "name": "name",
+            "parent_id": "parent_id"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/groups-index"
+        },
+        "imports": {
+          "displayName": "Imports",
+          "path": "/imports",
+          "fields": {
+            "created_at": "created_at",
+            "current_people_count": "current_people_count",
+            "errors_list": "errors_list",
+            "id": "id",
+            "import_type": "import_type",
+            "imported_people_count": "imported_people_count",
+            "name": "name",
+            "updated_at": "updated_at",
+            "user_id": "user_id"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/imports-index"
+        },
+        "integrations_signals_registrations": {
+          "displayName": "Signal Registrations",
+          "path": "/integrations_signals_registrations",
+          "fields": {
+            "attribution": "attribution",
+            "created_at": "created_at",
+            "data_shape": "data_shape",
+            "description": "description",
+            "globally_installed_at": "globally_installed_at",
+            "id": "id",
+            "indicators": "indicators",
+            "integration": "integration",
+            "integration_slug": "integration_slug",
+            "owner_user_guid": "owner_user_guid",
+            "type": "type"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/integrations-signals-registrations-index"
+        },
+        "integrations_signals_registrations_plays": {
+          "displayName": "Play Registrations",
+          "path": "/integrations_signals_registrations_plays",
+          "fields": {
+            "attributes": "attributes",
+            "created_at": "created_at",
+            "description": "description",
+            "enabled_at": "enabled_at",
+            "id": "id",
+            "identifier": "identifier",
+            "indicators": "indicators",
+            "integration": "integration",
+            "label": "label",
+            "name": "name",
+            "owner_tenant_id": "owner_tenant_id",
+            "owner_user_guid": "owner_user_guid",
+            "signal_registration": "signal_registration",
+            "signal_type": "signal_type",
+            "state": "state"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/integrations-signals-registrations-plays-index"
+        },
+        "meetings": {
+          "displayName": "Meetings",
+          "path": "/meetings",
+          "fields": {
+            "account_id": "account_id",
+            "all_day": "all_day",
+            "attendees": "attendees",
+            "booked_by_meetings_settings": "booked_by_meetings_settings",
+            "booked_by_user": "booked_by_user",
+            "cadence": "cadence",
+            "calendar_id": "calendar_id",
+            "calendar_type": "calendar_type",
+            "canceled_at": "canceled_at",
+            "created_at": "created_at",
+            "crm": "crm",
+            "crm_custom_fields": "crm_custom_fields",
+            "crm_references": "crm_references",
+            "description": "description",
+            "end_time": "end_time",
+            "event_id": "event_id",
+            "event_source": "event_source",
+            "guests": "guests",
+            "i_cal_uid": "i_cal_uid",
+            "id": "id",
+            "last_occurrence_at": "last_occurrence_at",
+            "location": "location",
+            "meeting_type": "meeting_type",
+            "meeting_type_id": "meeting_type_id",
+            "no_show": "no_show",
+            "owned_by_meetings_settings": "owned_by_meetings_settings",
+            "owned_by_user": "owned_by_user",
+            "person": "person",
+            "recipient_email": "recipient_email",
+            "recipient_name": "recipient_name",
+            "recurrence": "recurrence",
+            "recurring": "recurring",
+            "recurring_interval": "recurring_interval",
+            "reschedule_guid": "reschedule_guid",
+            "reschedule_status": "reschedule_status",
+            "start_time": "start_time",
+            "status": "status",
+            "step": "step",
+            "strict_attribution": "strict_attribution",
+            "task_id": "task_id",
+            "title": "title",
+            "undo_completion_count": "undo_completion_count",
+            "updated_at": "updated_at"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/meetings-index"
+        },
+        "notes": {
+          "displayName": "Notes",
+          "path": "/notes",
+          "fields": {
+            "associated_type": "associated_type",
+            "associated_with": "associated_with",
+            "call": "call",
+            "content": "content",
+            "created_at": "created_at",
+            "id": "id",
+            "updated_at": "updated_at",
+            "user": "user"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/notes-index"
+        },
+        "pending_emails": {
+          "displayName": "Pending Emails",
+          "path": "/pending_emails",
+          "fields": {
+            "id": "id",
+            "mailbox": "mailbox",
+            "mime_email_payload": "mime_email_payload"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/pending-emails-index"
+        },
+        "people": {
+          "displayName": "People",
+          "path": "/people",
+          "fields": {
+            "account": "account",
+            "account_crm_id": "account_crm_id",
+            "bouncing": "bouncing",
+            "cadences": "cadences",
+            "city": "city",
+            "contact_restrictions": "contact_restrictions",
+            "country": "country",
+            "counts": "counts",
+            "created_at": "created_at",
+            "crm_id": "crm_id",
+            "crm_object_type": "crm_object_type",
+            "crm_url": "crm_url",
+            "custom_fields": "custom_fields",
+            "display_name": "display_name",
+            "do_not_contact": "do_not_contact",
+            "email_address": "email_address",
+            "eu_resident": "eu_resident",
+            "first_name": "first_name",
+            "full_email_address": "full_email_address",
+            "home_phone": "home_phone",
+            "id": "id",
+            "import": "import",
+            "job_seniority": "job_seniority",
+            "last_completed_step": "last_completed_step",
+            "last_completed_step_cadence": "last_completed_step_cadence",
+            "last_contacted_at": "last_contacted_at",
+            "last_contacted_by": "last_contacted_by",
+            "last_contacted_type": "last_contacted_type",
+            "last_name": "last_name",
+            "last_replied_at": "last_replied_at",
+            "linkedin_url": "linkedin_url",
+            "locale": "locale",
+            "locale_utc_offset": "locale_utc_offset",
+            "mobile_phone": "mobile_phone",
+            "most_recent_cadence": "most_recent_cadence",
+            "owner": "owner",
+            "owner_crm_id": "owner_crm_id",
+            "person_company_industry": "person_company_industry",
+            "person_company_name": "person_company_name",
+            "person_company_website": "person_company_website",
+            "person_stage": "person_stage",
+            "personal_email_address": "personal_email_address",
+            "personal_website": "personal_website",
+            "phone": "phone",
+            "phone_extension": "phone_extension",
+            "secondary_email_address": "secondary_email_address",
+            "starred": "starred",
+            "state": "state",
+            "success_count": "success_count",
+            "tags": "tags",
+            "title": "title",
+            "twitter_handle": "twitter_handle",
+            "untouched": "untouched",
+            "updated_at": "updated_at",
+            "work_city": "work_city",
+            "work_country": "work_country",
+            "work_state": "work_state"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/people-index"
+        },
+        "person_stages": {
+          "displayName": "Person Stages",
+          "path": "/person_stages",
+          "fields": {
+            "active": "active",
+            "created_at": "created_at",
+            "id": "id",
+            "name": "name",
+            "order": "order",
+            "updated_at": "updated_at"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/person-stages-index"
+        },
+        "phone_number_assignments": {
+          "displayName": "Phone Number Assignments",
+          "path": "/phone_number_assignments",
+          "fields": {
+            "id": "id",
+            "number": "number",
+            "user": "user"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/phone-number-assignments-index"
+        },
+        "phone_numbers_caller_ids": {
+          "displayName": "Caller Ids",
+          "path": "/phone_numbers_caller_ids",
+          "fields": {
+            "account_name": "account_name",
+            "display_name": "display_name",
+            "person": "person",
+            "title": "title"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/phone-numbers-caller-ids-index"
+        },
+        "saved_list_views": {
+          "displayName": "Saved List Views",
+          "path": "/saved_list_views",
+          "fields": {
+            "id": "id",
+            "is_default": "is_default",
+            "name": "name",
+            "shared": "shared",
+            "view": "view",
+            "view_params": "view_params"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/saved-list-views-index"
+        },
+        "steps": {
+          "displayName": "Steps",
+          "path": "/steps",
+          "fields": {
+            "cadence": "cadence",
+            "created_at": "created_at",
+            "day": "day",
+            "details": "details",
+            "disabled": "disabled",
+            "display_name": "display_name",
+            "id": "id",
+            "multitouch_enabled": "multitouch_enabled",
+            "name": "name",
+            "step_number": "step_number",
+            "type": "type",
+            "updated_at": "updated_at"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/steps-index"
+        },
+        "successes": {
+          "displayName": "Successes",
+          "path": "/successes",
+          "fields": {
+            "counts": "counts",
+            "created_at": "created_at",
+            "id": "id",
+            "latest_action": "latest_action",
+            "latest_cadence": "latest_cadence",
+            "latest_call": "latest_call",
+            "latest_email": "latest_email",
+            "latest_step": "latest_step",
+            "person": "person",
+            "succeeded_at": "succeeded_at",
+            "success_window_started_at": "success_window_started_at",
+            "updated_at": "updated_at",
+            "user": "user"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/successes-index"
+        },
+        "tags": {
+          "displayName": "Team Tags",
+          "path": "/tags",
+          "fields": {
+            "id": "id",
+            "name": "name"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/tags-index"
+        },
+        "tasks": {
+          "displayName": "Tasks",
+          "path": "/tasks",
+          "fields": {
+            "completed_at": "completed_at",
+            "completed_by": "completed_by",
+            "created_at": "created_at",
+            "created_by_user": "created_by_user",
+            "current_state": "current_state",
+            "description": "description",
+            "due_at": "due_at",
+            "due_date": "due_date",
+            "expires_after": "expires_after",
+            "id": "id",
+            "opportunity": "opportunity",
+            "person": "person",
+            "remind_at": "remind_at",
+            "subject": "subject",
+            "task_type": "task_type",
+            "updated_at": "updated_at",
+            "user": "user"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/tasks-index"
+        },
+        "team_template_attachments": {
+          "displayName": "Team Template Attachments",
+          "path": "/team_template_attachments",
+          "fields": {
+            "attachment_file_size": "attachment_file_size",
+            "attachment_id": "attachment_id",
+            "download_url": "download_url",
+            "id": "id",
+            "name": "name",
+            "team_template": "team_template"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/team-template-attachments-index"
+        },
+        "team_templates": {
+          "displayName": "Team Templates",
+          "path": "/team_templates",
+          "fields": {
+            "_links": "_links",
+            "archived_at": "archived_at",
+            "body": "body",
+            "body_preview": "body_preview",
+            "click_tracking_enabled": "click_tracking_enabled",
+            "counts": "counts",
+            "created_at": "created_at",
+            "id": "id",
+            "last_modified_at": "last_modified_at",
+            "last_modified_user": "last_modified_user",
+            "last_used_at": "last_used_at",
+            "open_tracking_enabled": "open_tracking_enabled",
+            "subject": "subject",
+            "tags": "tags",
+            "title": "title",
+            "updated_at": "updated_at"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/team-templates-index"
+        },
+        "users": {
+          "displayName": "Users",
+          "path": "/users",
+          "fields": {
+            "email": "email",
+            "guid": "guid",
+            "id": "id",
+            "name": "name"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/users-index"
+        },
+        "webhook_subscriptions": {
+          "displayName": "Webhook Subscriptions",
+          "path": "/webhook_subscriptions",
+          "fields": {
+            "callback_token": "callback_token",
+            "callback_url": "callback_url",
+            "enabled": "enabled",
+            "event_type": "event_type",
+            "id": "id",
+            "tenant_id": "tenant_id",
+            "user_guid": "user_guid"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/webhook-subscriptions-index"
+        }
+      }
     }
   }
 }

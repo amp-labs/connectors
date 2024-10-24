@@ -46,20 +46,22 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 			continue
 		}
 
-		metadata, err := metadataMapper(res, obj)
+		data, err := metadataMapper(res, c.Module.ID, obj)
 		if err != nil {
 			return nil, err
 		}
 
-		objMetadata.Result[obj] = *metadata
+		objMetadata.Result[obj] = *data
 	}
 
 	return &objMetadata, nil
 }
 
 // metadataMapper constructs the metadata fields to a new map and returns it.
-// Returns an error if it faces any in unmarshaling the response.
-func metadataMapper(resp *common.JSONHTTPResponse, obj string) (*common.ObjectMetadata, error) {
+// Returns an error if it faces any in unmarshalling the response.
+func metadataMapper(
+	resp *common.JSONHTTPResponse, moduleID common.ModuleID, obj string,
+) (*common.ObjectMetadata, error) {
 	response, err := common.UnmarshalJSON[responseData](resp)
 	if err != nil {
 		return nil, err
@@ -69,10 +71,10 @@ func metadataMapper(resp *common.JSONHTTPResponse, obj string) (*common.ObjectMe
 		FieldsMap: make(map[string]string),
 	}
 
-	// Ensure the response data array, has atleast 1 record.
+	// Ensure the response data array, has at least 1 record.
 	// If there is no data, we use the static schema file to generate the metadata.
 	if len(response.Data) == 0 {
-		return metadata.Schemas.SelectOne(obj)
+		return metadata.Schemas.SelectOne(moduleID, obj)
 	}
 
 	mdt.DisplayName = obj

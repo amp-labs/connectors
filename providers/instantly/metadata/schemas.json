@@ -1,62 +1,72 @@
 {
-  "data": {
-    "campaigns": {
-      "displayName": "Campaigns",
-      "url": "https://developer.instantly.ai/campaign-1/list-campaigns",
-      "fields": {
-        "id": "ID",
-        "name": "Name"
-      }
-    },
-    "accounts": {
-      "displayName": "Accounts",
-      "url": "https://developer.instantly.ai/account/list-accounts",
-      "fields": {
-        "email": "email1@domain.com",
-        "timestamp_created": "Timestamp Created",
-        "timestamp_updated": "Timestamp Updated",
-        "payload": "Payload"
-      }
-    },
-    "emails": {
-      "displayName": "Emails",
-      "url": "https://developer.instantly.ai/unibox/emails-or-list",
-      "fields": {
-        "id": "ID",
-        "message_id": "Message ID",
-        "is_unread": "Is Unread",
-        "lead": "Lead",
-        "campaign_id": "Campaign ID",
-        "from_address_email": "Sender's Email Address",
-        "from_address_json": "Sender's Email JSON",
-        "ai_interest_value": "AI Interest Value",
-        "reminder_ts": "Reminder Timestamp",
-        "i_status": "Interest Status Value",
-        "subject": "Subject",
-        "timestamp_created": "Timestamp Created",
-        "content_preview": "Content Preview",
-        "body": "Body",
-        "thread_id": "Thread ID",
-        "eaccount": "Email Account",
-        "to_address_email_list": "Receivers Email Address",
-        "to_address_json": "Receiver's Email JSON",
-        "ue_type": "Email Type",
-        "scheduled_at": "Scheduled At",
-        "cc_address_email_list": "CC Email Address List",
-        "cc_address_json": "CC Email Address JSON",
-        "bcc_address_email_list": "BCC Email Address List"
-      }
-    },
-    "tags": {
-      "displayName": "Tags",
-      "url": "https://developer.instantly.ai/tags/list-tags",
-      "fields": {
-        "id": "ID",
-        "timestamp_created": "Timestamp Created",
-        "timestamp_updated": "Timestamp Updated",
-        "organization_id": "Organization ID",
-        "label": "Label",
-        "description": "Description"
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "",
+      "objects": {
+        "campaigns": {
+          "displayName": "Campaigns",
+          "path": "/campaigns",
+          "docs": "https://developer.instantly.ai/campaign-1/list-campaigns",
+          "fields": {
+            "id": "ID",
+            "name": "Name"
+          }
+        },
+        "accounts": {
+          "displayName": "Accounts",
+          "path": "/accounts",
+          "docs": "https://developer.instantly.ai/account/list-accounts",
+          "fields": {
+            "email": "email1@domain.com",
+            "timestamp_created": "Timestamp Created",
+            "timestamp_updated": "Timestamp Updated",
+            "payload": "Payload"
+          }
+        },
+        "emails": {
+          "displayName": "Emails",
+          "path": "/emails",
+          "docs": "https://developer.instantly.ai/unibox/emails-or-list",
+          "fields": {
+            "id": "ID",
+            "message_id": "Message ID",
+            "is_unread": "Is Unread",
+            "lead": "Lead",
+            "campaign_id": "Campaign ID",
+            "from_address_email": "Sender's Email Address",
+            "from_address_json": "Sender's Email JSON",
+            "ai_interest_value": "AI Interest Value",
+            "reminder_ts": "Reminder Timestamp",
+            "i_status": "Interest Status Value",
+            "subject": "Subject",
+            "timestamp_created": "Timestamp Created",
+            "content_preview": "Content Preview",
+            "body": "Body",
+            "thread_id": "Thread ID",
+            "eaccount": "Email Account",
+            "to_address_email_list": "Receivers Email Address",
+            "to_address_json": "Receiver's Email JSON",
+            "ue_type": "Email Type",
+            "scheduled_at": "Scheduled At",
+            "cc_address_email_list": "CC Email Address List",
+            "cc_address_json": "CC Email Address JSON",
+            "bcc_address_email_list": "BCC Email Address List"
+          }
+        },
+        "tags": {
+          "displayName": "Tags",
+          "path": "/tags",
+          "docs": "https://developer.instantly.ai/tags/list-tags",
+          "fields": {
+            "id": "ID",
+            "timestamp_created": "Timestamp Created",
+            "timestamp_updated": "Timestamp Updated",
+            "organization_id": "Organization ID",
+            "label": "Label",
+            "description": "Description"
+          }
+        }
       }
     }
   }

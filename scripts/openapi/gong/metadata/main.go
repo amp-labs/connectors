@@ -4,6 +4,7 @@ import (
 	"log/slog"
 
 	"github.com/amp-labs/connectors/common/handy"
+	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers/gong/metadata"
 	"github.com/amp-labs/connectors/providers/gong/openapi"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
@@ -67,7 +68,7 @@ func main() {
 	)
 	must(err)
 
-	schemas := scrapper.NewObjectMetadataResult()
+	schemas := staticschema.NewMetadata()
 	registry := handy.NamedLists[string]{}
 
 	for _, object := range objects {
@@ -79,7 +80,7 @@ func main() {
 		}
 
 		for _, field := range object.Fields {
-			schemas.Add(object.ObjectName, object.DisplayName, field, nil)
+			schemas.Add("", object.ObjectName, object.DisplayName, field, object.URLPath, nil)
 		}
 
 		for _, queryParam := range object.QueryParams {
