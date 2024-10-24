@@ -15,20 +15,56 @@ type Explorer struct {
 	*parameters
 }
 
-// GetBasicReadObjects retrieves schemas that can be used by ListObjectMetadata.
-// objectEndpoints - optional map of Endpoint Path to ObjectName associated with it.
-// ignoreEndpoints - optional list of paths to ignore
-// displayNameOverride - optional map of ObjectName to DisplayName. This will override display name from OpenAPI doc.
-func (e Explorer) GetBasicReadObjects(
-	ignoreEndpoints []string,
+// ReadObjectsGet is the same as ReadObjectsGet but retrieves schemas for endpoints that perform reading via GET.
+// If you need schemas located under GET and POST operations,
+// make 2 calls as they will have different arguments in particular PathMatchingStrategy,
+// and then Combine two lists of schemas.
+func (e Explorer) ReadObjectsGet(
+	pathMatcher PathMatcher,
 	objectEndpoints map[string]string,
 	displayNameOverride map[string]string,
 	check ObjectCheck,
-) ([]Schema, error) {
-	schemas := make([]Schema, 0)
+) (Schemas, error) {
+	return e.ReadObjects("GET", pathMatcher, objectEndpoints, displayNameOverride, check)
+}
 
-	for _, path := range e.GetBasicPathItems(newIgnorePathStrategy(ignoreEndpoints), objectEndpoints) {
-		schema, found, err := path.RetrieveSchemaOperationGet(
+// ReadObjectsPost is the same as ReadObjectsGet but retrieves schemas for endpoints that perform reading via POST.
+func (e Explorer) ReadObjectsPost(
+	pathMatcher PathMatcher,
+	objectEndpoints map[string]string,
+	displayNameOverride map[string]string,
+	check ObjectCheck,
+) (Schemas, error) {
+	return e.ReadObjects("POST", pathMatcher, objectEndpoints, displayNameOverride, check)
+}
+
+// ReadObjects will explore OpenAPI file returning list of Schemas.
+// See every parameter for detailed customization.
+//
+// operationName - under which REST operation the schema resides. Ex: GET - list reading, POST - search reading.
+// pathMatcher - guides which URL paths to include in search or to ignore.
+// objectEndpoints - URL path mapped to ObjectName.
+// Ex: 	/customer/orders -> orders.
+//
+//	Note: deep connector would need to do the reverse mapping to reconstruct URL given orders objectName.
+//
+// displayNameOverride - objectName mapped to custom Display name.
+// check - callback that returns true if fieldName matched the target location of Object in response.
+// Ex: 	if (objectName == orders && fieldName == data) => true
+//
+//	Given response with fields {meta{}, data{}, pagination{}} for orders object,
+//	the implementation indicates that schema will be located under `data`.
+func (e Explorer) ReadObjects(
+	operationName string,
+	pathMatcher PathMatcher,
+	objectEndpoints map[string]string,
+	displayNameOverride map[string]string,
+	check ObjectCheck,
+) (Schemas, error) {
+	schemas := make(Schemas, 0)
+
+	for _, path := range e.GetPathItems(pathMatcher, objectEndpoints) {
+		schema, found, err := path.RetrieveSchemaOperation(operationName,
 			displayNameOverride, check, e.displayPostProcessing, e.parameterFilter,
 		)
 		if err != nil {
@@ -48,14 +84,14 @@ func (e Explorer) GetBasicReadObjects(
 	return schemas, nil
 }
 
-// GetBasicPathItems returns path items where object name is a single word.
-func (e Explorer) GetBasicPathItems(
-	ignoreEndpoints *ignorePathStrategy, endpointResources map[string]string,
+// GetPathItems returns path items where object name is a single word.
+func (e Explorer) GetPathItems(
+	pathMatcher PathMatcher, endpointResources map[string]string,
 ) []PathItem {
 	items := handy.Map[string, PathItem]{}
 
 	for path, pathObj := range e.schema.GetPaths() {
-		if ignoreEndpoints.Check(path) {
+		if !pathMatcher.IsPathMatching(path) {
 			// Ignore this endpoint path.
 			continue
 		}

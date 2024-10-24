@@ -61,8 +61,9 @@ func main() {
 	)
 	must(err)
 
-	objects, err := explorer.GetBasicReadObjects(
-		ignoreEndpoints, nil, nil, api3.IdenticalObjectCheck,
+	objects, err := explorer.ReadObjectsGet(
+		api3.NewDenyPathStrategy(ignoreEndpoints),
+		nil, nil, api3.IdenticalObjectCheck,
 	)
 	must(err)
 

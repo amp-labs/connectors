@@ -80,8 +80,9 @@ func main() {
 	)
 	must(err)
 
-	objects, err := explorer.GetBasicReadObjects(
-		ignoreEndpoints, nil, displayNameOverride,
+	objects, err := explorer.ReadObjectsGet(
+		api3.NewDenyPathStrategy(ignoreEndpoints),
+		nil, displayNameOverride,
 		api3.CustomMappingObjectCheck(zendesksupport.ObjectNameToResponseField),
 	)
 	must(err)

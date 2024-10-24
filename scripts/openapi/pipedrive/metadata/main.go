@@ -66,8 +66,9 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	objects, err := explorer.GetBasicReadObjects(
-		ignoreEndpoints, nil, displayName,
+	objects, err := explorer.ReadObjectsGet(
+		api3.NewDenyPathStrategy(ignoreEndpoints),
+		nil, displayName,
 		api3.DataObjectCheck)
 	if err != nil {
 		log.Fatalln(err)
