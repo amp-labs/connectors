@@ -154,6 +154,22 @@ func (r *Metadata) LookupURLPath(moduleID common.ModuleID, objectName string) (s
 	return fullPath, nil
 }
 
+// ModuleRegistry returns the list of API modules from static schema.
+func (r *Metadata) ModuleRegistry() common.Modules {
+	result := make(common.Modules, len(r.Modules))
+
+	for id, module := range r.Modules {
+		// Label and version is not differentiated and all is part of path.
+		result[id] = common.Module{
+			ID:      module.ID,
+			Label:   module.Path,
+			Version: "",
+		}
+	}
+
+	return result
+}
+
 func (m *Module) withPath(path string) {
 	// Move last slash from module path to object. It looks better that way.
 	path, _ = strings.CutSuffix(path, "/")

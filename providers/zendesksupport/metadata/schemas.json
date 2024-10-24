@@ -1,7 +1,140 @@
 {
   "modules": {
-    "root": {
-      "id": "root",
+    "help-center": {
+      "id": "help-center",
+      "path": "/api/v2",
+      "objects": {
+        "article_labels": {
+          "displayName": "Article Labels",
+          "path": "/help_center/articles/labels",
+          "fields": {
+            "created_at": "created_at",
+            "id": "id",
+            "name": "name",
+            "updated_at": "updated_at",
+            "url": "url"
+          }
+        },
+        "articles": {
+          "displayName": "Articles",
+          "path": "/help_center/articles/search",
+          "fields": {
+            "author_id": "author_id",
+            "body": "body",
+            "comments_disabled": "comments_disabled",
+            "content_tag_ids": "content_tag_ids",
+            "created_at": "created_at",
+            "draft": "draft",
+            "edited_at": "edited_at",
+            "html_url": "html_url",
+            "id": "id",
+            "label_names": "label_names",
+            "locale": "locale",
+            "outdated": "outdated",
+            "outdated_locales": "outdated_locales",
+            "permission_group_id": "permission_group_id",
+            "position": "position",
+            "promoted": "promoted",
+            "section_id": "section_id",
+            "source_locale": "source_locale",
+            "title": "title",
+            "updated_at": "updated_at",
+            "url": "url",
+            "user_segment_id": "user_segment_id",
+            "user_segment_ids": "user_segment_ids",
+            "vote_count": "vote_count",
+            "vote_sum": "vote_sum"
+          }
+        },
+        "community_posts": {
+          "displayName": "Community Posts",
+          "path": "/help_center/community_posts/search",
+          "fields": {
+            "author_id": "author_id",
+            "closed": "closed",
+            "comment_count": "comment_count",
+            "content_tag_ids": "content_tag_ids",
+            "created_at": "created_at",
+            "details": "details",
+            "featured": "featured",
+            "follower_count": "follower_count",
+            "html_url": "html_url",
+            "id": "id",
+            "non_author_editor_id": "non_author_editor_id",
+            "non_author_updated_at": "non_author_updated_at",
+            "pinned": "pinned",
+            "status": "status",
+            "title": "title",
+            "topic_id": "topic_id",
+            "updated_at": "updated_at",
+            "url": "url",
+            "vote_count": "vote_count",
+            "vote_sum": "vote_sum"
+          }
+        },
+        "posts": {
+          "displayName": "Posts",
+          "path": "/community/posts",
+          "fields": {
+            "author_id": "author_id",
+            "closed": "closed",
+            "comment_count": "comment_count",
+            "content_tag_ids": "content_tag_ids",
+            "created_at": "created_at",
+            "details": "details",
+            "featured": "featured",
+            "follower_count": "follower_count",
+            "html_url": "html_url",
+            "id": "id",
+            "non_author_editor_id": "non_author_editor_id",
+            "non_author_updated_at": "non_author_updated_at",
+            "pinned": "pinned",
+            "status": "status",
+            "title": "title",
+            "topic_id": "topic_id",
+            "updated_at": "updated_at",
+            "url": "url",
+            "vote_count": "vote_count",
+            "vote_sum": "vote_sum"
+          }
+        },
+        "topics": {
+          "displayName": "Topics",
+          "path": "/community/topics",
+          "fields": {
+            "created_at": "created_at",
+            "description": "description",
+            "follower_count": "follower_count",
+            "html_url": "html_url",
+            "id": "id",
+            "manageable_by": "manageable_by",
+            "name": "name",
+            "position": "position",
+            "updated_at": "updated_at",
+            "url": "url",
+            "user_segment_id": "user_segment_id"
+          }
+        },
+        "user_segments": {
+          "displayName": "User Segments",
+          "path": "/help_center/user_segments",
+          "fields": {
+            "built_in": "built_in",
+            "created_at": "created_at",
+            "group_ids": "group_ids",
+            "id": "id",
+            "name": "name",
+            "or_tags": "or_tags",
+            "organization_ids": "organization_ids",
+            "tags": "tags",
+            "updated_at": "updated_at",
+            "user_type": "user_type"
+          }
+        }
+      }
+    },
+    "ticketing": {
+      "id": "ticketing",
       "path": "/api/v2",
       "objects": {
         "activities": {

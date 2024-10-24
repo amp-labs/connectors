@@ -10,7 +10,10 @@ var (
 	// Static file containing openapi spec.
 	//
 	//go:embed support-api.yaml
-	apiFile []byte
+	supportAPIFile []byte
+	//go:embed help-center-api.yaml
+	helpCenterAPIFile []byte
 
-	FileManager = api3.NewOpenapiFileManager(apiFile) // nolint:gochecknoglobals
+	SupportFileManager    = api3.NewOpenapiFileManager(supportAPIFile)    // nolint:gochecknoglobals
+	HelpCenterFileManager = api3.NewOpenapiFileManager(helpCenterAPIFile) // nolint:gochecknoglobals
 )
