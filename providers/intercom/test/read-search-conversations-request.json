@@ -1,0 +1,15 @@
+{
+  "query": {
+    "operator": "AND",
+    "value": [
+      {
+        "field": "updated_at",
+        "operator": ">",
+        "value": "1726674883"
+      }
+    ]
+  },
+  "pagination": {
+    "per_page": 150
+  }
+}
