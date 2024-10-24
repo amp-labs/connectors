@@ -5,10 +5,10 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
-	"github.com/amp-labs/connectors/tools/scrapper"
 )
 
 func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
@@ -25,7 +25,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Name:         "Unknown object requested",
 			Input:        []string{"butterflies"},
 			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{scrapper.ErrObjectNotFound},
+			ExpectedErrs: []error{staticschema.ErrObjectNotFound},
 		},
 		{
 			Name:   "Successfully describe one object with metadata",
