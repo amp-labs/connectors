@@ -38,12 +38,12 @@ func constructHeaders(config common.ReadParams) []common.Header {
 	// Add the `If-Modified-Since` header if provided.
 	// All Objects(or Modules in ZohoCRM terms) supports this.
 	if !config.Since.IsZero() {
-		modHeader := common.Header{
-			Key:   "If-Modified-Since",
-			Value: config.Since.Format(time.RFC3339),
+		return []common.Header{
+			{
+				Key:   "If-Modified-Since",
+				Value: config.Since.Format(time.RFC3339),
+			},
 		}
-
-		return []common.Header{modHeader}
 	}
 
 	return []common.Header{}
