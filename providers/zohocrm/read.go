@@ -2,9 +2,9 @@ package zohocrm
 
 import (
 	"context"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
 // Read retrieves data based on the provided common.ReadParams configuration parameters.
@@ -19,7 +19,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	headers := constructHeaders(config, url)
+	headers := constructHeaders(config)
 
 	res, err := c.Client.Get(ctx, url.String(), headers...)
 	if err != nil {
@@ -34,19 +34,13 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	)
 }
 
-func constructHeaders(config common.ReadParams, url *urlbuilder.URL) []common.Header {
-	// Retrieve the since from the url.
-	since, ok := url.GetFirstQueryParam("since")
-	if !ok {
-		return []common.Header{}
-	}
-
+func constructHeaders(config common.ReadParams) []common.Header {
 	// Add the `If-Modified-Since` header if provided.
 	// All Objects(or Modules in ZohoCRM terms) supports this.
 	if !config.Since.IsZero() {
 		modHeader := common.Header{
 			Key:   "If-Modified-Since",
-			Value: since,
+			Value: config.Since.Format(time.RFC3339),
 		}
 
 		return []common.Header{modHeader}
