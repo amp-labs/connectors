@@ -31,6 +31,7 @@ Sample Response Data:
             "message": "record added",
             "status": "success"
         },
+		{...}
     ]
 }
 */
@@ -94,7 +95,6 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 
 	return &common.WriteResult{
 		Success: true,
-		Data:    response.Data[0],
 		Errors:  errors,
 	}, nil
 }

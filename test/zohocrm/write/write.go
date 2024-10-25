@@ -102,12 +102,17 @@ func createLeads(ctx context.Context, conn connectors.WriteConnector) error {
 func updateContacts(ctx context.Context, conn connectors.WriteConnector) error {
 	config := common.WriteParams{
 		ObjectName: "contacts",
-		RecordId:   "64934900000005440112",
+		// RecordId:   "64934900000005440112",
 		RecordData: []map[string]any{
 			{
 				"First_Name": "Ryan",
 				"Phone":      "+12343678",
 				"Last_Name":  "Dahl",
+			},
+			{
+				"First_Name": "Ryan",
+				"Phone":      "+12343678",
+				// "Last_Name":  "Dahl",
 			},
 		},
 	}
