@@ -27,5 +27,15 @@ func init() {
 			Subscribe: false,
 			Write:     false,
 		},
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://kit.com/favicon.ico",
+				LogoURL: "https://media.kit.com/images/logos/kit-logo-warm-white.svg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://kit.com/favicon.ico",
+				LogoURL: "https://media.kit.com/images/logos/kit-logo-soft-black.svg",
+			},
+		},
 	})
 }
