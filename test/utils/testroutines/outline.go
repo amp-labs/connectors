@@ -1,12 +1,11 @@
 package testroutines
 
 import (
-	"errors"
 	"net/http/httptest"
 	"reflect"
-	"strings"
 	"testing"
 
+	"github.com/amp-labs/connectors/test/utils/testutils"
 	"github.com/go-test/deep"
 )
 
@@ -39,23 +38,7 @@ func (o TestCase[Input, Output]) Validate(t *testing.T, err error, output Output
 }
 
 func (o TestCase[Input, Output]) checkError(t *testing.T, err error) {
-	if err != nil {
-		if len(o.ExpectedErrs) == 0 {
-			t.Fatalf("%s: expected no errors, got: (%v)", o.Name, err)
-		}
-	} else {
-		// check that missing error is what is expected
-		if len(o.ExpectedErrs) != 0 {
-			t.Fatalf("%s: expected errors (%v), but got nothing", o.Name, o.ExpectedErrs)
-		}
-	}
-
-	// check every error
-	for _, expectedErr := range o.ExpectedErrs {
-		if !errors.Is(err, expectedErr) && !strings.Contains(err.Error(), expectedErr.Error()) {
-			t.Fatalf("%s: expected Error: (%v), got: (%v)", o.Name, expectedErr, err)
-		}
-	}
+	testutils.CheckErrors(t, o.Name, o.ExpectedErrs, err)
 }
 
 func (o TestCase[Input, Output]) checkValue(t *testing.T, output Output) {
