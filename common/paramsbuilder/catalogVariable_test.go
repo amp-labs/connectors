@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/amp-labs/connectors/common/substitutions"
+	"github.com/amp-labs/connectors/common/substitutions/catalogreplacer"
 )
 
 func TestNewCatalogVariables(t *testing.T) {
@@ -13,7 +14,7 @@ func TestNewCatalogVariables(t *testing.T) {
 	tests := []struct {
 		name     string
 		input    substitutions.Registry[string]
-		expected []CatalogVariable
+		expected []catalogreplacer.CatalogVariable
 	}{
 		{
 			name: "Unknown substitutions are not translated to Variables",
@@ -23,7 +24,7 @@ func TestNewCatalogVariables(t *testing.T) {
 				"nothing": "",
 				"":        "something",
 			},
-			expected: []CatalogVariable{},
+			expected: []catalogreplacer.CatalogVariable{},
 		},
 		{
 			name: "Only workspace Variable is captured",
@@ -31,7 +32,7 @@ func TestNewCatalogVariables(t *testing.T) {
 				"insect":    "butterfly",
 				"workspace": "office",
 			},
-			expected: []CatalogVariable{
+			expected: []catalogreplacer.CatalogVariable{
 				&Workspace{Name: "office"},
 			},
 		},
@@ -55,21 +56,21 @@ func TestNewCatalogSubstitutionRegistry(t *testing.T) {
 
 	tests := []struct {
 		name     string
-		input    []CatalogVariable
+		input    []catalogreplacer.CatalogVariable
 		expected substitutions.Registry[string]
 	}{
 		{
 			name:     "No variables - no substitutions",
-			input:    []CatalogVariable{},
+			input:    []catalogreplacer.CatalogVariable{},
 			expected: substitutions.Registry[string]{},
 		},
 		{
 			name: "Workspace is translated into substitution",
-			input: []CatalogVariable{
+			input: []catalogreplacer.CatalogVariable{
 				&Workspace{Name: "cool organization"},
 			},
 			expected: substitutions.Registry[string]{
-				variableWorkspace: "cool organization",
+				catalogreplacer.VariableWorkspace: "cool organization",
 			},
 		},
 	}
@@ -79,7 +80,7 @@ func TestNewCatalogSubstitutionRegistry(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			output := NewCatalogSubstitutionRegistry(tt.input)
+			output := catalogreplacer.NewCatalogSubstitutionRegistry(tt.input)
 			if !reflect.DeepEqual(output, tt.expected) {
 				t.Fatalf("%s: expected: (%v), got: (%v)", tt.name, tt.expected, output)
 			}

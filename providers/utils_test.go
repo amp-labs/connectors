@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/amp-labs/connectors/common/paramsbuilder"
+	"github.com/amp-labs/connectors/common/substitutions/catalogreplacer"
 )
 
 var (
@@ -102,7 +102,7 @@ func TestReadInfo(t *testing.T) { // nolint:funlen
 	type inType struct {
 		options  []CatalogOption
 		provider Provider
-		vars     []paramsbuilder.CatalogVariable
+		vars     []catalogreplacer.CatalogVariable
 	}
 
 	tests := []struct {
@@ -141,8 +141,13 @@ func TestReadInfo(t *testing.T) { // nolint:funlen
 			input: inType{
 				options:  customTestCatalogOption,
 				provider: "test",
-				vars: []paramsbuilder.CatalogVariable{
-					&paramsbuilder.Workspace{Name: "europe"},
+				vars: []catalogreplacer.CatalogVariable{
+					catalogreplacer.CustomCatalogVariable{
+						Plan: catalogreplacer.SubstitutionPlan{
+							From: "workspace",
+							To:   "europe",
+						},
+					},
 				},
 			},
 			expected: &ProviderInfo{

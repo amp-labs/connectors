@@ -20,6 +20,7 @@ import (
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/scanning"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
+	"github.com/amp-labs/connectors/common/substitutions/catalogreplacer"
 	"github.com/amp-labs/connectors/connector"
 	"github.com/amp-labs/connectors/providers"
 	"golang.org/x/oauth2"
@@ -138,20 +139,20 @@ func main() {
 	}
 }
 
-func mainOAuth2ClientCreds(ctx context.Context, provider string, catalogVariables []paramsbuilder.CatalogVariable) {
+func mainOAuth2ClientCreds(ctx context.Context, provider string, catalogVariables []catalogreplacer.CatalogVariable) {
 	params := createClientAuthParams(provider)
 	proxy := buildOAuth2ClientCredentialsProxy(ctx, provider, params.Scopes, params.ID, params.Secret, catalogVariables)
 	startProxy(ctx, proxy, DefaultPort)
 }
 
-func mainOAuth2AuthCode(ctx context.Context, provider string, catalogVariables []paramsbuilder.CatalogVariable) {
+func mainOAuth2AuthCode(ctx context.Context, provider string, catalogVariables []catalogreplacer.CatalogVariable) {
 	params := createClientAuthParams(provider)
 	tokens := getTokensFromRegistry()
 	proxy := buildOAuth2AuthCodeProxy(ctx, provider, params.Scopes, params.ID, params.Secret, catalogVariables, tokens)
 	startProxy(ctx, proxy, DefaultPort)
 }
 
-func mainApiKey(ctx context.Context, provider string, catalogVariables []paramsbuilder.CatalogVariable) {
+func mainApiKey(ctx context.Context, provider string, catalogVariables []catalogreplacer.CatalogVariable) {
 	apiKey := registry.MustString(credscanning.Fields.ApiKey.Name)
 	if apiKey == "" {
 		_, _ = fmt.Fprintln(os.Stderr, "api key from registry is empty")
@@ -162,7 +163,7 @@ func mainApiKey(ctx context.Context, provider string, catalogVariables []paramsb
 	startProxy(ctx, proxy, DefaultPort)
 }
 
-func mainBasic(ctx context.Context, provider string, catalogVariables []paramsbuilder.CatalogVariable) {
+func mainBasic(ctx context.Context, provider string, catalogVariables []catalogreplacer.CatalogVariable) {
 	params := createBasicParams()
 
 	proxy := buildBasicAuthProxy(ctx, provider, catalogVariables, params.User, params.Pass)
@@ -271,7 +272,7 @@ func startProxy(ctx context.Context, proxy *Proxy, port int) {
 	}
 }
 
-func buildOAuth2ClientCredentialsProxy(ctx context.Context, provider string, scopes []string, clientId, clientSecret string, catalogVariables []paramsbuilder.CatalogVariable) *Proxy {
+func buildOAuth2ClientCredentialsProxy(ctx context.Context, provider string, scopes []string, clientId, clientSecret string, catalogVariables []catalogreplacer.CatalogVariable) *Proxy {
 	providerInfo := getProviderConfig(provider, catalogVariables)
 	cfg := configureOAuthClientCredentials(clientId, clientSecret, scopes, providerInfo)
 	httpClient := setupOAuth2ClientCredentialsHttpClient(ctx, providerInfo, cfg)
@@ -284,7 +285,7 @@ func buildOAuth2ClientCredentialsProxy(ctx context.Context, provider string, sco
 	return newProxy(target, httpClient)
 }
 
-func buildApiKeyProxy(ctx context.Context, provider string, catalogVariables []paramsbuilder.CatalogVariable, apiKey string) *Proxy {
+func buildApiKeyProxy(ctx context.Context, provider string, catalogVariables []catalogreplacer.CatalogVariable, apiKey string) *Proxy {
 	providerInfo := getProviderConfig(provider, catalogVariables)
 	httpClient := setupApiKeyHttpClient(ctx, providerInfo, apiKey)
 
@@ -296,7 +297,7 @@ func buildApiKeyProxy(ctx context.Context, provider string, catalogVariables []p
 	return newProxy(target, httpClient)
 }
 
-func buildBasicAuthProxy(ctx context.Context, provider string, catalogVariables []paramsbuilder.CatalogVariable, user, pass string) *Proxy {
+func buildBasicAuthProxy(ctx context.Context, provider string, catalogVariables []catalogreplacer.CatalogVariable, user, pass string) *Proxy {
 	providerInfo := getProviderConfig(provider, catalogVariables)
 	httpClient := setupBasicAuthHttpClient(ctx, providerInfo, user, pass)
 
@@ -308,7 +309,7 @@ func buildBasicAuthProxy(ctx context.Context, provider string, catalogVariables 
 	return newProxy(target, httpClient)
 }
 
-func buildOAuth2AuthCodeProxy(ctx context.Context, provider string, scopes []string, clientId, clientSecret string, catalogVariables []paramsbuilder.CatalogVariable, tokens *oauth2.Token) *Proxy {
+func buildOAuth2AuthCodeProxy(ctx context.Context, provider string, scopes []string, clientId, clientSecret string, catalogVariables []catalogreplacer.CatalogVariable, tokens *oauth2.Token) *Proxy {
 	providerInfo := getProviderConfig(provider, catalogVariables)
 	cfg := configureOAuthAuthCode(clientId, clientSecret, scopes, providerInfo)
 	httpClient := setupOAuth2AuthCodeHttpClient(ctx, providerInfo, cfg, tokens)
@@ -321,7 +322,7 @@ func buildOAuth2AuthCodeProxy(ctx context.Context, provider string, scopes []str
 	return newProxy(target, httpClient)
 }
 
-func getProviderConfig(provider string, catalogVariables []paramsbuilder.CatalogVariable) *providers.ProviderInfo {
+func getProviderConfig(provider string, catalogVariables []catalogreplacer.CatalogVariable) *providers.ProviderInfo {
 	config, err := providers.ReadInfo(provider, catalogVariables...)
 	if err != nil {
 		panic(fmt.Errorf("%w: %s", err, provider))
