@@ -106,3 +106,14 @@ func GetRecordsUnderJSONPath(jsonPath string) RecordsFunc {
 		return jsonquery.Convertor.ArrayToMap(arr)
 	}
 }
+
+func GetOptionalRecordsUnderJSONPath(jsonPath string) RecordsFunc {
+	return func(node *ajson.Node) ([]map[string]any, error) {
+		arr, err := jsonquery.New(node).Array(jsonPath, true)
+		if err != nil {
+			return nil, err
+		}
+
+		return jsonquery.Convertor.ArrayToMap(arr)
+	}
+}

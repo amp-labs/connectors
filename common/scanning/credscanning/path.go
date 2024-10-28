@@ -2,6 +2,7 @@ package credscanning
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 
 	"github.com/iancoleman/strcase"
@@ -19,6 +20,8 @@ func LoadPath(providerName string) string {
 		filePath = strcase.ToKebab(providerName)
 		filePath = fmt.Sprintf("./%v-creds.json", filePath)
 	}
+
+	slog.Debug("loading credentials file", "path", filePath)
 
 	return filePath
 }
