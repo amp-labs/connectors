@@ -1,0 +1,18 @@
+{
+  "newsletters": [
+    {
+      "id": 1,
+      "deduplicate_id": "1:1724072800",
+      "content_ids": [
+        2
+      ],
+      "name": "Weekly Update #33",
+      "sent_at": null,
+      "created": 1724072465,
+      "updated": 1724072800,
+      "type": "email",
+      "tags": []
+    }
+  ],
+  "next": "MQ=="
+}
