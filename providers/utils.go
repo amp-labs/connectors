@@ -9,7 +9,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/handy"
-	"github.com/amp-labs/connectors/common/paramsbuilder"
+	"github.com/amp-labs/connectors/common/substitutions/catalogreplacer"
 	"github.com/go-playground/validator"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
@@ -111,11 +111,11 @@ func SetInfo(provider Provider, info ProviderInfo) {
 // ReadInfo reads the information from the catalog for specific provider. It also performs string substitution
 // on the values in the config that are surrounded by {{}}, if vars are provided.
 // The catalog variable will be applied such that `{{.VAR_NAME}}` string will be replaced with `VAR_VALUE`.
-func ReadInfo(provider Provider, vars ...paramsbuilder.CatalogVariable) (*ProviderInfo, error) {
+func ReadInfo(provider Provider, vars ...catalogreplacer.CatalogVariable) (*ProviderInfo, error) {
 	return NewCustomCatalog().ReadInfo(provider, vars...)
 }
 
-func (c CustomCatalog) ReadInfo(provider Provider, vars ...paramsbuilder.CatalogVariable) (*ProviderInfo, error) {
+func (c CustomCatalog) ReadInfo(provider Provider, vars ...catalogreplacer.CatalogVariable) (*ProviderInfo, error) {
 	catalogInstance, err := c.catalog()
 	if err != nil {
 		return nil, err
@@ -153,8 +153,8 @@ func (c CustomCatalog) ReadInfo(provider Provider, vars ...paramsbuilder.Catalog
 	return &providerInfo, nil
 }
 
-func (i *ProviderInfo) SubstituteWith(vars []paramsbuilder.CatalogVariable) error {
-	return paramsbuilder.NewCatalogSubstitutionRegistry(vars).Apply(i)
+func (i *ProviderInfo) SubstituteWith(vars []catalogreplacer.CatalogVariable) error {
+	return catalogreplacer.NewCatalogSubstitutionRegistry(vars).Apply(i)
 }
 
 func (i *ProviderInfo) GetOption(key string) (string, bool) {

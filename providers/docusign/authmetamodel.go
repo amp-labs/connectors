@@ -1,7 +1,7 @@
 package docusign
 
 import (
-	"github.com/amp-labs/connectors/common/paramsbuilder"
+	"github.com/amp-labs/connectors/common/substitutions/catalogreplacer"
 )
 
 const serverKey = "server"
@@ -33,8 +33,8 @@ func (v AuthMetadataVars) AsMap() *map[string]string {
 
 // GetSubstitutionPlan allows variable substitution when resolving provider information.
 // Only server URL is supported.
-func (v AuthMetadataVars) GetSubstitutionPlan() paramsbuilder.SubstitutionPlan {
-	return paramsbuilder.SubstitutionPlan{
+func (v AuthMetadataVars) GetSubstitutionPlan() catalogreplacer.SubstitutionPlan {
+	return catalogreplacer.SubstitutionPlan{
 		From: serverKey,
 		To:   v.Server,
 	}
