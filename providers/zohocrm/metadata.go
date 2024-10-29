@@ -2,12 +2,14 @@ package zohocrm
 
 import (
 	"context"
+	"sync"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 )
 
 // restMetadataEndpoint is the resource for retrieving metadata details.
+// doc: https://www.zoho.com/crm/developer/docs/api/v6/field-meta.html
 const restMetadataEndpoint = "settings/fields"
 
 // apiKeyField is the key holding the metadata field name.
@@ -20,47 +22,76 @@ type metadataFields struct {
 func (c *Connector) ListObjectMetadata(ctx context.Context,
 	objectNames []string,
 ) (*common.ListObjectMetadataResult, error) {
+	var (
+		wg sync.WaitGroup //nolint: varnamelen
+		mu sync.Mutex     //nolint: varnamelen
+	)
+
+	wg.Add(len(objectNames))
+
 	if len(objectNames) == 0 {
 		return nil, common.ErrMissingObjects
 	}
 
-	objMetadata := common.ListObjectMetadataResult{
-		Result: make(map[string]common.ObjectMetadata),
-		Errors: make(map[string]error),
+	objectMetadata := common.ListObjectMetadataResult{
+		Result: make(map[string]common.ObjectMetadata, len(objectNames)),
+		Errors: make(map[string]error, len(objectNames)),
 	}
 
-	for _, obj := range objectNames {
-		url, err := c.getAPIURL(restMetadataEndpoint)
-		if err != nil {
-			return nil, err
-		}
+	for _, object := range objectNames {
+		go func(object string) {
+			metadata, err := c.getMetadata(ctx, object)
+			if err != nil {
+				mu.Lock()
+				objectMetadata.Errors[object] = err
+				mu.Unlock()
+				wg.Done()
 
-		capObj := naming.CapitalizeFirstLetterEveryWord(obj)
+				return
+			}
 
-		// setting this, returns both used and unused fields
-		url.WithQueryParam("type", "all")
-		url.WithQueryParam("module", capObj)
+			mu.Lock()
+			objectMetadata.Result[object] = *metadata
+			mu.Unlock()
 
-		resp, err := c.Client.Get(ctx, url.String())
-		if err != nil {
-			objMetadata.Errors[obj] = err
-
-			continue
-		}
-
-		metadata, err := metadataMapper(resp)
-		if err != nil {
-			return nil, err
-		}
-
-		metadata.DisplayName = capObj
-		objMetadata.Result[obj] = *metadata
+			wg.Done()
+		}(object)
 	}
 
-	return &objMetadata, nil
+	// Wait for all goroutines to finish their calls.
+	wg.Wait()
+
+	return &objectMetadata, nil
 }
 
-func metadataMapper(resp *common.JSONHTTPResponse) (*common.ObjectMetadata, error) {
+func (c *Connector) getMetadata(ctx context.Context, objectName string) (*common.ObjectMetadata, error) {
+	url, err := c.getAPIURL(restMetadataEndpoint)
+	if err != nil {
+		return nil, err
+	}
+
+	capObj := naming.CapitalizeFirstLetterEveryWord(objectName)
+
+	// setting this, returns both used and unused fields
+	url.WithQueryParam("type", "all")
+	url.WithQueryParam("module", capObj)
+
+	resp, err := c.Client.Get(ctx, url.String())
+	if err != nil {
+		return nil, err
+	}
+
+	metadata, err := parseMetadataResponse(resp)
+	if err != nil {
+		return nil, err
+	}
+
+	metadata.DisplayName = capObj
+
+	return metadata, nil
+}
+
+func parseMetadataResponse(resp *common.JSONHTTPResponse) (*common.ObjectMetadata, error) {
 	response, err := common.UnmarshalJSON[metadataFields](resp)
 	if err != nil {
 		return nil, err
