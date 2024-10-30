@@ -9,6 +9,20 @@ func ContentJSON() http.HandlerFunc {
 	}
 }
 
+// ContentXML is a setup handler, which configures server to use XML.
+func ContentXML() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/xml")
+	}
+}
+
+// ContentHTML is a setup handler, which configures server to use HTML.
+func ContentHTML() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/html")
+	}
+}
+
 // Response is used to configure server response with HTTP status and body data.
 // Data is optional.
 func Response(status int, data ...[]byte) http.HandlerFunc {
