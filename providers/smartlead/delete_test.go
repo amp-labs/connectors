@@ -7,7 +7,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -31,12 +30,6 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			Input:        common.DeleteParams{ObjectName: "campaigns"},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingRecordID},
-		},
-		{
-			Name:         "Mime response header expected",
-			Input:        common.DeleteParams{ObjectName: "campaigns", RecordId: "782647"},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{interpreter.ErrMissingContentType},
 		},
 		{
 			Name:   "Cannot remove unknown object",

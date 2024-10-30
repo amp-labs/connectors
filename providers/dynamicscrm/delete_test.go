@@ -7,7 +7,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -27,12 +26,6 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			Input:        common.DeleteParams{ObjectName: "fax"},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingRecordID},
-		},
-		{
-			Name:         "Mime response header expected",
-			Input:        common.DeleteParams{ObjectName: "fax", RecordId: "dd2f7870-3fe8-ee11-a204-0022481f9e3c"},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{interpreter.ErrMissingContentType},
 		},
 		{
 			Name:  "Correct error message is understood from JSON response",

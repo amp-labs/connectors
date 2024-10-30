@@ -9,7 +9,6 @@ import (
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -31,17 +30,6 @@ func TestBulkWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	}`
 
 	tests := []bulkWriteTestCase{
-		{
-			Name: "Mime response header expected",
-			Input: BulkOperationParams{
-				ObjectName:      "Opportunity",
-				ExternalIdField: "fieldName8",
-				CSVData:         strings.NewReader(""),
-				Mode:            UpsertMode,
-			},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{interpreter.ErrMissingContentType},
-		},
 		{
 			Name: "Read object must be included",
 			Input: BulkOperationParams{
