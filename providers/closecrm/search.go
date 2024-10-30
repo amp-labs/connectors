@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/handy"
 )
 
 /*
@@ -28,7 +29,7 @@ const searchEndpoint = "data/search"
 //
 // doc: https://developer.close.com/resources/advanced-filtering
 func (c *Connector) Search(ctx context.Context, config SearchParams) (*common.ReadResult, error) {
-	input, err := buildUpdatedDateFilter(config)
+	searchFilter, err := buildUpdatedDateFilter(config)
 	if err != nil {
 		return nil, err
 	}
@@ -38,7 +39,7 @@ func (c *Connector) Search(ctx context.Context, config SearchParams) (*common.Re
 		return nil, err
 	}
 
-	resp, err := c.Client.Post(ctx, url.String(), input)
+	resp, err := c.Client.Post(ctx, url.String(), searchFilter)
 	if err != nil {
 		return nil, err
 	}
@@ -46,37 +47,37 @@ func (c *Connector) Search(ctx context.Context, config SearchParams) (*common.Re
 	return common.ParseResult(
 		resp,
 		common.GetRecordsUnderJSONPath("data"),
-		searchNextRecords(),
+		getNextRecordCursor,
 		common.GetMarshaledData,
-		config.Fields,
+		handy.NewStringSet(config.Fields...),
 	)
 }
 
-func buildUpdatedDateFilter(config SearchParams) (Filters, error) {
+func buildUpdatedDateFilter(params SearchParams) (Filter, error) {
 	limit, err := strconv.Atoi(defaultPageSize)
 	if err != nil {
-		return Filters{}, err
+		return Filter{}, err
 	}
 
-	flt := Filters{
-		FilterQueries: FilterQueries{
+	flt := Filter{
+		Query: Query{
 			Type: "and",
 			Queries: []map[string]any{
 				{
-					ObjectTypeQueryKey: config.ObjectName,
+					ObjectTypeQueryKey: params.ObjectName,
 					TypeQueryKey:       "object_type",
 				},
 				{
 					TypeQueryKey: "field_condition",
 					FieldQueryKey: map[string]any{
 						TypeQueryKey:          "regular_field",
-						ObjectTypeQueryKey:    config.ObjectName,
+						ObjectTypeQueryKey:    params.ObjectName,
 						FieldNameTypeQueryKey: "date_updated",
 					},
 					ConditionQueryKey: map[string]any{
 						OnOrAfterQueryKey: map[string]any{
 							TypeQueryKey:  "fixed_local_date",
-							ValueQueryKey: config.Since.Format(time.DateOnly),
+							ValueQueryKey: params.Since.Format(time.DateOnly),
 							WhichQueryKey: "start",
 						},
 						TypeQueryKey: "moment_range",
@@ -85,14 +86,14 @@ func buildUpdatedDateFilter(config SearchParams) (Filters, error) {
 			},
 		},
 		Fields: map[string][]string{
-			config.ObjectName: config.Fields.List(),
+			params.ObjectName: params.Fields,
 		},
 		Cursor: nil,
 		Limit:  limit,
 	}
 
-	if len(config.NextPage) > 0 {
-		flt.Cursor = config.NextPage.String()
+	if len(params.NextPage) > 0 {
+		flt.Cursor = params.NextPage.String()
 	}
 
 	return flt, nil

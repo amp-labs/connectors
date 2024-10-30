@@ -4,31 +4,30 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/handy"
 )
 
 type SearchParams struct {
 	ObjectName string
-	Fields     handy.StringSet
+	Fields     []string
 	Since      time.Time
 	NextPage   common.NextPageToken
-	Filters    Filters
+	Filters    Filter
 }
 
-type Filters struct {
-	FilterQueries FilterQueries       `json:"query"`
-	Cursor        any                 `json:"cursor"`
-	Limit         int                 `json:"_limit"`  //nolint:tagliatelle
-	Fields        map[string][]string `json:"_fields"` //nolint:tagliatelle
+type Filter struct {
+	Query  Query               `json:"query"`
+	Cursor any                 `json:"cursor"`
+	Limit  int                 `json:"_limit"`  //nolint:tagliatelle
+	Fields map[string][]string `json:"_fields"` //nolint:tagliatelle
 }
 
-type FilterQueries struct {
+type Query struct {
 	Type    string           `json:"type"`
 	Queries []map[string]any `json:"queries"`
 }
 
 // nolint:gochecknoglobals
-var (
+const (
 	TypeQueryKey          = "type"
 	ObjectTypeQueryKey    = "object_type"
 	FieldQueryKey         = "field"

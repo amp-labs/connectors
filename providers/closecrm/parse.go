@@ -19,7 +19,7 @@ Read Response Schema:
 
 */
 
-var (
+const (
 	defaultPageSize = "100"      // nolint:gochecknoglobals
 	limitQuery      = "_limit"   // nolint:gochecknoglobals
 	skipQuery       = "_skip"    // nolint:gochecknoglobals
@@ -30,6 +30,7 @@ var (
 var ErrSkipFailure = errors.New("error: failed to create next page url")
 
 // nextRecordsURL builds the next-page url func.
+// https://developer.close.com/topics/pagination/
 func nextRecordsURL(url *urlbuilder.URL) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
 		// check if there is more items in the collection.
@@ -54,17 +55,23 @@ func nextRecordsURL(url *urlbuilder.URL) common.NextPageFunc {
 	}
 }
 
-func searchNextRecords() common.NextPageFunc {
-	return func(node *ajson.Node) (string, error) {
-		crs, err := jsonquery.New(node).Str("cursor", true)
-		if err != nil {
-			return "", err
-		}
+/*
+Search Response schema:
 
-		if crs == nil {
-			return "", nil
-		}
-
-		return *crs, nil
+	{
+		 "data": [{...},{...}],
+		 "cursor": "..."
 	}
+*/
+func getNextRecordCursor(node *ajson.Node) (string, error) {
+	crs, err := jsonquery.New(node).Str("cursor", true)
+	if err != nil {
+		return "", err
+	}
+
+	if crs == nil {
+		return "", nil
+	}
+
+	return *crs, nil
 }

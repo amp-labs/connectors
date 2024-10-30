@@ -22,7 +22,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	if !config.Since.IsZero() {
 		return c.Search(ctx, SearchParams{
 			ObjectName: config.ObjectName,
-			Fields:     config.Fields,
+			Fields:     config.Fields.List(),
 			Since:      config.Since,
 			NextPage:   config.NextPage,
 		})

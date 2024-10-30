@@ -25,13 +25,13 @@ func main() {
 	conn := closecrm.GetCloseConnector(ctx)
 	defer utils.Close(conn)
 
-	// if err := readActivities(ctx, conn); err != nil {
-	// 	slog.Error(err.Error())
-	// }
+	if err := readActivities(ctx, conn); err != nil {
+		slog.Error(err.Error())
+	}
 
-	// if err := readContacts(ctx, conn); err != nil {
-	// 	slog.Error(err.Error())
-	// }
+	if err := readContacts(ctx, conn); err != nil {
+		slog.Error(err.Error())
+	}
 
 	if err := readLeads(ctx, conn); err != nil {
 		slog.Error(err.Error())
