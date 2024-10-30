@@ -9,8 +9,10 @@ func init() {
 		AuthType:    Oauth2,
 		BaseURL:     "https://www.zohoapis.com",
 		Oauth2Opts: &Oauth2Opts{
-			GrantType:                 AuthorizationCode,
-			AuthURL:                   "https://accounts.zoho.com/oauth/v2/auth",
+			GrantType: AuthorizationCode,
+			AuthURL:   "https://accounts.zoho.com/oauth/v2/auth",
+			// ref: https://www.zoho.com/analytics/api/v2/authentication/generating-code.html
+			AuthURLParams:             map[string]string{"access_type": "offline"},
 			TokenURL:                  "https://accounts.zoho.com/oauth/v2/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
