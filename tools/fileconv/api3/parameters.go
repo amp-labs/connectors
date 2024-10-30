@@ -7,23 +7,23 @@ import (
 	"github.com/iancoleman/strcase"
 )
 
-// ObjectCheck is a procedure that decides if field name is related to the object name.
+// ObjectArrayLocator is a procedure that decides if field name is related to the object name.
 // Below you can find the common cases.
-type ObjectCheck func(objectName, fieldName string) bool
+type ObjectArrayLocator func(objectName, fieldName string) bool
 
-// IdenticalObjectCheck item schema within response is stored under matching object name.
+// IdenticalObjectLocator item schema within response is stored under matching object name.
 // Ex: requesting contacts will return payload with {"contacts":[...]}.
-func IdenticalObjectCheck(objectName, fieldName string) bool {
+func IdenticalObjectLocator(objectName, fieldName string) bool {
 	return fieldName == objectName
 }
 
-// DataObjectCheck item schema within response is always stored under the data field.
+// DataObjectLocator item schema within response is always stored under the data field.
 // Ex: requesting contacts or leads or users will return payload with {"data":[...]}.
-func DataObjectCheck(objectName, fieldName string) bool {
+func DataObjectLocator(objectName, fieldName string) bool {
 	return fieldName == "data"
 }
 
-// CustomMappingObjectCheck builds ObjectCheck using mapping,
+// CustomMappingObjectCheck builds ObjectArrayLocator using mapping,
 // which knows exceptions and patterns to determine response field name.
 //
 // Ex:
@@ -36,7 +36,7 @@ func DataObjectCheck(objectName, fieldName string) bool {
 //
 // This can be understood as follows: orders, carts, coupons REST resources will be found under JSON response field
 // matching "it's name", while the rest will be located under "data" field.
-func CustomMappingObjectCheck(dict handy.DefaultMap[string, string]) ObjectCheck {
+func CustomMappingObjectCheck(dict handy.DefaultMap[string, string]) ObjectArrayLocator {
 	return func(objectName, fieldName string) bool {
 		expected := dict.Get(objectName)
 

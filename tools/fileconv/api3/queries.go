@@ -35,9 +35,9 @@ func (e Explorer) ReadObjectsGet(
 	pathMatcher PathMatcher,
 	objectEndpoints map[string]string,
 	displayNameOverride map[string]string,
-	check ObjectCheck,
+	locator ObjectArrayLocator,
 ) (Schemas, error) {
-	return e.ReadObjects("GET", pathMatcher, objectEndpoints, displayNameOverride, check)
+	return e.ReadObjects("GET", pathMatcher, objectEndpoints, displayNameOverride, locator)
 }
 
 // ReadObjectsPost is the same as ReadObjectsGet but retrieves schemas for endpoints that perform reading via POST.
@@ -45,9 +45,9 @@ func (e Explorer) ReadObjectsPost(
 	pathMatcher PathMatcher,
 	objectEndpoints map[string]string,
 	displayNameOverride map[string]string,
-	check ObjectCheck,
+	locator ObjectArrayLocator,
 ) (Schemas, error) {
-	return e.ReadObjects("POST", pathMatcher, objectEndpoints, displayNameOverride, check)
+	return e.ReadObjects("POST", pathMatcher, objectEndpoints, displayNameOverride, locator)
 }
 
 // ReadObjects will explore OpenAPI file returning list of Schemas.
@@ -61,7 +61,7 @@ func (e Explorer) ReadObjectsPost(
 //	Note: deep connector would need to do the reverse mapping to reconstruct URL given orders objectName.
 //
 // displayNameOverride - objectName mapped to custom Display name.
-// check - callback that returns true if fieldName matched the target location of Object in response.
+// locator - callback that returns true if fieldName matched the target location of Object in response.
 // Ex: 	if (objectName == orders && fieldName == data) => true
 //
 //	Given response with fields {meta{}, data{}, pagination{}} for orders object,
@@ -71,13 +71,13 @@ func (e Explorer) ReadObjects(
 	pathMatcher PathMatcher,
 	objectEndpoints map[string]string,
 	displayNameOverride map[string]string,
-	check ObjectCheck,
+	locator ObjectArrayLocator,
 ) (Schemas, error) {
 	schemas := make(Schemas, 0)
 
 	for _, path := range e.GetPathItems(pathMatcher, objectEndpoints) {
 		schema, found, err := path.RetrieveSchemaOperation(operationName,
-			displayNameOverride, check, e.displayPostProcessing, e.parameterFilter,
+			displayNameOverride, locator, e.displayPostProcessing, e.parameterFilter,
 		)
 		if err != nil {
 			return nil, err

@@ -67,7 +67,7 @@ func (s Schema) String() string {
 
 func (p PathItem) RetrieveSchemaOperation(
 	operationName string,
-	displayNameOverride map[string]string, check ObjectCheck, displayProcessor DisplayNameProcessor,
+	displayNameOverride map[string]string, locator ObjectArrayLocator, displayProcessor DisplayNameProcessor,
 	parameterFilter ParameterFilterGetMethod,
 ) (*Schema, bool, error) {
 	operation := p.selectOperation(operationName)
@@ -101,7 +101,7 @@ func (p PathItem) RetrieveSchemaOperation(
 		}
 	}
 
-	fields, err := extractFieldsFromArrayItem(p.objectName, schema, check)
+	fields, err := extractObjectFields(p.objectName, schema, locator)
 
 	return &Schema{
 		ObjectName:  p.objectName,
@@ -126,9 +126,29 @@ func (p PathItem) selectOperation(operationName string) *openapi3.Operation {
 	}
 }
 
-func extractFieldsFromArrayItem(objectName string, schema *openapi3.Schema, check ObjectCheck) ([]string, error) {
-	checkExpectationsOperationResponseSchema(schema)
+func extractObjectFields(objectName string, schema *openapi3.Schema, locator ObjectArrayLocator) ([]string, error) {
+	switch getSchemaType(schema) {
+	case schemaTypeObject:
+		return extractFieldsFromArrayHolder(objectName, schema, locator)
+	case schemaTypeArray:
+		return extractFieldsFromArray(objectName, schema)
+	case schemaTypeUnknown:
+		// Even though OpenAPI doesn't explicitly state that the schema is of object type,
+		// Attempt to process it as such.
+		// It seems that some OpenAPI files are not that strict about such things. Ex: Pipedrive, Zendesk.
+		return extractFieldsFromArrayHolder(objectName, schema, locator)
+	default:
+		return nil, createUnprocessableObjectError(objectName)
+	}
+}
 
+// Response schema is an object. This object holds an array of items.
+// It is not obvious which field holds the list of items that we are interested in.
+// We cannot assume that object will always have one property of array type, therefore an ObjectArrayLocator is used
+// to determine what is the name of property with respect to the object name.
+func extractFieldsFromArrayHolder(
+	objectName string, schema *openapi3.Schema, locator ObjectArrayLocator,
+) ([]string, error) {
 	definitions := []openapi3.Schemas{
 		schema.Properties,
 	}
@@ -144,7 +164,7 @@ func extractFieldsFromArrayItem(objectName string, schema *openapi3.Schema, chec
 				// Those fields of an item are what we are after.
 				// Now ask the discriminator if this is the target List.
 				// It is possible that response has multiple arrays, that's why we are asking to resolve ambiguity.
-				if check(objectName, name) {
+				if locator(objectName, name) {
 					return extractFields(items.Value)
 				}
 			}
@@ -157,7 +177,17 @@ func extractFieldsFromArrayItem(objectName string, schema *openapi3.Schema, chec
 		return []string{}, nil
 	}
 
-	return nil, fmt.Errorf("%w: object %v", ErrUnprocessableObject, objectName)
+	return nil, createUnprocessableObjectError(objectName)
+}
+
+// Response schema is an array itself. Collect fields that describe single item.
+func extractFieldsFromArray(objectName string, schema *openapi3.Schema) ([]string, error) {
+	items, ok := getItems(schema.NewRef())
+	if !ok {
+		return nil, createUnprocessableObjectError(objectName)
+	}
+
+	return extractFields(items.Value)
 }
 
 func getItems(schema *openapi3.SchemaRef) (*openapi3.SchemaRef, bool) {
@@ -261,32 +291,52 @@ func extractFields(source *openapi3.Schema) ([]string, error) {
 	return combined.List(), nil
 }
 
+type definitionSchemaType int
+
+const (
+	schemaTypeUnknown definitionSchemaType = iota
+	schemaTypeObject
+	schemaTypeArray
+)
+
 // This logs any concerns if any.
 // The OpenAPI extractor has some expectations that should hold true, otherwise the extraction
 // should be rethought to match the edge case.
 //
 // Operation response has a schema, it must be an object, and it should contain a field
 // that will hold Object of interest. That object is what connectors.ReadConnector returns via Read method.
-func checkExpectationsOperationResponseSchema(schema *openapi3.Schema) {
+// It is allowed to have an array without it being nested under object.
+//
+// Returns enum marking the type of schema. This can be used to adjust processing.
+func getSchemaType(schema *openapi3.Schema) definitionSchemaType {
 	if schema.Type == nil {
 		slog.Warn("Schema definition has no type")
 
-		return
+		return schemaTypeUnknown
 	}
 
 	if len(*schema.Type) != 1 {
 		slog.Warn("Schema definition has multiple types")
 	}
 
-	found := false
-
 	for _, s := range *schema.Type {
 		if s == "object" {
-			found = true
+			return schemaTypeObject
 		}
 	}
 
-	if !found {
-		slog.Warn("Schema definition is not an object. Expected to be an object containing array of items.")
+	for _, s := range *schema.Type {
+		if s == "array" {
+			return schemaTypeArray
+		}
 	}
+
+	slog.Warn("Schema definition is neither an object nor an array. " +
+		"Expected to be an object containing array of items, or the list itself.")
+
+	return schemaTypeUnknown
+}
+
+func createUnprocessableObjectError(objectName string) error {
+	return fmt.Errorf("%w: object %v", ErrUnprocessableObject, objectName)
 }

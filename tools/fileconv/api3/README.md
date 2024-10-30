@@ -30,7 +30,7 @@ schemas = yourconnector.FileManager.GetExplorer().GetBasicReadObjects(
     ignoreEndpoints,
     objectEndpoints,
     displayNameOverride,
-    objectCheck,
+    objectArrayLocator,
 )
 ```
 
@@ -46,10 +46,10 @@ Argument description:
   * By default, last URI part is used as Object Name.
 
 
-* **objectCheck** - function that accepts JSON response field and Object name. Using both you can determine 
+* **objectArrayLocator** - function that accepts JSON response field and Object name. Using both you can determine 
 if this is the correct response field that will hold your schema. Some common implementations are provided.
-  * api3.IdenticalObjectCheck - expects data to be stored under the same name as object name. Ex: {"contacts":[...]}
-  * api3.DataObjectCheck - expects schema to be returned under `data` field. Ex: {"data":[...]}
+  * api3.IdenticalObjectLocator - expects data to be stored under the same name as object name. Ex: {"contacts":[...]}
+  * api3.DataObjectLocator - expects schema to be returned under `data` field. Ex: {"data":[...]}
   * Your implementation can have exception or do combination of the two based on different objects.
 
 Additionally, Explorer can be configured to apply display name processing after data is extracted. For example, you can capitalize every word of display for better look.
