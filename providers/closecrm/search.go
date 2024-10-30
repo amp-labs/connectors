@@ -1,0 +1,3 @@
+package closecrm
+
+func Search()
