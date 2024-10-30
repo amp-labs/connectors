@@ -36,8 +36,6 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 		mu sync.Mutex     //nolint: varnamelen
 	)
 
-	wg.Add(len(objectNames))
-
 	if len(objectNames) == 0 {
 		return nil, common.ErrMissingObjects
 	}
@@ -46,6 +44,8 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 		Result: make(map[string]common.ObjectMetadata, len(objectNames)),
 		Errors: make(map[string]error, len(objectNames)),
 	}
+
+	wg.Add(len(objectNames))
 
 	for _, object := range objectNames {
 		go func(object string) {

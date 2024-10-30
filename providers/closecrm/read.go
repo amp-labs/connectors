@@ -2,17 +2,30 @@ package closecrm
 
 import (
 	"context"
-	"time"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
 // Read retrieves data based on the provided read parameters.
-// ref: https://developer.close.com/resources/leads/
+// ref: https://developer.close.com/resources/leads
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
 	if err := config.ValidateParams(true); err != nil {
 		return nil, err
+	}
+
+	// If Since is provided we Read data through the searchig API.
+	// The searching API supports the incremental read using dates only.
+	// The API has a limit of 10K records when paginating.
+	// doc: https://developer.close.com/resources/advanced-filtering/
+	if !config.Since.IsZero() {
+		return c.Search(ctx, SearchParams{
+			ObjectName: config.ObjectName,
+			Fields:     config.Fields,
+			Since:      config.Since,
+			NextPage:   config.NextPage,
+		})
 	}
 
 	url, err := c.buildReadURL(config)
@@ -20,19 +33,23 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	// Add _fields query parameters for filtering the response fields.
-	url.WithQueryParamList("_fields", config.Fields.List())
-
-	if !config.Since.IsZero() {
-		// Filter response data according to the provided since data.
-		url.WithQueryParam("date_updated", config.Since.Format(time.RFC3339))
-	}
+	// Add initial query parameters for mutating the response fields.
+	url.WithQueryParam("_fields", strings.Join(config.Fields.List(), ","))
+	url.WithQueryParam(skipQuery, "0")
+	url.WithQueryParam(limitQuery, defaultPageSize)
 
 	resp, err := c.Client.Get(ctx, url.String())
 	if err != nil {
 		return nil, err
 	}
 
+	return common.ParseResult(
+		resp,
+		common.GetRecordsUnderJSONPath("data"),
+		nextRecordsURL(url),
+		common.GetMarshaledData,
+		config.Fields,
+	)
 }
 
 func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error) {

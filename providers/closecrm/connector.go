@@ -50,6 +50,11 @@ func (c *Connector) Provider() string {
 	return providers.Close
 }
 
+// String implements fmt.Stringer interface.
+func (c *Connector) String() string {
+	return c.Provider() + ".Connector"
+}
+
 func (c *Connector) setBaseURL(newURL string) {
 	c.BaseURL = newURL
 	c.Client.HTTPClient.Base = newURL

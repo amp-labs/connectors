@@ -6,7 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/amp-labs/connectors/test/close"
+	"github.com/amp-labs/connectors/test/closecrm"
 	"github.com/amp-labs/connectors/test/utils"
 )
 
@@ -18,7 +18,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := close.GetCloseConnector(ctx)
+	conn := closecrm.GetCloseConnector(ctx)
 
 	defer utils.Close(conn)
 
