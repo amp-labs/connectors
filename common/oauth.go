@@ -8,19 +8,19 @@ import (
 	"golang.org/x/oauth2"
 )
 
-// TokenSourceContext is an interface that extends the oauth2.TokenSource interface
+// TokenSourceWithContext is an interface that extends the oauth2.TokenSource interface
 // with a context. This is useful for token sources that need to be aware of the
 // context in which they are being called. The use of this interface is optional,
 // but if the token source conforms to it, then the context version of the Token
 // method will be called instead of the normal one.
-type TokenSourceContext interface {
+type TokenSourceWithContext interface {
 	oauth2.TokenSource
 
-	// TokenContext returns a token or an error.
+	// TokenWithContext returns a token or an error.
 	// Token must be safe for concurrent use by multiple goroutines.
 	// The returned Token must not be modified.
 	// Similar semantics to oauth2.TokenSource, but with a context.
-	TokenContext(ctx context.Context) (*oauth2.Token, error)
+	TokenWithContext(ctx context.Context) (*oauth2.Token, error)
 }
 
 type OAuthOption func(*oauthClientParams)
@@ -181,9 +181,9 @@ func (t *oauth2Transport) RoundTrip(req *http.Request) (*http.Response, error) {
 		err   error
 	)
 
-	srcCtx, ok := t.Source.(TokenSourceContext)
+	srcCtx, ok := t.Source.(TokenSourceWithContext)
 	if ok {
-		token, err = srcCtx.TokenContext(req.Context())
+		token, err = srcCtx.TokenWithContext(req.Context())
 	} else {
 		token, err = t.Source.Token()
 	}
@@ -276,7 +276,7 @@ type observableTokenSource struct {
 	tokenSource  oauth2.TokenSource
 }
 
-func (w *observableTokenSource) TokenContext(ctx context.Context) (*oauth2.Token, error) {
+func (w *observableTokenSource) TokenWithContext(ctx context.Context) (*oauth2.Token, error) {
 	w.mut.Lock()
 	defer w.mut.Unlock()
 
@@ -285,9 +285,9 @@ func (w *observableTokenSource) TokenContext(ctx context.Context) (*oauth2.Token
 		err error
 	)
 
-	srcCtx, ok := w.tokenSource.(TokenSourceContext)
+	srcCtx, ok := w.tokenSource.(TokenSourceWithContext)
 	if ok {
-		tok, err = srcCtx.TokenContext(ctx)
+		tok, err = srcCtx.TokenWithContext(ctx)
 	} else {
 		tok, err = w.tokenSource.Token()
 	}
