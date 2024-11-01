@@ -9,6 +9,16 @@ import (
 	"github.com/amp-labs/connectors/common"
 )
 
+/*
+   docs:
+   https://developers.hubspot.com/beta-docs/reference/api/crm/objects/companies
+   https://developers.hubspot.com/beta-docs/reference/api/crm/objects/contacts
+   https://developers.hubspot.com/beta-docs/reference/api/crm/objects/deals
+   https://developers.hubspot.com/beta-docs/reference/api/crm/objects/tickets
+   https://developers.hubspot.com/beta-docs/reference/api/crm/objects/line_items
+   https://developers.hubspot.com/beta-docs/reference/api/crm/objects/products
+*/
+
 var getRecordSupportedObjectsToPathMap = map[string]string{
 	"company":   "companies",
 	"contact":   "contacts",

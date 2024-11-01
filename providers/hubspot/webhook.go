@@ -24,10 +24,10 @@ type WebhookMessage struct {
 
 func (c *Connector) TransformWebhookMessageToReadResult(ctx context.Context, msg WebhookMessage) (*common.ReadResult, error) {
 	// Transform the webhook message into a ReadResult.
-	// This is a placeholder implementation.
 	objectName := strings.Split(msg.SubscriptionType, ".")[0]
 	recordId := strconv.Itoa(msg.ObjectId)
 
+	// Since the webhook message doesn't contain the record data, we need to fetch it.
 	recordResult, err := c.GetRecord(ctx, objectName, recordId)
 	if err != nil {
 		return nil, err
