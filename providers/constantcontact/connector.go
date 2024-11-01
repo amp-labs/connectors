@@ -53,7 +53,11 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 func (c *Connector) getURL(objectName string) (*urlbuilder.URL, error) {
 	path, err := metadata.Schemas.LookupURLPath(c.Module.ID, objectName)
 	if err != nil {
-		return nil, err
+		var ok bool
+		if path, ok = objectNameToWritePath[objectName]; !ok {
+			// check out if object name is part of exceptions
+			return nil, common.ErrOperationNotSupportedForObject
+		}
 	}
 
 	return urlbuilder.New(c.BaseURL, ApiVersion, path)
