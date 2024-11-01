@@ -8,6 +8,21 @@ import (
 	"golang.org/x/oauth2"
 )
 
+// TokenSourceWithContext is an interface that extends the oauth2.TokenSource interface
+// with a context. This is useful for token sources that need to be aware of the
+// context in which they are being called. The use of this interface is optional,
+// but if the token source conforms to it, then the context version of the Token
+// method will be called instead of the normal one.
+type TokenSourceWithContext interface {
+	oauth2.TokenSource
+
+	// TokenWithContext returns a token or an error.
+	// Token must be safe for concurrent use by multiple goroutines.
+	// The returned Token must not be modified.
+	// Similar semantics to oauth2.TokenSource, but with a context.
+	TokenWithContext(ctx context.Context) (*oauth2.Token, error)
+}
+
 type OAuthOption func(*oauthClientParams)
 
 // NewOAuthHTTPClient returns a new http client, with automatic OAuth authentication. Specifically
@@ -161,7 +176,18 @@ func (t *oauth2Transport) RoundTrip(req *http.Request) (*http.Response, error) {
 		}()
 	}
 
-	token, err := t.Source.Token()
+	var (
+		token *oauth2.Token
+		err   error
+	)
+
+	srcCtx, ok := t.Source.(TokenSourceWithContext)
+	if ok {
+		token, err = srcCtx.TokenWithContext(req.Context())
+	} else {
+		token, err = t.Source.Token()
+	}
+
 	if err != nil {
 		return nil, err
 	}
@@ -250,6 +276,33 @@ type observableTokenSource struct {
 	tokenSource  oauth2.TokenSource
 }
 
+func (w *observableTokenSource) TokenWithContext(ctx context.Context) (*oauth2.Token, error) {
+	w.mut.Lock()
+	defer w.mut.Unlock()
+
+	var (
+		tok *oauth2.Token
+		err error
+	)
+
+	srcCtx, ok := w.tokenSource.(TokenSourceWithContext)
+	if ok {
+		tok, err = srcCtx.TokenWithContext(ctx)
+	} else {
+		tok, err = w.tokenSource.Token()
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	if err := w.Observe(tok); err != nil {
+		return nil, err
+	}
+
+	return tok, nil
+}
+
 func (w *observableTokenSource) Token() (*oauth2.Token, error) {
 	w.mut.Lock()
 	defer w.mut.Unlock()
@@ -259,15 +312,23 @@ func (w *observableTokenSource) Token() (*oauth2.Token, error) {
 		return nil, err
 	}
 
+	if err := w.Observe(tok); err != nil {
+		return nil, err
+	}
+
+	return tok, nil
+}
+
+func (w *observableTokenSource) Observe(tok *oauth2.Token) error {
 	if w.HasChanged(tok) {
 		if err := w.tokenUpdated(w.lastKnown, tok); err != nil {
-			return nil, err
+			return err
 		}
 
 		w.lastKnown = tok
 	}
 
-	return tok, nil
+	return nil
 }
 
 func (w *observableTokenSource) HasChanged(tok *oauth2.Token) bool {
