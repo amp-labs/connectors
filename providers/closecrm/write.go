@@ -8,7 +8,7 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-// Write creates/updates records in closecrm.
+// Write creates/updates records in CloseCRM.
 //
 // doc: https://developer.close.com/resources/leads/#create-a-new-lead
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
