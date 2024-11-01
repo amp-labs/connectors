@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/amp-labs/connectors/common/handy"
+	"github.com/amp-labs/connectors/internal/datautils"
 )
 
 // Explorer allows to traverse schema in most common ways
@@ -88,7 +88,7 @@ func (e Explorer) ReadObjects(
 func (e Explorer) GetPathItems(
 	pathMatcher PathMatcher, endpointResources map[string]string,
 ) []PathItem {
-	items := handy.Map[string, PathItem]{}
+	items := datautils.Map[string, PathItem]{}
 
 	for path, pathObj := range e.schema.GetPaths() {
 		if !pathMatcher.IsPathMatching(path) {

@@ -1,4 +1,4 @@
-package handy
+package datautils
 
 // NewStringSet and StringSet are Aliases.
 var NewStringSet = NewSet[string] // nolint:gochecknoglobals

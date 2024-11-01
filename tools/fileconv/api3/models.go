@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/amp-labs/connectors/common/handy"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/getkin/kin-openapi/openapi3"
 )
@@ -46,7 +46,7 @@ type Schema struct {
 type Schemas []Schema
 
 func (s Schemas) Combine(others Schemas) Schemas {
-	registry := handy.Map[string, Schema]{}
+	registry := datautils.Map[string, Schema]{}
 	for _, schema := range append(s, others...) {
 		_, found := registry[schema.ObjectName]
 
@@ -225,7 +225,7 @@ func extractSchema(operation *openapi3.Operation) *openapi3.Schema {
 }
 
 func extractFields(source *openapi3.Schema) ([]string, error) {
-	combined := make(handy.Set[string])
+	combined := make(datautils.Set[string])
 
 	if source.AnyOf != nil {
 		// this object can be represented by various definitions

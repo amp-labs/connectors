@@ -7,7 +7,7 @@ import (
 	"syscall"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/handy"
+	"github.com/amp-labs/connectors/internal/datautils"
 	connTest "github.com/amp-labs/connectors/test/dynamicscrm"
 	"github.com/amp-labs/connectors/test/utils"
 )
@@ -36,7 +36,7 @@ func main() {
 
 	fmt.Println("Read object using all fields from ListObjectMetadata")
 
-	requestFields := handy.Map[string, string](metadata.Result[objectName].FieldsMap).KeySet()
+	requestFields := datautils.Map[string, string](metadata.Result[objectName].FieldsMap).KeySet()
 
 	response, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: objectName,
@@ -49,7 +49,7 @@ func main() {
 			utils.Fail("expected to read at least one record", "error", err)
 		}
 
-		givenFields := handy.Map[string, any](response.Data[0].Fields).KeySet()
+		givenFields := datautils.Map[string, any](response.Data[0].Fields).KeySet()
 
 		difference := givenFields.Diff(requestFields)
 		if len(difference) != 0 {

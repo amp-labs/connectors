@@ -3,7 +3,7 @@ package main
 import (
 	"log/slog"
 
-	"github.com/amp-labs/connectors/common/handy"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers/gong/metadata"
@@ -17,7 +17,7 @@ var (
 	// Even though OpenAPI docs and official documentation say that some query parameters are required
 	// in practice you still can make an API call without any specified.
 	// Must include "calls" object.
-	queryParamFilterExceptions = handy.NewSet("calls") // nolint:gochecknoglobals
+	queryParamFilterExceptions = datautils.NewSet("calls") // nolint:gochecknoglobals
 
 	ignoreEndpoints = []string{ // nolint:gochecknoglobals
 		"/v2/settings/scorecards",
@@ -70,7 +70,7 @@ func main() {
 	goutils.Must(err)
 
 	schemas := staticschema.NewMetadata()
-	registry := handy.NamedLists[string]{}
+	registry := datautils.NamedLists[string]{}
 
 	for _, object := range objects {
 		if object.Problem != nil {

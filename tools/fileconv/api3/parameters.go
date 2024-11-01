@@ -1,8 +1,8 @@
 package api3
 
 import (
-	"github.com/amp-labs/connectors/common/handy"
 	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/iancoleman/strcase"
 )
@@ -36,7 +36,7 @@ func DataObjectCheck(objectName, fieldName string) bool {
 //
 // This can be understood as follows: orders, carts, coupons REST resources will be found under JSON response field
 // matching "it's name", while the rest will be located under "data" field.
-func CustomMappingObjectCheck(dict handy.DefaultMap[string, string]) ObjectCheck {
+func CustomMappingObjectCheck(dict datautils.DefaultMap[string, string]) ObjectCheck {
 	return func(objectName, fieldName string) bool {
 		expected := dict.Get(objectName)
 

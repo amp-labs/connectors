@@ -1,4 +1,4 @@
-package handy
+package datautils
 
 // Map is a generic version of map with useful methods.
 // It can return Keys as a slice or a Set.

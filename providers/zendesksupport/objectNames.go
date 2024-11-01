@@ -1,7 +1,7 @@
 package zendesksupport
 
 import (
-	"github.com/amp-labs/connectors/common/handy"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/providers/zendesksupport/metadata"
 )
 
@@ -9,7 +9,7 @@ import (
 var supportedObjectsByRead = metadata.Schemas.ObjectNames() //nolint:gochecknoglobals
 
 // ObjectNameToResponseField maps ObjectName to the response field name which contains that object.
-var ObjectNameToResponseField = handy.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
+var ObjectNameToResponseField = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
 	"ticket_audits":        "audits",
 	"search":               "results", // This is "/api/v2/search"
 	"satisfaction_reasons": "reasons",

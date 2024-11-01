@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/amp-labs/connectors/common/handy"
+	"github.com/amp-labs/connectors/internal/datautils"
 )
 
 type ModelDocLinks []ModelDocLink
@@ -81,8 +81,8 @@ type queryParamObjectStats struct {
 
 // CalculateQueryParamStats produces statistics on objects and their query parameters.
 // queryParamRegistry - holds query parameter name to the list of object names that use it.
-func CalculateQueryParamStats(queryParamRegistry handy.NamedLists[string]) *QueryParamStats {
-	objects := handy.NewStringSet()
+func CalculateQueryParamStats(queryParamRegistry datautils.NamedLists[string]) *QueryParamStats {
+	objects := datautils.NewStringSet()
 	for _, objectNames := range queryParamRegistry {
 		objects.Add(objectNames)
 	}

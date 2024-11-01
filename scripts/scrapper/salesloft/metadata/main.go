@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/amp-labs/connectors/common/handy"
 	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers/salesloft/metadata"
@@ -105,7 +105,7 @@ func createQueryParamStats() {
 	index, err := metadata.FileManager.LoadIndex()
 	goutils.Must(err)
 
-	registry := handy.NamedLists[string]{}
+	registry := datautils.NamedLists[string]{}
 
 	filteredListDocs := getFilteredListDocs(index)
 	numObjects := len(filteredListDocs)

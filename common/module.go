@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/amp-labs/connectors/common/handy"
+	"github.com/amp-labs/connectors/internal/datautils"
 )
 
 var (
@@ -18,7 +18,7 @@ var (
 
 type ModuleID string
 
-type Modules = handy.Map[ModuleID, Module]
+type Modules = datautils.Map[ModuleID, Module]
 
 // Module represents a set of endpoints and functionality available by provider.
 // Single provider may support multiple modules, requiring the user to choose a module before making requests.

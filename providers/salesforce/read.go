@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/handy"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/datautils"
 )
 
 // Read reads data from Salesforce. By default, it will read all rows (backfill). However, if Since is set,
@@ -59,7 +59,7 @@ func makeSOQL(config common.ReadParams) *soqlBuilder {
 
 	// If Since is not set, then we're doing a backfill. We read all rows (in pages)
 	if !config.Since.IsZero() {
-		soql.Where("SystemModstamp > " + handy.Time.FormatRFC3339inUTC(config.Since))
+		soql.Where("SystemModstamp > " + datautils.Time.FormatRFC3339inUTC(config.Since))
 	}
 
 	if config.Deleted {
