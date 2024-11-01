@@ -8,6 +8,7 @@ import (
 	"log/slog"
 
 	"github.com/amp-labs/connectors/common/handy"
+	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers/intercom"
 	"github.com/amp-labs/connectors/providers/intercom/metadata"
@@ -50,21 +51,21 @@ var (
 
 func main() {
 	explorer, err := openapi.FileManager.GetExplorer()
-	handy.Must(err)
+	goutils.Must(err)
 
 	readObjects, err := explorer.ReadObjectsGet(
 		api3.NewDenyPathStrategy(ignoreEndpoints),
 		nil, displayNameOverride,
 		api3.CustomMappingObjectCheck(intercom.ObjectNameToResponseField),
 	)
-	handy.Must(err)
+	goutils.Must(err)
 
 	searchObjects, err := explorer.ReadObjectsPost(
 		api3.NewAllowPathStrategy(searchEndpoints),
 		searchObjectEndpoints, displayNameOverride,
 		api3.CustomMappingObjectCheck(intercom.ObjectNameToResponseField),
 	)
-	handy.Must(err)
+	goutils.Must(err)
 
 	objects := searchObjects.Combine(readObjects)
 
@@ -88,8 +89,8 @@ func main() {
 		}
 	}
 
-	handy.Must(metadata.FileManager.SaveSchemas(schemas))
-	handy.Must(metadata.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
+	goutils.Must(metadata.FileManager.SaveSchemas(schemas))
+	goutils.Must(metadata.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
 
 	slog.Info("Completed.")
 }

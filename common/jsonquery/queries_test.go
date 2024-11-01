@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/amp-labs/connectors/common/handy"
+	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 	"github.com/spyzhov/ajson"
 )
@@ -86,7 +86,7 @@ func TestQueryInteger(t *testing.T) { // nolint:funlen
 			input: inType{
 				key: "count",
 			},
-			expected: handy.Pointers.Int64(38),
+			expected: goutils.Pointers.Int64(38),
 		},
 		{
 			name: "Reaching for nested integer",
@@ -95,7 +95,7 @@ func TestQueryInteger(t *testing.T) { // nolint:funlen
 				optional: false,
 				zoom:     []string{"payload", "notes", "body"},
 			},
-			expected: handy.Pointers.Int64(359),
+			expected: goutils.Pointers.Int64(359),
 		},
 		{
 			name: "Reaching for nested integer using self reference",
@@ -104,7 +104,7 @@ func TestQueryInteger(t *testing.T) { // nolint:funlen
 				optional: false,
 				zoom:     []string{"payload", "notes", "body", "amount"},
 			},
-			expected: handy.Pointers.Int64(359),
+			expected: goutils.Pointers.Int64(359),
 		},
 		{
 			name: "Non existent zoom path is ok for optional integer",
@@ -181,7 +181,7 @@ func TestQueryString(t *testing.T) { // nolint:funlen
 			input: inType{
 				key: "text",
 			},
-			expected: handy.Pointers.Str("Hello World"),
+			expected: goutils.Pointers.Str("Hello World"),
 		},
 		{
 			name: "Reaching for nested string",
@@ -190,7 +190,7 @@ func TestQueryString(t *testing.T) { // nolint:funlen
 				optional: false,
 				zoom:     []string{"payload", "notes", "body"},
 			},
-			expected: handy.Pointers.Str("Some notes"),
+			expected: goutils.Pointers.Str("Some notes"),
 		},
 		{
 			name: "Reaching for nested string using self reference",
@@ -199,7 +199,7 @@ func TestQueryString(t *testing.T) { // nolint:funlen
 				optional: false,
 				zoom:     []string{"payload", "notes", "body", "text"},
 			},
-			expected: handy.Pointers.Str("Some notes"),
+			expected: goutils.Pointers.Str("Some notes"),
 		},
 		{
 			name: "Non existent zoom path is ok for optional string",
@@ -276,7 +276,7 @@ func TestQueryBool(t *testing.T) { // nolint:funlen
 			input: inType{
 				key: "inProgress",
 			},
-			expected: handy.Pointers.Bool(false),
+			expected: goutils.Pointers.Bool(false),
 		},
 		{
 			name: "Reaching for nested bool",
@@ -285,7 +285,7 @@ func TestQueryBool(t *testing.T) { // nolint:funlen
 				optional: false,
 				zoom:     []string{"payload", "notes", "body"},
 			},
-			expected: handy.Pointers.Bool(true),
+			expected: goutils.Pointers.Bool(true),
 		},
 		{
 			name: "Reaching for nested bool using self reference",
@@ -294,7 +294,7 @@ func TestQueryBool(t *testing.T) { // nolint:funlen
 				optional: false,
 				zoom:     []string{"payload", "notes", "body", "purchased"},
 			},
-			expected: handy.Pointers.Bool(true),
+			expected: goutils.Pointers.Bool(true),
 		},
 		{
 			name: "Non existent zoom path is ok for optional bool",

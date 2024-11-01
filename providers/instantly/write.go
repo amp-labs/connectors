@@ -4,9 +4,9 @@ import (
 	"context"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/handy"
 	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/spyzhov/ajson"
 )
 
@@ -64,9 +64,9 @@ func (c *Connector) Write(
 
 var recordIdPaths = map[string]*string{ // nolint:gochecknoglobals
 	objectNameLeads:            nil, // ID is not returned for Leads.
-	objectNameBlocklistEntries: handy.Pointers.Str("blocklist_id"),
-	objectNameUniboxReplies:    handy.Pointers.Str("message_id"),
-	objectNameTags:             handy.Pointers.Str("id"),
+	objectNameBlocklistEntries: goutils.Pointers.Str("blocklist_id"),
+	objectNameUniboxReplies:    goutils.Pointers.Str("message_id"),
+	objectNameTags:             goutils.Pointers.Str("id"),
 }
 
 func constructURLPathCreate(config common.WriteParams, url *urlbuilder.URL) {

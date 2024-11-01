@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common/handy"
+	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/getkin/kin-openapi/openapi3"
 )
 
@@ -151,7 +152,7 @@ func extractFieldsFromArrayItem(objectName string, schema *openapi3.Schema, chec
 		}
 	}
 
-	if handy.Pointers.IsTrue(schema.AdditionalProperties.Has) {
+	if goutils.Pointers.IsTrue(schema.AdditionalProperties.Has) {
 		// this schema is dynamic.
 		// the fields cannot be known.
 		return []string{}, nil

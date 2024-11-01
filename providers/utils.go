@@ -8,8 +8,8 @@ import (
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/handy"
 	"github.com/amp-labs/connectors/common/substitutions/catalogreplacer"
+	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/go-playground/validator"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
@@ -73,7 +73,7 @@ func (c CustomCatalog) ReadCatalog() (*CatalogWrapper, error) {
 		return nil, err
 	}
 
-	catalogCopy, err := handy.Clone[*CatalogWrapper](catalogInstance)
+	catalogCopy, err := goutils.Clone[*CatalogWrapper](catalogInstance)
 	if err != nil {
 		return nil, err
 	}
@@ -132,7 +132,7 @@ func (c CustomCatalog) ReadInfo(provider Provider, vars ...catalogreplacer.Catal
 	}
 
 	// Clone before modifying
-	providerInfo, err := handy.Clone[ProviderInfo](pInfo)
+	providerInfo, err := goutils.Clone[ProviderInfo](pInfo)
 	if err != nil {
 		return nil, err
 	}

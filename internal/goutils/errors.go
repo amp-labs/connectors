@@ -1,4 +1,4 @@
-package handy
+package goutils
 
 func Must(err error) {
 	if err != nil {

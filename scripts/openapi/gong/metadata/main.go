@@ -4,6 +4,7 @@ import (
 	"log/slog"
 
 	"github.com/amp-labs/connectors/common/handy"
+	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers/gong/metadata"
 	"github.com/amp-labs/connectors/providers/gong/openapi"
@@ -60,13 +61,13 @@ func main() {
 				api3.OnlyOptionalQueryParameters(objectName, operation)
 		}),
 	)
-	must(err)
+	goutils.Must(err)
 
 	objects, err := explorer.ReadObjectsGet(
 		api3.NewDenyPathStrategy(ignoreEndpoints),
 		nil, nil, api3.IdenticalObjectCheck,
 	)
-	must(err)
+	goutils.Must(err)
 
 	schemas := staticschema.NewMetadata()
 	registry := handy.NamedLists[string]{}
@@ -88,14 +89,8 @@ func main() {
 		}
 	}
 
-	must(metadata.FileManager.SaveSchemas(schemas))
-	must(metadata.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
+	goutils.Must(metadata.FileManager.SaveSchemas(schemas))
+	goutils.Must(metadata.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
 
 	slog.Info("Completed.")
-}
-
-func must(err error) {
-	if err != nil {
-		panic(err)
-	}
 }

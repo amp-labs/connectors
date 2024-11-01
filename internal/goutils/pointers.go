@@ -1,4 +1,4 @@
-package handy
+package goutils
 
 // Pointers is a collection of utility functions that help with go pointer referencing.
 var Pointers = pointers{} // nolint:gochecknoglobals
