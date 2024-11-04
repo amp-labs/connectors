@@ -19,6 +19,7 @@ import (
    https://developers.hubspot.com/beta-docs/reference/api/crm/objects/products
 */
 
+//nolint:gochecknoglobals
 var getRecordSupportedObjectsToPathMap = map[string]string{
 	"company":   "companies",
 	"contact":   "contacts",
@@ -36,7 +37,7 @@ func (c *Connector) GetRecord(ctx context.Context, objectName string, recordId s
 		return nil, fmt.Errorf("%w: %s", ErrUnsupportedObject, objectName)
 	}
 
-	relativePath := path.Join("/crm/v3/objects", objectNameInPath, recordId)
+	relativePath := path.Join("/objects", objectNameInPath, recordId)
 
 	resp, err := c.Client.Get(ctx, c.getURL(relativePath))
 	if err != nil {

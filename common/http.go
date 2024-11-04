@@ -294,6 +294,7 @@ func (h *HTTPClient) sendRequest(req *http.Request) (*http.Response, []byte, err
 		return nil, nil, fmt.Errorf("error reading response body: %w", err)
 	}
 
+	// fmt.Println(res)
 	// Check the response status code
 	if res.StatusCode < 200 || res.StatusCode > 299 {
 		if h.ErrorHandler != nil {

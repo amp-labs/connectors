@@ -13,7 +13,7 @@ type WebhookMessage struct {
 	EventId          int    `json:"eventId"`
 	SubscriptionId   int    `json:"subscriptionId"`
 	PortalId         int    `json:"portalId"`
-	OccurredAt       string `json:"occurredAt"`
+	OccurredAt       int    `json:"occurredAt"`
 	SubscriptionType string `json:"subscriptionType"`
 	AttemptNumber    int    `json:"attemptNumber"`
 	ObjectId         int    `json:"objectId"`
@@ -22,7 +22,14 @@ type WebhookMessage struct {
 	PropertyValue    string `json:"propertyValue"`
 }
 
-func (c *Connector) TransformWebhookMessageToReadResult(ctx context.Context, msg WebhookMessage) (*common.ReadResult, error) {
+type WebhookResult struct {
+	WebhookMessage *WebhookMessage    `json:"webhookMessage"`
+	Record         *common.ReadResult `json:"record"`
+}
+
+func (c *Connector) GetWebhookResultFromWebhookMessage(
+	ctx context.Context, msg *WebhookMessage,
+) (*WebhookResult, error) {
 	// Transform the webhook message into a ReadResult.
 	objectName := strings.Split(msg.SubscriptionType, ".")[0]
 	recordId := strconv.Itoa(msg.ObjectId)
@@ -33,5 +40,8 @@ func (c *Connector) TransformWebhookMessageToReadResult(ctx context.Context, msg
 		return nil, err
 	}
 
-	return recordResult, nil
+	return &WebhookResult{
+		WebhookMessage: msg,
+		Record:         recordResult,
+	}, nil
 }
