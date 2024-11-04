@@ -3,13 +3,17 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers/hubspot"
 	connTest "github.com/amp-labs/connectors/test/hubspot"
 	"github.com/amp-labs/connectors/test/utils"
+	"github.com/brianvoe/gofakeit/v6"
 )
 
 const samplePropertyChange = `{
@@ -26,38 +30,6 @@ const samplePropertyChange = `{
   "propertyValue": "sample-value"
 }`
 
-const sampleRecordContact = `{
-  "success": true,
-  "recordId": "74999542704",
-  "data": {
-    "company": "Personalis",
-    "createdate": "2024-11-04T21:51:26.472Z",
-    "email": "lestermertz@larson.org",
-    "firstname": "Lucious",
-    "hs_all_contact_vids": "74999542704",
-    "hs_calculated_phone_number": "+17087038093",
-    "hs_calculated_phone_number_country_code": "US",
-    "hs_currently_enrolled_in_prospecting_agent": "false",
-    "hs_email_domain": "larson.org",
-    "hs_is_contact": "true",
-    "hs_is_unworked": "true",
-    "hs_lifecyclestage_lead_date": "2024-11-04T21:51:26.472Z",
-    "hs_membership_has_accessed_private_content": "0",
-    "hs_object_id": "74999542704",
-    "hs_object_source": "INTEGRATION",
-    "hs_object_source_id": "2317233",
-    "hs_object_source_label": "INTEGRATION",
-    "hs_pipeline": "contacts-lifecycle-pipeline",
-    "hs_registered_member": "0",
-    "hs_searchable_calculated_phone_number": "7087038093",
-    "lastmodifieddate": "2024-11-04T21:51:26.472Z",
-    "lastname": "Spencer",
-    "lifecyclestage": "lead",
-    "phone": "7087038093",
-    "website": "https://www.directcutting-edge.net/granular/reintermediate/infomediaries"
-  }
-}`
-
 func main() {
 	// Handle Ctrl-C gracefully.
 	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
@@ -70,11 +42,37 @@ func main() {
 	conn := connTest.GetHubspotConnector(ctx)
 	defer utils.Close(conn)
 
+	// Write an artificial contact to Hubspot.
+	writeresult, err := conn.Write(ctx, common.WriteParams{
+		ObjectName: "contacts",
+		RecordId:   "",
+		RecordData: map[string]any{
+			"email":     gofakeit.Email(),
+			"phone":     gofakeit.Phone(),
+			"company":   gofakeit.Company(),
+			"website":   gofakeit.URL(),
+			"lastname":  gofakeit.LastName(),
+			"firstname": gofakeit.FirstName(),
+		},
+	})
+	if err != nil {
+		utils.Fail("error writing to hubspot", "error", err)
+	}
+
+	fmt.Println(writeresult.RecordId)
+
 	propMsg := hubspot.WebhookMessage{}
 
 	if err := json.Unmarshal([]byte(samplePropertyChange), &propMsg); err != nil {
 		utils.Fail("error unmarshalling property change message", "error", err)
 	}
+
+	recordId, err := strconv.Atoi(writeresult.RecordId)
+	if err != nil {
+		utils.Fail("error converting record id to int", "error", err)
+	}
+
+	propMsg.ObjectId = recordId
 
 	recordResult, err := conn.GetWebhookResultFromWebhookMessage(ctx, &propMsg)
 	if err != nil {
