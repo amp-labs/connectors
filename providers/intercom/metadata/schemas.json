@@ -7,6 +7,7 @@
         "activity_logs": {
           "displayName": "Activity Logs",
           "path": "/admins/activity_logs",
+          "responseKey": "activity_logs",
           "fields": {
             "activity_description": "activity_description",
             "activity_type": "activity_type",
@@ -19,6 +20,7 @@
         "admins": {
           "displayName": "Admins",
           "path": "/admins",
+          "responseKey": "admins",
           "fields": {
             "avatar": "avatar",
             "away_mode_enabled": "away_mode_enabled",
@@ -36,6 +38,7 @@
         "articles": {
           "displayName": "Articles",
           "path": "/articles",
+          "responseKey": "data",
           "fields": {
             "author_id": "author_id",
             "body": "body",
@@ -58,6 +61,7 @@
         "collections": {
           "displayName": "Collections",
           "path": "/help_center/collections",
+          "responseKey": "data",
           "fields": {
             "created_at": "created_at",
             "default_locale": "default_locale",
@@ -77,6 +81,7 @@
         "companies": {
           "displayName": "Companies",
           "path": "/companies",
+          "responseKey": "data",
           "fields": {
             "app_id": "app_id",
             "company_id": "company_id",
@@ -102,6 +107,7 @@
         "contacts": {
           "displayName": "Contacts",
           "path": "/contacts",
+          "responseKey": "data",
           "fields": {
             "android_app_name": "android_app_name",
             "android_app_version": "android_app_version",
@@ -154,6 +160,7 @@
         "conversations": {
           "displayName": "Conversations",
           "path": "/conversations/search",
+          "responseKey": "conversations",
           "fields": {
             "admin_assignee_id": "admin_assignee_id",
             "ai_agent": "ai_agent",
@@ -186,6 +193,7 @@
         "data_attributes": {
           "displayName": "Data Attributes",
           "path": "/data_attributes",
+          "responseKey": "data",
           "fields": {
             "admin_id": "admin_id",
             "api_writable": "api_writable",
@@ -209,6 +217,7 @@
         "events": {
           "displayName": "Data Event Summary",
           "path": "/events",
+          "responseKey": "events",
           "fields": {
             "count": "count",
             "description": "description",
@@ -220,6 +229,7 @@
         "help_centers": {
           "displayName": "Help Centers",
           "path": "/help_center/help_centers",
+          "responseKey": "data",
           "fields": {
             "created_at": "created_at",
             "display_name": "display_name",
@@ -233,6 +243,7 @@
         "news_items": {
           "displayName": "News Items",
           "path": "/news/news_items",
+          "responseKey": "data",
           "fields": {
             "body": "body",
             "cover_image_url": "cover_image_url",
@@ -254,6 +265,7 @@
         "newsfeeds": {
           "displayName": "Newsfeeds",
           "path": "/news/newsfeeds",
+          "responseKey": "data",
           "fields": {
             "body": "body",
             "cover_image_url": "cover_image_url",
@@ -275,6 +287,7 @@
         "segments": {
           "displayName": "Segments",
           "path": "/segments",
+          "responseKey": "segments",
           "fields": {
             "count": "count",
             "created_at": "created_at",
@@ -288,6 +301,7 @@
         "subscription_types": {
           "displayName": "Subscription Types",
           "path": "/subscription_types",
+          "responseKey": "data",
           "fields": {
             "consent_type": "consent_type",
             "content_types": "content_types",
@@ -301,6 +315,7 @@
         "tags": {
           "displayName": "Tags",
           "path": "/tags",
+          "responseKey": "data",
           "fields": {
             "applied_at": "applied_at",
             "applied_by": "applied_by",
@@ -312,6 +327,7 @@
         "teams": {
           "displayName": "Teams",
           "path": "/teams",
+          "responseKey": "teams",
           "fields": {
             "admin_ids": "admin_ids",
             "admin_priority_level": "admin_priority_level",
@@ -323,6 +339,7 @@
         "ticket_types": {
           "displayName": "Ticket Types",
           "path": "/ticket_types",
+          "responseKey": "ticket_types",
           "fields": {
             "archived": "archived",
             "category": "category",
@@ -340,6 +357,7 @@
         "tickets": {
           "displayName": "Tickets",
           "path": "/tickets/search",
+          "responseKey": "tickets",
           "fields": {
             "admin_assignee_id": "admin_assignee_id",
             "category": "category",

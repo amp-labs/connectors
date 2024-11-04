@@ -41,6 +41,9 @@ type Object struct {
 	// It can be used to make request to "list objects".
 	URLPath string `json:"path"`
 
+	// A field name where the object is located within provider response.
+	ResponseKey string `json:"responseKey"`
+
 	// FieldsMap is a map of field names to field display names
 	FieldsMap map[string]string `json:"fields"`
 
@@ -52,7 +55,7 @@ type Object struct {
 // NOTE: empty module id is treated as root module.
 func (r *Metadata) Add(
 	moduleID common.ModuleID,
-	objectName, objectDisplayName, fieldName, urlPath string,
+	objectName, objectDisplayName, fieldName, urlPath, responseKey string,
 	docsURL *string,
 ) {
 	moduleID = moduleIdentifier(moduleID)
@@ -64,6 +67,7 @@ func (r *Metadata) Add(
 		data = Object{
 			DisplayName: objectDisplayName,
 			URLPath:     urlPath,
+			ResponseKey: responseKey,
 			FieldsMap:   make(map[string]string),
 			DocsURL:     docsURL,
 		}
@@ -168,6 +172,16 @@ func (r *Metadata) ModuleRegistry() common.Modules {
 	}
 
 	return result
+}
+
+// LookupArrayFieldName will give you the field name which holds the array of objects in provider response.
+// Ex: CustomerSubscriptions is located under field name subscriptions => { "subscriptions": [{},{},{}] }.
+func (r *Metadata) LookupArrayFieldName(moduleID common.ModuleID, objectName string) (string, error) {
+	moduleID = moduleIdentifier(moduleID)
+
+	fieldName := r.Modules[moduleID].Objects[objectName].ResponseKey
+
+	return fieldName, nil
 }
 
 func (m *Module) withPath(path string) {

@@ -7,6 +7,7 @@
         "activities": {
           "displayName": "Activities",
           "path": "/activities",
+          "responseKey": "activities",
           "fields": {
             "customer_id": "customer_id",
             "customer_identifiers": "customer_identifiers",
@@ -21,6 +22,7 @@
         "broadcasts": {
           "displayName": "Broadcasts",
           "path": "/broadcasts",
+          "responseKey": "broadcasts",
           "fields": {
             "actions": "actions",
             "active": "active",
@@ -39,6 +41,7 @@
         "collections": {
           "displayName": "Collections",
           "path": "/collections",
+          "responseKey": "collections",
           "fields": {
             "bytes": "bytes",
             "created_at": "created_at",
@@ -52,6 +55,7 @@
         "exports": {
           "displayName": "Exports",
           "path": "/exports",
+          "responseKey": "exports",
           "fields": {
             "created_at": "created_at",
             "deduplicate_id": "deduplicate_id",
@@ -70,6 +74,7 @@
         "messages": {
           "displayName": "Messages",
           "path": "/messages",
+          "responseKey": "messages",
           "fields": {
             "action_id": "action_id",
             "broadcast_id": "broadcast_id",
@@ -95,6 +100,7 @@
         "newsletters": {
           "displayName": "Newsletters",
           "path": "/newsletters",
+          "responseKey": "newsletters",
           "fields": {
             "content_ids": "content_ids",
             "created": "created",
@@ -112,6 +118,7 @@
         "object_types": {
           "displayName": "Object Types",
           "path": "/object_types",
+          "responseKey": "types",
           "fields": {
             "enabled": "enabled",
             "icon": "icon",
@@ -125,6 +132,7 @@
         "reporting_webhooks": {
           "displayName": "Reporting Webhooks",
           "path": "/reporting_webhooks",
+          "responseKey": "reporting_webhooks",
           "fields": {
             "disabled": "disabled",
             "endpoint": "endpoint",
@@ -138,6 +146,7 @@
         "segments": {
           "displayName": "Segments",
           "path": "/segments",
+          "responseKey": "segments",
           "fields": {
             "deduplicate_id": "deduplicate_id",
             "description": "description",
@@ -152,6 +161,7 @@
         "sender_identities": {
           "displayName": "Sender Identities",
           "path": "/sender_identities",
+          "responseKey": "sender_identities",
           "fields": {
             "address": "address",
             "auto_generated": "auto_generated",
@@ -165,6 +175,7 @@
         "snippets": {
           "displayName": "Snippets",
           "path": "/snippets",
+          "responseKey": "snippets",
           "fields": {
             "name": "name",
             "updated_at": "updated_at",
@@ -174,6 +185,7 @@
         "subscription_topics": {
           "displayName": "Subscription Topics",
           "path": "/subscription_topics",
+          "responseKey": "topics",
           "fields": {
             "description": "description",
             "id": "id",
@@ -185,6 +197,7 @@
         "transactional": {
           "displayName": "Transactional",
           "path": "/transactional",
+          "responseKey": "messages",
           "fields": {
             "created_at": "created_at",
             "description": "description",
@@ -201,6 +214,7 @@
         "workspaces": {
           "displayName": "Workspaces",
           "path": "/workspaces",
+          "responseKey": "workspaces",
           "fields": {
             "billable_messages_sent": "billable_messages_sent",
             "id": "id",

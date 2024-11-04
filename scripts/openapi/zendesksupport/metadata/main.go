@@ -33,7 +33,8 @@ func main() {
 			}
 
 			for _, field := range object.Fields {
-				schemas.Add(module, object.ObjectName, object.DisplayName, field, object.URLPath, nil)
+				schemas.Add(module, object.ObjectName, object.DisplayName,
+					field, object.URLPath, object.ResponseKey, nil)
 			}
 
 			for _, queryParam := range object.QueryParams {

@@ -151,6 +151,11 @@
       "url": "https://developers.salesloft.com/docs/api/cadence-bulk-memberships-create"
     },
     {
+      "name": "cadence-export-downloads-create",
+      "displayName": "Create a cadence export download",
+      "url": "https://developers.salesloft.com/docs/api/cadence-export-downloads-create"
+    },
+    {
       "name": "cadence-exports-show",
       "displayName": "Export a cadence",
       "url": "https://developers.salesloft.com/docs/api/cadence-exports-show"
@@ -269,6 +274,11 @@
       "name": "conversations-transcriptions-find-one-transcript-sentences",
       "displayName": "Fetch a Transcription's sentences",
       "url": "https://developers.salesloft.com/docs/api/conversations-transcriptions-find-one-transcript-sentences"
+    },
+    {
+      "name": "crm-account-team-members-index",
+      "displayName": "List CRM Account Team Members",
+      "url": "https://developers.salesloft.com/docs/api/crm-account-team-members-index"
     },
     {
       "name": "crm-activities-index",
@@ -586,6 +596,56 @@
       "url": "https://developers.salesloft.com/docs/api/ongoing-actions-create"
     },
     {
+      "name": "opportunities-index",
+      "displayName": "List opportunities",
+      "url": "https://developers.salesloft.com/docs/api/opportunities-index"
+    },
+    {
+      "name": "opportunities-show",
+      "displayName": "Fetch an Opportunity",
+      "url": "https://developers.salesloft.com/docs/api/opportunities-show"
+    },
+    {
+      "name": "opportunity-people-create",
+      "displayName": "Create a Sales Opportunity Person",
+      "url": "https://developers.salesloft.com/docs/api/opportunity-people-create"
+    },
+    {
+      "name": "opportunity-people-destroy",
+      "displayName": "Delete a Opportunity Association",
+      "url": "https://developers.salesloft.com/docs/api/opportunity-people-destroy"
+    },
+    {
+      "name": "opportunity-people-index",
+      "displayName": "List opportunity/person associations",
+      "url": "https://developers.salesloft.com/docs/api/opportunity-people-index"
+    },
+    {
+      "name": "opportunity-stages-create",
+      "displayName": "Create an Opportunity Stage",
+      "url": "https://developers.salesloft.com/docs/api/opportunity-stages-create"
+    },
+    {
+      "name": "opportunity-stages-destroy",
+      "displayName": "Delete an Opportunity Stage",
+      "url": "https://developers.salesloft.com/docs/api/opportunity-stages-destroy"
+    },
+    {
+      "name": "opportunity-stages-index",
+      "displayName": "List Opportunity Stages",
+      "url": "https://developers.salesloft.com/docs/api/opportunity-stages-index"
+    },
+    {
+      "name": "opportunity-stages-show",
+      "displayName": "Fetch an Opportunity Stage",
+      "url": "https://developers.salesloft.com/docs/api/opportunity-stages-show"
+    },
+    {
+      "name": "opportunity-stages-update",
+      "displayName": "Update an Opportunity Stage",
+      "url": "https://developers.salesloft.com/docs/api/opportunity-stages-update"
+    },
+    {
       "name": "pending-emails-index",
       "displayName": "List pending emails",
       "url": "https://developers.salesloft.com/docs/api/pending-emails-index"
@@ -669,6 +729,11 @@
       "name": "phone-numbers-recording-settings-show",
       "displayName": "Fetch recording setting",
       "url": "https://developers.salesloft.com/docs/api/phone-numbers-recording-settings-show"
+    },
+    {
+      "name": "profiles-index",
+      "displayName": "Fetch current user's profile",
+      "url": "https://developers.salesloft.com/docs/api/profiles-index"
     },
     {
       "name": "saved-list-views-create",
