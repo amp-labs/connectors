@@ -138,7 +138,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.WriteConnector, error) {
-				return constructTestConnector(tt.Server.URL)
+				return constructTestConnector(tt.Server.URL, ModuleTicketing)
 			})
 		})
 	}
