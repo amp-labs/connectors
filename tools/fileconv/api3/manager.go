@@ -6,6 +6,7 @@ import (
 
 // OpenapiFileManager locates openapi file.
 // Allows to read data of interest.
+// Use it when dealing with OpenAPI v3.
 type OpenapiFileManager struct {
 	file []byte
 }
@@ -24,10 +25,5 @@ func (m OpenapiFileManager) GetExplorer(opts ...Option) (*Explorer, error) {
 		return nil, err
 	}
 
-	return &Explorer{
-		schema: &Document{
-			delegate: data,
-		},
-		parameters: createParams(opts),
-	}, nil
+	return NewExplorer(data, opts...), nil
 }
