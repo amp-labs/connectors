@@ -11,7 +11,6 @@ import (
 
 /*
 Read Response Schema:
-Read Response Schema:
 {
     "has_more": false,
     "total_results": 1,
