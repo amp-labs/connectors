@@ -9,8 +9,8 @@ import (
 )
 
 var (
-	perPage          = "per_page" //gochecknoglobals
-	metadataPageSize = "1"        //gochecknoglobals
+	perPage          = "per_page" // nolint:gochecknoglobals
+	metadataPageSize = "1"        // nolint:gochecknoglobals
 )
 
 // ListObjectMetadata creates metadata of object via reading objects using Kit API.
