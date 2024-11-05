@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common/handy"
+	"github.com/getkin/kin-openapi/openapi3"
 )
 
 // Explorer allows to traverse schema in most common ways
@@ -13,6 +14,17 @@ import (
 type Explorer struct {
 	schema *Document
 	*parameters
+}
+
+// NewExplorer creates explorer on openAPI v3 file.
+// See Option to discover how explorer can be customized.
+func NewExplorer(data *openapi3.T, opts ...Option) *Explorer {
+	return &Explorer{
+		schema: &Document{
+			delegate: data,
+		},
+		parameters: createParams(opts),
+	}
 }
 
 // ReadObjectsGet is the same as ReadObjectsGet but retrieves schemas for endpoints that perform reading via GET.

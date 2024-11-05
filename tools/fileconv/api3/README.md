@@ -1,18 +1,32 @@
 # Package api3
 
 ## Purpose
-This package extracts schemas metadata from OpenAPI files.
+This package extracts schemas metadata from OpenAPI files version 3.
+If your OpenAPI file is using older version 2 check out `api2` package.
 
 ## Description
 Some connectors cannot serve metadata via APIs and do this via static files.
 Those files are a processed version of OpenAPI spec. 
+
+## Loading File
+
+```go
+var (
+    // Static file containing openapi spec.
+    //
+    //go:embed specs.json
+    apiFile []byte
+
+	FileManager = api3.NewOpenapiFileManager(apiFile) // nolint:gochecknoglobals
+)
+```
 
 ## Usage
 Scripts that use this package are located under `scripts/openapi/<connector_name>/main.go`.
 
 ```go
 // Pseudo code, omitting err.
-schemas = api3.NewOpenapiFileManager(openapiBytesDataFile).GetExplorer().GetBasicReadObjects(
+schemas = yourconnector.FileManager.GetExplorer().GetBasicReadObjects(
     ignoreEndpoints,
     objectEndpoints,
     displayNameOverride,
