@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"os"
 	"os/signal"
 	"strconv"
@@ -58,8 +57,6 @@ func main() {
 	if err != nil {
 		utils.Fail("error writing to hubspot", "error", err)
 	}
-
-	fmt.Println(writeresult.RecordId)
 
 	propMsg := hubspot.WebhookMessage{}
 
