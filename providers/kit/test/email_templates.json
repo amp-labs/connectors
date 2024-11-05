@@ -1,0 +1,16 @@
+{
+    "pagination": {
+      "has_previous_page": false,
+      "has_next_page": false,
+      "start_cursor": "Wzld",
+      "end_cursor": "WzFd",
+      "per_page": 500
+    },
+    "email_templates": [
+      {
+        "id": 9,
+        "name": "Custom HTML Template",
+        "is_default": false,
+        "category": "HTML"
+      }]
+}
