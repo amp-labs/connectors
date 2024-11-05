@@ -7,7 +7,7 @@ func init() {
 	SetInfo(Close, ProviderInfo{
 		DisplayName: "Close",
 		AuthType:    Oauth2,
-		BaseURL:     "https://api.close.com/api",
+		BaseURL:     "https://api.close.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://app.close.com/oauth2/authorize",
