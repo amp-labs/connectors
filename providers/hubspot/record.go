@@ -7,6 +7,7 @@ import (
 	"path"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/naming"
 )
 
 /*
@@ -20,24 +21,25 @@ import (
 */
 
 //nolint:gochecknoglobals
-var getRecordSupportedObjectsToPathMap = map[string]string{
-	"company":   "companies",
-	"contact":   "contacts",
-	"deal":      "deals",
-	"ticket":    "tickets",
-	"line_item": "line_items",
-	"product":   "products",
+var getRecordSupportedObjectsToPathMap = map[string]bool{
+	"company":   true,
+	"contact":   true,
+	"deal":      true,
+	"ticket":    true,
+	"line_item": true,
+	"product":   true,
 }
 
-var ErrUnsupportedObject = errors.New("unsupported object")
+var errGerRecordNotSupportedForObject = errors.New("getRecord is not supproted for the object")
 
 func (c *Connector) GetRecord(ctx context.Context, objectName string, recordId string) (*common.ReadResultRow, error) {
-	objectNameInPath, ok := getRecordSupportedObjectsToPathMap[objectName]
-	if !ok {
-		return nil, fmt.Errorf("%w: %s", ErrUnsupportedObject, objectName)
+	_, supported := getRecordSupportedObjectsToPathMap[objectName]
+	if !supported {
+		return nil, fmt.Errorf("%w %s", errGerRecordNotSupportedForObject, objectName)
 	}
 
-	relativePath := path.Join("/objects", objectNameInPath, recordId)
+	pluralObjectName := naming.NewPluralString(objectName).String()
+	relativePath := path.Join("/objects", pluralObjectName, recordId)
 
 	resp, err := c.Client.Get(ctx, c.getURL(relativePath))
 	if err != nil {

@@ -42,7 +42,7 @@ func main() {
 	defer utils.Close(conn)
 
 	// Write an artificial contact to Hubspot.
-	writeresult, err := conn.Write(ctx, common.WriteParams{
+	writeResult, err := conn.Write(ctx, common.WriteParams{
 		ObjectName: "contacts",
 		RecordId:   "",
 		RecordData: map[string]any{
@@ -64,7 +64,7 @@ func main() {
 		utils.Fail("error unmarshalling property change message", "error", err)
 	}
 
-	recordId, err := strconv.Atoi(writeresult.RecordId)
+	recordId, err := strconv.Atoi(writeResult.RecordId)
 	if err != nil {
 		utils.Fail("error converting record id to int", "error", err)
 	}
