@@ -154,16 +154,19 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.ReadConnector, error) {
-				return constructTestConnector(tt.Server.URL)
+				return constructTestConnector(tt.Server.URL, ModuleTicketing)
 			})
 		})
 	}
 }
 
-func constructTestConnector(serverURL string) (*Connector, error) {
+func constructTestConnector(
+	serverURL string, moduleID common.ModuleID, // nolint:unparam
+) (*Connector, error) {
 	connector, err := NewConnector(
 		WithAuthenticatedClient(http.DefaultClient),
 		WithWorkspace("test-workspace"),
+		WithModule(moduleID),
 	)
 	if err != nil {
 		return nil, err
