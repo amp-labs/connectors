@@ -3,6 +3,8 @@ package interpreter
 import (
 	"errors"
 	"testing"
+
+	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
 func TestFormatSwitchParseJSON(t *testing.T) { //nolint:funlen
@@ -12,13 +14,13 @@ func TestFormatSwitchParseJSON(t *testing.T) { //nolint:funlen
 		name     string
 		selector *FormatSwitch
 		input    string
-		expected error
+		expected []error
 	}{
 		{
 			name:     "Missing templates produces unknown format",
 			selector: NewFormatSwitch(),
 			input:    ``,
-			expected: ErrUnknownResponseFormat,
+			expected: []error{ErrUnknownResponseFormat},
 		},
 		{
 			name: "Successful single template",
@@ -27,7 +29,7 @@ func TestFormatSwitchParseJSON(t *testing.T) { //nolint:funlen
 				Template: func() ErrorDescriptor { return &sampleTestFormatStatus{} },
 			}),
 			input:    `{"status": "bad request"}`,
-			expected: errTestResStatus,
+			expected: []error{errTestResStatus},
 		},
 		{
 			name: "Format order matters",
@@ -39,7 +41,7 @@ func TestFormatSwitchParseJSON(t *testing.T) { //nolint:funlen
 				Template: func() ErrorDescriptor { return &sampleTestFormatStatus{} },
 			}),
 			input:    `{"status": "bad request", "code": "251"}`,
-			expected: errTestResCode,
+			expected: []error{errTestResCode},
 		},
 		{
 			name: "All keys must match for template to be selected",
@@ -54,7 +56,7 @@ func TestFormatSwitchParseJSON(t *testing.T) { //nolint:funlen
 				Template: func() ErrorDescriptor { return &sampleTestFormatDescription{} },
 			}),
 			input:    `{"status": "bad request", "description": "missing required field", "code": "251"}`,
-			expected: errTestResDescription,
+			expected: []error{errTestResDescription},
 		},
 		{
 			name: "No match defaults to unknown format conclusion",
@@ -69,7 +71,27 @@ func TestFormatSwitchParseJSON(t *testing.T) { //nolint:funlen
 				Template: func() ErrorDescriptor { return &sampleTestFormatDescription{} },
 			}),
 			input:    `{}`,
-			expected: ErrUnknownResponseFormat,
+			expected: []error{ErrUnknownResponseFormat},
+		},
+		{
+			name: "Multiple objects are mapped to respective formats",
+			selector: NewFormatSwitch(FormatTemplate{
+				MustKeys: []string{"code"},
+				Template: func() ErrorDescriptor { return &sampleTestFormatCode{} },
+			}, FormatTemplate{
+				MustKeys: []string{"status"},
+				Template: func() ErrorDescriptor { return &sampleTestFormatStatus{} },
+			}),
+			input: `[
+				{"status": "bad request", "code": "251"},
+				{"random": "truly unknown format"},
+				{"status": "bad request"}
+			]`,
+			expected: []error{ // order doesn't matter, check each exists
+				errTestResCode,
+				ErrUnknownResponseFormat,
+				errTestResStatus,
+			},
 		},
 	}
 
@@ -83,13 +105,7 @@ func TestFormatSwitchParseJSON(t *testing.T) { //nolint:funlen
 
 			output := descriptor.CombineErr(errors.New("base-from-test")) // nolint:goerr113
 
-			if tt.expected == nil {
-				t.Fatalf("%s test is missing output expectation", tt.name)
-			}
-
-			if !errors.Is(output, tt.expected) {
-				t.Fatalf("%s: expected: (%v), got: (%v)", tt.name, tt.expected, output)
-			}
+			testutils.CheckErrors(t, tt.name, tt.expected, output)
 		})
 	}
 }
