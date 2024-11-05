@@ -40,7 +40,7 @@ func main() {
 
 	objects, err := explorer.ReadObjectsGet(
 		api3.NewDenyPathStrategy(ignoreEndpoints),
-		nil, displayNameOverride, api3.DataObjectCheck,
+		nil, displayNameOverride, api3.DataObjectLocator,
 	)
 	must(err)
 
