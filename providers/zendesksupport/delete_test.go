@@ -47,8 +47,11 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			Input: common.DeleteParams{ObjectName: "brands", RecordId: "31207417638931"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.MethodDELETE(),
-				Then:  mockserver.Response(http.StatusNoContent),
+				If: mockcond.And{
+					mockcond.PathSuffix("/v2/brands/31207417638931"),
+					mockcond.MethodDELETE(),
+				},
+				Then: mockserver.Response(http.StatusNoContent),
 			}.Server(),
 			Expected:     &common.DeleteResult{Success: true},
 			ExpectedErrs: nil,
