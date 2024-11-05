@@ -21,7 +21,7 @@ import (
 */
 
 //nolint:gochecknoglobals
-var getRecordSupportedObjectsToPathMap = map[string]bool{
+var getRecordSupportedObjects = map[string]bool{
 	"company":   true,
 	"contact":   true,
 	"deal":      true,
@@ -33,7 +33,7 @@ var getRecordSupportedObjectsToPathMap = map[string]bool{
 var errGerRecordNotSupportedForObject = errors.New("getRecord is not supproted for the object")
 
 func (c *Connector) GetRecord(ctx context.Context, objectName string, recordId string) (*common.ReadResultRow, error) {
-	_, supported := getRecordSupportedObjectsToPathMap[objectName]
+	_, supported := getRecordSupportedObjects[objectName]
 	if !supported {
 		return nil, fmt.Errorf("%w %s", errGerRecordNotSupportedForObject, objectName)
 	}
