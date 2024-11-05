@@ -1,8 +1,6 @@
 package zendesksupport
 
 import (
-	"strings"
-
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
@@ -65,10 +63,6 @@ func (c *Connector) getURL(objectName string) (*urlbuilder.URL, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	// TODO BaseURL should be modified to remove /api prefix.
-	// These changes could be breaking, therefore a temporary in code hack
-	path, _ = strings.CutPrefix(path, "/api")
 
 	return urlbuilder.New(c.BaseURL, path)
 }
