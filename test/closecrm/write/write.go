@@ -36,7 +36,6 @@ func main() {
 	if err := createContact(ctx, conn); err != nil {
 		slog.Error(err.Error())
 	}
-
 }
 
 func createLead(ctx context.Context, conn connectors.WriteConnector) error {

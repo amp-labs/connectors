@@ -10,7 +10,7 @@ func init() { // nolint:funlen
 	SetInfo(ZendeskSupport, ProviderInfo{
 		DisplayName: "Zendesk Support",
 		AuthType:    Oauth2,
-		BaseURL:     "https://{{.workspace}}.zendesk.com",
+		BaseURL:     "https://{{.workspace}}.zendesk.com/api",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://{{.workspace}}.zendesk.com/oauth/authorizations/new",
