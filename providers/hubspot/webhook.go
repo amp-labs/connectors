@@ -23,8 +23,8 @@ type WebhookMessage struct {
 }
 
 type WebhookResult struct {
-	WebhookMessage *WebhookMessage    `json:"webhookMessage"`
-	Record         *common.ReadResult `json:"record"`
+	WebhookMessage *WebhookMessage       `json:"webhookMessage"`
+	Record         *common.ReadResultRow `json:"record"`
 }
 
 func (c *Connector) GetWebhookResultFromWebhookMessage(
@@ -35,13 +35,13 @@ func (c *Connector) GetWebhookResultFromWebhookMessage(
 	recordId := strconv.Itoa(msg.ObjectId)
 
 	// Since the webhook message doesn't contain the record data, we need to fetch it.
-	recordResult, err := c.GetRecord(ctx, objectName, recordId)
+	recordResultRow, err := c.GetRecord(ctx, objectName, recordId)
 	if err != nil {
 		return nil, err
 	}
 
 	return &WebhookResult{
 		WebhookMessage: msg,
-		Record:         recordResult,
+		Record:         recordResultRow,
 	}, nil
 }

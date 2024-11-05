@@ -31,7 +31,7 @@ var getRecordSupportedObjectsToPathMap = map[string]string{
 
 var ErrUnsupportedObject = errors.New("unsupported object")
 
-func (c *Connector) GetRecord(ctx context.Context, objectName string, recordId string) (*common.ReadResult, error) {
+func (c *Connector) GetRecord(ctx context.Context, objectName string, recordId string) (*common.ReadResultRow, error) {
 	objectNameInPath, ok := getRecordSupportedObjectsToPathMap[objectName]
 	if !ok {
 		return nil, fmt.Errorf("%w: %s", ErrUnsupportedObject, objectName)
@@ -49,10 +49,7 @@ func (c *Connector) GetRecord(ctx context.Context, objectName string, recordId s
 		return nil, fmt.Errorf("error parsing record: %w", err)
 	}
 
-	return &common.ReadResult{
-		Rows: 1,
-		Data: []common.ReadResultRow{
-			{Raw: *record},
-		},
+	return &common.ReadResultRow{
+		Raw: *record,
 	}, nil
 }
