@@ -1,4 +1,4 @@
-package handy
+package datautils
 
 // IndexedLists is a dynamic list of identifiable slices.
 // Each slice is associated to the unique comparable object.

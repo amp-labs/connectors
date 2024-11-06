@@ -1,6 +1,6 @@
 package attio
 
-import "github.com/amp-labs/connectors/common/handy"
+import "github.com/amp-labs/connectors/internal/datautils"
 
 const (
 	objectNameObjects          = "objects"
@@ -11,7 +11,7 @@ const (
 	objectNameNotes            = "notes"
 )
 
-var supportedObjectsByRead = handy.NewSet( //nolint:gochecknoglobals
+var supportedObjectsByRead = datautils.NewSet( //nolint:gochecknoglobals
 	objectNameObjects,
 	objectNameLists,
 	objectNameWorkspacemembers,
@@ -20,7 +20,7 @@ var supportedObjectsByRead = handy.NewSet( //nolint:gochecknoglobals
 	objectNameNotes,
 )
 
-var supportedObjectsByWrite = handy.NewSet( //nolint:gochecknoglobals
+var supportedObjectsByWrite = datautils.NewSet( //nolint:gochecknoglobals
 	objectNameObjects,
 	objectNameLists,
 	objectNameTasks,
@@ -28,7 +28,7 @@ var supportedObjectsByWrite = handy.NewSet( //nolint:gochecknoglobals
 	objectNameWebhooks,
 )
 
-var supportLimitAndOffset = handy.NewSet( //nolint:gochecknoglobals
+var supportLimitAndOffset = datautils.NewSet( //nolint:gochecknoglobals
 	objectNameTasks,
 	objectNameNotes,
 	objectNameWebhooks,

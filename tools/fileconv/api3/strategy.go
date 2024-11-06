@@ -3,7 +3,7 @@ package api3
 import (
 	"strings"
 
-	"github.com/amp-labs/connectors/common/handy"
+	"github.com/amp-labs/connectors/internal/datautils"
 )
 
 // NewAllowPathStrategy produces a path matching strategy that will accept only those paths that matched the list.
@@ -44,7 +44,7 @@ type PathMatcher interface {
 //   - prefix matching,
 //   - suffix matching.
 type StarRulePathResolver struct {
-	endpoints            handy.StringSet
+	endpoints            datautils.StringSet
 	prefixes             []string
 	suffixes             []string
 	pathMatchingCallback func(hasMatched bool) bool
@@ -55,7 +55,7 @@ func newStarRulePathResolver(
 	pathMatchingCallback func(matched bool) bool,
 ) *StarRulePathResolver {
 	result := &StarRulePathResolver{
-		endpoints:            handy.NewStringSet(),
+		endpoints:            datautils.NewStringSet(),
 		prefixes:             make([]string, 0),
 		suffixes:             make([]string, 0),
 		pathMatchingCallback: pathMatchingCallback,

@@ -3,7 +3,8 @@ package main
 import (
 	"log/slog"
 
-	"github.com/amp-labs/connectors/common/handy"
+	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers/gong/metadata"
 	"github.com/amp-labs/connectors/providers/gong/openapi"
@@ -16,7 +17,7 @@ var (
 	// Even though OpenAPI docs and official documentation say that some query parameters are required
 	// in practice you still can make an API call without any specified.
 	// Must include "calls" object.
-	queryParamFilterExceptions = handy.NewSet("calls") // nolint:gochecknoglobals
+	queryParamFilterExceptions = datautils.NewSet("calls") // nolint:gochecknoglobals
 
 	ignoreEndpoints = []string{ // nolint:gochecknoglobals
 		"/v2/settings/scorecards",
@@ -60,16 +61,16 @@ func main() {
 				api3.OnlyOptionalQueryParameters(objectName, operation)
 		}),
 	)
-	must(err)
+	goutils.MustBeNil(err)
 
 	objects, err := explorer.ReadObjectsGet(
 		api3.NewDenyPathStrategy(ignoreEndpoints),
 		nil, nil, api3.IdenticalObjectLocator,
 	)
-	must(err)
+	goutils.MustBeNil(err)
 
 	schemas := staticschema.NewMetadata()
-	registry := handy.NamedLists[string]{}
+	registry := datautils.NamedLists[string]{}
 
 	for _, object := range objects {
 		if object.Problem != nil {
@@ -88,14 +89,8 @@ func main() {
 		}
 	}
 
-	must(metadata.FileManager.SaveSchemas(schemas))
-	must(metadata.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
+	goutils.MustBeNil(metadata.FileManager.SaveSchemas(schemas))
+	goutils.MustBeNil(metadata.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
 
 	slog.Info("Completed.")
-}
-
-func must(err error) {
-	if err != nil {
-		panic(err)
-	}
 }

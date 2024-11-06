@@ -8,7 +8,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/handy"
+	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/providers/dynamicscrm"
 	connTest "github.com/amp-labs/connectors/test/dynamicscrm"
 	"github.com/amp-labs/connectors/test/utils"
@@ -61,8 +61,8 @@ func main() {
 	leadID := fmt.Sprintf("%v", lead["leadid"])
 	fmt.Println("Updating some lead properties")
 	updateLead(ctx, conn, leadID, &LeadUploadPayload{
-		LastName:  handy.Pointers.Str(""),
-		FirstName: handy.Pointers.Str("Squidward"),
+		LastName:  goutils.Pointer(""),
+		FirstName: goutils.Pointer("Squidward"),
 	})
 	fmt.Println("View that lead has changed accordingly")
 

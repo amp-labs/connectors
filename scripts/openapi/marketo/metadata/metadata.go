@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/handy"
+	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers/marketo/metadata"
 	"github.com/getkin/kin-openapi/openapi2"
@@ -25,12 +25,12 @@ func main() {
 	// 5 represents the amount of substrings that will be generated
 	// when path of interest is split using `/`
 	def, docA, err := constructDefinitions(assets, 5) //nolint:gomnd
-	handy.Must(err)
+	goutils.MustBeNil(err)
 
 	// 4 represents the amount of substrings that will be generated
 	// when path of interest is split using `/`
 	ldef, docL, err := constructDefinitions(leads, 4) //nolint:gomnd
-	handy.Must(err)
+	goutils.MustBeNil(err)
 
 	// Initializes an empty ObjectMetadata variable
 	objectMetadata := make(map[string]staticschema.Object)
@@ -41,7 +41,7 @@ func main() {
 	// Adds Assets Metadata details to the same variable declared above.
 	objectMetadata = generateMetadata(def, docA, objectMetadata)
 
-	handy.Must(metadata.FileManager.SaveSchemas(&staticschema.Metadata{
+	goutils.MustBeNil(metadata.FileManager.SaveSchemas(&staticschema.Metadata{
 		Modules: map[common.ModuleID]staticschema.Module{
 			staticschema.RootModuleID: {
 				Objects: objectMetadata,

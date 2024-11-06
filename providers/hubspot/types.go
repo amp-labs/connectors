@@ -2,7 +2,7 @@ package hubspot
 
 import (
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/handy"
+	"github.com/amp-labs/connectors/internal/datautils"
 )
 
 type SearchParams struct {
@@ -15,7 +15,7 @@ type SearchParams struct {
 	// FilterBy is the filter to apply to the search
 	FilterGroups []FilterGroup // optional
 	// Fields is the list of fields to return in the result.
-	Fields handy.Set[string] // optional
+	Fields datautils.Set[string] // optional
 }
 
 func (p SearchParams) ValidateParams() error {

@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/amp-labs/connectors/common/handy"
 	"github.com/amp-labs/connectors/common/scanning"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -65,7 +65,7 @@ func createProviderCreds(
 	}
 
 	registry := scanning.NewRegistry()
-	readers := handy.NamedLists[scanning.Reader]{}
+	readers := datautils.NamedLists[scanning.Reader]{}
 
 	// add readers for every field
 	for kind, fieldList := range fields {
@@ -95,7 +95,7 @@ func selectReader(field Field, filePath string, providerName string) scanning.Re
 	return field.GetENVReader(providerName)
 }
 
-func (r ProviderCredentials) loadValues(readers handy.NamedLists[scanning.Reader]) error {
+func (r ProviderCredentials) loadValues(readers datautils.NamedLists[scanning.Reader]) error {
 	// validate JSON file or ENV has all Required variables
 	missingKeys := make([]string, 0)
 
