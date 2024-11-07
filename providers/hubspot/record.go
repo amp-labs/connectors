@@ -8,6 +8,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/internal/datautils"
 )
 
 /*
@@ -21,20 +22,16 @@ import (
 */
 
 //nolint:gochecknoglobals
-var getRecordSupportedObjects = map[string]bool{
-	"company":   true,
-	"contact":   true,
-	"deal":      true,
-	"ticket":    true,
-	"line_item": true,
-	"product":   true,
-}
+var (
+	getRecordSupportedObjectsSet = datautils.NewStringSet(
+		"company", "contact", "deal", "ticket", "line_item", "product",
+	)
 
-var errGerRecordNotSupportedForObject = errors.New("getRecord is not supproted for the object")
+	errGerRecordNotSupportedForObject = errors.New("getRecord is not supproted for the object")
+)
 
 func (c *Connector) GetRecord(ctx context.Context, objectName string, recordId string) (*common.ReadResultRow, error) {
-	_, supported := getRecordSupportedObjects[objectName]
-	if !supported {
+	if !getRecordSupportedObjectsSet.Has(objectName) {
 		return nil, fmt.Errorf("%w %s", errGerRecordNotSupportedForObject, objectName)
 	}
 
