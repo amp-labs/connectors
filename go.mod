@@ -11,11 +11,12 @@ require (
 	github.com/go-playground/validator v9.31.0+incompatible
 	github.com/go-test/deep v1.1.1
 	github.com/iancoleman/strcase v0.3.0
+	github.com/invopop/yaml v0.3.1
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/viper v1.19.0
 	github.com/spyzhov/ajson v0.9.5
 	github.com/stretchr/testify v1.9.0
-	golang.org/x/oauth2 v0.23.0
+	golang.org/x/oauth2 v0.24.0
 	golang.org/x/text v0.19.0
 )
 
@@ -31,7 +32,6 @@ require (
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
-	github.com/invopop/yaml v0.3.1 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
