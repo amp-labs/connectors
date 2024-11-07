@@ -36,7 +36,6 @@ func main() {
 	if err := readLeads(ctx, conn); err != nil {
 		slog.Error(err.Error())
 	}
-
 }
 
 func readContacts(ctx context.Context, conn connectors.ReadConnector) error {
