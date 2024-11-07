@@ -71,7 +71,7 @@ func main() {
 
 	propMsg.ObjectId = recordId
 
-	recordResult, err := conn.GetWebhookResultFromWebhookMessage(ctx, &propMsg)
+	recordResult, err := conn.GetRecordFromWebhookMessage(ctx, &propMsg)
 	if err != nil {
 		utils.Fail("error getting record from webhook message", "error", err)
 	}

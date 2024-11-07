@@ -22,26 +22,13 @@ type WebhookMessage struct {
 	PropertyValue    string `json:"propertyValue"`
 }
 
-type WebhookResult struct {
-	WebhookMessage *WebhookMessage       `json:"webhookMessage"`
-	Record         *common.ReadResultRow `json:"record"`
-}
-
-func (c *Connector) GetWebhookResultFromWebhookMessage(
+func (c *Connector) GetRecordFromWebhookMessage(
 	ctx context.Context, msg *WebhookMessage,
-) (*WebhookResult, error) {
+) (*common.ReadResultRow, error) {
 	// Transform the webhook message into a ReadResult.
 	objectName := strings.Split(msg.SubscriptionType, ".")[0]
 	recordId := strconv.Itoa(msg.ObjectId)
 
 	// Since the webhook message doesn't contain the record data, we need to fetch it.
-	recordResultRow, err := c.GetRecord(ctx, objectName, recordId)
-	if err != nil {
-		return nil, err
-	}
-
-	return &WebhookResult{
-		WebhookMessage: msg,
-		Record:         recordResultRow,
-	}, nil
+	return c.GetRecord(ctx, objectName, recordId)
 }
