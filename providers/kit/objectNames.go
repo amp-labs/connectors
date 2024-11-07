@@ -1,6 +1,6 @@
 package kit
 
-import "github.com/amp-labs/connectors/common/handy"
+import "github.com/amp-labs/connectors/internal/datautils"
 
 const (
 	objectNameBroadcasts     = "broadcasts"
@@ -15,7 +15,7 @@ const (
 	objectNameWebhooks       = "webhooks"
 )
 
-var supportedObjectsByRead = handy.NewSet( //nolint:gochecknoglobals
+var supportedObjectsByRead = datautils.NewSet( //nolint:gochecknoglobals
 	objectNameCustomfields,
 	objectNameEmailtemplates,
 	objectNameTags,
