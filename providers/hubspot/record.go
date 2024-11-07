@@ -11,6 +11,15 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
+//nolint:gochecknoglobals
+var (
+	getRecordSupportedObjectsSet = datautils.NewStringSet(
+		"company", "contact", "deal", "ticket", "line_item", "product",
+	)
+
+	errGerRecordNotSupportedForObject = errors.New("getRecord is not supproted for the object")
+)
+
 /*
    docs:
    https://developers.hubspot.com/beta-docs/reference/api/crm/objects/companies
@@ -21,15 +30,7 @@ import (
    https://developers.hubspot.com/beta-docs/reference/api/crm/objects/products
 */
 
-//nolint:gochecknoglobals
-var (
-	getRecordSupportedObjectsSet = datautils.NewStringSet(
-		"company", "contact", "deal", "ticket", "line_item", "product",
-	)
-
-	errGerRecordNotSupportedForObject = errors.New("getRecord is not supproted for the object")
-)
-
+// GetRecord returns a record from the object with the given ID and object name.
 func (c *Connector) GetRecord(ctx context.Context, objectName string, recordId string) (*common.ReadResultRow, error) {
 	if !getRecordSupportedObjectsSet.Has(objectName) {
 		return nil, fmt.Errorf("%w %s", errGerRecordNotSupportedForObject, objectName)

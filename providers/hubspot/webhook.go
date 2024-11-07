@@ -22,6 +22,7 @@ type WebhookMessage struct {
 	PropertyValue    string `json:"propertyValue"`
 }
 
+// GetRecordFromWebhookMessage fetches a record from the Hubspot API using the data from a webhook message.
 func (c *Connector) GetRecordFromWebhookMessage(
 	ctx context.Context, msg *WebhookMessage,
 ) (*common.ReadResultRow, error) {
