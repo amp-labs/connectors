@@ -1,7 +1,7 @@
 package helpcenter
 
 import (
-	"github.com/amp-labs/connectors/common/handy"
+	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/providers/zendesksupport"
 	"github.com/amp-labs/connectors/providers/zendesksupport/openapi"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
@@ -26,14 +26,14 @@ func Objects() []api3.Schema {
 			api3.CapitalizeFirstLetterEveryWord,
 		),
 	)
-	handy.Must(err)
+	goutils.MustBeNil(err)
 
 	objects, err := explorer.ReadObjectsGet(
 		api3.NewDenyPathStrategy(ignoreEndpoints),
 		objectEndpoints, nil,
 		api3.CustomMappingObjectCheck(zendesksupport.ObjectNameToResponseField[zendesksupport.ModuleHelpCenter]),
 	)
-	handy.Must(err)
+	goutils.MustBeNil(err)
 
 	return objects
 }

@@ -2,7 +2,7 @@ package paramsbuilder
 
 import (
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/handy"
+	"github.com/amp-labs/connectors/internal/datautils"
 )
 
 // Module represents a sub-product of a provider.
@@ -32,7 +32,7 @@ func (p *Module) ValidateParams() error {
 // This defines a list of module a user could switch to. Any out of scope module will be ignored.
 // If user supplied unsupported module, then it will use this fallback.
 func (p *Module) WithModule(moduleID common.ModuleID, supported common.Modules, fallbackID common.ModuleID) {
-	modules := handy.NewDefaultMap(supported,
+	modules := datautils.NewDefaultMap(supported,
 		func(unknownID common.ModuleID) common.Module {
 			// Unknown module ids will receive a fallback module.
 			return supported[fallbackID]

@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/amp-labs/connectors/common/handy"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/getkin/kin-openapi/openapi3"
 )
 
@@ -45,7 +45,7 @@ type Schema struct {
 type Schemas []Schema
 
 func (s Schemas) Combine(others Schemas) Schemas {
-	registry := handy.Map[string, Schema]{}
+	registry := datautils.Map[string, Schema]{}
 	for _, schema := range append(s, others...) {
 		_, found := registry[schema.ObjectName]
 
@@ -171,7 +171,7 @@ func extractFieldsFromArrayHolder(
 		}
 	}
 
-	if handy.Pointers.IsTrue(schema.AdditionalProperties.Has) {
+	if isBooleanTruthful(schema.AdditionalProperties.Has) {
 		// this schema is dynamic.
 		// the fields cannot be known.
 		return []string{}, nil
@@ -254,7 +254,7 @@ func extractSchema(operation *openapi3.Operation) *openapi3.Schema {
 }
 
 func extractFields(source *openapi3.Schema) ([]string, error) {
-	combined := make(handy.Set[string])
+	combined := make(datautils.Set[string])
 
 	if source.AnyOf != nil {
 		// this object can be represented by various definitions
@@ -339,4 +339,12 @@ func getSchemaType(schema *openapi3.Schema) definitionSchemaType {
 
 func createUnprocessableObjectError(objectName string) error {
 	return fmt.Errorf("%w: object %v", ErrUnprocessableObject, objectName)
+}
+
+func isBooleanTruthful(input *bool) bool {
+	if input == nil {
+		return false
+	}
+
+	return *input
 }

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/amp-labs/connectors/common/handy"
 	"github.com/amp-labs/connectors/common/scanning"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/iancoleman/strcase"
 )
@@ -123,8 +123,8 @@ func (f Field) GetENVReader(providerName string) *scanning.EnvReader {
 
 func getFields(info providers.ProviderInfo,
 	withRequiredAccessToken, withRequiredWorkspace bool,
-) (handy.NamedLists[Field], error) {
-	lists := handy.NamedLists[Field]{}
+) (datautils.NamedLists[Field], error) {
+	lists := datautils.NamedLists[Field]{}
 	requiredType := "required"
 	optionalType := "optional"
 

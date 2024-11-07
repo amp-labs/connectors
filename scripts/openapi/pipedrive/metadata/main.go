@@ -4,7 +4,7 @@ import (
 	"log"
 	"log/slog"
 
-	"github.com/amp-labs/connectors/common/handy"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers/pipedrive/metadata"
 	"github.com/amp-labs/connectors/providers/pipedrive/openapi"
@@ -76,7 +76,7 @@ func main() {
 	}
 
 	schemas := staticschema.NewMetadata()
-	registry := handy.NamedLists[string]{}
+	registry := datautils.NamedLists[string]{}
 
 	for _, object := range objects {
 		if object.Problem != nil {

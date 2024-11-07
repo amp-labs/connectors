@@ -1,7 +1,7 @@
 package intercom
 
 import (
-	"github.com/amp-labs/connectors/common/handy"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/providers/intercom/metadata"
 )
 
@@ -13,7 +13,7 @@ const ticketsObjectName = "tickets"
 var supportedObjectsByRead = metadata.Schemas.ObjectNames() //nolint:gochecknoglobals
 
 // ObjectNameToResponseField maps ObjectName to the response field name which contains that object.
-var ObjectNameToResponseField = handy.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
+var ObjectNameToResponseField = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
 	"admins":        "admins",
 	"teams":         "teams",
 	"ticket_types":  "ticket_types",
@@ -29,7 +29,7 @@ var ObjectNameToResponseField = handy.NewDefaultMap(map[string]string{ //nolint:
 	},
 )
 
-var objectNameToURLPath = handy.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
+var objectNameToURLPath = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
 	"activity_logs": "/admins/activity_logs",
 	"collections":   "/help_center/collections",
 	"help_centers":  "/help_center/help_centers",
@@ -40,7 +40,7 @@ var objectNameToURLPath = handy.NewDefaultMap(map[string]string{ //nolint:gochec
 })
 
 // nolint:gomnd
-var incrementalSearchObjectPagination = handy.NewDefaultMap(map[string]int{ //nolint:gochecknoglobals
+var incrementalSearchObjectPagination = datautils.NewDefaultMap(map[string]int{ //nolint:gochecknoglobals
 	// https://developers.intercom.com/docs/references/rest-api/api.intercom.io/conversations/searchconversations
 	"conversations": 150,
 	// https://developers.intercom.com/docs/references/rest-api/api.intercom.io/contacts/searchcontacts

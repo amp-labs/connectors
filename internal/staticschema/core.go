@@ -4,7 +4,7 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/handy"
+	"github.com/amp-labs/connectors/internal/datautils"
 )
 
 const RootModuleID common.ModuleID = "root"
@@ -118,11 +118,11 @@ func (r *Metadata) getOrCreateModule(moduleID common.ModuleID) Module {
 }
 
 // ObjectNames provides a registry of object names grouped by module.
-func (r *Metadata) ObjectNames() handy.UniqueLists[common.ModuleID, string] {
-	moduleObjectNames := make(handy.UniqueLists[common.ModuleID, string])
+func (r *Metadata) ObjectNames() datautils.UniqueLists[common.ModuleID, string] {
+	moduleObjectNames := make(datautils.UniqueLists[common.ModuleID, string])
 
 	for key, value := range r.Modules {
-		names := handy.NewStringSet()
+		names := datautils.NewStringSet()
 		for name := range value.Objects {
 			names.AddOne(name)
 		}

@@ -8,7 +8,7 @@ import (
 	"slices"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/handy"
+	"github.com/amp-labs/connectors/internal/datautils"
 )
 
 type ListIngestJobsResult struct {
@@ -36,7 +36,7 @@ func (c *Connector) ListIngestJobsInfo(ctx context.Context, jobIDs ...string) ([
 	// If we have jobIds, we create a set to keep track of the matches we need to find. Each time we get
 	// a match, we remove it from the set. If the set is empty, we can break the loop to save time and unnecessary
 	// pagination.
-	pending := handy.NewSetFromList(jobIDs)
+	pending := datautils.NewSetFromList(jobIDs)
 
 	// To keep track of pages
 	location := url.String()
