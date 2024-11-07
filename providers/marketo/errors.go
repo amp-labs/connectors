@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/httputils"
 )
 
 type Error struct {
@@ -42,7 +42,7 @@ func checkResponseLeverErr(body []byte) (bool, int, error) {
 }
 
 func isSuccessfulResponse(resp *http.Response, body []byte) (bool, error) {
-	if success := datautils.HTTP.IsStatus2XX(resp); success {
+	if success := httputils.IsStatus2XX(resp); success {
 		return true, nil
 	}
 

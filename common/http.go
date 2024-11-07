@@ -12,7 +12,7 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common/logging"
-	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/httputils"
 )
 
 // Header is a key/value pair that can be added to a request.
@@ -88,7 +88,7 @@ func (h *HTTPClient) isSuccessfulResponse(response *http.Response, body []byte) 
 		return h.ResponseDifferentiator(response, body)
 	}
 
-	return datautils.HTTP.IsStatus2XX(response), nil
+	return httputils.IsStatus2XX(response), nil
 }
 
 func (h *HTTPClient) handleError(response *http.Response, body []byte) error {
@@ -350,7 +350,7 @@ func makeDeleteRequest(ctx context.Context, url string, headers []Header) (*http
 func (h *HTTPClient) sendRequest(req *http.Request) (*http.Response, []byte, error) { //nolint:cyclop
 	// Send the request
 	response, err := h.Client.Do(req)
-	defer datautils.HTTP.BodyClose(response)
+	defer httputils.BodyClose(response)
 
 	if err != nil {
 		return nil, nil, err
