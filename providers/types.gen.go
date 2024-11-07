@@ -31,7 +31,7 @@ const (
 	Password          Oauth2OptsGrantType = "password"
 )
 
-// ApiKeyAsBasicOpts when this object is present, it means that this provider uses Basic Auth to actually collect an API key
+// ApiKeyAsBasicOpts when this object is present, it means that this provider uses Basic Auth to actually collect an API key.
 type ApiKeyAsBasicOpts struct {
 	// FieldUsed whether the API key should be used as the username or password.
 	FieldUsed ApiKeyAsBasicOptsFieldUsed `json:"fieldUsed,omitempty"`

@@ -8,8 +8,9 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/amp-labs/connectors/common/handy"
 	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers/salesloft/metadata"
 	"github.com/amp-labs/connectors/tools/scrapper"
@@ -61,12 +62,12 @@ func createIndex() {
 		log.Printf("Index completed %.2f%%\n", getPercentage(i, len(sections))) // nolint:forbidigo
 	}
 
-	must(metadata.FileManager.SaveIndex(registry))
+	goutils.MustBeNil(metadata.FileManager.SaveIndex(registry))
 }
 
 func createSchemas() {
 	index, err := metadata.FileManager.LoadIndex()
-	must(err)
+	goutils.MustBeNil(err)
 
 	schemas := staticschema.NewMetadata()
 
@@ -97,14 +98,14 @@ func createSchemas() {
 		log.Printf("Schemas completed %.2f%% [%v]\n", getPercentage(i, len(filteredListDocs)), modelName)
 	}
 
-	must(metadata.FileManager.SaveSchemas(schemas))
+	goutils.MustBeNil(metadata.FileManager.SaveSchemas(schemas))
 }
 
 func createQueryParamStats() {
 	index, err := metadata.FileManager.LoadIndex()
-	must(err)
+	goutils.MustBeNil(err)
 
-	registry := handy.NamedLists[string]{}
+	registry := datautils.NamedLists[string]{}
 
 	filteredListDocs := getFilteredListDocs(index)
 	numObjects := len(filteredListDocs)
@@ -122,7 +123,7 @@ func createQueryParamStats() {
 		log.Printf("Query param schemas completed %.2f%% [%v]\n", getPercentage(i, numObjects), modelName)
 	}
 
-	must(metadata.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
+	goutils.MustBeNil(metadata.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
 }
 
 /*
@@ -169,12 +170,6 @@ func getSectionLinks() []string {
 
 func getPercentage(i int, i2 int) float64 {
 	return (float64(i+1) / float64(i2)) * 100 // nolint:gomnd
-}
-
-func must(err error) {
-	if err != nil {
-		panic(err)
-	}
 }
 
 // List of exceptions:

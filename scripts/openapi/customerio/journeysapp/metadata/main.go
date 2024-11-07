@@ -4,7 +4,8 @@ import (
 	"log"
 	"log/slog"
 
-	"github.com/amp-labs/connectors/common/handy"
+	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers/customerapp"
 	"github.com/amp-labs/connectors/providers/customerapp/metadata"
@@ -29,17 +30,17 @@ func main() {
 			api3.CamelCaseToSpaceSeparated,
 			api3.CapitalizeFirstLetterEveryWord,
 		))
-	must(err)
+	goutils.MustBeNil(err)
 
 	objects, err := explorer.ReadObjectsGet(
 		api3.NewDenyPathStrategy(ignoreEndpoints),
 		nil, displayNameOverride,
 		api3.CustomMappingObjectCheck(customerapp.ObjectNameToResponseField),
 	)
-	must(err)
+	goutils.MustBeNil(err)
 
 	schemas := staticschema.NewMetadata()
-	registry := handy.NamedLists[string]{}
+	registry := datautils.NamedLists[string]{}
 
 	for _, object := range objects {
 		if object.Problem != nil {
@@ -58,14 +59,8 @@ func main() {
 		}
 	}
 
-	must(metadata.FileManager.SaveSchemas(schemas))
-	must(metadata.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
+	goutils.MustBeNil(metadata.FileManager.SaveSchemas(schemas))
+	goutils.MustBeNil(metadata.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
 
 	log.Println("Completed.")
-}
-
-func must(err error) {
-	if err != nil {
-		panic(err)
-	}
 }

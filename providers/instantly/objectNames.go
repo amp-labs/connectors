@@ -1,6 +1,6 @@
 package instantly
 
-import "github.com/amp-labs/connectors/common/handy"
+import "github.com/amp-labs/connectors/internal/datautils"
 
 const (
 	objectNameCampaigns        = "campaigns"
@@ -12,7 +12,7 @@ const (
 	objectNameUniboxReplies    = "unibox-replies"
 )
 
-var supportedObjectsByRead = handy.NewSet( //nolint:gochecknoglobals
+var supportedObjectsByRead = datautils.NewSet( //nolint:gochecknoglobals
 	// Object Name	----------	API endpoint path
 	objectNameCampaigns, // campaign/list
 	objectNameAccounts,  // account/list
@@ -20,7 +20,7 @@ var supportedObjectsByRead = handy.NewSet( //nolint:gochecknoglobals
 	objectNameTags,      // custom-tag
 )
 
-var supportedObjectsByWrite = handy.NewSet( //nolint:gochecknoglobals
+var supportedObjectsByWrite = datautils.NewSet( //nolint:gochecknoglobals
 	// Object Name	----------	API endpoint path
 	objectNameTags,             // custom-tag
 	objectNameLeads,            // lead/add
@@ -28,7 +28,7 @@ var supportedObjectsByWrite = handy.NewSet( //nolint:gochecknoglobals
 	objectNameUniboxReplies,    // unibox/emails/reply
 )
 
-var supportedObjectsByDelete = handy.NewSet( //nolint:gochecknoglobals
+var supportedObjectsByDelete = datautils.NewSet( //nolint:gochecknoglobals
 	// Delete tag.
 	// https://developer.instantly.ai/tags/delete-a-tag
 	objectNameTags,

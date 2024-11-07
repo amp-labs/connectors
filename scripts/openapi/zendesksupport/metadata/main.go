@@ -4,7 +4,8 @@ import (
 	"log/slog"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/handy"
+	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers/zendesksupport"
 	"github.com/amp-labs/connectors/providers/zendesksupport/metadata"
@@ -16,8 +17,8 @@ import (
 
 func main() {
 	schemas := staticschema.NewMetadata()
-	registry := handy.NamedLists[string]{}
-	lists := handy.IndexedLists[common.ModuleID, api3.Schema]{}
+	registry := datautils.NamedLists[string]{}
+	lists := datautils.IndexedLists[common.ModuleID, api3.Schema]{}
 
 	lists.Add(zendesksupport.ModuleTicketing, support.Objects()...)
 	lists.Add(zendesksupport.ModuleHelpCenter, helpcenter.Objects()...)
@@ -41,8 +42,8 @@ func main() {
 		}
 	}
 
-	handy.Must(metadata.FileManager.SaveSchemas(schemas))
-	handy.Must(metadata.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
+	goutils.MustBeNil(metadata.FileManager.SaveSchemas(schemas))
+	goutils.MustBeNil(metadata.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
 
 	slog.Info("Completed.")
 }

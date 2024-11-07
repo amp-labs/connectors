@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/handy"
+	"github.com/amp-labs/connectors/internal/datautils"
 )
 
 /*
@@ -49,7 +49,7 @@ func (c *Connector) Search(ctx context.Context, config SearchParams) (*common.Re
 		common.GetRecordsUnderJSONPath("data"),
 		getNextRecordCursor,
 		common.GetMarshaledData,
-		handy.NewStringSet(config.Fields...),
+		datautils.NewStringSet(config.Fields...),
 	)
 }
 
