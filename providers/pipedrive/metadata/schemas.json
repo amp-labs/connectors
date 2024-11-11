@@ -7,6 +7,7 @@
         "activities": {
           "displayName": "Activities",
           "path": "/activities",
+          "responseKey": "data",
           "fields": {
             "active_flag": "active_flag",
             "add_time": "add_time",
@@ -74,6 +75,7 @@
         "activityFields": {
           "displayName": "Activity Fields",
           "path": "/activityFields",
+          "responseKey": "data",
           "fields": {
             "active_flag": "active_flag",
             "add_time": "add_time",
@@ -104,6 +106,7 @@
         "activityTypes": {
           "displayName": "Activity Types",
           "path": "/activityTypes",
+          "responseKey": "data",
           "fields": {
             "active_flag": "active_flag",
             "add_time": "add_time",
@@ -120,6 +123,7 @@
         "callLogs": {
           "displayName": "Call Logs",
           "path": "/callLogs",
+          "responseKey": "data",
           "fields": {
             "activity_id": "activity_id",
             "company_id": "company_id",
@@ -142,21 +146,29 @@
         },
         "collection": {
           "displayName": "collection",
-          "path": "/persons/collection",
+          "path": "/organizations/collection",
+          "responseKey": "data",
           "fields": {
             "active_flag": "active_flag",
             "add_time": "add_time",
+            "address": "address",
+            "address_admin_area_level_1": "address_admin_area_level_1",
+            "address_admin_area_level_2": "address_admin_area_level_2",
+            "address_country": "address_country",
+            "address_formatted_address": "address_formatted_address",
+            "address_locality": "address_locality",
+            "address_postal_code": "address_postal_code",
+            "address_route": "address_route",
+            "address_street_number": "address_street_number",
+            "address_sublocality": "address_sublocality",
+            "address_subpremise": "address_subpremise",
             "cc_email": "cc_email",
             "delete_time": "delete_time",
-            "email": "email",
             "id": "id",
             "label": "label",
             "label_ids": "label_ids",
             "name": "name",
-            "org_id": "org_id",
             "owner_id": "owner_id",
-            "phone": "phone",
-            "picture_id": "picture_id",
             "update_time": "update_time",
             "visible_to": "visible_to"
           }
@@ -164,6 +176,7 @@
         "currencies": {
           "displayName": "Currencies",
           "path": "/currencies",
+          "responseKey": "data",
           "fields": {
             "active_flag": "active_flag",
             "code": "code",
@@ -177,6 +190,7 @@
         "deals": {
           "displayName": "Deals",
           "path": "/deals",
+          "responseKey": "data",
           "fields": {
             "active": "active",
             "activities_count": "activities_count",
@@ -250,6 +264,7 @@
         "files": {
           "displayName": "Files",
           "path": "/files",
+          "responseKey": "data",
           "fields": {
             "active_flag": "active_flag",
             "activity_id": "activity_id",
@@ -284,6 +299,7 @@
         "filters": {
           "displayName": "Filters",
           "path": "/filters",
+          "responseKey": "data",
           "fields": {
             "active_flag": "active_flag",
             "add_time": "add_time",
@@ -299,6 +315,7 @@
         "leadLabels": {
           "displayName": "Lead Labels",
           "path": "/leadLabels",
+          "responseKey": "data",
           "fields": {
             "add_time": "add_time",
             "color": "color",
@@ -310,6 +327,7 @@
         "leadSources": {
           "displayName": "Lead Sources",
           "path": "/leadSources",
+          "responseKey": "data",
           "fields": {
             "name": "name"
           }
@@ -317,6 +335,7 @@
         "leads": {
           "displayName": "Leads",
           "path": "/leads",
+          "responseKey": "data",
           "fields": {
             "add_time": "add_time",
             "cc_email": "cc_email",
@@ -344,6 +363,7 @@
         "legacyTeams": {
           "displayName": "Legacy Teams",
           "path": "/legacyTeams",
+          "responseKey": "data",
           "fields": {
             "active_flag": "active_flag",
             "add_time": "add_time",
@@ -359,6 +379,7 @@
         "mailThreads": {
           "displayName": "Mail Threads",
           "path": "/mailbox/mailThreads",
+          "responseKey": "data",
           "fields": {
             "account_id": "account_id",
             "add_time": "add_time",
@@ -402,6 +423,7 @@
         "noteFields": {
           "displayName": "Note Fields",
           "path": "/noteFields",
+          "responseKey": "data",
           "fields": {
             "active_flag": "active_flag",
             "bulk_edit_allowed": "bulk_edit_allowed",
@@ -417,6 +439,7 @@
         "notes": {
           "displayName": "Notes",
           "path": "/notes",
+          "responseKey": "data",
           "fields": {
             "active_flag": "active_flag",
             "add_time": "add_time",
@@ -441,6 +464,7 @@
         "organizationFields": {
           "displayName": "organization Fields",
           "path": "/organizationFields",
+          "responseKey": "data",
           "fields": {
             "active_flag": "active_flag",
             "add_time": "add_time",
@@ -471,6 +495,7 @@
         "organizationRelationships": {
           "displayName": "Organization Relationships",
           "path": "/organizationRelationships",
+          "responseKey": "data",
           "fields": {
             "active_flag": "active_flag",
             "add_time": "add_time",
@@ -487,6 +512,7 @@
         "organizations": {
           "displayName": "Organizations",
           "path": "/organizations",
+          "responseKey": "data",
           "fields": {
             "active_flag": "active_flag",
             "activities_count": "activities_count",
@@ -540,6 +566,7 @@
         "permissionSets": {
           "displayName": "Permission Sets",
           "path": "/permissionSets",
+          "responseKey": "data",
           "fields": {
             "app": "app",
             "assignment_count": "assignment_count",
@@ -552,6 +579,7 @@
         "personFields": {
           "displayName": "Person Fields",
           "path": "/personFields",
+          "responseKey": "data",
           "fields": {
             "active_flag": "active_flag",
             "add_time": "add_time",
@@ -582,6 +610,7 @@
         "persons": {
           "displayName": "Persons",
           "path": "/persons",
+          "responseKey": "data",
           "fields": {
             "active_flag": "active_flag",
             "activities_count": "activities_count",
@@ -630,6 +659,7 @@
         "phases": {
           "displayName": "Phases",
           "path": "/projects/phases",
+          "responseKey": "data",
           "fields": {
             "add_time": "add_time",
             "board_id": "board_id",
@@ -642,6 +672,7 @@
         "pipelines": {
           "displayName": "Pipelines",
           "path": "/pipelines",
+          "responseKey": "data",
           "fields": {
             "active": "active",
             "add_time": "add_time",
@@ -657,6 +688,7 @@
         "productFields": {
           "displayName": "product Fields",
           "path": "/productFields",
+          "responseKey": "data",
           "fields": {
             "active_flag": "active_flag",
             "add_time": "add_time",
@@ -682,6 +714,7 @@
         "products": {
           "displayName": "Products",
           "path": "/products",
+          "responseKey": "data",
           "fields": {
             "data": "data",
             "related_objects": "related_objects",
@@ -691,6 +724,7 @@
         "projectTemplates": {
           "displayName": "Project Templates",
           "path": "/projectTemplates",
+          "responseKey": "data",
           "fields": {
             "add_time": "add_time",
             "description": "description",
@@ -704,6 +738,7 @@
         "projects": {
           "displayName": "Projects",
           "path": "/projects",
+          "responseKey": "data",
           "fields": {
             "add_time": "add_time",
             "archive_time": "archive_time",
@@ -727,6 +762,7 @@
         "recents": {
           "displayName": "Recents",
           "path": "/recents",
+          "responseKey": "data",
           "fields": {
             "data": "data",
             "id": "id",
@@ -736,6 +772,7 @@
         "roles": {
           "displayName": "Roles",
           "path": "/roles",
+          "responseKey": "data",
           "fields": {
             "active_flag": "active_flag",
             "assignment_count": "assignment_count",
@@ -749,6 +786,7 @@
         "stages": {
           "displayName": "Stages",
           "path": "/stages",
+          "responseKey": "data",
           "fields": {
             "active_flag": "active_flag",
             "add_time": "add_time",
@@ -767,6 +805,7 @@
         "tasks": {
           "displayName": "Tasks",
           "path": "/tasks",
+          "responseKey": "data",
           "fields": {
             "add_time": "add_time",
             "assignee_id": "assignee_id",
@@ -785,6 +824,7 @@
         "users": {
           "displayName": "Users",
           "path": "/users",
+          "responseKey": "data",
           "fields": {
             "access": "access",
             "activated": "activated",
@@ -811,6 +851,7 @@
         "webhooks": {
           "displayName": "Webhooks",
           "path": "/webhooks",
+          "responseKey": "data",
           "fields": {
             "add_time": "add_time",
             "additional_data": "additional_data",

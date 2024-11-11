@@ -89,7 +89,7 @@ func createSchemas() {
 						newDisplayName, isList := handleDisplayName(model.DisplayName)
 						if isList {
 							schemas.Add("", modelName,
-								newDisplayName, fieldName, fmt.Sprintf("/%v", modelName), &model.URL)
+								newDisplayName, fieldName, fmt.Sprintf("/%v", modelName), "data", &model.URL)
 						}
 					}
 				})

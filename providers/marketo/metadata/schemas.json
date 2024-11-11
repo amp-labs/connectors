@@ -7,6 +7,7 @@
         "activities": {
           "displayName": "activities",
           "path": "/activities",
+          "responseKey": "",
           "fields": {
             "activityDate": "activityDate",
             "activityTypeId": "activityTypeId",
@@ -22,6 +23,7 @@
         "campaigns": {
           "displayName": "campaigns",
           "path": "/campaigns",
+          "responseKey": "",
           "fields": {
             "active": "active",
             "createdAt": "createdAt",
@@ -38,6 +40,7 @@
         "channels": {
           "displayName": "channels",
           "path": "/channels",
+          "responseKey": "",
           "fields": {
             "applicableProgramType": "applicableProgramType",
             "createdAt": "createdAt",
@@ -50,6 +53,7 @@
         "companies": {
           "displayName": "companies",
           "path": "/companies",
+          "responseKey": "",
           "fields": {
             "id": "id",
             "reasons": "reasons",
@@ -60,6 +64,7 @@
         "customobjects": {
           "displayName": "customobjects",
           "path": "/customobjects",
+          "responseKey": "",
           "fields": {
             "apiName": "apiName",
             "createdAt": "createdAt",
@@ -79,6 +84,7 @@
         "emailTemplates": {
           "displayName": "emailTemplates",
           "path": "/emailTemplates",
+          "responseKey": "",
           "fields": {
             "createdAt": "createdAt",
             "description": "description",
@@ -95,6 +101,7 @@
         "emails": {
           "displayName": "emails",
           "path": "/emails",
+          "responseKey": "",
           "fields": {
             "autoCopyToText": "autoCopyToText",
             "ccFields": "ccFields",
@@ -123,6 +130,7 @@
         "files": {
           "displayName": "files",
           "path": "/files",
+          "responseKey": "",
           "fields": {
             "createdAt": "createdAt",
             "description": "description",
@@ -138,6 +146,7 @@
         "folders": {
           "displayName": "folders",
           "path": "/folders",
+          "responseKey": "",
           "fields": {
             "accessZoneId": "accessZoneId",
             "createdAt": "createdAt",
@@ -158,6 +167,7 @@
         "forms": {
           "displayName": "forms",
           "path": "/forms",
+          "responseKey": "",
           "fields": {
             "buttonLabel": "buttonLabel",
             "buttonLocation": "buttonLocation",
@@ -184,6 +194,7 @@
         "landingPageDomains": {
           "displayName": "landingPageDomains",
           "path": "/landingPageDomains",
+          "responseKey": "",
           "fields": {
             "hostname": "hostname",
             "type": "type"
@@ -192,6 +203,7 @@
         "landingPageTemplates": {
           "displayName": "landingPageTemplates",
           "path": "/landingPageTemplates",
+          "responseKey": "",
           "fields": {
             "createdAt": "createdAt",
             "description": "description",
@@ -209,6 +221,7 @@
         "landingPages": {
           "displayName": "landingPages",
           "path": "/landingPages",
+          "responseKey": "",
           "fields": {
             "URL": "URL",
             "computedUrl": "computedUrl",
@@ -233,6 +246,7 @@
         "leads": {
           "displayName": "leads",
           "path": "/leads",
+          "responseKey": "",
           "fields": {
             "id": "id",
             "membership": "membership",
@@ -243,6 +257,7 @@
         "lists": {
           "displayName": "lists",
           "path": "/lists",
+          "responseKey": "",
           "fields": {
             "createdAt": "createdAt",
             "description": "description",
@@ -256,6 +271,7 @@
         "namedAccountLists": {
           "displayName": "namedAccountLists",
           "path": "/namedAccountLists",
+          "responseKey": "",
           "fields": {
             "createdAt": "createdAt",
             "marketoGUID": "marketoGUID",
@@ -271,6 +287,7 @@
         "namedaccounts": {
           "displayName": "namedaccounts",
           "path": "/namedaccounts",
+          "responseKey": "",
           "fields": {
             "marketoGUID": "marketoGUID",
             "reasons": "reasons",
@@ -281,6 +298,7 @@
         "opportunities": {
           "displayName": "opportunities",
           "path": "/opportunities",
+          "responseKey": "",
           "fields": {
             "marketoGUID": "marketoGUID",
             "reasons": "reasons",
@@ -290,6 +308,7 @@
         "programs": {
           "displayName": "programs",
           "path": "/programs",
+          "responseKey": "",
           "fields": {
             "channel": "channel",
             "createdAt": "createdAt",
@@ -309,6 +328,7 @@
         "redirectRules": {
           "displayName": "redirectRules",
           "path": "/redirectRules",
+          "responseKey": "",
           "fields": {
             "createdAt": "createdAt",
             "hostname": "hostname",
@@ -323,6 +343,7 @@
         "salespersons": {
           "displayName": "salespersons",
           "path": "/salespersons",
+          "responseKey": "",
           "fields": {
             "id": "id",
             "reasons": "reasons",
@@ -333,6 +354,7 @@
         "segmentation": {
           "displayName": "segmentation",
           "path": "/segmentation",
+          "responseKey": "",
           "fields": {
             "createdAt": "createdAt",
             "description": "description",
@@ -348,6 +370,7 @@
         "smartCampaigns": {
           "displayName": "smartCampaigns",
           "path": "/smartCampaigns",
+          "responseKey": "",
           "fields": {
             "computedUrl": "computedUrl",
             "createdAt": "createdAt",
@@ -376,6 +399,7 @@
         "smartLists": {
           "displayName": "smartLists",
           "path": "/smartLists",
+          "responseKey": "",
           "fields": {
             "createdAt": "createdAt",
             "description": "description",
@@ -390,6 +414,7 @@
         "snippets": {
           "displayName": "snippets",
           "path": "/snippets",
+          "responseKey": "",
           "fields": {
             "createdAt": "createdAt",
             "description": "description",
@@ -405,6 +430,7 @@
         "staticLists": {
           "displayName": "staticLists",
           "path": "/staticLists",
+          "responseKey": "",
           "fields": {
             "computedUrl": "computedUrl",
             "createdAt": "createdAt",
@@ -420,6 +446,7 @@
         "tagTypes": {
           "displayName": "tagTypes",
           "path": "/tagTypes",
+          "responseKey": "",
           "fields": {
             "applicableProgramTypes": "applicableProgramTypes",
             "required": "required",
