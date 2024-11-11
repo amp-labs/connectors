@@ -39,6 +39,7 @@ type Schema struct {
 	Fields      []string
 	QueryParams []string
 	URLPath     string
+	ResponseKey string
 	Problem     error
 }
 
@@ -101,7 +102,7 @@ func (p PathItem) RetrieveSchemaOperation(
 		}
 	}
 
-	fields, err := extractObjectFields(p.objectName, schema, locator)
+	fields, responseKey, err := extractObjectFields(p.objectName, schema, locator)
 
 	return &Schema{
 		ObjectName:  p.objectName,
@@ -109,6 +110,7 @@ func (p PathItem) RetrieveSchemaOperation(
 		Fields:      fields,
 		QueryParams: getQueryParameters(operation),
 		URLPath:     p.urlPath,
+		ResponseKey: responseKey,
 		Problem:     err,
 	}, true, nil
 }
@@ -126,7 +128,9 @@ func (p PathItem) selectOperation(operationName string) *openapi3.Operation {
 	}
 }
 
-func extractObjectFields(objectName string, schema *openapi3.Schema, locator ObjectArrayLocator) ([]string, error) {
+func extractObjectFields(
+	objectName string, schema *openapi3.Schema, locator ObjectArrayLocator,
+) (fields []string, location string, err error) {
 	switch getSchemaType(schema) {
 	case schemaTypeObject:
 		return extractFieldsFromArrayHolder(objectName, schema, locator)
@@ -138,7 +142,7 @@ func extractObjectFields(objectName string, schema *openapi3.Schema, locator Obj
 		// It seems that some OpenAPI files are not that strict about such things. Ex: Pipedrive, Zendesk.
 		return extractFieldsFromArrayHolder(objectName, schema, locator)
 	default:
-		return nil, createUnprocessableObjectError(objectName)
+		return nil, "", createUnprocessableObjectError(objectName)
 	}
 }
 
@@ -148,7 +152,7 @@ func extractObjectFields(objectName string, schema *openapi3.Schema, locator Obj
 // to determine what is the name of property with respect to the object name.
 func extractFieldsFromArrayHolder(
 	objectName string, schema *openapi3.Schema, locator ObjectArrayLocator,
-) ([]string, error) {
+) (fields []string, location string, err error) {
 	definitions := []openapi3.Schemas{
 		schema.Properties,
 	}
@@ -165,7 +169,12 @@ func extractFieldsFromArrayHolder(
 				// Now ask the discriminator if this is the target List.
 				// It is possible that response has multiple arrays, that's why we are asking to resolve ambiguity.
 				if locator(objectName, name) {
-					return extractFields(items.Value)
+					fields, err = extractFields(items.Value)
+					if err != nil {
+						return nil, "", err
+					}
+
+					return fields, name, nil
 				}
 			}
 		}
@@ -174,20 +183,24 @@ func extractFieldsFromArrayHolder(
 	if isBooleanTruthful(schema.AdditionalProperties.Has) {
 		// this schema is dynamic.
 		// the fields cannot be known.
-		return []string{}, nil
+		return []string{}, "", nil
 	}
 
-	return nil, createUnprocessableObjectError(objectName)
+	return nil, "", createUnprocessableObjectError(objectName)
 }
 
 // Response schema is an array itself. Collect fields that describe single item.
-func extractFieldsFromArray(objectName string, schema *openapi3.Schema) ([]string, error) {
+func extractFieldsFromArray(
+	objectName string, schema *openapi3.Schema,
+) (fields []string, location string, err error) {
 	items, ok := getItems(schema.NewRef())
 	if !ok {
-		return nil, createUnprocessableObjectError(objectName)
+		return nil, "", createUnprocessableObjectError(objectName)
 	}
 
-	return extractFields(items.Value)
+	fields, err = extractFields(items.Value)
+
+	return fields, "", err
 }
 
 func getItems(schema *openapi3.SchemaRef) (*openapi3.SchemaRef, bool) {

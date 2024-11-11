@@ -7,6 +7,7 @@
         "AccountDataExRelations": {
           "displayName": "Account Data Ex Relations",
           "path": "/AccountDataExRelations",
+          "responseKey": "data",
           "fields": {
             "account": "account",
             "account_id": "account_id",
@@ -24,6 +25,7 @@
         "AccountKPIs": {
           "displayName": "Account KPIs",
           "path": "/AccountKPIs",
+          "responseKey": "data",
           "fields": {
             "account": "account",
             "account_id": "account_id",
@@ -46,6 +48,7 @@
         "AccountRelationLabels": {
           "displayName": "Account Relation Labels",
           "path": "/AccountRelationLabels",
+          "responseKey": "data",
           "fields": {
             "account_relation": "account_relation",
             "account_relation_id": "account_relation_id",
@@ -62,6 +65,7 @@
         "AccountRelationTypes": {
           "displayName": "Account Relation Types",
           "path": "/AccountRelationTypes",
+          "responseKey": "data",
           "fields": {
             "color": "color",
             "created": "created",
@@ -76,6 +80,7 @@
         "AccountRelations": {
           "displayName": "Account Relations",
           "path": "/AccountRelations",
+          "responseKey": "data",
           "fields": {
             "account1": "account1",
             "account1_id": "account1_id",
@@ -92,6 +97,7 @@
         "AccountRoles": {
           "displayName": "Account Roles",
           "path": "/AccountRoles",
+          "responseKey": "data",
           "fields": {
             "color": "color",
             "created": "created",
@@ -106,6 +112,7 @@
         "AccountSharingClientRelations": {
           "displayName": "Account Sharing Client Relations",
           "path": "/AccountSharingClientRelations",
+          "responseKey": "data",
           "fields": {
             "account": "account",
             "account_id": "account_id",
@@ -123,6 +130,7 @@
         "AccountSharingSalesUnitRelations": {
           "displayName": "Account Sharing Sales Unit Relations",
           "path": "/AccountSharingSalesUnitRelations",
+          "responseKey": "data",
           "fields": {
             "account": "account",
             "account_id": "account_id",
@@ -140,6 +148,7 @@
         "AccountSocialRelations": {
           "displayName": "Account Social Relations",
           "path": "/AccountSocialRelations",
+          "responseKey": "data",
           "fields": {
             "angellist_url": "angellist_url",
             "created": "created",
@@ -178,6 +187,7 @@
         "AccountTypes": {
           "displayName": "Account Types",
           "path": "/AccountTypes",
+          "responseKey": "data",
           "fields": {
             "can_change_readonly": "can_change_readonly",
             "created": "created",
@@ -197,6 +207,7 @@
         "Accounts": {
           "displayName": "Accounts",
           "path": "/Accounts",
+          "responseKey": "data",
           "fields": {
             "account_class": "account_class",
             "account_type": "account_type",
@@ -259,6 +270,7 @@
         "Activities": {
           "displayName": "Activities",
           "path": "/Activities",
+          "responseKey": "data",
           "fields": {
             "active_reminder": "active_reminder",
             "id": "id",
@@ -268,6 +280,7 @@
         "ActivityComments": {
           "displayName": "Activity Comments",
           "path": "/ActivityComments",
+          "responseKey": "data",
           "fields": {
             "activity_id": "activity_id",
             "appointment": "appointment",
@@ -286,6 +299,7 @@
         "ActivityDataExRelations": {
           "displayName": "Activity Data Ex Relations",
           "path": "/ActivityDataExRelations",
+          "responseKey": "data",
           "fields": {
             "activity_id": "activity_id",
             "appointment": "appointment",
@@ -304,6 +318,7 @@
         "ActivityKPIs": {
           "displayName": "Activity KPIs",
           "path": "/ActivityKPIs",
+          "responseKey": "data",
           "fields": {
             "activity_id": "activity_id",
             "application_id": "application_id",
@@ -327,6 +342,7 @@
         "ActivityRelations": {
           "displayName": "Activity Relations",
           "path": "/ActivityRelations",
+          "responseKey": "data",
           "fields": {
             "account": "account",
             "account_id": "account_id",
@@ -358,6 +374,7 @@
         "AllowedAccountTypes": {
           "displayName": "Allowed Account Types",
           "path": "/AllowedAccountTypes",
+          "responseKey": "data",
           "fields": {
             "account_type": "account_type",
             "account_type_id": "account_type_id",
@@ -374,6 +391,7 @@
         "AllowedCompanyEmails": {
           "displayName": "Allowed Company Emails",
           "path": "/AllowedCompanyEmails",
+          "responseKey": "data",
           "fields": {
             "company_email": "company_email",
             "company_email_id": "company_email_id",
@@ -390,6 +408,7 @@
         "AllowedCompanyPhones": {
           "displayName": "Allowed Company Phones",
           "path": "/AllowedCompanyPhones",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "id": "id",
@@ -406,6 +425,7 @@
         "AllowedContactTypes": {
           "displayName": "Allowed Contact Types",
           "path": "/AllowedContactTypes",
+          "responseKey": "data",
           "fields": {
             "contact_type": "contact_type",
             "contact_type_id": "contact_type_id",
@@ -422,6 +442,7 @@
         "AllowedLeadTypes": {
           "displayName": "Allowed Lead Types",
           "path": "/AllowedLeadTypes",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "id": "id",
@@ -438,6 +459,7 @@
         "AllowedPipelines": {
           "displayName": "Allowed Pipelines",
           "path": "/AllowedPipelines",
+          "responseKey": "data",
           "fields": {
             "access_step_documents": "access_step_documents",
             "created": "created",
@@ -455,6 +477,7 @@
         "AllowedQuoteTypes": {
           "displayName": "Allowed Quote Types",
           "path": "/AllowedQuoteTypes",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "id": "id",
@@ -471,6 +494,7 @@
         "ApiAccesses": {
           "displayName": "API Accesses",
           "path": "/ApiAccesses",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "email": "email",
@@ -490,6 +514,7 @@
         "AppointmentClientInviteesRelations": {
           "displayName": "Appointment Client Invitees Relations",
           "path": "/AppointmentClientInviteesRelations",
+          "responseKey": "data",
           "fields": {
             "appointment": "appointment",
             "appointment_id": "appointment_id",
@@ -507,6 +532,7 @@
         "AppointmentContactInviteesRelations": {
           "displayName": "Appointment Contact Invitees Relations",
           "path": "/AppointmentContactInviteesRelations",
+          "responseKey": "data",
           "fields": {
             "appointment": "appointment",
             "appointment_id": "appointment_id",
@@ -528,6 +554,7 @@
         "AppointmentReminders": {
           "displayName": "Appointment Reminders",
           "path": "/AppointmentReminders",
+          "responseKey": "data",
           "fields": {
             "appointment": "appointment",
             "appointment_id": "appointment_id",
@@ -547,6 +574,7 @@
         "AppointmentSchedules": {
           "displayName": "Appointment Schedules",
           "path": "/AppointmentSchedules",
+          "responseKey": "data",
           "fields": {
             "additional_fields_data": "additional_fields_data",
             "appointment_description": "appointment_description",
@@ -594,6 +622,7 @@
         "AppointmentTypes": {
           "displayName": "Appointment Types",
           "path": "/AppointmentTypes",
+          "responseKey": "data",
           "fields": {
             "can_change_readonly": "can_change_readonly",
             "created": "created",
@@ -614,6 +643,7 @@
         "Appointments": {
           "displayName": "Appointments",
           "path": "/Appointments",
+          "responseKey": "data",
           "fields": {
             "account_relations": "account_relations",
             "active_reminder": "active_reminder",
@@ -673,6 +703,7 @@
         "ApprovalApprovers": {
           "displayName": "Approval Approvers",
           "path": "/ApprovalApprovers",
+          "responseKey": "data",
           "fields": {
             "approval": "approval",
             "approval_id": "approval_id",
@@ -691,6 +722,7 @@
         "ApprovalProcessActivityLogLines": {
           "displayName": "Approval Process Activity Log Lines",
           "path": "/ApprovalProcessActivityLogLines",
+          "responseKey": "data",
           "fields": {
             "approval": "approval",
             "approval_id": "approval_id",
@@ -710,6 +742,7 @@
         "ApprovalProcesses": {
           "displayName": "Approval Processes",
           "path": "/ApprovalProcesses",
+          "responseKey": "data",
           "fields": {
             "activity_logs": "activity_logs",
             "created": "created",
@@ -733,6 +766,7 @@
         "Approvals": {
           "displayName": "Approvals",
           "path": "/Approvals",
+          "responseKey": "data",
           "fields": {
             "account": "account",
             "account_id": "account_id",
@@ -768,6 +802,7 @@
         "Calls": {
           "displayName": "Calls",
           "path": "/Calls",
+          "responseKey": "data",
           "fields": {
             "account": "account",
             "account_id": "account_id",
@@ -796,6 +831,7 @@
         "ClientExcludedOppties": {
           "displayName": "Client Excluded Oppties",
           "path": "/ClientExcludedOppties",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "id": "id",
@@ -813,6 +849,7 @@
         "ClientFavorites": {
           "displayName": "Client Favorites",
           "path": "/ClientFavorites",
+          "responseKey": "data",
           "fields": {
             "account": "account",
             "account_id": "account_id",
@@ -847,6 +884,7 @@
         "ClientSettings": {
           "displayName": "Client Settings",
           "path": "/ClientSettings",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "id": "id",
@@ -863,6 +901,7 @@
         "ClientStoryReads": {
           "displayName": "Client Story Reads",
           "path": "/ClientStoryReads",
+          "responseKey": "data",
           "fields": {
             "activity_id": "activity_id",
             "appointment": "appointment",
@@ -885,6 +924,7 @@
         "Clients": {
           "displayName": "Clients",
           "path": "/Clients",
+          "responseKey": "data",
           "fields": {
             "account_favorite": "account_favorite",
             "appointment_favorite": "appointment_favorite",
@@ -929,6 +969,7 @@
         "CloudObjectFolders": {
           "displayName": "Cloud Object Folders",
           "path": "/CloudObjectFolders",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "entity_api_name": "entity_api_name",
@@ -946,6 +987,7 @@
         "CloudObjectRelations": {
           "displayName": "Cloud Object Relations",
           "path": "/CloudObjectRelations",
+          "responseKey": "data",
           "fields": {
             "account": "account",
             "account_id": "account_id",
@@ -993,6 +1035,7 @@
         "CloudObjectStepRelations": {
           "displayName": "Cloud Object Step Relations",
           "path": "/CloudObjectStepRelations",
+          "responseKey": "data",
           "fields": {
             "cloud_object": "cloud_object",
             "cloud_object_id": "cloud_object_id",
@@ -1009,6 +1052,7 @@
         "CloudObjectTemplates": {
           "displayName": "Cloud Object Templates",
           "path": "/CloudObjectTemplates",
+          "responseKey": "data",
           "fields": {
             "application": "application",
             "application_id": "application_id",
@@ -1035,6 +1079,7 @@
         "CloudObjects": {
           "displayName": "Cloud Objects",
           "path": "/CloudObjects",
+          "responseKey": "data",
           "fields": {
             "application": "application",
             "application_id": "application_id",
@@ -1061,6 +1106,7 @@
         "CompanyEmails": {
           "displayName": "Company Emails",
           "path": "/CompanyEmails",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "email": "email",
@@ -1081,6 +1127,7 @@
         "ContactAccountAccountRoleRelations": {
           "displayName": "Contact Account Account Role Relations",
           "path": "/ContactAccountAccountRoleRelations",
+          "responseKey": "data",
           "fields": {
             "account_role": "account_role",
             "account_role_id": "account_role_id",
@@ -1097,6 +1144,7 @@
         "ContactAccountRelations": {
           "displayName": "Contact Account Relations",
           "path": "/ContactAccountRelations",
+          "responseKey": "data",
           "fields": {
             "account": "account",
             "account_id": "account_id",
@@ -1120,6 +1168,7 @@
         "ContactDataExRelations": {
           "displayName": "Contact Data Ex Relations",
           "path": "/ContactDataExRelations",
+          "responseKey": "data",
           "fields": {
             "contact": "contact",
             "contact_id": "contact_id",
@@ -1137,6 +1186,7 @@
         "ContactKPIs": {
           "displayName": "Contact KPIs",
           "path": "/ContactKPIs",
+          "responseKey": "data",
           "fields": {
             "application_id": "application_id",
             "client": "client",
@@ -1159,6 +1209,7 @@
         "ContactRelationLabels": {
           "displayName": "Contact Relation Labels",
           "path": "/ContactRelationLabels",
+          "responseKey": "data",
           "fields": {
             "contact_relation": "contact_relation",
             "contact_relation_id": "contact_relation_id",
@@ -1175,6 +1226,7 @@
         "ContactRelationTypes": {
           "displayName": "Contact Relation Types",
           "path": "/ContactRelationTypes",
+          "responseKey": "data",
           "fields": {
             "color": "color",
             "created": "created",
@@ -1189,6 +1241,7 @@
         "ContactRelations": {
           "displayName": "Contact Relations",
           "path": "/ContactRelations",
+          "responseKey": "data",
           "fields": {
             "contact1": "contact1",
             "contact1_id": "contact1_id",
@@ -1205,6 +1258,7 @@
         "ContactSharingClientRelations": {
           "displayName": "Contact Sharing Client Relations",
           "path": "/ContactSharingClientRelations",
+          "responseKey": "data",
           "fields": {
             "client": "client",
             "client_id": "client_id",
@@ -1222,6 +1276,7 @@
         "ContactSharingSalesUnitRelations": {
           "displayName": "Contact Sharing Sales Unit Relations",
           "path": "/ContactSharingSalesUnitRelations",
+          "responseKey": "data",
           "fields": {
             "contact": "contact",
             "contact_id": "contact_id",
@@ -1239,6 +1294,7 @@
         "ContactSocialRelations": {
           "displayName": "Contact Social Relations",
           "path": "/ContactSocialRelations",
+          "responseKey": "data",
           "fields": {
             "angellist_url": "angellist_url",
             "created": "created",
@@ -1277,6 +1333,7 @@
         "ContactTypes": {
           "displayName": "Contact Types",
           "path": "/ContactTypes",
+          "responseKey": "data",
           "fields": {
             "can_change_readonly": "can_change_readonly",
             "created": "created",
@@ -1296,6 +1353,7 @@
         "Contacts": {
           "displayName": "Contacts",
           "path": "/Contacts",
+          "responseKey": "data",
           "fields": {
             "account_position": "account_position",
             "account_relations": "account_relations",
@@ -1359,6 +1417,7 @@
         "Currencies": {
           "displayName": "Currencies",
           "path": "/Currencies",
+          "responseKey": "data",
           "fields": {
             "code": "code",
             "created": "created",
@@ -1375,6 +1434,7 @@
         "CurrencyExchangeRates": {
           "displayName": "Currency Exchange Rates",
           "path": "/CurrencyExchangeRates",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "currency": "currency",
@@ -1392,6 +1452,7 @@
         "CurrencyExchangeRatesLists": {
           "displayName": "Currency Exchange Rates Lists",
           "path": "/CurrencyExchangeRatesLists",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "currency_exchange_rates": "currency_exchange_rates",
@@ -1406,6 +1467,7 @@
         "Data": {
           "displayName": "Data",
           "path": "/Data",
+          "responseKey": "data",
           "fields": {
             "calc_value": "calc_value",
             "created": "created",
@@ -1426,6 +1488,7 @@
         "DataRelations": {
           "displayName": "Data Relations",
           "path": "/DataRelations",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "data": "data",
@@ -1444,6 +1507,7 @@
         "EmailContentSharingClientRelations": {
           "displayName": "Email Content Sharing Client Relations",
           "path": "/EmailContentSharingClientRelations",
+          "responseKey": "data",
           "fields": {
             "client": "client",
             "client_id": "client_id",
@@ -1460,6 +1524,7 @@
         "EmailContentSharingSalesUnitRelations": {
           "displayName": "Email Content Sharing Sales Unit Relations",
           "path": "/EmailContentSharingSalesUnitRelations",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "email": "email",
@@ -1476,6 +1541,7 @@
         "EmailEvents": {
           "displayName": "Email Events",
           "path": "/EmailEvents",
+          "responseKey": "data",
           "fields": {
             "additional_data": "additional_data",
             "created": "created",
@@ -1492,6 +1558,7 @@
         "EmailSequenceActivityLogLines": {
           "displayName": "Email Sequence Activity Log Lines",
           "path": "/EmailSequenceActivityLogLines",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "email_sequence_activity_log": "email_sequence_activity_log",
@@ -1509,6 +1576,7 @@
         "EmailSequenceActivityLogs": {
           "displayName": "Email Sequence Activity Logs",
           "path": "/EmailSequenceActivityLogs",
+          "responseKey": "data",
           "fields": {
             "actor": "actor",
             "actor_id": "actor_id",
@@ -1533,6 +1601,7 @@
         "EmailSequenceEnrolleds": {
           "displayName": "Email Sequence Enrolleds",
           "path": "/EmailSequenceEnrolleds",
+          "responseKey": "data",
           "fields": {
             "account": "account",
             "account_id": "account_id",
@@ -1571,6 +1640,7 @@
         "EmailSequences": {
           "displayName": "Email Sequences",
           "path": "/EmailSequences",
+          "responseKey": "data",
           "fields": {
             "activity_logs": "activity_logs",
             "created": "created",
@@ -1595,6 +1665,7 @@
         "EmailTemplateFolders": {
           "displayName": "Email Template Folders",
           "path": "/EmailTemplateFolders",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "id": "id",
@@ -1610,6 +1681,7 @@
         "EmailTemplateSharingClientRelations": {
           "displayName": "Email Template Sharing Client Relations",
           "path": "/EmailTemplateSharingClientRelations",
+          "responseKey": "data",
           "fields": {
             "client": "client",
             "client_id": "client_id",
@@ -1627,6 +1699,7 @@
         "EmailTemplateSharingSalesUnitRelations": {
           "displayName": "Email Template Sharing Sales Unit Relations",
           "path": "/EmailTemplateSharingSalesUnitRelations",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "email_template": "email_template",
@@ -1644,6 +1717,7 @@
         "EmailTemplates": {
           "displayName": "Email Templates",
           "path": "/EmailTemplates",
+          "responseKey": "data",
           "fields": {
             "body": "body",
             "created": "created",
@@ -1668,6 +1742,7 @@
         "Emails": {
           "displayName": "Emails",
           "path": "/Emails",
+          "responseKey": "data",
           "fields": {
             "account_relations": "account_relations",
             "additional_headers": "additional_headers",
@@ -1725,6 +1800,7 @@
         "Entities": {
           "displayName": "Entities",
           "path": "/Entities",
+          "responseKey": "data",
           "fields": {
             "abstract_entity_id": "abstract_entity_id",
             "access_mode": "access_mode",
@@ -1751,6 +1827,7 @@
         "EntityFitnessIndicators": {
           "displayName": "Entity Fitness Indicators",
           "path": "/EntityFitnessIndicators",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "description": "description",
@@ -1774,6 +1851,7 @@
         "EntityFitnesses": {
           "displayName": "Entity Fitnesses",
           "path": "/EntityFitnesses",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "entity_type": "entity_type",
@@ -1793,6 +1871,7 @@
         "EntityHealths": {
           "displayName": "Entity Healths",
           "path": "/EntityHealths",
+          "responseKey": "data",
           "fields": {
             "calculation_progress": "calculation_progress",
             "created": "created",
@@ -1810,6 +1889,7 @@
         "EntityScorings": {
           "displayName": "Entity Scorings",
           "path": "/EntityScorings",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "entity_type": "entity_type",
@@ -1828,6 +1908,7 @@
         "FieldPermissions": {
           "displayName": "Field Permissions",
           "path": "/FieldPermissions",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "field": "field",
@@ -1847,6 +1928,7 @@
         "FieldSequences": {
           "displayName": "Field Sequences",
           "path": "/FieldSequences",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "id": "id",
@@ -1859,6 +1941,7 @@
         "Fields": {
           "displayName": "Fields",
           "path": "/Fields",
+          "responseKey": "data",
           "fields": {
             "advanced_formula": "advanced_formula",
             "api_name": "api_name",
@@ -1911,6 +1994,7 @@
         "Forecasts": {
           "displayName": "Forecasts",
           "path": "/Forecasts",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "description": "description",
@@ -1939,6 +2023,7 @@
         "FormViewSharingClientRelations": {
           "displayName": "Form View Sharing Client Relations",
           "path": "/FormViewSharingClientRelations",
+          "responseKey": "data",
           "fields": {
             "client": "client",
             "client_id": "client_id",
@@ -1956,6 +2041,7 @@
         "FormViewSharingSalesUnitRelations": {
           "displayName": "Form View Sharing Sales Unit Relations",
           "path": "/FormViewSharingSalesUnitRelations",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "form_view": "form_view",
@@ -1973,6 +2059,7 @@
         "FormViews": {
           "displayName": "Form Views",
           "path": "/FormViews",
+          "responseKey": "data",
           "fields": {
             "account_type": "account_type",
             "account_type_id": "account_type_id",
@@ -2003,6 +2090,7 @@
         "GhostContactAccountAccountRoleRelations": {
           "displayName": "Ghost Contact Account Account Role Relations",
           "path": "/GhostContactAccountAccountRoleRelations",
+          "responseKey": "data",
           "fields": {
             "account_role": "account_role",
             "account_role_id": "account_role_id",
@@ -2019,6 +2107,7 @@
         "GhostContactAccountRelations": {
           "displayName": "Ghost Contact Account Relations",
           "path": "/GhostContactAccountRelations",
+          "responseKey": "data",
           "fields": {
             "account": "account",
             "account_id": "account_id",
@@ -2040,6 +2129,7 @@
         "GhostContacts": {
           "displayName": "Ghost Contacts",
           "path": "/GhostContacts",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "id": "id",
@@ -2054,6 +2144,7 @@
         "GhostLeadOpptyContactRelations": {
           "displayName": "Ghost Lead Oppty Contact Relations",
           "path": "/GhostLeadOpptyContactRelations",
+          "responseKey": "data",
           "fields": {
             "comment": "comment",
             "created": "created",
@@ -2076,6 +2167,7 @@
         "GhostLeadOpptyContactSalesRoleRelations": {
           "displayName": "Ghost Lead Oppty Contact Sales Role Relations",
           "path": "/GhostLeadOpptyContactSalesRoleRelations",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "ghost_lead_oppty_contact_relation": "ghost_lead_oppty_contact_relation",
@@ -2092,6 +2184,7 @@
         "ImportMappingMasks": {
           "displayName": "Import Mapping Masks",
           "path": "/ImportMappingMasks",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "entity_api_name": "entity_api_name",
@@ -2114,6 +2207,7 @@
         "InterfacePreviews": {
           "displayName": "Interface Previews",
           "path": "/InterfacePreviews",
+          "responseKey": "data",
           "fields": {
             "account_type": "account_type",
             "account_type_id": "account_type_id",
@@ -2155,6 +2249,7 @@
         "LeadOppties": {
           "displayName": "Lead Oppties",
           "path": "/LeadOppties",
+          "responseKey": "data",
           "fields": {
             "id": "id",
             "is_delete_protected": "is_delete_protected"
@@ -2163,6 +2258,7 @@
         "LeadOpptyAccountRelations": {
           "displayName": "Lead Oppty Account Relations",
           "path": "/LeadOpptyAccountRelations",
+          "responseKey": "data",
           "fields": {
             "account": "account",
             "account_id": "account_id",
@@ -2181,6 +2277,7 @@
         "LeadOpptyContactGroupRelations": {
           "displayName": "Lead Oppty Contact Group Relations",
           "path": "/LeadOpptyContactGroupRelations",
+          "responseKey": "data",
           "fields": {
             "color": "color",
             "created": "created",
@@ -2199,6 +2296,7 @@
         "LeadOpptyContactRelations": {
           "displayName": "Lead Oppty Contact Relations",
           "path": "/LeadOpptyContactRelations",
+          "responseKey": "data",
           "fields": {
             "comment": "comment",
             "contact": "contact",
@@ -2223,6 +2321,7 @@
         "LeadOpptyContactSalesRoleRelations": {
           "displayName": "Lead Oppty Contact Sales Role Relations",
           "path": "/LeadOpptyContactSalesRoleRelations",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "id": "id",
@@ -2239,6 +2338,7 @@
         "LeadOpptyDataExRelations": {
           "displayName": "Lead Oppty Data Ex Relations",
           "path": "/LeadOpptyDataExRelations",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "data": "data",
@@ -2257,6 +2357,7 @@
         "LeadOpptyKPIs": {
           "displayName": "Lead Oppty KPIs",
           "path": "/LeadOpptyKPIs",
+          "responseKey": "data",
           "fields": {
             "application_id": "application_id",
             "client": "client",
@@ -2280,6 +2381,7 @@
         "LeadOpptySharingClientRelations": {
           "displayName": "Lead Oppty Sharing Client Relations",
           "path": "/LeadOpptySharingClientRelations",
+          "responseKey": "data",
           "fields": {
             "client": "client",
             "client_id": "client_id",
@@ -2298,6 +2400,7 @@
         "LeadOpptySharingSalesUnitRelations": {
           "displayName": "Lead Oppty Sharing Sales Unit Relations",
           "path": "/LeadOpptySharingSalesUnitRelations",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "id": "id",
@@ -2316,6 +2419,7 @@
         "LeadOpptyStepCheckListRelations": {
           "displayName": "Lead Oppty Step Check List Relations",
           "path": "/LeadOpptyStepCheckListRelations",
+          "responseKey": "data",
           "fields": {
             "activity_id": "activity_id",
             "appointment": "appointment",
@@ -2345,6 +2449,7 @@
         "LeadProcesses": {
           "displayName": "Lead Processes",
           "path": "/LeadProcesses",
+          "responseKey": "data",
           "fields": {
             "color": "color",
             "created": "created",
@@ -2361,6 +2466,7 @@
         "LeadTypes": {
           "displayName": "Lead Types",
           "path": "/LeadTypes",
+          "responseKey": "data",
           "fields": {
             "can_change_readonly": "can_change_readonly",
             "created": "created",
@@ -2385,6 +2491,7 @@
         "Leads": {
           "displayName": "Leads",
           "path": "/Leads",
+          "responseKey": "data",
           "fields": {
             "account_relations": "account_relations",
             "contact_relations": "contact_relations",
@@ -2439,6 +2546,7 @@
         "MasterRights": {
           "displayName": "Master Rights",
           "path": "/MasterRights",
+          "responseKey": "data",
           "fields": {
             "access_account_relation_types": "access_account_relation_types",
             "access_accounts": "access_accounts",
@@ -2581,6 +2689,7 @@
         "MemoComments": {
           "displayName": "Memo Comments",
           "path": "/MemoComments",
+          "responseKey": "data",
           "fields": {
             "comment": "comment",
             "created": "created",
@@ -2598,6 +2707,7 @@
         "Memos": {
           "displayName": "Memos",
           "path": "/Memos",
+          "responseKey": "data",
           "fields": {
             "account_relations": "account_relations",
             "comments": "comments",
@@ -2625,6 +2735,7 @@
         "MessageRelations": {
           "displayName": "Message Relations",
           "path": "/MessageRelations",
+          "responseKey": "data",
           "fields": {
             "account": "account",
             "account_id": "account_id",
@@ -2653,6 +2764,7 @@
         "MessageSharingClientRelations": {
           "displayName": "Message Sharing Client Relations",
           "path": "/MessageSharingClientRelations",
+          "responseKey": "data",
           "fields": {
             "client": "client",
             "client_id": "client_id",
@@ -2670,6 +2782,7 @@
         "MessageSharingSalesUnitRelations": {
           "displayName": "Message Sharing Sales Unit Relations",
           "path": "/MessageSharingSalesUnitRelations",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "email": "email",
@@ -2687,6 +2800,7 @@
         "Notes": {
           "displayName": "Notes",
           "path": "/Notes",
+          "responseKey": "data",
           "fields": {
             "account": "account",
             "account_id": "account_id",
@@ -2715,6 +2829,7 @@
         "OnlineFormActivityLogLines": {
           "displayName": "Online Form Activity Log Lines",
           "path": "/OnlineFormActivityLogLines",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "executed_at": "executed_at",
@@ -2733,6 +2848,7 @@
         "OnlineFormDataExRelations": {
           "displayName": "Online Form Data Ex Relations",
           "path": "/OnlineFormDataExRelations",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "data": "data",
@@ -2750,6 +2866,7 @@
         "OnlineFormRelations": {
           "displayName": "Online Form Relations",
           "path": "/OnlineFormRelations",
+          "responseKey": "data",
           "fields": {
             "account": "account",
             "account_id": "account_id",
@@ -2776,6 +2893,7 @@
         "OnlineFormTypeEmailRelations": {
           "displayName": "Online Form Type Email Relations",
           "path": "/OnlineFormTypeEmailRelations",
+          "responseKey": "data",
           "fields": {
             "account": "account",
             "account_id": "account_id",
@@ -2799,6 +2917,7 @@
         "OnlineFormTypes": {
           "displayName": "Online Form Types",
           "path": "/OnlineFormTypes",
+          "responseKey": "data",
           "fields": {
             "activity_logs": "activity_logs",
             "auto_prefill_with_javascript": "auto_prefill_with_javascript",
@@ -2830,6 +2949,7 @@
         "OnlineForms": {
           "displayName": "Online Forms",
           "path": "/OnlineForms",
+          "responseKey": "data",
           "fields": {
             "account_relations": "account_relations",
             "contact_relations": "contact_relations",
@@ -2857,6 +2977,7 @@
         "Opportunities": {
           "displayName": "Opportunities",
           "path": "/Opportunities",
+          "responseKey": "data",
           "fields": {
             "account_relations": "account_relations",
             "active_quote": "active_quote",
@@ -2926,6 +3047,7 @@
         "OpportunityTypes": {
           "displayName": "Opportunity Types",
           "path": "/OpportunityTypes",
+          "responseKey": "data",
           "fields": {
             "can_change_readonly": "can_change_readonly",
             "created": "created",
@@ -2953,6 +3075,7 @@
         "OpptyProductRelationDataExRelations": {
           "displayName": "Oppty Product Relation Data Ex Relations",
           "path": "/OpptyProductRelationDataExRelations",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "data": "data",
@@ -2970,6 +3093,7 @@
         "OpptyProductRelationRevenueSchedulePeriods": {
           "displayName": "Oppty Product Relation Revenue Schedule Periods",
           "path": "/OpptyProductRelationRevenueSchedulePeriods",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "date": "date",
@@ -2987,6 +3111,7 @@
         "OpptyProductRelationRevenueSchedules": {
           "displayName": "Oppty Product Relation Revenue Schedules",
           "path": "/OpptyProductRelationRevenueSchedules",
+          "responseKey": "data",
           "fields": {
             "cancelation_date": "cancelation_date",
             "created": "created",
@@ -3004,6 +3129,7 @@
         "OpptyProductRelationTypes": {
           "displayName": "Oppty Product Relation Types",
           "path": "/OpptyProductRelationTypes",
+          "responseKey": "data",
           "fields": {
             "can_change_readonly": "can_change_readonly",
             "created": "created",
@@ -3025,6 +3151,7 @@
         "OpptyProductRelations": {
           "displayName": "Oppty Product Relations",
           "path": "/OpptyProductRelations",
+          "responseKey": "data",
           "fields": {
             "amount": "amount",
             "comment": "comment",
@@ -3057,6 +3184,7 @@
         "OpptyRecurrences": {
           "displayName": "Oppty Recurrences",
           "path": "/OpptyRecurrences",
+          "responseKey": "data",
           "fields": {
             "condition": "condition",
             "created": "created",
@@ -3083,6 +3211,7 @@
         "OpptyRevenueSchedulePeriods": {
           "displayName": "Oppty Revenue Schedule Periods",
           "path": "/OpptyRevenueSchedulePeriods",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "date": "date",
@@ -3100,6 +3229,7 @@
         "OpptyRevenueSchedules": {
           "displayName": "Oppty Revenue Schedules",
           "path": "/OpptyRevenueSchedules",
+          "responseKey": "data",
           "fields": {
             "cancelation_date": "cancelation_date",
             "created": "created",
@@ -3117,6 +3247,7 @@
         "ParentAccountRelationTypes": {
           "displayName": "Parent Account Relation Types",
           "path": "/ParentAccountRelationTypes",
+          "responseKey": "data",
           "fields": {
             "child_label": "child_label",
             "created": "created",
@@ -3131,6 +3262,7 @@
         "Phones": {
           "displayName": "Phones",
           "path": "/Phones",
+          "responseKey": "data",
           "fields": {
             "call_forwarding_phone": "call_forwarding_phone",
             "created": "created",
@@ -3151,6 +3283,7 @@
         "Pipelines": {
           "displayName": "Pipelines",
           "path": "/Pipelines",
+          "responseKey": "data",
           "fields": {
             "color": "color",
             "created": "created",
@@ -3167,6 +3300,7 @@
         "ProcessActivityLogLines": {
           "displayName": "Process Activity Log Lines",
           "path": "/ProcessActivityLogLines",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "executed_at": "executed_at",
@@ -3185,6 +3319,7 @@
         "ProcessActivityLogs": {
           "displayName": "Process Activity Logs",
           "path": "/ProcessActivityLogs",
+          "responseKey": "data",
           "fields": {
             "actor": "actor",
             "actor_id": "actor_id",
@@ -3211,6 +3346,7 @@
         "ProcessTemplates": {
           "displayName": "Process Templates",
           "path": "/ProcessTemplates",
+          "responseKey": "data",
           "fields": {
             "action_types": "action_types",
             "created": "created",
@@ -3228,6 +3364,7 @@
         "Processes": {
           "displayName": "Processes",
           "path": "/Processes",
+          "responseKey": "data",
           "fields": {
             "activity": "activity",
             "activity_logs": "activity_logs",
@@ -3252,6 +3389,7 @@
         "ProductCategories": {
           "displayName": "Product Categories",
           "path": "/ProductCategories",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "id": "id",
@@ -3268,6 +3406,7 @@
         "ProductDataExRelations": {
           "displayName": "Product Data Ex Relations",
           "path": "/ProductDataExRelations",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "data": "data",
@@ -3285,6 +3424,7 @@
         "ProductPipelineRelations": {
           "displayName": "Product Pipeline Relations",
           "path": "/ProductPipelineRelations",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "id": "id",
@@ -3301,6 +3441,7 @@
         "ProductPriceListPrices": {
           "displayName": "Product Price List Prices",
           "path": "/ProductPriceListPrices",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "currency": "currency",
@@ -3320,6 +3461,7 @@
         "ProductPriceLists": {
           "displayName": "Product Price Lists",
           "path": "/ProductPriceLists",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "end_date": "end_date",
@@ -3336,6 +3478,7 @@
         "ProductTypes": {
           "displayName": "Product Types",
           "path": "/ProductTypes",
+          "responseKey": "data",
           "fields": {
             "can_change_readonly": "can_change_readonly",
             "created": "created",
@@ -3357,6 +3500,7 @@
         "Products": {
           "displayName": "Products",
           "path": "/Products",
+          "responseKey": "data",
           "fields": {
             "allowed_pipelines": "allowed_pipelines",
             "created": "created",
@@ -3384,6 +3528,7 @@
         "ProfileSharingClientRelations": {
           "displayName": "Profile Sharing Client Relations",
           "path": "/ProfileSharingClientRelations",
+          "responseKey": "data",
           "fields": {
             "client": "client",
             "client_id": "client_id",
@@ -3400,6 +3545,7 @@
         "ProfileSharingSalesUnitRelations": {
           "displayName": "Profile Sharing Sales Unit Relations",
           "path": "/ProfileSharingSalesUnitRelations",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "id": "id",
@@ -3416,6 +3562,7 @@
         "Profiles": {
           "displayName": "Profiles",
           "path": "/Profiles",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "entity": "entity",
@@ -3437,6 +3584,7 @@
         "ProjectContactRelations": {
           "displayName": "Project Contact Relations",
           "path": "/ProjectContactRelations",
+          "responseKey": "data",
           "fields": {
             "contact": "contact",
             "contact_id": "contact_id",
@@ -3454,6 +3602,7 @@
         "ProjectDataExRelations": {
           "displayName": "Project Data Ex Relations",
           "path": "/ProjectDataExRelations",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "data": "data",
@@ -3471,6 +3620,7 @@
         "ProjectKPIs": {
           "displayName": "Project KPIs",
           "path": "/ProjectKPIs",
+          "responseKey": "data",
           "fields": {
             "application_id": "application_id",
             "client": "client",
@@ -3493,6 +3643,7 @@
         "ProjectObjectives": {
           "displayName": "Project Objectives",
           "path": "/ProjectObjectives",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "id": "id",
@@ -3509,6 +3660,7 @@
         "ProjectSharingClientRelations": {
           "displayName": "Project Sharing Client Relations",
           "path": "/ProjectSharingClientRelations",
+          "responseKey": "data",
           "fields": {
             "client": "client",
             "client_id": "client_id",
@@ -3526,6 +3678,7 @@
         "ProjectSharingSalesUnitRelations": {
           "displayName": "Project Sharing Sales Unit Relations",
           "path": "/ProjectSharingSalesUnitRelations",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "id": "id",
@@ -3543,6 +3696,7 @@
         "ProjectTypes": {
           "displayName": "Project Types",
           "path": "/ProjectTypes",
+          "responseKey": "data",
           "fields": {
             "can_change_readonly": "can_change_readonly",
             "created": "created",
@@ -3563,6 +3717,7 @@
         "Projects": {
           "displayName": "Projects",
           "path": "/Projects",
+          "responseKey": "data",
           "fields": {
             "account": "account",
             "account_id": "account_id",
@@ -3603,6 +3758,7 @@
         "QuoteAccountRelations": {
           "displayName": "Quote Account Relations",
           "path": "/QuoteAccountRelations",
+          "responseKey": "data",
           "fields": {
             "account": "account",
             "account_id": "account_id",
@@ -3620,6 +3776,7 @@
         "QuoteContactRelations": {
           "displayName": "Quote Contact Relations",
           "path": "/QuoteContactRelations",
+          "responseKey": "data",
           "fields": {
             "contact": "contact",
             "contact_id": "contact_id",
@@ -3637,6 +3794,7 @@
         "QuoteDataExRelations": {
           "displayName": "Quote Data Ex Relations",
           "path": "/QuoteDataExRelations",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "data": "data",
@@ -3654,6 +3812,7 @@
         "QuoteKPIs": {
           "displayName": "Quote KPIs",
           "path": "/QuoteKPIs",
+          "responseKey": "data",
           "fields": {
             "application_id": "application_id",
             "client": "client",
@@ -3676,6 +3835,7 @@
         "QuoteProcesses": {
           "displayName": "Quote Processes",
           "path": "/QuoteProcesses",
+          "responseKey": "data",
           "fields": {
             "color": "color",
             "created": "created",
@@ -3692,6 +3852,7 @@
         "QuoteSharingClientRelations": {
           "displayName": "Quote Sharing Client Relations",
           "path": "/QuoteSharingClientRelations",
+          "responseKey": "data",
           "fields": {
             "client": "client",
             "client_id": "client_id",
@@ -3709,6 +3870,7 @@
         "QuoteSharingSalesUnitRelations": {
           "displayName": "Quote Sharing Sales Unit Relations",
           "path": "/QuoteSharingSalesUnitRelations",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "id": "id",
@@ -3726,6 +3888,7 @@
         "QuoteTypes": {
           "displayName": "Quote Types",
           "path": "/QuoteTypes",
+          "responseKey": "data",
           "fields": {
             "can_change_readonly": "can_change_readonly",
             "created": "created",
@@ -3750,6 +3913,7 @@
         "Quotes": {
           "displayName": "Quotes",
           "path": "/Quotes",
+          "responseKey": "data",
           "fields": {
             "account_relations": "account_relations",
             "contact_relations": "contact_relations",
@@ -3807,6 +3971,7 @@
         "ReportFolders": {
           "displayName": "Report Folders",
           "path": "/ReportFolders",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "id": "id",
@@ -3822,6 +3987,7 @@
         "ReportSchedules": {
           "displayName": "Report Schedules",
           "path": "/ReportSchedules",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "documents": "documents",
@@ -3840,6 +4006,7 @@
         "ReportSharingClientRelations": {
           "displayName": "Report Sharing Client Relations",
           "path": "/ReportSharingClientRelations",
+          "responseKey": "data",
           "fields": {
             "client": "client",
             "client_id": "client_id",
@@ -3857,6 +4024,7 @@
         "ReportSharingSalesUnitRelations": {
           "displayName": "Report Sharing Sales Unit Relations",
           "path": "/ReportSharingSalesUnitRelations",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "id": "id",
@@ -3874,6 +4042,7 @@
         "Reports": {
           "displayName": "Reports",
           "path": "/Reports",
+          "responseKey": "data",
           "fields": {
             "access_link": "access_link",
             "created": "created",
@@ -3901,6 +4070,7 @@
         "SalesRoles": {
           "displayName": "Sales Roles",
           "path": "/SalesRoles",
+          "responseKey": "data",
           "fields": {
             "color_code": "color_code",
             "created": "created",
@@ -3915,6 +4085,7 @@
         "SalesUnitClientRelations": {
           "displayName": "Sales Unit Client Relations",
           "path": "/SalesUnitClientRelations",
+          "responseKey": "data",
           "fields": {
             "client": "client",
             "client_id": "client_id",
@@ -3932,6 +4103,7 @@
         "SalesUnits": {
           "displayName": "Sales Units",
           "path": "/SalesUnits",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "id": "id",
@@ -3949,6 +4121,7 @@
         "StepChecklistSalesRoleRelations": {
           "displayName": "Step Checklist Sales Role Relations",
           "path": "/StepChecklistSalesRoleRelations",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "id": "id",
@@ -3965,6 +4138,7 @@
         "StepChecklists": {
           "displayName": "Step Checklists",
           "path": "/StepChecklists",
+          "responseKey": "data",
           "fields": {
             "activity_type_id": "activity_type_id",
             "appointment_type": "appointment_type",
@@ -4004,6 +4178,7 @@
         "Steps": {
           "displayName": "Steps",
           "path": "/Steps",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "description": "description",
@@ -4031,6 +4206,7 @@
         "TagRelations": {
           "displayName": "Tag Relations",
           "path": "/TagRelations",
+          "responseKey": "data",
           "fields": {
             "account": "account",
             "account_id": "account_id",
@@ -4055,6 +4231,7 @@
         "Tags": {
           "displayName": "Tags",
           "path": "/Tags",
+          "responseKey": "data",
           "fields": {
             "color": "color",
             "created": "created",
@@ -4073,6 +4250,7 @@
         "TargetRelations": {
           "displayName": "Target Relations",
           "path": "/TargetRelations",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "group_target": "group_target",
@@ -4089,6 +4267,7 @@
         "Targets": {
           "displayName": "Targets",
           "path": "/Targets",
+          "responseKey": "data",
           "fields": {
             "calculation_type": "calculation_type",
             "child_targets": "child_targets",
@@ -4114,6 +4293,7 @@
         "TaskRecurrences": {
           "displayName": "Task Recurrences",
           "path": "/TaskRecurrences",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "day": "day",
@@ -4137,6 +4317,7 @@
         "TaskReminders": {
           "displayName": "Task Reminders",
           "path": "/TaskReminders",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "id": "id",
@@ -4155,6 +4336,7 @@
         "TaskSharingClientRelations": {
           "displayName": "Task Sharing Client Relations",
           "path": "/TaskSharingClientRelations",
+          "responseKey": "data",
           "fields": {
             "client": "client",
             "client_id": "client_id",
@@ -4172,6 +4354,7 @@
         "TaskSharingSalesUnitRelations": {
           "displayName": "Task Sharing Sales Unit Relations",
           "path": "/TaskSharingSalesUnitRelations",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "id": "id",
@@ -4189,6 +4372,7 @@
         "TaskTypes": {
           "displayName": "Task Types",
           "path": "/TaskTypes",
+          "responseKey": "data",
           "fields": {
             "can_change_readonly": "can_change_readonly",
             "created": "created",
@@ -4209,6 +4393,7 @@
         "Tasks": {
           "displayName": "Tasks",
           "path": "/Tasks",
+          "responseKey": "data",
           "fields": {
             "account_relations": "account_relations",
             "active_reminder": "active_reminder",
@@ -4258,6 +4443,7 @@
         "TextMessageConversationRelationses": {
           "displayName": "Text Message Conversation Relationses",
           "path": "/TextMessageConversationRelationses",
+          "responseKey": "data",
           "fields": {
             "account": "account",
             "account_id": "account_id",
@@ -4283,6 +4469,7 @@
         "TextMessageConversations": {
           "displayName": "Text Message Conversations",
           "path": "/TextMessageConversations",
+          "responseKey": "data",
           "fields": {
             "account_relations": "account_relations",
             "contact_relations": "contact_relations",
@@ -4309,6 +4496,7 @@
         "TextMessages": {
           "displayName": "Text Messages",
           "path": "/TextMessages",
+          "responseKey": "data",
           "fields": {
             "content": "content",
             "created": "created",
@@ -4328,6 +4516,7 @@
         "Timeframes": {
           "displayName": "Timeframes",
           "path": "/Timeframes",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "id": "id",
@@ -4346,6 +4535,7 @@
         "Translations": {
           "displayName": "Translations",
           "path": "/Translations",
+          "responseKey": "data",
           "fields": {
             "account_type": "account_type",
             "account_type_id": "account_type_id",
@@ -4388,6 +4578,7 @@
         "Types": {
           "displayName": "Types",
           "path": "/Types",
+          "responseKey": "data",
           "fields": {
             "container_size": "container_size",
             "default_value": "default_value",
@@ -4406,6 +4597,7 @@
         "UnsubscribedPhones": {
           "displayName": "Unsubscribed Phones",
           "path": "/UnsubscribedPhones",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "id": "id",
@@ -4419,6 +4611,7 @@
         "WebhookEvents": {
           "displayName": "Webhook Events",
           "path": "/WebhookEvents",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "event": "event",
@@ -4433,6 +4626,7 @@
         "Webhooks": {
           "displayName": "Webhooks",
           "path": "/Webhooks",
+          "responseKey": "data",
           "fields": {
             "application": "application",
             "application_id": "application_id",
@@ -4453,6 +4647,7 @@
         "Webresources": {
           "displayName": "Web Resources",
           "path": "/Webresources",
+          "responseKey": "data",
           "fields": {
             "created": "created",
             "display_param": "display_param",

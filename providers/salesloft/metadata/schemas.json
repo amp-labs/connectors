@@ -7,6 +7,7 @@
         "account_stages": {
           "displayName": "Account Stages",
           "path": "/account_stages",
+          "locatedAt": "data",
           "fields": {
             "active": "active",
             "created_at": "created_at",
@@ -20,6 +21,7 @@
         "account_tiers": {
           "displayName": "Account Tiers",
           "path": "/account_tiers",
+          "locatedAt": "data",
           "fields": {
             "active": "active",
             "created_at": "created_at",
@@ -33,6 +35,7 @@
         "accounts": {
           "displayName": "Accounts",
           "path": "/accounts",
+          "locatedAt": "data",
           "fields": {
             "account_tier": "account_tier",
             "archived_at": "archived_at",
@@ -80,6 +83,7 @@
         "action_details_call_instructions": {
           "displayName": "Call Instructions",
           "path": "/action_details_call_instructions",
+          "locatedAt": "data",
           "fields": {
             "created_at": "created_at",
             "id": "id",
@@ -91,6 +95,7 @@
         "actions": {
           "displayName": "Actions",
           "path": "/actions",
+          "locatedAt": "data",
           "fields": {
             "action_details": "action_details",
             "cadence": "cadence",
@@ -112,6 +117,7 @@
         "activities_calls": {
           "displayName": "Calls",
           "path": "/activities_calls",
+          "locatedAt": "data",
           "fields": {
             "action": "action",
             "cadence": "cadence",
@@ -135,6 +141,7 @@
         "activities_emails": {
           "displayName": "Emails",
           "path": "/activities_emails",
+          "locatedAt": "data",
           "fields": {
             "action": "action",
             "additional_recipients": "additional_recipients",
@@ -169,6 +176,7 @@
         "activity_histories": {
           "displayName": "Past Activities",
           "path": "/activity_histories",
+          "locatedAt": "data",
           "fields": {
             "created_at": "created_at",
             "dynamic_data": "dynamic_data",
@@ -189,6 +197,7 @@
         "bulk_jobs": {
           "displayName": "Bulk Jobs",
           "path": "/bulk_jobs",
+          "locatedAt": "data",
           "fields": {
             "created_at": "created_at",
             "errors": "errors",
@@ -210,6 +219,7 @@
         "bulk_jobs_job_data": {
           "displayName": "Job Data for a Bulk Job",
           "path": "/bulk_jobs_job_data",
+          "locatedAt": "data",
           "fields": {
             "error": "error",
             "id": "id",
@@ -222,6 +232,7 @@
         "bulk_jobs_results": {
           "displayName": "Job Data for a Completed Bulk Job.",
           "path": "/bulk_jobs_results",
+          "locatedAt": "data",
           "fields": {
             "error": "error",
             "id": "id",
@@ -234,6 +245,7 @@
         "cadence_memberships": {
           "displayName": "Cadence Memberships",
           "path": "/cadence_memberships",
+          "locatedAt": "data",
           "fields": {
             "added_at": "added_at",
             "cadence": "cadence",
@@ -253,6 +265,7 @@
         "cadences": {
           "displayName": "Cadences",
           "path": "/cadences",
+          "locatedAt": "data",
           "fields": {
             "added_stage": "added_stage",
             "archived": "archived",
@@ -289,6 +302,7 @@
         "calendar_events": {
           "displayName": "Calendar Events",
           "path": "/calendar_events",
+          "locatedAt": "data",
           "fields": {
             "all_day": "all_day",
             "attendees": "attendees",
@@ -324,6 +338,7 @@
         "call_data_records": {
           "displayName": "Call Data Records",
           "path": "/call_data_records",
+          "locatedAt": "data",
           "fields": {
             "call": "call",
             "call_type": "call_type",
@@ -348,6 +363,7 @@
         "call_dispositions": {
           "displayName": "Call Dispositions",
           "path": "/call_dispositions",
+          "locatedAt": "data",
           "fields": {
             "created_at": "created_at",
             "id": "id",
@@ -359,6 +375,7 @@
         "call_sentiments": {
           "displayName": "Call Sentiments",
           "path": "/call_sentiments",
+          "locatedAt": "data",
           "fields": {
             "created_at": "created_at",
             "id": "id",
@@ -367,9 +384,25 @@
           },
           "docs": "https://developers.salesloft.com/docs/api/call-sentiments-index"
         },
+        "crm_account_team_members": {
+          "displayName": "Crm Account Team Members",
+          "path": "/crm_account_team_members",
+          "locatedAt": "data",
+          "fields": {
+            "account_access_level": "account_access_level",
+            "account_crm_id": "account_crm_id",
+            "crm_id": "crm_id",
+            "id": "id",
+            "team_member_role": "team_member_role",
+            "user_crm_id": "user_crm_id",
+            "user_crm_name": "user_crm_name"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/crm-account-team-members-index"
+        },
         "crm_activities": {
           "displayName": "Crm Activities",
           "path": "/crm_activities",
+          "locatedAt": "data",
           "fields": {
             "activity_type": "activity_type",
             "created_at": "created_at",
@@ -388,6 +421,7 @@
         "crm_activity_fields": {
           "displayName": "Crm Activity Fields",
           "path": "/crm_activity_fields",
+          "locatedAt": "data",
           "fields": {
             "created_at": "created_at",
             "crm_object_type": "crm_object_type",
@@ -406,6 +440,7 @@
         "crm_users": {
           "displayName": "Crm Users",
           "path": "/crm_users",
+          "locatedAt": "data",
           "fields": {
             "created_at": "created_at",
             "crm_id": "crm_id",
@@ -421,6 +456,7 @@
         "custom_fields": {
           "displayName": "Custom Fields",
           "path": "/custom_fields",
+          "locatedAt": "data",
           "fields": {
             "created_at": "created_at",
             "field_type": "field_type",
@@ -434,6 +470,7 @@
         "custom_roles": {
           "displayName": "Custom Roles",
           "path": "/custom_roles",
+          "locatedAt": "data",
           "fields": {
             "id": "id",
             "name": "name"
@@ -443,6 +480,7 @@
         "data_control_requests": {
           "displayName": "Requests",
           "path": "/data_control_requests",
+          "locatedAt": "data",
           "fields": {
             "dry_run": "dry_run",
             "events": "events",
@@ -457,6 +495,7 @@
         "email_template_attachments": {
           "displayName": "Email Template Attachments",
           "path": "/email_template_attachments",
+          "locatedAt": "data",
           "fields": {
             "attachment_content_type": "attachment_content_type",
             "attachment_file_size": "attachment_file_size",
@@ -473,6 +512,7 @@
         "email_templates": {
           "displayName": "Email Templates",
           "path": "/email_templates",
+          "locatedAt": "data",
           "fields": {
             "_links": "_links",
             "archived_at": "archived_at",
@@ -499,6 +539,7 @@
         "external_configurations": {
           "displayName": "Team Configurations",
           "path": "/external_configurations",
+          "locatedAt": "data",
           "fields": {
             "deleted": "deleted",
             "external_type": "external_type",
@@ -512,6 +553,7 @@
         "external_mappings": {
           "displayName": "Team Mappings",
           "path": "/external_mappings",
+          "locatedAt": "data",
           "fields": {
             "deleted": "deleted",
             "external_id": "external_id",
@@ -527,6 +569,7 @@
         "groups": {
           "displayName": "Groups",
           "path": "/groups",
+          "locatedAt": "data",
           "fields": {
             "accessible_groups": "accessible_groups",
             "id": "id",
@@ -538,6 +581,7 @@
         "imports": {
           "displayName": "Imports",
           "path": "/imports",
+          "locatedAt": "data",
           "fields": {
             "created_at": "created_at",
             "current_people_count": "current_people_count",
@@ -554,6 +598,7 @@
         "integrations_signals_registrations": {
           "displayName": "Signal Registrations",
           "path": "/integrations_signals_registrations",
+          "locatedAt": "data",
           "fields": {
             "attribution": "attribution",
             "created_at": "created_at",
@@ -565,6 +610,7 @@
             "integration": "integration",
             "integration_slug": "integration_slug",
             "owner_user_guid": "owner_user_guid",
+            "signal_name": "signal_name",
             "type": "type"
           },
           "docs": "https://developers.salesloft.com/docs/api/integrations-signals-registrations-index"
@@ -572,6 +618,7 @@
         "integrations_signals_registrations_plays": {
           "displayName": "Play Registrations",
           "path": "/integrations_signals_registrations_plays",
+          "locatedAt": "data",
           "fields": {
             "attributes": "attributes",
             "created_at": "created_at",
@@ -594,6 +641,7 @@
         "meetings": {
           "displayName": "Meetings",
           "path": "/meetings",
+          "locatedAt": "data",
           "fields": {
             "account_id": "account_id",
             "all_day": "all_day",
@@ -644,6 +692,7 @@
         "notes": {
           "displayName": "Notes",
           "path": "/notes",
+          "locatedAt": "data",
           "fields": {
             "associated_type": "associated_type",
             "associated_with": "associated_with",
@@ -656,9 +705,80 @@
           },
           "docs": "https://developers.salesloft.com/docs/api/notes-index"
         },
+        "opportunities": {
+          "displayName": "Opportunities",
+          "path": "/opportunities",
+          "locatedAt": "data",
+          "fields": {
+            "account": "account",
+            "account_crm_id": "account_crm_id",
+            "account_name": "account_name",
+            "amount": "amount",
+            "close_date": "close_date",
+            "created_at": "created_at",
+            "created_by_crm_id": "created_by_crm_id",
+            "created_date": "created_date",
+            "creator": "creator",
+            "crm_id": "crm_id",
+            "crm_last_updated_date": "crm_last_updated_date",
+            "crm_type": "crm_type",
+            "crm_url": "crm_url",
+            "currency_iso_code": "currency_iso_code",
+            "custom_fields": "custom_fields",
+            "id": "id",
+            "is_closed": "is_closed",
+            "is_won": "is_won",
+            "most_recent_cadence": "most_recent_cadence",
+            "most_recent_step": "most_recent_step",
+            "most_recent_step_account": "most_recent_step_account",
+            "most_recent_step_number": "most_recent_step_number",
+            "name": "name",
+            "opportunity_type": "opportunity_type",
+            "opportunity_window_person_id": "opportunity_window_person_id",
+            "opportunity_window_started_at": "opportunity_window_started_at",
+            "owner": "owner",
+            "owner_crm_id": "owner_crm_id",
+            "owner_crm_name": "owner_crm_name",
+            "probability": "probability",
+            "stage_name": "stage_name",
+            "tags": "tags",
+            "updated_at": "updated_at"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/opportunities-index"
+        },
+        "opportunity_people": {
+          "displayName": "Opportunity/Person Associations",
+          "path": "/opportunity_people",
+          "locatedAt": "data",
+          "fields": {
+            "created_at": "created_at",
+            "id": "id",
+            "opportunity_crm_id": "opportunity_crm_id",
+            "opportunity_id": "opportunity_id",
+            "person_crm_id": "person_crm_id",
+            "person_id": "person_id",
+            "updated_at": "updated_at"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/opportunity-people-index"
+        },
+        "opportunity_stages": {
+          "displayName": "Opportunity Stages",
+          "path": "/opportunity_stages",
+          "locatedAt": "data",
+          "fields": {
+            "active": "active",
+            "created_at": "created_at",
+            "id": "id",
+            "name": "name",
+            "order": "order",
+            "updated_at": "updated_at"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/opportunity-stages-index"
+        },
         "pending_emails": {
           "displayName": "Pending Emails",
           "path": "/pending_emails",
+          "locatedAt": "data",
           "fields": {
             "id": "id",
             "mailbox": "mailbox",
@@ -669,6 +789,7 @@
         "people": {
           "displayName": "People",
           "path": "/people",
+          "locatedAt": "data",
           "fields": {
             "account": "account",
             "account_crm_id": "account_crm_id",
@@ -690,6 +811,7 @@
             "first_name": "first_name",
             "full_email_address": "full_email_address",
             "home_phone": "home_phone",
+            "hot_lead": "hot_lead",
             "id": "id",
             "import": "import",
             "job_seniority": "job_seniority",
@@ -733,6 +855,7 @@
         "person_stages": {
           "displayName": "Person Stages",
           "path": "/person_stages",
+          "locatedAt": "data",
           "fields": {
             "active": "active",
             "created_at": "created_at",
@@ -746,6 +869,7 @@
         "phone_number_assignments": {
           "displayName": "Phone Number Assignments",
           "path": "/phone_number_assignments",
+          "locatedAt": "data",
           "fields": {
             "id": "id",
             "number": "number",
@@ -756,6 +880,7 @@
         "phone_numbers_caller_ids": {
           "displayName": "Caller Ids",
           "path": "/phone_numbers_caller_ids",
+          "locatedAt": "data",
           "fields": {
             "account_name": "account_name",
             "display_name": "display_name",
@@ -767,6 +892,7 @@
         "saved_list_views": {
           "displayName": "Saved List Views",
           "path": "/saved_list_views",
+          "locatedAt": "data",
           "fields": {
             "id": "id",
             "is_default": "is_default",
@@ -780,6 +906,7 @@
         "steps": {
           "displayName": "Steps",
           "path": "/steps",
+          "locatedAt": "data",
           "fields": {
             "cadence": "cadence",
             "created_at": "created_at",
@@ -799,6 +926,7 @@
         "successes": {
           "displayName": "Successes",
           "path": "/successes",
+          "locatedAt": "data",
           "fields": {
             "counts": "counts",
             "created_at": "created_at",
@@ -819,6 +947,7 @@
         "tags": {
           "displayName": "Team Tags",
           "path": "/tags",
+          "locatedAt": "data",
           "fields": {
             "id": "id",
             "name": "name"
@@ -828,6 +957,7 @@
         "tasks": {
           "displayName": "Tasks",
           "path": "/tasks",
+          "locatedAt": "data",
           "fields": {
             "completed_at": "completed_at",
             "completed_by": "completed_by",
@@ -852,6 +982,7 @@
         "team_template_attachments": {
           "displayName": "Team Template Attachments",
           "path": "/team_template_attachments",
+          "locatedAt": "data",
           "fields": {
             "attachment_file_size": "attachment_file_size",
             "attachment_id": "attachment_id",
@@ -865,6 +996,7 @@
         "team_templates": {
           "displayName": "Team Templates",
           "path": "/team_templates",
+          "locatedAt": "data",
           "fields": {
             "_links": "_links",
             "archived_at": "archived_at",
@@ -888,6 +1020,7 @@
         "users": {
           "displayName": "Users",
           "path": "/users",
+          "locatedAt": "data",
           "fields": {
             "email": "email",
             "guid": "guid",
@@ -899,6 +1032,7 @@
         "webhook_subscriptions": {
           "displayName": "Webhook Subscriptions",
           "path": "/webhook_subscriptions",
+          "locatedAt": "data",
           "fields": {
             "callback_token": "callback_token",
             "callback_url": "callback_url",

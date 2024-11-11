@@ -7,6 +7,7 @@
         "calls": {
           "displayName": "Calls",
           "path": "/calls",
+          "responseKey": "calls",
           "fields": {
             "calendarEventId": "calendarEventId",
             "clientUniqueId": "clientUniqueId",
@@ -33,6 +34,7 @@
         "users": {
           "displayName": "Users",
           "path": "/users",
+          "responseKey": "users",
           "fields": {
             "active": "active",
             "created": "created",
@@ -55,6 +57,7 @@
         "workspaces": {
           "displayName": "Workspaces",
           "path": "/workspaces",
+          "responseKey": "workspaces",
           "fields": {
             "description": "description",
             "id": "id",

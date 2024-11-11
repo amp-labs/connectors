@@ -87,7 +87,7 @@ func main() {
 		}
 
 		for _, field := range object.Fields {
-			schemas.Add("", object.ObjectName, object.DisplayName, field, object.URLPath, nil)
+			schemas.Add("", object.ObjectName, object.DisplayName, field, object.URLPath, object.ResponseKey, nil)
 		}
 
 		for _, queryParam := range object.QueryParams {

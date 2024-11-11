@@ -7,6 +7,7 @@
         "article_labels": {
           "displayName": "Article Labels",
           "path": "/help_center/articles/labels",
+          "responseKey": "labels",
           "fields": {
             "created_at": "created_at",
             "id": "id",
@@ -18,6 +19,7 @@
         "articles": {
           "displayName": "Articles",
           "path": "/help_center/articles/search",
+          "responseKey": "results",
           "fields": {
             "author_id": "author_id",
             "body": "body",
@@ -49,6 +51,7 @@
         "community_posts": {
           "displayName": "Community Posts",
           "path": "/help_center/community_posts/search",
+          "responseKey": "results",
           "fields": {
             "author_id": "author_id",
             "closed": "closed",
@@ -75,6 +78,7 @@
         "posts": {
           "displayName": "Posts",
           "path": "/community/posts",
+          "responseKey": "posts",
           "fields": {
             "author_id": "author_id",
             "closed": "closed",
@@ -101,6 +105,7 @@
         "topics": {
           "displayName": "Topics",
           "path": "/community/topics",
+          "responseKey": "topics",
           "fields": {
             "created_at": "created_at",
             "description": "description",
@@ -118,6 +123,7 @@
         "user_segments": {
           "displayName": "User Segments",
           "path": "/help_center/user_segments",
+          "responseKey": "user_segments",
           "fields": {
             "built_in": "built_in",
             "created_at": "created_at",
@@ -140,6 +146,7 @@
         "activities": {
           "displayName": "Activities",
           "path": "/activities",
+          "responseKey": "activities",
           "fields": {
             "actor": "actor",
             "actor_id": "actor_id",
@@ -158,6 +165,7 @@
         "attributes": {
           "displayName": "Attributes",
           "path": "/routing/attributes",
+          "responseKey": "attributes",
           "fields": {
             "created_at": "created_at",
             "id": "id",
@@ -169,6 +177,7 @@
         "audit_logs": {
           "displayName": "Audit Logs",
           "path": "/audit_logs",
+          "responseKey": "audit_logs",
           "fields": {
             "action": "action",
             "action_label": "action_label",
@@ -187,6 +196,7 @@
         "automations": {
           "displayName": "Automations",
           "path": "/automations",
+          "responseKey": "automations",
           "fields": {
             "actions": "actions",
             "active": "active",
@@ -203,6 +213,7 @@
         "bookmarks": {
           "displayName": "Bookmarks",
           "path": "/bookmarks",
+          "responseKey": "bookmarks",
           "fields": {
             "created_at": "created_at",
             "id": "id",
@@ -213,6 +224,7 @@
         "brands": {
           "displayName": "Brands",
           "path": "/brands",
+          "responseKey": "brands",
           "fields": {
             "active": "active",
             "brand_url": "brand_url",
@@ -235,6 +247,7 @@
         "custom_objects": {
           "displayName": "Custom Objects",
           "path": "/custom_objects",
+          "responseKey": "custom_objects",
           "fields": {
             "created_at": "created_at",
             "created_by_user_id": "created_by_user_id",
@@ -253,6 +266,7 @@
         "custom_roles": {
           "displayName": "Custom Roles",
           "path": "/custom_roles",
+          "responseKey": "custom_roles",
           "fields": {
             "configuration": "configuration",
             "created_at": "created_at",
@@ -267,6 +281,7 @@
         "custom_statuses": {
           "displayName": "Custom Statuses",
           "path": "/custom_statuses",
+          "responseKey": "custom_statuses",
           "fields": {
             "active": "active",
             "agent_label": "agent_label",
@@ -287,6 +302,7 @@
         "deleted_tickets": {
           "displayName": "Deleted Tickets",
           "path": "/deleted_tickets",
+          "responseKey": "deleted_tickets",
           "fields": {
             "actor": "actor",
             "deleted_at": "deleted_at",
@@ -298,6 +314,7 @@
         "deleted_users": {
           "displayName": "Deleted Users",
           "path": "/deleted_users",
+          "responseKey": "deleted_users",
           "fields": {
             "active": "active",
             "created_at": "created_at",
@@ -319,6 +336,7 @@
         "deletion_schedules": {
           "displayName": "Deletion Schedules",
           "path": "/deletion_schedules",
+          "responseKey": "deletion_schedules",
           "fields": {
             "active": "active",
             "conditions": "conditions",
@@ -334,6 +352,7 @@
         "email_notifications": {
           "displayName": "Email Notifications",
           "path": "/email_notifications",
+          "responseKey": "email_notifications",
           "fields": {
             "comment_id": "comment_id",
             "created_at": "created_at",
@@ -349,6 +368,7 @@
         "group_memberships": {
           "displayName": "Group Memberships",
           "path": "/group_memberships",
+          "responseKey": "group_memberships",
           "fields": {
             "created_at": "created_at",
             "default": "default",
@@ -362,6 +382,7 @@
         "groups": {
           "displayName": "Groups",
           "path": "/groups",
+          "responseKey": "groups",
           "fields": {
             "created_at": "created_at",
             "default": "default",
@@ -377,6 +398,7 @@
         "job_statuses": {
           "displayName": "Job Statuses",
           "path": "/job_statuses",
+          "responseKey": "job_statuses",
           "fields": {
             "id": "id",
             "job_type": "job_type",
@@ -391,6 +413,7 @@
         "locales": {
           "displayName": "Locales",
           "path": "/locales",
+          "responseKey": "locales",
           "fields": {
             "created_at": "created_at",
             "id": "id",
@@ -403,6 +426,7 @@
         "macros": {
           "displayName": "Macros",
           "path": "/macros",
+          "responseKey": "macros",
           "fields": {
             "actions": "actions",
             "active": "active",
@@ -427,6 +451,7 @@
         "monitored_twitter_handles": {
           "displayName": "Monitored Twitter Handles",
           "path": "/channels/twitter/monitored_twitter_handles",
+          "responseKey": "monitored_twitter_handles",
           "fields": {
             "allow_reply": "allow_reply",
             "avatar_url": "avatar_url",
@@ -443,6 +468,7 @@
         "organization_fields": {
           "displayName": "Organization Fields",
           "path": "/organization_fields",
+          "responseKey": "organization_fields",
           "fields": {
             "active": "active",
             "created_at": "created_at",
@@ -467,6 +493,7 @@
         "organization_memberships": {
           "displayName": "Organization Memberships",
           "path": "/organization_memberships",
+          "responseKey": "organization_memberships",
           "fields": {
             "created_at": "created_at",
             "default": "default",
@@ -482,6 +509,7 @@
         "organization_subscriptions": {
           "displayName": "Organization Subscriptions",
           "path": "/organization_subscriptions",
+          "responseKey": "organization_subscriptions",
           "fields": {
             "created_at": "created_at",
             "id": "id",
@@ -492,6 +520,7 @@
         "organizations": {
           "displayName": "Organizations",
           "path": "/organizations",
+          "responseKey": "organizations",
           "fields": {
             "created_at": "created_at",
             "details": "details",
@@ -512,6 +541,7 @@
         "queues": {
           "displayName": "Queues",
           "path": "/queues",
+          "responseKey": "queues",
           "fields": {
             "created_at": "created_at",
             "definition": "definition",
@@ -529,6 +559,7 @@
         "recipient_addresses": {
           "displayName": "Recipient Addresses",
           "path": "/recipient_addresses",
+          "responseKey": "recipient_addresses",
           "fields": {
             "brand_id": "brand_id",
             "cname_status": "cname_status",
@@ -548,6 +579,7 @@
         "requests": {
           "displayName": "Requests",
           "path": "/requests",
+          "responseKey": "requests",
           "fields": {
             "assignee_id": "assignee_id",
             "can_be_solved_by_me": "can_be_solved_by_me",
@@ -579,6 +611,7 @@
         "resource_collections": {
           "displayName": "Resource Collections",
           "path": "/resource_collections",
+          "responseKey": "resource_collections",
           "fields": {
             "created_at": "created_at",
             "id": "id",
@@ -589,6 +622,7 @@
         "satisfaction_ratings": {
           "displayName": "Satisfaction Ratings",
           "path": "/satisfaction_ratings",
+          "responseKey": "satisfaction_ratings",
           "fields": {
             "assignee_id": "assignee_id",
             "comment": "comment",
@@ -608,6 +642,7 @@
         "satisfaction_reasons": {
           "displayName": "Satisfaction Rating Reasons",
           "path": "/satisfaction_reasons",
+          "responseKey": "reasons",
           "fields": {
             "created_at": "created_at",
             "deleted_at": "deleted_at",
@@ -622,6 +657,7 @@
         "search": {
           "displayName": "Search Results",
           "path": "/search",
+          "responseKey": "results",
           "fields": {
             "created_at": "created_at",
             "default": "default",
@@ -637,6 +673,7 @@
         "session": {
           "displayName": "Session",
           "path": "/users/me/session",
+          "responseKey": "session",
           "fields": {
             "authenticated_at": "authenticated_at",
             "id": "id",
@@ -648,6 +685,7 @@
         "sessions": {
           "displayName": "Sessions",
           "path": "/sessions",
+          "responseKey": "sessions",
           "fields": {
             "authenticated_at": "authenticated_at",
             "id": "id",
@@ -659,6 +697,7 @@
         "sharing_agreements": {
           "displayName": "Sharing Agreements",
           "path": "/sharing_agreements",
+          "responseKey": "sharing_agreements",
           "fields": {
             "created_at": "created_at",
             "id": "id",
@@ -674,6 +713,7 @@
         "suspended_tickets": {
           "displayName": "Suspended Tickets",
           "path": "/suspended_tickets",
+          "responseKey": "suspended_tickets",
           "fields": {
             "attachments": "attachments",
             "author": "author",
@@ -696,6 +736,7 @@
         "tags": {
           "displayName": "Tags",
           "path": "/tags",
+          "responseKey": "tags",
           "fields": {
             "count": "count",
             "name": "name"
@@ -704,6 +745,7 @@
         "target_failures": {
           "displayName": "Target Failures",
           "path": "/target_failures",
+          "responseKey": "target_failures",
           "fields": {
             "consecutive_failure_count": "consecutive_failure_count",
             "created_at": "created_at",
@@ -718,6 +760,7 @@
         "targets": {
           "displayName": "Targets",
           "path": "/targets",
+          "responseKey": "targets",
           "fields": {
             "account_name": "account_name",
             "active": "active",
@@ -759,6 +802,7 @@
         "ticket_audits": {
           "displayName": "Ticket Audits",
           "path": "/ticket_audits",
+          "responseKey": "audits",
           "fields": {
             "author_id": "author_id",
             "created_at": "created_at",
@@ -772,6 +816,7 @@
         "ticket_fields": {
           "displayName": "Ticket Fields",
           "path": "/ticket_fields",
+          "responseKey": "ticket_fields",
           "fields": {
             "active": "active",
             "agent_description": "agent_description",
@@ -808,6 +853,7 @@
         "ticket_forms": {
           "displayName": "Ticket Forms",
           "path": "/ticket_forms",
+          "responseKey": "ticket_forms",
           "fields": {
             "active": "active",
             "agent_conditions": "agent_conditions",
@@ -831,6 +877,7 @@
         "ticket_metrics": {
           "displayName": "Ticket Metrics",
           "path": "/ticket_metrics",
+          "responseKey": "ticket_metrics",
           "fields": {
             "agent_wait_time_in_minutes": "agent_wait_time_in_minutes",
             "assigned_at": "assigned_at",
@@ -861,6 +908,7 @@
         "tickets": {
           "displayName": "Tickets",
           "path": "/tickets",
+          "responseKey": "tickets",
           "fields": {
             "allow_attachments": "allow_attachments",
             "allow_channelback": "allow_channelback",
@@ -919,6 +967,7 @@
         "trigger_categories": {
           "displayName": "Trigger Categories",
           "path": "/trigger_categories",
+          "responseKey": "trigger_categories",
           "fields": {
             "active_count": "active_count",
             "created_at": "created_at",
@@ -932,6 +981,7 @@
         "triggers": {
           "displayName": "Triggers",
           "path": "/triggers",
+          "responseKey": "triggers",
           "fields": {
             "actions": "actions",
             "active": "active",
@@ -951,6 +1001,7 @@
         "user_fields": {
           "displayName": "User Fields",
           "path": "/user_fields",
+          "responseKey": "user_fields",
           "fields": {
             "active": "active",
             "created_at": "created_at",
@@ -975,6 +1026,7 @@
         "users": {
           "displayName": "Users",
           "path": "/users",
+          "responseKey": "users",
           "fields": {
             "active": "active",
             "alias": "alias",
@@ -1020,6 +1072,7 @@
         "views": {
           "displayName": "Views",
           "path": "/views",
+          "responseKey": "views",
           "fields": {
             "active": "active",
             "conditions": "conditions",
@@ -1037,6 +1090,7 @@
         "workspaces": {
           "displayName": "Workspaces",
           "path": "/workspaces",
+          "responseKey": "workspaces",
           "fields": {
             "activated": "activated",
             "apps": "apps",
