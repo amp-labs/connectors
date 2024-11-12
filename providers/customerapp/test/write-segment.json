@@ -1,0 +1,12 @@
+{
+  "segment": {
+    "id": 16,
+    "deduplicate_id": "16:1731421925",
+    "name": "finished",
+    "description": "a segment that will be removed",
+    "state": "finished",
+    "progress": null,
+    "type": "manual",
+    "tags": null
+  }
+}
