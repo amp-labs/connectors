@@ -12,7 +12,7 @@ func init() {
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://oauth.pipedrive.com/oauth/authorize",
 			TokenURL:                  "https://oauth.pipedrive.com/oauth/token",
-			ExplicitScopesRequired:    true,
+			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
