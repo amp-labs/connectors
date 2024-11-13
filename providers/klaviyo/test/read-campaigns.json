@@ -1,0 +1,65 @@
+{
+  "data" : [ {
+    "type" : "campaign",
+    "id" : "01JCPFHB29QZ1NDPR3GCGQS5G2",
+    "attributes" : {
+      "name" : "Email Campaign - Nov 15, 2024, 1:18 AM",
+      "status" : "Scheduled",
+      "archived" : false,
+      "audiences" : {
+        "included" : [ "XzKvNz" ],
+        "excluded" : [ ]
+      },
+      "send_options" : {
+        "use_smart_sending" : true,
+        "ignore_unsubscribes" : false
+      },
+      "tracking_options" : {
+        "add_tracking_params" : false,
+        "custom_tracking_params" : [ ],
+        "is_tracking_clicks" : true,
+        "is_tracking_opens" : true
+      },
+      "send_strategy" : {
+        "method" : "static",
+        "options_static" : {
+          "datetime" : "2024-11-30T18:15:00+00:00",
+          "is_local" : true,
+          "send_past_recipients_immediately" : true
+        },
+        "options_throttled" : null,
+        "options_sto" : null
+      },
+      "created_at" : "2024-11-14T23:18:34.827140+00:00",
+      "scheduled_at" : "2024-11-14T23:20:02.718919+00:00",
+      "updated_at" : "2024-11-14T23:20:32.232276+00:00",
+      "send_time" : "2024-11-30T18:15:00+00:00"
+    },
+    "relationships" : {
+      "campaign-messages" : {
+        "data" : [ {
+          "type" : "campaign-message",
+          "id" : "01JCPFHB2F7J0J2R2HC8GNNC3Z"
+        } ],
+        "links" : {
+          "self" : "https://a.klaviyo.com/api/campaigns/01JCPFHB29QZ1NDPR3GCGQS5G2/relationships/campaign-messages/",
+          "related" : "https://a.klaviyo.com/api/campaigns/01JCPFHB29QZ1NDPR3GCGQS5G2/campaign-messages/"
+        }
+      },
+      "tags" : {
+        "links" : {
+          "self" : "https://a.klaviyo.com/api/campaigns/01JCPFHB29QZ1NDPR3GCGQS5G2/relationships/tags/",
+          "related" : "https://a.klaviyo.com/api/campaigns/01JCPFHB29QZ1NDPR3GCGQS5G2/tags/"
+        }
+      }
+    },
+    "links" : {
+      "self" : "https://a.klaviyo.com/api/campaigns/01JCPFHB29QZ1NDPR3GCGQS5G2/"
+    }
+  } ],
+  "links" : {
+    "self" : "https://a.klaviyo.com/api/campaigns?filter=greater-than%28updated_at%2C2024-11-14T22%3A27%3A51Z%29%2Cequals%28messages.channel%2C%27email%27%29",
+    "next" : null,
+    "prev" : null
+  }
+}
