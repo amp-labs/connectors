@@ -121,6 +121,8 @@ func main() {
 		switch info.Oauth2Opts.GrantType {
 		case providers.ClientCredentials:
 			mainOAuth2ClientCreds(ctx, provider, catalogVariables)
+		case providers.AuthorizationCodePKCE:
+			fallthrough
 		case providers.AuthorizationCode:
 			mainOAuth2AuthCode(ctx, provider, catalogVariables)
 		case providers.Password:
