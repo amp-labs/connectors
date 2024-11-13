@@ -62,8 +62,8 @@ func Pluralize(displayName string) string {
 	return naming.NewPluralString(displayName).String()
 }
 
-// ParameterFilterGetMethod callback that filters REST operations based on endpoint parameters.
-type ParameterFilterGetMethod func(objectName string, operation *openapi3.Operation) bool
+// ReadOperationMethodFilter callback that filters REST operations based on endpoint parameters.
+type ReadOperationMethodFilter func(objectName string, operation *openapi3.Operation) bool
 
 // OnlyOptionalQueryParameters operation must include only optional query parameters.
 func OnlyOptionalQueryParameters(objectName string, operation *openapi3.Operation) bool {
@@ -79,7 +79,8 @@ func OnlyOptionalQueryParameters(objectName string, operation *openapi3.Operatio
 
 type parameters struct {
 	displayPostProcessing DisplayNameProcessor
-	parameterFilter       ParameterFilterGetMethod
+	operationMethodFilter ReadOperationMethodFilter
+	mediaType             string
 }
 
 type Option = func(params *parameters)
@@ -88,6 +89,24 @@ func createParams(opts []Option) *parameters {
 	var params parameters
 	for _, opt := range opts {
 		opt(&params)
+	}
+
+	// Default values are setup here.
+
+	if params.displayPostProcessing == nil {
+		params.displayPostProcessing = func(displayName string) string {
+			return displayName
+		}
+	}
+
+	if params.operationMethodFilter == nil {
+		params.operationMethodFilter = func(objectName string, operation *openapi3.Operation) bool {
+			return true
+		}
+	}
+
+	if len(params.mediaType) == 0 {
+		params.mediaType = "application/json"
 	}
 
 	return &params
@@ -108,8 +127,16 @@ func WithDisplayNamePostProcessors(processors ...DisplayNameProcessor) Option {
 
 // WithParameterFilterGetMethod adds custom callback to decide
 // if GET operation should be included based on parameters definitions.
-func WithParameterFilterGetMethod(parameterFilter ParameterFilterGetMethod) Option {
+func WithParameterFilterGetMethod(parameterFilter ReadOperationMethodFilter) Option {
 	return func(params *parameters) {
-		params.parameterFilter = parameterFilter
+		params.operationMethodFilter = parameterFilter
+	}
+}
+
+// WithMediaType picks which media type which should be used when searching schemas in API response.
+// By default, schema is expected to be under "application/json" media response.
+func WithMediaType(mediaType string) Option {
+	return func(params *parameters) {
+		params.mediaType = mediaType
 	}
 }
