@@ -52,11 +52,7 @@ type ErrLinks struct {
 
 func (c *Connector) interpretError(res *http.Response, body []byte) error {
 	mediaType, _, err := mime.ParseMediaType(res.Header.Get("Content-Type"))
-	if err != nil {
-		return fmt.Errorf("mime.ParseMediaType failed: %w", err)
-	}
-
-	if mediaType == "application/json" {
+	if err == nil && mediaType == "application/json" {
 		return c.interpretJSONError(res, body)
 	}
 

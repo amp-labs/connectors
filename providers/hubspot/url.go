@@ -1,10 +1,11 @@
 package hubspot
 
 import (
-	"strings"
+	"path"
 )
 
 // getURL is a helper to return the full URL considering the base URL & module.
 func (c *Connector) getURL(arg string) string {
-	return strings.Join([]string{c.BaseURL, c.Module.Path(), arg}, "/")
+	// TODO: use url package to join paths and avoid issues with slashes in another PR
+	return c.BaseURL + "/" + path.Join(c.Module.Path(), arg)
 }

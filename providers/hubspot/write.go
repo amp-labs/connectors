@@ -3,7 +3,7 @@ package hubspot
 import (
 	"context"
 	"fmt"
-	"strings"
+	"path"
 
 	"github.com/amp-labs/connectors/common"
 )
@@ -25,7 +25,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 
 	var write common.WriteMethod
 
-	relativeURL := strings.Join([]string{"objects", config.ObjectName}, "/")
+	relativeURL := path.Join("objects", config.ObjectName)
 	url := c.getURL(relativeURL)
 
 	if config.RecordId != "" {
