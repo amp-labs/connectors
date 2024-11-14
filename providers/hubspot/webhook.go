@@ -2,6 +2,8 @@ package hubspot
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -27,9 +29,59 @@ func (c *Connector) GetRecordFromWebhookMessage(
 	ctx context.Context, msg *WebhookMessage,
 ) (*common.ReadResultRow, error) {
 	// Transform the webhook message into a ReadResult.
-	objectName := strings.Split(msg.SubscriptionType, ".")[0]
+	objectName, err := c.ExtractObjectNameFromWebhookMessage(msg)
+	if err != nil {
+		return nil, err
+	}
+
 	recordId := strconv.Itoa(msg.ObjectId)
 
 	// Since the webhook message doesn't contain the record data, we need to fetch it.
 	return c.GetRecord(ctx, objectName, recordId)
 }
+
+var errWebhookNotSupportedForObject = errors.New("webhook is not supported for the object")
+
+func (c *Connector) ExtractObjectNameFromWebhookMessage(msg *WebhookMessage) (string, error) {
+	parts := strings.Split(msg.SubscriptionType, ".")
+	if !getRecordSupportedObjectsSet.Has(parts[0]) {
+		return "", fmt.Errorf("%w '%s'", errWebhookNotSupportedForObject, parts[0])
+	}
+
+	return parts[0], nil
+}
+
+/*
+	EXAMPLES: There is no documentation that shows data structure of webhook messages.
+	Below examples were found from hubspot app settings page after login at:
+	https://app.hubspot.com/private-apps/<<CustomerAppId>>/<<PrivateAppId>>/webhooks
+	Or from UI on Customer Account
+	Settings -> Account Management -> Integrations -> Private Apps -> <<YOUR PRIVATE APP>> -> Webhooks
+
+	{
+		"appId": 4210286,
+		"eventId": 100,
+		"subscriptionId": 2881778,
+		"portalId": 44237313,
+		"occurredAt": 1731612159499,
+		"subscriptionType": "contact.creation",
+		"attemptNumber": 0,
+		"objectId": 123,
+		"changeSource": "CRM",
+		"changeFlag": "NEW"
+	}
+
+	{
+		"appId": 4210286,
+		"eventId": 100,
+		"subscriptionId": 2902227,
+		"portalId": 44237313,
+		"occurredAt": 1731612210994,
+		"subscriptionType": "contact.propertyChange",
+		"attemptNumber": 0,
+		"objectId": 123,
+		"changeSource": "CRM",
+		"propertyName": "message",
+		"propertyValue": "sample-value"
+	}
+*/
