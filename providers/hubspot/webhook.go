@@ -29,7 +29,11 @@ func (c *Connector) GetRecordFromWebhookMessage(
 	ctx context.Context, msg *WebhookMessage,
 ) (*common.ReadResultRow, error) {
 	// Transform the webhook message into a ReadResult.
-	objectName := strings.Split(msg.SubscriptionType, ".")[0]
+	objectName, err := c.ExtractObjectNameFromWebhookMessage(msg)
+	if err != nil {
+		return nil, err
+	}
+
 	recordId := strconv.Itoa(msg.ObjectId)
 
 	// Since the webhook message doesn't contain the record data, we need to fetch it.
