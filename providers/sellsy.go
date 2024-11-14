@@ -9,7 +9,7 @@ func init() {
 		AuthType:    Oauth2,
 		BaseURL:     "https://api.sellsy.com",
 		Oauth2Opts: &Oauth2Opts{
-			GrantType:                 PKCE,
+			GrantType:                 AuthorizationCodePKCE,
 			AuthURL:                   "https://login.sellsy.com/oauth2/authorization",
 			TokenURL:                  "https://login.sellsy.com/oauth2/access-tokens",
 			ExplicitScopesRequired:    false,

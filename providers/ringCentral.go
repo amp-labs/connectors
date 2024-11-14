@@ -9,7 +9,7 @@ func init() {
 		AuthType:    Oauth2,
 		BaseURL:     "https://platform.ringcentral.com",
 		Oauth2Opts: &Oauth2Opts{
-			GrantType:                 PKCE,
+			GrantType:                 AuthorizationCodePKCE,
 			AuthURL:                   "https://platform.ringcentral.com/restapi/oauth/authorize",
 			TokenURL:                  "https://platform.ringcentral.com/restapi/oauth/token",
 			ExplicitScopesRequired:    false,
