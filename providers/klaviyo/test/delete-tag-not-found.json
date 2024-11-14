@@ -1,0 +1,14 @@
+{
+  "errors": [
+    {
+      "id": "0c47a1a4-6afd-48e7-9d5c-d21e332ecac6",
+      "status": 404,
+      "code": "not_found",
+      "title": "Not found.",
+      "detail": "A tag with id 5eb337d5-a132-4627-aa1e-04bc9aac260d does not exist.",
+      "source": {
+        "pointer": "/data/"
+      }
+    }
+  ]
+}

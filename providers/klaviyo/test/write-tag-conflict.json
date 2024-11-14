@@ -1,0 +1,14 @@
+{
+  "errors": [
+    {
+      "id": "7d567da5-701f-485e-8879-76a832c95dca",
+      "status": 409,
+      "code": "tag_service_error",
+      "title": "Tag Service Error",
+      "detail": "Tag with name 'popular' already exists",
+      "source": {
+        "pointer": "/data/"
+      }
+    }
+  ]
+}
