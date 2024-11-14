@@ -228,12 +228,12 @@ func (i *ProviderInfo) NewClient(ctx context.Context, params *NewClientParams) (
 		switch i.Oauth2Opts.GrantType {
 		case AuthorizationCode:
 			return createOAuth2AuthCodeHTTPClient(ctx, params.Client, params.Debug, params.OAuth2AuthCodeCreds)
+		case AuthorizationCodePKCE:
+			return nil, fmt.Errorf("%w: %s", ErrClient, "Authorization code + PKCE grant type not supported")
 		case ClientCredentials:
 			return createOAuth2ClientCredentialsHTTPClient(ctx, params.Client, params.Debug, params.OAuth2ClientCreds)
 		case Password:
 			return createOAuth2PasswordHTTPClient(ctx, params.Client, params.Debug, params.OAuth2AuthCodeCreds)
-		case PKCE:
-			return nil, fmt.Errorf("%w: %s", ErrClient, "PKCE grant type not supported")
 		default:
 			return nil, fmt.Errorf("%w: unsupported grant type %q", ErrClient, i.Oauth2Opts.GrantType)
 		}

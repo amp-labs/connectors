@@ -19,7 +19,7 @@ func init() {
 			},
 		},
 		Oauth2Opts: &Oauth2Opts{
-			GrantType:                 PKCE,
+			GrantType:                 AuthorizationCodePKCE,
 			AuthURL:                   "https://airtable.com/oauth2/v1/authorize",
 			TokenURL:                  "https://airtable.com/oauth2/v1/token",
 			ExplicitScopesRequired:    true,
