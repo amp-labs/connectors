@@ -9,7 +9,7 @@ func init() {
 		AuthType:    Oauth2,
 		BaseURL:     "https://a.klaviyo.com",
 		Oauth2Opts: &Oauth2Opts{
-			GrantType:                 PKCE,
+			GrantType:                 AuthorizationCodePKCE,
 			AuthURL:                   "https://www.klaviyo.com/oauth/authorize",
 			TokenURL:                  "https://a.klaviyo.com/oauth/token",
 			ExplicitScopesRequired:    true,
