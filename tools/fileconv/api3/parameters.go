@@ -28,7 +28,7 @@ func DataObjectLocator(objectName, fieldName string) bool {
 //
 // Ex:
 //
-//	CustomMappingObjectCheck(handy.NewDefaultMap(map[string]string{
+//	CustomMappingObjectCheck(datautils.NewDefaultMap(map[string]string{
 //			"orders":	"orders",
 //			"carts":	"carts",
 //			"coupons":	"coupons",
@@ -55,6 +55,11 @@ func CapitalizeFirstLetterEveryWord(displayName string) string {
 // CamelCaseToSpaceSeparated converts camel case into lower case space separated string.
 func CamelCaseToSpaceSeparated(displayName string) string {
 	return strcase.ToDelimited(displayName, ' ')
+}
+
+// Pluralize will apply pluralization to the display name.
+func Pluralize(displayName string) string {
+	return naming.NewPluralString(displayName).String()
 }
 
 // ParameterFilterGetMethod callback that filters REST operations based on endpoint parameters.
