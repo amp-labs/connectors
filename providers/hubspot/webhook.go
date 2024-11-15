@@ -40,7 +40,7 @@ func (c *Connector) GetRecordFromWebhookMessage(
 	return c.GetRecord(ctx, objectName, recordId)
 }
 
-func (c *Connector) GetEventTypeFromWebhookMessage(msg *WebhookMessage) (common.WebhookEventType, error) {
+func (c *Connector) ExtractEventTypeFromWebhookMessage(msg *WebhookMessage) (common.WebhookEventType, error) {
 	parts := strings.Split(msg.SubscriptionType, ".")
 	if !getRecordSupportedObjectsSet.Has(parts[0]) {
 		return "", errWebhookNotSupportedForObject
@@ -51,7 +51,7 @@ func (c *Connector) GetEventTypeFromWebhookMessage(msg *WebhookMessage) (common.
 		return common.WebhookEventTypeCreate, nil
 	case "propertyChange":
 		return common.WebhookEventTypeUpdate, nil
-	case "deletion":
+	case "deletion", "privacyDeletion":
 		return common.WebhookEventTypeDelete, nil
 	default:
 		return common.WebhookEventtypePassThrough, nil
