@@ -40,10 +40,17 @@ func (c *Connector) GetRecordFromWebhookMessage(
 	return c.GetRecord(ctx, objectName, recordId)
 }
 
-var errWebhookNotSupportedForObject = errors.New("webhook is not supported for the object")
+var (
+	errWebhookNotSupportedForObject            = errors.New("webhook is not supported for the object")
+	errExtractinctObjectNameFromWebhookMessage = errors.New("error extracting object name from webhook message")
+)
 
 func (c *Connector) ExtractObjectNameFromWebhookMessage(msg *WebhookMessage) (string, error) {
 	parts := strings.Split(msg.SubscriptionType, ".")
+	if len(parts) == 0 {
+		return "", fmt.Errorf("%w from event type: %s", errExtractinctObjectNameFromWebhookMessage, msg.SubscriptionType)
+	}
+
 	if !getRecordSupportedObjectsSet.Has(parts[0]) {
 		return "", fmt.Errorf("%w '%s'", errWebhookNotSupportedForObject, parts[0])
 	}
