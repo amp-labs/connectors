@@ -247,3 +247,12 @@ type PostAuthInfo struct {
 	CatalogVars *map[string]string
 	RawResponse *JSONHTTPResponse
 }
+
+type WebhookEventType string
+
+const (
+	WebhookEventTypeCreate      WebhookEventType = "create"
+	WebhookEventTypeUpdate      WebhookEventType = "update"
+	WebhookEventTypeDelete      WebhookEventType = "delete"
+	WebhookEventtypePassThrough WebhookEventType = "passThrough"
+)

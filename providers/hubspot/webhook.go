@@ -40,6 +40,24 @@ func (c *Connector) GetRecordFromWebhookMessage(
 	return c.GetRecord(ctx, objectName, recordId)
 }
 
+func (c *Connector) GetEventTypeFromWebhookMessage(msg *WebhookMessage) (common.WebhookEventType, error) {
+	parts := strings.Split(msg.SubscriptionType, ".")
+	if !getRecordSupportedObjectsSet.Has(parts[0]) {
+		return "", errWebhookNotSupportedForObject
+	}
+
+	switch parts[1] {
+	case "creation":
+		return common.WebhookEventTypeCreate, nil
+	case "propertyChange":
+		return common.WebhookEventTypeUpdate, nil
+	case "deletion":
+		return common.WebhookEventTypeDelete, nil
+	default:
+		return common.WebhookEventtypePassThrough, nil
+	}
+}
+
 var errWebhookNotSupportedForObject = errors.New("webhook is not supported for the object")
 
 func (c *Connector) ExtractObjectNameFromWebhookMessage(msg *WebhookMessage) (string, error) {
