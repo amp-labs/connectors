@@ -77,9 +77,27 @@ func OnlyOptionalQueryParameters(objectName string, operation *openapi3.Operatio
 	return true
 }
 
+// PropertyFlattener is used to inherit fields from nested object moving them to the top level.
+// Ex:
+//
+//	{
+//		"a":1,
+//		"b":2,
+//		"grouping": {
+//			"c":3,
+//			"d":4,
+//		},
+//		"e":5
+//	}
+//
+// If we return true on "grouping" fieldName then it will be flattened with the resulting
+// list of fields becoming "a", "b", "c", "d", "e".
+type PropertyFlattener func(objectName, fieldName string) bool
+
 type parameters struct {
 	displayPostProcessing DisplayNameProcessor
 	operationMethodFilter ReadOperationMethodFilter
+	propertyFlattener     PropertyFlattener
 	mediaType             string
 }
 
@@ -102,6 +120,12 @@ func createParams(opts []Option) *parameters {
 	if params.operationMethodFilter == nil {
 		params.operationMethodFilter = func(objectName string, operation *openapi3.Operation) bool {
 			return true
+		}
+	}
+
+	if params.propertyFlattener == nil {
+		params.propertyFlattener = func(objectName, fieldName string) bool {
+			return false
 		}
 	}
 
@@ -138,5 +162,15 @@ func WithParameterFilterGetMethod(parameterFilter ReadOperationMethodFilter) Opt
 func WithMediaType(mediaType string) Option {
 	return func(params *parameters) {
 		params.mediaType = mediaType
+	}
+}
+
+// WithPropertyFlattening allows nested fields to be moved to the top level.
+// There are some APIs that hold fields of interest under grouping object, the nested object.
+// This configuration flattens response schema fields.
+// Please, have a look at PropertyFlattener documentation.
+func WithPropertyFlattening(propertyFlattener PropertyFlattener) Option {
+	return func(params *parameters) {
+		params.propertyFlattener = propertyFlattener
 	}
 }
