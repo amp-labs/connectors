@@ -68,6 +68,7 @@ func TestExtractObjectNameFromWebhookMessage(t *testing.T) {
 	assert.ErrorContains(t, err, "webhook is not supported for the object ''")
 }
 
+//nolint:funlen
 func TestExtractEventTypeFromWebhookMessage(t *testing.T) {
 	t.Parallel()
 
