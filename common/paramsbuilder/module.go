@@ -5,6 +5,10 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
+type ModuleHolder interface {
+	GiveModule() *Module
+}
+
 // Module represents a sub-product of a provider.
 // This is relevant where there are several APIs for different sub-products, and the APIs
 // are versioned differently or have different ways of constructing URLs and requests for reading/writing.
@@ -14,6 +18,10 @@ type Module struct {
 	// This defines a list of modules a user could switch to.
 	// Validation will check module identifiers are consistent.
 	supported common.Modules
+}
+
+func (p *Module) GiveModule() *Module {
+	return p
 }
 
 func (p *Module) ValidateParams() error {

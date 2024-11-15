@@ -4,6 +4,8 @@
 // and exposed to end user via delegation. Most would do delegation only.
 package paramsbuilder
 
+import "github.com/amp-labs/connectors/common"
+
 // ParamAssurance checks that param data is valid
 // Every param instance must implement it.
 type ParamAssurance interface {
@@ -20,7 +22,14 @@ type ParamAssurance interface {
 func Apply[P ParamAssurance](params P,
 	opts []func(params *P),
 	defaultOpts ...func(params *P),
-) (*P, error) {
+) (paramsOut *P, outErr error) {
+	defer common.PanicRecovery(func(cause error) {
+		// Options may have calls to panic().
+		// We allow this and recover by converting it to normal error.
+		outErr = cause
+		paramsOut = nil
+	})
+
 	for _, opt := range defaultOpts {
 		opt(&params)
 	}

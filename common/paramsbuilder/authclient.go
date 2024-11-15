@@ -8,6 +8,12 @@ import (
 
 var ErrMissingClient = errors.New("http client not set")
 
+// ClientHolder gives authenticated client.
+// This is useful to check if object is of interface type to get access to HTTP client.
+type ClientHolder interface {
+	GiveClient() *AuthClient
+}
+
 // AuthClient params sets up authenticated proxy HTTP client.
 type AuthClient struct {
 	// Caller is an HTTP client that knows how to make authenticated requests.
@@ -35,4 +41,8 @@ func (p *AuthClient) WithAuthenticatedClient(client common.AuthenticatedHTTPClie
 		Client:       client,
 		ErrorHandler: common.InterpretError,
 	}
+}
+
+func (p *AuthClient) GiveClient() *AuthClient {
+	return p
 }
