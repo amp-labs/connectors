@@ -1,0 +1,13 @@
+{
+  "tags": [
+    {
+      "id": "91",
+      "name": "Nurture Subscriber",
+      "description": "",
+      "category": {
+        "id": "10"
+      }
+    }
+  ],
+  "next_page_token": "https://api.infusionsoft.com/crm/rest/v2/tags/?page_size=1&page_token=91"
+}

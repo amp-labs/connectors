@@ -1,0 +1,597 @@
+{
+  "modules": {
+    "version1": {
+      "id": "version1",
+      "path": "/v1",
+      "objects": {
+        "affiliates": {
+          "displayName": "Affiliates",
+          "path": "/affiliates",
+          "responseKey": "affiliates",
+          "fields": {
+            "code": "code",
+            "contact_id": "contact_id",
+            "id": "id",
+            "name": "name",
+            "notify_on_lead": "notify_on_lead",
+            "notify_on_sale": "notify_on_sale",
+            "parent_id": "parent_id",
+            "status": "status",
+            "track_leads_for": "track_leads_for"
+          }
+        },
+        "appointments": {
+          "displayName": "Appointments",
+          "path": "/appointments",
+          "responseKey": "appointments",
+          "fields": {
+            "contact_id": "contact_id",
+            "description": "description",
+            "end_date": "end_date",
+            "location": "location",
+            "remind_time": "remind_time",
+            "start_date": "start_date",
+            "title": "title",
+            "user": "user"
+          }
+        },
+        "campaigns": {
+          "displayName": "Campaigns",
+          "path": "/campaigns",
+          "responseKey": "campaigns",
+          "fields": {
+            "created_by_global_id": "created_by_global_id",
+            "date_created": "date_created",
+            "error_message": "error_message",
+            "goals": "goals",
+            "id": "id",
+            "locked": "locked",
+            "name": "name",
+            "published_date": "published_date",
+            "published_status": "published_status",
+            "published_time_zone": "published_time_zone",
+            "sequences": "sequences",
+            "time_zone": "time_zone"
+          }
+        },
+        "commissions": {
+          "displayName": "Commissions",
+          "path": "/affiliates/commissions",
+          "responseKey": "commissions",
+          "fields": {
+            "amount_earned": "amount_earned",
+            "contact_first_name": "contact_first_name",
+            "contact_id": "contact_id",
+            "contact_last_name": "contact_last_name",
+            "date_earned": "date_earned",
+            "description": "description",
+            "invoice_id": "invoice_id",
+            "product_name": "product_name",
+            "sales_affiliate_id": "sales_affiliate_id",
+            "sold_by_first_name": "sold_by_first_name",
+            "sold_by_last_name": "sold_by_last_name"
+          }
+        },
+        "companies": {
+          "displayName": "Companies",
+          "path": "/companies",
+          "responseKey": "companies",
+          "fields": {
+            "address": "address",
+            "company_name": "company_name",
+            "custom_fields": "custom_fields",
+            "email_address": "email_address",
+            "email_opted_in": "email_opted_in",
+            "email_status": "email_status",
+            "fax_number": "fax_number",
+            "id": "id",
+            "notes": "notes",
+            "phone_number": "phone_number",
+            "website": "website"
+          }
+        },
+        "contacts": {
+          "displayName": "Contacts",
+          "path": "/contacts",
+          "responseKey": "contacts",
+          "fields": {
+            "ScoreValue": "ScoreValue",
+            "addresses": "addresses",
+            "anniversary": "anniversary",
+            "birthday": "birthday",
+            "company": "company",
+            "company_name": "company_name",
+            "contact_type": "contact_type",
+            "custom_fields": "custom_fields",
+            "date_created": "date_created",
+            "email_addresses": "email_addresses",
+            "email_opted_in": "email_opted_in",
+            "email_status": "email_status",
+            "family_name": "family_name",
+            "fax_numbers": "fax_numbers",
+            "given_name": "given_name",
+            "id": "id",
+            "job_title": "job_title",
+            "last_updated": "last_updated",
+            "lead_source_id": "lead_source_id",
+            "middle_name": "middle_name",
+            "owner_id": "owner_id",
+            "phone_numbers": "phone_numbers",
+            "preferred_locale": "preferred_locale",
+            "preferred_name": "preferred_name",
+            "prefix": "prefix",
+            "social_accounts": "social_accounts",
+            "source_type": "source_type",
+            "spouse_name": "spouse_name",
+            "suffix": "suffix",
+            "time_zone": "time_zone",
+            "website": "website"
+          }
+        },
+        "emails": {
+          "displayName": "Emails",
+          "path": "/emails",
+          "responseKey": "emails",
+          "fields": {
+            "clicked_date": "clicked_date",
+            "contact_id": "contact_id",
+            "headers": "headers",
+            "id": "id",
+            "opened_date": "opened_date",
+            "original_provider": "original_provider",
+            "original_provider_id": "original_provider_id",
+            "received_date": "received_date",
+            "sent_date": "sent_date",
+            "sent_from_address": "sent_from_address",
+            "sent_from_reply_address": "sent_from_reply_address",
+            "sent_to_address": "sent_to_address",
+            "sent_to_bcc_addresses": "sent_to_bcc_addresses",
+            "sent_to_cc_addresses": "sent_to_cc_addresses",
+            "subject": "subject"
+          }
+        },
+        "files": {
+          "displayName": "Files",
+          "path": "/files",
+          "responseKey": "files",
+          "fields": {
+            "category": "category",
+            "contact_id": "contact_id",
+            "created_by": "created_by",
+            "date_created": "date_created",
+            "download_url": "download_url",
+            "file_box_type": "file_box_type",
+            "file_name": "file_name",
+            "file_size": "file_size",
+            "id": "id",
+            "last_updated": "last_updated",
+            "public": "public",
+            "remote_file_key": "remote_file_key"
+          }
+        },
+        "hooks": {
+          "displayName": "Hooks",
+          "path": "/hooks",
+          "responseKey": "",
+          "fields": {
+            "eventKey": "eventKey",
+            "hookUrl": "hookUrl",
+            "key": "key",
+            "status": "status"
+          }
+        },
+        "merchants": {
+          "displayName": "Merchants",
+          "path": "/merchants",
+          "responseKey": "merchant_accounts",
+          "fields": {
+            "account_name": "account_name",
+            "id": "id",
+            "is_test": "is_test",
+            "type": "type"
+          }
+        },
+        "notes": {
+          "displayName": "Notes",
+          "path": "/notes",
+          "responseKey": "notes",
+          "fields": {
+            "body": "body",
+            "contact_id": "contact_id",
+            "date_created": "date_created",
+            "id": "id",
+            "last_updated": "last_updated",
+            "last_updated_by": "last_updated_by",
+            "title": "title",
+            "type": "type",
+            "user_id": "user_id"
+          }
+        },
+        "opportunities": {
+          "displayName": "Opportunities",
+          "path": "/opportunities",
+          "responseKey": "opportunities",
+          "fields": {
+            "affiliate_id": "affiliate_id",
+            "contact": "contact",
+            "custom_fields": "custom_fields",
+            "date_created": "date_created",
+            "estimated_close_date": "estimated_close_date",
+            "id": "id",
+            "include_in_forecast": "include_in_forecast",
+            "last_updated": "last_updated",
+            "next_action_date": "next_action_date",
+            "next_action_notes": "next_action_notes",
+            "opportunity_notes": "opportunity_notes",
+            "opportunity_title": "opportunity_title",
+            "projected_revenue_high": "projected_revenue_high",
+            "projected_revenue_low": "projected_revenue_low",
+            "stage": "stage",
+            "user": "user"
+          }
+        },
+        "orders": {
+          "displayName": "Orders",
+          "path": "/orders",
+          "responseKey": "orders",
+          "fields": {
+            "allow_payment": "allow_payment",
+            "allow_paypal": "allow_paypal",
+            "contact": "contact",
+            "contact_id": "contact_id",
+            "creation_date": "creation_date",
+            "id": "id",
+            "invoice_number": "invoice_number",
+            "lead_affiliate_id": "lead_affiliate_id",
+            "modification_date": "modification_date",
+            "notes": "notes",
+            "order_date": "order_date",
+            "order_items": "order_items",
+            "order_type": "order_type",
+            "payment_plan": "payment_plan",
+            "product_id": "product_id",
+            "recurring": "recurring",
+            "refund_total": "refund_total",
+            "sales_affiliate_id": "sales_affiliate_id",
+            "shipping_information": "shipping_information",
+            "source_type": "source_type",
+            "status": "status",
+            "terms": "terms",
+            "title": "title",
+            "total": "total",
+            "total_due": "total_due",
+            "total_paid": "total_paid"
+          }
+        },
+        "products": {
+          "displayName": "Products",
+          "path": "/products",
+          "responseKey": "products",
+          "fields": {
+            "id": "id",
+            "product_desc": "product_desc",
+            "product_name": "product_name",
+            "product_options": "product_options",
+            "product_price": "product_price",
+            "product_short_desc": "product_short_desc",
+            "sku": "sku",
+            "status": "status",
+            "subscription_only": "subscription_only",
+            "subscription_plans": "subscription_plans",
+            "url": "url"
+          }
+        },
+        "programs": {
+          "displayName": "Programs",
+          "path": "/affiliates/programs",
+          "responseKey": "programs",
+          "fields": {
+            "affiliate_id": "affiliate_id",
+            "id": "id",
+            "name": "name",
+            "notes": "notes",
+            "priority": "priority"
+          }
+        },
+        "redirectlinks": {
+          "displayName": "Redirects",
+          "path": "/affiliates/redirectlinks",
+          "responseKey": "redirects",
+          "fields": {
+            "affiliate_id": "affiliate_id",
+            "id": "id",
+            "local_url_code": "local_url_code",
+            "name": "name",
+            "program_ids": "program_ids",
+            "redirect_url": "redirect_url"
+          }
+        },
+        "stage_pipeline": {
+          "displayName": "Stage Pipelines",
+          "path": "/opportunity/stage_pipeline",
+          "responseKey": "",
+          "fields": {
+            "end_stage": "end_stage",
+            "is_default": "is_default",
+            "stage_count": "stage_count",
+            "stage_id": "stage_id",
+            "stage_name": "stage_name",
+            "stage_order": "stage_order"
+          }
+        },
+        "subscriptions": {
+          "displayName": "Subscriptions",
+          "path": "/subscriptions",
+          "responseKey": "subscriptions",
+          "fields": {
+            "active": "active",
+            "allow_tax": "allow_tax",
+            "auto_charge": "auto_charge",
+            "billing_amount": "billing_amount",
+            "billing_cycle": "billing_cycle",
+            "billing_frequency": "billing_frequency",
+            "contact_id": "contact_id",
+            "credit_card_id": "credit_card_id",
+            "end_date": "end_date",
+            "id": "id",
+            "next_bill_date": "next_bill_date",
+            "payment_gateway_id": "payment_gateway_id",
+            "product_id": "product_id",
+            "quantity": "quantity",
+            "sale_affiliate_id": "sale_affiliate_id",
+            "start_date": "start_date",
+            "subscription_plan_id": "subscription_plan_id",
+            "use_default_payment_gateway": "use_default_payment_gateway"
+          }
+        },
+        "summaries": {
+          "displayName": "Summaries",
+          "path": "/affiliates/summaries",
+          "responseKey": "summaries",
+          "fields": {
+            "affiliate_id": "affiliate_id",
+            "amount_earned": "amount_earned",
+            "balance": "balance",
+            "clawbacks": "clawbacks"
+          }
+        },
+        "synced_products": {
+          "displayName": "Product Statuses",
+          "path": "/products/sync",
+          "responseKey": "product_statuses",
+          "fields": {
+            "product": "product",
+            "status": "status"
+          }
+        },
+        "tags": {
+          "displayName": "Tags",
+          "path": "/tags",
+          "responseKey": "tags",
+          "fields": {
+            "category": "category",
+            "description": "description",
+            "id": "id",
+            "name": "name"
+          }
+        },
+        "tasks": {
+          "displayName": "Tasks",
+          "path": "/tasks",
+          "responseKey": "tasks",
+          "fields": {
+            "completed": "completed",
+            "completion_date": "completion_date",
+            "contact": "contact",
+            "creation_date": "creation_date",
+            "description": "description",
+            "due_date": "due_date",
+            "funnel_id": "funnel_id",
+            "jgraph_id": "jgraph_id",
+            "modification_date": "modification_date",
+            "priority": "priority",
+            "remind_time": "remind_time",
+            "title": "title",
+            "type": "type",
+            "url": "url",
+            "user_id": "user_id"
+          }
+        },
+        "transactions": {
+          "displayName": "Transactions",
+          "path": "/transactions",
+          "responseKey": "transactions",
+          "fields": {
+            "amount": "amount",
+            "collection_method": "collection_method",
+            "contact_id": "contact_id",
+            "currency": "currency",
+            "errors": "errors",
+            "gateway": "gateway",
+            "gateway_account_name": "gateway_account_name",
+            "id": "id",
+            "order_ids": "order_ids",
+            "orders": "orders",
+            "paymentDate": "paymentDate",
+            "status": "status",
+            "test": "test",
+            "transaction_date": "transaction_date",
+            "type": "type"
+          }
+        },
+        "users": {
+          "displayName": "Users",
+          "path": "/users",
+          "responseKey": "users",
+          "fields": {
+            "address": "address",
+            "company_name": "company_name",
+            "created_by": "created_by",
+            "date_created": "date_created",
+            "email_address": "email_address",
+            "family_name": "family_name",
+            "fax_numbers": "fax_numbers",
+            "given_name": "given_name",
+            "global_user_id": "global_user_id",
+            "id": "id",
+            "infusionsoft_id": "infusionsoft_id",
+            "job_title": "job_title",
+            "last_updated": "last_updated",
+            "last_updated_by": "last_updated_by",
+            "middle_name": "middle_name",
+            "partner": "partner",
+            "phone_numbers": "phone_numbers",
+            "preferred_name": "preferred_name",
+            "status": "status",
+            "time_zone": "time_zone",
+            "website": "website"
+          }
+        }
+      }
+    },
+    "version2": {
+      "id": "version2",
+      "path": "/v2",
+      "objects": {
+        "automation_categories": {
+          "displayName": "Automation Categories",
+          "path": "/automationCategory",
+          "responseKey": "automation_categories",
+          "fields": {
+            "automation_count": "automation_count",
+            "id": "id",
+            "name": "name"
+          }
+        },
+        "automations": {
+          "displayName": "Automations",
+          "path": "/automations",
+          "responseKey": "automations",
+          "fields": {
+            "active_contacts": "active_contacts",
+            "categories": "categories",
+            "error_message": "error_message",
+            "id": "id",
+            "locked": "locked",
+            "published_by": "published_by",
+            "published_date": "published_date",
+            "published_timezone": "published_timezone",
+            "status": "status",
+            "title": "title"
+          }
+        },
+        "campaigns": {
+          "displayName": "Campaigns",
+          "path": "/campaigns",
+          "responseKey": "campaigns",
+          "fields": {
+            "active_contact_count": "active_contact_count",
+            "completed_contact_count": "completed_contact_count",
+            "created_by_global_id": "created_by_global_id",
+            "date_created": "date_created",
+            "error_message": "error_message",
+            "goals": "goals",
+            "id": "id",
+            "locked": "locked",
+            "name": "name",
+            "published_date": "published_date",
+            "published_status": "published_status",
+            "published_time_zone": "published_time_zone",
+            "sequences": "sequences",
+            "time_zone": "time_zone"
+          }
+        },
+        "companies": {
+          "displayName": "Companies",
+          "path": "/companies",
+          "responseKey": "companies",
+          "fields": {
+            "address": "address",
+            "company_name": "company_name",
+            "create_time": "create_time",
+            "custom_fields": "custom_fields",
+            "email_address": "email_address",
+            "fax_number": "fax_number",
+            "id": "id",
+            "notes": "notes",
+            "phone_number": "phone_number",
+            "update_time": "update_time",
+            "website": "website"
+          }
+        },
+        "contact_link_types": {
+          "displayName": "Contact Link Types",
+          "path": "/contacts/links/types",
+          "responseKey": "contact_link_types",
+          "fields": {
+            "id": "id",
+            "max_links": "max_links",
+            "name": "name"
+          }
+        },
+        "contacts": {
+          "displayName": "Contacts",
+          "path": "/contacts",
+          "responseKey": "contacts",
+          "fields": {
+            "addresses": "addresses",
+            "anniversary_date": "anniversary_date",
+            "birth_date": "birth_date",
+            "company": "company",
+            "contact_type": "contact_type",
+            "create_time": "create_time",
+            "custom_fields": "custom_fields",
+            "email_addresses": "email_addresses",
+            "family_name": "family_name",
+            "fax_numbers": "fax_numbers",
+            "given_name": "given_name",
+            "id": "id",
+            "job_title": "job_title",
+            "leadsource_id": "leadsource_id",
+            "links": "links",
+            "middle_name": "middle_name",
+            "origin": "origin",
+            "owner_id": "owner_id",
+            "phone_numbers": "phone_numbers",
+            "preferred_locale": "preferred_locale",
+            "preferred_name": "preferred_name",
+            "prefix": "prefix",
+            "referral_code": "referral_code",
+            "score_value": "score_value",
+            "social_accounts": "social_accounts",
+            "source_type": "source_type",
+            "spouse_name": "spouse_name",
+            "suffix": "suffix",
+            "tag_ids": "tag_ids",
+            "time_zone": "time_zone",
+            "update_time": "update_time",
+            "utm_parameters": "utm_parameters",
+            "website": "website"
+          }
+        },
+        "tag_categories": {
+          "displayName": "Tag Categories",
+          "path": "/tags/categories",
+          "responseKey": "tag_categories",
+          "fields": {
+            "category": "category",
+            "description": "description",
+            "id": "id",
+            "name": "name"
+          }
+        },
+        "tags": {
+          "displayName": "Tags",
+          "path": "/tags",
+          "responseKey": "tags",
+          "fields": {
+            "category": "category",
+            "description": "description",
+            "id": "id",
+            "name": "name"
+          }
+        }
+      }
+    }
+  }
+}
