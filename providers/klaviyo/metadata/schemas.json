@@ -1,0 +1,647 @@
+{
+  "modules": {
+    "2024-10-15": {
+      "id": "2024-10-15",
+      "path": "/api",
+      "objects": {
+        "accounts": {
+          "displayName": "Accounts",
+          "path": "/accounts",
+          "responseKey": "data",
+          "fields": {
+            "contact_information": "contact_information",
+            "id": "id",
+            "industry": "industry",
+            "links": "links",
+            "locale": "locale",
+            "preferred_currency": "preferred_currency",
+            "public_api_key": "public_api_key",
+            "test_account": "test_account",
+            "timezone": "timezone",
+            "type": "type"
+          }
+        },
+        "campaigns": {
+          "displayName": "Campaigns",
+          "path": "/campaigns",
+          "responseKey": "data",
+          "fields": {
+            "archived": "archived",
+            "audiences": "audiences",
+            "created_at": "created_at",
+            "id": "id",
+            "links": "links",
+            "name": "name",
+            "relationships": "relationships",
+            "scheduled_at": "scheduled_at",
+            "send_options": "send_options",
+            "send_strategy": "send_strategy",
+            "send_time": "send_time",
+            "status": "status",
+            "tracking_options": "tracking_options",
+            "type": "type",
+            "updated_at": "updated_at"
+          }
+        },
+        "catalog-categories": {
+          "displayName": "Catalog Categories",
+          "path": "/catalog-categories",
+          "responseKey": "data",
+          "fields": {
+            "external_id": "external_id",
+            "id": "id",
+            "links": "links",
+            "name": "name",
+            "relationships": "relationships",
+            "type": "type",
+            "updated": "updated"
+          }
+        },
+        "catalog-category-bulk-create-jobs": {
+          "displayName": "Catalog Category Bulk Create Jobs",
+          "path": "/catalog-category-bulk-create-jobs",
+          "responseKey": "data",
+          "fields": {
+            "completed_at": "completed_at",
+            "completed_count": "completed_count",
+            "created_at": "created_at",
+            "errors": "errors",
+            "expires_at": "expires_at",
+            "failed_count": "failed_count",
+            "id": "id",
+            "links": "links",
+            "relationships": "relationships",
+            "status": "status",
+            "total_count": "total_count",
+            "type": "type"
+          }
+        },
+        "catalog-category-bulk-delete-jobs": {
+          "displayName": "Catalog Category Bulk Delete Jobs",
+          "path": "/catalog-category-bulk-delete-jobs",
+          "responseKey": "data",
+          "fields": {
+            "completed_at": "completed_at",
+            "completed_count": "completed_count",
+            "created_at": "created_at",
+            "errors": "errors",
+            "expires_at": "expires_at",
+            "failed_count": "failed_count",
+            "id": "id",
+            "links": "links",
+            "relationships": "relationships",
+            "status": "status",
+            "total_count": "total_count",
+            "type": "type"
+          }
+        },
+        "catalog-category-bulk-update-jobs": {
+          "displayName": "Catalog Category Bulk Update Jobs",
+          "path": "/catalog-category-bulk-update-jobs",
+          "responseKey": "data",
+          "fields": {
+            "completed_at": "completed_at",
+            "completed_count": "completed_count",
+            "created_at": "created_at",
+            "errors": "errors",
+            "expires_at": "expires_at",
+            "failed_count": "failed_count",
+            "id": "id",
+            "links": "links",
+            "relationships": "relationships",
+            "status": "status",
+            "total_count": "total_count",
+            "type": "type"
+          }
+        },
+        "catalog-item-bulk-create-jobs": {
+          "displayName": "Catalog Item Bulk Create Jobs",
+          "path": "/catalog-item-bulk-create-jobs",
+          "responseKey": "data",
+          "fields": {
+            "completed_at": "completed_at",
+            "completed_count": "completed_count",
+            "created_at": "created_at",
+            "errors": "errors",
+            "expires_at": "expires_at",
+            "failed_count": "failed_count",
+            "id": "id",
+            "links": "links",
+            "relationships": "relationships",
+            "status": "status",
+            "total_count": "total_count",
+            "type": "type"
+          }
+        },
+        "catalog-item-bulk-delete-jobs": {
+          "displayName": "Catalog Item Bulk Delete Jobs",
+          "path": "/catalog-item-bulk-delete-jobs",
+          "responseKey": "data",
+          "fields": {
+            "completed_at": "completed_at",
+            "completed_count": "completed_count",
+            "created_at": "created_at",
+            "errors": "errors",
+            "expires_at": "expires_at",
+            "failed_count": "failed_count",
+            "id": "id",
+            "links": "links",
+            "relationships": "relationships",
+            "status": "status",
+            "total_count": "total_count",
+            "type": "type"
+          }
+        },
+        "catalog-item-bulk-update-jobs": {
+          "displayName": "Catalog Item Bulk Update Jobs",
+          "path": "/catalog-item-bulk-update-jobs",
+          "responseKey": "data",
+          "fields": {
+            "completed_at": "completed_at",
+            "completed_count": "completed_count",
+            "created_at": "created_at",
+            "errors": "errors",
+            "expires_at": "expires_at",
+            "failed_count": "failed_count",
+            "id": "id",
+            "links": "links",
+            "relationships": "relationships",
+            "status": "status",
+            "total_count": "total_count",
+            "type": "type"
+          }
+        },
+        "catalog-items": {
+          "displayName": "Catalog Items",
+          "path": "/catalog-items",
+          "responseKey": "data",
+          "fields": {
+            "created": "created",
+            "custom_metadata": "custom_metadata",
+            "description": "description",
+            "external_id": "external_id",
+            "id": "id",
+            "image_full_url": "image_full_url",
+            "image_thumbnail_url": "image_thumbnail_url",
+            "images": "images",
+            "links": "links",
+            "price": "price",
+            "published": "published",
+            "relationships": "relationships",
+            "title": "title",
+            "type": "type",
+            "updated": "updated",
+            "url": "url"
+          }
+        },
+        "catalog-variant-bulk-create-jobs": {
+          "displayName": "Catalog Variant Bulk Create Jobs",
+          "path": "/catalog-variant-bulk-create-jobs",
+          "responseKey": "data",
+          "fields": {
+            "completed_at": "completed_at",
+            "completed_count": "completed_count",
+            "created_at": "created_at",
+            "errors": "errors",
+            "expires_at": "expires_at",
+            "failed_count": "failed_count",
+            "id": "id",
+            "links": "links",
+            "relationships": "relationships",
+            "status": "status",
+            "total_count": "total_count",
+            "type": "type"
+          }
+        },
+        "catalog-variant-bulk-delete-jobs": {
+          "displayName": "Catalog Variant Bulk Delete Jobs",
+          "path": "/catalog-variant-bulk-delete-jobs",
+          "responseKey": "data",
+          "fields": {
+            "completed_at": "completed_at",
+            "completed_count": "completed_count",
+            "created_at": "created_at",
+            "errors": "errors",
+            "expires_at": "expires_at",
+            "failed_count": "failed_count",
+            "id": "id",
+            "links": "links",
+            "relationships": "relationships",
+            "status": "status",
+            "total_count": "total_count",
+            "type": "type"
+          }
+        },
+        "catalog-variant-bulk-update-jobs": {
+          "displayName": "Catalog Variant Bulk Update Jobs",
+          "path": "/catalog-variant-bulk-update-jobs",
+          "responseKey": "data",
+          "fields": {
+            "completed_at": "completed_at",
+            "completed_count": "completed_count",
+            "created_at": "created_at",
+            "errors": "errors",
+            "expires_at": "expires_at",
+            "failed_count": "failed_count",
+            "id": "id",
+            "links": "links",
+            "relationships": "relationships",
+            "status": "status",
+            "total_count": "total_count",
+            "type": "type"
+          }
+        },
+        "catalog-variants": {
+          "displayName": "Catalog Variants",
+          "path": "/catalog-variants",
+          "responseKey": "data",
+          "fields": {
+            "created": "created",
+            "custom_metadata": "custom_metadata",
+            "description": "description",
+            "external_id": "external_id",
+            "id": "id",
+            "image_full_url": "image_full_url",
+            "image_thumbnail_url": "image_thumbnail_url",
+            "images": "images",
+            "inventory_policy": "inventory_policy",
+            "inventory_quantity": "inventory_quantity",
+            "links": "links",
+            "price": "price",
+            "published": "published",
+            "relationships": "relationships",
+            "sku": "sku",
+            "title": "title",
+            "type": "type",
+            "updated": "updated",
+            "url": "url"
+          }
+        },
+        "coupon-code-bulk-create-jobs": {
+          "displayName": "Coupon Code Bulk Create Jobs",
+          "path": "/coupon-code-bulk-create-jobs",
+          "responseKey": "data",
+          "fields": {
+            "completed_at": "completed_at",
+            "completed_count": "completed_count",
+            "created_at": "created_at",
+            "errors": "errors",
+            "expires_at": "expires_at",
+            "failed_count": "failed_count",
+            "id": "id",
+            "links": "links",
+            "relationships": "relationships",
+            "status": "status",
+            "total_count": "total_count",
+            "type": "type"
+          }
+        },
+        "coupon-codes": {
+          "displayName": "Coupon Codes",
+          "path": "/coupon-codes",
+          "responseKey": "data",
+          "fields": {
+            "expires_at": "expires_at",
+            "id": "id",
+            "links": "links",
+            "relationships": "relationships",
+            "status": "status",
+            "type": "type",
+            "unique_code": "unique_code"
+          }
+        },
+        "coupons": {
+          "displayName": "Coupons",
+          "path": "/coupons",
+          "responseKey": "data",
+          "fields": {
+            "description": "description",
+            "external_id": "external_id",
+            "id": "id",
+            "links": "links",
+            "type": "type"
+          }
+        },
+        "events": {
+          "displayName": "Events",
+          "path": "/events",
+          "responseKey": "data",
+          "fields": {
+            "datetime": "datetime",
+            "event_properties": "event_properties",
+            "id": "id",
+            "links": "links",
+            "relationships": "relationships",
+            "timestamp": "timestamp",
+            "type": "type",
+            "uuid": "uuid"
+          }
+        },
+        "flows": {
+          "displayName": "Flows",
+          "path": "/flows",
+          "responseKey": "data",
+          "fields": {
+            "archived": "archived",
+            "created": "created",
+            "id": "id",
+            "links": "links",
+            "name": "name",
+            "relationships": "relationships",
+            "status": "status",
+            "trigger_type": "trigger_type",
+            "type": "type",
+            "updated": "updated"
+          }
+        },
+        "forms": {
+          "displayName": "Forms",
+          "path": "/forms",
+          "responseKey": "data",
+          "fields": {
+            "ab_test": "ab_test",
+            "created_at": "created_at",
+            "id": "id",
+            "links": "links",
+            "name": "name",
+            "relationships": "relationships",
+            "status": "status",
+            "type": "type",
+            "updated_at": "updated_at"
+          }
+        },
+        "images": {
+          "displayName": "Images",
+          "path": "/images",
+          "responseKey": "data",
+          "fields": {
+            "format": "format",
+            "hidden": "hidden",
+            "id": "id",
+            "image_url": "image_url",
+            "links": "links",
+            "name": "name",
+            "size": "size",
+            "type": "type",
+            "updated_at": "updated_at"
+          }
+        },
+        "lists": {
+          "displayName": "Lists",
+          "path": "/lists",
+          "responseKey": "data",
+          "fields": {
+            "created": "created",
+            "id": "id",
+            "links": "links",
+            "name": "name",
+            "opt_in_process": "opt_in_process",
+            "relationships": "relationships",
+            "type": "type",
+            "updated": "updated"
+          }
+        },
+        "metrics": {
+          "displayName": "Metrics",
+          "path": "/metrics",
+          "responseKey": "data",
+          "fields": {
+            "created": "created",
+            "id": "id",
+            "integration": "integration",
+            "links": "links",
+            "name": "name",
+            "relationships": "relationships",
+            "type": "type",
+            "updated": "updated"
+          }
+        },
+        "profile-bulk-import-jobs": {
+          "displayName": "Profile Bulk Import Jobs",
+          "path": "/profile-bulk-import-jobs",
+          "responseKey": "data",
+          "fields": {
+            "completed_at": "completed_at",
+            "completed_count": "completed_count",
+            "created_at": "created_at",
+            "expires_at": "expires_at",
+            "failed_count": "failed_count",
+            "id": "id",
+            "links": "links",
+            "relationships": "relationships",
+            "started_at": "started_at",
+            "status": "status",
+            "total_count": "total_count",
+            "type": "type"
+          }
+        },
+        "profile-suppression-bulk-create-jobs": {
+          "displayName": "Profile Suppression Bulk Create Jobs",
+          "path": "/profile-suppression-bulk-create-jobs",
+          "responseKey": "data",
+          "fields": {
+            "completed_at": "completed_at",
+            "completed_count": "completed_count",
+            "created_at": "created_at",
+            "id": "id",
+            "links": "links",
+            "relationships": "relationships",
+            "skipped_count": "skipped_count",
+            "status": "status",
+            "total_count": "total_count",
+            "type": "type"
+          }
+        },
+        "profile-suppression-bulk-delete-jobs": {
+          "displayName": "Profile Suppression Bulk Delete Jobs",
+          "path": "/profile-suppression-bulk-delete-jobs",
+          "responseKey": "data",
+          "fields": {
+            "completed_at": "completed_at",
+            "completed_count": "completed_count",
+            "created_at": "created_at",
+            "id": "id",
+            "links": "links",
+            "relationships": "relationships",
+            "skipped_count": "skipped_count",
+            "status": "status",
+            "total_count": "total_count",
+            "type": "type"
+          }
+        },
+        "profiles": {
+          "displayName": "Profiles",
+          "path": "/profiles",
+          "responseKey": "data",
+          "fields": {
+            "created": "created",
+            "email": "email",
+            "external_id": "external_id",
+            "first_name": "first_name",
+            "id": "id",
+            "image": "image",
+            "last_event_date": "last_event_date",
+            "last_name": "last_name",
+            "links": "links",
+            "locale": "locale",
+            "location": "location",
+            "organization": "organization",
+            "phone_number": "phone_number",
+            "predictive_analytics": "predictive_analytics",
+            "properties": "properties",
+            "relationships": "relationships",
+            "subscriptions": "subscriptions",
+            "title": "title",
+            "type": "type",
+            "updated": "updated"
+          }
+        },
+        "reviews": {
+          "displayName": "Reviews",
+          "path": "/reviews",
+          "responseKey": "data",
+          "fields": {
+            "author": "author",
+            "content": "content",
+            "created": "created",
+            "email": "email",
+            "id": "id",
+            "images": "images",
+            "links": "links",
+            "product": "product",
+            "public_reply": "public_reply",
+            "rating": "rating",
+            "relationships": "relationships",
+            "review_type": "review_type",
+            "smart_quote": "smart_quote",
+            "status": "status",
+            "title": "title",
+            "type": "type",
+            "updated": "updated",
+            "verified": "verified"
+          }
+        },
+        "segments": {
+          "displayName": "Segments",
+          "path": "/segments",
+          "responseKey": "data",
+          "fields": {
+            "created": "created",
+            "definition": "definition",
+            "id": "id",
+            "is_active": "is_active",
+            "is_processing": "is_processing",
+            "is_starred": "is_starred",
+            "links": "links",
+            "name": "name",
+            "relationships": "relationships",
+            "type": "type",
+            "updated": "updated"
+          }
+        },
+        "tag-groups": {
+          "displayName": "Tag Groups",
+          "path": "/tag-groups",
+          "responseKey": "data",
+          "fields": {
+            "default": "default",
+            "exclusive": "exclusive",
+            "id": "id",
+            "links": "links",
+            "name": "name",
+            "relationships": "relationships",
+            "type": "type"
+          }
+        },
+        "tags": {
+          "displayName": "Tags",
+          "path": "/tags",
+          "responseKey": "data",
+          "fields": {
+            "id": "id",
+            "links": "links",
+            "name": "name",
+            "relationships": "relationships",
+            "type": "type"
+          }
+        },
+        "template-universal-content": {
+          "displayName": "Template Universal Content",
+          "path": "/template-universal-content",
+          "responseKey": "data",
+          "fields": {
+            "created": "created",
+            "definition": "definition",
+            "id": "id",
+            "links": "links",
+            "name": "name",
+            "screenshot_status": "screenshot_status",
+            "screenshot_url": "screenshot_url",
+            "type": "type",
+            "updated": "updated"
+          }
+        },
+        "templates": {
+          "displayName": "Templates",
+          "path": "/templates",
+          "responseKey": "data",
+          "fields": {
+            "created": "created",
+            "editor_type": "editor_type",
+            "html": "html",
+            "id": "id",
+            "links": "links",
+            "name": "name",
+            "text": "text",
+            "type": "type",
+            "updated": "updated"
+          }
+        },
+        "tracking-settings": {
+          "displayName": "Tracking Settings",
+          "path": "/tracking-settings",
+          "responseKey": "data",
+          "fields": {
+            "auto_add_parameters": "auto_add_parameters",
+            "custom_parameters": "custom_parameters",
+            "id": "id",
+            "links": "links",
+            "type": "type",
+            "utm_campaign": "utm_campaign",
+            "utm_id": "utm_id",
+            "utm_medium": "utm_medium",
+            "utm_source": "utm_source",
+            "utm_term": "utm_term"
+          }
+        },
+        "webhook-topics": {
+          "displayName": "Webhook Topics",
+          "path": "/webhook-topics",
+          "responseKey": "data",
+          "fields": {
+            "id": "id",
+            "links": "links",
+            "type": "type"
+          }
+        },
+        "webhooks": {
+          "displayName": "Webhooks",
+          "path": "/webhooks",
+          "responseKey": "data",
+          "fields": {
+            "created_at": "created_at",
+            "description": "description",
+            "enabled": "enabled",
+            "endpoint_url": "endpoint_url",
+            "id": "id",
+            "links": "links",
+            "name": "name",
+            "relationships": "relationships",
+            "type": "type",
+            "updated_at": "updated_at"
+          }
+        }
+      }
+    }
+  }
+}

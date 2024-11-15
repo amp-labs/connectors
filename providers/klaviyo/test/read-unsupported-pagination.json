@@ -1,0 +1,15 @@
+{
+  "errors": [
+    {
+      "id": "6cdf7bc5-cd5e-420e-9220-d47b70e16d1f",
+      "status": 400,
+      "code": "invalid",
+      "title": "Invalid input.",
+      "detail": "'page_size' is not a valid field for the resource 'list'.",
+      "source": {
+        "pointer": "/data/attributes/page_size"
+      },
+      "meta": {}
+    }
+  ]
+}

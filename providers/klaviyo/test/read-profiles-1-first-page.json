@@ -1,0 +1,64 @@
+{
+  "data": [
+    {
+      "type": "profile",
+      "id": "01HSXWNWF52J5PJG45BW383RMV",
+      "attributes": {
+        "email": "jennifer@gmail.com",
+        "phone_number": null,
+        "external_id": null,
+        "anonymous_id": null,
+        "first_name": null,
+        "last_name": null,
+        "organization": null,
+        "locale": null,
+        "title": null,
+        "image": null,
+        "created": "2024-03-26T17:24:42+00:00",
+        "updated": "2024-03-26T17:24:42+00:00",
+        "last_event_date": "2024-03-26T17:24:41+00:00",
+        "location": {
+          "city": null,
+          "zip": null,
+          "country": null,
+          "longitude": null,
+          "address2": null,
+          "address1": null,
+          "region": null,
+          "latitude": null,
+          "timezone": null,
+          "ip": null
+        },
+        "properties": {}
+      },
+      "relationships": {
+        "lists": {
+          "links": {
+            "self": "https://a.klaviyo.com/api/profiles/01HSXWNWF52J5PJG45BW383RMV/relationships/lists/",
+            "related": "https://a.klaviyo.com/api/profiles/01HSXWNWF52J5PJG45BW383RMV/lists/"
+          }
+        },
+        "segments": {
+          "links": {
+            "self": "https://a.klaviyo.com/api/profiles/01HSXWNWF52J5PJG45BW383RMV/relationships/segments/",
+            "related": "https://a.klaviyo.com/api/profiles/01HSXWNWF52J5PJG45BW383RMV/segments/"
+          }
+        },
+        "conversation": {
+          "links": {
+            "self": "https://a.klaviyo.com/api/profiles/01HSXWNWF52J5PJG45BW383RMV/relationships/conversation/",
+            "related": "https://a.klaviyo.com/api/profiles/01HSXWNWF52J5PJG45BW383RMV/conversation/"
+          }
+        }
+      },
+      "links": {
+        "self": "https://a.klaviyo.com/api/profiles/01HSXWNWF52J5PJG45BW383RMV/"
+      }
+    }
+  ],
+  "links": {
+    "self": "https://a.klaviyo.com/api/profiles?page[size]=1",
+    "next": "https://a.klaviyo.com/api/profiles?page%5Bsize%5D=1&page%5Bcursor%5D=bmV4dDo6aWQ6OjAxSFNYV05XRjUySjVQSkc0NUJXMzgzUk1W",
+    "prev": null
+  }
+}
