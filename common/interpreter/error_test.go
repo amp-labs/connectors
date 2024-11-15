@@ -97,6 +97,19 @@ func TestErrorHandler(t *testing.T) { //nolint:funlen
 			},
 			expectedErr: []error{ErrCustomHTML},
 		},
+		{
+			name: "Custom response is handled using custom handler",
+			server: mockserver.Fixed{
+				Setup:  mockserver.ContentMIME("application/special-media"),
+				Always: mockserver.Response(http.StatusNotFound),
+			}.Server(),
+			handler: ErrorHandler{
+				Custom: map[Mime]FaultyResponseHandler{
+					"application/special-media": handlerReturningError(ErrCustomJSON),
+				},
+			},
+			expectedErr: []error{ErrCustomJSON},
+		},
 	}
 
 	for _, tt := range tests {
