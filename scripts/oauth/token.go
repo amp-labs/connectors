@@ -21,6 +21,7 @@ import (
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/scanning"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
+	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/providers"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
@@ -90,12 +91,16 @@ type OAuthApp struct {
 	Port              int
 	Config            *oauth2.Config
 	ClientCredsConfig *clientcredentials.Config
-	Options           []oauth2.AuthCodeOption
-	State             string
-	Proto             string
-	SSLCert           string
-	SSLKey            string
-	PasswordParams    *providers.BasicParams
+	// AuthOptions are passed to oauth2.Config method - AuthCodeURL().
+	AuthOptions []oauth2.AuthCodeOption
+	// ExchangeOptions are passed to oauth2.Config method - Exchange().
+	ExchangeOptions []oauth2.AuthCodeOption
+	State           string
+	Proto           string
+	SSLCert         string
+	SSLKey          string
+	CodeVerifier    *string
+	PasswordParams  *providers.BasicParams
 }
 
 // ServeHTTP implements the http.Handler interface.
@@ -108,7 +113,7 @@ func (a *OAuthApp) ServeHTTP(writer http.ResponseWriter, request *http.Request) 
 	case request.URL.Path == "/" && request.Method == "GET":
 		// Redirect to the OAuth provider.
 		encState := base64.URLEncoding.EncodeToString([]byte(a.State))
-		writer.Header().Set("Location", a.Config.AuthCodeURL(encState, a.Options...))
+		writer.Header().Set("Location", a.Config.AuthCodeURL(encState, a.AuthOptions...))
 		writer.WriteHeader(http.StatusTemporaryRedirect)
 
 	default:
@@ -144,7 +149,7 @@ func (a *OAuthApp) processCallback(writer http.ResponseWriter, request *http.Req
 	}
 
 	// Exchange the code for a token.
-	tok, err := a.Config.Exchange(request.Context(), code)
+	tok, err := a.Config.Exchange(request.Context(), code, a.ExchangeOptions...)
 	if err != nil {
 		slog.Error("Error exchanging code for token", "error", err)
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
@@ -306,8 +311,14 @@ func setup() *OAuthApp {
 	}
 
 	oauthScopes := strings.Split(scopes, ",")
+	var codeVerifier *string
 
 	switch providerInfo.Oauth2Opts.GrantType {
+	case providers.AuthorizationCodePKCE:
+		codeVerifier = goutils.Pointer(oauth2.GenerateVerifier())
+		// PKCE is an additional set of rules for Oauth2.
+
+		fallthrough
 	case providers.AuthorizationCode:
 		if providerInfo.Oauth2Opts.AuthURL == "" {
 			slog.Error("provider does not have an AuthURL, not compatible with this script", "provider", provider)
@@ -325,18 +336,21 @@ func setup() *OAuthApp {
 
 		// Create the OAuth app.
 		app := &OAuthApp{
-			GrantType: providers.AuthorizationCode,
-			Callback:  *callback,
-			Port:      *port,
-			Proto:     *proto,
-			SSLCert:   *SSLCert,
-			SSLKey:    *SSLKey,
+			GrantType:    providers.AuthorizationCode,
+			Callback:     *callback,
+			Port:         *port,
+			Proto:        *proto,
+			SSLCert:      *SSLCert,
+			SSLKey:       *SSLKey,
+			CodeVerifier: codeVerifier,
 			Config: &oauth2.Config{
 				ClientID:     clientId,
 				ClientSecret: clientSecret,
 				RedirectURL:  redirect,
 				Scopes:       oauthScopes,
 			},
+			AuthOptions:     make([]oauth2.AuthCodeOption, 0),
+			ExchangeOptions: make([]oauth2.AuthCodeOption, 0),
 		}
 		if state != "" {
 			app.State = state
@@ -349,14 +363,19 @@ func setup() *OAuthApp {
 			AuthStyle: oauth2.AuthStyleAutoDetect,
 		}
 
-		var authCodeOptions []oauth2.AuthCodeOption
+		for key, value := range providerInfo.Oauth2Opts.AuthURLParams {
+			app.AuthOptions = append(app.AuthOptions, oauth2.SetAuthURLParam(key, value))
+		}
 
-		authURLParams := providerInfo.Oauth2Opts.AuthURLParams
-		if authURLParams != nil {
-			for k, v := range authURLParams {
-				option := oauth2.SetAuthURLParam(k, v)
-				app.Options = append(authCodeOptions, option)
-			}
+		if codeVerifier != nil {
+			// For PKCE technique the code challenge
+			// which was created from the code verifier must be sent as part of authorization request.
+			// Reference: https://www.rfc-editor.org/rfc/rfc7636#section-4.3
+			app.AuthOptions = append(app.AuthOptions, oauth2.S256ChallengeOption(*codeVerifier))
+			// When the exchange of auth code for the access token will be happening,
+			// we need to enhance the request with original not-encoded code verifier.
+			// Reference: https://www.rfc-editor.org/rfc/rfc7636#section-4.5
+			app.ExchangeOptions = append(app.ExchangeOptions, oauth2.VerifierOption(*codeVerifier))
 		}
 
 		return app
