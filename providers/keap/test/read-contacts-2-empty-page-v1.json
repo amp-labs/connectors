@@ -1,0 +1,6 @@
+{
+  "contacts": [],
+  "count": 2,
+  "next": "https://api.infusionsoft.com/crm/rest/v1/contacts/?limit=2&offset=4&since=2024-06-03T22:17:59.039Z&order=id",
+  "previous": "https://api.infusionsoft.com/crm/rest/v1/contacts/?limit=2&offset=0&since=2024-06-03T22:17:59.039Z&order=id"
+}

@@ -51,14 +51,14 @@ func (a Module) Path() string {
 //	Then:	It will be represented as follows:
 //
 //		ModuleObjectNameToFieldName{
-//			ModuleCommerce: handy.NewDefaultMap(map[string]string{
+//			ModuleCommerce: datautils.NewDefaultMap(map[string]string{
 //				"carts": "carts",
 //			},
 //				func(objectName string) string {
 //					return "data" // always under "data" field {"data": [{},{},...]}
 //				},
 //			),
-//			ModuleHelpCenter: handy.NewDefaultMap(map[string]string{
+//			ModuleHelpCenter: datautils.NewDefaultMap(map[string]string{
 //				"chats":        "active_chats",
 //			}, func(objectName string) string {
 //				fieldName := objectName // Object "messages" is stored under {"messages": [{},{},...]}
