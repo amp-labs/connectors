@@ -68,23 +68,23 @@ func (s Schema) String() string {
 
 func (p PathItem) RetrieveSchemaOperation(
 	operationName string,
-	displayNameOverride map[string]string, locator ObjectArrayLocator, displayProcessor DisplayNameProcessor,
-	parameterFilter ParameterFilterGetMethod,
+	displayNameOverride map[string]string,
+	locator ObjectArrayLocator,
+	displayProcessor DisplayNameProcessor,
+	operationMethodFilter ReadOperationMethodFilter,
+	mime string,
 ) (*Schema, bool, error) {
 	operation := p.selectOperation(operationName)
 	if operation == nil {
 		return nil, false, nil
 	}
 
-	if parameterFilter != nil {
-		ok := parameterFilter(p.objectName, operation)
-		if !ok {
-			// Omit this schema. We only work with GET method without required parameters
-			return nil, false, nil
-		}
+	if ok := operationMethodFilter(p.objectName, operation); !ok {
+		// Omit this schema, operation for this object is not what we are looking for.
+		return nil, false, nil
 	}
 
-	schema := extractSchema(operation)
+	schema := extractSchema(operation, mime)
 	if schema == nil {
 		return nil, false, nil
 	}
@@ -96,10 +96,8 @@ func (p PathItem) RetrieveSchemaOperation(
 			displayName = p.objectName
 		}
 
-		if displayProcessor != nil {
-			// Post process Display Names to have shared format.
-			displayName = displayProcessor(displayName)
-		}
+		// Post process Display Names to have shared format.
+		displayName = displayProcessor(displayName)
 	}
 
 	fields, responseKey, err := extractObjectFields(p.objectName, schema, locator)
@@ -227,7 +225,7 @@ func getQueryParameters(operation *openapi3.Operation) []string {
 	return queryParams
 }
 
-func extractSchema(operation *openapi3.Operation) *openapi3.Schema {
+func extractSchema(operation *openapi3.Operation, mime string) *openapi3.Schema {
 	if operation == nil {
 		return nil
 	}
@@ -248,7 +246,7 @@ func extractSchema(operation *openapi3.Operation) *openapi3.Schema {
 		return nil
 	}
 
-	mediaType := value.Content.Get("application/json")
+	mediaType := value.Content.Get(mime)
 	if mediaType == nil {
 		return nil
 	}
