@@ -80,6 +80,7 @@ func (e Explorer) ReadObjects(
 			displayNameOverride, locator,
 			e.displayPostProcessing,
 			e.operationMethodFilter,
+			e.propertyFlattener,
 			e.mediaType,
 		)
 		if err != nil {
