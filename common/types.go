@@ -96,16 +96,25 @@ var (
 type ReadParams struct {
 	// The name of the object we are reading, e.g. "Account"
 	ObjectName string // required
+
 	// The fields we are reading from the object, e.g. ["Id", "Name", "BillingCity"]
 	Fields datautils.StringSet // required, at least one field needed
+
 	// NextPage is an opaque token that can be used to get the next page of results.
 	NextPage NextPageToken // optional, only set this if you want to read the next page of results
+
 	// Since is a timestamp that can be used to get only records that have changed since that time.
 	Since time.Time // optional, omit this to fetch all records
+
 	// Deleted is true if we want to read deleted records instead of active records.
 	Deleted bool // optional, defaults to false
-	// Filter is only supported for salesforce. It is a SOQL string that comes after the WHERE clause
-	// which will be used to filter the records.
+
+	// Filter is supported for the following connectors:
+	//	* Salesforce: it is a SOQL string that comes after the WHERE clause which will be used to filter the records.
+	//		Reference: https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql.htm
+	//	* Klaviyo: comma separated methods following JSON:API filtering syntax.
+	//		Note: timing is already handled by Since argument.
+	//		Reference: https://developers.klaviyo.com/en/docs/filtering_
 	Filter string // optional
 }
 
