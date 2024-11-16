@@ -251,8 +251,8 @@ type PostAuthInfo struct {
 type WebhookEventType string
 
 const (
-	WebhookEventTypeCreate      WebhookEventType = "create"
-	WebhookEventTypeUpdate      WebhookEventType = "update"
-	WebhookEventTypeDelete      WebhookEventType = "delete"
-	WebhookEventtypePassThrough WebhookEventType = "passThrough"
+	WebhookEventTypeCreate WebhookEventType = "create"
+	WebhookEventTypeUpdate WebhookEventType = "update"
+	WebhookEventTypeDelete WebhookEventType = "delete"
+	WebhookEventTypeOther  WebhookEventType = "other"
 )

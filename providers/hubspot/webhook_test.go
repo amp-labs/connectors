@@ -93,7 +93,7 @@ func TestExtractEventTypeFromWebhookMessage(t *testing.T) {
 		t.Fatalf("error extracting object name from webhook message: %s", err)
 	}
 
-	assert.Equal(t, evtTypeCreate, common.WebhookEventTypeCreate, "object type should be parsedCorrectly")
+	assert.Equal(t, evtTypeCreate, common.WebhookEventTypeCreate, "event type should be parsed Correctly")
 
 	deleteMessage := &WebhookMessage{
 		AppId:            1,
@@ -111,10 +111,10 @@ func TestExtractEventTypeFromWebhookMessage(t *testing.T) {
 
 	evtTypeDelete, err := conn.ExtractEventTypeFromWebhookMessage(deleteMessage)
 	if err != nil {
-		t.Fatalf("error extracting object name from webhook message: %s", err)
+		t.Fatalf("error extracting eventTye from webhook message: %s", err)
 	}
 
-	assert.Equal(t, evtTypeDelete, common.WebhookEventTypeDelete, "object type should be parsedCorrectly")
+	assert.Equal(t, evtTypeDelete, common.WebhookEventTypeDelete, "event type should be parsed correctly")
 
 	updateMessage := &WebhookMessage{
 		AppId:            1,
@@ -132,27 +132,10 @@ func TestExtractEventTypeFromWebhookMessage(t *testing.T) {
 
 	evtTypeUpdate, err := conn.ExtractEventTypeFromWebhookMessage(updateMessage)
 	if err != nil {
-		t.Fatalf("error extracting object name from webhook message: %s", err)
+		t.Fatalf("error extracting eventTye from webhook message: %s", err)
 	}
 
-	assert.Equal(t, evtTypeUpdate, common.WebhookEventTypeUpdate, "object type should be parsedCorrectly")
-
-	unsupportedObjectMessage := &WebhookMessage{
-		AppId:            1,
-		EventId:          1,
-		SubscriptionId:   1,
-		PortalId:         1,
-		OccurredAt:       1,
-		SubscriptionType: "someObject.creation",
-		AttemptNumber:    1,
-		ObjectId:         1,
-		ChangeSource:     "CRM",
-		PropertyName:     "message",
-		PropertyValue:    "sample-value",
-	}
-
-	_, err = conn.ExtractEventTypeFromWebhookMessage(unsupportedObjectMessage)
-	assert.ErrorIs(t, err, errWebhookNotSupportedForObject)
+	assert.Equal(t, evtTypeUpdate, common.WebhookEventTypeUpdate, "event type should be parsed correctly")
 
 	emptyObjectMessage := &WebhookMessage{
 		AppId:            1,
@@ -169,5 +152,5 @@ func TestExtractEventTypeFromWebhookMessage(t *testing.T) {
 	}
 
 	_, err = conn.ExtractEventTypeFromWebhookMessage(emptyObjectMessage)
-	assert.ErrorIs(t, err, errWebhookNotSupportedForObject)
+	assert.ErrorIs(t, err, errUnexpectedWebhookEventType)
 }

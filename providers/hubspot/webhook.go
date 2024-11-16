@@ -40,10 +40,15 @@ func (c *Connector) GetRecordFromWebhookMessage(
 	return c.GetRecord(ctx, objectName, recordId)
 }
 
+var errUnexpectedWebhookEventType = errors.New("unexpected webhook event type")
+
 func (c *Connector) ExtractEventTypeFromWebhookMessage(msg *WebhookMessage) (common.WebhookEventType, error) {
 	parts := strings.Split(msg.SubscriptionType, ".")
-	if !getRecordSupportedObjectsSet.Has(parts[0]) {
-		return "", errWebhookNotSupportedForObject
+
+	//nolint:gomnd
+	if len(parts) < 2 {
+		// this should never happen unless the provider changes webhook message format
+		return common.WebhookEventTypeOther, fmt.Errorf("%w: '%s'", errUnexpectedWebhookEventType, msg.SubscriptionType)
 	}
 
 	switch parts[1] {
@@ -54,7 +59,7 @@ func (c *Connector) ExtractEventTypeFromWebhookMessage(msg *WebhookMessage) (com
 	case "deletion", "privacyDeletion":
 		return common.WebhookEventTypeDelete, nil
 	default:
-		return common.WebhookEventtypePassThrough, nil
+		return common.WebhookEventTypeOther, nil
 	}
 }
 
