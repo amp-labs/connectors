@@ -3,9 +3,9 @@ package kit
 import "github.com/amp-labs/connectors/internal/datautils"
 
 const (
-	objectNameBroadcasts     = "broadcasts"
-	objectNameCustomfields   = "custom_fields"
-	objectNameEmailtemplates = "email_templates"
+	objectNameBroadCasts     = "broadcasts"
+	objectNameCustomFields   = "custom_fields"
+	objectNameEmailTemplates = "email_templates"
 	objectNameForms          = "forms"
 	objectNamePurchases      = "purchases"
 	objectNameSequences      = "sequences"
@@ -16,7 +16,7 @@ const (
 )
 
 var supportedObjectsByRead = datautils.NewSet( //nolint:gochecknoglobals
-	objectNameCustomfields,
-	objectNameEmailtemplates,
+	objectNameCustomFields,
+	objectNameEmailTemplates,
 	objectNameTags,
 )
