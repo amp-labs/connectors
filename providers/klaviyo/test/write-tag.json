@@ -1,0 +1,51 @@
+{
+  "data": {
+    "type": "tag",
+    "id": "9891d452-56fe-4397-b431-a92e79cdc980",
+    "attributes": {
+      "name": "popular"
+    },
+    "relationships": {
+      "tag-group": {
+        "data": {
+          "type": "tag-group",
+          "id": "7da3b722-7e43-44ec-8450-4247843972ab"
+        },
+        "links": {
+          "self": "https://a.klaviyo.com/api/tags/9891d452-56fe-4397-b431-a92e79cdc980/relationships/tag-group/",
+          "related": "https://a.klaviyo.com/api/tags/9891d452-56fe-4397-b431-a92e79cdc980/tag-group/"
+        }
+      },
+      "lists": {
+        "links": {
+          "self": "https://a.klaviyo.com/api/tags/9891d452-56fe-4397-b431-a92e79cdc980/relationships/lists/",
+          "related": "https://a.klaviyo.com/api/tags/9891d452-56fe-4397-b431-a92e79cdc980/lists/"
+        }
+      },
+      "segments": {
+        "links": {
+          "self": "https://a.klaviyo.com/api/tags/9891d452-56fe-4397-b431-a92e79cdc980/relationships/segments/",
+          "related": "https://a.klaviyo.com/api/tags/9891d452-56fe-4397-b431-a92e79cdc980/segments/"
+        }
+      },
+      "campaigns": {
+        "links": {
+          "self": "https://a.klaviyo.com/api/tags/9891d452-56fe-4397-b431-a92e79cdc980/relationships/campaigns/",
+          "related": "https://a.klaviyo.com/api/tags/9891d452-56fe-4397-b431-a92e79cdc980/campaigns/"
+        }
+      },
+      "flows": {
+        "links": {
+          "self": "https://a.klaviyo.com/api/tags/9891d452-56fe-4397-b431-a92e79cdc980/relationships/flows/",
+          "related": "https://a.klaviyo.com/api/tags/9891d452-56fe-4397-b431-a92e79cdc980/flows/"
+        }
+      }
+    },
+    "links": {
+      "self": "https://a.klaviyo.com/api/tags/9891d452-56fe-4397-b431-a92e79cdc980/"
+    }
+  },
+  "links": {
+    "self": "https://a.klaviyo.com/api/tags"
+  }
+}

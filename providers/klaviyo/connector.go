@@ -44,20 +44,37 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	conn.setBaseURL(providerInfo.BaseURL)
 	conn.Client.HTTPClient.ErrorHandler = interpreter.ErrorHandler{
 		Custom: map[string]interpreter.FaultyResponseHandler{
-			"application/vnd.api+json": interpreter.NewFaultyResponder(errorFormats, nil),
+			"application/vnd.api+json": interpreter.NewFaultyResponder(errorFormats, statusCodeMapping),
 		},
 	}.Handle
 
 	return conn, nil
 }
 
-func (c *Connector) getURL(objectName string) (*urlbuilder.URL, error) {
+func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
 	path, err := metadata.Schemas.LookupURLPath(c.Module.ID, objectName)
 	if err != nil {
 		return nil, err
 	}
 
 	return urlbuilder.New(c.BaseURL, path)
+}
+
+func (c *Connector) getWriteURL(objectName string) (*urlbuilder.URL, error) {
+	path := ObjectNameToWritePath.Get(objectName)
+
+	return urlbuilder.New(c.BaseURL, path)
+}
+
+func (c *Connector) getDeleteURL(objectName string) (*urlbuilder.URL, error) {
+	return urlbuilder.New(c.BaseURL, "api", objectName)
+}
+
+func (c *Connector) revisionHeader() common.Header {
+	return common.Header{
+		Key:   "revision",
+		Value: string(c.Module.ID),
+	}
 }
 
 func (c *Connector) setBaseURL(newURL string) {

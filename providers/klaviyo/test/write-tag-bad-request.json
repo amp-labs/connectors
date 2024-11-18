@@ -1,0 +1,16 @@
+{
+  "errors": [
+    {
+      "id": "43cb63ce-40df-4501-8bcb-64c9c2eba79d",
+      "status": 400,
+      "code": "invalid",
+      "title": "Invalid input.",
+      "detail": "One of `attributes`, `relationships` or `id` must be included in the request payload.",
+      "source": {
+        "pointer": "/data"
+      },
+      "links": {},
+      "meta": {}
+    }
+  ]
+}
