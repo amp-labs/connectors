@@ -54,9 +54,9 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 }
 
 func constructWriteResult(objName string, body *ajson.Node) (*common.WriteResult, error) {
-	obj := naming.NewSingularString(objName)
+	obj := naming.NewSingularString(objName).String()
 
-	objectResponse, err := jsonquery.New(body).Object(obj.String(), true)
+	objectResponse, err := jsonquery.New(body).Object(obj, true)
 	if err != nil {
 		return nil, err
 	}
