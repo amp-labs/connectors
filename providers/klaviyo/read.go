@@ -23,10 +23,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	res, err := c.Client.Get(ctx, url.String(), common.Header{
-		Key:   "revision",
-		Value: string(c.Module.ID),
-	})
+	res, err := c.Client.Get(ctx, url.String(), c.revisionHeader())
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +43,7 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 	}
 
 	// First page
-	url, err := c.getURL(config.ObjectName)
+	url, err := c.getReadURL(config.ObjectName)
 	if err != nil {
 		return nil, err
 	}

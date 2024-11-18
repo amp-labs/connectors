@@ -1,0 +1,14 @@
+{
+  "errors": [
+    {
+      "id": "434575c3-bcf6-45a7-b1d8-e365161e45c3",
+      "status": 401,
+      "code": "authentication_failed",
+      "title": "Incorrect authentication credentials.",
+      "detail": "Incorrect authentication credentials.",
+      "source": {
+        "pointer": "/data/"
+      }
+    }
+  ]
+}

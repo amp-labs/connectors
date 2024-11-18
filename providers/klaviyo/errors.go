@@ -2,8 +2,10 @@ package klaviyo
 
 import (
 	"fmt"
+	"net/http"
 	"strings"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 )
 
@@ -15,6 +17,10 @@ var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
 		},
 	}...,
 )
+
+var statusCodeMapping = map[int]error{ // nolint:gochecknoglobals
+	http.StatusConflict: common.ErrBadRequest,
+}
 
 type ResponseError struct {
 	Errors []ErrorDetails `json:"errors"`
