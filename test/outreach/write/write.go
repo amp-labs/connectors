@@ -23,7 +23,6 @@ func main() {
 	utils.SetupLogging()
 
 	conn := connTest.GetOutreachConnector(ctx)
-	defer utils.Close(conn)
 
 	err := testWriteConnector(context.Background(), conn)
 	if err != nil {

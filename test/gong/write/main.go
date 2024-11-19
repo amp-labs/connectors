@@ -42,7 +42,6 @@ func main() {
 	utils.SetupLogging()
 
 	conn := connTest.GetGongConnector(ctx)
-	defer utils.Close(conn)
 
 	slog.Info("TEST Create Call")
 	slog.Info("Creating Call")

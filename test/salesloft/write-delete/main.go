@@ -30,7 +30,6 @@ func main() {
 	utils.SetupLogging()
 
 	conn := msTest.GetSalesloftConnector(ctx)
-	defer utils.Close(conn)
 
 	fmt.Println("> TEST Create/Update/Delete ListView")
 	fmt.Println("Creating ListView")

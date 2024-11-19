@@ -28,7 +28,6 @@ func main() {
 	utils.SetupLogging()
 
 	conn := connTest.GetSmartleadConnector(ctx)
-	defer utils.Close(conn)
 
 	fmt.Println("> TEST Create/Delete campaign")
 	fmt.Println("Creating campaign")

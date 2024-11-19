@@ -41,7 +41,7 @@ func main() {
 	}
 
 	conn := connTest.Get{{ .Provider }}Connector(ctx, filePath)
-	defer utils.Close(conn)
+
 
 	fmt.Println("> TEST Create/Update/Delete {{ .ObjectName }}")
 	fmt.Println("Creating {{ .ObjectName }}")

@@ -19,7 +19,6 @@ func main() {
 	utils.SetupLogging()
 
 	conn := zohocrm.GetZohoConnector(ctx)
-	defer utils.Close(conn)
 
 	m, err := conn.ListObjectMetadata(ctx, []string{"leads", "deals", "contacts"})
 	if err != nil {

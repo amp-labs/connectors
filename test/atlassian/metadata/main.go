@@ -25,7 +25,6 @@ func main() {
 	utils.SetupLogging()
 
 	conn := connTest.GetAtlassianConnector(ctx)
-	defer utils.Close(conn)
 
 	response, err := conn.Read(ctx, common.ReadParams{})
 	if err != nil {

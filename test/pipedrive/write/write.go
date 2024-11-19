@@ -25,7 +25,6 @@ func main() {
 	utils.SetupLogging()
 
 	conn := pipedrive.GetPipedriveConnector(ctx)
-	defer utils.Close(conn)
 
 	if err := createActivity(ctx, conn); err != nil {
 		slog.Error(err.Error())

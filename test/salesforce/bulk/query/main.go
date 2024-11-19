@@ -21,7 +21,6 @@ func main() {
 	utils.SetupLogging()
 
 	conn := connTest.GetSalesforceConnector(ctx)
-	defer utils.Close(conn)
 
 	query := "SELECT Id, Name FROM Account LIMIT 1000"
 

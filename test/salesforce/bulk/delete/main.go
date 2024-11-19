@@ -25,7 +25,6 @@ func main() {
 	utils.SetupLogging()
 
 	conn := connTest.GetSalesforceConnector(ctx)
-	defer utils.Close(conn)
 
 	// We first create objects in Salesforce,
 	// and then we generate an in-memory CSV of the Salesforce IDs of the newly created objects,

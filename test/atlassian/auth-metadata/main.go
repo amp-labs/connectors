@@ -20,7 +20,6 @@ func main() {
 	utils.SetupLogging()
 
 	conn := connTest.GetAtlassianConnector(ctx)
-	defer utils.Close(conn)
 
 	info, err := conn.GetPostAuthInfo(ctx)
 	if err != nil || info.CatalogVars == nil {

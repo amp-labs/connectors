@@ -27,7 +27,6 @@ func main() {
 	utils.SetupLogging()
 
 	conn := connTest.GetSalesforceConnector(ctx)
-	defer utils.Close(conn)
 
 	response, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: objectName,

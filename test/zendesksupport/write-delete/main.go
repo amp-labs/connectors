@@ -36,7 +36,6 @@ func main() {
 	utils.SetupLogging()
 
 	conn := connTest.GetZendeskSupportConnector(ctx)
-	defer utils.Close(conn)
 
 	fmt.Println("> TEST Create/Update/Delete brands")
 

@@ -40,7 +40,6 @@ func main() {
 	utils.SetupLogging()
 
 	conn := connTest.GetMSDynamics365CRMConnector(ctx)
-	defer utils.Close(conn)
 
 	fmt.Println("> TEST Create/Update/Delete lead")
 	fmt.Println("Creating lead")

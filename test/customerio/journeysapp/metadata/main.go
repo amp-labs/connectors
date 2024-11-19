@@ -25,7 +25,6 @@ func main() {
 	utils.SetupLogging()
 
 	conn := connTest.GetCustomerJourneysAppConnector(ctx)
-	defer utils.Close(conn)
 
 	metadata, err := conn.ListObjectMetadata(ctx, []string{
 		objectName,

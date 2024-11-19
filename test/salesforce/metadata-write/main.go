@@ -9,7 +9,6 @@ import (
 	"syscall"
 
 	connTest "github.com/amp-labs/connectors/test/salesforce"
-	"github.com/amp-labs/connectors/test/utils"
 )
 
 func main() {
@@ -25,7 +24,6 @@ func main() {
 	slog.SetDefault(logger)
 
 	conn := connTest.GetSalesforceConnector(ctx)
-	defer utils.Close(conn)
 
 	input := []byte(`
 <createMetadata>

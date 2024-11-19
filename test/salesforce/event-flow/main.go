@@ -24,7 +24,6 @@ func main() {
 	utils.SetupLogging()
 
 	conn := connTest.GetSalesforceConnector(ctx)
-	defer utils.Close(conn)
 
 	uniqueString := strconv.Itoa(int(time.Now().UnixMilli()))
 
