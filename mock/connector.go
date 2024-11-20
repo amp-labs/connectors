@@ -54,10 +54,6 @@ func (c *Connector) String() string {
 	return "mock"
 }
 
-func (c *Connector) Close() error {
-	return nil
-}
-
 func (c *Connector) JSONHTTPClient() *common.JSONHTTPClient {
 	return c.client
 }

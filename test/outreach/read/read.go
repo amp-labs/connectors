@@ -22,7 +22,6 @@ func main() {
 	utils.SetupLogging()
 
 	conn := connTest.GetOutreachConnector(ctx)
-	defer utils.Close(conn)
 
 	var err error
 

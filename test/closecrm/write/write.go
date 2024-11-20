@@ -23,7 +23,6 @@ func main() {
 	utils.SetupLogging()
 
 	conn := closecrm.GetCloseConnector(ctx)
-	defer utils.Close(conn)
 
 	if err := createLead(ctx, conn); err != nil {
 		slog.Error(err.Error())

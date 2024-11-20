@@ -19,7 +19,6 @@ func main() {
 	utils.SetupLogging()
 
 	conn := connTest.GetOutreachConnector(ctx)
-	defer utils.Close(conn)
 
 	m, err := conn.ListObjectMetadata(ctx, []string{"sequences"})
 	if err != nil {

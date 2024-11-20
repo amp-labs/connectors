@@ -3,7 +3,6 @@ package connectors
 import (
 	"context"
 	"fmt"
-	"io"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
@@ -14,7 +13,6 @@ import (
 // basic configuration about the provider.
 type Connector interface {
 	fmt.Stringer
-	io.Closer
 
 	// JSONHTTPClient returns the underlying JSON HTTP client. This is useful for
 	// testing, or for calling methods that aren't exposed by the Connector

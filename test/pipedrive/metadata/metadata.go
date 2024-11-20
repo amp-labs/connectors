@@ -19,7 +19,6 @@ func main() {
 	utils.SetupLogging()
 
 	conn := pipedrive.GetPipedriveConnector(ctx)
-	defer utils.Close(conn)
 
 	m, err := conn.ListObjectMetadata(ctx, []string{"activities", "callLogs", "currencies", "deals"})
 	if err != nil {

@@ -24,7 +24,6 @@ func main() {
 	utils.SetupLogging()
 
 	conn := connTest.GetSmartleadConnector(ctx)
-	defer utils.Close(conn)
 
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: objectName,

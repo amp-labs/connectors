@@ -27,7 +27,6 @@ func main() { //nolint:funlen
 	utils.SetupLogging()
 
 	conn := connTest.GetSalesforceConnector(ctx)
-	defer utils.Close(conn)
 
 	fmt.Println("Lookup account")
 

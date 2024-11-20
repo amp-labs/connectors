@@ -29,7 +29,6 @@ func main() {
 	utils.SetupLogging()
 
 	conn := msTest.GetIntercomConnector(ctx)
-	defer utils.Close(conn)
 
 	fmt.Println("> TEST Create/Update/Delete Article")
 	fmt.Println("Prepare by getting first admin user id")

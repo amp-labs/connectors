@@ -31,7 +31,6 @@ func main() {
 	utils.SetupLogging()
 
 	conn := connTest.GetPipelinerConnector(ctx)
-	defer utils.Close(conn)
 
 	fmt.Println("> TEST Create/Update/Delete Notes")
 	fmt.Println("Creating Notes")

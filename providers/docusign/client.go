@@ -15,10 +15,6 @@ func (c *Connector) HTTPClient() *common.HTTPClient {
 	return c.Client.HTTPClient
 }
 
-func (c *Connector) Close() error {
-	return nil
-}
-
 func (c *Connector) String() string {
 	return c.Provider() + ".Connector"
 }

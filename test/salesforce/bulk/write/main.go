@@ -59,7 +59,6 @@ func main() {
 	utils.SetupLogging()
 
 	conn := connTest.GetSalesforceConnector(ctx)
-	defer utils.Close(conn)
 
 	logs := tests.Run(ctx, conn)
 
