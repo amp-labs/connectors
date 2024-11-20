@@ -23,7 +23,6 @@ func main() {
 	utils.SetupLogging()
 
 	conn := msTest.GetSalesloftConnector(ctx)
-	defer utils.Close(conn)
 
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "people",

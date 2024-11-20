@@ -18,8 +18,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := connTest.GetDocusignConnector(ctx)
-	defer utils.Close(conn)
+	connTest.GetDocusignConnector(ctx)
 
 	slog.Info("constructor finished")
 }

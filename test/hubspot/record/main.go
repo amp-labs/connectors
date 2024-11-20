@@ -39,7 +39,6 @@ func main() {
 
 	// Get the Hubspot connector.
 	conn := connTest.GetHubspotConnector(ctx)
-	defer utils.Close(conn)
 
 	// Write an artificial contact to Hubspot.
 	writeResult, err := conn.Write(ctx, common.WriteParams{

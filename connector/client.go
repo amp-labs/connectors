@@ -11,7 +11,3 @@ func (c *Connector) JSONHTTPClient() *common.JSONHTTPClient {
 func (c *Connector) HTTPClient() *common.HTTPClient {
 	return c.Client.HTTPClient
 }
-
-func (c *Connector) Close() error {
-	return nil
-}

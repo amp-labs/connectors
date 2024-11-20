@@ -30,7 +30,6 @@ func main() {
 	utils.SetupLogging()
 
 	conn := connTest.GetInstantlyConnector(ctx)
-	defer utils.Close(conn)
 
 	slog.Info("> TEST Create/Update/Delete tags")
 	slog.Info("Creating tags")

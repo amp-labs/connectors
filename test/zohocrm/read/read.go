@@ -23,7 +23,6 @@ func main() {
 	utils.SetupLogging()
 
 	conn := zohocrm.GetZohoConnector(ctx)
-	defer utils.Close(conn)
 
 	if err := readContacts(ctx, conn); err != nil {
 		slog.Error(err.Error())

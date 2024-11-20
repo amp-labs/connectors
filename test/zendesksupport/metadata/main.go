@@ -26,7 +26,6 @@ func main() {
 	utils.SetupLogging()
 
 	conn := connTest.GetZendeskSupportConnector(ctx)
-	defer utils.Close(conn)
 
 	response, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: objectName,

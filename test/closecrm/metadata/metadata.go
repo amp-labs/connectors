@@ -20,8 +20,6 @@ func main() {
 
 	conn := closecrm.GetCloseConnector(ctx)
 
-	defer utils.Close(conn)
-
 	m, err := conn.ListObjectMetadata(ctx, []string{"lead", "contact", "activity", "task"})
 	if err != nil {
 		utils.Fail("error listing metadata for Close", "error", err)

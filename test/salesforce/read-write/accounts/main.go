@@ -30,7 +30,6 @@ func mainFn() int { //nolint:funlen
 	utils.SetupLogging()
 
 	conn := connTest.GetSalesforceConnector(ctx)
-	defer utils.Close(conn)
 
 	if err := testReadConnector(ctx, conn); err != nil {
 		slog.Error("Error testing", "connector", conn, "error", err)

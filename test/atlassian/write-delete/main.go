@@ -43,7 +43,6 @@ func main() {
 	utils.SetupLogging()
 
 	conn := connTest.GetAtlassianConnector(ctx)
-	defer utils.Close(conn)
 
 	slog.Info("> TEST Create/Update/Delete issue")
 	slog.Info("Creating issue")

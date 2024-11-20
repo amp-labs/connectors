@@ -25,7 +25,6 @@ func main() {
 	utils.SetupLogging()
 
 	conn := msTest.GetIntercomConnector(ctx)
-	defer utils.Close(conn)
 
 	response, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: objectName,
