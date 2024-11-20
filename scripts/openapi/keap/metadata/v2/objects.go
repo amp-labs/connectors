@@ -11,9 +11,14 @@ import (
 
 var (
 	ignoreEndpoints = []string{ // nolint:gochecknoglobals
+		// endpoints for creating fields
+		"/v2/notes/model/customFields",
+		"/v2/tasks/model/customFields",
 		// custom fields and models endpoints to create them are not read candidates
-		"*/model",
-		"*/customFields",
+		"/v2/affiliates/model", // array located at "custom_fields"
+		"/v2/contacts/model",   // array located at "custom_fields"
+		"/v2/notes/model",      // array located at "custom_fields"
+		"/v2/tasks/model",      // array located at "custom_fields"
 		// singular object
 		"/v2/businessProfile",
 		// misc
