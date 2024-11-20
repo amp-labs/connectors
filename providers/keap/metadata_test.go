@@ -1,17 +1,22 @@
 package keap
 
 import (
+	"net/http"
 	"testing"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/staticschema"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
 func TestListObjectMetadataV1(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
+
+	responseContactsModel := testutils.DataFromFile(t, "custom-fields-contacts.json")
 
 	tests := []testroutines.Metadata{
 		{
@@ -27,9 +32,13 @@ func TestListObjectMetadataV1(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			ExpectedErrs: []error{staticschema.ErrObjectNotFound},
 		},
 		{
-			Name:       "Successfully describe multiple objects with metadata",
-			Input:      []string{"campaigns", "products"},
-			Server:     mockserver.Dummy(),
+			Name:  "Successfully describe multiple objects with metadata",
+			Input: []string{"campaigns", "products", "contacts"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.PathSuffix("/crm/rest/v1/contacts/model"),
+				Then:  mockserver.Response(http.StatusOK, responseContactsModel),
+			}.Server(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
@@ -49,6 +58,47 @@ func TestListObjectMetadataV1(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							"sku":           "sku",
 							"status":        "status",
 							"product_price": "product_price",
+						},
+					},
+					"contacts": {
+						DisplayName: "Contacts",
+						FieldsMap: map[string]string{
+							"ScoreValue":       "ScoreValue",
+							"addresses":        "addresses",
+							"anniversary":      "anniversary",
+							"birthday":         "birthday",
+							"company":          "company",
+							"company_name":     "company_name",
+							"contact_type":     "contact_type",
+							"custom_fields":    "custom_fields",
+							"date_created":     "date_created",
+							"email_addresses":  "email_addresses",
+							"email_opted_in":   "email_opted_in",
+							"email_status":     "email_status",
+							"family_name":      "family_name",
+							"fax_numbers":      "fax_numbers",
+							"given_name":       "given_name",
+							"id":               "id",
+							"job_title":        "job_title",
+							"last_updated":     "last_updated",
+							"lead_source_id":   "lead_source_id",
+							"middle_name":      "middle_name",
+							"owner_id":         "owner_id",
+							"phone_numbers":    "phone_numbers",
+							"preferred_locale": "preferred_locale",
+							"preferred_name":   "preferred_name",
+							"prefix":           "prefix",
+							"social_accounts":  "social_accounts",
+							"source_type":      "source_type",
+							"spouse_name":      "spouse_name",
+							"suffix":           "suffix",
+							"time_zone":        "time_zone",
+							"website":          "website",
+							// Custom fields.
+							"jobtitle":       "title",
+							"jobdescription": "job_description",
+							"experience":     "experience",
+							"age":            "age",
 						},
 					},
 				},

@@ -1,6 +1,6 @@
 # Custom Fields
 
-The `Read` operation will return custom fields alongside other native properties.
+The `Read` and `ListObjectMetadata` operations will return custom fields alongside other native properties.
 Keap API indexes custom fields using numbered identifiers without including human-readable names.
 This issue is addressed in the implementation.
 
