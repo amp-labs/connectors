@@ -63,6 +63,10 @@ func (c *Connector) ExtractEventTypeFromWebhookMessage(msg *WebhookMessage) (com
 	}
 }
 
+func (c *Connector) GetRawEventNameFromWebhook(msg *WebhookMessage) string {
+	return msg.SubscriptionType
+}
+
 var errWebhookNotSupportedForObject = errors.New("webhook is not supported for the object")
 
 func (c *Connector) ExtractObjectNameFromWebhookMessage(msg *WebhookMessage) (string, error) {
