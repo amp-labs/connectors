@@ -9,8 +9,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/providers/keap"
-	connTest "github.com/amp-labs/connectors/test/keap"
+	connTest "github.com/amp-labs/connectors/test/getresponse"
 	"github.com/amp-labs/connectors/test/utils"
 )
 
@@ -22,21 +21,16 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := connTest.GetKeapConnector(ctx)
-	defer utils.Close(conn)
+	conn := connTest.GetTheGetResponseConnector(ctx)
 
 	res, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: "emails",
-		Fields:     connectors.Fields("id", "subject", "sent_from_address"),
+		ObjectName: "campaigns",
+		Fields:     connectors.Fields("id", "name", "description"),
 	})
 	if err != nil {
-		utils.Fail("error reading from Keap", "error", err)
+		utils.Fail("error reading from GetResponse", "error", err)
 	}
 
-	fmt.Println("Reading emails..")
+	fmt.Println("Reading campaigns..")
 	utils.DumpJSON(res, os.Stdout)
-
-	if res.Rows > keap.DefaultPageSize {
-		utils.Fail(fmt.Sprintf("expected max %v rows", keap.DefaultPageSize))
-	}
 }
