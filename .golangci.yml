@@ -7,26 +7,6 @@ linters:
   disable:
     # Disabled because we use inits all over the place
     - gochecknoinits
-    # Abandoned, replaced by unused
-    - varcheck
-    # Abandoned, replaced by unused
-    - structcheck
-    # Abandoned, replaced by unused
-    - deadcode
-    # Author archived it, and suggests to not use it in real-world applications
-    - interfacer
-    # Abandoned, replaced by revive
-    - nosnakecase
-    # Abandoned, replaced by revive
-    - golint
-    # Abandoned, replaced by exhaustruct
-    - exhaustivestruct
-    # Deprecated by owner
-    - ifshort
-    # Archived by owner, replaced by govet
-    - maligned
-    # Deprecated by owner, replaced with exportloopref
-    - scopelint
     # Highly annoying. We'd need to whitelist all packages we import, which is a lot of work and adds very little value.
     - depguard
     # Annoying and unhelpful. Assumes uninitialized (zero-valued) fields are always a bug, which is plain wrong.
@@ -41,6 +21,8 @@ linters:
     - nolintlint
     # Named returns are helpful if there are multiple return values of the same type, and acts as self-documentation of the function.
     - nonamedreturns
+    # No longer relevant in newer versions of Go
+    - exportloopref
 linters-settings:
   # See https://golangci-lint.run/usage/linters#revive
   revive:

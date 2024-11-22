@@ -86,16 +86,18 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				NextPage:   "test-placeholder?skip=700",
 				Fields:     connectors.Fields("id"),
 			},
-			Server: mockserver.NewServer(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
+			Server: mockserver.NewServer(func(writer http.ResponseWriter, r *http.Request) {
+				writer.Header().Set("Content-Type", "application/json")
+				writer.WriteHeader(http.StatusOK)
 				// Create fake response big enough to conclude that next page exists.
 				manyCampaigns := make([]string, DefaultPageSize)
-				for i := 0; i < DefaultPageSize; i++ {
+
+				for i := range DefaultPageSize {
 					manyCampaigns[i] = "{}"
 				}
+
 				data := fmt.Sprintf("[%v]", strings.Join(manyCampaigns, ","))
-				_, _ = w.Write([]byte(data))
+				_, _ = writer.Write([]byte(data))
 			}),
 			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
 				return actual.NextPage.String() == expected.NextPage.String() &&
@@ -212,7 +214,6 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 
 	for _, tt := range tests {
 		// nolint:varnamelen
-		tt := tt // rebind, omit loop side effects for parallel goroutine
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 

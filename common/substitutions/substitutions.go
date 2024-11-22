@@ -10,7 +10,8 @@ import (
 // using the substitutions map.
 func substituteStruct(input interface{}, substitutions map[string]string) (err error) { //nolint:gocognit,cyclop,lll
 	configStruct := reflect.ValueOf(input).Elem()
-	for i := 0; i < configStruct.NumField(); i++ {
+
+	for i := range configStruct.NumField() {
 		field := configStruct.Field(i)
 
 		// If the field is a string, perform substitution on it.

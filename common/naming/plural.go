@@ -6,9 +6,10 @@ import "encoding/json"
 // It is capable of self conversion to singular form.
 // You can use it as keys in maps, values, and it knows how to Marshal itself like a string.
 // Unmarshalling will apply plural formating.
-type PluralString struct {
+type PluralString struct { //nolint:recvcheck
 	text string
 }
+
 type PluralStrings []PluralString
 
 func NewPluralString(str string) PluralString {

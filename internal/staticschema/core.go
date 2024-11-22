@@ -219,7 +219,7 @@ func commonPrefix(a, b string) string {
 
 	result := ""
 
-	for i := 0; i < shortestLength; i++ {
+	for i := range shortestLength {
 		if first[i] != second[i] {
 			return result
 		}

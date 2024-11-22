@@ -157,7 +157,6 @@ func TestReadZendeskSupportModule(t *testing.T) { //nolint:funlen,gocognit,cyclo
 
 	for _, tt := range tests {
 		// nolint:varnamelen
-		tt := tt // rebind, omit loop side effects for parallel goroutine
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
@@ -221,7 +220,6 @@ func TestReadHelpCenterModule(t *testing.T) { //nolint:funlen,gocognit,cyclop,ma
 
 	for _, tt := range tests {
 		// nolint:varnamelen
-		tt := tt // rebind, omit loop side effects for parallel goroutine
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 

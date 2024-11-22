@@ -96,7 +96,7 @@ type (
 	DeleteResult             = common.DeleteResult
 	ListObjectMetadataResult = common.ListObjectMetadataResult
 
-	ErrorWithStatus = common.HTTPStatusError
+	ErrorWithStatus = common.HTTPStatusError //nolint:errname
 )
 
 var Fields = datautils.NewStringSet // nolint:gochecknoglobals
