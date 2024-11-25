@@ -49,10 +49,22 @@ func (c *Connector) GetRecord(ctx context.Context, objectName string, recordId s
 		return nil, fmt.Errorf("error parsing record: %w", err)
 	}
 
+	id, err := extractIdFromRecord(*record)
+	if err != nil {
+		// this should never happen unless the provider changes webhook message format
+		return nil, err
+	}
+
 	return &common.ReadResultRow{
 		Raw: *record,
+		Id:  id,
 	}, nil
 }
+
+var (
+	errMissingId    = errors.New("missing id field in raw record")
+	errTypeMismatch = errors.New("field is not a string")
+)
 
 //nolint:revive
 func (c *Connector) GetRecordsWithIds(
@@ -101,11 +113,33 @@ func (c *Connector) GetRecordsWithIds(
 	}
 
 	data := make([]common.ReadResultRow, len(records))
+
 	for i, record := range records {
+		id, err := extractIdFromRecord(record)
+		if err != nil {
+			// this should never happen unless the provider changes webhook message format
+			return nil, err
+		}
+
 		data[i] = common.ReadResultRow{
 			Raw: record,
+			Id:  id,
 		}
 	}
 
 	return data, nil
+}
+
+func extractIdFromRecord(record map[string]any) (string, error) {
+	id, ok := record["id"]
+	if !ok {
+		return "", errMissingId
+	}
+
+	idStr, ok := id.(string)
+	if !ok {
+		return "", errTypeMismatch
+	}
+
+	return idStr, nil
 }
