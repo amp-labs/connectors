@@ -53,3 +53,53 @@ func (c *Connector) GetRecord(ctx context.Context, objectName string, recordId s
 		Raw: *record,
 	}, nil
 }
+
+func (c *Connector) GetRecordsWithIds(ctx context.Context, objectName string, ids []string, fields []string) ([]common.ReadResultRow, error) {
+	if !getRecordSupportedObjectsSet.Has(objectName) {
+		return nil, fmt.Errorf("%w %s", errGerRecordNotSupportedForObject, objectName)
+	}
+
+	inputs := make([]map[string]any, len(ids))
+	for i, id := range ids {
+		inputs[i] = map[string]any{
+			"properties": fields,
+			"id":         id,
+		}
+	}
+
+	pluralObjectName := naming.NewPluralString(objectName).String()
+	relativePath := path.Join("/objects", pluralObjectName, "batch", "read")
+
+	body := map[string]any{
+		"inputs": inputs,
+	}
+
+	resp, err := c.Client.Post(ctx, c.getURL(relativePath), body)
+	if err != nil {
+		return nil, err
+	}
+
+	resBody, ok := resp.Body()
+	if !ok {
+		return nil, common.ErrEmptyJSONHTTPResponse
+	}
+
+	records, err := getRecords(resBody)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(fields) != 0 {
+		// If fields are specified, extract only those fields from the record.
+		return getMarshalledData(records, fields)
+	}
+
+	data := make([]common.ReadResultRow, len(records))
+	for i, record := range records {
+		data[i] = common.ReadResultRow{
+			Raw: record,
+		}
+	}
+
+	return data, nil
+}
