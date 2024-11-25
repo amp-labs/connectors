@@ -74,7 +74,6 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 
 	for _, tt := range tests { // nolint:dupl
 		// nolint:varnamelen
-		tt := tt
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 

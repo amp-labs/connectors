@@ -42,11 +42,12 @@ func (c *Connector) GetRecordFromWebhookMessage(
 
 var errUnexpectedWebhookEventType = errors.New("unexpected webhook event type")
 
+const minParts = 2
+
 func (c *Connector) ExtractEventTypeFromWebhookMessage(msg *WebhookMessage) (common.WebhookEventType, error) {
 	parts := strings.Split(msg.SubscriptionType, ".")
 
-	//nolint:gomnd
-	if len(parts) < 2 {
+	if len(parts) < minParts {
 		// this should never happen unless the provider changes webhook message format
 		return common.WebhookEventTypeOther, fmt.Errorf("%w: '%s'", errUnexpectedWebhookEventType, msg.SubscriptionType)
 	}

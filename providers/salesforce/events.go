@@ -275,7 +275,7 @@ func (c *Connector) postToSFAPI(ctx context.Context, body any, path string, enti
 		return nil, err
 	}
 
-	if res.Warnings != nil && len(res.Warnings) > 0 {
+	if len(res.Warnings) > 0 {
 		slog.Warn(entity, "warnings", res.Warnings)
 	}
 
