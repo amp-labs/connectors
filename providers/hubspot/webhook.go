@@ -79,6 +79,35 @@ func (c *Connector) ExtractObjectNameFromWebhookMessage(msg *WebhookMessage) (st
 	return parts[0], nil
 }
 
+var (
+	errEmptyRow       = errors.New("row is empty")
+	errEmptyRawRecord = errors.New("raw record is empty")
+	errMissingId      = errors.New("missing id field in raw record")
+	errTypeMismatch   = errors.New("field is not a string")
+)
+
+func (c *Connector) GetIdFromReadResultRow(row *common.ReadResultRow) (string, error) {
+	if row == nil {
+		return "", errEmptyRow
+	}
+
+	if row.Raw == nil {
+		return "", errEmptyRawRecord
+	}
+
+	idRef, ok := row.Raw["id"]
+	if !ok {
+		return "", errMissingId
+	}
+
+	id, ok := idRef.(string)
+	if !ok {
+		return "", fmt.Errorf("id %w. Got %T", errTypeMismatch, idRef)
+	}
+
+	return id, nil
+}
+
 /*
 	EXAMPLES: There is no documentation that shows data structure of webhook messages.
 	Below examples were found from hubspot app settings page after login at:
