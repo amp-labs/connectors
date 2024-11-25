@@ -170,6 +170,8 @@ type ReadResultRow struct {
 	Fields map[string]any `json:"fields"`
 	// Raw is the raw JSON response from the provider.
 	Raw map[string]any `json:"raw"`
+	// RecordId is the ID of the record. Currently only used for hubspot
+	Id string `json:"id,omitempty"`
 }
 
 // WriteResult is what's returned from writing data via the Write call.
