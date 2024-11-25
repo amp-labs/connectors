@@ -13,7 +13,7 @@ var pluralizer = pluralize.NewClient() // nolint:gochecknoglobals
 // It is capable of self conversion to plural form.
 // You can use it as keys in maps, values, and it knows how to Marshal itself like a string.
 // Unmarshalling will apply singular formating.
-type SingularString struct {
+type SingularString struct { //nolint:recvcheck
 	text string
 }
 

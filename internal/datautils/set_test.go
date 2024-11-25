@@ -34,7 +34,6 @@ func TestStringSet(t *testing.T) {
 
 	for _, tt := range tests {
 		// nolint:varnamelen
-		tt := tt // rebind, omit loop side effects for parallel goroutine
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 

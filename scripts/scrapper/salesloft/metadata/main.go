@@ -169,7 +169,7 @@ func getSectionLinks() []string {
 }
 
 func getPercentage(i int, i2 int) float64 {
-	return (float64(i+1) / float64(i2)) * 100 // nolint:gomnd
+	return (float64(i+1) / float64(i2)) * 100 // nolint:gomnd,mnd
 }
 
 // List of exceptions:

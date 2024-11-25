@@ -91,7 +91,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 
 	for _, tt := range tests {
 		// nolint:varnamelen
-		tt := tt // rebind, omit loop side effects for parallel goroutine
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 

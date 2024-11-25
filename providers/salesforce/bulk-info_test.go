@@ -49,7 +49,6 @@ func TestJobInfo(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 
 	for _, tt := range tests { // nolint:dupl
 		// nolint:varnamelen
-		tt := tt // rebind, omit loop side effects for parallel goroutine
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
@@ -87,7 +86,6 @@ func TestGetBulkQueryInfo(t *testing.T) { // nolint:dupl
 
 	for _, tt := range tests { // nolint:dupl
 		// nolint:varnamelen
-		tt := tt // rebind, omit loop side effects for parallel goroutine
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
@@ -179,7 +177,6 @@ func TestJobResults(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 
 	for _, tt := range tests { // nolint:dupl
 		// nolint:varnamelen
-		tt := tt // rebind, omit loop side effects for parallel goroutine
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
@@ -211,7 +208,6 @@ func TestGetSuccessfulJobResults(t *testing.T) { // nolint:dupl
 
 	for _, tt := range tests { // nolint:dupl
 		// nolint:varnamelen
-		tt := tt // rebind, omit loop side effects for parallel goroutine
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
@@ -243,7 +239,6 @@ func TestGetBulkQueryResults(t *testing.T) { // nolint:dupl
 
 	for _, tt := range tests { // nolint:dupl
 		// nolint:varnamelen
-		tt := tt // rebind, omit loop side effects for parallel goroutine
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 

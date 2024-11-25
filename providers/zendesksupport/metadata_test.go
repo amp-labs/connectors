@@ -96,7 +96,6 @@ func TestListObjectMetadataZendeskSupportModule(t *testing.T) { // nolint:funlen
 
 	for _, tt := range tests {
 		// nolint:varnamelen
-		tt := tt // rebind, omit loop side effects for parallel goroutine
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
@@ -162,7 +161,6 @@ func TestListObjectMetadataHelpCenterModule(t *testing.T) { // nolint:funlen,goc
 
 	for _, tt := range tests {
 		// nolint:varnamelen
-		tt := tt // rebind, omit loop side effects for parallel goroutine
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 

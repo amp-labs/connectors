@@ -134,7 +134,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 
 	for _, tt := range tests {
 		// nolint:varnamelen
-		tt := tt
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
