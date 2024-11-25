@@ -47,6 +47,7 @@ type StarRulePathResolver struct {
 	endpoints            datautils.StringSet
 	prefixes             []string
 	suffixes             []string
+	contains             []string
 	pathMatchingCallback func(hasMatched bool) bool
 }
 
@@ -58,11 +59,14 @@ func newStarRulePathResolver(
 		endpoints:            datautils.NewStringSet(),
 		prefixes:             make([]string, 0),
 		suffixes:             make([]string, 0),
+		contains:             make([]string, 0),
 		pathMatchingCallback: pathMatchingCallback,
 	}
 
 	for _, endpoint := range endpoints {
-		if rule, ok := strings.CutPrefix(endpoint, "*"); ok {
+		if strings.HasPrefix(endpoint, "*") && strings.HasSuffix(endpoint, "*") {
+			result.contains = append(result.contains, strings.Trim(endpoint, "*"))
+		} else if rule, ok := strings.CutPrefix(endpoint, "*"); ok {
 			result.suffixes = append(result.suffixes, rule)
 		} else if rule, ok = strings.CutSuffix(endpoint, "*"); ok {
 			result.prefixes = append(result.prefixes, rule)
@@ -79,6 +83,12 @@ func (s StarRulePathResolver) IsPathMatching(path string) bool {
 		return s.pathMatchingCallback(true)
 	}
 
+	for _, middle := range s.contains {
+		if stringsInTheMiddle(path, middle) {
+			return s.pathMatchingCallback(true)
+		}
+	}
+
 	for _, prefix := range s.prefixes {
 		if strings.HasPrefix(path, prefix) {
 			return s.pathMatchingCallback(true)
@@ -92,4 +102,14 @@ func (s StarRulePathResolver) IsPathMatching(path string) bool {
 	}
 
 	return s.pathMatchingCallback(false)
+}
+
+func stringsInTheMiddle(text, substr string) bool {
+	parts := strings.Split(text, substr)
+	if len(parts) != 2 {
+		return false
+	}
+
+	// There must be text preceding and succeeding substring to be in the middle.
+	return len(parts[0]) != 0 && len(parts[1]) != 0
 }
