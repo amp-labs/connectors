@@ -106,8 +106,6 @@ paths:
       summary: Get lists
       tags:
       - Lists
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/GetLists
   /accounts/{accountId}/lists/{listId}:
     get:
       description: "This endpoint is used to retrieve the information for a specific\
@@ -192,8 +190,6 @@ paths:
       summary: Get list
       tags:
       - Lists
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/GetList
   /accounts/{accountId}/lists?ws.op=find:
     get:
       description: "This endpoint is used to search for lists when you do not have\
@@ -316,8 +312,6 @@ paths:
       summary: Find lists
       tags:
       - Lists
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/FindLists
   /accounts/{accountId}/lists/{listId}/tags:
     get:
       description: "Get the most popular tags for a list.  This will return an array\
@@ -408,8 +402,6 @@ paths:
       summary: Get tags for list
       tags:
       - Lists
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/GetTagsForList
 components:
   parameters:
     accountId:

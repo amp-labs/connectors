@@ -121,8 +121,6 @@ paths:
       summary: Delete subscriber by email
       tags:
       - Subscribers
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/DeleteSubscriberByEmail
     get:
       description: "This endpoint is used to get a paginated collection of subscribers\
         \ under the specified account and list.  The subscribers are returned in the\
@@ -251,8 +249,6 @@ paths:
       summary: Get subscribers
       tags:
       - Subscribers
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/GetSubscribers
     patch:
       description: "This endpoint is used to update the information for the specified\
         \ subscriber by email.\n\nCheck out related examples:\n\n  * Find Subscribers\
@@ -377,8 +373,6 @@ paths:
       summary: Update subscriber by email
       tags:
       - Subscribers
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/UpdateSubscriberByEmail
     post:
       description: "This endpoint is used to add subscribers to the specified account\
         \ and list. Before adding a subscriber to a list, read <a href=\"https://help.aweber.com/entries/21729456-can-i-use-this-list\"\
@@ -506,8 +500,6 @@ paths:
       summary: Add subscriber
       tags:
       - Subscribers
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/AddSubscriber
   /accounts/{accountId}/lists/{listId}/subscribers/{subscriberId}:
     delete:
       description: "This endpoint is used to delete a subscriber and related information\
@@ -615,8 +607,6 @@ paths:
       summary: Delete subscriber by ID
       tags:
       - Subscribers
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/DeleteSubscriber
     get:
       description: "This endpoint is used to retrieve the information for the specified\
         \ subscriber.\nCheck out related examples:\n\n  * Find Subscribers Across\
@@ -721,8 +711,6 @@ paths:
       summary: Get subscriber
       tags:
       - Subscribers
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/GetSubscriber
     patch:
       description: "This endpoint is used to update the information for the specified\
         \ subscriber by ID\n\nCheck out related examples:\n\n  * Find Subscribers\
@@ -845,8 +833,6 @@ paths:
       summary: Update subscriber by ID
       tags:
       - Subscribers
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/UpdateSubscriber
     post:
       description: "This endpoint is used to move a subscriber from one list to another\
         \ on\nthe specified account.  The subscriber will be unsubscribed from the\
@@ -986,8 +972,6 @@ paths:
       summary: Move subscriber
       tags:
       - Subscribers
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/MoveSubscriber
   /accounts/{accountId}/lists/{listId}/subscribers?ws.op=find:
     get:
       description: "This endpoint is used to find the collection of subscribers that\
@@ -1362,8 +1346,6 @@ paths:
       summary: Find subscribers for list
       tags:
       - Subscribers
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/FindSubscribersForList
   /accounts/{accountId}?ws.op=findSubscribers:
     get:
       description: "This endpoint is used to find the collection of subscribers that\n\
@@ -1716,8 +1698,6 @@ paths:
       summary: Find subscribers for account
       tags:
       - Subscribers
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/FindSubscribersForAccount
   /accounts/{accountId}/lists/{listId}/subscribers/{subscriberId}?ws.op=getActivity:
     get:
       description: "This endpoint is used to retrieve the analytics activity for a\
@@ -1854,8 +1834,6 @@ paths:
       summary: Get subscriber activity
       tags:
       - Subscribers
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/GetSubscriberActivity
   /accounts/{accountId}/lists/{listId}/purchases:
     post:
       description: |
@@ -1990,8 +1968,6 @@ paths:
       summary: Create a purchase
       tags:
       - Subscribers
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/CreatePurchase
 components:
   parameters:
     accountId:

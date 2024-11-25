@@ -129,8 +129,6 @@ paths:
       summary: Get webforms for account
       tags:
       - Webforms
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/GetWebformsForAccount
   /accounts/{accountId}?ws.op=getWebFormSplitTests:
     get:
       description: "This endpoint is used to retrieve webform split tests for all\
@@ -248,8 +246,6 @@ paths:
       summary: Get split tests for account
       tags:
       - Webforms
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/GetSplitTestsForAccount
   /accounts/{accountId}/lists/{listId}/web_forms:
     get:
       description: "This endpoint is used to retrieve a collection of webforms for\
@@ -358,8 +354,6 @@ paths:
       summary: Get webforms for list
       tags:
       - Webforms
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/GetWebformsForList
   /accounts/{accountId}/lists/{listId}/web_forms/{webformId}:
     get:
       description: "This endpoint is used to retrieve single webform for a list\n\n\
@@ -448,8 +442,6 @@ paths:
       summary: Get webform for list
       tags:
       - Webforms
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/GetWebformForList
   /accounts/{accountId}/lists/{listId}/web_form_split_tests:
     get:
       description: "This endpoint is used to retrieve webform split tests for a list.\n\
@@ -558,8 +550,6 @@ paths:
       summary: Get split tests for list
       tags:
       - Webforms
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/GetSplitTestsForList
   /accounts/{accountId}/lists/{listId}/web_form_split_tests/{splitTestId}:
     get:
       description: "This endpoint is used to retrieve a specific webform split test.\n\
@@ -651,8 +641,6 @@ paths:
       summary: Get split test for list
       tags:
       - Webforms
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/GetSplitTestForList
   /accounts/{accountId}/lists/{listId}/web_form_split_tests/{splitTestId}/components:
     get:
       description: "This endpoint is used to retrieve a collection of webform split\
@@ -768,8 +756,6 @@ paths:
       summary: Get split test components
       tags:
       - Webforms
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/GetSplitTestComponents
   /accounts/{accountId}/lists/{listId}/web_form_split_tests/{splitTestId}/components/{splitTestComponentId}:
     get:
       description: "This endpoint is used to retrieve a collection of webform split\
@@ -867,8 +853,6 @@ paths:
       summary: Get split test component
       tags:
       - Webforms
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/GetSplitTestComponent
 components:
   parameters:
     accountId:

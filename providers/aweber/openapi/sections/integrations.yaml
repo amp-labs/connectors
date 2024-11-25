@@ -5,27 +5,31 @@ info:
     name: API Team
     url: https://labs.aweber.com
   description: REST API for access the AWeber service.
-  title: Segments
+  title: Integrations
   version: "1.0"
 servers:
 - url: /
 tags:
-- name: Segments
+- name: Integrations
 paths:
-  /accounts/{accountId}/lists/{listId}/segments:
+  /accounts/{accountId}/integrations:
     get:
-      description: This endpoint is used to get a paginated collection of list segments.
+      description: "This endpoint is used to get a paginated collection of integrations.\
+        \ The integrations returned include Facebook, Twitter, PayPal and Shopify,\
+        \ if connected. The integrations are typically used when [creating a broadcast](#tag/Broadcasts/paths/~1accounts~1{accountId}~1lists~1{listId}~1broadcasts/post)\
+        \ and cross-posting the broadcast to Twitter or Facebook, the integration\
+        \ `self_link` is needed in this case.\n\nCheck out related examples:\n\n \
+        \ * Get Integrations ( \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/python/get-integrations\"\
+        \ target=\"_blank\">Python</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/get-integrations\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Integrations.postman_collection.json\"\
+        \ target=\"_blank\">Postman</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.GetIntegrations\"\
+        \ target=\"_blank\">C#.NET</a> |\n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/get_integration.rb\"\
+        \ target=\"_blank\">Ruby</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/node/get-integrations.js\"\
+        \ target=\"_blank\">Node.js</a> )"
       parameters:
       - description: The account ID
         in: path
         name: accountId
-        required: true
-        schema:
-          format: int32
-          type: integer
-      - description: The list ID
-        in: path
-        name: listId
         required: true
         schema:
           format: int32
@@ -52,65 +56,67 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Segments'
+                $ref: '#/components/schemas/Integrations'
           description: The request completed successfully
         "400":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_400_response'
+                $ref: '#/components/schemas/_accounts__accountId__integrations_get_400_response'
           description: The server cannot or will not process the request due to a
             client error
         "401":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_401_response'
+                $ref: '#/components/schemas/_accounts__accountId__integrations_get_401_response'
           description: The request could not be completed due to an authentication
             error
         "403":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_403_response'
+                $ref: '#/components/schemas/_accounts__accountId__integrations_get_403_response'
           description: The request could not be completed due to a rate limit error
-        "404":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_404_response'
-          description: The requested resource could not be found
         "410":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_410_response'
+                $ref: '#/components/schemas/_accounts__accountId__integrations_get_410_response'
           description: The request has been blocked
         "500":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_500_response'
+                $ref: '#/components/schemas/_accounts__accountId__integrations_get_500_response'
           description: The request failed due to an internal error in the code or
             because of an external dependency failure
         "503":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_503_response'
+                $ref: '#/components/schemas/_accounts__accountId__integrations_get_503_response'
           description: The server is currently unavailable
       security:
       - OAuth 2.0:
-        - list.read
-      summary: Get segments
+        - account.read
+      summary: Get integrations
       tags:
-      - Segments
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/GetSegments
-  /accounts/{accountId}/lists/{listId}/segments/{segmentId}:
+      - Integrations
+  /accounts/{accountId}/integrations/{integrationId}:
     get:
-      description: |
-        This endpoint is used to retrieve the information for the specified segment.
+      description: "This endpoint is used to retrieve the information for a specific\
+        \ connected integration. A specific integration will be Facebook, Twitter,\
+        \ PayPal or Shopify. The integration is typically used when [creating a broadcast](#tag/Broadcasts/paths/~1accounts~1{accountId}~1lists~1{listId}~1broadcasts/post)\
+        \ and cross-posting the broadcast to Twitter or Facebook, the integration\
+        \ `self_link` is needed in this case.\n\nCheck out related examples:\n\n \
+        \ * Get Integrations ( \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/python/get-integrations\"\
+        \ target=\"_blank\">Python</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/get-integrations\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Integrations.postman_collection.json\"\
+        \ target=\"_blank\">Postman</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.GetIntegrations\"\
+        \ target=\"_blank\">C#.NET</a> |\n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/get_integration.rb\"\
+        \ target=\"_blank\">Ruby</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/node/get-integrations.js\"\
+        \ target=\"_blank\">Node.js</a> )"
       parameters:
       - description: The account ID
         in: path
@@ -119,16 +125,9 @@ paths:
         schema:
           format: int32
           type: integer
-      - description: The list ID
+      - description: The integration ID
         in: path
-        name: listId
-        required: true
-        schema:
-          format: int32
-          type: integer
-      - description: The segment ID
-        in: path
-        name: segmentId
+        name: integrationId
         required: true
         schema:
           format: int32
@@ -138,75 +137,58 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Segment'
+                $ref: '#/components/schemas/Integration'
           description: The request completed successfully
-        "400":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments__segmentId__get_400_response'
-          description: The server cannot or will not process the request due to a
-            client error
         "401":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_401_response'
+                $ref: '#/components/schemas/_accounts__accountId__integrations_get_401_response'
           description: The request could not be completed due to an authentication
             error
         "403":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_403_response'
+                $ref: '#/components/schemas/_accounts__accountId__integrations_get_403_response'
           description: The request could not be completed due to a rate limit error
         "404":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_404_response'
+                $ref: '#/components/schemas/_accounts__accountId__integrations__integrationId__get_404_response'
           description: The requested resource could not be found
         "410":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_410_response'
+                $ref: '#/components/schemas/_accounts__accountId__integrations_get_410_response'
           description: The request has been blocked
         "500":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_500_response'
+                $ref: '#/components/schemas/_accounts__accountId__integrations_get_500_response'
           description: The request failed due to an internal error in the code or
             because of an external dependency failure
         "503":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_503_response'
+                $ref: '#/components/schemas/_accounts__accountId__integrations_get_503_response'
           description: The server is currently unavailable
       security:
       - OAuth 2.0:
-        - list.read
-      summary: Get segment
+        - account.read
+      summary: Get integration
       tags:
-      - Segments
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/GetSegment
+      - Integrations
 components:
   parameters:
     accountId:
       description: The account ID
       in: path
       name: accountId
-      required: true
-      schema:
-        format: int32
-        type: integer
-    listId:
-      description: The list ID
-      in: path
-      name: listId
       required: true
       schema:
         format: int32
@@ -230,10 +212,10 @@ components:
         maximum: 100
         minimum: 1
         type: integer
-    segmentId:
-      description: The segment ID
+    integrationId:
+      description: The integration ID
       in: path
-      name: segmentId
+      name: integrationId
       required: true
       schema:
         format: int32
@@ -243,85 +225,82 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_401_response'
+            $ref: '#/components/schemas/_accounts__accountId__integrations_get_401_response'
       description: The request could not be completed due to an authentication error
     ForbiddenError:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_403_response'
+            $ref: '#/components/schemas/_accounts__accountId__integrations_get_403_response'
       description: The request could not be completed due to a rate limit error
-    NotFound:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_404_response'
-      description: The requested resource could not be found
     BlockedError:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_410_response'
+            $ref: '#/components/schemas/_accounts__accountId__integrations_get_410_response'
       description: The request has been blocked
     InternalServerError:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_500_response'
+            $ref: '#/components/schemas/_accounts__accountId__integrations_get_500_response'
       description: The request failed due to an internal error in the code or because
         of an external dependency failure
     ServiceUnavailable:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_503_response'
+            $ref: '#/components/schemas/_accounts__accountId__integrations_get_503_response'
       description: The server is currently unavailable
-    BadOAuth1:
+    NotFound:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments__segmentId__get_400_response'
-      description: The server cannot or will not process the request due to a client
-        error
+            $ref: '#/components/schemas/_accounts__accountId__integrations__integrationId__get_404_response'
+      description: The requested resource could not be found
   schemas:
-    Segments:
+    Integrations:
       example:
         entries:
-        - is_split_test: false
-          resource_type_link: https://api.aweber.com/1.0/#segment
-          name: All Subscribers
-          id: 1
-          self_link: https://api.aweber.com/1.0/accounts/123/lists/456/segments/1
-        - is_split_test: false
-          resource_type_link: https://api.aweber.com/1.0/#segment
-          name: All Subscribers
-          id: 1
-          self_link: https://api.aweber.com/1.0/accounts/123/lists/456/segments/1
-        prev_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/segments?ws.start=0
-        resource_type_link: https://api.aweber.com/1.0/#segment-page-resource
+        - resource_type_link: https://api.aweber.com/1.0/#integration
+          service_name: facebook
+          id: 123
+          login: twitter
+          self_link: https://api.aweber.com/1.0/account/123/integrations/456
+          http_etag: 902ba3cda1883801594b6e1b452790cc53948fda-f83cb0ac22a8d5f792417f9b3dc0e9dc7558aa32
+        - resource_type_link: https://api.aweber.com/1.0/#integration
+          service_name: facebook
+          id: 123
+          login: twitter
+          self_link: https://api.aweber.com/1.0/account/123/integrations/456
+          http_etag: 902ba3cda1883801594b6e1b452790cc53948fda-f83cb0ac22a8d5f792417f9b3dc0e9dc7558aa32
+        prev_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/custom_fields?ws.start=0
+        resource_type_link: https://api.aweber.com/1.0/#integrations-page-resource
         start: 0
         total_size: 100
-        next_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/segments?ws.start=10&ws.size=10
+        next_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/custom_fields?ws.start=0&ws.size=10
       properties:
         entries:
+          description: A list of integration entries
           items:
-            $ref: '#/components/schemas/Segment'
+            $ref: '#/components/schemas/Integration'
           type: array
         next_collection_link:
           description: A link to the next page of entries if more entries exist. This
             attribute is omitted from the collection if there are no more entries.
-          example: https://api.aweber.com/1.0/accounts/123/lists/456/segments?ws.start=10&ws.size=10
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/custom_fields?ws.start=0&ws.size=10
           format: uri
           type: string
         prev_collection_link:
           description: A link to the previous page of entries if any exist. This attribute
             is omitted from the collection if ws.start is 0.
-          example: https://api.aweber.com/1.0/accounts/123/lists/456/segments?ws.start=0
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/custom_fields?ws.start=0
           format: uri
           type: string
         resource_type_link:
-          description: The link to the segment page type
-          example: https://api.aweber.com/1.0/#segment-page-resource
+          description: A link that identifies the type of resource that this collection
+            represents
+          example: https://api.aweber.com/1.0/#integrations-page-resource
           format: uri
           type: string
         start:
@@ -334,39 +313,39 @@ components:
           minimum: 0
           type: integer
       type: object
-    Segment:
+    Integration:
       example:
-        is_split_test: false
-        resource_type_link: https://api.aweber.com/1.0/#segment
-        name: All Subscribers
-        id: 1
-        self_link: https://api.aweber.com/1.0/accounts/123/lists/456/segments/1
+        resource_type_link: https://api.aweber.com/1.0/#integration
+        service_name: facebook
+        id: 123
+        login: twitter
+        self_link: https://api.aweber.com/1.0/account/123/integrations/456
+        http_etag: 902ba3cda1883801594b6e1b452790cc53948fda-f83cb0ac22a8d5f792417f9b3dc0e9dc7558aa32
       properties:
+        http_etag:
+          description: The ETag HTTP header
+          example: 902ba3cda1883801594b6e1b452790cc53948fda-f83cb0ac22a8d5f792417f9b3dc0e9dc7558aa32
+          type: string
         id:
-          description: The unique ID for the segment
-          example: 1
+          description: The unique ID for the integration
+          example: 123
           type: integer
-        is_split_test:
-          description: |
-            Whether the segment is part of a split test.
-
-            Must be false to use for scheduling a broadcast.
-
-            Segments that were created automatically for a split test in the control panel are set to true.
-          example: false
-          type: boolean
-        name:
-          description: The segment name
-          example: All Subscribers
+        login:
+          description: The integration user name
+          example: twitter
+          type: string
+        service_name:
+          description: The integration name
+          example: facebook
           type: string
         resource_type_link:
-          description: The link to the segment type
-          example: https://api.aweber.com/1.0/#segment
+          description: The link to the integration type
+          example: https://api.aweber.com/1.0/#integration
           format: uri
           type: string
         self_link:
           description: The link to this resource
-          example: https://api.aweber.com/1.0/accounts/123/lists/456/segments/1
+          example: https://api.aweber.com/1.0/account/123/integrations/456
           format: uri
           type: string
       type: object
@@ -401,17 +380,14 @@ components:
           type: string
       title: Auth Error
       type: object
-    _accounts__accountId__lists__listId__segments_get_400_response_error:
+    _accounts__accountId__integrations_get_400_response_error:
       description: |
         An error object.
-        One of the following errors may be received:
+        The following error may be received:
 
         | Error Type           | Explanation                              |
         |----------------------|------------------------------------------|
         | WebServiceError      | `ws.start` or `ws.size` values are invalid |
-        | MissingOAuthParametersError | An OAuth parameter is missing in the request |
-        | UnsupportedOAuthVersionError | Unsupported OAuth 1 version |
-        | UnsupportedOAuthSignatureMethodError | Unsupported OAuth 1 signature method |
 
         Please see the message body for more details.
       example:
@@ -437,7 +413,7 @@ components:
           example: WebServiceError
           type: string
       type: object
-    _accounts__accountId__lists__listId__segments_get_400_response:
+    _accounts__accountId__integrations_get_400_response:
       example:
         error:
           documentation_url: https://api.aweber.com#badrequest
@@ -446,13 +422,13 @@ components:
           status: 400
       properties:
         error:
-          $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_400_response_error'
+          $ref: '#/components/schemas/_accounts__accountId__integrations_get_400_response_error'
       type: object
-    _accounts__accountId__lists__listId__segments_get_401_response:
+    _accounts__accountId__integrations_get_401_response:
       oneOf:
       - $ref: '#/components/schemas/Endpoint Error'
       - $ref: '#/components/schemas/Auth Error'
-    _accounts__accountId__lists__listId__segments_get_403_response_error:
+    _accounts__accountId__integrations_get_403_response_error:
       description: |
         An error object.
         The following error may be received:
@@ -487,7 +463,7 @@ components:
           - ForbiddenError
           type: string
       type: object
-    _accounts__accountId__lists__listId__segments_get_403_response:
+    _accounts__accountId__integrations_get_403_response:
       example:
         error:
           documentation_url: https://api.aweber.com#forbidden
@@ -496,55 +472,9 @@ components:
           status: 1
       properties:
         error:
-          $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_403_response_error'
+          $ref: '#/components/schemas/_accounts__accountId__integrations_get_403_response_error'
       type: object
-    _accounts__accountId__lists__listId__segments_get_404_response_error:
-      description: |
-        An error object.
-        The following error may be received:
-
-        | Error Type           | Explanation                              |
-        |----------------------|------------------------------------------|
-        | NotFoundError        | The requested resource could not be found |
-
-        Please see the message body for more details.
-      example:
-        documentation_url: https://api.aweber.com#notfound
-        message: "Object: None, name: ''"
-        type: NotFoundError
-        status: 5
-      properties:
-        documentation_url:
-          description: A link to the documentation that describes the error
-          example: https://api.aweber.com#notfound
-          type: string
-        message:
-          description: A human friendly description of the error
-          example: "Object: None, name: ''"
-          type: string
-        status:
-          description: The HTTP status code
-          enum:
-          - 404
-          type: integer
-        type:
-          description: The API error type
-          enum:
-          - NotFoundError
-          type: string
-      type: object
-    _accounts__accountId__lists__listId__segments_get_404_response:
-      example:
-        error:
-          documentation_url: https://api.aweber.com#notfound
-          message: "Object: None, name: ''"
-          type: NotFoundError
-          status: 5
-      properties:
-        error:
-          $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_404_response_error'
-      type: object
-    _accounts__accountId__lists__listId__segments_get_410_response_error:
+    _accounts__accountId__integrations_get_410_response_error:
       description: |
         An error object.
         The following error may be received:
@@ -579,7 +509,7 @@ components:
           - BlockedError
           type: string
       type: object
-    _accounts__accountId__lists__listId__segments_get_410_response:
+    _accounts__accountId__integrations_get_410_response:
       example:
         error:
           documentation_url: https://api.aweber.com/#blocked
@@ -588,9 +518,9 @@ components:
           status: 5
       properties:
         error:
-          $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_410_response_error'
+          $ref: '#/components/schemas/_accounts__accountId__integrations_get_410_response_error'
       type: object
-    _accounts__accountId__lists__listId__segments_get_500_response_error:
+    _accounts__accountId__integrations_get_500_response_error:
       description: |
         An error object.
         The following error may be received:
@@ -604,7 +534,7 @@ components:
         documentation_url: https://api.aweber.com#internalerror
         message: Something went wrong.
         type: InternalServerError
-        status: 2
+        status: 5
       properties:
         documentation_url:
           description: A link to the documentation that describes the error
@@ -625,18 +555,18 @@ components:
           - InternalServerError
           type: string
       type: object
-    _accounts__accountId__lists__listId__segments_get_500_response:
+    _accounts__accountId__integrations_get_500_response:
       example:
         error:
           documentation_url: https://api.aweber.com#internalerror
           message: Something went wrong.
           type: InternalServerError
-          status: 2
+          status: 5
       properties:
         error:
-          $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_500_response_error'
+          $ref: '#/components/schemas/_accounts__accountId__integrations_get_500_response_error'
       type: object
-    _accounts__accountId__lists__listId__segments_get_503_response_error:
+    _accounts__accountId__integrations_get_503_response_error:
       description: |
         An error object.
         The following error may be received:
@@ -650,7 +580,7 @@ components:
         documentation_url: https://api.aweber.com#serviceunavailable
         message: Failed to communicate with endpoint
         type: ServiceUnavailableError
-        status: 7
+        status: 2
       properties:
         documentation_url:
           description: A link to the documentation that describes the error
@@ -671,65 +601,62 @@ components:
           - ServiceUnavailableError
           type: string
       type: object
-    _accounts__accountId__lists__listId__segments_get_503_response:
+    _accounts__accountId__integrations_get_503_response:
       example:
         error:
           documentation_url: https://api.aweber.com#serviceunavailable
           message: Failed to communicate with endpoint
           type: ServiceUnavailableError
-          status: 7
+          status: 2
       properties:
         error:
-          $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_503_response_error'
+          $ref: '#/components/schemas/_accounts__accountId__integrations_get_503_response_error'
       type: object
-    _accounts__accountId__lists__listId__segments__segmentId__get_400_response_error:
+    _accounts__accountId__integrations__integrationId__get_404_response_error:
       description: |
         An error object.
-        One of the following errors may be received:
+        The following error may be received:
 
-        | Error Type                           | Explanation                              |
-        |--------------------------------------|------------------------------------------|
-        | BadRequestError                      | There was an error decoding query parameters |
-        | MissingOAuthParametersError          | An OAuth parameter is missing in the request |
-        | UnsupportedOAuthSignatureMethodError | The provided OAuth 1 signature method is unsupported. Only HMAC-SHA1 is supported. |
-        | UnsupportedOAuthVersionError         | The provided OAuth 1 version is unsupported. |
+        | Error Type           | Explanation                              |
+        |----------------------|------------------------------------------|
+        | NotFoundError        | The requested resource could not be found |
 
         Please see the message body for more details.
       example:
-        documentation_url: https://api.aweber.com#badrequest
-        message: "Missing oauth parameters: oauth_consumer_key"
-        type: MissingOAuthParametersError
+        documentation_url: https://api.aweber.com#notfound
+        message: "Object: None, name: ''"
+        type: NotFoundError
         status: 0
       properties:
         documentation_url:
           description: A link to the documentation that describes the error
-          example: https://api.aweber.com#badrequest
+          example: https://api.aweber.com#notfound
           type: string
         message:
           description: A human friendly description of the error
-          example: "Missing oauth parameters: oauth_consumer_key"
+          example: "Object: None, name: ''"
           type: string
         status:
           description: The HTTP status code
           enum:
-          - 400
+          - 404
           type: integer
         type:
           description: The API error type
           enum:
-          - MissingOAuthParametersError
+          - NotFoundError
           type: string
       type: object
-    _accounts__accountId__lists__listId__segments__segmentId__get_400_response:
+    _accounts__accountId__integrations__integrationId__get_404_response:
       example:
         error:
-          documentation_url: https://api.aweber.com#badrequest
-          message: "Missing oauth parameters: oauth_consumer_key"
-          type: MissingOAuthParametersError
+          documentation_url: https://api.aweber.com#notfound
+          message: "Object: None, name: ''"
+          type: NotFoundError
           status: 0
       properties:
         error:
-          $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments__segmentId__get_400_response_error'
+          $ref: '#/components/schemas/_accounts__accountId__integrations__integrationId__get_404_response_error'
       type: object
     Endpoint_Error_error:
       description: |

@@ -5,17 +5,16 @@ info:
     name: API Team
     url: https://labs.aweber.com
   description: REST API for access the AWeber service.
-  title: Landing Pages
+  title: Segments
   version: "1.0"
 servers:
 - url: /
 tags:
-- name: Landing Pages
+- name: Segments
 paths:
-  /accounts/{accountId}/lists/{listId}/landing_pages:
+  /accounts/{accountId}/lists/{listId}/segments:
     get:
-      description: This endpoint is used to get a paginated collection of list landing
-        pages.
+      description: This endpoint is used to get a paginated collection of list segments.
       parameters:
       - description: The account ID
         in: path
@@ -53,65 +52,63 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LandingPages'
+                $ref: '#/components/schemas/Segments'
           description: The request completed successfully
         "400":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/_accounts__accountId__lists__listId__landing_pages_get_400_response'
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_400_response'
           description: The server cannot or will not process the request due to a
             client error
         "401":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/_accounts__accountId__lists__listId__landing_pages_get_401_response'
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_401_response'
           description: The request could not be completed due to an authentication
             error
         "403":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/_accounts__accountId__lists__listId__landing_pages_get_403_response'
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_403_response'
           description: The request could not be completed due to a rate limit error
         "404":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/_accounts__accountId__lists__listId__landing_pages_get_404_response'
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_404_response'
           description: The requested resource could not be found
         "410":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/_accounts__accountId__lists__listId__landing_pages_get_410_response'
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_410_response'
           description: The request has been blocked
         "500":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/_accounts__accountId__lists__listId__landing_pages_get_500_response'
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_500_response'
           description: The request failed due to an internal error in the code or
             because of an external dependency failure
         "503":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/_accounts__accountId__lists__listId__landing_pages_get_503_response'
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_503_response'
           description: The server is currently unavailable
       security:
       - OAuth 2.0:
-        - landing-page.read
-      summary: Get landing pages
+        - list.read
+      summary: Get segments
       tags:
-      - Landing Pages
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/GetLandingPages
-  /accounts/{accountId}/lists/{listId}/landing_pages/{landingPageId}:
+      - Segments
+  /accounts/{accountId}/lists/{listId}/segments/{segmentId}:
     get:
       description: |
-        This endpoint is used to retrieve the information for the specified landing page.
+        This endpoint is used to retrieve the information for the specified segment.
       parameters:
       - description: The account ID
         in: path
@@ -127,73 +124,71 @@ paths:
         schema:
           format: int32
           type: integer
-      - description: The landing page ID
+      - description: The segment ID
         in: path
-        name: landingPageId
+        name: segmentId
         required: true
         schema:
-          format: uuid
-          type: string
+          format: int32
+          type: integer
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LandingPage'
+                $ref: '#/components/schemas/Segment'
           description: The request completed successfully
         "400":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/_accounts__accountId__lists__listId__landing_pages__landingPageId__get_400_response'
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments__segmentId__get_400_response'
           description: The server cannot or will not process the request due to a
             client error
         "401":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/_accounts__accountId__lists__listId__landing_pages_get_401_response'
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_401_response'
           description: The request could not be completed due to an authentication
             error
         "403":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/_accounts__accountId__lists__listId__landing_pages_get_403_response'
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_403_response'
           description: The request could not be completed due to a rate limit error
         "404":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/_accounts__accountId__lists__listId__landing_pages_get_404_response'
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_404_response'
           description: The requested resource could not be found
         "410":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/_accounts__accountId__lists__listId__landing_pages_get_410_response'
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_410_response'
           description: The request has been blocked
         "500":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/_accounts__accountId__lists__listId__landing_pages_get_500_response'
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_500_response'
           description: The request failed due to an internal error in the code or
             because of an external dependency failure
         "503":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/_accounts__accountId__lists__listId__landing_pages_get_503_response'
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_503_response'
           description: The server is currently unavailable
       security:
       - OAuth 2.0:
         - list.read
-      summary: Get landing page
+      summary: Get segment
       tags:
-      - Landing Pages
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/GetLandingPage
+      - Segments
 components:
   parameters:
     accountId:
@@ -231,106 +226,98 @@ components:
         maximum: 100
         minimum: 1
         type: integer
-    landingPageId:
-      description: The landing page ID
+    segmentId:
+      description: The segment ID
       in: path
-      name: landingPageId
+      name: segmentId
       required: true
       schema:
-        format: uuid
-        type: string
+        format: int32
+        type: integer
   responses:
     UnauthorizedError:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/_accounts__accountId__lists__listId__landing_pages_get_401_response'
+            $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_401_response'
       description: The request could not be completed due to an authentication error
     ForbiddenError:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/_accounts__accountId__lists__listId__landing_pages_get_403_response'
+            $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_403_response'
       description: The request could not be completed due to a rate limit error
     NotFound:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/_accounts__accountId__lists__listId__landing_pages_get_404_response'
+            $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_404_response'
       description: The requested resource could not be found
     BlockedError:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/_accounts__accountId__lists__listId__landing_pages_get_410_response'
+            $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_410_response'
       description: The request has been blocked
     InternalServerError:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/_accounts__accountId__lists__listId__landing_pages_get_500_response'
+            $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_500_response'
       description: The request failed due to an internal error in the code or because
         of an external dependency failure
     ServiceUnavailable:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/_accounts__accountId__lists__listId__landing_pages_get_503_response'
+            $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_503_response'
       description: The server is currently unavailable
     BadOAuth1:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/_accounts__accountId__lists__listId__landing_pages__landingPageId__get_400_response'
+            $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments__segmentId__get_400_response'
       description: The server cannot or will not process the request due to a client
         error
   schemas:
-    LandingPages:
+    Segments:
       example:
         entries:
-        - resource_type_link: https://api.aweber.com/1.0/#landing_page
-          name: My Awesome Landing Page
-          created_at: 2000-01-23T04:56:07.000+00:00
-          id: 48b38cd9-a5df-4297-8987-ed31b3093b39
-          modified_at: 2000-01-23T04:56:07.000+00:00
-          published_at: 2000-01-23T04:56:07.000+00:00
-          self_link: https://api.aweber.com/1.0/accounts/123/lists/456/landing_pages/48b38cd9-a5df-4297-8987-ed31b3093b39
-          published_url: https://awd415f.aweberpages.com/awesomepage
-          status: published
-        - resource_type_link: https://api.aweber.com/1.0/#landing_page
-          name: My Awesome Landing Page
-          created_at: 2000-01-23T04:56:07.000+00:00
-          id: 48b38cd9-a5df-4297-8987-ed31b3093b39
-          modified_at: 2000-01-23T04:56:07.000+00:00
-          published_at: 2000-01-23T04:56:07.000+00:00
-          self_link: https://api.aweber.com/1.0/accounts/123/lists/456/landing_pages/48b38cd9-a5df-4297-8987-ed31b3093b39
-          published_url: https://awd415f.aweberpages.com/awesomepage
-          status: published
-        prev_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/landing_pages/48b38cd9-a5df-4297-8987-ed31b3093b39?ws.start=0
-        resource_type_link: https://api.aweber.com/1.0/#landing_page-page-resource
+        - is_split_test: false
+          resource_type_link: https://api.aweber.com/1.0/#segment
+          name: All Subscribers
+          id: 1
+          self_link: https://api.aweber.com/1.0/accounts/123/lists/456/segments/1
+        - is_split_test: false
+          resource_type_link: https://api.aweber.com/1.0/#segment
+          name: All Subscribers
+          id: 1
+          self_link: https://api.aweber.com/1.0/accounts/123/lists/456/segments/1
+        prev_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/segments?ws.start=0
+        resource_type_link: https://api.aweber.com/1.0/#segment-page-resource
         start: 0
         total_size: 100
-        next_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/landing_pages/48b38cd9-a5df-4297-8987-ed31b3093b39?ws.start=10&ws.size=10
+        next_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/segments?ws.start=10&ws.size=10
       properties:
         entries:
           items:
-            $ref: '#/components/schemas/LandingPageNoContent'
+            $ref: '#/components/schemas/Segment'
           type: array
         next_collection_link:
           description: A link to the next page of entries if more entries exist. This
             attribute is omitted from the collection if there are no more entries.
-          example: https://api.aweber.com/1.0/accounts/123/lists/456/landing_pages/48b38cd9-a5df-4297-8987-ed31b3093b39?ws.start=10&ws.size=10
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/segments?ws.start=10&ws.size=10
           format: uri
           type: string
         prev_collection_link:
           description: A link to the previous page of entries if any exist. This attribute
             is omitted from the collection if ws.start is 0.
-          example: https://api.aweber.com/1.0/accounts/123/lists/456/landing_pages/48b38cd9-a5df-4297-8987-ed31b3093b39?ws.start=0
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/segments?ws.start=0
           format: uri
           type: string
         resource_type_link:
-          description: The link to the landing page page type
-          example: https://api.aweber.com/1.0/#landing_page-page-resource
+          description: The link to the segment page type
+          example: https://api.aweber.com/1.0/#segment-page-resource
           format: uri
           type: string
         start:
@@ -343,61 +330,40 @@ components:
           minimum: 0
           type: integer
       type: object
-    LandingPageNoContent:
+    Segment:
       example:
-        resource_type_link: https://api.aweber.com/1.0/#landing_page
-        name: My Awesome Landing Page
-        created_at: 2000-01-23T04:56:07.000+00:00
-        id: 48b38cd9-a5df-4297-8987-ed31b3093b39
-        modified_at: 2000-01-23T04:56:07.000+00:00
-        published_at: 2000-01-23T04:56:07.000+00:00
-        self_link: https://api.aweber.com/1.0/accounts/123/lists/456/landing_pages/48b38cd9-a5df-4297-8987-ed31b3093b39
-        published_url: https://awd415f.aweberpages.com/awesomepage
-        status: published
+        is_split_test: false
+        resource_type_link: https://api.aweber.com/1.0/#segment
+        name: All Subscribers
+        id: 1
+        self_link: https://api.aweber.com/1.0/accounts/123/lists/456/segments/1
       properties:
-        created_at:
-          description: When the landing page was created
-          format: date-time
-          type: string
         id:
-          description: The unique ID for the landing page
-          example: 48b38cd9-a5df-4297-8987-ed31b3093b39
-          format: uuid
-          type: string
-        modified_at:
-          description: When the landing page was last modified
-          format: date-time
-          type: string
+          description: The unique ID for the segment
+          example: 1
+          type: integer
+        is_split_test:
+          description: |
+            Whether the segment is part of a split test.
+
+            Must be false to use for scheduling a broadcast.
+
+            Segments that were created automatically for a split test in the control panel are set to true.
+          example: false
+          type: boolean
         name:
-          description: The landing page name
-          example: My Awesome Landing Page
-          type: string
-        published_at:
-          description: When the landing page was published
-          format: date-time
-          nullable: true
-          type: string
-        published_url:
-          description: The URL for the landing page
-          example: https://awd415f.aweberpages.com/awesomepage
-          format: uri
-          nullable: true
+          description: The segment name
+          example: All Subscribers
           type: string
         resource_type_link:
-          description: The link to the landing page type
-          example: https://api.aweber.com/1.0/#landing_page
+          description: The link to the segment type
+          example: https://api.aweber.com/1.0/#segment
           format: uri
           type: string
         self_link:
           description: The link to this resource
-          example: https://api.aweber.com/1.0/accounts/123/lists/456/landing_pages/48b38cd9-a5df-4297-8987-ed31b3093b39
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/segments/1
           format: uri
-          type: string
-        status:
-          description: The status of the landing page
-          enum:
-          - published
-          - unpublished
           type: string
       type: object
     Endpoint Error:
@@ -431,33 +397,7 @@ components:
           type: string
       title: Auth Error
       type: object
-    LandingPage:
-      allOf:
-      - properties:
-          content_html:
-            description: The draft HTML of the landing page
-            example: <html><h1>Title</h1><body>Landing Page Text</body></html>
-            type: string
-          published_html:
-            description: The published HTML of the landing page
-            example: <html><h1>Title</h1><body>Landing Page Text</body></html>
-            nullable: true
-            type: string
-        type: object
-      - $ref: '#/components/schemas/LandingPageNoContent'
-      example:
-        resource_type_link: https://api.aweber.com/1.0/#landing_page
-        published_html: <html><h1>Title</h1><body>Landing Page Text</body></html>
-        name: My Awesome Landing Page
-        created_at: 2000-01-23T04:56:07.000+00:00
-        id: 48b38cd9-a5df-4297-8987-ed31b3093b39
-        modified_at: 2000-01-23T04:56:07.000+00:00
-        published_at: 2000-01-23T04:56:07.000+00:00
-        self_link: https://api.aweber.com/1.0/accounts/123/lists/456/landing_pages/48b38cd9-a5df-4297-8987-ed31b3093b39
-        published_url: https://awd415f.aweberpages.com/awesomepage
-        content_html: <html><h1>Title</h1><body>Landing Page Text</body></html>
-        status: published
-    _accounts__accountId__lists__listId__landing_pages_get_400_response_error:
+    _accounts__accountId__lists__listId__segments_get_400_response_error:
       description: |
         An error object.
         One of the following errors may be received:
@@ -493,7 +433,7 @@ components:
           example: WebServiceError
           type: string
       type: object
-    _accounts__accountId__lists__listId__landing_pages_get_400_response:
+    _accounts__accountId__lists__listId__segments_get_400_response:
       example:
         error:
           documentation_url: https://api.aweber.com#badrequest
@@ -502,13 +442,13 @@ components:
           status: 400
       properties:
         error:
-          $ref: '#/components/schemas/_accounts__accountId__lists__listId__landing_pages_get_400_response_error'
+          $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_400_response_error'
       type: object
-    _accounts__accountId__lists__listId__landing_pages_get_401_response:
+    _accounts__accountId__lists__listId__segments_get_401_response:
       oneOf:
       - $ref: '#/components/schemas/Endpoint Error'
       - $ref: '#/components/schemas/Auth Error'
-    _accounts__accountId__lists__listId__landing_pages_get_403_response_error:
+    _accounts__accountId__lists__listId__segments_get_403_response_error:
       description: |
         An error object.
         The following error may be received:
@@ -543,7 +483,7 @@ components:
           - ForbiddenError
           type: string
       type: object
-    _accounts__accountId__lists__listId__landing_pages_get_403_response:
+    _accounts__accountId__lists__listId__segments_get_403_response:
       example:
         error:
           documentation_url: https://api.aweber.com#forbidden
@@ -552,9 +492,9 @@ components:
           status: 1
       properties:
         error:
-          $ref: '#/components/schemas/_accounts__accountId__lists__listId__landing_pages_get_403_response_error'
+          $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_403_response_error'
       type: object
-    _accounts__accountId__lists__listId__landing_pages_get_404_response_error:
+    _accounts__accountId__lists__listId__segments_get_404_response_error:
       description: |
         An error object.
         The following error may be received:
@@ -589,7 +529,7 @@ components:
           - NotFoundError
           type: string
       type: object
-    _accounts__accountId__lists__listId__landing_pages_get_404_response:
+    _accounts__accountId__lists__listId__segments_get_404_response:
       example:
         error:
           documentation_url: https://api.aweber.com#notfound
@@ -598,9 +538,9 @@ components:
           status: 5
       properties:
         error:
-          $ref: '#/components/schemas/_accounts__accountId__lists__listId__landing_pages_get_404_response_error'
+          $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_404_response_error'
       type: object
-    _accounts__accountId__lists__listId__landing_pages_get_410_response_error:
+    _accounts__accountId__lists__listId__segments_get_410_response_error:
       description: |
         An error object.
         The following error may be received:
@@ -635,7 +575,7 @@ components:
           - BlockedError
           type: string
       type: object
-    _accounts__accountId__lists__listId__landing_pages_get_410_response:
+    _accounts__accountId__lists__listId__segments_get_410_response:
       example:
         error:
           documentation_url: https://api.aweber.com/#blocked
@@ -644,9 +584,9 @@ components:
           status: 5
       properties:
         error:
-          $ref: '#/components/schemas/_accounts__accountId__lists__listId__landing_pages_get_410_response_error'
+          $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_410_response_error'
       type: object
-    _accounts__accountId__lists__listId__landing_pages_get_500_response_error:
+    _accounts__accountId__lists__listId__segments_get_500_response_error:
       description: |
         An error object.
         The following error may be received:
@@ -681,7 +621,7 @@ components:
           - InternalServerError
           type: string
       type: object
-    _accounts__accountId__lists__listId__landing_pages_get_500_response:
+    _accounts__accountId__lists__listId__segments_get_500_response:
       example:
         error:
           documentation_url: https://api.aweber.com#internalerror
@@ -690,9 +630,9 @@ components:
           status: 2
       properties:
         error:
-          $ref: '#/components/schemas/_accounts__accountId__lists__listId__landing_pages_get_500_response_error'
+          $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_500_response_error'
       type: object
-    _accounts__accountId__lists__listId__landing_pages_get_503_response_error:
+    _accounts__accountId__lists__listId__segments_get_503_response_error:
       description: |
         An error object.
         The following error may be received:
@@ -727,7 +667,7 @@ components:
           - ServiceUnavailableError
           type: string
       type: object
-    _accounts__accountId__lists__listId__landing_pages_get_503_response:
+    _accounts__accountId__lists__listId__segments_get_503_response:
       example:
         error:
           documentation_url: https://api.aweber.com#serviceunavailable
@@ -736,9 +676,9 @@ components:
           status: 7
       properties:
         error:
-          $ref: '#/components/schemas/_accounts__accountId__lists__listId__landing_pages_get_503_response_error'
+          $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments_get_503_response_error'
       type: object
-    _accounts__accountId__lists__listId__landing_pages__landingPageId__get_400_response_error:
+    _accounts__accountId__lists__listId__segments__segmentId__get_400_response_error:
       description: |
         An error object.
         One of the following errors may be received:
@@ -776,7 +716,7 @@ components:
           - MissingOAuthParametersError
           type: string
       type: object
-    _accounts__accountId__lists__listId__landing_pages__landingPageId__get_400_response:
+    _accounts__accountId__lists__listId__segments__segmentId__get_400_response:
       example:
         error:
           documentation_url: https://api.aweber.com#badrequest
@@ -785,7 +725,7 @@ components:
           status: 0
       properties:
         error:
-          $ref: '#/components/schemas/_accounts__accountId__lists__listId__landing_pages__landingPageId__get_400_response_error'
+          $ref: '#/components/schemas/_accounts__accountId__lists__listId__segments__segmentId__get_400_response_error'
       type: object
     Endpoint_Error_error:
       description: |

@@ -150,8 +150,6 @@ paths:
       summary: Get broadcasts
       tags:
       - Broadcasts
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/GetBroadcasts
     post:
       description: "This endpoint is used to create a broadcast message draft. \n\
         **This POST request is limited to 1 million bytes.**\n\nCheck out related\
@@ -268,8 +266,6 @@ paths:
       summary: Create broadcast
       tags:
       - Broadcasts
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/CreateBroadcast
   /accounts/{accountId}/lists/{listId}/broadcasts/{broadcastId}:
     delete:
       description: "This endpoint is used to delete a broadcast message draft. **(Please\
@@ -385,8 +381,6 @@ paths:
       summary: Delete broadcast
       tags:
       - Broadcasts
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/DeleteBroadcast
     get:
       description: "This endpoint is used to retrieve a broadcast message.\n\nCheck\
         \ out related examples:\n\n  * Create and Schedule Broadcast ( \n    <a href=\"\
@@ -497,8 +491,6 @@ paths:
       summary: Get broadcast
       tags:
       - Broadcasts
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/GetBroadcast
     put:
       description: "This endpoint is used to replace existing details of a broadcast\
         \ message in a draft state. **(Please be aware that only broadcast drafts\
@@ -630,8 +622,6 @@ paths:
       summary: Update broadcast
       tags:
       - Broadcasts
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/PutBroadcast
   /accounts/{accountId}/lists/{listId}/broadcasts/{broadcastId}/cancel:
     post:
       description: "This endpoint is used to cancel a currently scheduled broadcast.\n\
@@ -750,8 +740,6 @@ paths:
       summary: Cancel scheduled broadcast
       tags:
       - Broadcasts
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/CancelScheduledBroadcast
   /accounts/{accountId}/lists/{listId}/broadcasts/total:
     get:
       description: "This endpoint is used to get the total number of broadcasts in\
@@ -869,8 +857,6 @@ paths:
       summary: Get total broadcasts
       tags:
       - Broadcasts
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/GetTotalBroadcasts
   /accounts/{accountId}/lists/{listId}/broadcasts/{broadcastId}/schedule:
     post:
       description: "This endpoint is used to schedule a broadcast.\n\nCheck out related\
@@ -1001,8 +987,6 @@ paths:
       summary: Schedule broadcast
       tags:
       - Broadcasts
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/ScheduleBroadcast
   /accounts/{accountId}/lists/{listId}/broadcasts/{broadcastId}/opens:
     get:
       description: |-
@@ -1108,8 +1092,6 @@ paths:
       summary: Get broadcast opens
       tags:
       - Broadcasts
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/GetBroadcastOpens
   /accounts/{accountId}/lists/{listId}/broadcasts/{broadcastId}/clicks:
     get:
       description: |-
@@ -1215,8 +1197,6 @@ paths:
       summary: Get broadcast clicks
       tags:
       - Broadcasts
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/GetBroadcastClicks
 components:
   parameters:
     accountId:

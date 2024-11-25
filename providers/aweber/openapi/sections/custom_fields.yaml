@@ -106,8 +106,6 @@ paths:
       summary: Get custom fields
       tags:
       - Custom Fields
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/GetCustomFields
     post:
       description: "This endpoint is used to add a new custom field to the specified\
         \ account and list.\n\nCheck out related examples:\n\n  * Manage Custom Fields\
@@ -213,8 +211,6 @@ paths:
       summary: Add custom field
       tags:
       - Custom Fields
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/AddCustomField
   /accounts/{accountId}/lists/{listId}/custom_fields/{customFieldId}:
     delete:
       description: "This endpoint is used to delete a custom field entry See <a href=\"\
@@ -298,8 +294,6 @@ paths:
       summary: Delete custom field
       tags:
       - Custom Fields
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/DeleteCustomField
     get:
       description: "This endpoint is used to retrieve the information for the specified\
         \ custom field.\n\nCheck out related examples:\n\n  * Manage Custom Fields\
@@ -390,8 +384,6 @@ paths:
       summary: Get custom field
       tags:
       - Custom Fields
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/GetCustomField
     patch:
       description: "This endpoint is used to update the information for the specified\
         \ custom field. See <a href=\"https://help.aweber.com/entries/21749682-why-could-changing-my-custom-field-names-cause-problems\"\
@@ -495,8 +487,6 @@ paths:
       summary: Update custom field
       tags:
       - Custom Fields
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/UpdateCustomField
 components:
   parameters:
     accountId:

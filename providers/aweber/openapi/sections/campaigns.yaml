@@ -127,8 +127,6 @@ paths:
       summary: Get campaigns
       tags:
       - Campaigns
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/GetCampaigns
   /accounts/{accountId}/lists/{listId}/campaigns/{campaignType}{campaignId}:
     get:
       description: "A followup or broadcast campaign\n\nCheck out related examples:\n\
@@ -240,8 +238,6 @@ paths:
       summary: Get campaign
       tags:
       - Campaigns
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/GetCampaign
   /accounts/{accountId}/lists/{listId}/campaigns?ws.op=find:
     get:
       description: "Find a collection of either followup(\"f\") or broadcast(\"b\"\
@@ -386,8 +382,6 @@ paths:
       summary: Find campaigns
       tags:
       - Campaigns
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/FindCampaigns
   /accounts/{accountId}/lists/{listId}/campaigns/{campaignType}{campaignId}/links:
     get:
       description: "A paginated collection of Links in a followup or broadcast campaign\
@@ -764,8 +758,6 @@ paths:
       summary: Get clicks
       tags:
       - Campaigns
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/GetClicks
   /accounts/{accountId}/lists/{listId}/campaigns/{campaignType}{campaignId}/links/{linkId}/clicks/{clickId}:
     get:
       description: "A non-unique click on a link in a followup or broadcast campaign\n\
@@ -891,8 +883,6 @@ paths:
       summary: Get click
       tags:
       - Campaigns
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/GetClick
   /accounts/{accountId}/lists/{listId}/campaigns/b{campaignId}/stats:
     get:
       description: "A paginated collection of statistics for a broadcast campaign\
@@ -1013,8 +1003,6 @@ paths:
       summary: Get broadcast statistics
       tags:
       - Campaigns
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/GetBroadcastStatistics
   /accounts/{accountId}/lists/{listId}/campaigns/b{campaignId}/stats/{statsId}:
     get:
       description: "A statistic for a broadcast campaign message\n\nCheck out related\
@@ -1185,8 +1173,6 @@ paths:
       summary: Get broadcast statistic
       tags:
       - Campaigns
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/GetBroadcastStatistic
 components:
   parameters:
     accountId:

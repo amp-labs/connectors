@@ -1,6 +1,0 @@
-tags:
-  OAuth2 Reference: |
-    These endpoints are used to authenticate with the api. The AWeber API uses
-    the OAuth 2.0 model to handle authentication. OAuth is a standardized way
-    for services to grant permission on a user's behalf to another application,
-    without exposing their credentials (ie - username and password).

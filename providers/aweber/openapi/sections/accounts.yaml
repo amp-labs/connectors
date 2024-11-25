@@ -92,8 +92,6 @@ paths:
       summary: Get accounts
       tags:
       - Accounts
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/GetAccounts
   /accounts/{accountId}:
     get:
       description: "This endpoint is used to retrieve information for a specific account.\n\
@@ -170,8 +168,6 @@ paths:
       summary: Get account
       tags:
       - Accounts
-      x-code-samples:
-        $ref: _code_samples.yaml#/code_samples/GetAccount
 components:
   parameters:
     wsStart:
