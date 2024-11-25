@@ -18,13 +18,19 @@ type Document struct {
 	delegate *openapi3.T
 }
 
-func (s Document) GetPaths() map[string]*openapi3.PathItem {
+func (s Document) GetPaths() map[urlPath]*openapi3.PathItem {
 	paths := s.delegate.Paths
 	if paths == nil {
 		return nil
 	}
 
-	return paths.Map()
+	result := make(map[urlPath]*openapi3.PathItem)
+	for k, v := range paths.Map() {
+		url := newURLPath(k)
+		result[*url] = v
+	}
+
+	return result
 }
 
 type PathItem struct {

@@ -3,6 +3,7 @@ package api3
 import (
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/iancoleman/strcase"
 )
@@ -98,7 +99,12 @@ type parameters struct {
 	displayPostProcessing DisplayNameProcessor
 	operationMethodFilter ReadOperationMethodFilter
 	propertyFlattener     PropertyFlattener
-	mediaType             string
+	mediaType           string
+	withPathIdentifiers *bool
+}
+
+func (p parameters) acceptPathIdentifiers() bool {
+	return p.withPathIdentifiers != nil && *p.withPathIdentifiers
 }
 
 type Option = func(params *parameters)
@@ -131,6 +137,10 @@ func createParams(opts []Option) *parameters {
 
 	if len(params.mediaType) == 0 {
 		params.mediaType = "application/json"
+	}
+
+	if params.withPathIdentifiers == nil {
+		params.withPathIdentifiers = goutils.Pointer(false)
 	}
 
 	return &params
@@ -172,5 +182,12 @@ func WithMediaType(mediaType string) Option {
 func WithPropertyFlattening(propertyFlattener PropertyFlattener) Option {
 	return func(params *parameters) {
 		params.propertyFlattener = propertyFlattener
+	}
+}
+
+// WithPathIdentifiers considers API endpoint paths that have identifiers when extracting objects.
+func WithPathIdentifiers() Option {
+	return func(params *parameters) {
+		params.withPathIdentifiers = goutils.Pointer(true)
 	}
 }

@@ -3,7 +3,6 @@ package api3
 import (
 	"log/slog"
 	"sort"
-	"strings"
 
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/getkin/kin-openapi/openapi3"
@@ -107,25 +106,18 @@ func (e Explorer) GetPathItems(
 	items := datautils.Map[string, PathItem]{}
 
 	for path, pathObj := range e.schema.GetPaths() {
-		if !pathMatcher.IsPathMatching(path) {
+		if !pathMatcher.IsPathMatching(path.String()) {
 			// Ignore this endpoint path.
 			continue
 		}
 
-		if strings.Contains(path, "{") {
+		if !e.acceptPathIdentifiers() && path.hasIdentifiers() {
 			// as of now only single word objects are supported
 			// there should be no slashes, curly brackets - nested resources
 			continue
 		}
 
-		objectName, ok := endpointResources[path]
-		if !ok {
-			// ObjectName is empty at this time.
-			// We need to do some processing to infer ObjectName from URL path.
-			// By default, the last URL part is the ObjectName describing this REST resource.
-			parts := strings.Split(path, "/")
-			objectName = parts[len(parts)-1]
-		}
+		objectName := path.objectName(endpointResources)
 
 		if items.Has(objectName) {
 			slog.Warn("object name is not unique, ignoring",
@@ -137,7 +129,7 @@ func (e Explorer) GetPathItems(
 
 		items[objectName] = PathItem{
 			objectName: objectName,
-			urlPath:    path,
+			urlPath:    path.String(),
 			delegate:   pathObj,
 		}
 	}
