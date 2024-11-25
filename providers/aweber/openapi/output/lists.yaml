@@ -1,0 +1,1322 @@
+openapi: 3.0.2
+info:
+  contact:
+    email: api@aweber.com
+    name: API Team
+    url: https://labs.aweber.com
+  description: REST API for access the AWeber service.
+  title: Lists
+  version: "1.0"
+servers:
+- url: /
+tags:
+- name: Lists
+paths:
+  /accounts/{accountId}/lists:
+    get:
+      description: "This endpoint is used to get a paginated collection of subscriber\
+        \ lists.\n\nCheck out related examples:\n\n  * Get Tags ( \n    <a href=\"\
+        https://github.com/aweber/public-api-examples/blob/master/python/get-tags\"\
+        \ target=\"_blank\">Python</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/get-tags\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Tags.postman_collection.json\"\
+        \ target=\"_blank\">Postman</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.GetTags/\"\
+        \ target=\"_blank\">C#.NET</a> |\n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/get_tags.rb\"\
+        \ target=\"_blank\">Ruby</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/node/get-tags.js\"\
+        \ target=\"_blank\">Node.js</a> )"
+      parameters:
+      - description: The account ID
+        in: path
+        name: accountId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: The pagination starting offset
+        in: query
+        name: ws.start
+        schema:
+          default: 0
+          format: int32
+          minimum: 0
+          type: integer
+      - description: The pagination total entries to retrieve
+        in: query
+        name: ws.size
+        schema:
+          default: 100
+          format: int32
+          maximum: 100
+          minimum: 1
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Lists'
+          description: The request completed successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists_get_400_response'
+          description: The server cannot or will not process the request due to a
+            client error
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists_get_401_response'
+          description: The request could not be completed due to an authentication
+            error
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists_get_403_response'
+          description: The request could not be completed due to a rate limit error
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists_get_404_response'
+          description: The requested resource could not be found
+        "410":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists_get_410_response'
+          description: The request has been blocked
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists_get_500_response'
+          description: The request failed due to an internal error in the code or
+            because of an external dependency failure
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists_get_503_response'
+          description: The server is currently unavailable
+      security:
+      - OAuth 2.0:
+        - list.read
+      summary: Get lists
+      tags:
+      - Lists
+      x-code-samples:
+        $ref: _code_samples.yaml#/code_samples/GetLists
+  /accounts/{accountId}/lists/{listId}:
+    get:
+      description: "This endpoint is used to retrieve the information for a specific\
+        \ subscriber list.\n\nCheck out related examples:\n\n  * Get Tags ( \n   \
+        \ <a href=\"https://github.com/aweber/public-api-examples/blob/master/python/get-tags\"\
+        \ target=\"_blank\">Python</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/get-tags\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Tags.postman_collection.json\"\
+        \ target=\"_blank\">Postman</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.GetTags/\"\
+        \ target=\"_blank\">C#.NET</a> |\n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/get_tags.rb\"\
+        \ target=\"_blank\">Ruby</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/node/get-tags.js\"\
+        \ target=\"_blank\">Node.js</a> )"
+      parameters:
+      - description: The account ID
+        in: path
+        name: accountId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: The list ID
+        in: path
+        name: listId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/List'
+          description: The request completed successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__get_400_response'
+          description: The server cannot or will not process the request due to a
+            client error
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists_get_401_response'
+          description: The request could not be completed due to an authentication
+            error
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists_get_403_response'
+          description: The request could not be completed due to a rate limit error
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists_get_404_response'
+          description: The requested resource could not be found
+        "410":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists_get_410_response'
+          description: The request has been blocked
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists_get_500_response'
+          description: The request failed due to an internal error in the code or
+            because of an external dependency failure
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists_get_503_response'
+          description: The server is currently unavailable
+      security:
+      - OAuth 2.0:
+        - list.read
+      summary: Get list
+      tags:
+      - Lists
+      x-code-samples:
+        $ref: _code_samples.yaml#/code_samples/GetList
+  /accounts/{accountId}/lists?ws.op=find:
+    get:
+      description: "This endpoint is used to search for lists when you do not have\
+        \ a link nor know the list ID.\n\nCheck out related examples:\n\n  * Get Tags\
+        \ ( \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/python/get-tags\"\
+        \ target=\"_blank\">Python</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/get-tags\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Tags.postman_collection.json\"\
+        \ target=\"_blank\">Postman</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.GetTags/\"\
+        \ target=\"_blank\">C#.NET</a> |\n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/get_tags.rb\"\
+        \ target=\"_blank\">Ruby</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/node/get-tags.js\"\
+        \ target=\"_blank\">Node.js</a> )"
+      parameters:
+      - description: The account ID
+        in: path
+        name: accountId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: The method name - expecting "find"
+        explode: true
+        in: query
+        name: ws.op
+        required: true
+        schema:
+          enum:
+          - find
+          type: string
+        style: form
+      - description: Name or unique list ID of the list
+        explode: true
+        in: query
+        name: name
+        required: false
+        schema:
+          maxLength: 100
+          minLength: 1
+          type: string
+        style: form
+      - description: The pagination starting offset
+        in: query
+        name: ws.start
+        schema:
+          default: 0
+          format: int32
+          minimum: 0
+          type: integer
+      - description: The pagination total entries to retrieve
+        in: query
+        name: ws.size
+        schema:
+          default: 100
+          format: int32
+          maximum: 100
+          minimum: 1
+          type: integer
+      - description: "A flag to show the total size only - expecting \\\"total_size\\\
+          \", when added the response will be an integer"
+        in: query
+        name: ws.show
+        schema:
+          enum:
+          - total_size
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindLists'
+          description: The request completed successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists_ws_op_find_get_400_response'
+          description: The server cannot or will not process the request due to a
+            client error
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists_get_401_response'
+          description: The request could not be completed due to an authentication
+            error
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists_get_403_response'
+          description: The request could not be completed due to a rate limit error
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists_get_404_response'
+          description: The requested resource could not be found
+        "410":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists_get_410_response'
+          description: The request has been blocked
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists_get_500_response'
+          description: The request failed due to an internal error in the code or
+            because of an external dependency failure
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists_get_503_response'
+          description: The server is currently unavailable
+      security:
+      - OAuth 2.0:
+        - list.read
+      summary: Find lists
+      tags:
+      - Lists
+      x-code-samples:
+        $ref: _code_samples.yaml#/code_samples/FindLists
+  /accounts/{accountId}/lists/{listId}/tags:
+    get:
+      description: "Get the most popular tags for a list.  This will return an array\
+        \ containing up to 500 tags sorted by descending popularity.\n\nCheck out\
+        \ related examples:\n\n  * Get Tags ( \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/python/get-tags\"\
+        \ target=\"_blank\">Python</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/get-tags\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Tags.postman_collection.json\"\
+        \ target=\"_blank\">Postman</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.GetTags/\"\
+        \ target=\"_blank\">C#.NET</a> |\n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/get_tags.rb\"\
+        \ target=\"_blank\">Ruby</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/node/get-tags.js\"\
+        \ target=\"_blank\">Node.js</a> )"
+      parameters:
+      - description: The account ID
+        in: path
+        name: accountId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: The list ID
+        in: path
+        name: listId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                example:
+                - alpha
+                - beta
+                - gamma
+                items:
+                  type: string
+                type: array
+          description: The request completed successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__tags_get_400_response'
+          description: The server cannot or will not process the request due to a
+            client error
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists_get_401_response'
+          description: The request could not be completed due to an authentication
+            error
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists_get_403_response'
+          description: The request could not be completed due to a rate limit error
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists_get_404_response'
+          description: The requested resource could not be found
+        "410":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists_get_410_response'
+          description: The request has been blocked
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists_get_500_response'
+          description: The request failed due to an internal error in the code or
+            because of an external dependency failure
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists_get_503_response'
+          description: The server is currently unavailable
+      security:
+      - OAuth 2.0:
+        - list.read
+      summary: Get tags for list
+      tags:
+      - Lists
+      x-code-samples:
+        $ref: _code_samples.yaml#/code_samples/GetTagsForList
+components:
+  parameters:
+    accountId:
+      description: The account ID
+      in: path
+      name: accountId
+      required: true
+      schema:
+        format: int32
+        type: integer
+    wsStart:
+      description: The pagination starting offset
+      in: query
+      name: ws.start
+      schema:
+        default: 0
+        format: int32
+        minimum: 0
+        type: integer
+    wsSize:
+      description: The pagination total entries to retrieve
+      in: query
+      name: ws.size
+      schema:
+        default: 100
+        format: int32
+        maximum: 100
+        minimum: 1
+        type: integer
+    listId:
+      description: The list ID
+      in: path
+      name: listId
+      required: true
+      schema:
+        format: int32
+        type: integer
+    wsShow:
+      description: "A flag to show the total size only - expecting \\\"total_size\\\
+        \", when added the response will be an integer"
+      in: query
+      name: ws.show
+      schema:
+        enum:
+        - total_size
+        type: string
+  responses:
+    UnauthorizedError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/_accounts__accountId__lists_get_401_response'
+      description: The request could not be completed due to an authentication error
+    ForbiddenError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/_accounts__accountId__lists_get_403_response'
+      description: The request could not be completed due to a rate limit error
+    NotFound:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/_accounts__accountId__lists_get_404_response'
+      description: The requested resource could not be found
+    BlockedError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/_accounts__accountId__lists_get_410_response'
+      description: The request has been blocked
+    InternalServerError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/_accounts__accountId__lists_get_500_response'
+      description: The request failed due to an internal error in the code or because
+        of an external dependency failure
+    ServiceUnavailable:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/_accounts__accountId__lists_get_503_response'
+      description: The server is currently unavailable
+    BadOAuth1:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/_accounts__accountId__lists__listId__get_400_response'
+      description: The server cannot or will not process the request due to a client
+        error
+  schemas:
+    Lists:
+      example:
+        entries:
+        - total_subscribers_subscribed_yesterday: 3
+          draft_broadcasts_link: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts?status=draft
+          segments_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/segments
+          web_form_split_tests_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/web_form_split_tests
+          campaigns_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/campaigns
+          sent_broadcasts_link: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts?status=sent
+          total_unconfirmed_subscribers: 10
+          web_forms_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/web_forms
+          subscribers_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/subscribers
+          total_unsubscribed_subscribers: 5
+          uuid: 123e4567-e89b-12d3-a456-426655440000
+          custom_fields_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/custom_fields
+          resource_type_link: https://api.aweber.com/1.0/#list
+          total_subscribers_subscribed_today: 4
+          landing_pages_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/landing_pages
+          name: Weekly Newsletter
+          total_subscribed_subscribers: 250
+          vapid_public_key: BEJSWW8eHj_XKHt5AHpaL3tw0gee8NI2j06xyEIDmOfRGbHmqZVlwsvMO0yISFe834TaBEZRkbdHyTvSXhYCW6E
+          id: 456
+          scheduled_broadcasts_link: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts?status=scheduled
+          self_link: https://api.aweber.com/1.0/accounts/123/lists/456
+          unique_list_id: awlist456
+          http_etag: \"902ba3cda1883801594b6e1b452790cc53948fda-f83cb0ac22a8d5f792417f9b3dc0e9dc7558aa32\"
+          total_subscribers: 275
+        - total_subscribers_subscribed_yesterday: 3
+          draft_broadcasts_link: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts?status=draft
+          segments_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/segments
+          web_form_split_tests_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/web_form_split_tests
+          campaigns_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/campaigns
+          sent_broadcasts_link: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts?status=sent
+          total_unconfirmed_subscribers: 10
+          web_forms_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/web_forms
+          subscribers_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/subscribers
+          total_unsubscribed_subscribers: 5
+          uuid: 123e4567-e89b-12d3-a456-426655440000
+          custom_fields_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/custom_fields
+          resource_type_link: https://api.aweber.com/1.0/#list
+          total_subscribers_subscribed_today: 4
+          landing_pages_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/landing_pages
+          name: Weekly Newsletter
+          total_subscribed_subscribers: 250
+          vapid_public_key: BEJSWW8eHj_XKHt5AHpaL3tw0gee8NI2j06xyEIDmOfRGbHmqZVlwsvMO0yISFe834TaBEZRkbdHyTvSXhYCW6E
+          id: 456
+          scheduled_broadcasts_link: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts?status=scheduled
+          self_link: https://api.aweber.com/1.0/accounts/123/lists/456
+          unique_list_id: awlist456
+          http_etag: \"902ba3cda1883801594b6e1b452790cc53948fda-f83cb0ac22a8d5f792417f9b3dc0e9dc7558aa32\"
+          total_subscribers: 275
+        prev_collection_link: https://api.aweber.com/1.0/accounts/123/lists?ws.start=0
+        resource_type_link: https://api.aweber.com/1.0/#list-page-resource
+        start: 0
+        total_size: 100
+        next_collection_link: https://api.aweber.com/1.0/accounts/123/lists?ws.start=0&ws.size=10
+      properties:
+        entries:
+          description: A list of list entries
+          items:
+            $ref: '#/components/schemas/List'
+          type: array
+        next_collection_link:
+          description: A link to the next page of entries if more entries exist. This
+            attribute is omitted from the collection if there are no more entries.
+          example: https://api.aweber.com/1.0/accounts/123/lists?ws.start=0&ws.size=10
+          format: uri
+          type: string
+        prev_collection_link:
+          description: A link to the previous page of entries if any exist. This attribute
+            is omitted from the collection if ws.start is 0.
+          example: https://api.aweber.com/1.0/accounts/123/lists?ws.start=0
+          format: uri
+          type: string
+        resource_type_link:
+          description: A link that identifies the type of resource that this collection
+            represents
+          example: https://api.aweber.com/1.0/#list-page-resource
+          format: uri
+          type: string
+        start:
+          description: The starting offset for the page of entries to retrieve
+          minimum: 0
+          type: integer
+        total_size:
+          description: The total number of entries
+          example: 100
+          minimum: 0
+          type: integer
+      type: object
+    List:
+      example:
+        total_subscribers_subscribed_yesterday: 3
+        draft_broadcasts_link: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts?status=draft
+        segments_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/segments
+        web_form_split_tests_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/web_form_split_tests
+        campaigns_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/campaigns
+        sent_broadcasts_link: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts?status=sent
+        total_unconfirmed_subscribers: 10
+        web_forms_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/web_forms
+        subscribers_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/subscribers
+        total_unsubscribed_subscribers: 5
+        uuid: 123e4567-e89b-12d3-a456-426655440000
+        custom_fields_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/custom_fields
+        resource_type_link: https://api.aweber.com/1.0/#list
+        total_subscribers_subscribed_today: 4
+        landing_pages_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/landing_pages
+        name: Weekly Newsletter
+        total_subscribed_subscribers: 250
+        vapid_public_key: BEJSWW8eHj_XKHt5AHpaL3tw0gee8NI2j06xyEIDmOfRGbHmqZVlwsvMO0yISFe834TaBEZRkbdHyTvSXhYCW6E
+        id: 456
+        scheduled_broadcasts_link: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts?status=scheduled
+        self_link: https://api.aweber.com/1.0/accounts/123/lists/456
+        unique_list_id: awlist456
+        http_etag: \"902ba3cda1883801594b6e1b452790cc53948fda-f83cb0ac22a8d5f792417f9b3dc0e9dc7558aa32\"
+        total_subscribers: 275
+      properties:
+        campaigns_collection_link:
+          description: "[E-Mail Campaigns](#tag/Campaigns/paths/~1accounts~1{accountId}~1lists~1{listId}~1campaigns/get)\
+            \ used by this list"
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/campaigns
+          format: uri
+          type: string
+        custom_fields_collection_link:
+          description: "Subscriber [Custom Fields](#tag/Custom-Fields/paths/~1accounts~1{accountId}~1lists~1{listId}~1custom_fields/get)\
+            \ defined for this list"
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/custom_fields
+          format: uri
+          type: string
+        draft_broadcasts_link:
+          description: "Draft [Broadcasts](#tag/Broadcasts/paths/~1accounts~1{accountId}~1lists~1{listId}~1broadcasts/get)\
+            \ belonging to this list"
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts?status=draft
+          format: uri
+          type: string
+        scheduled_broadcasts_link:
+          description: "Scheduled [Broadcasts](#tag/Broadcasts/paths/~1accounts~1{accountId}~1lists~1{listId}~1broadcasts/get)\
+            \ belonging to this list"
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts?status=scheduled
+          format: uri
+          type: string
+        sent_broadcasts_link:
+          description: "Sent [Broadcasts](#tag/Broadcasts/paths/~1accounts~1{accountId}~1lists~1{listId}~1broadcasts/get)\
+            \ belonging to this list"
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts?status=sent
+          format: uri
+          type: string
+        http_etag:
+          description: The ETag HTTP header
+          example: \"902ba3cda1883801594b6e1b452790cc53948fda-f83cb0ac22a8d5f792417f9b3dc0e9dc7558aa32\"
+          type: string
+        id:
+          description: The unique ID for the list
+          example: 456
+          type: integer
+        landing_pages_collection_link:
+          description: "Link to the [Landing Pages](#tag/Landing-Pages/paths/~1accounts~1{accountId}~1lists~1{listId}~1landing_pages/get)\
+            \ used by this list"
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/landing_pages
+          format: uri
+          type: string
+        name:
+          description: The name of the list.  This name may be changed by the customer
+            at any time.
+          example: Weekly Newsletter
+          maxLength: 32
+          minLength: 1
+          type: string
+        resource_type_link:
+          description: The link to the list type
+          example: https://api.aweber.com/1.0/#list
+          format: uri
+          type: string
+        segments_collection_link:
+          description: "Link to the Subscriber [Segments](#tag/Segments/paths/~1accounts~1{accountId}~1lists~1{listId}~1segments/get)\
+            \ used by this list"
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/segments
+          format: uri
+          type: string
+        self_link:
+          description: The link to this resource
+          example: https://api.aweber.com/1.0/accounts/123/lists/456
+          format: uri
+          type: string
+        subscribers_collection_link:
+          description: "Link to the [Subscribers](#tag/Subscribers/paths/~1accounts~1{accountId}~1lists~1{listId}~1subscribers/get)\
+            \ belonging to this list"
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/subscribers
+          format: uri
+          type: string
+        total_subscribed_subscribers:
+          description: Number of subscribers where status = subscribed
+          example: 250
+          minimum: 0
+          type: integer
+        total_subscribers:
+          description: Number of subscribers
+          example: 275
+          minimum: 0
+          type: integer
+        total_subscribers_subscribed_today:
+          description: Number of subscribers that were subscribed today
+          example: 4
+          minimum: 0
+          type: integer
+        total_subscribers_subscribed_yesterday:
+          description: Number of subscribers that were subscribed yesterday
+          example: 3
+          minimum: 0
+          type: integer
+        total_unconfirmed_subscribers:
+          description: Number of subscribers where status = unconfirmed
+          example: 10
+          minimum: 0
+          type: integer
+        total_unsubscribed_subscribers:
+          description: Number of subscribers where status = unsubscribed
+          example: 5
+          minimum: 0
+          type: integer
+        unique_list_id:
+          description: |
+            Unique list ID of list.
+
+            The unique list ID is the automatically generated name for your list.
+
+            If you create a custom sign up form, you'll need to specify the unique list ID in the form's HTML code, ensuring that subscribers will be added to the list.
+
+            The unique list ID is also the first part of your autoresponder's e-mail address used by subscribers to sign up to your list.
+
+            A subscriber can sign up to your list by sending an email to this address. (Though this method is rarely used anymore.)
+          example: awlist456
+          maxLength: 30
+          minLength: 1
+          type: string
+        uuid:
+          description: The UUID (universally unique identifier) for the list
+          example: 123e4567-e89b-12d3-a456-426655440000
+          type: string
+        vapid_public_key:
+          description: Public key that is used to validate web push notifications
+          example: BEJSWW8eHj_XKHt5AHpaL3tw0gee8NI2j06xyEIDmOfRGbHmqZVlwsvMO0yISFe834TaBEZRkbdHyTvSXhYCW6E
+          type: string
+        web_form_split_tests_collection_link:
+          description: "[Webform Split Tests](#tag/Webforms/paths/~1accounts~1{accountId}~1lists~1{listId}~1web_form_split_tests/get)\
+            \ defined for this list"
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/web_form_split_tests
+          format: uri
+          type: string
+        web_forms_collection_link:
+          description: "[Webforms](#tag/Webforms/paths/~1accounts~1{accountId}~1lists~1{listId}~1web_forms/get)\
+            \ defined for this list."
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/web_forms
+          format: uri
+          type: string
+      type: object
+    Endpoint Error:
+      example:
+        error:
+          documentation_url: https://api.aweber.com#unauthorized
+          message: Consumer key is invalid.
+          type: UnauthorizedError
+          status: 6
+      properties:
+        error:
+          $ref: '#/components/schemas/Endpoint_Error_error'
+      title: Endpoint Error
+      type: object
+    Auth Error:
+      properties:
+        error:
+          description: |
+            The type of authentication error returned.
+            The following error may be received:
+
+            | Error Type       | Explanation                              |
+            |------------------|------------------------------------------|
+            | invalid_token    | The access token is invalid or has expired |
+          example: invalid_token
+          type: string
+        error_description:
+          description: |
+            A human friendly description of the error
+          example: The access token is invalid or has expired
+          type: string
+      title: Auth Error
+      type: object
+    FindLists:
+      example:
+        entries:
+        - total_subscribers_subscribed_yesterday: 3
+          draft_broadcasts_link: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts?status=draft
+          segments_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/segments
+          web_form_split_tests_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/web_form_split_tests
+          campaigns_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/campaigns
+          sent_broadcasts_link: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts?status=sent
+          total_unconfirmed_subscribers: 10
+          web_forms_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/web_forms
+          subscribers_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/subscribers
+          total_unsubscribed_subscribers: 5
+          uuid: 123e4567-e89b-12d3-a456-426655440000
+          custom_fields_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/custom_fields
+          resource_type_link: https://api.aweber.com/1.0/#list
+          total_subscribers_subscribed_today: 4
+          landing_pages_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/landing_pages
+          name: Weekly Newsletter
+          total_subscribed_subscribers: 250
+          vapid_public_key: BEJSWW8eHj_XKHt5AHpaL3tw0gee8NI2j06xyEIDmOfRGbHmqZVlwsvMO0yISFe834TaBEZRkbdHyTvSXhYCW6E
+          id: 456
+          scheduled_broadcasts_link: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts?status=scheduled
+          self_link: https://api.aweber.com/1.0/accounts/123/lists/456
+          unique_list_id: awlist456
+          http_etag: \"902ba3cda1883801594b6e1b452790cc53948fda-f83cb0ac22a8d5f792417f9b3dc0e9dc7558aa32\"
+          total_subscribers: 275
+        - total_subscribers_subscribed_yesterday: 3
+          draft_broadcasts_link: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts?status=draft
+          segments_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/segments
+          web_form_split_tests_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/web_form_split_tests
+          campaigns_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/campaigns
+          sent_broadcasts_link: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts?status=sent
+          total_unconfirmed_subscribers: 10
+          web_forms_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/web_forms
+          subscribers_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/subscribers
+          total_unsubscribed_subscribers: 5
+          uuid: 123e4567-e89b-12d3-a456-426655440000
+          custom_fields_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/custom_fields
+          resource_type_link: https://api.aweber.com/1.0/#list
+          total_subscribers_subscribed_today: 4
+          landing_pages_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/landing_pages
+          name: Weekly Newsletter
+          total_subscribed_subscribers: 250
+          vapid_public_key: BEJSWW8eHj_XKHt5AHpaL3tw0gee8NI2j06xyEIDmOfRGbHmqZVlwsvMO0yISFe834TaBEZRkbdHyTvSXhYCW6E
+          id: 456
+          scheduled_broadcasts_link: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts?status=scheduled
+          self_link: https://api.aweber.com/1.0/accounts/123/lists/456
+          unique_list_id: awlist456
+          http_etag: \"902ba3cda1883801594b6e1b452790cc53948fda-f83cb0ac22a8d5f792417f9b3dc0e9dc7558aa32\"
+          total_subscribers: 275
+        total_size_link: https://api.aweber.com/1.0/accounts/123/lists?name=List+Name&ws.op=find&ws.show=total_size
+        start: 0
+      properties:
+        entries:
+          description: The list of list entries
+          items:
+            $ref: '#/components/schemas/List'
+          type: array
+        start:
+          description: The starting offset for the page of entries to retrieve
+          minimum: 0
+          type: integer
+        total_size_link:
+          description: A link to check the total number of entries found for this
+            resource
+          example: https://api.aweber.com/1.0/accounts/123/lists?name=List+Name&ws.op=find&ws.show=total_size
+          format: uri
+          type: string
+      type: object
+    _accounts__accountId__lists_get_400_response_error:
+      description: |
+        An error object.
+        One of the following errors may be received:
+
+        | Error Type           | Explanation                              |
+        |----------------------|------------------------------------------|
+        | WebServiceError      | `ws.start` or `ws.size` values are invalid |
+        | BadRequestError      | `ws.op` is invalid (parameter can only be `find`) or there was an error decoding query parameters | |
+        | MissingOAuthParametersError | An OAuth parameter is missing in the request |
+        | UnsupportedOAuthVersionError | Unsupported OAuth 1 version |
+        | UnsupportedOAuthSignatureMethodError | Unsupported OAuth 1 signature method |
+
+        Please see the message body for more details.
+      example:
+        documentation_url: https://api.aweber.com#badrequest
+        message: Maximum for "ws.size" parameter is 100.
+        type: WebServiceError
+        status: 400
+      properties:
+        documentation_url:
+          description: A link to the documentation that describes the error
+          example: https://api.aweber.com#badrequest
+          type: string
+        message:
+          description: A human friendly description of the error
+          example: Maximum for "ws.size" parameter is 100.
+          type: string
+        status:
+          description: The HTTP status code
+          example: 400
+          type: integer
+        type:
+          description: The API error type
+          example: WebServiceError
+          type: string
+      type: object
+    _accounts__accountId__lists_get_400_response:
+      example:
+        error:
+          documentation_url: https://api.aweber.com#badrequest
+          message: Maximum for "ws.size" parameter is 100.
+          type: WebServiceError
+          status: 400
+      properties:
+        error:
+          $ref: '#/components/schemas/_accounts__accountId__lists_get_400_response_error'
+      type: object
+    _accounts__accountId__lists_get_401_response:
+      oneOf:
+      - $ref: '#/components/schemas/Endpoint Error'
+      - $ref: '#/components/schemas/Auth Error'
+    _accounts__accountId__lists_get_403_response_error:
+      description: |
+        An error object.
+        The following error may be received:
+
+        | Error Type           | Explanation                              |
+        |----------------------|------------------------------------------|
+        | ForbiddenError       | Rate limit may be reached or account may be suspended |
+
+        Please see the message body for more details.
+      example:
+        documentation_url: https://api.aweber.com#forbidden
+        message: Rate Limit Error
+        type: ForbiddenError
+        status: 1
+      properties:
+        documentation_url:
+          description: A link to the documentation that describes the error
+          example: https://api.aweber.com#forbidden
+          type: string
+        message:
+          description: A human friendly description of the error
+          example: Rate Limit Error
+          type: string
+        status:
+          description: The HTTP status code
+          enum:
+          - 403
+          type: integer
+        type:
+          description: The API error type
+          enum:
+          - ForbiddenError
+          type: string
+      type: object
+    _accounts__accountId__lists_get_403_response:
+      example:
+        error:
+          documentation_url: https://api.aweber.com#forbidden
+          message: Rate Limit Error
+          type: ForbiddenError
+          status: 1
+      properties:
+        error:
+          $ref: '#/components/schemas/_accounts__accountId__lists_get_403_response_error'
+      type: object
+    _accounts__accountId__lists_get_404_response_error:
+      description: |
+        An error object.
+        The following error may be received:
+
+        | Error Type           | Explanation                              |
+        |----------------------|------------------------------------------|
+        | NotFoundError        | The requested resource could not be found |
+
+        Please see the message body for more details.
+      example:
+        documentation_url: https://api.aweber.com#notfound
+        message: "Object: None, name: ''"
+        type: NotFoundError
+        status: 5
+      properties:
+        documentation_url:
+          description: A link to the documentation that describes the error
+          example: https://api.aweber.com#notfound
+          type: string
+        message:
+          description: A human friendly description of the error
+          example: "Object: None, name: ''"
+          type: string
+        status:
+          description: The HTTP status code
+          enum:
+          - 404
+          type: integer
+        type:
+          description: The API error type
+          enum:
+          - NotFoundError
+          type: string
+      type: object
+    _accounts__accountId__lists_get_404_response:
+      example:
+        error:
+          documentation_url: https://api.aweber.com#notfound
+          message: "Object: None, name: ''"
+          type: NotFoundError
+          status: 5
+      properties:
+        error:
+          $ref: '#/components/schemas/_accounts__accountId__lists_get_404_response_error'
+      type: object
+    _accounts__accountId__lists_get_410_response_error:
+      description: |
+        An error object.
+        The following error may be received:
+
+        | Error Type           | Explanation                              |
+        |----------------------|------------------------------------------|
+        | BlockedError         | This Request has been blocked            |
+
+        Please see the message body for more details.
+      example:
+        documentation_url: https://api.aweber.com/#blocked
+        message: Blocked Error
+        type: BlockedError
+        status: 5
+      properties:
+        documentation_url:
+          description: A link to the documentation that describes the error
+          example: https://api.aweber.com/#blocked
+          type: string
+        message:
+          description: A human friendly description of the error
+          example: Blocked Error
+          type: string
+        status:
+          description: The HTTP status code
+          enum:
+          - 410
+          type: integer
+        type:
+          description: The API error type
+          enum:
+          - BlockedError
+          type: string
+      type: object
+    _accounts__accountId__lists_get_410_response:
+      example:
+        error:
+          documentation_url: https://api.aweber.com/#blocked
+          message: Blocked Error
+          type: BlockedError
+          status: 5
+      properties:
+        error:
+          $ref: '#/components/schemas/_accounts__accountId__lists_get_410_response_error'
+      type: object
+    _accounts__accountId__lists_get_500_response_error:
+      description: |
+        An error object.
+        The following error may be received:
+
+        | Error Type           | Explanation                              |
+        |----------------------|------------------------------------------|
+        | InternalServerError    | The request failed due to an internal error |
+
+        Please see the message body for more details.
+      example:
+        documentation_url: https://api.aweber.com#internalerror
+        message: Something went wrong.
+        type: InternalServerError
+        status: 2
+      properties:
+        documentation_url:
+          description: A link to the documentation that describes the error
+          example: https://api.aweber.com#internalerror
+          type: string
+        message:
+          description: A human friendly description of the error
+          example: Something went wrong.
+          type: string
+        status:
+          description: The HTTP status code
+          enum:
+          - 500
+          type: integer
+        type:
+          description: The API error type
+          enum:
+          - InternalServerError
+          type: string
+      type: object
+    _accounts__accountId__lists_get_500_response:
+      example:
+        error:
+          documentation_url: https://api.aweber.com#internalerror
+          message: Something went wrong.
+          type: InternalServerError
+          status: 2
+      properties:
+        error:
+          $ref: '#/components/schemas/_accounts__accountId__lists_get_500_response_error'
+      type: object
+    _accounts__accountId__lists_get_503_response_error:
+      description: |
+        An error object.
+        The following error may be received:
+
+        | Error Type           | Explanation                              |
+        |----------------------|------------------------------------------|
+        | ServiceUnavailableError | The server is unavailable |
+
+        Please see the message body for more details.
+      example:
+        documentation_url: https://api.aweber.com#serviceunavailable
+        message: Failed to communicate with endpoint
+        type: ServiceUnavailableError
+        status: 7
+      properties:
+        documentation_url:
+          description: A link to the documentation that describes the error
+          example: https://api.aweber.com#serviceunavailable
+          type: string
+        message:
+          description: A human friendly description of the error
+          example: Failed to communicate with endpoint
+          type: string
+        status:
+          description: The HTTP status code
+          enum:
+          - 503
+          type: integer
+        type:
+          description: The API error type
+          enum:
+          - ServiceUnavailableError
+          type: string
+      type: object
+    _accounts__accountId__lists_get_503_response:
+      example:
+        error:
+          documentation_url: https://api.aweber.com#serviceunavailable
+          message: Failed to communicate with endpoint
+          type: ServiceUnavailableError
+          status: 7
+      properties:
+        error:
+          $ref: '#/components/schemas/_accounts__accountId__lists_get_503_response_error'
+      type: object
+    _accounts__accountId__lists__listId__get_400_response_error:
+      description: |
+        An error object.
+        One of the following errors may be received:
+
+        | Error Type                           | Explanation                              |
+        |--------------------------------------|------------------------------------------|
+        | BadRequestError                      | There was an error decoding query parameters |
+        | MissingOAuthParametersError          | An OAuth parameter is missing in the request |
+        | UnsupportedOAuthSignatureMethodError | The provided OAuth 1 signature method is unsupported. Only HMAC-SHA1 is supported. |
+        | UnsupportedOAuthVersionError         | The provided OAuth 1 version is unsupported. |
+
+        Please see the message body for more details.
+      example:
+        documentation_url: https://api.aweber.com#badrequest
+        message: "Missing oauth parameters: oauth_consumer_key"
+        type: MissingOAuthParametersError
+        status: 0
+      properties:
+        documentation_url:
+          description: A link to the documentation that describes the error
+          example: https://api.aweber.com#badrequest
+          type: string
+        message:
+          description: A human friendly description of the error
+          example: "Missing oauth parameters: oauth_consumer_key"
+          type: string
+        status:
+          description: The HTTP status code
+          enum:
+          - 400
+          type: integer
+        type:
+          description: The API error type
+          enum:
+          - MissingOAuthParametersError
+          type: string
+      type: object
+    _accounts__accountId__lists__listId__get_400_response:
+      example:
+        error:
+          documentation_url: https://api.aweber.com#badrequest
+          message: "Missing oauth parameters: oauth_consumer_key"
+          type: MissingOAuthParametersError
+          status: 0
+      properties:
+        error:
+          $ref: '#/components/schemas/_accounts__accountId__lists__listId__get_400_response_error'
+      type: object
+    _accounts__accountId__lists_ws_op_find_get_400_response_error:
+      description: |
+        An error object.
+        One of the following errors may be received:
+
+        | Error Type           | Explanation                              |
+        |----------------------|------------------------------------------|
+        | WebServiceError      | `ws.start` or `ws.size` values are invalid |
+        | BadRequestError      | `ws.op` is invalid (parameter can only be `find`) or there was an error decoding query parameters |
+        | MissingOAuthParametersError | An OAuth parameter is missing in the request |
+        | UnsupportedOAuthVersionError | Unsupported OAuth 1 version |
+        | UnsupportedOAuthSignatureMethodError | Unsupported OAuth 1 signature method |
+
+        Please see the message body for more details.
+      example:
+        documentation_url: https://api.aweber.com#badrequest
+        message: Maximum for "ws.size" parameter is 100.
+        type: WebServiceError
+        status: 400
+      properties:
+        documentation_url:
+          description: A link to the documentation that describes the error
+          example: https://api.aweber.com#badrequest
+          type: string
+        message:
+          description: A human friendly description of the error
+          example: Maximum for "ws.size" parameter is 100.
+          type: string
+        status:
+          description: The HTTP status code
+          example: 400
+          type: integer
+        type:
+          description: The API error type
+          example: WebServiceError
+          type: string
+      type: object
+    _accounts__accountId__lists_ws_op_find_get_400_response:
+      example:
+        error:
+          documentation_url: https://api.aweber.com#badrequest
+          message: Maximum for "ws.size" parameter is 100.
+          type: WebServiceError
+          status: 400
+      properties:
+        error:
+          $ref: '#/components/schemas/_accounts__accountId__lists_ws_op_find_get_400_response_error'
+      type: object
+    _accounts__accountId__lists__listId__tags_get_400_response_error:
+      description: |
+        An error object.
+        One of the following errors may be received:
+
+        | Error Type           | Explanation                              |
+        |----------------------|------------------------------------------|
+        | BadRequestError      | There was an error decoding query parameters |
+        | MissingOAuthParametersError | An OAuth parameter is missing in the request |
+        | UnsupportedOAuthVersionError | Unsupported OAuth 1 version |
+        | UnsupportedOAuthSignatureMethodError | Unsupported OAuth 1 signature method |
+
+        Please see the message body for more details.
+      example:
+        documentation_url: https://api.aweber.com#badrequest
+        message: Maximum for "ws.size" parameter is 100.
+        type: WebServiceError
+        status: 400
+      properties:
+        documentation_url:
+          description: A link to the documentation that describes the error
+          example: https://api.aweber.com#badrequest
+          type: string
+        message:
+          description: A human friendly description of the error
+          example: Maximum for "ws.size" parameter is 100.
+          type: string
+        status:
+          description: The HTTP status code
+          example: 400
+          type: integer
+        type:
+          description: The API error type
+          example: WebServiceError
+          type: string
+      type: object
+    _accounts__accountId__lists__listId__tags_get_400_response:
+      example:
+        error:
+          documentation_url: https://api.aweber.com#badrequest
+          message: Maximum for "ws.size" parameter is 100.
+          type: WebServiceError
+          status: 400
+      properties:
+        error:
+          $ref: '#/components/schemas/_accounts__accountId__lists__listId__tags_get_400_response_error'
+      type: object
+    Endpoint_Error_error:
+      description: |
+        An error object.
+        The following error may be received:
+
+        | Error Type           | Explanation                              |
+        |----------------------|------------------------------------------|
+        | UnauthorizedError    | There is a problem with your authorization credentials |
+
+        Please see the message body for more details.
+      example:
+        documentation_url: https://api.aweber.com#unauthorized
+        message: Consumer key is invalid.
+        type: UnauthorizedError
+        status: 6
+      properties:
+        documentation_url:
+          description: A link to the documentation that describes the error
+          example: https://api.aweber.com#unauthorized
+          type: string
+        message:
+          description: A human friendly description of the error
+          example: Consumer key is invalid.
+          type: string
+        status:
+          description: The HTTP status code
+          enum:
+          - 401
+          type: integer
+        type:
+          description: The API error type
+          enum:
+          - UnauthorizedError
+          type: string
+      type: object

@@ -1,0 +1,1853 @@
+openapi: 3.0.2
+info:
+  contact:
+    email: api@aweber.com
+    name: API Team
+    url: https://labs.aweber.com
+  description: REST API for access the AWeber service.
+  title: Webforms
+  version: "1.0"
+servers:
+- url: /
+tags:
+- name: Webforms
+paths:
+  /accounts/{accountId}?ws.op=getWebForms:
+    get:
+      description: "This endpoint is used to retrieve webforms for all lists on an\
+        \ account.\n\nCheck out related examples:\n\n  * Get Webforms Detail ( \n\
+        \    <a href=\"https://github.com/aweber/public-api-examples/blob/master/python/get-webforms-detail\"\
+        \ target=\"_blank\">Python</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/get-webforms-detail\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Webforms%20Detail.postman_collection.json\"\
+        \ target=\"_blank\">Postman</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Example.GetWebformsDetail\"\
+        \ target=\"_blank\">C#.NET</a> |\n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/get_webforms_details.rb\"\
+        \ target=\"_blank\">Ruby</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/node/get-webforms-details.js\"\
+        \ target=\"_blank\">Node.js</a> )"
+      parameters:
+      - description: The account ID
+        in: path
+        name: accountId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: The method name - expecting "getWebForms"
+        explode: true
+        in: query
+        name: ws.op
+        required: true
+        schema:
+          enum:
+          - getWebForms
+          type: string
+        style: form
+      - description: The pagination total entries to retrieve
+        explode: true
+        in: query
+        name: ws.size
+        required: true
+        schema:
+          default: 100
+          format: int32
+          maximum: 100
+          minimum: 1
+          type: integer
+        style: form
+      - description: The pagination starting offset
+        explode: true
+        in: query
+        name: ws.start
+        required: true
+        schema:
+          default: 0
+          format: int32
+          minimum: 0
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Webforms'
+          description: The request completed successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_400_response'
+          description: The server cannot or will not process the request due to a
+            client error
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_401_response'
+          description: The request could not be completed due to an authentication
+            error
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_403_response'
+          description: The request could not be completed due to a rate limit error
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_404_response'
+          description: The requested resource could not be found
+        "405":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_405_response'
+          description: The method received in the request-line is known by the origin
+            server but not supported by the target resource.
+        "410":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_410_response'
+          description: The request has been blocked
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_500_response'
+          description: The request failed due to an internal error in the code or
+            because of an external dependency failure
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_503_response'
+          description: The server is currently unavailable
+      security:
+      - OAuth 2.0:
+        - list.read
+      summary: Get webforms for account
+      tags:
+      - Webforms
+      x-code-samples:
+        $ref: _code_samples.yaml#/code_samples/GetWebformsForAccount
+  /accounts/{accountId}?ws.op=getWebFormSplitTests:
+    get:
+      description: "This endpoint is used to retrieve webform split tests for all\
+        \ lists on an account.\n\nCheck out related examples:\n\n  * Get Webforms\
+        \ Detail ( \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/python/get-webforms-detail\"\
+        \ target=\"_blank\">Python</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/get-webforms-detail\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Webforms%20Detail.postman_collection.json\"\
+        \ target=\"_blank\">Postman</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Example.GetWebformsDetail\"\
+        \ target=\"_blank\">C#.NET</a> |\n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/get_webforms_details.rb\"\
+        \ target=\"_blank\">Ruby</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/node/get-webforms-details.js\"\
+        \ target=\"_blank\">Node.js</a> )"
+      parameters:
+      - description: The account ID
+        in: path
+        name: accountId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: The method name - expecting "getWebFormSplitTests"
+        explode: true
+        in: query
+        name: ws.op
+        required: true
+        schema:
+          enum:
+          - getWebFormSplitTests
+          type: string
+        style: form
+      - description: The pagination total entries to retrieve
+        explode: true
+        in: query
+        name: ws.size
+        required: true
+        schema:
+          default: 100
+          format: int32
+          maximum: 100
+          minimum: 1
+          type: integer
+        style: form
+      - description: The pagination starting offset
+        explode: true
+        in: query
+        name: ws.start
+        required: true
+        schema:
+          default: 0
+          format: int32
+          minimum: 0
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebFormSplitTests'
+          description: The request completed successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_400_response'
+          description: The server cannot or will not process the request due to a
+            client error
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_401_response'
+          description: The request could not be completed due to an authentication
+            error
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_403_response'
+          description: The request could not be completed due to a rate limit error
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_404_response'
+          description: The requested resource could not be found
+        "405":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_405_response'
+          description: The method received in the request-line is known by the origin
+            server but not supported by the target resource.
+        "410":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_410_response'
+          description: The request has been blocked
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_500_response'
+          description: The request failed due to an internal error in the code or
+            because of an external dependency failure
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_503_response'
+          description: The server is currently unavailable
+      security:
+      - OAuth 2.0:
+        - list.read
+      summary: Get split tests for account
+      tags:
+      - Webforms
+      x-code-samples:
+        $ref: _code_samples.yaml#/code_samples/GetSplitTestsForAccount
+  /accounts/{accountId}/lists/{listId}/web_forms:
+    get:
+      description: "This endpoint is used to retrieve a collection of webforms for\
+        \ a list\n\nCheck out related examples:\n\n  * Get Webforms Detail ( \n  \
+        \  <a href=\"https://github.com/aweber/public-api-examples/blob/master/python/get-webforms-detail\"\
+        \ target=\"_blank\">Python</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/get-webforms-detail\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Webforms%20Detail.postman_collection.json\"\
+        \ target=\"_blank\">Postman</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Example.GetWebformsDetail\"\
+        \ target=\"_blank\">C#.NET</a> |\n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/get_webforms_details.rb\"\
+        \ target=\"_blank\">Ruby</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/node/get-webforms-details.js\"\
+        \ target=\"_blank\">Node.js</a> )"
+      parameters:
+      - description: The account ID
+        in: path
+        name: accountId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: The list ID
+        in: path
+        name: listId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: The pagination starting offset
+        in: query
+        name: ws.start
+        schema:
+          default: 0
+          format: int32
+          minimum: 0
+          type: integer
+      - description: The pagination total entries to retrieve
+        in: query
+        name: ws.size
+        schema:
+          default: 100
+          format: int32
+          maximum: 100
+          minimum: 1
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Webforms'
+          description: The request completed successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_400_response'
+          description: The server cannot or will not process the request due to a
+            client error
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_401_response'
+          description: The request could not be completed due to an authentication
+            error
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_403_response'
+          description: The request could not be completed due to a rate limit error
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_404_response'
+          description: The requested resource could not be found
+        "405":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_405_response'
+          description: The method received in the request-line is known by the origin
+            server but not supported by the target resource.
+        "410":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_410_response'
+          description: The request has been blocked
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_500_response'
+          description: The request failed due to an internal error in the code or
+            because of an external dependency failure
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_503_response'
+          description: The server is currently unavailable
+      security:
+      - OAuth 2.0:
+        - list.read
+      summary: Get webforms for list
+      tags:
+      - Webforms
+      x-code-samples:
+        $ref: _code_samples.yaml#/code_samples/GetWebformsForList
+  /accounts/{accountId}/lists/{listId}/web_forms/{webformId}:
+    get:
+      description: "This endpoint is used to retrieve single webform for a list\n\n\
+        Check out related examples:\n\n  * Get Webforms Detail ( \n    <a href=\"\
+        https://github.com/aweber/public-api-examples/blob/master/python/get-webforms-detail\"\
+        \ target=\"_blank\">Python</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/get-webforms-detail\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Webforms%20Detail.postman_collection.json\"\
+        \ target=\"_blank\">Postman</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Example.GetWebformsDetail\"\
+        \ target=\"_blank\">C#.NET</a> |\n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/get_webforms_details.rb\"\
+        \ target=\"_blank\">Ruby</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/node/get-webforms-details.js\"\
+        \ target=\"_blank\">Node.js</a> )"
+      parameters:
+      - description: The account ID
+        in: path
+        name: accountId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: The list ID
+        in: path
+        name: listId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: The webform ID
+        in: path
+        name: webformId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Webform'
+          description: The request completed successfully
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_401_response'
+          description: The request could not be completed due to an authentication
+            error
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_403_response'
+          description: The request could not be completed due to a rate limit error
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_404_response'
+          description: The requested resource could not be found
+        "405":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_405_response'
+          description: The method received in the request-line is known by the origin
+            server but not supported by the target resource.
+        "410":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_410_response'
+          description: The request has been blocked
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_500_response'
+          description: The request failed due to an internal error in the code or
+            because of an external dependency failure
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_503_response'
+          description: The server is currently unavailable
+      summary: Get webform for list
+      tags:
+      - Webforms
+      x-code-samples:
+        $ref: _code_samples.yaml#/code_samples/GetWebformForList
+  /accounts/{accountId}/lists/{listId}/web_form_split_tests:
+    get:
+      description: "This endpoint is used to retrieve webform split tests for a list.\n\
+        \nCheck out related examples:\n\n  * Get Webforms Detail ( \n    <a href=\"\
+        https://github.com/aweber/public-api-examples/blob/master/python/get-webforms-detail\"\
+        \ target=\"_blank\">Python</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/get-webforms-detail\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Webforms%20Detail.postman_collection.json\"\
+        \ target=\"_blank\">Postman</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Example.GetWebformsDetail\"\
+        \ target=\"_blank\">C#.NET</a> |\n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/get_webforms_details.rb\"\
+        \ target=\"_blank\">Ruby</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/node/get-webforms-details.js\"\
+        \ target=\"_blank\">Node.js</a> )"
+      parameters:
+      - description: The account ID
+        in: path
+        name: accountId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: The list ID
+        in: path
+        name: listId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: The pagination starting offset
+        in: query
+        name: ws.start
+        schema:
+          default: 0
+          format: int32
+          minimum: 0
+          type: integer
+      - description: The pagination total entries to retrieve
+        in: query
+        name: ws.size
+        schema:
+          default: 100
+          format: int32
+          maximum: 100
+          minimum: 1
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebFormSplitTests'
+          description: The request completed successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_400_response'
+          description: The server cannot or will not process the request due to a
+            client error
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_401_response'
+          description: The request could not be completed due to an authentication
+            error
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_403_response'
+          description: The request could not be completed due to a rate limit error
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_404_response'
+          description: The requested resource could not be found
+        "405":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_405_response'
+          description: The method received in the request-line is known by the origin
+            server but not supported by the target resource.
+        "410":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_410_response'
+          description: The request has been blocked
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_500_response'
+          description: The request failed due to an internal error in the code or
+            because of an external dependency failure
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_503_response'
+          description: The server is currently unavailable
+      security:
+      - OAuth 2.0:
+        - list.read
+      summary: Get split tests for list
+      tags:
+      - Webforms
+      x-code-samples:
+        $ref: _code_samples.yaml#/code_samples/GetSplitTestsForList
+  /accounts/{accountId}/lists/{listId}/web_form_split_tests/{splitTestId}:
+    get:
+      description: "This endpoint is used to retrieve a specific webform split test.\n\
+        \nCheck out related examples:\n\n  * Get Webforms Detail ( \n    <a href=\"\
+        https://github.com/aweber/public-api-examples/blob/master/python/get-webforms-detail\"\
+        \ target=\"_blank\">Python</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/get-webforms-detail\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Webforms%20Detail.postman_collection.json\"\
+        \ target=\"_blank\">Postman</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Example.GetWebformsDetail\"\
+        \ target=\"_blank\">C#.NET</a> |\n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/get_webforms_details.rb\"\
+        \ target=\"_blank\">Ruby</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/node/get-webforms-details.js\"\
+        \ target=\"_blank\">Node.js</a> )"
+      parameters:
+      - description: The account ID
+        in: path
+        name: accountId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: The list ID
+        in: path
+        name: listId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: The webform split test ID
+        in: path
+        name: splitTestId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebformSplitTest'
+          description: The request completed successfully
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_401_response'
+          description: The request could not be completed due to an authentication
+            error
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_403_response'
+          description: The request could not be completed due to a rate limit error
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_404_response'
+          description: The requested resource could not be found
+        "405":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_405_response'
+          description: The method received in the request-line is known by the origin
+            server but not supported by the target resource.
+        "410":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_410_response'
+          description: The request has been blocked
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_500_response'
+          description: The request failed due to an internal error in the code or
+            because of an external dependency failure
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_503_response'
+          description: The server is currently unavailable
+      security:
+      - OAuth 2.0:
+        - list.read
+      summary: Get split test for list
+      tags:
+      - Webforms
+      x-code-samples:
+        $ref: _code_samples.yaml#/code_samples/GetSplitTestForList
+  /accounts/{accountId}/lists/{listId}/web_form_split_tests/{splitTestId}/components:
+    get:
+      description: "This endpoint is used to retrieve a collection of webform split\
+        \ test components.\n\nCheck out related examples:\n\n  * Get Webforms Detail\
+        \ ( \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/python/get-webforms-detail\"\
+        \ target=\"_blank\">Python</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/get-webforms-detail\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Webforms%20Detail.postman_collection.json\"\
+        \ target=\"_blank\">Postman</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Example.GetWebformsDetail\"\
+        \ target=\"_blank\">C#.NET</a> |\n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/get_webforms_details.rb\"\
+        \ target=\"_blank\">Ruby</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/node/get-webforms-details.js\"\
+        \ target=\"_blank\">Node.js</a> )"
+      parameters:
+      - description: The account ID
+        in: path
+        name: accountId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: The list ID
+        in: path
+        name: listId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: The webform split test ID
+        in: path
+        name: splitTestId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: The pagination starting offset
+        in: query
+        name: ws.start
+        schema:
+          default: 0
+          format: int32
+          minimum: 0
+          type: integer
+      - description: The pagination total entries to retrieve
+        in: query
+        name: ws.size
+        schema:
+          default: 100
+          format: int32
+          maximum: 100
+          minimum: 1
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebformSplitTestComponents'
+          description: The request completed successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_400_response'
+          description: The server cannot or will not process the request due to a
+            client error
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_401_response'
+          description: The request could not be completed due to an authentication
+            error
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_403_response'
+          description: The request could not be completed due to a rate limit error
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_404_response'
+          description: The requested resource could not be found
+        "405":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_405_response'
+          description: The method received in the request-line is known by the origin
+            server but not supported by the target resource.
+        "410":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_410_response'
+          description: The request has been blocked
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_500_response'
+          description: The request failed due to an internal error in the code or
+            because of an external dependency failure
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_503_response'
+          description: The server is currently unavailable
+      security:
+      - OAuth 2.0:
+        - list.read
+      summary: Get split test components
+      tags:
+      - Webforms
+      x-code-samples:
+        $ref: _code_samples.yaml#/code_samples/GetSplitTestComponents
+  /accounts/{accountId}/lists/{listId}/web_form_split_tests/{splitTestId}/components/{splitTestComponentId}:
+    get:
+      description: "This endpoint is used to retrieve a collection of webform split\
+        \ test components.\n\nCheck out related examples:\n\n  * Get Webforms Detail\
+        \ ( \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/python/get-webforms-detail\"\
+        \ target=\"_blank\">Python</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/get-webforms-detail\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Webforms%20Detail.postman_collection.json\"\
+        \ target=\"_blank\">Postman</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Example.GetWebformsDetail\"\
+        \ target=\"_blank\">C#.NET</a> |\n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/get_webforms_details.rb\"\
+        \ target=\"_blank\">Ruby</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/node/get-webforms-details.js\"\
+        \ target=\"_blank\">Node.js</a> )"
+      parameters:
+      - description: The account ID
+        in: path
+        name: accountId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: The list ID
+        in: path
+        name: listId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: The webform split test ID
+        in: path
+        name: splitTestId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: The webform split test component ID
+        in: path
+        name: splitTestComponentId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebformSplitTestComponent'
+          description: The request completed successfully
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_401_response'
+          description: The request could not be completed due to an authentication
+            error
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_403_response'
+          description: The request could not be completed due to a rate limit error
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_404_response'
+          description: The requested resource could not be found
+        "405":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_405_response'
+          description: The method received in the request-line is known by the origin
+            server but not supported by the target resource.
+        "410":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_410_response'
+          description: The request has been blocked
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_500_response'
+          description: The request failed due to an internal error in the code or
+            because of an external dependency failure
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_503_response'
+          description: The server is currently unavailable
+      security:
+      - OAuth 2.0:
+        - list.read
+      summary: Get split test component
+      tags:
+      - Webforms
+      x-code-samples:
+        $ref: _code_samples.yaml#/code_samples/GetSplitTestComponent
+components:
+  parameters:
+    accountId:
+      description: The account ID
+      in: path
+      name: accountId
+      required: true
+      schema:
+        format: int32
+        type: integer
+    listId:
+      description: The list ID
+      in: path
+      name: listId
+      required: true
+      schema:
+        format: int32
+        type: integer
+    wsStart:
+      description: The pagination starting offset
+      in: query
+      name: ws.start
+      schema:
+        default: 0
+        format: int32
+        minimum: 0
+        type: integer
+    wsSize:
+      description: The pagination total entries to retrieve
+      in: query
+      name: ws.size
+      schema:
+        default: 100
+        format: int32
+        maximum: 100
+        minimum: 1
+        type: integer
+    webformId:
+      description: The webform ID
+      in: path
+      name: webformId
+      required: true
+      schema:
+        format: int32
+        type: integer
+    splitTestId:
+      description: The webform split test ID
+      in: path
+      name: splitTestId
+      required: true
+      schema:
+        format: int32
+        type: integer
+    splitTestComponentId:
+      description: The webform split test component ID
+      in: path
+      name: splitTestComponentId
+      required: true
+      schema:
+        type: string
+  responses:
+    BadRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_400_response'
+      description: The server cannot or will not process the request due to a client
+        error
+    UnauthorizedError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_401_response'
+      description: The request could not be completed due to an authentication error
+    ForbiddenError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_403_response'
+      description: The request could not be completed due to a rate limit error
+    NotFound:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_404_response'
+      description: The requested resource could not be found
+    NotAllowed:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_405_response'
+      description: The method received in the request-line is known by the origin
+        server but not supported by the target resource.
+    BlockedError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_410_response'
+      description: The request has been blocked
+    InternalServerError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_500_response'
+      description: The request failed due to an internal error in the code or because
+        of an external dependency failure
+    ServiceUnavailable:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_503_response'
+      description: The server is currently unavailable
+  schemas:
+    Webforms:
+      example:
+        entries:
+        - javascript_source_link: http://forms.aweber.com/form/123/456.js
+          unique_conversion_percentage: 6.451612903225806
+          is_active: true
+          html_source_link: http://forms.aweber.com/form/123/456.html
+          type: exitpopup
+          tags:
+          - slow
+          - fast
+          - lightspeed
+          resource_type_link: https://api.aweber.com/1.0/#web_form
+          name: Joker's Wild
+          total_displays: 123456789
+          conversion_percentage: 6.451612903225806
+          id: 234
+          total_unique_displays: 1234
+          self_link: https://api.aweber.com/1.0/accounts/123/lists/456/web_forms/789
+          http_etag: \"902ba3cda1883801594b6e1b452790cc53948fda-f83cb0ac22a8d5f792417f9b3dc0e9dc7558aa32\"
+          total_submissions: 123456
+        - javascript_source_link: http://forms.aweber.com/form/123/456.js
+          unique_conversion_percentage: 6.451612903225806
+          is_active: true
+          html_source_link: http://forms.aweber.com/form/123/456.html
+          type: exitpopup
+          tags:
+          - slow
+          - fast
+          - lightspeed
+          resource_type_link: https://api.aweber.com/1.0/#web_form
+          name: Joker's Wild
+          total_displays: 123456789
+          conversion_percentage: 6.451612903225806
+          id: 234
+          total_unique_displays: 1234
+          self_link: https://api.aweber.com/1.0/accounts/123/lists/456/web_forms/789
+          http_etag: \"902ba3cda1883801594b6e1b452790cc53948fda-f83cb0ac22a8d5f792417f9b3dc0e9dc7558aa32\"
+          total_submissions: 123456
+        prev_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/web_forms?ws.start=10&ws.size=10
+        resource_type_link: https://api.aweber.com/1.0/#web_form-page-resource
+        start: 0
+        total_size: 100
+        next_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/web_forms?ws.start=0&ws.size=10
+      properties:
+        entries:
+          description: A list of webform entries
+          items:
+            $ref: '#/components/schemas/Webform'
+          type: array
+        next_collection_link:
+          description: A link to the next page of entries if more entries exist. This
+            attribute is omitted from the collection if there are no more entries.
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/web_forms?ws.start=0&ws.size=10
+          format: uri
+          type: string
+        prev_collection_link:
+          description: A link to the previous page of entries if any exist. This attribute
+            is omitted from the collection if ws.start is 0.
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/web_forms?ws.start=10&ws.size=10
+          format: uri
+          type: string
+        resource_type_link:
+          description: A link that identifies the type of resource that this collection
+            represents
+          example: https://api.aweber.com/1.0/#web_form-page-resource
+          format: uri
+          type: string
+        start:
+          description: The starting offset for the page of entries to retrieve
+          minimum: 0
+          type: integer
+        total_size:
+          description: The total number of entries
+          example: 100
+          minimum: 0
+          type: integer
+      type: object
+    Webform:
+      example:
+        javascript_source_link: http://forms.aweber.com/form/123/456.js
+        unique_conversion_percentage: 6.451612903225806
+        is_active: true
+        html_source_link: http://forms.aweber.com/form/123/456.html
+        type: exitpopup
+        tags:
+        - slow
+        - fast
+        - lightspeed
+        resource_type_link: https://api.aweber.com/1.0/#web_form
+        name: Joker's Wild
+        total_displays: 123456789
+        conversion_percentage: 6.451612903225806
+        id: 234
+        total_unique_displays: 1234
+        self_link: https://api.aweber.com/1.0/accounts/123/lists/456/web_forms/789
+        http_etag: \"902ba3cda1883801594b6e1b452790cc53948fda-f83cb0ac22a8d5f792417f9b3dc0e9dc7558aa32\"
+        total_submissions: 123456
+      properties:
+        conversion_percentage:
+          description: The conversion percentage
+          example: 6.451612903225806
+          format: float
+          type: number
+        html_source_link:
+          description: The webform HTML source URL
+          example: http://forms.aweber.com/form/123/456.html
+          format: uri
+          type: string
+        http_etag:
+          description: The ETag HTTP header
+          example: \"902ba3cda1883801594b6e1b452790cc53948fda-f83cb0ac22a8d5f792417f9b3dc0e9dc7558aa32\"
+          type: string
+        id:
+          description: The unique ID for the webform activity
+          example: 234
+          type: integer
+        is_active:
+          description: Whether the webform is active or not
+          type: boolean
+        javascript_source_link:
+          description: The webform javascript source URL
+          example: http://forms.aweber.com/form/123/456.js
+          format: uri
+          type: string
+        name:
+          description: The webform name
+          example: Joker's Wild
+          type: string
+        resource_type_link:
+          description: The link to the webform type
+          example: https://api.aweber.com/1.0/#web_form
+          format: uri
+          type: string
+        self_link:
+          description: The link to this resource
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/web_forms/789
+          format: uri
+          type: string
+        tags:
+          description: A list of tags added to the webform
+          example:
+          - slow
+          - fast
+          - lightspeed
+          items:
+            minLength: 1
+            type: string
+          type: array
+        total_displays:
+          description: The total number of times the webform is displayed
+          example: 123456789
+          type: integer
+        total_submissions:
+          description: The total number of submissions received by the webform
+          example: 123456
+          type: integer
+        total_unique_displays:
+          description: The total number of unique times the webform is displayed
+          example: 1234
+          type: integer
+        type:
+          description: The webform display type
+          enum:
+          - exitpopup
+          - inline
+          - lightbox
+          - popover
+          - popunder
+          - popup
+          - styled
+          type: string
+        unique_conversion_percentage:
+          description: The conversion percentage based on unique counts
+          example: 6.451612903225806
+          format: float
+          type: number
+      type: object
+    Endpoint Error:
+      example:
+        error:
+          documentation_url: https://api.aweber.com#unauthorized
+          message: Consumer key is invalid.
+          type: UnauthorizedError
+          status: 1
+      properties:
+        error:
+          $ref: '#/components/schemas/Endpoint_Error_error'
+      title: Endpoint Error
+      type: object
+    Auth Error:
+      properties:
+        error:
+          description: |
+            The type of authentication error returned.
+            The following error may be received:
+
+            | Error Type       | Explanation                              |
+            |------------------|------------------------------------------|
+            | invalid_token    | The access token is invalid or has expired |
+          example: invalid_token
+          type: string
+        error_description:
+          description: |
+            A human friendly description of the error
+          example: The access token is invalid or has expired
+          type: string
+      title: Auth Error
+      type: object
+    WebFormSplitTests:
+      example:
+        entries:
+        - javascript_source_link: http://forms.aweber.com/form/123/split_456.js
+          is_active: true
+          resource_type_link: https://api.aweber.com/1.0/#web_form_split_test
+          name: Joker's Wild Split Test
+          components_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/web_form_split_tests/789/components
+          id: 234
+          self_link: https://api.aweber.com/1.0/accounts/123/lists/456/web_form_split_tests/789
+          http_etag: \"902ba3cda1883801594b6e1b452790cc53948fda-f83cb0ac22a8d5f792417f9b3dc0e9dc7558aa32\"
+        - javascript_source_link: http://forms.aweber.com/form/123/split_456.js
+          is_active: true
+          resource_type_link: https://api.aweber.com/1.0/#web_form_split_test
+          name: Joker's Wild Split Test
+          components_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/web_form_split_tests/789/components
+          id: 234
+          self_link: https://api.aweber.com/1.0/accounts/123/lists/456/web_form_split_tests/789
+          http_etag: \"902ba3cda1883801594b6e1b452790cc53948fda-f83cb0ac22a8d5f792417f9b3dc0e9dc7558aa32\"
+        prev_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/web_form_split_tests?ws.start=0
+        resource_type_link: https://api.aweber.com/1.0/#web_form_split_test-page-resource
+        start: 0
+        total_size: 100
+        next_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/web_form_split_tests?ws.start=10&ws.size=10
+      properties:
+        entries:
+          items:
+            $ref: '#/components/schemas/WebformSplitTest'
+          type: array
+        next_collection_link:
+          description: A link to the next page of entries if more entries exist. This
+            attribute is omitted from the collection if there are no more entries.
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/web_form_split_tests?ws.start=10&ws.size=10
+          format: uri
+          type: string
+        prev_collection_link:
+          description: A link to the previous page of entries if any exist. This attribute
+            is omitted from the collection if ws.start is 0.
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/web_form_split_tests?ws.start=0
+          format: uri
+          type: string
+        resource_type_link:
+          description: The link to the event type
+          example: https://api.aweber.com/1.0/#web_form_split_test-page-resource
+          format: uri
+          type: string
+        start:
+          description: The starting offset for the page of entries to retrieve
+          minimum: 0
+          type: integer
+        total_size:
+          description: The total number of entries
+          example: 100
+          minimum: 0
+          type: integer
+      type: object
+    WebformSplitTest:
+      example:
+        javascript_source_link: http://forms.aweber.com/form/123/split_456.js
+        is_active: true
+        resource_type_link: https://api.aweber.com/1.0/#web_form_split_test
+        name: Joker's Wild Split Test
+        components_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/web_form_split_tests/789/components
+        id: 234
+        self_link: https://api.aweber.com/1.0/accounts/123/lists/456/web_form_split_tests/789
+        http_etag: \"902ba3cda1883801594b6e1b452790cc53948fda-f83cb0ac22a8d5f792417f9b3dc0e9dc7558aa32\"
+      properties:
+        components_collection_link:
+          description: "The webform [Split Test Components](#tag/Webforms/paths/~1accounts~1{accountId}~1lists~1{listId}~1web_form_split_tests~1{splitTestId}~1components/get)\
+            \ URL"
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/web_form_split_tests/789/components
+          format: uri
+          type: string
+        http_etag:
+          description: The ETag HTTP header
+          example: \"902ba3cda1883801594b6e1b452790cc53948fda-f83cb0ac22a8d5f792417f9b3dc0e9dc7558aa32\"
+          type: string
+        id:
+          description: The unique ID for the webform split test
+          example: 234
+          type: integer
+        is_active:
+          description: Whether the split test is active or not
+          type: boolean
+        javascript_source_link:
+          description: The webform javascript source URL
+          example: http://forms.aweber.com/form/123/split_456.js
+          format: uri
+          type: string
+        name:
+          description: The split test name
+          example: Joker's Wild Split Test
+          type: string
+        resource_type_link:
+          description: The link to the split test type
+          example: https://api.aweber.com/1.0/#web_form_split_test
+          format: uri
+          type: string
+        self_link:
+          description: The link to this resource
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/web_form_split_tests/789
+          format: uri
+          type: string
+      type: object
+    WebformSplitTestComponents:
+      example:
+        entries:
+        - javascript_source_link: http://forms.aweber.com/form/123/456.js
+          unique_conversion_percentage: 6.451612903225806
+          is_active: true
+          weight: 40
+          html_source_link: http://forms.aweber.com/form/123/456.html
+          type: exitpopup
+          web_form_link: https://api.aweber.com/1.0/accounts/123/lists/456/web_form/789
+          tags:
+          - slow
+          - fast
+          - lightspeed
+          resource_type_link: https://api.aweber.com/1.0/#component
+          name: Joker's Wild
+          total_displays: 123456789
+          conversion_percentage: 0.0
+          id: 234-456
+          total_unique_displays: 1234
+          self_link: https://api.aweber.com/1.0/accounts/123/lists/456/web_form_split_tests/789/component/234-456
+          http_etag: \"902ba3cda1883801594b6e1b452790cc53948fda-f83cb0ac22a8d5f792417f9b3dc0e9dc7558aa32\"
+          total_submissions: 123456
+        - javascript_source_link: http://forms.aweber.com/form/123/456.js
+          unique_conversion_percentage: 6.451612903225806
+          is_active: true
+          weight: 40
+          html_source_link: http://forms.aweber.com/form/123/456.html
+          type: exitpopup
+          web_form_link: https://api.aweber.com/1.0/accounts/123/lists/456/web_form/789
+          tags:
+          - slow
+          - fast
+          - lightspeed
+          resource_type_link: https://api.aweber.com/1.0/#component
+          name: Joker's Wild
+          total_displays: 123456789
+          conversion_percentage: 0.0
+          id: 234-456
+          total_unique_displays: 1234
+          self_link: https://api.aweber.com/1.0/accounts/123/lists/456/web_form_split_tests/789/component/234-456
+          http_etag: \"902ba3cda1883801594b6e1b452790cc53948fda-f83cb0ac22a8d5f792417f9b3dc0e9dc7558aa32\"
+          total_submissions: 123456
+        prev_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/web_form_split_tests/789/components?ws.start=0
+        resource_type_link: https://api.aweber.com/1.0/#component-page-resource
+        start: 0
+        total_size: 100
+        next_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/web_form_split_tests/789/components?ws.start=10&ws.size=10
+      properties:
+        entries:
+          items:
+            $ref: '#/components/schemas/WebformSplitTestComponent'
+          type: array
+        next_collection_link:
+          description: A link to the next page of entries if more entries exist. This
+            attribute is omitted from the collection if there are no more entries.
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/web_form_split_tests/789/components?ws.start=10&ws.size=10
+          format: uri
+          type: string
+        prev_collection_link:
+          description: A link to the previous page of entries if any exist. This attribute
+            is omitted from the collection if ws.start is 0.
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/web_form_split_tests/789/components?ws.start=0
+          format: uri
+          type: string
+        resource_type_link:
+          description: The link to the Component type
+          example: https://api.aweber.com/1.0/#component-page-resource
+          format: uri
+          type: string
+        start:
+          description: The starting offset for the page of entries to retrieve
+          minimum: 0
+          type: integer
+        total_size:
+          description: The total number of entries
+          example: 100
+          minimum: 0
+          type: integer
+      type: object
+    WebformSplitTestComponent:
+      example:
+        javascript_source_link: http://forms.aweber.com/form/123/456.js
+        unique_conversion_percentage: 6.451612903225806
+        is_active: true
+        weight: 40
+        html_source_link: http://forms.aweber.com/form/123/456.html
+        type: exitpopup
+        web_form_link: https://api.aweber.com/1.0/accounts/123/lists/456/web_form/789
+        tags:
+        - slow
+        - fast
+        - lightspeed
+        resource_type_link: https://api.aweber.com/1.0/#component
+        name: Joker's Wild
+        total_displays: 123456789
+        conversion_percentage: 0.0
+        id: 234-456
+        total_unique_displays: 1234
+        self_link: https://api.aweber.com/1.0/accounts/123/lists/456/web_form_split_tests/789/component/234-456
+        http_etag: \"902ba3cda1883801594b6e1b452790cc53948fda-f83cb0ac22a8d5f792417f9b3dc0e9dc7558aa32\"
+        total_submissions: 123456
+      properties:
+        conversion_percentage:
+          description: The conversion percentage
+          example: 0.0
+          format: float
+          minimum: 0
+          type: number
+        html_source_link:
+          description: The webform HTML source URL
+          example: http://forms.aweber.com/form/123/456.html
+          format: uri
+          type: string
+        http_etag:
+          description: The ETag HTTP header
+          example: \"902ba3cda1883801594b6e1b452790cc53948fda-f83cb0ac22a8d5f792417f9b3dc0e9dc7558aa32\"
+          type: string
+        id:
+          description: The unique ID for the webform component
+          example: 234-456
+          type: string
+        is_active:
+          description: Whether the webform is active or not
+          type: boolean
+        javascript_source_link:
+          description: The webform javascript source URL
+          example: http://forms.aweber.com/form/123/456.js
+          format: uri
+          type: string
+        name:
+          description: The webform name
+          example: Joker's Wild
+          type: string
+        resource_type_link:
+          description: The link to the webform type
+          example: https://api.aweber.com/1.0/#component
+          format: uri
+          type: string
+        self_link:
+          description: The link to this resource
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/web_form_split_tests/789/component/234-456
+          format: uri
+          type: string
+        tags:
+          description: A list of tags added to the webform component
+          example:
+          - slow
+          - fast
+          - lightspeed
+          items:
+            minLength: 1
+            type: string
+          type: array
+        total_displays:
+          description: The total number of times the webform is displayed
+          example: 123456789
+          minimum: 0
+          type: integer
+        total_submissions:
+          description: The total number of submissions received by the webform
+          example: 123456
+          minimum: 0
+          type: integer
+        total_unique_displays:
+          description: The total number of unique times the webform is displayed
+          example: 1234
+          minimum: 0
+          type: integer
+        type:
+          description: The webform display type
+          enum:
+          - exitpopup
+          - inline
+          - lightbox
+          - popover
+          - popunder
+          - popup
+          - styled
+          type: string
+        unique_conversion_percentage:
+          description: The conversion percentage based on unique counts
+          example: 6.451612903225806
+          format: float
+          minimum: 0
+          type: number
+        web_form_link:
+          description: "The link to [Webform](#tag/Webforms/paths/~1accounts~1{accountId}~1lists~1{listId}~1web_forms~1{webformId}/get)"
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/web_form/789
+          format: uri
+          type: string
+        weight:
+          description: The relative display weight
+          example: 40
+          minimum: 0
+          type: integer
+      type: object
+    _accounts__accountId__ws_op_getWebForms_get_400_response_error:
+      description: |
+        An error object.
+        The following error may be received:
+
+        | Error Type        | Explanation |
+        |-------------------|-------------|
+        | BadRequestError   | The request is malformed.  This can be caused by missing authorization credentials |
+      example:
+        documentation_url: https://api.aweber.com#badrequest
+        message: Missing required argument(s)
+        type: BadRequestError
+        status: 6
+      properties:
+        documentation_url:
+          description: A link to the documentation that describes the error
+          example: https://api.aweber.com#badrequest
+          type: string
+        message:
+          description: A human friendly description of the error
+          example: Missing required argument(s)
+          type: string
+        status:
+          description: The HTTP status code
+          enum:
+          - 400
+          type: integer
+        type:
+          description: The API error type
+          enum:
+          - BadRequestError
+          type: string
+      type: object
+    _accounts__accountId__ws_op_getWebForms_get_400_response:
+      example:
+        error:
+          documentation_url: https://api.aweber.com#badrequest
+          message: Missing required argument(s)
+          type: BadRequestError
+          status: 6
+      properties:
+        error:
+          $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_400_response_error'
+      type: object
+    _accounts__accountId__ws_op_getWebForms_get_401_response:
+      oneOf:
+      - $ref: '#/components/schemas/Endpoint Error'
+      - $ref: '#/components/schemas/Auth Error'
+    _accounts__accountId__ws_op_getWebForms_get_403_response_error:
+      description: |
+        An error object.
+        The following error may be received:
+
+        | Error Type           | Explanation                              |
+        |----------------------|------------------------------------------|
+        | ForbiddenError       | Rate limit may be reached or account may be suspended |
+
+        Please see the message body for more details.
+      example:
+        documentation_url: https://api.aweber.com#forbidden
+        message: Rate Limit Error
+        type: ForbiddenError
+        status: 5
+      properties:
+        documentation_url:
+          description: A link to the documentation that describes the error
+          example: https://api.aweber.com#forbidden
+          type: string
+        message:
+          description: A human friendly description of the error
+          example: Rate Limit Error
+          type: string
+        status:
+          description: The HTTP status code
+          enum:
+          - 403
+          type: integer
+        type:
+          description: The API error type
+          enum:
+          - ForbiddenError
+          type: string
+      type: object
+    _accounts__accountId__ws_op_getWebForms_get_403_response:
+      example:
+        error:
+          documentation_url: https://api.aweber.com#forbidden
+          message: Rate Limit Error
+          type: ForbiddenError
+          status: 5
+      properties:
+        error:
+          $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_403_response_error'
+      type: object
+    _accounts__accountId__ws_op_getWebForms_get_404_response_error:
+      description: |
+        An error object.
+        The following error may be received:
+
+        | Error Type           | Explanation                              |
+        |----------------------|------------------------------------------|
+        | NotFoundError        | The requested resource could not be found |
+
+        Please see the message body for more details.
+      example:
+        documentation_url: https://api.aweber.com#notfound
+        message: "Object: None, name: ''"
+        type: NotFoundError
+        status: 5
+      properties:
+        documentation_url:
+          description: A link to the documentation that describes the error
+          example: https://api.aweber.com#notfound
+          type: string
+        message:
+          description: A human friendly description of the error
+          example: "Object: None, name: ''"
+          type: string
+        status:
+          description: The HTTP status code
+          enum:
+          - 404
+          type: integer
+        type:
+          description: The API error type
+          enum:
+          - NotFoundError
+          type: string
+      type: object
+    _accounts__accountId__ws_op_getWebForms_get_404_response:
+      example:
+        error:
+          documentation_url: https://api.aweber.com#notfound
+          message: "Object: None, name: ''"
+          type: NotFoundError
+          status: 5
+      properties:
+        error:
+          $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_404_response_error'
+      type: object
+    _accounts__accountId__ws_op_getWebForms_get_405_response_error:
+      description: |
+        An error object.
+        One of the following errors may be received:
+
+        | Error Type              | Explanation |
+        |-------------------------|-------------|
+        | MethodNotAllowedError   | The requested resource does not implement the requested method. |
+
+        Please see the message body for more details.
+      example:
+        documentation_url: https://api.aweber.com#methodnotallowed
+        message: ' https://api.aweber.com#methodnotallowed'
+        type: MethodNotAllowedError
+        status: 2
+      properties:
+        documentation_url:
+          description: A link to the documentation that describes the error
+          example: https://api.aweber.com#methodnotallowed
+          type: string
+        message:
+          description: A human friendly description of the error
+          example: ' https://api.aweber.com#methodnotallowed'
+          type: string
+        status:
+          description: The HTTP status code
+          enum:
+          - 405
+          type: integer
+        type:
+          description: The API error type
+          enum:
+          - MethodNotAllowedError
+          type: string
+      type: object
+    _accounts__accountId__ws_op_getWebForms_get_405_response:
+      example:
+        error:
+          documentation_url: https://api.aweber.com#methodnotallowed
+          message: ' https://api.aweber.com#methodnotallowed'
+          type: MethodNotAllowedError
+          status: 2
+      properties:
+        error:
+          $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_405_response_error'
+      type: object
+    _accounts__accountId__ws_op_getWebForms_get_410_response_error:
+      description: |
+        An error object.
+        The following error may be received:
+
+        | Error Type           | Explanation                              |
+        |----------------------|------------------------------------------|
+        | BlockedError         | This Request has been blocked            |
+
+        Please see the message body for more details.
+      example:
+        documentation_url: https://api.aweber.com/#blocked
+        message: Blocked Error
+        type: BlockedError
+        status: 7
+      properties:
+        documentation_url:
+          description: A link to the documentation that describes the error
+          example: https://api.aweber.com/#blocked
+          type: string
+        message:
+          description: A human friendly description of the error
+          example: Blocked Error
+          type: string
+        status:
+          description: The HTTP status code
+          enum:
+          - 410
+          type: integer
+        type:
+          description: The API error type
+          enum:
+          - BlockedError
+          type: string
+      type: object
+    _accounts__accountId__ws_op_getWebForms_get_410_response:
+      example:
+        error:
+          documentation_url: https://api.aweber.com/#blocked
+          message: Blocked Error
+          type: BlockedError
+          status: 7
+      properties:
+        error:
+          $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_410_response_error'
+      type: object
+    _accounts__accountId__ws_op_getWebForms_get_500_response_error:
+      description: |
+        An error object.
+        The following error may be received:
+
+        | Error Type           | Explanation                              |
+        |----------------------|------------------------------------------|
+        | InternalServerError    | The request failed due to an internal error |
+
+        Please see the message body for more details.
+      example:
+        documentation_url: https://api.aweber.com#internalerror
+        message: Something went wrong.
+        type: InternalServerError
+        status: 9
+      properties:
+        documentation_url:
+          description: A link to the documentation that describes the error
+          example: https://api.aweber.com#internalerror
+          type: string
+        message:
+          description: A human friendly description of the error
+          example: Something went wrong.
+          type: string
+        status:
+          description: The HTTP status code
+          enum:
+          - 500
+          type: integer
+        type:
+          description: The API error type
+          enum:
+          - InternalServerError
+          type: string
+      type: object
+    _accounts__accountId__ws_op_getWebForms_get_500_response:
+      example:
+        error:
+          documentation_url: https://api.aweber.com#internalerror
+          message: Something went wrong.
+          type: InternalServerError
+          status: 9
+      properties:
+        error:
+          $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_500_response_error'
+      type: object
+    _accounts__accountId__ws_op_getWebForms_get_503_response_error:
+      description: |
+        An error object.
+        The following error may be received:
+
+        | Error Type           | Explanation                              |
+        |----------------------|------------------------------------------|
+        | ServiceUnavailableError | The server is unavailable |
+
+        Please see the message body for more details.
+      example:
+        documentation_url: https://api.aweber.com#serviceunavailable
+        message: Failed to communicate with endpoint
+        type: ServiceUnavailableError
+        status: 3
+      properties:
+        documentation_url:
+          description: A link to the documentation that describes the error
+          example: https://api.aweber.com#serviceunavailable
+          type: string
+        message:
+          description: A human friendly description of the error
+          example: Failed to communicate with endpoint
+          type: string
+        status:
+          description: The HTTP status code
+          enum:
+          - 503
+          type: integer
+        type:
+          description: The API error type
+          enum:
+          - ServiceUnavailableError
+          type: string
+      type: object
+    _accounts__accountId__ws_op_getWebForms_get_503_response:
+      example:
+        error:
+          documentation_url: https://api.aweber.com#serviceunavailable
+          message: Failed to communicate with endpoint
+          type: ServiceUnavailableError
+          status: 3
+      properties:
+        error:
+          $ref: '#/components/schemas/_accounts__accountId__ws_op_getWebForms_get_503_response_error'
+      type: object
+    Endpoint_Error_error:
+      description: |
+        An error object.
+        The following error may be received:
+
+        | Error Type           | Explanation                              |
+        |----------------------|------------------------------------------|
+        | UnauthorizedError    | There is a problem with your authorization credentials |
+
+        Please see the message body for more details.
+      example:
+        documentation_url: https://api.aweber.com#unauthorized
+        message: Consumer key is invalid.
+        type: UnauthorizedError
+        status: 1
+      properties:
+        documentation_url:
+          description: A link to the documentation that describes the error
+          example: https://api.aweber.com#unauthorized
+          type: string
+        message:
+          description: A human friendly description of the error
+          example: Consumer key is invalid.
+          type: string
+        status:
+          description: The HTTP status code
+          enum:
+          - 401
+          type: integer
+        type:
+          description: The API error type
+          enum:
+          - UnauthorizedError
+          type: string
+      type: object

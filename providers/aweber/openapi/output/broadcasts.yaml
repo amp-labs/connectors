@@ -1,0 +1,2621 @@
+openapi: 3.0.2
+info:
+  contact:
+    email: api@aweber.com
+    name: API Team
+    url: https://labs.aweber.com
+  description: REST API for access the AWeber service.
+  title: Broadcasts
+  version: "1.0"
+servers:
+- url: /
+tags:
+- name: Broadcasts
+paths:
+  /accounts/{accountId}/lists/{listId}/broadcasts:
+    get:
+      description: "This endpoint is used to get a paginated collection of broadcasts\
+        \ under the specified account and list.  The sort order is dependent on the\
+        \ requested status.\n\n  * *draft* messages are sorted by `broadcast_id` **and**\
+        \ only include API created broadcast drafts\n  * *scheduled* messages are\
+        \ sorted by `scheduled_for`\n  * *sent* messages are sorted by `sent_at`\n\
+        \n\nCheck out related examples:\n\n  * Create and Schedule Broadcast ( \n\
+        \    <a href=\"https://github.com/aweber/public-api-examples/blob/master/python/create-schedule-broadcast\"\
+        \ target=\"_blank\">Python</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/create-schedule-broadcast\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/postman/Create%20and%20Schedule%20Boadcast.postman_collection.json\"\
+        \ target=\"_blank\">Postman</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.CreateScheduleBroadcast\"\
+        \ target=\"_blank\">C#.NET</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/create_schedule_broadcast.rb\"\
+        \ target=\"_blank\">Ruby</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/node/create-schedule-broadcast.js\"\
+        \ target=\"_blank\">Node.js</a> )\n  * Get Broadcast Details ( \n    <a href=\"\
+        https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-details\"\
+        \ target=\"_blank\">Python</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/create-schedule-broadcast\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Broadcast%20Details.postman_collection.json\"\
+        \ target=\"_blank\">Postman</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastDetails\"\
+        \ target=\"_blank\">C#.NET</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_details.rb\"\
+        \ target=\"_blank\">Ruby</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-details.js\"\
+        \ target=\"_blank\">Node.js</a> )\n  * Get Broadcast Opens and Clicks ( \n\
+        \    <a href=\"https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-opens-clicks\"\
+        \ target=\"_blank\">Python</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-opens-clicks\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastOpensClicks\"\
+        \ target=\"_blank\">C#.NET</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_opens_clicks.rb\"\
+        \ target=\"_blank\">Ruby</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-opens-clicks.js\"\
+        \ target=\"_blank\">Node.js</a> )\n  * Get Broadcast Statistics ( \n    <a\
+        \ href=\"https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-stats\"\
+        \ target=\"_blank\">Python</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-stats\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Broadcast%20Stats.postman_collection.json\"\
+        \ target=\"_blank\">Postman</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastStats\"\
+        \ target=\"_blank\">C#.NET</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_stats.rb\"\
+        \ target=\"_blank\">Ruby</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-stats.js\"\
+        \ target=\"_blank\">Node.js</a> )"
+      parameters:
+      - description: The account ID
+        in: path
+        name: accountId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: The list ID
+        in: path
+        name: listId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: The status of the broadcasts to retrieve. **(Please be aware
+          that `draft` only returns API created Broadcast drafts)**
+        explode: true
+        in: query
+        name: status
+        required: true
+        schema:
+          enum:
+          - draft
+          - scheduled
+          - sent
+          type: string
+        style: form
+      - description: The pagination starting offset
+        in: query
+        name: ws.start
+        schema:
+          default: 0
+          format: int32
+          minimum: 0
+          type: integer
+      - description: The pagination total entries to retrieve
+        in: query
+        name: ws.size
+        schema:
+          default: 100
+          format: int32
+          maximum: 100
+          minimum: 1
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Broadcasts'
+          description: The request completed successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_400_response'
+          description: The server cannot or will not process the request due to a
+            client error
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_401_response'
+          description: The request could not be completed due to an authentication
+            error
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_403_response'
+          description: The request could not be completed due to a rate limit error
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_404_response'
+          description: The requested resource could not be found
+        "410":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_410_response'
+          description: The request has been blocked
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_500_response'
+          description: The request failed due to an internal error in the code or
+            because of an external dependency failure
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_503_response'
+          description: The server is currently unavailable
+      security:
+      - OAuth 2.0:
+        - email.read
+      summary: Get broadcasts
+      tags:
+      - Broadcasts
+      x-code-samples:
+        $ref: _code_samples.yaml#/code_samples/GetBroadcasts
+    post:
+      description: "This endpoint is used to create a broadcast message draft. \n\
+        **This POST request is limited to 1 million bytes.**\n\nCheck out related\
+        \ examples:\n\n  * Create and Schedule Broadcast ( \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/python/create-schedule-broadcast\"\
+        \ target=\"_blank\">Python</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/create-schedule-broadcast\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/postman/Create%20and%20Schedule%20Boadcast.postman_collection.json\"\
+        \ target=\"_blank\">Postman</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.CreateScheduleBroadcast\"\
+        \ target=\"_blank\">C#.NET</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/create_schedule_broadcast.rb\"\
+        \ target=\"_blank\">Ruby</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/node/create-schedule-broadcast.js\"\
+        \ target=\"_blank\">Node.js</a> )\n  * Get Broadcast Details ( \n    <a href=\"\
+        https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-details\"\
+        \ target=\"_blank\">Python</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/create-schedule-broadcast\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Broadcast%20Details.postman_collection.json\"\
+        \ target=\"_blank\">Postman</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastDetails\"\
+        \ target=\"_blank\">C#.NET</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_details.rb\"\
+        \ target=\"_blank\">Ruby</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-details.js\"\
+        \ target=\"_blank\">Node.js</a> )\n  * Get Broadcast Opens and Clicks ( \n\
+        \    <a href=\"https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-opens-clicks\"\
+        \ target=\"_blank\">Python</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-opens-clicks\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastOpensClicks\"\
+        \ target=\"_blank\">C#.NET</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_opens_clicks.rb\"\
+        \ target=\"_blank\">Ruby</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-opens-clicks.js\"\
+        \ target=\"_blank\">Node.js</a> )\n  * Get Broadcast Statistics ( \n    <a\
+        \ href=\"https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-stats\"\
+        \ target=\"_blank\">Python</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-stats\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Broadcast%20Stats.postman_collection.json\"\
+        \ target=\"_blank\">Postman</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastStats\"\
+        \ target=\"_blank\">C#.NET</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_stats.rb\"\
+        \ target=\"_blank\">Ruby</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-stats.js\"\
+        \ target=\"_blank\">Node.js</a> )"
+      parameters:
+      - description: The account ID
+        in: path
+        name: accountId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: The list ID
+        in: path
+        name: listId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateBroadcast'
+        description: Request Body
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Broadcast'
+          description: The request completed successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_400_response'
+          description: The server cannot or will not process the request due to a
+            client error
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_401_response'
+          description: The request could not be completed due to an authentication
+            error
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_post_403_response'
+          description: Forbidden due to rate limit or missing Manage Email permission
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_404_response'
+          description: The requested resource could not be found
+        "410":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_410_response'
+          description: The request has been blocked
+        "415":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_post_415_response'
+          description: The enclosed body has a media type that is not application/x-www-form-urlencoded
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_500_response'
+          description: The request failed due to an internal error in the code or
+            because of an external dependency failure
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_503_response'
+          description: The server is currently unavailable
+      security:
+      - OAuth 2.0:
+        - email.write
+      summary: Create broadcast
+      tags:
+      - Broadcasts
+      x-code-samples:
+        $ref: _code_samples.yaml#/code_samples/CreateBroadcast
+  /accounts/{accountId}/lists/{listId}/broadcasts/{broadcastId}:
+    delete:
+      description: "This endpoint is used to delete a broadcast message draft. **(Please\
+        \ be aware that only drafts created the API are able to be deleted)**\n\n\
+        Check out related examples:\n\n  * Create and Schedule Broadcast ( \n    <a\
+        \ href=\"https://github.com/aweber/public-api-examples/blob/master/python/create-schedule-broadcast\"\
+        \ target=\"_blank\">Python</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/create-schedule-broadcast\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/postman/Create%20and%20Schedule%20Boadcast.postman_collection.json\"\
+        \ target=\"_blank\">Postman</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.CreateScheduleBroadcast\"\
+        \ target=\"_blank\">C#.NET</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/create_schedule_broadcast.rb\"\
+        \ target=\"_blank\">Ruby</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/node/create-schedule-broadcast.js\"\
+        \ target=\"_blank\">Node.js</a> )\n  * Get Broadcast Details ( \n    <a href=\"\
+        https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-details\"\
+        \ target=\"_blank\">Python</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/create-schedule-broadcast\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Broadcast%20Details.postman_collection.json\"\
+        \ target=\"_blank\">Postman</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastDetails\"\
+        \ target=\"_blank\">C#.NET</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_details.rb\"\
+        \ target=\"_blank\">Ruby</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-details.js\"\
+        \ target=\"_blank\">Node.js</a> )\n  * Get Broadcast Opens and Clicks ( \n\
+        \    <a href=\"https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-opens-clicks\"\
+        \ target=\"_blank\">Python</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-opens-clicks\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastOpensClicks\"\
+        \ target=\"_blank\">C#.NET</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_opens_clicks.rb\"\
+        \ target=\"_blank\">Ruby</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-opens-clicks.js\"\
+        \ target=\"_blank\">Node.js</a> )\n  * Get Broadcast Statistics ( \n    <a\
+        \ href=\"https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-stats\"\
+        \ target=\"_blank\">Python</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-stats\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Broadcast%20Stats.postman_collection.json\"\
+        \ target=\"_blank\">Postman</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastStats\"\
+        \ target=\"_blank\">C#.NET</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_stats.rb\"\
+        \ target=\"_blank\">Ruby</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-stats.js\"\
+        \ target=\"_blank\">Node.js</a> )"
+      parameters:
+      - description: The account ID
+        in: path
+        name: accountId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: The list ID
+        in: path
+        name: listId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: The broadcast ID
+        in: path
+        name: broadcastId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      responses:
+        "204":
+          description: The request completed successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_400_response'
+          description: The server cannot or will not process the request due to a
+            client error
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_401_response'
+          description: The request could not be completed due to an authentication
+            error
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_post_403_response'
+          description: Forbidden due to rate limit or missing Manage Email permission
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_404_response'
+          description: The requested resource could not be found
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts__broadcastId__put_409_response'
+          description: The request could not be completed due to a conflict with the
+            current state of the target resource
+        "410":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_410_response'
+          description: The request has been blocked
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_500_response'
+          description: The request failed due to an internal error in the code or
+            because of an external dependency failure
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_503_response'
+          description: The server is currently unavailable
+      security:
+      - OAuth 2.0:
+        - email.write
+      summary: Delete broadcast
+      tags:
+      - Broadcasts
+      x-code-samples:
+        $ref: _code_samples.yaml#/code_samples/DeleteBroadcast
+    get:
+      description: "This endpoint is used to retrieve a broadcast message.\n\nCheck\
+        \ out related examples:\n\n  * Create and Schedule Broadcast ( \n    <a href=\"\
+        https://github.com/aweber/public-api-examples/blob/master/python/create-schedule-broadcast\"\
+        \ target=\"_blank\">Python</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/create-schedule-broadcast\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/postman/Create%20and%20Schedule%20Boadcast.postman_collection.json\"\
+        \ target=\"_blank\">Postman</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.CreateScheduleBroadcast\"\
+        \ target=\"_blank\">C#.NET</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/create_schedule_broadcast.rb\"\
+        \ target=\"_blank\">Ruby</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/node/create-schedule-broadcast.js\"\
+        \ target=\"_blank\">Node.js</a> )\n  * Get Broadcast Details ( \n    <a href=\"\
+        https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-details\"\
+        \ target=\"_blank\">Python</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/create-schedule-broadcast\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Broadcast%20Details.postman_collection.json\"\
+        \ target=\"_blank\">Postman</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastDetails\"\
+        \ target=\"_blank\">C#.NET</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_details.rb\"\
+        \ target=\"_blank\">Ruby</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-details.js\"\
+        \ target=\"_blank\">Node.js</a> )\n  * Get Broadcast Opens and Clicks ( \n\
+        \    <a href=\"https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-opens-clicks\"\
+        \ target=\"_blank\">Python</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-opens-clicks\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastOpensClicks\"\
+        \ target=\"_blank\">C#.NET</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_opens_clicks.rb\"\
+        \ target=\"_blank\">Ruby</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-opens-clicks.js\"\
+        \ target=\"_blank\">Node.js</a> )\n  * Get Broadcast Statistics ( \n    <a\
+        \ href=\"https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-stats\"\
+        \ target=\"_blank\">Python</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-stats\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Broadcast%20Stats.postman_collection.json\"\
+        \ target=\"_blank\">Postman</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastStats\"\
+        \ target=\"_blank\">C#.NET</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_stats.rb\"\
+        \ target=\"_blank\">Ruby</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-stats.js\"\
+        \ target=\"_blank\">Node.js</a> )"
+      parameters:
+      - description: The account ID
+        in: path
+        name: accountId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: The list ID
+        in: path
+        name: listId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: The broadcast ID
+        in: path
+        name: broadcastId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Broadcast'
+          description: The request completed successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_400_response'
+          description: The server cannot or will not process the request due to a
+            client error
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_401_response'
+          description: The request could not be completed due to an authentication
+            error
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_post_403_response'
+          description: Forbidden due to rate limit or missing Manage Email permission
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_404_response'
+          description: The requested resource could not be found
+        "410":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_410_response'
+          description: The request has been blocked
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_500_response'
+          description: The request failed due to an internal error in the code or
+            because of an external dependency failure
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_503_response'
+          description: The server is currently unavailable
+      security:
+      - OAuth 2.0:
+        - email.read
+      summary: Get broadcast
+      tags:
+      - Broadcasts
+      x-code-samples:
+        $ref: _code_samples.yaml#/code_samples/GetBroadcast
+    put:
+      description: "This endpoint is used to replace existing details of a broadcast\
+        \ message in a draft state. **(Please be aware that only broadcast drafts\
+        \ created by the API are available to update)**\n\nCheck out related examples:\n\
+        \n  * Create and Schedule Broadcast ( \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/python/create-schedule-broadcast\"\
+        \ target=\"_blank\">Python</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/create-schedule-broadcast\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/postman/Create%20and%20Schedule%20Boadcast.postman_collection.json\"\
+        \ target=\"_blank\">Postman</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.CreateScheduleBroadcast\"\
+        \ target=\"_blank\">C#.NET</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/create_schedule_broadcast.rb\"\
+        \ target=\"_blank\">Ruby</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/node/create-schedule-broadcast.js\"\
+        \ target=\"_blank\">Node.js</a> )\n  * Get Broadcast Details ( \n    <a href=\"\
+        https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-details\"\
+        \ target=\"_blank\">Python</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/create-schedule-broadcast\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Broadcast%20Details.postman_collection.json\"\
+        \ target=\"_blank\">Postman</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastDetails\"\
+        \ target=\"_blank\">C#.NET</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_details.rb\"\
+        \ target=\"_blank\">Ruby</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-details.js\"\
+        \ target=\"_blank\">Node.js</a> )\n  * Get Broadcast Opens and Clicks ( \n\
+        \    <a href=\"https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-opens-clicks\"\
+        \ target=\"_blank\">Python</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-opens-clicks\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastOpensClicks\"\
+        \ target=\"_blank\">C#.NET</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_opens_clicks.rb\"\
+        \ target=\"_blank\">Ruby</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-opens-clicks.js\"\
+        \ target=\"_blank\">Node.js</a> )\n  * Get Broadcast Statistics ( \n    <a\
+        \ href=\"https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-stats\"\
+        \ target=\"_blank\">Python</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-stats\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Broadcast%20Stats.postman_collection.json\"\
+        \ target=\"_blank\">Postman</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastStats\"\
+        \ target=\"_blank\">C#.NET</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_stats.rb\"\
+        \ target=\"_blank\">Ruby</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-stats.js\"\
+        \ target=\"_blank\">Node.js</a> )"
+      parameters:
+      - description: The account ID
+        in: path
+        name: accountId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: The list ID
+        in: path
+        name: listId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: The broadcast ID
+        in: path
+        name: broadcastId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UpdateBroadcast'
+        description: Request Body
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Broadcast'
+          description: The request completed successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_400_response'
+          description: The server cannot or will not process the request due to a
+            client error
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_401_response'
+          description: The request could not be completed due to an authentication
+            error
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_post_403_response'
+          description: Forbidden due to rate limit or missing Manage Email permission
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_404_response'
+          description: The requested resource could not be found
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts__broadcastId__put_409_response'
+          description: The request could not be completed due to a conflict with the
+            current state of the target resource
+        "410":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_410_response'
+          description: The request has been blocked
+        "415":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_post_415_response'
+          description: The enclosed body has a media type that is not application/x-www-form-urlencoded
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_500_response'
+          description: The request failed due to an internal error in the code or
+            because of an external dependency failure
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_503_response'
+          description: The server is currently unavailable
+      security:
+      - OAuth 2.0:
+        - email.write
+      summary: Update broadcast
+      tags:
+      - Broadcasts
+      x-code-samples:
+        $ref: _code_samples.yaml#/code_samples/PutBroadcast
+  /accounts/{accountId}/lists/{listId}/broadcasts/{broadcastId}/cancel:
+    post:
+      description: "This endpoint is used to cancel a currently scheduled broadcast.\n\
+        \nCheck out related examples:\n\n  * Create and Schedule Broadcast ( \n  \
+        \  <a href=\"https://github.com/aweber/public-api-examples/blob/master/python/create-schedule-broadcast\"\
+        \ target=\"_blank\">Python</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/create-schedule-broadcast\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/postman/Create%20and%20Schedule%20Boadcast.postman_collection.json\"\
+        \ target=\"_blank\">Postman</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.CreateScheduleBroadcast\"\
+        \ target=\"_blank\">C#.NET</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/create_schedule_broadcast.rb\"\
+        \ target=\"_blank\">Ruby</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/node/create-schedule-broadcast.js\"\
+        \ target=\"_blank\">Node.js</a> )\n  * Get Broadcast Details ( \n    <a href=\"\
+        https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-details\"\
+        \ target=\"_blank\">Python</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/create-schedule-broadcast\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Broadcast%20Details.postman_collection.json\"\
+        \ target=\"_blank\">Postman</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastDetails\"\
+        \ target=\"_blank\">C#.NET</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_details.rb\"\
+        \ target=\"_blank\">Ruby</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-details.js\"\
+        \ target=\"_blank\">Node.js</a> )\n  * Get Broadcast Opens and Clicks ( \n\
+        \    <a href=\"https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-opens-clicks\"\
+        \ target=\"_blank\">Python</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-opens-clicks\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastOpensClicks\"\
+        \ target=\"_blank\">C#.NET</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_opens_clicks.rb\"\
+        \ target=\"_blank\">Ruby</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-opens-clicks.js\"\
+        \ target=\"_blank\">Node.js</a> )\n  * Get Broadcast Statistics ( \n    <a\
+        \ href=\"https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-stats\"\
+        \ target=\"_blank\">Python</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-stats\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Broadcast%20Stats.postman_collection.json\"\
+        \ target=\"_blank\">Postman</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastStats\"\
+        \ target=\"_blank\">C#.NET</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_stats.rb\"\
+        \ target=\"_blank\">Ruby</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-stats.js\"\
+        \ target=\"_blank\">Node.js</a> )"
+      parameters:
+      - description: The account ID
+        in: path
+        name: accountId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: The list ID
+        in: path
+        name: listId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: The broadcast ID
+        in: path
+        name: broadcastId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts__broadcastId__cancel_post_200_response'
+          description: The request completed successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_400_response'
+          description: The server cannot or will not process the request due to a
+            client error
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_401_response'
+          description: The request could not be completed due to an authentication
+            error
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_post_403_response'
+          description: Forbidden due to rate limit or missing Manage Email permission
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_404_response'
+          description: The requested resource could not be found
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts__broadcastId__put_409_response'
+          description: The request could not be completed due to a conflict with the
+            current state of the target resource
+        "410":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_410_response'
+          description: The request has been blocked
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_500_response'
+          description: The request failed due to an internal error in the code or
+            because of an external dependency failure
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_503_response'
+          description: The server is currently unavailable
+      security:
+      - OAuth 2.0:
+        - email.write
+      summary: Cancel scheduled broadcast
+      tags:
+      - Broadcasts
+      x-code-samples:
+        $ref: _code_samples.yaml#/code_samples/CancelScheduledBroadcast
+  /accounts/{accountId}/lists/{listId}/broadcasts/total:
+    get:
+      description: "This endpoint is used to get the total number of broadcasts in\
+        \ a particular state.\n\nCheck out related examples:\n\n  * Create and Schedule\
+        \ Broadcast ( \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/python/create-schedule-broadcast\"\
+        \ target=\"_blank\">Python</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/create-schedule-broadcast\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/postman/Create%20and%20Schedule%20Boadcast.postman_collection.json\"\
+        \ target=\"_blank\">Postman</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.CreateScheduleBroadcast\"\
+        \ target=\"_blank\">C#.NET</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/create_schedule_broadcast.rb\"\
+        \ target=\"_blank\">Ruby</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/node/create-schedule-broadcast.js\"\
+        \ target=\"_blank\">Node.js</a> )\n  * Get Broadcast Details ( \n    <a href=\"\
+        https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-details\"\
+        \ target=\"_blank\">Python</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/create-schedule-broadcast\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Broadcast%20Details.postman_collection.json\"\
+        \ target=\"_blank\">Postman</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastDetails\"\
+        \ target=\"_blank\">C#.NET</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_details.rb\"\
+        \ target=\"_blank\">Ruby</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-details.js\"\
+        \ target=\"_blank\">Node.js</a> )\n  * Get Broadcast Opens and Clicks ( \n\
+        \    <a href=\"https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-opens-clicks\"\
+        \ target=\"_blank\">Python</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-opens-clicks\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastOpensClicks\"\
+        \ target=\"_blank\">C#.NET</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_opens_clicks.rb\"\
+        \ target=\"_blank\">Ruby</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-opens-clicks.js\"\
+        \ target=\"_blank\">Node.js</a> )\n  * Get Broadcast Statistics ( \n    <a\
+        \ href=\"https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-stats\"\
+        \ target=\"_blank\">Python</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-stats\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Broadcast%20Stats.postman_collection.json\"\
+        \ target=\"_blank\">Postman</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastStats\"\
+        \ target=\"_blank\">C#.NET</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_stats.rb\"\
+        \ target=\"_blank\">Ruby</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-stats.js\"\
+        \ target=\"_blank\">Node.js</a> )"
+      parameters:
+      - description: The account ID
+        in: path
+        name: accountId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: The list ID
+        in: path
+        name: listId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: The status of the broadcasts to retrieve. **(Please be aware
+          that `draft` only returns API created Broadcast drafts)**
+        explode: true
+        in: query
+        name: status
+        required: true
+        schema:
+          enum:
+          - draft
+          - scheduled
+          - sent
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_total_get_200_response'
+          description: The request completed successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_400_response'
+          description: The server cannot or will not process the request due to a
+            client error
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_401_response'
+          description: The request could not be completed due to an authentication
+            error
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_403_response'
+          description: The request could not be completed due to a rate limit error
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_404_response'
+          description: The requested resource could not be found
+        "410":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_410_response'
+          description: The request has been blocked
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_500_response'
+          description: The request failed due to an internal error in the code or
+            because of an external dependency failure
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_503_response'
+          description: The server is currently unavailable
+      security:
+      - OAuth 2.0:
+        - email.read
+      summary: Get total broadcasts
+      tags:
+      - Broadcasts
+      x-code-samples:
+        $ref: _code_samples.yaml#/code_samples/GetTotalBroadcasts
+  /accounts/{accountId}/lists/{listId}/broadcasts/{broadcastId}/schedule:
+    post:
+      description: "This endpoint is used to schedule a broadcast.\n\nCheck out related\
+        \ examples:\n\n  * Create and Schedule Broadcast ( \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/python/create-schedule-broadcast\"\
+        \ target=\"_blank\">Python</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/create-schedule-broadcast\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/postman/Create%20and%20Schedule%20Boadcast.postman_collection.json\"\
+        \ target=\"_blank\">Postman</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.CreateScheduleBroadcast\"\
+        \ target=\"_blank\">C#.NET</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/create_schedule_broadcast.rb\"\
+        \ target=\"_blank\">Ruby</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/node/create-schedule-broadcast.js\"\
+        \ target=\"_blank\">Node.js</a> )\n  * Get Broadcast Details ( \n    <a href=\"\
+        https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-details\"\
+        \ target=\"_blank\">Python</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/create-schedule-broadcast\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Broadcast%20Details.postman_collection.json\"\
+        \ target=\"_blank\">Postman</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastDetails\"\
+        \ target=\"_blank\">C#.NET</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_details.rb\"\
+        \ target=\"_blank\">Ruby</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-details.js\"\
+        \ target=\"_blank\">Node.js</a> )\n  * Get Broadcast Opens and Clicks ( \n\
+        \    <a href=\"https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-opens-clicks\"\
+        \ target=\"_blank\">Python</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-opens-clicks\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastOpensClicks\"\
+        \ target=\"_blank\">C#.NET</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_opens_clicks.rb\"\
+        \ target=\"_blank\">Ruby</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-opens-clicks.js\"\
+        \ target=\"_blank\">Node.js</a> )\n  * Get Broadcast Statistics ( \n    <a\
+        \ href=\"https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-stats\"\
+        \ target=\"_blank\">Python</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-stats\"\
+        \ target=\"_blank\">PHP</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Broadcast%20Stats.postman_collection.json\"\
+        \ target=\"_blank\">Postman</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastStats\"\
+        \ target=\"_blank\">C#.NET</a> | \n    <a href=\"https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_stats.rb\"\
+        \ target=\"_blank\">Ruby</a>  | \n    <a href=\"https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-stats.js\"\
+        \ target=\"_blank\">Node.js</a> )"
+      parameters:
+      - description: The account ID
+        in: path
+        name: accountId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: The list ID
+        in: path
+        name: listId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: The broadcast ID
+        in: path
+        name: broadcastId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ScheduleBroadcast'
+        description: Request Body
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts__broadcastId__schedule_post_200_response'
+          description: The broadcast successfully scheduled
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_400_response'
+          description: The server cannot or will not process the request due to a
+            client error
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_401_response'
+          description: The request could not be completed due to an authentication
+            error
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_post_403_response'
+          description: Forbidden due to rate limit or missing Manage Email permission
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_404_response'
+          description: The requested resource could not be found
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts__broadcastId__put_409_response'
+          description: The request could not be completed due to a conflict with the
+            current state of the target resource
+        "410":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_410_response'
+          description: The request has been blocked
+        "415":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_post_415_response'
+          description: The enclosed body has a media type that is not application/x-www-form-urlencoded
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_500_response'
+          description: The request failed due to an internal error in the code or
+            because of an external dependency failure
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_503_response'
+          description: The server is currently unavailable
+      security:
+      - OAuth 2.0:
+        - email.write
+      summary: Schedule broadcast
+      tags:
+      - Broadcasts
+      x-code-samples:
+        $ref: _code_samples.yaml#/code_samples/ScheduleBroadcast
+  /accounts/{accountId}/lists/{listId}/broadcasts/{broadcastId}/opens:
+    get:
+      description: |-
+        This endpoint is used to retrieve a broadcast message's unique opens. If a subscriber has opened several times, the first open record will be returned for the subscriber.
+        The subscriber's email address will only be returned if the token has the `subscriber.read` scope.
+      parameters:
+      - description: The account ID
+        in: path
+        name: accountId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: The list ID
+        in: path
+        name: listId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: The broadcast ID
+        in: path
+        name: broadcastId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: The pagination key when paging in reverse. Cannot be combined
+          with `after`.
+        in: query
+        name: before
+        schema:
+          type: string
+      - description: The pagination key when paging forward. Cannot be combined with
+          `before`.
+        in: query
+        name: after
+        schema:
+          type: string
+      - description: The pagination total entries to retrieve
+        in: query
+        name: page_size
+        schema:
+          default: 100
+          maximum: 100
+          minimum: 1
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BroadcastOpens'
+          description: The request completed successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts__broadcastId__opens_get_400_response'
+          description: The server cannot or will not process the request due to a
+            client error
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_401_response'
+          description: The request could not be completed due to an authentication
+            error
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_post_403_response'
+          description: Forbidden due to rate limit or missing Manage Email permission
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts__broadcastId__opens_get_404_response'
+          description: The requested resource could not be found
+        "410":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_410_response'
+          description: The request has been blocked
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_500_response'
+          description: The request failed due to an internal error in the code or
+            because of an external dependency failure
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_503_response'
+          description: The server is currently unavailable
+      security:
+      - OAuth 2.0:
+        - email.read
+      summary: Get broadcast opens
+      tags:
+      - Broadcasts
+      x-code-samples:
+        $ref: _code_samples.yaml#/code_samples/GetBroadcastOpens
+  /accounts/{accountId}/lists/{listId}/broadcasts/{broadcastId}/clicks:
+    get:
+      description: |-
+        This endpoint is used to retrieve a broadcast message's unique clicks. If a subscriber has clicked several times, the first click record will be returned for the subscriber.
+        The subscriber's email address will only be returned if the token has the `subscriber.read` scope.
+      parameters:
+      - description: The account ID
+        in: path
+        name: accountId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: The list ID
+        in: path
+        name: listId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: The broadcast ID
+        in: path
+        name: broadcastId
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: The pagination key when paging in reverse. Cannot be combined
+          with `after`.
+        in: query
+        name: before
+        schema:
+          type: string
+      - description: The pagination key when paging forward. Cannot be combined with
+          `before`.
+        in: query
+        name: after
+        schema:
+          type: string
+      - description: The pagination total entries to retrieve
+        in: query
+        name: page_size
+        schema:
+          default: 100
+          maximum: 100
+          minimum: 1
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BroadcastClicks'
+          description: The request completed successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts__broadcastId__opens_get_400_response'
+          description: The server cannot or will not process the request due to a
+            client error
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_401_response'
+          description: The request could not be completed due to an authentication
+            error
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_post_403_response'
+          description: Forbidden due to rate limit or missing Manage Email permission
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts__broadcastId__opens_get_404_response'
+          description: The requested resource could not be found
+        "410":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_410_response'
+          description: The request has been blocked
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_500_response'
+          description: The request failed due to an internal error in the code or
+            because of an external dependency failure
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_503_response'
+          description: The server is currently unavailable
+      security:
+      - OAuth 2.0:
+        - email.read
+      summary: Get broadcast clicks
+      tags:
+      - Broadcasts
+      x-code-samples:
+        $ref: _code_samples.yaml#/code_samples/GetBroadcastClicks
+components:
+  parameters:
+    accountId:
+      description: The account ID
+      in: path
+      name: accountId
+      required: true
+      schema:
+        format: int32
+        type: integer
+    listId:
+      description: The list ID
+      in: path
+      name: listId
+      required: true
+      schema:
+        format: int32
+        type: integer
+    wsStart:
+      description: The pagination starting offset
+      in: query
+      name: ws.start
+      schema:
+        default: 0
+        format: int32
+        minimum: 0
+        type: integer
+    wsSize:
+      description: The pagination total entries to retrieve
+      in: query
+      name: ws.size
+      schema:
+        default: 100
+        format: int32
+        maximum: 100
+        minimum: 1
+        type: integer
+    broadcastId:
+      description: The broadcast ID
+      in: path
+      name: broadcastId
+      required: true
+      schema:
+        format: int32
+        type: integer
+    before:
+      description: The pagination key when paging in reverse. Cannot be combined with
+        `after`.
+      in: query
+      name: before
+      schema:
+        type: string
+    after:
+      description: The pagination key when paging forward. Cannot be combined with
+        `before`.
+      in: query
+      name: after
+      schema:
+        type: string
+    pageSize:
+      description: The pagination total entries to retrieve
+      in: query
+      name: page_size
+      schema:
+        default: 100
+        maximum: 100
+        minimum: 1
+        type: integer
+  responses:
+    BroadcastBadRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_400_response'
+      description: The server cannot or will not process the request due to a client
+        error
+    UnauthorizedError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_401_response'
+      description: The request could not be completed due to an authentication error
+    ForbiddenError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_403_response'
+      description: The request could not be completed due to a rate limit error
+    BroadcastNotFound:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_404_response'
+      description: The requested resource could not be found
+    BlockedError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_410_response'
+      description: The request has been blocked
+    InternalServerError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_500_response'
+      description: The request failed due to an internal error in the code or because
+        of an external dependency failure
+    ServiceUnavailable:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_503_response'
+      description: The server is currently unavailable
+    RateLimitOrEmailPermission:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_post_403_response'
+      description: Forbidden due to rate limit or missing Manage Email permission
+    NotFormURLEncoded:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_post_415_response'
+      description: The enclosed body has a media type that is not application/x-www-form-urlencoded
+    BroadcastSchedulingError:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts__broadcastId__put_409_response'
+      description: The request could not be completed due to a conflict with the current
+        state of the target resource
+    BadRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts__broadcastId__opens_get_400_response'
+      description: The server cannot or will not process the request due to a client
+        error
+    NotFound:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts__broadcastId__opens_get_404_response'
+      description: The requested resource could not be found
+  schemas:
+    Broadcasts:
+      example:
+        entries:
+        - sent_at: 2017-11-15T14:26:36.210647-05:00
+          subject: Weekly Recipes
+          scheduled_for: 2017-11-15T10:46:07.926074-05:00
+          self_link: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts/3456789
+          status: sent
+        - sent_at: 2017-11-15T14:26:36.210647-05:00
+          subject: Weekly Recipes
+          scheduled_for: 2017-11-15T10:46:07.926074-05:00
+          self_link: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts/3456789
+          status: sent
+        prev_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts?status=sent&ws.size=1&ws.start=0
+        resource_type_link: https://api.aweber.com/1.0/#broadcast-page-resource
+        total_size_link: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts/total?status=draft
+        start: 0
+        self_link: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts?status=sent&ws.size=1&ws.start=0
+        next_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts?status=sent&ws.size=1&ws.start=1
+      properties:
+        entries:
+          description: The list of broadcast entries.
+          items:
+            $ref: '#/components/schemas/Broadcasts_entries_inner'
+          type: array
+        next_collection_link:
+          description: A link to the next page of entries if more entries exist. This
+            attribute is omitted from the collection if there are no more entries.
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts?status=sent&ws.size=1&ws.start=1
+          format: uri
+          type: string
+        prev_collection_link:
+          description: A link to the previous page of entries if previous entries
+            exist. This attribute is omitted if this is the first page.
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts?status=sent&ws.size=1&ws.start=0
+          format: uri
+          type: string
+        resource_type_link:
+          description: A link that identifies the type of resource that this collection
+            represents.
+          example: https://api.aweber.com/1.0/#broadcast-page-resource
+          format: uri
+          type: string
+        self_link:
+          description: A link to the current page of entries.
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts?status=sent&ws.size=1&ws.start=0
+          format: uri
+          type: string
+        start:
+          description: The starting offset for the page of entries to retrieve.
+          minimum: 0
+          type: integer
+        total_size_link:
+          description: A link to a resource that provides the total number of broadcasts
+            in the collection.
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts/total?status=draft
+          format: uri
+          type: string
+      type: object
+    Endpoint Error:
+      example:
+        error:
+          documentation_url: https://api.aweber.com#unauthorized
+          message: Consumer key is invalid.
+          type: UnauthorizedError
+          status: 1
+      properties:
+        error:
+          $ref: '#/components/schemas/Endpoint_Error_error'
+      title: Endpoint Error
+      type: object
+    Auth Error:
+      properties:
+        error:
+          description: |
+            The type of authentication error returned.
+            The following error may be received:
+
+            | Error Type       | Explanation                              |
+            |------------------|------------------------------------------|
+            | invalid_token    | The access token is invalid or has expired |
+          example: invalid_token
+          type: string
+        error_description:
+          description: |
+            A human friendly description of the error
+          example: The access token is invalid or has expired
+          type: string
+      title: Auth Error
+      type: object
+    CreateBroadcast:
+      properties:
+        body_html:
+          description: "The content of the message in html format. If body_text is\
+            \ not provided, it will be auto-generated. If body_text is not provided,\
+            \ body_html must be provided."
+          example: <html><h1>Title</h1><body>Message body.</body></html>
+          format: html
+          type: string
+        body_text:
+          description: "The content of the message in plain text, used when HTML is\
+            \ not supported. If body_html is not provided, the broadcast will be sent\
+            \ using only the body_text. If body_text is not provided, body_html must\
+            \ be provided."
+          example: This is the content of my message
+          type: string
+        body_amp:
+          description: "<b>[Please read <a href=\"https://help.aweber.com/hc/en-us/articles/360025741194\"\
+            \ target=\"_blank\">our KB article</a> before using this field.]</b><br>The\
+            \ content of the message in AMP format."
+          example: <html amp4email><body>content</body></html>
+          format: amp
+          type: string
+        click_tracking_enabled:
+          default: true
+          description: Enables links in the email message to be tracked
+          type: boolean
+        exclude_lists:
+          description: "JSON encoded list of [Lists](#tag/Lists) URLs to exclude in\
+            \ the delivery of this broadcast.<br> Use the `self_link` of the list\
+            \ here - e.g. `https://api.aweber.com/1.0/accounts/<account_id>/lists/<list_id>`.\
+            \ If updated, this value will replace the existing excluded_lists."
+          example: "[[\"\\\\\\\"https://api.aweber.com/1.0/accounts/123/lists/456\\\
+            \\\\\"\"]]"
+          type: string
+        include_lists:
+          description: "JSON encoded list of [Lists](#tag/Lists) URLs to include in\
+            \ the delivery of this broadcast.<br> Use the `self_link` of the list\
+            \ here - e.g. `https://api.aweber.com/1.0/accounts/<account_id>/lists/<list_id>`.\
+            \ If updated, this value will replace the existing included_lists."
+          example: "[[\"\\\\\\\"https://api.aweber.com/1.0/accounts/123/lists/456\\\
+            \\\\\"\"]]"
+          type: string
+        facebook_integration:
+          description: "URL to the [Facebook broadcast integration](#tag/Integrations)\
+            \ to use for this broadcast. When the broadcast is sent, the subject of\
+            \ the broadcast will be posted to this Facebook integration  - e.g., `https://api.aweber.com/1.0/accounts/<account_id>/integrations/<integration_id>`"
+          example: https://api.aweber.com/1.0/accounts/123/integrations/1
+          format: uri
+          type: string
+        is_archived:
+          default: true
+          description: Whether the broadcast enabled sharing via an archive url
+          type: boolean
+        notify_on_send:
+          default: true
+          description: "If true, notify when stats are available on a sent broadcast\
+            \ message"
+          type: boolean
+        segment_link:
+          description: |
+            URL to the [Segment](#tag/Segments) to send this broadcast to.  Use the `self_link` of the
+            segment here - e.g.
+            `https://api.aweber.com/1.0/accounts/<account_id>/lists/<list_id>/segments/<segment_id>`.
+            If not specified, the broadcast will be sent to the “Active Subscribers” segment.
+        subject:
+          description: The broadcast subject line. Subject must not be empty nor contain
+            only whitespace.
+          example: Weekly Recipes
+          maximum: 120
+          type: string
+        twitter_integration:
+          description: "URL to the [Twitter broadcast integration](#tag/Integrations)\
+            \ to use for this broadcast. When the broadcast is sent, the subject of\
+            \ the broadcast will be tweeted - e.g., `https://api.aweber.com/1.0/accounts/<account_id>/integrations/<integration_id>`"
+          example: https://api.aweber.com/1.0/accounts/123/integrations/2
+          format: uri
+          type: string
+      required:
+      - body_html
+      - body_text
+      - subject
+      type: object
+    Broadcast:
+      example:
+        body_html: <html><h1>Title</h1><body>Message body.</body></html>
+        body_text: This is the content of my message
+        exclude_lists:
+        - https://api.aweber.com/1.0/accounts/123/lists/456
+        subject: Weekly Recipes
+        created_at: 2000-01-23T04:56:07.000+00:00
+        scheduled_for: 2017-11-15T10:46:07.926074-05:00
+        segment_name: my_segment
+        opens_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts/3456789/opens
+        stats:
+          num_complaints: 0
+          num_emailed: 1
+          num_undeliv: 0
+          unique_clicks: 1
+          unique_opens: 1
+        has_customized_body_text: true
+        links:
+        - href: http://archive.aweber.com/awlist12345.rss
+          rel: list_archive_rss_url
+        - href: http://archive.aweber.com/awlist12345
+          rel: list_archive_url
+        click_tracking_enabled: true
+        segment_link: ""
+        archive_url: http://archive.aweber.com/awlist12345/9198b
+        facebook_integration: https://api.aweber.com/1.0/accounts/123/integrations/1
+        body_amp: <html amp4email><body>content</body></html>
+        include_lists:
+        - https://api.aweber.com/1.0/accounts/123/lists/456
+        twitter_integration: https://api.aweber.com/1.0/accounts/123/integrations/2
+        sent_at: 2000-01-23T04:56:07.000+00:00
+        is_archived: true
+        broadcast_id: 12345
+        clicks_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts/3456789/clicks
+        self_link: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts/3456789
+        notify_on_send: true
+        status: admin_hold
+      properties:
+        archive_url:
+          description: "The link to the broadcast archive page, only set if the broadcast\
+            \ was sent."
+          example: http://archive.aweber.com/awlist12345/9198b
+          format: uri
+          type: string
+        body_html:
+          description: The content of the message in html format.
+          example: <html><h1>Title</h1><body>Message body.</body></html>
+          format: html
+          type: string
+        body_text:
+          description: "The content of the message in plain text, displayed when HTML\
+            \ is not supported."
+          example: This is the content of my message
+          type: string
+        body_amp:
+          description: "<b>[Please read <a href=\"https://help.aweber.com/hc/en-us/articles/360025741194\"\
+            \ target=\"_blank\">our KB article</a> before using this field.]</b><br>The\
+            \ content of the message in AMP format."
+          example: <html amp4email><body>content</body></html>
+          format: amp
+          type: string
+        broadcast_id:
+          description: The broadcast ID.
+          example: 12345
+          type: integer
+        click_tracking_enabled:
+          description: Enables links in the email message to be tracked.
+          type: boolean
+        clicks_collection_link:
+          description: The link to this broadcasts clicks collection.
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts/3456789/clicks
+          format: uri
+          type: string
+        created_at:
+          description: When the message was created.
+          format: date-time
+          type: string
+        exclude_lists:
+          description: "List of [Lists](#tag/Lists) URLs that are excluded in the\
+            \ delivery of this broadcast.<br> This is the `self_link` of the list\
+            \ here - e.g. `https://api.aweber.com/1.0/accounts/<account_id>/lists/<list_id>`"
+          example:
+          - https://api.aweber.com/1.0/accounts/123/lists/456
+          items:
+            format: uri
+            type: string
+          type: array
+        facebook_integration:
+          description: "URL to the [Facebook broadcast integration](#tag/Integrations)\
+            \ to use for this broadcast. When the broadcast is sent, the subject of\
+            \ the broadcast will be posted to this Facebook integration  - e.g., `https://api.aweber.com/1.0/accounts/<account_id>/integrations/<integration_id>`"
+          example: https://api.aweber.com/1.0/accounts/123/integrations/1
+          format: uri
+          type: string
+        has_customized_body_text:
+          description: "If true, the plain text field will be shown when HTML is not\
+            \ supported. If false, it will auto-generate plain text based on the HTML\
+            \ given."
+          type: boolean
+        include_lists:
+          description: "List of [Lists](#tag/Lists) URLs that are included in the\
+            \ delivery of this broadcast.<br> This is the `self_link` of the list\
+            \ here - e.g. `https://api.aweber.com/1.0/accounts/<account_id>/lists/<list_id>`"
+          example:
+          - https://api.aweber.com/1.0/accounts/123/lists/456
+          items:
+            format: uri
+            type: string
+          type: array
+        is_archived:
+          description: Whether the broadcast enabled sharing via an archive url.
+          type: boolean
+        links:
+          description: A list of links relevant to the broadcast such as RSS feeds
+            and broadcast archives.
+          example:
+          - href: http://archive.aweber.com/awlist12345.rss
+            rel: list_archive_rss_url
+          - href: http://archive.aweber.com/awlist12345
+            rel: list_archive_url
+          items:
+            $ref: '#/components/schemas/Broadcast_links_inner'
+          type: array
+        notify_on_send:
+          description: "If true, notify when stats are available on a sent broadcast\
+            \ message, defaults to true."
+          type: boolean
+        opens_collection_link:
+          description: The link to this broadcasts opens collection.
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts/3456789/opens
+          format: uri
+          type: string
+        scheduled_for:
+          description: When broadcast is scheduled to send.
+          example: 2017-11-15T10:46:07.926074-05:00
+          format: date-time
+          type: string
+        segment_link:
+          description: "URL to the [Segment](#tag/Segments) to send this broadcast\
+            \ to."
+        segment_name:
+          description: "The name of the segment the broadcast will be sent to, or\
+            \ Unknown if the segment no longer exists."
+          example: my_segment
+          type: string
+        self_link:
+          description: The link to this resource.
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts/3456789
+          format: uri
+          type: string
+        sent_at:
+          description: Date/Time broadcast was sent.
+          format: date-time
+          type: string
+        stats:
+          description: "A list of statistics for a broadcast, only set for sent broadcasts."
+          example:
+            num_complaints: 0
+            num_emailed: 1
+            num_undeliv: 0
+            unique_clicks: 1
+            unique_opens: 1
+          type: object
+        status:
+          description: The status of the broadcast.
+          enum:
+          - admin_hold
+          - draft
+          - scheduled
+          - sending
+          - sent
+          - unknown
+          type: string
+        subject:
+          description: The broadcast subject line.
+          example: Weekly Recipes
+          maximum: 120
+          type: string
+        twitter_integration:
+          description: "URL to the [Twitter broadcast integration](#tag/Integrations)\
+            \ to use for this broadcast. When the broadcast is sent, the subject of\
+            \ the broadcast will be tweeted - e.g., `https://api.aweber.com/1.0/accounts/<account_id>/integrations/<integration_id>`"
+          example: https://api.aweber.com/1.0/accounts/123/integrations/2
+          format: uri
+          type: string
+      type: object
+    UpdateBroadcast:
+      properties:
+        body_html:
+          description: "The content of the message in html format. If body_text is\
+            \ not provided, it will be auto-generated."
+          example: <html><h1>Title</h1><body>Message body.</body></html>
+          format: html
+          type: string
+        body_text:
+          description: "The content of the message in plain text, used when HTML is\
+            \ not supported. If body_html is not provided, the broadcast will be sent\
+            \ using only the body_text."
+          example: This is the content of my message
+          type: string
+        body_amp:
+          description: "<b>[Please read <a href=\"https://help.aweber.com/hc/en-us/articles/360025741194\"\
+            \ target=\"_blank\">our KB article</a> before using this field.]</b><br>The\
+            \ content of the message in AMP format."
+          example: <html amp4email><body>content</body></html>
+          format: amp
+          type: string
+        click_tracking_enabled:
+          description: Enables links in the email message to be tracked.
+          type: boolean
+        exclude_lists:
+          description: "JSON encoded list of [Lists](#tag/Lists) URLs to exclude in\
+            \ the delivery of this broadcast.<br> Use the `self_link` of the list\
+            \ here - e.g. `https://api.aweber.com/1.0/accounts/<account_id>/lists/<list_id>`.\
+            \ If updated, this value will replace the existing excluded_lists."
+          example: "[\"\\\\\\\"https://api.aweber.com/1.0/accounts/123/lists/456\\\
+            \\\\\"\"]"
+          type: string
+        include_lists:
+          description: "JSON encoded list of [Lists](#tag/Lists) URLs to include in\
+            \ the delivery of this broadcast.<br> Use the `self_link` of the list\
+            \ here - e.g. `https://api.aweber.com/1.0/accounts/<account_id>/lists/<list_id>`.\
+            \ If updated, this value will replace the existing included_lists."
+          example: "[\"\\\\\\\"https://api.aweber.com/1.0/accounts/123/lists/456\\\
+            \\\\\"\"]"
+          type: string
+        facebook_integration:
+          description: "URL to the [Facebook broadcast integration](#tag/Integrations)\
+            \ to use for this broadcast. When the broadcast is sent, the subject of\
+            \ the broadcast will be posted to this Facebook integration  - e.g., `https://api.aweber.com/1.0/accounts/<account_id>/integrations/<integration_id>`"
+          example: https://api.aweber.com/1.0/accounts/123/integrations/1
+          format: uri
+          type: string
+        is_archived:
+          description: Whether the broadcast enabled sharing via an archive url.
+          type: boolean
+        notify_on_send:
+          description: "If true, notify when stats are available on a sent broadcast\
+            \ message, defaults to true."
+          type: boolean
+        subject:
+          description: The broadcast subject line. Subject must not be empty nor contain
+            only whitespace.
+          example: Weekly Recipes
+          maximum: 120
+          type: string
+        twitter_integration:
+          description: "URL to the [Twitter broadcast integration](#tag/Integrations)\
+            \ to use for this broadcast. When the broadcast is sent, the subject of\
+            \ the broadcast will be tweeted - e.g., `https://api.aweber.com/1.0/accounts/<account_id>/integrations/<integration_id>`"
+          example: https://api.aweber.com/1.0/accounts/123/integrations/2
+          format: uri
+          type: string
+        segment_link:
+          description: "URL to the [Segment](#tag/Segments) to send this broadcast\
+            \ to.  Use the `self_link` of the segment here - e.g. `https://api.aweber.com/1.0/accounts/<account_id>/lists/<list_id>/segments/<segment_id>`.\
+            \ If not specified, the broadcast will be sent to the “Active Subscribers”\
+            \ segment."
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/segments/1
+          format: url
+          type: string
+      type: object
+    ScheduleBroadcast:
+      properties:
+        scheduled_for:
+          description: "Scheduled time for sending broadcast message, ISO-8601 formatted."
+          format: date-time
+          type: string
+      required:
+      - scheduled_for
+      type: object
+    BroadcastOpens:
+      example:
+        entries:
+        - resource_type_link: https://api.aweber.com/1.0/#open
+          subscriber_link: https://api.aweber.com/1.0/accounts/123/lists/456/subscribers/789
+          type: open
+          email: user@example.com
+          event_time: 2017-07-18T16:53:02-04:00
+        - resource_type_link: https://api.aweber.com/1.0/#open
+          subscriber_link: https://api.aweber.com/1.0/accounts/123/lists/456/subscribers/789
+          type: open
+          email: user@example.com
+          event_time: 2017-07-18T16:53:02-04:00
+        prev_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts/789/opens?before=MjAyMC0wOS0wNCAxODozMzozNCswMDowMCw0NDk%3D
+        resource_type_link: https://api.aweber.com/1.0/#open-page-resource
+        total_size: 1
+        next_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts/789/opens?after=MjAyMC0wOS0wNCAxODozMzozNCswMDowMCw0NDk%3D
+      properties:
+        entries:
+          description: A list of entries
+          items:
+            $ref: '#/components/schemas/BroadcastOpens_entries_inner'
+          type: array
+        next_collection_link:
+          description: A link to the next page of entries if more entries exist. This
+            attribute is omitted from the collection if there are no more entries.
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts/789/opens?after=MjAyMC0wOS0wNCAxODozMzozNCswMDowMCw0NDk%3D
+          type: string
+        prev_collection_link:
+          description: A link to the previous page of entries if any exist.
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts/789/opens?before=MjAyMC0wOS0wNCAxODozMzozNCswMDowMCw0NDk%3D
+          type: string
+        resource_type_link:
+          description: A link that identifies the type of resource that this collection
+            represents
+          example: https://api.aweber.com/1.0/#open-page-resource
+          type: string
+        total_size:
+          description: The total number of entries
+          example: 1
+          minimum: 0
+          type: integer
+      type: object
+    BroadcastClicks:
+      example:
+        entries:
+        - resource_type_link: https://api.aweber.com/1.0/#click
+          subscriber_link: https://api.aweber.com/1.0/accounts/123/lists/456/subscribers/789
+          type: click
+          email: user@example.com
+          event_time: 2017-07-18T16:53:02-04:00
+        - resource_type_link: https://api.aweber.com/1.0/#click
+          subscriber_link: https://api.aweber.com/1.0/accounts/123/lists/456/subscribers/789
+          type: click
+          email: user@example.com
+          event_time: 2017-07-18T16:53:02-04:00
+        prev_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts/789/clicks?before=MjAyMC0wOS0wNCAxODozMzozNCswMDowMCw0NDk%3D
+        resource_type_link: https://api.aweber.com/1.0/#click-page-resource
+        total_size: 1
+        next_collection_link: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts/789/clicks?after=MjAyMC0wOS0wNCAxODozMzozNCswMDowMCw0NDk%3D
+      properties:
+        entries:
+          description: A list of entries
+          items:
+            $ref: '#/components/schemas/BroadcastClicks_entries_inner'
+          type: array
+        next_collection_link:
+          description: A link to the next page of entries if more entries exist. This
+            attribute is omitted from the collection if there are no more entries.
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts/789/clicks?after=MjAyMC0wOS0wNCAxODozMzozNCswMDowMCw0NDk%3D
+          type: string
+        prev_collection_link:
+          description: A link to the previous page of entries if any exist.
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts/789/clicks?before=MjAyMC0wOS0wNCAxODozMzozNCswMDowMCw0NDk%3D
+          type: string
+        resource_type_link:
+          description: A link that identifies the type of resource that this collection
+            represents
+          example: https://api.aweber.com/1.0/#click-page-resource
+          type: string
+        total_size:
+          description: The total number of entries
+          example: 1
+          minimum: 0
+          type: integer
+      type: object
+    _accounts__accountId__lists__listId__broadcasts_get_400_response_error:
+      description: |
+        An error object.
+        One of the following errors may be received:
+
+        | Error Type                  | Explanation                                |
+        |-----------------------------|--------------------------------------------|
+        | BadRequestError             | Query parameters are invalid |
+        | BroadcastDatetimeExpired    | Broadcast schedule time is in the past |
+        | InvalidBroadcastStatusError | `status` parameter has an invalid value |
+        | InvalidDatetimeError        | `scheduled_for` has an invalid value |
+        | InvalidIntegrationURIError  | An integration URI parameter has an invalid value |
+        | InvalidListURIError         | A list URI parameter has an invalid value |
+        | InvalidSegmentURIError      | `segment_link` parameter has an invalid value |
+        | InvalidSubjectError         | `subject` parameter has an invalid value |
+        | MissingArgumentError        | An required argument was not provided |
+        | MissingBodyError            | `body_html` or `body_text` paraeter was not provided |
+        | MissingDatetimeError        | `scheduled_for` parameter was not provided |
+        | MissingOAuthParametersError | An OAuth parameter is missing in the request |
+        | MissingStatusError          | `status` parameter was not provided |
+        | SplitTestSegmentError       | `segment_link` refers to a split test segment |
+        | UnsupportedOAuthSignatureMethodError | Unsupported OAuth 1 signature method |
+        | UnsupportedOAuthVersionError | Unsupported OAuth 1 version |
+        | WebServiceError             | `ws.start` or `ws.size` values are invalid |
+
+        Please see the message body for more details.
+      example:
+        documentation_url: https://api.aweber.com#badrequest
+        message: Maximum for "ws.size" parameter is 100.
+        type: BadRequestError
+        status: 6
+      properties:
+        documentation_url:
+          description: A link to the documentation that describes the error
+          example: https://api.aweber.com#badrequest
+          type: string
+        message:
+          description: A human friendly description of the error
+          example: Maximum for "ws.size" parameter is 100.
+          type: string
+        status:
+          description: The HTTP status code
+          enum:
+          - 400
+          type: integer
+        type:
+          description: The API error type
+          enum:
+          - BadRequestError
+          - BroadcastDatetimeExpired
+          - InvalidBroadcastStatusError
+          - InvalidDatetimeError
+          - InvalidIntegrationURIError
+          - InvalidListURIError
+          - InvalidSubjectError
+          - MissingArgumentError
+          - MissingBodyError
+          - MissingDatetimeError
+          - MissingOAuthParametersError
+          - MissingStatusError
+          - UnsupportedOAuthSignatureMethodError
+          - UnsupportedOAuthVersionError
+          - WebServiceError
+          example: BadRequestError
+          type: string
+      type: object
+    _accounts__accountId__lists__listId__broadcasts_get_400_response:
+      example:
+        error:
+          documentation_url: https://api.aweber.com#badrequest
+          message: Maximum for "ws.size" parameter is 100.
+          type: BadRequestError
+          status: 6
+      properties:
+        error:
+          $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_400_response_error'
+      type: object
+    _accounts__accountId__lists__listId__broadcasts_get_401_response:
+      oneOf:
+      - $ref: '#/components/schemas/Endpoint Error'
+      - $ref: '#/components/schemas/Auth Error'
+    _accounts__accountId__lists__listId__broadcasts_get_403_response_error:
+      description: |
+        An error object.
+        The following error may be received:
+
+        | Error Type           | Explanation                              |
+        |----------------------|------------------------------------------|
+        | ForbiddenError       | Rate limit may be reached or account may be suspended |
+
+        Please see the message body for more details.
+      example:
+        documentation_url: https://api.aweber.com#forbidden
+        message: Rate Limit Error
+        type: ForbiddenError
+        status: 5
+      properties:
+        documentation_url:
+          description: A link to the documentation that describes the error
+          example: https://api.aweber.com#forbidden
+          type: string
+        message:
+          description: A human friendly description of the error
+          example: Rate Limit Error
+          type: string
+        status:
+          description: The HTTP status code
+          enum:
+          - 403
+          type: integer
+        type:
+          description: The API error type
+          enum:
+          - ForbiddenError
+          type: string
+      type: object
+    _accounts__accountId__lists__listId__broadcasts_get_403_response:
+      example:
+        error:
+          documentation_url: https://api.aweber.com#forbidden
+          message: Rate Limit Error
+          type: ForbiddenError
+          status: 5
+      properties:
+        error:
+          $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_403_response_error'
+      type: object
+    _accounts__accountId__lists__listId__broadcasts_get_404_response_error:
+      description: |
+        An error object.
+        The following errors may be received:
+
+        | Error Type             | Explanation                           |
+        |------------------------|---------------------------------------|
+        | BroadcastNotFoundError | The requested broadcast could not be found |
+        | ListNotFoundError      | The requested list could not be found |
+        | ResourceNotFoundError  | The requested resource could not be found |
+
+        Please see the message body for more details.
+      example:
+        documentation_url: https://api.aweber.com#notfound
+        message: List id:456 not found
+        type: ListNotFoundError
+        status: 5
+      properties:
+        documentation_url:
+          description: A link to the documentation that describes the error
+          example: https://api.aweber.com#notfound
+          type: string
+        message:
+          description: A human friendly description of the error
+          example: List id:456 not found
+          type: string
+        status:
+          description: The HTTP status code
+          enum:
+          - 404
+          type: integer
+        type:
+          description: The API error type
+          enum:
+          - BroadcastNotFoundError
+          - ListNotFoundError
+          - ResourceNotFoundError
+          example: ListNotFoundError
+          type: string
+      type: object
+    _accounts__accountId__lists__listId__broadcasts_get_404_response:
+      example:
+        error:
+          documentation_url: https://api.aweber.com#notfound
+          message: List id:456 not found
+          type: ListNotFoundError
+          status: 5
+      properties:
+        error:
+          $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_404_response_error'
+      type: object
+    _accounts__accountId__lists__listId__broadcasts_get_410_response_error:
+      description: |
+        An error object.
+        The following error may be received:
+
+        | Error Type           | Explanation                              |
+        |----------------------|------------------------------------------|
+        | BlockedError         | This Request has been blocked            |
+
+        Please see the message body for more details.
+      example:
+        documentation_url: https://api.aweber.com/#blocked
+        message: Blocked Error
+        type: BlockedError
+        status: 2
+      properties:
+        documentation_url:
+          description: A link to the documentation that describes the error
+          example: https://api.aweber.com/#blocked
+          type: string
+        message:
+          description: A human friendly description of the error
+          example: Blocked Error
+          type: string
+        status:
+          description: The HTTP status code
+          enum:
+          - 410
+          type: integer
+        type:
+          description: The API error type
+          enum:
+          - BlockedError
+          type: string
+      type: object
+    _accounts__accountId__lists__listId__broadcasts_get_410_response:
+      example:
+        error:
+          documentation_url: https://api.aweber.com/#blocked
+          message: Blocked Error
+          type: BlockedError
+          status: 2
+      properties:
+        error:
+          $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_410_response_error'
+      type: object
+    _accounts__accountId__lists__listId__broadcasts_get_500_response_error:
+      description: |
+        An error object.
+        The following error may be received:
+
+        | Error Type           | Explanation                              |
+        |----------------------|------------------------------------------|
+        | InternalServerError    | The request failed due to an internal error |
+
+        Please see the message body for more details.
+      example:
+        documentation_url: https://api.aweber.com#internalerror
+        message: Something went wrong.
+        type: InternalServerError
+        status: 7
+      properties:
+        documentation_url:
+          description: A link to the documentation that describes the error
+          example: https://api.aweber.com#internalerror
+          type: string
+        message:
+          description: A human friendly description of the error
+          example: Something went wrong.
+          type: string
+        status:
+          description: The HTTP status code
+          enum:
+          - 500
+          type: integer
+        type:
+          description: The API error type
+          enum:
+          - InternalServerError
+          type: string
+      type: object
+    _accounts__accountId__lists__listId__broadcasts_get_500_response:
+      example:
+        error:
+          documentation_url: https://api.aweber.com#internalerror
+          message: Something went wrong.
+          type: InternalServerError
+          status: 7
+      properties:
+        error:
+          $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_500_response_error'
+      type: object
+    _accounts__accountId__lists__listId__broadcasts_get_503_response_error:
+      description: |
+        An error object.
+        The following error may be received:
+
+        | Error Type           | Explanation                              |
+        |----------------------|------------------------------------------|
+        | ServiceUnavailableError | The server is unavailable |
+
+        Please see the message body for more details.
+      example:
+        documentation_url: https://api.aweber.com#serviceunavailable
+        message: Failed to communicate with endpoint
+        type: ServiceUnavailableError
+        status: 9
+      properties:
+        documentation_url:
+          description: A link to the documentation that describes the error
+          example: https://api.aweber.com#serviceunavailable
+          type: string
+        message:
+          description: A human friendly description of the error
+          example: Failed to communicate with endpoint
+          type: string
+        status:
+          description: The HTTP status code
+          enum:
+          - 503
+          type: integer
+        type:
+          description: The API error type
+          enum:
+          - ServiceUnavailableError
+          type: string
+      type: object
+    _accounts__accountId__lists__listId__broadcasts_get_503_response:
+      example:
+        error:
+          documentation_url: https://api.aweber.com#serviceunavailable
+          message: Failed to communicate with endpoint
+          type: ServiceUnavailableError
+          status: 9
+      properties:
+        error:
+          $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_get_503_response_error'
+      type: object
+    _accounts__accountId__lists__listId__broadcasts_post_403_response_error:
+      description: |
+        An error object.
+        The following error may be received:
+
+        | Error Type           | Explanation                              |
+        |----------------------|------------------------------------------|
+        | ForbiddenError       | Rate limit may be reached, account may be suspended, or the application does not have Manage Email permission |
+
+        Please see the message body for more details.
+      example:
+        documentation_url: https://api.aweber.com#forbidden
+        message: Rate Limit Error
+        type: ForbiddenError
+        status: 0
+      properties:
+        documentation_url:
+          description: A link to the documentation that describes the error
+          example: https://api.aweber.com#forbidden
+          type: string
+        message:
+          description: A human friendly description of the error
+          example: Rate Limit Error
+          type: string
+        status:
+          description: The HTTP status code
+          enum:
+          - 403
+          type: integer
+        type:
+          description: The API error type
+          enum:
+          - ForbiddenError
+          type: string
+      type: object
+    _accounts__accountId__lists__listId__broadcasts_post_403_response:
+      example:
+        error:
+          documentation_url: https://api.aweber.com#forbidden
+          message: Rate Limit Error
+          type: ForbiddenError
+          status: 0
+      properties:
+        error:
+          $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_post_403_response_error'
+      type: object
+    _accounts__accountId__lists__listId__broadcasts_post_415_response_error:
+      description: |
+        An error object.
+        The following error may be received:
+
+        | Error Type         | Explanation                               |
+        |--------------------|-------------------------------------------|
+        | InvalidContentType | The requested resource could not be found |
+
+        Please see the message body for more details.
+      example:
+        documentation_url: https://api.aweber.com#invalidcontent
+        message: Content Type must be application/x-www-form-urlencoded
+        type: InvalidContentType
+        status: 6
+      properties:
+        documentation_url:
+          description: A link to the documentation that describes the error
+          example: https://api.aweber.com#invalidcontent
+          type: string
+        message:
+          description: A human friendly description of the error
+          example: Content Type must be application/x-www-form-urlencoded
+          type: string
+        status:
+          description: The HTTP status code
+          enum:
+          - 415
+          type: integer
+        type:
+          description: The API error type
+          enum:
+          - InvalidContentType
+          type: string
+      type: object
+    _accounts__accountId__lists__listId__broadcasts_post_415_response:
+      example:
+        error:
+          documentation_url: https://api.aweber.com#invalidcontent
+          message: Content Type must be application/x-www-form-urlencoded
+          type: InvalidContentType
+          status: 6
+      properties:
+        error:
+          $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts_post_415_response_error'
+      type: object
+    _accounts__accountId__lists__listId__broadcasts__broadcastId__put_409_response_error:
+      description: |
+        An error object.
+        The following error may be received:
+
+        | Error Type               | Explanation                              |
+        |--------------------------|------------------------------------------|
+        | BroadcastSchedulingError | Scheduling or canceling failed due to the broadcast status or the account being locked. |
+
+        Please see the message body for more details.
+      example:
+        documentation_url: https://api.aweber.com#conflict
+        message: "This broadcast cannot be scheduled. It may have been queued, sent\
+          \ or the account is locked"
+        type: BroadcastSchedulingError
+        status: 0
+      properties:
+        documentation_url:
+          description: A link to the documentation that describes the error
+          example: https://api.aweber.com#conflict
+          type: string
+        message:
+          description: A human friendly description of the error
+          example: "This broadcast cannot be scheduled. It may have been queued, sent\
+            \ or the account is locked"
+          type: string
+        status:
+          description: The HTTP status code
+          enum:
+          - 409
+          type: integer
+        type:
+          description: The API error type
+          enum:
+          - BroadcastSchedulingError
+          type: string
+      type: object
+    _accounts__accountId__lists__listId__broadcasts__broadcastId__put_409_response:
+      example:
+        error:
+          documentation_url: https://api.aweber.com#conflict
+          message: "This broadcast cannot be scheduled. It may have been queued, sent\
+            \ or the account is locked"
+          type: BroadcastSchedulingError
+          status: 0
+      properties:
+        error:
+          $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts__broadcastId__put_409_response_error'
+      type: object
+    _accounts__accountId__lists__listId__broadcasts__broadcastId__cancel_post_200_response:
+      example:
+        self_link: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts/3456789
+      properties:
+        self_link:
+          description: The link to this resource.
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts/3456789
+          format: uri
+          type: string
+      type: object
+    _accounts__accountId__lists__listId__broadcasts_total_get_200_response:
+      example:
+        total_size: 4
+      properties:
+        total_size:
+          description: The total broadcasts with the status.
+          example: 4
+          type: integer
+      type: object
+    _accounts__accountId__lists__listId__broadcasts__broadcastId__schedule_post_200_response:
+      example:
+        self_link: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts/3456789
+      properties:
+        self_link:
+          description: The link to the broadcast resource.
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts/3456789
+          format: uri
+          type: string
+      type: object
+    _accounts__accountId__lists__listId__broadcasts__broadcastId__opens_get_400_response_error:
+      description: |
+        An error object.
+        The following error may be received:
+
+        | Error Type        | Explanation |
+        |-------------------|-------------|
+        | BadRequestError   | The request is malformed.  This can be caused by missing authorization credentials |
+      example:
+        documentation_url: https://api.aweber.com#badrequest
+        message: Missing required argument(s)
+        type: BadRequestError
+        status: 0
+      properties:
+        documentation_url:
+          description: A link to the documentation that describes the error
+          example: https://api.aweber.com#badrequest
+          type: string
+        message:
+          description: A human friendly description of the error
+          example: Missing required argument(s)
+          type: string
+        status:
+          description: The HTTP status code
+          enum:
+          - 400
+          type: integer
+        type:
+          description: The API error type
+          enum:
+          - BadRequestError
+          type: string
+      type: object
+    _accounts__accountId__lists__listId__broadcasts__broadcastId__opens_get_400_response:
+      example:
+        error:
+          documentation_url: https://api.aweber.com#badrequest
+          message: Missing required argument(s)
+          type: BadRequestError
+          status: 0
+      properties:
+        error:
+          $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts__broadcastId__opens_get_400_response_error'
+      type: object
+    _accounts__accountId__lists__listId__broadcasts__broadcastId__opens_get_404_response_error:
+      description: |
+        An error object.
+        The following error may be received:
+
+        | Error Type           | Explanation                              |
+        |----------------------|------------------------------------------|
+        | NotFoundError        | The requested resource could not be found |
+
+        Please see the message body for more details.
+      example:
+        documentation_url: https://api.aweber.com#notfound
+        message: "Object: None, name: ''"
+        type: NotFoundError
+        status: 6
+      properties:
+        documentation_url:
+          description: A link to the documentation that describes the error
+          example: https://api.aweber.com#notfound
+          type: string
+        message:
+          description: A human friendly description of the error
+          example: "Object: None, name: ''"
+          type: string
+        status:
+          description: The HTTP status code
+          enum:
+          - 404
+          type: integer
+        type:
+          description: The API error type
+          enum:
+          - NotFoundError
+          type: string
+      type: object
+    _accounts__accountId__lists__listId__broadcasts__broadcastId__opens_get_404_response:
+      example:
+        error:
+          documentation_url: https://api.aweber.com#notfound
+          message: "Object: None, name: ''"
+          type: NotFoundError
+          status: 6
+      properties:
+        error:
+          $ref: '#/components/schemas/_accounts__accountId__lists__listId__broadcasts__broadcastId__opens_get_404_response_error'
+      type: object
+    Broadcasts_entries_inner:
+      example:
+        sent_at: 2017-11-15T14:26:36.210647-05:00
+        subject: Weekly Recipes
+        scheduled_for: 2017-11-15T10:46:07.926074-05:00
+        self_link: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts/3456789
+        status: sent
+      properties:
+        self_link:
+          description: The link to this resource.
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts/3456789
+          format: uri
+          type: string
+        status:
+          description: The status of the broadcast.
+          enum:
+          - draft
+          - scheduled
+          - sent
+          example: sent
+          type: string
+        scheduled_for:
+          description: When broadcast is scheduled to send.
+          example: 2017-11-15T10:46:07.926074-05:00
+          format: date-time
+          type: string
+        sent_at:
+          description: Date/Time broadcast was sent.
+          example: 2017-11-15T14:26:36.210647-05:00
+          format: date-time
+          type: string
+        subject:
+          description: The broadcast subject line.
+          example: Weekly Recipes
+          maximum: 120
+          type: string
+      type: object
+    Endpoint_Error_error:
+      description: |
+        An error object.
+        The following error may be received:
+
+        | Error Type           | Explanation                              |
+        |----------------------|------------------------------------------|
+        | UnauthorizedError    | There is a problem with your authorization credentials |
+
+        Please see the message body for more details.
+      example:
+        documentation_url: https://api.aweber.com#unauthorized
+        message: Consumer key is invalid.
+        type: UnauthorizedError
+        status: 1
+      properties:
+        documentation_url:
+          description: A link to the documentation that describes the error
+          example: https://api.aweber.com#unauthorized
+          type: string
+        message:
+          description: A human friendly description of the error
+          example: Consumer key is invalid.
+          type: string
+        status:
+          description: The HTTP status code
+          enum:
+          - 401
+          type: integer
+        type:
+          description: The API error type
+          enum:
+          - UnauthorizedError
+          type: string
+      type: object
+    Broadcast_links_inner:
+      properties:
+        href:
+          description: Link target
+          example: http://archive.aweber.com/awlist12345.rss
+          format: uri
+          type: string
+        rel:
+          description: "Link relation (`\"list_archive_rss_url\"`, `\"list_archive_url\"\
+            `, etc.)"
+          example: list_archive_rss_url
+          type: string
+      type: object
+    BroadcastOpens_entries_inner:
+      example:
+        resource_type_link: https://api.aweber.com/1.0/#open
+        subscriber_link: https://api.aweber.com/1.0/accounts/123/lists/456/subscribers/789
+        type: open
+        email: user@example.com
+        event_time: 2017-07-18T16:53:02-04:00
+      properties:
+        email:
+          description: "Email address of the subscriber who opened the broadcast.\
+            \ *Note:* This is the current email address of the subscriber, not necessarily\
+            \ the email address the broadcast was sent to."
+          example: user@example.com
+          type: string
+        event_time:
+          description: Time that the open occurred
+          example: 2017-07-18T16:53:02-04:00
+          format: date-time
+          type: string
+        resource_type_link:
+          description: A link to the open type
+          example: https://api.aweber.com/1.0/#open
+          type: string
+        subscriber_link:
+          description: The link to the subscriber entry
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/subscribers/789
+          type: string
+        type:
+          description: Type of subscriber activity
+          enum:
+          - open
+          type: string
+    BroadcastClicks_entries_inner:
+      example:
+        resource_type_link: https://api.aweber.com/1.0/#click
+        subscriber_link: https://api.aweber.com/1.0/accounts/123/lists/456/subscribers/789
+        type: click
+        email: user@example.com
+        event_time: 2017-07-18T16:53:02-04:00
+      properties:
+        email:
+          description: "Email address of the subscriber who clicked the broadcast.\
+            \ *Note:* This is the current email address of the subscriber, not necessarily\
+            \ the email address the broadcast was sent to."
+          example: user@example.com
+          type: string
+        event_time:
+          description: Time that the click occurred
+          example: 2017-07-18T16:53:02-04:00
+          format: date-time
+          type: string
+        resource_type_link:
+          description: A link to the click type
+          example: https://api.aweber.com/1.0/#click
+          type: string
+        subscriber_link:
+          description: The link to the subscriber entry
+          example: https://api.aweber.com/1.0/accounts/123/lists/456/subscribers/789
+          type: string
+        type:
+          description: Type of subscriber activity
+          enum:
+          - click
+          type: string

@@ -12,8 +12,6 @@ info:
 tags:
   - name: Campaigns
 
-produces:
- - application/json
 
 paths:
   /accounts/{accountId}/lists/{listId}/campaigns:
@@ -179,7 +177,6 @@ paths:
         - $ref: '_parameters.yaml#/parameters/listId'
         - name: ws.op
           in: query
-          requires: true
           description: The method name - expecting "find"
           schema:
             type: string
@@ -270,7 +267,6 @@ paths:
           content:
             application/json:
               schema:
-                type: object
                 $ref: '_definitions.yaml#/definitions/Links'
         '400':
           $ref: '_responses.yaml#/responses/CampaignBadRequest'
@@ -333,7 +329,6 @@ paths:
           content:
             application/json:
               schema:
-                type: object
                 $ref: '_definitions.yaml#/definitions/Link'
         '400':
           $ref: '_responses.yaml#/responses/CampaignBadRequest'
@@ -397,7 +392,6 @@ paths:
           content:
             application/json:
               schema:
-                type: object
                 $ref: '_definitions.yaml#/definitions/Clicks'
         '400':
           $ref: '_responses.yaml#/responses/CampaignBadRequest'
@@ -461,7 +455,6 @@ paths:
           content:
             application/json:
               schema:
-                type: object
                 $ref: '_definitions.yaml#/definitions/Click'
         '400':
           $ref: '_responses.yaml#/responses/CampaignBadRequest'
@@ -525,7 +518,6 @@ paths:
           content:
             application/json:
               schema:
-                type: object
                 $ref: '_definitions.yaml#/definitions/Stats'
         '400':
           $ref: '_responses.yaml#/responses/CampaignBadRequest'
@@ -587,7 +579,6 @@ paths:
           content:
             application/json:
               schema:
-                type: object
                 $ref: '_definitions.yaml#/definitions/Stat'
         '400':
           $ref: '_responses.yaml#/responses/CampaignBadRequest'
