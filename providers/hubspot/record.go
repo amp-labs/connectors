@@ -54,7 +54,13 @@ func (c *Connector) GetRecord(ctx context.Context, objectName string, recordId s
 	}, nil
 }
 
-func (c *Connector) GetRecordsWithIds(ctx context.Context, objectName string, ids []string, fields []string) ([]common.ReadResultRow, error) {
+//nolint:revive
+func (c *Connector) GetRecordsWithIds(
+	ctx context.Context,
+	objectName string,
+	ids []string,
+	fields []string,
+) ([]common.ReadResultRow, error) {
 	if !getRecordSupportedObjectsSet.Has(objectName) {
 		return nil, fmt.Errorf("%w %s", errGerRecordNotSupportedForObject, objectName)
 	}
