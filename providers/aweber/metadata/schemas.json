@@ -1,0 +1,225 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "/accounts",
+      "objects": {
+        "accounts": {
+          "displayName": "Accounts",
+          "path": "",
+          "responseKey": "entries",
+          "fields": {
+            "analytics_src": "analytics_src",
+            "company": "company",
+            "http_etag": "http_etag",
+            "id": "id",
+            "integrations_collection_link": "integrations_collection_link",
+            "lists_collection_link": "lists_collection_link",
+            "resource_type_link": "resource_type_link",
+            "self_link": "self_link",
+            "uuid": "uuid"
+          }
+        },
+        "broadcasts": {
+          "displayName": "Broadcasts",
+          "path": "/{accountId}/lists/{listId}/broadcasts",
+          "responseKey": "entries",
+          "fields": {
+            "scheduled_for": "scheduled_for",
+            "self_link": "self_link",
+            "sent_at": "sent_at",
+            "status": "status",
+            "subject": "subject"
+          }
+        },
+        "campaigns": {
+          "displayName": "Campaigns",
+          "path": "/{accountId}/lists/{listId}/campaigns",
+          "responseKey": "entries",
+          "fields": {
+            "campaign_type": "campaign_type",
+            "click_tracking_enabled": "click_tracking_enabled",
+            "content_type": "content_type",
+            "id": "id",
+            "is_archived": "is_archived",
+            "links_collection_link": "links_collection_link",
+            "message_interval": "message_interval",
+            "message_number": "message_number",
+            "resource_type_link": "resource_type_link",
+            "scheduled_at": "scheduled_at",
+            "self_link": "self_link",
+            "sent_at": "sent_at",
+            "spam_assassin_score": "spam_assassin_score",
+            "stats_collection_link": "stats_collection_link",
+            "subject": "subject",
+            "total_clicks": "total_clicks",
+            "total_opens": "total_opens",
+            "total_sent": "total_sent",
+            "total_spam_complaints": "total_spam_complaints",
+            "total_undelivered": "total_undelivered",
+            "total_unsubscribes": "total_unsubscribes",
+            "twitter_account_link": "twitter_account_link"
+          }
+        },
+        "custom-fields": {
+          "displayName": "Custom Fields",
+          "path": "/{accountId}/lists/{listId}/custom_fields",
+          "responseKey": "entries",
+          "fields": {
+            "http_etag": "http_etag",
+            "id": "id",
+            "is_subscriber_updateable": "is_subscriber_updateable",
+            "name": "name",
+            "resource_type_link": "resource_type_link",
+            "self_link": "self_link"
+          }
+        },
+        "integrations": {
+          "displayName": "Integrations",
+          "path": "/{accountId}/integrations",
+          "responseKey": "entries",
+          "fields": {
+            "http_etag": "http_etag",
+            "id": "id",
+            "login": "login",
+            "resource_type_link": "resource_type_link",
+            "self_link": "self_link",
+            "service_name": "service_name"
+          }
+        },
+        "landing-pages": {
+          "displayName": "Landing Pages",
+          "path": "/{accountId}/lists/{listId}/landing_pages",
+          "responseKey": "entries",
+          "fields": {
+            "created_at": "created_at",
+            "id": "id",
+            "modified_at": "modified_at",
+            "name": "name",
+            "published_at": "published_at",
+            "published_url": "published_url",
+            "resource_type_link": "resource_type_link",
+            "self_link": "self_link",
+            "status": "status"
+          }
+        },
+        "lists": {
+          "displayName": "Lists",
+          "path": "/{accountId}/lists",
+          "responseKey": "entries",
+          "fields": {
+            "campaigns_collection_link": "campaigns_collection_link",
+            "custom_fields_collection_link": "custom_fields_collection_link",
+            "draft_broadcasts_link": "draft_broadcasts_link",
+            "http_etag": "http_etag",
+            "id": "id",
+            "landing_pages_collection_link": "landing_pages_collection_link",
+            "name": "name",
+            "resource_type_link": "resource_type_link",
+            "scheduled_broadcasts_link": "scheduled_broadcasts_link",
+            "segments_collection_link": "segments_collection_link",
+            "self_link": "self_link",
+            "sent_broadcasts_link": "sent_broadcasts_link",
+            "subscribers_collection_link": "subscribers_collection_link",
+            "total_subscribed_subscribers": "total_subscribed_subscribers",
+            "total_subscribers": "total_subscribers",
+            "total_subscribers_subscribed_today": "total_subscribers_subscribed_today",
+            "total_subscribers_subscribed_yesterday": "total_subscribers_subscribed_yesterday",
+            "total_unconfirmed_subscribers": "total_unconfirmed_subscribers",
+            "total_unsubscribed_subscribers": "total_unsubscribed_subscribers",
+            "unique_list_id": "unique_list_id",
+            "uuid": "uuid",
+            "vapid_public_key": "vapid_public_key",
+            "web_form_split_tests_collection_link": "web_form_split_tests_collection_link",
+            "web_forms_collection_link": "web_forms_collection_link"
+          }
+        },
+        "segments": {
+          "displayName": "Segments",
+          "path": "/{accountId}/lists/{listId}/segments",
+          "responseKey": "entries",
+          "fields": {
+            "id": "id",
+            "is_split_test": "is_split_test",
+            "name": "name",
+            "resource_type_link": "resource_type_link",
+            "self_link": "self_link"
+          }
+        },
+        "subscribers": {
+          "displayName": "Subscribers",
+          "path": "/{accountId}/lists/{listId}/subscribers",
+          "responseKey": "entries",
+          "fields": {
+            "ad_tracking": "ad_tracking",
+            "area_code": "area_code",
+            "city": "city",
+            "country": "country",
+            "custom_fields": "custom_fields",
+            "dma_code": "dma_code",
+            "email": "email",
+            "id": "id",
+            "ip_address": "ip_address",
+            "is_verified": "is_verified",
+            "last_followup_message_number_sent": "last_followup_message_number_sent",
+            "last_followup_sent_at": "last_followup_sent_at",
+            "last_followup_sent_link": "last_followup_sent_link",
+            "latitude": "latitude",
+            "longitude": "longitude",
+            "misc_notes": "misc_notes",
+            "name": "name",
+            "postal_code": "postal_code",
+            "region": "region",
+            "resource_type_link": "resource_type_link",
+            "self_link": "self_link",
+            "status": "status",
+            "subscribed_at": "subscribed_at",
+            "subscription_method": "subscription_method",
+            "subscription_url": "subscription_url",
+            "tags": "tags",
+            "unsubscribe_method": "unsubscribe_method",
+            "unsubscribed_at": "unsubscribed_at",
+            "verified_at": "verified_at"
+          }
+        },
+        "web-form-split-tests": {
+          "displayName": "Web Form Split Tests",
+          "path": "/{accountId}/lists/{listId}/web_form_split_tests",
+          "responseKey": "entries",
+          "fields": {
+            "components_collection_link": "components_collection_link",
+            "http_etag": "http_etag",
+            "id": "id",
+            "is_active": "is_active",
+            "javascript_source_link": "javascript_source_link",
+            "name": "name",
+            "resource_type_link": "resource_type_link",
+            "self_link": "self_link"
+          }
+        },
+        "web-forms": {
+          "displayName": "Web Forms",
+          "path": "/{accountId}/lists/{listId}/web_forms",
+          "responseKey": "entries",
+          "fields": {
+            "conversion_percentage": "conversion_percentage",
+            "html_source_link": "html_source_link",
+            "http_etag": "http_etag",
+            "id": "id",
+            "is_active": "is_active",
+            "javascript_source_link": "javascript_source_link",
+            "name": "name",
+            "resource_type_link": "resource_type_link",
+            "self_link": "self_link",
+            "tags": "tags",
+            "total_displays": "total_displays",
+            "total_submissions": "total_submissions",
+            "total_unique_displays": "total_unique_displays",
+            "type": "type",
+            "unique_conversion_percentage": "unique_conversion_percentage"
+          }
+        }
+      }
+    }
+  }
+}
