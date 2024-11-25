@@ -170,7 +170,7 @@ type ReadResultRow struct {
 	Fields map[string]any `json:"fields"`
 	// Raw is the raw JSON response from the provider.
 	Raw map[string]any `json:"raw"`
-	// RecordId is the ID of the record. Currently only used for hubspot
+	// RecordId is the ID of the record. Currently only populated for hubspot GetRecord and GetRecordsWithId function
 	Id string `json:"id,omitempty"`
 }
 

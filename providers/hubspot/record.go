@@ -49,8 +49,15 @@ func (c *Connector) GetRecord(ctx context.Context, objectName string, recordId s
 		return nil, fmt.Errorf("error parsing record: %w", err)
 	}
 
+	id, err := extractIdFromRecord(*record)
+	if err != nil {
+		// this should never happen unless the provider changes webhook message format
+		return nil, err
+	}
+
 	return &common.ReadResultRow{
 		Raw: *record,
+		Id:  id,
 	}, nil
 }
 
