@@ -76,4 +76,11 @@ func main() {
 	}
 
 	utils.DumpJSON(recordResult, os.Stdout)
+
+	records, err := conn.GetRecordsWithIds(ctx, "contact", []string{writeResult.RecordId}, nil)
+	if err != nil {
+		utils.Fail("error getting records with ids", "error", err)
+	}
+
+	utils.DumpJSON(records, os.Stdout)
 }
