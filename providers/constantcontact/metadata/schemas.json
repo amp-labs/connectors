@@ -1,0 +1,208 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "",
+      "objects": {
+        "account_emails": {
+          "displayName": "Account Emails",
+          "path": "/account/emails",
+          "responseKey": "",
+          "fields": {
+            "confirm_source_type": "confirm_source_type",
+            "confirm_status": "confirm_status",
+            "confirm_time": "confirm_time",
+            "email_address": "email_address",
+            "email_id": "email_id",
+            "pending_roles": "pending_roles",
+            "roles": "roles"
+          }
+        },
+        "accounts": {
+          "displayName": "Accounts",
+          "path": "/partner/accounts",
+          "responseKey": "site_owner_list",
+          "fields": {
+            "billing_status": "billing_status",
+            "encoded_account_id": "encoded_account_id",
+            "last_login_date": "last_login_date",
+            "organization_name": "organization_name",
+            "site_owner_name": "site_owner_name",
+            "subscriber_count": "subscriber_count"
+          }
+        },
+        "activities": {
+          "displayName": "Activities",
+          "path": "/activities",
+          "responseKey": "activities",
+          "fields": {
+            "_links": "_links",
+            "activity_errors": "activity_errors",
+            "activity_id": "activity_id",
+            "completed_at": "completed_at",
+            "created_at": "created_at",
+            "percent_done": "percent_done",
+            "source_file_name": "source_file_name",
+            "started_at": "started_at",
+            "state": "state",
+            "status": "status",
+            "updated_at": "updated_at"
+          }
+        },
+        "campaign_id_xrefs": {
+          "displayName": "Email Campaign Identifiers",
+          "path": "/emails/campaign_id_xrefs",
+          "responseKey": "xrefs",
+          "fields": {
+            "campaign_activity_id": "campaign_activity_id",
+            "campaign_id": "campaign_id",
+            "v2_email_campaign_id": "v2_email_campaign_id"
+          }
+        },
+        "contact_custom_fields": {
+          "displayName": "Contact Custom Fields",
+          "path": "/contact_custom_fields",
+          "responseKey": "custom_fields",
+          "fields": {
+            "created_at": "created_at",
+            "custom_field_id": "custom_field_id",
+            "label": "label",
+            "name": "name",
+            "type": "type",
+            "updated_at": "updated_at"
+          }
+        },
+        "contact_id_xrefs": {
+          "displayName": "Contact Identifiers",
+          "path": "/contacts/contact_id_xrefs",
+          "responseKey": "xrefs",
+          "fields": {
+            "contact_id": "contact_id",
+            "sequence_id": "sequence_id"
+          }
+        },
+        "contact_lists": {
+          "displayName": "Contact Lists",
+          "path": "/contact_lists",
+          "responseKey": "lists",
+          "fields": {
+            "created_at": "created_at",
+            "deleted_at": "deleted_at",
+            "description": "description",
+            "favorite": "favorite",
+            "list_id": "list_id",
+            "membership_count": "membership_count",
+            "name": "name",
+            "updated_at": "updated_at"
+          }
+        },
+        "contact_tags": {
+          "displayName": "Contact Tags",
+          "path": "/contact_tags",
+          "responseKey": "tags",
+          "fields": {
+            "contacts_count": "contacts_count",
+            "created_at": "created_at",
+            "name": "name",
+            "tag_id": "tag_id",
+            "tag_source": "tag_source",
+            "updated_at": "updated_at"
+          }
+        },
+        "contacts": {
+          "displayName": "Contacts",
+          "path": "/contacts",
+          "responseKey": "contacts",
+          "fields": {
+            "anniversary": "anniversary",
+            "birthday_day": "birthday_day",
+            "birthday_month": "birthday_month",
+            "company_name": "company_name",
+            "contact_id": "contact_id",
+            "create_source": "create_source",
+            "created_at": "created_at",
+            "custom_fields": "custom_fields",
+            "deleted_at": "deleted_at",
+            "email_address": "email_address",
+            "first_name": "first_name",
+            "job_title": "job_title",
+            "last_name": "last_name",
+            "list_memberships": "list_memberships",
+            "notes": "notes",
+            "phone_numbers": "phone_numbers",
+            "sms_channel": "sms_channel",
+            "street_addresses": "street_addresses",
+            "taggings": "taggings",
+            "update_source": "update_source",
+            "updated_at": "updated_at"
+          }
+        },
+        "email_campaign_summaries": {
+          "displayName": "Email Campaign Summaries",
+          "path": "/reports/summary_reports/email_campaign_summaries",
+          "responseKey": "bulk_email_campaign_summaries",
+          "fields": {
+            "campaign_id": "campaign_id",
+            "campaign_type": "campaign_type",
+            "last_sent_date": "last_sent_date",
+            "unique_counts": "unique_counts"
+          }
+        },
+        "email_campaigns": {
+          "displayName": "Email Campaigns",
+          "path": "/emails",
+          "responseKey": "campaigns",
+          "fields": {
+            "campaign_id": "campaign_id",
+            "created_at": "created_at",
+            "current_status": "current_status",
+            "name": "name",
+            "type": "type",
+            "type_code": "type_code",
+            "updated_at": "updated_at"
+          }
+        },
+        "list_id_xrefs": {
+          "displayName": "List Identifiers",
+          "path": "/contact_lists/list_id_xrefs",
+          "responseKey": "xrefs",
+          "fields": {
+            "list_id": "list_id",
+            "sequence_id": "sequence_id"
+          }
+        },
+        "privileges": {
+          "displayName": "Privileges",
+          "path": "/account/user/privileges",
+          "responseKey": "",
+          "fields": {
+            "privilege_id": "privilege_id",
+            "privilege_name": "privilege_name"
+          }
+        },
+        "segments": {
+          "displayName": "Segments",
+          "path": "/segments",
+          "responseKey": "segments",
+          "fields": {
+            "created_at": "created_at",
+            "edited_at": "edited_at",
+            "name": "name",
+            "segment_id": "segment_id"
+          }
+        },
+        "subscriptions": {
+          "displayName": "Subscriptions",
+          "path": "/partner/webhooks/subscriptions",
+          "responseKey": "",
+          "fields": {
+            "hook_uri": "hook_uri",
+            "topic_description": "topic_description",
+            "topic_id": "topic_id",
+            "topic_name": "topic_name"
+          }
+        }
+      }
+    }
+  }
+}

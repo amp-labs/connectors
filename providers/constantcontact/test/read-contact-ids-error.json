@@ -1,0 +1,6 @@
+[
+  {
+    "error_key": "contacts.api.bad_request",
+    "error_message": "Sequence ID is invalid."
+  }
+]

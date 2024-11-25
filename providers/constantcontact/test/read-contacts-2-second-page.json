@@ -1,0 +1,23 @@
+{
+  "contacts": [
+    {
+      "contact_id": "832444c0-4392-11ef-95d3-fa163e761ca9",
+      "email_address": {
+        "address": "john.doe@withampersand.com",
+        "permission_to_send": "implicit",
+        "created_at": "2024-07-16T16:43:21Z",
+        "updated_at": "2024-07-16T16:43:21Z",
+        "opt_in_source": "Account",
+        "opt_in_date": "2024-07-16T16:43:21Z",
+        "confirm_status": "off"
+      },
+      "first_name": "John",
+      "last_name": "Doe",
+      "update_source": "Account",
+      "create_source": "Account",
+      "created_at": "2024-07-16T16:43:21Z",
+      "updated_at": "2024-07-16T16:43:21Z"
+    }
+  ],
+  "_links": {}
+}
