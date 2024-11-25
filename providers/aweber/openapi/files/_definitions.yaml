@@ -1,0 +1,3032 @@
+definitions:
+
+  Account:
+    type: object
+    properties:
+      analytics_src:
+        description: Analytics source for event tracking Javascript.
+        type: uri
+        example: //analytics.aweber.com/js/awt_analytics.js?id=123
+      http_etag:
+        description: The ETag HTTP header
+        type: string
+        example: \"902ba3cda1883801594b6e1b452790cc53948fda-f83cb0ac22a8d5f792417f9b3dc0e9dc7558aa32\"
+      id:
+        description: The unique ID for the account
+        type: integer
+        example: 123
+      integrations_collection_link:
+        description: The link to the [3rd party service Integrations](#tag/Integrations/paths/~1accounts~1{accountId}~1integrations/get)
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/integrations
+      lists_collection_link:
+        description: The link to the [Lists for the account](#tag/Lists/paths/~1accounts~1{accountId}~1lists/get)
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists
+      resource_type_link:
+        description: The link to the account type
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/#account
+      self_link:
+        description: The link to the account resource
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123
+      uuid:
+        description: The UUID (universally unique identifier) for the account
+        type: string
+        format: uuid
+        example: b619e767-9de6-43b7-a914-9a8d77a08ee5
+      company:
+        description: Company Name associated with the account
+        type: string
+        example: Example Company 1
+
+  Accounts:
+    type: object
+    properties:
+      entries:
+        description: A list of account entries
+        type: array
+        items:
+          $ref: '#/definitions/Account'
+      next_collection_link:
+        description: A link to the next page of entries if more entries exist. This attribute is omitted from the collection if there are no more entries.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/custom_fields?ws.start=0&ws.size=10
+      prev_collection_link:
+        description: A link to the previous page of entries if any exist. This attribute is omitted from the collection if ws.start is 0.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/custom_fields?ws.start=0
+      resource_type_link:
+        description: A link that identifies the type of resource that this collection represents
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/#account
+      start:
+        description: The starting offset for the page of entries to retrieve
+        type: integer
+        minimum: 0
+      total_size:
+        description: The total number of entries
+        type: integer
+        minimum: 0
+        example: 100
+
+  FindSubscribersAccount:
+    type: object
+    properties:
+      entries:
+        description: The list of subscriber entries plus list information
+        type: array
+        items:
+            $ref: '#/definitions/SubscriberFind'
+      next_collection_link:
+        description: A link to the next page of entries if more entries exist. This attribute is omitted from the collection if there are no more entries.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/campaigns/b789/messages?ws.start=1&ws.size=100
+      prev_collection_link:
+        description: A link to the previous page of entries if previous entries exist. This attribute is omitted if this is the first page.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/campaigns/b789/messages?ws.start=1&ws.size=100
+      resource_type_link:
+        description: A link that identifies the type of resource that this collection represents
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/#subscribers-page-resource
+      self_link:
+        description: A link to the current page of entries.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/subscribers?ws.start=0&ws.size=100&account_id=123&list_id=456
+      start:
+        description: The starting offset for the page of entries to retrieve
+        type: integer
+        minimum: 0
+      total_size_link:
+        description: Link to the total number of entries
+        type: string
+        format: uri
+        example: "https://api.aweber.com/1.0/accounts/123?ws.op=findSubscribers&ws.show=total_size"
+
+  UpdateBroadcast:
+    type: object
+    properties:
+      body_html:
+        description: The content of the message in html format. If body_text is not provided, it will be auto-generated.
+        type: string
+        format: html
+        example: <html><h1>Title</h1><body>Message body.</body></html>
+      body_text:
+        description: The content of the message in plain text, used when HTML is not supported. If body_html is not provided, the broadcast will be sent using only the body_text.
+        type: string
+        example: This is the content of my message
+      body_amp:
+        description: "<b>[Please read <a href=\"https://help.aweber.com/hc/en-us/articles/360025741194\" target=\"_blank\">our KB article</a> before using this field.]</b><br>The content of the message in AMP format."
+        type: string
+        format: amp
+        example: <html amp4email><body>content</body></html>
+      click_tracking_enabled:
+        description: Enables links in the email message to be tracked.
+        type: boolean
+      exclude_lists:
+        description: >-
+          JSON encoded list of [Lists](#tag/Lists) URLs to exclude in the delivery of this broadcast.<br>
+          Use the `self_link` of the list here - e.g. `https://api.aweber.com/1.0/accounts/<account_id>/lists/<list_id>`.
+          If updated, this value will replace the existing excluded_lists.
+        default: []
+        type: string
+        example: [\"https://api.aweber.com/1.0/accounts/123/lists/456\"]
+      include_lists:
+        description: >-
+          JSON encoded list of [Lists](#tag/Lists) URLs to include in the delivery of this broadcast.<br>
+          Use the `self_link` of the list here - e.g. `https://api.aweber.com/1.0/accounts/<account_id>/lists/<list_id>`.
+          If updated, this value will replace the existing included_lists.
+        default: []
+        type: string
+        example: [\"https://api.aweber.com/1.0/accounts/123/lists/456\"]
+      facebook_integration:
+        description: >-
+          URL to the [Facebook broadcast integration](#tag/Integrations) to use for this broadcast.
+          When the broadcast is sent, the subject of the broadcast will be posted to this Facebook
+          integration  - e.g., `https://api.aweber.com/1.0/accounts/<account_id>/integrations/<integration_id>`
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/integrations/1
+      is_archived:
+        description: Whether the broadcast enabled sharing via an archive url.
+        type: boolean
+      notify_on_send:
+        description: If true, notify when stats are available on a sent broadcast message, defaults to true.
+        type: boolean
+      subject:
+        description: The broadcast subject line. Subject must not be empty nor contain only whitespace.
+        type: string
+        maximum: 120
+        example: Weekly Recipes
+      twitter_integration:
+        description: >-
+          URL to the [Twitter broadcast integration](#tag/Integrations) to use for this broadcast.
+          When the broadcast is sent, the subject of the broadcast will be tweeted - e.g.,
+          `https://api.aweber.com/1.0/accounts/<account_id>/integrations/<integration_id>`
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/integrations/2
+      segment_link:
+        description: >-
+          URL to the [Segment](#tag/Segments) to send this broadcast to.  Use the `self_link` of the
+          segment here - e.g.
+          `https://api.aweber.com/1.0/accounts/<account_id>/lists/<list_id>/segments/<segment_id>`.
+          If not specified, the broadcast will be sent to the “Active Subscribers” segment.
+        type: string
+        format: url
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/segments/1
+
+  CreateBroadcast:
+    type: object
+    required:
+      - body_html
+      - body_text
+      - subject
+    properties:
+      body_html:
+        description: The content of the message in html format. If body_text is not provided, it will be auto-generated. If body_text is not provided, body_html must be provided.
+        type: string
+        format: html
+        example: <html><h1>Title</h1><body>Message body.</body></html>
+      body_text:
+        description: The content of the message in plain text, used when HTML is not supported. If body_html is not provided, the broadcast will be sent using only the body_text. If body_text is not provided, body_html must be provided.
+        type: string
+        example: This is the content of my message
+      body_amp:
+        description: "<b>[Please read <a href=\"https://help.aweber.com/hc/en-us/articles/360025741194\" target=\"_blank\">our KB article</a> before using this field.]</b><br>The content of the message in AMP format."
+        type: string
+        format: amp
+        example: <html amp4email><body>content</body></html>
+      click_tracking_enabled:
+        description: Enables links in the email message to be tracked
+        default: true
+        type: boolean
+      exclude_lists:
+        description: >-
+          JSON encoded list of [Lists](#tag/Lists) URLs to exclude in the delivery of this broadcast.<br>
+          Use the `self_link` of the list here - e.g. `https://api.aweber.com/1.0/accounts/<account_id>/lists/<list_id>`.
+          If updated, this value will replace the existing excluded_lists.
+        default: []
+        type: string
+        example:
+          - [\"https://api.aweber.com/1.0/accounts/123/lists/456\"]
+      include_lists:
+        description: >-
+          JSON encoded list of [Lists](#tag/Lists) URLs to include in the delivery of this broadcast.<br>
+          Use the `self_link` of the list here - e.g. `https://api.aweber.com/1.0/accounts/<account_id>/lists/<list_id>`.
+          If updated, this value will replace the existing included_lists.
+        default: []
+        type: string
+        example:
+          - [\"https://api.aweber.com/1.0/accounts/123/lists/456\"]
+      facebook_integration:
+        description: >-
+          URL to the [Facebook broadcast integration](#tag/Integrations) to use for this broadcast.
+          When the broadcast is sent, the subject of the broadcast will be posted to this Facebook
+          integration  - e.g., `https://api.aweber.com/1.0/accounts/<account_id>/integrations/<integration_id>`
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/integrations/1
+      is_archived:
+        description: Whether the broadcast enabled sharing via an archive url
+        default: true
+        type: boolean
+      notify_on_send:
+        description: If true, notify when stats are available on a sent broadcast message
+        default: true
+        type: boolean
+      segment_link:
+        description: |
+          URL to the [Segment](#tag/Segments) to send this broadcast to.  Use the `self_link` of the
+          segment here - e.g.
+          `https://api.aweber.com/1.0/accounts/<account_id>/lists/<list_id>/segments/<segment_id>`.
+          If not specified, the broadcast will be sent to the “Active Subscribers” segment.
+      subject:
+        description: The broadcast subject line. Subject must not be empty nor contain only whitespace.
+        type: string
+        maximum: 120
+        example: Weekly Recipes
+      twitter_integration:
+        description: >-
+          URL to the [Twitter broadcast integration](#tag/Integrations) to use for this broadcast.
+          When the broadcast is sent, the subject of the broadcast will be tweeted - e.g.,
+          `https://api.aweber.com/1.0/accounts/<account_id>/integrations/<integration_id>`
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/integrations/2
+
+  ScheduleBroadcast:
+    type: object
+    required:
+      - scheduled_for
+    properties:
+      scheduled_for:
+        description: Scheduled time for sending broadcast message, ISO-8601 formatted.
+        type: string
+        format: date-time
+        example: 2017-07-18 16:53:02-04:00
+
+  Broadcast:
+    type: object
+    properties:
+      archive_url:
+        description: The link to the broadcast archive page, only set if the broadcast was sent.
+        type: string
+        format: uri
+        example: http://archive.aweber.com/awlist12345/9198b
+      body_html:
+        description: The content of the message in html format.
+        type: string
+        format: html
+        example: <html><h1>Title</h1><body>Message body.</body></html>
+      body_text:
+        description: The content of the message in plain text, displayed when HTML is not supported.
+        type: string
+        example: This is the content of my message
+      body_amp:
+        description: "<b>[Please read <a href=\"https://help.aweber.com/hc/en-us/articles/360025741194\" target=\"_blank\">our KB article</a> before using this field.]</b><br>The content of the message in AMP format."
+        type: string
+        format: amp
+        example: <html amp4email><body>content</body></html>
+      broadcast_id:
+        description: The broadcast ID.
+        type: integer
+        example: 12345
+      click_tracking_enabled:
+        description: Enables links in the email message to be tracked.
+        type: boolean
+      clicks_collection_link:
+        description: The link to this broadcasts clicks collection.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts/3456789/clicks
+      created_at:
+        description: When the message was created.
+        type: string
+        format: date-time
+        example: 2015-10-23T16:19:20
+      exclude_lists:
+        description: >-
+          List of [Lists](#tag/Lists) URLs that are excluded in the delivery of this broadcast.<br>
+          This is the `self_link` of the list here - e.g.
+          `https://api.aweber.com/1.0/accounts/<account_id>/lists/<list_id>`
+        type: array
+        items:
+          type: string
+          format: uri
+        example:
+          - https://api.aweber.com/1.0/accounts/123/lists/456
+      facebook_integration:
+        description: >-
+          URL to the [Facebook broadcast integration](#tag/Integrations) to use for this broadcast.
+          When the broadcast is sent, the subject of the broadcast will be posted to this Facebook
+          integration  - e.g., `https://api.aweber.com/1.0/accounts/<account_id>/integrations/<integration_id>`
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/integrations/1
+      has_customized_body_text:
+        description: If true, the plain text field will be shown when HTML is not supported. If false, it will auto-generate plain text based on the HTML given.
+        type: boolean
+      include_lists:
+        description: >-
+          List of [Lists](#tag/Lists) URLs that are included in the delivery of this broadcast.<br>
+          This is the `self_link` of the list here - e.g.
+          `https://api.aweber.com/1.0/accounts/<account_id>/lists/<list_id>`
+        type: array
+        items:
+          type: string
+          format: uri
+        example:
+          - https://api.aweber.com/1.0/accounts/123/lists/456
+      is_archived:
+        description: Whether the broadcast enabled sharing via an archive url.
+        type: boolean
+      links:
+        description: A list of links relevant to the broadcast such as RSS feeds and broadcast archives.
+        type: array
+        items:
+          type: object
+          properties:
+            href:
+              description: Link target
+              type: string
+              format: uri
+              example: "http://archive.aweber.com/awlist12345.rss"
+            rel:
+              description: Link relation (`"list_archive_rss_url"`, `"list_archive_url"`, etc.)
+              type: string
+              example: list_archive_rss_url
+        example:
+           - href: http://archive.aweber.com/awlist12345.rss
+             rel: list_archive_rss_url
+           - href: http://archive.aweber.com/awlist12345
+             rel: list_archive_url
+      notify_on_send:
+        description: If true, notify when stats are available on a sent broadcast message, defaults to true.
+        type: boolean
+      opens_collection_link:
+        description: The link to this broadcasts opens collection.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts/3456789/opens
+      scheduled_for:
+        description: When broadcast is scheduled to send.
+        type: string
+        format: date-time
+        example: 2017-11-15T10:46:07.926074-05:00
+      segment_link:
+        description: URL to the [Segment](#tag/Segments) to send this broadcast to.
+      segment_name:
+        description: The name of the segment the broadcast will be sent to, or Unknown if the segment no longer exists.
+        type: string
+        example: my_segment
+      self_link:
+        description: The link to this resource.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts/3456789
+      sent_at:
+        description: Date/Time broadcast was sent.
+        type: string
+        format: date-time
+      stats:
+        description: A list of statistics for a broadcast, only set for sent broadcasts.
+        type: object
+        example:
+          num_complaints: 0
+          num_emailed: 1
+          num_undeliv: 0
+          unique_clicks: 1
+          unique_opens: 1
+      status:
+         description: The status of the broadcast.
+         type: string
+         enum:
+           - admin_hold
+           - draft
+           - scheduled
+           - sending
+           - sent
+           - unknown
+      subject:
+        description: The broadcast subject line.
+        type: string
+        maximum: 120
+        example: Weekly Recipes
+      twitter_integration:
+        description: >-
+          URL to the [Twitter broadcast integration](#tag/Integrations) to use for this broadcast.
+          When the broadcast is sent, the subject of the broadcast will be tweeted - e.g.,
+          `https://api.aweber.com/1.0/accounts/<account_id>/integrations/<integration_id>`
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/integrations/2
+
+  Broadcasts:
+    type: object
+    properties:
+      entries:
+        description: The list of broadcast entries.
+        type: array
+        items:
+          type: object
+          properties:
+            self_link:
+              description: The link to this resource.
+              type: string
+              format: uri
+              example: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts/3456789
+            status:
+              description: The status of the broadcast.
+              type: string
+              enum:
+                - draft
+                - scheduled
+                - sent
+              example: sent
+            scheduled_for:
+              description: When broadcast is scheduled to send.
+              type: string
+              format: date-time
+              example: 2017-11-15T10:46:07.926074-05:00
+            sent_at:
+              description: Date/Time broadcast was sent.
+              type: string
+              format: date-time
+              example: 2017-11-15T14:26:36.210647-05:00
+            subject:
+              description: The broadcast subject line.
+              type: string
+              maximum: 120
+              example: Weekly Recipes
+      next_collection_link:
+        description: A link to the next page of entries if more entries exist. This attribute is omitted from the collection if there are no more entries.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts?status=sent&ws.size=1&ws.start=1
+      prev_collection_link:
+        description: A link to the previous page of entries if previous entries exist. This attribute is omitted if this is the first page.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts?status=sent&ws.size=1&ws.start=0
+      resource_type_link:
+        description: A link that identifies the type of resource that this collection represents.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/#broadcast-page-resource
+      self_link:
+        description: A link to the current page of entries.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts?status=sent&ws.size=1&ws.start=0
+      start:
+        description: The starting offset for the page of entries to retrieve.
+        type: integer
+        minimum: 0
+      total_size_link:
+        description: A link to a resource that provides the total number of broadcasts in the collection.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts/total?status=draft
+  BroadcastOpens:
+   type: object
+   properties:
+     entries:
+       type: array
+       description: A list of entries
+       items:
+         properties:
+           email:
+             description: Email address of the subscriber who opened the broadcast. *Note:* This is the
+               current email address of the subscriber, not necessarily the email address the broadcast was sent to.
+             type: string
+             example: user@example.com
+           event_time:
+             description: Time that the open occurred
+             type: string
+             format: date-time
+             example: 2017-07-18T16:53:02-04:00
+           resource_type_link:
+             description: A link to the open type
+             type: string
+             example: https://api.aweber.com/1.0/#open
+           subscriber_link:
+             description: The link to the subscriber entry
+             type: string
+             example: https://api.aweber.com/1.0/accounts/123/lists/456/subscribers/789
+           type:
+             description: Type of subscriber activity
+             type: string
+             enum:
+               - open
+     next_collection_link:
+       description: A link to the next page of entries if more entries exist. This attribute is omitted from the collection if there are no more entries.
+       type: string
+       example: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts/789/opens?after=MjAyMC0wOS0wNCAxODozMzozNCswMDowMCw0NDk%3D
+     prev_collection_link:
+       description: A link to the previous page of entries if any exist.
+       type: string
+       example: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts/789/opens?before=MjAyMC0wOS0wNCAxODozMzozNCswMDowMCw0NDk%3D
+     resource_type_link:
+       description: A link that identifies the type of resource that this collection represents
+       type: string
+       example: https://api.aweber.com/1.0/#open-page-resource
+     total_size:
+       description: The total number of entries
+       type: integer
+       minimum: 0
+       example: 1
+  BroadcastClicks:
+   type: object
+   properties:
+     entries:
+       type: array
+       description: A list of entries
+       items:
+         properties:
+           email:
+             description: Email address of the subscriber who clicked the broadcast. *Note:* This is the
+               current email address of the subscriber, not necessarily the email address the broadcast was sent to.
+             type: string
+             example: user@example.com
+           event_time:
+             description: Time that the click occurred
+             type: string
+             format: date-time
+             example: 2017-07-18T16:53:02-04:00
+           resource_type_link:
+             description: A link to the click type
+             type: string
+             example: https://api.aweber.com/1.0/#click
+           subscriber_link:
+             description: The link to the subscriber entry
+             type: string
+             example: https://api.aweber.com/1.0/accounts/123/lists/456/subscribers/789
+           type:
+             description: Type of subscriber activity
+             type: string
+             enum:
+               - click
+     next_collection_link:
+       description: A link to the next page of entries if more entries exist. This attribute is omitted from the collection if there are no more entries.
+       type: string
+       example: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts/789/clicks?after=MjAyMC0wOS0wNCAxODozMzozNCswMDowMCw0NDk%3D
+     prev_collection_link:
+       description: A link to the previous page of entries if any exist.
+       type: string
+       example: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts/789/clicks?before=MjAyMC0wOS0wNCAxODozMzozNCswMDowMCw0NDk%3D
+     resource_type_link:
+       description: A link that identifies the type of resource that this collection represents
+       type: string
+       example: https://api.aweber.com/1.0/#click-page-resource
+     total_size:
+       description: The total number of entries
+       type: integer
+       minimum: 0
+       example: 1
+  Campaign:
+    properties:
+      campaign_type:
+        description: "Type of campaign. (f: followup, b: broadcast)"
+        type: string
+        enum: [b,f]
+      click_tracking_enabled:
+        description: Whether click tracking is enabled
+        type: boolean
+      content_type:
+        description: Type of message
+        type: string
+        enum: ["Text", "HTML", "Text/HTML"]
+      id:
+        description: Unique campaign ID for followup or broadcast
+        type: integer
+        example: 1234567
+      is_archived:
+        description: Is the campaign in the campaign archive (broadcast only)
+        type: boolean
+      links_collection_link:
+        description: A URL to retrieve the [Links](#tag/Campaigns/paths/~1accounts~1{accountId}~1lists~1{listId}~1campaigns~1{campaignType}{campaignId}~1links/get) for this campaign
+        type: string
+        format: uri
+        example: "https://api.aweber.com/1.0/accounts/123/lists/456/campaigns/b3456789/links"
+      message_interval:
+        description: Message interval (followup only)
+        type: integer
+        minimum: 1
+        maximum: 999
+      message_number:
+        description: Followup sequence number (followup only)
+        type: integer
+        minimum: 1
+        maximum: 999
+      resource_type_link:
+        description: A link that identifies the type of resource that this collection represents
+        type: string
+        format: uri
+        example: "https://api.aweber.com/1.0/#broadcast_campaign"
+      scheduled_at:
+        description: When broadcast is scheduled to send (broadcast only)
+        type: string
+        format: date-time
+        example: "2017-07-18 16:53:02-04:00"
+      self_link:
+        description: The link to this resource
+        type: string
+        format: uri
+        example: "https://api.aweber.com/1.0/accounts/123/lists/456/campaigns/b3456789"
+      sent_at:
+        description: Date/Time campaign was sent (broadcast only)
+        type: string
+        format: date-time
+        example: "2017-07-18 16:53:07-04:00"
+      spam_assassin_score:
+        description: >-
+          SpamAssassin score.  Read
+          <a href="https://blog.aweber.com/email-deliverability/spamassassin-deliverability-tips.htm"
+           target="_blank">SpamAssassin's Tips on Deliverability</a> for more detail.
+        type: number
+        format: float
+        example: 2.1
+      stats_collection_link:
+        description: A link to the [statistics collection](#tag/Campaigns/paths/~1accounts~1{accountId}~1lists~1{listId}~1campaigns~1b{campaignId}~1stats/get) for this campaign
+        type: string
+        format: uri
+        example: "https://api.aweber.com/1.0/accounts/accounts/123/lists/456/campaigns/b3456789/stats"
+      subject:
+        description: Subject of message
+        type: string
+        maximum: 120
+        example: Weekly Recipes
+      total_clicks:
+        description: Total clicks of this message
+        type: integer
+      total_opens:
+        description: Total number of messages opened
+        type: integer
+      total_sent:
+        description: Total number of messages sent
+        type: integer
+      total_spam_complaints:
+        description: Total number of spam complaints received
+        type: integer
+      total_undelivered:
+        description: Total number of undeliverable messages
+        type: integer
+      total_unsubscribes:
+        description: Total number of unsubscribes from this campaign
+        type: integer
+      twitter_account_link:
+          description: Twitter account where broadcast was tweeted (broadcasts only). Links to [Integration](#tag/Integrations/paths/~1accounts~1{accountId}~1integrations~1{integrationId}/get).
+          type: string
+          format: uri
+          example: https://api.aweber.com/1.0/account/123/integrations/456
+
+  FindCampaigns:
+    type: object
+    properties:
+      entries:
+        description: A list of campaign entries
+        type: array
+        items:
+          $ref: '#/definitions/Campaign'
+      next_collection_link:
+        description: A link to the next page of entries if more entries exist. This attribute is omitted from the collection if there are no more entries.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/campaigns?ws.start=101&ws.size=100
+      prev_collection_link:
+        description: A link to the previous page of entries if any exist. This attribute is omitted from the collection if ws.start is 0.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/campaigns?ws.start=0&ws.size=100
+      start:
+        description: The starting offset for the page of entries to retrieve
+        type: integer
+        minimum: 0
+      total_size_link:
+        description: Link to the total number of entries
+        type: string
+        format: uri
+        example: "https://api.aweber.com/1.0/accounts/123/lists/456/campaigns?campaign_type=b&ws.op=find&ws.show=total_size"
+
+  ListCampaigns:
+    type: object
+    properties:
+      entries:
+        description: A list of campaign entries
+        type: array
+        items:
+          $ref: '#/definitions/Campaign'
+      next_collection_link:
+        description: A link to the next page of entries if more entries exist. This attribute is omitted from the collection if there are no more entries.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/campaigns?ws.start=101&ws.size=100
+      prev_collection_link:
+        description: A link to the previous page of entries if any exist. This attribute is omitted from the collection if ws.start is 0.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/campaigns?ws.start=0&ws.size=100
+      start:
+        description: The starting offset for the page of entries to retrieve
+        type: integer
+        minimum: 0
+      total_size:
+        description: The total number of entries
+        type: integer
+
+  Link:
+    type: object
+    properties:
+      clicks_collection_link:
+        description: Link to the collection of [Clicks](#tag/Campaigns/paths/~1accounts~1{accountId}~1lists~1{listId}~1campaigns~1{campaignType}{campaignId}~1links~1{linkId}~1clicks~1{clickId}/get) for the link
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/campaigns/b789/links/2/clicks
+      id:
+        description: Unique link ID for followup or broadcast
+        type: integer
+        example: 2
+      resource_type_link:
+        description: A link that identifies the type of resource that this represents
+        type: string
+        format: uri
+        example: "https://api.aweber.com/1.0/#link"
+      self_link:
+        description: The link to this resource
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/campaigns/b789/links/2
+      total_clicks:
+        description: Total clicks for this link
+        type: integer
+        example: 200
+      total_unique_clicks:
+        description: Total subscribers that clicked the link
+        type: integer
+        example: 150
+      url:
+        description: URL of link
+        type: string
+        format: uri
+        example: https://aweber.com/
+
+  Links:
+    type: object
+    properties:
+      entries:
+        description: A list of link entries
+        type: array
+        items:
+          $ref: '#/definitions/Link'
+      next_collection_link:
+        description: A link to the next page of entries if more entries exist. This attribute is omitted from the collection if there are no more entries.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/campaigns/b789/links?ws.start=2&ws.size=1
+      prev_collection_link:
+        description: A link to the previous page of entries if any exist. This attribute is omitted from the collection if ws.start is 0.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/campaigns/b789/links?ws.start=0&ws.size=1
+      start:
+        description: The starting offset for the page of entries to retrieve
+        type: integer
+        minimum: 0
+        example: 1
+      total_size:
+        description: The total number of entries
+        type: integer
+        example: 10
+
+  Click:
+    type: object
+    properties:
+      subscriber_link:
+        description: Link to the [Subscriber](#tag/Subscribers/paths/~1accounts~1{accountId}~1lists~1{listId}~1subscribers~1{subscriberId}/get) for this click
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/subscribers/123456
+      id:
+        description: Click ID (only unique for a link in followup or broadcast)
+        type: integer
+        example: 2
+      resource_type_link:
+        description: A link that identifies the type of resource that this represents
+        type: string
+        format: uri
+        example: "https://api.aweber.com/1.0/#click"
+      self_link:
+        description: The link to this resource
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/campaigns/b789/links/2/clicks/2
+      event_time:
+        description: The timestamp representing the time the click occurred
+        type: string
+        format: date-time
+        example: "2016-12-09 14:14:49-05:00"
+      type:
+        description: Type of event
+        type: string
+        enum:
+          - click
+      is_earliest:
+        description: If true, this is the first click event on the link
+        type: boolean
+        example: true
+
+  Clicks:
+    type: object
+    properties:
+      entries:
+        description: A list of click entries
+        type: array
+        items:
+          $ref: '#/definitions/Click'
+      next_collection_link:
+        description: A link to the next page of entries if more entries exist. This attribute is omitted from the collection if there are no more entries.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/campaigns/b789/links/1/clicks?ws.start=2&ws.size=1
+      prev_collection_link:
+        description: A link to the previous page of entries if any exist. This attribute is omitted from the collection if ws.start is 0.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/campaigns/b789/links/1/clicks?ws.start=0&ws.size=1
+      start:
+        description: The starting offset for the page of entries to retrieve
+        type: integer
+        minimum: 0
+        example: 1
+      total_size:
+        description: The total number of entries
+        type: integer
+        example: 10
+      resource_type_link:
+        description: A link that identifies the type of resource that this collection represents
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/#click-page-resource
+  Stat:
+    type: object
+    properties:
+      description:
+        description: A description of the statistic
+        type: string
+        example: 'total number of times a subscriber clicked any link appearing in your campaign except the unsubscribe link (includes multiple clicks of the same link)'
+      id:
+        description: Statistic's ID
+        type: string
+        example: total_clicks
+      resource_type_link:
+        description: A link that identifies the type of resource that this represents
+        type: string
+        format: uri
+        enum:
+          - integer_stat
+          - decimal_stat
+          - list_stat
+        example: https://api.aweber.com/1.0/#integer_stat
+      self_link:
+        description: The link to this resource
+        type: string
+        format: uri
+        example: "https://api.aweber.com/1.0/accounts/123/lists/456/campaigns/b789/stats/total_clicks"
+      value:
+        description: |
+          The statistic's value
+
+          The datatype of the value attribute may be different for each Stat.
+          Stats can be integer_stat, decimal_stat, or list_stat. Evaluate the
+          resource_type_link attribute if you must programmatically handle
+          different datatypes in a special way.
+
+          Below is a list of the statistics ID and return type
+
+          >
+          > __Aggregate Statistics__
+          >
+          > * total_clicks - integer_stat
+          > * unique_clicks - integer_stat
+          > * total_opens - integer_stat
+          > * unique_opens - integer_stat
+          > * total_sales - integer_stat
+          > * total_sales_dollars - decimal_stat
+          > * total_unsubscribed - integer_stat
+
+          > __Time Related Statistics__
+          >
+          > * hourly_opens - list_stat
+          > * hourly_clicks - list_stat
+          > * hourly_webhits - list_stat
+          > * hourly_sales - list_stat
+          > * hourly_unsubscribes - list_stat
+          > * daily_opens - list_stat
+          > * daily_clicks - list_stat
+          > * daily_webhits - list_stat
+          > * daily_sales - list_stat
+          > * daily_unsubscribes - list_stat
+
+          > __Top 10 URL Statistics__
+          >
+          > * clicks_by_link - list_stat
+          > * webhits_by_link - list_stat
+
+          >  __Top 10 Subscriber Statistics__ (Requires access to subscriber data)
+          >
+          > * opens_by_subscriber - list_stat
+          > * sales_by_subscriber - list_stat
+        oneOf:
+          - type: integer
+          - type: number
+          - type: string
+        example: 21
+
+  Stats:
+    type: object
+    properties:
+      entries:
+        description: A list of stats entries
+        type: array
+        items:
+          $ref: '#/definitions/Stat'
+      next_collection_link:
+        description: A link to the next page of entries if more entries exist. This attribute is omitted from the collection if there are no more entries.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/campaigns/b789/stats?ws.start=2&ws.size=1
+      prev_collection_link:
+        description: A link to the previous page of entries if any exist. This attribute is omitted from the collection if ws.start is 0.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/campaigns/b789/stats?ws.start=0&ws.size=1
+      resource_type_link:
+        description: A link that identifies the type of resource that this represents
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/#stat-page-resource
+      start:
+        description: The starting offset for the page of entries to retrieve
+        type: integer
+        minimum: 0
+        example: 1
+      total_size:
+        description: The total number of entries
+        type: integer
+        example: 10
+
+  CustomField:
+    type: object
+    properties:
+      http_etag:
+        description: The ETag HTTP header
+        type: string
+        example: 902ba3cda1883801594b6e1b452790cc53948fda-f83cb0ac22a8d5f792417f9b3dc0e9dc7558aa32
+      id:
+        description: The unique ID for the custom field
+        type: integer
+        example: 12345
+      is_subscriber_updateable:
+        description: Whether the subscriber is allowed to update the custom field
+        type: boolean
+        example: false
+      name:
+        description: The name of the custom field
+        type: string
+        example: Favorite color
+      resource_type_link:
+        description: The link to the custom field type
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/#custom_field
+      self_link:
+        description: The link to the event resource
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/custom_fields/7
+
+  CustomFields:
+    type: object
+    properties:
+      entries:
+        description: A list of custom field entries
+        type: array
+        items:
+          $ref: '#/definitions/CustomField'
+      next_collection_link:
+        description: A link to the next page of entries if more entries exist. This attribute is omitted from the collection if there are no more entries.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/custom_fields?ws.start=0&ws.size=10
+      prev_collection_link:
+        description: A link to the previous page of entries if any exist. This attribute is omitted from the collection if ws.start is 0.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/custom_fields?ws.start=0
+      resource_type_link:
+        description: A link that identifies the type of resource that this collection represents
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/#custom_field
+      start:
+        description: The starting offset for the page of entries to retrieve
+        type: integer
+        minimum: 0
+      total_size:
+        description: The total number of entries
+        type: integer
+        minimum: 0
+        example: 100
+
+  Integration:
+    type: object
+    properties:
+      http_etag:
+        description: The ETag HTTP header
+        type: string
+        example: 902ba3cda1883801594b6e1b452790cc53948fda-f83cb0ac22a8d5f792417f9b3dc0e9dc7558aa32
+      id:
+        description: The unique ID for the integration
+        type: integer
+        example: 123
+      login:
+        description: The integration user name
+        type: string
+        example: twitter
+      service_name:
+        description: The integration name
+        type: string
+        example: facebook
+      resource_type_link:
+        description: The link to the integration type
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/#integration
+      self_link:
+        description: The link to this resource
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/account/123/integrations/456
+
+  Integrations:
+    type: object
+    properties:
+      entries:
+        description: A list of integration entries
+        type: array
+        items:
+          $ref: '#/definitions/Integration'
+      next_collection_link:
+        description: A link to the next page of entries if more entries exist. This attribute is omitted from the collection if there are no more entries.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/custom_fields?ws.start=0&ws.size=10
+      prev_collection_link:
+        description: A link to the previous page of entries if any exist. This attribute is omitted from the collection if ws.start is 0.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/custom_fields?ws.start=0
+      resource_type_link:
+        description: A link that identifies the type of resource that this collection represents
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/#integrations-page-resource
+      start:
+        description: The starting offset for the page of entries to retrieve
+        type: integer
+        minimum: 0
+      total_size:
+        description: The total number of entries
+        type: integer
+        minimum: 0
+        example: 100
+
+  List:
+    type: object
+    properties:
+      campaigns_collection_link:
+        description: "[E-Mail Campaigns](#tag/Campaigns/paths/~1accounts~1{accountId}~1lists~1{listId}~1campaigns/get) used by this list"
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/campaigns
+      custom_fields_collection_link:
+        description: Subscriber [Custom Fields](#tag/Custom-Fields/paths/~1accounts~1{accountId}~1lists~1{listId}~1custom_fields/get) defined for this list
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/custom_fields
+      draft_broadcasts_link:
+        description: Draft [Broadcasts](#tag/Broadcasts/paths/~1accounts~1{accountId}~1lists~1{listId}~1broadcasts/get) belonging to this list
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts?status=draft
+      scheduled_broadcasts_link:
+        description: Scheduled [Broadcasts](#tag/Broadcasts/paths/~1accounts~1{accountId}~1lists~1{listId}~1broadcasts/get) belonging to this list
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts?status=scheduled
+      sent_broadcasts_link:
+        description: Sent [Broadcasts](#tag/Broadcasts/paths/~1accounts~1{accountId}~1lists~1{listId}~1broadcasts/get) belonging to this list
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts?status=sent
+      http_etag:
+        description: The ETag HTTP header
+        type: string
+        example: \"902ba3cda1883801594b6e1b452790cc53948fda-f83cb0ac22a8d5f792417f9b3dc0e9dc7558aa32\"
+      id:
+        description: The unique ID for the list
+        type: integer
+        example: 456
+      landing_pages_collection_link:
+        description: Link to the [Landing Pages](#tag/Landing-Pages/paths/~1accounts~1{accountId}~1lists~1{listId}~1landing_pages/get) used by this list
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/landing_pages
+      name:
+        description: The name of the list.  This name may be changed by the customer at any time.
+        type: string
+        minLength: 1
+        maxLength: 32
+        example: Weekly Newsletter
+      resource_type_link:
+        description: The link to the list type
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/#list
+      segments_collection_link:
+        description: Link to the Subscriber [Segments](#tag/Segments/paths/~1accounts~1{accountId}~1lists~1{listId}~1segments/get) used by this list
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/segments
+      self_link:
+        description: The link to this resource
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456
+      subscribers_collection_link:
+        description: Link to the [Subscribers](#tag/Subscribers/paths/~1accounts~1{accountId}~1lists~1{listId}~1subscribers/get) belonging to this list
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/subscribers
+      total_subscribed_subscribers:
+        description: Number of subscribers where status = subscribed
+        type: integer
+        minimum: 0
+        example: 250
+      total_subscribers:
+        description: Number of subscribers
+        type: integer
+        minimum: 0
+        example: 275
+      total_subscribers_subscribed_today:
+        description: Number of subscribers that were subscribed today
+        type: integer
+        minimum: 0
+        example: 4
+      total_subscribers_subscribed_yesterday:
+        description: Number of subscribers that were subscribed yesterday
+        type: integer
+        minimum: 0
+        example: 3
+      total_unconfirmed_subscribers:
+        description: Number of subscribers where status = unconfirmed
+        type: integer
+        minimum: 0
+        example: 10
+      total_unsubscribed_subscribers:
+        description: Number of subscribers where status = unsubscribed
+        type: integer
+        minimum: 0
+        example: 5
+      unique_list_id:
+        description: |
+          Unique list ID of list.
+
+          The unique list ID is the automatically generated name for your list.
+
+          If you create a custom sign up form, you'll need to specify the unique list ID in the form's HTML code, ensuring that subscribers will be added to the list.
+
+          The unique list ID is also the first part of your autoresponder's e-mail address used by subscribers to sign up to your list.
+
+          A subscriber can sign up to your list by sending an email to this address. (Though this method is rarely used anymore.)
+        type: string
+        minLength: 1
+        maxLength: 30
+        example: awlist456
+      uuid:
+        description: The UUID (universally unique identifier) for the list
+        type: string
+        example: 123e4567-e89b-12d3-a456-426655440000
+      vapid_public_key:
+        description: Public key that is used to validate web push notifications
+        type: string
+        example: BEJSWW8eHj_XKHt5AHpaL3tw0gee8NI2j06xyEIDmOfRGbHmqZVlwsvMO0yISFe834TaBEZRkbdHyTvSXhYCW6E
+      web_form_split_tests_collection_link:
+        description: "[Webform Split Tests](#tag/Webforms/paths/~1accounts~1{accountId}~1lists~1{listId}~1web_form_split_tests/get) defined for this list"
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/web_form_split_tests
+      web_forms_collection_link:
+        description: "[Webforms](#tag/Webforms/paths/~1accounts~1{accountId}~1lists~1{listId}~1web_forms/get) defined for this list."
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/web_forms
+
+  Lists:
+    type: object
+    properties:
+      entries:
+        description: A list of list entries
+        type: array
+        items:
+          $ref: '#/definitions/List'
+      next_collection_link:
+        description: A link to the next page of entries if more entries exist. This attribute is omitted from the collection if there are no more entries.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists?ws.start=0&ws.size=10
+      prev_collection_link:
+        description: A link to the previous page of entries if any exist. This attribute is omitted from the collection if ws.start is 0.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists?ws.start=0
+      resource_type_link:
+        description: A link that identifies the type of resource that this collection represents
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/#list-page-resource
+      start:
+        description: The starting offset for the page of entries to retrieve
+        type: integer
+        minimum: 0
+      total_size:
+        description: The total number of entries
+        type: integer
+        minimum: 0
+        example: 100
+
+  FindLists:
+    type: object
+    properties:
+      entries:
+        description: The list of list entries
+        type: array
+        items:
+          $ref: '#/definitions/List'
+      start:
+        description: The starting offset for the page of entries to retrieve
+        type: integer
+        minimum: 0
+      total_size_link:
+        description: A link to check the total number of entries found for this resource
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists?name=List+Name&ws.op=find&ws.show=total_size
+
+  Message:
+    type: object
+    properties:
+      event_time:
+        description: The timestamp of when the event occurred
+        type: string
+        format: date-time
+        example: '2017-07-31 11:36:34-04:00'
+      http_etag:
+        description: The ETag HTTP header
+        type: string
+        example: 902ba3cda1883801594b6e1b452790cc53948fda-f83cb0ac22a8d5f792417f9b3dc0e9dc7558aa32
+      id:
+        description: The unique ID for the message
+        type: integer
+        example: 123
+      last_opened:
+        description: The last time message was opened
+        type: string
+        format: date-time
+        example: '2017-07-31 11:36:34-04:00'
+      opens_collection_link:
+        description: The link to the [Open](#tag/Messages/paths/~1accounts~1{accountId}~1lists~1{listId}~1campaigns~1{campaignType}{messageId}~1messages~1{messageEntryId}~1opens/get) collection
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/campaigns/b789/messages/234/opens
+      resource_type_link:
+        description: The link to the message type
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/#message
+      self_link:
+        description: The link to this resource
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/campaigns/b789/messages/234
+      subscriber_link:
+        description: The link to the [Subscriber](#tag/Subscribers/paths/~1accounts~1{accountId}~1lists~1{listId}~1subscribers~1{subscriberId}/get) entry
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/subscribers/789
+      total_opens:
+        description: The total number times the message was opened
+        type: integer
+      tracked_events_collection_link:
+        description: The link to the [Tracked Event](#tag/Messages/paths/~1accounts~1{accountId}~1lists~1{listId}~1campaigns~1{campaignType}{messageId}~1messages~1{messageEntryId}~1tracked_events/get) collection
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/campaigns/b789/messages/234/tracked_events
+      type:
+        description: The type of subscriber activity
+        type: string
+        enum:
+          - sent_message
+
+  Messages:
+    type: object
+    properties:
+      entries:
+        description: The list of message entries
+        type: array
+        items:
+          $ref: '#/definitions/Message'
+      next_collection_link:
+        description: A link to the next page of entries if more entries exist. This attribute is omitted from the collection if there are no more entries.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/campaigns/b789/messages?ws.start=1&ws.size=100
+      prev_collection_link:
+        description: A link to the previous page of entries if any exist. This attribute is omitted from the collection if ws.start is 0.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/campaigns/b789/messages?ws.start=0&ws.size=100
+      resource_type_link:
+        description: A link that identifies the type of resource that this collection represents
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/#message-page-resource
+      start:
+        description: The starting offset for the page of entries to retrieve
+        type: integer
+        minimum: 0
+      total_size:
+        description: The total number of entries
+        type: integer
+        minimum: 0
+        example: 100
+  MessagesFindSubscribers:
+    type: object
+    properties:
+      entries:
+        description: The list of subscriber entries
+        type: array
+        items:
+          oneOf:
+          - $ref: '#/definitions/Subscriber'
+          - $ref: '#/definitions/DeletedSubscriber'
+      next_collection_link:
+        description: A link to the next page of entries if more entries exist. This attribute is omitted from the collection if there are no more entries.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/campaigns/b789/messages?ws.op=getSubscribers&ws.start=5&ws.size=5
+      prev_collection_link:
+        description: A link to the previous page of entries if previous entries exist. This attribute is omitted if this is the first page.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/campaigns/b789/messages?ws.op=getSubscribers&ws.start=6&ws.size=5
+      start:
+        description: The starting offset for the page of entries to retrieve
+        type: integer
+        minimum: 0
+      total_size_link:
+        description: A link to show the total size only
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/campaigns/b789/messages?ws.op=getSubscribers&ws.show=total_size
+  Open:
+    type: object
+    properties:
+      event_time:
+        description: When the event occurred including timezone
+        type: string
+        format: date-time
+        example: '2017-07-31 11:36:34-04:00'
+      http_etag:
+        description: The ETag HTTP header
+        type: string
+        example: '"902ba3cda1883801594b6e1b452790cc53948fda-f83cb0ac22a8d5f792417f9b3dc0e9dc7558aa32"'
+      id:
+        description: The unique ID for the subscriber activity
+        type: integer
+        example: 123
+      resource_type_link:
+        description: The link to the open type
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/#open
+      self_link:
+        description: The link to this resource
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/campaigns/b789/messages/234/opens/567
+      subscriber_link:
+        description: The link to the [Subscriber](#tag/Subscribers/paths/~1accounts~1{accountId}~1lists~1{listId}~1subscribers~1{subscriberId}/get) entry
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/subscribers/789
+      type:
+        description: Type of subscriber activity
+        type: string
+        enum:
+          - open
+
+  Opens:
+    type: object
+    properties:
+      entries:
+        description: The list of open entries
+        type: array
+        items:
+          $ref: '#/definitions/Open'
+      next_collection_link:
+        description: A link to the next page of entries if more entries exist. This attribute is omitted from the collection if there are no more entries.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/campaigns/b789/messages/234/opens?ws.start=1&ws.size=100
+      prev_collection_link:
+        description: A link to the previous page of entries if any exist. This attribute is omitted from the collection if ws.start is 0.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/campaigns/b789/messages/234/opens?ws.start=0&ws.size=100
+      resource_type_link:
+        description: A link that identifies the type of resource that this collection represents
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/#open-page-resource
+      start:
+        description: The starting offset for the page of entries to retrieve
+        type: integer
+        minimum: 0
+      total_size:
+        description: The total number of entries
+        type: integer
+        minimum: 0
+        example: 100
+
+  TrackedEvent:
+    type: object
+    properties:
+      event_time:
+        description: When the event occurred including timezone
+        type: string
+        format: date-time
+        example: '2017-07-31 11:36:34-04:00'
+      http_etag:
+        description: The ETag HTTP header
+        type: string
+        example: '"902ba3cda1883801594b6e1b452790cc53948fda-f83cb0ac22a8d5f792417f9b3dc0e9dc7558aa32"'
+      id:
+        description: The unique ID for the tracked event
+        type: integer
+        example: 1
+      resource_type_link:
+        description: The link to the open type
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/#tracked_event
+      self_link:
+        description: The link to this resource
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/campaigns/b789/messages/234/tracked_events/1
+      subscriber_link:
+        description: The link to the [Subscriber](#tag/Subscribers/paths/~1accounts~1{accountId}~1lists~1{listId}~1subscribers~1{subscriberId}/get) entry
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/subscribers/789
+      type:
+        description: Type of tracked event
+        type: string
+        enum:
+          - tracked_event
+
+  TrackedEvents:
+    type: object
+    properties:
+      entries:
+        description: The list of tracked event entries
+        type: array
+        items:
+          $ref: '#/definitions/TrackedEvent'
+      next_collection_link:
+        description: A link to the next page of entries if more entries exist. This attribute is omitted from the collection if there are no more entries.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/campaigns/b789/messages/234/tracked_events?ws.start=1&ws.size=100
+      prev_collection_link:
+        description: A link to the previous page of entries if any exist. This attribute is omitted from the collection if ws.start is 0.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/campaigns/b789/messages/234/tracked_events?ws.start=0&ws.size=100
+      resource_type_link:
+        description: A link that identifies the type of resource that this collection represents
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/#tracked_event-page-resource
+      start:
+        description: The starting offset for the page of entries to retrieve
+        type: integer
+        minimum: 0
+      total_size:
+        description: The total number of entries
+        type: integer
+        minimum: 0
+        example: 100
+  Activity:
+    type: object
+    properties:
+      event_time:
+        description: The timestamp of when the event occurred
+        type: string
+      id:
+        description: Identifier for this subscriber activity.  This is set
+          to the type if no reasonable identifier exists.
+        type: integer
+      resource_type_link:
+        description: The link to the event type
+        type: string
+        format: uri
+      self_link:
+        description: The link to the event resource (may be null)
+        type: string
+        format: uri
+        nullable: True
+      subscriber_link:
+        description: The link to the [Subscriber](#tag/Subscribers/paths/~1accounts~1{accountId}~1lists~1{listId}~1subscribers~1{subscriberId}/get) resource
+        type: string
+        format: uri
+      type:
+        description: The type of activity
+        type: string
+        enum:
+          - click
+          - link
+          - open
+          - sent_message
+          - subscribed
+          - tracked_event
+          - verified
+
+  ClickActivity:
+    type: object
+    properties:
+      event_time:
+        description: The timestamp of when the event occurred
+        type: string
+      http_etag:
+        description: The ETag HTTP header
+        type: string
+      id:
+        description: The unique ID for the subscriber activity
+        type: integer
+      resource_type_link:
+        description: The link to the event type
+        type: string
+        format: uri
+      self_link:
+        description: The link to the event resource
+        type: string
+        format: uri
+      subscriber_link:
+        description: The link to the [Subscriber](#tag/Subscribers/paths/~1accounts~1{accountId}~1lists~1{listId}~1subscribers~1{subscriberId}/get) resource
+        type: string
+        format: uri
+      type:
+        description: The type of activity
+        type: string
+        enum:
+          - click
+          - link
+          - open
+          - sent_message
+          - subscribed
+          - tracked_event
+          - verified
+      is_earliest:
+        description: Indicates if this was the first click for the link
+        type: boolean
+
+  LinkActivity:
+    type: object
+    properties:
+      event_time:
+        description: The timestamp of when the event occurred
+        type: string
+      http_etag:
+        description: The ETag HTTP header
+        type: string
+      id:
+        description: The unique ID for the subscriber activity
+        type: integer
+      resource_type_link:
+        description: The link to the event type
+        type: string
+        format: uri
+      self_link:
+        description: The link to the event resource
+        type: string
+        format: uri
+      subscriber_link:
+        description: The link to the [Subscriber](#tag/Subscribers/paths/~1accounts~1{accountId}~1lists~1{listId}~1subscribers~1{subscriberId}/get) resource
+        type: string
+        format: uri
+      type:
+        description: The type of activity
+        type: string
+        enum:
+          - click
+          - link
+          - open
+          - sent_message
+          - subscribed
+          - tracked_event
+          - verified
+      clicks_collection_link:
+        description: The link to the [Clicks](#tag/Campaigns/paths/~1accounts~1{accountId}~1lists~1{listId}~1campaigns~1{campaignType}{campaignId}~1links~1{linkId}~1clicks/get) collection
+        type: string
+        format: uri
+      total_unique_clicks:
+        description: The total number of unique clicks
+        type: integer
+      total_clicks:
+        description: The total number of clicks
+        type: integer
+      url:
+        description: The URL for the link
+        type: string
+        format: uri
+
+  OpenActivity:
+    type: object
+    $ref: '#/definitions/Activity'
+
+  SentMessageActivity:
+    type: object
+    properties:
+      event_time:
+        description: The timestamp of when the event occurred
+        type: string
+      http_etag:
+        description: The ETag HTTP header
+        type: string
+      id:
+        description: The unique ID for the subscriber activity
+        type: integer
+      resource_type_link:
+        description: The link to the event type
+        type: string
+        format: uri
+      self_link:
+        description: The link to the event resource
+        type: string
+        format: uri
+      subscriber_link:
+        description: The link to the [Subscriber](#tag/Subscribers/paths/~1accounts~1{accountId}~1lists~1{listId}~1subscribers~1{subscriberId}/get) resource
+        type: string
+        format: uri
+      type:
+        description: The type of activity
+        type: string
+        enum:
+          - click
+          - link
+          - open
+          - sent_message
+          - subscribed
+          - tracked_event
+          - verified
+      opens_collection_link:
+        description: The link to the [Opens](#tag/Messages/paths/~1accounts~1{accountId}~1lists~1{listId}~1campaigns~1{campaignType}{messageId}~1messages~1{messageEntryId}~1opens/get) collection
+        type: string
+        format: uri
+      tracked_events_collection_link:
+        description: The link to the [Tracked Events](#tag/Messages/paths/~1accounts~1{accountId}~1lists~1{listId}~1campaigns~1{campaignType}{messageId}~1messages~1{messageEntryId}~1tracked_events/get) collection
+        type: string
+        format: uri
+      total_opens:
+        description: The total number of times the message was opened
+        type: integer
+
+  SubscribedActivity:
+    type: object
+    $ref: '#/definitions/Activity'
+
+  TrackedEventActivity:
+    type: object
+    $ref: '#/definitions/Activity'
+
+  Subscriber:
+    title: Subscriber
+    type: object
+    properties:
+      ad_tracking:
+        description: The customer ad tracking field
+        type: string
+        minLength: 1
+        maxLength: 20
+        example: ebook
+      area_code:
+        description: The subscriber's area code
+        type: integer
+        minimum: 0
+        maximum: 999
+        example: 555
+      city:
+        description: The subscriber's address city
+        type: string
+        minLength: 1
+        maxLength: 100
+        example: Chalfont
+      country:
+        description: The subscriber's address country
+        type: string
+        minLength: 1
+        maxLength: 100
+        example: United States
+      custom_fields:
+        description: The custom fields specified on the subscriber
+        type: object
+        additionalProperties:
+          type: string
+          minimum: 1
+        example:
+          apple: fuji
+          pear: bosc
+      dma_code:
+        description: The subscriber's designated market area code (USA and canada only)
+        type: integer
+        maximum: 881
+        minimum: 0
+        example: 504
+      email:
+        description: The subscriber's email address.
+        type: string
+        minLength: 1
+        maxLength: 50
+        format: email
+      id:
+        description: The lead ID
+        type: integer
+        minimum: 0
+        example: 789
+      ip_address:
+        description: The subscriber's IP address.
+        type: string
+        format: ipv4
+        minLength: 1
+        maxLength: 60
+        example: '204.194.222.28'
+      is_verified:
+        description: A value indication if the subscriber's email address confirmed
+        type: boolean
+      last_followup_message_number_sent:
+        description: >-
+          The sequence number of the last followup message sent to the subscriber.  If this value is
+          set to 1001, then the subscriber will not receive followup messages.
+        type: integer
+        minimum: 0
+        maximum: 1001
+      last_followup_sent_at:
+        description: The last followup message sent to the subscriber
+        type: string
+        format: date-time
+        example: '2015-12-17T14:06:26.861089-05:00'
+      last_followup_sent_link:
+        description: A link to the [Last Follow Up Message](#tag/Campaigns/paths/~1accounts~1{accountId}~1lists~1{listId}~1campaigns~1{campaignType}{campaignId}/get) the subscriber was sent
+        type: string
+        format: uri
+        example: 'https://api.aweber.com/1.0/accounts/123/lists/456/campaigns/f12345678'
+      latitude:
+        description: The subscriber's geographical latitude
+        type: number
+        format: double
+        minimum: -90.0
+        maximum: 90.0
+        example: 37.751
+      longitude:
+        description: The subscriber's geographical longitude
+        type: number
+        format: double
+        minimum: -180.0
+        maximum: 180.0
+        example: -97.822
+      misc_notes:
+        description: Miscellaneous notes.
+        type: string
+        maxLength: 60
+        example: ebook
+      name:
+        description: The subscriber's name.
+        type: string
+        minLength: 1
+        maxLength: 60
+        example: John Doe
+      postal_code:
+        description: The subscriber's address postal code
+        type: string
+        minLength: 1
+        maxLength: 100
+        example: '99999-9999'
+      region:
+        description: The subscriber's address stage or region abbreviation
+        type: string
+        minLength: 1
+        maxLength: 100
+        example: PA
+      resource_type_link:
+        description: A link that identifies the type of resource that this collection represents
+        type: string
+        format: uri
+        enum: 
+        - https://api.aweber.com/1.0/#subscriber
+      self_link:
+        description: The link to this resource
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/subscribers/789
+      status:
+        description: The subscriber's status
+        type: string
+        enum:
+          - subscribed
+          - unsubscribed
+          - unconfirmed
+      subscribed_at:
+        description: The timestamp for when the subscriber subscribed
+        type: string
+        format: date-time
+        example: '2015-10-13T16:19:20-04:00'
+      subscription_method:
+        description: |
+          The method by which the subscriber was subscribed.
+
+          | Method    | Description                              |
+          | ------    | -----------                              |
+          | api       | subscribed via an API integration        |
+          | email     | subscriber emailed to list to opt-in     |
+          | import    | subscriber was imported by the customer  |
+          | webform   | subscriber subscribed via a web form     |
+
+        type: string
+        enum:
+          - api
+          - email
+          - import
+          - webform
+      subscription_url:
+        description: The webform url from which the subscriber subscribed from
+        type: string
+        format: uri
+        maximum: 100
+        example: https://forms.aweber.com/form/16/123456789.htm
+      tags:
+        description: A list of tags added to the subscriber
+        type: array
+        items:
+          type: string
+          minLength: 1
+        example:
+          - slow
+          - fast
+          - lightspeed
+      unsubscribe_method:
+        description: The method that describes how the subscriber unsubscribed
+        type: string
+        enum:
+          - 'unsubscribe link'
+          - 'customer cp'
+          - 'undeliverable'
+          - 'api: unsubscribe'
+          - 'api: move'
+      unsubscribed_at:
+        description: The timestamp for when the subscriber unsubscribed
+        type: string
+        format: date-time
+        example: '2017-10-13T10:41:43.300889-04:00'
+      verified_at:
+        description: The timestamp for when the subscriber confirmed their email address
+        type: string
+        format: date-time
+        example: '2015-10-13T16:19:53'
+
+  DeletedSubscriber:
+    title: Deleted Subscriber
+    type: object
+    properties:
+      description:
+        description: Detail of the subscriber
+        type: string
+        example: Subscriber has been deleted
+      http_etag:
+        description: The ETag HTTP header
+        type: string
+        example: \"902ba3cda1883801594b6e1b452790cc53948fda-f83cb0ac22a8d5f792417f9b3dc0e9dc7558aa32\"
+      resource_type_link:
+        description: A link that identifies the type of resource that this collection represents
+        type: string
+        format: uri
+        enum: 
+        - https://api.aweber.com/1.0/#deleted_subscriber      
+      self_link:
+        description: The link to this resource
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/subscribers/deleted
+  Subscribers:
+    type: object
+    properties:
+      entries:
+        description: The list of subscriber entries
+        type: array
+        items:
+          $ref: '#/definitions/Subscriber'
+      next_collection_link:
+        description: A link to the next page of entries if more entries exist. This attribute is omitted from the collection if there are no more entries.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/campaigns/b789/messages?ws.start=1&ws.size=100
+      prev_collection_link:
+        description: A link to the previous page of entries if previous entries exist. This attribute is omitted if this is the first page.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/campaigns/b789/messages?ws.start=1&ws.size=100
+      resource_type_link:
+        description: A link that identifies the type of resource that this collection represents
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/#subscribers-page-resource
+      self_link:
+        description: A link to the current page of entries.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/subscribers?ws.start=0&ws.size=100&account_id=123&list_id=456
+      start:
+        description: The starting offset for the page of entries to retrieve
+        type: integer
+        minimum: 0
+      total_size:
+        description: The total number of entries
+        type: integer
+        minimum: 0
+        example: 100
+
+  SubscriberFind:
+    type: object
+    properties:
+      ad_tracking:
+        description: The customer ad tracking field
+        type: string
+        minLength: 1
+        maxLength: 20
+        example: ebook
+      area_code:
+        description: The subscriber's area code
+        type: integer
+        minimum: 0
+        maximum: 999
+        example: 555
+      city:
+        description: The subscriber's address city
+        type: string
+        minLength: 1
+        maxLength: 100
+        example: Chalfont
+      country:
+        description: The subscriber's address country
+        type: string
+        minLength: 1
+        maxLength: 100
+        example: United States
+      custom_fields:
+        description: The custom fields specified on the subscriber
+        type: object
+        additionalProperties:
+          type: string
+          minimum: 1
+        example:
+          apple: fuji
+          pear: bosc
+      dma_code:
+        description: The subscriber's designated market area code (usa and canada only)
+        type: integer
+        maximum: 881
+        minimum: 0
+        example: 504
+      email:
+        description: The subscriber's email address
+        type: string
+        minLength: 1
+        maxLength: 50
+        format: email
+      id:
+        description: The lead ID
+        type: integer
+        minimum: 0
+        example: 789
+      ip_address:
+        description: The subscriber's IP address
+        type: string
+        format: ipv4
+        minLength: 1
+        maxLength: 60
+        example: '204.194.222.28'
+      is_verified:
+        description: A value indication if the subscriber's email address confirmed
+        type: boolean
+      last_followup_message_number_sent:
+        description: The sequence number of the last followup message sent to the subscriber
+        type: integer
+        minimum: 0
+        maximum: 1001
+      last_followup_sent_at:
+        description: The last followup message sent to the subscriber
+        type: string
+        format: date-time
+        example: '2015-12-17T14:06:26.861089-05:00'
+      last_followup_sent_link:
+        description: A link to the [Last Follow Up Message](#tag/Campaigns/paths/~1accounts~1{accountId}~1lists~1{listId}~1campaigns~1{campaignType}{campaignId}/get) the subscriber was sent
+        type: string
+        format: uri
+        example: 'https://api.aweber.com/1.0/accounts/123/lists/456/campaigns/f12345678'
+      latitude:
+        description: The subscriber's geographical latitude
+        type: number
+        format: double
+        minimum: -90.0
+        maximum: 90.0
+        example: 37.751
+      list_link:
+        description: A link to the [List](#tag/Lists/paths/~1accounts~1{accountId}~1lists~1{listId}/get) the subscriber is on
+        type: string
+        format: uri
+        example: 'https://api.aweber.com/1.0/accounts/123/lists/456'
+      list_name:
+        description: List name
+        type: string
+        minLength: 1
+        maxLength: 32
+        example: 'Test List'
+      longitude:
+        description: The subscriber's geographical longitude
+        type: number
+        format: double
+        minimum: -180.0
+        maximum: 180.0
+        example: -97.822
+      misc_notes:
+        description: Miscellaneous notes
+        type: string
+        maxLength: 60
+        example: ebook
+      name:
+        description: The subscriber's name
+        type: string
+        minLength: 1
+        maxLength: 60
+        example: John Doe
+      postal_code:
+        description: The subscriber's address postal code
+        type: string
+        minLength: 1
+        maxLength: 100
+        example: '99999-9999'
+      region:
+        description: The subscriber's address stage or region abbreviation
+        type: string
+        minLength: 1
+        maxLength: 100
+        example: PA
+      resource_type_link:
+        description: A link that identifies the type of resource that this collection represents
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/#subscriber
+      self_link:
+        description: The link to this resource
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/subscribers/789
+      status:
+        description: The subscriber's status
+        type: string
+        enum:
+          - subscribed
+          - unsubscribed
+          - unconfirmed
+      subscribed_at:
+        description: The timestamp for when the subscriber subscribed
+        type: string
+        format: date-time
+        example: '2015-10-13T16:19:20-04:00'
+      subscription_method:
+        description: The method by which the subscriber was subscribed
+        type: string
+        enum:
+          - api
+          - email
+          - import
+          - webform
+      subscription_url:
+        description: The webform url from which the subscriber subscribed from
+        type: string
+        format: uri
+        maximum: 100
+        example: https://forms.aweber.com/form/16/123456789.htm
+      tags:
+        description: A list of tags added to the subscriber
+        type: array
+        items:
+          type: string
+          minLength: 1
+        example:
+          - slow
+          - fast
+          - lightspeed
+      unsubscribe_method:
+        description: The method that describes how the subscriber unsubscribed
+        type: string
+        enum:
+          - 'unsubscribe link'
+          - 'customer cp'
+          - 'undeliverable'
+          - 'api: unsubscribe'
+          - 'api: move'
+      unsubscribed_at:
+        description: The timestamp for when the subscriber unsubscribed
+        type: string
+        format: date-time
+        example: '2017-10-13T10:41:43.300889-04:00'
+      verified_at:
+        description: The timestamp for when the subscriber confirmed their email address
+        type: string
+        format: date-time
+        example: '2015-10-13T16:19:53'
+
+  FindSubscribers:
+    type: object
+    properties:
+      entries:
+        description: The list of subscriber entries plus list information
+        type: array
+        items:
+          $ref: '#/definitions/SubscriberFind'
+      next_collection_link:
+        description: A link to the next page of entries if more entries exist. This attribute is omitted from the collection if there are no more entries.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/subscribers?ws.op=find&ws.start=1&ws.size=100
+      prev_collection_link:
+        description: A link to the previous page of entries if previous entries exist. This attribute is omitted if this is the first page.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/subscribers?ws.op=find&ws.start=1&ws.size=100
+      start:
+        description: The starting offset for the page of entries to retrieve
+        type: integer
+        minimum: 0
+      total_size_link:
+        description: Link to the total number of entries
+        type: string
+        format: uri
+        example: "https://api.aweber.com/1.0/accounts/123/lists/456/subscribers?ws.op=find&ws.show=total_size"
+
+  SubscriberGetActivity:
+    type: object
+    properties:
+      entries:
+        description: The list of activity entries.  The contents of the entry
+         varies, but will always have the following fields listed
+        type: array
+        items:
+          $ref: '_definitions.yaml#/definitions/Activity'
+        example:
+          event_time: 2015-07-31 11:36:34-04:00
+          http_etag: abd5e0fcbab9073cf861271845859008a7e1c750-ca5feee2b7fbb6febfca8af5541541ea960aaedb
+          id: 2701
+          resource_type_link: https://api.aweber.com/1.0/#subscriber_activity
+          self_link: https://api.aweber.com/1.0/accounts/123/lists/456/subscribers/789/subscribed
+          subscriber_link: https://api.aweber.com/1.0/accounts/123/lists/456/subscribers/789
+          type: subscribed
+      start:
+        description: The starting offset for the page of entries to retrieve
+        type: integer
+        minimum: 0
+      total_size_link:
+        description: A link to check the total number of entries found for this resource
+        type: string
+      next_collection_link:
+        description: A link to the next page of entries if more entries exist. This attribute is omitted from the collection if there are no more entries.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/subscribers/64787088?ws.op=getActivity&ws.start=3&ws.size=1
+      prev_collection_link:
+        description: A link to the previous page of entries if previous entries exist. This attribute is omitted if this is the first page.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/subscribers/64787088?ws.op=getActivity&ws.start=1&ws.size=1"
+
+  Purchase:
+    type: object
+    properties:
+      event_time:
+        description: The timestamp of when the event occurred
+        type: string
+        example: 2015-07-31T11:36:34-04:00
+      currency:
+        type: string
+        description: >-
+          Three-letter [ISO currency
+          code](https://www.iso.org/iso-4217-currency-codes.html).
+      event_note:
+        description: A custom note associated with this specific tracked event
+        type: string
+      product_name:
+        description: A custom description for the page or event
+        type: string
+      value:
+        description: The monetary value associated with this tracked event.
+        type: number
+      vendor:
+        description: The sales tracking url profile for the web page
+        type: string
+      url:
+        description: The URL for the tracked event
+        type: string
+      ad_tracking:
+        description: The customer ad tracking field
+        type: string
+        minLength: 1
+        maxLength: 20
+        example: ebook
+      custom_fields:
+        description: The custom fields specified on the subscriber
+        type: object
+        additionalProperties:
+          type: string
+          minimum: 1
+        example:
+          apple: fuji
+          pear: bosc
+      email:
+        description: The subscriber's email address
+        type: string
+        minLength: 1
+        maxLength: 50
+        format: email
+      ip_address:
+        description: The subscriber's IP address. This must be a public IP address.
+        type: string
+        format: ipv4
+        minLength: 1
+        maxLength: 60
+        example: '204.194.222.28'
+      misc_notes:
+        description: Miscellaneous notes
+        type: string
+        maxLength: 60
+        example: ebook
+      name:
+        description: The subscriber's name
+        type: string
+        minLength: 1
+        maxLength: 60
+        example: John Doe
+      tags:
+        description: A list of tags added to the subscriber
+        type: array
+        items:
+          type: string
+          minLength: 1
+        example:
+          - slow
+          - fast
+          - lightspeed
+    required:
+      - email
+      - ip_address
+      - vendor
+      - product_name
+      - event_note
+      - currency
+      - value
+      - event_time
+      - url
+    additionalProperties: false
+
+  AddSubscriberRequestBody:
+    type: object
+    required:
+      - email
+    properties:
+      ad_tracking:
+        description: The customer ad tracking field
+        type: string
+        minLength: 1
+        maxLength: 20
+        example: ebook
+      custom_fields:
+        description: >-
+          The custom fields specified on the subscriber.  Note that the custom
+          fields are required to already exist for the list. See
+          [Custom Fields](#tag/Custom-Fields) for details.
+        type: object
+        additionalProperties:
+          type: string
+          minLength: 1
+        example:
+          apple: fuji
+          pear: bosc
+      email:
+        description: The subscriber's email address
+        type: string
+        minLength: 1
+        maxLength: 50
+        format: email
+      ip_address:
+        description: >-
+          The subscriber's IP address. This field is used to determine the following Geo Location fields: 
+          area_code, city, country, dma_code, latitude, longitude, postal_code, and region. IP address can only be 
+          specified when Subscribers are initially created. Internal, private, or reserved IP addresses are 
+          not acceptable.
+        type: string
+        minLength: 1
+        maxLength: 60
+        format: ipv4
+      last_followup_message_number_sent:
+        description: >-
+          The sequence number of the last followup message sent to the subscriber.  This field
+          determines the next followup message to be sent to the Subscriber.  When set to 0 (default),
+          the Subscriber should receive the 1st (autoresponse) Followup message.  Set the value of this
+          field to 1001 if you do not want any Followups to be sent to this Subscriber.
+        type: integer
+        minimum: 0
+        maximum: 1001
+      misc_notes:
+        description: Miscellaneous notes
+        type: string
+        minLength: 1
+        maxLength: 60
+      name:
+        description: The subscriber's name
+        type: string
+        minLength: 1
+        maxLength: 60
+        example: John Doe
+      strict_custom_fields:
+        description: >-
+          If this parameter is present and set to `true`, then custom field names are matched case
+          sensitively.  Enabling this option also causes the operation to fail if a custom field
+          is included that is not defined for the list.
+        type: string
+        enum:
+          - "true"
+          - "false"
+      update_existing:
+        description: >-
+          If this parameter is present and set to `true`, then if a subscriber is already present on the
+          list, the subscriber will be updated. 
+          <br><br>
+          **Note:**
+          <br>
+
+          - Only the fields defined in the 
+          <a href='#tag/Subscribers/paths/~1accounts~1{accountId}~1lists~1{listId}~1subscribers~1{subscriberId}/patch'>patch</a>
+          endpoint will be updated. 
+
+          - Any tags in the request will be **appended** to the existing Subscriber.
+        type: string
+        enum:
+          - "true"
+          - "false"
+      tags:
+        description: >-
+          A list of tags added to the subscriber.  This field is used to apply a list of tags to a
+          Subscriber. With Campaigns, you can trigger a series of messages based on what Tags have
+          been applied to your subscribers.
+        type: array
+        items:
+          type: string
+        example:
+          - slow
+          - fast
+          - lightspeed
+
+  UpdateSubscriberRequestBody:
+    type: object
+    properties:
+      ad_tracking:
+        description: The customer ad tracking field
+        type: string
+        minLength: 1
+        maxLength: 20
+        example: ebook
+      custom_fields:
+        description: >-
+          The custom fields specified on the subscriber.  Custom fields are represented as a sub-object
+          where only the **values** can be modified.
+          <br><br>
+          **Note:** If updating custom field values, **all** fields must be included in the request.
+          If all fields are not included, the omitted fields will be set to *null*.
+          <br><br>
+          In order to modify custom field values:
+
+          - Retrieve the custom fields and values for the subscriber.
+
+          - Add all fields and their values to the PATCH request.
+
+          - Modify the value **only** for the fields you wish to update.
+
+          - Submit the request containing all the custom fields and their respective values.
+        type: object
+        additionalProperties:
+          type: string
+          minLength: 1
+        example:
+          apple: fuji
+          pear: bosc
+      email:
+        description: The subscriber's email address
+        type: string
+        maximum: 50
+        format: email
+      last_followup_message_number_sent:
+        description: >-
+          The sequence number of the last followup message sent to the subscriber.  This field
+          determines the next followup message to be sent to the Subscriber.  When set to 0, the Subscriber
+          will receive the 1st (autoresponse) Followup message.  Set the value of this field to 1001 if you
+          do not want any Followups to be sent to this Subscriber.
+        type: integer
+        minimum: 0
+        maximum: 1001
+      misc_notes:
+        description: Miscellaneous notes
+        type: string
+        example: Open House 2015
+      name:
+        description: The subscriber's name
+        type: string
+        minLength: 1
+        maxLength: 60
+        example: John Doe
+      status:
+        description:
+          The subscriber's status.<br>
+          **Note** you cannot set a subscriber's status to "unconfirmed".
+        type: string
+        enum:
+          - subscribed
+          - unsubscribed
+      strict_custom_fields:
+        description: >-
+          If this parameter is present and set to `true`, then custom field names are matched case
+          sensitively.  Enabling this option also causes the operation to fail if a custom field
+          is included that is not defined for the list.
+        type: string
+        enum:
+        - "true"
+        - "false"
+      tags:
+        description: An object with the keys "add" and/or "remove" and values of lists of tags
+        type: object
+        properties:
+          add:
+            description: List of tags to add to the subscriber
+            type: array
+            items:
+              type: string
+            example:
+              - fast
+              - lightspeed
+          remove:
+            description: List of tags to remove from the subscriber
+            type: array
+            items:
+              type: string
+            example:
+              - slow
+
+  MoveSubscriberRequestBody:
+    type: object
+    required:
+      - ws.op
+      - list_link
+    properties:
+      enforce_custom_field_mapping:
+        description: If set to true, this will cause the move of a subscriber to fail if the custom fields from the origin list do not match (case insensitively) to the target list
+        type: boolean
+        format: bool
+        example: true
+      last_followup_message_number_sent:
+        description: >-
+          The sequence number of the last followup message sent to the subscriber.  This field
+          determines the next followup message to be sent to the Subscriber.  When set to 0, the Subscriber
+          will receive the 1st (autoresponse) Followup message.  Set the value of this field to 1001 if you
+          do not want any Followups to be sent to this Subscriber.
+        type: integer
+        minimum: 0
+        maximum: 1001
+      list_link:
+        description: The link to the destination [List](#tag/Lists/paths/~1accounts~1{accountId}~1lists~1{listId}/get)
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456
+      ws.op:
+        description: The method name - expecting "move"
+        type: string
+        enum:
+          - move
+  Webform:
+    type: object
+    properties:
+      conversion_percentage:
+        description: The conversion percentage
+        type: number
+        format: float
+        example: 6.451612903225806
+      html_source_link:
+        description: The webform HTML source URL
+        type: string
+        format: uri
+        example: http://forms.aweber.com/form/123/456.html
+      http_etag:
+        description: The ETag HTTP header
+        type: string
+        example: \"902ba3cda1883801594b6e1b452790cc53948fda-f83cb0ac22a8d5f792417f9b3dc0e9dc7558aa32\"
+      id:
+        description: The unique ID for the webform activity
+        type: integer
+        example: 234
+      is_active:
+        description: Whether the webform is active or not
+        type: boolean
+      javascript_source_link:
+        description: The webform javascript source URL
+        type: string
+        format: uri
+        example: http://forms.aweber.com/form/123/456.js
+      name:
+        description: The webform name
+        type: string
+        example: Joker's Wild
+      resource_type_link:
+        description: The link to the webform type
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/#web_form
+      self_link:
+        description: The link to this resource
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/web_forms/789
+      tags:
+        description: A list of tags added to the webform
+        type: array
+        items:
+          type: string
+          minLength: 1
+        example:
+          - slow
+          - fast
+          - lightspeed
+      total_displays:
+        description: The total number of times the webform is displayed
+        type: integer
+        example: 123456789
+      total_submissions:
+        description: The total number of submissions received by the webform
+        type: integer
+        example: 123456
+      total_unique_displays:
+        description: The total number of unique times the webform is displayed
+        type: integer
+        example: 1234
+      type:
+        description: The webform display type
+        type: string
+        enum:
+          - exitpopup
+          - inline
+          - lightbox
+          - popover
+          - popunder
+          - popup
+          - styled
+      unique_conversion_percentage:
+        description: The conversion percentage based on unique counts
+        type: number
+        format: float
+        example: 6.451612903225806
+
+  Webforms:
+    type: object
+    properties:
+      entries:
+        description: A list of webform entries
+        type: array
+        items:
+          $ref: '#/definitions/Webform'
+      next_collection_link:
+        description: A link to the next page of entries if more entries exist. This attribute is omitted from the collection if there are no more entries.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/web_forms?ws.start=0&ws.size=10
+      prev_collection_link:
+        description: A link to the previous page of entries if any exist. This attribute is omitted from the collection if ws.start is 0.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/web_forms?ws.start=10&ws.size=10
+      resource_type_link:
+        description: A link that identifies the type of resource that this collection represents
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/#web_form-page-resource
+      start:
+        description: The starting offset for the page of entries to retrieve
+        type: integer
+        minimum: 0
+      total_size:
+        description: The total number of entries
+        type: integer
+        minimum: 0
+        example: 100
+
+  WebformSplitTest:
+    type: object
+    properties:
+      components_collection_link:
+        description: The webform [Split Test Components](#tag/Webforms/paths/~1accounts~1{accountId}~1lists~1{listId}~1web_form_split_tests~1{splitTestId}~1components/get) URL
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/web_form_split_tests/789/components
+      http_etag:
+        description: The ETag HTTP header
+        type: string
+        example: \"902ba3cda1883801594b6e1b452790cc53948fda-f83cb0ac22a8d5f792417f9b3dc0e9dc7558aa32\"
+      id:
+        description: The unique ID for the webform split test
+        type: integer
+        example: 234
+      is_active:
+        description: Whether the split test is active or not
+        type: boolean
+      javascript_source_link:
+        description: The webform javascript source URL
+        type: string
+        format: uri
+        example: http://forms.aweber.com/form/123/split_456.js
+      name:
+        description: The split test name
+        type: string
+        example: Joker's Wild Split Test
+      resource_type_link:
+        description: The link to the split test type
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/#web_form_split_test
+      self_link:
+        description: The link to this resource
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/web_form_split_tests/789
+
+  WebFormSplitTests:
+    type: object
+    properties:
+      entries:
+        type: array
+        items:
+          $ref: '_definitions.yaml#/definitions/WebformSplitTest'
+      next_collection_link:
+        description: A link to the next page of entries if more entries exist. This attribute is omitted from the collection if there are no more entries.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/web_form_split_tests?ws.start=10&ws.size=10
+      prev_collection_link:
+        description: A link to the previous page of entries if any exist. This attribute is omitted from the collection if ws.start is 0.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/web_form_split_tests?ws.start=0
+      resource_type_link:
+        description: The link to the event type
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/#web_form_split_test-page-resource
+      start:
+        description: The starting offset for the page of entries to retrieve
+        type: integer
+        minimum: 0
+      total_size:
+        description: The total number of entries
+        type: integer
+        minimum: 0
+        example: 100
+
+  WebformSplitTestComponent:
+    type: object
+    properties:
+      conversion_percentage:
+        description: The conversion percentage
+        type: number
+        format: float
+        minimum: 0
+        example: 0.0
+      html_source_link:
+        description: The webform HTML source URL
+        type: string
+        format: uri
+        example: http://forms.aweber.com/form/123/456.html
+      http_etag:
+        description: The ETag HTTP header
+        type: string
+        example: \"902ba3cda1883801594b6e1b452790cc53948fda-f83cb0ac22a8d5f792417f9b3dc0e9dc7558aa32\"
+      id:
+        description: The unique ID for the webform component
+        type: string
+        example: 234-456
+      is_active:
+        description: Whether the webform is active or not
+        type: boolean
+      javascript_source_link:
+        description: The webform javascript source URL
+        type: string
+        format: uri
+        example: http://forms.aweber.com/form/123/456.js
+      name:
+        description: The webform name
+        type: string
+        example: Joker's Wild
+      resource_type_link:
+        description: The link to the webform type
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/#component
+      self_link:
+        description: The link to this resource
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/web_form_split_tests/789/component/234-456
+      tags:
+        description: A list of tags added to the webform component
+        type: array
+        items:
+          type: string
+          minLength: 1
+        example:
+          - slow
+          - fast
+          - lightspeed
+      total_displays:
+        description: The total number of times the webform is displayed
+        type: integer
+        minimum: 0
+        example: 123456789
+      total_submissions:
+        description: The total number of submissions received by the webform
+        type: integer
+        minimum: 0
+        example: 123456
+      total_unique_displays:
+        description: The total number of unique times the webform is displayed
+        type: integer
+        minimum: 0
+        example: 1234
+      type:
+        description: The webform display type
+        type: string
+        enum:
+          - exitpopup
+          - inline
+          - lightbox
+          - popover
+          - popunder
+          - popup
+          - styled
+      unique_conversion_percentage:
+        description: The conversion percentage based on unique counts
+        type: number
+        format: float
+        minimum: 0
+        example: 6.451612903225806
+      web_form_link:
+        description: "The link to [Webform](#tag/Webforms/paths/~1accounts~1{accountId}~1lists~1{listId}~1web_forms~1{webformId}/get)"
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/web_form/789
+      weight:
+        description: The relative display weight
+        type: integer
+        minimum: 0
+        example: 40
+
+  WebformSplitTestComponents:
+    type: object
+    properties:
+      entries:
+        type: array
+        items:
+          $ref: '_definitions.yaml#/definitions/WebformSplitTestComponent'
+      next_collection_link:
+        description: A link to the next page of entries if more entries exist. This attribute is omitted from the collection if there are no more entries.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/web_form_split_tests/789/components?ws.start=10&ws.size=10
+      prev_collection_link:
+        description: A link to the previous page of entries if any exist. This attribute is omitted from the collection if ws.start is 0.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/web_form_split_tests/789/components?ws.start=0
+      resource_type_link:
+        description: The link to the Component type
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/#component-page-resource
+      start:
+        description: The starting offset for the page of entries to retrieve
+        type: integer
+        minimum: 0
+      total_size:
+        description: The total number of entries
+        type: integer
+        minimum: 0
+        example: 100
+
+  Segment:
+    type: object
+    properties:
+      id:
+        description: The unique ID for the segment
+        type: integer
+        example: 1
+      is_split_test:
+        description: |
+          Whether the segment is part of a split test.
+
+          Must be false to use for scheduling a broadcast.
+
+          Segments that were created automatically for a split test in the control panel are set to true.
+        type: boolean
+        example: false
+      name:
+        description: The segment name
+        type: string
+        example: All Subscribers
+      resource_type_link:
+        description: The link to the segment type
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/#segment
+      self_link:
+        description: The link to this resource
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/segments/1
+
+  Segments:
+    type: object
+    properties:
+      entries:
+        type: array
+        items:
+          $ref: '_definitions.yaml#/definitions/Segment'
+      next_collection_link:
+        description: A link to the next page of entries if more entries exist. This attribute is omitted from the collection if there are no more entries.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/segments?ws.start=10&ws.size=10
+      prev_collection_link:
+        description: A link to the previous page of entries if any exist. This attribute is omitted from the collection if ws.start is 0.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/segments?ws.start=0
+      resource_type_link:
+        description: The link to the segment page type
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/#segment-page-resource
+      start:
+        description: The starting offset for the page of entries to retrieve
+        type: integer
+        minimum: 0
+      total_size:
+        description: The total number of entries
+        type: integer
+        minimum: 0
+        example: 100
+
+  LandingPage:
+    allOf:
+    - type: object
+      properties:
+        content_html:
+          description: The draft HTML of the landing page
+          type: string
+          example: <html><h1>Title</h1><body>Landing Page Text</body></html>
+        published_html:
+          description: The published HTML of the landing page
+          type: string
+          nullable: true
+          example: <html><h1>Title</h1><body>Landing Page Text</body></html>
+    - $ref: '_definitions.yaml#/definitions/LandingPageNoContent'
+
+  LandingPageNoContent:
+    type: object
+    properties:
+      created_at: 
+        description: When the landing page was created
+        type: string
+        format: date-time
+        example: 2017-07-18 16:53:02-04:00
+      id:
+        description: The unique ID for the landing page
+        type: string
+        format: uuid
+        example: 48b38cd9-a5df-4297-8987-ed31b3093b39
+      modified_at: 
+        description: When the landing page was last modified
+        type: string
+        format: date-time
+        example: 2017-07-18 16:53:02-04:00
+      name:
+        description: The landing page name
+        type: string
+        example: My Awesome Landing Page
+      published_at: 
+        description: When the landing page was published
+        type: string
+        format: date-time
+        nullable: true
+        example: 2017-07-18 16:53:02-04:00
+      published_url:
+        description: The URL for the landing page
+        type: string
+        format: uri
+        nullable: true
+        example: https://awd415f.aweberpages.com/awesomepage
+      resource_type_link:
+        description: The link to the landing page type
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/#landing_page
+      self_link:
+        description: The link to this resource
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/landing_pages/48b38cd9-a5df-4297-8987-ed31b3093b39
+      status:
+        description: The status of the landing page
+        type: string
+        enum:
+          - published
+          - unpublished
+
+  LandingPages:
+    type: object
+    properties:
+      entries:
+        type: array
+        items:
+          $ref: '_definitions.yaml#/definitions/LandingPageNoContent'
+      next_collection_link:
+        description: A link to the next page of entries if more entries exist. This attribute is omitted from the collection if there are no more entries.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/landing_pages/48b38cd9-a5df-4297-8987-ed31b3093b39?ws.start=10&ws.size=10
+      prev_collection_link:
+        description: A link to the previous page of entries if any exist. This attribute is omitted from the collection if ws.start is 0.
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/accounts/123/lists/456/landing_pages/48b38cd9-a5df-4297-8987-ed31b3093b39?ws.start=0
+      resource_type_link:
+        description: The link to the landing page page type
+        type: string
+        format: uri
+        example: https://api.aweber.com/1.0/#landing_page-page-resource
+      start:
+        description: The starting offset for the page of entries to retrieve
+        type: integer
+        minimum: 0
+      total_size:
+        description: The total number of entries
+        type: integer
+        minimum: 0
+        example: 100

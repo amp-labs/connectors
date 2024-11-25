@@ -1,0 +1,132 @@
+openapi: 3.0.2
+info:
+  title: Accounts
+  description: REST API for access the AWeber service.
+  version: '1.0'
+  contact:
+    name: API Team
+    url: 'https://labs.aweber.com'
+    email: api@aweber.com
+tags:
+  - name: Accounts
+paths:
+  /accounts:
+    get:
+      summary: Get accounts
+      description: |
+        This endpoint is used to get a paginated collection of accounts.
+
+        Check out examples for <a href="https://github.com/aweber/public-api-examples/tree/master/python" target="_blank">Python</a>, 
+        <a href="https://github.com/aweber/public-api-examples/tree/master/php" target="_blank">PHP</a>, 
+        <a href="https://github.com/aweber/public-api-examples/tree/master/postman" target="_blank">Postman</a>, 
+        <a href="https://github.com/aweber/public-api-examples/tree/master/csharp" target="_blank">C#.NET</a>,
+        <a href="https://github.com/aweber/public-api-examples/tree/master/ruby" target="_blank">Ruby</a>,
+        and <a href="https://github.com/aweber/public-api-examples/blob/master/node" target="_blank">Node.js</a>.
+      tags:
+        - Accounts
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/wsStart'
+        - $ref: '_parameters.yaml#/parameters/wsSize'
+      security:
+        - OAuth 2.0:
+          - account.read
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/GetAccounts'
+      responses:
+        '200':
+          description: The request completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '_definitions.yaml#/definitions/Accounts'
+        '400':
+          description: The server cannot or will not process the request due to a client error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    description: |
+                      An error object.
+                      One of the following errors may be received:
+
+                      | Error Type           | Explanation                              |
+                      |----------------------|------------------------------------------|
+                      | WebServiceError      | `ws.start` or `ws.size` values are invalid |
+                      | BadRequestError      | Error decoding query parameters |
+                      | MissingOAuthParametersError | An OAuth parameter is missing in the request |
+                      | UnsupportedOAuthVersionError | Unsupported OAuth 1 version |
+                      | UnsupportedOAuthSignatureMethodError | Unsupported OAuth 1 signature method |
+
+                      Please see the message body for more details.
+                    type: object
+                    properties:
+                      documentation_url:
+                        description: A link to the documentation that describes the error
+                        type: string
+                        example: https://api.aweber.com#badrequest
+                      message:
+                        description: A human friendly description of the error
+                        type: string
+                        example: Maximum for "ws.size" parameter is 100.
+                      status:
+                        description: The HTTP status code
+                        type: integer
+                        example: 400
+                      type:
+                        description: The API error type
+                        type: string
+                        example: WebServiceError
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/ForbiddenError'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+  '/accounts/{accountId}':
+    get:
+      summary: Get account
+      description: |
+        This endpoint is used to retrieve information for a specific account.
+
+        Check out examples for <a href="https://github.com/aweber/public-api-examples/tree/master/python" target="_blank">Python</a>, 
+        <a href="https://github.com/aweber/public-api-examples/tree/master/php" target="_blank">PHP</a>, 
+        <a href="https://github.com/aweber/public-api-examples/tree/master/postman" target="_blank">Postman</a>, 
+        <a href="https://github.com/aweber/public-api-examples/tree/master/csharp" target="_blank">C#.NET</a>,
+        <a href="https://github.com/aweber/public-api-examples/tree/master/ruby" target="_blank">Ruby</a>,
+        and <a href="https://github.com/aweber/public-api-examples/blob/master/node" target="_blank">Node.js</a>.
+      tags:
+        - Accounts
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+      security:
+        - OAuth 2.0:
+            - account.read
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/GetAccount'
+      responses:
+        '200':
+          description: The request completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '_definitions.yaml#/definitions/Account'
+        '400':
+          $ref: '_responses.yaml#/responses/BadOAuth1'
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/ForbiddenError'
+        '404':
+          $ref: '_responses.yaml#/responses/NotFound'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'

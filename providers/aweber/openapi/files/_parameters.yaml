@@ -1,0 +1,622 @@
+parameters:
+  accountId:
+    name: accountId
+    in: path
+    description: The account ID
+    required: true
+    schema:
+      type: integer
+      format: int32
+  after:
+    name: after
+    in: query
+    description: The pagination key when paging forward. Cannot be combined with `before`.
+    schema:
+      type: string
+  before:
+    name: before
+    in: query
+    description: The pagination key when paging in reverse. Cannot be combined with `after`.
+    schema:
+      type: string
+  campaignType:
+    name: campaignType
+    in: path
+    description: The campaign type (b - broadcast, f - followup)
+    required: true
+    schema:
+      type: string
+      enum: [b, f]
+  customFieldId:
+    name: customFieldId
+    in: path
+    description: The custom field ID
+    required: true
+    schema:
+      type: integer
+      format: int32
+  integrationId:
+    name: integrationId
+    in: path
+    description: The integration ID
+    required: true
+    schema:
+      type: integer
+      format: int32
+  listId:
+    name: listId
+    in: path
+    description: The list ID
+    required: true
+    schema:
+      type: integer
+      format: int32
+  messageEntryId:
+    name: messageEntryId
+    in: path
+    description: The message entry ID
+    required: true
+    schema:
+      type: integer
+      format: int32
+  messageId:
+    name: messageId
+    in: path
+    description: The message ID
+    required: true
+    schema:
+      type: integer
+      format: int32
+  subscriberId:
+    name: subscriberId
+    in: path
+    description: The subscriber ID
+    required: true
+    schema:
+      type: integer
+      format: int32
+  broadcastId:
+    name: broadcastId
+    in: path
+    description: The broadcast ID
+    required: true
+    schema:
+      type: integer
+      format: int32
+  campaignId:
+    name: campaignId
+    required: true
+    in: path
+    description: The campaign ID
+    schema:
+      type: integer
+      format: int32
+  findSubAdTracking:
+    name: ad_tracking
+    in: query
+    description: The customer ad tracking field
+    schema:
+      type: string
+      minLength: 1
+      maxLength: 20
+      example: ebook
+  findSubAreaCode:
+    name: area_code
+    in: query
+    description: The subscriber's area code
+    schema:
+      type: integer
+      format: int32
+      maximum: 999
+      minimum: 0
+      example: 555
+  findSubCity:
+    name: city
+    in: query
+    description: The subscriber's city
+    schema:
+      type: string
+      minLength: 1
+      maxLength: 100
+      example: Chalfont
+  findSubCountry:
+    name: country
+    in: query
+    description: The subscriber's country
+    schema:
+      type: string
+      minLength: 1
+      maxLength: 100
+      example: United States
+  findSubCustomFields:
+    name: custom_fields
+    in: query
+    description: The JSON encoded custom field key value pairs
+    schema:
+      type: string
+      example: '{"apple": "fuji", "pear": "bosc"}'
+  findSubDmaCode:
+    name: dma_code
+    in: query
+    description: The subscriber's designated market area code (usa and canada only)
+    schema:
+      type: integer
+      format: int32
+      maximum: 881
+      example: 504
+  findSubEmail:
+    name: email
+    in: query
+    description: The subscriber's email address
+    schema:
+      type: string
+      minLength: 1
+      maxLength: 50
+      format: email
+  findSubLastMessage:
+    name: last_followup_message_number_sent
+    in: query
+    description: The sequence number of the last followup message sent to the subscriber
+    schema:
+      type: integer
+      format: int32
+      maximum: 1001
+  findSubLastMessageSentAt:
+    name: last_followup_message_sent_at
+    in: query
+    description: The day when the last followup message was sent to the subscriber
+    schema:
+      type: string
+      format: date
+      minLength: 1
+      maxLength: 10
+      example: '2017-11-28'
+  findSubLatitude:
+    name: latitude
+    in: query
+    description: The subscriber's geographical latitude
+    schema:
+      type: number
+      format: double
+      minimum: -90.0
+      maximum: 90.0
+      example: 37.751
+  findSubLongitude:
+    name: longitude
+    in: query
+    description: The subscriber's geographical longitude
+    schema:
+      type: number
+      format: double
+      minimum: -180.0
+      maximum: 180.0
+      example: -97.822
+  findSubMiscNotes:
+    name: misc_notes
+    in: query
+    description: Miscellaneous notes
+    schema:
+      type: string
+      maxLength: 60
+      example: ebook
+  findSubName:
+    name: name
+    in: query
+    description: The subscriber's name
+    schema:
+      type: string
+      minLength: 1
+      maxLength: 60
+      example: John Doe
+  findSubPostalCode:
+    name: postal_code
+    in: query
+    description: The subscriber's postal or zip code
+    schema:
+      type: string
+      minLength: 1
+      maxLength: 100
+      example: '99999-9999'
+  findSubRegion:
+    name: region
+    in: query
+    description: The subscriber's state or region abbreviation
+    schema:
+      type: string
+      minLength: 1
+      maxLength: 100
+      example: PA
+  findSubStatus:
+    name: status
+    in: query
+    description: The subscriber's status
+    schema:
+      type: string
+      enum:
+        - subscribed
+        - unsubscribed
+        - unconfirmed
+  findSubSubscribedBefore:
+    name: subscribed_before
+    in: query
+    description: The day on or before the subscriber subscribed
+    schema:
+      type: string
+      format: date
+      example: '2017-07-16'
+  findSubSubscribedAfter:
+    name: subscribed_after
+    in: query
+    description: The day on or after the subscriber subscribed
+    schema:
+      type: string
+      format: date
+      example: '2017-07-16'
+  findSubSubscribedAt:
+    name: subscribed_at
+    in: query
+    description: The day in which the subscriber subscribed
+    schema:
+      type: string
+      format: date
+      example: '2017-07-16'
+  findSubUnsubscribedBefore:
+    name: unsubscribed_before
+    in: query
+    description: The day on or before the subscriber unsubscribed
+    schema:
+      type: string
+      format: date
+      example: '2017-10-13'
+  findSubUnsubscribedAfter:
+    name: unsubscribed_after
+    in: query
+    description: The day on or after the subscriber unsubscribed
+    schema:
+      type: string
+      format: date
+      example: '2017-10-13' 
+  findSubUnsubscribedAt:
+    name: unsubscribed_at
+    in: query
+    description: The day in which the subscriber unsubscribed
+    schema:
+      type: string
+      format: date
+      example: '2017-10-13'
+  findSubSubscriptionMethod:
+    name: subscription_method
+    in: query
+    description: How the subscriber was subscribed
+    schema:
+      type: string
+      enum:
+        - api
+        - email
+        - import
+        - webform
+  findSubTags:
+    name: tags
+    in: query
+    description: A string containing a JSON-formatted array of tags. All tags must match for the subscriber to match.
+    schema:
+      type: string
+      example: '["tag1", "tag2"]'
+  findSubNotTag:
+    name: tags_not_in
+    in: query
+    description: A string containing a JSON-formatted array of tags. Checks that all tags are not matched to a subscriber.
+    schema:
+      type: string
+      example: '["tag1", "tag2"]'
+  findSubUnsubscribeMethod:
+    name: unsubscribe_method
+    in: query
+    description: How the subscriber unsubscribed
+    schema:
+      type: string
+      enum:
+        - 'unsubscribe link'
+        - 'customer cp'
+        - 'undeliverable'
+        - 'api: unsubscribe'
+        - 'api: move'
+  findSubVerifiedAt:
+    name: verified_at
+    in: query
+    description: The day in which the subscriber confirmed their email address
+    schema:
+      type: string
+      format: date
+      example: '2017-07-18'
+  landingPageId:
+    name: landingPageId
+    in: path
+    description: The landing page ID
+    required: true
+    schema:
+      type: string
+      format: uuid
+  linkId:
+    name: linkId
+    required: true
+    in: path
+    description: The link ID
+    schema:
+      type: integer
+      format: int32
+  clickId:
+    name: clickId
+    required: true
+    in: path
+    description: The click ID
+    schema:
+      type: integer
+      format: int32
+  statsId:
+    name: statsId
+    required: true
+    in: path
+    description: |
+      <br>
+      
+      >The statistic's ID.
+      >
+      >The datatype of the ID may be different for each Stat. 
+      >
+      >Below is a list of the statistic IDs that can be passed in.
+      >
+      >__Aggregate Statistics__
+      >
+      >| Stat ID | Description |
+      >|---------|-------------|
+      >| total_clicks | Total number of times a subscriber clicked any link appearing in your campaign except the unsubscribe link (includes multiple clicks of the same link) |
+      >| unique_clicks | Total number of subscribers who clicked any link in your campaign |
+      >| total_opens | Total number of times your campaign was opened by any subscriber your campaign was sent to (including multiple opens by the same subscriber) |
+      >| unique_opens | Total number of subscribers who opened your campaign |
+      >| total_sales | Total number of sales made by subscribers who received your campaign |
+      >| total_sales_dollars | Total monetary value of sales made by subscribers who received your campaign |
+      >| total_unsubscribed | Total number of subscribers who unsubscribed by clicking the unsubscribe link in your campaign |
+      >
+      >__Time Related Statistics__
+      >
+      >| Stat ID | Description |
+      >|---------|-------------|
+      >| hourly_clicks | Hourly breakdown of unique and total clicks for the first 24 hours after a campaign was sent |
+      >| hourly_opens | Hourly breakdown of unique and total opens for the first 24 hours after a campaign was sent |
+      >| hourly_sales | Hourly breakdown of sales for the first 24 hours after a campaign was sent |
+      >| hourly_unsubscribed | Hourly breakdown of subscribers who unsubscribed by clicking the unsubscribed link for the first 24 hours after a campaign was sent |
+      >| hourly_webhits | Hourly breakdown of webhits to your website from subscribers sent this message for the first 24 hours after a campaign was sent |
+      >| daily_clicks | Daily breakdown of unique and total clicks for the first 14 days after a campaign was sent |
+      >| daily_opens | Daily breakdown of unique and total opens for the first 14 days after a campaign was sent |
+      >| daily_sales | Daily breakdown of sales for the first 14 days after a campaign was sent |
+      >| daily_unsubscribed | Daily breakdown of subscribers who unsuscribed by clicking the unsubscribed link for the first 14 days after a campaign was sent |
+      >| daily_webhits | Daily breakdown of webhits to your website from subscribers sent this message for the first 14 days after a campaign was sent |
+      >
+      >__Top 10 URL Statistics__
+      >
+      >| Stat ID | Description |
+      >|---------|-------------|
+      >| clicks_by_link | Top 10 links that were clicked (ranked by total_clicked) |
+      >| webhits_by_link | Top 10 webhits by click (ranked by total clicks) |
+      >
+      >__Top 10 Subscriber Statistics__
+      >(Requires access to subscriber data)
+      >
+      >| Stat ID | Description |
+      >|---------|-------------|
+      >| opens_by_subscriber | Top 10 subscribers that opened your message (ranked by total opens) |
+      >| sales_by_subscriber | Top 10 subscribers that made a sale from your message (ranked by total sales dollars) |
+      
+    schema:
+      type: string
+      enum:
+        - total_clicks
+        - unique_clicks
+        - total_opens
+        - unique_opens
+        - total_sales
+        - total_sales_dollars
+        - total_unsubscribed
+        - hourly_opens
+        - hourly_clicks
+        - hourly_webhits
+        - hourly_sales
+        - hourly_unsubscribed
+        - daily_opens
+        - daily_clicks
+        - daily_webhits
+        - daily_sales
+        - daily_unsubscribed
+        - clicks_by_link
+        - webhits_by_link
+        - opens_by_subscriber
+        - sales_by_subscriber
+  openId:
+    name: openId
+    in: path
+    description: The open entry ID
+    required: true
+    schema:
+      type: integer
+      format: int32
+  pageSize:
+    name: page_size
+    in: query
+    description: The pagination total entries to retrieve
+    schema:
+      type: integer
+      maximum: 100
+      minimum: 1
+      default: 100
+  trackedEventId:
+    name: trackedEventId
+    in: path
+    description: The tracked event entry ID
+    required: true
+    schema:
+      type: integer
+      format: int32
+  splitTestId:
+    name: splitTestId
+    required: true
+    in: path
+    description: The webform split test ID
+    schema:
+      type: integer
+      format: int32
+  splitTestComponentId:
+    name: splitTestComponentId
+    in: path
+    description: The webform split test component ID
+    required: true
+    schema:
+      type: string
+  webformId:
+    name: webformId
+    required: true
+    in: path
+    description: The webform ID
+    schema:
+      type: integer
+      format: int32
+  wsStart:
+    name: ws.start
+    in: query
+    description: The pagination starting offset
+    schema:
+      type: integer
+      format: int32
+      minimum: 0
+      default: 0
+  wsSize:
+    name: ws.size
+    in: query
+    description: The pagination total entries to retrieve
+    schema:
+      type: integer
+      format: int32
+      minimum: 1
+      maximum: 100
+      default: 100
+  wsShow:
+    name: ws.show
+    in: query
+    description: A flag to show the total size only - expecting
+      \"total_size\", when added the response will be an integer
+    schema:
+      type: string
+      enum:
+        - total_size
+  sortKey:
+    name: sort_key
+    in: query
+    description: The collection will be sorted by the field key specified. If no key is spcified the search will default to the order in which the subscribers were added to the list.
+    schema:
+      type: string
+      enum:
+        - subscribed_at
+        - unsubscribed_at
+  sortOrder:
+    name: sort_order
+    in: query
+    description: The collection will be sorted by the order in which the subscribers were added to the list. To specify the order, use the value `asc` for ascending or `desc` for descending.
+    schema:
+      type: string
+      default: asc
+      enum:
+        - asc
+        - desc
+  sortOrderList:
+    name: sort_order
+    in: query
+    description: The collection will be sorted in the order specified by the key entered for `sort_key`. To specify the order, use the value `asc` for ascending or `desc` for descending.
+    schema:
+      type: string
+      default: asc
+      enum:
+        - asc
+        - desc
+  oauth_consumer_key:
+    name: oauth_consumer_key
+    in: body
+    required: true
+    description: The consumer key assigned to your application, available on the <a href="https://labs.aweber.com/apps" target="_blank">My Apps Page</a>
+    type: string
+    example: XXXXXXXXXXXXXX
+  oauth_callback:
+    name: oauth_callback
+    in: body
+    required: false
+    description: |
+      A url that will be sent the verifier token when authorizing the request token in a future step.
+      If you don't have a callback, use `oob` as the value, this will indicate that the callback is 'out of band'
+      and will display an html page after authorization, containing the verifier token.
+    type: string
+    example: http://localhost/demo.php
+  oauth_nonce:
+    name: oauth_nonce
+    in: body
+    required: true
+    description: A unique, randomly generated string. Each request should have a unique nonce.
+    type: string
+    example: 510a6d6f0e4fb70b72096ce48cb22af8
+  oauth_signature:
+    name: oauth_signature
+    in: body
+    required: true
+    description: |
+      This is an HMAC-SHA1 hash of the entire request, including the application's secret,
+      and the customer's oauth_token_secret. Generating the signature is a complex process,
+      and we highly recommend using an OAuth library that will handle this for you.
+    type: string
+    example: uvNa27v1uyVES37VfsX2Tj1OUYU=
+  oauth_signature_method:
+    name: oauth_signature_method
+    in: body
+    required: true
+    description: The hashing algorithm that was used to generate the signature. AWeber only supports the HMAC-SHA1 hash, so that's what this parameter should always be.
+    type: string
+    example: HMAC-SHA1
+  oauth_timestamp:
+    name: oauth_timestamp
+    in: body
+    required: true
+    description: Timestamp for the request. This is in the format of a Unix timestamp, or seconds since January 1st, 1970.
+    type: string
+    example: 1285168264
+  oauth_token:
+    name: oauth_token
+    in: body
+    required: true
+    description: |
+      This is the token that represents the user of the application. This will be either the request token,
+      when in the process of gaining an access token, or the access token when making requests to the AWeber API.
+      The oauth_token parameter will be blank when you are getting a request token for a new user.
+    type: string
+    example:
+  oauth_version:
+    name: oauth_version
+    in: body
+    required: true
+    description: This identifies which version of the OAuth protocol you are using, and should always be 1.0 when working with the AWeber API.
+    type: string
+    example: 1.0
+  segmentId:
+    name: segmentId
+    in: path
+    description: The segment ID
+    required: true
+    schema:
+      type: integer
+      format: int32
+  subCollectionEmail:
+    name: subscriber_email
+    in: query
+    description: The subscriber's email address
+    required: true
+    schema:
+      type: string
+      minLength: 1
+      maxLength: 50
+      format: email

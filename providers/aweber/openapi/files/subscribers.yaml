@@ -1,0 +1,1283 @@
+openapi: 3.0.2
+info:
+  title: Subscribers
+  description: REST API for access the AWeber service.
+  version: '1.0'
+  contact:
+    name: API Team
+    url: 'https://labs.aweber.com'
+    email: api@aweber.com
+tags:
+  - name: Subscribers
+paths:
+  '/accounts/{accountId}/lists/{listId}/subscribers':
+    get:
+      summary: Get subscribers
+      description: >-
+        This endpoint is used to get a paginated collection of subscribers under
+        the specified account and list.  The subscribers are returned in the order
+        that they were added to the list starting with the oldest subscriber.
+        The order can be changed using the `sort_order` query parameter.
+
+        Check out related examples:
+
+          * Find Subscribers Across Lists ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/find-subscribers-across-lists" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/find-subscribers-across-lists" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Find%20Subscribers%20Across%20Lists.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.FindSubscribersAcrossLists" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/find_subscribers_across_lists.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/find-subscribers-across-lists.js" target="_blank">Node.js</a> )
+          * Manage Subscriber ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/manage-subscriber" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/manage-subscriber" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Manage%20Subscriber.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.ManageSubscriber" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/manage_subscriber.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/manage-subscriber.js" target="_blank">Node.js</a> )
+          * Move Subscriber ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/move-subscriber" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/move-subscriber" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Move%20Subscriber.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.MoveSubscriber" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/move_subscriber.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/move-subscriber.js" target="_blank">Node.js</a> )
+      tags:
+        - Subscribers
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/listId'
+        - $ref: '_parameters.yaml#/parameters/wsStart'
+        - $ref: '_parameters.yaml#/parameters/wsSize'
+        - $ref: '_parameters.yaml#/parameters/sortOrder'
+      security:
+        - OAuth 2.0:
+            - subscriber.read
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/GetSubscribers'
+      responses:
+        '200':
+          description: The request completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '_definitions.yaml#/definitions/Subscribers'
+        '400':
+          description: The server cannot or will not process the request due to a client error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    description: |
+                      An error object.
+                      One of the following errors may be received:
+
+                      | Error Type                           | Explanation                              |
+                      |--------------------------------------|------------------------------------------|
+                      | WebServiceError                      | `ws.start`, `ws.size`, or `sort_order` values are invalid |
+                      | MissingOAuthParametersError          | An OAuth parameter is missing in the request |
+                      | UnsupportedOAuthSignatureMethodError | The provided OAuth 1 signature method is unsupported. Only HMAC-SHA1 is supported. |
+                      | UnsupportedOAuthVersionError         | The provided OAuth 1 version is unsupported. |
+                    type: object
+                    properties:
+                      documentation_url:
+                        description: A link to the documentation that describes the error
+                        type: string
+                        example: https://api.aweber.com#badrequest
+                      message:
+                        description: A human friendly description of the error
+                        type: string
+                        example: Maximum for "ws.size" parameter is 100.
+                      status:
+                        description: The HTTP status code
+                        type: integer
+                        example: 400
+                      type:
+                        description: The API error type
+                        type: string
+                        example: WebServiceError
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/ForbiddenError'
+        '404':
+          $ref: '_responses.yaml#/responses/NotFound'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+    post:
+      summary: Add subscriber
+      description: >-
+        This endpoint is used to add subscribers to the specified account and
+        list. Before adding a subscriber to a list, read
+        <a href="https://help.aweber.com/entries/21729456-can-i-use-this-list"
+        target="_blank">Can I use this list?</a> to understand the ramifications.
+        If you have a large list of subscribers, please use our <a
+        href="https://help.aweber.com/hc/en-us/articles/204028626-How-do-I-import-a-list-of-subscribers-"
+        target="_blank">list importer</a>. Attempting to use the endpoint to bulk
+        add subscribers is considered abuse which violates our Terms of Service.
+
+
+        Check out related examples:
+
+          * Find Subscribers Across Lists ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/find-subscribers-across-lists" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/find-subscribers-across-lists" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Find%20Subscribers%20Across%20Lists.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.FindSubscribersAcrossLists" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/find_subscribers_across_lists.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/find-subscribers-across-lists.js" target="_blank">Node.js</a> )
+          * Manage Subscriber ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/manage-subscriber" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/manage-subscriber" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Manage%20Subscriber.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.ManageSubscriber" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/manage_subscriber.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/manage-subscriber.js" target="_blank">Node.js</a> )
+          * Move Subscriber ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/move-subscriber" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/move-subscriber" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Move%20Subscriber.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.MoveSubscriber" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/move_subscriber.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/move-subscriber.js" target="_blank">Node.js</a> )
+      tags:
+        - Subscribers
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/listId'
+      security:
+        - OAuth 2.0:
+            - subscriber.write
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/AddSubscriber'
+      responses:
+        '201':
+          description: The subscriber was created successfully
+          headers:
+            Location:
+              description: URI of the new subscriber
+              example: >-
+                https://api.aweber.com/1.0/accounts/123/lists/456/subscribers/789
+              schema:
+                type: string
+                format: uri
+        '400':
+          description: The server cannot or will not process the request due to a client error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    description: |
+                      An error object.
+                      One of the following errors may be received:
+
+                      | Error Type                           | Explanation                              |
+                      |--------------------------------------|------------------------------------------|
+                      | WebServiceError                      | An issue with the email address entered. Issue could be the that the subscriber is already subscribed, has an invalid email, or has a blocked email. |
+                      | MissingArgumentError                 | No email address in the request body. |
+                      | BadRequestError                      | An issue with one of the fields in the request body or no Content-Type header specified. |
+                      | InvalidTypeError                     | A field in the request body has an invalid type. |
+                      | MissingOAuthParametersError          | An OAuth parameter is missing in the request. |
+                      | UnsupportedOAuthSignatureMethodError | The provided OAuth 1 signature method is unsupported. Only HMAC-SHA1 is supported. |
+                      | UnsupportedOAuthVersionError         | The provided OAuth 1 version is unsupported. |
+
+                      Please see the message body for more details.
+                    type: object
+                    properties:
+                      documentation_url:
+                        description: A link to the documentation that describes the error
+                        type: string
+                        example: https://api.aweber.com#badrequest
+                      message:
+                        description: A human friendly description of the error
+                        type: string
+                        example: Missing required argument(s)
+                      status:
+                        description: The HTTP status code
+                        type: integer
+                        example: 400
+                      type:
+                        description: The API error type
+                        type: string
+                        example: BadRequestError
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          description: The request could not be completed due to a rate limit error, due to account being on hold, or because the subscriber limit has been reached.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    description: |
+                      An error object.
+                      The following error may be received:
+
+                      | Error Type           | Explanation                              |
+                      |----------------------|------------------------------------------|
+                      | ForbiddenError       | Rate limit may be reached, account may be suspended, subscriber limit has been reached, account may be on hold, or email address cannot be accepted at this time |
+
+                      Please see the message body for more details.
+                    type: object
+                    properties:
+                      documentation_url:
+                        description: A link to the documentation that describes the error
+                        type: string
+                        example: https://api.aweber.com#forbidden
+                      message:
+                        description: A human friendly description of the error
+                        type: string
+                        example: Rate Limit Error
+                      status:
+                        description: The HTTP status code
+                        type: integer
+                        enum:
+                          - 403
+                      type:
+                        description: The API error type
+                        type: string
+                        enum:
+                          - ForbiddenError
+        '404':
+          $ref: '_responses.yaml#/responses/SubListNotFound'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '415':
+          $ref: '_responses.yaml#/responses/NotFormURLEncodedOrJSON'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '_definitions.yaml#/definitions/AddSubscriberRequestBody'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '_definitions.yaml#/definitions/AddSubscriberRequestBody'
+        description: Request body to add a subscriber
+        required: true
+    patch:
+      summary: Update subscriber by email
+      description: >-
+        This endpoint is used to update the information for the specified
+        subscriber by email.
+
+
+        Check out related examples:
+
+          * Find Subscribers Across Lists ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/find-subscribers-across-lists" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/find-subscribers-across-lists" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Find%20Subscribers%20Across%20Lists.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.FindSubscribersAcrossLists" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/find_subscribers_across_lists.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/find-subscribers-across-lists.js" target="_blank">Node.js</a> )
+          * Manage Subscriber ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/manage-subscriber" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/manage-subscriber" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Manage%20Subscriber.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.ManageSubscriber" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/manage_subscriber.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/manage-subscriber.js" target="_blank">Node.js</a> )
+          * Move Subscriber ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/move-subscriber" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/move-subscriber" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Move%20Subscriber.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.MoveSubscriber" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/move_subscriber.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/move-subscriber.js" target="_blank">Node.js</a> )
+      tags:
+        - Subscribers
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/listId'
+        - $ref: '_parameters.yaml#/parameters/subCollectionEmail'
+      security:
+        - OAuth 2.0:
+            - subscriber.write
+      responses:
+        '209':
+          description: The subscriber was updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '_definitions.yaml#/definitions/Subscriber'
+        '400':
+          description: The server cannot or will not process the request due to a client error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    description: |
+                      An error object.
+                      One of the following errors may be received:
+
+                      | Error Type                           | Explanation                              |
+                      |--------------------------------------|------------------------------------------|
+                      | BadRequestError                      | A field in the request body is invalid or no Content-Type header specified. |
+                      | WebServiceError                      | Email address is already subscribed |
+                      | MissingOAuthParametersError          | An OAuth parameter is missing in the request |
+                      | UnsupportedOAuthSignatureMethodError | The provided OAuth 1 signature method is unsupported. Only HMAC-SHA1 is supported. |
+                      | UnsupportedOAuthVersionError         | The provided OAuth 1 version is unsupported. |
+
+                      Please see the message body for more details.
+                    type: object
+                    properties:
+                      documentation_url:
+                        description: A link to the documentation that describes the error
+                        type: string
+                        example: https://api.aweber.com#badrequest
+                      message:
+                        description: A human friendly description of the error
+                        type: string
+                        example: Missing required argument(s)
+                      status:
+                        description: The HTTP status code
+                        type: integer
+                        example: 400
+                      type:
+                        description: The API error type
+                        type: string
+                        example: BadRequestError
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/ForbiddenError'
+        '404':
+          $ref: '_responses.yaml#/responses/NotFound'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '415':
+          $ref: '_responses.yaml#/responses/NotFormURLEncodedOrJSON'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '_definitions.yaml#/definitions/UpdateSubscriberRequestBody'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '_definitions.yaml#/definitions/UpdateSubscriberRequestBody'
+        description: Request body to update a subscriber
+        required: true
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/UpdateSubscriberByEmail'
+    delete:
+      summary: Delete subscriber by email
+      description: |
+        This endpoint is used to delete a subscriber and related information by the subscriber's email.
+
+        If you just want to unsubscribe the subscriber, then make a
+        [PATCH request](#tag/Subscribers/paths/~1accounts~1{accountId}~1lists~1{listId}~1subscribers~1{subscriberId}/patch)
+        to set the status to "unsubscribed" instead.  When a subscriber is *DELETED*,
+        the subscriber is unsubscribed from the list and all related analytics activity
+        is removed from the customer account for the subscriber.  Any references to
+        clicks or opens are shown as "Deleted Subscriber" afterwards.
+
+
+        Check out related examples:
+
+          * Find Subscribers Across Lists ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/find-subscribers-across-lists" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/find-subscribers-across-lists" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Find%20Subscribers%20Across%20Lists.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.FindSubscribersAcrossLists" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/find_subscribers_across_lists.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/find-subscribers-across-lists.js" target="_blank">Node.js</a> )
+          * Manage Subscriber ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/manage-subscriber" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/manage-subscriber" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Manage%20Subscriber.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.ManageSubscriber" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/manage_subscriber.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/manage-subscriber.js" target="_blank">Node.js</a> )
+          * Move Subscriber ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/move-subscriber" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/move-subscriber" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Move%20Subscriber.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.MoveSubscriber" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/move_subscriber.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/move-subscriber.js" target="_blank">Node.js</a> )
+      tags:
+        - Subscribers
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/listId'
+        - $ref: '_parameters.yaml#/parameters/subCollectionEmail'
+      security:
+        - OAuth 2.0:
+            - subscriber.write
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/DeleteSubscriberByEmail'
+      responses:
+        '200':
+          description: The subscriber was deleted successfully
+        '400':
+          $ref: '_responses.yaml#/responses/BadOAuth1LessTypes'
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/ForbiddenError'
+        '404':
+          $ref: '_responses.yaml#/responses/SubscriberNotFound'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+  '/accounts/{accountId}/lists/{listId}/subscribers/{subscriberId}':
+    patch:
+      summary: Update subscriber by ID
+      description: >-
+        This endpoint is used to update the information for the specified
+        subscriber by ID
+
+
+        Check out related examples:
+
+          * Find Subscribers Across Lists ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/find-subscribers-across-lists" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/find-subscribers-across-lists" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Find%20Subscribers%20Across%20Lists.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.FindSubscribersAcrossLists" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/find_subscribers_across_lists.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/find-subscribers-across-lists.js" target="_blank">Node.js</a> )
+          * Manage Subscriber ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/manage-subscriber" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/manage-subscriber" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Manage%20Subscriber.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.ManageSubscriber" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/manage_subscriber.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/manage-subscriber.js" target="_blank">Node.js</a> )
+          * Move Subscriber ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/move-subscriber" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/move-subscriber" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Move%20Subscriber.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.MoveSubscriber" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/move_subscriber.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/move-subscriber.js" target="_blank">Node.js</a> )
+      tags:
+        - Subscribers
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/listId'
+        - $ref: '_parameters.yaml#/parameters/subscriberId'
+      security:
+        - OAuth 2.0:
+            - subscriber.write
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/UpdateSubscriber'
+      responses:
+        '209':
+          description: The subscriber was updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '_definitions.yaml#/definitions/Subscriber'
+        '400':
+          description: The server cannot or will not process the request due to a client error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    description: |
+                      An error object.
+                      One of the following errors may be received:
+
+                      | Error Type                           | Explanation                              |
+                      |--------------------------------------|------------------------------------------|
+                      | BadRequestError                      | A field in the request body is invalid or no Content-Type header specified. |
+                      | WebServiceError                      | Email address is already subscribed |
+                      | MissingOAuthParametersError          | An OAuth parameter is missing in the request |
+                      | UnsupportedOAuthSignatureMethodError | The provided OAuth 1 signature method is unsupported. Only HMAC-SHA1 is supported. |
+                      | UnsupportedOAuthVersionError         | The provided OAuth 1 version is unsupported. |
+
+                      Please see the message body for more details.
+                    type: object
+                    properties:
+                      documentation_url:
+                        description: A link to the documentation that describes the error
+                        type: string
+                        example: https://api.aweber.com#badrequest
+                      message:
+                        description: A human friendly description of the error
+                        type: string
+                        example: Missing required argument(s)
+                      status:
+                        description: The HTTP status code
+                        type: integer
+                        example: 400
+                      type:
+                        description: The API error type
+                        type: string
+                        example: BadRequestError
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/ForbiddenError'
+        '404':
+          $ref: '_responses.yaml#/responses/NotFound'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '415':
+          $ref: '_responses.yaml#/responses/NotFormURLEncodedOrJSON'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '_definitions.yaml#/definitions/UpdateSubscriberRequestBody'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '_definitions.yaml#/definitions/UpdateSubscriberRequestBody'
+        description: Request body to update a subscriber
+        required: true
+    delete:
+      summary: Delete subscriber by ID
+      description: |
+        This endpoint is used to delete a subscriber and related information by the subscriber's ID.
+
+        If you just want to unsubscribe the subscriber, then make a
+        [PATCH request](#tag/Subscribers/paths/~1accounts~1{accountId}~1lists~1{listId}~1subscribers~1{subscriberId}/patch)
+        to set the status to "unsubscribed" instead.  When a subscriber is *DELETED*,
+        the subscriber is unsubscribed from the list and all related analytics activity
+        is removed from the customer account for the subscriber.  Any references to
+        clicks or opens are shown as "Deleted Subscriber" afterwards.
+
+
+        Check out related examples:
+
+          * Find Subscribers Across Lists ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/find-subscribers-across-lists" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/find-subscribers-across-lists" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Find%20Subscribers%20Across%20Lists.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.FindSubscribersAcrossLists" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/find_subscribers_across_lists.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/find-subscribers-across-lists.js" target="_blank">Node.js</a> )
+          * Manage Subscriber ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/manage-subscriber" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/manage-subscriber" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Manage%20Subscriber.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.ManageSubscriber" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/manage_subscriber.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/manage-subscriber.js" target="_blank">Node.js</a> )
+          * Move Subscriber ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/move-subscriber" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/move-subscriber" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Move%20Subscriber.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.MoveSubscriber" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/move_subscriber.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/move-subscriber.js" target="_blank">Node.js</a> )
+      tags:
+        - Subscribers
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/listId'
+        - $ref: '_parameters.yaml#/parameters/subscriberId'
+      security:
+        - OAuth 2.0:
+            - subscriber.write
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/DeleteSubscriber'
+      responses:
+        '200':
+          description: The subscriber was deleted successfully
+        '400':
+          $ref: '_responses.yaml#/responses/BadOAuth1LessTypes'
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/ForbiddenError'
+        '404':
+          $ref: '_responses.yaml#/responses/SubscriberNotFound'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+    get:
+      summary: Get subscriber
+      description: >-
+        This endpoint is used to retrieve the information for the specified
+        subscriber.
+
+        Check out related examples:
+
+          * Find Subscribers Across Lists ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/find-subscribers-across-lists" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/find-subscribers-across-lists" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Find%20Subscribers%20Across%20Lists.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.FindSubscribersAcrossLists" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/find_subscribers_across_lists.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/find-subscribers-across-lists.js" target="_blank">Node.js</a> )
+          * Manage Subscriber ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/manage-subscriber" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/manage-subscriber" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Manage%20Subscriber.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.ManageSubscriber" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/manage_subscriber.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/manage-subscriber.js" target="_blank">Node.js</a> )
+          * Move Subscriber ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/move-subscriber" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/move-subscriber" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Move%20Subscriber.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.MoveSubscriber" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/move_subscriber.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/move-subscriber.js" target="_blank">Node.js</a> )
+      tags:
+        - Subscribers
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/listId'
+        - $ref: '_parameters.yaml#/parameters/subscriberId'
+      security:
+        - OAuth 2.0:
+            - subscriber.read
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/GetSubscriber'
+      responses:
+        '200':
+          description: The request completed successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '_definitions.yaml#/definitions/Subscriber'
+                  - type: object
+                    properties:
+                      uuid:
+                        description: The UUID (universally unique identifier) for the subscriber
+                        type: string
+                        example: 123e4567-e89b-12d3-a456-426655440000
+        '400':
+          $ref: '_responses.yaml#/responses/BadOAuth1'
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/ForbiddenError'
+        '404':
+          $ref: '_responses.yaml#/responses/NotFound'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+    post:
+      summary: Move subscriber
+      description: |
+        This endpoint is used to move a subscriber from one list to another on
+        the specified account.  The subscriber will be unsubscribed from the original
+        list and subscribed to the destination list without sending a verification
+        message.  By default, the subscriber will be set to the beginning of the
+        followup sequence on the destination list.  You can explicitly set the
+        position in the followup list by specifying the `last_followup_message_number_sent`
+        body parameter.
+
+        If either the source or destination list has custom fields defined, read our
+        <a href="https://help.aweber.com/hc/en-us/articles/360009520774" target="_blank">Knowledge Base</a>
+        article.
+
+        **Requirements**
+         - the subscriber MUST have a status of "subscribed"
+         - the destination list MUST be owned by the same account as the source list
+
+
+        Check out related examples:
+
+          * Find Subscribers Across Lists ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/find-subscribers-across-lists" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/find-subscribers-across-lists" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Find%20Subscribers%20Across%20Lists.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.FindSubscribersAcrossLists" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/find_subscribers_across_lists.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/find-subscribers-across-lists.js" target="_blank">Node.js</a> )
+          * Manage Subscriber ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/manage-subscriber" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/manage-subscriber" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Manage%20Subscriber.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.ManageSubscriber" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/manage_subscriber.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/manage-subscriber.js" target="_blank">Node.js</a> )
+          * Move Subscriber ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/move-subscriber" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/move-subscriber" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Move%20Subscriber.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.MoveSubscriber" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/move_subscriber.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/move-subscriber.js" target="_blank">Node.js</a> )
+      tags:
+        - Subscribers
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/listId'
+        - $ref: '_parameters.yaml#/parameters/subscriberId'
+      security:
+        - OAuth 2.0:
+            - subscriber.write
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/MoveSubscriber'
+      responses:
+        '201':
+          description: The subscriber was moved successfully
+          headers:
+            Location:
+              description: URI of the moved subscriber
+              example: >-
+                https://api.aweber.com/1.0/accounts/123/lists/456/subscribers/789
+              schema:
+                type: string
+                format: uri
+        '400':
+          description: The server cannot or will not process the request due to a client error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    description: |
+                      An error object.
+                      One of the following errors may be received:
+
+                      | Error Type                           | Explanation                              |
+                      |--------------------------------------|------------------------------------------|
+                      | BadRequestError                      | An issue with one of the fields in the request body or no Content-Type header is specified. |
+                      | MissingOAuthParametersError          | An OAuth parameter is missing in the request. |
+                      | UnsupportedOAuthSignatureMethodError | The provided OAuth 1 signature method is unsupported. Only HMAC-SHA1 is supported. |
+                      | UnsupportedOAuthVersionError         | The provided OAuth 1 version is unsupported. |
+
+                      Please see the message body for more details.
+                    type: object
+                    properties:
+                      documentation_url:
+                        description: A link to the documentation that describes the error
+                        type: string
+                        example: https://api.aweber.com#badrequest
+                      message:
+                        description: A human friendly description of the error
+                        type: string
+                        example: Missing required argument(s)
+                      status:
+                        description: The HTTP status code
+                        type: integer
+                        example: 400
+                      type:
+                        description: The API error type
+                        type: string
+                        example: BadRequestError
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/ForbiddenError'
+        '404':
+          $ref: '_responses.yaml#/responses/NotFound'
+        '405':
+          description: A request method is not supported for the requested resource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    description: |
+                      An error object.
+                      One of the following errors may be received:
+
+                      | Error Type      | Explanation |
+                      |-----------------|-------------|
+                      | WebServiceError | The move could not be completed. This could be due to the email not being accepted on the new list, custom fields not matching between lists, trying to move an unsubscribed subscriber, or trying to move a subscriber to a list they're already on. |
+                    type: object
+                    properties:
+                      documentation_url:
+                        description: A link to the documentation that describes the error
+                        type: string
+                        example: https://api.aweber.com#methodnotallowed
+                      message:
+                        description: A human friendly description of the error
+                        type: string
+                        example: Subscriber already belongs to this list.
+                      status:
+                        description: The HTTP status code
+                        type: integer
+                        example: 405
+                      type:
+                        description: The API error type
+                        type: string
+                        example: WebServiceError
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '415':
+          $ref: '_responses.yaml#/responses/NotFormURLEncodedOrJSON'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '_definitions.yaml#/definitions/MoveSubscriberRequestBody'
+        description: Request body to move subscriber
+        required: true
+  '/accounts/{accountId}/lists/{listId}/subscribers?ws.op=find':
+    get:
+      summary: Find subscribers for list
+      description: >-
+        This endpoint is used to find the collection of subscribers that match a
+        search criteria for the specified account and list.
+
+        * All parameters match on the full value and are case sensitive. (Partial
+          matches are NOT supported)
+
+        * For Date parameters, include the date as 'YYYY-MM-DD' or 'MM-DD-YYYY'
+          and any subscriber matching the query will be returned.
+
+        * Date parameters are entered as single days, but may search multiple days
+          depending on the parameter. For example: `subscribed_at=2017-07-16` or
+          `subscribed_before=2018-12-25`
+
+        * Values that are empty (or empty string) are treated the same as if
+          they were omitted entirely.
+
+        The subscribers are returned in the order that they were added to the list
+        starting with the oldest subscriber first.  This order can be changed using
+        the `sort_order` query parameter.
+
+
+        Check out related examples:
+
+          * Find Subscribers Across Lists ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/find-subscribers-across-lists" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/find-subscribers-across-lists" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Find%20Subscribers%20Across%20Lists.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.FindSubscribersAcrossLists" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/find_subscribers_across_lists.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/find-subscribers-across-lists.js" target="_blank">Node.js</a> )
+          * Manage Subscriber ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/manage-subscriber" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/manage-subscriber" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Manage%20Subscriber.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.ManageSubscriber" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/manage_subscriber.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/manage-subscriber.js" target="_blank">Node.js</a> )
+          * Move Subscriber ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/move-subscriber" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/move-subscriber" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Move%20Subscriber.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.MoveSubscriber" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/move_subscriber.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/move-subscriber.js" target="_blank">Node.js</a> )
+      tags:
+        - Subscribers
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/listId'
+        - name: ws.op
+          in: query
+          required: true
+          description: The method name - expecting "find"
+          schema:
+            type: string
+            enum:
+              - find
+        - $ref: '_parameters.yaml#/parameters/wsStart'
+        - $ref: '_parameters.yaml#/parameters/wsSize'
+        - $ref: '_parameters.yaml#/parameters/wsShow'
+        - $ref: '_parameters.yaml#/parameters/sortKey'
+        - $ref: '_parameters.yaml#/parameters/sortOrderList'
+        - $ref: '_parameters.yaml#/parameters/findSubAdTracking'
+        - $ref: '_parameters.yaml#/parameters/findSubAreaCode'
+        - $ref: '_parameters.yaml#/parameters/findSubCity'
+        - $ref: '_parameters.yaml#/parameters/findSubCountry'
+        - $ref: '_parameters.yaml#/parameters/findSubCustomFields'
+        - $ref: '_parameters.yaml#/parameters/findSubDmaCode'
+        - $ref: '_parameters.yaml#/parameters/findSubEmail'
+        - $ref: '_parameters.yaml#/parameters/findSubLastMessage'
+        - $ref: '_parameters.yaml#/parameters/findSubLastMessageSentAt'
+        - $ref: '_parameters.yaml#/parameters/findSubLatitude'
+        - $ref: '_parameters.yaml#/parameters/findSubLongitude'
+        - $ref: '_parameters.yaml#/parameters/findSubMiscNotes'
+        - $ref: '_parameters.yaml#/parameters/findSubName'
+        - $ref: '_parameters.yaml#/parameters/findSubPostalCode'
+        - $ref: '_parameters.yaml#/parameters/findSubRegion'
+        - $ref: '_parameters.yaml#/parameters/findSubStatus'
+        - $ref: '_parameters.yaml#/parameters/findSubSubscribedBefore'
+        - $ref: '_parameters.yaml#/parameters/findSubSubscribedAfter'
+        - $ref: '_parameters.yaml#/parameters/findSubSubscribedAt'
+        - $ref: '_parameters.yaml#/parameters/findSubSubscriptionMethod'
+        - $ref: '_parameters.yaml#/parameters/findSubTags'
+        - $ref: '_parameters.yaml#/parameters/findSubNotTag'
+        - $ref: '_parameters.yaml#/parameters/findSubUnsubscribeMethod'
+        - $ref: '_parameters.yaml#/parameters/findSubUnsubscribedBefore'
+        - $ref: '_parameters.yaml#/parameters/findSubUnsubscribedAfter'
+        - $ref: '_parameters.yaml#/parameters/findSubUnsubscribedAt'
+        - $ref: '_parameters.yaml#/parameters/findSubVerifiedAt'
+      security:
+        - OAuth 2.0:
+            - subscriber.read
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/FindSubscribersForList'
+      responses:
+        '200':
+          description: The request completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '_definitions.yaml#/definitions/FindSubscribers'
+        '400':
+          $ref: '_responses.yaml#/responses/SearchListBadRequest'
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/RateLimitOrSubscriberPermission'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+  '/accounts/{accountId}?ws.op=findSubscribers':
+    get:
+      summary: Find subscribers for account
+      description: |
+        This endpoint is used to find the collection of subscribers that
+        match a search criteria for the specified account across all lists.
+
+        * All parameters match on the full value and are case sensitive.
+        (No partial matches are accepted)
+
+        * For Date parameters, include the date as 'YYYY-MM-DD' or 'MM-DD-YYYY'
+        and any subscriber matching the query will be returned.
+
+        * Date parameters are entered as single days, but may search multiple days
+        depending on the parameter. For example: `subscribed_at=2017-07-16` or
+        `subscribed_before=2018-12-25`
+
+        * Values that are empty (or empty string) are treated the same as
+        if they were omitted entirely.
+
+        * If no search parameters are included, **all subscribers from all
+        lists** will be returned.
+
+        The subscribers are returned in the order that they were added to the list
+        starting with the oldest subscriber first.
+
+        Check out related examples:
+
+          * Find Subscribers Across Lists ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/find-subscribers-across-lists" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/find-subscribers-across-lists" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Find%20Subscribers%20Across%20Lists.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.FindSubscribersAcrossLists" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/find_subscribers_across_lists.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/find-subscribers-across-lists.js" target="_blank">Node.js</a> )
+          * Manage Subscriber ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/manage-subscriber" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/manage-subscriber" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Manage%20Subscriber.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.ManageSubscriber" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/manage_subscriber.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/manage-subscriber.js" target="_blank">Node.js</a> )
+          * Move Subscriber ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/move-subscriber" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/move-subscriber" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Move%20Subscriber.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.MoveSubscriber" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/move_subscriber.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/move-subscriber.js" target="_blank">Node.js</a> )
+      tags:
+        - Subscribers
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - name: ws.op
+          in: query
+          required: true
+          description: The method name - expecting "findSubscribers"
+          schema:
+            type: string
+            enum:
+              - findSubscribers
+        - $ref: '_parameters.yaml#/parameters/findSubAdTracking'
+        - $ref: '_parameters.yaml#/parameters/findSubAreaCode'
+        - $ref: '_parameters.yaml#/parameters/findSubCity'
+        - $ref: '_parameters.yaml#/parameters/findSubCountry'
+        - $ref: '_parameters.yaml#/parameters/findSubCustomFields'
+        - $ref: '_parameters.yaml#/parameters/findSubDmaCode'
+        - $ref: '_parameters.yaml#/parameters/findSubEmail'
+        - $ref: '_parameters.yaml#/parameters/findSubLastMessage'
+        - $ref: '_parameters.yaml#/parameters/findSubLastMessageSentAt'
+        - $ref: '_parameters.yaml#/parameters/findSubLatitude'
+        - $ref: '_parameters.yaml#/parameters/findSubLongitude'
+        - $ref: '_parameters.yaml#/parameters/findSubMiscNotes'
+        - $ref: '_parameters.yaml#/parameters/findSubName'
+        - $ref: '_parameters.yaml#/parameters/findSubPostalCode'
+        - $ref: '_parameters.yaml#/parameters/findSubRegion'
+        - $ref: '_parameters.yaml#/parameters/findSubStatus'
+        - $ref: '_parameters.yaml#/parameters/findSubSubscribedBefore'
+        - $ref: '_parameters.yaml#/parameters/findSubSubscribedAfter'
+        - $ref: '_parameters.yaml#/parameters/findSubSubscribedAt'
+        - $ref: '_parameters.yaml#/parameters/findSubSubscriptionMethod'
+        - $ref: '_parameters.yaml#/parameters/findSubTags'
+        - $ref: '_parameters.yaml#/parameters/findSubNotTag'
+        - $ref: '_parameters.yaml#/parameters/findSubUnsubscribeMethod'
+        - $ref: '_parameters.yaml#/parameters/findSubUnsubscribedBefore'
+        - $ref: '_parameters.yaml#/parameters/findSubUnsubscribedAfter'
+        - $ref: '_parameters.yaml#/parameters/findSubUnsubscribedAt'
+        - $ref: '_parameters.yaml#/parameters/findSubVerifiedAt'
+        - $ref: '_parameters.yaml#/parameters/wsStart'
+        - $ref: '_parameters.yaml#/parameters/wsSize'
+        - $ref: '_parameters.yaml#/parameters/wsShow'
+      security:
+        - OAuth 2.0:
+            - subscriber.read
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/FindSubscribersForAccount'
+      responses:
+        '200':
+          description: The request completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '_definitions.yaml#/definitions/FindSubscribersAccount'
+        '400':
+          $ref: '_responses.yaml#/responses/SearchBadRequest'
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/RateLimitOrSubscriberPermission'
+        '404':
+          $ref: '_responses.yaml#/responses/NotFound'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+  '/accounts/{accountId}/lists/{listId}/subscribers/{subscriberId}?ws.op=getActivity':
+    get:
+      summary: Get subscriber activity
+      description: >-
+        This endpoint is used to retrieve the analytics activity for a
+        subscriber. The activity is returned as a chronological list of events
+        and includes:
+
+        When they subscribed to the list. When they verified their subscription.
+        What messages were sent to them. When sent messages were opened. When
+        links were clicked (if click tracking was enabled). When a subscriber
+        made a sale or other TrackedEvent.
+
+        Check out related examples:
+
+          * Find Subscribers Across Lists ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/find-subscribers-across-lists" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/find-subscribers-across-lists" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Find%20Subscribers%20Across%20Lists.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.FindSubscribersAcrossLists" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/find_subscribers_across_lists.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/find-subscribers-across-lists.js" target="_blank">Node.js</a> )
+          * Manage Subscriber ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/manage-subscriber" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/manage-subscriber" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Manage%20Subscriber.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.ManageSubscriber" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/manage_subscriber.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/manage-subscriber.js" target="_blank">Node.js</a> )
+          * Move Subscriber ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/move-subscriber" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/move-subscriber" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Move%20Subscriber.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.MoveSubscriber" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/move_subscriber.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/move-subscriber.js" target="_blank">Node.js</a> )
+      tags:
+        - Subscribers
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/listId'
+        - $ref: '_parameters.yaml#/parameters/subscriberId'
+        - name: ws.op
+          in: query
+          required: true
+          description: The method name - expecting "getActivity"
+          schema:
+            type: string
+            enum:
+              - getActivity
+        - $ref: '_parameters.yaml#/parameters/wsStart'
+        - $ref: '_parameters.yaml#/parameters/wsSize'
+      security:
+        - OAuth 2.0:
+            - subscriber.read
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/GetSubscriberActivity'
+      responses:
+        '200':
+          description: The request completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '_definitions.yaml#/definitions/SubscriberGetActivity'
+        '400':
+          $ref: '_responses.yaml#/responses/BadOAuth1LessTypes'
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/ForbiddenError'
+        '404':
+          $ref: '_responses.yaml#/responses/NotFound'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+  '/accounts/{accountId}/lists/{listId}/purchases':
+    post:
+      summary: Create a purchase
+      description: |
+        This endpoint creates a purchase (a pageview tracked event) for a
+        subscriber. If the subscriber does not exist, it is created. If the
+        subscriber exists, then it will be updated. This endpoint combines 3
+        api calls into one, which will account toward the rate limit.
+
+
+        Check out related examples:
+
+          * Create a Purchase (
+            <a href="https://github.com/aweber/public-api-examples/tree/master/php/create-purchase" target="_blank">PHP</a> |
+            <a href="https://github.com/aweber/public-api-examples/tree/master/python/create-purchase" target="_blank">Python</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Create%20Purchase.postman_collection.json" target="_blank">Postman</a> |
+            <a href="https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.CreatePurchase" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/tree/master/ruby/create_purchase.rb" target="_blank">Ruby</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/create-purchase.js" target="_blank">Node.js</a> )
+          * Find Subscribers Across Lists (
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/find-subscribers-across-lists" target="_blank">Python</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/find-subscribers-across-lists" target="_blank">PHP</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Find%20Subscribers%20Across%20Lists.postman_collection.json" target="_blank">Postman</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.FindSubscribersAcrossLists" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/find_subscribers_across_lists.rb" target="_blank">Ruby</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/find-subscribers-across-lists.js" target="_blank">Node.js</a> )
+          * Manage Subscriber (
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/manage-subscriber" target="_blank">Python</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/manage-subscriber" target="_blank">PHP</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Manage%20Subscriber.postman_collection.json" target="_blank">Postman</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.ManageSubscriber" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/manage_subscriber.rb" target="_blank">Ruby</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/manage-subscriber.js" target="_blank">Node.js</a> )
+          * Move Subscriber (
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/move-subscriber" target="_blank">Python</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/move-subscriber" target="_blank">PHP</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Move%20Subscriber.postman_collection.json" target="_blank">Postman</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.MoveSubscriber" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/move_subscriber.rb" target="_blank">Ruby</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/move-subscriber.js" target="_blank">Node.js</a> )
+      tags:
+        - Subscribers
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - name: listId
+          in: path
+          description: The list ID
+          required: true
+          schema:
+            type: integer
+            format: int32
+      security:
+        - OAuth 2.0:
+            - subscriber.read
+            - subscriber.write
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/CreatePurchase'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '_definitions.yaml#/definitions/Purchase'
+      responses:
+        202:
+          description: The event was accepted and is being processed.
+          headers:
+            Location:
+              description: URI of the subscriber's activity
+              example: >-
+                https://api.aweber.com/1.0/accounts/123/lists/456/subscribers/789?ws.op=getActivity
+              schema:
+                type: string
+                format: uri
+        '400':
+          description: The server cannot or will not process the request due to a client error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    description: |
+                      An error object.
+                      One of the following errors may be received:
+
+                      | Error Type                           | Explanation                              |
+                      |--------------------------------------|------------------------------------------|
+                      | BadRequestError                      | An issue with one of the fields in the request body or no Content-Type header is specified. |
+                      | MissingOAuthParametersError          | An OAuth parameter is missing in the request. |
+                      | UnsupportedOAuthSignatureMethodError | The provided OAuth 1 signature method is unsupported. Only HMAC-SHA1 is supported. |
+                      | UnsupportedOAuthVersionError         | The provided OAuth 1 version is unsupported. |
+
+                      Please see the message body for more details.
+                    type: object
+                    properties:
+                      documentation_url:
+                        description: A link to the documentation that describes the error
+                        type: string
+                        example: https://api.aweber.com#badrequest
+                      message:
+                        description: A human friendly description of the error
+                        type: string
+                        example: Missing required argument(s)
+                      status:
+                        description: The HTTP status code
+                        type: integer
+                        example: 400
+                      type:
+                        description: The API error type
+                        type: string
+                        example: BadRequestError
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/ForbiddenError'
+        '404':
+          $ref: '_responses.yaml#/responses/NotFound'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '415':
+          $ref: '_responses.yaml#/responses/NotFormURLEncodedOrJSON'
+        500:
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        503:
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'

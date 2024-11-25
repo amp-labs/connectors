@@ -1,0 +1,52 @@
+tags:
+  FAQ: |
+      ### **Do I need to be an AWeber customer to develop an application?**
+      ------------
+      To develop an API application, you will need to <a href='https://labs.aweber.com' target="_blank">
+      open an AWeber Labs account</a> which is 100% free and entirely unrelated to AWeber customer accounts.                          
+    
+      If you are not an AWeber customer already, you may also want to
+      <a href='https://www.aweber.com/order.htm' target="_blank">create an AWeber customer account</a>
+      using a free 1 month trial. This account can be used to test the API application
+      which you are developing.
+    
+      ### **How does AWeber's API handle user authentication?**
+      ------------
+      The AWeber API uses OAuth to handle authenticating requests on behalf of AWeber users.  OAuth provides 
+      a standardized way for providing third party applications access to a user's data without the need for that
+      customer to give out their username and password. For more information on how authentication is implemented
+      in the AWeber API, please read [our authentication guide][0].
+    
+      ### **What character encoding does the API use?**
+      ------------
+      The AWeber API uses <a href='http://en.wikipedia.org/wiki/UTF-8' target="_blank">UTF-8</a> character encoding.
+      UTF-8 was chosen due to its widespread usage online and is supported by a majority of the programming
+      languages in use today.
+      
+      - <a href='http://kunststube.net/encoding/' target="_blank">What every programmer needs to know about character encoding</a>
+    
+      When passing data to the AWeber API, it's up to the app developer to ensure that the data is sent to us using
+      the proper character encoding.  The API will return a <a href='https://api.aweber.com#badrequest' target="_blank">
+      Bad Request</a> with 'Invalid Character Encoding' if the data sent to the API is not UTF-8 encoded.
+    
+      ### **How do I update customer account information / add subscribers?**
+      ------------
+      You can add a subscriber to a list by invoking the [POST Subscriber][1] endpoint.
+      Please refer to our <a class="php" href="https://github.com/aweber/public-api-examples/tree/master/php/manage-subscriber" target="_blank">php</a> and <a class="python" href="https://github.com/aweber/public-api-examples/tree/master/python/manage-subscriber" target="_blank">python</a> code samples for examples of adding Subscribers.</p>
+    
+      Customer account information cannot currently be edited via the API.
+      Please refer to our [reference documentation][2] or [changelog][3] for more details.
+    
+      ### **What formats of data are returned by the AWeber API?**
+      ------------
+      All requests in the AWeber API, including error messages, are returned as JSON formatted strings.  JSON was chosen 
+      due to its ease of readability and because it is well supported in a large number of languages.
+    
+      ### **How many requests can my application make in a given amount of time?**
+      ------------
+      AWeber API requests are limited to 120 requests per minute, per customer account.
+    
+      [0]: #tag/Getting-Started "gettingStarted"
+      [1]: #tag/Subscribers%2Fpaths%2F~1accounts~1%7BaccountId%7D~1lists~1%7BlistId%7D~1subscribers%2Fpost "postSubscriber"
+      [2]: #tag/Accounts "accounts"
+      [3]: #tag/API-Changelog "changelog"

@@ -1,0 +1,461 @@
+openapi: 3.0.2
+info:
+  title: Webforms
+  description: REST API for access the AWeber service.
+  version: '1.0'
+  contact:
+    name: API Team
+    url: 'https://labs.aweber.com'
+    email: api@aweber.com
+tags:
+  - name: Webforms
+paths:
+  '/accounts/{accountId}?ws.op=getWebForms':
+    get:
+      summary: Get webforms for account
+      description: >-
+        This endpoint is used to retrieve webforms for all lists on an account.
+
+
+        Check out related examples:
+
+          * Get Webforms Detail ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-webforms-detail" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-webforms-detail" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Webforms%20Detail.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Example.GetWebformsDetail" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_webforms_details.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/get-webforms-details.js" target="_blank">Node.js</a> )
+      tags:
+        - Webforms
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - name: ws.op
+          in: query
+          required: true
+          description: The method name - expecting "getWebForms"
+          schema:
+            type: string
+            enum:
+              - getWebForms
+        - name: ws.size
+          in: query
+          required: true
+          description: The pagination total entries to retrieve
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 100
+            default: 100
+        - name: ws.start
+          in: query
+          required: true
+          description: The pagination starting offset
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            default: 0
+      security:
+        - OAuth 2.0:
+            - list.read
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/GetWebformsForAccount'
+      responses:
+        '200':
+          description: The request completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '_definitions.yaml#/definitions/Webforms'
+        '400':
+          $ref: '_responses.yaml#/responses/BadRequest'
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/ForbiddenError'
+        '404':
+          $ref: '_responses.yaml#/responses/NotFound'
+        '405':
+          $ref: '_responses.yaml#/responses/NotAllowed'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+  '/accounts/{accountId}?ws.op=getWebFormSplitTests':
+    get:
+      summary: Get split tests for account
+      description: >-
+        This endpoint is used to retrieve webform split tests for all lists on
+        an account.
+
+
+        Check out related examples:
+
+          * Get Webforms Detail ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-webforms-detail" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-webforms-detail" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Webforms%20Detail.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Example.GetWebformsDetail" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_webforms_details.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/get-webforms-details.js" target="_blank">Node.js</a> )
+      tags:
+        - Webforms
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - name: ws.op
+          in: query
+          required: true
+          description: The method name - expecting "getWebFormSplitTests"
+          schema:
+            type: string
+            enum:
+              - getWebFormSplitTests
+        - name: ws.size
+          in: query
+          required: true
+          description: The pagination total entries to retrieve
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 100
+            default: 100
+        - name: ws.start
+          in: query
+          required: true
+          description: The pagination starting offset
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            default: 0
+      security:
+        - OAuth 2.0:
+            - list.read
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/GetSplitTestsForAccount'
+      responses:
+        '200':
+          description: The request completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '_definitions.yaml#/definitions/WebFormSplitTests'
+        '400':
+          $ref: '_responses.yaml#/responses/BadRequest'
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/ForbiddenError'
+        '404':
+          $ref: '_responses.yaml#/responses/NotFound'
+        '405':
+          $ref: '_responses.yaml#/responses/NotAllowed'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+  '/accounts/{accountId}/lists/{listId}/web_forms':
+    get:
+      summary: Get webforms for list
+      description: >-
+        This endpoint is used to retrieve a collection of webforms for a list
+
+
+        Check out related examples:
+
+          * Get Webforms Detail ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-webforms-detail" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-webforms-detail" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Webforms%20Detail.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Example.GetWebformsDetail" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_webforms_details.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/get-webforms-details.js" target="_blank">Node.js</a> )
+      tags:
+        - Webforms
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/listId'
+        - $ref: '_parameters.yaml#/parameters/wsStart'
+        - $ref: '_parameters.yaml#/parameters/wsSize'
+      security:
+        - OAuth 2.0:
+            - list.read
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/GetWebformsForList'
+      responses:
+        '200':
+          description: The request completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '_definitions.yaml#/definitions/Webforms'
+        '400':
+          $ref: '_responses.yaml#/responses/BadRequest'
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/ForbiddenError'
+        '404':
+          $ref: '_responses.yaml#/responses/NotFound'
+        '405':
+          $ref: '_responses.yaml#/responses/NotAllowed'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+  '/accounts/{accountId}/lists/{listId}/web_forms/{webformId}':
+    get:
+      summary: Get webform for list
+      description: >-
+        This endpoint is used to retrieve single webform for a list
+
+
+        Check out related examples:
+
+          * Get Webforms Detail ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-webforms-detail" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-webforms-detail" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Webforms%20Detail.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Example.GetWebformsDetail" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_webforms_details.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/get-webforms-details.js" target="_blank">Node.js</a> )
+      tags:
+        - Webforms
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/listId'
+        - $ref: '_parameters.yaml#/parameters/webformId'
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/GetWebformForList'
+      responses:
+        '200':
+          description: The request completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '_definitions.yaml#/definitions/Webform'
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/ForbiddenError'
+        '404':
+          $ref: '_responses.yaml#/responses/NotFound'
+        '405':
+          $ref: '_responses.yaml#/responses/NotAllowed'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+  '/accounts/{accountId}/lists/{listId}/web_form_split_tests':
+    get:
+      summary: Get split tests for list
+      description: >-
+        This endpoint is used to retrieve webform split tests for a list.
+
+
+        Check out related examples:
+
+          * Get Webforms Detail ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-webforms-detail" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-webforms-detail" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Webforms%20Detail.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Example.GetWebformsDetail" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_webforms_details.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/get-webforms-details.js" target="_blank">Node.js</a> )
+      tags:
+        - Webforms
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/listId'
+        - $ref: '_parameters.yaml#/parameters/wsStart'
+        - $ref: '_parameters.yaml#/parameters/wsSize'
+      security:
+        - OAuth 2.0:
+            - list.read
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/GetSplitTestsForList'
+      responses:
+        '200':
+          description: The request completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '_definitions.yaml#/definitions/WebFormSplitTests'
+        '400':
+          $ref: '_responses.yaml#/responses/BadRequest'
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/ForbiddenError'
+        '404':
+          $ref: '_responses.yaml#/responses/NotFound'
+        '405':
+          $ref: '_responses.yaml#/responses/NotAllowed'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+  '/accounts/{accountId}/lists/{listId}/web_form_split_tests/{splitTestId}':
+    get:
+      summary: Get split test for list
+      description: >-
+        This endpoint is used to retrieve a specific webform split test.
+
+
+        Check out related examples:
+
+          * Get Webforms Detail ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-webforms-detail" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-webforms-detail" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Webforms%20Detail.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Example.GetWebformsDetail" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_webforms_details.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/get-webforms-details.js" target="_blank">Node.js</a> )
+      tags:
+        - Webforms
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/listId'
+        - $ref: '_parameters.yaml#/parameters/splitTestId'
+      security:
+        - OAuth 2.0:
+            - list.read
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/GetSplitTestForList'
+      responses:
+        '200':
+          description: The request completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '_definitions.yaml#/definitions/WebformSplitTest'
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/ForbiddenError'
+        '404':
+          $ref: '_responses.yaml#/responses/NotFound'
+        '405':
+          $ref: '_responses.yaml#/responses/NotAllowed'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+  '/accounts/{accountId}/lists/{listId}/web_form_split_tests/{splitTestId}/components':
+    get:
+      summary: Get split test components
+      description: >-
+        This endpoint is used to retrieve a collection of webform split test
+        components.
+
+
+        Check out related examples:
+
+          * Get Webforms Detail ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-webforms-detail" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-webforms-detail" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Webforms%20Detail.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Example.GetWebformsDetail" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_webforms_details.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/get-webforms-details.js" target="_blank">Node.js</a> )
+      tags:
+        - Webforms
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/listId'
+        - $ref: '_parameters.yaml#/parameters/splitTestId'
+        - $ref: '_parameters.yaml#/parameters/wsStart'
+        - $ref: '_parameters.yaml#/parameters/wsSize'
+      security:
+        - OAuth 2.0:
+            - list.read
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/GetSplitTestComponents'
+      responses:
+        '200':
+          description: The request completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '_definitions.yaml#/definitions/WebformSplitTestComponents'
+        '400':
+          $ref: '_responses.yaml#/responses/BadRequest'
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/ForbiddenError'
+        '404':
+          $ref: '_responses.yaml#/responses/NotFound'
+        '405':
+          $ref: '_responses.yaml#/responses/NotAllowed'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+  '/accounts/{accountId}/lists/{listId}/web_form_split_tests/{splitTestId}/components/{splitTestComponentId}':
+    get:
+      summary: Get split test component
+      description: >-
+        This endpoint is used to retrieve a collection of webform split test
+        components.
+
+
+        Check out related examples:
+
+          * Get Webforms Detail ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-webforms-detail" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-webforms-detail" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Webforms%20Detail.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Example.GetWebformsDetail" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_webforms_details.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/get-webforms-details.js" target="_blank">Node.js</a> )
+      tags:
+        - Webforms
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/listId'
+        - $ref: '_parameters.yaml#/parameters/splitTestId'
+        - $ref: '_parameters.yaml#/parameters/splitTestComponentId'
+      security:
+        - OAuth 2.0:
+            - list.read
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/GetSplitTestComponent'
+      responses:
+        '200':
+          description: The request completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '_definitions.yaml#/definitions/WebformSplitTestComponent'
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/ForbiddenError'
+        '404':
+          $ref: '_responses.yaml#/responses/NotFound'
+        '405':
+          $ref: '_responses.yaml#/responses/NotAllowed'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'

@@ -1,0 +1,256 @@
+tags:
+  Troubleshooting: |
+    # Authentication Errors
+    When authenticating an application, there are a few errors which a user may encounter. This section will provide you with
+    input into some of the authentication errors and how to resolve them.
+    
+    <h2 id='common-issues'><strong>Common Issues<hr></strong></h2>
+    
+    ### Invalid redirect URI
+    If this error is encountered, it is due to a mismatch between the `redirect_uri` being submitted and the `OAuth Redirect URL` specified when creating
+    the application in your <a href="https://labs.aweber.com" target="_blank">AWeber Developer</a> account.
+    
+    <a href="/static/redirect-uri.png?v=20200515" target="_blank"><img class="redirect-uri" alt="[OAuth2 Redirect]" src="/static/redirect-uri.png?v=20200515"></a>
+    
+    #### Troubleshooting Checklist
+    - Ensure the submitted `redirect_uri` ***exactly*** matches the `OAuth Redirect URL` specified for your application.
+        - Make sure there are no characters added/missing.
+    
+    <h2 id='public-requires-pkce'><strong>Public Applications<hr></strong></h2>
+    
+    ### PKCE Errors
+    These errors are raised when you try to authorize a public application, but do not include a <code>code_challenge</code> in your original request.
+    - Public Client MUST Use PKCE
+    - code_challenge is required for public client
+    
+    #### Troubleshooting Checklist
+    - See [here](#section/Public-or-confidential) for steps on how to authenticate a public application.
+    
+    <h2 id='confidential-with-pkce'><strong>Confidential Applications</strong><hr></h2>
+    
+    ### PKCE Errors
+    These errors are raised when you try to authorize a confidential application and include a <code>code_verifier</code>, <code>challenge</code>,
+    or <code>challenge_method</code> in your request
+    - Confidential Client MUST NOT Use PKCE
+    - code_challenge and code_challenge_method are disallowed for confidential clients
+    
+    #### Troubleshooting Checklist
+    - See [here](#tag/Authentication-Overview) for steps on how to authenticate a confidential application.
+    
+    # API Errors
+    If an API call results in an error, the API response will return details about the error using JSON. Most errors encountered 
+    with the API can be easily handled and corrected in your application. To provide a better user experience, you should design 
+    your API applications to expect errors and handle them appropriately.
+    When an error is returned:
+    - The appropriate HTTP status will be set in the response headers.
+    - Content-Type will be set to application/json.
+    - The body will consist of a JSON formatted dictionary with a single key called "error" containing the status, error type, 
+    message, and documentation URL.
+    
+    Here is a sample API error response:
+    ```json
+    {"error": 
+      {"status": 401, 
+       "message": "Consumer key is invalid.", 
+       "type": "UnauthorizedError", 
+       "documentation_url": "https://api.aweber.com"}}
+    ```
+    
+    <h2 id='badrequest'><strong>400 BadRequestError<hr></strong></h2>
+    This error is raised when you make a properly authenticated request to a valid resource with incorrect parameters. 
+    If you receive 400 BAD REQUEST errors, refer to the actual error message as well as the appropriate documentation for the 
+    method you are calling.
+    <br>
+    
+    #### Examples
+    - Attempting to modify a read-only field.
+    - Invoking the find() method on a subscriber entry without supplying an email address
+    - Invoking the move() method on a subscriber entry without supplying a list
+    - Creating or modifying resources using invalid character encodings. (See [FAQ](#tag/FAQ))
+    - Creating or modifying a resource while missing required parameters
+        - Note: For [Creating Broadcasts](#tag/Broadcasts/paths/~1accounts~1{accountId}~1lists~1{listId}~1broadcasts/post), either `body_text` or `body_html` must always be included.
+    - Passing through a private or reserved IP address when adding a subscriber ("Invalid Subscriber IP address. The address is part of a reserved block.")
+    
+    #### Troubleshooting Checklist
+    - Refer to the error message for a summary of what is wrong.
+    - Refer to the API reference documentation for the method you're calling to find out what it requires.
+    
+    
+    <h2 id='unauthorized'><strong>401 UnauthorizedError<hr></strong></h2>
+    This class of errors represents authentication errors. In order to troubleshoot authentication errors, a basic understanding 
+    of the OAuth 2.0 Authentication Protocol is required. Please refer to the following documentation for more information on 
+    how we handle authentication with the AWeber API as well as specific examples of how to handle each kind of authentication error.
+    
+    [AWeber API Authentication](#tag/Getting-Started) <br>
+    <a href="https://tools.ietf.org/html/rfc6749" target="_blank">RFC5849 OAuth 2.0 Specification</a>
+        
+    ### **Invalid Token**
+    This error is raised when your access token key is expired or invalid. The most common causes for this error is that the AWeber Customer 
+    disconnected your application from their account, you're access token has expired, or you have a typographical error in the access token key.
+    
+    #### Troubleshooting Checklist
+    - Obtain a new access token key.
+    
+    ### **Invalid Account**
+    This error is raised when the AWeber Customer account is no longer active. The most common causes for this error are that the 
+    AWeber Customer cancelled their account or you are using an invalid account id.
+    
+    #### Troubleshooting Checklist
+    - Contact support to reactivate the AWeber Customer account.
+    
+    ### **Invalid Request**
+    This error is raised when your application attempts to communicate to the AWeber API without using the OAuth 2.0 protocol. You must 
+    fully implement the OAuth 2.0 protocol to access the AWeber API.
+    
+    #### Troubleshooting Checklist
+    - If you are new to OAuth 2.0, refer to our [API Authentication Guide](#tag/Getting-Started).
+    
+    
+    <h2 id='forbidden'><strong>403 ForbiddenError<hr></strong></h2>
+    This class of errors is used when the API understands your request but has refused to grant access to the requested resource.
+    
+    ### **Account Temporarily Suspended**
+    This error is raised when the AWeber Customer account is temporarily suspended. The most common causes for this error are that the AWeber 
+    Customer has a billing issue or you are using an invalid account id.
+    
+    #### Troubleshooting Checklist
+    - Contact support to reactivate the AWeber Customer account.
+    
+    ### **Adding subscribers is not available while the account is on hold.**
+    This error is raised when the AWeber Customer account is on hold. The customer has decided to switch their account to the hold package which
+    does not allow subscribers to be added.
+    
+    #### Troubleshooting Checklist
+    - Switch the AWeber Customer account off of the hold package.
+    
+    ### **Application not authorized to manage email.**
+    This error is raised when you make a request to create or schedule a Broadcast, but your application has not been authorized by the AWeber 
+    Customer to manage email.
+    
+    #### Troubleshooting Checklist
+    - Ensure that your application has specified that it requires the <a href="https://help.aweber.com/hc/en-us/articles/360002999053" target="_blank">
+    Manage All Email Communications</a> permission.
+    - Ensure that the AWeber Customer has authorized your application after it was modified to require the 
+    <a href="https://help.aweber.com/hc/en-us/articles/360002999053" target="_blank">Manage All Email Communications</a> permission. The AWeber 
+    Customer may need to disable and re-enable your application to grant this authorization.
+    
+    ### **Rate Limit Error.**
+    This error is raised when the number of API requests made by your application exceed its predefined limit. These rate limits are outlined in our
+    <a href="https://help.aweber.com/hc/en-us/articles/360002917994" target="_blank">knowledge base</a>.
+    
+    #### Troubleshooting Checklist
+    - Reduce the frequency that you make API requests.
+    - Utilize a local cache in your application to prevent making unnecessary API requests.
+    - See our <a href="https://help.aweber.com/hc/en-us/articles/360002917994" target="_blank">knowledge base</a> documentation on how to handle rate limits.
+    
+    ### **Subscriber Complaints Error.**
+    This error is raised when the number of complaints reported by subscribers is too high.
+    Complaints generally occur when subscribers receive email they did not sign up for or do not want.
+    Continued complaints reported by subscribers can lead to the suspension of the AWeber account.
+    
+    #### Troubleshooting Checklist
+    - Review and implement these <a href="https://help.aweber.com/entries/21748721-How-Do-I-Lower-My-Complaint-Rate-" target="_blank">
+    best practices</a> to lower subscriber complaints.
+    - Wait for those complaints to lessen.
+    
+    ### **Resource temporarily unavailable**
+    This error is raised when the POST or PUT request length exceeds 1 million bytes of data when creating a broadcast message.
+    
+    #### Troubleshooting Checklist
+    - Send a smaller POST/PUT payload.
+    
+    ### **The email address provided cannot be accepted at this time**
+    This error is raised when the subscriber email address is not currently acceptable.
+    
+    #### Troubleshooting Checklist
+    - Try again using an exponential backoff
+    
+    ### **This account is not accepting requests at this time**
+    #### Troubleshooting Checklist
+    - Try again using an exponential backoff
+    
+    ### **Your request cannot be processed at this time**
+    #### Troubleshooting Checklist
+    - Try again using an exponential backoff
+    
+    ### **Subscriber limit reached.**
+    - You've reached the subscriber limit for your current plan. Upgrade to continue adding subscribers. 
+    
+    
+    <h2 id='notfound'><strong>404 NotFoundError<hr></strong></h2>
+    This error is raised when the requested resource does not exist.
+    
+    #### Troubleshooting Checklist
+    - Check the URL of the resource you are requesting.
+    - Refer to the [API Reference Documentation](#tag/Accounts) for more information.
+    
+    
+    <h2 id='methodnotallowed'><strong>405 MethodNotAllowedError<hr></strong></h2>
+    This error is raised when a properly authenticated request is made to a valid resource, but the HTTP method you used is not allowed.
+    
+    #### Examples
+    - Attempting to modify a read-only resource using the PUT or PATCH method.
+    - Invoking the move() method on a subscriber entry that has a status of 'unconfirmed'.
+    
+    #### Troubleshooting Checklist
+    - Check the URL of the resource you are requesting.
+    - Make sure the resource supports the HTTP method you are using.
+    - Check the response from the error message for further details.
+    - Refer to the [API Reference Documentation](#tag/Accounts) for more information.
+    
+    
+    <h2 id='conflict'><strong>409 Conflict</strong></h2><hr>
+    This error is raised when the request could not be completed due to a conflict with the current state of the resource.
+    
+    #### Examples
+    - Attempting to schedule a Broadcast that has already been sent.
+    
+    
+    <h2 id='blocked'><strong>410 BlockedError<hr></strong></h2>
+    This error is raised when the request is blocked.
+    
+    #### Troubleshooting Checklist
+    This request has been blocked. If you feel this is a mistake, please contact api@aweber.com
+    and include your IP Address, the name of your integration, the API endpoint URL you were 
+    attempting to reach, and any other information you feel would be helpful
+    
+    
+    <h2 id='invalidcontent'><strong>415 InvalidContentType<hr></strong></h2>
+    This error is raised when the request is in a format that is not supported by the resource for the method.
+    
+    #### Examples
+    - Making a POST request with a Content-Type other than application/x-www-form-urlencode.
+    
+    
+    <h2 id='internalerror'><strong>500 InternalServerError<hr></h2></strong>
+    
+    This error is raised when the API experiences an internal error.
+    
+    #### Troubleshooting Checklist
+    - Try your request again.
+    - Contact support if the problem persists.
+    
+    
+    <h2 id='serviceunavailable'><strong>503 ServiceUnavailableError<hr></strong></h2>
+    
+    This error is raised when the API is down for maintenance.
+    
+    #### Troubleshooting Checklist
+    - Try your request again.
+    - Contact support if the problem persists.
+    
+    #### Troubleshooting Checklist
+    - Use a version of the Python Client Library >= 1.2.1
+    - Contact support if the problem persists.
+    
+    
+    # Non-Error Responses
+    
+    <h2 id='nocontent'><strong>204 NoContent<hr></strong></h2>
+    
+    A 204 No Content status is returned when an API resource was successfully updated and there is no content to return.
+    
+    
+    <h2 id='contentmodified'><strong>209 ContentModified<hr></strong></h2>
+    
+    A 209 Content Modified status is returned along with a JSON representation when an API resource was successfully updated with an HTTP PATCH request.

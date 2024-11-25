@@ -1,0 +1,30 @@
+tags:
+  Lists Collection: |
+    ### What is it?
+    
+    Represents the individual subscriber lists within the AWeber Customer Account.
+    
+    Use this set of resources to retrieve the available lists and information about each list.  The
+    list collection response is sorted by the generated list `id` and paginated using `next_collection_link`
+    and `prev_collection_link` properties. See [How Collections are Represented](#collection-representation)
+    for details on collection traversal.
+    
+    ### Related endpoints
+    
+    * [Lists](#tag/Lists)
+    * [Get custom fields for a list](#tag/Custom-Fields/paths/~1accounts~1{accountId}~1lists~1{listId}~1custom_fields/get)
+    * [Add a custom field to a list](#tag/Custom-Fields/paths/~1accounts~1{accountId}~1lists~1{listId}~1custom_fields/post)
+    * [Update a custom field on a list](#tag/Custom-Fields/paths/~1accounts~1{accountId}~1lists~1{listId}~1custom_fields~1{customFieldId}/patch)
+    * [Remove a custom field from a list](#tag/Custom-Fields/paths/~1accounts~1{accountId}~1lists~1{listId}~1custom_fields~1{customFieldId}/delete)
+    * [Get subscribers on a list](#tag/Subscribers/paths/~1accounts~1{accountId}~1lists~1{listId}~1subscribers/get)
+    * [Add a subscriber to a list](#tag/Subscribers/paths/~1accounts~1{accountId}~1lists~1{listId}~1subscribers/post)
+    * [Find subscribers on a list](#tag/Subscribers/paths/~1accounts~1{accountId}~1lists~1{listId}~1subscribers?ws.op=find/get)
+    * [Get broadcasts on a list](#tag/Broadcasts/paths/~1accounts~1{accountId}~1lists~1{listId}~1broadcasts/get)
+    
+    ### Related code examples
+    
+    * [Find a List and Get Tags](#tag/Find-a-List-and-Get-Tags)
+    * [Manage a Subscriber on a List](#tag/Manage-a-Subscriber)
+    * [Find Subscribers Across Lists](#tag/Find-Subscribers-Across-Lists)
+    * [Move Subscriber to Another List](#tag/Move-Subscriber-to-Another-List)
+    * [Get Webforms for a list](#tag/Get-Webforms-Detail)

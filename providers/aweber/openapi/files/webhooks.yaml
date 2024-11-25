@@ -1,0 +1,477 @@
+tags:
+  Webhooks: |
+    ## Getting Started
+    
+    AWeber offers support for webhooks including `subscriber.added`, `subscriber.subscribed` and `subscriber.unsubscribed`
+    events.  The integration will receive notifications when the events occur for each AWeber User Account that is
+    connected.  The notifications are sent to a callback URL that is configured by the AWeber User when they connect
+    your integration.  You will need to provide the valid patterns for the URLs that your integration will receive
+    notifications on.
+    
+    When you create or edit an integration, you enable webhooks by:
+    
+    1. providing one or more URL prefixes as the **Callback URL Allow-list**
+    2. selecting one or more events to be notified for
+    
+    The *Callback URL Allow-list* is the list of **exact** URL prefixes that can be configured by the AWeber User
+    when they connect their account to your integration.  For example, if the "allow list" contains
+    ``https://example.com/api`` then customers can use any callback URL that starts with ``https://example.com/api``
+    including ``https://example.com/api/V1StGXR8_Z5jdHi6B-myT``, ``https://example.com/api/1A2E05D9-741D-4F1C-8937-6DFD984840ED``,
+    or even ``https://example.com/api-unexpected-suffix``.  *You usually want to end "allow list" entries with an
+    explicit ``/`` to avoid that last one.*
+    
+    ### Authorizing Webhooks[](#authorizing-webhooks)
+    
+    To authorize your webhooks-enabled integration, you will need to grant the
+    `subscriber.read` and `account.read` permissions from your AWeber User Account.
+    For more information about AWeber OAuth scopes see
+    <a href='https://help.aweber.com/hc/en-us/articles/360021487653' target='_blank'>here</a>.
+    
+    Open an OAuth 2.0 authorize URL in your browser:  
+    
+        https://auth.aweber.com/oauth2/authorize?client_id={client_id}&scope=subscriber.read%20account.read
+    
+    Replace **{client_id}** with the Client ID of your webhooks-enabled integration. The Client ID
+    is available in your AWeber Developer account. The `scope` parameter may be any valid set of
+    scopes as long as it contains `subscriber.read` and `account.read`.
+    
+    You may continue the OAuth 2.0 flow to retrieve an access token if you need one. More detailed
+    instructions on OAuth 2.0 are available 
+    <a href='https://help.aweber.com/hc/en-us/articles/360021258174' target='_blank'>here</a>.
+    
+    ### Providing a Callback URL
+    
+    Once authorized, you must configure the callback URL for your webhooks-enabled integration in
+    the AWeber control panel.  This is required to match a prefix in your integration's **Callback URL Allow-list**.
+    
+    Open this <a href='https://www.aweber.com/users/apps' target='_blank'>link</a> in your browser.
+    
+    You may be prompted to log in with your AWeber User Account (not your AWeber Developer Account).
+    
+    <a href="/static/myapps.png" target="_blank"><img class="myapps" alt="[My Apps]" src="/static/myapps.png"></a>
+    
+    Click on your integration in the list of connected integrations.
+    
+    <a href="/static/webhookapp.png" target="_blank"><img class="webhookapp" alt="[My Apps]" src="/static/webhookapp.png"></a>
+    
+    Enter the URL to receive webhook requests in the **Webhook URL** field (1) and press the **Save** button (2).
+    The URL you entered must match the whitelisted base URL you provided to us when your integration was set up.
+    Your test account should start receiving webhooks at that URL.
+    
+    If no Webhook URL field is visible, the selected application does not have webhooks enabled.
+    
+    <p style='color: red'>If the Webhook URL field is disabled, your test user has not authorized webhooks yet.
+    See the <a href='/#authorizing-webhooks'><strong>Authorizing Webhooks</strong></a> section for more information.</p>
+    
+    ### How do I trigger a webhook?
+    
+    Navigate to the Sign Up Forms screen <a href='https://www.aweber.com/users/web_forms' target='_blank'>here</a>.
+    If you aren’t logged in, you will need to provide your AWeber Customer Account credentials.
+    Click the **Publish** link for the desired sign up form.
+    
+    <a href="/static/publishform.png" target="_blank"><img class="publishform" alt="[My Apps]" src="/static/publishform.png"></a>
+    
+    When the Publish screen appears, click on the **Use My Form as a Landing Page** section.
+    Copy and paste the URL provided into a new window. Complete the fields on the sign up form.
+    This will trigger our `subscriber.added` webhook outlined further down in this document.
+    
+    ***Alternatively:*** You can add subscribers via our 
+    <a href='/#tag/Subscribers/paths/~1accounts~1{accountId}~1lists~1{listId}~1subscribers/post'>Add Subscriber</a>
+    endpoint in our API.
+    
+    ## Verifying Webhook Payloads
+    
+    ### Procedure
+    
+    When you receive a request to your webhook URL, you should first verify that the request came from AWeber.  The
+    **Verification Key** is the key of an HMAC-SHA256 hash of the request's `Date` header and request body.
+    
+    The message to hash is constructed by:  
+    `rstrip('date:' + date_header_value + '\n' + request_body)`
+    
+    Where:
+    - `rstrip` is a function that removes all space, tab, line feed, carriage return, vertical tab, and form feed characters (0x20, 0x09, 0x0a, 0x0d, 0x0b, and 0x0c) from the end of a string
+    - `date_header_value` is the value of the `Date` request header
+    - `request_body` is the full HTTP request body
+    
+    ### Example
+    
+    Given this HTTP Request
+    
+    ```
+    POST /my-callback HTTP/1.1
+    AWeber-Delivery-ID: 238D534C-2101-4440-98D7-7404938C3675
+    AWeber-Signature: sha256=74856469e8a97c0939a8d398460e1ffc83e4e40a46e657c61e9d3723035df10a
+    Content-Length: 130
+    Content-Type: application/vnd.aweber.webhook+json; version=1.0
+    Date: Mon, 21 Oct 2019 19:05:20 GMT
+    
+    
+    {"account": null
+    ,"client_id": "fKcKvImyD2pQmRDWYSFx92rReytdL4Jh"
+    ,"callback": "5AB10F8A-EC5A-40E8-AF0B-7DC8DF580E55"
+    ,"data": []}
+    ```
+    
+    The message to verify would be:
+    ```
+    date:Mon, 21 Oct 2019 19:05:20 GMT\n{"account": null\n,"client_id": "fKcKvImyD2pQmRDWYSFx92rReytdL4Jh"\n,"callback":"5AB10F8A-EC5A-40E8-AF0B-7DC8DF580E55"\n,"data": []}
+    ```
+    
+    Given a base64 encoded verification key `bXktdmVyaWZpY2F0aW9uLWtleQ==` the expected signature can be calculated:
+    ```
+    sha256hmac(key=b64decode('bXktdmVyaWZpY2F0aW9uLWtleQ=='), message='date:Mon, 21 Oct 2019 19:05:20 GMT\n{"account": null\n,"client_id": "fKcKvImyD2pQmRDWYSFx92rReytdL4Jh"\n,"callback": "5AB10F8A-EC5A-40E8-AF0B-7DC8DF580E55"\n,"data": []}')
+    ```
+    
+    The result, `74856469e8a97c0939a8d398460e1ffc83e4e40a46e657c61e9d3723035df10a`, should match the hex digest following `sha256=`
+     from the `AWeber-Signature` header.
+    
+    Once the message has been verified, you should check that the `client_id` field matches the Client ID of your integration.
+    
+    ### Python Verification Script
+    
+    The following Python script implements webhook verification. It defines these variables:  
+    - `request_headers`: a dictionary mapping HTTP request headers to their values
+    - `request_body`: the full HTTP request body
+    - `key_b64`: the base64 encoded verification key
+    
+    ```python
+    #!/usr/bin/env python
+    import base64
+    import hmac
+    
+    request_headers = {
+        'Date': 'Mon, 21 Oct 2019 19:05:20 GMT',
+        'AWeber-Signature': ('sha256=74856469e8a97c0939a8d398460e1ffc83e4e40a46e65'
+                             '7c61e9d3723035df10a'),
+    }
+    
+    request_body = b"""\
+    {"account": null
+    ,"client_id": "fKcKvImyD2pQmRDWYSFx92rReytdL4Jh"
+    ,"callback": "5AB10F8A-EC5A-40E8-AF0B-7DC8DF580E55"
+    ,"data": []}"""
+    
+    key_b64 = 'bXktdmVyaWZpY2F0aW9uLWtleQ=='
+    
+    # The verification key is encoded in base64
+    key = base64.b64decode(key_b64)
+    
+    # The AWeber-Signature header contains the hash type and hash separated by '='
+    alg, _, expected_hash = request_headers['AWeber-Signature'].partition('=')
+    if alg != 'sha256':
+        raise ValueError('Unexpected hash type: ' + alg)
+    
+    message = (b'date:' +
+               request_headers['Date'].encode('utf-8') +
+               b'\n' +
+               request_body)
+    calculated_hash = hmac.HMAC(key, msg=message.rstrip(), digestmod='SHA256')
+    if calculated_hash.hexdigest() != expected_hash:
+        raise ValueError('Invalid signature')
+    
+    print('Signature validated!')
+    ```
+    
+    ## Returning a Response
+    
+    If you successfully process the message, you should return a **200** status code in your response. The response body will be ignored.
+    
+    If you return a non-2XX level status code due to a failure, we may retry the message or stop sending webhooks entirely. 
+    
+    ## Webhook Reference
+    
+    ### Headers
+    
+    AWeber webhook callback requests will include the following HTTP headers:  
+    
+    | <div style='width:180px'>Header</div> | Description       |
+    |-----------------------------|-------------------|
+    | `AWeber-Delivery-ID`        | Unique identifier for this request. This is helpful to include if you need support. |
+    | `AWeber-Signature`          | Hash type and message digest separated by an equals sign (=). The only defined hash type is `sha256` for HMAC-SHA256. See <a href='https://tools.ietf.org/html/rfc2104' target='_blank'>RFC-2104</a> for more details. |
+    | `Date`                      | Date the message was generated. See <a href='https://tools.ietf.org/html/rfc7231#section-7.1.1.2' target='_blank'>RFC-7231§7.1.1.2</a> and <a href='https://tools.ietf.org/html/rfc5322#section-3.3' target='_blank'>RFC-5322§3.3</a> for more details. |
+    
+    ### Body
+    
+    | <div style='width:100px'>Name</div> | Type             | Description               |
+    |-------------|------------------|---------------------------|
+    | `account`   | string           | Uniquely identifies the account that this event was fired for. |
+    | `client_id` | string           | OAuth 2 client ID assigned to the application. |
+    | `callback`  | string           | Unique identifier for the callback. |
+    | `data`      | array of objects | Each object contains two members: `event` and `payload`. The event is the name of the event and the payload is the data associated with the event. |
+    
+    ### Events
+    
+    Events that occur in short succession will be batched together. Event batch sizes can range in size.
+    Batches are multiple events that are predetermined for a single callback url.
+    
+    #### subscriber.added
+    
+    Triggered when a subscriber is added to a list regardless of the status of the subscriber. This event is fired for **both** verified and unverified subscribers.
+    
+    The payload of a `subscriber.added` event is a JSON object with these members:
+    
+    | <div style='width:180px'>Name</div> | Type             | Description               |
+    |-------------------------------------|------------------|---------------------------|
+    | `account` | string | Uniquely identifies the AWeber account this is attached to. |
+    | `ad_tracking` | string | Optional customer-specified ad-tracking field that was included with the subscription request. |
+    | `custom_fields` | object | Mapping of current custom field values. Fields without values will be omitted. |
+    | `email` | string | Email address of the subscriber at the time of event generation. |
+    | `id` | string | Uniquely identifies this subscriber. |
+    | `links` | object |  Links to related entity URLs. These should be used to retrieve those entities from the API. <br /><br /> It will contain the following members: <ul><li> `account`: The <a href='/#tag/Accounts/paths/~1accounts~1{accountId}/get'>account</a> this subscriber is attached to. </li><li>`list`: This <a href='/#tag/Lists/paths/~1accounts~1{accountId}~1lists~1{listId}/get'>list</a> the subscriber is part of.</li><li>`subscriber`: This <a href='/#tag/Subscribers/paths/~1accounts~1{accountId}~1lists~1{listId}~1subscribers~1{subscriberId}/get'>subscriber</a>.</li></ul> |
+    | `list` | string | Uniquely identifies the list that this subscriber is part of. |
+    | `misc_notes` | string | Optional notes that were included with the subscription request. |
+    | `name` | string | Display name of the subscriber. |
+    | `signup_ip` | string | IPv4 or IPv6 address that the subscription was created from. |
+    | `signup_location` | object | Mapping of signup location fields to values if the location was known at the time of signup. This field will be `null` otherwise. <br /> <br />It will contain the following members: <ul><li>`city`: string</li><li>`country_code`: string</li><li>`country_name`: string</li><li>`latitude`: number</li><li>`longitude`: number</li><li>`metro_code`: number</li><li>`postal_code`: string</li><li>`region_code`: string</li><li>`region_name`: string</li></ul> Fields without values are included with the value set to `null`. |
+    | `status` | string | One of `subscribed`, `unconfirmed`, `unsubscribed`, or `deleted`. |
+    | `subscribed_at` | string | ISO-8601 date-time at which the subscriber record was created. |
+    | `subscription_method` | string | One of `api`, `email`, `import`, or `webform`. |
+    | `subscription_url` | string | URL that the subscriber was added with. |
+    | `tags` | array of strings | Possibly empty array of tags that the subscriber is marked with. |
+    | `unsubscribe_method` | string | One of `unsubscribe link`, `customer cp`, `undeliverable`, `api: unsubscribe`, or `api: move`. |
+    | `unsubscribed_at` | string | ISO-8601 date-time at which the subscriber was unsubscribed. |
+    | `verified_at` | string | ISO-8601 date-time at which the subscriber was verified. |
+    
+    ##### Example HTTP Request
+    ```
+    POST /example HTTP/1.1
+    AWeber-Delivery-ID: 238D534C-2101-4440-98D7-7404938C3675
+    AWeber-Signature: sha256=99e0837dff15e0e27dc6729db56ac23860bd2d2da7ba07eb173f07628a7c7bad
+    Content-Length: 1646
+    Content-Type: application/vnd.aweber.webhook+json; version=1.0
+    Date: Mon, 21 Oct 2019 19:05:20 GMT
+    
+    {
+      "account": "c6501188-693a-472d-b426-296833f7e0ac",
+      "client_id": "EmfELYyHkpYQMioIs7WidJf73csfev3b",
+      "callback": "dd16587a-f7d1-4fdf-9f53-98f0353089a7",
+      "data": [
+        {
+          "event": "subscriber.added",
+          "payload": {
+            "account": "c6501188-693a-472d-b426-296833f7e0ac",
+            "ad_tracking": "control panel",
+            "custom_fields": {
+              "apple": "fuji",
+              "pear": null
+            },
+            "email": "example@example.com",
+            "id": "7941c272-6189-4318-b07f-c108368df796",
+            "links": {
+              "account": "https://api.aweber.com/1.0/accounts/000000",
+              "list": "https://api.aweber.com/1.0/accounts/000000/lists/000000",
+              "subscriber": "https://api.aweber.com/1.0/accounts/000000/lists/000000/subscribers/000000"
+            },
+            "list": "6011a920-d7d1-4829-a62a-b1c9309e2465",
+            "misc_notes": "",
+            "name": "Webhooks Tester",
+            "signup_ip": "204.194.222.28",
+            "signup_location": {
+              "city": "Chalfont",
+              "country_code": "US",
+              "country_name": "United States",
+              "latitude": 40.2964,
+              "longitude": -75.2053,
+              "metro_code": "504",
+              "postal_code": "18914",
+              "region_code": "PA",
+              "region_name": "Pennsylvania"
+            },
+            "status": "unconfirmed",
+            "subscribed_at": "2019-10-16T19:05:20-05:00",
+            "subscription_method": "webform",
+            "subscription_url": "https://www.aweber.com/users/leads/add",
+            "tags": [],
+            "unsubscribe_method": null,
+            "unsubscribed_at": null,
+            "verified_at": null
+          }
+        }
+      ]
+    }
+    ```
+    
+    #### subscriber.subscribed
+    
+    Triggered when a subscriber is subscribed to a list.  This event is fired for subscribers on both <a href='https://help.aweber.com/hc/en-us/articles/204030556-Confirmed-Opt-In-Definition-' target='_blank'>COI</a> and <a href='https://help.aweber.com/hc/en-us/articles/360002687873-Things-to-consider-when-changing-from-confirmed-optin-in-to-single-opt-in-' target='_blank'>SOI</a> lists.
+    
+    The payload of a `subscriber.subscribed` event is a JSON object with these members:
+    
+    | <div style='width:180px'>Name</div> | Type             | Description               |
+    |-------------------------------------|------------------|---------------------------|
+    | `account` | string | Uniquely identifies the AWeber account this is attached to. |
+    | `ad_tracking` | string | Optional customer-specified ad-tracking field that was included with the subscription request. |
+    | `custom_fields` | object | Mapping of current custom field values. Fields without values will be omitted. |
+    | `email` | string | Email address of the subscriber at the time of event generation. |
+    | `id` | string | Uniquely identifies this subscriber. |
+    | `links` | object |  Links to related entity URLs. These should be used to retrieve those entities from the API. <br /><br /> It will contain the following members: <ul><li> `account`: The <a href='/#tag/Accounts/paths/~1accounts~1{accountId}/get'>account</a> this subscriber is attached to. </li><li>`list`: This <a href='/#tag/Lists/paths/~1accounts~1{accountId}~1lists~1{listId}/get'>list</a> the subscriber is part of.</li><li>`subscriber`: This <a href='/#tag/Subscribers/paths/~1accounts~1{accountId}~1lists~1{listId}~1subscribers~1{subscriberId}/get'>subscriber</a>.</li></ul> |
+    | `list` | string | Uniquely identifies the list that this subscriber is part of. |
+    | `misc_notes` | string | Optional notes that were included with the subscription request. |
+    | `name` | string | Display name of the subscriber. |
+    | `signup_ip` | string | IPv4 or IPv6 address that the subscription was created from. |
+    | `signup_location` | object | Mapping of signup location fields to values if the location was known at the time of signup. This field will be `null` otherwise. <br /> <br />It will contain the following members: <ul><li>`city`: string</li><li>`country_code`: string</li><li>`country_name`: string</li><li>`latitude`: number</li><li>`longitude`: number</li><li>`metro_code`: number</li><li>`postal_code`: string</li><li>`region_code`: string</li><li>`region_name`: string</li></ul> Fields without values are included with the value set to `null`. |
+    | `status` | string | One of `subscribed`, `unconfirmed`, `unsubscribed`, or `deleted`. |
+    | `subscribed_at` | string | ISO-8601 date-time at which the subscriber record was created. |
+    | `subscription_method` | string | One of `api`, `email`, `import`, or `webform`. |
+    | `subscription_url` | string | URL that the subscriber was added with. |
+    | `tags` | array of strings | Possibly empty array of tags that the subscriber is marked with. |
+    | `unsubscribe_method` | string | One of `unsubscribe link`, `customer cp`, `undeliverable`, `api: unsubscribe`, or `api: move`. |
+    | `unsubscribed_at` | string | ISO-8601 date-time at which the subscriber was unsubscribed. |
+    | `verified_at` | string | ISO-8601 date-time at which the subscriber was verified. |
+    
+    ##### Example HTTP Request
+    
+    ```
+    POST /example HTTP/1.1
+    AWeber-Delivery-ID: 375e9b8b-7cfe-4bb4-aeb4-aa530310559d
+    AWeber-Signature: sha256=ef62e7301aa8a9b322d65b21ed685fa53290df00da6156076466d5dec760e45f
+    Content-Length: 1647
+    Content-Type: application/vnd.aweber.webhook+json; version=1.0
+    Date: Fri, 27 Dec 2019 14:12:32 GMT
+    
+    {
+      "account": "c6501188-693a-472d-b426-296833f7e0ac",
+      "client_id": "EmfELYyHkpYQMioIs7WidJf73csfev3b",
+      "callback": "dd16587a-f7d1-4fdf-9f53-98f0353089a7",
+      "data": [
+        {
+          "event": "subscriber.subscribed",
+          "payload": {
+            "account": "c6501188-693a-472d-b426-296833f7e0ac",
+            "ad_tracking": "control panel",
+            "custom_fields": {
+              "apple": "fuji",
+              "pear": null
+            },
+            "email": "example@example.com",
+            "id": "e5423b61-8bff-4555-b791-927645e3bc4e",
+            "links": {
+              "account": "https://api.aweber.com/1.0/accounts/000000",
+              "list": "https://api.aweber.com/1.0/accounts/000000/lists/000000",
+              "subscriber": "https://api.aweber.com/1.0/accounts/000000/lists/000000/subscribers/000000"
+            },
+            "list": "6011a920-d7d1-4829-a62a-b1c9309e2465",
+            "misc_notes": "",
+            "name": "Webhooks Tester",
+            "signup_ip": "204.194.222.28",
+            "signup_location": {
+              "city": "Chalfont",
+              "country_code": "US",
+              "country_name": "United States",
+              "latitude": 40.2964,
+              "longitude": -75.2053,
+              "metro_code": "504",
+              "postal_code": "18914",
+              "region_code": "PA",
+              "region_name": "Pennsylvania"
+            },
+            "status": "subscribed",
+            "subscribed_at": "2019-10-16T19:05:20-05:00",
+            "subscription_method": "webform",
+            "subscription_url": "https://www.aweber.com/users/leads/add",
+            "tags": [],
+            "unsubscribe_method": null,
+            "unsubscribed_at": null,
+            "verified_at": "2019-12-27T10:11:55"
+          }
+        }
+      ]
+    }
+    ```
+    
+    #### subscriber.unsubscribed
+    
+    Triggered when a subscriber is unsubscribed from a list.
+    
+    The payload of a `subscriber.unsubscribed` event is a JSON object with these members:
+    
+    | <div style='width:180px'>Name</div> | Type             | Description               |
+    |-------------------------------------|------------------|---------------------------|
+    | `account` | string | Uniquely identifies the AWeber account this is attached to. |
+    | `ad_tracking` | string | Optional customer-specified ad-tracking field that was included with the subscription request. |
+    | `custom_fields` | object | Mapping of current custom field values. Fields without values will be omitted. |
+    | `email` | string | Email address of the subscriber at the time of event generation. |
+    | `id` | string | Uniquely identifies this subscriber. |
+    | `links` | object |  Links to related entity URLs. These should be used to retrieve those entities from the API. <br /><br /> It will contain the following members: <ul><li> `account`: The <a href='/#tag/Accounts/paths/~1accounts~1{accountId}/get'>account</a> this subscriber is attached to. </li><li>`list`: This <a href='/#tag/Lists/paths/~1accounts~1{accountId}~1lists~1{listId}/get'>list</a> the subscriber is part of.</li><li>`subscriber`: This <a href='/#tag/Subscribers/paths/~1accounts~1{accountId}~1lists~1{listId}~1subscribers~1{subscriberId}/get'>subscriber</a>.</li></ul> |
+    | `list` | string | Uniquely identifies the list that this subscriber is part of. |
+    | `misc_notes` | string | Optional notes that were included with the subscription request. |
+    | `name` | string | Display name of the subscriber. |
+    | `signup_ip` | string | IPv4 or IPv6 address that the subscription was created from. |
+    | `signup_location` | object | Mapping of signup location fields to values if the location was known at the time of signup. This field will be `null` otherwise. <br /> <br />It will contain the following members: <ul><li>`city`: string</li><li>`country_code`: string</li><li>`country_name`: string</li><li>`latitude`: number</li><li>`longitude`: number</li><li>`metro_code`: number</li><li>`postal_code`: string</li><li>`region_code`: string</li><li>`region_name`: string</li></ul> Fields without values are included with the value set to `null`. |
+    | `status` | string | One of `subscribed`, `unconfirmed`, `unsubscribed`, or `deleted`. |
+    | `subscribed_at` | string | ISO-8601 date-time at which the subscriber record was created. |
+    | `subscription_method` | string | One of `api`, `email`, `import`, or `webform`. |
+    | `subscription_url` | string | URL that the subscriber was added with. |
+    | `tags` | array of strings | Possibly empty array of tags that the subscriber is marked with. |
+    | `unsubscribe_method` | string | One of `unsubscribe link`, `customer cp`, `undeliverable`, `api: unsubscribe`, or `api: move`. |
+    | `unsubscribed_at` | string | ISO-8601 date-time at which the subscriber was unsubscribed. |
+    | `verified_at` | string | ISO-8601 date-time at which the subscriber was verified. |
+    
+    ##### Example HTTP Request
+    
+    ```
+    POST /example HTTP/1.1
+    AWeber-Delivery-ID: ca154dc4-cbc1-4fd7-91a6-a326de9a5265
+    AWeber-Signature: sha256=2783917cb0ffc64afd383dada36fa5ecac1c7c0465375d566b03f876aecb1e4b
+    Content-Length: 1686
+    Content-Type: application/vnd.aweber.webhook+json; version=1.0
+    Date: Fri, 27 Dec 2019 17:32:32 GMT
+    
+    {
+      "account": "c6501188-693a-472d-b426-296833f7e0ac",
+      "client_id": "EmfELYyHkpYQMioIs7WidJf73csfev3b",
+      "callback": "dd16587a-f7d1-4fdf-9f53-98f0353089a7",
+      "data": [
+        {
+          "event": "subscriber.unsubscribed",
+          "payload": {
+            "account": "c6501188-693a-472d-b426-296833f7e0ac",
+            "ad_tracking": "control panel",
+            "custom_fields": {
+              "apple": "fuji",
+              "pear": null
+            },
+            "email": "example@example.com",
+            "id": "cf8eb994-dce4-4c1c-8bad-2c6284692d18",
+            "links": {
+              "account": "https://api.aweber.com/1.0/accounts/000000",
+              "list": "https://api.aweber.com/1.0/accounts/000000/lists/000000",
+              "subscriber": "https://api.aweber.com/1.0/accounts/000000/lists/000000/subscribers/000000"
+            },
+            "list": "6011a920-d7d1-4829-a62a-b1c9309e2465",
+            "misc_notes": "",
+            "name": "Webhooks Tester",
+            "signup_ip": "204.194.222.28",
+            "signup_location": {
+              "city": "Chalfont",
+              "country_code": "US",
+              "country_name": "United States",
+              "latitude": 40.2964,
+              "longitude": -75.2053,
+              "metro_code": "504",
+              "postal_code": "18914",
+              "region_code": "PA",
+              "region_name": "Pennsylvania"
+            },
+            "status": "unsubscribed",
+            "subscribed_at": "2019-10-16T19:05:20-05:00",
+            "subscription_method": "webform",
+            "subscription_url": "https://www.aweber.com/users/leads/add",
+            "tags": [],
+            "unsubscribe_method": "unsubscribe link",
+            "unsubscribed_at": "2019-27-12T17:32:09+0000",
+            "verified_at": "2019-12-27T10:11:55"
+          }
+        }
+      ]
+    }
+    ```
+    
+    ## Considerations
+    
+    Webhooks are not guaranteed to be published. They are sent on a best effort basis. To catch any events you may have missed, you should query the API with a scheduled job.
+    
+    Duplicate webhook requests may be sent. To prevent taking action on a message that you have already received, you can use the `AWeber-Delivery-ID` as a unique identifier for that message.
+    
+    You should not rely on the order in which webhook messages are published. Due to differences in processing time, they may arrive out of order.

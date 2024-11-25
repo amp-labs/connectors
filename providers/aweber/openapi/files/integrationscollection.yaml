@@ -1,0 +1,24 @@
+tags:
+  Integrations Collection: |
+    ### What is it?
+    
+    Represents the 3rd Party Services that are integrated with the AWeber Customer Account.
+    
+    Use this set of resources to retrieve the integrations that are available for
+    use when creating broadcasts.  For example, use the integration `self_link`
+    as a parameter when [creating a broadcast](#tag/Broadcasts/paths/~1accounts~1{accountId}~1lists~1{listId}~1broadcasts/post) to cross-post to Twitter and Facebook
+    when a broadcast is sent. The integrations returned include Facebook, Twitter,
+    PayPal and Shopify, if connected.
+    
+    The collection response is sorted by the generated integration `id` and paginated using `next_collection_link` and `prev_collection_link` properties.  See
+    [How Collections are Represented](#collection-representation) for details on collection
+    traversal.
+    
+    ### Related endpoints
+    
+    * [Integrations](#tag/Integrations)
+    
+    ### Related code examples
+    
+    * [Create and Schedule a Broadcast](#tag/Create-and-Schedule-a-Broadcast)
+    * [Get Integrations List](#tag/Get-Integrations-List)

@@ -1,0 +1,605 @@
+openapi: 3.0.2
+
+info:
+  title: Campaigns
+  description: REST API for access the AWeber service.
+  version: '1.0'
+  contact:
+    name: API Team
+    url: https://labs.aweber.com
+    email: api@aweber.com
+
+tags:
+  - name: Campaigns
+
+produces:
+ - application/json
+
+paths:
+  /accounts/{accountId}/lists/{listId}/campaigns:
+    get:
+      summary: Get campaigns
+      description: >-
+        The collection of followup ("f") or broadcast ("b") campaigns for the list.
+        The collection is ordered with followups messages followed by broadcast
+        messages.  The followup messages are sorted by `id` ascending and the
+        broadcast messages are sorted by `sent_at` descending.
+
+
+        Check out related examples:
+
+          * Get Clicks ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-clicks" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-clicks" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Clicks.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.GetClicks" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_clicks.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/get-clicks.js" target="_blank">Node.js</a> )
+          * Get Broadcast Opens and Clicks ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-opens-clicks" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-opens-clicks" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.GetBroadcastOpensClicks" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_opens_clicks.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/get-broadcast-opens-clicks.js" target="_blank">Node.js</a> )
+          * Get Broadcast Statistics ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-stats" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-stats" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.GetBroadcastStats" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_stats.rb" target="_blank">Ruby</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/get-broadcast-stats.js" target="_blank">Node.js</a> )
+      tags:
+        - Campaigns
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/listId'
+        - $ref: '_parameters.yaml#/parameters/wsStart'
+        - $ref: '_parameters.yaml#/parameters/wsSize'
+      security:
+        - OAuth 2.0:
+            - email.read
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/GetCampaigns'
+      responses:
+        '200':
+          description: The request completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '_definitions.yaml#/definitions/ListCampaigns'
+        '400':
+          $ref: '_responses.yaml#/responses/CampaignBadRequest'
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/ForbiddenError'
+        '404':
+          $ref: '_responses.yaml#/responses/NotFound'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+  /accounts/{accountId}/lists/{listId}/campaigns/{campaignType}{campaignId}:
+    get:
+      summary: Get campaign
+      description: >-
+        A followup or broadcast campaign
+
+
+        Check out related examples:
+
+          * Get Clicks ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-clicks" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-clicks" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Clicks.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.GetClicks" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_clicks.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/get-clicks.js" target="_blank">Node.js</a> )
+          * Get Broadcast Opens and Clicks ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-opens-clicks" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-opens-clicks" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.GetBroadcastOpensClicks" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_opens_clicks.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/get-broadcast-opens-clicks.js" target="_blank">Node.js</a> )
+          * Get Broadcast Statistics ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-stats" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-stats" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.GetBroadcastStats" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_stats.rb" target="_blank">Ruby</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/get-broadcast-stats.js" target="_blank">Node.js</a> )
+      tags:
+        - Campaigns
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/listId'
+        - $ref: '_parameters.yaml#/parameters/campaignType'
+        - $ref: '_parameters.yaml#/parameters/campaignId'
+      security:
+        - OAuth 2.0:
+            - email.read
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/GetCampaign'
+      responses:
+        '200':
+          description: The request completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '_definitions.yaml#/definitions/Campaign'
+        '400':
+          $ref: '_responses.yaml#/responses/CampaignBadRequest'
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/ForbiddenError'
+        '404':
+          $ref: '_responses.yaml#/responses/NotFound'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+  /accounts/{accountId}/lists/{listId}/campaigns?ws.op=find:
+    get:
+      summary: Find campaigns
+      description: >-
+        Find a collection of either followup("f") or broadcast("b") Campaigns.
+        The collection is ordered with followups messages followed by broadcast
+        messages.  The followup messages are sorted by `id` ascending and the
+        broadcast messages are sorted by `sent_at` descending.
+
+
+        Check out related examples:
+
+          * Get Clicks ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-clicks" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-clicks" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Clicks.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.GetClicks" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_clicks.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/get-clicks.js" target="_blank">Node.js</a> )
+          * Get Broadcast Opens and Clicks ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-opens-clicks" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-opens-clicks" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.GetBroadcastOpensClicks" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_opens_clicks.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/get-broadcast-opens-clicks.js" target="_blank">Node.js</a> )
+          * Get Broadcast Statistics ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-stats" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-stats" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.GetBroadcastStats" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_stats.rb" target="_blank">Ruby</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/get-broadcast-stats.js" target="_blank">Node.js</a> )
+      tags:
+        - Campaigns
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/listId'
+        - name: ws.op
+          in: query
+          requires: true
+          description: The method name - expecting "find"
+          schema:
+            type: string
+            enum:
+              - find
+        - name: campaign_type
+          in: query
+          required: true
+          description: The campaign type (b - broadcast, f - followup)
+          schema:
+            type: string
+            enum: [b,f]
+        - $ref: '_parameters.yaml#/parameters/wsStart'
+        - $ref: '_parameters.yaml#/parameters/wsSize'
+        - $ref: '_parameters.yaml#/parameters/wsShow'
+      security:
+        - OAuth 2.0:
+            - email.read
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/FindCampaigns'
+      responses:
+        '200':
+          description: The request completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '_definitions.yaml#/definitions/FindCampaigns'
+        '400':
+          $ref: '_responses.yaml#/responses/SearchBadRequest'
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/ForbiddenError'
+        '404':
+          $ref: '_responses.yaml#/responses/NotFound'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+  /accounts/{accountId}/lists/{listId}/campaigns/{campaignType}{campaignId}/links:
+    get:
+      summary: Get links
+      description: >-
+        A paginated collection of Links in a followup or broadcast campaign sorted
+        by link `id`.
+
+
+        Check out related examples:
+
+          * Get Clicks ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-clicks" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-clicks" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Clicks.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.GetClicks" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_clicks.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/get-clicks.js" target="_blank">Node.js</a> )
+          * Get Broadcast Opens and Clicks ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-opens-clicks" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-opens-clicks" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.GetBroadcastOpensClicks" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_opens_clicks.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/get-broadcast-opens-clicks.js" target="_blank">Node.js</a> )
+          * Get Broadcast Statistics ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-stats" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-stats" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.GetBroadcastStats" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_stats.rb" target="_blank">Ruby</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/get-broadcast-stats.js" target="_blank">Node.js</a> )
+      tags:
+        - Campaigns
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/listId'
+        - $ref: '_parameters.yaml#/parameters/campaignType'
+        - $ref: '_parameters.yaml#/parameters/campaignId'
+        - $ref: '_parameters.yaml#/parameters/wsStart'
+        - $ref: '_parameters.yaml#/parameters/wsSize'
+      security:
+        - OAuth 2.0:
+            - email.read
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/GetLinks'
+      responses:
+        '200':
+          description: The request completed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '_definitions.yaml#/definitions/Links'
+        '400':
+          $ref: '_responses.yaml#/responses/CampaignBadRequest'
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/ForbiddenError'
+        '404':
+          $ref: '_responses.yaml#/responses/NotFound'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+  /accounts/{accountId}/lists/{listId}/campaigns/{campaignType}{campaignId}/links/{linkId}:
+    get:
+      summary: Get link
+      description: >-
+        A link in a followup or broadcast campaign
+
+
+        Check out related examples:
+
+          * Get Clicks ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-clicks" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-clicks" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Clicks.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.GetClicks" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_clicks.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/get-clicks.js" target="_blank">Node.js</a> )
+          * Get Broadcast Opens and Clicks ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-opens-clicks" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-opens-clicks" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.GetBroadcastOpensClicks" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_opens_clicks.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/get-broadcast-opens-clicks.js" target="_blank">Node.js</a> )
+          * Get Broadcast Statistics ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-stats" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-stats" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.GetBroadcastStats" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_stats.rb" target="_blank">Ruby</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/get-broadcast-stats.js" target="_blank">Node.js</a> )
+      tags:
+        - Campaigns
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/listId'
+        - $ref: '_parameters.yaml#/parameters/campaignType'
+        - $ref: '_parameters.yaml#/parameters/campaignId'
+        - $ref: '_parameters.yaml#/parameters/linkId'
+      security:
+        - OAuth 2.0:
+            - email.read
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/GetLink'
+      responses:
+        '200':
+          description: The request completed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '_definitions.yaml#/definitions/Link'
+        '400':
+          $ref: '_responses.yaml#/responses/CampaignBadRequest'
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/ForbiddenError'
+        '404':
+          $ref: '_responses.yaml#/responses/NotFound'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+  /accounts/{accountId}/lists/{listId}/campaigns/{campaignType}{campaignId}/links/{linkId}/clicks:
+    get:
+      summary: Get clicks
+      description: >-
+        A paginated collection of link clicks in a followup or broadcast campaign sorted
+        by link `id`.
+
+
+        Check out related examples:
+
+          * Get Clicks ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-clicks" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-clicks" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Clicks.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.GetClicks" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_clicks.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/get-clicks.js" target="_blank">Node.js</a> )
+          * Get Broadcast Opens and Clicks ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-opens-clicks" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-opens-clicks" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.GetBroadcastOpensClicks" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_opens_clicks.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/get-broadcast-opens-clicks.js" target="_blank">Node.js</a> )
+          * Get Broadcast Statistics ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-stats" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-stats" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.GetBroadcastStats" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_stats.rb" target="_blank">Ruby</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/get-broadcast-stats.js" target="_blank">Node.js</a> )
+      tags:
+        - Campaigns
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/listId'
+        - $ref: '_parameters.yaml#/parameters/campaignType'
+        - $ref: '_parameters.yaml#/parameters/campaignId'
+        - $ref: '_parameters.yaml#/parameters/linkId'
+        - $ref: '_parameters.yaml#/parameters/wsStart'
+        - $ref: '_parameters.yaml#/parameters/wsSize'
+      security:
+        - OAuth 2.0:
+            - email.read
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/GetClicks'
+      responses:
+        '200':
+          description: The request completed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '_definitions.yaml#/definitions/Clicks'
+        '400':
+          $ref: '_responses.yaml#/responses/CampaignBadRequest'
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/ForbiddenError'
+        '404':
+          $ref: '_responses.yaml#/responses/NotFound'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+  /accounts/{accountId}/lists/{listId}/campaigns/{campaignType}{campaignId}/links/{linkId}/clicks/{clickId}:
+    get:
+      summary: Get click
+      description: >-
+        A non-unique click on a link in a followup or broadcast campaign
+
+
+        Check out related examples:
+
+          * Get Clicks ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-clicks" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-clicks" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Clicks.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.GetClicks" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_clicks.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/get-clicks.js" target="_blank">Node.js</a> )
+          * Get Broadcast Opens and Clicks ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-opens-clicks" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-opens-clicks" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.GetBroadcastOpensClicks" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_opens_clicks.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/get-broadcast-opens-clicks.js" target="_blank">Node.js</a> )
+          * Get Broadcast Statistics ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-stats" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-stats" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.GetBroadcastStats" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_stats.rb" target="_blank">Ruby</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/get-broadcast-stats.js" target="_blank">Node.js</a> )
+      tags:
+        - Campaigns
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/listId'
+        - $ref: '_parameters.yaml#/parameters/campaignType'
+        - $ref: '_parameters.yaml#/parameters/campaignId'
+        - $ref: '_parameters.yaml#/parameters/linkId'
+        - $ref: '_parameters.yaml#/parameters/clickId'
+      security:
+        - OAuth 2.0:
+            - email.read
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/GetClick'
+      responses:
+        '200':
+          description: The request completed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '_definitions.yaml#/definitions/Click'
+        '400':
+          $ref: '_responses.yaml#/responses/CampaignBadRequest'
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/ForbiddenError'
+        '404':
+          $ref: '_responses.yaml#/responses/NotFound'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+  /accounts/{accountId}/lists/{listId}/campaigns/b{campaignId}/stats:
+    get:
+      summary: Get broadcast statistics
+      description: |
+        A paginated collection of statistics for a broadcast campaign message
+        sorted by "statistics ID"
+
+
+        Check out related examples:
+
+          * Get Clicks ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-clicks" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-clicks" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Clicks.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.GetClicks" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_clicks.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/get-clicks.js" target="_blank">Node.js</a> )
+          * Get Broadcast Opens and Clicks ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-opens-clicks" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-opens-clicks" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.GetBroadcastOpensClicks" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_opens_clicks.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/get-broadcast-opens-clicks.js" target="_blank">Node.js</a> )
+          * Get Broadcast Statistics ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-stats" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-stats" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.GetBroadcastStats" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_stats.rb" target="_blank">Ruby</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/get-broadcast-stats.js" target="_blank">Node.js</a> )
+      tags:
+        - Campaigns
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/listId'
+        - $ref: '_parameters.yaml#/parameters/campaignId'
+        - $ref: '_parameters.yaml#/parameters/wsStart'
+        - $ref: '_parameters.yaml#/parameters/wsSize'
+      security:
+        - OAuth 2.0:
+            - email.read
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/GetBroadcastStatistics'
+      responses:
+        '200':
+          description: The request completed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '_definitions.yaml#/definitions/Stats'
+        '400':
+          $ref: '_responses.yaml#/responses/CampaignBadRequest'
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/ForbiddenError'
+        '404':
+          $ref: '_responses.yaml#/responses/NotFound'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+  /accounts/{accountId}/lists/{listId}/campaigns/b{campaignId}/stats/{statsId}:
+    get:
+      summary: Get broadcast statistic
+      description: >-
+        A statistic for a broadcast campaign message
+
+
+        Check out related examples:
+
+          * Get Clicks ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-clicks" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-clicks" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Clicks.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.GetClicks" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_clicks.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/get-clicks.js" target="_blank">Node.js</a> )
+          * Get Broadcast Opens and Clicks ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-opens-clicks" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-opens-clicks" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.GetBroadcastOpensClicks" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_opens_clicks.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/get-broadcast-opens-clicks.js" target="_blank">Node.js</a> )
+          * Get Broadcast Statistics ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-stats" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-stats" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.GetBroadcastStats" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_stats.rb" target="_blank">Ruby</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/get-broadcast-stats.js" target="_blank">Node.js</a> )
+      tags:
+        - Campaigns
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/listId'
+        - $ref: '_parameters.yaml#/parameters/campaignId'
+        - $ref: '_parameters.yaml#/parameters/statsId'
+      security:
+        - OAuth 2.0:
+            - email.read
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/GetBroadcastStatistic'
+      responses:
+        '200':
+          description: The request completed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '_definitions.yaml#/definitions/Stat'
+        '400':
+          $ref: '_responses.yaml#/responses/CampaignBadRequest'
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/ForbiddenError'
+        '404':
+          $ref: '_responses.yaml#/responses/NotFound'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'

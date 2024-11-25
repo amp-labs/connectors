@@ -1,0 +1,105 @@
+- name: Accounts
+  description:
+    $ref: 'accountcollection.yaml#/tags/Account Collection'
+- name: Broadcasts
+  description:
+    $ref: 'broadcastcollection.yaml#/tags/Broadcast Collection'
+- name: Campaigns
+  description:
+    $ref: 'campaigncollection.yaml#/tags/Campaign Collection'
+- name: Custom Fields
+  description:
+    $ref: 'customfieldscollection.yaml#/tags/Custom Fields Collection'
+- name: Integrations
+  description:
+    $ref: 'integrationscollection.yaml#/tags/Integrations Collection'
+- name: Landing Pages
+  description:
+    $ref: 'landingpagescollection.yaml#/tags/Landing Pages Collection'
+- name: Lists
+  description:
+    $ref: 'listscollection.yaml#/tags/Lists Collection'
+- name: Segments
+  description:
+    $ref: 'segmentscollection.yaml#/tags/Segments Collection'
+- name: Subscribers
+  description:
+    $ref: 'subscriberscollection.yaml#/tags/Subscribers Collection'
+- name: Webforms
+  description:
+    $ref: 'webformscollection.yaml#/tags/Webforms Collection'
+- name: Getting Started
+  description:
+    $ref: 'gettingstarted.yaml#/tags/Getting Started'
+- name: Authentication Overview
+  description:
+    $ref: 'oauth2overview.yaml#/tags/OAuth2 Overview'
+- name: OAuth 2.0 Examples
+  description:
+    $ref: 'oauth2example.yaml#/tags/OAuth2 Example'
+- name: OAuth 2.0 Traces
+  description:
+    $ref: 'oauth2traces.yaml#/tags/OAuth2 Traces'
+- name: OAuth 2.0 Reference
+  description:
+    $ref: 'oauth2reference.yaml#/tags/OAuth2 Reference'
+- name: Developer Changelog
+  description:
+    $ref: 'changelog.yaml#/tags/Changelog'
+- name: FAQ
+  description:
+    $ref: 'faq.yaml#/tags/FAQ'
+- name: Troubleshooting
+  description:
+    $ref: 'troubleshooting.yaml#/tags/Troubleshooting'
+- name: Introduction
+  description:
+    $ref: 'github_samples.yaml#/tags/Introduction'
+- name: Create and Schedule a Broadcast
+  description:
+    $ref: 'github_samples.yaml#/tags/Create and Schedule a Broadcast'
+- name: Find Subscribers Across Lists
+  description:
+    $ref: 'github_samples.yaml#/tags/Find Subscribers Across Lists'
+- name: Find a List and Get Tags
+  description:
+    $ref: 'github_samples.yaml#/tags/Find a List and Get Tags'
+- name: Manage a Subscriber
+  description:
+    $ref: 'github_samples.yaml#/tags/Manage a Subscriber'
+- name: Create a Purchase
+  description:
+    $ref: 'github_samples.yaml#/tags/Create a Purchase'
+- name: Manage Custom Fields
+  description:
+    $ref: 'github_samples.yaml#/tags/Manage Custom Fields'
+- name: Move Subscriber to Another List
+  description:
+    $ref: 'github_samples.yaml#/tags/Move Subscriber to Another List'
+- name: Get Sent Broadcast Details
+  description:
+    $ref: 'github_samples.yaml#/tags/Get Sent Broadcast Details'
+- name: Get Broadcast Statistics
+  description:
+    $ref: 'github_samples.yaml#/tags/Get Broadcast Statistics'
+- name: Get Clicks by Link for a Campaign
+  description:
+    $ref: 'github_samples.yaml#/tags/Get Clicks by Link for a Campaign'
+- name: Get Subscribers Who Opened or Clicked a Broadcast
+  description:
+    $ref: 'github_samples.yaml#/tags/Get Subscribers Who Opened or Clicked a Broadcast'
+- name: Get Webforms Detail
+  description:
+    $ref: 'github_samples.yaml#/tags/Get Webforms Detail'
+- name: Get Integrations List
+  description:
+    $ref: 'github_samples.yaml#/tags/Get Integrations List'
+- name: Get Segments
+  description:
+    $ref: 'github_samples.yaml#/tags/Get Segments'
+- name: Get Landing Pages
+  description:
+    $ref: 'github_samples.yaml#/tags/Get Landing Pages'
+- name: Webhooks
+  description:
+    $ref: 'webhooks.yaml#/tags/Webhooks'

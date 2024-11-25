@@ -1,0 +1,37 @@
+tags:
+  Broadcast Collection: |
+    ### What is it?
+    
+    Represents broadcast messages associated with a specific list.
+    
+    Use this set of resources to create, retrieve, modify, schedule, and delete broadcast
+    messages on a list.
+    
+    The broadcast collection is paginated in pages of 100 items by default and sorted based
+    on the message status.  Each response page includes `next_collection_link` and
+    `prev_collection_link` properties to traverse the collection.  See
+    [How Collections are Represented](#collection-representation) for traversal details and the
+    following table for sorting.
+    
+    | Status      | Sort attribute  | Description                                                                                                |
+    |-------------|-----------------|------------------------------------------------------------------------------------------------------------|
+    | `draft`     | `broadcast_id`  | A Broadcast Message that has been created via the `Create Broadcast` endpoint and is currently unscheduled |
+    | `scheduled` | `scheduled_for` | A Broadcast Message that has scheduled but not sent                                                        |
+    | `sent`      | `sent_at`       | A Broadcast Message that has been sent                                                                     |
+    
+    ### Related endpoints
+    
+    * [Broadcasts](#tag/Broadcasts)
+    * [Get broadcasts by state](#tag/Broadcasts/paths/~1accounts~1{accountId}~1lists~1{listId}~1broadcasts/get)
+    * [Get broadcasts for a list](#tag/Campaigns/paths/~1accounts~1{accountId}~1lists~1{listId}~1campaigns/get)
+    * [Get information about links in a broadcast](#tag/Campaigns/paths/~1accounts~1{accountId}~1lists~1{listId}~1campaigns~1{campaignType}{campaignId}~1links/get)
+    * [Get information about link clicks for a broadcast](#tag/Campaigns/paths/~1accounts~1{accountId}~1lists~1{listId}~1campaigns~1{campaignType}{campaignId}~1links~1{linkId}~1clicks/get)
+    * [Get broadcast statistics](#tag/Campaigns/paths/~1accounts~1{accountId}~1lists~1{listId}~1campaigns~1b{campaignId}~1stats/get)
+    
+    ### Related code samples
+    
+    * [Create and Schedule a Broadcast](#tag/Create-and-Schedule-a-Broadcast)
+    * [Get Sent Broadcast Details](#tag/Get-Sent-Broadcast-Details)
+    * [Get Broadcast Statistics](#tag/Get-Broadcast-Statistics)
+    * [Get Subscribers Who Opened or Clicked a Broadcast](#tag/Get-Subscribers-Who-Opened-or-Clicked-a-Broadcast)
+    * [Get Clicks by Link for a Broadcast](#tag/Get-Clicks-by-Link-for-a-Campaign)

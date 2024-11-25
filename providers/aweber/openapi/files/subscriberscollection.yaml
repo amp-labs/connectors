@@ -1,0 +1,37 @@
+tags:
+  Subscribers Collection: |
+    ### What is it?
+    
+    Represents a collection of subscribers.
+    
+    Use this set of resources to add, remove, find, and update an AWeber Customer Account's subscribers.
+    The collection responses are ordered and paginated using `next_collection_link` and
+    `prev_collection_link` properties.  See [How Collections are Represented](#collection-representation)
+    for details on collection traversal and the individual endpoint descriptions for ordering constraints.
+    Many of the subscriber-related endpoints support the `sort_order` query parameter to control the sorting
+    *direction* in the response collection.
+    
+    Subscribers are one of the most important elements in the AWeber API so care must be taken before
+    adding a subscriber to a list.  Read more about adding subscribers in AWeber Knowledge Base article
+    <a href="https://help.aweber.com/entries/21729456-can-i-use-this-list" target="_blank">
+    "Can I use this list?"</a>.
+    
+    Although not required, it's strongly recommended that you provide the IP address of the Subscriber if
+    it is known.  For web based Apps, the `ip_address` that you should use is the REMOTE_ADDRESS of their
+    requests to your App server, not the server's IP address.  The IP address is used in the Geo Location
+    parameters and for send windows in the AWeber Control Panel.  **The IP address can only be specified
+    when ADDING a new subscriber.**
+    
+    
+    ### Related endpoints
+    
+    * [Subscribers](#tag/Subscribers)
+    * [Get subcribers associated with a message](#tag/Messages/paths/~1accounts~1{accountId}~1lists~1{listId}~1campaigns~1{campaignType}{messageId}~1messages?ws.op=getSubscribers/get)
+    * [Get susbcribers that opened a message](#tag/Messages/paths/~1accounts~1{accountId}~1lists~1{listId}~1campaigns~1{campaignType}{messageId}~1messages~1{messageEntryId}~1opens/get)
+    
+    ### Related code examples
+    
+    * [Manage a Subscriber](#tag/Manage-a-Subscriber)
+    * [Find Subscribers Across Lists](#tag/Find-Subscribers-Across-Lists)
+    * [Move Subscriber to Another List](#tag/Move-Subscriber-to-Another-List)
+    * [Get Subscribers Who Opened or Clicked a Broadcast](#tag/Get-Subscribers-Who-Opened-or-Clicked-a-Broadcast)

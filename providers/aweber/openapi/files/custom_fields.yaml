@@ -1,0 +1,393 @@
+openapi: 3.0.2
+info:
+  title: AWeber API Documentation
+  description: REST API for access the AWeber service.
+  version: '1.0'
+  contact:
+    name: API Team
+    url: 'https://labs.aweber.com'
+    email: api@aweber.com
+tags:
+  - name: Custom Fields
+paths:
+  '/accounts/{accountId}/lists/{listId}/custom_fields':
+    get:
+      summary: Get custom fields
+      description: >-
+        This endpoint is used to get a paginated collection of custom fields
+        under the specified account and list
+
+
+        Check out related examples:
+
+          * Manage Custom Fields ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/manage-custom-fields" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/manage-custom-fields" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Manage%20Custom%20Fields.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.ManageCustomFields" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/manage_custom_fields.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/manage-custom-fields.js" target="_blank">Node.js</a> )
+      tags:
+        - Custom Fields
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/listId'
+        - $ref: '_parameters.yaml#/parameters/wsStart'
+        - $ref: '_parameters.yaml#/parameters/wsSize'
+      security:
+        - OAuth 2.0:
+            - list.read
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/GetCustomFields'
+      responses:
+        '200':
+          description: The request completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '_definitions.yaml#/definitions/CustomFields'
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/ForbiddenError'
+        '404':
+          $ref: '_responses.yaml#/responses/NotFound'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+    post:
+      summary: Add custom field
+      description: >-
+        This endpoint is used to add a new custom field to the specified account
+        and list.
+
+
+        Check out related examples:
+
+          * Manage Custom Fields ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/manage-custom-fields" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/manage-custom-fields" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Manage%20Custom%20Fields.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.ManageCustomFields" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/manage_custom_fields.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/manage-custom-fields.js" target="_blank">Node.js</a> )
+      tags:
+        - Custom Fields
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/listId'
+      security:
+        - OAuth 2.0:
+            - list.write
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/AddCustomField'
+      responses:
+        '201':
+          description: The custom field was created successfully
+          headers:
+            Location:
+              description: URI of the new custom field
+              example: >-
+                https://api.aweber.com/1.0/accounts/123/lists/456/custom_fields/7
+              schema:
+                type: string
+                format: uri
+        '400':
+          description: The server cannot or will not process the request due to a client error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    description: |
+                      An error object.
+                      The following error may be received:
+
+                      | Error Type      | Explanation |
+                      |-----------------|-------------|
+                      | BadRequestError | The `ws.op` field is invalid or the OAuth query string could not be parsed.  This can also be caused by using an unsupported content type. |
+                      | WebServiceError | The custom field could not be added since a field with the specified name already exists |
+                    properties:
+                      documentation_url:
+                        description: A link to the documentation that describes the error
+                        type: string
+                        format: url
+                        example: https://api.aweber.com#badrequest
+                      message:
+                        description: A human friendly description of the error
+                        type: string
+                        example: "name: Must be unique"
+                      status:
+                        description: The HTTP status code
+                        type: integer
+                        enum:
+                          - 400
+                      type:
+                        description: The API error type
+                        type: string
+                        enum:
+                          - BadRequestError
+                          - WebServiceError
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/ForbiddenError'
+        '404':
+          $ref: '_responses.yaml#/responses/NotFound'
+        '405':
+          description: The maximum number of custom fields has been exceeded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    description: |
+                      An error object.
+                      The following error may be received:
+
+                      | Error Type      | Explanation |
+                      |-----------------|-------------|
+                      | WebServiceError | The custom field could not be added since it already has 25 custom field definitions |
+                    properties:
+                      documentation_url:
+                        description: A link to the documentation that describes the error
+                        type: string
+                        format: url
+                        example: https://api.aweber.com#methodnotallowed
+                      message:
+                        description: A human friendly description of the error
+                        type: string
+                        example: You may only have 25 CustomFields
+                      status:
+                        description: The HTTP status code
+                        type: integer
+                        enum:
+                          - 405
+                      type:
+                        description: The API error type
+                        type: string
+                        enum:
+                          - WebServiceError
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - ws.op
+              properties:
+                name:
+                  description: The name of the custom field
+                  type: string
+                  example: Favorite color
+                ws.op:
+                  description: The method name - expecting "create"
+                  type: string
+                  enum:
+                    - create
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - name
+                - ws.op
+              properties:
+                name:
+                  description: The name of the custom field
+                  type: string
+                  example: Favorite color
+                ws.op:
+                  description: The method name - expecting "create"
+                  type: string
+                  enum:
+                    - create
+            example: name=foo&ws.op=create
+        description: Request Body
+        required: true
+  '/accounts/{accountId}/lists/{listId}/custom_fields/{customFieldId}':
+    get:
+      summary: Get custom field
+      description: >-
+        This endpoint is used to retrieve the information for the specified
+        custom field.
+
+
+        Check out related examples:
+
+          * Manage Custom Fields ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/manage-custom-fields" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/manage-custom-fields" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Manage%20Custom%20Fields.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.ManageCustomFields" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/manage_custom_fields.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/manage-custom-fields.js" target="_blank">Node.js</a> )
+      tags:
+        - Custom Fields
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/listId'
+        - $ref: '_parameters.yaml#/parameters/customFieldId'
+      security:
+        - OAuth 2.0:
+            - list.read
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/GetCustomField'
+      responses:
+        '200':
+          description: The request completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '_definitions.yaml#/definitions/CustomField'
+        '400':
+          $ref: '_responses.yaml#/responses/BadRequest'
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/ForbiddenError'
+        '404':
+          $ref: '_responses.yaml#/responses/NotFound'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+    patch:
+      summary: Update custom field
+      description: >-
+        This endpoint is used to update the information for the specified custom
+        field.
+        See
+        <a href="https://help.aweber.com/entries/21749682-why-could-changing-my-custom-field-names-cause-problems"
+         target="_blank">Why could changing my custom field names cause problems</a>
+        before changing the name of a Custom Field.
+
+
+        Check out related examples:
+
+          * Manage Custom Fields ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/manage-custom-fields" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/manage-custom-fields" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Manage%20Custom%20Fields.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.ManageCustomFields" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/manage_custom_fields.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/manage-custom-fields.js" target="_blank">Node.js</a> )
+      tags:
+        - Custom Fields
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/listId'
+        - $ref: '_parameters.yaml#/parameters/customFieldId'
+      security:
+        - OAuth 2.0:
+            - list.write
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/UpdateCustomField'
+      responses:
+        '209':
+          description: The custom field was updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '_definitions.yaml#/definitions/CustomField'
+        '400':
+          $ref: '_responses.yaml#/responses/BadRequest'
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/ForbiddenError'
+        '404':
+          $ref: '_responses.yaml#/responses/NotFound'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  description: The name of the custom field
+                  type: string
+                  example: Favorite color
+                is_subscriber_updateable:
+                  description: Whether the subscriber is allowed to update the custom field
+                  type: boolean
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                name:
+                  description: The name of the custom field
+                  type: string
+                  example: Favorite color
+                is_subscriber_updateable:
+                  description: Whether the subscriber is allowed to update the custom field
+                  type: boolean
+            example: name=foo&is_subscriber_updateable=true
+        description: Request Body
+        required: true
+    delete:
+      summary: Delete custom field
+      description: >-
+        This endpoint is used to delete a custom field entry
+        See
+        <a href="https://help.aweber.com/entries/21749682-why-could-changing-my-custom-field-names-cause-problems"
+         target="_blank">Why could changing my custom field names cause problems</a>
+        before removing a Custom Field.
+
+
+        Check out related examples:
+
+          * Manage Custom Fields ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/manage-custom-fields" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/manage-custom-fields" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Manage%20Custom%20Fields.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.ManageCustomFields" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/manage_custom_fields.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/manage-custom-fields.js" target="_blank">Node.js</a> )
+      tags:
+        - Custom Fields
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/listId'
+        - $ref: '_parameters.yaml#/parameters/customFieldId'
+      security:
+        - OAuth 2.0:
+            - list.write
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/DeleteCustomField'
+      responses:
+        '200':
+          description: The custom field was deleted successfully
+        '400':
+          $ref: '_responses.yaml#/responses/BadRequest'
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/ForbiddenError'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'

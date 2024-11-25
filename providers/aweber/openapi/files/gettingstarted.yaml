@@ -1,0 +1,78 @@
+tags:
+  Getting Started: |
+    ## Creating a Developer Account
+    To start developing, you will first need to [create a free developer account](https://labs.aweber.com).
+    After you create a developer account, [log in](https://labs.aweber.com/auth/login) 
+    and [create an app](https://labs.aweber.com/apps).
+    
+    ## What does AWeber provide?
+    
+    AWeber provides a REST API and Webhooks. For more information about webhooks please navigate to the
+    [Webhooks](#tag/Webhooks) section within this documentation.
+    
+    ## What is the AWeber API?
+    
+    The AWeber API is a [JSON] based [REST] API.
+    
+    [JSON]: https://en.wikipedia.org/wiki/JSON
+    [REST]: https://en.wikipedia.org/wiki/Representational_state_transfer
+    
+    This means that resources are represented as JSON dictionaries and you use a different
+    HTTP verb to do your standard CRUD operations on them:
+    
+    - [POST](https://tools.ietf.org/html/rfc7231#section-4.3.3): Create new resources.
+    - [GET](https://tools.ietf.org/html/rfc7231#section-4.3.1): Retrieve a resource.
+    - [PATCH](https://tools.ietf.org/html/rfc5789): Update existing resources.
+    - [DELETE](https://tools.ietf.org/html/rfc7231#section-4.3.5): Delete existing resources.
+    
+    ### Note
+    
+    Within this document, campaigns is a generic term that refers to both Broadcast and
+    Follow Up messages. Currently the AWeber API does not support
+    [Campaigns](https://www.aweber.com/email-automation.htm), which is an email automation
+    platform available to customers within the AWeber web platform.
+    
+    ### Authentication
+    
+    Before you can make requests to the API, you need to support our authentication
+    protocol. We currently require all new applications using the API to make use of the 
+    OAuth 2.0 authentication protocol.
+    
+    We recommend that you start out by visiting the
+    [OAuth 2.0 Overview](#tag/OAuth-2.0-Overview). This will walk you through the authentication
+    process.
+    
+    ### How Resources are Arranged in the AWeber API
+    
+    API resources are arranged in the AWeber API based on their relationships to each
+    other. We illustrate these relationships on the image below with the URLs of the
+    resources. When we refer to the relationships of the resources, we say an Account has
+    Lists, a List has Subscribers, etc. We can also say Subscribers belong to a List, or
+    Lists belong to an Account, and so on.
+    
+    A single resource is referred to as an Entry and is shown as a yellow circle on the
+    image. Entries are contained in Collections which are shown as a blue box on the image.
+    These resources are contained under version '1.0' of the API.
+    
+    <a href="/static/api-map.png?v=20200827" target="_blank"><img class="api-map" alt="[Resource Map]" src="/static/api-map.png?v=20200827"></a>
+    
+    <a name="collection-representation">&nbsp;</a>
+    ### How Collections are Represented
+    
+    Collections are represented as an ordered sequence of entries. They are paginated using the `ws.size` and
+    `ws.start` query parameters where `ws.size` is the maximum number of entries to return and `ws.start` is
+    the zero-based index to start the page at. The response represents a page of entries and includes at
+    least the following body properties:
+    
+    | Name                 | Type                 | Description                                             |
+    | ----                 | ----                 | -----------                                             |
+    | entries              | List of Objects      | The entries on the requested page                       |
+    | start                | Non-negative Integer | The starting offset of the page                         |
+    | total_size           | Non-negative Integer | The total size of the collection*                       |
+    | next_collection_link | URL                  | Link to the next page unless this is the final page     |
+    | prev_collection_link | URL                  | Link to the previous page unless this is the first page |
+    
+    Though you can specify the exact page that you want using `ws.size` and `ws.start`, you should use the
+    `next_collection_link` and `prev_collection_link` properties in the response to traverse the collection.
+    If the `prev_collection_link` is absent, then the current page is the first page. Likewise, if the
+    `next_collection_link` is absent, then the current page is the last page in the collection.

@@ -1,0 +1,146 @@
+openapi: 3.0.2
+info:
+  title: Integrations
+  description: REST API for access the AWeber service.
+  version: '1.0'
+  contact:
+    name: API Team
+    url: 'https://labs.aweber.com'
+    email: api@aweber.com
+tags:
+  - name: Integrations
+paths:
+  '/accounts/{accountId}/integrations':
+    get:
+      summary: Get integrations
+      description: >-
+        This endpoint is used to get a paginated collection of integrations.
+        The integrations returned include Facebook, Twitter, PayPal and Shopify,
+        if connected. The integrations are typically used when
+        [creating a broadcast](#tag/Broadcasts/paths/~1accounts~1{accountId}~1lists~1{listId}~1broadcasts/post)
+        and cross-posting the broadcast to Twitter or Facebook, the integration
+        `self_link` is needed in this case.
+
+
+        Check out related examples:
+
+          * Get Integrations ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-integrations" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-integrations" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Integrations.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.GetIntegrations" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_integration.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/get-integrations.js" target="_blank">Node.js</a> )
+      tags:
+        - Integrations
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/wsStart'
+        - $ref: '_parameters.yaml#/parameters/wsSize'
+      security:
+        - OAuth 2.0:
+            - account.read
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/GetIntegrations'
+      responses:
+        '200':
+          description: The request completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '_definitions.yaml#/definitions/Integrations'
+        '400':
+          description: The server cannot or will not process the request due to a client error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    description: |
+                      An error object.
+                      The following error may be received:
+
+                      | Error Type           | Explanation                              |
+                      |----------------------|------------------------------------------|
+                      | WebServiceError      | `ws.start` or `ws.size` values are invalid |
+
+                      Please see the message body for more details.
+                    type: object
+                    properties:
+                      documentation_url:
+                        description: A link to the documentation that describes the error
+                        type: string
+                        example: https://api.aweber.com#badrequest
+                      message:
+                        description: A human friendly description of the error
+                        type: string
+                        example: Maximum for "ws.size" parameter is 100.
+                      status:
+                        description: The HTTP status code
+                        type: integer
+                        example: 400
+                      type:
+                        description: The API error type
+                        type: string
+                        example: WebServiceError
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/ForbiddenError'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+  '/accounts/{accountId}/integrations/{integrationId}':
+    get:
+      summary: Get integration
+      description: >-
+        This endpoint is used to retrieve the information for a specific
+        connected integration. A specific integration will be Facebook, Twitter,
+        PayPal or Shopify. The integration is typically used when
+        [creating a broadcast](#tag/Broadcasts/paths/~1accounts~1{accountId}~1lists~1{listId}~1broadcasts/post)
+        and cross-posting the broadcast to Twitter or Facebook, the integration
+        `self_link` is needed in this case.
+
+
+        Check out related examples:
+
+          * Get Integrations ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-integrations" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-integrations" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Integrations.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.GetIntegrations" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_integration.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/get-integrations.js" target="_blank">Node.js</a> )
+      tags:
+        - Integrations
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/integrationId'
+      security:
+        - OAuth 2.0:
+            - account.read
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/GetIntegration'
+      responses:
+        '200':
+          description: The request completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '_definitions.yaml#/definitions/Integration'
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/ForbiddenError'
+        '404':
+          $ref: '_responses.yaml#/responses/NotFound'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'

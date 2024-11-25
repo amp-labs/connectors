@@ -1,0 +1,722 @@
+openapi: 3.0.2
+info:
+  title: Broadcasts
+  description: REST API for access the AWeber service.
+  version: '1.0'
+  contact:
+    name: API Team
+    url: 'https://labs.aweber.com'
+    email: api@aweber.com
+tags:
+  - name: Broadcasts
+paths:
+  '/accounts/{accountId}/lists/{listId}/broadcasts':
+    get:
+      summary: Get broadcasts
+      description: >-
+        This endpoint is used to get a paginated collection of broadcasts under
+        the specified account and list.  The sort order is dependent on the requested
+        status.
+
+          * *draft* messages are sorted by `broadcast_id` **and** only include API created broadcast drafts
+          * *scheduled* messages are sorted by `scheduled_for`
+          * *sent* messages are sorted by `sent_at`
+
+
+        Check out related examples:
+
+          * Create and Schedule Broadcast ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/create-schedule-broadcast" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/create-schedule-broadcast" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Create%20and%20Schedule%20Boadcast.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.CreateScheduleBroadcast" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/create_schedule_broadcast.rb" target="_blank">Ruby</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/node/create-schedule-broadcast.js" target="_blank">Node.js</a> )
+          * Get Broadcast Details ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-details" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/create-schedule-broadcast" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Broadcast%20Details.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastDetails" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_details.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-details.js" target="_blank">Node.js</a> )
+          * Get Broadcast Opens and Clicks ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-opens-clicks" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-opens-clicks" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastOpensClicks" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_opens_clicks.rb" target="_blank">Ruby</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-opens-clicks.js" target="_blank">Node.js</a> )
+          * Get Broadcast Statistics ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-stats" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-stats" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Broadcast%20Stats.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastStats" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_stats.rb" target="_blank">Ruby</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-stats.js" target="_blank">Node.js</a> )
+      tags:
+        - Broadcasts
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/listId'
+        - name: status
+          in: query
+          required: true
+          description: The status of the broadcasts to retrieve. **(Please be aware that `draft` only returns API created Broadcast drafts)**
+          schema:
+            type: string
+            enum:
+              - draft
+              - scheduled
+              - sent
+        - $ref: '_parameters.yaml#/parameters/wsStart'
+        - $ref: '_parameters.yaml#/parameters/wsSize'
+      security:
+        - OAuth 2.0:
+            - email.read
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/GetBroadcasts'
+      responses:
+        '200':
+          description: The request completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '_definitions.yaml#/definitions/Broadcasts'
+        '400':
+          $ref: '_responses.yaml#/responses/BroadcastBadRequest'
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/ForbiddenError'
+        '404':
+          $ref: '_responses.yaml#/responses/BroadcastNotFound'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+    post:
+      summary: Create broadcast
+      description: >-
+        This endpoint is used to create a broadcast message draft. 
+
+        **This POST request is limited to 1 million bytes.**
+
+
+        Check out related examples:
+
+          * Create and Schedule Broadcast ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/create-schedule-broadcast" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/create-schedule-broadcast" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Create%20and%20Schedule%20Boadcast.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.CreateScheduleBroadcast" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/create_schedule_broadcast.rb" target="_blank">Ruby</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/node/create-schedule-broadcast.js" target="_blank">Node.js</a> )
+          * Get Broadcast Details ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-details" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/create-schedule-broadcast" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Broadcast%20Details.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastDetails" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_details.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-details.js" target="_blank">Node.js</a> )
+          * Get Broadcast Opens and Clicks ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-opens-clicks" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-opens-clicks" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastOpensClicks" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_opens_clicks.rb" target="_blank">Ruby</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-opens-clicks.js" target="_blank">Node.js</a> )
+          * Get Broadcast Statistics ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-stats" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-stats" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Broadcast%20Stats.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastStats" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_stats.rb" target="_blank">Ruby</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-stats.js" target="_blank">Node.js</a> )
+      tags:
+        - Broadcasts
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/listId'
+      security:
+        - OAuth 2.0:
+            - email.write
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/CreateBroadcast'
+      responses:
+        '200':
+          description: The request completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '_definitions.yaml#/definitions/Broadcast'
+        '400':
+          $ref: '_responses.yaml#/responses/BroadcastBadRequest'
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/RateLimitOrEmailPermission'
+        '404':
+          $ref: '_responses.yaml#/responses/BroadcastNotFound'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '415':
+          $ref: '_responses.yaml#/responses/NotFormURLEncoded'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '_definitions.yaml#/definitions/CreateBroadcast'
+        description: Request Body
+        required: true
+  '/accounts/{accountId}/lists/{listId}/broadcasts/{broadcastId}':
+    get:
+      summary: Get broadcast
+      description: >-
+        This endpoint is used to retrieve a broadcast message.
+
+
+        Check out related examples:
+
+          * Create and Schedule Broadcast ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/create-schedule-broadcast" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/create-schedule-broadcast" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Create%20and%20Schedule%20Boadcast.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.CreateScheduleBroadcast" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/create_schedule_broadcast.rb" target="_blank">Ruby</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/node/create-schedule-broadcast.js" target="_blank">Node.js</a> )
+          * Get Broadcast Details ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-details" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/create-schedule-broadcast" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Broadcast%20Details.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastDetails" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_details.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-details.js" target="_blank">Node.js</a> )
+          * Get Broadcast Opens and Clicks ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-opens-clicks" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-opens-clicks" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastOpensClicks" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_opens_clicks.rb" target="_blank">Ruby</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-opens-clicks.js" target="_blank">Node.js</a> )
+          * Get Broadcast Statistics ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-stats" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-stats" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Broadcast%20Stats.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastStats" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_stats.rb" target="_blank">Ruby</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-stats.js" target="_blank">Node.js</a> )
+      tags:
+        - Broadcasts
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/listId'
+        - $ref: '_parameters.yaml#/parameters/broadcastId'
+      security:
+        - OAuth 2.0:
+            - email.read
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/GetBroadcast'
+      responses:
+        '200':
+          description: The request completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '_definitions.yaml#/definitions/Broadcast'
+        '400':
+          $ref: '_responses.yaml#/responses/BroadcastBadRequest'
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/RateLimitOrEmailPermission'
+        '404':
+          $ref: '_responses.yaml#/responses/BroadcastNotFound'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+    put:
+      summary: Update broadcast
+      description: >-
+        This endpoint is used to replace existing details of a broadcast message
+        in a draft state. **(Please be aware that only broadcast drafts created by the API are available to update)**
+
+
+        Check out related examples:
+
+          * Create and Schedule Broadcast ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/create-schedule-broadcast" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/create-schedule-broadcast" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Create%20and%20Schedule%20Boadcast.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.CreateScheduleBroadcast" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/create_schedule_broadcast.rb" target="_blank">Ruby</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/node/create-schedule-broadcast.js" target="_blank">Node.js</a> )
+          * Get Broadcast Details ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-details" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/create-schedule-broadcast" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Broadcast%20Details.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastDetails" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_details.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-details.js" target="_blank">Node.js</a> )
+          * Get Broadcast Opens and Clicks ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-opens-clicks" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-opens-clicks" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastOpensClicks" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_opens_clicks.rb" target="_blank">Ruby</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-opens-clicks.js" target="_blank">Node.js</a> )
+          * Get Broadcast Statistics ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-stats" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-stats" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Broadcast%20Stats.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastStats" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_stats.rb" target="_blank">Ruby</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-stats.js" target="_blank">Node.js</a> )
+      tags:
+        - Broadcasts
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/listId'
+        - $ref: '_parameters.yaml#/parameters/broadcastId'
+      security:
+        - OAuth 2.0:
+            - email.write
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/PutBroadcast'
+      responses:
+        '200':
+          description: The request completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '_definitions.yaml#/definitions/Broadcast'
+        '400':
+          $ref: '_responses.yaml#/responses/BroadcastBadRequest'
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/RateLimitOrEmailPermission'
+        '404':
+          $ref: '_responses.yaml#/responses/BroadcastNotFound'
+        '409':
+          $ref: '_responses.yaml#/responses/BroadcastSchedulingError'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '415':
+          $ref: '_responses.yaml#/responses/NotFormURLEncoded'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '_definitions.yaml#/definitions/UpdateBroadcast'
+        description: Request Body
+        required: true
+    delete:
+      summary: Delete broadcast
+      description: >-
+        This endpoint is used to delete a broadcast message draft. **(Please be aware that only drafts created the API are able to be deleted)**
+
+
+        Check out related examples:
+
+          * Create and Schedule Broadcast ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/create-schedule-broadcast" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/create-schedule-broadcast" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Create%20and%20Schedule%20Boadcast.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.CreateScheduleBroadcast" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/create_schedule_broadcast.rb" target="_blank">Ruby</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/node/create-schedule-broadcast.js" target="_blank">Node.js</a> )
+          * Get Broadcast Details ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-details" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/create-schedule-broadcast" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Broadcast%20Details.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastDetails" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_details.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-details.js" target="_blank">Node.js</a> )
+          * Get Broadcast Opens and Clicks ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-opens-clicks" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-opens-clicks" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastOpensClicks" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_opens_clicks.rb" target="_blank">Ruby</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-opens-clicks.js" target="_blank">Node.js</a> )
+          * Get Broadcast Statistics ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-stats" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-stats" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Broadcast%20Stats.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastStats" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_stats.rb" target="_blank">Ruby</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-stats.js" target="_blank">Node.js</a> )
+      tags:
+        - Broadcasts
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/listId'
+        - $ref: '_parameters.yaml#/parameters/broadcastId'
+      security:
+        - OAuth 2.0:
+            - email.write
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/DeleteBroadcast'
+      responses:
+        '204':
+          description: The request completed successfully
+        '400':
+          $ref: '_responses.yaml#/responses/BroadcastBadRequest'
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/RateLimitOrEmailPermission'
+        '404':
+          $ref: '_responses.yaml#/responses/BroadcastNotFound'
+        '409':
+          $ref: '_responses.yaml#/responses/BroadcastSchedulingError'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+  '/accounts/{accountId}/lists/{listId}/broadcasts/{broadcastId}/cancel':
+    post:
+      summary: Cancel scheduled broadcast
+      description: >-
+        This endpoint is used to cancel a currently scheduled broadcast.
+
+
+        Check out related examples:
+
+          * Create and Schedule Broadcast ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/create-schedule-broadcast" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/create-schedule-broadcast" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Create%20and%20Schedule%20Boadcast.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.CreateScheduleBroadcast" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/create_schedule_broadcast.rb" target="_blank">Ruby</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/node/create-schedule-broadcast.js" target="_blank">Node.js</a> )
+          * Get Broadcast Details ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-details" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/create-schedule-broadcast" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Broadcast%20Details.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastDetails" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_details.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-details.js" target="_blank">Node.js</a> )
+          * Get Broadcast Opens and Clicks ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-opens-clicks" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-opens-clicks" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastOpensClicks" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_opens_clicks.rb" target="_blank">Ruby</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-opens-clicks.js" target="_blank">Node.js</a> )
+          * Get Broadcast Statistics ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-stats" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-stats" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Broadcast%20Stats.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastStats" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_stats.rb" target="_blank">Ruby</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-stats.js" target="_blank">Node.js</a> )
+      tags:
+        - Broadcasts
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/listId'
+        - $ref: '_parameters.yaml#/parameters/broadcastId'
+      security:
+        - OAuth 2.0:
+            - email.write
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/CancelScheduledBroadcast'
+      responses:
+        '200':
+          description: The request completed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  self_link:
+                    description: The link to this resource.
+                    type: string
+                    format: uri
+                    example: >-
+                      https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts/3456789
+        '400':
+          $ref: '_responses.yaml#/responses/BroadcastBadRequest'
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/RateLimitOrEmailPermission'
+        '404':
+          $ref: '_responses.yaml#/responses/BroadcastNotFound'
+        '409':
+          $ref: '_responses.yaml#/responses/BroadcastSchedulingError'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+  '/accounts/{accountId}/lists/{listId}/broadcasts/total':
+    get:
+      summary: Get total broadcasts
+      description: >-
+        This endpoint is used to get the total number of broadcasts in a
+        particular state.
+
+
+        Check out related examples:
+
+          * Create and Schedule Broadcast ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/create-schedule-broadcast" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/create-schedule-broadcast" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Create%20and%20Schedule%20Boadcast.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.CreateScheduleBroadcast" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/create_schedule_broadcast.rb" target="_blank">Ruby</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/node/create-schedule-broadcast.js" target="_blank">Node.js</a> )
+          * Get Broadcast Details ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-details" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/create-schedule-broadcast" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Broadcast%20Details.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastDetails" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_details.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-details.js" target="_blank">Node.js</a> )
+          * Get Broadcast Opens and Clicks ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-opens-clicks" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-opens-clicks" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastOpensClicks" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_opens_clicks.rb" target="_blank">Ruby</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-opens-clicks.js" target="_blank">Node.js</a> )
+          * Get Broadcast Statistics ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-stats" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-stats" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Broadcast%20Stats.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastStats" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_stats.rb" target="_blank">Ruby</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-stats.js" target="_blank">Node.js</a> )
+      tags:
+        - Broadcasts
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/listId'
+        - name: status
+          in: query
+          required: true
+          description: The status of the broadcasts to retrieve. **(Please be aware that `draft` only returns API created Broadcast drafts)**
+          schema:
+            type: string
+            enum:
+              - draft
+              - scheduled
+              - sent
+      security:
+        - OAuth 2.0:
+            - email.read
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/GetTotalBroadcasts'
+      responses:
+        '200':
+          description: The request completed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_size:
+                    description: The total broadcasts with the status.
+                    type: integer
+                    example: 4
+        '400':
+          $ref: '_responses.yaml#/responses/BroadcastBadRequest'
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/ForbiddenError'
+        '404':
+          $ref: '_responses.yaml#/responses/BroadcastNotFound'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+  '/accounts/{accountId}/lists/{listId}/broadcasts/{broadcastId}/schedule':
+    post:
+      summary: Schedule broadcast
+      description: >-
+        This endpoint is used to schedule a broadcast.
+
+
+        Check out related examples:
+
+          * Create and Schedule Broadcast ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/create-schedule-broadcast" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/create-schedule-broadcast" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Create%20and%20Schedule%20Boadcast.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.CreateScheduleBroadcast" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/create_schedule_broadcast.rb" target="_blank">Ruby</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/node/create-schedule-broadcast.js" target="_blank">Node.js</a> )
+          * Get Broadcast Details ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-details" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/create-schedule-broadcast" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Broadcast%20Details.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastDetails" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_details.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-details.js" target="_blank">Node.js</a> )
+          * Get Broadcast Opens and Clicks ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-opens-clicks" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-opens-clicks" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastOpensClicks" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_opens_clicks.rb" target="_blank">Ruby</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-opens-clicks.js" target="_blank">Node.js</a> )
+          * Get Broadcast Statistics ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-broadcast-stats" target="_blank">Python</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-broadcast-stats" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Broadcast%20Stats.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/csharp/AWeber.Examples.GetBroadcastStats" target="_blank">C#.NET</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_broadcast_stats.rb" target="_blank">Ruby</a>  | 
+            <a href="https://github.com/aweber/public-api-examples/tree/master/node/get-broadcast-stats.js" target="_blank">Node.js</a> )
+      tags:
+        - Broadcasts
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/listId'
+        - $ref: '_parameters.yaml#/parameters/broadcastId'
+      security:
+        - OAuth 2.0:
+            - email.write
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/ScheduleBroadcast'
+      responses:
+        '200':
+          description: The broadcast successfully scheduled
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  self_link:
+                    description: The link to the broadcast resource.
+                    type: string
+                    format: uri
+                    example: >-
+                      https://api.aweber.com/1.0/accounts/123/lists/456/broadcasts/3456789
+        '400':
+          $ref: '_responses.yaml#/responses/BroadcastBadRequest'
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/RateLimitOrEmailPermission'
+        '404':
+          $ref: '_responses.yaml#/responses/BroadcastNotFound'
+        '409':
+          $ref: '_responses.yaml#/responses/BroadcastSchedulingError'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '415':
+          $ref: '_responses.yaml#/responses/NotFormURLEncoded'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '_definitions.yaml#/definitions/ScheduleBroadcast'
+        description: Request Body
+        required: true
+  '/accounts/{accountId}/lists/{listId}/broadcasts/{broadcastId}/opens':
+    get:
+      summary: Get broadcast opens
+      description: >-
+        This endpoint is used to retrieve a broadcast message's unique opens.
+        If a subscriber has opened several times, the first open record will
+        be returned for the subscriber.
+
+        The subscriber's email address will only be returned if the token has the `subscriber.read` scope.
+
+      tags:
+        - Broadcasts
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/listId'
+        - $ref: '_parameters.yaml#/parameters/broadcastId'
+        - $ref: '_parameters.yaml#/parameters/before'
+        - $ref: '_parameters.yaml#/parameters/after'
+        - $ref: '_parameters.yaml#/parameters/pageSize'
+      security:
+        - OAuth 2.0:
+            - email.read
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/GetBroadcastOpens'
+      responses:
+        '200':
+          description: The request completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '_definitions.yaml#/definitions/BroadcastOpens'
+        '400':
+          $ref: '_responses.yaml#/responses/BadRequest'
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/RateLimitOrEmailPermission'
+        '404':
+          $ref: '_responses.yaml#/responses/NotFound'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+  '/accounts/{accountId}/lists/{listId}/broadcasts/{broadcastId}/clicks':
+    get:
+      summary: Get broadcast clicks
+      description: >-
+        This endpoint is used to retrieve a broadcast message's unique clicks.
+        If a subscriber has clicked several times, the first click record will
+        be returned for the subscriber.
+
+        The subscriber's email address will only be returned if the token has the `subscriber.read` scope.
+
+      tags:
+        - Broadcasts
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/listId'
+        - $ref: '_parameters.yaml#/parameters/broadcastId'
+        - $ref: '_parameters.yaml#/parameters/before'
+        - $ref: '_parameters.yaml#/parameters/after'
+        - $ref: '_parameters.yaml#/parameters/pageSize'
+      security:
+        - OAuth 2.0:
+            - email.read
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/GetBroadcastClicks'
+      responses:
+        '200':
+          description: The request completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '_definitions.yaml#/definitions/BroadcastClicks'
+        '400':
+          $ref: '_responses.yaml#/responses/BadRequest'
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/RateLimitOrEmailPermission'
+        '404':
+          $ref: '_responses.yaml#/responses/NotFound'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'

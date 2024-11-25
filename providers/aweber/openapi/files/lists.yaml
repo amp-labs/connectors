@@ -1,0 +1,338 @@
+openapi: 3.0.2
+info:
+  title: Lists
+  description: REST API for access the AWeber service.
+  version: '1.0'
+  contact:
+    name: API Team
+    url: 'https://labs.aweber.com'
+    email: api@aweber.com
+tags:
+  - name: Lists
+paths:
+  '/accounts/{accountId}/lists':
+    get:
+      summary: Get lists
+      description: >-
+        This endpoint is used to get a paginated collection of subscriber lists.
+
+
+        Check out related examples:
+
+          * Get Tags ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-tags" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-tags" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Tags.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.GetTags/" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_tags.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/get-tags.js" target="_blank">Node.js</a> )
+      tags:
+        - Lists
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/wsStart'
+        - $ref: '_parameters.yaml#/parameters/wsSize'
+      security:
+        - OAuth 2.0:
+            - list.read
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/GetLists'
+      responses:
+        '200':
+          description: The request completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '_definitions.yaml#/definitions/Lists'
+        '400':
+          description: The server cannot or will not process the request due to a client error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    description: |
+                      An error object.
+                      One of the following errors may be received:
+
+                      | Error Type           | Explanation                              |
+                      |----------------------|------------------------------------------|
+                      | WebServiceError      | `ws.start` or `ws.size` values are invalid |
+                      | BadRequestError      | `ws.op` is invalid (parameter can only be `find`) or there was an error decoding query parameters | |
+                      | MissingOAuthParametersError | An OAuth parameter is missing in the request |
+                      | UnsupportedOAuthVersionError | Unsupported OAuth 1 version |
+                      | UnsupportedOAuthSignatureMethodError | Unsupported OAuth 1 signature method |
+
+                      Please see the message body for more details.
+                    type: object
+                    properties:
+                      documentation_url:
+                        description: A link to the documentation that describes the error
+                        type: string
+                        example: https://api.aweber.com#badrequest
+                      message:
+                        description: A human friendly description of the error
+                        type: string
+                        example: Maximum for "ws.size" parameter is 100.
+                      status:
+                        description: The HTTP status code
+                        type: integer
+                        example: 400
+                      type:
+                        description: The API error type
+                        type: string
+                        example: WebServiceError
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/ForbiddenError'
+        '404':
+          $ref: '_responses.yaml#/responses/NotFound'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+  '/accounts/{accountId}/lists/{listId}':
+    get:
+      summary: Get list
+      description: >-
+        This endpoint is used to retrieve the information for a specific
+        subscriber list.
+
+
+        Check out related examples:
+
+          * Get Tags ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-tags" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-tags" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Tags.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.GetTags/" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_tags.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/get-tags.js" target="_blank">Node.js</a> )
+      tags:
+        - Lists
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/listId'
+      security:
+        - OAuth 2.0:
+            - list.read
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/GetList'
+      responses:
+        '200':
+          description: The request completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '_definitions.yaml#/definitions/List'
+        '400':
+          $ref: '_responses.yaml#/responses/BadOAuth1'
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/ForbiddenError'
+        '404':
+          $ref: '_responses.yaml#/responses/NotFound'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+  '/accounts/{accountId}/lists?ws.op=find':
+    get:
+      summary: Find lists
+      description: >-
+        This endpoint is used to search for lists when you do not have
+        a link nor know the list ID.
+
+
+        Check out related examples:
+
+          * Get Tags ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-tags" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-tags" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Tags.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.GetTags/" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_tags.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/get-tags.js" target="_blank">Node.js</a> )
+      tags:
+        - Lists
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - name: ws.op
+          in: query
+          required: true
+          description: The method name - expecting "find"
+          schema:
+            type: string
+            enum:
+              - find
+        - name: name
+          in: query
+          required: false
+          description: Name or unique list ID of the list
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 100
+        - $ref: '_parameters.yaml#/parameters/wsStart'
+        - $ref: '_parameters.yaml#/parameters/wsSize'
+        - $ref: '_parameters.yaml#/parameters/wsShow'
+      security:
+        - OAuth 2.0:
+            - list.read
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/FindLists'
+      responses:
+        '200':
+          description: The request completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '_definitions.yaml#/definitions/FindLists'
+        '400':
+          description: The server cannot or will not process the request due to a client error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    description: |
+                      An error object.
+                      One of the following errors may be received:
+
+                      | Error Type           | Explanation                              |
+                      |----------------------|------------------------------------------|
+                      | WebServiceError      | `ws.start` or `ws.size` values are invalid |
+                      | BadRequestError      | `ws.op` is invalid (parameter can only be `find`) or there was an error decoding query parameters |
+                      | MissingOAuthParametersError | An OAuth parameter is missing in the request |
+                      | UnsupportedOAuthVersionError | Unsupported OAuth 1 version |
+                      | UnsupportedOAuthSignatureMethodError | Unsupported OAuth 1 signature method |
+
+                      Please see the message body for more details.
+                    type: object
+                    properties:
+                      documentation_url:
+                        description: A link to the documentation that describes the error
+                        type: string
+                        example: https://api.aweber.com#badrequest
+                      message:
+                        description: A human friendly description of the error
+                        type: string
+                        example: Maximum for "ws.size" parameter is 100.
+                      status:
+                        description: The HTTP status code
+                        type: integer
+                        example: 400
+                      type:
+                        description: The API error type
+                        type: string
+                        example: WebServiceError
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/ForbiddenError'
+        '404':
+          $ref: '_responses.yaml#/responses/NotFound'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'
+  '/accounts/{accountId}/lists/{listId}/tags':
+    get:
+      summary: Get tags for list
+      description: >-
+        Get the most popular tags for a list.  This will return an array
+        containing up to 500 tags sorted by descending popularity.
+
+
+        Check out related examples:
+
+          * Get Tags ( 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/python/get-tags" target="_blank">Python</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/php/get-tags" target="_blank">PHP</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/postman/Get%20Tags.postman_collection.json" target="_blank">Postman</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/csharp/AWeber.Examples.GetTags/" target="_blank">C#.NET</a> |
+            <a href="https://github.com/aweber/public-api-examples/blob/master/ruby/get_tags.rb" target="_blank">Ruby</a> | 
+            <a href="https://github.com/aweber/public-api-examples/blob/master/node/get-tags.js" target="_blank">Node.js</a> )
+      tags:
+        - Lists
+      parameters:
+        - $ref: '_parameters.yaml#/parameters/accountId'
+        - $ref: '_parameters.yaml#/parameters/listId'
+      security:
+        - OAuth 2.0:
+            - list.read
+      x-code-samples:
+        $ref: '_code_samples.yaml#/code_samples/GetTagsForList'
+      responses:
+        '200':
+          description: The request completed successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                example:
+                  - alpha
+                  - beta
+                  - gamma
+        '400':
+          description: The server cannot or will not process the request due to a client error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    description: |
+                      An error object.
+                      One of the following errors may be received:
+
+                      | Error Type           | Explanation                              |
+                      |----------------------|------------------------------------------|
+                      | BadRequestError      | There was an error decoding query parameters |
+                      | MissingOAuthParametersError | An OAuth parameter is missing in the request |
+                      | UnsupportedOAuthVersionError | Unsupported OAuth 1 version |
+                      | UnsupportedOAuthSignatureMethodError | Unsupported OAuth 1 signature method |
+
+                      Please see the message body for more details.
+                    type: object
+                    properties:
+                      documentation_url:
+                        description: A link to the documentation that describes the error
+                        type: string
+                        example: https://api.aweber.com#badrequest
+                      message:
+                        description: A human friendly description of the error
+                        type: string
+                        example: Maximum for "ws.size" parameter is 100.
+                      status:
+                        description: The HTTP status code
+                        type: integer
+                        example: 400
+                      type:
+                        description: The API error type
+                        type: string
+                        example: WebServiceError
+        '401':
+          $ref: '_responses.yaml#/responses/UnauthorizedError'
+        '403':
+          $ref: '_responses.yaml#/responses/ForbiddenError'
+        '404':
+          $ref: '_responses.yaml#/responses/NotFound'
+        '410':
+          $ref: '_responses.yaml#/responses/BlockedError'
+        '500':
+          $ref: '_responses.yaml#/responses/InternalServerError'
+        '503':
+          $ref: '_responses.yaml#/responses/ServiceUnavailable'

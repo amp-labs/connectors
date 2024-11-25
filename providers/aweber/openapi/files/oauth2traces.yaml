@@ -1,0 +1,133 @@
+tags:
+  OAuth2 Traces: |
+    This section contains low-level HTTP traces of the OAuth 2.0 authorization code
+    flow.  The client IDs, client secrets, authorization codes, and other details are
+    fictitious and should not be used anywhere else.
+    
+    <a name="confidential-protocol-flow"></a>
+    
+    ## Confidential protocol flow
+    The following HTTP trace shows the entire flow for a Confidential client using the
+    following parameters:
+    
+    | Parameter          | Value
+    | -------------      | ------
+    | Client ID          | `N1nwOnhAUyEjJcA0l4eI7dCfYKNVizSDE4Le0J4FRqc` 
+    | Client secret      | `rSu9NU70xOZFN2ojnWq3tLI49kb8vs84_KZQe1bcJy4` 
+    | Scopes             | `account.read list.read subscriber.read`
+    | Redirect URI       | `https://127.0.0.1/oauth2-callback`
+    | State              | `62cdb1ee8a5c40f6ba0d5de1dfa83113`
+    | Authorization code | `VhXKzYi5paFfs1aYqgikSw`
+    
+    **The web application initiates the authorization flow.**
+    ```
+    GET /oauth2/authorize?response_type=code&client_id=N1nwOnhAUyEjJcA0l4eI7dCfYKNVizSDE4Le0J4FRqc&redirect_uri=https%3A%2F%2F127.0.0.1%2Foauth2-callback&scope=account.read+list.read+subscriber.read&state=62cdb1ee8a5c40f6ba0d5de1dfa83113 HTTP/1.1
+    Host: auth.aweber.com
+    
+    HTTP/1.1 200 OK
+    Content-Type: text/html
+    
+    <html>.... authorization form ....</html>
+    ```
+    
+    **The user authenticates and authorizes the application.**
+    
+    The authorization form action initiates a POST to the AWeber authorization
+    server which redirects the user to the application-specified redirect URL.
+    ```
+    POST /oauth2/authorize HTTP/1.1
+    Host: auth.aweber.com
+    Content-Type: application/x-www-form-urlencoded
+    
+    parameters-omitted
+    
+    HTTP/1.1 302 Found
+    Location: https://127.0.0.1/oauth2-callback?state=62cdb1ee8a5c40f6ba0d5de1dfa83113&code=VhXKzYi5paFfs1aYqgikSw
+    ```
+    
+    **The external application exchanges the authorization code for an access token.**
+    ```
+    POST /oauth2/token HTTP/1.1
+    Host: auth.aweber.com
+    Content-Type: application/x-www-form-urlencoded
+    Accept: application/json
+    Authorization: Basic TjFud09uaEFVeUVqSmNBMGw0ZUk3ZENmWUtOVml6U0RFNExlMEo0RlJxYzpyU3U5TlU3MHhPWkZOMm9qbldxM3RMSTQ5a2I4dnM4NF9LWlFlMWJjSnk0
+    
+    grant_type=authorization_code&code=VhXKzYi5paFfs1aYqgikSw&redirect_uri=https%3A%2F%2F127.0.0.1%2Foauth2-callback
+    
+    HTTP/1.1 200 OK
+    Content-Type: application/json
+    Cache-Control: no-store
+    Pragma: no-cache
+    
+    {
+      "access_token": "uPloUGQL689I9qYk1nkwjb2yZirWnoja",
+      "refresh_token": "XF2OZN3dmSSphGimcoNbq839UGT0lGo2",
+      "expires_in": 7200,
+      "state": "62cdb1ee8a5c40f6ba0d5de1dfa83113"
+    }
+    ```
+    
+    <a name="public-protocol-flow"></a>
+    
+    ## Public protocol flow
+    
+    The following HTTP trace shows the entire flow for a Public client using the
+    following parameters:
+    
+    | Parameter          | Value
+    | -------------      | ------
+    | Client ID          | `N1nwOnhAUyEjJcA0l4eI7dCfYKNVizSDE4Le0J4FRqc` 
+    | Code verifier      | `HLBvz1g_bbLZ31kjvlXJ5Rl0W1GgxU8rjYJdQIIEH_Y`
+    | Scopes             | `account.read list.read subscriber.read`
+    | Redirect URI       | `https://127.0.0.1/oauth2-callback`
+    | State              | `62cdb1ee8a5c40f6ba0d5de1dfa83113`
+    | Authorization code | `VhXKzYi5paFfs1aYqgikSw`
+    
+    **The web application initiates the authorization flow.**
+    ```
+    GET /oauth2/authorize?response_type=code&client_id=N1nwOnhAUyEjJcA0l4eI7dCfYKNVizSDE4Le0J4FRqc&code_challenge=-oiamT7-EafhQ27P3V9cGEtu3crg731kec-GWhgrTV8&code_challenge_method=S256&redirect_uri=https%3A%2F%2F127.0.0.1%2Foauth2-callback&scope=account.read+list.read+subscriber.read&state=62cdb1ee8a5c40f6ba0d5de1dfa83113 HTTP/1.1
+    Host: auth.aweber.com
+    
+    HTTP/1.1 200 OK
+    Content-Type: text/html
+    
+    <html>.... authorization form ....</html>
+    ```
+    The authorization form action initiates a POST to the AWeber authorization
+    server which redirects the user to the application-specified redirect URL.
+    
+    **The user authenticates and authorizes the application.**
+    ```
+    POST /oauth2/authorize HTTP/1.1
+    Host: auth.aweber.com
+    Content-Type: application/x-www-form-urlencoded
+    
+    parameters-omitted
+    
+    HTTP/1.1 302 Found
+    Location: https://127.0.0.1/oauth2-callback?state=62cdb1ee8a5c40f6ba0d5de1dfa83113&code=VhXKzYi5paFfs1aYqgikSw
+    ```
+    
+    **The external application exchanges the authorization code for an access token.**
+    ```
+    POST /oauth2/token HTTP/1.1
+    Host: auth.aweber.com
+    Content-Type: application/x-www-form-urlencoded
+    Accept: application/json
+    
+    grant_type=authorization_code&code=VhXKzYi5paFfs1aYqgikSw&code_verifier=HLBvz1g_bbLZ31kjvlXJ5Rl0W1GgxU8rjYJdQIIEH_Y&client_id=N1nwOnhAUyEjJcA0l4eI7dCfYKNVizSDE4Le0J4FRqc
+    
+    HTTP/1.1 200 OK
+    Content-Type: application/json
+    Cache-Control: no-store
+    Pragma: no-cache
+    
+    {
+      "access_token": "uPloUGQL689I9qYk1nkwjb2yZirWnoja",
+      "refresh_token": "XF2OZN3dmSSphGimcoNbq839UGT0lGo2",
+      "expires_in": 7200,
+      "state": "62cdb1ee8a5c40f6ba0d5de1dfa83113"
+    }
+    ```
+    

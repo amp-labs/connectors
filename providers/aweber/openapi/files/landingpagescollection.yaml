@@ -1,0 +1,18 @@
+tags:
+  Landing Pages Collection: |
+    ### What is it?
+    
+    Represents the landing pages associated with a list.
+    
+    Use this resource to retrieve the landing pages that are defined for the list.  The single collection
+    response is sorted by the generated landing page `id` and paginated using `next_collection_link` and
+    `prev_collection_link` properties.  See
+    [How Collections are Represented](#collection-representation) for details on collection traversal.
+    
+    ### Related endpoints
+    
+    * [Landing Pages](#tag/Landing-Pages)
+    
+    ### Related code examples
+    
+    * [Get Landing Pages](#tag/Get-Landing-Pages)
