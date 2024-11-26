@@ -1,0 +1,22 @@
+{
+  "contact_id": "af73e650-96f0-11ef-b2a0-fa163eafb85e",
+  "email_address": {
+    "address": "dlang@example.com",
+    "permission_to_send": "implicit",
+    "created_at": "2024-10-30T18:56:35Z",
+    "updated_at": "2024-10-30T18:56:35Z",
+    "opt_in_source": "Account",
+    "opt_in_date": "2024-10-30T18:56:35Z",
+    "confirm_status": "off"
+  },
+  "first_name": "Debora",
+  "last_name": "Lang",
+  "job_title": "Musician",
+  "company_name": "Acme Corp.",
+  "birthday_month": 11,
+  "birthday_day": 24,
+  "anniversary": "2006-11-15",
+  "create_source": "Account",
+  "created_at": "2024-10-30T18:56:35Z",
+  "updated_at": "2024-10-30T18:56:35Z"
+}

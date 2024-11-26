@@ -1,0 +1,19 @@
+{
+  "campaign_activities": [
+    {
+      "campaign_activity_id": "09d33311-6b6c-426e-a636-21d08a9bfb3f",
+      "role": "primary_email"
+    },
+    {
+      "campaign_activity_id": "43f2ab5c-5355-4981-9149-5a9dae76ceef",
+      "role": "permalink"
+    }
+  ],
+  "campaign_id": "987cb9ab-ad0c-4087-bd46-2e2ad241221f",
+  "created_at": "2024-11-01T19:19:34.456Z",
+  "current_status": "Draft",
+  "name": "December Newsletter for Dog Lovers",
+  "type": "CUSTOM_CODE_EMAIL",
+  "type_code": 26,
+  "updated_at": "2024-11-01T19:19:34.456Z"
+}
