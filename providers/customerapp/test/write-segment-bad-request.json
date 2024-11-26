@@ -1,0 +1,11 @@
+{
+  "errors": [
+    {
+      "detail": "Name can't be blank",
+      "source": {
+        "pointer": "/data/attributes/name"
+      },
+      "status": "422"
+    }
+  ]
+}
