@@ -7,7 +7,6 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/staticschema"
-	"github.com/amp-labs/connectors/providers/customerapp"
 	"github.com/amp-labs/connectors/providers/customerapp/metadata"
 	"github.com/amp-labs/connectors/providers/customerapp/openapi"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
@@ -22,6 +21,15 @@ var (
 	displayNameOverride = map[string]string{ // nolint:gochecknoglobals
 
 	}
+	objectNameToReadResponseField = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
+		"object_types":        "types",
+		"transactional":       "messages",
+		"subscription_topics": "topics",
+	},
+		func(objectName string) (fieldName string) {
+			return objectName
+		},
+	)
 )
 
 func main() {
@@ -35,7 +43,7 @@ func main() {
 	objects, err := explorer.ReadObjectsGet(
 		api3.NewDenyPathStrategy(ignoreEndpoints),
 		nil, displayNameOverride,
-		api3.CustomMappingObjectCheck(customerapp.ObjectNameToResponseField),
+		api3.CustomMappingObjectCheck(objectNameToReadResponseField),
 	)
 	goutils.MustBeNil(err)
 
