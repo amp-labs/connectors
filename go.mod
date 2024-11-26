@@ -14,7 +14,7 @@ require (
 	github.com/invopop/yaml v0.3.1
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/viper v1.19.0
-	github.com/spyzhov/ajson v0.9.5
+	github.com/spyzhov/ajson v0.9.6
 	github.com/stretchr/testify v1.10.0
 	golang.org/x/oauth2 v0.24.0
 	golang.org/x/text v0.20.0
