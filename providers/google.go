@@ -13,7 +13,7 @@ func init() {
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://accounts.google.com/o/oauth2/v2/auth",
-			AuthURLParams:             map[string]string{"access_type": "offline"},
+			AuthURLParams:             map[string]string{"access_type": "offline", "prompt": "consent"},
 			TokenURL:                  "https://oauth2.googleapis.com/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
