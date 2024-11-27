@@ -1,0 +1,23 @@
+{
+  "tag_ids": [],
+  "id": 30,
+  "company": null,
+  "email_opted_in": false,
+  "email_status": "NonMarketable",
+  "date_created": "2024-11-12T21:45:54.000+0000",
+  "last_updated": "2024-11-12T21:46:01.341+0000",
+  "ScoreValue": "0",
+  "last_updated_utc_millis": 1731447961341,
+  "email_addresses": [
+    {
+      "email": "john.doe@gmail.com",
+      "field": "EMAIL1"
+    }
+  ],
+  "addresses": [],
+  "phone_numbers": [],
+  "given_name": "",
+  "family_name": "",
+  "middle_name": null,
+  "owner_id": null
+}

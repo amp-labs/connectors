@@ -30,7 +30,7 @@ func main() {
 		Fields:     connectors.Fields("id", "subject", "sent_from_address"),
 	})
 	if err != nil {
-		utils.Fail("error reading from microsoft CRM", "error", err)
+		utils.Fail("error reading from Keap", "error", err)
 	}
 
 	fmt.Println("Reading emails..")
