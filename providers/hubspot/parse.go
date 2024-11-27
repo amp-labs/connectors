@@ -118,15 +118,22 @@ func getRecords(node *ajson.Node) ([]map[string]interface{}, error) {
 func getMarshalledData(records []map[string]interface{}, fields []string) ([]common.ReadResultRow, error) {
 	data := make([]common.ReadResultRow, len(records))
 
+	//nolint:varnamelen
 	for i, record := range records {
 		recordProperties, ok := record["properties"].(map[string]interface{})
 		if !ok {
 			return nil, ErrNotObject
 		}
 
+		id, ok := record["id"].(string)
+		if !ok {
+			return nil, errMissingId
+		}
+
 		data[i] = common.ReadResultRow{
 			Fields: common.ExtractLowercaseFieldsFromRaw(fields, recordProperties),
 			Raw:    record,
+			Id:     id,
 		}
 	}
 
