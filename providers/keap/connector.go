@@ -52,13 +52,26 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	return conn, nil
 }
 
-func (c *Connector) getURL(objectName string) (*urlbuilder.URL, error) {
+func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
 	path, err := metadata.Schemas.LookupURLPath(c.Module.ID, objectName)
 	if err != nil {
 		return nil, err
 	}
 
-	return urlbuilder.New(c.BaseURL, ApiPathPrefix, path)
+	return c.getURL(path)
+}
+
+func (c *Connector) getWriteURL(objectName string) (*urlbuilder.URL, error) {
+	modulePath := metadata.Schemas.LookupModuleURLPath(c.Module.ID)
+	path := objectNameToWritePath.Get(objectName)
+
+	return c.getURL(modulePath, path)
+}
+
+func (c *Connector) getURL(args ...string) (*urlbuilder.URL, error) {
+	return urlbuilder.New(c.BaseURL, append([]string{
+		ApiPathPrefix,
+	}, args...)...)
 }
 
 func (c *Connector) setBaseURL(newURL string) {
