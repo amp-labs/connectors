@@ -4,7 +4,7 @@ const Smartlead Provider = "smartlead"
 
 func init() {
 	SetInfo(Smartlead, ProviderInfo{
-		DisplayName: "Smartlead AI",
+		DisplayName: "Smartlead",
 		AuthType:    ApiKey,
 		BaseURL:     "https://server.smartlead.ai/api",
 		ApiKeyOpts: &ApiKeyOpts{
