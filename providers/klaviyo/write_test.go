@@ -1,6 +1,7 @@
 package klaviyo
 
 import (
+	"encoding/json"
 	"errors"
 	"net/http"
 	"testing"
@@ -39,7 +40,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			Input: common.WriteParams{
 				ObjectName: "tags",
 				RecordId:   "9891d452-56fe-4397-b431-a92e79cdc980",
-				RecordData: "dummy",
+				RecordData: make(map[string]any),
 			},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentMIME("application/vnd.api+json"),
@@ -57,7 +58,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			Input: common.WriteParams{
 				ObjectName: "tags",
 				RecordId:   "9891d452-56fe-4397-b431-a92e79cdc980",
-				RecordData: "dummy",
+				RecordData: make(map[string]any),
 			},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentMIME("application/vnd.api+json"),
@@ -75,7 +76,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			Input: common.WriteParams{
 				ObjectName: "tags",
 				RecordId:   "9891d452-56fe-4397-b431-a92e79cdc980",
-				RecordData: "dummy",
+				RecordData: make(map[string]any),
 			},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentMIME("application/vnd.api+json"),
@@ -88,7 +89,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "Write must act as a Create",
-			Input: common.WriteParams{ObjectName: "campaigns", RecordData: "dummy"},
+			Input: common.WriteParams{ObjectName: "campaigns", RecordData: make(map[string]any)},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentMIME("application/vnd.api+json"),
 				If:    mockcond.MethodPOST(),
@@ -102,7 +103,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			Input: common.WriteParams{
 				ObjectName: "campaigns",
 				RecordId:   "01JCPFHB29QZ1NDPR3GCGQS5G2",
-				RecordData: "dummy",
+				RecordData: make(map[string]any),
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentMIME("application/vnd.api+json"),
@@ -114,7 +115,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "Valid creation of a tag",
-			Input: common.WriteParams{ObjectName: "tags", RecordData: "dummy"},
+			Input: common.WriteParams{ObjectName: "tags", RecordData: make(map[string]any)},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentMIME("application/vnd.api+json"),
 				If:    mockcond.MethodPOST(),
@@ -146,6 +147,148 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			tt.Run(t, func() (connectors.WriteConnector, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
+		})
+	}
+}
+
+func TestPrepareWritePayload(t *testing.T) { //nolint:funlen
+	t.Parallel()
+
+	type inType struct {
+		objectName     string
+		pathIdentifier string
+		payload        string
+	}
+
+	tests := []struct {
+		name     string
+		input    inType
+		expected string
+	}{
+		{
+			name: "Update segment",
+			// https://developers.klaviyo.com/en/reference/create_segment
+			input: inType{
+				objectName:     "segments",
+				pathIdentifier: "f6825fcf-c51b-4724-937b-0814ed02af83",
+				payload: `
+				{
+				  "is_starred": false
+				}`,
+			},
+			expected: `
+			{
+			  "data": {
+				"id": "f6825fcf-c51b-4724-937b-0814ed02af83",
+				"type": "segment",
+				"attributes": {
+				  "is_starred": false
+				}
+			  }
+			}`,
+		},
+		{
+			name: "Create campaign",
+			// https://developers.klaviyo.com/en/reference/create_campaign
+			input: inType{
+				objectName:     "campaigns",
+				pathIdentifier: "",
+				payload: `
+				{
+				  "tracking_options": {
+					"custom_tracking_params": [
+					  {
+						"type": "dynamic",
+						"value": "campaign_id"
+					  }
+					]
+				  },
+				  "campaign-messages": {
+					"data": [
+					  {
+						"type": "campaign-message",
+						"attributes": {
+						  "render_options": {
+							"shorten_links": true,
+							"add_org_prefix": true,
+							"add_info_link": true,
+							"add_opt_out_language": false
+						  }
+						}
+					  }
+					]
+				  }
+				}`,
+			},
+			expected: `
+			{
+			  "data": {
+				"type": "campaign",
+				"attributes": {
+				  "tracking_options": {
+					"custom_tracking_params": [
+					  {
+						"type": "dynamic",
+						"value": "campaign_id"
+					  }
+					]
+				  },
+				  "campaign-messages": {
+					"data": [
+					  {
+						"type": "campaign-message",
+						"attributes": {
+						  "render_options": {
+							"shorten_links": true,
+							"add_org_prefix": true,
+							"add_info_link": true,
+							"add_opt_out_language": false
+						  }
+						}
+					  }
+					]
+				  }
+				}
+			  }
+			}`,
+		},
+	}
+
+	for _, tt := range tests { // nolint:varnamelen
+		// nolint:varnamelen
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			inputPayload := make(map[string]any)
+			if err := json.Unmarshal([]byte(tt.input.payload), &inputPayload); err != nil {
+				t.Fatalf("errors are not expected %v", err)
+			}
+
+			outputObject, err := prepareWritePayload(common.WriteParams{
+				ObjectName: tt.input.objectName,
+				RecordId:   tt.input.pathIdentifier,
+				RecordData: inputPayload,
+			})
+			if err != nil {
+				t.Fatalf("errors are not expected %v", err)
+			}
+
+			outputData, err := json.Marshal(outputObject)
+			if err != nil {
+				t.Fatalf("errors are not expected %v", err)
+			}
+
+			actualJSON := make(map[string]any)
+			if err = json.Unmarshal(outputData, &actualJSON); err != nil {
+				t.Fatalf("errors are not expected %v", err)
+			}
+
+			expectedJSON := make(map[string]any)
+			if err = json.Unmarshal([]byte(tt.expected), &expectedJSON); err != nil {
+				t.Fatalf("errors are not expected %v", err)
+			}
+
+			testutils.CheckOutput(t, tt.name, expectedJSON, actualJSON)
 		})
 	}
 }

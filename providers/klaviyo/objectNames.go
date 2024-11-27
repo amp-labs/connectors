@@ -2,6 +2,7 @@ package klaviyo
 
 import (
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/providers/klaviyo/metadata"
 )
@@ -43,6 +44,10 @@ func init() {
 	}
 }
 
+// Reporting APIs is not added to the write method, this should be done via proxy.
+// https://developers.klaviyo.com/en/reference/reporting_api_overview
+// "tracking-settings" is ignored as a standalone object.
+// https://developers.klaviyo.com/en/reference/update_tracking_setting
 const (
 	objectNameCampaigns                     = "campaigns"
 	objectNameCampaignSendJobs              = "campaign-send-jobs"
@@ -105,91 +110,179 @@ const (
 
 var supportedObjectsByCreate = map[common.ModuleID]datautils.StringSet{ //nolint:gochecknoglobals
 	Module2024Oct15: datautils.NewSet(
+		// https://developers.klaviyo.com/en/reference/create_campaign
 		objectNameCampaigns,
+		// https://developers.klaviyo.com/en/reference/send_campaign
 		objectNameCampaignSendJobs,
+		// https://developers.klaviyo.com/en/reference/assign_template_to_campaign_message
 		objectNameCampaignMessageAssignTemplate,
+		// https://developers.klaviyo.com/en/reference/create_catalog_variant
 		objectNameCatalogVariants,
+		// https://developers.klaviyo.com/en/reference/bulk_create_catalog_variants
 		objectNameCatalogVariantBulkCreateJobs,
+		// https://developers.klaviyo.com/en/reference/bulk_update_catalog_variants
 		objectNameCatalogVariantBulkUpdateJobs,
+		// https://developers.klaviyo.com/en/reference/bulk_delete_catalog_variants
 		objectNameCatalogVariantBulkDeleteJobs,
+		// https://developers.klaviyo.com/en/reference/create_catalog_item
 		objectNameCatalogItems,
+		// https://developers.klaviyo.com/en/reference/bulk_create_catalog_items
 		objectNameCatalogItemBulkCreateJobs,
+		// https://developers.klaviyo.com/en/reference/bulk_update_catalog_items
 		objectNameCatalogItemBulkUpdateJobs,
+		// https://developers.klaviyo.com/en/reference/bulk_delete_catalog_items
 		objectNameCatalogItemBulkDeleteJobs,
+		// https://developers.klaviyo.com/en/reference/create_back_in_stock_subscription
 		objectNameBackInStockSubscriptions,
+		// https://developers.klaviyo.com/en/reference/create_catalog_category
 		objectNameCatalogCategories,
+		// https://developers.klaviyo.com/en/reference/bulk_create_catalog_categories
 		objectNameCatalogCategoryBulkCreateJobs,
+		// https://developers.klaviyo.com/en/reference/bulk_update_catalog_categories
 		objectNameCatalogCategoryBulkUpdateJobs,
+		// https://developers.klaviyo.com/en/reference/bulk_delete_catalog_categories
 		objectNameCatalogCategoryBulkDeleteJobs,
+		// https://developers.klaviyo.com/en/reference/create_coupon
 		objectNameCoupons,
+		// https://developers.klaviyo.com/en/reference/delete_coupon
 		objectNameCouponCodes,
+		// https://developers.klaviyo.com/en/reference/bulk_create_coupon_codes
 		objectNameCouponCodesBulkCreateJobs,
+		// https://developers.klaviyo.com/en/reference/request_profile_deletion
 		objectNameDataPrivacyDeletionJobs,
+		// https://developers.klaviyo.com/en/reference/create_event
 		objectNameEvents,
+		// https://developers.klaviyo.com/en/reference/bulk_create_events
 		objectNameEventBulkCreateJobs,
+		// https://developers.klaviyo.com/en/reference/upload_image_from_url
 		objectNameImages,
+		// https://developers.klaviyo.com/en/reference/upload_image_from_file
 		objectNameImageUpload,
+		// https://developers.klaviyo.com/en/reference/create_list
 		objectNameLists,
+		// https://developers.klaviyo.com/en/reference/query_metric_aggregates
 		objectNameMetricAggregates,
+		// https://developers.klaviyo.com/en/reference/bulk_suppress_profiles
 		objectNameSuppressionBulkCreateJobs,
+		// https://developers.klaviyo.com/en/reference/bulk_unsuppress_profiles
 		objectNameSuppressionBulkDeleteJobs,
+		// https://developers.klaviyo.com/en/reference/bulk_subscribe_profiles
 		objectNameSubscriptionBulkCreateJobs,
+		// https://developers.klaviyo.com/en/reference/bulk_unsubscribe_profiles
 		objectNameSubscriptionBulkDeleteJobs,
+		// https://developers.klaviyo.com/en/reference/create_profile
 		objectNameProfiles,
+		// https://developers.klaviyo.com/en/reference/create_push_token
 		objectNamePushTokens,
+		// https://developers.klaviyo.com/en/reference/spawn_bulk_profile_import_job
 		objectNameProfileBulkImportJobs,
+		// https://developers.klaviyo.com/en/reference/create_segment
 		objectNameSegments,
+		// https://developers.klaviyo.com/en/reference/create_tag
 		objectNameTags,
+		// https://developers.klaviyo.com/en/reference/create_tag_group
 		objectNameTagGroups,
+		// https://developers.klaviyo.com/en/reference/create_universal_content
 		objectNameTemplateUniversalContent,
+		// https://developers.klaviyo.com/en/reference/create_template
 		objectNameTemplate,
+		// https://developers.klaviyo.com/en/reference/create_webhook
 		objectNameWebhooks,
+		//
+		// Client APIs have multiple POST actions.
+		//
+		// https://developers.klaviyo.com/en/reference/create_client_subscription
+		objectNameClientSubscriptions,
+		// https://developers.klaviyo.com/en/reference/create_client_push_token
+		objectNameClientPushTokens,
+		// https://developers.klaviyo.com/en/reference/unregister_client_push_token
+		objectNameClientPushTokensUnregister,
+		// https://developers.klaviyo.com/en/reference/create_client_event
+		objectNameClientEvents,
+		// https://developers.klaviyo.com/en/reference/create_client_profile
+		objectNameClientProfiles,
+		// https://developers.klaviyo.com/en/reference/bulk_create_client_events
+		objectNameClientEventBulkCreate,
+		// https://developers.klaviyo.com/en/reference/create_client_back_in_stock_subscription
+		objectNameClientBackInStockSubscriptions,
 	),
 }
 
 var supportedObjectsByUpdate = map[common.ModuleID]datautils.StringSet{ //nolint:gochecknoglobals
 	Module2024Oct15: datautils.NewSet(
+		// https://developers.klaviyo.com/en/reference/update_campaign
 		objectNameCampaigns,
+		// https://developers.klaviyo.com/en/reference/cancel_campaign_send
 		objectNameCampaignSendJobs,
+		// https://developers.klaviyo.com/en/reference/update_campaign_message
 		objectNameCampaignMessages,
+		// https://developers.klaviyo.com/en/reference/update_catalog_variant
 		objectNameCatalogVariants,
+		// https://developers.klaviyo.com/en/reference/update_catalog_item
 		objectNameCatalogItems,
+		// https://developers.klaviyo.com/en/reference/update_catalog_category
 		objectNameCatalogCategories,
+		// https://developers.klaviyo.com/en/reference/update_coupon
 		objectNameCoupons,
+		// https://developers.klaviyo.com/en/reference/update_coupon_code
 		objectNameCouponCodes,
+		// https://developers.klaviyo.com/en/reference/update_flow
 		objectNameFlows,
+		// https://developers.klaviyo.com/en/reference/update_image
 		objectNameImages,
+		// https://developers.klaviyo.com/en/reference/update_list
 		objectNameLists,
+		// https://developers.klaviyo.com/en/reference/update_profile
 		objectNameProfiles,
+		// https://developers.klaviyo.com/en/reference/update_segment
 		objectNameSegments,
+		// https://developers.klaviyo.com/en/reference/update_tag
 		objectNameTags,
+		// https://developers.klaviyo.com/en/reference/update_tag_group
 		objectNameTagGroups,
+		// https://developers.klaviyo.com/en/reference/update_universal_content
 		objectNameTemplateUniversalContent,
+		// https://developers.klaviyo.com/en/reference/update_template
 		objectNameTemplate,
+		// https://developers.klaviyo.com/en/reference/update_webhook
 		objectNameWebhooks,
 	),
 }
 
 var supportedObjectsByDelete = map[common.ModuleID]datautils.StringSet{ //nolint:gochecknoglobals
 	Module2024Oct15: datautils.NewSet(
+		// https://developers.klaviyo.com/en/reference/delete_campaign
 		objectNameCampaigns,
+		// https://developers.klaviyo.com/en/reference/delete_catalog_variant
 		objectNameCatalogVariants,
+		// https://developers.klaviyo.com/en/reference/delete_catalog_item
 		objectNameCatalogItems,
+		// https://developers.klaviyo.com/en/reference/delete_catalog_category
 		objectNameCatalogCategories,
+		// https://developers.klaviyo.com/en/reference/delete_coupon
 		objectNameCoupons,
+		// https://developers.klaviyo.com/en/reference/delete_coupon_code
 		objectNameCouponCodes,
+		// https://developers.klaviyo.com/en/reference/delete_flow
 		objectNameFlows,
+		// https://developers.klaviyo.com/en/reference/delete_list
 		objectNameLists,
+		// https://developers.klaviyo.com/en/reference/delete_segment
 		objectNameSegments,
+		// https://developers.klaviyo.com/en/reference/delete_tag
 		objectNameTags,
+		// https://developers.klaviyo.com/en/reference/delete_tag_group
 		objectNameTagGroups,
+		// https://developers.klaviyo.com/en/reference/delete_universal_content
 		objectNameTemplateUniversalContent,
+		// https://developers.klaviyo.com/en/reference/delete_template
 		objectNameTemplate,
+		// https://developers.klaviyo.com/en/reference/delete_webhook
 		objectNameWebhooks,
 	),
 }
 
-var ObjectNameToWritePath = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
+var objectNameToWritePath = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
 	objectNameClientSubscriptions:            "client/subscriptions",
 	objectNameClientPushTokens:               "client/push-tokens",
 	objectNameClientPushTokensUnregister:     "client/push-token-unregister",
@@ -200,5 +293,23 @@ var ObjectNameToWritePath = datautils.NewDefaultMap(map[string]string{ //nolint:
 },
 	func(objectName string) (jsonPath string) {
 		return "api/" + objectName
+	},
+)
+
+// Write payload requires "type" property.
+// This information can be inferred from ObjectName and client should not worry about it.
+var objectNameToTypeWritePayload = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
+	objectNameCampaignMessageAssignTemplate:  "campaign-message",
+	objectNameTemplateUniversalContent:       "template-universal-content",
+	objectNameClientSubscriptions:            "subscription",
+	objectNameClientPushTokens:               "push-token",
+	objectNameClientPushTokensUnregister:     "push-token-unregister",
+	objectNameClientEvents:                   "event",
+	objectNameClientProfiles:                 "profile",
+	objectNameClientEventBulkCreate:          "event-bulk-create",
+	objectNameClientBackInStockSubscriptions: "back-in-stock-subscription",
+},
+	func(objectName string) (objectType string) {
+		return naming.NewSingularString(objectName).String()
 	},
 )

@@ -7,6 +7,16 @@ import (
 	"testing"
 )
 
+func CheckOutput(t *testing.T, name string,
+	expected any, actual any,
+) {
+	t.Helper()
+
+	if !reflect.DeepEqual(actual, expected) {
+		t.Fatalf("%s: expected: (%v), got: (%v)", name, expected, actual)
+	}
+}
+
 func CheckOutputWithError(t *testing.T, name string,
 	expected any, expectedErr error,
 	actual any, actualErr error,
@@ -18,9 +28,7 @@ func CheckOutputWithError(t *testing.T, name string,
 		t.Fatalf("%s: expected: (%v), got: (%v)", name, expectedErr, actualErr)
 	}
 
-	if !reflect.DeepEqual(actual, expected) {
-		t.Fatalf("%s: expected: (%v), got: (%v)", name, expected, actual)
-	}
+	CheckOutput(t, name, expected, actual)
 }
 
 func CheckErrors(t *testing.T, name string, expectedErrs []error, actualErr error) {

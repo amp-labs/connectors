@@ -73,6 +73,10 @@ var (
 	// ErrMissingExpectedValues is returned when response data doesn't have values expected for processing.
 	ErrMissingExpectedValues = errors.New("response data is missing expected values")
 
+	// ErrPreprocessingWritePayload is returned when request payload supplied to connector "Write" method
+	// couldn't be processed. Likely, the issue is within provided WriteParams.RecordData or implementation.
+	ErrPreprocessingWritePayload = errors.New("failed preprocessing write payload")
+
 	// ErrEmptyJSONHTTPResponse is returned when the JSONHTTPResponse is nil.
 	ErrEmptyJSONHTTPResponse = errors.New("empty json http response")
 
