@@ -3,6 +3,7 @@ package hubspot
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -127,4 +128,44 @@ func makeFieldsMap(data *describeObjectResponse) map[string]string {
 	}
 
 	return fieldsMap
+}
+
+var (
+	errMissingAccessToken   = errors.New("missing access token")
+	errFailedToGetTokenInfo = errors.New("failed to get token info")
+	errFailedToGetHubId     = errors.New("failed to get hub id")
+)
+
+func (c *Connector) GetPostAuthInfo(
+	ctx context.Context,
+	params *common.PostAuthInfoParams,
+) (*common.PostAuthInfo, error) {
+	if params.AccessToken == "" {
+		return nil, errMissingAccessToken
+	}
+
+	resp, err := c.Client.Get(ctx, "/oauth/v1/access-tokens/"+params.AccessToken)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching HubSpot token info: %w", err)
+	}
+
+	body, ok := resp.Body()
+	if !ok {
+		return nil, errors.Join(errFailedToGetTokenInfo, common.ErrEmptyJSONHTTPResponse)
+	}
+
+	hubspotId, err := body.GetKey("hub_id")
+	if err != nil {
+		return nil, errors.Join(errFailedToGetHubId, err)
+	}
+
+	hubId, err := hubspotId.GetString()
+	if err != nil {
+		return nil, fmt.Errorf("error parsing 'hub_id': %w", err)
+	}
+
+	return &common.PostAuthInfo{
+		ProviderWorkspaceRef: hubId,
+		RawResponse:          resp,
+	}, nil
 }
