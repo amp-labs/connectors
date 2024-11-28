@@ -12,20 +12,6 @@ import (
 	"github.com/amp-labs/connectors/test/utils"
 )
 
-const samplePropertyChange = `{
-  "appId": 4210286,
-  "eventId": 100,
-  "subscriptionId": 2902227,
-  "portalId": 44237313,
-  "occurredAt": 1730750483646,
-  "subscriptionType": "contact.propertyChange",
-  "attemptNumber": 0,
-  "objectId": 74999542704,
-  "changeSource": "CRM",
-  "propertyName": "message",
-  "propertyValue": "sample-value"
-}`
-
 func main() {
 	// Handle Ctrl-C gracefully.
 	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
