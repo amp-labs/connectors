@@ -83,7 +83,7 @@ type AuthMetadataConnector interface {
 	Connector
 
 	// GetPostAuthInfo returns authentication metadata.
-	GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, error)
+	GetPostAuthInfo(ctx context.Context, params *common.PostAuthInfoParams) (*common.PostAuthInfo, error)
 }
 
 // We re-export the following types so that they can be used by consumers of this library.
