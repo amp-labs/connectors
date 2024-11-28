@@ -21,7 +21,7 @@ func main() {
 
 	conn := connTest.GetAtlassianConnector(ctx)
 
-	info, err := conn.GetPostAuthInfo(ctx)
+	info, err := conn.GetPostAuthInfo(ctx, nil)
 	if err != nil || info.CatalogVars == nil {
 		utils.Fail("error obtaining auth info", "error", err)
 	}

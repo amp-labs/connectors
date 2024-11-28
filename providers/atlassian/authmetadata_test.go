@@ -90,7 +90,7 @@ func TestGetPostAuthInfo(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintid
 			}
 
 			// start of tests
-			output, err := connector.GetPostAuthInfo(ctx)
+			output, err := connector.GetPostAuthInfo(ctx, nil)
 			if err != nil {
 				if len(tt.expectedErrs) == 0 {
 					t.Fatalf("%s: expected no errors, got: (%v)", tt.name, err)
