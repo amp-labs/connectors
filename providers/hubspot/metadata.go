@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
@@ -159,13 +160,13 @@ func (c *Connector) GetPostAuthInfo(
 		return nil, errors.Join(errFailedToGetHubId, err)
 	}
 
-	hubId, err := hubspotId.GetString()
+	hubId, err := hubspotId.GetNumeric()
 	if err != nil {
 		return nil, fmt.Errorf("error parsing 'hub_id': %w", err)
 	}
 
 	return &common.PostAuthInfo{
-		ProviderWorkspaceRef: hubId,
+		ProviderWorkspaceRef: strconv.Itoa(int(hubId)),
 		RawResponse:          resp,
 	}, nil
 }

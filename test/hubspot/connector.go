@@ -13,8 +13,7 @@ import (
 
 // GetHubspotConnector returns a Hubspot connector.
 func GetHubspotConnector(ctx context.Context) *hubspot.Connector {
-	filePath := credscanning.LoadPath(providers.Hubspot)
-	reader := utils.MustCreateProvCredJSON(filePath, true, false)
+	reader := CredsReader()
 
 	conn, err := hubspot.NewConnector(
 		hubspot.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
@@ -24,6 +23,11 @@ func GetHubspotConnector(ctx context.Context) *hubspot.Connector {
 	}
 
 	return conn
+}
+
+func CredsReader() *credscanning.ProviderCredentials {
+	filePath := credscanning.LoadPath(providers.Hubspot)
+	return utils.MustCreateProvCredJSON(filePath, true, false)
 }
 
 func getConfig(reader *credscanning.ProviderCredentials) *oauth2.Config {
