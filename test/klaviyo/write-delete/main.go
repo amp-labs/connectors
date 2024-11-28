@@ -19,16 +19,6 @@ import (
 var objectName = "tags"
 
 type TagPayload struct {
-	Tag Tag `json:"data"`
-}
-
-type Tag struct {
-	ID         string        `json:"id,omitempty"`
-	Type       string        `json:"type"`
-	Attributes TagAttributes `json:"attributes"`
-}
-
-type TagAttributes struct {
 	Name string `json:"name"`
 }
 
@@ -41,19 +31,13 @@ func main() {
 	utils.SetupLogging()
 
 	conn := connTest.GetKlaviyoConnector(ctx)
-	defer utils.Close(conn)
 
 	slog.Info("> TEST Create/Update/Delete tag")
 	slog.Info("Creating tag")
 
 	name := gofakeit.AppName()
 	createTag(ctx, conn, &TagPayload{
-		Tag: Tag{
-			Type: "tag",
-			Attributes: TagAttributes{
-				Name: name,
-			},
-		},
+		Name: name,
 	})
 
 	slog.Info("Reading tags")
@@ -69,13 +53,7 @@ func main() {
 
 	newName := gofakeit.AppName()
 	updateTag(ctx, conn, tagID, &TagPayload{
-		Tag: Tag{
-			ID:   tagID,
-			Type: "tag",
-			Attributes: TagAttributes{
-				Name: newName,
-			},
-		},
+		Name: newName,
 	})
 
 	slog.Info("View that tag has changed accordingly")

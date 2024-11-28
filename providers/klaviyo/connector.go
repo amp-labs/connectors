@@ -61,7 +61,7 @@ func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
 }
 
 func (c *Connector) getWriteURL(objectName string) (*urlbuilder.URL, error) {
-	path := ObjectNameToWritePath.Get(objectName)
+	path := objectNameToWritePath.Get(objectName)
 
 	return urlbuilder.New(c.BaseURL, path)
 }
