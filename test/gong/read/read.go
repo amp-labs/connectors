@@ -24,7 +24,7 @@ func main() {
 	conn := connTest.GetGongConnector(ctx)
 
 	res, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: "calls", // could be calls, users
+		ObjectName: "calls",
 		Fields:     connectors.Fields("url"),
 	})
 	if err != nil {
