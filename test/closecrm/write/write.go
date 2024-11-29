@@ -8,9 +8,9 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/test/closecrm"
+	"github.com/amp-labs/connectors/providers/closecrm"
+	testConn "github.com/amp-labs/connectors/test/closecrm"
 	"github.com/amp-labs/connectors/test/utils"
 )
 
@@ -22,7 +22,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := closecrm.GetCloseConnector(ctx)
+	conn := testConn.GetCloseConnector(ctx)
 
 	if err := createLead(ctx, conn); err != nil {
 		slog.Error(err.Error())
@@ -37,7 +37,7 @@ func main() {
 	}
 }
 
-func createLead(ctx context.Context, conn connectors.WriteConnector) error {
+func createLead(ctx context.Context, conn *closecrm.Connector) error {
 	config := common.WriteParams{
 		ObjectName: "lead",
 		RecordData: map[string]any{
@@ -63,7 +63,7 @@ func createLead(ctx context.Context, conn connectors.WriteConnector) error {
 	return nil
 }
 
-func updateLead(ctx context.Context, conn connectors.WriteConnector) error {
+func updateLead(ctx context.Context, conn *closecrm.Connector) error {
 	config := common.WriteParams{
 		ObjectName: "lead",
 		RecordId:   "lead_UaHMFD5GgwUArEb6eZr21mOhDXkhbEUi9NNxoNkByYC",
@@ -88,7 +88,7 @@ func updateLead(ctx context.Context, conn connectors.WriteConnector) error {
 	return nil
 }
 
-func createContact(ctx context.Context, conn connectors.WriteConnector) error {
+func createContact(ctx context.Context, conn *closecrm.Connector) error {
 	config := common.WriteParams{
 		ObjectName: "contact",
 		RecordData: map[string]any{

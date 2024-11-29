@@ -10,7 +10,8 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors"
-	"github.com/amp-labs/connectors/test/closecrm"
+	"github.com/amp-labs/connectors/providers/closecrm"
+	testConn "github.com/amp-labs/connectors/test/closecrm"
 	"github.com/amp-labs/connectors/test/utils"
 )
 
@@ -22,7 +23,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := closecrm.GetCloseConnector(ctx)
+	conn := testConn.GetCloseConnector(ctx)
 
 	if err := readActivities(ctx, conn); err != nil {
 		slog.Error(err.Error())
@@ -37,7 +38,7 @@ func main() {
 	}
 }
 
-func readActivities(ctx context.Context, conn connectors.ReadConnector) error {
+func readActivities(ctx context.Context, conn *closecrm.Connector) error {
 	config := connectors.ReadParams{
 		ObjectName: "activity",
 		Fields:     connectors.Fields("user_id", "user_name", "source", "id"),
@@ -59,7 +60,7 @@ func readActivities(ctx context.Context, conn connectors.ReadConnector) error {
 	return nil
 }
 
-func readContacts(ctx context.Context, conn connectors.ReadConnector) error {
+func readContacts(ctx context.Context, conn *closecrm.Connector) error {
 	config := connectors.ReadParams{
 		ObjectName: "contact",
 		Fields:     connectors.Fields("name", "title", "emails", "phones", "id"),
@@ -81,7 +82,7 @@ func readContacts(ctx context.Context, conn connectors.ReadConnector) error {
 	return nil
 }
 
-func readLeads(ctx context.Context, conn connectors.ReadConnector) error {
+func readLeads(ctx context.Context, conn *closecrm.Connector) error {
 	config := connectors.ReadParams{
 		ObjectName: "lead",
 		Since:      time.Now().Add(-72 * time.Hour),

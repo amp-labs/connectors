@@ -10,7 +10,8 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors"
-	"github.com/amp-labs/connectors/test/pipedrive"
+	"github.com/amp-labs/connectors/providers/pipedrive"
+	testConn "github.com/amp-labs/connectors/test/pipedrive"
 	"github.com/amp-labs/connectors/test/utils"
 )
 
@@ -22,7 +23,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := pipedrive.GetPipedriveConnector(ctx)
+	conn := testConn.GetPipedriveConnector(ctx)
 
 	if err := readActivities(ctx, conn); err != nil {
 		slog.Error(err.Error())
@@ -37,7 +38,7 @@ func main() {
 	}
 }
 
-func readActivities(ctx context.Context, conn connectors.ReadConnector) error {
+func readActivities(ctx context.Context, conn *pipedrive.Connector) error {
 	config := connectors.ReadParams{
 		ObjectName: "activities",
 		Since:      time.Now().Add(-720 * time.Hour),
@@ -61,7 +62,7 @@ func readActivities(ctx context.Context, conn connectors.ReadConnector) error {
 	return nil
 }
 
-func readDeals(ctx context.Context, conn connectors.ReadConnector) error {
+func readDeals(ctx context.Context, conn *pipedrive.Connector) error {
 	config := connectors.ReadParams{
 		ObjectName: "deals",
 		Since:      time.Now().Add(-720 * time.Hour),
@@ -85,7 +86,7 @@ func readDeals(ctx context.Context, conn connectors.ReadConnector) error {
 	return nil
 }
 
-func readLeads(ctx context.Context, conn connectors.ReadConnector) error {
+func readLeads(ctx context.Context, conn *pipedrive.Connector) error {
 	config := connectors.ReadParams{
 		ObjectName: "leads",
 		Since:      time.Now().Add(-720 * time.Hour),
