@@ -4,6 +4,8 @@
 // and exposed to end user via delegation. Most would do delegation only.
 package paramsbuilder
 
+import "github.com/amp-labs/connectors/internal/goutils"
+
 // ParamAssurance checks that param data is valid
 // Every param instance must implement it.
 type ParamAssurance interface {
@@ -20,7 +22,12 @@ type ParamAssurance interface {
 func Apply[P ParamAssurance](params P,
 	opts []func(params *P),
 	defaultOpts ...func(params *P),
-) (*P, error) {
+) (output *P, err error) {
+	defer goutils.PanicRecovery(func(cause error) {
+		err = cause
+		output = nil
+	})
+
 	for _, opt := range defaultOpts {
 		opt(&params)
 	}
