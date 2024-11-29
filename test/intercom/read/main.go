@@ -9,7 +9,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/providers/intercom"
 	msTest "github.com/amp-labs/connectors/test/intercom"
 	"github.com/amp-labs/connectors/test/utils"
 )
@@ -38,8 +37,4 @@ func main() {
 
 	fmt.Println("Reading conversations..")
 	utils.DumpJSON(res, os.Stdout)
-
-	if res.Rows > intercom.DefaultPageSize {
-		utils.Fail(fmt.Sprintf("expected max %v rows", intercom.DefaultPageSize))
-	}
 }

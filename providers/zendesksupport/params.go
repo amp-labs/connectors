@@ -10,11 +10,6 @@ import (
 	"golang.org/x/oauth2"
 )
 
-const (
-	// DefaultPageSize is number of elements per page.
-	DefaultPageSize = 100
-)
-
 // Option is a function which mutates the connector configuration.
 type Option = func(params *parameters)
 
