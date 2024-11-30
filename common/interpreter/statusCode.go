@@ -2,6 +2,7 @@ package interpreter
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
@@ -18,7 +19,7 @@ func DefaultStatusCodeMappingToErr(res *http.Response, body []byte) error { // n
 	case http.StatusForbidden:
 		return common.ErrForbidden
 	case http.StatusNotFound:
-		return common.ErrBadRequest // TODO more specific error
+		return fmt.Errorf("%w: %w", common.ErrBadRequest, common.ErrNotFound)
 	case http.StatusMethodNotAllowed:
 		return common.ErrBadRequest // TODO more specific error
 	case http.StatusRequestTimeout:

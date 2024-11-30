@@ -2,6 +2,7 @@ package gong
 
 import (
 	"context"
+	"errors"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
@@ -34,6 +35,15 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 
 	res, err := c.Client.Get(ctx, url.String())
 	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return &common.ReadResult{
+				Rows:     0,
+				Data:     make([]common.ReadResultRow, 0),
+				NextPage: "",
+				Done:     true,
+			}, nil
+		}
+
 		return nil, err
 	}
 
