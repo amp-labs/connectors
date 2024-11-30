@@ -70,6 +70,9 @@ var (
 	// ErrBadRequest is returned when we get a 400 response from the provider.
 	ErrBadRequest = errors.New("bad request")
 
+	// ErrNotFound is returned when we get a 404 response from the provider.
+	ErrNotFound = errors.New("not found")
+
 	// ErrMissingExpectedValues is returned when response data doesn't have values expected for processing.
 	ErrMissingExpectedValues = errors.New("response data is missing expected values")
 
