@@ -29,7 +29,7 @@ func (c *Connector) GetRecordFromWebhookMessage(
 	ctx context.Context, msg *WebhookMessage,
 ) (*common.ReadResultRow, error) {
 	// Transform the webhook message into a ReadResult.
-	objectName, err := c.ExtractObjectNameFromWebhookMessage(msg)
+	objectName, err := msg.ObjectName()
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +44,7 @@ var errUnexpectedWebhookEventType = errors.New("unexpected webhook event type")
 
 const minParts = 2
 
-func (c *Connector) ExtractEventTypeFromWebhookMessage(msg *WebhookMessage) (common.WebhookEventType, error) {
+func (msg *WebhookMessage) EventType() (common.WebhookEventType, error) {
 	parts := strings.Split(msg.SubscriptionType, ".")
 
 	if len(parts) < minParts {
@@ -64,13 +64,13 @@ func (c *Connector) ExtractEventTypeFromWebhookMessage(msg *WebhookMessage) (com
 	}
 }
 
-func (c *Connector) GetRawEventNameFromWebhook(msg *WebhookMessage) string {
+func (msg *WebhookMessage) RawEventName() string {
 	return msg.SubscriptionType
 }
 
 var errWebhookNotSupportedForObject = errors.New("webhook is not supported for the object")
 
-func (c *Connector) ExtractObjectNameFromWebhookMessage(msg *WebhookMessage) (string, error) {
+func (msg *WebhookMessage) ObjectName() (string, error) {
 	parts := strings.Split(msg.SubscriptionType, ".")
 	if !getRecordSupportedObjectsSet.Has(parts[0]) {
 		return "", fmt.Errorf("%w '%s'", errWebhookNotSupportedForObject, parts[0])

@@ -24,9 +24,7 @@ func TestExtractObjectNameFromWebhookMessage(t *testing.T) {
 		PropertyValue:    "sample-value",
 	}
 
-	conn := &Connector{}
-
-	objectName, err := conn.ExtractObjectNameFromWebhookMessage(correctMessage)
+	objectName, err := correctMessage.ObjectName()
 	if err != nil {
 		t.Fatalf("error extracting object name from webhook message: %s", err)
 	}
@@ -47,7 +45,7 @@ func TestExtractObjectNameFromWebhookMessage(t *testing.T) {
 		PropertyValue:    "sample-value",
 	}
 
-	_, err = conn.ExtractObjectNameFromWebhookMessage(unsupportedObjectMessage)
+	_, err = unsupportedObjectMessage.ObjectName()
 	assert.ErrorContains(t, err, "webhook is not supported for the object 'someObject'")
 
 	emptyObjectMessage := &WebhookMessage{
@@ -64,7 +62,7 @@ func TestExtractObjectNameFromWebhookMessage(t *testing.T) {
 		PropertyValue:    "sample-value",
 	}
 
-	_, err = conn.ExtractObjectNameFromWebhookMessage(emptyObjectMessage)
+	_, err = emptyObjectMessage.ObjectName()
 	assert.ErrorContains(t, err, "webhook is not supported for the object ''")
 }
 
@@ -86,9 +84,7 @@ func TestExtractEventTypeFromWebhookMessage(t *testing.T) {
 		PropertyValue:    "sample-value",
 	}
 
-	conn := &Connector{}
-
-	evtTypeCreate, err := conn.ExtractEventTypeFromWebhookMessage(createMessage)
+	evtTypeCreate, err := createMessage.EventType()
 	if err != nil {
 		t.Fatalf("error extracting object name from webhook message: %s", err)
 	}
@@ -109,7 +105,7 @@ func TestExtractEventTypeFromWebhookMessage(t *testing.T) {
 		PropertyValue:    "sample-value",
 	}
 
-	evtTypeDelete, err := conn.ExtractEventTypeFromWebhookMessage(deleteMessage)
+	evtTypeDelete, err := deleteMessage.EventType()
 	if err != nil {
 		t.Fatalf("error extracting eventTye from webhook message: %s", err)
 	}
@@ -130,7 +126,7 @@ func TestExtractEventTypeFromWebhookMessage(t *testing.T) {
 		PropertyValue:    "sample-value",
 	}
 
-	evtTypeUpdate, err := conn.ExtractEventTypeFromWebhookMessage(updateMessage)
+	evtTypeUpdate, err := updateMessage.EventType()
 	if err != nil {
 		t.Fatalf("error extracting eventTye from webhook message: %s", err)
 	}
@@ -151,6 +147,6 @@ func TestExtractEventTypeFromWebhookMessage(t *testing.T) {
 		PropertyValue:    "sample-value",
 	}
 
-	_, err = conn.ExtractEventTypeFromWebhookMessage(emptyObjectMessage)
+	_, err = emptyObjectMessage.EventType()
 	assert.ErrorIs(t, err, errUnexpectedWebhookEventType)
 }
