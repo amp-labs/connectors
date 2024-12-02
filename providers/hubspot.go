@@ -37,5 +37,6 @@ func init() {
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722479265/media/hubspot_1722479265.svg",
 			},
 		},
+		PostAuthInfoNeeded: true,
 	})
 }

@@ -253,8 +253,9 @@ type ObjectMetadata struct {
 }
 
 type PostAuthInfo struct {
-	CatalogVars *map[string]string
-	RawResponse *JSONHTTPResponse
+	CatalogVars          *map[string]string
+	RawResponse          *JSONHTTPResponse
+	ProviderWorkspaceRef string
 }
 
 type WebhookEventType string

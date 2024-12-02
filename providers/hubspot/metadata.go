@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
@@ -127,4 +128,43 @@ func makeFieldsMap(data *describeObjectResponse) map[string]string {
 	}
 
 	return fieldsMap
+}
+
+func (c *Connector) GetPostAuthInfo(
+	ctx context.Context,
+) (*common.PostAuthInfo, error) {
+	accInfo, resp, err := c.GetAccountInfo(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching HubSpot account info: %w", err)
+	}
+
+	return &common.PostAuthInfo{
+		ProviderWorkspaceRef: strconv.Itoa(accInfo.PortalId),
+		RawResponse:          resp,
+	}, nil
+}
+
+type AccountInfo struct {
+	PortalId              int    `json:"portalId"`
+	TimeZone              string `json:"timeZone"`
+	CompanyCurrency       string `json:"companyCurrency"`
+	AdditionalCurrencies  []string
+	UTCOffset             string `json:"utcOffset"`
+	UTCOffsetMilliseconds int    `json:"utcOffsetMilliseconds"`
+	UIDomain              string `json:"uiDomain"`
+	DataHostingLocation   string `json:"dataHostingLocation"`
+}
+
+func (c *Connector) GetAccountInfo(ctx context.Context) (*AccountInfo, *common.JSONHTTPResponse, error) {
+	resp, err := c.Client.Get(ctx, "account-info/v3/details")
+	if err != nil {
+		return nil, resp, fmt.Errorf("error fetching HubSpot token info: %w", err)
+	}
+
+	accountInfo, err := common.UnmarshalJSON[AccountInfo](resp)
+	if err != nil {
+		return nil, resp, fmt.Errorf("error unmarshalling account info response into JSON: %w", err)
+	}
+
+	return accountInfo, resp, nil
 }
