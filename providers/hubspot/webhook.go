@@ -79,10 +79,6 @@ func (c *Connector) ExtractObjectNameFromWebhookMessage(msg *WebhookMessage) (st
 	return parts[0], nil
 }
 
-func (c *Connector) GetWorkspaceFromWebhook(msg *WebhookMessage) string {
-	return strconv.Itoa(msg.PortalId)
-}
-
 /*
 	EXAMPLES: There is no documentation that shows data structure of webhook messages.
 	Below examples were found from hubspot app settings page after login at:
