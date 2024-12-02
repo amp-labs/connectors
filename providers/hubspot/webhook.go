@@ -79,6 +79,10 @@ func (msg *WebhookMessage) ObjectName() (string, error) {
 	return parts[0], nil
 }
 
+func (msg *WebhookMessage) Workspace() string {
+	return strconv.Itoa(msg.PortalId)
+}
+
 /*
 	EXAMPLES: There is no documentation that shows data structure of webhook messages.
 	Below examples were found from hubspot app settings page after login at:
