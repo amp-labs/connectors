@@ -64,8 +64,8 @@ func (msg *WebhookMessage) EventType() (common.WebhookEventType, error) {
 	}
 }
 
-func (msg *WebhookMessage) RawEventName() string {
-	return msg.SubscriptionType
+func (msg *WebhookMessage) RawEventName() (string, error) {
+	return msg.SubscriptionType, nil
 }
 
 var errWebhookNotSupportedForObject = errors.New("webhook is not supported for the object")
@@ -79,8 +79,8 @@ func (msg *WebhookMessage) ObjectName() (string, error) {
 	return parts[0], nil
 }
 
-func (msg *WebhookMessage) Workspace() string {
-	return strconv.Itoa(msg.PortalId)
+func (msg *WebhookMessage) Workspace() (string, error) {
+	return strconv.Itoa(msg.PortalId), nil
 }
 
 /*

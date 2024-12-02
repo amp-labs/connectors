@@ -266,3 +266,10 @@ const (
 	WebhookEventTypeDelete WebhookEventType = "delete"
 	WebhookEventTypeOther  WebhookEventType = "other"
 )
+
+type WebhookMessage interface {
+	EventType() (WebhookEventType, error)
+	RawEventName() (string, error)
+	ObjectName() (string, error)
+	Workspace() (string, error)
+}
