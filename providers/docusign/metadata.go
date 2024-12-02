@@ -16,7 +16,10 @@ var (
 	userInfoURL = "https://account.docusign.com/oauth/userinfo" // nolint:gochecknoglobals
 )
 
-func (c *Connector) GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, error) { // nolint:cyclop,funlen
+//nolint:funlen,cyclop
+func (c *Connector) GetPostAuthInfo(
+	ctx context.Context,
+) (*common.PostAuthInfo, error) { // nolint:cyclop,funlen
 	resp, err := c.get(ctx, userInfoURL)
 	if err != nil {
 		return nil, err
