@@ -3,7 +3,6 @@ package hubspot
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -131,42 +130,41 @@ func makeFieldsMap(data *describeObjectResponse) map[string]string {
 	return fieldsMap
 }
 
-var (
-	errMissingAccessToken   = errors.New("missing access token")
-	errFailedToGetTokenInfo = errors.New("failed to get token info")
-	errFailedToGetHubId     = errors.New("failed to get hub id")
-)
-
 func (c *Connector) GetPostAuthInfo(
 	ctx context.Context,
-	params *common.PostAuthInfoParams,
 ) (*common.PostAuthInfo, error) {
-	if params.AccessToken == "" {
-		return nil, errMissingAccessToken
-	}
-
-	resp, err := c.Client.Get(ctx, "/oauth/v1/access-tokens/"+params.AccessToken)
+	accInfo, resp, err := c.GetAccountInfo(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("error fetching HubSpot token info: %w", err)
-	}
-
-	body, ok := resp.Body()
-	if !ok {
-		return nil, errors.Join(errFailedToGetTokenInfo, common.ErrEmptyJSONHTTPResponse)
-	}
-
-	hubspotId, err := body.GetKey("hub_id")
-	if err != nil {
-		return nil, errors.Join(errFailedToGetHubId, err)
-	}
-
-	hubId, err := hubspotId.GetNumeric()
-	if err != nil {
-		return nil, fmt.Errorf("error parsing 'hub_id': %w", err)
+		return nil, fmt.Errorf("error fetching HubSpot account info: %w", err)
 	}
 
 	return &common.PostAuthInfo{
-		ProviderWorkspaceRef: strconv.Itoa(int(hubId)),
+		ProviderWorkspaceRef: strconv.Itoa(accInfo.PortalId),
 		RawResponse:          resp,
 	}, nil
+}
+
+type AccountInfo struct {
+	PortalId              int    `json:"portalId"`
+	TimeZone              string `json:"timeZone"`
+	CompanyCurrency       string `json:"companyCurrency"`
+	AdditionalCurrencies  []string
+	UTCOffset             string `json:"utcOffset"`
+	UTCOffsetMilliseconds int    `json:"utcOffsetMilliseconds"`
+	UIDomain              string `json:"uiDomain"`
+	DataHostingLocation   string `json:"dataHostingLocation"`
+}
+
+func (c *Connector) GetAccountInfo(ctx context.Context) (*AccountInfo, *common.JSONHTTPResponse, error) {
+	resp, err := c.Client.Get(ctx, "account-info/v3/details")
+	if err != nil {
+		return nil, resp, fmt.Errorf("error fetching HubSpot token info: %w", err)
+	}
+
+	accountInfo, err := common.UnmarshalJSON[AccountInfo](resp)
+	if err != nil {
+		return nil, resp, fmt.Errorf("error unmarshalling account info response into JSON: %w", err)
+	}
+
+	return accountInfo, resp, nil
 }

@@ -245,10 +245,6 @@ type ObjectMetadata struct {
 	FieldsMap map[string]string
 }
 
-type PostAuthInfoParams struct {
-	AccessToken string
-}
-
 type PostAuthInfo struct {
 	CatalogVars          *map[string]string
 	RawResponse          *JSONHTTPResponse

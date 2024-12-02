@@ -19,7 +19,6 @@ var (
 //nolint:funlen,cyclop
 func (c *Connector) GetPostAuthInfo(
 	ctx context.Context,
-	_ *common.PostAuthInfoParams,
 ) (*common.PostAuthInfo, error) { // nolint:cyclop,funlen
 	resp, err := c.get(ctx, userInfoURL)
 	if err != nil {

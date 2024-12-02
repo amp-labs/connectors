@@ -6,8 +6,6 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	connTest "github.com/amp-labs/connectors/test/hubspot"
 	"github.com/amp-labs/connectors/test/utils"
 )
@@ -23,12 +21,7 @@ func main() {
 	// Get the Hubspot connector.
 	conn := connTest.GetHubspotConnector(ctx)
 
-	reader := connTest.CredsReader()
-	token := reader.Get(credscanning.Fields.AccessToken)
-
-	postAuthInfo, err := conn.GetPostAuthInfo(ctx, &common.PostAuthInfoParams{
-		AccessToken: token,
-	})
+	postAuthInfo, err := conn.GetPostAuthInfo(ctx)
 
 	if err != nil {
 		utils.Fail("error getting post auth info", "error", err)

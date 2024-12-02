@@ -13,7 +13,7 @@ var (
 	ErrContainerNotFound = errors.New("cloud container was not found for chosen workspace")
 )
 
-func (c *Connector) GetPostAuthInfo(ctx context.Context, _ *common.PostAuthInfoParams) (*common.PostAuthInfo, error) {
+func (c *Connector) GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, error) {
 	cloudId, err := c.retrieveCloudId(ctx)
 	if err != nil {
 		return nil, errors.Join(ErrDiscoveryFailure, err)
