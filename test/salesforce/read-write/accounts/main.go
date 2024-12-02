@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors"
+	"github.com/amp-labs/connectors/providers/salesforce"
 	connTest "github.com/amp-labs/connectors/test/salesforce"
 	"github.com/amp-labs/connectors/test/utils"
 )
@@ -46,7 +47,7 @@ func mainFn() int { //nolint:funlen
 	return 0
 }
 
-func testReadConnector(ctx context.Context, conn connectors.ReadConnector) error {
+func testReadConnector(ctx context.Context, conn *salesforce.Connector) error {
 	// Create a context with a timeout
 	ctx, done := context.WithTimeout(ctx, TimeoutSeconds*time.Second)
 	defer done()
@@ -72,7 +73,7 @@ func testReadConnector(ctx context.Context, conn connectors.ReadConnector) error
 	return nil
 }
 
-func testWriteConnector(ctx context.Context, conn connectors.WriteConnector) error {
+func testWriteConnector(ctx context.Context, conn *salesforce.Connector) error {
 	// IMPORTANT: every time this test is run, it will create a new Account
 	// in SFDC instance. Will need to delete those out at later date.
 	writtenRecordId, err := testSalesforceValidCreate(ctx, conn)
@@ -90,7 +91,7 @@ func testWriteConnector(ctx context.Context, conn connectors.WriteConnector) err
 const accountNumber = 123
 
 // testSalesforceValidCreate will create a valid record in Salesforce.
-func testSalesforceValidCreate(ctx context.Context, conn connectors.WriteConnector) (string, error) {
+func testSalesforceValidCreate(ctx context.Context, conn *salesforce.Connector) (string, error) {
 	writeRes, err := conn.Write(ctx, connectors.WriteParams{
 		ObjectName: "Account",
 		RecordData: map[string]interface{}{
@@ -117,7 +118,7 @@ func testSalesforceValidCreate(ctx context.Context, conn connectors.WriteConnect
 const accountNumber2 = 456
 
 // testSalesforceValidUpdate will update existing record in Salesforce.
-func testSalesforceValidUpdate(ctx context.Context, conn connectors.WriteConnector, writtenRecordId string) error {
+func testSalesforceValidUpdate(ctx context.Context, conn *salesforce.Connector, writtenRecordId string) error {
 	writeRes, err := conn.Write(ctx, connectors.WriteParams{
 		ObjectName: "Account",
 		RecordData: map[string]interface{}{

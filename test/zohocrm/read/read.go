@@ -10,8 +10,9 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors"
+	"github.com/amp-labs/connectors/providers/zohocrm"
 	"github.com/amp-labs/connectors/test/utils"
-	"github.com/amp-labs/connectors/test/zohocrm"
+	testConn "github.com/amp-labs/connectors/test/zohocrm"
 )
 
 func main() {
@@ -22,7 +23,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := zohocrm.GetZohoConnector(ctx)
+	conn := testConn.GetZohoConnector(ctx)
 
 	if err := readContacts(ctx, conn); err != nil {
 		slog.Error(err.Error())
@@ -37,7 +38,7 @@ func main() {
 	}
 }
 
-func readContacts(ctx context.Context, conn connectors.ReadConnector) error {
+func readContacts(ctx context.Context, conn *zohocrm.Connector) error {
 	config := connectors.ReadParams{
 		ObjectName: "contacts",
 		Since:      time.Now().Add(-30 * time.Hour),
@@ -61,7 +62,7 @@ func readContacts(ctx context.Context, conn connectors.ReadConnector) error {
 	return nil
 }
 
-func readDeals(ctx context.Context, conn connectors.ReadConnector) error {
+func readDeals(ctx context.Context, conn *zohocrm.Connector) error {
 	config := connectors.ReadParams{
 		ObjectName: "deals",
 		Since:      time.Now().Add(-720 * time.Hour),
@@ -84,7 +85,7 @@ func readDeals(ctx context.Context, conn connectors.ReadConnector) error {
 	return nil
 }
 
-func readLeads(ctx context.Context, conn connectors.ReadConnector) error {
+func readLeads(ctx context.Context, conn *zohocrm.Connector) error {
 	config := connectors.ReadParams{
 		ObjectName: "leads",
 		Since:      time.Now().Add(-720 * time.Hour),
