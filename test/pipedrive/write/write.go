@@ -10,9 +10,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/test/pipedrive"
+	"github.com/amp-labs/connectors/providers/pipedrive"
+	testConn "github.com/amp-labs/connectors/test/pipedrive"
 	"github.com/amp-labs/connectors/test/utils"
 )
 
@@ -24,7 +24,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := pipedrive.GetPipedriveConnector(ctx)
+	conn := testConn.GetPipedriveConnector(ctx)
 
 	if err := createActivity(ctx, conn); err != nil {
 		slog.Error(err.Error())
@@ -43,7 +43,7 @@ func main() {
 	}
 }
 
-func createActivity(ctx context.Context, conn connectors.WriteConnector) error {
+func createActivity(ctx context.Context, conn *pipedrive.Connector) error {
 	config := common.WriteParams{
 		ObjectName: "activities",
 		RecordData: map[string]any{
@@ -72,7 +72,7 @@ func createActivity(ctx context.Context, conn connectors.WriteConnector) error {
 	return nil
 }
 
-func updateActivity(ctx context.Context, conn connectors.WriteConnector) error {
+func updateActivity(ctx context.Context, conn *pipedrive.Connector) error {
 	config := common.WriteParams{
 		ObjectName: "activities",
 		RecordId:   "1",
@@ -99,7 +99,7 @@ func updateActivity(ctx context.Context, conn connectors.WriteConnector) error {
 	return nil
 }
 
-func createCallLog(ctx context.Context, conn connectors.WriteConnector) error {
+func createCallLog(ctx context.Context, conn *pipedrive.Connector) error {
 	config := common.WriteParams{
 		ObjectName: "callLogs",
 		RecordData: map[string]any{

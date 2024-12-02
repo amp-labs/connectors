@@ -8,10 +8,10 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers/zohocrm"
 	"github.com/amp-labs/connectors/test/utils"
-	"github.com/amp-labs/connectors/test/zohocrm"
+	testConn "github.com/amp-labs/connectors/test/zohocrm"
 )
 
 func main() {
@@ -22,7 +22,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := zohocrm.GetZohoConnector(ctx)
+	conn := testConn.GetZohoConnector(ctx)
 
 	if err := createDeals(ctx, conn); err != nil {
 		slog.Error(err.Error())
@@ -37,7 +37,7 @@ func main() {
 	}
 }
 
-func createDeals(ctx context.Context, conn connectors.WriteConnector) error {
+func createDeals(ctx context.Context, conn *zohocrm.Connector) error {
 	config := common.WriteParams{
 		ObjectName: "Deals",
 		RecordData: []map[string]any{
@@ -66,7 +66,7 @@ func createDeals(ctx context.Context, conn connectors.WriteConnector) error {
 	return nil
 }
 
-func createLeads(ctx context.Context, conn connectors.WriteConnector) error {
+func createLeads(ctx context.Context, conn *zohocrm.Connector) error {
 	config := common.WriteParams{
 		ObjectName: "Leads",
 		RecordData: []map[string]any{
@@ -98,7 +98,7 @@ func createLeads(ctx context.Context, conn connectors.WriteConnector) error {
 	return nil
 }
 
-func updateContacts(ctx context.Context, conn connectors.WriteConnector) error {
+func updateContacts(ctx context.Context, conn *zohocrm.Connector) error {
 	config := common.WriteParams{
 		ObjectName: "contacts",
 		// RecordId:   "64934900000005440112",

@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors"
+	"github.com/amp-labs/connectors/providers/outreach"
 	connTest "github.com/amp-labs/connectors/test/outreach"
 	"github.com/amp-labs/connectors/test/utils"
 )
@@ -41,7 +42,7 @@ func main() {
 	}
 }
 
-func testReadSequences(ctx context.Context, conn connectors.ReadConnector) error {
+func testReadSequences(ctx context.Context, conn *outreach.Connector) error {
 	config := connectors.ReadParams{
 		ObjectName: "sequences",
 		Since:      time.Now().Add(-720 * time.Hour),
@@ -65,7 +66,7 @@ func testReadSequences(ctx context.Context, conn connectors.ReadConnector) error
 	return nil
 }
 
-func testReadMailings(ctx context.Context, conn connectors.ReadConnector) error {
+func testReadMailings(ctx context.Context, conn *outreach.Connector) error {
 	config := connectors.ReadParams{
 		ObjectName: "mailings",
 		Since:      time.Now().Add(-720 * time.Hour),
@@ -89,7 +90,7 @@ func testReadMailings(ctx context.Context, conn connectors.ReadConnector) error 
 	return nil
 }
 
-func testReadProspects(ctx context.Context, conn connectors.ReadConnector) error {
+func testReadProspects(ctx context.Context, conn *outreach.Connector) error {
 	config := connectors.ReadParams{
 		ObjectName: "prospects",
 		Since:      time.Now().Add(-720 * time.Hour),
