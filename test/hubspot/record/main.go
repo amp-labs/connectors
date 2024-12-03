@@ -57,10 +57,10 @@ func main() {
 		utils.Fail("error writing to hubspot", "error", err)
 	}
 
-	propMsg := hubspot.WebhookMessage{}
+	propMsg := hubspot.SubscriptionEvent{}
 
 	if err := json.Unmarshal([]byte(samplePropertyChange), &propMsg); err != nil {
-		utils.Fail("error unmarshalling property change message", "error", err)
+		utils.Fail("error unmarshalling property change event", "error", err)
 	}
 
 	recordId, err := strconv.Atoi(writeResult.RecordId)
@@ -70,9 +70,9 @@ func main() {
 
 	propMsg.ObjectId = recordId
 
-	recordResult, err := conn.GetRecordFromWebhookMessage(ctx, &propMsg)
+	recordResult, err := conn.GetRecordFromSubscriptionEvent(ctx, &propMsg)
 	if err != nil {
-		utils.Fail("error getting record from webhook message", "error", err)
+		utils.Fail("error getting record from subscription event", "error", err)
 	}
 
 	utils.DumpJSON(recordResult, os.Stdout)

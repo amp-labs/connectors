@@ -51,7 +51,7 @@ func (c *Connector) GetRecord(ctx context.Context, objectName string, recordId s
 
 	id, err := extractIdFromRecord(*record)
 	if err != nil {
-		// this should never happen unless the provider changes webhook message format
+		// this should never happen unless the provider changes subscription event format
 		return nil, err
 	}
 
@@ -117,7 +117,7 @@ func (c *Connector) GetRecordsWithIds(
 	for i, record := range records {
 		id, err := extractIdFromRecord(record)
 		if err != nil {
-			// this should never happen unless the provider changes webhook message format
+			// this should never happen unless the provider changes subscription event format
 			return nil, err
 		}
 

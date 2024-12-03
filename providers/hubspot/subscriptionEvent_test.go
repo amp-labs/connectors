@@ -7,10 +7,10 @@ import (
 	"gotest.tools/v3/assert"
 )
 
-func TestExtractObjectNameFromWebhookMessage(t *testing.T) {
+func TestExtractObjectNameFromSubscribeEvent(t *testing.T) {
 	t.Parallel()
 
-	correctMessage := &WebhookMessage{
+	validEvent := &SubscriptionEvent{
 		AppId:            1,
 		EventId:          1,
 		SubscriptionId:   1,
@@ -24,14 +24,14 @@ func TestExtractObjectNameFromWebhookMessage(t *testing.T) {
 		PropertyValue:    "sample-value",
 	}
 
-	objectName, err := correctMessage.ObjectName()
+	objectName, err := validEvent.ObjectName()
 	if err != nil {
-		t.Fatalf("error extracting object name from webhook message: %s", err)
+		t.Fatalf("error extracting object name from subscription event: %s", err)
 	}
 
 	assert.Equal(t, objectName, "contact", "object name should be parsedCorrectly")
 
-	unsupportedObjectMessage := &WebhookMessage{
+	unsupportedEvent := &SubscriptionEvent{
 		AppId:            1,
 		EventId:          1,
 		SubscriptionId:   1,
@@ -45,10 +45,10 @@ func TestExtractObjectNameFromWebhookMessage(t *testing.T) {
 		PropertyValue:    "sample-value",
 	}
 
-	_, err = unsupportedObjectMessage.ObjectName()
-	assert.ErrorContains(t, err, "webhook is not supported for the object 'someObject'")
+	_, err = unsupportedEvent.ObjectName()
+	assert.ErrorContains(t, err, "subscription is not supported for the object 'someObject'")
 
-	emptyObjectMessage := &WebhookMessage{
+	emptyObjectEvent := &SubscriptionEvent{
 		AppId:            1,
 		EventId:          1,
 		SubscriptionId:   1,
@@ -62,15 +62,15 @@ func TestExtractObjectNameFromWebhookMessage(t *testing.T) {
 		PropertyValue:    "sample-value",
 	}
 
-	_, err = emptyObjectMessage.ObjectName()
-	assert.ErrorContains(t, err, "webhook is not supported for the object ''")
+	_, err = emptyObjectEvent.ObjectName()
+	assert.ErrorContains(t, err, "subscription is not supported for the object ''")
 }
 
 //nolint:funlen
-func TestExtractEventTypeFromWebhookMessage(t *testing.T) {
+func TestExtractEventTypeFromSubscribeEvent(t *testing.T) {
 	t.Parallel()
 
-	createMessage := &WebhookMessage{
+	createEvent := SubscriptionEvent{
 		AppId:            1,
 		EventId:          1,
 		SubscriptionId:   1,
@@ -84,14 +84,14 @@ func TestExtractEventTypeFromWebhookMessage(t *testing.T) {
 		PropertyValue:    "sample-value",
 	}
 
-	evtTypeCreate, err := createMessage.EventType()
+	evtTypeCreate, err := createEvent.EventType()
 	if err != nil {
-		t.Fatalf("error extracting object name from webhook message: %s", err)
+		t.Fatalf("error extracting object name from subscription  event: %s", err)
 	}
 
-	assert.Equal(t, evtTypeCreate, common.WebhookEventTypeCreate, "event type should be parsed Correctly")
+	assert.Equal(t, evtTypeCreate, common.SubscriptionEventTypeCreate, "event type should be parsed Correctly")
 
-	deleteMessage := &WebhookMessage{
+	deleteMessage := &SubscriptionEvent{
 		AppId:            1,
 		EventId:          1,
 		SubscriptionId:   1,
@@ -107,12 +107,12 @@ func TestExtractEventTypeFromWebhookMessage(t *testing.T) {
 
 	evtTypeDelete, err := deleteMessage.EventType()
 	if err != nil {
-		t.Fatalf("error extracting eventTye from webhook message: %s", err)
+		t.Fatalf("error extracting eventTye from subscription event: %s", err)
 	}
 
-	assert.Equal(t, evtTypeDelete, common.WebhookEventTypeDelete, "event type should be parsed correctly")
+	assert.Equal(t, evtTypeDelete, common.SubscriptionEventTypeDelete, "event type should be parsed correctly")
 
-	updateMessage := &WebhookMessage{
+	updateMessage := &SubscriptionEvent{
 		AppId:            1,
 		EventId:          1,
 		SubscriptionId:   1,
@@ -128,12 +128,12 @@ func TestExtractEventTypeFromWebhookMessage(t *testing.T) {
 
 	evtTypeUpdate, err := updateMessage.EventType()
 	if err != nil {
-		t.Fatalf("error extracting eventTye from webhook message: %s", err)
+		t.Fatalf("error extracting eventTye from subscription event: %s", err)
 	}
 
-	assert.Equal(t, evtTypeUpdate, common.WebhookEventTypeUpdate, "event type should be parsed correctly")
+	assert.Equal(t, evtTypeUpdate, common.SubscriptionEventTypeUpdate, "event type should be parsed correctly")
 
-	emptyObjectMessage := &WebhookMessage{
+	emptyObjectEvent := &SubscriptionEvent{
 		AppId:            1,
 		EventId:          1,
 		SubscriptionId:   1,
@@ -147,6 +147,11 @@ func TestExtractEventTypeFromWebhookMessage(t *testing.T) {
 		PropertyValue:    "sample-value",
 	}
 
-	_, err = emptyObjectMessage.EventType()
-	assert.ErrorIs(t, err, errUnexpectedWebhookEventType)
+	_, err = emptyObjectEvent.EventType()
+	assert.ErrorIs(
+		t,
+		err,
+		errUnexpectedSubscriptionEventType,
+		"error should be of type errUnexpectedSubscriptionEventType",
+	)
 }

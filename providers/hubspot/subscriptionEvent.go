@@ -10,7 +10,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 )
 
-type WebhookMessage struct {
+type SubscriptionEvent struct {
 	AppId            int    `json:"appId"`
 	EventId          int    `json:"eventId"`
 	SubscriptionId   int    `json:"subscriptionId"`
@@ -24,67 +24,69 @@ type WebhookMessage struct {
 	PropertyValue    string `json:"propertyValue"`
 }
 
-// GetRecordFromWebhookMessage fetches a record from the Hubspot API using the data from a webhook message.
-func (c *Connector) GetRecordFromWebhookMessage(
-	ctx context.Context, msg *WebhookMessage,
+// GetRecordFromSubscribeEvent fetches a record from the Hubspot API using the data from a subscription event.
+func (c *Connector) GetRecordFromSubscriptionEvent(
+	ctx context.Context, evt *SubscriptionEvent,
 ) (*common.ReadResultRow, error) {
-	// Transform the webhook message into a ReadResult.
-	objectName, err := msg.ObjectName()
+	// Transform the subscription event into a ReadResult.
+	objectName, err := evt.ObjectName()
 	if err != nil {
 		return nil, err
 	}
 
-	recordId := strconv.Itoa(msg.ObjectId)
+	recordId := strconv.Itoa(evt.ObjectId)
 
-	// Since the webhook message doesn't contain the record data, we need to fetch it.
+	// Since the subscription event doesn't contain the record data, we need to fetch it.
 	return c.GetRecord(ctx, objectName, recordId)
 }
 
-var errUnexpectedWebhookEventType = errors.New("unexpected webhook event type")
+var errUnexpectedSubscriptionEventType = errors.New("unexpected subscription event type")
 
 const minParts = 2
 
-func (msg *WebhookMessage) EventType() (common.WebhookEventType, error) {
-	parts := strings.Split(msg.SubscriptionType, ".")
+func (evt *SubscriptionEvent) EventType() (common.SubscriptionEventType, error) {
+	parts := strings.Split(evt.SubscriptionType, ".")
 
 	if len(parts) < minParts {
-		// this should never happen unless the provider changes webhook message format
-		return common.WebhookEventTypeOther, fmt.Errorf("%w: '%s'", errUnexpectedWebhookEventType, msg.SubscriptionType)
+		// this should never happen unless the provider changes subscription event format
+		return common.SubscriptionEventTypeOther, fmt.Errorf(
+			"%w: '%s'", errUnexpectedSubscriptionEventType, evt.SubscriptionType,
+		)
 	}
 
 	switch parts[1] {
 	case "creation":
-		return common.WebhookEventTypeCreate, nil
+		return common.SubscriptionEventTypeCreate, nil
 	case "propertyChange":
-		return common.WebhookEventTypeUpdate, nil
+		return common.SubscriptionEventTypeUpdate, nil
 	case "deletion", "privacyDeletion":
-		return common.WebhookEventTypeDelete, nil
+		return common.SubscriptionEventTypeDelete, nil
 	default:
-		return common.WebhookEventTypeOther, nil
+		return common.SubscriptionEventTypeOther, nil
 	}
 }
 
-func (msg *WebhookMessage) RawEventName() (string, error) {
-	return msg.SubscriptionType, nil
+func (evt *SubscriptionEvent) RawEventName() (string, error) {
+	return evt.SubscriptionType, nil
 }
 
-var errWebhookNotSupportedForObject = errors.New("webhook is not supported for the object")
+var errSubscriptionSupportedForObject = errors.New("subscription is not supported for the object")
 
-func (msg *WebhookMessage) ObjectName() (string, error) {
-	parts := strings.Split(msg.SubscriptionType, ".")
+func (evt *SubscriptionEvent) ObjectName() (string, error) {
+	parts := strings.Split(evt.SubscriptionType, ".")
 	if !getRecordSupportedObjectsSet.Has(parts[0]) {
-		return "", fmt.Errorf("%w '%s'", errWebhookNotSupportedForObject, parts[0])
+		return "", fmt.Errorf("%w '%s'", errSubscriptionSupportedForObject, parts[0])
 	}
 
 	return parts[0], nil
 }
 
-func (msg *WebhookMessage) Workspace() (string, error) {
-	return strconv.Itoa(msg.PortalId), nil
+func (evt *SubscriptionEvent) Workspace() (string, error) {
+	return strconv.Itoa(evt.PortalId), nil
 }
 
 /*
-	EXAMPLES: There is no documentation that shows data structure of webhook messages.
+	EXAMPLES: There is no documentation that shows data structure of subscription event.
 	Below examples were found from hubspot app settings page after login at:
 	https://app.hubspot.com/private-apps/<<CustomerAppId>>/<<PrivateAppId>>/webhooks
 	Or from UI on Customer Account
