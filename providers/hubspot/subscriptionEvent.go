@@ -24,7 +24,7 @@ type SubscriptionEvent struct {
 	PropertyValue    string `json:"propertyValue"`
 }
 
-// GetRecordFromSubscribeEvent fetches a record from the Hubspot API using the data from a subscription event.
+// GetRecordFromSubscriptionEvent fetches a record from the Hubspot API using the data from a subscription event.
 func (c *Connector) GetRecordFromSubscriptionEvent(
 	ctx context.Context, evt *SubscriptionEvent,
 ) (*common.ReadResultRow, error) {

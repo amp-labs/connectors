@@ -7,7 +7,7 @@ import (
 	"gotest.tools/v3/assert"
 )
 
-func TestExtractObjectNameFromSubscribeEvent(t *testing.T) {
+func TestExtractObjectNameFromSubscriptionEvent(t *testing.T) {
 	t.Parallel()
 
 	validEvent := &SubscriptionEvent{
@@ -67,7 +67,7 @@ func TestExtractObjectNameFromSubscribeEvent(t *testing.T) {
 }
 
 //nolint:funlen
-func TestExtractEventTypeFromSubscribeEvent(t *testing.T) {
+func TestExtractEventTypeFromSubscriptionEvent(t *testing.T) {
 	t.Parallel()
 
 	createEvent := SubscriptionEvent{
