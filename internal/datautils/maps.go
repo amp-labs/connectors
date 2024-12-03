@@ -1,5 +1,7 @@
 package datautils
 
+import "encoding/json"
+
 // Map is a generic version of map with useful methods.
 // It can return Keys as a slice or a Set.
 type Map[K comparable, V any] map[K]V
@@ -63,4 +65,21 @@ func (m DefaultMap[K, V]) Get(key K) V { // nolint:ireturn
 	var empty V
 
 	return empty
+}
+
+// Convert a struct to a map of string to any.
+func StructToMap(obj any) (map[string]any, error) {
+	var result map[string]any
+
+	jsonBytes, err := json.Marshal(obj)
+	if err != nil {
+		return nil, err
+	}
+
+	err = json.Unmarshal(jsonBytes, &result)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }
