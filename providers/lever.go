@@ -5,6 +5,7 @@ const (
 	LeverSandbox Provider = "leverSandbox"
 )
 
+//nolint:funlen
 func init() {
 	// Lever Production configuration
 	SetInfo(Lever, ProviderInfo{
