@@ -1,6 +1,6 @@
 # Generate Go types from OpenAPI spec.
 
-CATALOG_YAML = https://raw.githubusercontent.com/amp-labs/openapi/089a1627afc8bcdabd8e7ec37f142e0992045ff5/catalog/catalog.yaml
+CATALOG_YAML = https://raw.githubusercontent.com/amp-labs/openapi/main/catalog/catalog.yaml
 
 
 .PHONY: gen/catalog
