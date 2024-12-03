@@ -9,7 +9,6 @@ const (
 func init() {
 	// Lever Production configuration
 	SetInfo(Lever, ProviderInfo{
-
 		DisplayName: "Lever",
 		AuthType:    Oauth2,
 		BaseURL:     "https://api.lever.co",
@@ -50,7 +49,6 @@ func init() {
 
 	// Lever Sandbox configuration
 	SetInfo(LeverSandbox, ProviderInfo{
-
 		DisplayName: "Lever Sandbox",
 		AuthType:    Oauth2,
 		BaseURL:     "https://api.sandbox.lever.co",
