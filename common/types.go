@@ -258,11 +258,20 @@ type PostAuthInfo struct {
 	ProviderWorkspaceRef string
 }
 
-type WebhookEventType string
+type SubscriptionEventType string
 
 const (
-	WebhookEventTypeCreate WebhookEventType = "create"
-	WebhookEventTypeUpdate WebhookEventType = "update"
-	WebhookEventTypeDelete WebhookEventType = "delete"
-	WebhookEventTypeOther  WebhookEventType = "other"
+	SubscriptionEventTypeCreate SubscriptionEventType = "create"
+	SubscriptionEventTypeUpdate SubscriptionEventType = "update"
+	SubscriptionEventTypeDelete SubscriptionEventType = "delete"
+	SubscriptionEventTypeOther  SubscriptionEventType = "other"
 )
+
+// SubscribeEvent is an interface for webhook events coming from the provider.
+// This interface defines methods to extract information from the webhook event.
+type SubscriptionEvent interface {
+	EventType() (SubscriptionEventType, error)
+	RawEventName() (string, error)
+	ObjectName() (string, error)
+	Workspace() (string, error)
+}
