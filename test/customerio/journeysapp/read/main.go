@@ -24,13 +24,15 @@ func main() {
 	conn := connTest.GetCustomerJourneysAppConnector(ctx)
 
 	res, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: "segments",
+		ObjectName: "newsletters",
 		Fields:     connectors.Fields("name"),
+		// Read newsletters using pagination, where it omits first record.
+		NextPage: `https://api.customer.io/v1/newsletters?limit=50&start=MQ==`,
 	})
 	if err != nil {
 		utils.Fail("error reading from Customer Journeys App", "error", err)
 	}
 
-	slog.Info("Reading segments..")
+	slog.Info("Reading newsletters..")
 	utils.DumpJSON(res, os.Stdout)
 }
