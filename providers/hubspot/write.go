@@ -6,6 +6,7 @@ import (
 	"path"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/datautils"
 )
 
 type writeResponse struct {
@@ -51,9 +52,14 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, err
 	}
 
+	record, err := datautils.StructToMap(*rsp)
+	if err != nil {
+		return nil, err
+	}
+
 	return &common.WriteResult{
 		RecordId: rsp.ID,
 		Success:  true,
-		Data:     rsp.Properties,
+		Data:     record,
 	}, nil
 }
