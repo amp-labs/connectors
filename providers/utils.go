@@ -446,3 +446,23 @@ func (i *ProviderInfo) GetApiKeyHeader(apiKey string) (string, string, error) {
 
 	return headerName, headerValue, nil
 }
+
+// Override can be used to override the base URL of the provider, and could be
+// used for other fields in the future.
+func (i *ProviderInfo) Override(override *ProviderInfo) *ProviderInfo {
+	if i == nil {
+		return &ProviderInfo{}
+	}
+
+	// Return the original if the override is nil.
+	if override == nil {
+		return i
+	}
+
+	// Only allow overriding the base URL for now.
+	if override.BaseURL != "" {
+		i.BaseURL = override.BaseURL
+	}
+
+	return i
+}
