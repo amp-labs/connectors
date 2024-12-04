@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/atlassian"
@@ -29,6 +30,33 @@ func GetAtlassianConnector(ctx context.Context) *atlassian.Connector {
 	)
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)
+	}
+
+	return conn
+}
+
+func GetAtlassianConnectConnector(ctx context.Context, claims map[string]any) *atlassian.Connector {
+	filePath := credscanning.LoadPath(providers.Atlassian)
+	reader := utils.MustCreateProvCredJSON(filePath, true, true)
+
+	opts := []common.HeaderAuthClientOption{
+		common.WithHeaderClient(http.DefaultClient),
+		common.WithDynamicHeaders(atlassian.JwtTokenGenerator(claims, reader.Get(credscanning.Fields.Secret))),
+	}
+
+	client, err := common.NewJwtAuthHTTPClient(ctx, opts...)
+	if err != nil {
+		panic(err)
+	}
+
+	conn, err := atlassian.NewConnector(
+		atlassian.WithAuthenticatedClient(client),
+		atlassian.WithWorkspace(reader.Get(credscanning.Fields.Workspace)),
+		atlassian.WithModule(atlassian.ModuleAtlassianJiraConnect),
+	)
+	if err != nil {
+		utils.Fail("error creating connector", "error", err)
+		panic(err)
 	}
 
 	return conn

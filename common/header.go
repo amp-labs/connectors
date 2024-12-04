@@ -59,18 +59,21 @@ func WithHeaderUnauthorizedHandler(
 
 // WithDynamicHeaders sets a function that will be called on every request to
 // get additional headers to use. Use this for things like time-based tokens
-// or loading headers from some external authority.
-func WithDynamicHeaders(f func() ([]Header, error)) HeaderAuthClientOption {
+// or loading headers from some external authority. The function can access a
+// copy of the request object to use its metadata for generating headers.
+func WithDynamicHeaders(f DynamicHeadersGenerator) HeaderAuthClientOption {
 	return func(params *headerClientParams) {
 		params.dynamicHeaders = f
 	}
 }
 
+type DynamicHeadersGenerator func(http.Request) ([]Header, error)
+
 // oauthClientParams is the internal configuration for the oauth http client.
 type headerClientParams struct {
 	client         *http.Client
 	headers        []Header
-	dynamicHeaders func() ([]Header, error)
+	dynamicHeaders DynamicHeadersGenerator
 	debug          func(req *http.Request, rsp *http.Response)
 	unauthorized   func(hdrs []Header, req *http.Request, rsp *http.Response) (*http.Response, error)
 }
@@ -97,7 +100,7 @@ func newHeaderAuthClient(_ context.Context, params *headerClientParams) Authenti
 type headerAuthClient struct {
 	client         *http.Client
 	headers        []Header
-	dynamicHeaders func() ([]Header, error)
+	dynamicHeaders DynamicHeadersGenerator
 	debug          func(req *http.Request, rsp *http.Response)
 	unauthorized   func(hdrs []Header, req *http.Request, rsp *http.Response) (*http.Response, error)
 }
@@ -111,7 +114,7 @@ func (c *headerAuthClient) Do(req *http.Request) (*http.Response, error) {
 	}
 
 	if c.dynamicHeaders != nil {
-		hdrs, err := c.dynamicHeaders()
+		hdrs, err := c.dynamicHeaders(*req)
 		if err != nil {
 			return nil, err
 		}
