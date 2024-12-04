@@ -141,6 +141,7 @@ func getMarshalledData(records []map[string]interface{}, fields []string) ([]com
 }
 
 // GetLastResultId returns the last row's id from a result.
+// nolint:cyclop
 func GetLastResultId(result *common.ReadResult) string {
 	if result == nil {
 		return ""
