@@ -78,6 +78,8 @@ const (
 	ObjectFieldHsObjectId         ObjectField = "hs_object_id"
 	ObjectFieldHsLastModifiedDate ObjectField = "hs_lastmodifieddate"
 	ObjectFieldLastModifiedDate   ObjectField = "lastmodifieddate"
+	ObjectFieldId                 ObjectField = "id"
+	ObjectFieldProperties         ObjectField = "properties"
 )
 
 type ObjectType string
