@@ -57,6 +57,27 @@ func TestGetLastResultId(t *testing.T) {
 			},
 			expected: "ghijkl",
 		},
+		{
+			name: "Dummy hubspot test",
+			input: &common.ReadResultRow{
+				Fields: map[string]any{
+					"lifecyclestage": "lead",
+				},
+				Raw: map[string]any{
+					"archived":  false,
+					"createdAt": "2010-12-08T06:13:17.698Z",
+					"id":        "15237",
+					"properties": map[string]any{
+						"createdate":       "2010-12-08T06:13:17.698Z",
+						"hs_object_id":     "15237",
+						"lastmodifieddate": "2010-12-04T11:18:28.697Z",
+						"lifecyclestage":   "lead",
+					},
+					"updatedAt": "2010-12-04T11:18:28.697Z",
+				},
+			},
+			expected: "15237",
+		},
 	}
 
 	for _, test := range tests {
