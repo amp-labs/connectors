@@ -140,35 +140,27 @@ func getMarshalledData(records []map[string]interface{}, fields []string) ([]com
 	return data, nil
 }
 
-// GetLastResultId returns the last row's id from a result.
+// GetResultId returns the id of a hubspot result row.
 // nolint:cyclop
-func GetLastResultId(result *common.ReadResult) string {
-	if result == nil {
+func GetResultId(row *common.ReadResultRow) string {
+	if row == nil {
 		return ""
 	}
-
-	numRecords := len(result.Data)
-	if numRecords == 0 {
-		return ""
-	}
-
-	// Get the last row
-	lastRow := result.Data[numRecords-1]
 
 	// Attempt to get it from the fields
-	if idValue, ok := lastRow.Fields[string(ObjectFieldId)].(string); ok && idValue != "" {
+	if idValue, ok := row.Fields[string(ObjectFieldId)].(string); ok && idValue != "" {
 		return idValue
-	} else if idValue, ok = lastRow.Fields[string(ObjectFieldHsObjectId)].(string); ok && idValue != "" {
+	} else if idValue, ok = row.Fields[string(ObjectFieldHsObjectId)].(string); ok && idValue != "" {
 		return idValue
 	}
 
 	// Attempt to get it from raw
-	if idValue, ok := lastRow.Raw[string(ObjectFieldId)].(string); ok && idValue != "" {
+	if idValue, ok := row.Raw[string(ObjectFieldId)].(string); ok && idValue != "" {
 		return idValue
 	}
 
 	// Attempt to get the properties map
-	propertiesValue, ok := lastRow.Raw[string(ObjectFieldProperties)].(map[string]any)
+	propertiesValue, ok := row.Raw[string(ObjectFieldProperties)].(map[string]any)
 	if !ok || propertiesValue == nil {
 		return ""
 	}
