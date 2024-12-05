@@ -254,6 +254,7 @@ func (i *ProviderInfo) NewClient(ctx context.Context, params *NewClientParams) (
 
 		return createApiKeyHTTPClient(ctx, params.Client, params.Debug, i, params.ApiKey)
 	case Jwt:
+		// We shouldn't hit this case, because no providerInfo has auth type set to JWT yet.
 		fallthrough
 	default:
 		return nil, fmt.Errorf("%w: unsupported auth type %q", ErrClient, i.AuthType)
