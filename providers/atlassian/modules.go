@@ -9,6 +9,8 @@ const (
 	ModuleEmpty common.ModuleID = ""
 	// ModuleJira is the module used for listing Jira issues.
 	ModuleJira common.ModuleID = "jira"
+	// ModuleAtlassianJiraConnect is the module used for Atlassian Connect.
+	ModuleAtlassianJiraConnect common.ModuleID = "atlassian-connect"
 )
 
 // supportedModules represents currently working and supported modules within the Atlassian connector.
@@ -21,6 +23,11 @@ var supportedModules = common.Modules{ // nolint: gochecknoglobals
 	},
 	ModuleJira: {
 		ID:      ModuleJira,
+		Label:   "rest/api",
+		Version: "3",
+	},
+	ModuleAtlassianJiraConnect: {
+		ID:      ModuleAtlassianJiraConnect,
 		Label:   "rest/api",
 		Version: "3",
 	},
