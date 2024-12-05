@@ -66,14 +66,15 @@ var (
 	errTypeMismatch = errors.New("field is not a string")
 )
 
-//nolint:revive
+//nolint:revive,funlen
 func (c *Connector) GetRecordsWithIds(
 	ctx context.Context,
 	objectName string,
 	ids []string,
 	fields []string,
 ) ([]common.ReadResultRow, error) {
-	if !getRecordSupportedObjectsSet.Has(objectName) {
+	singularObjName := naming.NewSingularString(objectName).String()
+	if !getRecordSupportedObjectsSet.Has(singularObjName) {
 		return nil, fmt.Errorf("%w %s", errGerRecordNotSupportedForObject, objectName)
 	}
 
