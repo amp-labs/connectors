@@ -2,13 +2,9 @@ package kit
 
 import (
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
-	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers"
-)
-
-const (
-	apiVersion = "v4"
 )
 
 type Connector struct {
@@ -41,12 +37,11 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	}
 
 	conn.setBaseURL(providerInfo.BaseURL)
+	conn.Client.HTTPClient.ErrorHandler = interpreter.ErrorHandler{
+		JSON: interpreter.NewFaultyResponder(errorFormats, nil),
+	}.Handle
 
 	return conn, nil
-}
-
-func (c *Connector) getApiURL(arg string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.BaseURL, apiVersion, arg)
 }
 
 func (c *Connector) setBaseURL(newURL string) {
