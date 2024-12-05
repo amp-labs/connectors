@@ -1,0 +1,144 @@
+{
+    "modules": {
+      "root": {
+        "id": "root",
+        "path": "/v4",
+        "objects": {
+          "broadcasts": {
+            "displayName": "broadcasts",
+            "path": "/broadcasts",
+            "responseKey": "broadcasts",
+            "fields": {
+             "id": "id",
+             "publication_id": "publication_id",
+             "created_at": "created_at",
+             "subject": "subject",
+             "preview_text": "preview_text",
+             "description": "description",
+             "content": "content",
+             "public": "public",
+             "published_at": "published_at",
+             "send_at": "send_at",
+             "thumbnail_alt": "thumbnail_alt",
+             "thumbnail_url": "thumbnail_url",
+             "email_address": "email_address",
+             "email_template":"email_template",
+             "subscriber_filter":"subscriber_filter"
+            }
+          },
+          "custom_fields":{
+            "displayName": "custom_fields",
+            "path": "/custom_fields",
+            "responseKey": "custom_fields",
+            "fields": {
+              "id": "id",
+              "name": "name",
+              "key": "key",
+              "label": "label"
+            }
+          },
+          "forms":{
+            "displayName": "forms",
+            "path": "/forms",
+            "responseKey": "forms",
+            "fields": {
+              "id": "id",
+              "name": "name",
+              "created_at": "created_at",
+              "type": "type",
+              "format": "format",
+              "embed_js": "embed_js",
+              "embed_url": "embed_url",
+              "archived": "archived",
+              "uid": "uid"
+            }
+          },
+          "subscribers":{
+            "displayName": "subscribers",
+            "path": "/subscribers",
+            "responseKey": "subscribers",
+            "fields": {
+              "id": "id",
+              "first_name": "first_name",
+              "email_address": "email_address",
+              "state": "state",
+              "created_at": "created_at",
+              "fields": "fields"
+            }
+          },
+          "tags":{
+            "displayName": "tags",
+            "path": "/tags",
+            "responseKey": "tags",
+            "fields": {
+              "id": "id",
+              "name": "name",
+              "created_at": "created_at"
+            }
+          },
+          "email_templates":{
+            "displayName": "email_templates",
+            "path": "/email_templates",
+            "responseKey": "email_templates",
+            "fields": {
+              "id": "id",
+              "name": "name",
+              "is_default": "is_default",
+              "category": "category"
+            }
+          },
+          "purchases":{
+            "displayName": "purchases",
+            "path": "/purchases",
+            "responseKey": "purchases",
+            "fields": {
+              "id": "id",
+              "transaction_id": "transaction_id",
+              "status": "status",
+              "email_address": "email_address",
+              "currency": "currency",
+              "transaction_time": "transaction_time",
+              "subtotal": "subtotal",
+              "discount": "discount",
+              "tax": "tax",
+              "total": "total",
+              "products": "products"
+            }
+          },
+          "segments":{
+            "displayName": "segments",
+            "path": "/segments",
+            "responseKey": "segments",
+            "fields": {
+              "id": "id",
+              "name": "name",
+              "created_at": "created_at"
+            }
+          },
+          "sequences":{
+            "displayName": "sequences",
+            "path": "/sequences",
+            "responseKey": "sequences",
+            "fields": {
+              "id": "id",
+              "name": "name",
+              "hold": "hold",
+              "repeat": "repeat",
+              "created_at": "created_at"
+            }
+          },
+          "webhooks":{
+            "displayName": "webhooks",
+            "path": "/webhooks",
+            "responseKey": "webhooks",
+            "fields": {
+              "id": "id",
+              "account_id": "account_id",
+              "event": "event",
+              "target_url": "target_url"
+            }
+          }
+        }
+      }
+    }
+  }
