@@ -32,6 +32,7 @@ var Fields = struct { // nolint:gochecknoglobals
 	// Oauth2
 	State  Field
 	Scopes Field
+	Secret Field
 }{
 	Provider: Field{
 		Name:      "provider",
@@ -98,6 +99,11 @@ var Fields = struct { // nolint:gochecknoglobals
 		PathJSON:  "scopes",
 		SuffixENV: "SCOPES",
 	},
+	Secret: Field{
+		Name:      "secret",
+		PathJSON:  "secret",
+		SuffixENV: "SECRET",
+	},
 }
 
 type Field struct {
@@ -121,6 +127,7 @@ func (f Field) GetENVReader(providerName string) *scanning.EnvReader {
 	}
 }
 
+// nolint:cyclop
 func getFields(info providers.ProviderInfo,
 	withRequiredAccessToken, withRequiredWorkspace bool,
 ) (datautils.NamedLists[Field], error) {
@@ -143,6 +150,8 @@ func getFields(info providers.ProviderInfo,
 	case providers.None:
 	case providers.Oauth2:
 		lists.Add(requiredType, Fields.ClientId, Fields.ClientSecret)
+	case providers.Jwt:
+		lists.Add(requiredType, Fields.Secret)
 	default:
 		return nil, ErrProviderInfo
 	}

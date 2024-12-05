@@ -19,6 +19,7 @@ const (
 const (
 	ApiKey AuthType = "apiKey"
 	Basic  AuthType = "basic"
+	Jwt    AuthType = "jwt"
 	None   AuthType = "none"
 	Oauth2 AuthType = "oauth2"
 )
