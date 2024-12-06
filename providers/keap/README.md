@@ -5,7 +5,7 @@ Keap API indexes custom fields using numbered identifiers without including huma
 This issue is addressed in the implementation.
 
 
-## Example
+## Original record
 ```json
 {
   "id": 22,
@@ -15,7 +15,7 @@ This issue is addressed in the implementation.
 ```
 
 
-## Explanation
+## Normal response
 [List Contacts](https://developer.keap.com/docs/rest/#tag/Contact/operation/listContactsUsingGET)
 When requesting the contacts resource, the response includes custom fields as follows:
 ```json

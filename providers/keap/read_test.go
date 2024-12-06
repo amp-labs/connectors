@@ -98,6 +98,19 @@ func TestReadV1(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"jobdescription": "AI application in commerce",
 						"experience":     "8 years in 3 companies",
 						"age":            float64(32),
+						"custom_fields": []any{map[string]any{
+							"id":      float64(12),
+							"content": "8 years in 3 companies",
+						}, map[string]any{
+							"id":      float64(6),
+							"content": "Product Owner",
+						}, map[string]any{
+							"id":      float64(8),
+							"content": "AI application in commerce",
+						}, map[string]any{
+							"id":      float64(14),
+							"content": float64(32),
+						}},
 					},
 				}, {
 					Fields: map[string]any{

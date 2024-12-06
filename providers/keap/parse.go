@@ -18,7 +18,8 @@ func makeNextRecordsURL(moduleID common.ModuleID) common.NextPageFunc {
 	}
 }
 
-// Before parsing the records if applicable API will be called one time to get model describing custom fields.
+// Before parsing the records, if any custom fields are present (without a human-readable name),
+// this will call the correct API to extend & replace the custom field with human-readable information.
 // Object will then be enhanced using model.
 func (c *Connector) parseReadRecords(
 	ctx context.Context, config common.ReadParams, jsonPath string,
@@ -34,18 +35,11 @@ func (c *Connector) parseReadRecords(
 			return nil, err
 		}
 
-		result := make([]map[string]any, len(arr))
-
-		for index, object := range arr {
-			item, err := c.enhanceObjectWithCustomFieldNames(object, customFields)
-			if err != nil {
-				return nil, err
-			}
-
-			result[index] = item
+		if len(customFields) == 0 {
+			return jsonquery.Convertor.ArrayToMap(arr)
 		}
 
-		return result, nil
+		return enhanceObjectsWithCustomFieldNames(arr, customFields)
 	}
 }
 
@@ -54,33 +48,32 @@ func (c *Connector) parseReadRecords(
 // * Locate custom fields in JSON read response.
 // * Replace ids with human-readable names, which is provided as argument.
 // * Place fields at the top level of the object.
-func (c *Connector) enhanceObjectWithCustomFieldNames(
-	node *ajson.Node,
+func enhanceObjectsWithCustomFieldNames(
+	arr []*ajson.Node,
 	fields map[int]modelCustomField,
-) (map[string]any, error) {
-	object, err := jsonquery.Convertor.ObjectToMap(node)
-	if err != nil {
-		return nil, err
-	}
+) ([]map[string]any, error) {
+	result := make([]map[string]any, len(arr))
 
-	if len(fields) == 0 {
-		// no custom fields, the object is ready as is.
-		return object, nil
-	}
-
-	customFieldsResponse, err := jsonquery.ParseNode[readCustomFieldsResponse](node)
-	if err != nil {
-		return nil, err
-	}
-
-	// Replace identifiers with human-readable field names which were found by making a call to "/model".
-	for _, field := range customFieldsResponse.CustomFields {
-		if model, ok := fields[field.ID]; ok {
-			object[model.FieldName] = field.Content
+	for index, node := range arr {
+		object, err := jsonquery.Convertor.ObjectToMap(node)
+		if err != nil {
+			return nil, err
 		}
+
+		customFieldsResponse, err := jsonquery.ParseNode[readCustomFieldsResponse](node)
+		if err != nil {
+			return nil, err
+		}
+
+		// Replace identifiers with human-readable field names which were found by making a call to "/model".
+		for _, field := range customFieldsResponse.CustomFields {
+			if model, ok := fields[field.ID]; ok {
+				object[model.FieldName] = field.Content
+			}
+		}
+
+		result[index] = object
 	}
 
-	delete(object, "custom_fields")
-
-	return object, nil
+	return result, nil
 }
