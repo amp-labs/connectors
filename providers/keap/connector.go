@@ -18,11 +18,6 @@ type Connector struct {
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	defer common.PanicRecovery(func(cause error) {
-		outErr = cause
-		conn = nil
-	})
-
 	params, err := paramsbuilder.Apply(parameters{}, opts, WithModule(ModuleV1))
 	if err != nil {
 		return nil, err
