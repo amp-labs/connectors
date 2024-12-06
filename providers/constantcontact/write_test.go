@@ -6,7 +6,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -48,7 +47,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 				},
 				Then: mockserver.Response(http.StatusOK, responseCreateContact),
 			}.Server(),
-			Comparator: writeComparator,
+			Comparator: testroutines.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "af73e650-96f0-11ef-b2a0-fa163eafb85e",
@@ -76,7 +75,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 				},
 				Then: mockserver.Response(http.StatusOK, responseCreateContact),
 			}.Server(),
-			Comparator: writeComparator,
+			Comparator: testroutines.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "af73e650-96f0-11ef-b2a0-fa163eafb85e",
@@ -103,7 +102,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 				},
 				Then: mockserver.Response(http.StatusOK, responseCreateEmailCampaign),
 			}.Server(),
-			Comparator: writeComparator,
+			Comparator: testroutines.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "987cb9ab-ad0c-4087-bd46-2e2ad241221f",
@@ -130,7 +129,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 				},
 				Then: mockserver.Response(http.StatusOK, responseCreateEmailCampaign),
 			}.Server(),
-			Comparator: writeComparator,
+			Comparator: testroutines.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "987cb9ab-ad0c-4087-bd46-2e2ad241221f",
@@ -153,8 +152,4 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			})
 		})
 	}
-}
-
-func writeComparator(serverURL string, actual, expected *common.WriteResult) bool {
-	return mockutils.WriteResultComparator.SubsetData(actual, expected)
 }

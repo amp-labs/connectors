@@ -7,7 +7,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -147,14 +146,9 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, leads),
 			}.Server(),
-			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
-				// custom comparison focuses on subset of fields to keep the test short
-				return mockutils.ReadResultComparator.SubsetFields(actual, expected) &&
-					mockutils.ReadResultComparator.SubsetRaw(actual, expected) &&
-					actual.NextPage.String() == expected.NextPage.String() &&
-					actual.Done == expected.Done
-			},
+			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
+				Rows: 1,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
 						"channel": nil,
@@ -186,7 +180,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"was_seen":            true,
 					},
 				}},
-				Done: true,
+				NextPage: "",
+				Done:     true,
 			},
 			ExpectedErrs: nil,
 		},
