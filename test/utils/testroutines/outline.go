@@ -20,7 +20,7 @@ type TestCase[Input any, Output any] struct {
 	// Mock Server which connector will call.
 	Server *httptest.Server
 	// Custom Comparator of how expected output agrees with actual output.
-	Comparator func(serverURL string, actual, expected Output) bool
+	Comparator Comparator[Output]
 	// Expected return value.
 	Expected Output
 	// ExpectedErrs is a list of errors that must be present in error output.
