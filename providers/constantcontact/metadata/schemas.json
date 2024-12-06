@@ -18,19 +18,6 @@
             "roles": "roles"
           }
         },
-        "accounts": {
-          "displayName": "Accounts",
-          "path": "/partner/accounts",
-          "responseKey": "site_owner_list",
-          "fields": {
-            "billing_status": "billing_status",
-            "encoded_account_id": "encoded_account_id",
-            "last_login_date": "last_login_date",
-            "organization_name": "organization_name",
-            "site_owner_name": "site_owner_name",
-            "subscriber_count": "subscriber_count"
-          }
-        },
         "activities": {
           "displayName": "Activities",
           "path": "/activities",
@@ -49,16 +36,6 @@
             "updated_at": "updated_at"
           }
         },
-        "campaign_id_xrefs": {
-          "displayName": "Email Campaign Identifiers",
-          "path": "/emails/campaign_id_xrefs",
-          "responseKey": "xrefs",
-          "fields": {
-            "campaign_activity_id": "campaign_activity_id",
-            "campaign_id": "campaign_id",
-            "v2_email_campaign_id": "v2_email_campaign_id"
-          }
-        },
         "contact_custom_fields": {
           "displayName": "Contact Custom Fields",
           "path": "/contact_custom_fields",
@@ -70,15 +47,6 @@
             "name": "name",
             "type": "type",
             "updated_at": "updated_at"
-          }
-        },
-        "contact_id_xrefs": {
-          "displayName": "Contact Identifiers",
-          "path": "/contacts/contact_id_xrefs",
-          "responseKey": "xrefs",
-          "fields": {
-            "contact_id": "contact_id",
-            "sequence_id": "sequence_id"
           }
         },
         "contact_lists": {
@@ -162,15 +130,6 @@
             "updated_at": "updated_at"
           }
         },
-        "list_id_xrefs": {
-          "displayName": "List Identifiers",
-          "path": "/contact_lists/list_id_xrefs",
-          "responseKey": "xrefs",
-          "fields": {
-            "list_id": "list_id",
-            "sequence_id": "sequence_id"
-          }
-        },
         "privileges": {
           "displayName": "Privileges",
           "path": "/account/user/privileges",
@@ -189,17 +148,6 @@
             "edited_at": "edited_at",
             "name": "name",
             "segment_id": "segment_id"
-          }
-        },
-        "subscriptions": {
-          "displayName": "Subscriptions",
-          "path": "/partner/webhooks/subscriptions",
-          "responseKey": "",
-          "fields": {
-            "hook_uri": "hook_uri",
-            "topic_description": "topic_description",
-            "topic_id": "topic_id",
-            "topic_name": "topic_name"
           }
         }
       }
