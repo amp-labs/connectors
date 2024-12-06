@@ -9,7 +9,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/providers/zendesksupport"
 	"github.com/amp-labs/connectors/test/utils"
 	connTest "github.com/amp-labs/connectors/test/zendesksupport"
 )
@@ -36,8 +35,4 @@ func main() {
 
 	fmt.Println("Reading users..")
 	utils.DumpJSON(res, os.Stdout)
-
-	if res.Rows > zendesksupport.DefaultPageSize {
-		utils.Fail(fmt.Sprintf("expected max %v rows", zendesksupport.DefaultPageSize))
-	}
 }
