@@ -1,0 +1,20 @@
+{
+    "webhooks": [
+      {
+        "id": 1,
+        "account_id": 1275,
+        "event": {
+          "name": "form_subscribe",
+          "form_id": 10
+        },
+        "target_url": "http://example.convertkit.dev/"
+      }
+    ],
+    "pagination": {
+      "has_previous_page": false,
+      "has_next_page": false,
+      "start_cursor": "WzJd",
+      "end_cursor": "WzFd",
+      "per_page": 500
+    }
+  }

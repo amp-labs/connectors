@@ -1,0 +1,21 @@
+{
+    "subscribers": [
+      {
+        "id": 143,
+        "first_name": "Alice",
+        "email_address": "alice@convertkit.dev",
+        "state": "active",
+        "created_at": "2023-01-27T11:43:55Z",
+        "fields": {
+          "category": "One"
+        }
+      }
+    ],
+    "pagination": {
+      "has_previous_page": false,
+      "has_next_page": false,
+      "start_cursor": "WzE0M10=",
+      "end_cursor": "WzE0M10=",
+      "per_page": 500
+    }
+  }

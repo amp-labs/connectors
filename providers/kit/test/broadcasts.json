@@ -1,0 +1,30 @@
+{
+    "broadcasts": [
+      {
+        "id": 3,
+        "created_at": "2023-02-17T11:43:55Z",
+        "subject": "Productivity tricks",
+        "preview_text": null,
+        "description": null,
+        "content": null,
+        "public": false,
+        "published_at": null,
+        "send_at": null,
+        "thumbnail_alt": null,
+        "thumbnail_url": null,
+        "email_address": null,
+        "email_template": {
+          "id": 6,
+          "name": "Text Only"
+        },
+        "subscriber_filter": [
+          {
+            "all": [
+              {
+                "type": "all_subscribers"
+              }
+            ]
+          }
+        ]
+      }]
+    }

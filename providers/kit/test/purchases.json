@@ -1,0 +1,25 @@
+{
+    "purchases": [
+      {
+        "id": 3,
+        "transaction_id": "512-41-4101",
+        "status": "paid",
+        "email_address": "pru.magoo@convertkit.dev",
+        "currency": "USD",
+        "transaction_time": "2023-02-17T11:43:55Z",
+        "subtotal": 5,
+        "discount": 0,
+        "tax": 0,
+        "total": 5,
+        "products": [
+          {
+            "quantity": 1,
+            "lid": "000-13-0000",
+            "unit_price": 0.05,
+            "sku": null,
+            "name": "Tip",
+            "pid": "111-75-7524"
+          }
+        ]
+      }]
+    }

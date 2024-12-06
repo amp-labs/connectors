@@ -1,0 +1,16 @@
+{
+    "segments": [
+      {
+        "id": 55,
+        "name": "Segment B",
+        "created_at": "2023-02-17T11:43:55Z"
+      }
+    ],
+    "pagination": {
+      "has_previous_page": false,
+      "has_next_page": false,
+      "start_cursor": "WzU1XQ==",
+      "end_cursor": "WzU0XQ==",
+      "per_page": 500
+    }
+  }
