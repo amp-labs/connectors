@@ -27,6 +27,11 @@ func main() {
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "contacts",
 		Fields:     connectors.Fields("first_name"),
+		// Since:      time.Now().Add(-300 * (24 * time.Hour)),
+		// NextPage:  `https://api.cc.email/v3/contacts?cursor=bGltaXQ9MSZuZXh0PTI=`,
+		// NextPage:  `https://api.cc.email/v3/contacts?cursor=bGltaXQ9MSZuZXh0PTImdXBkYXRlZF9hZnRlcj0yMDIyLTAzLTExVDIyJTNBMDklM0EwMiUyQjAwJTNBMDA=`,
+		// NextPage:  `https://api.cc.email/v3/emails?limit=1&next=MQ**`,
+		// NextPage:  `https://api.cc.email/v3/emails?limit=1&next=MQ**&after_date=2022-03-11T22:41:18Z`,
 	})
 	if err != nil {
 		utils.Fail("error reading from ConstantContact", "error", err)
