@@ -45,13 +45,13 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		},
 		{
 			Name:  "Error response is parsed",
-			Input: common.ReadParams{ObjectName: "contact_id_xrefs", Fields: connectors.Fields("contact_id")},
+			Input: common.ReadParams{ObjectName: "contacts", Fields: connectors.Fields("contact_id")},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusBadRequest, responseContactIDsError),
 			}.Server(),
 			ExpectedErrs: []error{
-				errors.New("Sequence ID is invalid."), // nolint:goerr113
+				errors.New("Descriptive error message."), // nolint:goerr113
 				common.ErrBadRequest,
 			},
 		},

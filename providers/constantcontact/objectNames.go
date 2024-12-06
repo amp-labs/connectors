@@ -8,7 +8,6 @@ import (
 
 const (
 	objectNameAccountEmails           = "account_emails"
-	objectNameAccounts                = "accounts"
 	objectNameContactCustomFields     = "contact_custom_fields"
 	objectNameContactLists            = "contact_lists"
 	objectNameContactTags             = "contact_tags"
@@ -16,7 +15,11 @@ const (
 	objectNameEmailCampaignActivities = "email_campaign_activities"
 	objectNameEmailCampaigns          = "email_campaigns"
 	objectNameSegments                = "segments"
-	objectNameSubscriptions           = "subscriptions"
+
+	// Partner accounts and subscriptions need special handling. Ignored for now.
+	// https://v3.developer.constantcontact.com/api_guide/partners_accts_get.html
+	// objectNameAccounts                = "accounts"
+	// objectNameSubscriptions           = "subscriptions".
 )
 
 // Supported object names can be found under schemas.json.
@@ -27,7 +30,7 @@ var supportedObjectsByCreate = datautils.NewSet(
 	// https://v3.developer.constantcontact.com/api_reference/index.html#!/Account_Services/addAccountEmailAddress
 	objectNameAccountEmails,
 	// https://v3.developer.constantcontact.com/api_reference/index.html#!/Technology_Partners/provision
-	objectNameAccounts,
+	// objectNameAccounts,
 	// https://v3.developer.constantcontact.com/api_reference/index.html#!/Contacts_Custom_Fields/postCustomFields
 	objectNameContactCustomFields,
 	// https://v3.developer.constantcontact.com/api_reference/index.html#!/Contact_Lists/createList
@@ -59,7 +62,7 @@ var supportedObjectsByUpdate = datautils.NewSet(
 	// https://v3.developer.constantcontact.com/api_reference/index.html#!/Segments/updateSegment
 	objectNameSegments,
 	// https://v3.developer.constantcontact.com/api_reference/index.html#!/Technology_Partners_Webhooks/putWebhooksTopic
-	objectNameSubscriptions,
+	// objectNameSubscriptions,
 )
 
 // nolint: lll,gochecknoglobals
@@ -77,7 +80,7 @@ var supportedObjectsByDelete = datautils.NewStringSet(
 	// https://v3.developer.constantcontact.com/api_reference/index.html#!/Segments/deleteSegment
 	objectNameSegments,
 	// https://v3.developer.constantcontact.com/api_reference/index.html#!/Technology_Partners_Webhooks/deleteWebhooksSubscriptions
-	objectNameSubscriptions,
+	// objectNameSubscriptions,
 )
 
 var objectNameToWritePath = map[string]string{ //nolint:gochecknoglobals
@@ -87,14 +90,14 @@ var objectNameToWritePath = map[string]string{ //nolint:gochecknoglobals
 }
 
 var objectNameToWriteResponseIdentifier = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
-	objectNameAccounts:                "encoded_account_id",
+	// objectNameAccounts: "encoded_account_id",
+	// objectNameSubscriptions: "topic_id",
 	objectNameAccountEmails:           "email_id",
 	objectNameContactLists:            "list_id",
 	objectNameContactTags:             "tag_id",
 	objectNameContactCustomFields:     "custom_field_id",
 	objectNameEmailCampaigns:          "campaign_id",
 	objectNameEmailCampaignActivities: "campaign_activity_id",
-	objectNameSubscriptions:           "topic_id",
 },
 	func(objectName string) (id string) {
 		return naming.NewSingularString(objectName).String() + "_id"
