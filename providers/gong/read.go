@@ -38,7 +38,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		if errors.Is(err, common.ErrNotFound) {
 			return &common.ReadResult{
 				Rows:     0,
-				Data:     make([]common.ReadResultRow, 0),
+				Data:     nil,
 				NextPage: "",
 				Done:     true,
 			}, nil
