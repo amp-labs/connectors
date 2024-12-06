@@ -5,7 +5,7 @@
         "path": "/v4",
         "objects": {
           "broadcasts": {
-            "displayName": "broadcasts",
+            "displayName": "Broadcasts",
             "path": "/broadcasts",
             "responseKey": "broadcasts",
             "fields": {
@@ -27,7 +27,7 @@
             }
           },
           "custom_fields":{
-            "displayName": "custom_fields",
+            "displayName": "Custom Fields",
             "path": "/custom_fields",
             "responseKey": "custom_fields",
             "fields": {
@@ -38,7 +38,7 @@
             }
           },
           "forms":{
-            "displayName": "forms",
+            "displayName": "Forms",
             "path": "/forms",
             "responseKey": "forms",
             "fields": {
@@ -54,7 +54,7 @@
             }
           },
           "subscribers":{
-            "displayName": "subscribers",
+            "displayName": "Subscribers",
             "path": "/subscribers",
             "responseKey": "subscribers",
             "fields": {
@@ -67,7 +67,7 @@
             }
           },
           "tags":{
-            "displayName": "tags",
+            "displayName": "Tags",
             "path": "/tags",
             "responseKey": "tags",
             "fields": {
@@ -77,7 +77,7 @@
             }
           },
           "email_templates":{
-            "displayName": "email_templates",
+            "displayName": "Email Templates",
             "path": "/email_templates",
             "responseKey": "email_templates",
             "fields": {
@@ -88,7 +88,7 @@
             }
           },
           "purchases":{
-            "displayName": "purchases",
+            "displayName": "Purchases",
             "path": "/purchases",
             "responseKey": "purchases",
             "fields": {
@@ -106,7 +106,7 @@
             }
           },
           "segments":{
-            "displayName": "segments",
+            "displayName": "Segments",
             "path": "/segments",
             "responseKey": "segments",
             "fields": {
@@ -116,7 +116,7 @@
             }
           },
           "sequences":{
-            "displayName": "sequences",
+            "displayName": "Sequences",
             "path": "/sequences",
             "responseKey": "sequences",
             "fields": {
@@ -128,7 +128,7 @@
             }
           },
           "webhooks":{
-            "displayName": "webhooks",
+            "displayName": "Webhooks",
             "path": "/webhooks",
             "responseKey": "webhooks",
             "fields": {

@@ -18,7 +18,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
 	broadcastsresponse := testutils.DataFromFile(t, "broadcasts.json")
-	Customfieldsresponse := testutils.DataFromFile(t, "custom_fields.json")
+	customfieldsresponse := testutils.DataFromFile(t, "custom_fields.json")
 	emailtemplatesresponse := testutils.DataFromFile(t, "email_templates.json")
 	formsresponse := testutils.DataFromFile(t, "forms.json")
 	purchasesresponse := testutils.DataFromFile(t, "purchases.json")
@@ -44,7 +44,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					Then: mockserver.Response(http.StatusOK, broadcastsresponse),
 				}, {
 					If:   mockcond.PathSuffix("/v4/custom_fields"),
-					Then: mockserver.Response(http.StatusOK, Customfieldsresponse),
+					Then: mockserver.Response(http.StatusOK, customfieldsresponse),
 				}, {
 					If:   mockcond.PathSuffix("/v4/email_templates"),
 					Then: mockserver.Response(http.StatusOK, emailtemplatesresponse),
@@ -77,7 +77,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"broadcasts": {
-						DisplayName: "broadcasts",
+						DisplayName: "Broadcasts",
 						FieldsMap: map[string]string{
 							"content":           "content",
 							"created_at":        "created_at",
@@ -96,7 +96,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						},
 					},
 					"custom_fields": {
-						DisplayName: "custom_fields",
+						DisplayName: "Custom Fields",
 						FieldsMap: map[string]string{
 							"id":    "id",
 							"key":   "key",
@@ -105,7 +105,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						},
 					},
 					"email_templates": {
-						DisplayName: "email_templates",
+						DisplayName: "Email Templates",
 						FieldsMap: map[string]string{
 							"category":   "category",
 							"id":         "id",
@@ -114,7 +114,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						},
 					},
 					"forms": {
-						DisplayName: "forms",
+						DisplayName: "Forms",
 						FieldsMap: map[string]string{
 							"archived":   "archived",
 							"created_at": "created_at",
@@ -128,7 +128,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						},
 					},
 					"purchases": {
-						DisplayName: "purchases",
+						DisplayName: "Purchases",
 						FieldsMap: map[string]string{
 							"currency":         "currency",
 							"discount":         "discount",
@@ -144,7 +144,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						},
 					},
 					"segments": {
-						DisplayName: "segments",
+						DisplayName: "Segments",
 						FieldsMap: map[string]string{
 							"id":         "id",
 							"name":       "name",
@@ -152,7 +152,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						},
 					},
 					"sequences": {
-						DisplayName: "sequences",
+						DisplayName: "Sequences",
 						FieldsMap: map[string]string{
 							"created_at": "created_at",
 							"hold":       "hold",
@@ -162,7 +162,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						},
 					},
 					"subscribers": {
-						DisplayName: "subscribers",
+						DisplayName: "Subscribers",
 						FieldsMap: map[string]string{
 							"created_at":    "created_at",
 							"email_address": "email_address",
@@ -173,7 +173,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						},
 					},
 					"tags": {
-						DisplayName: "tags",
+						DisplayName: "Tags",
 						FieldsMap: map[string]string{
 							"created_at": "created_at",
 							"id":         "id",
@@ -181,7 +181,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						},
 					},
 					"webhooks": {
-						DisplayName: "webhooks",
+						DisplayName: "Webhooks",
 						FieldsMap: map[string]string{
 							"account_id": "account_id",
 							"event":      "event",
