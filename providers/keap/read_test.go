@@ -123,7 +123,7 @@ func TestReadV1(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Expected: &common.ReadResult{
 				Rows:     0,
 				Data:     []common.ReadResultRow{},
-				NextPage: "https://api.infusionsoft.com/crm/rest/v1/contacts/?limit=2&offset=4&since=2024-06-03T22:17:59.039Z&order=id", // nolint:lll
+				NextPage: "", // nolint:lll
 				Done:     true,
 			},
 			ExpectedErrs: nil,
