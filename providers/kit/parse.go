@@ -31,12 +31,6 @@ func makeNextRecordsURL(reqLink *urlbuilder.URL) common.NextPageFunc {
 
 			reqLink.WithQueryParam("after", *endCursorToken)
 
-			// Next page token is base64 encoded,
-			// therefore it may contain symbols that should be exempt from escaping.
-			reqLink.AddEncodingExceptions(map[string]string{
-				"%3D": "=",
-			})
-
 			return reqLink.String(), nil
 		}
 

@@ -9,7 +9,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	ap "github.com/amp-labs/connectors/providers/kit"
+	testConn "github.com/amp-labs/connectors/providers/kit"
 	"github.com/amp-labs/connectors/test/kit"
 )
 
@@ -38,7 +38,7 @@ func MainFn() int {
 	return 0
 }
 
-func testReadCustomFields(ctx context.Context, conn *ap.Connector) error {
+func testReadCustomFields(ctx context.Context, conn *testConn.Connector) error {
 	params := common.ReadParams{
 		ObjectName: "custom_fields",
 		Fields:     connectors.Fields(""),
@@ -61,7 +61,7 @@ func testReadCustomFields(ctx context.Context, conn *ap.Connector) error {
 	return nil
 }
 
-func testReadTags(ctx context.Context, conn *ap.Connector) error {
+func testReadTags(ctx context.Context, conn *testConn.Connector) error {
 	params := common.ReadParams{
 		ObjectName: "tags",
 		Fields:     connectors.Fields(""),
@@ -84,7 +84,7 @@ func testReadTags(ctx context.Context, conn *ap.Connector) error {
 	return nil
 }
 
-func testReadEmailTemplates(ctx context.Context, conn *ap.Connector) error {
+func testReadEmailTemplates(ctx context.Context, conn *testConn.Connector) error {
 	params := common.ReadParams{
 		ObjectName: "email_templates",
 		Fields:     connectors.Fields(""),
