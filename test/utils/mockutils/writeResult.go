@@ -17,15 +17,6 @@ func (writeResultComparator) SubsetData(actual, expected *common.WriteResult) bo
 		return false
 	}
 
-	// strict comparison
-	ok := actual.Success == expected.Success &&
-		actual.RecordId == expected.RecordId &&
-		reflect.DeepEqual(actual.Errors, expected.Errors)
-
-	if !ok {
-		return false
-	}
-
 	for k, expectedValue := range expected.Data {
 		actualValue, ok := actual.Data[k]
 		if !ok {
@@ -38,4 +29,9 @@ func (writeResultComparator) SubsetData(actual, expected *common.WriteResult) bo
 	}
 
 	return true
+}
+
+// ExactErrors uses strict error comparison.
+func (writeResultComparator) ExactErrors(actual, expected *common.WriteResult) bool {
+	return reflect.DeepEqual(actual.Errors, expected.Errors)
 }

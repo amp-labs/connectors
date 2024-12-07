@@ -8,7 +8,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -68,7 +67,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				If:    mockcond.PathSuffix("/api/profiles"),
 				Then:  mockserver.Response(http.StatusOK, responseProfilesFirstPage),
 			}.Server(),
-			Comparator: readComparator,
+			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -94,7 +93,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Since:      time.Date(2024, 3, 4, 8, 22, 56, 0, time.UTC),
 				Filter:     "equals(messages.channel,'email')",
 			},
-			Comparator: readComparator,
+			Comparator: testroutines.ComparatorSubsetRead,
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentMIME("application/vnd.api+json"),
 				If: mockcond.And{
@@ -147,12 +146,4 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 	connector.setBaseURL(serverURL)
 
 	return connector, nil
-}
-
-func readComparator(baseURL string, actual, expected *common.ReadResult) bool {
-	return mockutils.ReadResultComparator.SubsetFields(actual, expected) &&
-		mockutils.ReadResultComparator.SubsetRaw(actual, expected) &&
-		actual.NextPage.String() == expected.NextPage.String() &&
-		actual.Rows == expected.Rows &&
-		actual.Done == expected.Done
 }
