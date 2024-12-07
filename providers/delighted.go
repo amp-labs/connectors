@@ -3,7 +3,6 @@ package providers
 const Delighted Provider = "delighted"
 
 func init() {
-
 	SetInfo(Delighted, ProviderInfo{
 		DisplayName: "Delighted",
 		AuthType:    Basic,
@@ -31,5 +30,4 @@ func init() {
 			},
 		},
 	})
-
 }
