@@ -10,6 +10,8 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/amp-labs/connectors/internal/httputils"
 )
 
 // Header is a key/value pair that can be added to a request.
@@ -17,6 +19,11 @@ type Header struct {
 	Key   string
 	Value string
 }
+
+// ResponseDifferentiator acts as an arbiter, categorizing a response as successful or erroneous.
+// The former would be a happy path for HTTPClient,
+// the later would invoke ErrorHandler producing an error object.
+type ResponseDifferentiator func(rsp *http.Response, body []byte) (bool, error)
 
 // ErrorHandler allows the caller to inject their own HTTP error handling logic.
 // All non-2xx responses will be passed to the error handler. If the error handler
@@ -26,19 +33,41 @@ type Header struct {
 // to the error handler as arguments.
 type ErrorHandler func(rsp *http.Response, body []byte) error
 
-type ResponseHandler func(rsp *http.Response) (*http.Response, error)
-
 // HTTPClient is an HTTP client that handles OAuth access token refreshes.
 type HTTPClient struct {
-	Base            string                  // optional base URL. If not set, then all URLs must be absolute.
-	Client          AuthenticatedHTTPClient // underlying HTTP client. Required.
-	ErrorHandler    ErrorHandler            // optional error handler. If not set, then the default error handler is used.
-	ResponseHandler ResponseHandler         // optional, Allows mutation of the http.Response from the Saas API response.
+	// Base is optional URL base. If not set, then all URLs must be absolute.
+	Base string
+
+	// Client is required. It is underlying HTTP client, a delegate.
+	Client AuthenticatedHTTPClient
+
+	// ResponseDifferentiator is optional arbiter that decides if response is successful
+	// otherwise ErrorHandler should be called. By default, response with status 2xx is considered successful.
+	ResponseDifferentiator ResponseDifferentiator
+
+	// ErrorHandler is optional. If not ser the default response error handler is used.
+	ErrorHandler ErrorHandler
 }
 
 // getURL returns the base prefixed URL.
 func (h *HTTPClient) getURL(url string) (string, error) {
 	return getURL(h.Base, url)
+}
+
+func (h *HTTPClient) isSuccessfulResponse(response *http.Response, body []byte) (bool, error) {
+	if h.ResponseDifferentiator != nil {
+		return h.ResponseDifferentiator(response, body)
+	}
+
+	return httputils.IsStatus2XX(response), nil
+}
+
+func (h *HTTPClient) handleError(response *http.Response, body []byte) error {
+	if h.ErrorHandler != nil {
+		return h.ErrorHandler(response, body)
+	}
+
+	return InterpretError(response, body)
 }
 
 // Get makes a GET request to the given URL and returns the response. If the response is not a 2xx,
@@ -266,44 +295,29 @@ func makeDeleteRequest(ctx context.Context, url string, headers []Header) (*http
 // sendRequest sends the given request and returns the response & response body.
 func (h *HTTPClient) sendRequest(req *http.Request) (*http.Response, []byte, error) { //nolint:cyclop
 	// Send the request
-	res, err := h.Client.Do(req)
+	response, err := h.Client.Do(req)
+	defer httputils.BodyClose(response)
+
 	if err != nil {
 		return nil, nil, err
 	}
 
-	// Apply the ResponseHandler if provided
-	if h.ResponseHandler != nil {
-		res, err = h.ResponseHandler(res)
-		if err != nil {
-			return nil, nil, err
-		}
-	}
-
 	// Read the response body
-	body, err := io.ReadAll(res.Body)
-
-	defer func() {
-		if res != nil && res.Body != nil {
-			if closeErr := res.Body.Close(); closeErr != nil {
-				slog.Warn("unable to close response body", "error", closeErr)
-			}
-		}
-	}()
-
+	body, err := io.ReadAll(response.Body)
 	if err != nil {
 		return nil, nil, fmt.Errorf("error reading response body: %w", err)
 	}
 
-	// Check the response status code
-	if res.StatusCode < 200 || res.StatusCode > 299 {
-		if h.ErrorHandler != nil {
-			return nil, nil, h.ErrorHandler(res, body)
-		}
-
-		return nil, nil, InterpretError(res, body)
+	success, err := h.isSuccessfulResponse(response, body)
+	if err != nil {
+		return nil, nil, err
 	}
 
-	return res, body, nil
+	if !success {
+		return nil, nil, h.handleError(response, body)
+	}
+
+	return response, body, nil
 }
 
 // getURL returns the given URL if it is an absolute URL, or the given URL joined with the base URL.
