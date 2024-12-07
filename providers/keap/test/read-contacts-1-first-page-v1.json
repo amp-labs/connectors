@@ -6,10 +6,10 @@
       "company": null,
       "email_opted_in": false,
       "email_status": "NonMarketable",
-      "date_created": "2024-11-07T20:35:13.000+0000",
-      "last_updated": "2024-11-07T20:35:13.000+0000",
-      "ScoreValue": null,
-      "last_updated_utc_millis": 1731011713217,
+      "date_created": "2024-11-20T18:34:12.000+0000",
+      "last_updated": "2024-11-20T18:34:12.000+0000",
+      "ScoreValue": "0",
+      "last_updated_utc_millis": 1732127651841,
       "email_addresses": [
         {
           "email": "erica.lewis@gmail.com",
@@ -21,7 +21,25 @@
       "given_name": "Erica",
       "family_name": "Lewis",
       "middle_name": null,
-      "owner_id": null
+      "owner_id": null,
+      "custom_fields": [
+        {
+          "id": 12,
+          "content": "8 years in 3 companies"
+        },
+        {
+          "id": 6,
+          "content": "Product Owner"
+        },
+        {
+          "id": 8,
+          "content": "AI application in commerce"
+        },
+        {
+          "id": 14,
+          "content": 32
+        }
+      ]
     },
     {
       "tag_ids": [],
@@ -44,7 +62,25 @@
       "given_name": "John",
       "family_name": "Doe",
       "middle_name": null,
-      "owner_id": null
+      "owner_id": null,
+      "custom_fields": [
+        {
+          "id": 12,
+          "content": null
+        },
+        {
+          "id": 6,
+          "content": null
+        },
+        {
+          "id": 8,
+          "content": null
+        },
+        {
+          "id": 14,
+          "content": null
+        }
+      ]
     }
   ],
   "count": 2,

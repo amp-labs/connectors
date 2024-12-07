@@ -1,6 +1,7 @@
 package jsonquery
 
 import (
+	"encoding/json"
 	"errors"
 
 	"github.com/spyzhov/ajson"
@@ -65,4 +66,24 @@ func (convertor) ObjectToMap(node *ajson.Node) (map[string]any, error) {
 	}
 
 	return result, nil
+}
+
+func ParseNode[T any](node *ajson.Node) (*T, error) {
+	var template T
+
+	raw, err := node.Unpack()
+	if err != nil {
+		return nil, err
+	}
+
+	data, err := json.Marshal(raw)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := json.Unmarshal(data, &template); err != nil {
+		return nil, err
+	}
+
+	return &template, nil
 }
