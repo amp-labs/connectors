@@ -30,11 +30,6 @@ func APIVersionSOAP() string {
 
 // NewConnector returns a new Salesforce connector.
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	defer common.PanicRecovery(func(cause error) {
-		outErr = cause
-		conn = nil
-	})
-
 	params, err := paramsbuilder.Apply(parameters{}, opts)
 	if err != nil {
 		return nil, err

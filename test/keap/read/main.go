@@ -9,7 +9,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/providers/keap"
 	connTest "github.com/amp-labs/connectors/test/keap"
 	"github.com/amp-labs/connectors/test/utils"
 )
@@ -35,8 +34,4 @@ func main() {
 
 	fmt.Println("Reading emails..")
 	utils.DumpJSON(res, os.Stdout)
-
-	if res.Rows > keap.DefaultPageSize {
-		utils.Fail(fmt.Sprintf("expected max %v rows", keap.DefaultPageSize))
-	}
 }

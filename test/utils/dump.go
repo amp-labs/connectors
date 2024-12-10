@@ -7,13 +7,13 @@ import (
 
 // DumpJSON dumps the given value as JSON to the given writer.
 func DumpJSON(v any, w io.Writer) {
-	bts, err := json.MarshalIndent(v, "", "  ")
-	if err != nil {
-		Fail("error marshaling to JSON: %w", "error", err)
-	}
+	encoder := json.NewEncoder(w)
 
-	_, err = w.Write(append(bts, []byte("\n")...))
-	if err != nil {
-		Fail("error writing to writer: %w", "error", err)
+	// JSON may have URLs with special symbols which shouldn't be escaped. Ex: `&`.
+	encoder.SetEscapeHTML(false)
+	encoder.SetIndent("", "  ")
+
+	if err := encoder.Encode(v); err != nil {
+		Fail("error marshaling to JSON: %w", "error", err)
 	}
 }

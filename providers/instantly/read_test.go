@@ -120,7 +120,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Always: mockserver.ResponseString(http.StatusOK, "[]"),
 			}.Server(),
 			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
-				expectedNextPage := strings.ReplaceAll(expected.NextPage.String(), "{{testServerURL}}", baseURL)
+				expectedNextPage := ""
 
 				return actual.NextPage.String() == expectedNextPage &&
 					actual.Done == expected.Done

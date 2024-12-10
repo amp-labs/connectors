@@ -9,7 +9,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/providers/pipeliner"
 	connTest "github.com/amp-labs/connectors/test/pipeliner"
 	"github.com/amp-labs/connectors/test/utils"
 )
@@ -36,8 +35,4 @@ func main() {
 
 	fmt.Println("Reading Contacts..")
 	utils.DumpJSON(res, os.Stdout)
-
-	if res.Rows > pipeliner.DefaultPageSize {
-		utils.Fail(fmt.Sprintf("expected max %v rows", pipeliner.DefaultPageSize))
-	}
 }

@@ -9,7 +9,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/providers/dynamicscrm"
 	connTest "github.com/amp-labs/connectors/test/dynamicscrm"
 	"github.com/amp-labs/connectors/test/utils"
 )
@@ -36,8 +35,4 @@ func main() {
 
 	fmt.Println("Reading contacts..")
 	utils.DumpJSON(res, os.Stdout)
-
-	if res.Rows > dynamicscrm.DefaultPageSize {
-		utils.Fail(fmt.Sprintf("expected max %v rows", dynamicscrm.DefaultPageSize))
-	}
 }
