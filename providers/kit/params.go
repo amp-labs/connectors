@@ -16,6 +16,11 @@ type parameters struct {
 	paramsbuilder.Client
 }
 
+const (
+	// DefaultPageSize is number of elements per page.
+	DefaultPageSize = 500
+)
+
 func (p parameters) ValidateParams() error {
 	return errors.Join(
 		p.Client.ValidateParams(),
