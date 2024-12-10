@@ -216,9 +216,11 @@ func newPipelinerConnector(parameters Parameters) (connectors.Connector, error) 
 }
 
 func newSmartleadConnector(parameters Parameters) (connectors.Connector, error) {
-	return smartlead.NewConnector(
-		smartlead.WithAuthenticatedClient(parameters.AuthenticatedClient),
-	)
+	// Client could directly be set via common methods -
+	// hc, _ = common.NewHeaderAuthHTTPClient(context.TODO())
+	// parameters.AuthenticatedClient = hc
+
+	return smartlead.NewConnector(parameters)
 }
 
 func newMarketoConnector(parameters Parameters) (connectors.Connector, error) {

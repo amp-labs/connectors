@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
 // Delete removes object. As of now only removal of Campaigns is allowed.
@@ -26,7 +27,7 @@ func (c *Connector) Delete(ctx context.Context, config common.DeleteParams) (*co
 	url.AddPath(config.RecordId)
 
 	// 200 OK is expected
-	_, err = c.Client.Delete(ctx, url.String())
+	_, err = c.JSON.Delete(ctx, url.String())
 	if err != nil {
 		return nil, err
 	}
@@ -34,4 +35,8 @@ func (c *Connector) Delete(ctx context.Context, config common.DeleteParams) (*co
 	return &common.DeleteResult{
 		Success: true,
 	}, nil
+}
+
+func (c *Connector) getURL(arg string) (*urlbuilder.URL, error) {
+	return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, arg)
 }
