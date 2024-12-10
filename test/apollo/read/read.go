@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -73,7 +72,6 @@ func testReadEmailAccounts(ctx context.Context, conn *ap.Connector) error {
 	params := common.ReadParams{
 		ObjectName: "email_accounts",
 		Fields:     connectors.Fields("user_id", "id", "email"),
-		Since:      time.Now().Add(-1800 * time.Hour),
 	}
 
 	res, err := conn.Read(ctx, params)
@@ -97,7 +95,6 @@ func testReadCustomFields(ctx context.Context, conn *ap.Connector) error {
 	params := common.ReadParams{
 		ObjectName: "typed_custom_fields",
 		Fields:     connectors.Fields("type", "id", "modality"),
-		Since:      time.Now().Add(-1800 * time.Hour),
 	}
 
 	res, err := conn.Read(ctx, params)
@@ -121,7 +118,6 @@ func testReadSequences(ctx context.Context, conn *ap.Connector) error {
 	params := common.ReadParams{
 		ObjectName: "emailer_campaigns",
 		Fields:     connectors.Fields("id", "name", "archived"),
-		Since:      time.Now().Add(-1800 * time.Hour),
 	}
 
 	res, err := conn.Read(ctx, params)
