@@ -38,6 +38,11 @@ func MainFn() int {
 		return 1
 	}
 
+	err = testReadSequences(ctx, conn)
+	if err != nil {
+		return 1
+	}
+
 	return 0
 }
 
@@ -92,6 +97,30 @@ func testReadCustomFields(ctx context.Context, conn *ap.Connector) error {
 	params := common.ReadParams{
 		ObjectName: "typed_custom_fields",
 		Fields:     connectors.Fields("type", "id", "modality"),
+		Since:      time.Now().Add(-1800 * time.Hour),
+	}
+
+	res, err := conn.Read(ctx, params)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	// Print the results
+	jsonStr, err := json.MarshalIndent(res, "", "  ")
+	if err != nil {
+		return fmt.Errorf("error marshalling JSON: %w", err)
+	}
+
+	_, _ = os.Stdout.Write(jsonStr)
+	_, _ = os.Stdout.WriteString("\n")
+
+	return nil
+}
+
+func testReadSequences(ctx context.Context, conn *ap.Connector) error {
+	params := common.ReadParams{
+		ObjectName: "emailer_campaigns",
+		Fields:     connectors.Fields("id", "name", "archived"),
 		Since:      time.Now().Add(-1800 * time.Hour),
 	}
 
