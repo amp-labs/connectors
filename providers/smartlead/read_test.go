@@ -8,6 +8,7 @@ import (
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/jsonquery"
+	"github.com/amp-labs/connectors/connector"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -131,15 +132,17 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 }
 
 func constructTestConnector(serverURL string) (*Connector, error) {
-	connector, err := NewConnector(
-		WithAuthenticatedClient(http.DefaultClient),
+	conn, err := NewConnector(
+		connector.Parameters{
+			AuthenticatedClient: http.DefaultClient,
+		},
 	)
 	if err != nil {
 		return nil, err
 	}
 
 	// for testing we want to redirect calls to our mock server
-	connector.setBaseURL(serverURL)
+	conn.setBaseURL(serverURL)
 
 	return connector, nil
 }

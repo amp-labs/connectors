@@ -469,3 +469,12 @@ func (i *ProviderInfo) Override(override *ProviderInfo) *ProviderInfo {
 
 	return i
 }
+
+func ReadInfoMap(provider Provider, vars map[string]string) (*ProviderInfo, error) {
+	return NewCustomCatalog().ReadInfoMap(provider, vars)
+}
+
+func (c CustomCatalog) ReadInfoMap(provider Provider, vars map[string]string) (*ProviderInfo, error) {
+	// TODO: Reads providerInfo and substitutes placeholders with a map
+	return c.ReadInfo(provider)
+}
