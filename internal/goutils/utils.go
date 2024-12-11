@@ -11,3 +11,15 @@ func MustBeNil(err error) {
 		panic(err)
 	}
 }
+
+// PanicRecovery catches the cause of panic and passes it to the callback.
+func PanicRecovery(wrapup func(cause error)) {
+	if re := recover(); re != nil {
+		err, ok := re.(error)
+		if !ok {
+			panic(re)
+		}
+
+		wrapup(err)
+	}
+}

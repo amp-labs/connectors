@@ -19,20 +19,26 @@ var (
 		"/account/summary",                  // returns single customer
 		"/account/summary/physical_address", // returns single address
 		"/contacts/counts",                  // object describing statistics on contacts
+		// Requires query parameters
+		"/emails/campaign_id_xrefs",
+		"/contacts/contact_id_xrefs",
+		"/contact_lists/list_id_xrefs",
+		// Partner accounts need auth token to be in 2 headers, usual auth and custom x-api-key.
+		"/partner/*",
 	}
 	objectEndpoints = map[string]string{
 		"/account/emails": "account_emails",
 		"/emails":         "email_campaigns",
 	}
 	displayNameOverride = map[string]string{
-		"campaign_id_xrefs": "Email Campaign Identifiers",
-		"contact_id_xrefs":  "Contact Identifiers",
-		"list_id_xrefs":     "List Identifiers",
+		// "campaign_id_xrefs": "Email Campaign Identifiers",
+		// "contact_id_xrefs":  "Contact Identifiers",
+		// "list_id_xrefs":     "List Identifiers",
 	}
 	objectNameToResponseField = datautils.NewDefaultMap(map[string]string{
-		"campaign_id_xrefs":        "xrefs",
-		"contact_id_xrefs":         "xrefs",
-		"list_id_xrefs":            "xrefs",
+		// "campaign_id_xrefs":        "xrefs",
+		// "contact_id_xrefs":         "xrefs",
+		// "list_id_xrefs":            "xrefs",
 		"accounts":                 "site_owner_list",
 		"email_campaign_summaries": "bulk_email_campaign_summaries",
 		"contact_tags":             "tags",

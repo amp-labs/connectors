@@ -51,6 +51,11 @@ func ParseResult(
 	// * or current page was empty.
 	// This will guarantee that Read is finite.
 	done := nextPage == "" || len(marshaledData) == 0
+	if done {
+		// It is possible that the provider doesn't reset the next page token when there are no more records.
+		// In this case, we should set the next page token to an empty string to indicate that we are done.
+		nextPage = ""
+	}
 
 	return &ReadResult{
 		Rows:     int64(len(marshaledData)),
