@@ -1,0 +1,10 @@
+{
+    "subscriber": {
+      "id": 261,
+      "first_name": "Alice",
+      "email_address": "alice@convertkit.dev",
+      "state": "inactive",
+      "created_at": "2023-02-17T11:43:55Z",
+      "fields": {}
+    }
+}
