@@ -1,0 +1,63 @@
+{
+  "custom_fields": [
+    {
+      "id": 6,
+      "label": "title",
+      "options": [],
+      "record_type": "CONTACT",
+      "field_type": "Text",
+      "field_name": "jobtitle",
+      "default_value": null
+    },
+    {
+      "id": 8,
+      "label": "job_description",
+      "options": [],
+      "record_type": "CONTACT",
+      "field_type": "Text",
+      "field_name": "jobdescription",
+      "default_value": null
+    },
+    {
+      "id": 12,
+      "label": "experience",
+      "options": [],
+      "record_type": "CONTACT",
+      "field_type": "Text",
+      "field_name": "experience",
+      "default_value": null
+    },
+    {
+      "id": 14,
+      "label": "age",
+      "options": [],
+      "record_type": "CONTACT",
+      "field_type": "WholeNumber",
+      "field_name": "age",
+      "default_value": null
+    }
+  ],
+  "optional_properties": [
+    "company_name",
+    "opt_in_reason",
+    "origin",
+    "relationships",
+    "fax_numbers",
+    "social_accounts",
+    "contact_type",
+    "lead_source_id",
+    "birthday",
+    "preferred_name",
+    "prefix",
+    "suffix",
+    "notes",
+    "time_zone",
+    "website",
+    "job_title",
+    "preferred_locale",
+    "source_type",
+    "custom_fields",
+    "spouse_name",
+    "anniversary"
+  ]
+}
