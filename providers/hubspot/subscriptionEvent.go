@@ -44,7 +44,7 @@ func (c *Connector) GetRecordFromSubscriptionEvent(
 }
 
 // GetRecordFromSubscriptionEvent fetches a record from the Hubspot API using the data from a subscription event.
-func (c *Connector) VerifyWebhookMessage(
+func VerifyWebhookMessage(
 	_ context.Context, params *common.WebhookVerificationParameters,
 ) (bool, error) {
 	ts := params.Headers.Get("X-Hubspot-Request-Timestamp")
