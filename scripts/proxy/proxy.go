@@ -382,7 +382,7 @@ func setupOAuth2ClientCredentialsHttpClient(ctx context.Context, prov *providers
 		panic(err)
 	}
 
-	cc, err := connector.NewConnector(prov.Name, connector.WithAuthenticatedClient(c))
+	cc, err := connector.NewConnector(prov.Name, connector.Parameters{AuthenticatedClient: c})
 	if err != nil {
 		panic(err)
 	}
@@ -403,7 +403,7 @@ func setupOAuth2AuthCodeHttpClient(ctx context.Context, prov *providers.Provider
 		panic(err)
 	}
 
-	cc, err := connector.NewConnector(prov.Name, connector.WithAuthenticatedClient(c))
+	cc, err := connector.NewConnector(prov.Name, connector.Parameters{AuthenticatedClient: c})
 	if err != nil {
 		panic(err)
 	}
@@ -423,7 +423,7 @@ func setupBasicAuthHttpClient(ctx context.Context, prov *providers.ProviderInfo,
 		panic(err)
 	}
 
-	cc, err := connector.NewConnector(prov.Name, connector.WithAuthenticatedClient(c))
+	cc, err := connector.NewConnector(prov.Name, connector.Parameters{AuthenticatedClient: c})
 	if err != nil {
 		panic(err)
 	}
@@ -440,7 +440,7 @@ func setupApiKeyHttpClient(ctx context.Context, prov *providers.ProviderInfo, ap
 		panic(err)
 	}
 
-	cc, err := connector.NewConnector(prov.Name, connector.WithAuthenticatedClient(c))
+	cc, err := connector.NewConnector(prov.Name, connector.Parameters{AuthenticatedClient: c})
 	if err != nil {
 		panic(err)
 	}
