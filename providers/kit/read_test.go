@@ -3,12 +3,10 @@ package kit
 
 import (
 	"net/http"
-	"strings"
 	"testing"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -18,7 +16,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
 	responseCustomFields := testutils.DataFromFile(t, "custom_fields.json")
-	responseNextpageCustomFields := testutils.DataFromFile(t, "next_custom_fields.json")
+	responseNextPageCustomFields := testutils.DataFromFile(t, "next_custom_fields.json")
 	responseTags := testutils.DataFromFile(t, "tags.json")
 	responseEmptyPageTags := testutils.DataFromFile(t, "emptypage_tags.json")
 	responseEmailTemplates := testutils.DataFromFile(t, "email_templates.json")
@@ -48,11 +46,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.ResponseString(http.StatusOK, `{"email_templates":[]}`),
 			}.Server(),
-			Expected: &common.ReadResult{
-				Rows: 0,
-				Data: []common.ReadResultRow{},
-				Done: true,
-			},
+			Expected:     &common.ReadResult{Rows: 0, Done: true},
 			ExpectedErrs: nil,
 		},
 		{
@@ -80,23 +74,16 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:  "Read next page of custom fields object",
-			Input: common.ReadParams{ObjectName: "custom_fields", Fields: connectors.Fields("")},
+			Input: common.ReadParams{ObjectName: "custom_fields", Fields: connectors.Fields("id")},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, responseNextpageCustomFields),
+				Always: mockserver.Response(http.StatusOK, responseNextPageCustomFields),
 			}.Server(),
-			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
-				expectedNextPage := strings.ReplaceAll(expected.NextPage.String(), "{{testServerURL}}", baseURL)
-
-				return mockutils.ReadResultComparator.SubsetRaw(actual, expected) &&
-					actual.NextPage.String() == expectedNextPage &&
-					actual.Rows == expected.Rows &&
-					actual.Done == expected.Done
-			},
+			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
-					Fields: map[string]any{},
+					Fields: map[string]any{"id": float64(2)},
 					Raw: map[string]any{
 						"id":    float64(2),
 						"name":  "ck_field_2_first_name",
@@ -105,7 +92,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					},
 				},
 				},
-				NextPage: "{{testServerURL}}/v4/custom_fields?after=WzFd&per_page=500",
+				NextPage: testroutines.URLTestServer + "/v4/custom_fields?after=WzFd&per_page=500",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -139,12 +126,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseEmptyPageTags),
 			}.Server(),
-			Expected: &common.ReadResult{
-				Rows:     0,
-				Data:     []common.ReadResultRow{},
-				NextPage: "",
-				Done:     true,
-			},
+			Expected:     &common.ReadResult{Rows: 0, NextPage: "", Done: true},
 			ExpectedErrs: nil,
 		},
 		{

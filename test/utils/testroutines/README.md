@@ -27,7 +27,8 @@ Below is the example of the run method:
 func (r Read) Run(t *testing.T, builder ConnectorBuilder[connectors.ReadConnector]) {
 t.Helper()
 conn := builder.Build(t, r.Name) // builder will return Connector of certain type
-output, err := conn.Read(context.Background(), r.Input) // select a method that you want to test and pass input
+readParams := prepareReadParams(r.Server.URL, r.Input) // substitute BaseURL with MockServerURL
+output, err := conn.Read(context.Background(), readParams) // select a method that you want to test and pass input
 ReadType(r).Validate(t, err, output) // invoke TestCase[InputType,OutputType].Validate(...)
 }
 
@@ -79,3 +80,36 @@ func TestRead(t *testing.T) {
   // ...
 }
 ```
+
+### Comparator
+
+In most cases, an exact comparison can make test cases overly large and noisy.
+Comparing just a few objects or a subset of fields is often sufficient. For example:
+```go
+{
+    Name: "Incremental read of conversations via search",
+    Input: common.ReadParams{...},
+    Server: mockserver.Conditional{...}.Server(),
+    Comparator: testroutines.ComparatorSubsetRead,
+    Expected: &common.ReadResult{
+        Rows: 1,
+        Data: []common.ReadResultRow{{
+            Fields: map[string]any{
+                "id":    "5",
+                "state": "open",
+                "title": "What is return policy?",
+            },
+            Raw: map[string]any{
+                "ai_agent_participated": false,
+            },
+        }},
+        NextPage: testroutines.URLTestServer + "/conversations/search?starting_after=WzE3MjY3NTIxNDUwMDAsNSwyXQ==",
+        Done:     false,
+    },
+    ExpectedErrs: nil,
+}
+```
+This approach ensures the test is concise while still validating the critical aspects of the behavior.
+It's important to note that any reference to the original connector BaseURL should be replaced with `testroutines.URLTestServer`
+either in `ReadResult` or `ReadParams`.
+During runtime, this value will be correctly substituted, satisfying the intended behavior.
