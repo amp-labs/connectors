@@ -90,10 +90,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 					},
 					"calls": []}`),
 			}.Server(),
-			Expected: &common.ReadResult{
-				Data: []common.ReadResultRow{},
-				Done: true,
-			},
+			Expected:     &common.ReadResult{Done: true},
 			ExpectedErrs: nil,
 		},
 		{
@@ -110,10 +107,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				If:   mockcond.QueryParam("fromDateTime", "2024-09-19T12:30:45Z"),
 				Then: mockserver.Response(http.StatusOK, fakeServerResp),
 			}.Server(),
-			Comparator: func(serverURL string, actual, expected *common.ReadResult) bool {
-				return actual.Rows == expected.Rows
-			},
-			Expected:     &common.ReadResult{Rows: 2},
+			Comparator:   testroutines.ComparatorPagination,
+			Expected:     &common.ReadResult{Rows: 2, NextPage: "", Done: true},
 			ExpectedErrs: nil,
 		},
 		{

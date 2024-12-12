@@ -6,7 +6,6 @@ import (
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/staticschema"
-	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 )
@@ -28,12 +27,10 @@ func TestListObjectMetadataV1(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			ExpectedErrs: []error{staticschema.ErrObjectNotFound},
 		},
 		{
-			Name:   "Successfully describe multiple objects with metadata",
-			Input:  []string{"campaigns", "products"},
-			Server: mockserver.Dummy(),
-			Comparator: func(baseURL string, actual, expected *common.ListObjectMetadataResult) bool {
-				return mockutils.MetadataResultComparator.SubsetFields(actual, expected)
-			},
+			Name:       "Successfully describe multiple objects with metadata",
+			Input:      []string{"campaigns", "products"},
+			Server:     mockserver.Dummy(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"campaigns": {
@@ -78,12 +75,10 @@ func TestListObjectMetadataV2(t *testing.T) { // nolint:funlen,gocognit,cyclop
 
 	tests := []testroutines.Metadata{
 		{
-			Name:   "Successfully describe multiple objects with metadata",
-			Input:  []string{"automation_categories", "tags"},
-			Server: mockserver.Dummy(),
-			Comparator: func(baseURL string, actual, expected *common.ListObjectMetadataResult) bool {
-				return mockutils.MetadataResultComparator.SubsetFields(actual, expected)
-			},
+			Name:       "Successfully describe multiple objects with metadata",
+			Input:      []string{"automation_categories", "tags"},
+			Server:     mockserver.Dummy(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"automation_categories": {
