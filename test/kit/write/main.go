@@ -39,6 +39,7 @@ func MainFn() int {
 
 func testCustomfields(ctx context.Context) error {
 	conn := kit.GetKitConnector(ctx)
+
 	slog.Info("Creating the customfields")
 
 	params := common.WriteParams{
@@ -86,6 +87,7 @@ func testCustomfields(ctx context.Context) error {
 
 func testSubscribers(ctx context.Context) error {
 	conn := kit.GetKitConnector(ctx)
+
 	slog.Info("Creating the subscribers")
 
 	params := common.WriteParams{
@@ -141,6 +143,7 @@ func testSubscribers(ctx context.Context) error {
 
 func testTags(ctx context.Context) error {
 	conn := kit.GetKitConnector(ctx)
+
 	slog.Info("Creating the tags")
 
 	params := common.WriteParams{

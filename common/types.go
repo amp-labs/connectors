@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/amp-labs/connectors/internal/datautils"
@@ -274,4 +275,13 @@ type SubscriptionEvent interface {
 	RawEventName() (string, error)
 	ObjectName() (string, error)
 	Workspace() (string, error)
+}
+
+// WebhookVerificationParameters is a struct that contains the parameters required to verify a webhook.
+type WebhookVerificationParameters struct {
+	Headers      http.Header
+	Body         []byte
+	URL          string
+	ClientSecret string
+	Method       string
 }
