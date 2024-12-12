@@ -2,6 +2,9 @@ package hubspot
 
 import (
 	"context"
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"strconv"
@@ -38,6 +41,28 @@ func (c *Connector) GetRecordFromSubscriptionEvent(
 
 	// Since the subscription event doesn't contain the record data, we need to fetch it.
 	return c.GetRecord(ctx, objectName, recordId)
+}
+
+// GetRecordFromSubscriptionEvent fetches a record from the Hubspot API using the data from a subscription event.
+func (c *Connector) VerifyWebhookMessage(
+	_ context.Context, params *common.WebhookVerificationParameters,
+) (bool, error) {
+	ts := params.Headers.Get("X-Hubspot-Request-Timestamp")
+
+	rawString := params.Method + params.URL + string(params.Body) + ts
+
+	mac := hmac.New(sha256.New, []byte(params.ClientSecret))
+	mac.Write([]byte(rawString))
+	expectedMAC := mac.Sum(nil)
+
+	signature := params.Headers.Get("X-Hubspot-Signature-V3")
+
+	decodedSignature, err := base64.StdEncoding.DecodeString(signature)
+	if err != nil {
+		return false, fmt.Errorf("failed to decode signature: %w", err)
+	}
+
+	return hmac.Equal(decodedSignature, expectedMAC), nil
 }
 
 var errUnexpectedSubscriptionEventType = errors.New("unexpected subscription event type")
