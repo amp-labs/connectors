@@ -87,3 +87,10 @@ type ObjectType string
 const (
 	ObjectTypeContact ObjectType = "contacts"
 )
+
+type hubspotHeaderKey string
+
+const (
+	xHubspotRequestTimestamp hubspotHeaderKey = "X-Hubspot-Request-Timestamp"
+	xHubspotSignatureV3      hubspotHeaderKey = "X-Hubspot-Signature-V3"
+)
