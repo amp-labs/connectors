@@ -86,6 +86,13 @@ type AuthMetadataConnector interface {
 	GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, error)
 }
 
+type WebhookVerifierConnector interface {
+	Connector
+
+	// VerifyWebhookMessage verifies the signature of a webhook message.
+	VerifyWebhookMessage(ctx context.Context, params *common.WebhookVerificationParameters) (bool, error)
+}
+
 // We re-export the following types so that they can be used by consumers of this library.
 type (
 	ReadParams               = common.ReadParams
