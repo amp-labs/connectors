@@ -43,11 +43,11 @@ func (c *Connector) GetRecordFromSubscriptionEvent(
 	return c.GetRecord(ctx, objectName, recordId)
 }
 
-// GetRecordFromSubscriptionEvent fetches a record from the Hubspot API using the data from a subscription event.
+// VerifyWebhookMessage verifies the signature of a webhook message from Hubspot.
 func (c *Connector) VerifyWebhookMessage(
 	_ context.Context, params *common.WebhookVerificationParameters,
 ) (bool, error) {
-	ts := params.Headers.Get("X-Hubspot-Request-Timestamp")
+	ts := params.Headers.Get(string(xHubspotRequestTimestamp))
 
 	rawString := params.Method + params.URL + string(params.Body) + ts
 
@@ -55,7 +55,7 @@ func (c *Connector) VerifyWebhookMessage(
 	mac.Write([]byte(rawString))
 	expectedMAC := mac.Sum(nil)
 
-	signature := params.Headers.Get("X-Hubspot-Signature-V3")
+	signature := params.Headers.Get(string(xHubspotSignatureV3))
 
 	decodedSignature, err := base64.StdEncoding.DecodeString(signature)
 	if err != nil {

@@ -86,7 +86,7 @@ type AuthMetadataConnector interface {
 	GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, error)
 }
 
-type WebhookVerifiableConnector interface {
+type WebhookVerifierConnector interface {
 	Connector
 
 	// VerifyWebhookMessage verifies the signature of a webhook message.
