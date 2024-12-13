@@ -86,7 +86,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				  "data": []
 				}`),
 			}.Server(),
-			Expected:     &common.ReadResult{Done: true},
+			Expected:     &common.ReadResult{Done: true, Data: []common.ReadResultRow{}},
 			ExpectedErrs: nil,
 		},
 		{

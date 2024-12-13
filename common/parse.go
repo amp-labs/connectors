@@ -59,8 +59,8 @@ func ParseResult(
 
 	if len(marshaledData) == 0 {
 		// Either a JSON array is empty or it was nil.
-		// For consistency return nil for missing records.
-		marshaledData = nil
+		// For consistency return empty array for missing records.
+		marshaledData = make([]ReadResultRow, 0)
 	}
 
 	return &ReadResult{
