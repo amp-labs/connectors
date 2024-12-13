@@ -92,7 +92,7 @@ func TestReadZendeskSupportModule(t *testing.T) { //nolint:funlen,gocognit,cyclo
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseUsersEmptyPage),
 			}.Server(),
-			Expected:     &common.ReadResult{Done: true},
+			Expected:     &common.ReadResult{Done: true, Data: []common.ReadResultRow{}},
 			ExpectedErrs: nil,
 		},
 		{

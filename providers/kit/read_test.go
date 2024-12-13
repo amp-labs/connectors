@@ -46,7 +46,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.ResponseString(http.StatusOK, `{"email_templates":[]}`),
 			}.Server(),
-			Expected:     &common.ReadResult{Rows: 0, Done: true},
+			Expected:     &common.ReadResult{Rows: 0, Data: []common.ReadResultRow{}, Done: true},
 			ExpectedErrs: nil,
 		},
 		{
@@ -126,7 +126,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseEmptyPageTags),
 			}.Server(),
-			Expected:     &common.ReadResult{Rows: 0, NextPage: "", Done: true},
+			Expected:     &common.ReadResult{Rows: 0, Data: []common.ReadResultRow{}, NextPage: "", Done: true},
 			ExpectedErrs: nil,
 		},
 		{
@@ -165,5 +165,4 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			})
 		})
 	}
-
 }
