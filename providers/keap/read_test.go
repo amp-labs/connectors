@@ -113,7 +113,7 @@ func TestReadV1(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseContactsEmptyPage),
 			}.Server(),
-			Expected:     &common.ReadResult{Rows: 0, NextPage: "", Done: true},
+			Expected:     &common.ReadResult{Rows: 0, Data: []common.ReadResultRow{}, NextPage: "", Done: true},
 			ExpectedErrs: nil,
 		},
 	}

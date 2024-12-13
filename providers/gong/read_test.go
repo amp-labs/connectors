@@ -90,7 +90,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 					},
 					"calls": []}`),
 			}.Server(),
-			Expected:     &common.ReadResult{Done: true},
+			Expected:     &common.ReadResult{Done: true, Data: []common.ReadResultRow{}},
 			ExpectedErrs: nil,
 		},
 		{
