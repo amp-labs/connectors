@@ -11,16 +11,14 @@ var (
 
 type ObjectType string
 
-// postSearchObjects represents the objects that uses the searching endpoint,
-// POST method for requesting records.
+// postSearchObjects represents the objects that uses the searching endpoint,POST method.
 var postSearchObjects = []ObjectType{ //nolint:gochecknoglobals
 	"mixed_people", "mixed_companies", "contacts",
-	"accounts", "emails_campaigns",
+	"accounts", "tasks",
 }
 
-// getSearchObjects represents the objects that uses the searching endpoint, GET method
-// for requesting records.Tasks has a query parameter `open_factor_names` requirement.
-var getSearchObjects = []ObjectType{"opportunities", "users"} //nolint:gochecknoglobals
+// getSearchObjects represents the objects that uses the searching endpoint, GET method.
+var getSearchObjects = []ObjectType{"opportunities", "users", "emailer_campaigns"} //nolint:gochecknoglobals
 
 // responseKey represent the results key fields in the response.
 // some endpoints have more than one, data fields returned.
