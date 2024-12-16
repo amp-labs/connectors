@@ -4,7 +4,7 @@ const Ashby Provider = "ashby"
 
 func init() {
 	SetInfo(Ashby, ProviderInfo{
-		DisplayName: "ashby",
+		DisplayName: "Ashby",
 		AuthType:    Basic,
 		BaseURL:     "https://api.ashbyhq.com",
 		Support: Support{
