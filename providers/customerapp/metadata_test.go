@@ -57,7 +57,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						},
 					},
 				},
-				Errors: nil,
+				Errors: make(map[string]error),
 			},
 			ExpectedErrs: nil,
 		},

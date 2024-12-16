@@ -1,6 +1,8 @@
 package keap
 
 import (
+	"errors"
+	"log/slog"
 	"net/http"
 	"testing"
 
@@ -106,6 +108,32 @@ func TestListObjectMetadataV1(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			},
 			ExpectedErrs: nil,
 		},
+		{
+			Name:  "Partial metadata due to failed custom data requests",
+			Input: []string{"contacts"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.PathSuffix("/crm/rest/v1/contacts/model"),
+				Then:  mockserver.Response(http.StatusInternalServerError),
+			}.Server(),
+			Comparator: metadataExpectAbsentFields,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"contacts": {
+						DisplayName: "Contacts",
+						FieldsMap: map[string]string{
+							// These custom fields MUST be absent due to not responding server.
+							"jobtitle":       "title",
+							"jobdescription": "job_description",
+							"experience":     "experience",
+							"age":            "age",
+						},
+					},
+				},
+				Errors: nil,
+			},
+			ExpectedErrs: nil,
+		},
 	}
 
 	for _, tt := range tests {
@@ -165,4 +193,24 @@ func TestListObjectMetadataV2(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			})
 		})
 	}
+}
+
+func metadataExpectAbsentFields(serverURL string, actual, expected *common.ListObjectMetadataResult) bool {
+	const contacts = "contacts"
+	if !errors.Is(actual.Errors[contacts], ErrResolvingCustomFields) {
+		slog.Info("missing metadata error", "errors", ErrResolvingCustomFields)
+
+		return false
+	}
+
+	for fieldName := range expected.Result[contacts].FieldsMap {
+		_, present := actual.Result[contacts].FieldsMap[fieldName]
+		if present {
+			slog.Info("custom field should NOT be present", "field", fieldName)
+
+			return false
+		}
+	}
+
+	return true
 }
