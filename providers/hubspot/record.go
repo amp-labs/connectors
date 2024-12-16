@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"path"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
@@ -37,9 +37,14 @@ func (c *Connector) GetRecord(ctx context.Context, objectName string, recordId s
 	}
 
 	pluralObjectName := naming.NewPluralString(objectName).String()
-	relativePath := path.Join("/objects", pluralObjectName, recordId)
+	relativePath := strings.Join([]string{"/objects", pluralObjectName, recordId}, "/")
 
-	resp, err := c.Client.Get(ctx, c.getURL(relativePath))
+	u, err := c.getURL(relativePath)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := c.Client.Get(ctx, u)
 	if err != nil {
 		return nil, err
 	}
@@ -72,6 +77,7 @@ func (c *Connector) GetRecordsWithIds(
 	objectName string,
 	ids []string,
 	fields []string,
+	associations []string,
 ) ([]common.ReadResultRow, error) {
 	singularObjName := naming.NewSingularString(objectName).String()
 	if !getRecordSupportedObjectsSet.Has(singularObjName) {
@@ -87,13 +93,17 @@ func (c *Connector) GetRecordsWithIds(
 	}
 
 	pluralObjectName := naming.NewPluralString(objectName).String()
-	relativePath := path.Join("/objects", pluralObjectName, "batch", "read")
+
+	u, err := c.getBatchRecordsURL(pluralObjectName, associations)
+	if err != nil {
+		return nil, err
+	}
 
 	body := map[string]any{
 		"inputs": inputs,
 	}
 
-	resp, err := c.Client.Post(ctx, c.getURL(relativePath), body)
+	resp, err := c.Client.Post(ctx, u, body)
 	if err != nil {
 		return nil, err
 	}
@@ -129,6 +139,16 @@ func (c *Connector) GetRecordsWithIds(
 	}
 
 	return data, nil
+}
+
+func (c *Connector) getBatchRecordsURL(objectName string, associations []string) (string, error) {
+	relativePath := strings.Join([]string{"/objects", objectName, "batch", "read"}, "/")
+
+	if len(associations) > 0 {
+		return c.getURL(relativePath, "associations", strings.Join(associations, ","))
+	} else {
+		return c.getURL(relativePath)
+	}
 }
 
 func extractIdFromRecord(record map[string]any) (string, error) {
