@@ -1,13 +1,16 @@
 package hubspot
 
 import (
+	"errors"
 	"fmt"
 	"net/url"
 )
 
+var errMissingValue = errors.New("missing value for query parameter")
+
 // getURL is a helper to return the full URL considering the base URL & module.
 func (c *Connector) getURL(arg string, queryArgs ...string) (string, error) {
-	u, err := url.JoinPath(c.BaseURL, c.Module.Path(), arg)
+	urlBase, err := url.JoinPath(c.BaseURL, c.Module.Path(), arg)
 	if err != nil {
 		return "", err
 	}
@@ -19,7 +22,7 @@ func (c *Connector) getURL(arg string, queryArgs ...string) (string, error) {
 			key := queryArgs[i]
 
 			if i+1 >= len(queryArgs) {
-				return "", fmt.Errorf("missing value for query parameter %q", key)
+				return "", fmt.Errorf("%w %q", errMissingValue, key)
 			}
 
 			val := queryArgs[i+1]
@@ -27,8 +30,8 @@ func (c *Connector) getURL(arg string, queryArgs ...string) (string, error) {
 			vals.Add(key, val)
 		}
 
-		u += "?" + vals.Encode()
+		urlBase += "?" + vals.Encode()
 	}
 
-	return u, nil
+	return urlBase, nil
 }
