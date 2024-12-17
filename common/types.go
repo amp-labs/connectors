@@ -124,6 +124,10 @@ type ReadParams struct {
 	//		Note: timing is already handled by Since argument.
 	//		Reference: https://developers.klaviyo.com/en/docs/filtering_
 	Filter string // optional
+
+	// AssociatedObjects is a list of associated objects to fetch along with the main object.
+	// Only supported by HubSpot connector Read (not Search)
+	AssociatedObjects []string // optional
 }
 
 // WriteParams defines how we are writing data to a SaaS API.

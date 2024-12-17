@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"path"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
@@ -30,37 +30,6 @@ var (
    https://developers.hubspot.com/beta-docs/reference/api/crm/objects/products
 */
 
-// GetRecord returns a record from the object with the given ID and object name.
-func (c *Connector) GetRecord(ctx context.Context, objectName string, recordId string) (*common.ReadResultRow, error) {
-	if !getRecordSupportedObjectsSet.Has(objectName) {
-		return nil, fmt.Errorf("%w %s", errGerRecordNotSupportedForObject, objectName)
-	}
-
-	pluralObjectName := naming.NewPluralString(objectName).String()
-	relativePath := path.Join("/objects", pluralObjectName, recordId)
-
-	resp, err := c.Client.Get(ctx, c.getURL(relativePath))
-	if err != nil {
-		return nil, err
-	}
-
-	record, err := common.UnmarshalJSON[map[string]any](resp)
-	if err != nil {
-		return nil, fmt.Errorf("error parsing record: %w", err)
-	}
-
-	id, err := extractIdFromRecord(*record)
-	if err != nil {
-		// this should never happen unless the provider changes subscription event format
-		return nil, err
-	}
-
-	return &common.ReadResultRow{
-		Raw: *record,
-		Id:  id,
-	}, nil
-}
-
 var (
 	errMissingId    = errors.New("missing id field in raw record")
 	errTypeMismatch = errors.New("field is not a string")
@@ -72,6 +41,7 @@ func (c *Connector) GetRecordsWithIds(
 	objectName string,
 	ids []string,
 	fields []string,
+	associations []string,
 ) ([]common.ReadResultRow, error) {
 	singularObjName := naming.NewSingularString(objectName).String()
 	if !getRecordSupportedObjectsSet.Has(singularObjName) {
@@ -87,13 +57,17 @@ func (c *Connector) GetRecordsWithIds(
 	}
 
 	pluralObjectName := naming.NewPluralString(objectName).String()
-	relativePath := path.Join("/objects", pluralObjectName, "batch", "read")
+
+	u, err := c.getBatchRecordsURL(pluralObjectName, associations)
+	if err != nil {
+		return nil, err
+	}
 
 	body := map[string]any{
 		"inputs": inputs,
 	}
 
-	resp, err := c.Client.Post(ctx, c.getURL(relativePath), body)
+	resp, err := c.Client.Post(ctx, u, body)
 	if err != nil {
 		return nil, err
 	}
@@ -129,6 +103,16 @@ func (c *Connector) GetRecordsWithIds(
 	}
 
 	return data, nil
+}
+
+func (c *Connector) getBatchRecordsURL(objectName string, associations []string) (string, error) {
+	relativePath := strings.Join([]string{"/objects", objectName, "batch", "read"}, "/")
+
+	if len(associations) > 0 {
+		return c.getURL(relativePath, "associations", strings.Join(associations, ","))
+	} else {
+		return c.getURL(relativePath)
+	}
 }
 
 func extractIdFromRecord(record map[string]any) (string, error) {

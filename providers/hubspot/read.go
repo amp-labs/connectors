@@ -14,7 +14,7 @@ import (
 // search endpoint. If Since is not set, it will use the read endpoint.
 // In case Deleted objects won’t appear in any search results.
 // Deleted objects can only be read by using this endpoint.
-func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
+func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) { //nolint:funlen
 	if err := config.ValidateParams(true); err != nil {
 		return nil, err
 	}
@@ -58,7 +58,13 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		// If NextPage is not set, then we're reading the first page of results.
 		// We need to construct the query and then make the request.
 		relativeURL := strings.Join([]string{"objects", config.ObjectName, "?" + makeQueryValues(config)}, "/")
-		rsp, err = c.Client.Get(ctx, c.getURL(relativeURL))
+
+		u, urlErr := c.getURL(relativeURL)
+		if urlErr != nil {
+			return nil, urlErr
+		}
+
+		rsp, err = c.Client.Get(ctx, u)
 	}
 
 	if err != nil {
@@ -88,6 +94,10 @@ func makeQueryValues(config common.ReadParams) string {
 	}
 
 	queryValues.Add("limit", DefaultPageSize)
+
+	if len(config.AssociatedObjects) > 0 {
+		queryValues.Add("associations", strings.Join(config.AssociatedObjects, ","))
+	}
 
 	return queryValues.Encode()
 }

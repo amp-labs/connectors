@@ -27,22 +27,6 @@ type SubscriptionEvent struct {
 	PropertyValue    string `json:"propertyValue"`
 }
 
-// GetRecordFromSubscriptionEvent fetches a record from the Hubspot API using the data from a subscription event.
-func (c *Connector) GetRecordFromSubscriptionEvent(
-	ctx context.Context, evt *SubscriptionEvent,
-) (*common.ReadResultRow, error) {
-	// Transform the subscription event into a ReadResult.
-	objectName, err := evt.ObjectName()
-	if err != nil {
-		return nil, err
-	}
-
-	recordId := strconv.Itoa(evt.ObjectId)
-
-	// Since the subscription event doesn't contain the record data, we need to fetch it.
-	return c.GetRecord(ctx, objectName, recordId)
-}
-
 // VerifyWebhookMessage verifies the signature of a webhook message from Hubspot.
 func (c *Connector) VerifyWebhookMessage(
 	_ context.Context, params *common.WebhookVerificationParameters,
