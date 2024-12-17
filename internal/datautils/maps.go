@@ -52,7 +52,7 @@ func (m Map[K, V]) Has(key K) bool {
 func (m Map[K, V]) Values() []V {
 	values := make([]V, 0, len(m))
 
-	for key := range m {
+	for key := range m { // nolint:ireturn
 		values = append(values, m[key])
 	}
 
