@@ -126,7 +126,7 @@ type ReadParams struct {
 	Filter string // optional
 
 	// AssociatedObjects is a list of associated objects to fetch along with the main object.
-	// Only supported by HubSpot connector.
+	// Only supported by HubSpot connector Read (not Search)
 	AssociatedObjects []string // optional
 }
 
