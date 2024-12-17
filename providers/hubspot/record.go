@@ -30,42 +30,6 @@ var (
    https://developers.hubspot.com/beta-docs/reference/api/crm/objects/products
 */
 
-// GetRecord returns a record from the object with the given ID and object name.
-func (c *Connector) GetRecord(ctx context.Context, objectName string, recordId string) (*common.ReadResultRow, error) {
-	if !getRecordSupportedObjectsSet.Has(objectName) {
-		return nil, fmt.Errorf("%w %s", errGerRecordNotSupportedForObject, objectName)
-	}
-
-	pluralObjectName := naming.NewPluralString(objectName).String()
-	relativePath := strings.Join([]string{"/objects", pluralObjectName, recordId}, "/")
-
-	u, err := c.getURL(relativePath)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := c.Client.Get(ctx, u)
-	if err != nil {
-		return nil, err
-	}
-
-	record, err := common.UnmarshalJSON[map[string]any](resp)
-	if err != nil {
-		return nil, fmt.Errorf("error parsing record: %w", err)
-	}
-
-	id, err := extractIdFromRecord(*record)
-	if err != nil {
-		// this should never happen unless the provider changes subscription event format
-		return nil, err
-	}
-
-	return &common.ReadResultRow{
-		Raw: *record,
-		Id:  id,
-	}, nil
-}
-
 var (
 	errMissingId    = errors.New("missing id field in raw record")
 	errTypeMismatch = errors.New("field is not a string")
