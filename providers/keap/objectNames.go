@@ -203,3 +203,25 @@ var objectNameToWriteResponseIdentifier = common.ModuleObjectNameToFieldName{ //
 		},
 	),
 }
+
+var objectsWithCustomFields = map[common.ModuleID]datautils.StringSet{ // nolint:gochecknoglobals
+	ModuleV1: datautils.NewStringSet(
+		objectNameAffiliates,
+		objectNameAppointments,
+		objectNameCompanies,
+		objectNameContacts,
+		objectNameNotes,
+		objectNameOpportunities,
+		objectNameOrders,
+		objectNameSubscriptions,
+		objectNameTasks,
+	),
+	ModuleV2: datautils.NewStringSet(
+		objectNameAffiliates,
+		objectNameContacts,
+		objectNameNotes,
+		objectNameOrders,
+		objectNameSubscriptions,
+		objectNameTasks,
+	),
+}

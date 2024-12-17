@@ -28,7 +28,7 @@ func (r *Metadata) Select(
 
 	list := &common.ListObjectMetadataResult{
 		Result: make(map[string]common.ObjectMetadata),
-		Errors: nil,
+		Errors: make(map[string]error),
 	}
 
 	// Lookup each object under the module.

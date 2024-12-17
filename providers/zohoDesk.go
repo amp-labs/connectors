@@ -4,7 +4,7 @@ const ZohoDesk Provider = "zohoDesk"
 
 func init() {
 	SetInfo(ZohoDesk, ProviderInfo{
-		DisplayName: "ZohoDesk",
+		DisplayName: "Zoho Desk",
 		AuthType:    Oauth2,
 		BaseURL:     "https://desk.zoho.com",
 		Oauth2Opts: &Oauth2Opts{
