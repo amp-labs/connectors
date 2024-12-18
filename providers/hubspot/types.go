@@ -80,6 +80,7 @@ const (
 	ObjectFieldLastModifiedDate   ObjectField = "lastmodifieddate"
 	ObjectFieldId                 ObjectField = "id"
 	ObjectFieldProperties         ObjectField = "properties"
+	ObjectFieldAssociations       ObjectField = "associations"
 )
 
 type ObjectType string
