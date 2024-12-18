@@ -6,6 +6,7 @@ import (
 	"path"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
@@ -20,6 +21,8 @@ type writeResponse struct {
 }
 
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
+	ctx = logging.With(ctx, "connector", "hubspot")
+
 	if err := config.ValidateParams(); err != nil {
 		return nil, err
 	}
