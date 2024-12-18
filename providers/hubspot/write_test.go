@@ -112,6 +112,7 @@ func TestFormatData(t *testing.T) {
 				if !errors.Is(err, tt.expectedErr) {
 					t.Fatalf("formatData() error = %v, expectedErr %v", err, tt.expectedErr)
 				}
+
 				return
 			}
 
