@@ -14,7 +14,7 @@ jobs:
         uses: golangci/golangci-lint-action@v3
         continue-on-error: false
         with:
-          version: v1.62.0
+          version: "v1.62.0"
       - name: Install gci
         run: "go install github.com/daixiang0/gci@latest"
       - name: List files with wrong format
