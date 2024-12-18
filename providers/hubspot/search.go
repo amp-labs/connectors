@@ -2,10 +2,12 @@ package hubspot
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/test/utils"
 )
 
 // Search uses the POST /search endpoint to filter object records and return the result.
@@ -26,7 +28,14 @@ func (c *Connector) Search(ctx context.Context, config SearchParams) (*common.Re
 
 	relativeURL := strings.Join([]string{"objects", config.ObjectName, "search"}, "/")
 
-	rsp, err = c.Client.Post(ctx, c.getURL(relativeURL), makeFilterBody(config))
+	fmt.Println("Config-----------")
+	fmt.Println(utils.PrettyFormatStruct(config))
+
+	bod := makeFilterBody(config)
+	fmt.Println("Search Body ------")
+	fmt.Println(utils.PrettyFormatStruct(bod))
+
+	rsp, err = c.Client.Post(ctx, c.getURL(relativeURL), bod)
 	if err != nil {
 		return nil, err
 	}
