@@ -70,7 +70,14 @@ func main() {
 
 	propMsg.ObjectId = recordId
 
-	records, err := conn.GetRecordsWithIds(ctx, "contact", []string{writeResult.RecordId}, nil, nil)
+	recordResult, err := conn.GetRecordFromSubscriptionEvent(ctx, &propMsg)
+	if err != nil {
+		utils.Fail("error getting record from subscription event", "error", err)
+	}
+
+	utils.DumpJSON(recordResult, os.Stdout)
+
+	records, err := conn.GetRecordsWithIds(ctx, "contact", []string{writeResult.RecordId}, nil)
 	if err != nil {
 		utils.Fail("error getting records with ids", "error", err)
 	}
