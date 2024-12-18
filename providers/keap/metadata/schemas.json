@@ -344,26 +344,6 @@
             "use_default_payment_gateway": "use_default_payment_gateway"
           }
         },
-        "summaries": {
-          "displayName": "Summaries",
-          "path": "/affiliates/summaries",
-          "responseKey": "summaries",
-          "fields": {
-            "affiliate_id": "affiliate_id",
-            "amount_earned": "amount_earned",
-            "balance": "balance",
-            "clawbacks": "clawbacks"
-          }
-        },
-        "synced_products": {
-          "displayName": "Product Statuses",
-          "path": "/products/sync",
-          "responseKey": "product_statuses",
-          "fields": {
-            "product": "product",
-            "status": "status"
-          }
-        },
         "tags": {
           "displayName": "Tags",
           "path": "/tags",
