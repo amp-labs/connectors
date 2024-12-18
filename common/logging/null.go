@@ -5,7 +5,7 @@ import (
 	"log/slog"
 )
 
-var nullLogger *slog.Logger
+var nullLogger *slog.Logger //nolint:gochecknoglobals
 
 func init() {
 	nullLogger = slog.New(&nullHandler{})
