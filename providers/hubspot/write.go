@@ -9,6 +9,10 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
+var (
+	ErrInvalidDataFormat = fmt.Errorf("data must be a map")
+)
+
 type writeResponse struct {
 	CreatedAt             string         `json:"createdAt"`
 	Archived              bool           `json:"archived"`
@@ -36,11 +40,10 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		write = c.Client.Post
 	}
 
-	// Hubspot requires everything to be wrapped in a "properties" object.
-	// We do this automatically in the write method so that the user doesn't
-	// have to worry about it.
-	data := make(map[string]interface{})
-	data["properties"] = config.RecordData
+	data, err := formatData(config.RecordData)
+	if err != nil {
+		return nil, err
+	}
 
 	json, err := write(ctx, url, data)
 	if err != nil {
@@ -61,5 +64,25 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		RecordId: rsp.ID,
 		Success:  true,
 		Data:     record,
+	}, nil
+}
+
+// formatData formats the data to be written to Hubspot. If the data contains a "properties" key, it's assumed to be
+// formatted correctly. If not, it's wrapped in a "properties" object.
+func formatData(data any) (map[ObjectField]any, error) {
+	mapData, ok := data.(map[ObjectField]any)
+	if !ok {
+		return nil, fmt.Errorf("%w: %T", ErrInvalidDataFormat, data)
+	}
+
+	// If the data has a "properties" / "associations" key, we assume it's formatted at the root level.
+	if _, ok := mapData[ObjectFieldProperties]; ok {
+		return mapData, nil
+	} else if _, ok := mapData[ObjectFieldAssociations]; ok {
+		return mapData, nil
+	}
+
+	return map[ObjectField]any{
+		ObjectFieldProperties: data,
 	}, nil
 }
