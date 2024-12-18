@@ -10,12 +10,14 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/amp-labs/connectors/common/logging"
 )
 
 // Header is a key/value pair that can be added to a request.
 type Header struct {
-	Key   string
-	Value string
+	Key   string `json:"key"`
+	Value string `json:"value"`
 }
 
 // ErrorHandler allows the caller to inject their own HTTP error handling logic.
@@ -41,6 +43,34 @@ func (h *HTTPClient) getURL(url string) (string, error) {
 	return getURL(h.Base, url)
 }
 
+// redactSensitiveHeaders redacts sensitive headers from the given headers.
+func redactSensitiveHeaders(hdrs []Header) []Header {
+	if hdrs == nil {
+		return nil
+	}
+
+	redacted := make([]Header, 0, len(hdrs))
+
+	for _, hdr := range hdrs {
+		switch {
+		case strings.EqualFold(hdr.Key, "Authorization"):
+			redacted = append(redacted, Header{Key: hdr.Key, Value: "<redacted>"})
+		case strings.EqualFold(hdr.Key, "Proxy-Authorization"):
+			redacted = append(redacted, Header{Key: hdr.Key, Value: "<redacted>"})
+		case strings.EqualFold(hdr.Key, "x-amz-security-token"):
+			redacted = append(redacted, Header{Key: hdr.Key, Value: "<redacted>"})
+		case strings.EqualFold(hdr.Key, "X-Api-Key"):
+			redacted = append(redacted, Header{Key: hdr.Key, Value: "<redacted>"})
+		case strings.EqualFold(hdr.Key, "X-Admin-Key"):
+			redacted = append(redacted, Header{Key: hdr.Key, Value: "<redacted>"})
+		default:
+			redacted = append(redacted, hdr)
+		}
+	}
+
+	return redacted
+}
+
 // Get makes a GET request to the given URL and returns the response. If the response is not a 2xx,
 // an error is returned. If the response is a 401, the caller should refresh the access token
 // and retry the request. If errorHandler is nil, then the default error handler is used.
@@ -50,6 +80,11 @@ func (h *HTTPClient) Get(ctx context.Context, url string, headers ...Header) (*h
 	if err != nil {
 		return nil, nil, err
 	}
+
+	logging.Logger(ctx).Debug("HTTP request",
+		"method", "GET", "url", fullURL,
+		"headers", redactSensitiveHeaders(headers))
+
 	// Make the request, get the response body
 	res, body, err := h.httpGet(ctx, fullURL, headers) //nolint:bodyclose
 	if err != nil {
@@ -70,6 +105,11 @@ func (h *HTTPClient) Post(ctx context.Context,
 	if err != nil {
 		return nil, nil, err
 	}
+
+	logging.Logger(ctx).Debug("HTTP request",
+		"method", "POST", "url", fullURL,
+		"headers", redactSensitiveHeaders(headers),
+		"bodySize", len(reqBody))
 
 	// Make the request, get the response body
 	res, body, err := h.httpPost(ctx, fullURL, headers, reqBody) //nolint:bodyclose
@@ -124,6 +164,11 @@ func (h *HTTPClient) Delete(ctx context.Context,
 	if err != nil {
 		return nil, nil, err
 	}
+
+	logging.Logger(ctx).Debug("HTTP request",
+		"method", "DELETE", "url", fullURL,
+		"headers", redactSensitiveHeaders(headers))
+
 	// Make the request, get the response body
 	res, body, err := h.httpDelete(ctx, fullURL, headers) //nolint:bodyclose
 	if err != nil {
@@ -232,6 +277,11 @@ func makePatchRequest(ctx context.Context, url string, headers []Header, body an
 
 	req.ContentLength = int64(len(jBody))
 
+	logging.Logger(ctx).Debug("HTTP request",
+		"method", "PATCH", "url", url,
+		"headers", redactSensitiveHeaders(headers),
+		"bodySize", len(jBody))
+
 	return addJSONContentTypeIfNotPresent(addHeaders(req, headers)), nil
 }
 
@@ -249,6 +299,11 @@ func makePutRequest(ctx context.Context, url string, headers []Header, body any)
 	}
 
 	req.ContentLength = int64(len(jBody))
+
+	logging.Logger(ctx).Debug("HTTP request",
+		"method", "PUT", "url", url,
+		"headers", redactSensitiveHeaders(headers),
+		"bodySize", len(jBody))
 
 	return addJSONContentTypeIfNotPresent(addHeaders(req, headers)), nil
 }

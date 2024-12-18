@@ -7,6 +7,7 @@ import (
 	"path"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/internal/datautils"
 )
@@ -73,6 +74,8 @@ func (c *Connector) GetRecordsWithIds(
 	ids []string,
 	fields []string,
 ) ([]common.ReadResultRow, error) {
+	ctx = logging.WithKeyValue(ctx, "connector", "hubspot")
+
 	singularObjName := naming.NewSingularString(objectName).String()
 	if !getRecordSupportedObjectsSet.Has(singularObjName) {
 		return nil, fmt.Errorf("%w %s", errGerRecordNotSupportedForObject, objectName)

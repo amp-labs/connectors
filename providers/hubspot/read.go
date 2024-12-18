@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/logging"
 )
 
 // Read reads data from Hubspot. If Since is set, it will use the
@@ -14,7 +15,9 @@ import (
 // search endpoint. If Since is not set, it will use the read endpoint.
 // In case Deleted objects won’t appear in any search results.
 // Deleted objects can only be read by using this endpoint.
-func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
+func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) { //nolint:funlen
+	ctx = logging.WithKeyValue(ctx, "connector", "hubspot")
+
 	if err := config.ValidateParams(true); err != nil {
 		return nil, err
 	}
