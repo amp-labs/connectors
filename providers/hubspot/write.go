@@ -2,6 +2,7 @@ package hubspot
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"path"
 
@@ -9,9 +10,7 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
-var (
-	ErrInvalidDataFormat = fmt.Errorf("data must be a map")
-)
+var ErrInvalidDataFormat = errors.New("data must be a map")
 
 type writeResponse struct {
 	CreatedAt             string         `json:"createdAt"`

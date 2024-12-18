@@ -6,7 +6,9 @@ import (
 	"testing"
 )
 
-func TestFormatData(t *testing.T) {
+func TestFormatData(t *testing.T) { //nolint:funlen
+	t.Parallel()
+
 	tests := []struct {
 		name        string
 		input       any
@@ -55,9 +57,10 @@ func TestFormatData(t *testing.T) {
 			name: "properties and associations, return as is",
 			input: map[string]any{
 				"properties": map[string]any{
-					"hs_timestamp":     1734527635844,
-					"hs_email_status":  "SENT",
-					"hs_email_headers": "{\"from\":{\"email\":null},\"to\":[{\"email\":null,\"firstName\":\"Some\",\"lastName\":\"Person\"}]}",
+					"hs_timestamp":    1734527635844,
+					"hs_email_status": "SENT",
+					"hs_email_headers": "" +
+						"{'from':{'email':null},'to':[{'email':null,'firstName':'Some','lastName':'Person'}]}",
 				},
 				"associations": []map[string]any{
 					{
@@ -77,9 +80,10 @@ func TestFormatData(t *testing.T) {
 			},
 			want: map[string]any{
 				"properties": map[string]any{
-					"hs_timestamp":     1734527635844,
-					"hs_email_status":  "SENT",
-					"hs_email_headers": "{\"from\":{\"email\":null},\"to\":[{\"email\":null,\"firstName\":\"Some\",\"lastName\":\"Person\"}]}",
+					"hs_timestamp":    1734527635844,
+					"hs_email_status": "SENT",
+					"hs_email_headers": "" +
+						"{'from':{'email':null},'to':[{'email':null,'firstName':'Some','lastName':'Person'}]}",
 				},
 				"associations": []map[string]any{
 					{
@@ -100,24 +104,25 @@ func TestFormatData(t *testing.T) {
 		},
 	}
 
-	for _, tt := range tests {
-		tt := tt // pin variable
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := formatData(tt.input)
-			if (err != nil) != tt.wantErr {
-				t.Fatalf("formatData() error = %v, wantErr %v", err, tt.wantErr)
+	for _, ttc := range tests {
+		t.Run(ttc.name, func(t *testing.T) {
+			t.Parallel()
+
+			got, err := formatData(ttc.input)
+			if (err != nil) != ttc.wantErr {
+				t.Fatalf("formatData() error = %v, wantErr %v", err, ttc.wantErr)
 			}
 
-			if tt.wantErr {
-				if !errors.Is(err, tt.expectedErr) {
-					t.Fatalf("formatData() error = %v, expectedErr %v", err, tt.expectedErr)
+			if ttc.wantErr {
+				if !errors.Is(err, ttc.expectedErr) {
+					t.Fatalf("formatData() error = %v, expectedErr %v", err, ttc.expectedErr)
 				}
 
 				return
 			}
 
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("formatData() = %#v, want %#v", got, tt.want)
+			if !reflect.DeepEqual(got, ttc.want) {
+				t.Errorf("formatData() = %#v, want %#v", got, ttc.want)
 			}
 		})
 	}
