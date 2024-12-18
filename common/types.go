@@ -140,6 +140,9 @@ type WriteParams struct {
 	// RecordData is a JSON node representing the record of data we want to insert in the case of CREATE
 	// or fields of data we want to modify in case of an update
 	RecordData any // required
+
+	// Associations is a map that contains the associations between the object and other objects.
+	Associations any // optional
 }
 
 // DeleteParams defines how we are deleting data in SaaS API.
