@@ -40,7 +40,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 			return nil, err
 		}
 	case in(config.ObjectName, readingSearchObjectsPOST):
-		return c.Search(ctx, config)
+		return c.Search(ctx, config, url)
 	default:
 		return nil, common.ErrObjectNotSupported
 	}
