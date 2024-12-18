@@ -65,9 +65,10 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 		url.WithQueryParam("limit", strconv.Itoa(DefaultPageSize))
 
 		if !config.Since.IsZero() {
-			url.WithQueryParam("since", datautils.Time.FormatRFC3339inUTC(config.Since))
+			url.WithQueryParam("since", datautils.Time.FormatRFC3339inUTCWithMilliseconds(config.Since))
 		}
 	} else if c.Module.ID == ModuleV2 {
+		// Since parameter is not applicable to objects in Module V2.
 		if config.ObjectName == "contact_link_types" {
 			url.WithQueryParam("pageSize", strconv.Itoa(DefaultPageSize))
 		} else {

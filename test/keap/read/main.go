@@ -27,6 +27,8 @@ func main() {
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "contacts",
 		Fields:     connectors.Fields("id"),
+		// Since:      time.Now().Add(-30 * time.Minute),
+		// NextPage: "https://api.infusionsoft.com/crm/rest/v1/contacts/?limit=1&offset=50&since=2024-12-17T21:39:36.099Z&order=id",
 	})
 	if err != nil {
 		utils.Fail("error reading from Keap", "error", err)

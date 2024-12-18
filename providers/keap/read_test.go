@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -15,6 +16,8 @@ import (
 
 func TestReadV1(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
+
+	millisecondInNano := int(time.Millisecond.Nanoseconds())
 
 	errorBadRequest := testutils.DataFromFile(t, "get-with-req-body-not-allowed.html")
 	errorNotFound := testutils.DataFromFile(t, "url-not-found.html")
@@ -131,14 +134,24 @@ func TestReadV1(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Read contacts empty page",
+			Name: "Incremental read of contacts, empty page",
 			Input: common.ReadParams{
 				ObjectName: "contacts",
 				Fields:     connectors.Fields("given_name"),
+				Since:      time.Date(2024, 3, 4, 8, 22, 56, 77*millisecondInNano, time.UTC),
 			},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, responseContactsEmptyPage),
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{{
+					If: mockcond.And{
+						mockcond.PathSuffix("/crm/rest/v1/contacts"),
+						mockcond.QueryParam("since", "2024-03-04T08:22:56.077Z"),
+					},
+					Then: mockserver.Response(http.StatusOK, responseContactsEmptyPage),
+				}, {
+					If:   mockcond.PathSuffix("/crm/rest/v1/contacts/model"),
+					Then: mockserver.Response(http.StatusOK, []byte{}), // no custom fields
+				}},
 			}.Server(),
 			Expected:     &common.ReadResult{Rows: 0, Data: []common.ReadResultRow{}, NextPage: "", Done: true},
 			ExpectedErrs: nil,
