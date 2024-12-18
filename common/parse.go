@@ -1,6 +1,7 @@
 package common
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/amp-labs/connectors/common/jsonquery"
@@ -26,21 +27,22 @@ func ParseResult(
 	marshalFunc func([]map[string]any, []string) ([]ReadResultRow, error),
 	fields datautils.Set[string],
 ) (*ReadResult, error) {
+	fmt.Println("11111")
 	body, ok := resp.Body()
 	if !ok {
 		return nil, ErrEmptyJSONHTTPResponse
 	}
-
+	fmt.Println("22222")
 	records, err := recordsFunc(body)
 	if err != nil {
 		return nil, err
 	}
-
+	fmt.Println("33333")
 	nextPage, err := nextPageFunc(body)
 	if err != nil {
 		return nil, err
 	}
-
+	fmt.Println("4444")
 	marshaledData, err := marshalFunc(records, fields.List())
 	if err != nil {
 		return nil, err

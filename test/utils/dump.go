@@ -17,3 +17,12 @@ func DumpJSON(v any, w io.Writer) {
 		Fail("error marshaling to JSON: %w", "error", err)
 	}
 }
+
+func PrettyFormatStruct(s any) (string, error) {
+	json, err := json.MarshalIndent(s, "", "  ")
+	if err != nil {
+		return "", err
+	}
+
+	return string(json), nil
+}
