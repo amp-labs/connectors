@@ -1,33 +1,26 @@
 package apollo
 
+//nolint:gochecknoglobals
 var (
-	restAPIPrefix string    = "v1"     //nolint:gochecknoglobals
-	pageQuery     string    = "page"   //nolint:gochecknoglobals
-	pageSize      string    = "100"    //nolint:gochecknoglobals
-	searchingPath string    = "search" //nolint:gochecknoglobals
-	readOp        operation = "read"   //nolint:gochecknoglobals
-	writeOp       operation = "write"  //nolint:gochecknoglobals
+	restAPIPrefix string    = "v1"
+	pageSize      string    = "100"
+	readOp        operation = "read"
+	pageQuery     string    = "page"
+	writeOp       operation = "write"
+	searchingPath string    = "search"
 )
 
-type ObjectType string
+// readingSearchObjectGET represents objects that read by search and uses GET method.
+//
+//nolint:gochecknoglobals
+var readingSearchObjectsGET = []string{"opportunities", "users"}
 
-// postSearchObjects represents the objects that uses the searching endpoint,POST method.
-var postSearchObjects = []ObjectType{ //nolint:gochecknoglobals
-	"mixed_people", "mixed_companies", "contacts",
-	"accounts", "tasks",
-}
+// readingSearchObjects represents objects that read by search and uses POST method.
+//
+//nolint:gochecknoglobals
+var readingSearchObjectsPOST = []string{"accounts", "contacts", "tasks", "emailer_campaigns"}
 
-// getSearchObjects represents the objects that uses the searching endpoint, GET method.
-var getSearchObjects = []ObjectType{"opportunities", "users", "emailer_campaigns"} //nolint:gochecknoglobals
-
-// responseKey represent the results key fields in the response.
-// some endpoints have more than one, data fields returned.
-var responseKey = map[string][]string{ //nolint:gochecknoglobals
-	"mixed_people":      {"people", "accounts"},
-	"mixed_companies":   {"organizations", "accounts"},
-	"opportunities":     {"opportunities"},
-	"accounts":          {"accounts"},
-	"emailer_campaigns": {"emailer_campaigns"},
-	"users":             {"users"},
-	"contacts":          {"contacts"},
-}
+// readingListObjects represents objects that read by listing.
+//
+//nolint:gochecknoglobals,lll
+var readingListObjects = []string{"contact_stages", "opportunity_stages", "account_stages", "email_accounts", "labels", "typed_custom_fields"}

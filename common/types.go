@@ -93,6 +93,9 @@ var (
 	// ErrOperationNotSupportedForObject is returned when operation is not supported for this object.
 	ErrOperationNotSupportedForObject = errors.New("operation is not supported for this object in this module")
 
+	// ErrObjectNotSupported is returned when operation is not supported for this object.
+	ErrObjectNotSupported = errors.New("operation is not supported for this object")
+
 	// ErrResolvingURLPathForObject is returned when URL cannot be implied for object name.
 	ErrResolvingURLPathForObject = errors.New("cannot resolve URL path for given object name")
 

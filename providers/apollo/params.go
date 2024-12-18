@@ -39,15 +39,13 @@ func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
 }
 
 func usesSearching(objectName string) bool {
-	return in(objectName, postSearchObjects, getSearchObjects)
+	return in(objectName, readingSearchObjectsGET, readingSearchObjectsPOST)
 }
 
-func in(a string, b ...[]ObjectType) bool {
-	o := ObjectType(a)
-
+func in(a string, b ...[]string) bool {
 	for _, sl := range b {
 		for _, v := range sl {
-			if v == o {
+			if v == a {
 				return true
 			}
 		}
