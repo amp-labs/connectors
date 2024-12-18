@@ -42,7 +42,7 @@ func MainFn() int {
 		return 1
 	}
 
-	err = testReadTasks(ctx, conn)
+	err = testReadContacts(ctx, conn)
 	if err != nil {
 		return 1
 	}
@@ -142,10 +142,10 @@ func testReadSequences(ctx context.Context, conn *ap.Connector) error {
 	return nil
 }
 
-func testReadTasks(ctx context.Context, conn *ap.Connector) error {
+func testReadContacts(ctx context.Context, conn *ap.Connector) error {
 	params := common.ReadParams{
-		ObjectName: "tasks",
-		Fields:     connectors.Fields("id", "created_at", "skipped_at"),
+		ObjectName: "contacts",
+		Fields:     connectors.Fields("id", "first_name", "name"),
 	}
 
 	res, err := conn.Read(ctx, params)
