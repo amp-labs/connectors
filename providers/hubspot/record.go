@@ -51,8 +51,7 @@ func (c *Connector) GetRecordsWithIds(
 	inputs := make([]map[string]any, len(ids))
 	for i, id := range ids {
 		inputs[i] = map[string]any{
-			"properties": fields,
-			"id":         id,
+			"id": id,
 		}
 	}
 
@@ -64,7 +63,8 @@ func (c *Connector) GetRecordsWithIds(
 	}
 
 	body := map[string]any{
-		"inputs": inputs,
+		"inputs":     inputs,
+		"properties": fields,
 	}
 
 	resp, err := c.Client.Post(ctx, u, body)
