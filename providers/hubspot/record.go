@@ -74,7 +74,7 @@ func (c *Connector) GetRecordsWithIds(
 	ids []string,
 	fields []string,
 ) ([]common.ReadResultRow, error) {
-	ctx = logging.WithKeyValue(ctx, "connector", "hubspot")
+	ctx = logging.With(ctx, "connector", "hubspot")
 
 	singularObjName := naming.NewSingularString(objectName).String()
 	if !getRecordSupportedObjectsSet.Has(singularObjName) {

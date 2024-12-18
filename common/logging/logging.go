@@ -5,48 +5,28 @@ import (
 	"log/slog"
 )
 
-type keyValues []keyValue
+// WithLoggerEnabled returns a new context with the logger
+// explicitly enabled or disabled. If the key is not set, the
+// logger will be enabled by default.
+func WithLoggerEnabled(ctx context.Context, enabled bool) context.Context {
+	if ctx == nil {
+		ctx = context.Background()
+	}
 
-type keyValue struct {
-	Key   string
-	Value any
+	return context.WithValue(ctx, contextKey("loggerEnabled"), enabled)
 }
 
-// WithKeyValue returns a new context with the given key-value pair which
-// will be picked up by the logger and used in the structured messages.
-func WithKeyValue(ctx context.Context, key string, value any) context.Context {
-	kv := getKeysAndValues(ctx)
-
-	entry := keyValue{
-		Key:   key,
-		Value: value,
+// With returns a new context with the given values added.
+// The values are added to the logger automatically.
+func With(ctx context.Context, values ...any) context.Context {
+	if len(values) == 0 && ctx != nil {
+		// Corner case, don't bother creating a new context.
+		return ctx
 	}
 
-	kv = append(kv, entry)
+	vals := append(getValues(ctx), values...)
 
-	return context.WithValue(ctx, contextKey("keyValues"), kv)
-}
-
-func (kv *keyValues) Slice() []any {
-	if kv == nil {
-		return nil
-	}
-
-	if len(*kv) == 0 {
-		return nil
-	}
-
-	out := make([]any, 0, len(*kv)*2) //nolint:mnd
-
-	for _, v := range *kv {
-		out = append(out, v.Slice()...)
-	}
-
-	return out
-}
-
-func (kv *keyValue) Slice() []any {
-	return []any{kv.Key, kv.Value}
+	return context.WithValue(ctx, contextKey("loggerValues"), vals)
 }
 
 // It's considered good practice to use unexported custom types for context keys.
@@ -54,17 +34,15 @@ func (kv *keyValue) Slice() []any {
 // values for their own keys.
 type contextKey string
 
-// getKeysAndValues returns the key-values from the context.
-// Used to build the logger.
-func getKeysAndValues(ctx context.Context) keyValues { //nolint:contextcheck
+func getValues(ctx context.Context) []any { //nolint:contextcheck
 	if ctx == nil {
 		ctx = context.Background()
 	}
 
 	// Check for a subsystem override.
-	sub := ctx.Value(contextKey("keyValues"))
+	sub := ctx.Value(contextKey("loggerValues"))
 	if sub != nil {
-		val, ok := sub.(keyValues)
+		val, ok := sub.([]any)
 		if ok {
 			return val
 		} else {
@@ -100,13 +78,29 @@ func Logger(ctx ...context.Context) *slog.Logger {
 		realCtx = context.Background()
 	}
 
+	// Logging can be disabled by setting the loggerEnabled key to false.
+	sub := realCtx.Value(contextKey("loggerEnabled"))
+	if sub != nil {
+		val, ok := sub.(bool)
+		if ok && !val {
+			// The logger has been explicitly disabled.
+			//
+			// It's much, much simpler to just return a logger which
+			// throws everything away, than to add a check everywhere
+			// we might want to log something.
+			return nullLogger
+		}
+	}
+
 	// Get the default logger
 	logger := slog.Default()
 
-	kv := getKeysAndValues(realCtx)
-	if kv != nil {
-		logger = logger.With(kv.Slice()...)
+	// Check for key-values to add to the logger.
+	vals := getValues(realCtx)
+	if vals != nil {
+		logger = logger.With(vals...)
 	}
 
+	// Return the logger
 	return logger
 }

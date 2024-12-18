@@ -27,7 +27,7 @@ func (c *Connector) ListObjectMetadata( // nolint:cyclop,funlen
 	ctx context.Context,
 	objectNames []string,
 ) (*common.ListObjectMetadataResult, error) {
-	ctx = logging.WithKeyValue(ctx, "connector", "hubspot")
+	ctx = logging.With(ctx, "connector", "hubspot")
 
 	if len(objectNames) == 0 {
 		return nil, common.ErrMissingObjects
@@ -159,7 +159,7 @@ type AccountInfo struct {
 }
 
 func (c *Connector) GetAccountInfo(ctx context.Context) (*AccountInfo, *common.JSONHTTPResponse, error) {
-	ctx = logging.WithKeyValue(ctx, "connector", "hubspot")
+	ctx = logging.With(ctx, "connector", "hubspot")
 
 	resp, err := c.Client.Get(ctx, "account-info/v3/details")
 	if err != nil {

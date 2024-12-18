@@ -16,7 +16,7 @@ import (
 // Archived results do not appear in search results.
 // Read more @ https://developers.hubspot.com/docs/api/crm/search
 func (c *Connector) Search(ctx context.Context, config SearchParams) (*common.ReadResult, error) {
-	ctx = logging.WithKeyValue(ctx, "connector", "hubspot")
+	ctx = logging.With(ctx, "connector", "hubspot")
 
 	if err := config.ValidateParams(); err != nil {
 		return nil, err

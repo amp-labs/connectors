@@ -21,7 +21,7 @@ type writeResponse struct {
 }
 
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
-	ctx = logging.WithKeyValue(ctx, "connector", "hubspot")
+	ctx = logging.With(ctx, "connector", "hubspot")
 
 	if err := config.ValidateParams(); err != nil {
 		return nil, err
