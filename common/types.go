@@ -141,7 +141,7 @@ type WriteParams struct {
 	// or fields of data we want to modify in case of an update
 	RecordData any // required
 
-	// Associations is a map that contains the associations between the object and other objects.
+	// Associations contains associations between the object and other objects.
 	Associations any // optional
 }
 
