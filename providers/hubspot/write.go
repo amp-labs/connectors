@@ -69,20 +69,20 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 
 // formatData formats the data to be written to Hubspot. If the data contains a "properties" key, it's assumed to be
 // formatted correctly. If not, it's wrapped in a "properties" object.
-func formatData(data any) (map[ObjectField]any, error) {
-	mapData, ok := data.(map[ObjectField]any)
+func formatData(data any) (map[string]any, error) {
+	mapData, ok := data.(map[string]any)
 	if !ok {
 		return nil, fmt.Errorf("%w: %T", ErrInvalidDataFormat, data)
 	}
 
 	// If the data has a "properties" / "associations" key, we assume it's formatted at the root level.
-	if _, ok := mapData[ObjectFieldProperties]; ok {
+	if _, ok := mapData[string(ObjectFieldProperties)]; ok {
 		return mapData, nil
-	} else if _, ok := mapData[ObjectFieldAssociations]; ok {
+	} else if _, ok := mapData[string(ObjectFieldAssociations)]; ok {
 		return mapData, nil
 	}
 
-	return map[ObjectField]any{
-		ObjectFieldProperties: data,
+	return map[string]any{
+		string(ObjectFieldProperties): data,
 	}, nil
 }
