@@ -73,11 +73,11 @@ func ParseResult(
 
 // ExtractLowercaseFieldsFromRaw returns a map of fields from a record.
 // The fields are all returned in lowercase.
-func ExtractLowercaseFieldsFromRaw(fields []string, record map[string]interface{}) map[string]interface{} {
-	out := make(map[string]interface{}, len(fields))
+func ExtractLowercaseFieldsFromRaw(fields []string, record map[string]any) map[string]any {
+	out := make(map[string]any, len(fields))
 
 	// Modify all record keys to lowercase
-	lowercaseRecord := make(map[string]interface{}, len(record))
+	lowercaseRecord := make(map[string]any, len(record))
 	for key, value := range record {
 		lowercaseRecord[strings.ToLower(key)] = value
 	}

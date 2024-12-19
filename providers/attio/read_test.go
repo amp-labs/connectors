@@ -109,7 +109,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						"created_at":       "2024-09-25T13:10:33.302000000Z",
 						"name":             "Sales",
 						"workspace_access": nil,
-						"workspace_member_access": []interface{}{
+						"workspace_member_access": []any{
 							map[string]any{
 								"level":               "full-access",
 								"workspace_member_id": "cc3821aa-f738-42c0-a739-7b6de755e5f1",
@@ -226,7 +226,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						"is_completed":      false,
 						"deadline_at":       "2023-01-01T15:00:00.000000000Z",
 						"linked_records":    []any{},
-						"assignees": []interface{}{
+						"assignees": []any{
 							map[string]any{
 								"referenced_actor_type": "workspace-member",
 								"referenced_actor_id":   "67af46e4-a450-4fee-a1d1-39729b3af771",
@@ -263,11 +263,11 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						},
 						"target_url": "https://example.com/webhook",
 						"status":     "active",
-						"subscriptions": []interface{}{
+						"subscriptions": []any{
 							map[string]any{
 								"event_type": "note.created",
 								"filter": map[string]any{
-									"$or": []interface{}{
+									"$or": []any{
 										map[string]any{
 											"field":    "id.list_id",
 											"operator": "equals",

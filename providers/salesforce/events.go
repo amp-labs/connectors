@@ -19,11 +19,11 @@ const (
 )
 
 type SFAPIResponseBody struct {
-	Id       string        `json:"id"`
-	Success  bool          `json:"success"`
-	Errors   []interface{} `json:"errors"`
-	Infos    []interface{} `json:"infos"`
-	Warnings []interface{} `json:"warnings"`
+	Id       string `json:"id"`
+	Success  bool   `json:"success"`
+	Errors   []any  `json:"errors"`
+	Infos    []any  `json:"infos"`
+	Warnings []any  `json:"warnings"`
 }
 
 // nolint:tagliatelle

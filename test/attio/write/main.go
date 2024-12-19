@@ -59,7 +59,7 @@ func testObjects(ctx context.Context) error {
 
 	params := common.WriteParams{
 		ObjectName: "objects",
-		RecordData: map[string]interface{}{
+		RecordData: map[string]any{
 			"data": map[string]string{
 				"api_slug":      "deal",
 				"singular_noun": "Deals",
@@ -84,12 +84,12 @@ func testObjects(ctx context.Context) error {
 
 	updateparams := common.WriteParams{
 		ObjectName: "objects",
-		RecordData: map[string]interface{}{
+		RecordData: map[string]any{
 			"data": map[string]string{
 				"singular_noun": "Deal",
 			},
 		},
-		RecordId: writeRes.Data["id"].(map[string]interface{})["object_id"].(string),
+		RecordId: writeRes.Data["id"].(map[string]any)["object_id"].(string),
 	}
 
 	updateres, err := Write(ctx, conn, updateparams)
@@ -114,7 +114,7 @@ func testLists(ctx context.Context) error {
 	writeParams := common.WriteParams{
 		ObjectName: "lists",
 		RecordData: map[string]any{
-			"data": map[string]interface{}{
+			"data": map[string]any{
 				"workspace_access": "full-access",
 				"name":             "Marketing",
 				"api_slug":         "marketing_1",
@@ -146,11 +146,11 @@ func testLists(ctx context.Context) error {
 	updateParams := common.WriteParams{
 		ObjectName: "lists",
 		RecordData: map[string]any{
-			"data": map[string]interface{}{
+			"data": map[string]any{
 				"name": "Sales",
 			},
 		},
-		RecordId: writeRes.Data["id"].(map[string]interface{})["list_id"].(string),
+		RecordId: writeRes.Data["id"].(map[string]any)["list_id"].(string),
 	}
 
 	writeres, err := Write(ctx, conn, updateParams)
@@ -249,11 +249,11 @@ func testTasks(ctx context.Context) error {
 	updateParams := common.WriteParams{
 		ObjectName: "tasks",
 		RecordData: map[string]any{
-			"data": map[string]interface{}{
+			"data": map[string]any{
 				"deadline_at": "2023-10-03T14:00:00.000000000Z",
 			},
 		},
-		RecordId: writeRes.Data["id"].(map[string]interface{})["task_id"].(string),
+		RecordId: writeRes.Data["id"].(map[string]any)["task_id"].(string),
 	}
 
 	writeres, err := Write(ctx, conn, updateParams)
@@ -316,7 +316,7 @@ func testWebhooks(ctx context.Context) error {
 				},
 			},
 		},
-		RecordId: writeRes.Data["id"].(map[string]interface{})["webhook_id"].(string),
+		RecordId: writeRes.Data["id"].(map[string]any)["webhook_id"].(string),
 	}
 
 	writeres, err := Write(ctx, conn, updateParams)
