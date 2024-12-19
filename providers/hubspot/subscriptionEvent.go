@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 )
@@ -18,13 +19,22 @@ type SubscriptionEvent struct {
 	EventId          int    `json:"eventId"`
 	SubscriptionId   int    `json:"subscriptionId"`
 	PortalId         int    `json:"portalId"`
-	OccurredAt       int    `json:"occurredAt"`
+	OccurredAt       int    `json:"occurredAt"` // in milliseconds
 	SubscriptionType string `json:"subscriptionType"`
 	AttemptNumber    int    `json:"attemptNumber"`
-	ObjectId         int    `json:"objectId"`
 	ChangeSource     string `json:"changeSource"`
-	PropertyName     string `json:"propertyName"`
-	PropertyValue    string `json:"propertyValue"`
+	// Optional fields
+	ObjectId   *int    `json:"objectId,omitempty"`
+	ChangeFlag *string `json:"changeFlag,omitempty"`
+	// Property Change Fields
+	PropertyName  *string `json:"propertyName,omitempty"`
+	PropertyValue *string `json:"propertyValue,omitempty"`
+	// Association Change Fields
+	AssociationType      *string `json:"associationType,omitempty"`
+	FromObjectId         *int    `json:"fromObjectId,omitempty"`
+	ToObjectId           *int    `json:"toObjectId,omitempty"`
+	AssociationRemoved   *bool   `json:"associationRemoved,omitempty"`
+	IsPrimaryAssociation *bool   `json:"isPrimaryAssociation,omitempty"`
 }
 
 // GetRecordFromSubscriptionEvent fetches a record from the Hubspot API using the data from a subscription event.
@@ -37,7 +47,7 @@ func (c *Connector) GetRecordFromSubscriptionEvent(
 		return nil, err
 	}
 
-	recordId := strconv.Itoa(evt.ObjectId)
+	recordId, _ := evt.RecordId()
 
 	// Since the subscription event doesn't contain the record data, we need to fetch it.
 	return c.GetRecord(ctx, objectName, recordId)
@@ -108,6 +118,20 @@ func (evt *SubscriptionEvent) ObjectName() (string, error) {
 
 func (evt *SubscriptionEvent) Workspace() (string, error) {
 	return strconv.Itoa(evt.PortalId), nil
+}
+
+var errRecordIdNotAvailable = errors.New("record ID is not available")
+
+func (evt *SubscriptionEvent) RecordId() (string, error) {
+	if evt.ObjectId != nil {
+		return strconv.Itoa(*evt.ObjectId), nil
+	}
+
+	return "", errRecordIdNotAvailable
+}
+
+func (evt *SubscriptionEvent) EventTimeStampNano() (int64, error) {
+	return time.UnixMilli(int64(evt.OccurredAt)).UnixNano(), nil
 }
 
 /*
