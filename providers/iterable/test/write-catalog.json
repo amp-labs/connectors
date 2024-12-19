@@ -1,0 +1,9 @@
+{
+  "msg": "",
+  "code": "Success",
+  "params": {
+    "id": 125254,
+    "name": "electronics",
+    "url": "/api/catalogs/electronics"
+  }
+}
