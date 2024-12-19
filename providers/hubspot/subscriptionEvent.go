@@ -25,16 +25,16 @@ type SubscriptionEvent struct {
 	ObjectId         int    `json:"objectId"`
 	ChangeSource     string `json:"changeSource"`
 	// Optional fields
-	ChangeFlag string `json:"changeFlag,omitempty"`
+	ChangeFlag *string `json:"changeFlag,omitempty"`
 	// Property Change Fields
-	PropertyName  string `json:"propertyName,omitempty"`
-	PropertyValue string `json:"propertyValue,omitempty"`
+	PropertyName  *string `json:"propertyName,omitempty"`
+	PropertyValue *string `json:"propertyValue,omitempty"`
 	// Association Change Fields
-	AssociationType      string `json:"associationType,omitempty"`
-	FromObjectId         int    `json:"fromObjectId,omitempty"`
-	ToObjectId           int    `json:"toObjectId,omitempty"`
-	AssociationRemoved   bool   `json:"associationRemoved,omitempty"`
-	IsPrimaryAssociation bool   `json:"isPrimaryAssociation,omitempty"`
+	AssociationType      *string `json:"associationType,omitempty"`
+	FromObjectId         *int    `json:"fromObjectId,omitempty"`
+	ToObjectId           *int    `json:"toObjectId,omitempty"`
+	AssociationRemoved   *bool   `json:"associationRemoved,omitempty"`
+	IsPrimaryAssociation *bool   `json:"isPrimaryAssociation,omitempty"`
 }
 
 // VerifyWebhookMessage verifies the signature of a webhook message from Hubspot.
