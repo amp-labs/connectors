@@ -29,7 +29,12 @@ func (c *Connector) Search(ctx context.Context, config SearchParams) (*common.Re
 
 	relativeURL := strings.Join([]string{"objects", config.ObjectName, "search"}, "/")
 
-	rsp, err = c.Client.Post(ctx, c.getURL(relativeURL), makeFilterBody(config))
+	u, err := c.getURL(relativeURL)
+	if err != nil {
+		return nil, err
+	}
+
+	rsp, err = c.Client.Post(ctx, u, makeFilterBody(config))
 	if err != nil {
 		return nil, err
 	}
