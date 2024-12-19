@@ -2,7 +2,6 @@ package hubspot
 
 import (
 	"context"
-	"net/url"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
@@ -60,9 +59,9 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	} else {
 		// If NextPage is not set, then we're reading the first page of results.
 		// We need to construct the query and then make the request.
-		relativeURL := strings.Join([]string{"objects", config.ObjectName, "?" + makeQueryValues(config)}, "/")
+		relativeURL := strings.Join([]string{"objects", config.ObjectName + "/"}, "/")
 
-		u, urlErr := c.getURL(relativeURL)
+		u, urlErr := c.getURL(relativeURL, makeQueryValues(config)...)
 		if urlErr != nil {
 			return nil, urlErr
 		}
@@ -84,23 +83,23 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 }
 
 // makeQueryValues returns the query for the desired read operation.
-func makeQueryValues(config common.ReadParams) string {
-	queryValues := url.Values{}
+func makeQueryValues(config common.ReadParams) []string {
+	var out []string
 
 	fields := config.Fields.List()
 	if len(fields) != 0 {
-		queryValues.Add("properties", strings.Join(fields, ","))
+		out = append(out, "properties", strings.Join(fields, ","))
 	}
 
 	if config.Deleted {
-		queryValues.Add("archived", "true")
+		out = append(out, "archived", "true")
 	}
 
-	queryValues.Add("limit", DefaultPageSize)
+	out = append(out, "limit", DefaultPageSize)
 
 	if len(config.AssociatedObjects) > 0 {
-		queryValues.Add("associations", strings.Join(config.AssociatedObjects, ","))
+		out = append(out, "associations", strings.Join(config.AssociatedObjects, ","))
 	}
 
-	return queryValues.Encode()
+	return out
 }
