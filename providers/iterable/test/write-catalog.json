@@ -1,0 +1,9 @@
+{
+  "msg": "",
+  "code": "Success",
+  "params": {
+    "id": 125254,
+    "name": "newPostmanCatalog",
+    "url": "/api/catalogs/newPostmanCatalog"
+  }
+}
