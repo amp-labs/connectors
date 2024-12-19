@@ -22,9 +22,9 @@ type SubscriptionEvent struct {
 	OccurredAt       int    `json:"occurredAt"` // in milliseconds
 	SubscriptionType string `json:"subscriptionType"`
 	AttemptNumber    int    `json:"attemptNumber"`
-	ObjectId         int    `json:"objectId"`
 	ChangeSource     string `json:"changeSource"`
 	// Optional fields
+	ObjectId   *int    `json:"objectId,omitempty"`
 	ChangeFlag *string `json:"changeFlag,omitempty"`
 	// Property Change Fields
 	PropertyName  *string `json:"propertyName,omitempty"`
@@ -104,8 +104,14 @@ func (evt *SubscriptionEvent) Workspace() (string, error) {
 	return strconv.Itoa(evt.PortalId), nil
 }
 
+var errRecordIdNotAvailable = errors.New("record ID is not available")
+
 func (evt *SubscriptionEvent) RecordId() (string, error) {
-	return strconv.Itoa(evt.ObjectId), nil
+	if evt.ObjectId != nil {
+		return strconv.Itoa(*evt.ObjectId), nil
+	}
+
+	return "", errRecordIdNotAvailable
 }
 
 func (evt *SubscriptionEvent) EventTimeStampNano() (int64, error) {
