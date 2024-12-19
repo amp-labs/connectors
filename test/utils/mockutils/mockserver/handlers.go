@@ -23,6 +23,13 @@ func ContentHTML() http.HandlerFunc {
 	}
 }
 
+// ContentText is a setup handler, which configures server to use Plain Text.
+func ContentText() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/plain")
+	}
+}
+
 // ContentMIME is a setup handler, which configures custom media type.
 func ContentMIME(mediaType string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
