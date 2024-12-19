@@ -68,7 +68,7 @@ func main() {
 		utils.Fail("error converting record id to int", "error", err)
 	}
 
-	propMsg.ObjectId = recordId
+	propMsg.ObjectId = &recordId
 
 	recordResult, err := conn.GetRecordFromSubscriptionEvent(ctx, &propMsg)
 	if err != nil {
