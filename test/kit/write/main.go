@@ -44,7 +44,7 @@ func testCustomfields(ctx context.Context) error {
 
 	params := common.WriteParams{
 		ObjectName: "custom_fields",
-		RecordData: map[string]interface{}{
+		RecordData: map[string]any{
 			"label": "customtest33",
 		},
 		RecordId: "",
@@ -92,7 +92,7 @@ func testSubscribers(ctx context.Context) error {
 
 	params := common.WriteParams{
 		ObjectName: "subscribers",
-		RecordData: map[string]interface{}{
+		RecordData: map[string]any{
 			"email_address": "dinesh@gmail.com",
 			"fields": map[string]string{
 				"Last name": "kumar",
@@ -148,7 +148,7 @@ func testTags(ctx context.Context) error {
 
 	params := common.WriteParams{
 		ObjectName: "tags",
-		RecordData: map[string]interface{}{
+		RecordData: map[string]any{
 			"name": "customer44",
 		},
 		RecordId: "",

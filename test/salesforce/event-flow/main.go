@@ -200,7 +200,7 @@ func TestCredentialsLegacy(conn *salesforce.Connector, ctx context.Context, uniq
 	return newNamedCred, nil
 }
 
-func printWithField(header string, key string, v interface{}) {
+func printWithField(header string, key string, v any) {
 	slog.Info(header, key, fmt.Sprintf("%+v", v))
 }
 

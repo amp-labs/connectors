@@ -94,7 +94,7 @@ const accountNumber = 123
 func testSalesforceValidCreate(ctx context.Context, conn *salesforce.Connector) (string, error) {
 	writeRes, err := conn.Write(ctx, connectors.WriteParams{
 		ObjectName: "Account",
-		RecordData: map[string]interface{}{
+		RecordData: map[string]any{
 			"Name":          "TEST ACCOUNT - [TO DELETE]",
 			"AccountNumber": accountNumber,
 		},
@@ -121,7 +121,7 @@ const accountNumber2 = 456
 func testSalesforceValidUpdate(ctx context.Context, conn *salesforce.Connector, writtenRecordId string) error {
 	writeRes, err := conn.Write(ctx, connectors.WriteParams{
 		ObjectName: "Account",
-		RecordData: map[string]interface{}{
+		RecordData: map[string]any{
 			"Name":          "OKADA TEST ACCOUNT",
 			"AccountNumber": accountNumber2,
 		},

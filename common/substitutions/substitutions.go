@@ -8,7 +8,7 @@ import (
 
 // substituteStruct performs string substitution on the fields of the input struct
 // using the substitutions map.
-func substituteStruct(input interface{}, substitutions map[string]string) (err error) { //nolint:gocognit,cyclop,lll
+func substituteStruct(input any, substitutions map[string]string) (err error) { //nolint:gocognit,cyclop,lll
 	configStruct := reflect.ValueOf(input).Elem()
 
 	for i := range configStruct.NumField() {
