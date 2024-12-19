@@ -82,6 +82,7 @@ func (e Explorer) ReadObjects(
 			e.operationMethodFilter,
 			e.propertyFlattener,
 			e.mediaType,
+			*e.autoSelectArrayItem,
 		)
 		if err != nil {
 			return nil, err
