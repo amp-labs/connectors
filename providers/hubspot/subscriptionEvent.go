@@ -108,7 +108,7 @@ func (evt *SubscriptionEvent) RecordId() (string, error) {
 	return strconv.Itoa(evt.ObjectId), nil
 }
 
-func EventTimeStampNano(evt *SubscriptionEvent) (int64, error) {
+func (evt *SubscriptionEvent) EventTimeStampNano() (int64, error) {
 	return time.UnixMilli(int64(evt.OccurredAt)).UnixNano(), nil
 }
 
