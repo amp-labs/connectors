@@ -59,7 +59,9 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	} else {
 		// If NextPage is not set, then we're reading the first page of results.
 		// We need to construct the query and then make the request.
-		relativeURL := strings.Join([]string{"objects", config.ObjectName + "/"}, "/")
+		// NB: The final slash is just to emulate prior behavior in earlier versions
+		// of this code. If it turns out to be unnecessary, remove it.
+		relativeURL := "objects/" + config.ObjectName + "/"
 
 		u, urlErr := c.getURL(relativeURL, makeQueryValues(config)...)
 		if urlErr != nil {
