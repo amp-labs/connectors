@@ -68,6 +68,12 @@ openapi.FileManager.GetExplorer(
     api3.WithParameterFilterGetMethod(
         api3.OnlyOptionalQueryParameters        		
     )
+    api3.WithMediaType("application/vnd.api+json"),
+    api3.WithPropertyFlattening(func(objectName, fieldName string) bool {
+        // Nested attributes object holds most important fields.
+        return fieldName == "attributes"
+    }),
+    api3.WithArrayItemAutoSelection(),
 )
 ```
 **Display Name.**
@@ -77,3 +83,12 @@ Of course, a single method will suffice, but chained processors allow for better
 
 **Parameter Filter.**
 Some GET methods can be ignored based on the endpoint's input parameters. For example, retain endpoints that have exclusively optional query parameters.
+
+**Media Type.**
+By default, the API response is in `application/json`, but this can be configured as needed.
+
+**Property Flattening.**
+You can specify a field name for flattening, which will relocate nested fields to the top level.
+
+**Array Item auto Selection.**
+Enabling this flag allows for automatic selection of the object schema when the response contains a single array. If the response includes multiple arrays, the `objectArrayLocator` will still be invoked to resolve any ambiguity. 
