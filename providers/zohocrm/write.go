@@ -44,6 +44,8 @@ type writeResponse struct {
 // A maximum of 100 records can be inserted per API call.
 // https://www.zoho.com/crm/developer/docs/api/v6/insert-records.html
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
+	var body any
+
 	if err := config.ValidateParams(); err != nil {
 		return nil, err
 	}
@@ -67,10 +69,13 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		write = c.Client.Post
 	}
 
-	// ZohoCRM requires everything to be wrapped in a "data" object.
-	// RecordData should be a list of map[string]any
-	body := map[string]any{
-		"data": config.RecordData,
+	// Checking if the config.RecordData asserts to []map[string]any
+	// If not, we wrap the data in a slice, else we send it as is.
+	recordDataCopy, ok := config.RecordData.([]map[string]any)
+	if !ok {
+		body = map[string]any{"data": []any{config.RecordData}}
+	} else {
+		body = map[string]any{"data": recordDataCopy}
 	}
 
 	resp, err := write(ctx, url.String(), body)
