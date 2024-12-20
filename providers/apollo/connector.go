@@ -66,14 +66,7 @@ func (c *Connector) getAPIURL(objectName string, ops operation) (*urlbuilder.URL
 	// currently we do not support routing to Search method.
 	//
 	if usesSearching(objectName) && ops == readOp {
-		switch {
-		case in(objectName, postSearchObjects):
-			return nil, common.ErrOperationNotSupportedForObject
-		// Objects opportunities & users do not use the POST method
-		// The POST search reading limits do  not apply to them.
-		case in(objectName, getSearchObjects):
-			url.AddPath(searchingPath)
-		}
+		url.AddPath(searchingPath)
 	}
 
 	return url, nil

@@ -11,7 +11,7 @@ import (
 
 var (
 	ignoreEndpoints = []string{ // nolint:gochecknoglobals
-		// endpoint for creating fields
+		// endpoints for creating fields
 		"/v1/appointments/model/customFields",
 		"/v1/notes/model/customFields",
 		"/v1/tasks/model/customFields",

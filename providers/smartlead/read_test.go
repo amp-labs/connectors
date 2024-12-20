@@ -8,7 +8,6 @@ import (
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/jsonquery"
-	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -68,12 +67,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseCampaignsEmpty),
 			}.Server(),
-			Expected: &common.ReadResult{
-				Rows:     0,
-				Data:     []common.ReadResultRow{},
-				NextPage: "",
-				Done:     true,
-			},
+			Expected:     &common.ReadResult{Rows: 0, Data: []common.ReadResultRow{}, NextPage: "", Done: true},
 			ExpectedErrs: nil,
 		},
 		{
@@ -83,13 +77,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseCampaigns),
 			}.Server(),
-			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
-				// custom comparison focuses on subset of fields to keep the test short
-				return mockutils.ReadResultComparator.SubsetFields(actual, expected) &&
-					mockutils.ReadResultComparator.SubsetRaw(actual, expected) &&
-					actual.NextPage.String() == expected.NextPage.String() &&
-					actual.Done == expected.Done
-			},
+			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 3,
 				Data: []common.ReadResultRow{{

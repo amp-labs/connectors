@@ -49,23 +49,21 @@ func recordsWrapperFunc(obj string) common.RecordsFunc {
 }
 
 // searchRecords returns a function that parses the search requests response.
-func searchRecords(respKeys []string) common.RecordsFunc {
+func searchRecords(fld string) common.RecordsFunc {
 	var records []map[string]any
 
 	return func(node *ajson.Node) ([]map[string]any, error) {
-		for _, v := range respKeys {
-			result, err := jsonquery.New(node).Array(v, true)
-			if err != nil {
-				return nil, err
-			}
-
-			rec, err := jsonquery.Convertor.ArrayToMap(result)
-			if err != nil {
-				return nil, err
-			}
-
-			records = append(records, rec...)
+		result, err := jsonquery.New(node).Array(fld, true)
+		if err != nil {
+			return nil, err
 		}
+
+		rec, err := jsonquery.Convertor.ArrayToMap(result)
+		if err != nil {
+			return nil, err
+		}
+
+		records = append(records, rec...)
 
 		return records, nil
 	}

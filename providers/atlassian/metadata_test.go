@@ -8,7 +8,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -66,9 +65,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseIssueSchema),
 			}.Server(),
-			Comparator: func(baseURL string, actual, expected *common.ListObjectMetadataResult) bool {
-				return mockutils.MetadataResultComparator.SubsetFields(actual, expected)
-			},
+			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"issue": {

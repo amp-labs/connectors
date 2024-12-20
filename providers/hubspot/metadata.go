@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/logging"
 	"github.com/spyzhov/ajson"
 )
 
@@ -26,6 +27,8 @@ func (c *Connector) ListObjectMetadata( // nolint:cyclop,funlen
 	ctx context.Context,
 	objectNames []string,
 ) (*common.ListObjectMetadataResult, error) {
+	ctx = logging.With(ctx, "connector", "hubspot")
+
 	if len(objectNames) == 0 {
 		return nil, common.ErrMissingObjects
 	}
@@ -88,7 +91,12 @@ type describeObjectResult struct {
 func (c *Connector) describeObject(ctx context.Context, objectName string) (*common.ObjectMetadata, error) {
 	relativeURL := strings.Join([]string{"properties", objectName}, "/")
 
-	rsp, err := c.Client.Get(ctx, c.getURL(relativeURL))
+	u, err := c.getURL(relativeURL)
+	if err != nil {
+		return nil, err
+	}
+
+	rsp, err := c.Client.Get(ctx, u)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching HubSpot fields: %w", err)
 	}
@@ -156,6 +164,8 @@ type AccountInfo struct {
 }
 
 func (c *Connector) GetAccountInfo(ctx context.Context) (*AccountInfo, *common.JSONHTTPResponse, error) {
+	ctx = logging.With(ctx, "connector", "hubspot")
+
 	resp, err := c.Client.Get(ctx, "account-info/v3/details")
 	if err != nil {
 		return nil, resp, fmt.Errorf("error fetching HubSpot token info: %w", err)
