@@ -1,0 +1,13 @@
+{
+  "msg": "",
+  "code": "Success",
+  "params": {
+    "catalogNames": [
+      {
+        "name": "catalogName"
+      }
+    ],
+    "totalCatalogsCount": 2,
+    "previousPageUrl": "/api/catalogs?pageSize=1&page=1"
+  }
+}
