@@ -6,7 +6,8 @@ func init() {
 	SetInfo(Discourse, ProviderInfo{
 		DisplayName: "Discourse",
 		AuthType:    ApiKey,
-		//Discourse is self-hosted, and users can choose their own custom domains for their hosted instances. The hosted domain serves as the base URL.
+		// Discourse is self-hosted, and users can choose their own custom domains for their hosted instances.
+		// The hosted domain serves as the base URL.
 		BaseURL: "https://{{.workspace}}",
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Header,
