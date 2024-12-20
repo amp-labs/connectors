@@ -107,20 +107,17 @@ func GetMarshaledData(records []map[string]any, fields []string) ([]ReadResultRo
 	return data, nil
 }
 
-func GetRecordsUnderJSONPath(jsonPath string) RecordsFunc {
-	return func(node *ajson.Node) ([]map[string]any, error) {
-		arr, err := jsonquery.New(node).Array(jsonPath, false)
-		if err != nil {
-			return nil, err
-		}
-
-		return jsonquery.Convertor.ArrayToMap(arr)
-	}
+func GetRecordsUnderJSONPath(jsonPath string, nestedPath ...string) RecordsFunc {
+	return getRecords(false, jsonPath, nestedPath...)
 }
 
-func GetOptionalRecordsUnderJSONPath(jsonPath string) RecordsFunc {
+func GetOptionalRecordsUnderJSONPath(jsonPath string, nestedPath ...string) RecordsFunc {
+	return getRecords(true, jsonPath, nestedPath...)
+}
+
+func getRecords(optional bool, jsonPath string, nestedPath ...string) RecordsFunc {
 	return func(node *ajson.Node) ([]map[string]any, error) {
-		arr, err := jsonquery.New(node).Array(jsonPath, true)
+		arr, err := jsonquery.New(node, nestedPath...).Array(jsonPath, optional)
 		if err != nil {
 			return nil, err
 		}
