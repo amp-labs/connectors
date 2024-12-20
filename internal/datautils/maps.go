@@ -52,7 +52,8 @@ func NewDefaultMap[K comparable, V any](dict Map[K, V], fallback func(K) V) Defa
 }
 
 // Get method uses map with a fallback value.
-func (m DefaultMap[K, V]) Get(key K) V { // nolint:ireturn
+// nolint:ireturn
+func (m DefaultMap[K, V]) Get(key K) V {
 	value, ok := m.Map[key]
 	if ok {
 		return value
