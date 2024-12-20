@@ -1,0 +1,7 @@
+{
+  "msg": "[/api/templates/push/upsert] Invalid JSON body",
+  "code": "BadJsonBody",
+  "params": {
+    "obj.buttons[0].actionIcon.iconType": "String value expected"
+  }
+}
