@@ -1,0 +1,162 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "/api",
+      "objects": {
+        "campaigns": {
+          "displayName": "Campaigns",
+          "path": "/campaigns",
+          "responseKey": "campaigns",
+          "fields": {
+            "campaignState": "campaignState",
+            "createdAt": "createdAt",
+            "createdByUserId": "createdByUserId",
+            "endedAt": "endedAt",
+            "id": "id",
+            "labels": "labels",
+            "listIds": "listIds",
+            "messageMedium": "messageMedium",
+            "name": "name",
+            "recurringCampaignId": "recurringCampaignId",
+            "sendSize": "sendSize",
+            "startAt": "startAt",
+            "suppressionListIds": "suppressionListIds",
+            "templateId": "templateId",
+            "type": "type",
+            "updatedAt": "updatedAt",
+            "updatedByUserId": "updatedByUserId",
+            "workflowId": "workflowId"
+          }
+        },
+        "catalogs": {
+          "displayName": "Catalogs",
+          "path": "/catalogs",
+          "responseKey": "catalogNames",
+          "fields": {
+            "name": "name"
+          }
+        },
+        "channels": {
+          "displayName": "Channels",
+          "path": "/channels",
+          "responseKey": "channels",
+          "fields": {
+            "channelType": "channelType",
+            "id": "id",
+            "messageMedium": "messageMedium",
+            "name": "name"
+          }
+        },
+        "jobs": {
+          "displayName": "Jobs",
+          "path": "/export/jobs",
+          "responseKey": "jobs",
+          "fields": {
+            "bytesExported": "bytesExported",
+            "dataTypeName": "dataTypeName",
+            "endTime": "endTime",
+            "id": "id",
+            "jobState": "jobState",
+            "scheduledStartTime": "scheduledStartTime"
+          }
+        },
+        "journeys": {
+          "displayName": "Journeys",
+          "path": "/journeys",
+          "responseKey": "journeys",
+          "fields": {
+            "createdAt": "createdAt",
+            "creatorUserId": "creatorUserId",
+            "description": "description",
+            "draft": "draft",
+            "enabled": "enabled",
+            "id": "id",
+            "isArchived": "isArchived",
+            "journeyType": "journeyType",
+            "lifetimeLimit": "lifetimeLimit",
+            "name": "name",
+            "simultaneousLimit": "simultaneousLimit",
+            "startTileId": "startTileId",
+            "triggerEventNames": "triggerEventNames",
+            "updatedAt": "updatedAt"
+          }
+        },
+        "lists": {
+          "displayName": "Lists",
+          "path": "/lists",
+          "responseKey": "lists",
+          "fields": {
+            "createdAt": "createdAt",
+            "description": "description",
+            "id": "id",
+            "listType": "listType",
+            "name": "name"
+          }
+        },
+        "messageTypes": {
+          "displayName": "Message Types",
+          "path": "/messageTypes",
+          "responseKey": "messageTypes",
+          "fields": {
+            "channelId": "channelId",
+            "createdAt": "createdAt",
+            "frequencyCap": "frequencyCap",
+            "id": "id",
+            "name": "name",
+            "rateLimitPerMinute": "rateLimitPerMinute",
+            "subscriptionPolicy": "subscriptionPolicy",
+            "updatedAt": "updatedAt"
+          }
+        },
+        "messages": {
+          "displayName": "Messages",
+          "path": "/embedded-messaging/messages",
+          "responseKey": "placements",
+          "fields": {
+            "embeddedMessages": "embeddedMessages",
+            "placementId": "placementId"
+          }
+        },
+        "metadata": {
+          "displayName": "Metadata",
+          "path": "/metadata",
+          "responseKey": "results",
+          "fields": {
+            "name": "name"
+          }
+        },
+        "templates": {
+          "displayName": "Templates",
+          "path": "/templates",
+          "responseKey": "templates",
+          "fields": {
+            "campaignId": "campaignId",
+            "clientTemplateId": "clientTemplateId",
+            "createdAt": "createdAt",
+            "creatorUserId": "creatorUserId",
+            "messageTypeId": "messageTypeId",
+            "name": "name",
+            "templateId": "templateId",
+            "updatedAt": "updatedAt"
+          }
+        },
+        "webhooks": {
+          "displayName": "Webhooks",
+          "path": "/webhooks",
+          "responseKey": "webhooks",
+          "fields": {
+            "authType": "authType",
+            "blastSendEnabled": "blastSendEnabled",
+            "channelIds": "channelIds",
+            "enabled": "enabled",
+            "endpoint": "endpoint",
+            "id": "id",
+            "messageTypeIds": "messageTypeIds",
+            "triggeredSendEnabled": "triggeredSendEnabled"
+          }
+        }
+      }
+    }
+  }
+}
