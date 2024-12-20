@@ -40,19 +40,16 @@ func main() {
 func createDeals(ctx context.Context, conn *zohocrm.Connector) error {
 	config := common.WriteParams{
 		ObjectName: "Deals",
-		RecordData: []map[string]any{
-			{
-				"id":        "3652397000003852095",
-				"Deal_Name": "v6 Update",
-				"Stage":     "Closed Won",
-				"Pipeline":  "Standard (Standard)",
-			},
+		RecordData: map[string]any{
+			"id":        "3652397000003852095",
+			"Deal_Name": "v6 Update",
+			"Stage":     "Closed Won",
+			"Pipeline":  "Standard (Standard)",
 		},
 	}
 
 	result, err := conn.Write(ctx, config)
 	if err != nil {
-		fmt.Println("Object: ", config.ObjectName)
 		return err
 	}
 
@@ -83,7 +80,6 @@ func createLeads(ctx context.Context, conn *zohocrm.Connector) error {
 
 	result, err := conn.Write(ctx, config)
 	if err != nil {
-		fmt.Println("Object: ", config.ObjectName)
 		return err
 	}
 
@@ -102,23 +98,15 @@ func updateContacts(ctx context.Context, conn *zohocrm.Connector) error {
 	config := common.WriteParams{
 		ObjectName: "contacts",
 		// RecordId:   "64934900000005440112",
-		RecordData: []map[string]any{
-			{
-				"First_Name": "Ryan",
-				"Phone":      "+12343678",
-				"Last_Name":  "Dahl",
-			},
-			{
-				"First_Name": "Ryan",
-				"Phone":      "+12343678",
-				// "Last_Name":  "Dahl",
-			},
+		RecordData: map[string]any{
+			"First_Name": "Ryan",
+			"Phone":      "+12343678",
+			"Last_Name":  "Dahl",
 		},
 	}
 
 	result, err := conn.Write(ctx, config)
 	if err != nil {
-		fmt.Println("Object: ", config.ObjectName)
 		return err
 	}
 
