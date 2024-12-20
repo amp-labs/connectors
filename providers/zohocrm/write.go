@@ -44,7 +44,7 @@ type writeResponse struct {
 // A maximum of 100 records can be inserted per API call.
 // https://www.zoho.com/crm/developer/docs/api/v6/insert-records.html
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
-	var body any
+	var errs []any
 
 	if err := config.ValidateParams(); err != nil {
 		return nil, err
@@ -69,13 +69,9 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		write = c.Client.Post
 	}
 
-	// Checking if the config.RecordData asserts to []map[string]any
-	// If not, we wrap the data in a slice, else we send it as is.
-	recordDataCopy, ok := config.RecordData.([]map[string]any)
-	if !ok {
-		body = map[string]any{"data": []any{config.RecordData}}
-	} else {
-		body = map[string]any{"data": recordDataCopy}
+	body, err := constructWritePayload(config.RecordData)
+	if err != nil {
+		return nil, err
 	}
 
 	resp, err := write(ctx, url.String(), body)
@@ -88,18 +84,30 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, err
 	}
 
-	var errors []any
-
 	// Looping in the response data to see if there is
 	// an error in any of the record Responses.
 	for _, r := range response.Data {
 		if r["code"] != "SUCCESS" {
-			errors = append(errors, r)
+			errs = append(errs, r)
 		}
 	}
 
 	return &common.WriteResult{
 		Success: true,
-		Errors:  errors,
+		Errors:  errs,
 	}, nil
+}
+
+func constructWritePayload(payload any) (any, error) {
+	v, ok := payload.([]map[string]any)
+	if !ok {
+		objectData, ok := payload.(map[string]any)
+		if !ok {
+			return nil, common.ErrBadRequest
+		}
+
+		return map[string]any{"data": []map[string]any{objectData}}, nil
+	}
+
+	return map[string]any{"data": v}, nil
 }
