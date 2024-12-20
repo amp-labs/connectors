@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/connector"
@@ -43,7 +44,7 @@ func salesforceAuthExample(ctx context.Context) error {
 	conn := createAuthConnector(ctx)
 
 	// Call the Salesforce API (limits endpoint just for example)
-	response, err := conn.Client.Get(ctx, "/services/data/v61.0/limits/")
+	response, err := conn.JSONHTTPClient().Get(ctx, "/services/data/v61.0/limits/")
 	if err != nil {
 		return err
 	}
@@ -71,10 +72,14 @@ func salesforceAuthExample(ctx context.Context) error {
 }
 
 // Create an auth connector with the Salesforce provider.
-func createAuthConnector(ctx context.Context) *connector.Connector {
-	conn, err := connector.NewConnector(providers.Salesforce,
-		connector.WithAuthenticatedClient(createAuthenticatedHttpClient(ctx)),
-		connector.WithWorkspace(Workspace))
+func createAuthConnector(ctx context.Context) connectors.Connector {
+	conn, err := connector.NewConnector(
+		providers.Salesforce,
+		connector.Parameters{
+			AuthenticatedClient: createAuthenticatedHttpClient(ctx),
+			Workspace:           Workspace,
+		},
+	)
 	if err != nil {
 		panic(err)
 	}
