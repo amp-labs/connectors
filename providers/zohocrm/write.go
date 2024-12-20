@@ -2,6 +2,7 @@ package zohocrm
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
@@ -103,7 +104,7 @@ func constructWritePayload(payload any) (any, error) {
 	if !ok {
 		objectData, ok := payload.(map[string]any)
 		if !ok {
-			return nil, common.ErrBadRequest
+			return nil, fmt.Errorf("expecting either a json object or a list of objects, but received type '%T'", payload) //nolint:err113,lll
 		}
 
 		return map[string]any{"data": []map[string]any{objectData}}, nil
