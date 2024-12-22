@@ -25,8 +25,8 @@ func main() {
 	defer utils.Close(conn)
 
 	res, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: "emails",
-		Fields:     connectors.Fields("id", "subject", "sent_from_address"),
+		ObjectName: "contacts",
+		Fields:     connectors.Fields("id"),
 	})
 	if err != nil {
 		utils.Fail("error reading from Keap", "error", err)

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/amp-labs/connectors/internal/datautils"
@@ -92,6 +93,9 @@ var (
 	// ErrOperationNotSupportedForObject is returned when operation is not supported for this object.
 	ErrOperationNotSupportedForObject = errors.New("operation is not supported for this object in this module")
 
+	// ErrObjectNotSupported is returned when operation is not supported for this object.
+	ErrObjectNotSupported = errors.New("operation is not supported for this object")
+
 	// ErrResolvingURLPathForObject is returned when URL cannot be implied for object name.
 	ErrResolvingURLPathForObject = errors.New("cannot resolve URL path for given object name")
 
@@ -123,6 +127,10 @@ type ReadParams struct {
 	//		Note: timing is already handled by Since argument.
 	//		Reference: https://developers.klaviyo.com/en/docs/filtering_
 	Filter string // optional
+
+	// AssociatedObjects is a list of associated objects to fetch along with the main object.
+	// Only supported by HubSpot connector Read (not Search)
+	AssociatedObjects []string // optional
 }
 
 // WriteParams defines how we are writing data to a SaaS API.
@@ -136,6 +144,9 @@ type WriteParams struct {
 	// RecordData is a JSON node representing the record of data we want to insert in the case of CREATE
 	// or fields of data we want to modify in case of an update
 	RecordData any // required
+
+	// Associations contains associations between the object and other objects.
+	Associations any // optional
 }
 
 // DeleteParams defines how we are deleting data in SaaS API.
@@ -274,4 +285,13 @@ type SubscriptionEvent interface {
 	RawEventName() (string, error)
 	ObjectName() (string, error)
 	Workspace() (string, error)
+}
+
+// WebhookVerificationParameters is a struct that contains the parameters required to verify a webhook.
+type WebhookVerificationParameters struct {
+	Headers      http.Header
+	Body         []byte
+	URL          string
+	ClientSecret string
+	Method       string
 }

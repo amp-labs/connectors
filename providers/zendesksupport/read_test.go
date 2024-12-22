@@ -8,7 +8,6 @@ import (
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/jsonquery"
-	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -93,10 +92,7 @@ func TestReadZendeskSupportModule(t *testing.T) { //nolint:funlen,gocognit,cyclo
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseUsersEmptyPage),
 			}.Server(),
-			Expected: &common.ReadResult{
-				Data: []common.ReadResultRow{},
-				Done: true,
-			},
+			Expected:     &common.ReadResult{Done: true, Data: []common.ReadResultRow{}},
 			ExpectedErrs: nil,
 		},
 		{
@@ -106,12 +102,12 @@ func TestReadZendeskSupportModule(t *testing.T) { //nolint:funlen,gocognit,cyclo
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseUsersFirstPage),
 			}.Server(),
-			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
-				return actual.NextPage.String() == expected.NextPage.String()
-			},
+			Comparator: testroutines.ComparatorPagination,
 			Expected: &common.ReadResult{
+				Rows: 3,
 				NextPage: "https://d3v-ampersand.zendesk.com/api/v2/users" +
 					"?page%5Bafter%5D=eyJvIjoiaWQiLCJ2IjoiYVJOc1cwVDZGd0FBIn0%3D&page%5Bsize%5D=3",
+				Done: false,
 			},
 			ExpectedErrs: nil,
 		},
@@ -126,14 +122,9 @@ func TestReadZendeskSupportModule(t *testing.T) { //nolint:funlen,gocognit,cyclo
 				If:    mockcond.PathSuffix("/v2/tickets"),
 				Then:  mockserver.Response(http.StatusOK, responseReadTickets),
 			}.Server(),
-			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
-				// custom comparison focuses on subset of fields to keep the test short
-				return mockutils.ReadResultComparator.SubsetFields(actual, expected) &&
-					mockutils.ReadResultComparator.SubsetRaw(actual, expected) &&
-					actual.NextPage.String() == expected.NextPage.String() &&
-					actual.Done == expected.Done
-			},
+			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
+				Rows: 1,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
 						"type":    "incident",
@@ -190,14 +181,9 @@ func TestReadHelpCenterModule(t *testing.T) { //nolint:funlen,gocognit,cyclop,ma
 				If:    mockcond.PathSuffix("/v2/community/posts"),
 				Then:  mockserver.Response(http.StatusOK, responseReadPosts),
 			}.Server(),
-			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
-				// custom comparison focuses on subset of fields to keep the test short
-				return mockutils.ReadResultComparator.SubsetFields(actual, expected) &&
-					mockutils.ReadResultComparator.SubsetRaw(actual, expected) &&
-					actual.NextPage.String() == expected.NextPage.String() &&
-					actual.Done == expected.Done
-			},
+			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
+				Rows: 1,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
 						"title":    "How do I get around the community?",

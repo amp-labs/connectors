@@ -19,7 +19,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	// The searching API supports the incremental read using dates only.
 	// The API has a limit of 10K records when paginating.
 	// doc: https://developer.close.com/resources/advanced-filtering/
-	if !config.Since.IsZero() {
+	if !config.Since.IsZero() && supportsFiltering(config.ObjectName) {
 		return c.Search(ctx, SearchParams{
 			ObjectName: config.ObjectName,
 			Fields:     config.Fields.List(),

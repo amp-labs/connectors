@@ -9,8 +9,8 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	ap "github.com/amp-labs/connectors/providers/apollo"
-	"github.com/amp-labs/connectors/test/apollo"
+	testConn "github.com/amp-labs/connectors/providers/kit"
+	"github.com/amp-labs/connectors/test/kit"
 )
 
 func main() {
@@ -18,21 +18,19 @@ func main() {
 }
 
 func MainFn() int {
-	ctx := context.Background()
+	conn := kit.GetKitConnector(context.Background())
 
-	conn := apollo.GetApolloConnector(ctx)
-
-	err := testReadContactsSearch(ctx, conn)
+	err := testReadCustomFields(context.Background(), conn)
 	if err != nil {
 		return 1
 	}
 
-	err = testReadPeopleSearch(ctx, conn)
+	err = testReadTags(context.Background(), conn)
 	if err != nil {
 		return 1
 	}
 
-	err = testReadOpportunitiesSearch(ctx, conn)
+	err = testReadEmailTemplates(context.Background(), conn)
 	if err != nil {
 		return 1
 	}
@@ -40,19 +38,18 @@ func MainFn() int {
 	return 0
 }
 
-func testReadContactsSearch(ctx context.Context, conn *ap.Connector) error {
+func testReadCustomFields(ctx context.Context, conn *testConn.Connector) error {
 	params := common.ReadParams{
-		ObjectName: "contacts",
-		Fields:     connectors.Fields("id"),
-		// NextPage:   "2",
+		ObjectName: "custom_fields",
+		Fields:     connectors.Fields(""),
 	}
 
-	res, err := conn.Search(ctx, params)
+	res, err := conn.Read(ctx, params)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
-	// Print the results
+	// Print the results.
 	jsonStr, err := json.MarshalIndent(res, "", "  ")
 	if err != nil {
 		return fmt.Errorf("error marshalling JSON: %w", err)
@@ -64,18 +61,18 @@ func testReadContactsSearch(ctx context.Context, conn *ap.Connector) error {
 	return nil
 }
 
-func testReadOpportunitiesSearch(ctx context.Context, conn *ap.Connector) error {
+func testReadTags(ctx context.Context, conn *testConn.Connector) error {
 	params := common.ReadParams{
-		ObjectName: "opportunities",
-		Fields:     connectors.Fields("id"),
+		ObjectName: "tags",
+		Fields:     connectors.Fields(""),
 	}
 
-	res, err := conn.Search(ctx, params)
+	res, err := conn.Read(ctx, params)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
-	// Print the results
+	// Print the results.
 	jsonStr, err := json.MarshalIndent(res, "", "  ")
 	if err != nil {
 		return fmt.Errorf("error marshalling JSON: %w", err)
@@ -87,18 +84,18 @@ func testReadOpportunitiesSearch(ctx context.Context, conn *ap.Connector) error 
 	return nil
 }
 
-func testReadPeopleSearch(ctx context.Context, conn *ap.Connector) error {
+func testReadEmailTemplates(ctx context.Context, conn *testConn.Connector) error {
 	params := common.ReadParams{
-		ObjectName: "mixed_people",
-		Fields:     connectors.Fields("id"),
+		ObjectName: "email_templates",
+		Fields:     connectors.Fields(""),
 	}
 
-	res, err := conn.Search(ctx, params)
+	res, err := conn.Read(ctx, params)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
-	// Print the results
+	// Print the results.
 	jsonStr, err := json.MarshalIndent(res, "", "  ")
 	if err != nil {
 		return fmt.Errorf("error marshalling JSON: %w", err)

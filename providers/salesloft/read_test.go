@@ -3,7 +3,6 @@ package salesloft
 import (
 	"errors"
 	"net/http"
-	"strings"
 	"testing"
 	"time"
 
@@ -88,10 +87,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseEmptyRead),
 			}.Server(),
-			Expected: &common.ReadResult{
-				Data: []common.ReadResultRow{},
-				Done: true,
-			},
+			Expected:     &common.ReadResult{Done: true, Data: []common.ReadResultRow{}},
 			ExpectedErrs: nil,
 		},
 		{
@@ -101,12 +97,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseListPeople),
 			}.Server(),
-			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
-				expectedNextPage := strings.ReplaceAll(expected.NextPage.String(), "{{testServerURL}}", baseURL)
-				return actual.NextPage.String() == expectedNextPage // nolint:nlreturn
-			},
+			Comparator: testroutines.ComparatorPagination,
 			Expected: &common.ReadResult{
-				NextPage: "{{testServerURL}}/v2/people?page=2&per_page=100",
+				Rows:     25,
+				NextPage: testroutines.URLTestServer + "/v2/people?page=2&per_page=100",
+				Done:     false,
 			},
 			ExpectedErrs: nil,
 		},
@@ -117,16 +112,14 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseListPeople),
 			}.Server(),
-			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
-				return mockutils.ReadResultComparator.SubsetRaw(actual, expected) &&
-					actual.Done == expected.Done &&
-					actual.Rows == expected.Rows
-			},
+			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 25,
 				// We are only interested to validate only first Read Row!
 				Data: []common.ReadResultRow{{
-					Fields: map[string]any{},
+					Fields: map[string]any{
+						"id": float64(164510523),
+					},
 					Raw: map[string]any{
 						"first_name":             "Lynnelle",
 						"email_address":          "losbourn29@paypal.com",
@@ -134,7 +127,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"person_company_website": "http://paypal.com",
 					},
 				}},
-				Done: false,
+				NextPage: testroutines.URLTestServer + "/v2/people?page=2&per_page=100",
+				Done:     false,
 			},
 			ExpectedErrs: nil,
 		},
@@ -148,11 +142,9 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseListPeople),
 			}.Server(),
-			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
-				return mockutils.ReadResultComparator.SubsetFields(actual, expected) &&
-					mockutils.ReadResultComparator.SubsetRaw(actual, expected)
-			},
+			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
+				Rows: 25,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
 						"email_address":          "losbourn29@paypal.com",
@@ -165,6 +157,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"person_company_website": "http://paypal.com",
 					},
 				}},
+				NextPage: testroutines.URLTestServer + "/v2/people?page=2&per_page=100",
+				Done:     false,
 			},
 			ExpectedErrs: nil,
 		},
@@ -178,10 +172,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseListUsers),
 			}.Server(),
-			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
-				return mockutils.ReadResultComparator.SubsetFields(actual, expected) &&
-					mockutils.ReadResultComparator.SubsetRaw(actual, expected)
-			},
+			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -196,7 +187,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					},
 				}},
 				NextPage: "",
-				Done:     false,
+				Done:     true,
 			},
 			ExpectedErrs: nil,
 		},
@@ -208,12 +199,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				If:    mockcond.QueryParamsMissing("updated_at[gte]"),
 				Then:  mockserver.Response(http.StatusOK, responseListAccounts),
 			}.Server(),
-			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
-				return actual.Rows == expected.Rows
-			},
-			Expected: &common.ReadResult{
-				Rows: 4,
-			},
+			Comparator:   testroutines.ComparatorPagination,
+			Expected:     &common.ReadResult{Rows: 4, NextPage: "", Done: true},
 			ExpectedErrs: nil,
 		},
 		{
@@ -228,12 +215,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				If:    mockcond.QueryParam("updated_at[gte]", "2024-06-07T10:51:20.851224-04:00"),
 				Then:  mockserver.Response(http.StatusOK, responseListAccountsSince),
 			}.Server(),
-			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
-				return actual.Rows == expected.Rows
-			},
-			Expected: &common.ReadResult{
-				Rows: 2,
-			},
+			Comparator:   testroutines.ComparatorPagination,
+			Expected:     &common.ReadResult{Rows: 2, NextPage: "", Done: true},
 			ExpectedErrs: nil,
 		},
 	}

@@ -3,9 +3,10 @@ package hubspot
 import (
 	"context"
 	"fmt"
-	"path"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
@@ -20,14 +21,20 @@ type writeResponse struct {
 }
 
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
+	ctx = logging.With(ctx, "connector", "hubspot")
+
 	if err := config.ValidateParams(); err != nil {
 		return nil, err
 	}
 
 	var write common.WriteMethod
 
-	relativeURL := path.Join("objects", config.ObjectName)
-	url := c.getURL(relativeURL)
+	relativeURL := strings.Join([]string{"objects", config.ObjectName}, "/")
+
+	url, err := c.getURL(relativeURL)
+	if err != nil {
+		return nil, err
+	}
 
 	if config.RecordId != "" {
 		write = c.Client.Patch
@@ -39,8 +46,9 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 	// Hubspot requires everything to be wrapped in a "properties" object.
 	// We do this automatically in the write method so that the user doesn't
 	// have to worry about it.
-	data := make(map[string]interface{})
+	data := make(map[string]any)
 	data["properties"] = config.RecordData
+	data["associations"] = config.Associations
 
 	json, err := write(ctx, url, data)
 	if err != nil {

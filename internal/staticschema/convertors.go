@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/datautils"
 )
 
 var ErrObjectNotFound = errors.New("object not found")
@@ -28,7 +29,7 @@ func (r *Metadata) Select(
 
 	list := &common.ListObjectMetadataResult{
 		Result: make(map[string]common.ObjectMetadata),
-		Errors: nil,
+		Errors: make(map[string]error),
 	}
 
 	// Lookup each object under the module.
@@ -37,7 +38,7 @@ func (r *Metadata) Select(
 			// move metadata from scrapper object to common object
 			list.Result[objectName] = common.ObjectMetadata{
 				DisplayName: v.DisplayName,
-				FieldsMap:   v.FieldsMap,
+				FieldsMap:   datautils.FromMap(v.FieldsMap).ShallowCopy(),
 			}
 		} else {
 			return nil, fmt.Errorf("%w: unknown object [%v]", ErrObjectNotFound, objectName)

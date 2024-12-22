@@ -18,6 +18,23 @@ type (
 func (r Read) Run(t *testing.T, builder ConnectorBuilder[connectors.ReadConnector]) {
 	t.Helper()
 	conn := builder.Build(t, r.Name)
-	output, err := conn.Read(context.Background(), r.Input)
+	readParams := prepareReadParams(r.Server.URL, r.Input)
+	output, err := conn.Read(context.Background(), readParams)
 	ReadType(r).Validate(t, err, output)
+}
+
+// This enables tests where we want to specify NextPage. Since we are dealing with mock-server
+// NextPage token may include URLTestServer key.
+// Example:
+//
+//	common.ReadParams{
+//		ObjectName: "tags",
+//		NextPage:   testroutines.URLTestServer + "/v1/tags?limit=100&skip=100",
+//	}
+func prepareReadParams(serverURL string, config common.ReadParams) common.ReadParams {
+	config.NextPage = common.NextPageToken(
+		resolveTestServerURL(config.NextPage.String(), serverURL),
+	)
+
+	return config
 }

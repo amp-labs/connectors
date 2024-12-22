@@ -1,10 +1,17 @@
 package closecrm
 
 import (
+	"slices"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
 )
+
+var advancedFilteringObjects = []string{"lead", "contact", "opportunity"} //nolint:gochecknoglobals
+
+func supportsFiltering(objectName string) bool {
+	return slices.Contains(advancedFilteringObjects, objectName)
+}
 
 type SearchParams struct {
 	ObjectName string

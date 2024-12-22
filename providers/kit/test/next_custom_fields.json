@@ -1,0 +1,17 @@
+{
+    "custom_fields": [
+      {
+        "id": 2,
+        "name": "ck_field_2_first_name",
+        "key": "first_name",
+        "label": "First name"
+      }
+    ],
+    "pagination": {
+      "has_previous_page": false,
+      "has_next_page": true,
+      "start_cursor": "WzFd",
+      "end_cursor": "WzFd",
+      "per_page": 500
+    }
+  }

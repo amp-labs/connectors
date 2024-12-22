@@ -1,6 +1,6 @@
 package providers
 
-const Lemlist Provider = "Lemlist"
+const Lemlist Provider = "lemlist"
 
 func init() {
 	SetInfo(Lemlist, ProviderInfo{

@@ -3,14 +3,12 @@ package intercom
 import (
 	"errors"
 	"net/http"
-	"strings"
 	"testing"
 	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/jsonquery"
-	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -98,10 +96,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				  "data": []
 				}`),
 			}.Server(),
-			Expected: &common.ReadResult{
-				Data: []common.ReadResultRow{},
-				Done: true,
-			},
+			Expected:     &common.ReadResult{Done: true, Data: []common.ReadResultRow{}},
 			ExpectedErrs: nil,
 		},
 		{
@@ -113,11 +108,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				If:    mockcond.Header(testApiVersionHeader),
 				Then:  mockserver.Response(http.StatusOK, responseNotesSecondPage),
 			}.Server(),
-			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
-				// response doesn't matter much, as soon as we don't have errors we are good
-				return actual.Done == expected.Done
-			},
-			Expected:     &common.ReadResult{Done: true},
+			Comparator:   testroutines.ComparatorPagination,
+			Expected:     &common.ReadResult{Rows: 1, NextPage: "", Done: true},
 			ExpectedErrs: nil,
 		},
 		{
@@ -128,11 +120,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseNotesFirstPage),
 			}.Server(),
-			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
-				return actual.NextPage.String() == expected.NextPage.String()
-			},
+			Comparator: testroutines.ComparatorPagination,
 			Expected: &common.ReadResult{
+				Rows:     2,
 				NextPage: "https://api.intercom.io/contacts/6643703ffae7834d1792fd30/notes?per_page=2&page=2",
+				Done:     false,
 			},
 			ExpectedErrs: nil,
 		},
@@ -143,13 +135,12 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseContactsFirstPage),
 			}.Server(),
-			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
-				expectedNextPage := strings.ReplaceAll(expected.NextPage.String(), "{{testServerURL}}", baseURL)
-				return actual.NextPage.String() == expectedNextPage // nolint:nlreturn
-			},
+			Comparator: testroutines.ComparatorPagination,
 			Expected: &common.ReadResult{
-				NextPage: "{{testServerURL}}/contacts?per_page=60&starting_after=" +
+				Rows: 1,
+				NextPage: testroutines.URLTestServer + "/contacts?per_page=60&starting_after=" +
 					"WzE3MTU2OTU2NzkwMDAsIjY2NDM3MDNmZmFlNzgzNGQxNzkyZmQzMCIsMl0=",
+				Done: false,
 			},
 			ExpectedErrs: nil,
 		},
@@ -161,11 +152,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseNotesSecondPage),
 			}.Server(),
-			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
-				return actual.NextPage.String() == expected.NextPage.String() &&
-					actual.Done == expected.Done
-			},
-			Expected:     &common.ReadResult{NextPage: "", Done: true},
+			Comparator:   testroutines.ComparatorPagination,
+			Expected:     &common.ReadResult{Rows: 1, NextPage: "", Done: true},
 			ExpectedErrs: nil,
 		},
 		{
@@ -175,11 +163,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseContactsThirdPage),
 			}.Server(),
-			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
-				return actual.NextPage.String() == expected.NextPage.String() &&
-					actual.Done == expected.Done
-			},
-			Expected:     &common.ReadResult{NextPage: "", Done: true},
+			Comparator:   testroutines.ComparatorPagination,
+			Expected:     &common.ReadResult{Rows: 1, NextPage: "", Done: true},
 			ExpectedErrs: nil,
 		},
 		{
@@ -192,15 +177,9 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseContactsSecondPage),
 			}.Server(),
-			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
-				expectedNextPage := strings.ReplaceAll(expected.NextPage.String(), "{{testServerURL}}", baseURL)
-				// custom comparison focuses on subset of fields to keep the test short
-				return mockutils.ReadResultComparator.SubsetFields(actual, expected) &&
-					mockutils.ReadResultComparator.SubsetRaw(actual, expected) &&
-					actual.NextPage.String() == expectedNextPage &&
-					actual.Done == expected.Done
-			},
+			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
+				Rows: 1,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
 						"name":  "Patrick",
@@ -217,7 +196,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"updated_at": float64(1715706939),
 					},
 				}},
-				NextPage: "{{testServerURL}}/contacts?per_page=60&starting_after=" +
+				NextPage: testroutines.URLTestServer + "/contacts?per_page=60&starting_after=" +
 					"Wy0xLCI2NjQzOWI5NDdiYjA5NWE2ODFmN2ZkOWUiLDNd",
 				Done: false,
 			},
@@ -233,20 +212,21 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseReadConversations),
 			}.Server(),
-			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
-				return mockutils.ReadResultComparator.SubsetFields(actual, expected) &&
-					actual.NextPage.String() == expected.NextPage.String() &&
-					actual.Done == expected.Done &&
-					actual.Rows == expected.Rows
-			},
+			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
 						"state": "closed",
 					},
+					Raw: map[string]any{
+						"state": "closed",
+					},
 				}, {
 					Fields: map[string]any{
+						"state": "open",
+					},
+					Raw: map[string]any{
 						"state": "open",
 					},
 				}},
@@ -268,14 +248,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				If:    mockcond.BodyBytes(requestSearchConversations),
 				Then:  mockserver.Response(http.StatusOK, responseSearchConversations),
 			}.Server(),
-			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
-				expectedNextPage := strings.ReplaceAll(expected.NextPage.String(), "{{testServerURL}}", baseURL)
-
-				return mockutils.ReadResultComparator.SubsetFields(actual, expected) &&
-					mockutils.ReadResultComparator.SubsetRaw(actual, expected) &&
-					actual.NextPage.String() == expectedNextPage &&
-					actual.Done == expected.Done
-			},
+			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -290,7 +263,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"updated_at":            float64(1726752145),
 					},
 				}},
-				NextPage: "{{testServerURL}}/conversations/search?starting_after=WzE3MjY3NTIxNDUwMDAsNSwyXQ==",
+				NextPage: testroutines.URLTestServer + "/conversations/search?starting_after=WzE3MjY3NTIxNDUwMDAsNSwyXQ==",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
