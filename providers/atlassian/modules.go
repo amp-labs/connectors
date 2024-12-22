@@ -6,7 +6,7 @@ import (
 
 const (
 	// ModuleEmpty is used for proxying requests through.
-	ModuleEmpty common.ModuleID = ""
+	ModuleEmpty common.ModuleID = "module-empty"
 	// ModuleJira is the module used for listing Jira issues.
 	ModuleJira common.ModuleID = "jira"
 	// ModuleAtlassianJiraConnect is the module used for Atlassian Connect.

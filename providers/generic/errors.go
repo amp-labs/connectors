@@ -1,4 +1,4 @@
-package connector
+package generic
 
 import (
 	"net/http"
