@@ -4,7 +4,6 @@ package connector
 import (
 	"errors"
 	"fmt"
-	"net/http"
 
 	"github.com/amp-labs/connectors/common"
 )
@@ -14,8 +13,7 @@ var ErrMissingValue = errors.New("missing metadata value")
 // Parameters can be used to pass input parameters to the connector. The json tags help with validation. Do not
 // remove these without updating the validation logic.
 type Parameters struct {
-	HTTPClient *http.Client
-	Module     common.ModuleID
+	Module common.ModuleID
 
 	// AuthenticatedClient is a client for the connector that knows how to handle authentication for the provider.
 	AuthenticatedClient common.AuthenticatedHTTPClient
