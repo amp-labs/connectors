@@ -19,6 +19,7 @@ import (
 	"github.com/amp-labs/connectors/providers/hubspot"
 	"github.com/amp-labs/connectors/providers/instantly"
 	"github.com/amp-labs/connectors/providers/intercom"
+	"github.com/amp-labs/connectors/providers/iterable"
 	"github.com/amp-labs/connectors/providers/keap"
 	"github.com/amp-labs/connectors/providers/klaviyo"
 	"github.com/amp-labs/connectors/providers/marketo"
@@ -85,6 +86,8 @@ func NewConnector(provider providers.Provider, parameters Parameters) (connector
 		conn, err = buildConnector(newConstantContactConnector, parameters, mustAuthenticatedClient)
 	case providers.Keap:
 		conn, err = buildConnector(newKeapConnector, parameters, mustAuthenticatedClient)
+	case providers.Iterable:
+		conn, err = buildConnector(newIterableConnector, parameters, mustAuthenticatedClient)
 	default:
 		conn, err = newGenericConnector(provider, parameters, mustAuthenticatedClient)
 	}
@@ -296,5 +299,11 @@ func newConstantContactConnector(parameters Parameters) (connectors.Connector, e
 func newKeapConnector(parameters Parameters) (connectors.Connector, error) {
 	return keap.NewConnector(
 		keap.WithAuthenticatedClient(parameters.AuthenticatedClient),
+	)
+}
+
+func newIterableConnector(parameters Parameters) (connectors.Connector, error) {
+	return iterable.NewConnector(
+		iterable.WithAuthenticatedClient(parameters.AuthenticatedClient),
 	)
 }
