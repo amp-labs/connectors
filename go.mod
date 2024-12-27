@@ -3,7 +3,7 @@ module github.com/amp-labs/connectors
 go 1.23.0
 
 require (
-	github.com/PuerkitoBio/goquery v1.9.2
+	github.com/PuerkitoBio/goquery v1.10.1
 	github.com/antchfx/xmlquery v1.4.3
 	github.com/brianvoe/gofakeit/v6 v6.28.0
 	github.com/gertd/go-pluralize v0.2.1
@@ -22,7 +22,7 @@ require (
 )
 
 require (
-	github.com/andybalholm/cascadia v1.3.2 // indirect
+	github.com/andybalholm/cascadia v1.3.3 // indirect
 	github.com/antchfx/xpath v1.3.3 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/go-openapi/jsonpointer v0.21.0 // indirect
