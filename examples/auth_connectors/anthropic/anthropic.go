@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/connector"
 	"github.com/amp-labs/connectors/examples/utils"
@@ -34,7 +33,7 @@ func anthropicAuthExample(ctx context.Context) error {
 	}
 
 	// Call the Anthropic API
-	response, err := conn.JSONHTTPClient().Post(ctx, "/v1/messages", &Message{
+	response, err := conn.Client.Post(ctx, "/v1/messages", &Message{
 		Model:     "claude-3-5-sonnet-20240620",
 		MaxTokens: 1024,
 		Messages: map[string]string{
@@ -69,11 +68,9 @@ func anthropicAuthExample(ctx context.Context) error {
 }
 
 // Create an auth connector with the Anthropic provider.
-func createAuthConnector(ctx context.Context) connectors.Connector {
+func createAuthConnector(ctx context.Context) *connector.Connector {
 	conn, err := connector.NewConnector(providers.Anthropic,
-		connector.Parameters{
-			AuthenticatedClient: createAuthenticatedHttpClient(ctx),
-		})
+		connector.WithAuthenticatedClient(createAuthenticatedHttpClient(ctx)))
 	if err != nil {
 		panic(err)
 	}

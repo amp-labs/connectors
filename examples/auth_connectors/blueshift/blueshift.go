@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/connector"
 	"github.com/amp-labs/connectors/examples/utils"
@@ -28,7 +27,7 @@ func blueshiftAuthExample(ctx context.Context) error {
 	conn := createAuthConnector(ctx)
 
 	// Call the Blueshift API
-	response, err := conn.JSONHTTPClient().Get(ctx, "/api/v2/campaigns.json")
+	response, err := conn.Client.Get(ctx, "/api/v2/campaigns.json")
 	if err != nil {
 		return err
 	}
@@ -56,9 +55,9 @@ func blueshiftAuthExample(ctx context.Context) error {
 }
 
 // Create an auth connector with the Blueshift provider.
-func createAuthConnector(ctx context.Context) connectors.Connector {
+func createAuthConnector(ctx context.Context) *connector.Connector {
 	conn, err := connector.NewConnector(providers.Blueshift,
-		connector.Parameters{AuthenticatedClient: createAuthenticatedHttpClient(ctx)})
+		connector.WithAuthenticatedClient(createAuthenticatedHttpClient(ctx)))
 	if err != nil {
 		panic(err)
 	}
