@@ -9,23 +9,39 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 )
 
+/*
 type SubscriptionEvent struct {
 	AppId            int    `json:"appId"`
 	EventId          int    `json:"eventId"`
 	SubscriptionId   int    `json:"subscriptionId"`
 	PortalId         int    `json:"portalId"`
-	OccurredAt       int    `json:"occurredAt"`
+	OccurredAt       int    `json:"occurredAt"` // in milliseconds
 	SubscriptionType string `json:"subscriptionType"`
 	AttemptNumber    int    `json:"attemptNumber"`
-	ObjectId         int    `json:"objectId"`
 	ChangeSource     string `json:"changeSource"`
-	PropertyName     string `json:"propertyName"`
-	PropertyValue    string `json:"propertyValue"`
+	// Optional fields
+	ObjectId   *int    `json:"objectId,omitempty"`
+	ChangeFlag *string `json:"changeFlag,omitempty"`
+	// Property Change Fields
+	PropertyName  *string `json:"propertyName,omitempty"`
+	PropertyValue *string `json:"propertyValue,omitempty"`
+	// Association Change Fields
+	AssociationType      *string `json:"associationType,omitempty"`
+	FromObjectId         *int    `json:"fromObjectId,omitempty"`
+	ToObjectId           *int    `json:"toObjectId,omitempty"`
+	AssociationRemoved   *bool   `json:"associationRemoved,omitempty"`
+	IsPrimaryAssociation *bool   `json:"isPrimaryAssociation,omitempty"`
 }
+
+
+*/
+
+type SubscriptionEvent map[string]any
 
 // VerifyWebhookMessage verifies the signature of a webhook message from Hubspot.
 func (c *Connector) VerifyWebhookMessage(
@@ -49,17 +65,26 @@ func (c *Connector) VerifyWebhookMessage(
 	return hmac.Equal(decodedSignature, expectedMAC), nil
 }
 
-var errUnexpectedSubscriptionEventType = errors.New("unexpected subscription event type")
+var (
+	errUnexpectedSubscriptionEventType = errors.New("unexpected subscription event type")
+	errSubscriptionTypeNotFound        = errors.New("subscription type not found")
+	errFieldTypeMismatch               = errors.New("field type mismatch")
+)
 
 const minParts = 2
 
-func (evt *SubscriptionEvent) EventType() (common.SubscriptionEventType, error) {
-	parts := strings.Split(evt.SubscriptionType, ".")
+func (evt SubscriptionEvent) EventType() (common.SubscriptionEventType, error) {
+	subTypeStr, err := evt.RawEventName()
+	if err != nil {
+		return common.SubscriptionEventTypeOther, fmt.Errorf("error getting raw event name: %w", err)
+	}
+
+	parts := strings.Split(subTypeStr, ".")
 
 	if len(parts) < minParts {
 		// this should never happen unless the provider changes subscription event format
 		return common.SubscriptionEventTypeOther, fmt.Errorf(
-			"%w: '%s'", errUnexpectedSubscriptionEventType, evt.SubscriptionType,
+			"%w: '%s'", errUnexpectedSubscriptionEventType, subTypeStr,
 		)
 	}
 
@@ -75,14 +100,31 @@ func (evt *SubscriptionEvent) EventType() (common.SubscriptionEventType, error) 
 	}
 }
 
-func (evt *SubscriptionEvent) RawEventName() (string, error) {
-	return evt.SubscriptionType, nil
+func (evt SubscriptionEvent) RawEventName() (string, error) {
+	subType, ok := evt["subscriptionType"]
+	if !ok {
+		return "", errSubscriptionTypeNotFound
+	}
+
+	subTypeStr, ok := subType.(string)
+	if !ok {
+		return "", fmt.Errorf(
+			"%w: expecting string but got '%T'", errFieldTypeMismatch, subType,
+		)
+	}
+
+	return subTypeStr, nil
 }
 
 var errSubscriptionSupportedForObject = errors.New("subscription is not supported for the object")
 
-func (evt *SubscriptionEvent) ObjectName() (string, error) {
-	parts := strings.Split(evt.SubscriptionType, ".")
+func (evt SubscriptionEvent) ObjectName() (string, error) {
+	rawEvent, err := evt.RawEventName()
+	if err != nil {
+		return "", fmt.Errorf("error getting raw event name: %w", err)
+	}
+
+	parts := strings.Split(rawEvent, ".")
 	if !getRecordSupportedObjectsSet.Has(parts[0]) {
 		return "", fmt.Errorf("%w '%s'", errSubscriptionSupportedForObject, parts[0])
 	}
@@ -90,8 +132,50 @@ func (evt *SubscriptionEvent) ObjectName() (string, error) {
 	return parts[0], nil
 }
 
-func (evt *SubscriptionEvent) Workspace() (string, error) {
-	return strconv.Itoa(evt.PortalId), nil
+var errNotFound = errors.New("property name not found")
+
+func (evt SubscriptionEvent) Workspace() (string, error) {
+	portalId, ok := evt["portalId"]
+	if !ok {
+		return "", fmt.Errorf("%w: portalId", errNotFound)
+	}
+
+	portalIdInt, ok := portalId.(int)
+	if !ok {
+		return "", fmt.Errorf("portalId %w, expected int, but received '%T'", errFieldTypeMismatch, portalId)
+	}
+
+	return strconv.Itoa(portalIdInt), nil
+}
+
+var errRecordIdNotAvailable = errors.New("record ID is not available")
+
+func (evt SubscriptionEvent) RecordId() (string, error) {
+	objIdRaw, ok := evt["objectId"]
+	if !ok {
+		return "", errRecordIdNotAvailable
+	}
+
+	objId, ok := objIdRaw.(int)
+	if !ok {
+		return "", fmt.Errorf("objectId %w, expected int, but received '%T'", errFieldTypeMismatch, objIdRaw)
+	}
+
+	return strconv.Itoa(objId), nil
+}
+
+func (evt SubscriptionEvent) EventTimeStampNano() (int64, error) {
+	tsRaw, ok := evt["occurredAt"]
+	if !ok {
+		return 0, fmt.Errorf("%w: occurredAt", errNotFound)
+	}
+
+	ts, ok := tsRaw.(int64)
+	if !ok {
+		return 0, fmt.Errorf("occurredAt %w, expected int, but received '%T'", errFieldTypeMismatch, ts)
+	}
+
+	return time.UnixMilli(ts).UnixNano(), nil
 }
 
 /*
