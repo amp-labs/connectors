@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/connector"
 	"github.com/amp-labs/connectors/examples/utils"
@@ -32,7 +31,7 @@ func adobeAuthExample(ctx context.Context) error {
 	conn := createAuthConnector(ctx)
 
 	// Call the Adobe API (limits endpoint just for example)
-	response, err := conn.JSONHTTPClient().Get(ctx, "/data/foundation/catalog/dataSets")
+	response, err := conn.Client.Get(ctx, "/data/foundation/catalog/dataSets")
 	if err != nil {
 		return err
 	}
@@ -62,10 +61,9 @@ func adobeAuthExample(ctx context.Context) error {
 }
 
 // Create an auth connector with the Adobe provider.
-func createAuthConnector(ctx context.Context) connectors.Connector {
-	conn, err := connector.NewConnector(providers.Adobe, connector.Parameters{
-		AuthenticatedClient: createAuthenticatedHttpClient(ctx),
-	})
+func createAuthConnector(ctx context.Context) *connector.Connector {
+	conn, err := connector.NewConnector(providers.Adobe,
+		connector.WithAuthenticatedClient(createAuthenticatedHttpClient(ctx)))
 	if err != nil {
 		panic(err)
 	}
