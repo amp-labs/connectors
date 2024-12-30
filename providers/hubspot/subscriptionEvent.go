@@ -140,12 +140,14 @@ func (evt SubscriptionEvent) Workspace() (string, error) {
 		return "", fmt.Errorf("%w: portalId", errNotFound)
 	}
 
-	portalIdInt, ok := portalId.(int)
+	portalIdInt, ok := portalId.(float64)
 	if !ok {
 		return "", fmt.Errorf("portalId %w, expected int, but received '%T'", errFieldTypeMismatch, portalId)
 	}
 
-	return strconv.Itoa(portalIdInt), nil
+	idInt := int(portalIdInt)
+
+	return strconv.Itoa(idInt), nil
 }
 
 var errRecordIdNotAvailable = errors.New("record ID is not available")
@@ -156,12 +158,14 @@ func (evt SubscriptionEvent) RecordId() (string, error) {
 		return "", errRecordIdNotAvailable
 	}
 
-	objId, ok := objIdRaw.(int)
+	objId, ok := objIdRaw.(float64)
 	if !ok {
 		return "", fmt.Errorf("objectId %w, expected int, but received '%T'", errFieldTypeMismatch, objIdRaw)
 	}
 
-	return strconv.Itoa(objId), nil
+	objIdInt := int(objId)
+
+	return strconv.Itoa(objIdInt), nil
 }
 
 func (evt SubscriptionEvent) EventTimeStampNano() (int64, error) {
@@ -170,12 +174,14 @@ func (evt SubscriptionEvent) EventTimeStampNano() (int64, error) {
 		return 0, fmt.Errorf("%w: occurredAt", errNotFound)
 	}
 
-	ts, ok := tsRaw.(int64)
+	ts, ok := tsRaw.(float64)
 	if !ok {
 		return 0, fmt.Errorf("occurredAt %w, expected int, but received '%T'", errFieldTypeMismatch, ts)
 	}
 
-	return time.UnixMilli(ts).UnixNano(), nil
+	tsInt := int64(ts)
+
+	return time.UnixMilli(tsInt).UnixNano(), nil
 }
 
 /*
