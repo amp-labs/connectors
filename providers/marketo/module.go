@@ -6,7 +6,7 @@ import (
 
 const (
 	// ModuleEmpty is used for proxying requests through.
-	ModuleEmpty common.ModuleID = "module-empty"
+	ModuleEmpty common.ModuleID = ""
 	// ModuleAssets is the module/API used for accessing assets objects.
 	ModuleAssets common.ModuleID = "assets"
 	// ModuleLeads is the module/API used for accessing leads objects.

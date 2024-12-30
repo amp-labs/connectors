@@ -6,7 +6,7 @@ import (
 
 const (
 	// ModuleEmpty is used for proxying requests through.
-	ModuleEmpty common.ModuleID = "module-empty"
+	ModuleEmpty common.ModuleID = ""
 	// ModuleCRM is the module used for accessing standard CRM objects.
 	ModuleCRM common.ModuleID = "CRM"
 )
