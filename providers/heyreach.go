@@ -3,8 +3,7 @@ package providers
 const HeyReach Provider = "heyreach"
 
 func init() {
-	// Hive Connector Configuration
-	SetInfo(Hive, ProviderInfo{
+	SetInfo(HeyReach, ProviderInfo{
 		DisplayName: "heyreach",
 		AuthType:    ApiKey,
 		BaseURL:     "https://api.heyreach.io/api",
@@ -18,12 +17,12 @@ func init() {
 		//nolint:lll
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722410295/media/const%20Hive%20Provider%20%3D%20%22hive%22_1722410295.png",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722410346/media/const%20Hive%20Provider%20%3D%20%22hive%22_1722410346.svg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1735632745/media/heyreach.io_1735632744.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1735632708/media/heyreach.io_1735632706.png",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722410295/media/const%20Hive%20Provider%20%3D%20%22hive%22_1722410295.png",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722410346/media/const%20Hive%20Provider%20%3D%20%22hive%22_1722410346.svg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1735632745/media/heyreach.io_1735632744.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1735632708/media/heyreach.io_1735632706.png",
 			},
 		},
 		Support: Support{
