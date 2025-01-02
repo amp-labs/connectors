@@ -13,7 +13,7 @@ func init() {
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1735777173/media/outplayhq.com_1735777172.png",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: " https://res.cloudinary.com/dycvts6vp/image/upload/v1735777081/media/outplayhq.com_1735777080.jpg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1735777081/media/outplayhq.com_1735777080.jpg",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1735777173/media/outplayhq.com_1735777172.png",
 			},
 		},
