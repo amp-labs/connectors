@@ -6,14 +6,13 @@ func init() {
 	SetInfo(EmailBison, ProviderInfo{
 		DisplayName: "EmailBison",
 		AuthType:    ApiKey,
-		BaseURL:     "https://dedi.emailbison.com",
+		BaseURL:     "https://{{.workspace}}.emailbison.com",
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Header,
 			Header: &ApiKeyOptsHeader{
 				Name:        "Authorization",
 				ValuePrefix: "Bearer ",
 			},
-			DocsURL: "https://dedi.emailbison.com/api/reference",
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
