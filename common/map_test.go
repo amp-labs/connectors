@@ -9,11 +9,11 @@ import (
 )
 
 //nolint:funlen,gocognit, cyclop
-func TestGenericMap(t *testing.T) {
+func TestStringMap(t *testing.T) {
 	t.Parallel()
 
 	//nolint:varnamelen
-	m := GenericMap{
+	m := StringMap{
 		"string": "string",
 		"int":    1,
 		"float":  1.1,
@@ -42,16 +42,6 @@ func TestGenericMap(t *testing.T) {
 
 		require.NoError(t, err3)
 		assert.Equal(t, want3, got3)
-
-		passes := []string{"string", "int", "float", "map", "bool"}
-
-		for k := range m {
-			got, err := m.Get(k)
-			if !slices.Contains(passes, k) {
-				require.Error(t, err)
-				assert.Nil(t, got)
-			}
-		}
 	})
 
 	t.Run("GetInt", func(t *testing.T) {
@@ -63,11 +53,11 @@ func TestGenericMap(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, want, got)
 
-		passes := []string{"int"}
+		keysWithIntValues := []string{"int"}
 
 		for k := range m {
 			got, err := m.GetInt(k)
-			if !slices.Contains(passes, k) {
+			if !slices.Contains(keysWithIntValues, k) {
 				require.Error(t, err)
 				assert.Equal(t, int64(0), got)
 			}
@@ -83,11 +73,11 @@ func TestGenericMap(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, want, got) //nolint:testifylint
 
-		passes := []string{"float"}
+		keysWithFloatValues := []string{"float"}
 
 		for k := range m {
 			got, err := m.GetFloat(k)
-			if !slices.Contains(passes, k) {
+			if !slices.Contains(keysWithFloatValues, k) {
 				require.Error(t, err)
 				assert.Equal(t, 0.0, got) //nolint:testifylint
 			}
@@ -109,11 +99,11 @@ func TestGenericMap(t *testing.T) {
 		require.NoError(t, err2)
 		assert.Equal(t, want2, got2)
 
-		passes := []string{"int", "float"}
+		keysWithNumericValues := []string{"int", "float"}
 
 		for k := range m {
 			got, err := m.AsInt(k)
-			if !slices.Contains(passes, k) {
+			if !slices.Contains(keysWithNumericValues, k) {
 				require.Error(t, err)
 				assert.Equal(t, int64(0), got)
 			}
@@ -135,11 +125,11 @@ func TestGenericMap(t *testing.T) {
 		require.NoError(t, err2)
 		assert.Equal(t, want2, got2) //nolint:testifylint
 
-		passes := []string{"int", "float"}
+		keysWithNumericValues := []string{"int", "float"}
 
 		for k := range m {
 			got, err := m.AsFloat(k)
-			if !slices.Contains(passes, k) {
+			if !slices.Contains(keysWithNumericValues, k) {
 				require.Error(t, err)
 				assert.Equal(t, 0.0, got) //nolint:testifylint
 			}
@@ -155,11 +145,11 @@ func TestGenericMap(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, want, got)
 
-		passes := []string{"bool"}
+		keysWithBooleanValues := []string{"bool"}
 
 		for k := range m {
 			got, err := m.GetBool(k)
-			if !slices.Contains(passes, k) {
+			if !slices.Contains(keysWithBooleanValues, k) {
 				require.Error(t, err)
 				assert.False(t, got)
 			}
@@ -175,11 +165,11 @@ func TestGenericMap(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, want, got)
 
-		passes := []string{"string"}
+		keysWithStringValues := []string{"string"}
 
 		for k := range m {
 			got, err := m.GetString(k)
-			if !slices.Contains(passes, k) {
+			if !slices.Contains(keysWithStringValues, k) {
 				require.Error(t, err)
 				assert.Equal(t, "", got)
 			}

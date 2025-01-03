@@ -4,21 +4,23 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+
+	"golang.org/x/exp/maps"
 )
 
-type GenericMap map[string]any
+var (
+	errKeyNotFound       = errors.New("key not found")
+	errNotANumber        = errors.New("not a number")
+	errFieldTypeMismatch = errors.New("field type mismatch")
+)
 
-func (m GenericMap) Keys(key string) any {
-	keys := make([]any, 0, len(m))
+type StringMap map[string]any
 
-	for k := range m {
-		keys = append(keys, k)
-	}
-
-	return keys
+func (m StringMap) Keys(key string) []string {
+	return maps.Keys(m)
 }
 
-func (m GenericMap) Get(key string) (any, error) {
+func (m StringMap) Get(key string) (any, error) {
 	val, ok := m[key]
 	if !ok {
 		return nil, fmt.Errorf("%w: %s", errKeyNotFound, key)
@@ -27,16 +29,11 @@ func (m GenericMap) Get(key string) (any, error) {
 	return val, nil
 }
 
-var (
-	errKeyNotFound = errors.New("key not found")
-	errNotANumber  = errors.New("not a number")
-)
-
 // AsFloat is a helper function that extracts a float from the map.
 // This function will convert number values such as int, uint, and float to float64.
 // By doing so, it may lose precision for large numbers.
 // This is helpful when you are not sure about the type of the number.
-func (m GenericMap) AsFloat(key string) (float64, error) {
+func (m StringMap) AsFloat(key string) (float64, error) {
 	val, err := m.Get(key)
 	if err != nil {
 		return 0, err
@@ -61,7 +58,7 @@ func (m GenericMap) AsFloat(key string) (float64, error) {
 // This function will convert number values such as int, uint, and float to int64.
 // By doing so, it may lose precision for large numbers.
 // This is helpful when you are not sure about the type of the number.
-func (m GenericMap) AsInt(key string) (int64, error) {
+func (m StringMap) AsInt(key string) (int64, error) {
 	val, err := m.Get(key)
 	if err != nil {
 		return 0, err
@@ -81,7 +78,7 @@ func (m GenericMap) AsInt(key string) (int64, error) {
 	}
 }
 
-func (m GenericMap) GetString(key string) (string, error) {
+func (m StringMap) GetString(key string) (string, error) {
 	val, err := m.Get(key)
 	if err != nil {
 		return "", err
@@ -90,19 +87,7 @@ func (m GenericMap) GetString(key string) (string, error) {
 	return assertType[string](val)
 }
 
-var errFieldTypeMismatch = errors.New("field type mismatch")
-
-//nolint:ireturn
-func assertType[T any](val any) (T, error) {
-	of, ok := val.(T)
-	if !ok {
-		return of, fmt.Errorf("%w: expected type %T, but received %T", errFieldTypeMismatch, of, val)
-	}
-
-	return of, nil
-}
-
-func (m GenericMap) GetBool(key string) (bool, error) {
+func (m StringMap) GetBool(key string) (bool, error) {
 	val, err := m.Get(key)
 	if err != nil {
 		return false, err
@@ -111,13 +96,13 @@ func (m GenericMap) GetBool(key string) (bool, error) {
 	return assertType[bool](val)
 }
 
-func (m GenericMap) Has(key string) bool {
+func (m StringMap) Has(key string) bool {
 	_, ok := m[key]
 
 	return ok
 }
 
-func (m GenericMap) Values() []any {
+func (m StringMap) Values() []any {
 	values := make([]any, 0, len(m))
 
 	for _, v := range m {
@@ -127,12 +112,12 @@ func (m GenericMap) Values() []any {
 	return values
 }
 
-func (m GenericMap) Len() int {
+func (m StringMap) Len() int {
 	return len(m)
 }
 
 // GetInt extracts an integer from the map.
-func (m GenericMap) GetInt(key string) (int64, error) {
+func (m StringMap) GetInt(key string) (int64, error) {
 	val, err := m.Get(key)
 	if err != nil {
 		return 0, err
@@ -150,7 +135,7 @@ func (m GenericMap) GetInt(key string) (int64, error) {
 }
 
 // GetFloat extracts a float from the map.
-func (m GenericMap) GetFloat(key string) (float64, error) {
+func (m StringMap) GetFloat(key string) (float64, error) {
 	val, err := m.Get(key)
 	if err != nil {
 		return 0, err
@@ -165,4 +150,14 @@ func (m GenericMap) GetFloat(key string) (float64, error) {
 	default:
 		return 0, fmt.Errorf("%w: expected a float, but received %T", errFieldTypeMismatch, val)
 	}
+}
+
+//nolint:ireturn
+func assertType[T any](val any) (T, error) {
+	of, ok := val.(T)
+	if !ok {
+		return of, fmt.Errorf("%w: expected type %T, but received %T", errFieldTypeMismatch, of, val)
+	}
+
+	return of, nil
 }

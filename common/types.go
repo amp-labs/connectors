@@ -297,5 +297,3 @@ type WebhookVerificationParameters struct {
 	ClientSecret string
 	Method       string
 }
-
-type SubscriptionEventMap GenericMap

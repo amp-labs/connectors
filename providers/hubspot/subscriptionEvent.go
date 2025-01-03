@@ -16,7 +16,7 @@ import (
 
 /*
 Note:
-SubscriptionEvent is a map[string]any on purpose because the structure of the event is not known.
+SubscriptionEvent is a map[string]any as opposed to a typed struct, because the structure of the event is not known .
 We may define the latest structure of the event, but in the future, the provider may add more fields.
 In that case, we won't be receiving those fields in the event.
 This form also prevents null fields to be sent out as zero values.
@@ -131,8 +131,8 @@ func (evt SubscriptionEvent) EventTimeStampNano() (int64, error) {
 	return time.UnixMilli(ts).UnixNano(), nil
 }
 
-func (evt SubscriptionEvent) asMap() common.GenericMap {
-	return common.GenericMap(evt)
+func (evt SubscriptionEvent) asMap() common.StringMap {
+	return common.StringMap(evt)
 }
 
 /*
