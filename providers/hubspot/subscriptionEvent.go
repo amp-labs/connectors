@@ -15,33 +15,6 @@ import (
 )
 
 /*
-type SubscriptionEvent struct {
-	AppId            int    `json:"appId"`
-	EventId          int    `json:"eventId"`
-	SubscriptionId   int    `json:"subscriptionId"`
-	PortalId         int    `json:"portalId"`
-	OccurredAt       int    `json:"occurredAt"` // in milliseconds
-	SubscriptionType string `json:"subscriptionType"`
-	AttemptNumber    int    `json:"attemptNumber"`
-	ChangeSource     string `json:"changeSource"`
-	// Optional fields
-	ObjectId   *int    `json:"objectId,omitempty"`
-	ChangeFlag *string `json:"changeFlag,omitempty"`
-	// Property Change Fields
-	PropertyName  *string `json:"propertyName,omitempty"`
-	PropertyValue *string `json:"propertyValue,omitempty"`
-	// Association Change Fields
-	AssociationType      *string `json:"associationType,omitempty"`
-	FromObjectId         *int    `json:"fromObjectId,omitempty"`
-	ToObjectId           *int    `json:"toObjectId,omitempty"`
-	AssociationRemoved   *bool   `json:"associationRemoved,omitempty"`
-	IsPrimaryAssociation *bool   `json:"isPrimaryAssociation,omitempty"`
-}
-
-
-*/
-
-/*
 Note:
 SubscriptionEvent is a map[string]any on purpose because the structure of the event is not known.
 We may define the latest structure of the event, but in the future, the provider may add more fields.

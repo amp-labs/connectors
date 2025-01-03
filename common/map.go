@@ -8,10 +8,6 @@ import (
 
 type GenericMap map[string]any
 
-func (m GenericMap) Map() map[string]any {
-	return m
-}
-
 func (m GenericMap) Keys(key string) any {
 	keys := make([]any, 0, len(m))
 
