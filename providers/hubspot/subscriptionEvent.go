@@ -41,6 +41,13 @@ type SubscriptionEvent struct {
 
 */
 
+/*
+Note:
+SubscriptionEvent is a map[string]any on purpose because the structure of the event is not known.
+We may define the latest structure of the event, but in the future, the provider may add more fields.
+In that case, we won't be receiving those fields in the event.
+This form also prevents null fields to be sent out as zero values.
+*/
 type SubscriptionEvent map[string]any
 
 // VerifyWebhookMessage verifies the signature of a webhook message from Hubspot.
@@ -65,11 +72,7 @@ func (c *Connector) VerifyWebhookMessage(
 	return hmac.Equal(decodedSignature, expectedMAC), nil
 }
 
-var (
-	errUnexpectedSubscriptionEventType = errors.New("unexpected subscription event type")
-	errSubscriptionTypeNotFound        = errors.New("subscription type not found")
-	errFieldTypeMismatch               = errors.New("field type mismatch")
-)
+var errUnexpectedSubscriptionEventType = errors.New("unexpected subscription event type")
 
 const minParts = 2
 
@@ -101,19 +104,9 @@ func (evt SubscriptionEvent) EventType() (common.SubscriptionEventType, error) {
 }
 
 func (evt SubscriptionEvent) RawEventName() (string, error) {
-	subType, ok := evt["subscriptionType"]
-	if !ok {
-		return "", errSubscriptionTypeNotFound
-	}
+	m := evt.asMap()
 
-	subTypeStr, ok := subType.(string)
-	if !ok {
-		return "", fmt.Errorf(
-			"%w: expecting string but got '%T'", errFieldTypeMismatch, subType,
-		)
-	}
-
-	return subTypeStr, nil
+	return m.GetString("subscriptionType")
 }
 
 var errSubscriptionSupportedForObject = errors.New("subscription is not supported for the object")
@@ -132,56 +125,41 @@ func (evt SubscriptionEvent) ObjectName() (string, error) {
 	return parts[0], nil
 }
 
-var errNotFound = errors.New("property name not found")
-
 func (evt SubscriptionEvent) Workspace() (string, error) {
-	portalId, ok := evt["portalId"]
-	if !ok {
-		return "", fmt.Errorf("%w: portalId", errNotFound)
+	m := evt.asMap()
+
+	portalId, err := m.AsInt("portalId")
+	if err != nil {
+		return "", err
 	}
 
-	portalIdInt, ok := portalId.(float64)
-	if !ok {
-		return "", fmt.Errorf("portalId %w, expected int, but received '%T'", errFieldTypeMismatch, portalId)
-	}
-
-	idInt := int(portalIdInt)
-
-	return strconv.Itoa(idInt), nil
+	return strconv.Itoa(int(portalId)), nil
 }
 
-var errRecordIdNotAvailable = errors.New("record ID is not available")
-
 func (evt SubscriptionEvent) RecordId() (string, error) {
-	objIdRaw, ok := evt["objectId"]
-	if !ok {
-		return "", errRecordIdNotAvailable
+	m := evt.asMap()
+
+	objId, err := m.AsInt("objectId")
+	if err != nil {
+		return "", err
 	}
 
-	objId, ok := objIdRaw.(float64)
-	if !ok {
-		return "", fmt.Errorf("objectId %w, expected int, but received '%T'", errFieldTypeMismatch, objIdRaw)
-	}
-
-	objIdInt := int(objId)
-
-	return strconv.Itoa(objIdInt), nil
+	return strconv.Itoa(int(objId)), nil
 }
 
 func (evt SubscriptionEvent) EventTimeStampNano() (int64, error) {
-	tsRaw, ok := evt["occurredAt"]
-	if !ok {
-		return 0, fmt.Errorf("%w: occurredAt", errNotFound)
+	m := evt.asMap()
+
+	ts, err := m.AsInt("occurredAt")
+	if err != nil {
+		return 0, err
 	}
 
-	ts, ok := tsRaw.(float64)
-	if !ok {
-		return 0, fmt.Errorf("occurredAt %w, expected int, but received '%T'", errFieldTypeMismatch, ts)
-	}
+	return time.UnixMilli(ts).UnixNano(), nil
+}
 
-	tsInt := int64(ts)
-
-	return time.UnixMilli(tsInt).UnixNano(), nil
+func (evt SubscriptionEvent) asMap() common.GenericMap {
+	return common.GenericMap(evt)
 }
 
 /*
