@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/goutils"
 	"gotest.tools/v3/assert"
 )
 
@@ -18,10 +19,10 @@ func TestExtractObjectNameFromSubscriptionEvent(t *testing.T) {
 		OccurredAt:       1,
 		SubscriptionType: "contact.creation",
 		AttemptNumber:    1,
-		ObjectId:         1,
+		ObjectId:         goutils.Pointer(1),
 		ChangeSource:     "CRM",
-		PropertyName:     "message",
-		PropertyValue:    "sample-value",
+		PropertyName:     goutils.Pointer("message"),
+		PropertyValue:    goutils.Pointer("sample-value"),
 	}
 
 	objectName, err := validEvent.ObjectName()
@@ -39,10 +40,10 @@ func TestExtractObjectNameFromSubscriptionEvent(t *testing.T) {
 		OccurredAt:       1,
 		SubscriptionType: "someObject.creation",
 		AttemptNumber:    1,
-		ObjectId:         1,
+		ObjectId:         goutils.Pointer(1),
 		ChangeSource:     "CRM",
-		PropertyName:     "message",
-		PropertyValue:    "sample-value",
+		PropertyName:     goutils.Pointer("message"),
+		PropertyValue:    goutils.Pointer("sample-value"),
 	}
 
 	_, err = unsupportedEvent.ObjectName()
@@ -56,10 +57,10 @@ func TestExtractObjectNameFromSubscriptionEvent(t *testing.T) {
 		OccurredAt:       1,
 		SubscriptionType: "",
 		AttemptNumber:    1,
-		ObjectId:         1,
+		ObjectId:         goutils.Pointer(1),
 		ChangeSource:     "CRM",
-		PropertyName:     "message",
-		PropertyValue:    "sample-value",
+		PropertyName:     goutils.Pointer("message"),
+		PropertyValue:    goutils.Pointer("sample-value"),
 	}
 
 	_, err = emptyObjectEvent.ObjectName()
@@ -78,10 +79,10 @@ func TestExtractEventTypeFromSubscriptionEvent(t *testing.T) {
 		OccurredAt:       1,
 		SubscriptionType: "contact.creation",
 		AttemptNumber:    1,
-		ObjectId:         1,
+		ObjectId:         goutils.Pointer(1),
 		ChangeSource:     "CRM",
-		PropertyName:     "message",
-		PropertyValue:    "sample-value",
+		PropertyName:     goutils.Pointer("message"),
+		PropertyValue:    goutils.Pointer("sample-value"),
 	}
 
 	evtTypeCreate, err := createEvent.EventType()
@@ -99,10 +100,10 @@ func TestExtractEventTypeFromSubscriptionEvent(t *testing.T) {
 		OccurredAt:       1,
 		SubscriptionType: "contact.deletion",
 		AttemptNumber:    1,
-		ObjectId:         1,
+		ObjectId:         goutils.Pointer(1),
 		ChangeSource:     "CRM",
-		PropertyName:     "message",
-		PropertyValue:    "sample-value",
+		PropertyName:     goutils.Pointer("message"),
+		PropertyValue:    goutils.Pointer("sample-value"),
 	}
 
 	evtTypeDelete, err := deleteMessage.EventType()
@@ -120,10 +121,10 @@ func TestExtractEventTypeFromSubscriptionEvent(t *testing.T) {
 		OccurredAt:       1,
 		SubscriptionType: "contact.propertyChange",
 		AttemptNumber:    1,
-		ObjectId:         1,
+		ObjectId:         goutils.Pointer(1),
 		ChangeSource:     "CRM",
-		PropertyName:     "message",
-		PropertyValue:    "sample-value",
+		PropertyName:     goutils.Pointer("message"),
+		PropertyValue:    goutils.Pointer("sample-value"),
 	}
 
 	evtTypeUpdate, err := updateMessage.EventType()
@@ -141,10 +142,10 @@ func TestExtractEventTypeFromSubscriptionEvent(t *testing.T) {
 		OccurredAt:       1,
 		SubscriptionType: "",
 		AttemptNumber:    1,
-		ObjectId:         1,
+		ObjectId:         goutils.Pointer(1),
 		ChangeSource:     "CRM",
-		PropertyName:     "message",
-		PropertyValue:    "sample-value",
+		PropertyName:     goutils.Pointer("message"),
+		PropertyValue:    goutils.Pointer("sample-value"),
 	}
 
 	_, err = emptyObjectEvent.EventType()

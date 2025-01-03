@@ -285,6 +285,8 @@ type SubscriptionEvent interface {
 	RawEventName() (string, error)
 	ObjectName() (string, error)
 	Workspace() (string, error)
+	RecordId() (string, error)
+	EventTimeStampNano() (int64, error)
 }
 
 // WebhookVerificationParameters is a struct that contains the parameters required to verify a webhook.
