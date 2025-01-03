@@ -2,6 +2,7 @@ package apollo
 
 import (
 	"context"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 )
@@ -17,6 +18,16 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 
 	if err := config.ValidateParams(true); err != nil {
 		return nil, err
+	}
+
+	// we want to update the objectName if the provided config.ObjectName
+	// is the displayname from the API docs to the supported objectName.
+	// Example: sequence would be mapped to emailer_campaigns.
+	// ref: https://docs.apollo.io/reference/search-for-sequences
+	objectName, ok := displayNameToObjectName[strings.ToLower(config.ObjectName)]
+	if ok {
+		// Renaming the Param ObjectName to the mapped object.
+		config.ObjectName = objectName
 	}
 
 	url, err := c.getAPIURL(config.ObjectName, readOp)

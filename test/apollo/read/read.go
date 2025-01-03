@@ -37,12 +37,17 @@ func MainFn() int {
 		return 1
 	}
 
-	err = testReadSequences(ctx, conn)
+	err = testReadEmailerCampaigns(ctx, conn)
 	if err != nil {
 		return 1
 	}
 
 	err = testReadContacts(ctx, conn)
+	if err != nil {
+		return 1
+	}
+
+	err = testReadSequences(ctx, conn)
 	if err != nil {
 		return 1
 	}
@@ -119,7 +124,7 @@ func testReadCustomFields(ctx context.Context, conn *ap.Connector) error {
 	return nil
 }
 
-func testReadSequences(ctx context.Context, conn *ap.Connector) error {
+func testReadEmailerCampaigns(ctx context.Context, conn *ap.Connector) error {
 	params := common.ReadParams{
 		ObjectName: "emailer_campaigns",
 		Fields:     connectors.Fields("id", "name", "archived"),
@@ -146,6 +151,29 @@ func testReadContacts(ctx context.Context, conn *ap.Connector) error {
 	params := common.ReadParams{
 		ObjectName: "contacts",
 		Fields:     connectors.Fields("id", "first_name", "name"),
+	}
+
+	res, err := conn.Read(ctx, params)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	// Print the results
+	jsonStr, err := json.MarshalIndent(res, "", "  ")
+	if err != nil {
+		return fmt.Errorf("error marshalling JSON: %w", err)
+	}
+
+	_, _ = os.Stdout.Write(jsonStr)
+	_, _ = os.Stdout.WriteString("\n")
+
+	return nil
+}
+
+func testReadSequences(ctx context.Context, conn *ap.Connector) error {
+	params := common.ReadParams{
+		ObjectName: "sequences",
+		Fields:     connectors.Fields("id", "name"),
 	}
 
 	res, err := conn.Read(ctx, params)
