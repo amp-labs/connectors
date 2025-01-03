@@ -2,14 +2,11 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"os"
 	"os/signal"
-	"strconv"
 	"syscall"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/providers/hubspot"
 	connTest "github.com/amp-labs/connectors/test/hubspot"
 	"github.com/amp-labs/connectors/test/utils"
 	"github.com/brianvoe/gofakeit/v6"
@@ -56,19 +53,6 @@ func main() {
 	if err != nil {
 		utils.Fail("error writing to hubspot", "error", err)
 	}
-
-	propMsg := hubspot.SubscriptionEvent{}
-
-	if err := json.Unmarshal([]byte(samplePropertyChange), &propMsg); err != nil {
-		utils.Fail("error unmarshalling property change event", "error", err)
-	}
-
-	recordId, err := strconv.Atoi(writeResult.RecordId)
-	if err != nil {
-		utils.Fail("error converting record id to int", "error", err)
-	}
-
-	propMsg.ObjectId = recordId
 
 	records, err := conn.GetRecordsWithIds(ctx, "contact", []string{writeResult.RecordId}, nil, nil)
 	if err != nil {
