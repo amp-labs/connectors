@@ -20,6 +20,20 @@ func (m StringMap) Keys(key string) []string {
 	return maps.Keys(m)
 }
 
+func (m StringMap) Has(key string) bool {
+	_, ok := m[key]
+
+	return ok
+}
+
+func (m StringMap) Values() []any {
+	return maps.Values(m)
+}
+
+func (m StringMap) Len() int {
+	return len(m)
+}
+
 func (m StringMap) Get(key string) (any, error) {
 	val, ok := m[key]
 	if !ok {
@@ -94,26 +108,6 @@ func (m StringMap) GetBool(key string) (bool, error) {
 	}
 
 	return assertType[bool](val)
-}
-
-func (m StringMap) Has(key string) bool {
-	_, ok := m[key]
-
-	return ok
-}
-
-func (m StringMap) Values() []any {
-	values := make([]any, 0, len(m))
-
-	for _, v := range m {
-		values = append(values, v)
-	}
-
-	return values
-}
-
-func (m StringMap) Len() int {
-	return len(m)
 }
 
 // GetInt extracts an integer from the map.
