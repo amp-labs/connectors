@@ -4,7 +4,7 @@ const HeyReach Provider = "heyreach"
 
 func init() {
 	SetInfo(HeyReach, ProviderInfo{
-		DisplayName: "heyreach",
+		DisplayName: "HeyReach",
 		AuthType:    ApiKey,
 		BaseURL:     "https://api.heyreach.io/api",
 		ApiKeyOpts: &ApiKeyOpts{
@@ -12,7 +12,6 @@ func init() {
 			Header: &ApiKeyOptsHeader{
 				Name: "X-API-KEY",
 			},
-			DocsURL: "https://documenter.getpostman.com/view/23808049/2sA2xb5F75",
 		},
 		//nolint:lll
 		Media: &Media{
