@@ -2,7 +2,6 @@ package apollo
 
 import (
 	"context"
-	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/jsonquery"
@@ -29,16 +28,6 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 	}
 
 	for _, objectName := range objectNames {
-		// we want to update the objectName if the provided objectName
-		// is the product name from the API docs to the supported objectName.
-		// Example: sequence would be mapped to emailer_campaigns.
-		// ref: https://docs.apollo.io/reference/search-for-sequences
-		mappedObjectName, ok := displayNameToObjectName[strings.ToLower(objectName)]
-		if ok {
-			// Renaming the Param ObjectName to the mapped object.
-			objectName = mappedObjectName
-		}
-
 		url, err := c.getAPIURL(objectName, readOp)
 		if err != nil {
 			return nil, err
@@ -47,7 +36,6 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 		// Limiting the response, so as we don't have to return 100 records of data
 		// when we just need 1.
 		url.WithQueryParam(perPage, metadataPageSize)
-
 		resp, err := c.Client.Get(ctx, url.String())
 		if err != nil {
 			metadataResult.Errors[objectName] = err
@@ -76,6 +64,8 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 }
 
 func parseMetadataFromResponse(body *ajson.Node, objectName string) (*common.ObjectMetadata, error) {
+	objectName = constructObjectName(objectName)
+
 	arr, err := jsonquery.New(body).Array(objectName, true)
 	if err != nil {
 		return nil, err

@@ -54,6 +54,8 @@ func (c *Connector) Provider() providers.Provider {
 // Depending on the operation(read or write), some objects will need different endpoints.
 // That's the sole purpose of the variable ops.
 func (c *Connector) getAPIURL(objectName string, ops operation) (*urlbuilder.URL, error) {
+	objectName = constructObjectName(objectName)
+
 	relativePath := strings.Join([]string{restAPIPrefix, objectName}, "/")
 
 	url, err := urlbuilder.New(c.BaseURL, relativePath)
