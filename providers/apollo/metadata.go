@@ -65,7 +65,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 }
 
 func parseMetadataFromResponse(body *ajson.Node, objectName string) (*common.ObjectMetadata, error) {
-	objectName = constructObjectName(objectName)
+	objectName = constructSupportedObjectName(objectName)
 
 	arr, err := jsonquery.New(body).Array(objectName, true)
 	if err != nil {

@@ -47,7 +47,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 }
 
 func constructWriteResult(body *ajson.Node, objName string) (*common.WriteResult, error) {
-	objName = constructObjectName(objName)
+	objName = constructSupportedObjectName(objName)
 
 	// API Response contains a json object having a singular objectName key with the
 	// created/updated details in it.

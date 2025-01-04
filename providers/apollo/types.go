@@ -39,7 +39,7 @@ var productNameToObjectName = map[string]string{
 	"lists_and_tags": "labels",
 }
 
-func constructObjectName(obj string) string {
+func constructSupportedObjectName(obj string) string {
 	// we want to update the objectName if the provided objectName
 	// is the product name from the API docs to the supported objectName.
 	// Example: sequence would be mapped to emailer_campaigns.
