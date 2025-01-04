@@ -36,6 +36,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 		// Limiting the response, so as we don't have to return 100 records of data
 		// when we just need 1.
 		url.WithQueryParam(perPage, metadataPageSize)
+
 		resp, err := c.Client.Get(ctx, url.String())
 		if err != nil {
 			metadataResult.Errors[objectName] = err
