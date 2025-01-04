@@ -20,8 +20,8 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	// we want to update the objectName if the provided config.ObjectName
-	// is the displayname from the API docs to the supported objectName.
+	// we want to update the objectName if the provided objectName
+	// is the product name from the API docs to the supported objectName.
 	// Example: sequence would be mapped to emailer_campaigns.
 	// ref: https://docs.apollo.io/reference/search-for-sequences
 	objectName, ok := displayNameToObjectName[strings.ToLower(config.ObjectName)]

@@ -2,6 +2,7 @@ package apollo
 
 import (
 	"context"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/jsonquery"
@@ -28,6 +29,16 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 	}
 
 	for _, objectName := range objectNames {
+		// we want to update the objectName if the provided objectName
+		// is the product name from the API docs to the supported objectName.
+		// Example: sequence would be mapped to emailer_campaigns.
+		// ref: https://docs.apollo.io/reference/search-for-sequences
+		mappedObjectName, ok := displayNameToObjectName[strings.ToLower(objectName)]
+		if ok {
+			// Renaming the Param ObjectName to the mapped object.
+			objectName = mappedObjectName
+		}
+
 		url, err := c.getAPIURL(objectName, readOp)
 		if err != nil {
 			return nil, err
