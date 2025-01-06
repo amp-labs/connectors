@@ -272,10 +272,11 @@ type PostAuthInfo struct {
 type SubscriptionEventType string
 
 const (
-	SubscriptionEventTypeCreate SubscriptionEventType = "create"
-	SubscriptionEventTypeUpdate SubscriptionEventType = "update"
-	SubscriptionEventTypeDelete SubscriptionEventType = "delete"
-	SubscriptionEventTypeOther  SubscriptionEventType = "other"
+	SubscriptionEventTypeCreate             SubscriptionEventType = "create"
+	SubscriptionEventTypeUpdate             SubscriptionEventType = "update"
+	SubscriptionEventTypeDelete             SubscriptionEventType = "delete"
+	SubscriptionEventTypeUpdatedAssociation SubscriptionEventType = "updatedAssociation"
+	SubscriptionEventTypeOther              SubscriptionEventType = "other"
 )
 
 // SubscribeEvent is an interface for webhook events coming from the provider.
