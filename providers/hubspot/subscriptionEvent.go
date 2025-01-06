@@ -9,23 +9,19 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 )
 
-type SubscriptionEvent struct {
-	AppId            int    `json:"appId"`
-	EventId          int    `json:"eventId"`
-	SubscriptionId   int    `json:"subscriptionId"`
-	PortalId         int    `json:"portalId"`
-	OccurredAt       int    `json:"occurredAt"`
-	SubscriptionType string `json:"subscriptionType"`
-	AttemptNumber    int    `json:"attemptNumber"`
-	ObjectId         int    `json:"objectId"`
-	ChangeSource     string `json:"changeSource"`
-	PropertyName     string `json:"propertyName"`
-	PropertyValue    string `json:"propertyValue"`
-}
+/*
+Note:
+SubscriptionEvent is a map[string]any as opposed to a typed struct, because the structure of the event is not known .
+We may define the latest structure of the event, but in the future, the provider may add more fields.
+In that case, we won't be receiving those fields in the event.
+This form also prevents null fields to be sent out as zero values.
+*/
+type SubscriptionEvent map[string]any
 
 // VerifyWebhookMessage verifies the signature of a webhook message from Hubspot.
 func (c *Connector) VerifyWebhookMessage(
@@ -53,13 +49,18 @@ var errUnexpectedSubscriptionEventType = errors.New("unexpected subscription eve
 
 const minParts = 2
 
-func (evt *SubscriptionEvent) EventType() (common.SubscriptionEventType, error) {
-	parts := strings.Split(evt.SubscriptionType, ".")
+func (evt SubscriptionEvent) EventType() (common.SubscriptionEventType, error) {
+	subTypeStr, err := evt.RawEventName()
+	if err != nil {
+		return common.SubscriptionEventTypeOther, fmt.Errorf("error getting raw event name: %w", err)
+	}
+
+	parts := strings.Split(subTypeStr, ".")
 
 	if len(parts) < minParts {
 		// this should never happen unless the provider changes subscription event format
 		return common.SubscriptionEventTypeOther, fmt.Errorf(
-			"%w: '%s'", errUnexpectedSubscriptionEventType, evt.SubscriptionType,
+			"%w: '%s'", errUnexpectedSubscriptionEventType, subTypeStr,
 		)
 	}
 
@@ -75,14 +76,21 @@ func (evt *SubscriptionEvent) EventType() (common.SubscriptionEventType, error) 
 	}
 }
 
-func (evt *SubscriptionEvent) RawEventName() (string, error) {
-	return evt.SubscriptionType, nil
+func (evt SubscriptionEvent) RawEventName() (string, error) {
+	m := evt.asMap()
+
+	return m.GetString("subscriptionType")
 }
 
 var errSubscriptionSupportedForObject = errors.New("subscription is not supported for the object")
 
-func (evt *SubscriptionEvent) ObjectName() (string, error) {
-	parts := strings.Split(evt.SubscriptionType, ".")
+func (evt SubscriptionEvent) ObjectName() (string, error) {
+	rawEvent, err := evt.RawEventName()
+	if err != nil {
+		return "", fmt.Errorf("error getting raw event name: %w", err)
+	}
+
+	parts := strings.Split(rawEvent, ".")
 	if !getRecordSupportedObjectsSet.Has(parts[0]) {
 		return "", fmt.Errorf("%w '%s'", errSubscriptionSupportedForObject, parts[0])
 	}
@@ -90,8 +98,41 @@ func (evt *SubscriptionEvent) ObjectName() (string, error) {
 	return parts[0], nil
 }
 
-func (evt *SubscriptionEvent) Workspace() (string, error) {
-	return strconv.Itoa(evt.PortalId), nil
+func (evt SubscriptionEvent) Workspace() (string, error) {
+	m := evt.asMap()
+
+	portalId, err := m.AsInt("portalId")
+	if err != nil {
+		return "", err
+	}
+
+	return strconv.Itoa(int(portalId)), nil
+}
+
+func (evt SubscriptionEvent) RecordId() (string, error) {
+	m := evt.asMap()
+
+	objId, err := m.AsInt("objectId")
+	if err != nil {
+		return "", err
+	}
+
+	return strconv.Itoa(int(objId)), nil
+}
+
+func (evt SubscriptionEvent) EventTimeStampNano() (int64, error) {
+	m := evt.asMap()
+
+	ts, err := m.AsInt("occurredAt")
+	if err != nil {
+		return 0, err
+	}
+
+	return time.UnixMilli(ts).UnixNano(), nil
+}
+
+func (evt SubscriptionEvent) asMap() common.StringMap {
+	return common.StringMap(evt)
 }
 
 /*
