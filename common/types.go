@@ -275,7 +275,7 @@ const (
 	SubscriptionEventTypeCreate            SubscriptionEventType = "create"
 	SubscriptionEventTypeUpdate            SubscriptionEventType = "update"
 	SubscriptionEventTypeDelete            SubscriptionEventType = "delete"
-	SubscriptionEventTypeUpdateAssociation SubscriptionEventType = "updateAssociation"
+	SubscriptionEventTypeAssociationUpdate SubscriptionEventType = "associationUpdate"
 	SubscriptionEventTypeOther             SubscriptionEventType = "other"
 )
 
