@@ -6,7 +6,7 @@ func init() {
 	SetInfo(EmailBison, ProviderInfo{
 		DisplayName: "EmailBison",
 		AuthType:    ApiKey,
-		BaseURL:     "https://{{.workspace}}.emailbison.com",
+		BaseURL:     "https://{{.workspace}}/api",
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Header,
 			Header: &ApiKeyOptsHeader{
