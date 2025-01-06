@@ -72,7 +72,7 @@ func (evt SubscriptionEvent) EventType() (common.SubscriptionEventType, error) {
 	case "deletion", "privacyDeletion":
 		return common.SubscriptionEventTypeDelete, nil
 	case "associationChange":
-		return common.SubscriptionEventTypeUpdatedAssociation, nil
+		return common.SubscriptionEventTypeUpdateAssociation, nil
 	default:
 		return common.SubscriptionEventTypeOther, nil
 	}
