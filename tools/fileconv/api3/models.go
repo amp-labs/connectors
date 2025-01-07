@@ -74,6 +74,7 @@ func (p PathItem) RetrieveSchemaOperation(
 	operationMethodFilter ReadOperationMethodFilter,
 	propertyFlattener PropertyFlattener,
 	mime string,
+	autoSelectArrayItem bool,
 ) (*Schema, bool, error) {
 	operation := p.selectOperation(operationName)
 	if operation == nil {
@@ -101,7 +102,10 @@ func (p PathItem) RetrieveSchemaOperation(
 		displayName = displayProcessor(displayName)
 	}
 
-	fields, responseKey, err := extractObjectFields(p.objectName, schema, locator, propertyFlattener)
+	fields, responseKey, err := extractObjectFields(p.objectName, schema, locator, propertyFlattener, autoSelectArrayItem)
+	if err == nil && len(fields) == 0 {
+		slog.Warn("not an array of objects", "object", p.objectName)
+	}
 
 	return &Schema{
 		ObjectName:  p.objectName,
@@ -130,54 +134,69 @@ func (p PathItem) selectOperation(operationName string) *openapi3.Operation {
 func extractObjectFields(
 	objectName string, schema *openapi3.Schema, locator ObjectArrayLocator,
 	propertyFlattener PropertyFlattener,
+	autoSelectArrayItem bool,
 ) (fields []string, location string, err error) {
 	switch getSchemaType(schema) {
 	case schemaTypeObject:
-		return extractFieldsFromArrayHolder(objectName, schema, locator, propertyFlattener)
+		return extractFieldsFromArrayHolder(objectName, schema, locator, propertyFlattener, autoSelectArrayItem)
 	case schemaTypeArray:
 		return extractFieldsFromArray(objectName, schema, propertyFlattener)
 	case schemaTypeUnknown:
 		// Even though OpenAPI doesn't explicitly state that the schema is of object type,
 		// Attempt to process it as such.
 		// It seems that some OpenAPI files are not that strict about such things. Ex: Pipedrive, Zendesk.
-		return extractFieldsFromArrayHolder(objectName, schema, locator, propertyFlattener)
+		return extractFieldsFromArrayHolder(objectName, schema, locator, propertyFlattener, autoSelectArrayItem)
 	default:
 		return nil, "", createUnprocessableObjectError(objectName)
 	}
 }
 
-// Response schema is an object. This object holds an array of items.
-// It is not obvious which field holds the list of items that we are interested in.
-// We cannot assume that object will always have one property of array type, therefore an ObjectArrayLocator is used
-// to determine what is the name of property with respect to the object name.
+type Array struct {
+	Name string
+	Item *openapi3.SchemaRef
+}
+
+// The response schema is an object that contains one or more arrays of items.
+// It is not immediately clear which field holds the list of items we are interested in.
+// Since the object may have multiple array properties, we cannot assume a single array
+// will always be present. To resolve this ambiguity, the ObjectArrayLocator callback
+// is used to select the appropriate array.
+//
+// Example:
+//
+//	{
+//	    "products": [...],
+//	    "prices": [...],
+//	    "links": {
+//	        "next": "url"
+//	    }
+//	}
+//
+// In this case, it is unclear whether to use the "products" or "prices" schema.
+// The ObjectArrayLocator will determine the correct field.
+//
+// Alternatively, if only one array is present and autoSelectArrayItem is enabled,
+// the selection will happen automatically without invoking the callback.
 func extractFieldsFromArrayHolder(
 	objectName string, schema *openapi3.Schema, locator ObjectArrayLocator,
 	propertyFlattener PropertyFlattener,
+	autoSelectArrayItem bool,
 ) (fields []string, location string, err error) {
-	definitions := []openapi3.Schemas{
-		schema.Properties,
-	}
-	for _, allOf := range schema.AllOf {
-		// item schema will likely be in composite schema
-		definitions = append(definitions, allOf.Value.Properties)
-	}
+	arrayOptions := extractPropertiesArrayType(schema)
 
-	for _, definition := range definitions {
-		for name, nestedSchema := range definition {
-			if items, ok := getItems(nestedSchema); ok {
-				// We are interested in the schema of array type.
-				// Those fields of an item are what we are after.
-				// Now ask the discriminator if this is the target List.
-				// It is possible that response has multiple arrays, that's why we are asking to resolve ambiguity.
-				if locator(objectName, name) {
-					fields, err = extractFields(objectName, propertyFlattener, items.Value)
-					if err != nil {
-						return nil, "", err
-					}
+	// Only one array property exists. We can conclude that this is the array item we are looking for.
+	// Otherwise, match object name with target field name.
+	approved := autoSelectArrayItem && len(arrayOptions) == 1
 
-					return fields, name, nil
-				}
+	for _, option := range arrayOptions {
+		// Verify with the discriminator whether this is the target "Array".
+		if approved || locator(objectName, option.Name) {
+			fields, err = extractFields(objectName, propertyFlattener, option.Item.Value)
+			if err != nil {
+				return nil, "", err
 			}
+
+			return fields, option.Name, nil
 		}
 	}
 
@@ -190,13 +209,40 @@ func extractFieldsFromArrayHolder(
 	return nil, "", createUnprocessableObjectError(objectName)
 }
 
+// The schema contains multiple properties that collectively form a normalized representation of the API response.
+// The procedure will identify and collect only the fields of array type.
+func extractPropertiesArrayType(schema *openapi3.Schema) []Array {
+	definitions := []openapi3.Schemas{
+		schema.Properties,
+	}
+	for _, allOf := range schema.AllOf {
+		// Item schema will likely be inside composite schema
+		definitions = append(definitions, allOf.Value.Properties)
+	}
+
+	arrays := make([]Array, 0)
+	// Collect properties that are of an array type.
+	for _, definition := range definitions {
+		for name, nestedSchema := range definition {
+			if itemsSchema, isArray := getItems(nestedSchema); isArray {
+				arrays = append(arrays, Array{
+					Name: name,
+					Item: itemsSchema,
+				})
+			}
+		}
+	}
+
+	return arrays
+}
+
 // Response schema is an array itself. Collect fields that describe single item.
 func extractFieldsFromArray(
 	objectName string, schema *openapi3.Schema,
 	propertyFlattener PropertyFlattener,
 ) (fields []string, location string, err error) {
-	items, ok := getItems(schema.NewRef())
-	if !ok {
+	items, isArray := getItems(schema.NewRef())
+	if !isArray {
 		return nil, "", createUnprocessableObjectError(objectName)
 	}
 
@@ -205,7 +251,7 @@ func extractFieldsFromArray(
 	return fields, "", err
 }
 
-func getItems(schema *openapi3.SchemaRef) (*openapi3.SchemaRef, bool) {
+func getItems(schema *openapi3.SchemaRef) (itemsSchema *openapi3.SchemaRef, isArray bool) {
 	if schema.Value == nil {
 		return nil, false
 	}
