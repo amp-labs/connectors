@@ -6,14 +6,14 @@ func init() {
 	SetInfo(EmailBison, ProviderInfo{
 		DisplayName: "EmailBison",
 		AuthType:    ApiKey,
-		BaseURL:     "https://dedi.emailbison.com",
+		// Every Bison customer can have a full custom domain.
+		BaseURL: "https://{{.workspace}}/api",
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Header,
 			Header: &ApiKeyOptsHeader{
 				Name:        "Authorization",
 				ValuePrefix: "Bearer ",
 			},
-			DocsURL: "https://dedi.emailbison.com/api/reference",
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
