@@ -2,6 +2,7 @@ package zohocrm
 
 import (
 	"context"
+	"strings"
 	"sync"
 
 	"github.com/amp-labs/connectors/common"
@@ -105,7 +106,7 @@ func parseMetadataResponse(resp *common.JSONHTTPResponse) (*common.ObjectMetadat
 	for _, f := range response.Fields {
 		apiField, ok := f[apiKeyField].(string)
 		if ok {
-			metadata.FieldsMap[apiField] = apiField
+			metadata.FieldsMap[strings.ToLower(apiField)] = strings.ToLower(apiField)
 		}
 	}
 
