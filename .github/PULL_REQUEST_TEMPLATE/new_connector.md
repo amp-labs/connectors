@@ -1,5 +1,3 @@
-Closes #<issue-number>
-
 # Configuration
 <Any special connector notes>
 
