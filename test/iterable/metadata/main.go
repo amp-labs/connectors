@@ -6,13 +6,14 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	connTest "github.com/amp-labs/connectors/test/instantly"
+	connTest "github.com/amp-labs/connectors/test/iterable"
 	"github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 )
 
-var objectName = "tags" // nolint: gochecknoglobals
+var objectName = "messageTypes"
 
 // We want to compare fields returned by read and schema properties provided by metadata methods.
 // Properties from read must all be present in schema definition.
@@ -24,13 +25,14 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := connTest.GetInstantlyConnector(ctx)
+	conn := connTest.GetIterableConnector(ctx)
 
 	response, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: objectName,
+		Fields:     connectors.Fields("name"),
 	})
 	if err != nil {
-		utils.Fail("error reading from Instantly", "error", err)
+		utils.Fail("error reading from Iterable", "error", err)
 	}
 
 	if response.Rows == 0 {
@@ -41,7 +43,7 @@ func main() {
 		objectName,
 	})
 	if err != nil {
-		utils.Fail("error listing metadata for Instantly", "error", err)
+		utils.Fail("error listing metadata for Iterable", "error", err)
 	}
 
 	slog.Info("Comparing")
