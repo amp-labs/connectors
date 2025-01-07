@@ -39,6 +39,9 @@ var productNameToObjectName = map[string]string{
 	"lists_and_tags": "labels",
 }
 
+// Apollo uses mismatched API object names and display names in the documentation.
+// We want to support both naming conventions. This function checks whether the provided objectName
+// is a display name, and if so, maps it to the corresponding API object name.
 func constructSupportedObjectName(obj string) string {
 	// we want to update the objectName if the provided objectName
 	// is the product name from the API docs to the supported objectName.
