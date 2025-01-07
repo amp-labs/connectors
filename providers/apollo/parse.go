@@ -52,6 +52,8 @@ func recordsWrapperFunc(obj string) common.RecordsFunc {
 func searchRecords(fld string) common.RecordsFunc {
 	var records []map[string]any
 
+	fld = constructSupportedObjectName(fld)
+
 	return func(node *ajson.Node) ([]map[string]any, error) {
 		result, err := jsonquery.New(node).Array(fld, true)
 		if err != nil {
