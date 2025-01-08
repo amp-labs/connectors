@@ -99,15 +99,38 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 }
 
 func constructWritePayload(payload any) (any, error) {
-	v, ok := payload.([]map[string]any)
+	data, ok := payload.([]map[string]any)
 	if !ok {
 		objectData, ok := payload.(map[string]any)
 		if !ok {
 			return nil, common.ErrBadRequest
 		}
 
+		// Capitalize words in the data fields for Creation/Updating
+		for k, data := range objectData {
+			fld := constructFieldNames([]string{k})
+			objectData[fld] = data
+			// Remove the previous field key in the map, as it's no longer required.
+			if fld != k {
+				delete(objectData, k)
+			}
+		}
+
 		return map[string]any{"data": []map[string]any{objectData}}, nil
 	}
 
-	return map[string]any{"data": v}, nil
+	// Range Over the Slice for every map, Capitalize them.
+	for _, v := range data {
+		// Capitalize words in the data fields for Creation/Updating
+		for k, d := range v {
+			fld := constructFieldNames([]string{k})
+			v[fld] = d
+			// Remove the previous field key in the map, as it's no longer required.
+			if fld != k {
+				delete(v, k)
+			}
+		}
+	}
+
+	return map[string]any{"data": data}, nil
 }
