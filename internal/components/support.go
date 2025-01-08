@@ -22,6 +22,7 @@ type EndpointSupport struct {
 }
 
 // Quick access to common support levels.
+// nolint:gochecknoglobals
 var (
 	// DeleteSupport
 	// TODO: For now, use bulkwrite.Delete as a stand-in for delete support.
@@ -52,33 +53,34 @@ func NewProviderEndpointSupport(mp map[common.ModuleID][]EndpointSupport) (*Prov
 	return &ProviderEndpointSupport{registry: mp}, nil
 }
 
+// nolint:cyclop
 func (pr *ProviderEndpointSupport) GetSupport(module common.ModuleID, path string) (*providers.Support, error) {
 	if endpoints, ok := pr.registry[module]; ok {
 		support := providers.Support{}
 
-		for _, es := range endpoints {
-			if es.glob == nil {
+		for _, esupport := range endpoints {
+			if esupport.glob == nil {
 				// We need to compile the glob.
-				g, err := glob.Compile(es.Endpoint)
+				g, err := glob.Compile(esupport.Endpoint)
 				if err != nil {
 					return nil, err
 				}
 
-				es.glob = g
+				esupport.glob = g
 			}
 
 			// There might be multiple endpoint matches, so add matched support to the final object.
-			if es.glob.Match(path) {
+			if esupport.glob.Match(path) {
 				// There's better ways to do this, but for now, this works.
-				support.Read = support.Read || es.Support.Read
-				support.Write = support.Write || es.Support.Write
-				support.Proxy = support.Proxy || es.Support.Proxy
-				support.Subscribe = support.Subscribe || es.Support.Subscribe
+				support.Read = support.Read || esupport.Support.Read
+				support.Write = support.Write || esupport.Support.Write
+				support.Proxy = support.Proxy || esupport.Support.Proxy
+				support.Subscribe = support.Subscribe || esupport.Support.Subscribe
 
-				support.BulkWrite.Delete = support.BulkWrite.Delete || es.Support.BulkWrite.Delete
-				support.BulkWrite.Insert = support.BulkWrite.Insert || es.Support.BulkWrite.Insert
-				support.BulkWrite.Update = support.BulkWrite.Update || es.Support.BulkWrite.Update
-				support.BulkWrite.Upsert = support.BulkWrite.Upsert || es.Support.BulkWrite.Upsert
+				support.BulkWrite.Delete = support.BulkWrite.Delete || esupport.Support.BulkWrite.Delete
+				support.BulkWrite.Insert = support.BulkWrite.Insert || esupport.Support.BulkWrite.Insert
+				support.BulkWrite.Update = support.BulkWrite.Update || esupport.Support.BulkWrite.Update
+				support.BulkWrite.Upsert = support.BulkWrite.Upsert || esupport.Support.BulkWrite.Upsert
 			}
 		}
 

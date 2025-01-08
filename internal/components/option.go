@@ -28,24 +28,6 @@ func WithResponseHandler(handler common.ResponseHandler) Option {
 	}
 }
 
-func WithMetadataStrategy(strategy MetadataStrategy) Option {
-	return func(c *ConnectorComponent) {
-		c.MetadataStrategy = strategy
-	}
-}
-
-func WithReadStrategy(strategy ReadStrategy) Option {
-	return func(c *ConnectorComponent) {
-		c.ReadStrategy = strategy
-	}
-}
-
-func WithWriteStrategy(strategy WriteStrategy) Option {
-	return func(c *ConnectorComponent) {
-		c.WriteStrategy = strategy
-	}
-}
-
 func WithProviderEndpointSupport(support ProviderEndpointSupport) Option {
 	return func(c *ConnectorComponent) {
 		c.ProviderEndpointSupport = support
