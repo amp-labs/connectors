@@ -65,28 +65,6 @@
             "warmup_details": "Warmup Details"
           }
         },
-        "leads": {
-          "displayName": "Leads",
-          "path": "/leads",
-          "docs": "https://api.smartlead.ai/reference/fetch-lead-by-email-address",
-          "fields": {
-            "id": "ID",
-            "first_name": "First name",
-            "last_name": "Last name",
-            "email": "Email",
-            "created_at": "Created at",
-            "phone_number": "Phone number",
-            "company_name": "Company name",
-            "website": "Website",
-            "location": "Location",
-            "custom_fields": "Custom fields",
-            "linkedin_profile": "Linkedin profile",
-            "company_url": "Company URL",
-            "is_unsubscribed": "Is unsubscribed",
-            "unsubscribed_client_id_map": "Unsubscribed client ID map",
-            "lead_campaign_data": "Lead campaign data"
-          }
-        },
         "client": {
           "displayName": "Clients",
           "path": "/client",
