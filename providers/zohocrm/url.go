@@ -58,19 +58,17 @@ func constructFieldNames(flds []string) string {
 }
 
 func capitalizeSegments(fld string) string {
+	// This maps fields to the unique available fields.
+	mappedObject, ok := uniqueFields[strings.ToLower(fld)]
+	if ok {
+		return mappedObject
+	}
+
 	// Most Fields are in the structure XXX_XXXX (Full_Name).
 	// thus we capitalize first letter of individual substrings.
 	// Split the field by `_` and capitalize the individual segments.
 	segments := strings.Split(fld, "_")
 	for idx, seg := range segments {
-		// A unique case is where the segment is "id" (ie: skype_id)
-		// This should be mapped to (Skype_ID) not (Skype_Id)
-		if strings.ToLower(seg) == "id" {
-			segments[idx] = "ID"
-
-			continue
-		}
-
 		seg = naming.CapitalizeFirstLetterEveryWord(seg)
 		// Update the segment to it's capitalized string.
 		segments[idx] = seg
