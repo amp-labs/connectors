@@ -1,0 +1,391 @@
+{
+  "results": [
+    {
+      "updatedAt": "2024-09-12T14:22:56.844Z",
+      "createdAt": "2020-06-30T15:57:37.277Z",
+      "name": "address",
+      "label": "Street Address",
+      "type": "string",
+      "fieldType": "text",
+      "description": "Contact's street address, including apartment or unit number.",
+      "groupName": "contactinformation",
+      "options": [],
+      "displayOrder": 6,
+      "calculated": false,
+      "externalOptions": false,
+      "hasUniqueValue": false,
+      "hidden": false,
+      "hubspotDefined": true,
+      "modificationMetadata": {
+        "archivable": true,
+        "readOnlyDefinition": true,
+        "readOnlyValue": false
+      },
+      "formField": true,
+      "dataSensitivity": "non_sensitive"
+    },
+    {
+      "updatedAt": "2024-09-12T14:20:30.071Z",
+      "createdAt": "2019-08-06T02:41:08.304Z",
+      "name": "mobilephone",
+      "label": "Mobile Phone Number",
+      "type": "string",
+      "fieldType": "phonenumber",
+      "description": "A contact's mobile phone number",
+      "groupName": "contactinformation",
+      "options": [],
+      "displayOrder": 4,
+      "calculated": false,
+      "externalOptions": false,
+      "hasUniqueValue": false,
+      "hidden": false,
+      "hubspotDefined": true,
+      "modificationMetadata": {
+        "archivable": true,
+        "readOnlyDefinition": true,
+        "readOnlyValue": false
+      },
+      "formField": true,
+      "dataSensitivity": "non_sensitive"
+    },
+    {
+      "updatedAt": "2024-09-05T17:14:04.747Z",
+      "createdAt": "2019-08-06T02:41:09.377Z",
+      "name": "associatedcompanyid",
+      "label": "Primary Associated Company ID",
+      "type": "number",
+      "fieldType": "number",
+      "description": "HubSpot defined ID of a contact's primary associated company in HubSpot.",
+      "groupName": "contactinformation",
+      "options": [],
+      "referencedObjectType": "COMPANY",
+      "displayOrder": 24,
+      "calculated": false,
+      "externalOptions": true,
+      "hasUniqueValue": false,
+      "hidden": true,
+      "hubspotDefined": true,
+      "modificationMetadata": {
+        "archivable": true,
+        "readOnlyDefinition": true,
+        "readOnlyValue": false
+      },
+      "formField": false,
+      "dataSensitivity": "non_sensitive"
+    },
+    {
+      "updatedAt": "2024-07-11T18:58:25.585Z",
+      "createdAt": "2024-07-11T18:58:25.585Z",
+      "name": "hs_associated_target_accounts",
+      "label": "Associated Target Accounts",
+      "type": "number",
+      "fieldType": "calculation_rollup",
+      "description": "The number of target accounts associated with this contact",
+      "groupName": "contactinformation",
+      "options": [],
+      "displayOrder": -1,
+      "calculated": false,
+      "externalOptions": false,
+      "hasUniqueValue": false,
+      "hidden": true,
+      "hubspotDefined": true,
+      "modificationMetadata": {
+        "archivable": true,
+        "readOnlyDefinition": false,
+        "readOnlyValue": true
+      },
+      "formField": false,
+      "dataSensitivity": "non_sensitive"
+    },
+    {
+      "updatedAt": "2023-05-01T20:02:33.973Z",
+      "createdAt": "2021-08-25T18:25:22.818Z",
+      "name": "hs_date_entered_customer",
+      "label": "Date entered 'Customer (Lifecycle Stage Pipeline)'",
+      "type": "datetime",
+      "fieldType": "calculation_read_time",
+      "description": "The date and time when the contact entered the 'Customer' stage, 'Lifecycle Stage Pipeline' pipeline",
+      "groupName": "contactinformation",
+      "options": [],
+      "displayOrder": -1,
+      "calculated": false,
+      "externalOptions": false,
+      "hasUniqueValue": false,
+      "hidden": true,
+      "hubspotDefined": true,
+      "modificationMetadata": {
+        "archivable": true,
+        "readOnlyDefinition": true,
+        "readOnlyValue": true
+      },
+      "formField": false,
+      "dataSensitivity": "non_sensitive"
+    },
+    {
+      "updatedAt": "2024-11-12T18:28:19.101Z",
+      "createdAt": "2020-06-30T15:57:36.876Z",
+      "name": "hubspotscore",
+      "label": "HubSpot Score",
+      "type": "number",
+      "fieldType": "calculation_score",
+      "description": "The number that shows qualification of contacts to sales readiness. It can be set in HubSpot's Lead Scoring app.",
+      "groupName": "sales_properties",
+      "options": [],
+      "displayOrder": 18,
+      "calculated": false,
+      "externalOptions": false,
+      "hasUniqueValue": false,
+      "hidden": false,
+      "hubspotDefined": true,
+      "modificationMetadata": {
+        "archivable": true,
+        "readOnlyDefinition": true,
+        "readOnlyValue": true
+      },
+      "formField": false,
+      "dataSensitivity": "non_sensitive"
+    },
+    {
+      "updatedAt": "2024-01-08T23:09:00.469Z",
+      "createdAt": "2024-01-08T23:09:00.469Z",
+      "name": "autogen",
+      "label": "autogen",
+      "type": "enumeration",
+      "fieldType": "booleancheckbox",
+      "description": "True if this contact was generated programatically for testing purposes",
+      "groupName": "contactinformation",
+      "options": [
+        {
+          "label": "Yes",
+          "value": "true",
+          "displayOrder": 0,
+          "hidden": false
+        },
+        {
+          "label": "No",
+          "value": "false",
+          "displayOrder": 1,
+          "hidden": false
+        }
+      ],
+      "createdUserId": "61526374",
+      "updatedUserId": "61526374",
+      "displayOrder": -1,
+      "calculated": false,
+      "externalOptions": false,
+      "archived": false,
+      "hasUniqueValue": false,
+      "hidden": false,
+      "showCurrencySymbol": false,
+      "modificationMetadata": {
+        "archivable": true,
+        "readOnlyDefinition": false,
+        "readOnlyValue": false
+      },
+      "formField": true,
+      "dataSensitivity": "non_sensitive"
+    },
+    {
+      "updatedAt": "2024-09-09T18:57:29.341Z",
+      "createdAt": "2024-05-29T12:52:00.227Z",
+      "name": "hs_contact_enrichment_opt_out",
+      "label": "Enrichment opt out",
+      "type": "bool",
+      "fieldType": "booleancheckbox",
+      "description": "",
+      "groupName": "contactinformation",
+      "options": [
+        {
+          "label": "Yes",
+          "value": "true",
+          "displayOrder": 0,
+          "hidden": false
+        },
+        {
+          "label": "No",
+          "value": "false",
+          "displayOrder": 1,
+          "hidden": false
+        }
+      ],
+      "displayOrder": -1,
+      "calculated": false,
+      "externalOptions": false,
+      "hasUniqueValue": false,
+      "hidden": false,
+      "hubspotDefined": true,
+      "modificationMetadata": {
+        "archivable": true,
+        "readOnlyDefinition": true,
+        "readOnlyValue": true
+      },
+      "formField": false,
+      "dataSensitivity": "non_sensitive"
+    },
+    {
+      "updatedAt": "2024-09-12T14:22:42.741Z",
+      "createdAt": "2020-06-30T15:57:37.144Z",
+      "name": "hs_content_membership_status",
+      "label": "Status",
+      "type": "enumeration",
+      "fieldType": "select",
+      "description": "Status of the contact's content membership.",
+      "groupName": "contact_activity",
+      "options": [
+        {
+          "label": "Active",
+          "value": "active",
+          "description": "",
+          "displayOrder": 0,
+          "hidden": false
+        },
+        {
+          "label": "Inactive",
+          "value": "inactive",
+          "description": "",
+          "displayOrder": 1,
+          "hidden": false
+        }
+      ],
+      "displayOrder": -1,
+      "calculated": false,
+      "externalOptions": false,
+      "hasUniqueValue": false,
+      "hidden": false,
+      "hubspotDefined": true,
+      "modificationMetadata": {
+        "archivable": true,
+        "readOnlyDefinition": true,
+        "readOnlyOptions": true,
+        "readOnlyValue": false
+      },
+      "formField": false,
+      "dataSensitivity": "non_sensitive"
+    },
+    {
+      "updatedAt": "2023-12-12T14:47:23.455Z",
+      "createdAt": "2021-06-22T17:52:16.232Z",
+      "name": "hs_all_assigned_business_unit_ids",
+      "label": "Business units",
+      "type": "enumeration",
+      "fieldType": "checkbox",
+      "description": "The business units this record is assigned to.",
+      "groupName": "contactinformation",
+      "options": [],
+      "displayOrder": -1,
+      "calculated": false,
+      "externalOptions": true,
+      "hasUniqueValue": false,
+      "hidden": false,
+      "hubspotDefined": true,
+      "modificationMetadata": {
+        "archivable": true,
+        "readOnlyDefinition": true,
+        "readOnlyValue": false
+      },
+      "formField": false,
+      "dataSensitivity": "non_sensitive"
+    },
+    {
+      "updatedAt": "2024-11-07T19:55:53.563Z",
+      "createdAt": "2020-06-30T15:57:37.203Z",
+      "name": "hs_predictivecontactscorebucket",
+      "label": "Lead Rating",
+      "type": "enumeration",
+      "fieldType": "radio",
+      "description": "The rating of this contact based on their predictive lead score",
+      "groupName": "contact_activity",
+      "options": [
+        {
+          "label": "1 Star",
+          "value": "bucket_1",
+          "description": "",
+          "displayOrder": 0,
+          "hidden": false
+        },
+        {
+          "label": "2 Stars",
+          "value": "bucket_2",
+          "description": "",
+          "displayOrder": 1,
+          "hidden": false
+        },
+        {
+          "label": "3 Stars",
+          "value": "bucket_3",
+          "description": "",
+          "displayOrder": 2,
+          "hidden": false
+        },
+        {
+          "label": "4 Stars",
+          "value": "bucket_4",
+          "description": "",
+          "displayOrder": 3,
+          "hidden": false
+        }
+      ],
+      "displayOrder": 999,
+      "calculated": false,
+      "externalOptions": false,
+      "hasUniqueValue": false,
+      "hidden": false,
+      "hubspotDefined": true,
+      "modificationMetadata": {
+        "archivable": true,
+        "readOnlyDefinition": true,
+        "readOnlyValue": true
+      },
+      "formField": false,
+      "dataSensitivity": "non_sensitive"
+    },
+    {
+      "updatedAt": "2024-11-06T20:48:27.060Z",
+      "createdAt": "2021-10-01T19:33:30.475Z",
+      "name": "hs_first_subscription_create_date",
+      "label": "First subscription create date",
+      "type": "datetime",
+      "fieldType": "calculation_rollup",
+      "description": "The create date of the first subscription by the contact.",
+      "groupName": "contactinformation",
+      "options": [],
+      "displayOrder": -1,
+      "calculated": false,
+      "externalOptions": false,
+      "hasUniqueValue": false,
+      "hidden": true,
+      "hubspotDefined": true,
+      "modificationMetadata": {
+        "archivable": true,
+        "readOnlyDefinition": true,
+        "readOnlyValue": true
+      },
+      "formField": false,
+      "dataSensitivity": "non_sensitive"
+    },
+    {
+      "updatedAt": "2024-05-06T18:44:18.865Z",
+      "createdAt": "2024-05-06T18:44:18.865Z",
+      "name": "hs_notes_last_activity",
+      "label": "Last Activity",
+      "type": "object_coordinates",
+      "fieldType": "text",
+      "description": "The coordinates of the last activity for a contact. This is set automatically by HubSpot based on user actions in the contact record.",
+      "groupName": "contactinformation",
+      "options": [],
+      "displayOrder": -1,
+      "calculated": false,
+      "externalOptions": false,
+      "hasUniqueValue": false,
+      "hidden": true,
+      "hubspotDefined": true,
+      "modificationMetadata": {
+        "archivable": true,
+        "readOnlyDefinition": true,
+        "readOnlyValue": true
+      },
+      "formField": false,
+      "dataSensitivity": "non_sensitive"
+    }
+  ]
+}
