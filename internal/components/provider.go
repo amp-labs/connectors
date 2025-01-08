@@ -1,8 +1,6 @@
 package components
 
 import (
-	"fmt"
-
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/providers"
@@ -15,7 +13,11 @@ type ProviderComponent struct {
 	module       common.ModuleID
 }
 
-func newProviderComponent(p providers.Provider, module common.ModuleID, metadata map[string]string) (*ProviderComponent, error) {
+func newProviderComponent(
+	p providers.Provider,
+	module common.ModuleID,
+	metadata map[string]string,
+) (*ProviderComponent, error) {
 	component := &ProviderComponent{provider: p}
 
 	// TODO: Use module to get provider info
@@ -31,7 +33,7 @@ func newProviderComponent(p providers.Provider, module common.ModuleID, metadata
 }
 
 func (p *ProviderComponent) String() string {
-	return fmt.Sprintf("%s.Connector", p.provider)
+	return p.provider + ".Connector"
 }
 
 func (p *ProviderComponent) Provider() providers.Provider {

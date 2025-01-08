@@ -34,7 +34,8 @@ var (
 	ErrMissingWorkspace  = errors.New("workspace not given")
 )
 
-// ValidateParameters sees which interfaces conn implements, calls the relevant validation methods
+// ValidateParameters sees which interfaces conn implements, calls the relevant validation methods.
+// nolint:cyclop
 func ValidateParameters(conn any, params Parameters) error {
 	var errs []error
 
@@ -87,6 +88,7 @@ func (RequireAuthenticatedClient) validateAuthenticatedClient(parameters Paramet
 	if parameters.AuthenticatedClient == nil {
 		return ErrMissingAuthClient
 	}
+
 	return nil
 }
 
@@ -102,6 +104,7 @@ func (RequireWorkspace) validateWorkspace(parameters Parameters) error {
 	if parameters.Workspace == "" {
 		return ErrMissingWorkspace
 	}
+
 	return nil
 }
 
@@ -141,5 +144,6 @@ func (RequireModule) validateModule(parameters Parameters) error {
 	if parameters.Module == "" {
 		return ErrMissingModule
 	}
+
 	return nil
 }

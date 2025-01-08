@@ -21,7 +21,7 @@ func NewClientComponent(
 		return nil, err
 	}
 
-	cc := &ClientComponent{
+	clientComponent := &ClientComponent{
 		JSON: &common.JSONHTTPClient{
 			HTTPClient: &common.HTTPClient{
 				Client: params.AuthenticatedClient,
@@ -51,10 +51,10 @@ func NewClientComponent(
 		ProviderComponent: *providerComponent,
 	}
 
-	cc.JSON.HTTPClient.Base = cc.ProviderInfo().BaseURL
-	cc.xml.HTTPClient.Base = cc.ProviderInfo().BaseURL
+	clientComponent.JSON.HTTPClient.Base = providerComponent.ProviderInfo().BaseURL
+	clientComponent.xml.HTTPClient.Base = providerComponent.ProviderInfo().BaseURL
 
-	return cc, nil
+	return clientComponent, nil
 }
 
 func errorFormats() *interpreter.FormatSwitch { return nil }

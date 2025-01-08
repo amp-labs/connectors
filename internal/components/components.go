@@ -13,12 +13,6 @@ type ConnectorComponent struct {
 	// are allowed on the connector.
 	ClientComponent
 	ProviderEndpointSupport
-
-	// These are the strategies that define how the connector interacts with the API for particular operations.
-	MetadataStrategy
-	ReadStrategy
-	WriteStrategy
-	DeleteStrategy
 }
 
 func Initialize[T any](
@@ -52,6 +46,6 @@ func Initialize[T any](
 	if err := common.ValidateParameters(conn, params); err != nil {
 		return nil, err
 	}
-	
+
 	return conn, nil
 }
