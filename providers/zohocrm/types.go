@@ -1,7 +1,7 @@
 package zohocrm
 
 // uniqueFields maps the fields to the uniquely required fields.
-var uniqueFields = map[string]string{
+var uniqueFields = map[string]string{ // nolint:gochecknoglobals
 	"SIC_Code":                 "SIC_Code",
 	"Skype_ID":                 "Skype_ID",
 	"Num_sent":                 "Num_sent",
