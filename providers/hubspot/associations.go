@@ -48,17 +48,17 @@ func (t *assocType) String() string {
 	return fmt.Sprintf("category=%s id=%d", t.Category, t.TypeId)
 }
 
-// getUniqueIds returns a slice of unsorted unique IDs from the given data.
-func getUniqueIds(data *[]common.ReadResultRow) []string {
-	uniqueIds := make(map[string]struct{})
+// getUniqueIDs returns a slice of unsorted unique IDs from the given data.
+func getUniqueIDs(data *[]common.ReadResultRow) []string {
+	uniqueIDs := make(map[string]struct{})
 
 	for _, row := range *data {
-		uniqueIds[row.Id] = struct{}{}
+		uniqueIDs[row.Id] = struct{}{}
 	}
 
-	var ids []string
+	ids := make([]string, 0, len(uniqueIDs))
 
-	for id := range uniqueIds {
+	for id := range uniqueIDs {
 		ids = append(ids, id)
 	}
 
@@ -66,8 +66,13 @@ func getUniqueIds(data *[]common.ReadResultRow) []string {
 }
 
 // fillAssociations fills the associations for the given object names and data.
-func (c *Connector) fillAssociations(ctx context.Context, fromObjName string, data *[]common.ReadResultRow, toAssociatedObjects []string) error {
-	ids := getUniqueIds(data)
+func (c *Connector) fillAssociations(
+	ctx context.Context,
+	fromObjName string,
+	data *[]common.ReadResultRow,
+	toAssociatedObjects []string,
+) error {
+	ids := getUniqueIDs(data)
 
 	for _, associatedObject := range toAssociatedObjects {
 		associations, err := c.getObjectAssociations(ctx, fromObjName, ids, associatedObject)
@@ -98,27 +103,27 @@ func (c *Connector) fillAssociations(ctx context.Context, fromObjName string, da
 func (c *Connector) getObjectAssociations(
 	ctx context.Context,
 	fromObject string,
-	fromIds []string,
+	fromIDs []string,
 	toObject string,
 ) (map[string][]common.Association, error) {
-	if len(fromIds) == 0 {
-		return nil, nil
+	if len(fromIDs) == 0 {
+		return map[string][]common.Association{}, nil
 	}
 
-	u, err := c.getURL(fmt.Sprintf("/crm/v4/associations/%s/%s/batch/read", fromObject, toObject))
+	hsUrl, err := c.getURL(fmt.Sprintf("/crm/v4/associations/%s/%s/batch/read", fromObject, toObject))
 	if err != nil {
 		return nil, err
 	}
 
 	var inputs assocInputs
 
-	for _, id := range fromIds {
+	for _, id := range fromIDs {
 		inputs.Inputs = append(inputs.Inputs, assocId{Id: id})
 	}
 
 	// Do one big batch request to get all associations.
 	// See https://developers.hubspot.com/docs/guides/api/crm/associations/associations-v4#retrieve-associated-records
-	rsp, err := c.Client.Post(ctx, u, &inputs)
+	rsp, err := c.Client.Post(ctx, hsUrl, &inputs)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching HubSpot associations: %w", err)
 	}

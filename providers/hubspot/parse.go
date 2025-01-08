@@ -117,7 +117,11 @@ func getRecords(node *ajson.Node) ([]map[string]interface{}, error) {
 }
 
 // getMarshalledData accepts a list of records and returns a list of structured data ([]ReadResultRow).
-func (c *Connector) getMarshalledData(ctx context.Context, objName string, associatedObjects []string) func(records []map[string]interface{}, fields []string) ([]common.ReadResultRow, error) {
+func (c *Connector) getMarshalledData(
+	ctx context.Context,
+	objName string,
+	associatedObjects []string,
+) func(records []map[string]interface{}, fields []string) ([]common.ReadResultRow, error) {
 	return func(records []map[string]interface{}, fields []string) ([]common.ReadResultRow, error) {
 		data := make([]common.ReadResultRow, len(records))
 
