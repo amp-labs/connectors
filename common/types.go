@@ -186,10 +186,24 @@ type ReadResultRow struct {
 	// Fields is a map of requested provider field names to values.
 	// All field names are in lowercase (eg: accountid, name, billingcityid)
 	Fields map[string]any `json:"fields"`
+	// Associations is a map of associated objects to the main object.
+	// The key is the associated object name, and the value is an array of associated object ids.
+	Associations map[string][]Association `json:"associations,omitempty"`
 	// Raw is the raw JSON response from the provider.
 	Raw map[string]any `json:"raw"`
 	// RecordId is the ID of the record. Currently only populated for hubspot GetRecord and GetRecordsWithId function
 	Id string `json:"id,omitempty"`
+}
+
+// Association is a struct that represents an association between two objects.
+// If you think of an association as a directed edge between two nodes, then
+// the ObjectID is the target node, and the AssociationType is the type of edge.
+// The source node is represented by ReadResultRow.
+type Association struct {
+	// ObjectID is the ID of the associated object.
+	ObjectID string `json:"objectId"`
+	// AssociationType is the type of association.
+	AssociationType string `json:"associationType,omitempty"`
 }
 
 // WriteResult is what's returned from writing data via the Write call.

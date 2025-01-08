@@ -43,7 +43,7 @@ func (c *Connector) Search(ctx context.Context, config SearchParams) (*common.Re
 		rsp,
 		getRecords,
 		getNextRecordsAfter,
-		getMarshalledData,
+		c.getMarshalledData(ctx, config.ObjectName, config.AssociatedObjects),
 		config.Fields,
 	)
 }
