@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"mime"
 	"net/http"
 	"strings"
@@ -113,6 +114,15 @@ func (j *JSONHTTPClient) Delete(ctx context.Context, url string, headers ...Head
 	}
 
 	return parseJSONResponse(res, body)
+}
+
+func ParseJSONResponse(res *http.Response) (*JSONHTTPResponse, error) {
+	b, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read response body: %w", err)
+	}
+
+	return parseJSONResponse(res, b)
 }
 
 // parseJSONResponse parses the given HTTP response and returns a JSONHTTPResponse.
