@@ -8,6 +8,8 @@ import (
 	"github.com/amp-labs/connectors/common"
 )
 
+// Type definitions for HubSpot associations API.
+
 type assocInputs struct {
 	Inputs []assocId `json:"inputs"`
 }
@@ -37,6 +39,16 @@ type assocOutput struct {
 	Results []assocResult `json:"results"`
 }
 
+// String returns a string representation of the association type.
+func (t *assocType) String() string {
+	if t.Label != nil && len(*t.Label) > 0 {
+		return fmt.Sprintf("category=%s id=%d label=%s", t.Category, t.TypeId, *t.Label)
+	}
+
+	return fmt.Sprintf("category=%s id=%d", t.Category, t.TypeId)
+}
+
+// getUniqueIds returns a slice of unsorted unique IDs from the given data.
 func getUniqueIds(data *[]common.ReadResultRow) []string {
 	uniqueIds := make(map[string]struct{})
 
@@ -53,13 +65,18 @@ func getUniqueIds(data *[]common.ReadResultRow) []string {
 	return ids
 }
 
-func (c *Connector) fillAssociations(ctx context.Context, objName string, data *[]common.ReadResultRow, associatedObjects []string) error {
+// fillAssociations fills the associations for the given object names and data.
+func (c *Connector) fillAssociations(ctx context.Context, fromObjName string, data *[]common.ReadResultRow, toAssociatedObjects []string) error {
 	ids := getUniqueIds(data)
 
-	for _, associatedObject := range associatedObjects {
-		associations, err := c.getObjectAssociations(ctx, objName, ids, associatedObject)
+	for _, associatedObject := range toAssociatedObjects {
+		associations, err := c.getObjectAssociations(ctx, fromObjName, ids, associatedObject)
 		if err != nil {
 			return err
+		}
+
+		if len(associations) == 0 {
+			continue
 		}
 
 		for i, row := range *data {
@@ -76,7 +93,14 @@ func (c *Connector) fillAssociations(ctx context.Context, objName string, data *
 	return nil
 }
 
-func (c *Connector) getObjectAssociations(ctx context.Context, fromObject string, fromIds []string, toObject string) (map[string][]common.Association, error) {
+// getObjectAssociations returns the associations for the given object names and IDs. It returns
+// a mapping of object IDs to their associations.
+func (c *Connector) getObjectAssociations(
+	ctx context.Context,
+	fromObject string,
+	fromIds []string,
+	toObject string,
+) (map[string][]common.Association, error) {
 	if len(fromIds) == 0 {
 		return nil, nil
 	}
@@ -92,6 +116,8 @@ func (c *Connector) getObjectAssociations(ctx context.Context, fromObject string
 		inputs.Inputs = append(inputs.Inputs, assocId{Id: id})
 	}
 
+	// Do one big batch request to get all associations.
+	// See https://developers.hubspot.com/docs/guides/api/crm/associations/associations-v4#retrieve-associated-records
 	rsp, err := c.Client.Post(ctx, u, &inputs)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching HubSpot associations: %w", err)
@@ -111,7 +137,7 @@ func (c *Connector) getObjectAssociations(ctx context.Context, fromObject string
 			for _, t := range assoc.AssociationTypes {
 				assocs = append(assocs, common.Association{
 					ObjectID:        strconv.FormatInt(assoc.ToObjectId, 10),
-					AssociationType: getAssociationType(t),
+					AssociationType: t.String(),
 				})
 			}
 		}
@@ -122,12 +148,4 @@ func (c *Connector) getObjectAssociations(ctx context.Context, fromObject string
 	}
 
 	return out, nil
-}
-
-func getAssociationType(t assocType) string {
-	if t.Label != nil && len(*t.Label) > 0 {
-		return fmt.Sprintf("category=%s id=%d label=%s", t.Category, t.TypeId, *t.Label)
-	}
-
-	return fmt.Sprintf("category=%s id=%d", t.Category, t.TypeId)
 }
