@@ -31,36 +31,33 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 
 // Zoho field names typically start with a capital letter.
 // For fields with multiple words, underscores are used to separate them.
-// This function converts field names into a format that the API can understand.
+// This function converts field names into a format that the API accepts.
 func constructFieldNames(flds []string) string {
 	cpdFlds := make([]string, len(flds))
 
 	for idx, fld := range flds {
 		// id is used and attached to the field parameter as is.
-		if fld == "id" {
+		if strings.ToLower(fld) == "id" {
 			cpdFlds[idx] = fld
 
 			continue
 		}
 
-		// fields ending with __s need to be capitalized the first letter
-		// of every other word only.
+		// Some fields end with `__s`, and the `s` should not be capitalized,
+		// so we strip it first and then reattach it after capitalizing all the other words
 		if strings.HasSuffix(fld, "__s") {
-			fld = capitalizeFields(fld[:len(fld)-3])
+			fld = capitalizeSegments(fld[:len(fld)-3])
 			fld += "__s"
 			cpdFlds[idx] = fld
-
-			continue
+		} else {
+			cpdFlds[idx] = capitalizeSegments(fld)
 		}
-
-		cpdFld := capitalizeFields(fld)
-		cpdFlds[idx] = cpdFld
 	}
 
 	return strings.Join(cpdFlds, ",")
 }
 
-func capitalizeFields(fld string) string {
+func capitalizeSegments(fld string) string {
 	// Most Fields are in the structure XXX_XXXX (Full_Name).
 	// thus we capitalize first letter of individual substrings.
 	// Split the field by `_` and capitalize the individual segments.
@@ -68,7 +65,7 @@ func capitalizeFields(fld string) string {
 	for idx, seg := range segments {
 		// A unique case is where the segment is "id" (ie: skype_id)
 		// This should be mapped to (Skype_ID) not (Skype_Id)
-		if seg == "id" {
+		if strings.ToLower(seg) == "id" {
 			segments[idx] = "ID"
 
 			continue

@@ -66,7 +66,7 @@ func readDeals(ctx context.Context, conn *zohocrm.Connector) error {
 	config := connectors.ReadParams{
 		ObjectName: "deals",
 		Since:      time.Now().Add(-720 * time.Hour),
-		Fields:     connectors.Fields("account_name", "closing_date", "id"),
+		Fields:     connectors.Fields("Account_Name", "Closing_Date", "id"),
 	}
 
 	result, err := conn.Read(ctx, config)
