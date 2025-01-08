@@ -110,7 +110,7 @@ func (c *Connector) getObjectAssociations(
 		return map[string][]common.Association{}, nil
 	}
 
-	hsUrl, err := c.getURL(fmt.Sprintf("/crm/v4/associations/%s/%s/batch/read", fromObject, toObject))
+	hsURL, err := c.getURL(fmt.Sprintf("/crm/v4/associations/%s/%s/batch/read", fromObject, toObject))
 	if err != nil {
 		return nil, err
 	}
@@ -123,7 +123,7 @@ func (c *Connector) getObjectAssociations(
 
 	// Do one big batch request to get all associations.
 	// See https://developers.hubspot.com/docs/guides/api/crm/associations/associations-v4#retrieve-associated-records
-	rsp, err := c.Client.Post(ctx, hsUrl, &inputs)
+	rsp, err := c.Client.Post(ctx, hsURL, &inputs)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching HubSpot associations: %w", err)
 	}
