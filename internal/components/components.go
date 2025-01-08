@@ -14,6 +14,12 @@ type ConnectorComponent struct {
 	// are allowed on the connector.
 	ClientComponent
 	ProviderEndpointSupport
+
+	// These are the strategies that define how the connector interacts with the API for particular operations.
+	MetadataStrategy
+	ReadStrategy
+	WriteStrategy
+	DeleteStrategy
 }
 
 // InitializeConnector initializes a connector T with the given provider, parameters, and constructor.
