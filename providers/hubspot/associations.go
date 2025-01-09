@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/logging"
 )
 
 // Type definitions for HubSpot associations API.
@@ -126,6 +127,8 @@ func (c *Connector) getObjectAssociations( //nolint:cyclop
 		var httpErr *common.HTTPStatusError
 
 		if errors.As(err, &httpErr) && httpErr.HTTPStatus == 404 {
+			logging.Logger(ctx).Warn("no associations found", "fromObject", fromObject, "toObject", toObject)
+
 			return map[string][]common.Association{}, nil
 		} else {
 			return nil, fmt.Errorf("error fetching HubSpot associations: %w", err)
