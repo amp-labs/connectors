@@ -45,8 +45,9 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 			SortBy: []SortBy{
 				BuildSort(ObjectFieldHsObjectId, SortDirectionAsc),
 			},
-			NextPage: config.NextPage,
-			Fields:   config.Fields,
+			NextPage:          config.NextPage,
+			Fields:            config.Fields,
+			AssociatedObjects: config.AssociatedObjects,
 		}
 
 		return c.Search(ctx, searchParams)
@@ -79,7 +80,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		rsp,
 		getRecords,
 		getNextRecordsURL,
-		getMarshalledData,
+		c.getMarshalledData(ctx, config.ObjectName, config.AssociatedObjects),
 		config.Fields,
 	)
 }
