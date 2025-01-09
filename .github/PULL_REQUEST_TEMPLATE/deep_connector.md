@@ -1,5 +1,5 @@
 # Installation 
-MailMonkey installation image:
+MailMonkey installation screenshot:
 ![image](https://github.com/user-attachments/assets/ebc027fb-b82b-4505-ac71-f2b61209fa4d)
 
 # Read
