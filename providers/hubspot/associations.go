@@ -111,10 +111,7 @@ func (c *Connector) getObjectAssociations( //nolint:cyclop
 		return map[string][]common.Association{}, nil
 	}
 
-	hsURL, err := c.getURL(fmt.Sprintf("/crm/v4/associations/%s/%s/batch/read", fromObject, toObject))
-	if err != nil {
-		return nil, err
-	}
+	hsURL := c.BaseURL + "/" + fmt.Sprintf("crm/v4/associations/%s/%s/batch/read", fromObject, toObject)
 
 	var inputs assocInputs
 
