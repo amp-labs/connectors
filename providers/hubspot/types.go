@@ -16,6 +16,8 @@ type SearchParams struct {
 	FilterGroups []FilterGroup // optional
 	// Fields is the list of fields to return in the result.
 	Fields datautils.Set[string] // optional
+	// AssociatedObjects is a list of associated objects to fetch along with the main object.
+	AssociatedObjects []string // optional
 }
 
 func (p SearchParams) ValidateParams() error {
