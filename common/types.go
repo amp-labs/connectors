@@ -256,11 +256,50 @@ type ListObjectMetadataResult struct {
 }
 
 type ObjectMetadata struct {
-	// Provider's display name for the object
+	// Provider's display name for the object.
 	DisplayName string
 
-	// FieldsMap is a map of field names to field display names
+	// Fields is a map of field names to FieldMetadata.
+	Fields map[string]FieldMetadata
+
+	// FieldsMap is a map of field names to field display names.
+	// Deprecated: this map includes only display names.
+	// Refer to Fields for extended description of field properties.
 	FieldsMap map[string]string
+}
+
+// NewObjectMetadata constructs ObjectMetadata.
+// This will automatically infer fields map from field metadata map. This construct exists for such convenience.
+func NewObjectMetadata(displayName string, fields map[string]FieldMetadata) *ObjectMetadata {
+	return &ObjectMetadata{
+		DisplayName: displayName,
+		Fields:      fields,
+		FieldsMap:   inferDeprecatedFieldsMap(fields),
+	}
+}
+
+type FieldMetadata struct {
+	// DisplayName is a human-readable field name.
+	DisplayName string
+
+	// ValueType is a set of Ampersand defined field types.
+	ValueType ValueType
+
+	// ProviderType is the raw type, a term used by provider API.
+	// Each is mapped to an Ampersand ValueType.
+	ProviderType string
+
+	// ReadOnly would indicate if field can be modified or only read.
+	ReadOnly bool
+
+	// Values is a list of possible values for this field.
+	// It is applicable only if the type is either singleSelect or multiSelect, otherwise slice is nil.
+	Values []FieldValue
+}
+
+type FieldValue struct {
+	Value        string
+	DisplayValue string
 }
 
 type PostAuthInfo struct {
@@ -297,4 +336,14 @@ type WebhookVerificationParameters struct {
 	URL          string
 	ClientSecret string
 	Method       string
+}
+
+func inferDeprecatedFieldsMap(fields map[string]FieldMetadata) map[string]string {
+	fieldsMap := make(map[string]string)
+
+	for name, field := range fields {
+		fieldsMap[name] = field.DisplayName
+	}
+
+	return fieldsMap
 }
