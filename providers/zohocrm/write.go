@@ -106,31 +106,27 @@ func constructWritePayload(payload any) (any, error) {
 			return nil, common.ErrBadRequest
 		}
 
-		// Capitalize words in the data fields for Creation/Updating
-		for k, data := range objectData {
-			fld := constructFieldNames([]string{k})
-			objectData[fld] = data
-			// Remove the previous field key in the map, as it's no longer required.
-			if fld != k {
-				delete(objectData, k)
-			}
-		}
+		capitalizeKeys(objectData)
 
 		return map[string]any{"data": []map[string]any{objectData}}, nil
 	}
 
 	// Range Over the Slice for every map, Capitalize them.
 	for _, v := range data {
-		// Capitalize words in the data fields for Creation/Updating
-		for k, d := range v {
-			fld := constructFieldNames([]string{k})
-			v[fld] = d
-			// Remove the previous field key in the map, as it's no longer required.
-			if fld != k {
-				delete(v, k)
-			}
-		}
+		capitalizeKeys(v)
 	}
 
 	return map[string]any{"data": data}, nil
+}
+
+func capitalizeKeys(data map[string]any) {
+	// Capitalize words in the data fields for Creation/Updating
+	for k, d := range data {
+		fld := constructFieldNames([]string{k})
+		data[fld] = d
+		// Remove the previous field key in the map, as it's no longer required.
+		if fld != k {
+			delete(data, k)
+		}
+	}
 }
