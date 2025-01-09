@@ -68,6 +68,7 @@ func getUniqueIDs(data *[]common.ReadResultRow) []string {
 }
 
 // fillAssociations fills the associations for the given object names and data.
+// Note that the data is modified in place.
 func (c *Connector) fillAssociations(
 	ctx context.Context,
 	fromObjName string,
@@ -148,7 +149,7 @@ func (c *Connector) getObjectAssociations( //nolint:cyclop
 		for _, assoc := range result.To {
 			for _, t := range assoc.AssociationTypes {
 				assocs = append(assocs, common.Association{
-					ObjectID:        strconv.FormatInt(assoc.ToObjectId, 10),
+					ObjectId:        strconv.FormatInt(assoc.ToObjectId, 10),
 					AssociationType: t.String(),
 				})
 			}

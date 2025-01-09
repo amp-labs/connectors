@@ -201,7 +201,7 @@ type ReadResultRow struct {
 // The source node is represented by ReadResultRow.
 type Association struct {
 	// ObjectID is the ID of the associated object.
-	ObjectID string `json:"objectId"`
+	ObjectId string `json:"objectId"`
 	// AssociationType is the type of association.
 	AssociationType string `json:"associationType,omitempty"`
 }
