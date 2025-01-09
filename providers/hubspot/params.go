@@ -54,6 +54,6 @@ func WithModule(module common.ModuleID) Option {
 	}
 }
 
-func requiresFiltering(config common.ReadParams) bool {
+func isIncrementalRead(config common.ReadParams) bool {
 	return !config.Since.IsZero()
 }

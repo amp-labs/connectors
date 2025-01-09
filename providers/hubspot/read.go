@@ -8,6 +8,12 @@ import (
 	"github.com/amp-labs/connectors/common/logging"
 )
 
+var (
+	// maxHubspotReadQueryLength is the maximum length of a query that should be sent to Hubspot. This is around 2-3K,
+	// but we're leaving some room for error.
+	maxHubspotReadQueryLength = 1
+)
+
 // Read reads data from Hubspot. If Since is set, it will use the
 // Search endpoint instead to filter records, but it will be
 // limited to a maximum of 10,000 records. This is a limit of the
@@ -26,28 +32,11 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		err error
 	)
 
-	// If filtering is required, then we have to use the search endpoint.
-	// The Search endpoint has a 10K record limit. In case this limit is reached,
-	// the sorting allows the caller to continue in another call by offsetting
-	// until the ID of the last record that was successfully fetched.
-	if requiresFiltering(config) {
-		searchParams := SearchParams{
-			ObjectName: config.ObjectName,
-			FilterGroups: []FilterGroup{
-				{
-					Filters: []Filter{
-						BuildLastModifiedFilterGroup(&config),
-						// Add more filters to AND them together
-					},
-					// Add more filter groups to OR them together
-				},
-			},
-			SortBy: []SortBy{
-				BuildSort(ObjectFieldHsObjectId, SortDirectionAsc),
-			},
-			NextPage: config.NextPage,
-			Fields:   config.Fields,
-		}
+	// If filtering is required, then we have to use the search endpoint. This is also the case when the query is
+	// too long. The Search endpoint has a 10K record limit. In case this limit is reached, the sorting allows the
+	// caller to continue in another call by offsetting until the ID of the last record that was successfully fetched.
+	if isIncrementalRead(config) || queryTooLong(config) {
+		searchParams := buildSearchParams(config)
 
 		return c.Search(ctx, searchParams)
 	}
@@ -104,4 +93,33 @@ func makeQueryValues(config common.ReadParams) []string {
 	}
 
 	return out
+}
+
+func buildSearchParams(config common.ReadParams) SearchParams {
+	searchParams := SearchParams{
+		ObjectName: config.ObjectName,
+		SortBy: []SortBy{
+			BuildSort(ObjectFieldHsObjectId, SortDirectionAsc),
+		},
+		NextPage: config.NextPage,
+		Fields:   config.Fields,
+	}
+
+	if isIncrementalRead(config) {
+		searchParams.FilterGroups = []FilterGroup{
+			{
+				Filters: []Filter{
+					BuildLastModifiedFilterGroup(&config),
+					// Add more filters to AND them together
+				},
+				// Add more filter groups to OR them together
+			},
+		}
+	}
+
+	return searchParams
+}
+
+func queryTooLong(config common.ReadParams) bool {
+	return len(strings.Join(config.Fields.List(), ",")) > maxHubspotReadQueryLength
 }
