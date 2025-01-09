@@ -126,7 +126,7 @@ func (c *Connector) getObjectAssociations( //nolint:cyclop
 	// See https://developers.hubspot.com/docs/guides/api/crm/associations/associations-v4#retrieve-associated-records
 	rsp, err := c.Client.Post(ctx, hsURL, &inputs)
 	if err != nil {
-		var httpErr common.HTTPStatusError
+		var httpErr *common.HTTPStatusError
 
 		if errors.As(err, &httpErr) && httpErr.HTTPStatus == 404 {
 			return map[string][]common.Association{}, nil
