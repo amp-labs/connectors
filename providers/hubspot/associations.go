@@ -2,6 +2,7 @@ package hubspot
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strconv"
 
@@ -125,7 +126,13 @@ func (c *Connector) getObjectAssociations(
 	// See https://developers.hubspot.com/docs/guides/api/crm/associations/associations-v4#retrieve-associated-records
 	rsp, err := c.Client.Post(ctx, hsURL, &inputs)
 	if err != nil {
-		return nil, fmt.Errorf("error fetching HubSpot associations: %w", err)
+		var httpErr common.HTTPStatusError
+
+		if errors.As(err, &httpErr) && httpErr.HTTPStatus == 404 {
+			return map[string][]common.Association{}, nil
+		} else {
+			return nil, fmt.Errorf("error fetching HubSpot associations: %w", err)
+		}
 	}
 
 	output, err := common.UnmarshalJSON[assocOutput](rsp)
