@@ -131,7 +131,7 @@ func (c *Connector) getObjectAssociations( //nolint:cyclop
 		if errors.As(err, &httpErr) && httpErr.HTTPStatus == 404 {
 			return map[string][]common.Association{}, nil
 		} else {
-			return nil, fmt.Errorf("error fetching HubSpot associations: %w", err)
+			return nil, fmt.Errorf("error fetching HubSpot associations: %w (%T)", err, err)
 		}
 	}
 
