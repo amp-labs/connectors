@@ -10,8 +10,8 @@ import (
 
 var (
 	// maxHubspotReadQueryLength is the maximum length of a query that should be sent to Hubspot. This is around 2-3K,
-	// but we're leaving some room for error.
-	maxHubspotReadQueryLength = 1
+	// but we're leaving room for error.
+	maxHubspotReadQueryLength = 1800
 )
 
 // Read reads data from Hubspot. If Since is set, it will use the
