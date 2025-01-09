@@ -101,7 +101,7 @@ func (c *Connector) fillAssociations(
 
 // getObjectAssociations returns the associations for the given object names and IDs. It returns
 // a mapping of object IDs to their associations.
-func (c *Connector) getObjectAssociations(
+func (c *Connector) getObjectAssociations( //nolint:cyclop
 	ctx context.Context,
 	fromObject string,
 	fromIDs []string,
