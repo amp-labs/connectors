@@ -1,0 +1,16 @@
+{
+  "data": [
+    {
+      "code": "SUCCESS",
+      "details": {
+        "Modified_Time": "2025-01-10T13:09:14+03:00",
+        "Modified_By": { "name": "Joseph Karage", "id": "6493490000000486001" },
+        "Created_Time": "2025-01-10T13:09:14+03:00",
+        "id": "6493490000001504003",
+        "Created_By": { "name": "Joseph Karage", "id": "6493490000000486001" }
+      },
+      "message": "record added",
+      "status": "success"
+    }
+  ]
+}
