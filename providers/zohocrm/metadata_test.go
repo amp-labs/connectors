@@ -37,7 +37,8 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				}, {
 					If:   mockcond.QueryParam("module", "Arsenal"),
 					Then: mockserver.Response(http.StatusBadRequest, arsenalResponse),
-				}}}.Server(),
+				}},
+			}.Server(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
@@ -76,7 +77,8 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					},
 				},
 				Errors: map[string]error{
-					"Arsenal": common.NewHTTPStatusError(http.StatusBadRequest, fmt.Errorf("%w: %s", common.ErrCaller, string(arsenalResponse))),
+					"Arsenal": common.NewHTTPStatusError(http.StatusBadRequest,
+						fmt.Errorf("%w: %s", common.ErrCaller, string(arsenalResponse))),
 				},
 			},
 			ExpectedErrs: nil,
@@ -93,7 +95,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			})
 		})
 	}
-
 }
 
 func constructTestConnector(serverURL string) (*Connector, error) {

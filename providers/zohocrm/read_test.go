@@ -38,7 +38,8 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.ResponseString(http.StatusBadRequest, string(unsupportedResponse)),
 			}.Server(),
-			ExpectedErrs: []error{common.NewHTTPStatusError(http.StatusBadRequest, fmt.Errorf("%w: %s", common.ErrCaller, string(unsupportedResponse)))},
+			ExpectedErrs: []error{common.NewHTTPStatusError(http.StatusBadRequest,
+				fmt.Errorf("%w: %s", common.ErrCaller, string(unsupportedResponse)))},
 		},
 		{
 			Name:  "Zero records response",
@@ -51,8 +52,11 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			ExpectedErrs: nil,
 		},
 		{
-			Name:  "Successfully Read Contacts",
-			Input: common.ReadParams{ObjectName: "contacts", Fields: connectors.Fields("Assistant", "Created_By", "Full_Name", "id", "Created_Time")},
+			Name: "Successfully Read Contacts",
+			Input: common.ReadParams{
+				ObjectName: "contacts",
+				Fields:     connectors.Fields("Assistant", "Created_By", "Full_Name", "id", "Created_Time"),
+			},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.ResponseString(http.StatusOK, string(contactsResponse)),

@@ -2,7 +2,6 @@ package zohocrm
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
@@ -77,7 +76,6 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 
 	resp, err := write(ctx, url.String(), body)
 	if err != nil {
-		fmt.Println("ERR: ", err)
 		return nil, err
 	}
 

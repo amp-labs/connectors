@@ -48,10 +48,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				If:    mockcond.MethodPOST(),
 				Then:  mockserver.Response(http.StatusBadRequest, unsupportedResponse),
 			}.Server(),
-			ExpectedErrs: []error{common.NewHTTPStatusError(http.StatusBadRequest, fmt.Errorf("%w: %s", common.ErrCaller, string(unsupportedResponse)))},
+			ExpectedErrs: []error{common.NewHTTPStatusError(http.StatusBadRequest,
+				fmt.Errorf("%w: %s", common.ErrCaller, string(unsupportedResponse)))},
 		},
 		{
-			Name: "Succesfully Create a Lead",
+			Name: "Successfully Create a Lead",
 			Input: common.WriteParams{ObjectName: "leads", RecordData: map[string]any{
 				"Lead_Source": "Employee Referral",
 				"Company":     "Ampersand",
@@ -72,9 +73,13 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name: "Successfully update a contact",
-			Input: common.WriteParams{ObjectName: "contacts", RecordId: "7e5209b8-bd4e-41d9-bbcd-2f9bab7d4030", RecordData: map[string]any{
-				"Name": "John Snow",
-			}},
+			Input: common.WriteParams{
+				ObjectName: "contacts",
+				RecordId:   "7e5209b8-bd4e-41d9-bbcd-2f9bab7d4030",
+				RecordData: map[string]any{
+					"Name": "John Snow",
+				},
+			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If:    mockcond.MethodPUT(),
@@ -89,7 +94,6 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 
 	for _, tt := range tests {
 		// nolint:varnamelen
-		tt := tt
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
