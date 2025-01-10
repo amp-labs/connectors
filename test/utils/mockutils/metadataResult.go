@@ -56,6 +56,30 @@ func (metadataResultComparator) SubsetFields(actual, expected *common.ListObject
 	return true
 }
 
+func (metadataResultComparator) SubsetErrors(actual, expected *common.ListObjectMetadataResult) bool {
+	for objectName, expectedError := range expected.Errors {
+		actualError, ok := actual.Errors[objectName]
+		if !ok {
+			return false
+		}
+
+		// The tester may specify ExpectedSubsetErrors with a list of errors to be present inside actualError.
+		var expectedErrors ExpectedSubsetErrors
+		if !errors.As(expectedError, &expectedErrors) {
+			// Single expected error.
+			expectedErrors = ExpectedSubsetErrors{expectedError}
+		}
+
+		if !errorsAre(actualError, expectedErrors) {
+			// Subset of errors is not found under actual error for current object name.
+			// No need to check other object names.
+			return false
+		}
+	}
+
+	return true
+}
+
 // ValidateReadConformsMetadata this will check that all the fields that were returned by `Read` method
 // are a subset of ObjectMetadata. It is possible that Read will not return all the possible fields
 // which is fine and not a cause for an error.
