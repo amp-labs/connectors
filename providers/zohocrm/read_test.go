@@ -1,7 +1,7 @@
 package zohocrm
 
 import (
-	"fmt"
+	"errors"
 	"net/http"
 	"testing"
 
@@ -36,17 +36,19 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Input: common.ReadParams{ObjectName: "arsenal", Fields: connectors.Fields("assistant")},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.ResponseString(http.StatusBadRequest, string(unsupportedResponse)),
+				Always: mockserver.Response(http.StatusBadRequest, unsupportedResponse),
 			}.Server(),
-			ExpectedErrs: []error{common.NewHTTPStatusError(http.StatusBadRequest,
-				fmt.Errorf("%w: %s", common.ErrCaller, string(unsupportedResponse)))},
+			ExpectedErrs: []error{
+				common.ErrCaller,
+				errors.New(string(unsupportedResponse)), //nolint:err113
+			},
 		},
 		{
 			Name:  "Zero records response",
 			Input: common.ReadParams{ObjectName: "calls", Fields: connectors.Fields("assistant")},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.ResponseString(http.StatusOK, string(callsResponse)),
+				Always: mockserver.Response(http.StatusOK, callsResponse),
 			}.Server(),
 			Expected:     &common.ReadResult{Rows: 0, Data: []common.ReadResultRow{}, Done: true},
 			ExpectedErrs: nil,
@@ -59,7 +61,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.ResponseString(http.StatusOK, string(contactsResponse)),
+				Always: mockserver.Response(http.StatusOK, contactsResponse),
 			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 1,

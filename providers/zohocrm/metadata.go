@@ -41,8 +41,6 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 
 	for _, object := range objectNames {
 		go func(object string) {
-			object = naming.CapitalizeFirstLetterEveryWord(object)
-
 			metadata, err := c.getMetadata(ctx, object)
 			if err != nil {
 				mu.Lock()

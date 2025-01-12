@@ -1,7 +1,7 @@
 package zohocrm
 
 import (
-	"fmt"
+	"errors"
 	"net/http"
 	"testing"
 
@@ -48,8 +48,10 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				If:    mockcond.MethodPOST(),
 				Then:  mockserver.Response(http.StatusBadRequest, unsupportedResponse),
 			}.Server(),
-			ExpectedErrs: []error{common.NewHTTPStatusError(http.StatusBadRequest,
-				fmt.Errorf("%w: %s", common.ErrCaller, string(unsupportedResponse)))},
+			ExpectedErrs: []error{
+				common.ErrCaller,
+				errors.New(string(unsupportedResponse)), //nolint:err113
+			},
 		},
 		{
 			Name: "Successfully Create a Lead",

@@ -39,10 +39,9 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					Then: mockserver.Response(http.StatusBadRequest, arsenalResponse),
 				}},
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
-					"Deals": {
+					"deals": {
 						DisplayName: "Deals",
 						FieldsMap: map[string]string{
 							"Account_Name":           "Account_Name",
@@ -77,7 +76,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					},
 				},
 				Errors: map[string]error{
-					"Arsenal": common.NewHTTPStatusError(http.StatusBadRequest,
+					"arsenal": common.NewHTTPStatusError(http.StatusBadRequest,
 						fmt.Errorf("%w: %s", common.ErrCaller, string(arsenalResponse))),
 				},
 			},
