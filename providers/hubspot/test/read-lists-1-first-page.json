@@ -1,0 +1,42 @@
+{
+  "offset": 2,
+  "hasMore": true,
+  "lists": [
+    {
+      "listId": "3",
+      "listVersion": 1,
+      "createdAt": "2025-01-08T20:00:31.738Z",
+      "updatedAt": "2025-01-08T20:00:31.738Z",
+      "filtersUpdatedAt": "2025-01-08T20:00:31.738Z",
+      "processingStatus": "COMPLETE",
+      "createdById": "61526375",
+      "updatedById": "61526375",
+      "processingType": "DYNAMIC",
+      "objectTypeId": "0-1",
+      "name": "Test List",
+      "additionalProperties": {
+        "hs_list_size": "4993",
+        "hs_list_reference_count": "0",
+        "hs_last_record_added_at": "1736775815261"
+      }
+    },
+    {
+      "listId": "4",
+      "listVersion": 1,
+      "createdAt": "2025-01-10T21:09:02.026Z",
+      "updatedAt": "2025-01-10T21:09:02.026Z",
+      "filtersUpdatedAt": "2025-01-10T21:09:02.026Z",
+      "processingStatus": "COMPLETE",
+      "createdById": "61427708",
+      "updatedById": "61427708",
+      "processingType": "SNAPSHOT",
+      "objectTypeId": "0-2",
+      "name": "Test static company list",
+      "additionalProperties": {
+        "hs_list_size": "3",
+        "hs_list_reference_count": "0"
+      }
+    }
+  ],
+  "total": 3
+}

@@ -21,6 +21,16 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
+	if crmObjectsOutsideTheObjectAPI.Has(config.ObjectName) {
+		// Objects outside ObjectAPI have different endpoint while both are part of CRM module.
+		// For instance Lists are fully returned only via Search endpoint.
+		return c.SearchCRM(ctx, SearchCRMParams{
+			ObjectName: config.ObjectName,
+			Fields:     config.Fields,
+			NextPage:   config.NextPage,
+		})
+	}
+
 	// If filtering is required, then we have to use the search endpoint.
 	// The Search endpoint has a 10K record limit. In case this limit is reached,
 	// the sorting allows the caller to continue in another call by offsetting
