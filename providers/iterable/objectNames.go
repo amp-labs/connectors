@@ -16,10 +16,6 @@ var paginatedObjects = datautils.NewSet( //nolint:gochecknoglobals
 	objectNameJourneys,
 )
 
-var incrementalReadObjects = datautils.NewSet( //nolint:gochecknoglobals
-	objectNameTemplates,
-)
-
 // While reading is done against one object, the writing occurs by template type.
 var templateWriteObjects = datautils.NewSet( //nolint:gochecknoglobals
 	"templatesEmail",
