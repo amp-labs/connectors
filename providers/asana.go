@@ -7,7 +7,7 @@ func init() {
 	SetInfo(Asana, ProviderInfo{
 		DisplayName: "Asana",
 		AuthType:    Oauth2,
-		BaseURL:     "https://app.asana.com/api",
+		BaseURL:     "https://app.asana.com",
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722163967/media/Asana_1722163967.jpg",
