@@ -6,7 +6,6 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
-	"github.com/amp-labs/connectors/internal/datautils"
 )
 
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
@@ -50,11 +49,6 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 
 	if paginatedObjects.Has(config.ObjectName) {
 		url.WithQueryParam("pageSize", strconv.Itoa(DefaultPageSize))
-	}
-
-	if incrementalReadObjects.Has(config.ObjectName) && !config.Since.IsZero() {
-		sinceValue := datautils.Time.FormatRFC3339inUTC(config.Since)
-		url.WithQueryParam("startDateTime", sinceValue)
 	}
 
 	return url, nil
