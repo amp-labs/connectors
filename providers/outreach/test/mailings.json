@@ -1,0 +1,66 @@
+{
+  "data": [
+    {
+      "type": "mailing",
+      "id": 1,
+      "attributes": {
+        "bodyHtml": "\u003chtml\u003e\u003cbody\u003e\u003cp\u003eHere Goes your HTML email\u003c/p\u003e\u003c/body\u003e\u003e\u003c/html\u003e",
+        "bodyText": "Here Goes your HTML email\u003e",
+        "clickCount": 0,
+        "createdAt": "2024-07-26T06:27:17.000Z",
+        "followUpTaskType": "string",
+        "mailboxAddress": "willy@withampersand.com",
+        "mailingType": "sequence",
+        "errorreason": null,
+        "openCount": 0,
+        "overrideSafetySettings": false,
+        "references": [],
+        "retryCount": 0,
+        "scheduledAt": "2019-08-24T14:15:22.000Z",
+        "state": "drafted",
+        "stateChangedAt": "2024-07-26T06:27:17.000Z",
+        "subject": "My Email Subject",
+        "trackLinks": true,
+        "trackOpens": true,
+        "updatedAt": "2024-08-02T22:28:21.000Z"
+      },
+      "relationships": {
+        "attachments": {
+          "data": [],
+          "links": {
+            "related": "https://api.outreach.io/api/v2/attachments?filter%5Bmailing%5D%5Bid%5D=1"
+          },
+          "meta": { "count": 0 }
+        },
+        "calendar": { "data": null },
+        "followUpSequence": { "data": null },
+        "mailbox": { "data": { "type": "mailbox", "id": 1 } },
+        "opportunity": { "data": null },
+        "prospect": { "data": { "type": "prospect", "id": 1 } },
+        "recipients": {
+          "data": [],
+          "links": {
+            "related": "https://api.outreach.io/api/v2/recipients?filter%5Bmailing%5D%5Bid%5D=1"
+          },
+          "meta": { "count": 0 }
+        },
+        "schedule": { "data": null },
+        "sequence": { "data": null },
+        "sequenceState": { "data": null },
+        "sequenceStep": { "data": null },
+        "task": { "data": null },
+        "tasks": {
+          "data": [],
+          "links": {
+            "related": "https://api.outreach.io/api/v2/tasks?filter%5Bmailing%5D%5Bid%5D=1"
+          },
+          "meta": { "count": 0 }
+        },
+        "template": { "data": null },
+        "user": { "data": { "type": "user", "id": 1 } }
+      },
+      "links": { "self": "https://api.outreach.io/api/v2/mailings/1" }
+    }
+  ],
+  "meta": { "count": 3, "count_truncated": false }
+}
