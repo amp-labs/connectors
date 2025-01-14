@@ -1,0 +1,19 @@
+{
+  "data": {
+    "type": "emailAddress",
+    "id": 5,
+    "attributes": {
+      "bouncedAt": null,
+      "createdAt": "2024-04-28T09:07:09.000Z",
+      "email": "groverstiedemann@lehner.io",
+      "emailType": null,
+      "order": 6,
+      "status": null,
+      "statusChangedAt": null,
+      "unsubscribedAt": null,
+      "updatedAt": "2025-01-13T12:34:39.000Z"
+    },
+    "relationships": { "prospect": { "data": null } },
+    "links": { "self": "https://api.outreach.io/api/v2/emailAddresses/5" }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "errors": [
+    {
+      "id": "routeNotFound",
+      "title": "Route Not Found",
+      "detail": "The request path does not match any known resource endpoints."
+    }
+  ]
+}
