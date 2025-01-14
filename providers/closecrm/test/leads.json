@@ -1,0 +1,314 @@
+{
+  "data": [
+    {
+      "id": "lead_YwEcogm9mopaw41KPrrAHOEgzErqwg4MT4Ii4tLp1Ua",
+      "url": "https://thedundermifflin.com",
+      "html_url": "https://app.close.com/lead/lead_YwEcogm9mopaw41KPrrAHOEgzErqwg4MT4Ii4tLp1Ua/",
+      "updated_by": null,
+      "contacts": [
+        {
+          "id": "cont_Cf4oIarVuMdMGGSesibzjJTaZJTBfsTPm6ylbMwZEyp",
+          "organization_id": "orga_Bnvb4C6ur74cnEX825rjjDDusTIIpQcFX2qusZcjGr5",
+          "lead_id": "lead_YwEcogm9mopaw41KPrrAHOEgzErqwg4MT4Ii4tLp1Ua",
+          "created_by": "user_4N6K1GpqhrjELJKSIMos60M78s2x86Qy6jAiUht5tmh",
+          "updated_by": null,
+          "date_created": "2025-01-14T10:44:06.154000+00:00",
+          "date_updated": "2025-01-14T10:44:06.154000+00:00",
+          "name": "Michael Scott",
+          "title": "Regional Manager",
+          "display_name": "Michael Scott",
+          "integration_links": [
+            {
+              "name": "LinkedIn Search",
+              "url": "https://www.linkedin.com/search/results/people/?keywords=Michael%20Scott"
+            }
+          ],
+          "urls": [],
+          "emails": [
+            {
+              "type": "office",
+              "email": "michael.scott@dundermifflin.com",
+              "is_unsubscribed": false
+            }
+          ],
+          "phones": [
+            {
+              "type": "office",
+              "phone": "+12484345508",
+              "phone_formatted": "+1 248-434-5508",
+              "country": "US"
+            }
+          ],
+          "custom.cf_lVTzZFmBtD5KNSID39CQNXre0eRM4biI9E7TDOhBqx7": "https://www.linkedin.com/in/michael-scott-24113720b"
+        },
+        {
+          "id": "cont_EKG2IEpubZJvMEkJsuox2qHZpghNVH0el9Z49VEGZuh",
+          "organization_id": "orga_Bnvb4C6ur74cnEX825rjjDDusTIIpQcFX2qusZcjGr5",
+          "lead_id": "lead_YwEcogm9mopaw41KPrrAHOEgzErqwg4MT4Ii4tLp1Ua",
+          "created_by": "user_4N6K1GpqhrjELJKSIMos60M78s2x86Qy6jAiUht5tmh",
+          "updated_by": null,
+          "date_created": "2025-01-14T10:44:06.204000+00:00",
+          "date_updated": "2025-01-14T10:44:06.204000+00:00",
+          "name": "Dwight Schrute",
+          "title": "Assistant to the Regional Manager",
+          "display_name": "Dwight Schrute",
+          "integration_links": [
+            {
+              "name": "LinkedIn Search",
+              "url": "https://www.linkedin.com/search/results/people/?keywords=Dwight%20Schrute"
+            }
+          ],
+          "urls": [],
+          "emails": [
+            {
+              "type": "office",
+              "email": "dwight.schrute@dundermifflin.com",
+              "is_unsubscribed": false
+            }
+          ],
+          "phones": [
+            {
+              "type": "office",
+              "phone": "+16317918378",
+              "phone_formatted": "+1 631-791-8378",
+              "country": "US"
+            }
+          ],
+          "custom.cf_ZMyfPSa24jCoi8KgYZQ9ifj7Gp6Pic7v5SknLFxaP0B": "No",
+          "custom.cf_lVTzZFmBtD5KNSID39CQNXre0eRM4biI9E7TDOhBqx7": "https://www.linkedin.com/in/dwight-schrute-657971187"
+        },
+        {
+          "id": "cont_uB5T4WIO3cAViSCOkNgr4fd1IWSzDQUenyeF0dINKB6",
+          "organization_id": "orga_Bnvb4C6ur74cnEX825rjjDDusTIIpQcFX2qusZcjGr5",
+          "lead_id": "lead_YwEcogm9mopaw41KPrrAHOEgzErqwg4MT4Ii4tLp1Ua",
+          "created_by": "user_4N6K1GpqhrjELJKSIMos60M78s2x86Qy6jAiUht5tmh",
+          "updated_by": null,
+          "date_created": "2025-01-14T10:44:06.257000+00:00",
+          "date_updated": "2025-01-14T10:44:06.257000+00:00",
+          "name": "Jim Halpert",
+          "title": "Sales Rep",
+          "display_name": "Jim Halpert",
+          "integration_links": [
+            {
+              "name": "LinkedIn Search",
+              "url": "https://www.linkedin.com/search/results/people/?keywords=Jim%20Halpert"
+            }
+          ],
+          "urls": [],
+          "emails": [
+            {
+              "type": "office",
+              "email": "james.halpert@dundermifflin.com",
+              "is_unsubscribed": false
+            }
+          ],
+          "phones": [
+            {
+              "type": "office",
+              "phone": "+18004377950",
+              "phone_formatted": "+1 800-437-7950",
+              "country": "US"
+            }
+          ],
+          "custom.cf_lVTzZFmBtD5KNSID39CQNXre0eRM4biI9E7TDOhBqx7": "https://www.linkedin.com/in/jim-halpert-574b6584"
+        },
+        {
+          "id": "cont_5VmBpqNx4Rsvz0QXCQJZkzddqcR5ynRrnaCfKHNscIE",
+          "organization_id": "orga_Bnvb4C6ur74cnEX825rjjDDusTIIpQcFX2qusZcjGr5",
+          "lead_id": "lead_YwEcogm9mopaw41KPrrAHOEgzErqwg4MT4Ii4tLp1Ua",
+          "created_by": "user_4N6K1GpqhrjELJKSIMos60M78s2x86Qy6jAiUht5tmh",
+          "updated_by": null,
+          "date_created": "2025-01-14T10:44:06.327000+00:00",
+          "date_updated": "2025-01-14T10:44:06.327000+00:00",
+          "name": "Angela Martin",
+          "title": "Head of Accounting",
+          "display_name": "Angela Martin",
+          "integration_links": [
+            {
+              "name": "LinkedIn Search",
+              "url": "https://www.linkedin.com/search/results/people/?keywords=Angela%20Martin"
+            }
+          ],
+          "urls": [],
+          "emails": [
+            {
+              "type": "office",
+              "email": "angela.marting@dundermifflin.com",
+              "is_unsubscribed": false
+            }
+          ],
+          "phones": [],
+          "custom.cf_ZMyfPSa24jCoi8KgYZQ9ifj7Gp6Pic7v5SknLFxaP0B": "Yes"
+        },
+        {
+          "id": "cont_4rATvZoPzUONkTEdYUqcFZOEl6hgLQsDkuyV0D4SlSS",
+          "organization_id": "orga_Bnvb4C6ur74cnEX825rjjDDusTIIpQcFX2qusZcjGr5",
+          "lead_id": "lead_YwEcogm9mopaw41KPrrAHOEgzErqwg4MT4Ii4tLp1Ua",
+          "created_by": "user_4N6K1GpqhrjELJKSIMos60M78s2x86Qy6jAiUht5tmh",
+          "updated_by": null,
+          "date_created": "2025-01-14T10:44:06.378000+00:00",
+          "date_updated": "2025-01-14T10:44:06.378000+00:00",
+          "name": "Toby Flenderson",
+          "title": "HR Rep (or the worst human being)",
+          "display_name": "Toby Flenderson",
+          "integration_links": [
+            {
+              "name": "LinkedIn Search",
+              "url": "https://www.linkedin.com/search/results/people/?keywords=Toby%20Flenderson"
+            }
+          ],
+          "urls": [],
+          "emails": [
+            {
+              "type": "office",
+              "email": "toby.flenderson@dundermifflin.com",
+              "is_unsubscribed": false
+            }
+          ],
+          "phones": [],
+          "custom.cf_ZMyfPSa24jCoi8KgYZQ9ifj7Gp6Pic7v5SknLFxaP0B": "Yes"
+        }
+      ],
+      "name": "Dunder Mifflin (Example)",
+      "integration_links": [
+        {
+          "name": "Google Search",
+          "url": "https://google.com/search?q=Dunder%20Mifflin%20%28Example%29"
+        }
+      ],
+      "date_created": "2025-01-09T10:43:46.561000+00:00",
+      "created_by_name": "Josep Karage",
+      "display_name": "Dunder Mifflin (Example)",
+      "tasks": [
+        {
+          "deduplication_key": null,
+          "id": "task_xiarcKu4M5S7d8Uvpp88OcCjkRivBJfHX2wZk86Vz1Y",
+          "lead_name": "Dunder Mifflin (Example)",
+          "text": "Sync with Dwight regarding intro call.",
+          "view": "inbox",
+          "updated_by": null,
+          "assigned_to_name": "Josep Karage",
+          "object_type": null,
+          "date_created": "2025-01-14T10:44:07.056000+00:00",
+          "contact_name": null,
+          "lead_id": "lead_YwEcogm9mopaw41KPrrAHOEgzErqwg4MT4Ii4tLp1Ua",
+          "created_by_name": "Josep Karage",
+          "date": "2025-01-14",
+          "is_primary_lead_notification": true,
+          "created_by": "user_4N6K1GpqhrjELJKSIMos60M78s2x86Qy6jAiUht5tmh",
+          "assigned_to": "user_4N6K1GpqhrjELJKSIMos60M78s2x86Qy6jAiUht5tmh",
+          "is_complete": false,
+          "due_date": "2025-01-14",
+          "updated_by_name": null,
+          "contact_id": null,
+          "date_updated": "2025-01-14T10:44:07.056000+00:00",
+          "_type": "lead",
+          "is_dateless": null,
+          "organization_id": "orga_Bnvb4C6ur74cnEX825rjjDDusTIIpQcFX2qusZcjGr5",
+          "object_id": null
+        },
+        {
+          "deduplication_key": null,
+          "id": "task_hWV2Q5DYmslNEatMQwyMVNDfipqlMyzHzrTroyPyaUn",
+          "lead_name": "Dunder Mifflin (Example)",
+          "text": "Follow up with Micheal re: contract.",
+          "view": "future",
+          "updated_by": null,
+          "assigned_to_name": "Josep Karage",
+          "object_type": null,
+          "date_created": "2025-01-14T10:44:07.085000+00:00",
+          "contact_name": null,
+          "lead_id": "lead_YwEcogm9mopaw41KPrrAHOEgzErqwg4MT4Ii4tLp1Ua",
+          "created_by_name": "Josep Karage",
+          "date": "2025-01-18",
+          "is_primary_lead_notification": true,
+          "created_by": "user_4N6K1GpqhrjELJKSIMos60M78s2x86Qy6jAiUht5tmh",
+          "assigned_to": "user_4N6K1GpqhrjELJKSIMos60M78s2x86Qy6jAiUht5tmh",
+          "is_complete": false,
+          "due_date": "2025-01-18",
+          "updated_by_name": null,
+          "contact_id": null,
+          "date_updated": "2025-01-14T10:44:07.085000+00:00",
+          "_type": "lead",
+          "is_dateless": null,
+          "organization_id": "orga_Bnvb4C6ur74cnEX825rjjDDusTIIpQcFX2qusZcjGr5",
+          "object_id": null
+        }
+      ],
+      "created_by": "user_4N6K1GpqhrjELJKSIMos60M78s2x86Qy6jAiUht5tmh",
+      "status_id": "stat_CLQUCdIGd5DtoGzW5gkKEQ4flCHhnxbdExGEbobVi9k",
+      "status_label": "Interested",
+      "updated_by_name": null,
+      "date_updated": "2025-01-14T10:44:08.749000+00:00",
+      "addresses": [
+        {
+          "label": "mailing",
+          "address_1": "1725 Slough Avenue",
+          "address_2": null,
+          "city": "Scranton",
+          "state": "PA",
+          "zipcode": "18501",
+          "country": "US"
+        }
+      ],
+      "custom": {
+        "Company Size": 1250,
+        "Current Vendor/Software": "Stark Industries",
+        "Industry": "Manufacturing",
+        "Lead Owner": "user_4N6K1GpqhrjELJKSIMos60M78s2x86Qy6jAiUht5tmh",
+        "Socials": "https://www.linkedin.com/company/wayne-enterprises-ltd"
+      },
+      "opportunities": [
+        {
+          "id": "oppo_uvXjv7sYsnSeOwqNwwpWjgVg79EGc5gNqpezS3Y3nJS",
+          "organization_id": "orga_Bnvb4C6ur74cnEX825rjjDDusTIIpQcFX2qusZcjGr5",
+          "lead_id": "lead_YwEcogm9mopaw41KPrrAHOEgzErqwg4MT4Ii4tLp1Ua",
+          "contact_id": "cont_Cf4oIarVuMdMGGSesibzjJTaZJTBfsTPm6ylbMwZEyp",
+          "annualized_expected_value": 6000000,
+          "annualized_value": 7500000,
+          "attachments": [],
+          "confidence": 80,
+          "date_lost": null,
+          "date_won": "2025-01-16",
+          "expected_value": 6000000,
+          "note": "Easiest sale of my life. Truly world's best boss.",
+          "value": 7500000,
+          "value_period": "one_time",
+          "user_id": "user_4N6K1GpqhrjELJKSIMos60M78s2x86Qy6jAiUht5tmh",
+          "user_name": "Josep Karage",
+          "date_created": "2025-01-11T11:43:46.561000+00:00",
+          "date_updated": "2025-01-14T10:44:06.761000+00:00",
+          "created_by": "user_4N6K1GpqhrjELJKSIMos60M78s2x86Qy6jAiUht5tmh",
+          "created_by_name": "Josep Karage",
+          "updated_by": null,
+          "updated_by_name": null,
+          "status_id": "stat_0lCyjQFvsc5vNwU8O5HyskiH0CO2VFOnfz9dPXDiD73",
+          "status_label": "Proposal Sent",
+          "status_type": "active",
+          "status_display_name": "Proposal Sent",
+          "pipeline_id": "pipe_5aEtQnO3TSkoQcgx2lLgxE",
+          "pipeline_name": "Sales",
+          "value_currency": "USD",
+          "value_formatted": "$75,000",
+          "lead_name": "Dunder Mifflin (Example)",
+          "contact_name": "Michael Scott",
+          "integration_links": [],
+          "custom.cf_7lOXTjMUJzVTBfBfL5wuL2IsSZk3cGl3nFfviWDvaUF": "Pro",
+          "custom.cf_jYR1bIa0uP3m1BQHqIIY4qFRz6GG74ALQXoNzikk34G": [
+            "Subscription"
+          ],
+          "custom.cf_V5d4eOAbG10oftkxPMuwO4zlSGA7eVK1ro7GHhY4fI1": 15
+        }
+      ],
+      "organization_id": "orga_Bnvb4C6ur74cnEX825rjjDDusTIIpQcFX2qusZcjGr5",
+      "description": "Limitless paper, in a paperless world. Dunder Mifflin is Pennsylvania's premier paper supplier to the northeast corridor of the United States.",
+      "custom.cf_VrDASliEOprzQEnsi88KGAEVjGUOB00ea12dpa63hlr": 1250,
+      "custom.cf_uOfms5LQFL39IzS0XDhqaTuxsrCyTVTlbzvANKFQ8Lu": "Stark Industries",
+      "custom.cf_X4BeCHhnzEzwqZoZoYi5l80jcA99DsC0YXf1B8wYWYn": "Manufacturing",
+      "custom.cf_9RsqbFDfApgIOJsiSCwRuKw5gdVibt6H7qEvn4nQDjN": "user_4N6K1GpqhrjELJKSIMos60M78s2x86Qy6jAiUht5tmh",
+      "custom.cf_fEpuyPj0nNEvtYFotU9xHwNvcMe7vJJ22S6H094WoxY": "https://www.linkedin.com/company/wayne-enterprises-ltd"
+    }
+  ],
+  "has_more": true,
+  "total_results": 5
+}
