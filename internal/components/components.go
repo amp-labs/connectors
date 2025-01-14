@@ -6,7 +6,8 @@ import (
 	"github.com/amp-labs/connectors/providers"
 )
 
-type Setup[T any] func(component *ConnectorComponent) (*T, error)
+// ConnectorConstructor is a function that creates a new instance of a connector T, given a ConnectorComponent.
+type ConnectorConstructor[T any] func(component *ConnectorComponent) (*T, error)
 
 type ConnectorComponent struct {
 	// These make up the base behavior of the connector, defining how a connector talks to an API, and what operations
@@ -15,10 +16,11 @@ type ConnectorComponent struct {
 	ProviderEndpointSupport
 }
 
-func Initialize[T any](
+// InitializeConnector initializes a connector T with the given provider, parameters, and constructor.
+func InitializeConnector[T any](
 	provider providers.Provider,
 	params common.Parameters,
-	setup Setup[T],
+	constructor ConnectorConstructor[T],
 	opts ...Option,
 ) (conn *T, err error) {
 	defer goutils.PanicRecovery(func(cause error) {
@@ -26,26 +28,37 @@ func Initialize[T any](
 		conn = nil
 	})
 
+	connectorComponent, err := initializeConnectorComponent(nil, provider, params)
+	if err != nil {
+		return nil, err
+	}
+
+	// Apply options *before* the constructor, so that constructors can override if needed
+	for _, opt := range opts {
+		opt(connectorComponent)
+	}
+
+	conn, err = constructor(connectorComponent)
+	if err != nil {
+		return nil, err
+	}
+
+	return conn, nil
+}
+
+func initializeConnectorComponent(
+	conn any,
+	provider providers.Provider,
+	params common.Parameters,
+) (*ConnectorComponent, error) {
+	if err := common.ValidateParameters(conn, params); err != nil {
+		return nil, err
+	}
+
 	clientComponent, err := NewClientComponent(provider, params)
 	if err != nil {
 		return nil, err
 	}
 
-	connectorComponent := &ConnectorComponent{ClientComponent: *clientComponent}
-
-	// Apply options *before* the setup, so that setups can override if needed
-	for _, opt := range opts {
-		opt(connectorComponent)
-	}
-
-	conn, err = setup(connectorComponent)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := common.ValidateParameters(conn, params); err != nil {
-		return nil, err
-	}
-
-	return conn, nil
+	return &ConnectorComponent{ClientComponent: *clientComponent}, nil
 }
