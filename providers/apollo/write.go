@@ -63,7 +63,7 @@ func constructWriteResult(body *ajson.Node, objName string) (*common.WriteResult
 		return nil, err
 	}
 
-	data, err := jsonquery.Convertor.ObjectToMap(body)
+	data, err := jsonquery.Convertor.ObjectToMap(respObject)
 	if err != nil {
 		return nil, err
 	}
