@@ -1,0 +1,38 @@
+{
+  "data": [
+    {
+      "type": "event",
+      "id": 1,
+      "attributes": {
+        "body": null,
+        "createdAt": "2024-02-16T19:30:18.000Z",
+        "eventAt": "2024-02-16T19:30:18.000Z",
+        "externalUrl": null,
+        "mailingId": null,
+        "name": "user_created",
+        "payload": null,
+        "requestCity": null,
+        "requestDevice": null,
+        "requestHost": null,
+        "requestProxied": false,
+        "requestRegion": null
+      },
+      "relationships": {
+        "account": { "data": null },
+        "call": { "data": null },
+        "mailing": { "data": null },
+        "opportunity": { "data": null },
+        "plugin": { "data": null },
+        "prospect": { "data": null },
+        "task": { "data": null },
+        "user": { "data": { "type": "user", "id": 1 } }
+      },
+      "links": { "self": "https://api.outreach.io/api/v2/events/1" }
+    }
+  ],
+  "meta": { "count": 1, "count_truncated": false },
+  "links": {
+    "last": "https://api.outreach.io/api/v2/events?page%5Boffset%5D=50",
+    "next": "https://api.outreach.io/api/v2/events?page%5Boffset%5D=50"
+  }
+}

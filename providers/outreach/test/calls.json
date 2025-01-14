@@ -1,0 +1,9 @@
+{
+  "errors": [
+    {
+      "id": "unauthorizedOauthScope",
+      "title": "Unauthorized OAuth Scope",
+      "detail": "Your authorization does not include the required scope 'calls.read'."
+    }
+  ]
+}
