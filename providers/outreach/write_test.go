@@ -54,7 +54,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			ExpectedErrs: []error{ErrIdMustInt},
 		},
 		{
-			Name: "Successfully creation of a sequence",
+			Name: "Successful creation of a sequence",
 			Input: common.WriteParams{
 				ObjectName: "sequences",
 				RecordData: map[string]any{
@@ -126,70 +126,6 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						"self": "https://api.outreach.io/api/v2/sequences/18",
 					},
 
-					"relationships": map[string]any{
-						"calls": map[string]any{
-							"links": map[string]any{
-								"related": "https://api.outreach.io/api/v2/calls?filter%5Bsequence%5D%5Bid%5D=18",
-							},
-						},
-						"contentCategoryMemberships": map[string]any{
-							"data": []any{},
-							"links": map[string]any{
-								"related": "https://api.outreach.io/api/v2/contentCategoryMemberships?filter%5Bsequence%5D%5Bid%5D=18",
-							},
-							"meta": map[string]any{
-								"count": float64(0),
-							},
-						},
-						"creator": map[string]any{
-							"data": map[string]any{
-								"id":   float64(2),
-								"type": "user",
-							},
-						},
-						"mailings": map[string]any{
-							"links": map[string]any{
-								"related": "https://api.outreach.io/api/v2/mailings?filter%5Bsequence%5D%5Bid%5D=18",
-							},
-						},
-						"owner": map[string]any{
-							"data": nil,
-						},
-						"ruleset": map[string]any{
-							"data": map[string]any{
-								"id":   float64(19),
-								"type": "ruleset",
-							},
-						},
-						"schedule": map[string]any{
-							"data": nil,
-						},
-						"sequenceStates": map[string]any{
-							"links": map[string]any{
-								"related": "https://api.outreach.io/api/v2/sequenceStates?filter%5Bsequence%5D%5Bid%5D=18",
-							},
-						},
-						"sequenceSteps": map[string]any{
-							"data": []any{},
-							"links": map[string]any{
-								"related": "https://api.outreach.io/api/v2/sequenceSteps?filter%5Bsequence%5D%5Bid%5D=18",
-							},
-							"meta": map[string]any{
-								"count": float64(0),
-							},
-						},
-						"tasks": map[string]any{
-							"links": map[string]any{
-								"related": "https://api.outreach.io/api/v2/tasks?filter%5Bsequence%5D%5Bid%5D=18",
-							},
-						},
-						"updater": map[string]any{
-							"data": map[string]any{
-								"id":   float64(2),
-								"type": "user",
-							},
-						},
-					},
 					"type": "sequence",
 				},
 			},

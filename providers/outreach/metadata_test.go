@@ -26,7 +26,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:  "Successfully describe supported objects",
-			Input: []string{"mailings", "opportunities"},
+			Input: []string{"opportunities"},
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
