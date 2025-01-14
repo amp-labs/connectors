@@ -9,6 +9,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
+	"github.com/amp-labs/connectors/internal/datautils"
 )
 
 type objectMetadataResult struct {
@@ -96,8 +97,13 @@ func (c *Connector) describeObject(ctx context.Context, objectName string) (*com
 		return nil, fmt.Errorf("error unmarshalling object metadata response into JSON: %w", err)
 	}
 
+	fields, err := c.fetchExternalMetadataEnumValues(ctx, objectName, resp.transformToFields())
+	if err != nil {
+		return nil, err
+	}
+
 	return common.NewObjectMetadata(
-		objectName, resp.transformToFields(),
+		objectName, fields,
 	), nil
 }
 
@@ -255,4 +261,129 @@ func (o fieldDescription) implyEnumerationType() (common.ValueType, []common.Fie
 		// ex: enumeration.calculation_equation
 		return common.ValueTypeOther, values
 	}
+}
+
+// Registry of objects to the fields with external metadata.
+// It provides information on location of data (URLs) and how to process JSON to infer enum options.
+// If you want to support more objects and their fields extend this registry.
+var objectsWithExternalMetadataFields = datautils.Map[string, []externalFieldDiscovery]{ // nolint:gochecknoglobals
+	"contacts": {
+		{
+			FieldName:         "hs_pipeline",
+			EndpointPath:      "/crm/v3/pipelines/contacts",
+			ResponseProcessor: parsePipelineFieldValues,
+		},
+	},
+	"deals": {
+		{
+			FieldName:         "pipeline",
+			EndpointPath:      "/crm/v3/pipelines/deals",
+			ResponseProcessor: parsePipelineFieldValues,
+		},
+	},
+}
+
+// Hubspot may have common.ValueTypeSingleSelect or common.ValueTypeMultiSelect without values.
+// This means we have to make additional API calls to resolve missing values.
+// Current procedure doesn't resolve all fields, where fieldDescription.externalOptions == true.
+func (c *Connector) fetchExternalMetadataEnumValues(
+	ctx context.Context,
+	objectName string, fields map[string]common.FieldMetadata,
+) (map[string]common.FieldMetadata, error) {
+	externalFields, ok := objectsWithExternalMetadataFields[objectName]
+	if !ok {
+		// Nothing to retrieve. This object doesn't have or doesn't support external field discovery.
+		return fields, nil
+	}
+
+	// For each external field that we support make an API call to fetch enumeration options.
+	// Store this values for each field within each object.
+	for _, discovery := range externalFields {
+		fieldMetadata, ok := fields[discovery.FieldName]
+		if !ok {
+			// Provider no longer has this field.
+			continue
+		}
+
+		rsp, err := c.Client.Get(ctx, c.getRawURL()+discovery.EndpointPath)
+		if err != nil {
+			return nil, fmt.Errorf("error resolving external metadata values for HubSpot: %w", err)
+		}
+
+		values, err := discovery.ResponseProcessor(rsp)
+		if err != nil {
+			return nil, err
+		}
+
+		// Store discovered values.
+		fieldMetadata.Values = values
+		fields[discovery.FieldName] = fieldMetadata
+	}
+
+	return fields, nil
+}
+
+// Holds information regarding Object's Field and how to discover external metadata.
+type externalFieldDiscovery struct {
+	// FieldName that has enum options found under EndpointPath.
+	FieldName string
+	// EndpointPath is a location where list of enum values can be found.
+	EndpointPath string
+	// ResponseProcessor knows how to parse an extract []common.FieldValue for the endpoint.
+	ResponseProcessor externalFieldProcessor
+}
+
+type externalFieldProcessor func(response *common.JSONHTTPResponse) ([]common.FieldValue, error)
+
+func parsePipelineFieldValues(response *common.JSONHTTPResponse) ([]common.FieldValue, error) {
+	type stage struct {
+		Value       string `json:"id"`
+		DisplayName string `json:"label"`
+	}
+
+	type pipeline struct {
+		Stages       []stage `json:"stages"`
+		DisplayOrder int     `json:"displayOrder"`
+	}
+
+	// For more details, refer to the HubSpot documentation on Pipelines.
+	// https://developers.hubspot.com/docs/guides/api/crm/pipelines#retrieve-pipelines
+	type pipelineResponse struct {
+		Pipelines []pipeline `json:"results"`
+	}
+
+	resp, err := common.UnmarshalJSON[pipelineResponse](response)
+	if err != nil {
+		return nil, fmt.Errorf("error unmarshalling pipelines into JSON: %w", err)
+	}
+
+	// Locate the default pipeline.
+	// Note: There can be multiple pipelines, but currently, enum options are returned only for the default pipeline.
+	//
+	// Problem: In HubSpot, field options are not defined at the object level but at the instance level.
+	// This means the object identifier is required to locate the pipeline and subsequently retrieve its options.
+	var defaultPipeline *pipeline
+
+	for _, p := range resp.Pipelines {
+		if p.DisplayOrder == 0 {
+			defaultPipeline = &p
+
+			break
+		}
+	}
+
+	if defaultPipeline == nil {
+		// There is no default pipeline.
+		return nil, nil
+	}
+
+	result := make([]common.FieldValue, len(defaultPipeline.Stages))
+	for i, s := range defaultPipeline.Stages {
+		result[i] = common.FieldValue{
+			Value:        s.Value,
+			DisplayValue: s.DisplayName,
+		}
+	}
+
+	return result, nil
 }
