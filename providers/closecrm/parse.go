@@ -52,6 +52,7 @@ func nextRecordsURL(url *urlbuilder.URL) common.NextPageFunc {
 				return url.String(), nil
 			}
 		}
+
 		return "", nil
 	}
 }
