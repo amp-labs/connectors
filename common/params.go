@@ -19,13 +19,8 @@ type Parameters struct {
 	// Metadata is a map of key-value pairs that can be used to pass in additional information to the connector.
 	// Generally this is used to substitute placeholders in the providerInfo, like workspace, server, etc, which is
 	// information that is specific to the connection.
-	Metadata Metadata
+	Metadata map[string]string
 }
-
-type (
-	Metadata    map[string]string
-	MetadataKey string
-)
 
 var (
 	ErrValidationFailed  = errors.New("validation failed")
@@ -37,48 +32,34 @@ var (
 // ValidateParameters sees which interfaces conn implements, calls the relevant validation methods.
 // nolint:cyclop
 func ValidateParameters(conn any, params Parameters) error {
-	var errs []error
+	var errs error
 
-	if r, ok := conn.(requireWorkspace); ok {
-		if err := r.validateWorkspace(params); err != nil {
-			errs = append(errs, err)
-		}
+	if r, ok := conn.(workspaceValidator); ok {
+		errs = errors.Join(errs, r.validateWorkspace(params))
 	}
 
-	if r, ok := conn.(requireAuthenticatedClient); ok {
-		if err := r.validateAuthenticatedClient(params); err != nil {
-			errs = append(errs, err)
-		}
+	if r, ok := conn.(authenticatedClientValidator); ok {
+		errs = errors.Join(errs, r.validateAuthenticatedClient(params))
 	}
 
-	if r, ok := conn.(requireMetadata); ok {
-		if err := r.validateMetadata(params); err != nil {
-			errs = append(errs, err)
-		}
+	if r, ok := conn.(metadataValidator); ok {
+		errs = errors.Join(errs, r.validateMetadata(params))
 	}
 
-	if r, ok := conn.(requireModule); ok {
-		if err := r.validateModule(params); err != nil {
-			errs = append(errs, err)
-		}
+	if r, ok := conn.(moduleValidator); ok {
+		errs = errors.Join(errs, r.validateModule(params))
 	}
 
-	if len(errs) > 0 {
-		err := ErrValidationFailed
-
-		for _, e := range errs {
-			err = fmt.Errorf("%w: %w", err, e)
-		}
-
-		return err
+	if errs != nil {
+		return fmt.Errorf("%w: %w", ErrValidationFailed, errs)
 	}
 
 	return nil
 }
 
-// RequireAuthenticatedClient is an interface that requires an authenticated client to be set in the parameters.
+// authenticatedClientValidator is an interface that requires an authenticated client to be set in the parameters.
 
-type requireAuthenticatedClient interface {
+type authenticatedClientValidator interface {
 	validateAuthenticatedClient(parameters Parameters) error
 }
 
@@ -92,9 +73,9 @@ func (RequireAuthenticatedClient) validateAuthenticatedClient(parameters Paramet
 	return nil
 }
 
-// RequireWorkspace is an interface that requires a workspace to be set in the parameters.
+// workspaceValidator is an interface that requires a workspace to be set in the parameters.
 
-type requireWorkspace interface {
+type workspaceValidator interface {
 	validateWorkspace(parameters Parameters) error
 }
 
@@ -108,9 +89,9 @@ func (RequireWorkspace) validateWorkspace(parameters Parameters) error {
 	return nil
 }
 
-// RequireMetadata is an interface that requires metadata to be set in the parameters.
+// metadataValidator is an interface that requires metadata to be set in the parameters.
 
-type requireMetadata interface {
+type metadataValidator interface {
 	validateMetadata(parameters Parameters) error
 }
 
@@ -132,9 +113,9 @@ func (RequireMetadata) validateMetadata(parameters Parameters) error {
 	return nil
 }
 
-// RequireModule is an interface that requires a module to be set in the parameters.
+// moduleValidator is an interface that requires a module to be set in the parameters.
 
-type requireModule interface {
+type moduleValidator interface {
 	validateModule(parameters Parameters) error
 }
 

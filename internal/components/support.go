@@ -46,7 +46,7 @@ var (
 )
 
 func NewProviderEndpointSupport(mp map[common.ModuleID][]EndpointSupport) (*ProviderEndpointSupport, error) {
-	if err := compileRegistry(mp); err != nil {
+	if err := precompileEndpoints(mp); err != nil {
 		return nil, err
 	}
 
@@ -91,7 +91,9 @@ func (pr *ProviderEndpointSupport) GetSupport(module common.ModuleID, path strin
 	return &NoSupport, nil
 }
 
-func compileRegistry(registry map[common.ModuleID][]EndpointSupport) error {
+// precompileEndpoints compiles globs for all the URL endpoints in the support registry. The glob package recommends
+// doing this for better performance.
+func precompileEndpoints(registry map[common.ModuleID][]EndpointSupport) error {
 	for _, endpoints := range registry {
 		for i := range endpoints {
 			if endpoints[i].glob != nil {

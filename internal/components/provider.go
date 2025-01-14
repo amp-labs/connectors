@@ -3,6 +3,7 @@ package components
 import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
+	"github.com/amp-labs/connectors/common/substitutions/catalogreplacer"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -16,12 +17,17 @@ type ProviderComponent struct {
 func newProviderComponent(
 	p providers.Provider,
 	module common.ModuleID,
+	workspace string,
 	metadata map[string]string,
 ) (*ProviderComponent, error) {
 	component := &ProviderComponent{provider: p}
+	metadata[catalogreplacer.VariableWorkspace] = workspace
 
 	// TODO: Use module to get provider info
-	providerInfo, err := providers.ReadInfo(component.provider, paramsbuilder.NewCatalogVariables(metadata)...)
+	providerInfo, err := providers.ReadInfo(
+		component.provider,
+		paramsbuilder.NewCatalogVariables(metadata)...,
+	)
 	if err != nil {
 		return nil, err
 	}
