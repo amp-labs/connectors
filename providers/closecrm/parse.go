@@ -34,23 +34,24 @@ var ErrSkipFailure = errors.New("error: failed to create next page url")
 func nextRecordsURL(url *urlbuilder.URL) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
 		// check if there is more items in the collection.
-		hasMore, err := jsonquery.New(node).Bool(hasMoreQuery, false)
+		hasMore, err := jsonquery.New(node).Bool(hasMoreQuery, true)
 		if err != nil {
 			return "", err
 		}
 
-		if *hasMore {
-			currSkip, exists := url.GetFirstQueryParam(skipQuery)
-			if !exists {
-				return "", ErrSkipFailure
+		if hasMore != nil {
+			if *hasMore {
+				currSkip, exists := url.GetFirstQueryParam(skipQuery)
+				if !exists {
+					return "", ErrSkipFailure
+				}
+
+				url.WithQueryParam(skipQuery, currSkip+defaultPageSize)
+				url.WithQueryParam(limitQuery, defaultPageSize)
+
+				return url.String(), nil
 			}
-
-			url.WithQueryParam(skipQuery, currSkip+defaultPageSize)
-			url.WithQueryParam(limitQuery, defaultPageSize)
-
-			return url.String(), nil
 		}
-
 		return "", nil
 	}
 }
