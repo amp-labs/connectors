@@ -51,8 +51,27 @@ func ComparatorSubsetWrite(_ string, actual, expected *common.WriteResult) bool 
 }
 
 // ComparatorSubsetMetadata will check a subset of fields is present.
+// Errors could be an exact match for each object or subset can be used as well.
+// This must be done by specifying expected errors using mockutils.ExpectedSubsetErrors.
+// Then errors.Is() will be applied for each error.
+//
+// For if this is the case refer to the example below:
+//
+//	Errors: map[string]error{
+//		"arsenal": mockutils.ExpectedSubsetErrors{ 						// Is doing a subset match.
+//			common.ErrCaller,
+//			errors.New(string(unsupportedResponse)),
+//		},
+//		"arsenal": common.NewHTTPStatusError(http.StatusBadRequest,		// Is doing exact match.
+//			fmt.Errorf("%w: %s", common.ErrCaller, string(unsupportedResponse))),
+//	},
 func ComparatorSubsetMetadata(_ string, actual, expected *common.ListObjectMetadataResult) bool {
-	return mockutils.MetadataResultComparator.SubsetFields(actual, expected)
+	if len(expected.Result)+len(expected.Errors) == 0 {
+		panic("please specify expected Result or Errors in Metadata response")
+	}
+
+	return mockutils.MetadataResultComparator.SubsetFields(actual, expected) &&
+		mockutils.MetadataResultComparator.SubsetErrors(actual, expected)
 }
 
 func resolveTestServerURL(urlTemplate string, serverURL string) string {
