@@ -2,7 +2,6 @@ package hubspot
 
 import (
 	"context"
-	"strings"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
@@ -22,19 +21,12 @@ func (c *Connector) Search(ctx context.Context, config SearchParams) (*common.Re
 		return nil, err
 	}
 
-	var (
-		rsp *common.JSONHTTPResponse
-		err error
-	)
-
-	relativeURL := strings.Join([]string{"objects", config.ObjectName, "search"}, "/")
-
-	u, err := c.getURL(relativeURL)
+	url, err := c.getCRMObjectsSearchURL(config)
 	if err != nil {
 		return nil, err
 	}
 
-	rsp, err = c.Client.Post(ctx, u, makeFilterBody(config))
+	rsp, err := c.Client.Post(ctx, url, makeFilterBody(config))
 	if err != nil {
 		return nil, err
 	}
