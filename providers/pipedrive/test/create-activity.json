@@ -1,0 +1,35 @@
+{
+  "success": true,
+  "data": {
+    "id": 9,
+    "company_id": 13313052,
+    "user_id": 20580207,
+    "done": false,
+    "type": "call",
+    "due_date": "2024-10-30",
+    "busy_flag": false,
+    "add_time": "2025-01-14 09:44:56",
+    "subject": "I usually can't come up with words",
+    "public_description": "Demo activity",
+    "location": "Dar es salaam",
+    "update_time": "2025-01-14 09:44:56",
+    "private": false,
+    "created_by_user_id": 20580207,
+    "owner_name": "Integration User",
+    "assigned_to_user_id": 20580207,
+    "type_name": "Call"
+  },
+  "additional_data": { "updates_story_id": null },
+  "related_objects": {
+    "user": {
+      "20580207": {
+        "id": 20580207,
+        "name": "Integration User",
+        "email": "integration.user+pipedrive@withampersand.com",
+        "has_pic": 0,
+        "pic_hash": null,
+        "active_flag": true
+      }
+    }
+  }
+}
