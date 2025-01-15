@@ -10,12 +10,12 @@ func init() {
 		BaseURL:     "https://api.groovehq.com",
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://www.groovehq.com/images/v3/brand/groove-lettermark-light.png",
-				LogoURL: "https://www.groovehq.com/images/v3/brand/groove-wordmark.png",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1736955540/media/inahuieqaf3j6jipw5l1.png",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1736955651/media/paozgcxtoudfmmrhokfz.png",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "https://www.groovehq.com/images/v3/brand/groove-lettermark.png",
-				LogoURL: "https://www.groovehq.com/images/v3/brand/official-groove-logo.png",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1736955682/media/rwtps5ybpjxvm6ywrz0p.png",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1736955709/media/iqpdotcxrdjt4ghla6at.png",
 			},
 		},
 		Oauth2Opts: &Oauth2Opts{
