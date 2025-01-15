@@ -76,7 +76,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			},
 		},
 		{
-			Name:  "Not found resource",
+			Name:  "Resource not found",
 			Input: common.ReadParams{ObjectName: "activitiess", Fields: connectors.Fields("id")},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
