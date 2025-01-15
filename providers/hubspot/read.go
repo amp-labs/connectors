@@ -96,9 +96,5 @@ func makeCRMObjectsQueryValues(config common.ReadParams) []string {
 
 	out = append(out, "limit", DefaultPageSize)
 
-	if len(config.AssociatedObjects) > 0 {
-		out = append(out, "associations", strings.Join(config.AssociatedObjects, ","))
-	}
-
 	return out
 }
