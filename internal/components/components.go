@@ -28,14 +28,9 @@ func InitializeConnector[T any](
 		conn = nil
 	})
 
-	connectorComponent, err := initializeConnectorComponent(nil, provider, params)
+	connectorComponent, err := initializeConnectorComponent(provider, params, opts...)
 	if err != nil {
 		return nil, err
-	}
-
-	// Apply options *before* the constructor, so that constructors can override if needed
-	for _, opt := range opts {
-		opt(connectorComponent)
 	}
 
 	conn, err = constructor(connectorComponent)
@@ -43,22 +38,29 @@ func InitializeConnector[T any](
 		return nil, err
 	}
 
-	return conn, nil
-}
-
-func initializeConnectorComponent(
-	conn any,
-	provider providers.Provider,
-	params common.Parameters,
-) (*ConnectorComponent, error) {
 	if err := common.ValidateParameters(conn, params); err != nil {
 		return nil, err
 	}
 
+	return conn, nil
+}
+
+func initializeConnectorComponent(
+	provider providers.Provider,
+	params common.Parameters,
+	opts ...Option,
+) (*ConnectorComponent, error) {
 	clientComponent, err := NewClientComponent(provider, params)
 	if err != nil {
 		return nil, err
 	}
 
-	return &ConnectorComponent{ClientComponent: *clientComponent}, nil
+	connectorComponent := &ConnectorComponent{ClientComponent: *clientComponent}
+
+	// Apply options *before* the constructor, so that constructors can override if needed
+	for _, opt := range opts {
+		opt(connectorComponent)
+	}
+
+	return connectorComponent, nil
 }
