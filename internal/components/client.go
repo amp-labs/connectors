@@ -20,9 +20,10 @@ func NewClientComponent(
 		return nil, err
 	}
 
-	clientComponent := &ClientComponent{
+	return &ClientComponent{
 		JSON: &common.JSONHTTPClient{
 			HTTPClient: &common.HTTPClient{
+				Base:   providerComponent.ProviderInfo().BaseURL,
 				Client: params.AuthenticatedClient,
 
 				// ErrorHandler is set to a default, but can be overridden using options.
@@ -34,6 +35,7 @@ func NewClientComponent(
 		},
 		XML: &common.XMLHTTPClient{
 			HTTPClient: &common.HTTPClient{
+				Base:   providerComponent.ProviderInfo().BaseURL,
 				Client: params.AuthenticatedClient,
 
 				// ErrorHandler is set to a default, but can be overridden using options.
@@ -44,12 +46,7 @@ func NewClientComponent(
 			ErrorPostProcessor: common.ErrorPostProcessor{},
 		},
 		ProviderComponent: *providerComponent,
-	}
-
-	clientComponent.JSON.HTTPClient.Base = providerComponent.ProviderInfo().BaseURL
-	clientComponent.XML.HTTPClient.Base = providerComponent.ProviderInfo().BaseURL
-
-	return clientComponent, nil
+	}, nil
 }
 
 func (c *ClientComponent) JSONHTTPClient() *common.JSONHTTPClient { return c.JSON }
