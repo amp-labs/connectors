@@ -1,12 +1,13 @@
 package zohocrm
 
 import (
-	"fmt"
+	"errors"
 	"net/http"
 	"testing"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -17,7 +18,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
 	dealResponse := testutils.DataFromFile(t, "deals.json")
-	arsenalResponse := testutils.DataFromFile(t, "arsenal.json")
+	unsupported := testutils.DataFromFile(t, "arsenal.json")
 
 	tests := []testroutines.Metadata{
 		{
@@ -36,48 +37,51 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					Then: mockserver.Response(http.StatusOK, dealResponse),
 				}, {
 					If:   mockcond.QueryParam("module", "Arsenal"),
-					Then: mockserver.Response(http.StatusBadRequest, arsenalResponse),
+					Then: mockserver.Response(http.StatusBadRequest, unsupported),
 				}},
 			}.Server(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"deals": {
 						DisplayName: "Deals",
 						FieldsMap: map[string]string{
-							"Account_Name":           "Account_Name",
-							"Amount":                 "Amount",
-							"Campaign_Source":        "Campaign_Source",
-							"Change_Log_Time__s":     "Change_Log_Time__s",
-							"Closing_Date":           "Closing_Date",
-							"Contact_Name":           "Contact_Name",
-							"Created_By":             "Created_By",
-							"Created_Time":           "Created_Time",
-							"Deal_Name":              "Deal_Name",
-							"Description":            "Description",
-							"Expected_Revenue":       "Expected_Revenue",
-							"Last_Activity_Time":     "Last_Activity_Time",
-							"Lead_Conversion_Time":   "Lead_Conversion_Time",
-							"Lead_Source":            "Lead_Source",
-							"Locked__s":              "Locked__s",
-							"Modified_By":            "Modified_By",
-							"Modified_Time":          "Modified_Time",
-							"Next_Step":              "Next_Step",
-							"Overall_Sales_Duration": "Overall_Sales_Duration",
-							"Owner":                  "Owner",
-							"Probability":            "Probability",
-							"Reason_For_Loss__s":     "Reason_For_Loss__s",
-							"Record_Image":           "Record_Image",
-							"Record_Status__s":       "Record_Status__s",
-							"Sales_Cycle_Duration":   "Sales_Cycle_Duration",
-							"Stage":                  "Stage",
-							"Type":                   "Type",
+							"account_name":           "account_name",
+							"amount":                 "amount",
+							"campaign_source":        "campaign_source",
+							"change_log_time__s":     "change_log_time__s",
+							"closing_date":           "closing_date",
+							"contact_name":           "contact_name",
+							"created_by":             "created_by",
+							"created_time":           "created_time",
+							"deal_name":              "deal_name",
+							"description":            "description",
+							"expected_revenue":       "expected_revenue",
 							"id":                     "id",
+							"last_activity_time":     "last_activity_time",
+							"lead_conversion_time":   "lead_conversion_time",
+							"lead_source":            "lead_source",
+							"locked__s":              "locked__s",
+							"modified_by":            "modified_by",
+							"modified_time":          "modified_time",
+							"next_step":              "next_step",
+							"overall_sales_duration": "overall_sales_duration",
+							"owner":                  "owner",
+							"probability":            "probability",
+							"reason_for_loss__s":     "reason_for_loss__s",
+							"record_image":           "record_image",
+							"record_status__s":       "record_status__s",
+							"sales_cycle_duration":   "sales_cycle_duration",
+							"stage":                  "stage",
+							"type":                   "type",
 						},
 					},
 				},
 				Errors: map[string]error{
-					"arsenal": common.NewHTTPStatusError(http.StatusBadRequest,
-						fmt.Errorf("%w: %s", common.ErrCaller, string(arsenalResponse))),
+					"arsenal": mockutils.ExpectedSubsetErrors{
+						common.ErrCaller,
+						errors.New(string(unsupported)), // nolint:goerr113
+					},
 				},
 			},
 			ExpectedErrs: nil,
