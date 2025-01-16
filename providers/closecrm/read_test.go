@@ -1,6 +1,7 @@
 package closecrm
 
 import (
+	"errors"
 	"net/http"
 	"testing"
 
@@ -15,7 +16,7 @@ import (
 func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
-	zeroRecords := testutils.DataFromFile(t, "empty.json")
+	zeroRecords := testutils.DataFromFile(t, "zero-records.json")
 	unsupportedResponse := testutils.DataFromFile(t, "unsupported.json")
 	activityResponse := testutils.DataFromFile(t, "activities.json")
 
@@ -33,12 +34,15 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:  "Unsupported object",
-			Input: common.ReadParams{ObjectName: "arsenal", Fields: datautils.NewStringSet("testField")},
+			Input: common.ReadParams{ObjectName: "united", Fields: datautils.NewStringSet("testField")},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusBadRequest, unsupportedResponse),
+				Always: mockserver.Response(http.StatusNotFound, unsupportedResponse),
 			}.Server(),
-			ExpectedErrs: []error{common.ErrObjectNotSupported},
+			ExpectedErrs: []error{
+				common.ErrRetryable,
+				errors.New(string(unsupportedResponse)), //nolint:err113
+			},
 		},
 		{
 			Name:  "Zero records response",
@@ -60,6 +64,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, activityResponse),
 			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
