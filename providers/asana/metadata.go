@@ -76,7 +76,7 @@ func (c *Connector) getMetadata(ctx context.Context, objectName string) (*common
 	}
 
 	// Requesting 1 record only, since it's the only useful data.
-	url.WithQueryParam("limit", "1")
+	// url.WithQueryParam("limit", "1")
 
 	resp, err := c.Client.Get(ctx, url.String())
 

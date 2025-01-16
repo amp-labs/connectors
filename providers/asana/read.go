@@ -33,7 +33,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	return common.ParseResult(
 		rsp,
 		common.GetOptionalRecordsUnderJSONPath("data"),
-		makeNextRecordsURL(url),
+		makeNextRecordsURL(),
 		common.GetMarshaledData,
 		config.Fields,
 	)
@@ -54,7 +54,6 @@ func (c *Connector) buildURL(config common.ReadParams) (*urlbuilder.URL, error) 
 
 	if supportLimitAndOffset.Has(config.ObjectName) {
 		url.WithQueryParam("limit", strconv.Itoa(DefaultPageSize))
-		url.WithQueryParam("offset", "0")
 	}
 
 	return url, err

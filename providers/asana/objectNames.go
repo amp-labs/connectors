@@ -16,6 +16,10 @@ var supportedObjectsByRead = datautils.NewSet( //nolint:gochecknoglobals
 	objectNameProjects,
 )
 
+var supportedObjectsByWrite = datautils.NewSet( //nolint:gochecknoglobals
+	objectNameAllocation,
+)
+
 var supportLimitAndOffset = datautils.NewSet( //nolint:gochecknoglobals
 	objectNameAllocation,
 	objectNameGoals,
