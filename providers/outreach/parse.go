@@ -43,9 +43,12 @@ func constructRecords(d Data) []map[string]any {
 		recordItems := make(map[string]any)
 		recordItems[idKey] = record.ID
 
+		// Attributes are flattened into the recordItems map.
 		for k, v := range record.Attributes {
 			recordItems[k] = v
 		}
+
+		recordItems[relationshipsKey] = record.Relationships
 
 		records[i] = recordItems
 	}
