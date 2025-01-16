@@ -39,7 +39,7 @@ func getRecords(node *ajson.Node) ([]map[string]any, error) {
 func constructRecords(d Data) []map[string]any {
 	records := make([]map[string]any, len(d.Data))
 
-	for i, record := range d.Data {
+	for idx, record := range d.Data {
 		recordItems := make(map[string]any)
 		recordItems[idKey] = record.ID
 
@@ -50,7 +50,7 @@ func constructRecords(d Data) []map[string]any {
 
 		recordItems[relationshipsKey] = record.Relationships
 
-		records[i] = recordItems
+		records[idx] = recordItems
 	}
 
 	return records
