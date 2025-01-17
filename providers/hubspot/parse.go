@@ -2,8 +2,10 @@ package hubspot
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 
@@ -186,4 +188,23 @@ func GetResultId(row *common.ReadResultRow) string {
 
 	// If everything fails, return an empty string
 	return ""
+}
+
+func getNextRecordsURLCRM(node *ajson.Node) (string, error) {
+	hasMore, err := jsonquery.New(node).BoolWithDefault("hasMore", false)
+	if err != nil {
+		return "", err
+	}
+
+	if !hasMore {
+		// Next page doesn't exist
+		return "", nil
+	}
+
+	offset, err := jsonquery.New(node).IntegerWithDefault("offset", 0)
+	if err != nil {
+		return "", err
+	}
+
+	return strconv.FormatInt(offset, 10), nil
 }

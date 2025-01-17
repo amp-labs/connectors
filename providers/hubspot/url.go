@@ -52,3 +52,9 @@ func (c *Connector) getCRMObjectsSearchURL(config SearchParams) (string, error) 
 
 	return c.getURL(relativeURL)
 }
+
+func (c *Connector) getCRMSearchURL(config SearchCRMParams) (string, error) {
+	relativeURL := strings.Join([]string{config.ObjectName, "search"}, "/")
+
+	return c.getURL(relativeURL)
+}

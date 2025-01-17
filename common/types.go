@@ -101,6 +101,9 @@ var (
 
 	// ErrFailedToUnmarshalBody is returned when response body cannot be marshalled into some type.
 	ErrFailedToUnmarshalBody = errors.New("failed to unmarshal response body")
+
+	// ErrNextPageInvalid is returned when next page token provided in Read operation cannot be understood.
+	ErrNextPageInvalid = errors.New("next page token is invalid")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.
