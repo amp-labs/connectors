@@ -1,0 +1,71 @@
+{
+  "data": [
+    {
+      "id": "acti_4440QLsync5No96XBuQkLfCngfKGXXixrWtWVUjM6lv",
+      "_type": "Meeting",
+      "organization_id": "orga_Bnvb4C6ur74cnEX825rjjDDusTIIpQcFX2qusZcjGr5",
+      "lead_id": "lead_G7FYn5pkohGlQzAgddQ9zcLOoYSkP2PIFsflsSOMq71",
+      "contact_id": null,
+      "user_id": "user_4N6K1GpqhrjELJKSIMos60M78s2x86Qy6jAiUht5tmh",
+      "users": ["user_4N6K1GpqhrjELJKSIMos60M78s2x86Qy6jAiUht5tmh"],
+      "activity_at": "2025-01-20T10:43:46.561000+00:00",
+      "date_created": "2025-01-20T10:43:46.561000+00:00",
+      "date_updated": "2025-01-14T10:44:08.137000+00:00",
+      "created_by": null,
+      "updated_by": null,
+      "user_name": "Josep Karage",
+      "connected_account_id": null,
+      "attached_call_ids": [],
+      "attendees": [
+        {
+          "email": "alfred@wayne-enterprises.com",
+          "name": "Alfred Pennyworth",
+          "status": "yes",
+          "user_id": null,
+          "contact_id": "cont_qiRsOr5orWdufZdykLPTQ2edmYakUo2W7ZQpiQ8ySw1",
+          "is_organizer": false
+        },
+        {
+          "email": "josephbkarage@gmail.com",
+          "name": "Josep Karage",
+          "status": "yes",
+          "user_id": "user_4N6K1GpqhrjELJKSIMos60M78s2x86Qy6jAiUht5tmh",
+          "contact_id": null,
+          "is_organizer": true
+        },
+        {
+          "email": "thedarkknight@wayne-enterprises.com",
+          "name": "Bruce Wayne",
+          "status": "yes",
+          "user_id": null,
+          "contact_id": "cont_v9cWsLt287f3rhQYWDNBZN332DcuMwmsuF3EXtZtp68",
+          "is_organizer": false
+        }
+      ],
+      "integrations": [],
+      "conference_links": [],
+      "duration": 2700,
+      "title": "Contract Finalization",
+      "location": "",
+      "calendar_event_link": null,
+      "is_recurring": false,
+      "source": "manual",
+      "status": null,
+      "starts_at": "2025-01-20T10:43:46.561000+00:00",
+      "ends_at": "2025-01-20T11:28:46.561000+00:00",
+      "actual_duration": null,
+      "calendar_event_uids": [],
+      "note": "",
+      "user_note": null,
+      "user_note_html": null,
+      "user_note_mentions": [],
+      "user_note_date_updated": null,
+      "notetaker_id": null,
+      "provider_calendar_event_id": null,
+      "provider_calendar_ids": [],
+      "provider_calendar_type": null,
+      "summary": null
+    }
+  ],
+  "has_more": false
+}
