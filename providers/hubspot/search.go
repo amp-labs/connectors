@@ -40,6 +40,37 @@ func (c *Connector) Search(ctx context.Context, config SearchParams) (*common.Re
 	)
 }
 
+func (c *Connector) SearchCRM(ctx context.Context, config SearchCRMParams) (*common.ReadResult, error) {
+	ctx = logging.With(ctx, "connector", "hubspot")
+
+	if err := config.ValidateParams(); err != nil {
+		return nil, err
+	}
+
+	url, err := c.getCRMSearchURL(config)
+	if err != nil {
+		return nil, err
+	}
+
+	payload, err := config.Payload()
+	if err != nil {
+		return nil, err
+	}
+
+	rsp, err := c.Client.Post(ctx, url, payload)
+	if err != nil {
+		return nil, err
+	}
+
+	return common.ParseResult(
+		rsp,
+		common.GetOptionalRecordsUnderJSONPath(config.ObjectName),
+		getNextRecordsURLCRM,
+		common.GetMarshaledData,
+		config.Fields,
+	)
+}
+
 // BuildLastModifiedFilterGroup filters records modified since the given time.
 // If the time is zero, it returns an empty filter. For contacts, it uses the
 // lastmodifieddate field. For other objects, it uses the hs_lastmodifieddate.
