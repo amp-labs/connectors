@@ -269,6 +269,13 @@ type ListObjectMetadataResult struct {
 	Errors map[string]error
 }
 
+func NewListObjectMetadataResult() *ListObjectMetadataResult {
+	return &ListObjectMetadataResult{
+		Result: make(map[string]ObjectMetadata),
+		Errors: make(map[string]error),
+	}
+}
+
 type ObjectMetadata struct {
 	// Provider's display name for the object.
 	DisplayName string

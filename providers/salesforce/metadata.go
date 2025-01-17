@@ -60,16 +60,14 @@ func (c *Connector) ListObjectMetadata(
 
 // constructResponseMap constructs a map of object names to object metadata from the composite response.
 func constructResponseMap(response *common.JSONHTTPResponse) (*common.ListObjectMetadataResult, error) {
-	objectsMap := &common.ListObjectMetadataResult{}
-	objectsMap.Result = make(map[string]common.ObjectMetadata)
-	objectsMap.Errors = make(map[string]error)
-
 	resp, err := common.UnmarshalJSON[compositeResponse](response)
 	if err != nil {
 		return nil, fmt.Errorf("error unmarshalling response from JSON: %w", err)
 	}
 
 	// Construct map of object names to object metadata
+	objectsMap := common.NewListObjectMetadataResult()
+
 	for _, subRes := range resp.CompositeResponse {
 		result := &describeSObjectResult{}
 
@@ -82,29 +80,13 @@ func constructResponseMap(response *common.JSONHTTPResponse) (*common.ListObject
 				"%w: %s", ErrCannotReadMetadata, string(subRes.Body),
 			)
 		} else {
-			objectsMap.Result[strings.ToLower(result.Name)] = common.ObjectMetadata{
-				DisplayName: result.Label,
-				// Map that satisfies type constraint
-				FieldsMap: makeFieldsMap(result.Fields),
-			}
+			objectsMap.Result[strings.ToLower(result.Name)] = *common.NewObjectMetadata(
+				result.Label, result.transformToFields(),
+			)
 		}
 	}
 
 	return objectsMap, nil
-}
-
-// makeFieldsMap constructs a map of field names to field labels from a describeSObjectResult.
-func makeFieldsMap(fields []fieldResult) map[string]string {
-	fieldsMap := make(map[string]string)
-
-	for _, field := range fields {
-		fieldName := strings.ToLower(field.Name)
-
-		// Add entry to fieldsMap
-		fieldsMap[fieldName] = field.Label
-	}
-
-	return fieldsMap
 }
 
 type compositeRequest struct {
@@ -146,6 +128,80 @@ type describeSObjectResult struct {
 //
 //nolint:lll
 type fieldResult struct {
-	Name  string `json:"name"`
-	Label string `json:"label"`
+	// Field name used in API calls, such as create(), delete(), and query().
+	Name        string `json:"name"`
+	DisplayName string `json:"label"`
+
+	// https://developer.salesforce.com/docs/atlas.en-us.244.0.api.meta/api/sforce_api_calls_describesobjects_describesobjectresult.htm#FieldType
+	Type string `json:"type"`
+
+	PicklistValues []picklistValue `json:"picklistValues"`
+}
+
+type picklistValue struct {
+	DisplayName string `json:"label"`
+	Value       string `json:"value"`
+}
+
+func (r describeSObjectResult) transformToFields() map[string]common.FieldMetadata {
+	fieldsMap := make(map[string]common.FieldMetadata)
+
+	for _, field := range r.Fields {
+		fieldName := strings.ToLower(field.Name)
+		fieldsMap[fieldName] = field.transformToFieldMetadata()
+	}
+
+	return fieldsMap
+}
+
+func (o fieldResult) transformToFieldMetadata() common.FieldMetadata {
+	var (
+		valueType common.ValueType
+		values    []common.FieldValue
+	)
+
+	// Based on type property map value to Ampersand value type.
+	switch o.Type {
+	case "string", "textarea":
+		valueType = common.ValueTypeString
+	case "boolean":
+		valueType = common.ValueTypeBoolean
+	case "int":
+		valueType = common.ValueTypeInt
+	case "double":
+		valueType = common.ValueTypeFloat
+	case "date":
+		valueType = common.ValueTypeDate
+	case "datetime":
+		valueType = common.ValueTypeDateTime
+	case "picklist", "combobox":
+		valueType = common.ValueTypeSingleSelect
+		values = o.getFieldValues()
+	case "multipicklist":
+		valueType = common.ValueTypeMultiSelect
+		values = o.getFieldValues()
+	default:
+		// Examples: base64, ID, reference, currency, percent, phone, url, email, anyType, location
+		valueType = common.ValueTypeOther
+	}
+
+	return common.FieldMetadata{
+		DisplayName:  o.DisplayName,
+		ValueType:    valueType,
+		ProviderType: o.Type,
+		ReadOnly:     true,
+		Values:       values,
+	}
+}
+
+func (o fieldResult) getFieldValues() []common.FieldValue {
+	result := make([]common.FieldValue, len(o.PicklistValues))
+	for index, option := range o.PicklistValues {
+		result[index] = common.FieldValue{
+			Value:        option.Value,
+			DisplayValue: option.DisplayName,
+		}
+	}
+
+	return result
 }
