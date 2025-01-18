@@ -27,7 +27,7 @@ func main() {
 
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: objectName,
-		Fields:     connectors.Fields("fullname", "emailaddress1", "fax"),
+		Fields:     connectors.Fields("fullname", "emailaddress1", "fax", "creditlimit_base"),
 	})
 	if err != nil {
 		utils.Fail("error reading from microsoft CRM", "error", err)

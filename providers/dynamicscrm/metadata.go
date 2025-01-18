@@ -18,7 +18,7 @@ func (c *Connector) ListObjectMetadata(
 		return nil, common.ErrMissingObjects
 	}
 
-	// enforce string formating, then internal delegation
+	// enforce string formating, then do internal delegation
 	return c.listObjectMetadata(ctx, naming.NewSingularStrings(objectNames))
 }
 
@@ -26,35 +26,29 @@ func (c *Connector) ListObjectMetadata(
 func (c *Connector) listObjectMetadata(
 	ctx context.Context, objectNames naming.SingularStrings,
 ) (*common.ListObjectMetadataResult, error) {
-	if len(objectNames) == 0 {
-		return nil, common.ErrMissingObjects
-	}
-
 	// Collect display name for the Object and its fields (name+display)
-	result := map[string]common.ObjectMetadata{}
+	metadataResult := common.NewListObjectMetadataResult()
 
 	for _, objectName := range objectNames {
-		objectDisplayName, err := c.getObjectDisplayName(ctx, objectName)
+		metadataObjectName := objectName.Plural().String()
+
+		objectDisplayName, err := c.fetchObjectDisplayName(ctx, objectName)
 		if err != nil {
-			return nil, err
+			metadataResult.AppendError(metadataObjectName, err)
 		}
 
-		fields, err := c.getFieldsForObject(ctx, objectName)
+		fields, err := c.fetchFieldsForObject(ctx, objectName)
 		if err != nil {
-			return nil, err
+			metadataResult.AppendError(metadataObjectName, err)
 		}
 
 		// Object names must be in plural.
 		// Connectors Read/Write methods for MS Dynamics use plural form. Ex: Read('contacts')
 		// The expectation is therefore to match, while schema API uses singular. Ex: `contact` schema
-		result[objectName.Plural().String()] = common.ObjectMetadata{
-			DisplayName: objectDisplayName,
-			FieldsMap:   fields,
-		}
+		metadataResult.Result[metadataObjectName] = *common.NewObjectMetadata(
+			objectDisplayName, fields,
+		)
 	}
 
-	return &common.ListObjectMetadataResult{
-		Result: result,
-		Errors: nil,
-	}, nil
+	return metadataResult, nil
 }

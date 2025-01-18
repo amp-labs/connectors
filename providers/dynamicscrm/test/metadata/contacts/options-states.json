@@ -1,0 +1,86 @@
+{
+  "@odata.context": "https://org6edbc606.api.crm.dynamics.com/api/data/v9.2/$metadata#EntityDefinitions('contact')/Attributes/Microsoft.Dynamics.CRM.StateAttributeMetadata(LogicalName,OptionSet(Options))",
+  "value": [
+    {
+      "LogicalName": "statecode",
+      "MetadataId": "cdc3895a-7539-41e9-966b-3f9ef805aefd",
+      "OptionSet": {
+        "MetadataId": "88fa5ad0-2a4b-4281-ac9c-b4e71fb77920",
+        "Options": [
+          {
+            "@odata.type": "#Microsoft.Dynamics.CRM.StateOptionMetadata",
+            "Value": 0,
+            "Color": null,
+            "IsManaged": true,
+            "ExternalValue": null,
+            "ParentValues": [],
+            "Tag": null,
+            "IsHidden": false,
+            "MetadataId": null,
+            "HasChanged": null,
+            "DefaultStatus": 1,
+            "InvariantName": "Active",
+            "Label": {
+              "LocalizedLabels": [
+                {
+                  "Label": "Active",
+                  "LanguageCode": 1033,
+                  "IsManaged": true,
+                  "MetadataId": "4754c2fa-2241-db11-898a-0007e9e17ebd",
+                  "HasChanged": null
+                }
+              ],
+              "UserLocalizedLabel": {
+                "Label": "Active",
+                "LanguageCode": 1033,
+                "IsManaged": true,
+                "MetadataId": "4754c2fa-2241-db11-898a-0007e9e17ebd",
+                "HasChanged": null
+              }
+            },
+            "Description": {
+              "LocalizedLabels": [],
+              "UserLocalizedLabel": null
+            }
+          },
+          {
+            "@odata.type": "#Microsoft.Dynamics.CRM.StateOptionMetadata",
+            "Value": 1,
+            "Color": null,
+            "IsManaged": true,
+            "ExternalValue": null,
+            "ParentValues": [],
+            "Tag": null,
+            "IsHidden": false,
+            "MetadataId": null,
+            "HasChanged": null,
+            "DefaultStatus": 2,
+            "InvariantName": "Inactive",
+            "Label": {
+              "LocalizedLabels": [
+                {
+                  "Label": "Inactive",
+                  "LanguageCode": 1033,
+                  "IsManaged": true,
+                  "MetadataId": "4954c2fa-2241-db11-898a-0007e9e17ebd",
+                  "HasChanged": null
+                }
+              ],
+              "UserLocalizedLabel": {
+                "Label": "Inactive",
+                "LanguageCode": 1033,
+                "IsManaged": true,
+                "MetadataId": "4954c2fa-2241-db11-898a-0007e9e17ebd",
+                "HasChanged": null
+              }
+            },
+            "Description": {
+              "LocalizedLabels": [],
+              "UserLocalizedLabel": null
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

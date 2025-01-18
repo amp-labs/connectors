@@ -1,0 +1,328 @@
+{
+  "@odata.context": "https://org5a07f924.api.crm.dynamics.com/api/data/v9.2/$metadata#EntityDefinitions('contact')/Attributes(LogicalName,DisplayName,SchemaName)",
+  "value": [
+    {
+      "@odata.type": "#Microsoft.Dynamics.CRM.StringAttributeMetadata",
+      "LogicalName": "adx_identity_newpassword",
+      "SchemaName": "adx_identity_newpassword",
+      "Targets": null,
+      "IsValidForCreate": true,
+      "IsValidForUpdate": true,
+      "AttributeTypeName": {
+        "Value": "StringType"
+      },
+      "DisplayName": {
+        "LocalizedLabels": [
+          {
+            "Label": "New Password Input"
+          }
+        ]
+      },
+      "Format": "Text"
+    },
+    {
+      "@odata.type": "#Microsoft.Dynamics.CRM.MemoAttributeMetadata",
+      "LogicalName": "adx_publicprofilecopy",
+      "SchemaName": "adx_PublicProfileCopy",
+      "Targets": null,
+      "IsValidForCreate": true,
+      "IsValidForUpdate": true,
+      "AttributeTypeName": {
+        "Value": "MemoType"
+      },
+      "DisplayName": {
+        "LocalizedLabels": [
+          {
+            "Label": "Public Profile Copy"
+          }
+        ]
+      },
+      "Format": "Text"
+    },
+    {
+      "@odata.type": "#Microsoft.Dynamics.CRM.BooleanAttributeMetadata",
+      "LogicalName": "merged",
+      "SchemaName": "Merged",
+      "Targets": null,
+      "IsValidForCreate": false,
+      "IsValidForUpdate": false,
+      "AttributeTypeName": {
+        "Value": "BooleanType"
+      },
+      "DisplayName": {
+        "LocalizedLabels": [
+          {
+            "Label": "Merged"
+          }
+        ]
+      },
+      "Format": ""
+    },
+    {
+      "@odata.type": "#Microsoft.Dynamics.CRM.BigIntAttributeMetadata",
+      "LogicalName": "versionnumber",
+      "SchemaName": "VersionNumber",
+      "Targets": null,
+      "IsValidForCreate": false,
+      "IsValidForUpdate": false,
+      "AttributeTypeName": {
+        "Value": "BigIntType"
+      },
+      "DisplayName": {
+        "LocalizedLabels": [
+          {
+            "Label": "Version Number"
+          }
+        ]
+      },
+      "Format": ""
+    },
+    {
+      "@odata.type": "#Microsoft.Dynamics.CRM.IntegerAttributeMetadata",
+      "LogicalName": "importsequencenumber",
+      "SchemaName": "ImportSequenceNumber",
+      "Targets": null,
+      "IsValidForCreate": true,
+      "IsValidForUpdate": false,
+      "AttributeTypeName": {
+        "Value": "IntegerType"
+      },
+      "DisplayName": {
+        "LocalizedLabels": [
+          {
+            "Label": "Import Sequence Number"
+          }
+        ]
+      },
+      "Format": "None"
+    },
+    {
+      "@odata.type": "#Microsoft.Dynamics.CRM.DecimalAttributeMetadata",
+      "LogicalName": "exchangerate",
+      "SchemaName": "ExchangeRate",
+      "Targets": null,
+      "IsValidForCreate": false,
+      "IsValidForUpdate": false,
+      "AttributeTypeName": {
+        "Value": "DecimalType"
+      },
+      "DisplayName": {
+        "LocalizedLabels": [
+          {
+            "Label": "Exchange Rate"
+          }
+        ]
+      },
+      "Format": ""
+    },
+    {
+      "@odata.type": "#Microsoft.Dynamics.CRM.MoneyAttributeMetadata",
+      "LogicalName": "annualincome",
+      "SchemaName": "AnnualIncome",
+      "Targets": null,
+      "IsValidForCreate": true,
+      "IsValidForUpdate": true,
+      "AttributeTypeName": {
+        "Value": "MoneyType"
+      },
+      "DisplayName": {
+        "LocalizedLabels": [
+          {
+            "Label": "Annual Income"
+          }
+        ]
+      },
+      "Format": ""
+    },
+    {
+      "@odata.type": "#Microsoft.Dynamics.CRM.DateTimeAttributeMetadata",
+      "LogicalName": "birthdate",
+      "SchemaName": "BirthDate",
+      "Targets": null,
+      "IsValidForCreate": true,
+      "IsValidForUpdate": true,
+      "AttributeTypeName": {
+        "Value": "DateTimeType"
+      },
+      "DisplayName": {
+        "LocalizedLabels": [
+          {
+            "Label": "Birthday"
+          }
+        ]
+      },
+      "Format": "DateOnly"
+    },
+    {
+      "@odata.type": "#Microsoft.Dynamics.CRM.DateTimeAttributeMetadata",
+      "LogicalName": "createdon",
+      "SchemaName": "CreatedOn",
+      "Targets": null,
+      "IsValidForCreate": false,
+      "IsValidForUpdate": false,
+      "AttributeTypeName": {
+        "Value": "DateTimeType"
+      },
+      "DisplayName": {
+        "LocalizedLabels": [
+          {
+            "Label": "Created On"
+          }
+        ]
+      },
+      "Format": "DateAndTime"
+    },
+    {
+      "@odata.type": "#Microsoft.Dynamics.CRM.StateAttributeMetadata",
+      "LogicalName": "statecode",
+      "SchemaName": "StateCode",
+      "Targets": null,
+      "IsValidForCreate": false,
+      "IsValidForUpdate": true,
+      "AttributeTypeName": {
+        "Value": "StateType"
+      },
+      "DisplayName": {
+        "LocalizedLabels": [
+          {
+            "Label": "Status"
+          }
+        ]
+      },
+      "Format": ""
+    },
+    {
+      "@odata.type": "#Microsoft.Dynamics.CRM.StatusAttributeMetadata",
+      "LogicalName": "statuscode",
+      "SchemaName": "StatusCode",
+      "Targets": null,
+      "IsValidForCreate": true,
+      "IsValidForUpdate": true,
+      "AttributeTypeName": {
+        "Value": "StatusType"
+      },
+      "DisplayName": {
+        "LocalizedLabels": [
+          {
+            "Label": "Status Reason"
+          }
+        ]
+      },
+      "Format": ""
+    },
+    {
+      "@odata.type": "#Microsoft.Dynamics.CRM.PicklistAttributeMetadata",
+      "LogicalName": "gendercode",
+      "SchemaName": "GenderCode",
+      "Targets": null,
+      "IsValidForCreate": true,
+      "IsValidForUpdate": true,
+      "AttributeTypeName": {
+        "Value": "PicklistType"
+      },
+      "DisplayName": {
+        "LocalizedLabels": [
+          {
+            "Label": "Gender"
+          }
+        ]
+      },
+      "Format": ""
+    },
+    {
+      "@odata.type": "#Microsoft.Dynamics.CRM.PicklistAttributeMetadata",
+      "LogicalName": "familystatuscode",
+      "SchemaName": "FamilyStatusCode",
+      "Targets": null,
+      "IsValidForCreate": true,
+      "IsValidForUpdate": true,
+      "AttributeTypeName": {
+        "Value": "PicklistType"
+      },
+      "DisplayName": {
+        "LocalizedLabels": [
+          {
+            "Label": "Marital Status"
+          }
+        ]
+      },
+      "Format": ""
+    },
+    {
+      "@odata.type": "#Microsoft.Dynamics.CRM.PicklistAttributeMetadata",
+      "LogicalName": "educationcode",
+      "SchemaName": "EducationCode",
+      "Targets": null,
+      "IsValidForCreate": true,
+      "IsValidForUpdate": true,
+      "AttributeTypeName": {
+        "Value": "PicklistType"
+      },
+      "DisplayName": {
+        "LocalizedLabels": [
+          {
+            "Label": "Education"
+          }
+        ]
+      },
+      "Format": ""
+    },
+    {
+      "@odata.type": "",
+      "LogicalName": "leadsourcecodename",
+      "SchemaName": "LeadSourceCodeName",
+      "Targets": null,
+      "IsValidForCreate": false,
+      "IsValidForUpdate": false,
+      "AttributeTypeName": {
+        "Value": "VirtualType"
+      },
+      "DisplayName": {
+        "LocalizedLabels": []
+      },
+      "Format": ""
+    },
+    {
+      "@odata.type": "#Microsoft.Dynamics.CRM.LookupAttributeMetadata",
+      "LogicalName": "accountid",
+      "SchemaName": "AccountId",
+      "Targets": [
+        "account"
+      ],
+      "IsValidForCreate": false,
+      "IsValidForUpdate": false,
+      "AttributeTypeName": {
+        "Value": "LookupType"
+      },
+      "DisplayName": {
+        "LocalizedLabels": [
+          {
+            "Label": "Account"
+          }
+        ]
+      },
+      "Format": "None"
+    },
+    {
+      "@odata.type": "#Microsoft.Dynamics.CRM.LookupAttributeMetadata",
+      "LogicalName": "createdby",
+      "SchemaName": "CreatedBy",
+      "Targets": [
+        "systemuser"
+      ],
+      "IsValidForCreate": false,
+      "IsValidForUpdate": false,
+      "AttributeTypeName": {
+        "Value": "LookupType"
+      },
+      "DisplayName": {
+        "LocalizedLabels": [
+          {
+            "Label": "Created By"
+          }
+        ]
+      },
+      "Format": "None"
+    }
+  ]
+}

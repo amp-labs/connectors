@@ -2,13 +2,11 @@ package dynamicscrm
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
-	"github.com/spyzhov/ajson"
 )
 
 // nolint:lll
@@ -68,19 +66,4 @@ func newPaginationHeader(pageSize int) common.Header {
 		Key:   "Prefer",
 		Value: fmt.Sprintf("odata.maxpagesize=%v", pageSize),
 	}
-}
-
-// Internal GET request, where we expect JSON payload.
-func (c *Connector) performGetRequest(ctx context.Context, url *urlbuilder.URL) (*ajson.Node, error) {
-	rsp, err := c.Client.Get(ctx, url.String())
-	if err != nil {
-		return nil, err
-	}
-
-	body, ok := rsp.Body()
-	if !ok {
-		return nil, errors.Join(ErrObjectNotFound, common.ErrEmptyJSONHTTPResponse)
-	}
-
-	return body, nil
 }
