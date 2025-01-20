@@ -386,6 +386,30 @@
       },
       "formField": false,
       "dataSensitivity": "non_sensitive"
+    },
+    {
+      "updatedAt": "2024-11-01T18:54:01.527Z",
+      "createdAt": "2021-07-29T20:21:14.749Z",
+      "name": "hs_pipeline",
+      "label": "Pipeline",
+      "type": "enumeration",
+      "fieldType": "select",
+      "description": "The pipeline with which this contact is currently associated",
+      "groupName": "contactinformation",
+      "options": [],
+      "displayOrder": -1,
+      "calculated": false,
+      "externalOptions": true,
+      "hasUniqueValue": false,
+      "hidden": true,
+      "hubspotDefined": true,
+      "modificationMetadata": {
+        "archivable": true,
+        "readOnlyDefinition": true,
+        "readOnlyValue": false
+      },
+      "formField": false,
+      "dataSensitivity": "non_sensitive"
     }
   ]
 }

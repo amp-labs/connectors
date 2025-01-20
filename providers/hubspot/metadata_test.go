@@ -12,10 +12,13 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
-func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
+func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
 	metadataContactsProperties := testutils.DataFromFile(t, "metadata-contacts-properties-sampled.json")
+	metadataContactsPipelines := testutils.DataFromFile(t, "metadata-contacts-external-pipelines.json")
+	metadataDealsProperties := testutils.DataFromFile(t, "metadata-deals-properties-sampled.json")
+	metadataDealsPipelines := testutils.DataFromFile(t, "metadata-deals-external-pipelines.json")
 
 	tests := []testroutines.Metadata{
 		{
@@ -27,10 +30,17 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Successfully describe contacts",
 			Input: []string{"contacts"},
-			Server: mockserver.Conditional{
+			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.PathSuffix("/crm/v3/properties/contacts"),
-				Then:  mockserver.Response(http.StatusOK, metadataContactsProperties),
+				Cases: []mockserver.Case{{
+					If:   mockcond.PathSuffix("/crm/v3/properties/contacts"),
+					Then: mockserver.Response(http.StatusOK, metadataContactsProperties),
+				}, {
+					// Connector will make this API call, output is valid empty data.
+					// This is done to shrink the scope of a test. See tests below that focus on pipelines.
+					If:   mockcond.PathSuffix("/crm/v3/pipelines/contacts"),
+					Then: mockserver.ResponseString(http.StatusOK, "{}"),
+				}},
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
@@ -163,6 +173,119 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							"address":                         "Street Address",
 							"associatedcompanyid":             "Primary Associated Company ID",
 							"hs_predictivecontactscorebucket": "Lead Rating",
+						},
+					},
+				},
+				Errors: nil,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Describe contacts with external pipeline enumeration options",
+			Input: []string{"contacts"},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{{
+					If:   mockcond.PathSuffix("/crm/v3/properties/contacts"),
+					Then: mockserver.Response(http.StatusOK, metadataContactsProperties),
+				}, {
+					If:   mockcond.PathSuffix("/crm/v3/pipelines/contacts"),
+					Then: mockserver.Response(http.StatusOK, metadataContactsPipelines),
+				}},
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"contacts": {
+						DisplayName: "contacts",
+						Fields: map[string]common.FieldMetadata{
+							// Values from External sources.
+							"hs_pipeline": {
+								DisplayName:  "Pipeline",
+								ValueType:    "singleSelect",
+								ProviderType: "enumeration.select",
+								ReadOnly:     false,
+								Values: []common.FieldValue{{
+									Value:        "subscriber",
+									DisplayValue: "Subscriber",
+								}, {
+									Value:        "lead",
+									DisplayValue: "Lead",
+								}, {
+									Value:        "marketingqualifiedlead",
+									DisplayValue: "Marketing Qualified Lead",
+								}, {
+									Value:        "salesqualifiedlead",
+									DisplayValue: "Sales Qualified Lead",
+								}, {
+									Value:        "opportunity",
+									DisplayValue: "Opportunity",
+								}, {
+									Value:        "customer",
+									DisplayValue: "Customer",
+								}, {
+									Value:        "evangelist",
+									DisplayValue: "Evangelist",
+								}, {
+									Value:        "other",
+									DisplayValue: "Other",
+								}},
+							},
+						},
+					},
+				},
+				Errors: nil,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Describe deals with external pipeline enumeration options",
+			Input: []string{"deals"},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{{
+					If:   mockcond.PathSuffix("/crm/v3/properties/deals"),
+					Then: mockserver.Response(http.StatusOK, metadataDealsProperties),
+				}, {
+					If:   mockcond.PathSuffix("/crm/v3/pipelines/deals"),
+					Then: mockserver.Response(http.StatusOK, metadataDealsPipelines),
+				}},
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"deals": {
+						DisplayName: "deals",
+						Fields: map[string]common.FieldMetadata{
+							// Values from External sources.
+							"pipeline": {
+								DisplayName:  "Pipeline",
+								ValueType:    "singleSelect",
+								ProviderType: "enumeration.select",
+								ReadOnly:     false,
+								Values: []common.FieldValue{{
+									Value:        "appointmentscheduled",
+									DisplayValue: "Appointment Scheduled",
+								}, {
+									Value:        "qualifiedtobuy",
+									DisplayValue: "Qualified To Buy",
+								}, {
+									Value:        "presentationscheduled",
+									DisplayValue: "Presentation Scheduled",
+								}, {
+									Value:        "decisionmakerboughtin",
+									DisplayValue: "Decision Maker Bought-In",
+								}, {
+									Value:        "contractsent",
+									DisplayValue: "Contract Sent",
+								}, {
+									Value:        "closedwon",
+									DisplayValue: "Closed Won",
+								}, {
+									Value:        "closedlost",
+									DisplayValue: "Closed Lost",
+								}},
+							},
 						},
 					},
 				},

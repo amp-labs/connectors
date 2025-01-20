@@ -38,6 +38,11 @@ func (c *Connector) getURL(arg string, queryArgs ...string) (string, error) {
 	return urlBase, nil
 }
 
+func (c *Connector) getRawURL() string {
+	// This URL is module independent.
+	return c.BaseURL
+}
+
 func (c *Connector) getCRMObjectsReadURL(config common.ReadParams) (string, error) {
 	// NB: The final slash is just to emulate prior behavior in earlier versions
 	// of this code. If it turns out to be unnecessary, remove it.
