@@ -1,0 +1,59 @@
+{
+    "data": {
+      "gid": "112233",
+      "resource_type": "goal",
+      "name": "Grow web traffic by 30%",
+      "html_notes": "<body>Start building brand awareness.</body>",
+      "notes": "Start building brand awareness.",
+      "due_on": "2019-09-15",
+      "start_on": "2019-09-14",
+      "is_workspace_level": true,
+      "liked": false,
+      "num_likes": 5,
+      "team": {
+        "gid": "12345",
+        "resource_type": "team",
+        "name": "Marketing"
+      },
+      "workspace": {
+        "gid": "12345",
+        "resource_type": "workspace",
+        "name": "My Company Workspace"
+      },
+      "time_period": {
+        "gid": "12345",
+        "resource_type": "time_period",
+        "end_on": "2019-09-14",
+        "start_on": "2019-09-13",
+        "period": "Q1",
+        "display_name": "Q1 FY22"
+      },
+      "metric": {
+        "gid": "12345",
+        "resource_type": "task",
+        "resource_subtype": "number",
+        "precision": 2,
+        "unit": "none",
+        "currency_code": "EUR",
+        "initial_number_value": 5.2,
+        "target_number_value": 10.2,
+        "current_number_value": 8.12,
+        "current_display_value": "8.12",
+        "progress_source": "manual",
+        "is_custom_weight": false,
+        "can_manage": true
+      },
+      "owner": {
+        "gid": "12345",
+        "resource_type": "user",
+        "name": "Greg Sanchez"
+      },
+      "current_status_update": {
+        "gid": "12345",
+        "resource_type": "status_update",
+        "title": "Status Update - Jun 15",
+        "resource_subtype": "project_status_update"
+      },
+      "status": "green"
+    }
+  }

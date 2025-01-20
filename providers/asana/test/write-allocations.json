@@ -1,0 +1,28 @@
+{
+    "data": {
+      "gid": "12345",
+      "resource_type": "allocation",
+      "start_date": "2024-02-28",
+      "end_date": "2024-02-28",
+      "effort": {
+        "type": "hours",
+        "value": 50
+      },
+      "assignee": {
+        "gid": "12345",
+        "resource_type": "user",
+        "name": "Greg Sanchez"
+      },
+      "created_by": {
+        "gid": "12345",
+        "resource_type": "user",
+        "name": "Greg Sanchez"
+      },
+      "parent": {
+        "gid": "12345",
+        "resource_type": "project",
+        "name": "Stuff to buy"
+      },
+      "resource_subtype": "project_allocation"
+    }
+  }

@@ -9,9 +9,7 @@ import (
 )
 
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
-
 	err := config.ValidateParams((true))
-
 	if err != nil {
 		return nil, err
 	}
@@ -37,17 +35,14 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		common.GetMarshaledData,
 		config.Fields,
 	)
-
 }
 
 func (c *Connector) buildURL(config common.ReadParams) (*urlbuilder.URL, error) {
-
 	if len(config.NextPage) != 0 {
 		return urlbuilder.New(config.NextPage.String())
 	}
 
 	url, err := c.geAPIURL(config.ObjectName)
-
 	if err != nil {
 		return nil, err
 	}
@@ -57,5 +52,4 @@ func (c *Connector) buildURL(config common.ReadParams) (*urlbuilder.URL, error) 
 	}
 
 	return url, err
-
 }

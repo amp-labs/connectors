@@ -1,0 +1,23 @@
+{
+    "data": {
+      "gid": "1222",
+      "resource_type": "membership",
+      "resource_subtype": "goal_membership",
+      "member": {
+        "gid": "12345",
+        "resource_type": "user",
+        "name": "Greg Sanchez"
+      },
+      "parent": {
+        "gid": "12345",
+        "resource_type": "goal",
+        "name": "Grow web traffic by 30%",
+        "owner": {
+          "gid": "12345",
+          "resource_type": "user",
+          "name": "Greg Sanchez"
+        }
+      },
+      "access_level": "editor"
+    }
+  }

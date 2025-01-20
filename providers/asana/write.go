@@ -2,18 +2,15 @@ package asana
 
 import (
 	"context"
-	"strconv"
+	"log"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/jsonquery"
-	"github.com/amp-labs/connectors/common/naming"
 	"github.com/spyzhov/ajson"
 )
 
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
-
 	err := config.ValidateParams()
-
 	if err != nil {
 		return nil, err
 	}
@@ -25,7 +22,6 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 	var write common.WriteMethod
 
 	url, err := c.geAPIURL(config.ObjectName)
-
 	if err != nil {
 		return nil, err
 	}
@@ -35,11 +31,13 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		write = c.Client.Post
 	} else {
 		write = c.Client.Put
+
 		url.AddPath(config.RecordId)
 	}
 
-	res, err := write(ctx, url.String(), config.RecordData)
+	log.Println("recorddata", config.RecordData)
 
+	res, err := write(ctx, url.String(), config.RecordData)
 	if err != nil {
 		return nil, err
 	}
@@ -51,32 +49,24 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		}, nil
 	}
 
-	// Write response has a reference to the resource but no payload data.
-	return constructWriteResult(config.ObjectName, body)
-
+	// write response with payload
+	return constructWriteResult(body)
 }
 
-func constructWriteResult(objName string, body *ajson.Node) (*common.WriteResult, error) {
-	obj := naming.NewSingularString(objName).String()
-
-	objectResponse, err := jsonquery.New(body).Object(obj, true)
+func constructWriteResult(body *ajson.Node) (*common.WriteResult, error) {
+	recordID, err := jsonquery.New(body, "data").StrWithDefault("gid", "")
 	if err != nil {
 		return nil, err
 	}
 
-	recordID, err := jsonquery.New(objectResponse).Integer("id", true)
-	if err != nil {
-		return nil, err
-	}
-
-	response, err := jsonquery.Convertor.ObjectToMap(objectResponse)
+	response, err := jsonquery.Convertor.ObjectToMap(body)
 	if err != nil {
 		return nil, err
 	}
 
 	return &common.WriteResult{
 		Success:  true,
-		RecordId: strconv.Itoa(int(*recordID)),
+		RecordId: recordID,
 		Errors:   nil,
 		Data:     response,
 	}, nil

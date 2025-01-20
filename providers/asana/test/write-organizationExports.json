@@ -1,0 +1,14 @@
+{
+    "data": {
+      "gid": "125",
+      "resource_type": "organization_export",
+      "created_at": "2012-02-22T02:06:58.147Z",
+      "download_url": "https://asana-export-us-east-1.s3.us-east-1.amazonaws.com/2563645399633793/domain_export/7588024658887731/download/ domain_export_2563645399633793_7588024658887731_2023018-201726.json.gz?X-Amz-Algorithm=AWS4-HMAC-SHA256& X-Amz-Content-Sha256=xxxxxxxx&X-Amz-Date=xxxxxxxx&X-Amz-Expires=300&X-Amz-Security-Token=xxxxxxxx& X-Amz-Signature=xxxxxxxx&X-Amz-SignedHeaders=host&x-id=GetObject#_=_",
+      "state": "started",
+      "organization": {
+        "gid": "12345",
+        "resource_type": "workspace",
+        "name": "My Company Workspace"
+      }
+    }
+  }

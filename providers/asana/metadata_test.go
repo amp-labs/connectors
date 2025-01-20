@@ -65,14 +65,12 @@ func TestListObjectMetadata(t *testing.T) {
 			})
 		})
 	}
-
 }
 
 func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(
 		WithAuthenticatedClient(http.DefaultClient),
 	)
-
 	if err != nil {
 		return nil, err
 	}
