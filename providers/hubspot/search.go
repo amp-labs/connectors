@@ -40,6 +40,16 @@ func (c *Connector) Search(ctx context.Context, config SearchParams) (*common.Re
 	)
 }
 
+// SearchCRM is intended for objects outside HubSpot's ObjectAPI.
+// For objects within ObjectAPI, refer to the Search method.
+//
+// Case-by-case explanation:
+// * Lists
+//   - Provider API endpoint for search
+//     https://developers.hubspot.com/docs/guides/api/crm/lists/overview#search-for-a-list
+//   - Search always returns an array of items, unlike the usual "read" operation.
+//     Therefore, the "retrieve" API endpoint is not used
+//     https://developers.hubspot.com/docs/guides/api/crm/lists/overview#retrieve-lists
 func (c *Connector) SearchCRM(ctx context.Context, config SearchCRMParams) (*common.ReadResult, error) {
 	ctx = logging.With(ctx, "connector", "hubspot")
 
