@@ -30,6 +30,6 @@
     "next_page": {
         "offset": "eyJ0eXAiOJiKV1iQLCJhbGciOiJIUzI1NiJ9",
         "path": "/tasks/12345/attachments?limit=2&offset=eyJ0eXAiOJiKV1iQLCJhbGciOiJIUzI1NiJ9",
-        "uri": "https://app.asana.com/api/1.0/tasks/12345/attachments?limit=2&offset=eyJ0eXAiOJiKV1iQLCJhbGciOiJIUzI1NiJ9"
+        "uri": "https://app.asana.com/api/1.0/tasks/12345/attachments?limit=2&offset=eyJ0ezI1NiJ9"
     }
 }
