@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
-	"time"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/providers/hubspot/metadata"
 )
 
 type objectMetadataResult struct {
@@ -42,7 +43,7 @@ func (c *Connector) ListObjectMetadata( // nolint:cyclop,funlen
 
 	for _, objectName := range objectNames {
 		go func(object string) {
-			objectMetadata, err := c.describeObject(ctx, object)
+			objectMetadata, err := c.getObjectMetadata(ctx, object)
 			if err != nil {
 				errChannel <- &objectMetadataError{
 					ObjectName: object,
@@ -78,8 +79,21 @@ func (c *Connector) ListObjectMetadata( // nolint:cyclop,funlen
 	return objectsMap, nil
 }
 
-// describeObject returns object metadata for the given object name.
-func (c *Connector) describeObject(ctx context.Context, objectName string) (*common.ObjectMetadata, error) {
+// getObjectMetadata returns object metadata for the given object name.
+func (c *Connector) getObjectMetadata(ctx context.Context, objectName string) (*common.ObjectMetadata, error) {
+	if crmObjectsOutsideTheObjectAPI.Has(objectName) {
+		return c.getObjectMetadataCRM(ctx, objectName)
+	}
+
+	return c.getObjectMetadataCRMCoreObjects(ctx, objectName)
+}
+
+// This method describes objects that are part of ObjectsAPI.
+// There is a dedicated API endpoint that is used for discovery of object properties.
+// https://developers.hubspot.com/docs/guides/api/crm/properties
+func (c *Connector) getObjectMetadataCRMCoreObjects(
+	ctx context.Context, objectName string,
+) (*common.ObjectMetadata, error) {
 	relativeURL := strings.Join([]string{"properties", objectName}, "/")
 
 	u, err := c.getURL(relativeURL)
@@ -105,6 +119,42 @@ func (c *Connector) describeObject(ctx context.Context, objectName string) (*com
 	return common.NewObjectMetadata(
 		objectName, fields,
 	), nil
+}
+
+// Method focuses on acquiring object properties for those objects that are not part of CRM ObjectsAPI.
+// https://developers.hubspot.com/docs/guides/api/crm/objects/companies
+// There is no discovery endpoint to acquire object properties, therefore, manual read is used.
+func (c *Connector) getObjectMetadataCRM(
+	ctx context.Context, objectName string,
+) (*common.ObjectMetadata, error) {
+	readResult, err := c.SearchCRM(ctx, SearchCRMParams{
+		ObjectName: objectName,
+		Fields:     connectors.Fields(""), // passed to satisfy validation
+		NextPage:   "",
+		PageSize:   1,
+	})
+	if err != nil {
+		// Ignore an error and fallback to static schema.
+		return metadata.Schemas.SelectOne(c.Module.ID, objectName)
+	}
+
+	if len(readResult.Data) == 0 {
+		// Read returned no rows.
+		return metadata.Schemas.SelectOne(c.Module.ID, objectName)
+	}
+
+	fields := make(map[string]common.FieldMetadata)
+	for fieldName := range readResult.Data[0].Raw {
+		fields[fieldName] = common.FieldMetadata{
+			DisplayName:  fieldName,
+			ValueType:    common.ValueTypeOther,
+			ProviderType: "", // not available
+			ReadOnly:     false,
+			Values:       nil,
+		}
+	}
+
+	return common.NewObjectMetadata(objectName, fields), nil
 }
 
 func (c *Connector) GetPostAuthInfo(
@@ -153,38 +203,21 @@ type fieldDescriptionResponse struct {
 }
 
 type fieldDescription struct {
-	UpdatedAt            time.Time                 `json:"updatedAt"`
-	CreatedAt            time.Time                 `json:"createdAt"`
 	Name                 string                    `json:"name"`
 	Label                string                    `json:"label"`
 	Type                 string                    `json:"type"`
 	FieldType            string                    `json:"fieldType"`
-	Description          string                    `json:"description"`
-	GroupName            string                    `json:"groupName"`
 	Options              []fieldEnumerationOption  `json:"options"`
-	DisplayOrder         int                       `json:"displayOrder"`
-	Calculated           bool                      `json:"calculated"`
-	ExternalOptions      bool                      `json:"externalOptions"`
-	HasUniqueValue       bool                      `json:"hasUniqueValue"`
-	Hidden               bool                      `json:"hidden"`
-	HubspotDefined       bool                      `json:"hubspotDefined"`
 	ModificationMetadata fieldModificationMetadata `json:"modificationMetadata"`
-	FormField            bool                      `json:"formField"`
-	DataSensitivity      string                    `json:"dataSensitivity"`
 }
 
 type fieldEnumerationOption struct {
-	Label        string `json:"label"`
-	Value        string `json:"value"`
-	Description  string `json:"description"`
-	DisplayOrder int    `json:"displayOrder"`
-	Hidden       bool   `json:"hidden"`
+	Label string `json:"label"`
+	Value string `json:"value"`
 }
 
 type fieldModificationMetadata struct {
-	Archivable         bool `json:"archivable"`
-	ReadOnlyDefinition bool `json:"readOnlyDefinition"`
-	ReadOnlyValue      bool `json:"readOnlyValue"`
+	ReadOnlyValue bool `json:"readOnlyValue"`
 }
 
 func (r fieldDescriptionResponse) transformToFields() map[string]common.FieldMetadata {

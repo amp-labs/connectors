@@ -19,6 +19,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 	metadataContactsPipelines := testutils.DataFromFile(t, "metadata-contacts-external-pipelines.json")
 	metadataDealsProperties := testutils.DataFromFile(t, "metadata-deals-properties-sampled.json")
 	metadataDealsPipelines := testutils.DataFromFile(t, "metadata-deals-external-pipelines.json")
+	responseLists := testutils.DataFromFile(t, "read-lists-1-first-page.json")
 
 	tests := []testroutines.Metadata{
 		{
@@ -285,6 +286,48 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 									Value:        "closedlost",
 									DisplayValue: "Closed Lost",
 								}},
+							},
+						},
+					},
+				},
+				Errors: nil,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Successfully describe lists, which is outside ObjectsAPI",
+			Input: []string{"lists"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.PathSuffix("/crm/v3/lists/search"),
+				Then:  mockserver.Response(http.StatusOK, responseLists),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"lists": {
+						DisplayName: "lists",
+						Fields: map[string]common.FieldMetadata{
+							"additionalProperties": {
+								DisplayName:  "additionalProperties",
+								ValueType:    "other",
+								ProviderType: "",
+								ReadOnly:     false,
+								Values:       nil,
+							},
+							"name": {
+								DisplayName:  "name",
+								ValueType:    "other",
+								ProviderType: "",
+								ReadOnly:     false,
+								Values:       nil,
+							},
+							"updatedAt": {
+								DisplayName:  "updatedAt",
+								ValueType:    "other",
+								ProviderType: "",
+								ReadOnly:     false,
+								Values:       nil,
 							},
 						},
 					},

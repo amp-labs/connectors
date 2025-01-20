@@ -42,6 +42,7 @@ type SearchCRMParams struct {
 	Fields datautils.Set[string] // optional
 	// NextPage is an opaque token that can be used to get the next page of results.
 	NextPage common.NextPageToken // optional, only set this if you want to read the next page of results
+	PageSize int
 }
 
 func (p SearchCRMParams) ValidateParams() error {
@@ -68,9 +69,14 @@ func (p SearchCRMParams) Payload() (SearchCRMPayload, error) {
 		}
 	}
 
+	pageSize := DefaultPageSizeInt
+	if p.PageSize != 0 {
+		pageSize = p.PageSize
+	}
+
 	return SearchCRMPayload{
 		Offset: offset,
-		Count:  DefaultPageSizeInt,
+		Count:  pageSize,
 	}, nil
 }
 
