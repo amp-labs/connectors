@@ -1,0 +1,65 @@
+{
+  "modules": {
+    "CRM": {
+      "id": "CRM",
+      "path": "/crm/v3",
+      "objects": {
+        "lists": {
+          "displayName": "Lists",
+          "path": "/lists/search",
+          "responseKey": "data",
+          "fields": {
+            "additionalProperties": {
+              "displayName": "additionalProperties",
+              "valueType": "other"
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "other"
+            },
+            "createdById": {
+              "displayName": "createdById",
+              "valueType": "other"
+            },
+            "filtersUpdatedAt": {
+              "displayName": "filtersUpdatedAt",
+              "valueType": "other"
+            },
+            "listId": {
+              "displayName": "listId",
+              "valueType": "other"
+            },
+            "listVersion": {
+              "displayName": "listVersion",
+              "valueType": "other"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "other"
+            },
+            "objectTypeId": {
+              "displayName": "objectTypeId",
+              "valueType": "other"
+            },
+            "processingStatus": {
+              "displayName": "processingStatus",
+              "valueType": "other"
+            },
+            "processingType": {
+              "displayName": "processingType",
+              "valueType": "other"
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "other"
+            },
+            "updatedById": {
+              "displayName": "updatedById",
+              "valueType": "other"
+            }
+          }
+        }
+      }
+    }
+  }
+}
