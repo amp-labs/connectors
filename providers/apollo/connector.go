@@ -17,11 +17,6 @@ type Connector struct {
 type operation string
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	defer common.PanicRecovery(func(cause error) {
-		outErr = cause
-		conn = nil
-	})
-
 	params, err := paramsbuilder.Apply(parameters{}, opts)
 	if err != nil {
 		return nil, err
@@ -59,6 +54,8 @@ func (c *Connector) Provider() providers.Provider {
 // Depending on the operation(read or write), some objects will need different endpoints.
 // That's the sole purpose of the variable ops.
 func (c *Connector) getAPIURL(objectName string, ops operation) (*urlbuilder.URL, error) {
+	objectName = constructSupportedObjectName(objectName)
+
 	relativePath := strings.Join([]string{restAPIPrefix, objectName}, "/")
 
 	url, err := urlbuilder.New(c.BaseURL, relativePath)
@@ -71,14 +68,7 @@ func (c *Connector) getAPIURL(objectName string, ops operation) (*urlbuilder.URL
 	// currently we do not support routing to Search method.
 	//
 	if usesSearching(objectName) && ops == readOp {
-		switch {
-		case in(objectName, postSearchObjects):
-			return nil, common.ErrOperationNotSupportedForObject
-		// Objects opportunities & users do not use the POST method
-		// The POST search reading limits do  not apply to them.
-		case in(objectName, getSearchObjects):
-			url.AddPath(searchingPath)
-		}
+		url.AddPath(searchingPath)
 	}
 
 	return url, nil

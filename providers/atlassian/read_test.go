@@ -10,7 +10,6 @@ import (
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/jsonquery"
-	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -93,14 +92,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				  "issues": []
 				}`),
 			}.Server(),
-			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
-				return nextPageComparator(actual, expected)
-			},
-			Expected: &common.ReadResult{
-				Rows:     0,
-				NextPage: "",
-				Done:     true,
-			},
+			Comparator:   testroutines.ComparatorPagination,
+			Expected:     &common.ReadResult{Rows: 0, NextPage: "", Done: true},
 			ExpectedErrs: nil,
 		},
 		{
@@ -139,14 +132,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					{"fields":{}, "id": "1"}
 				]}`),
 			}.Server(),
-			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
-				return nextPageComparator(actual, expected)
-			},
-			Expected: &common.ReadResult{
-				Rows:     2,
-				NextPage: "",
-				Done:     true,
-			},
+			Comparator:   testroutines.ComparatorPagination,
+			Expected:     &common.ReadResult{Rows: 2, NextPage: "", Done: true},
 			ExpectedErrs: nil,
 		},
 		{
@@ -162,9 +149,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					{"fields":{}, "id": "1"}
 				]}`),
 			}.Server(),
-			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
-				return nextPageComparator(actual, expected)
-			},
+			Comparator: testroutines.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows:     2,
 				NextPage: "8",
@@ -189,11 +174,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					  "issues": [{"fields":{}, "id": "0"}]
 					}`),
 			}.Server(),
-			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
-				return actual.Rows == expected.Rows
-			},
+			Comparator: testroutines.ComparatorPagination,
 			Expected: &common.ReadResult{
-				Rows: 1,
+				Rows:     1,
+				NextPage: "1",
+				Done:     false,
 			},
 			ExpectedErrs: nil, // there must be no errors.
 		},
@@ -216,11 +201,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						{"fields":{}, "id": "2"}
 					]}`),
 			}.Server(),
-			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
-				return actual.Rows == expected.Rows
-			},
+			Comparator: testroutines.ComparatorPagination,
 			Expected: &common.ReadResult{
-				Rows: 3,
+				Rows:     3,
+				NextPage: "20",
+				Done:     false,
 			},
 			ExpectedErrs: nil, // there must be no errors
 		},
@@ -234,13 +219,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseIssuesFirstPage),
 			}.Server(),
-			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
-				return mockutils.ReadResultComparator.SubsetFields(actual, expected) &&
-					mockutils.ReadResultComparator.SubsetRaw(actual, expected) &&
-					actual.NextPage.String() == expected.NextPage.String() &&
-					actual.Rows == expected.Rows &&
-					actual.Done == expected.Done
-			},
+			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{{
@@ -304,12 +283,6 @@ func TestReadWithoutMetadata(t *testing.T) {
 	if !errors.Is(err, ErrMissingCloudId) {
 		t.Fatalf("expected Read method to complain about missing cloud id")
 	}
-}
-
-func nextPageComparator(actual *common.ReadResult, expected *common.ReadResult) bool {
-	return actual.NextPage.String() == expected.NextPage.String() &&
-		actual.Rows == expected.Rows &&
-		actual.Done == expected.Done
 }
 
 func constructTestConnector(serverURL string) (*Connector, error) {

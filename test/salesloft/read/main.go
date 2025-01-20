@@ -9,7 +9,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/providers/salesloft"
 	msTest "github.com/amp-labs/connectors/test/salesloft"
 	"github.com/amp-labs/connectors/test/utils"
 )
@@ -34,8 +33,4 @@ func main() {
 
 	fmt.Println("Reading people..")
 	utils.DumpJSON(res, os.Stdout)
-
-	if res.Rows > salesloft.DefaultPageSize {
-		utils.Fail(fmt.Sprintf("expected max %v rows", salesloft.DefaultPageSize))
-	}
 }

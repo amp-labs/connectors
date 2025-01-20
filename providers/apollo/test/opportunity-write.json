@@ -1,0 +1,13 @@
+{
+  "opportunity": {
+    "id": "6781406a5dde2401b0dd5ea5",
+    "team_id": "6508dea16d3b6400a3ed7030",
+    "owner_id": null,
+    "salesforce_owner_id": null,
+    "amount": 200.0,
+    "closed_date": "2024-12-18T00:00:00.000+00:00",
+    "account_id": null,
+    "description": null,
+    "is_closed": false
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "pagination": {
+    "page": 1,
+    "per_page": 5,
+    "total_entries": 1,
+    "total_pages": 1
+  },
+  "breadcrumbs": [
+    {
+      "label": "Name",
+      "signal_field_name": "q_name",
+      "value": "Copywriting Dublin",
+      "display_name": "Copywriting Dublin"
+    }
+  ],
+  "emailer_campaigns": [
+    {
+      "id": "66e9e215ece19801b219997f",
+      "name": "Target Copywriting Clients in Dublin",
+      "archived": false,
+      "created_at": "2024-09-17T20:09:57.837Z",
+      "emailer_schedule_id": "6095a711bd01d100a506d52a",
+      "max_emails_per_day": null,
+      "user_id": "66302798d03b9601c7934ebf",
+      "same_account_reply_policy_cd": null
+    }
+  ],
+  "num_fetch_result": null
+}

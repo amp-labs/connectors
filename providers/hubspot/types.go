@@ -1,6 +1,9 @@
 package hubspot
 
 import (
+	"fmt"
+	"strconv"
+
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
 )
@@ -16,6 +19,8 @@ type SearchParams struct {
 	FilterGroups []FilterGroup // optional
 	// Fields is the list of fields to return in the result.
 	Fields datautils.Set[string] // optional
+	// AssociatedObjects is a list of associated objects to fetch along with the main object.
+	AssociatedObjects []string // optional
 }
 
 func (p SearchParams) ValidateParams() error {
@@ -28,6 +33,50 @@ func (p SearchParams) ValidateParams() error {
 	}
 
 	return nil
+}
+
+type SearchCRMParams struct {
+	// The name of the object we are reading, e.g. "Lists"
+	ObjectName string // required
+	// Fields is the list of fields to return in the result.
+	Fields datautils.Set[string] // optional
+	// NextPage is an opaque token that can be used to get the next page of results.
+	NextPage common.NextPageToken // optional, only set this if you want to read the next page of results
+}
+
+func (p SearchCRMParams) ValidateParams() error {
+	if len(p.ObjectName) == 0 {
+		return common.ErrMissingObjects
+	}
+
+	if len(p.Fields) == 0 {
+		return common.ErrMissingFields
+	}
+
+	return nil
+}
+
+func (p SearchCRMParams) Payload() (SearchCRMPayload, error) {
+	offset := 0
+
+	if len(p.NextPage) != 0 {
+		var err error
+
+		offset, err = strconv.Atoi(p.NextPage.String())
+		if err != nil {
+			return SearchCRMPayload{}, fmt.Errorf("%w: %w", common.ErrNextPageInvalid, err)
+		}
+	}
+
+	return SearchCRMPayload{
+		Offset: offset,
+		Count:  DefaultPageSizeInt,
+	}, nil
+}
+
+type SearchCRMPayload struct {
+	Offset int `json:"offset"`
+	Count  int `json:"count"`
 }
 
 type SortBy struct {
@@ -86,4 +135,11 @@ type ObjectType string
 
 const (
 	ObjectTypeContact ObjectType = "contacts"
+)
+
+type hubspotHeaderKey string
+
+const (
+	xHubspotRequestTimestamp hubspotHeaderKey = "X-Hubspot-Request-Timestamp"
+	xHubspotSignatureV3      hubspotHeaderKey = "X-Hubspot-Signature-V3"
 )

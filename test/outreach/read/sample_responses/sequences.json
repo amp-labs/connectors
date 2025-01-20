@@ -1,5 +1,5 @@
 {
-  "rows": 15,
+  "rows": 18,
   "data": [
     {
       "fields": {
@@ -36,6 +36,70 @@
         "positiveReplyCount": 0,
         "primaryReplyAction": "finish",
         "primaryReplyPauseDuration": null,
+        "relationships": {
+          "calls": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/calls?filter%5Bsequence%5D%5Bid%5D=1"
+            }
+          },
+          "contentCategoryMemberships": {
+            "data": [],
+            "links": {
+              "related": "https://api.outreach.io/api/v2/contentCategoryMemberships?filter%5Bsequence%5D%5Bid%5D=1"
+            },
+            "meta": {
+              "count": 0
+            }
+          },
+          "creator": {
+            "data": {
+              "id": 2,
+              "type": "user"
+            }
+          },
+          "mailings": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/mailings?filter%5Bsequence%5D%5Bid%5D=1"
+            }
+          },
+          "owner": {
+            "data": null
+          },
+          "ruleset": {
+            "data": {
+              "id": 2,
+              "type": "ruleset"
+            }
+          },
+          "schedule": {
+            "data": null
+          },
+          "sequenceStates": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/sequenceStates?filter%5Bsequence%5D%5Bid%5D=1"
+            }
+          },
+          "sequenceSteps": {
+            "data": [],
+            "links": {
+              "related": "https://api.outreach.io/api/v2/sequenceSteps?filter%5Bsequence%5D%5Bid%5D=1"
+            },
+            "meta": {
+              "count": 0
+            }
+          },
+          "tasks": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/tasks?filter%5Bsequence%5D%5Bid%5D=1"
+            }
+          },
+          "updater": {
+            "data": {
+              "id": 2,
+              "type": "user"
+            }
+          }
+        },
         "replyCount": 0,
         "salesMotion": null,
         "scheduleCount": 0,
@@ -91,6 +155,70 @@
         "positiveReplyCount": 0,
         "primaryReplyAction": "finish",
         "primaryReplyPauseDuration": null,
+        "relationships": {
+          "calls": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/calls?filter%5Bsequence%5D%5Bid%5D=2"
+            }
+          },
+          "contentCategoryMemberships": {
+            "data": [],
+            "links": {
+              "related": "https://api.outreach.io/api/v2/contentCategoryMemberships?filter%5Bsequence%5D%5Bid%5D=2"
+            },
+            "meta": {
+              "count": 0
+            }
+          },
+          "creator": {
+            "data": {
+              "id": 2,
+              "type": "user"
+            }
+          },
+          "mailings": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/mailings?filter%5Bsequence%5D%5Bid%5D=2"
+            }
+          },
+          "owner": {
+            "data": null
+          },
+          "ruleset": {
+            "data": {
+              "id": 3,
+              "type": "ruleset"
+            }
+          },
+          "schedule": {
+            "data": null
+          },
+          "sequenceStates": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/sequenceStates?filter%5Bsequence%5D%5Bid%5D=2"
+            }
+          },
+          "sequenceSteps": {
+            "data": [],
+            "links": {
+              "related": "https://api.outreach.io/api/v2/sequenceSteps?filter%5Bsequence%5D%5Bid%5D=2"
+            },
+            "meta": {
+              "count": 0
+            }
+          },
+          "tasks": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/tasks?filter%5Bsequence%5D%5Bid%5D=2"
+            }
+          },
+          "updater": {
+            "data": {
+              "id": 2,
+              "type": "user"
+            }
+          }
+        },
         "replyCount": 0,
         "salesMotion": null,
         "scheduleCount": 0,
@@ -146,6 +274,70 @@
         "positiveReplyCount": 0,
         "primaryReplyAction": "finish",
         "primaryReplyPauseDuration": null,
+        "relationships": {
+          "calls": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/calls?filter%5Bsequence%5D%5Bid%5D=3"
+            }
+          },
+          "contentCategoryMemberships": {
+            "data": [],
+            "links": {
+              "related": "https://api.outreach.io/api/v2/contentCategoryMemberships?filter%5Bsequence%5D%5Bid%5D=3"
+            },
+            "meta": {
+              "count": 0
+            }
+          },
+          "creator": {
+            "data": {
+              "id": 2,
+              "type": "user"
+            }
+          },
+          "mailings": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/mailings?filter%5Bsequence%5D%5Bid%5D=3"
+            }
+          },
+          "owner": {
+            "data": null
+          },
+          "ruleset": {
+            "data": {
+              "id": 4,
+              "type": "ruleset"
+            }
+          },
+          "schedule": {
+            "data": null
+          },
+          "sequenceStates": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/sequenceStates?filter%5Bsequence%5D%5Bid%5D=3"
+            }
+          },
+          "sequenceSteps": {
+            "data": [],
+            "links": {
+              "related": "https://api.outreach.io/api/v2/sequenceSteps?filter%5Bsequence%5D%5Bid%5D=3"
+            },
+            "meta": {
+              "count": 0
+            }
+          },
+          "tasks": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/tasks?filter%5Bsequence%5D%5Bid%5D=3"
+            }
+          },
+          "updater": {
+            "data": {
+              "id": 2,
+              "type": "user"
+            }
+          }
+        },
         "replyCount": 0,
         "salesMotion": null,
         "scheduleCount": 0,
@@ -201,6 +393,70 @@
         "positiveReplyCount": 0,
         "primaryReplyAction": "finish",
         "primaryReplyPauseDuration": null,
+        "relationships": {
+          "calls": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/calls?filter%5Bsequence%5D%5Bid%5D=4"
+            }
+          },
+          "contentCategoryMemberships": {
+            "data": [],
+            "links": {
+              "related": "https://api.outreach.io/api/v2/contentCategoryMemberships?filter%5Bsequence%5D%5Bid%5D=4"
+            },
+            "meta": {
+              "count": 0
+            }
+          },
+          "creator": {
+            "data": {
+              "id": 2,
+              "type": "user"
+            }
+          },
+          "mailings": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/mailings?filter%5Bsequence%5D%5Bid%5D=4"
+            }
+          },
+          "owner": {
+            "data": null
+          },
+          "ruleset": {
+            "data": {
+              "id": 5,
+              "type": "ruleset"
+            }
+          },
+          "schedule": {
+            "data": null
+          },
+          "sequenceStates": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/sequenceStates?filter%5Bsequence%5D%5Bid%5D=4"
+            }
+          },
+          "sequenceSteps": {
+            "data": [],
+            "links": {
+              "related": "https://api.outreach.io/api/v2/sequenceSteps?filter%5Bsequence%5D%5Bid%5D=4"
+            },
+            "meta": {
+              "count": 0
+            }
+          },
+          "tasks": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/tasks?filter%5Bsequence%5D%5Bid%5D=4"
+            }
+          },
+          "updater": {
+            "data": {
+              "id": 2,
+              "type": "user"
+            }
+          }
+        },
         "replyCount": 0,
         "salesMotion": null,
         "scheduleCount": 0,
@@ -256,6 +512,70 @@
         "positiveReplyCount": 0,
         "primaryReplyAction": "finish",
         "primaryReplyPauseDuration": null,
+        "relationships": {
+          "calls": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/calls?filter%5Bsequence%5D%5Bid%5D=5"
+            }
+          },
+          "contentCategoryMemberships": {
+            "data": [],
+            "links": {
+              "related": "https://api.outreach.io/api/v2/contentCategoryMemberships?filter%5Bsequence%5D%5Bid%5D=5"
+            },
+            "meta": {
+              "count": 0
+            }
+          },
+          "creator": {
+            "data": {
+              "id": 2,
+              "type": "user"
+            }
+          },
+          "mailings": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/mailings?filter%5Bsequence%5D%5Bid%5D=5"
+            }
+          },
+          "owner": {
+            "data": null
+          },
+          "ruleset": {
+            "data": {
+              "id": 6,
+              "type": "ruleset"
+            }
+          },
+          "schedule": {
+            "data": null
+          },
+          "sequenceStates": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/sequenceStates?filter%5Bsequence%5D%5Bid%5D=5"
+            }
+          },
+          "sequenceSteps": {
+            "data": [],
+            "links": {
+              "related": "https://api.outreach.io/api/v2/sequenceSteps?filter%5Bsequence%5D%5Bid%5D=5"
+            },
+            "meta": {
+              "count": 0
+            }
+          },
+          "tasks": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/tasks?filter%5Bsequence%5D%5Bid%5D=5"
+            }
+          },
+          "updater": {
+            "data": {
+              "id": 2,
+              "type": "user"
+            }
+          }
+        },
         "replyCount": 0,
         "salesMotion": null,
         "scheduleCount": 0,
@@ -311,6 +631,70 @@
         "positiveReplyCount": 0,
         "primaryReplyAction": "finish",
         "primaryReplyPauseDuration": null,
+        "relationships": {
+          "calls": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/calls?filter%5Bsequence%5D%5Bid%5D=6"
+            }
+          },
+          "contentCategoryMemberships": {
+            "data": [],
+            "links": {
+              "related": "https://api.outreach.io/api/v2/contentCategoryMemberships?filter%5Bsequence%5D%5Bid%5D=6"
+            },
+            "meta": {
+              "count": 0
+            }
+          },
+          "creator": {
+            "data": {
+              "id": 2,
+              "type": "user"
+            }
+          },
+          "mailings": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/mailings?filter%5Bsequence%5D%5Bid%5D=6"
+            }
+          },
+          "owner": {
+            "data": null
+          },
+          "ruleset": {
+            "data": {
+              "id": 7,
+              "type": "ruleset"
+            }
+          },
+          "schedule": {
+            "data": null
+          },
+          "sequenceStates": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/sequenceStates?filter%5Bsequence%5D%5Bid%5D=6"
+            }
+          },
+          "sequenceSteps": {
+            "data": [],
+            "links": {
+              "related": "https://api.outreach.io/api/v2/sequenceSteps?filter%5Bsequence%5D%5Bid%5D=6"
+            },
+            "meta": {
+              "count": 0
+            }
+          },
+          "tasks": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/tasks?filter%5Bsequence%5D%5Bid%5D=6"
+            }
+          },
+          "updater": {
+            "data": {
+              "id": 2,
+              "type": "user"
+            }
+          }
+        },
         "replyCount": 0,
         "salesMotion": null,
         "scheduleCount": 0,
@@ -367,6 +751,70 @@
         "positiveReplyCount": 0,
         "primaryReplyAction": "finish",
         "primaryReplyPauseDuration": null,
+        "relationships": {
+          "calls": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/calls?filter%5Bsequence%5D%5Bid%5D=7"
+            }
+          },
+          "contentCategoryMemberships": {
+            "data": [],
+            "links": {
+              "related": "https://api.outreach.io/api/v2/contentCategoryMemberships?filter%5Bsequence%5D%5Bid%5D=7"
+            },
+            "meta": {
+              "count": 0
+            }
+          },
+          "creator": {
+            "data": {
+              "id": 2,
+              "type": "user"
+            }
+          },
+          "mailings": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/mailings?filter%5Bsequence%5D%5Bid%5D=7"
+            }
+          },
+          "owner": {
+            "data": null
+          },
+          "ruleset": {
+            "data": {
+              "id": 8,
+              "type": "ruleset"
+            }
+          },
+          "schedule": {
+            "data": null
+          },
+          "sequenceStates": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/sequenceStates?filter%5Bsequence%5D%5Bid%5D=7"
+            }
+          },
+          "sequenceSteps": {
+            "data": [],
+            "links": {
+              "related": "https://api.outreach.io/api/v2/sequenceSteps?filter%5Bsequence%5D%5Bid%5D=7"
+            },
+            "meta": {
+              "count": 0
+            }
+          },
+          "tasks": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/tasks?filter%5Bsequence%5D%5Bid%5D=7"
+            }
+          },
+          "updater": {
+            "data": {
+              "id": 2,
+              "type": "user"
+            }
+          }
+        },
         "replyCount": 0,
         "salesMotion": null,
         "scheduleCount": 0,
@@ -423,6 +871,70 @@
         "positiveReplyCount": 0,
         "primaryReplyAction": "finish",
         "primaryReplyPauseDuration": null,
+        "relationships": {
+          "calls": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/calls?filter%5Bsequence%5D%5Bid%5D=8"
+            }
+          },
+          "contentCategoryMemberships": {
+            "data": [],
+            "links": {
+              "related": "https://api.outreach.io/api/v2/contentCategoryMemberships?filter%5Bsequence%5D%5Bid%5D=8"
+            },
+            "meta": {
+              "count": 0
+            }
+          },
+          "creator": {
+            "data": {
+              "id": 2,
+              "type": "user"
+            }
+          },
+          "mailings": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/mailings?filter%5Bsequence%5D%5Bid%5D=8"
+            }
+          },
+          "owner": {
+            "data": null
+          },
+          "ruleset": {
+            "data": {
+              "id": 9,
+              "type": "ruleset"
+            }
+          },
+          "schedule": {
+            "data": null
+          },
+          "sequenceStates": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/sequenceStates?filter%5Bsequence%5D%5Bid%5D=8"
+            }
+          },
+          "sequenceSteps": {
+            "data": [],
+            "links": {
+              "related": "https://api.outreach.io/api/v2/sequenceSteps?filter%5Bsequence%5D%5Bid%5D=8"
+            },
+            "meta": {
+              "count": 0
+            }
+          },
+          "tasks": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/tasks?filter%5Bsequence%5D%5Bid%5D=8"
+            }
+          },
+          "updater": {
+            "data": {
+              "id": 2,
+              "type": "user"
+            }
+          }
+        },
         "replyCount": 0,
         "salesMotion": null,
         "scheduleCount": 0,
@@ -479,6 +991,70 @@
         "positiveReplyCount": 0,
         "primaryReplyAction": "finish",
         "primaryReplyPauseDuration": null,
+        "relationships": {
+          "calls": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/calls?filter%5Bsequence%5D%5Bid%5D=9"
+            }
+          },
+          "contentCategoryMemberships": {
+            "data": [],
+            "links": {
+              "related": "https://api.outreach.io/api/v2/contentCategoryMemberships?filter%5Bsequence%5D%5Bid%5D=9"
+            },
+            "meta": {
+              "count": 0
+            }
+          },
+          "creator": {
+            "data": {
+              "id": 2,
+              "type": "user"
+            }
+          },
+          "mailings": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/mailings?filter%5Bsequence%5D%5Bid%5D=9"
+            }
+          },
+          "owner": {
+            "data": null
+          },
+          "ruleset": {
+            "data": {
+              "id": 11,
+              "type": "ruleset"
+            }
+          },
+          "schedule": {
+            "data": null
+          },
+          "sequenceStates": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/sequenceStates?filter%5Bsequence%5D%5Bid%5D=9"
+            }
+          },
+          "sequenceSteps": {
+            "data": [],
+            "links": {
+              "related": "https://api.outreach.io/api/v2/sequenceSteps?filter%5Bsequence%5D%5Bid%5D=9"
+            },
+            "meta": {
+              "count": 0
+            }
+          },
+          "tasks": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/tasks?filter%5Bsequence%5D%5Bid%5D=9"
+            }
+          },
+          "updater": {
+            "data": {
+              "id": 2,
+              "type": "user"
+            }
+          }
+        },
         "replyCount": 0,
         "salesMotion": null,
         "scheduleCount": 0,
@@ -535,6 +1111,70 @@
         "positiveReplyCount": 0,
         "primaryReplyAction": "finish",
         "primaryReplyPauseDuration": null,
+        "relationships": {
+          "calls": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/calls?filter%5Bsequence%5D%5Bid%5D=10"
+            }
+          },
+          "contentCategoryMemberships": {
+            "data": [],
+            "links": {
+              "related": "https://api.outreach.io/api/v2/contentCategoryMemberships?filter%5Bsequence%5D%5Bid%5D=10"
+            },
+            "meta": {
+              "count": 0
+            }
+          },
+          "creator": {
+            "data": {
+              "id": 2,
+              "type": "user"
+            }
+          },
+          "mailings": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/mailings?filter%5Bsequence%5D%5Bid%5D=10"
+            }
+          },
+          "owner": {
+            "data": null
+          },
+          "ruleset": {
+            "data": {
+              "id": 12,
+              "type": "ruleset"
+            }
+          },
+          "schedule": {
+            "data": null
+          },
+          "sequenceStates": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/sequenceStates?filter%5Bsequence%5D%5Bid%5D=10"
+            }
+          },
+          "sequenceSteps": {
+            "data": [],
+            "links": {
+              "related": "https://api.outreach.io/api/v2/sequenceSteps?filter%5Bsequence%5D%5Bid%5D=10"
+            },
+            "meta": {
+              "count": 0
+            }
+          },
+          "tasks": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/tasks?filter%5Bsequence%5D%5Bid%5D=10"
+            }
+          },
+          "updater": {
+            "data": {
+              "id": 2,
+              "type": "user"
+            }
+          }
+        },
         "replyCount": 0,
         "salesMotion": null,
         "scheduleCount": 0,
@@ -591,6 +1231,70 @@
         "positiveReplyCount": 0,
         "primaryReplyAction": "finish",
         "primaryReplyPauseDuration": null,
+        "relationships": {
+          "calls": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/calls?filter%5Bsequence%5D%5Bid%5D=11"
+            }
+          },
+          "contentCategoryMemberships": {
+            "data": [],
+            "links": {
+              "related": "https://api.outreach.io/api/v2/contentCategoryMemberships?filter%5Bsequence%5D%5Bid%5D=11"
+            },
+            "meta": {
+              "count": 0
+            }
+          },
+          "creator": {
+            "data": {
+              "id": 2,
+              "type": "user"
+            }
+          },
+          "mailings": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/mailings?filter%5Bsequence%5D%5Bid%5D=11"
+            }
+          },
+          "owner": {
+            "data": null
+          },
+          "ruleset": {
+            "data": {
+              "id": 13,
+              "type": "ruleset"
+            }
+          },
+          "schedule": {
+            "data": null
+          },
+          "sequenceStates": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/sequenceStates?filter%5Bsequence%5D%5Bid%5D=11"
+            }
+          },
+          "sequenceSteps": {
+            "data": [],
+            "links": {
+              "related": "https://api.outreach.io/api/v2/sequenceSteps?filter%5Bsequence%5D%5Bid%5D=11"
+            },
+            "meta": {
+              "count": 0
+            }
+          },
+          "tasks": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/tasks?filter%5Bsequence%5D%5Bid%5D=11"
+            }
+          },
+          "updater": {
+            "data": {
+              "id": 2,
+              "type": "user"
+            }
+          }
+        },
         "replyCount": 0,
         "salesMotion": null,
         "scheduleCount": 0,
@@ -647,6 +1351,70 @@
         "positiveReplyCount": 0,
         "primaryReplyAction": "finish",
         "primaryReplyPauseDuration": null,
+        "relationships": {
+          "calls": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/calls?filter%5Bsequence%5D%5Bid%5D=12"
+            }
+          },
+          "contentCategoryMemberships": {
+            "data": [],
+            "links": {
+              "related": "https://api.outreach.io/api/v2/contentCategoryMemberships?filter%5Bsequence%5D%5Bid%5D=12"
+            },
+            "meta": {
+              "count": 0
+            }
+          },
+          "creator": {
+            "data": {
+              "id": 2,
+              "type": "user"
+            }
+          },
+          "mailings": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/mailings?filter%5Bsequence%5D%5Bid%5D=12"
+            }
+          },
+          "owner": {
+            "data": null
+          },
+          "ruleset": {
+            "data": {
+              "id": 14,
+              "type": "ruleset"
+            }
+          },
+          "schedule": {
+            "data": null
+          },
+          "sequenceStates": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/sequenceStates?filter%5Bsequence%5D%5Bid%5D=12"
+            }
+          },
+          "sequenceSteps": {
+            "data": [],
+            "links": {
+              "related": "https://api.outreach.io/api/v2/sequenceSteps?filter%5Bsequence%5D%5Bid%5D=12"
+            },
+            "meta": {
+              "count": 0
+            }
+          },
+          "tasks": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/tasks?filter%5Bsequence%5D%5Bid%5D=12"
+            }
+          },
+          "updater": {
+            "data": {
+              "id": 2,
+              "type": "user"
+            }
+          }
+        },
         "replyCount": 0,
         "salesMotion": null,
         "scheduleCount": 0,
@@ -703,6 +1471,70 @@
         "positiveReplyCount": 0,
         "primaryReplyAction": "finish",
         "primaryReplyPauseDuration": null,
+        "relationships": {
+          "calls": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/calls?filter%5Bsequence%5D%5Bid%5D=13"
+            }
+          },
+          "contentCategoryMemberships": {
+            "data": [],
+            "links": {
+              "related": "https://api.outreach.io/api/v2/contentCategoryMemberships?filter%5Bsequence%5D%5Bid%5D=13"
+            },
+            "meta": {
+              "count": 0
+            }
+          },
+          "creator": {
+            "data": {
+              "id": 2,
+              "type": "user"
+            }
+          },
+          "mailings": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/mailings?filter%5Bsequence%5D%5Bid%5D=13"
+            }
+          },
+          "owner": {
+            "data": null
+          },
+          "ruleset": {
+            "data": {
+              "id": 15,
+              "type": "ruleset"
+            }
+          },
+          "schedule": {
+            "data": null
+          },
+          "sequenceStates": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/sequenceStates?filter%5Bsequence%5D%5Bid%5D=13"
+            }
+          },
+          "sequenceSteps": {
+            "data": [],
+            "links": {
+              "related": "https://api.outreach.io/api/v2/sequenceSteps?filter%5Bsequence%5D%5Bid%5D=13"
+            },
+            "meta": {
+              "count": 0
+            }
+          },
+          "tasks": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/tasks?filter%5Bsequence%5D%5Bid%5D=13"
+            }
+          },
+          "updater": {
+            "data": {
+              "id": 2,
+              "type": "user"
+            }
+          }
+        },
         "replyCount": 0,
         "salesMotion": null,
         "scheduleCount": 0,
@@ -759,6 +1591,70 @@
         "positiveReplyCount": 0,
         "primaryReplyAction": "finish",
         "primaryReplyPauseDuration": null,
+        "relationships": {
+          "calls": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/calls?filter%5Bsequence%5D%5Bid%5D=14"
+            }
+          },
+          "contentCategoryMemberships": {
+            "data": [],
+            "links": {
+              "related": "https://api.outreach.io/api/v2/contentCategoryMemberships?filter%5Bsequence%5D%5Bid%5D=14"
+            },
+            "meta": {
+              "count": 0
+            }
+          },
+          "creator": {
+            "data": {
+              "id": 2,
+              "type": "user"
+            }
+          },
+          "mailings": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/mailings?filter%5Bsequence%5D%5Bid%5D=14"
+            }
+          },
+          "owner": {
+            "data": null
+          },
+          "ruleset": {
+            "data": {
+              "id": 16,
+              "type": "ruleset"
+            }
+          },
+          "schedule": {
+            "data": null
+          },
+          "sequenceStates": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/sequenceStates?filter%5Bsequence%5D%5Bid%5D=14"
+            }
+          },
+          "sequenceSteps": {
+            "data": [],
+            "links": {
+              "related": "https://api.outreach.io/api/v2/sequenceSteps?filter%5Bsequence%5D%5Bid%5D=14"
+            },
+            "meta": {
+              "count": 0
+            }
+          },
+          "tasks": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/tasks?filter%5Bsequence%5D%5Bid%5D=14"
+            }
+          },
+          "updater": {
+            "data": {
+              "id": 2,
+              "type": "user"
+            }
+          }
+        },
         "replyCount": 0,
         "salesMotion": null,
         "scheduleCount": 0,
@@ -815,6 +1711,70 @@
         "positiveReplyCount": 0,
         "primaryReplyAction": "finish",
         "primaryReplyPauseDuration": null,
+        "relationships": {
+          "calls": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/calls?filter%5Bsequence%5D%5Bid%5D=15"
+            }
+          },
+          "contentCategoryMemberships": {
+            "data": [],
+            "links": {
+              "related": "https://api.outreach.io/api/v2/contentCategoryMemberships?filter%5Bsequence%5D%5Bid%5D=15"
+            },
+            "meta": {
+              "count": 0
+            }
+          },
+          "creator": {
+            "data": {
+              "id": 2,
+              "type": "user"
+            }
+          },
+          "mailings": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/mailings?filter%5Bsequence%5D%5Bid%5D=15"
+            }
+          },
+          "owner": {
+            "data": null
+          },
+          "ruleset": {
+            "data": {
+              "id": 17,
+              "type": "ruleset"
+            }
+          },
+          "schedule": {
+            "data": null
+          },
+          "sequenceStates": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/sequenceStates?filter%5Bsequence%5D%5Bid%5D=15"
+            }
+          },
+          "sequenceSteps": {
+            "data": [],
+            "links": {
+              "related": "https://api.outreach.io/api/v2/sequenceSteps?filter%5Bsequence%5D%5Bid%5D=15"
+            },
+            "meta": {
+              "count": 0
+            }
+          },
+          "tasks": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/tasks?filter%5Bsequence%5D%5Bid%5D=15"
+            }
+          },
+          "updater": {
+            "data": {
+              "id": 2,
+              "type": "user"
+            }
+          }
+        },
         "replyCount": 0,
         "salesMotion": null,
         "scheduleCount": 0,
@@ -834,6 +1794,369 @@
         "throttlePausedAt": null,
         "transactional": false,
         "updatedAt": "2024-08-02T22:47:36.000Z"
+      }
+    },
+    {
+      "fields": {
+        "description": null,
+        "id": 16,
+        "opencount": 0
+      },
+      "raw": {
+        "automationPercentage": 0,
+        "bounceCount": 0,
+        "clickCount": 0,
+        "createdAt": "2024-08-05T19:17:54.000Z",
+        "deliverCount": 0,
+        "description": null,
+        "durationInDays": 0,
+        "enabled": false,
+        "enabledAt": null,
+        "engagementScore": null,
+        "failureCount": 0,
+        "finishOnReply": true,
+        "id": 16,
+        "interestedCount": null,
+        "lastUsedAt": "2024-08-05T19:17:54.000Z",
+        "locked": false,
+        "lockedAt": null,
+        "maxActivations": 150,
+        "name": "test 1",
+        "negativeReplyCount": 0,
+        "neutralReplyCount": 0,
+        "numContactedProspects": 0,
+        "numRepliedProspects": 0,
+        "openCount": 0,
+        "optOutCount": 0,
+        "positiveReplyCount": 0,
+        "primaryReplyAction": "finish",
+        "primaryReplyPauseDuration": null,
+        "relationships": {
+          "calls": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/calls?filter%5Bsequence%5D%5Bid%5D=16"
+            }
+          },
+          "contentCategoryMemberships": {
+            "data": [],
+            "links": {
+              "related": "https://api.outreach.io/api/v2/contentCategoryMemberships?filter%5Bsequence%5D%5Bid%5D=16"
+            },
+            "meta": {
+              "count": 0
+            }
+          },
+          "creator": {
+            "data": {
+              "id": 2,
+              "type": "user"
+            }
+          },
+          "mailings": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/mailings?filter%5Bsequence%5D%5Bid%5D=16"
+            }
+          },
+          "owner": {
+            "data": {
+              "id": 2,
+              "type": "user"
+            }
+          },
+          "ruleset": {
+            "data": {
+              "id": 1,
+              "type": "ruleset"
+            }
+          },
+          "schedule": {
+            "data": {
+              "id": 1,
+              "type": "schedule"
+            }
+          },
+          "sequenceStates": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/sequenceStates?filter%5Bsequence%5D%5Bid%5D=16"
+            }
+          },
+          "sequenceSteps": {
+            "data": [],
+            "links": {
+              "related": "https://api.outreach.io/api/v2/sequenceSteps?filter%5Bsequence%5D%5Bid%5D=16"
+            },
+            "meta": {
+              "count": 0
+            }
+          },
+          "tasks": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/tasks?filter%5Bsequence%5D%5Bid%5D=16"
+            }
+          },
+          "updater": {
+            "data": {
+              "id": 2,
+              "type": "user"
+            }
+          }
+        },
+        "replyCount": 0,
+        "salesMotion": null,
+        "scheduleCount": 0,
+        "scheduleIntervalType": "calendar",
+        "secondaryReplyAction": "finish",
+        "secondaryReplyPauseDuration": null,
+        "sequenceStepCount": 0,
+        "sequenceType": "interval",
+        "shareType": "private",
+        "tags": [],
+        "throttleCapacity": null,
+        "throttleMaxAddsPerDay": 50,
+        "throttlePaused": false,
+        "throttlePausedAt": null,
+        "transactional": false,
+        "updatedAt": "2024-08-05T19:17:54.000Z"
+      }
+    },
+    {
+      "fields": {
+        "description": "A test sequence",
+        "id": 17,
+        "opencount": 0
+      },
+      "raw": {
+        "automationPercentage": 0,
+        "bounceCount": 0,
+        "clickCount": 0,
+        "createdAt": "2025-01-13T11:48:48.000Z",
+        "deliverCount": 0,
+        "description": "A test sequence",
+        "durationInDays": 0,
+        "enabled": false,
+        "enabledAt": null,
+        "engagementScore": null,
+        "failureCount": 0,
+        "finishOnReply": true,
+        "id": 17,
+        "interestedCount": null,
+        "lastUsedAt": "2025-01-13T11:48:48.000Z",
+        "locked": false,
+        "lockedAt": null,
+        "maxActivations": 150,
+        "name": "string",
+        "negativeReplyCount": 0,
+        "neutralReplyCount": 0,
+        "numContactedProspects": 0,
+        "numRepliedProspects": 0,
+        "openCount": 0,
+        "optOutCount": 0,
+        "positiveReplyCount": 0,
+        "primaryReplyAction": "finish",
+        "primaryReplyPauseDuration": null,
+        "relationships": {
+          "calls": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/calls?filter%5Bsequence%5D%5Bid%5D=17"
+            }
+          },
+          "contentCategoryMemberships": {
+            "data": [],
+            "links": {
+              "related": "https://api.outreach.io/api/v2/contentCategoryMemberships?filter%5Bsequence%5D%5Bid%5D=17"
+            },
+            "meta": {
+              "count": 0
+            }
+          },
+          "creator": {
+            "data": {
+              "id": 2,
+              "type": "user"
+            }
+          },
+          "mailings": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/mailings?filter%5Bsequence%5D%5Bid%5D=17"
+            }
+          },
+          "owner": {
+            "data": null
+          },
+          "ruleset": {
+            "data": {
+              "id": 18,
+              "type": "ruleset"
+            }
+          },
+          "schedule": {
+            "data": null
+          },
+          "sequenceStates": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/sequenceStates?filter%5Bsequence%5D%5Bid%5D=17"
+            }
+          },
+          "sequenceSteps": {
+            "data": [],
+            "links": {
+              "related": "https://api.outreach.io/api/v2/sequenceSteps?filter%5Bsequence%5D%5Bid%5D=17"
+            },
+            "meta": {
+              "count": 0
+            }
+          },
+          "tasks": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/tasks?filter%5Bsequence%5D%5Bid%5D=17"
+            }
+          },
+          "updater": {
+            "data": {
+              "id": 2,
+              "type": "user"
+            }
+          }
+        },
+        "replyCount": 0,
+        "salesMotion": null,
+        "scheduleCount": 0,
+        "scheduleIntervalType": "calendar",
+        "secondaryReplyAction": "finish",
+        "secondaryReplyPauseDuration": null,
+        "sequenceStepCount": 0,
+        "sequenceType": "interval",
+        "shareType": "shared",
+        "tags": [
+          "sequence",
+          "coffee"
+        ],
+        "throttleCapacity": null,
+        "throttleMaxAddsPerDay": null,
+        "throttlePaused": false,
+        "throttlePausedAt": null,
+        "transactional": false,
+        "updatedAt": "2025-01-13T11:48:48.000Z"
+      }
+    },
+    {
+      "fields": {
+        "description": "A test sequence",
+        "id": 18,
+        "opencount": 0
+      },
+      "raw": {
+        "automationPercentage": 0,
+        "bounceCount": 0,
+        "clickCount": 0,
+        "createdAt": "2025-01-13T12:47:31.000Z",
+        "deliverCount": 0,
+        "description": "A test sequence",
+        "durationInDays": 0,
+        "enabled": false,
+        "enabledAt": null,
+        "engagementScore": null,
+        "failureCount": 0,
+        "finishOnReply": true,
+        "id": 18,
+        "interestedCount": null,
+        "lastUsedAt": "2025-01-13T12:47:31.000Z",
+        "locked": false,
+        "lockedAt": null,
+        "maxActivations": 150,
+        "name": "string",
+        "negativeReplyCount": 0,
+        "neutralReplyCount": 0,
+        "numContactedProspects": 0,
+        "numRepliedProspects": 0,
+        "openCount": 0,
+        "optOutCount": 0,
+        "positiveReplyCount": 0,
+        "primaryReplyAction": "finish",
+        "primaryReplyPauseDuration": null,
+        "relationships": {
+          "calls": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/calls?filter%5Bsequence%5D%5Bid%5D=18"
+            }
+          },
+          "contentCategoryMemberships": {
+            "data": [],
+            "links": {
+              "related": "https://api.outreach.io/api/v2/contentCategoryMemberships?filter%5Bsequence%5D%5Bid%5D=18"
+            },
+            "meta": {
+              "count": 0
+            }
+          },
+          "creator": {
+            "data": {
+              "id": 2,
+              "type": "user"
+            }
+          },
+          "mailings": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/mailings?filter%5Bsequence%5D%5Bid%5D=18"
+            }
+          },
+          "owner": {
+            "data": null
+          },
+          "ruleset": {
+            "data": {
+              "id": 19,
+              "type": "ruleset"
+            }
+          },
+          "schedule": {
+            "data": null
+          },
+          "sequenceStates": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/sequenceStates?filter%5Bsequence%5D%5Bid%5D=18"
+            }
+          },
+          "sequenceSteps": {
+            "data": [],
+            "links": {
+              "related": "https://api.outreach.io/api/v2/sequenceSteps?filter%5Bsequence%5D%5Bid%5D=18"
+            },
+            "meta": {
+              "count": 0
+            }
+          },
+          "tasks": {
+            "links": {
+              "related": "https://api.outreach.io/api/v2/tasks?filter%5Bsequence%5D%5Bid%5D=18"
+            }
+          },
+          "updater": {
+            "data": {
+              "id": 2,
+              "type": "user"
+            }
+          }
+        },
+        "replyCount": 0,
+        "salesMotion": null,
+        "scheduleCount": 0,
+        "scheduleIntervalType": "calendar",
+        "secondaryReplyAction": "finish",
+        "secondaryReplyPauseDuration": null,
+        "sequenceStepCount": 0,
+        "sequenceType": "interval",
+        "shareType": "shared",
+        "tags": [
+          "sequence",
+          "coffee"
+        ],
+        "throttleCapacity": null,
+        "throttleMaxAddsPerDay": null,
+        "throttlePaused": false,
+        "throttlePausedAt": null,
+        "transactional": false,
+        "updatedAt": "2025-01-13T12:47:31.000Z"
       }
     }
   ],

@@ -2,12 +2,10 @@ package customerapp
 
 import (
 	"net/http"
-	"strings"
 	"testing"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -63,15 +61,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseNewslettersFirstPage),
 			}.Server(),
-			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
-				expectedNextPage := strings.ReplaceAll(expected.NextPage.String(), "{{testServerURL}}", baseURL)
-
-				return mockutils.ReadResultComparator.SubsetFields(actual, expected) &&
-					mockutils.ReadResultComparator.SubsetRaw(actual, expected) &&
-					actual.NextPage.String() == expectedNextPage &&
-					actual.Rows == expected.Rows &&
-					actual.Done == expected.Done
-			},
+			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -85,7 +75,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"created":        float64(1724072465),
 					},
 				}},
-				NextPage: "{{testServerURL}}/v1/newsletters?limit=50&start=MQ==",
+				NextPage: testroutines.URLTestServer + "/v1/newsletters?limit=50&start=MQ==",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -100,12 +90,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseNewslettersEmptyPage),
 			}.Server(),
-			Expected: &common.ReadResult{
-				Rows:     0,
-				Data:     []common.ReadResultRow{},
-				NextPage: "",
-				Done:     true,
-			},
+			Expected:     &common.ReadResult{Rows: 0, Data: []common.ReadResultRow{}, NextPage: "", Done: true},
 			ExpectedErrs: nil,
 		},
 		{
@@ -118,12 +103,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseExportsEmpty),
 			}.Server(),
-			Expected: &common.ReadResult{
-				Rows:     0,
-				Data:     []common.ReadResultRow{},
-				NextPage: "",
-				Done:     true,
-			},
+			Expected:     &common.ReadResult{Rows: 0, Data: []common.ReadResultRow{}, NextPage: "", Done: true},
 			ExpectedErrs: nil,
 		},
 	}

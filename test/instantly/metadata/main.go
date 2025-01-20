@@ -30,7 +30,7 @@ func main() {
 		ObjectName: objectName,
 	})
 	if err != nil {
-		utils.Fail("error reading from Smartlead", "error", err)
+		utils.Fail("error reading from Instantly", "error", err)
 	}
 
 	if response.Rows == 0 {
@@ -41,7 +41,7 @@ func main() {
 		objectName,
 	})
 	if err != nil {
-		utils.Fail("error listing metadata for Smartlead", "error", err)
+		utils.Fail("error listing metadata for Instantly", "error", err)
 	}
 
 	slog.Info("Comparing")

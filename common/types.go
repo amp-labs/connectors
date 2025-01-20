@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/amp-labs/connectors/internal/datautils"
@@ -92,11 +93,17 @@ var (
 	// ErrOperationNotSupportedForObject is returned when operation is not supported for this object.
 	ErrOperationNotSupportedForObject = errors.New("operation is not supported for this object in this module")
 
+	// ErrObjectNotSupported is returned when operation is not supported for this object.
+	ErrObjectNotSupported = errors.New("operation is not supported for this object")
+
 	// ErrResolvingURLPathForObject is returned when URL cannot be implied for object name.
 	ErrResolvingURLPathForObject = errors.New("cannot resolve URL path for given object name")
 
 	// ErrFailedToUnmarshalBody is returned when response body cannot be marshalled into some type.
 	ErrFailedToUnmarshalBody = errors.New("failed to unmarshal response body")
+
+	// ErrNextPageInvalid is returned when next page token provided in Read operation cannot be understood.
+	ErrNextPageInvalid = errors.New("next page token is invalid")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.
@@ -123,6 +130,10 @@ type ReadParams struct {
 	//		Note: timing is already handled by Since argument.
 	//		Reference: https://developers.klaviyo.com/en/docs/filtering_
 	Filter string // optional
+
+	// AssociatedObjects is a list of associated objects to fetch along with the main object.
+	// Only supported by HubSpot connector Read (not Search)
+	AssociatedObjects []string // optional
 }
 
 // WriteParams defines how we are writing data to a SaaS API.
@@ -136,6 +147,9 @@ type WriteParams struct {
 	// RecordData is a JSON node representing the record of data we want to insert in the case of CREATE
 	// or fields of data we want to modify in case of an update
 	RecordData any // required
+
+	// Associations contains associations between the object and other objects.
+	Associations any // optional
 }
 
 // DeleteParams defines how we are deleting data in SaaS API.
@@ -175,10 +189,24 @@ type ReadResultRow struct {
 	// Fields is a map of requested provider field names to values.
 	// All field names are in lowercase (eg: accountid, name, billingcityid)
 	Fields map[string]any `json:"fields"`
+	// Associations is a map of associated objects to the main object.
+	// The key is the associated object name, and the value is an array of associated object ids.
+	Associations map[string][]Association `json:"associations,omitempty"`
 	// Raw is the raw JSON response from the provider.
 	Raw map[string]any `json:"raw"`
 	// RecordId is the ID of the record. Currently only populated for hubspot GetRecord and GetRecordsWithId function
 	Id string `json:"id,omitempty"`
+}
+
+// Association is a struct that represents an association between two objects.
+// If you think of an association as a directed edge between two nodes, then
+// the ObjectID is the target node, and the AssociationType is the type of edge.
+// The source node is represented by ReadResultRow.
+type Association struct {
+	// ObjectID is the ID of the associated object.
+	ObjectId string `json:"objectId"`
+	// AssociationType is the type of association.
+	AssociationType string `json:"associationType,omitempty"`
 }
 
 // WriteResult is what's returned from writing data via the Write call.
@@ -244,12 +272,58 @@ type ListObjectMetadataResult struct {
 	Errors map[string]error
 }
 
+func NewListObjectMetadataResult() *ListObjectMetadataResult {
+	return &ListObjectMetadataResult{
+		Result: make(map[string]ObjectMetadata),
+		Errors: make(map[string]error),
+	}
+}
+
 type ObjectMetadata struct {
-	// Provider's display name for the object
+	// Provider's display name for the object.
 	DisplayName string
 
-	// FieldsMap is a map of field names to field display names
+	// Fields is a map of field names to FieldMetadata.
+	Fields map[string]FieldMetadata
+
+	// FieldsMap is a map of field names to field display names.
+	// Deprecated: this map includes only display names.
+	// Refer to Fields for extended description of field properties.
 	FieldsMap map[string]string
+}
+
+// NewObjectMetadata constructs ObjectMetadata.
+// This will automatically infer fields map from field metadata map. This construct exists for such convenience.
+func NewObjectMetadata(displayName string, fields map[string]FieldMetadata) *ObjectMetadata {
+	return &ObjectMetadata{
+		DisplayName: displayName,
+		Fields:      fields,
+		FieldsMap:   inferDeprecatedFieldsMap(fields),
+	}
+}
+
+type FieldMetadata struct {
+	// DisplayName is a human-readable field name.
+	DisplayName string
+
+	// ValueType is a set of Ampersand defined field types.
+	ValueType ValueType
+
+	// ProviderType is the raw type, a term used by provider API.
+	// Each is mapped to an Ampersand ValueType.
+	ProviderType string
+
+	// ReadOnly would indicate if field can be modified or only read.
+	ReadOnly bool
+
+	// Values is a list of possible values for this field.
+	// It is applicable only if the type is either singleSelect or multiSelect, otherwise slice is nil.
+	Values []FieldValue
+}
+
+type FieldValue struct {
+	Value        string
+	DisplayValue string
 }
 
 type PostAuthInfo struct {
@@ -261,10 +335,11 @@ type PostAuthInfo struct {
 type SubscriptionEventType string
 
 const (
-	SubscriptionEventTypeCreate SubscriptionEventType = "create"
-	SubscriptionEventTypeUpdate SubscriptionEventType = "update"
-	SubscriptionEventTypeDelete SubscriptionEventType = "delete"
-	SubscriptionEventTypeOther  SubscriptionEventType = "other"
+	SubscriptionEventTypeCreate            SubscriptionEventType = "create"
+	SubscriptionEventTypeUpdate            SubscriptionEventType = "update"
+	SubscriptionEventTypeDelete            SubscriptionEventType = "delete"
+	SubscriptionEventTypeAssociationUpdate SubscriptionEventType = "associationUpdate"
+	SubscriptionEventTypeOther             SubscriptionEventType = "other"
 )
 
 // SubscribeEvent is an interface for webhook events coming from the provider.
@@ -274,4 +349,25 @@ type SubscriptionEvent interface {
 	RawEventName() (string, error)
 	ObjectName() (string, error)
 	Workspace() (string, error)
+	RecordId() (string, error)
+	EventTimeStampNano() (int64, error)
+}
+
+// WebhookVerificationParameters is a struct that contains the parameters required to verify a webhook.
+type WebhookVerificationParameters struct {
+	Headers      http.Header
+	Body         []byte
+	URL          string
+	ClientSecret string
+	Method       string
+}
+
+func inferDeprecatedFieldsMap(fields map[string]FieldMetadata) map[string]string {
+	fieldsMap := make(map[string]string)
+
+	for name, field := range fields {
+		fieldsMap[name] = field.DisplayName
+	}
+
+	return fieldsMap
 }

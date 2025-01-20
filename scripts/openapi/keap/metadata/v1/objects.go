@@ -9,9 +9,10 @@ import (
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
 )
 
+// nolint:lll
 var (
 	ignoreEndpoints = []string{ // nolint:gochecknoglobals
-		// endpoint for creating fields
+		// endpoints for creating fields
 		"/v1/appointments/model/customFields",
 		"/v1/notes/model/customFields",
 		"/v1/tasks/model/customFields",
@@ -27,6 +28,9 @@ var (
 		"/v1/tasks/model",         // array located at "custom_fields"
 		// duplicates
 		"/v1/tasks/search", // covered by "/tasks"
+		// requires query parameters
+		"/v1/affiliates/summaries", // https://developer.infusionsoft.com/docs/rest/#tag/Affiliate/operation/listSummariesUsingGET
+		"/v1/products/sync",        // additionally, it is deprecated: https://developer.infusionsoft.com/docs/rest/#tag/Product/operation/listProductsFromSyncTokenUsingGET
 		// not applicable
 		"/v1/setting/application/enabled",       // retrieves application status
 		"/v1/setting/application/configuration", // retrieves application configuration
@@ -37,19 +41,19 @@ var (
 		"/v1/locales/countries",                 // countries is an object not array
 	}
 	objectEndpoints = map[string]string{ // nolint:gochecknoglobals
-		"/v1/products/sync": "synced_products",
+		// "/v1/products/sync": "synced_products",
 	}
 	displayNameOverride = map[string]string{ // nolint:gochecknoglobals
 		"commissions": "Commissions",
 		"emails":      "Emails",
 		"merchants":   "Merchants",
 		"programs":    "Programs",
-		"summaries":   "Summaries",
+		// "summaries":   "Summaries",
 	}
 	objectNameToResponseField = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
-		"merchants":       "merchant_accounts",
-		"redirectlinks":   "redirects",
-		"synced_products": "product_statuses",
+		"merchants":     "merchant_accounts",
+		"redirectlinks": "redirects",
+		// "synced_products": "product_statuses",
 	},
 		func(objectName string) (fieldName string) {
 			return objectName

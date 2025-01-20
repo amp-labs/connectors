@@ -3,6 +3,7 @@ package api3
 import (
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/iancoleman/strcase"
 )
@@ -99,6 +100,7 @@ type parameters struct {
 	operationMethodFilter ReadOperationMethodFilter
 	propertyFlattener     PropertyFlattener
 	mediaType             string
+	autoSelectArrayItem   *bool
 }
 
 type Option = func(params *parameters)
@@ -131,6 +133,11 @@ func createParams(opts []Option) *parameters {
 
 	if len(params.mediaType) == 0 {
 		params.mediaType = "application/json"
+	}
+
+	if params.autoSelectArrayItem == nil {
+		// By default, auto selection is off.
+		params.autoSelectArrayItem = goutils.Pointer(false)
 	}
 
 	return &params
@@ -172,5 +179,18 @@ func WithMediaType(mediaType string) Option {
 func WithPropertyFlattening(propertyFlattener PropertyFlattener) Option {
 	return func(params *parameters) {
 		params.propertyFlattener = propertyFlattener
+	}
+}
+
+// WithArrayItemAutoSelection enables automatic selection of the array field in API responses
+// if it is the only array type present.
+// Default: Disabled.
+//
+// Use Case: This is helpful when APIs have inconsistent response field names, making it
+// tedious to map each object name to its array field. If the response contains only one
+// array property and each array represents the API resource schema, this option should be selected.
+func WithArrayItemAutoSelection() Option {
+	return func(params *parameters) {
+		params.autoSelectArrayItem = goutils.Pointer(true)
 	}
 }

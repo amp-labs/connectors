@@ -10,7 +10,6 @@ import (
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/jsonquery"
-	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -99,11 +98,9 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				data := fmt.Sprintf("[%v]", strings.Join(manyCampaigns, ","))
 				_, _ = writer.Write([]byte(data))
 			}),
-			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
-				return actual.NextPage.String() == expected.NextPage.String() &&
-					actual.Done == expected.Done
-			},
+			Comparator: testroutines.ComparatorPagination,
 			Expected: &common.ReadResult{
+				Rows:     DefaultPageSize,
 				NextPage: "test-placeholder?limit=100&skip=800",
 				Done:     false,
 			},
@@ -119,16 +116,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.ResponseString(http.StatusOK, "[]"),
 			}.Server(),
-			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
-				expectedNextPage := strings.ReplaceAll(expected.NextPage.String(), "{{testServerURL}}", baseURL)
-
-				return actual.NextPage.String() == expectedNextPage &&
-					actual.Done == expected.Done
-			},
-			Expected: &common.ReadResult{
-				NextPage: "{{testServerURL}}/v1/campaign/list?limit=100&skip=100",
-				Done:     true,
-			},
+			Comparator:   testroutines.ComparatorPagination,
+			Expected:     &common.ReadResult{Rows: 0, NextPage: "", Done: true},
 			ExpectedErrs: nil,
 		},
 		{
@@ -141,11 +130,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseCampaigns),
 			}.Server(),
-			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
-				return mockutils.ReadResultComparator.SubsetFields(actual, expected) &&
-					mockutils.ReadResultComparator.SubsetRaw(actual, expected) &&
-					actual.Done == expected.Done
-			},
+			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{{
@@ -165,7 +150,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"name": "My Campaign",
 					},
 				}},
-				Done: false,
+				NextPage: testroutines.URLTestServer + "/v1/campaign/list?limit=100&skip=100",
+				Done:     false,
 			},
 			ExpectedErrs: nil,
 		},
@@ -179,12 +165,9 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseTags),
 			}.Server(),
-			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
-				return mockutils.ReadResultComparator.SubsetFields(actual, expected) &&
-					mockutils.ReadResultComparator.SubsetRaw(actual, expected) &&
-					actual.Done == expected.Done
-			},
+			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
+				Rows: 2,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
 						"label":       "High Delivery 3",
@@ -206,7 +189,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"description":     "High Delivery Accounts 2",
 					},
 				}},
-				Done: false,
+				NextPage: testroutines.URLTestServer + "/v1/custom-tag?limit=100&skip=100",
+				Done:     false,
 			},
 			ExpectedErrs: nil,
 		},

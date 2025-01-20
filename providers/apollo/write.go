@@ -47,6 +47,8 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 }
 
 func constructWriteResult(body *ajson.Node, objName string) (*common.WriteResult, error) {
+	objName = constructSupportedObjectName(objName)
+
 	// API Response contains a json object having a singular objectName key with the
 	// created/updated details in it.
 	obj := naming.NewSingularString(objName)
@@ -61,7 +63,7 @@ func constructWriteResult(body *ajson.Node, objName string) (*common.WriteResult
 		return nil, err
 	}
 
-	data, err := jsonquery.Convertor.ObjectToMap(body)
+	data, err := jsonquery.Convertor.ObjectToMap(respObject)
 	if err != nil {
 		return nil, err
 	}

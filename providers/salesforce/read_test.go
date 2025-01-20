@@ -8,7 +8,6 @@ import (
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/jsonquery"
-	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -76,10 +75,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				  "records": []
 				}`),
 			}.Server(),
-			Expected: &common.ReadResult{
-				Data: []common.ReadResultRow{},
-				Done: true,
-			},
+			Expected:     &common.ReadResult{Done: true, Data: []common.ReadResultRow{}},
 			ExpectedErrs: nil,
 		},
 		{
@@ -89,11 +85,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseLeadsFirstPage),
 			}.Server(),
-			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
-				return actual.NextPage.String() == expected.NextPage.String()
-			},
+			Comparator: testroutines.ComparatorPagination,
 			Expected: &common.ReadResult{
+				Rows:     8,
 				NextPage: "/services/data/v59.0/query/01g3A00007lZwLKQA0-2000",
+				Done:     false,
 			},
 			ExpectedErrs: nil,
 		},
@@ -107,14 +103,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseListContacts),
 			}.Server(),
-			Comparator: func(baseURL string, actual, expected *common.ReadResult) bool {
-				// custom comparison focuses on subset of fields to keep the test short
-				return mockutils.ReadResultComparator.SubsetFields(actual, expected) &&
-					mockutils.ReadResultComparator.SubsetRaw(actual, expected) &&
-					actual.NextPage.String() == expected.NextPage.String() &&
-					actual.Done == expected.Done &&
-					actual.Rows == expected.Rows
-			},
+			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 20,
 				Data: []common.ReadResultRow{{

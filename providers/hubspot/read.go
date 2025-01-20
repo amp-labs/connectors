@@ -2,10 +2,10 @@ package hubspot
 
 import (
 	"context"
-	"net/url"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/logging"
 )
 
 // Read reads data from Hubspot. If Since is set, it will use the
@@ -14,15 +14,22 @@ import (
 // search endpoint. If Since is not set, it will use the read endpoint.
 // In case Deleted objects won’t appear in any search results.
 // Deleted objects can only be read by using this endpoint.
-func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
+func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) { //nolint:funlen
+	ctx = logging.With(ctx, "connector", "hubspot")
+
 	if err := config.ValidateParams(true); err != nil {
 		return nil, err
 	}
 
-	var (
-		rsp *common.JSONHTTPResponse
-		err error
-	)
+	if crmObjectsOutsideTheObjectAPI.Has(config.ObjectName) {
+		// Objects outside ObjectAPI have different endpoint while both are part of CRM module.
+		// For instance Lists are fully returned only via Search endpoint.
+		return c.SearchCRM(ctx, SearchCRMParams{
+			ObjectName: config.ObjectName,
+			Fields:     config.Fields,
+			NextPage:   config.NextPage,
+		})
+	}
 
 	// If filtering is required, then we have to use the search endpoint.
 	// The Search endpoint has a 10K record limit. In case this limit is reached,
@@ -43,24 +50,20 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 			SortBy: []SortBy{
 				BuildSort(ObjectFieldHsObjectId, SortDirectionAsc),
 			},
-			NextPage: config.NextPage,
-			Fields:   config.Fields,
+			NextPage:          config.NextPage,
+			Fields:            config.Fields,
+			AssociatedObjects: config.AssociatedObjects,
 		}
 
 		return c.Search(ctx, searchParams)
 	}
 
-	if len(config.NextPage) > 0 {
-		// If NextPage is set, then we're reading the next page of results.
-		// All that matters is the NextPage URL, the fields are ignored.
-		rsp, err = c.Client.Get(ctx, config.NextPage.String())
-	} else {
-		// If NextPage is not set, then we're reading the first page of results.
-		// We need to construct the query and then make the request.
-		relativeURL := strings.Join([]string{"objects", config.ObjectName, "?" + makeQueryValues(config)}, "/")
-		rsp, err = c.Client.Get(ctx, c.getURL(relativeURL))
+	url, err := c.buildReadURL(config)
+	if err != nil {
+		return nil, err
 	}
 
+	rsp, err := c.Client.Get(ctx, url)
 	if err != nil {
 		return nil, err
 	}
@@ -69,25 +72,39 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		rsp,
 		getRecords,
 		getNextRecordsURL,
-		getMarshalledData,
+		c.getMarshalledData(ctx, config.ObjectName, config.AssociatedObjects),
 		config.Fields,
 	)
 }
 
-// makeQueryValues returns the query for the desired read operation.
-func makeQueryValues(config common.ReadParams) string {
-	queryValues := url.Values{}
+func (c *Connector) buildReadURL(config common.ReadParams) (string, error) {
+	if len(config.NextPage) != 0 {
+		// If NextPage is set, then we're reading the next page of results.
+		// All that matters is the NextPage URL, the fields are ignored.
+		return config.NextPage.String(), nil
+	}
+
+	// If NextPage is not set, then we're reading the first page of results.
+	// We need to construct the query and then make the request.
+	// NB: The final slash is just to emulate prior behavior in earlier versions
+	// of this code. If it turns out to be unnecessary, remove it.
+	return c.getCRMObjectsReadURL(config)
+}
+
+// makeCRMObjectsQueryValues returns the query for the desired read operation.
+func makeCRMObjectsQueryValues(config common.ReadParams) []string {
+	var out []string
 
 	fields := config.Fields.List()
 	if len(fields) != 0 {
-		queryValues.Add("properties", strings.Join(fields, ","))
+		out = append(out, "properties", strings.Join(fields, ","))
 	}
 
 	if config.Deleted {
-		queryValues.Add("archived", "true")
+		out = append(out, "archived", "true")
 	}
 
-	queryValues.Add("limit", DefaultPageSize)
+	out = append(out, "limit", DefaultPageSize)
 
-	return queryValues.Encode()
+	return out
 }

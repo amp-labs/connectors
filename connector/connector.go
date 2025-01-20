@@ -16,11 +16,6 @@ func NewConnector(
 	provider providers.Provider,
 	opts ...Option,
 ) (conn *Connector, outErr error) {
-	defer common.PanicRecovery(func(cause error) {
-		outErr = cause
-		conn = nil
-	})
-
 	params, err := paramsbuilder.Apply(parameters{provider: provider}, opts)
 	if err != nil {
 		return nil, err

@@ -1,0 +1,28 @@
+{
+  "contacts": [],
+  "id": "lead_q6XxGP7gFqn1UZ2F8lrmm0JuIOQzEsUGoVY0Yz9fLWx",
+  "html_url": "https://app.close.com/lead/lead_q6XxGP7gFqn1UZ2F8lrmm0JuIOQzEsUGoVY0Yz9fLWx/",
+  "name": "Bluth Company",
+  "organization_id": "orga_Bnvb4C6ur74cnEX825rjjDDusTIIpQcFX2qusZcjGr5",
+  "description": "Best. Show. Ever.",
+  "updated_by": "user_4N6K1GpqhrjELJKSIMos60M78s2x86Qy6jAiUht5tmh",
+  "status_label": "Potential",
+  "opportunities": [],
+  "created_by": "user_4N6K1GpqhrjELJKSIMos60M78s2x86Qy6jAiUht5tmh",
+  "custom": {},
+  "addresses": [],
+  "integration_links": [
+    {
+      "name": "Google Search",
+      "url": "https://google.com/search?q=Bluth%20Company"
+    }
+  ],
+  "status_id": "stat_s4Pu3Yd7fVHaEqNLyVaDAbf72PRbhkI9UDgfgRvmKw5",
+  "created_by_name": "Josep Karage",
+  "url": "http://thebluthcompany.tumblr.com/",
+  "date_created": "2025-01-16T07:48:13.837000+00:00",
+  "tasks": [],
+  "updated_by_name": "Josep Karage",
+  "date_updated": "2025-01-16T07:48:13.837000+00:00",
+  "display_name": "Bluth Company"
+}

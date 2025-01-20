@@ -41,6 +41,7 @@ func main() {
 func readActivities(ctx context.Context, conn *closecrm.Connector) error {
 	config := connectors.ReadParams{
 		ObjectName: "activity",
+		Since:      time.Now().Add(-72 * time.Hour),
 		Fields:     connectors.Fields("user_id", "user_name", "source", "id"),
 	}
 
@@ -86,8 +87,7 @@ func readLeads(ctx context.Context, conn *closecrm.Connector) error {
 	config := connectors.ReadParams{
 		ObjectName: "lead",
 		Since:      time.Now().Add(-72 * time.Hour),
-		// NextPage:   "eyJza2lwIjo0fQ.ZyJitQ.4Mg19Fds1IrDqBmI8UZ0U-mbsT8",
-		Fields: connectors.Fields("display_name", "description", "name", "id"),
+		Fields:     connectors.Fields("display_name", "description", "name", "id"),
 	}
 
 	result, err := conn.Read(ctx, config)

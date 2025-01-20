@@ -2,10 +2,10 @@ package hubspot
 
 import (
 	"context"
-	"strings"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/logging"
 )
 
 // Search uses the POST /search endpoint to filter object records and return the result.
@@ -15,18 +15,18 @@ import (
 // Archived results do not appear in search results.
 // Read more @ https://developers.hubspot.com/docs/api/crm/search
 func (c *Connector) Search(ctx context.Context, config SearchParams) (*common.ReadResult, error) {
+	ctx = logging.With(ctx, "connector", "hubspot")
+
 	if err := config.ValidateParams(); err != nil {
 		return nil, err
 	}
 
-	var (
-		rsp *common.JSONHTTPResponse
-		err error
-	)
+	url, err := c.getCRMObjectsSearchURL(config)
+	if err != nil {
+		return nil, err
+	}
 
-	relativeURL := strings.Join([]string{"objects", config.ObjectName, "search"}, "/")
-
-	rsp, err = c.Client.Post(ctx, c.getURL(relativeURL), makeFilterBody(config))
+	rsp, err := c.Client.Post(ctx, url, makeFilterBody(config))
 	if err != nil {
 		return nil, err
 	}
@@ -35,7 +35,38 @@ func (c *Connector) Search(ctx context.Context, config SearchParams) (*common.Re
 		rsp,
 		getRecords,
 		getNextRecordsAfter,
-		getMarshalledData,
+		c.getMarshalledData(ctx, config.ObjectName, config.AssociatedObjects),
+		config.Fields,
+	)
+}
+
+func (c *Connector) SearchCRM(ctx context.Context, config SearchCRMParams) (*common.ReadResult, error) {
+	ctx = logging.With(ctx, "connector", "hubspot")
+
+	if err := config.ValidateParams(); err != nil {
+		return nil, err
+	}
+
+	url, err := c.getCRMSearchURL(config)
+	if err != nil {
+		return nil, err
+	}
+
+	payload, err := config.Payload()
+	if err != nil {
+		return nil, err
+	}
+
+	rsp, err := c.Client.Post(ctx, url, payload)
+	if err != nil {
+		return nil, err
+	}
+
+	return common.ParseResult(
+		rsp,
+		common.GetOptionalRecordsUnderJSONPath(config.ObjectName),
+		getNextRecordsURLCRM,
+		common.GetMarshaledData,
 		config.Fields,
 	)
 }

@@ -13,7 +13,7 @@ func init() {
 			Header: &ApiKeyOptsHeader{
 				Name: "X-Api-Key",
 			},
-			DocsURL: "https://apolloio.github.io/apollo-api-docs/?shell#authentication",
+			DocsURL: "https://docs.apollo.io/docs/create-api-key",
 		},
 		//nolint:lll
 		Media: &Media{

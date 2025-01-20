@@ -10,18 +10,8 @@ import (
 func TestExtractObjectNameFromSubscriptionEvent(t *testing.T) {
 	t.Parallel()
 
-	validEvent := &SubscriptionEvent{
-		AppId:            1,
-		EventId:          1,
-		SubscriptionId:   1,
-		PortalId:         1,
-		OccurredAt:       1,
-		SubscriptionType: "contact.creation",
-		AttemptNumber:    1,
-		ObjectId:         1,
-		ChangeSource:     "CRM",
-		PropertyName:     "message",
-		PropertyValue:    "sample-value",
+	validEvent := SubscriptionEvent{
+		"subscriptionType": "contact.creation",
 	}
 
 	objectName, err := validEvent.ObjectName()
@@ -31,35 +21,15 @@ func TestExtractObjectNameFromSubscriptionEvent(t *testing.T) {
 
 	assert.Equal(t, objectName, "contact", "object name should be parsedCorrectly")
 
-	unsupportedEvent := &SubscriptionEvent{
-		AppId:            1,
-		EventId:          1,
-		SubscriptionId:   1,
-		PortalId:         1,
-		OccurredAt:       1,
-		SubscriptionType: "someObject.creation",
-		AttemptNumber:    1,
-		ObjectId:         1,
-		ChangeSource:     "CRM",
-		PropertyName:     "message",
-		PropertyValue:    "sample-value",
+	unsupportedEvent := SubscriptionEvent{
+		"subscriptionType": "someObject.creation",
 	}
 
 	_, err = unsupportedEvent.ObjectName()
 	assert.ErrorContains(t, err, "subscription is not supported for the object 'someObject'")
 
 	emptyObjectEvent := &SubscriptionEvent{
-		AppId:            1,
-		EventId:          1,
-		SubscriptionId:   1,
-		PortalId:         1,
-		OccurredAt:       1,
-		SubscriptionType: "",
-		AttemptNumber:    1,
-		ObjectId:         1,
-		ChangeSource:     "CRM",
-		PropertyName:     "message",
-		PropertyValue:    "sample-value",
+		"subscriptionType": "",
 	}
 
 	_, err = emptyObjectEvent.ObjectName()
@@ -71,17 +41,7 @@ func TestExtractEventTypeFromSubscriptionEvent(t *testing.T) {
 	t.Parallel()
 
 	createEvent := SubscriptionEvent{
-		AppId:            1,
-		EventId:          1,
-		SubscriptionId:   1,
-		PortalId:         1,
-		OccurredAt:       1,
-		SubscriptionType: "contact.creation",
-		AttemptNumber:    1,
-		ObjectId:         1,
-		ChangeSource:     "CRM",
-		PropertyName:     "message",
-		PropertyValue:    "sample-value",
+		"subscriptionType": "contact.creation",
 	}
 
 	evtTypeCreate, err := createEvent.EventType()
@@ -91,18 +51,8 @@ func TestExtractEventTypeFromSubscriptionEvent(t *testing.T) {
 
 	assert.Equal(t, evtTypeCreate, common.SubscriptionEventTypeCreate, "event type should be parsed Correctly")
 
-	deleteMessage := &SubscriptionEvent{
-		AppId:            1,
-		EventId:          1,
-		SubscriptionId:   1,
-		PortalId:         1,
-		OccurredAt:       1,
-		SubscriptionType: "contact.deletion",
-		AttemptNumber:    1,
-		ObjectId:         1,
-		ChangeSource:     "CRM",
-		PropertyName:     "message",
-		PropertyValue:    "sample-value",
+	deleteMessage := SubscriptionEvent{
+		"subscriptionType": "contact.deletion",
 	}
 
 	evtTypeDelete, err := deleteMessage.EventType()
@@ -112,18 +62,8 @@ func TestExtractEventTypeFromSubscriptionEvent(t *testing.T) {
 
 	assert.Equal(t, evtTypeDelete, common.SubscriptionEventTypeDelete, "event type should be parsed correctly")
 
-	updateMessage := &SubscriptionEvent{
-		AppId:            1,
-		EventId:          1,
-		SubscriptionId:   1,
-		PortalId:         1,
-		OccurredAt:       1,
-		SubscriptionType: "contact.propertyChange",
-		AttemptNumber:    1,
-		ObjectId:         1,
-		ChangeSource:     "CRM",
-		PropertyName:     "message",
-		PropertyValue:    "sample-value",
+	updateMessage := SubscriptionEvent{
+		"subscriptionType": "contact.propertyChange",
 	}
 
 	evtTypeUpdate, err := updateMessage.EventType()
@@ -133,18 +73,8 @@ func TestExtractEventTypeFromSubscriptionEvent(t *testing.T) {
 
 	assert.Equal(t, evtTypeUpdate, common.SubscriptionEventTypeUpdate, "event type should be parsed correctly")
 
-	emptyObjectEvent := &SubscriptionEvent{
-		AppId:            1,
-		EventId:          1,
-		SubscriptionId:   1,
-		PortalId:         1,
-		OccurredAt:       1,
-		SubscriptionType: "",
-		AttemptNumber:    1,
-		ObjectId:         1,
-		ChangeSource:     "CRM",
-		PropertyName:     "message",
-		PropertyValue:    "sample-value",
+	emptyObjectEvent := SubscriptionEvent{
+		"subscriptionType": "",
 	}
 
 	_, err = emptyObjectEvent.EventType()

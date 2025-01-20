@@ -6,6 +6,30 @@ import "encoding/json"
 // It can return Keys as a slice or a Set.
 type Map[K comparable, V any] map[K]V
 
+// FromMap converts golang map into Map resolving generic types on its own.
+// Example:
+//
+//	Given:
+//		dictionary = make(map[string]string)
+//	Then statements are equivalent:
+//		datautils.Map[string,string](golangMap)
+//		datautils.FromMap(dictionary)
+func FromMap[K comparable, V any](source map[K]V) Map[K, V] {
+	return source
+}
+
+// ShallowCopy performs copying which should cover most cases.
+// For deep copy you could use goutils.Clone.
+func (m Map[K, V]) ShallowCopy() Map[K, V] {
+	result := make(map[K]V)
+
+	for key, value := range m {
+		result[key] = value
+	}
+
+	return result
+}
+
 func (m Map[K, V]) Keys() []K {
 	keys := make([]K, 0)
 	for k := range m {
@@ -28,7 +52,7 @@ func (m Map[K, V]) Has(key K) bool {
 func (m Map[K, V]) Values() []V {
 	values := make([]V, 0, len(m))
 
-	for key := range m {
+	for key := range m { // nolint:ireturn
 		values = append(values, m[key])
 	}
 
@@ -52,7 +76,8 @@ func NewDefaultMap[K comparable, V any](dict Map[K, V], fallback func(K) V) Defa
 }
 
 // Get method uses map with a fallback value.
-func (m DefaultMap[K, V]) Get(key K) V { // nolint:ireturn
+// nolint:ireturn
+func (m DefaultMap[K, V]) Get(key K) V {
 	value, ok := m.Map[key]
 	if ok {
 		return value

@@ -1,0 +1,18 @@
+{
+    "sequences": [
+      {
+        "id": 3,
+        "name": "Evergreen sequence",
+        "hold": false,
+        "repeat": false,
+        "created_at": "2023-02-17T11:43:55Z"
+      }
+    ],
+    "pagination": {
+      "has_previous_page": false,
+      "has_next_page": false,
+      "start_cursor": "WzNd",
+      "end_cursor": "WzNd",
+      "per_page": 500
+    }
+  }

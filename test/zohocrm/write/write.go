@@ -40,19 +40,16 @@ func main() {
 func createDeals(ctx context.Context, conn *zohocrm.Connector) error {
 	config := common.WriteParams{
 		ObjectName: "Deals",
-		RecordData: []map[string]any{
-			{
-				"id":        "3652397000003852095",
-				"Deal_Name": "v6 Update",
-				"Stage":     "Closed Won",
-				"Pipeline":  "Standard (Standard)",
-			},
+		RecordData: map[string]any{
+			"id":        "3652397000003852095",
+			"deal_name": "v6 Update",
+			"stage":     "Closed Won",
+			"pipeline":  "Standard (Standard)",
 		},
 	}
 
 	result, err := conn.Write(ctx, config)
 	if err != nil {
-		fmt.Println("Object: ", config.ObjectName)
 		return err
 	}
 
@@ -68,22 +65,21 @@ func createDeals(ctx context.Context, conn *zohocrm.Connector) error {
 
 func createLeads(ctx context.Context, conn *zohocrm.Connector) error {
 	config := common.WriteParams{
-		ObjectName: "Leads",
+		ObjectName: "leads",
 		RecordData: []map[string]any{
 			{
-				"Lead_Source": "Employee Referral",
-				"Company":     "ABC",
-				"Last_Name":   "Daly",
-				"First_Name":  "Paul",
-				"Email":       "p.daly@zylker.com",
-				"State":       "Texas",
+				"lead_source": "Employee Referral",
+				"company":     "ABC",
+				"last_name":   "Daly",
+				"first_name":  "Paul",
+				"email":       "p.daly@zylker.com",
+				"state":       "Texas",
 			},
 		},
 	}
 
 	result, err := conn.Write(ctx, config)
 	if err != nil {
-		fmt.Println("Object: ", config.ObjectName)
 		return err
 	}
 
@@ -101,24 +97,16 @@ func createLeads(ctx context.Context, conn *zohocrm.Connector) error {
 func updateContacts(ctx context.Context, conn *zohocrm.Connector) error {
 	config := common.WriteParams{
 		ObjectName: "contacts",
-		// RecordId:   "64934900000005440112",
-		RecordData: []map[string]any{
-			{
-				"First_Name": "Ryan",
-				"Phone":      "+12343678",
-				"Last_Name":  "Dahl",
-			},
-			{
-				"First_Name": "Ryan",
-				"Phone":      "+12343678",
-				// "Last_Name":  "Dahl",
-			},
+		RecordId:   "6493490000001291001",
+		RecordData: map[string]any{
+			"First_Name": "Ryan",
+			"Phone":      "+12343678910",
+			"Last_Name":  "Dahl2",
 		},
 	}
 
 	result, err := conn.Write(ctx, config)
 	if err != nil {
-		fmt.Println("Object: ", config.ObjectName)
 		return err
 	}
 

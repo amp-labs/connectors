@@ -13,39 +13,36 @@ import (
 // InterpretError interprets the given HTTP response (in a fairly straightforward
 // way) and returns an error that can be handled by the caller.
 func InterpretError(res *http.Response, body []byte) error {
+	createError := func(err error) error {
+		if len(body) == 0 {
+			return err
+		} else {
+			return fmt.Errorf("%w: %s", err, string(body))
+		}
+	}
+
 	switch res.StatusCode {
 	case http.StatusUnauthorized:
 		// Access token invalid, refresh token and retry
-		return NewHTTPStatusError(res.StatusCode, fmt.Errorf("%w: %s", ErrAccessToken, string(body)))
+		return NewHTTPStatusError(res.StatusCode, createError(ErrAccessToken))
 	case http.StatusForbidden:
 		// Forbidden, not retryable
-		return NewHTTPStatusError(res.StatusCode, fmt.Errorf("%w: %s", ErrForbidden, string(body)))
+		return NewHTTPStatusError(res.StatusCode, createError(ErrForbidden))
 	case http.StatusNotFound:
 		// Semantics are debatable (temporarily missing vs. permanently gone), but for now treat this as a retryable error
-		return NewHTTPStatusError(res.StatusCode, fmt.Errorf("%w: %s", ErrRetryable, string(body)))
+		return NewHTTPStatusError(res.StatusCode, createError(ErrRetryable))
 	case http.StatusTooManyRequests:
 		// Too many requests, retryable
-		return NewHTTPStatusError(res.StatusCode, fmt.Errorf("%w: %s", ErrRetryable, string(body)))
+		return NewHTTPStatusError(res.StatusCode, createError(ErrRetryable))
 	}
 
 	if res.StatusCode >= 400 && res.StatusCode < 500 {
-		return NewHTTPStatusError(res.StatusCode, fmt.Errorf("%w: %s", ErrCaller, string(body)))
+		return NewHTTPStatusError(res.StatusCode, createError(ErrCaller))
 	} else if res.StatusCode >= 500 && res.StatusCode < 600 {
-		return NewHTTPStatusError(res.StatusCode, fmt.Errorf("%w: %s", ErrServer, string(body)))
+		return NewHTTPStatusError(res.StatusCode, createError(ErrServer))
 	}
 
-	return NewHTTPStatusError(res.StatusCode, fmt.Errorf("%w: %s", ErrUnknown, string(body)))
-}
-
-func PanicRecovery(wrapup func(cause error)) {
-	if re := recover(); re != nil {
-		err, ok := re.(error)
-		if !ok {
-			panic(re)
-		}
-
-		wrapup(err)
-	}
+	return NewHTTPStatusError(res.StatusCode, createError(ErrUnknown))
 }
 
 type ErrorPostProcessor struct {

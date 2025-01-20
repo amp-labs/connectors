@@ -1,35 +1,57 @@
 package apollo
 
-var (
-	restAPIPrefix string    = "v1"     //nolint:gochecknoglobals
-	pageQuery     string    = "page"   //nolint:gochecknoglobals
-	pageSize      string    = "100"    //nolint:gochecknoglobals
-	searchingPath string    = "search" //nolint:gochecknoglobals
-	readOp        operation = "read"   //nolint:gochecknoglobals
-	writeOp       operation = "write"  //nolint:gochecknoglobals
+import (
+	"strings"
 )
 
-type ObjectType string
+//nolint:gochecknoglobals
+var (
+	restAPIPrefix string    = "v1"
+	pageSize      string    = "100"
+	readOp        operation = "read"
+	pageQuery     string    = "page"
+	writeOp       operation = "write"
+	searchingPath string    = "search"
+)
 
-// postSearchObjects represents the objects that uses the searching endpoint,
-// POST method for requesting records.
-var postSearchObjects = []ObjectType{ //nolint:gochecknoglobals
-	"mixed_people", "mixed_companies", "contacts",
-	"accounts", "emails_campaigns",
+// readingSearchObjectGET represents objects that read by search and uses GET method.
+//
+//nolint:gochecknoglobals
+var readingSearchObjectsGET = []string{"opportunities", "users", "deals"}
+
+// readingSearchObjects represents objects that read by search and uses POST method.
+//
+//nolint:gochecknoglobals
+var readingSearchObjectsPOST = []string{"accounts", "contacts", "tasks", "emailer_campaigns", "sequences"}
+
+// readingListObjects represents objects that read by listing.
+//
+//nolint:gochecknoglobals,lll
+var readingListObjects = []string{"contact_stages", "opportunity_stages", "account_stages", "email_accounts", "labels", "typed_custom_fields", "deal_stages", "lists_and_tags"}
+
+// productNameToObjectName represents a mapping between the docs displaynames to object names.
+//
+//nolint:gochecknoglobals,lll
+var productNameToObjectName = map[string]string{
+	"sequences":      "emailer_campaigns",
+	"deals":          "opportunities",
+	"deal_stages":    "opportunity_stages",
+	"lists_and_tags": "labels",
 }
 
-// getSearchObjects represents the objects that uses the searching endpoint, GET method
-// for requesting records.Tasks has a query parameter `open_factor_names` requirement.
-var getSearchObjects = []ObjectType{"opportunities", "users"} //nolint:gochecknoglobals
+// Apollo uses mismatched API object names and display names in the documentation.
+// We want to support both naming conventions. This function checks whether the provided objectName
+// is a display name, and if so, maps it to the corresponding API object name.
+func constructSupportedObjectName(obj string) string {
+	// we want to update the objectName if the provided objectName
+	// is the product name from the API docs to the supported objectName.
+	// Example: sequence would be mapped to emailer_campaigns.
+	// ref: https://docs.apollo.io/reference/search-for-sequences
+	mappedObjectName, ok := productNameToObjectName[strings.ToLower(obj)]
+	if ok {
+		// Renaming the ObjectName to the mapped object.
+		obj = mappedObjectName
+	}
 
-// responseKey represent the results key fields in the response.
-// some endpoints have more than one, data fields returned.
-var responseKey = map[string][]string{ //nolint:gochecknoglobals
-	"mixed_people":      {"people", "accounts"},
-	"mixed_companies":   {"organizations", "accounts"},
-	"opportunities":     {"opportunities"},
-	"accounts":          {"accounts"},
-	"emailer_campaigns": {"emailer_campaigns"},
-	"users":             {"users"},
-	"contacts":          {"contacts"},
+	return obj
 }

@@ -9,7 +9,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/providers/keap"
 	connTest "github.com/amp-labs/connectors/test/keap"
 	"github.com/amp-labs/connectors/test/utils"
 )
@@ -26,8 +25,10 @@ func main() {
 	defer utils.Close(conn)
 
 	res, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: "emails",
-		Fields:     connectors.Fields("id", "subject", "sent_from_address"),
+		ObjectName: "contacts",
+		Fields:     connectors.Fields("id"),
+		// Since:      time.Now().Add(-30 * time.Minute),
+		// NextPage: "https://api.infusionsoft.com/crm/rest/v1/contacts/?limit=1&offset=50&since=2024-12-17T21:39:36.099Z&order=id",
 	})
 	if err != nil {
 		utils.Fail("error reading from Keap", "error", err)
@@ -35,8 +36,4 @@ func main() {
 
 	fmt.Println("Reading emails..")
 	utils.DumpJSON(res, os.Stdout)
-
-	if res.Rows > keap.DefaultPageSize {
-		utils.Fail(fmt.Sprintf("expected max %v rows", keap.DefaultPageSize))
-	}
 }

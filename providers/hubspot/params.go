@@ -12,7 +12,8 @@ import (
 
 const (
 	// DefaultPageSize is the default page size for paginated requests.
-	DefaultPageSize = "100"
+	DefaultPageSize    = "100"
+	DefaultPageSizeInt = 100
 )
 
 // Option is a function which mutates the hubspot connector configuration.

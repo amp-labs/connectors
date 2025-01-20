@@ -8,7 +8,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -88,9 +87,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 				If:    mockcond.MethodPOST(),
 				Then:  mockserver.Response(http.StatusOK, createIssueResponse),
 			}.Server(),
-			Comparator: func(serverURL string, actual, expected *common.WriteResult) bool {
-				return mockutils.WriteResultComparator.SubsetData(actual, expected)
-			},
+			Comparator: testroutines.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "10004",

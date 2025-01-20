@@ -1,0 +1,88 @@
+{
+  "data": [
+    {
+      "type": "opportunity",
+      "id": 1,
+      "attributes": {
+        "amount": 1000,
+        "closeDate": "2024-08-24T14:15:22.000Z",
+        "createdAt": "2024-07-31T11:49:16.000Z",
+        "currencyType": "USD",
+        "custom1": "Custom Value",
+        "description": null,
+        "externalCreatedAt": null,
+        "healthCategory": null,
+        "healthScore": null,
+        "mapLink": null,
+        "mapNextSteps": null,
+        "mapNumberOfOverdueTasks": null,
+        "mapStatus": null,
+        "name": "Compesation opportunuty",
+        "nextStep": null,
+        "opportunityType": null,
+        "probability": null,
+        "prospectingRepId": null,
+        "sharingTeamId": null,
+        "tags": [],
+        "territoryId": null,
+        "touchedAt": null,
+        "trashedAt": null,
+        "updatedAt": "2024-07-31T11:49:16.000Z"
+      },
+      "relationships": {
+        "account": { "data": null },
+        "assignedTeams": {
+          "data": [],
+          "links": {
+            "related": "https://api.outreach.io/api/v2/teams?filter%5Bopportunity%5D%5Bid%5D=1"
+          },
+          "meta": { "count": 0 }
+        },
+        "assignedUsers": {
+          "data": [],
+          "links": {
+            "related": "https://api.outreach.io/api/v2/users?filter%5Bopportunity%5D%5Bid%5D=1"
+          },
+          "meta": { "count": 0 }
+        },
+        "creator": { "data": { "type": "user", "id": 2 } },
+        "defaultPluginMapping": { "data": null },
+        "externalCreator": { "data": null },
+        "favorites": {
+          "data": [],
+          "links": {
+            "related": "https://api.outreach.io/api/v2/favorites?filter%5Bopportunity%5D%5Bid%5D=1"
+          },
+          "meta": { "count": 0 }
+        },
+        "opportunityHealthFactors": {
+          "data": [],
+          "links": {
+            "related": "https://api.outreach.io/api/v2/opportunityHealthFactors?filter%5Bopportunity%5D%5Bid%5D=1"
+          },
+          "meta": { "count": 0 }
+        },
+        "opportunityLineItems": {
+          "data": [],
+          "links": {
+            "related": "https://api.outreach.io/api/v2/opportunityLineItems?filter%5Bopportunity%5D%5Bid%5D=1"
+          },
+          "meta": { "count": 0 }
+        },
+        "opportunityStage": { "data": null },
+        "owner": { "data": null },
+        "primaryProspect": { "data": null },
+        "prospects": {
+          "links": {
+            "related": "https://api.outreach.io/api/v2/prospects?filter%5Bopportunity%5D%5Bid%5D=1"
+          }
+        },
+        "stage": { "data": null },
+        "territory": { "data": null },
+        "updater": { "data": { "type": "user", "id": 2 } }
+      },
+      "links": { "self": "https://api.outreach.io/api/v2/opportunities/1" }
+    }
+  ],
+  "meta": { "count": 1, "count_truncated": false }
+}

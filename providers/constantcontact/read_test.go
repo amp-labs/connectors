@@ -3,12 +3,10 @@ package constantcontact
 import (
 	"errors"
 	"net/http"
-	"strings"
 	"testing"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -45,13 +43,13 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		},
 		{
 			Name:  "Error response is parsed",
-			Input: common.ReadParams{ObjectName: "contact_id_xrefs", Fields: connectors.Fields("contact_id")},
+			Input: common.ReadParams{ObjectName: "contacts", Fields: connectors.Fields("contact_id")},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusBadRequest, responseContactIDsError),
 			}.Server(),
 			ExpectedErrs: []error{
-				errors.New("Sequence ID is invalid."), // nolint:goerr113
+				errors.New("Descriptive error message."), // nolint:goerr113
 				common.ErrBadRequest,
 			},
 		},
@@ -65,7 +63,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseContactsFirstPage),
 			}.Server(),
-			Comparator: readComparator,
+			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -78,7 +76,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"contact_id":   "af73e650-96f0-11ef-b2a0-fa163eafb85e",
 					},
 				}},
-				NextPage: "{{testServerURL}}/v3/contacts?cursor=bGltaXQ9MSZuZXh0PTI=",
+				NextPage: testroutines.URLTestServer + "/v3/contacts?cursor=bGltaXQ9MSZuZXh0PTI=",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -93,7 +91,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseContactsLastPage),
 			}.Server(),
-			Comparator: readComparator,
+			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -137,14 +135,4 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 	connector.setBaseURL(serverURL)
 
 	return connector, nil
-}
-
-func readComparator(baseURL string, actual, expected *common.ReadResult) bool {
-	expectedNextPage := strings.ReplaceAll(expected.NextPage.String(), "{{testServerURL}}", baseURL)
-
-	return mockutils.ReadResultComparator.SubsetFields(actual, expected) &&
-		mockutils.ReadResultComparator.SubsetRaw(actual, expected) &&
-		actual.NextPage.String() == expectedNextPage &&
-		actual.Rows == expected.Rows &&
-		actual.Done == expected.Done
 }

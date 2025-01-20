@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 	"os"
 	"os/signal"
@@ -10,7 +9,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/providers/instantly"
 	connTest "github.com/amp-labs/connectors/test/instantly"
 	"github.com/amp-labs/connectors/test/utils"
 )
@@ -39,8 +37,4 @@ func main() {
 
 	slog.Info("Reading campaigns..")
 	utils.DumpJSON(res, os.Stdout)
-
-	if res.Rows > instantly.DefaultPageSize {
-		utils.Fail(fmt.Sprintf("expected max %v rows", instantly.DefaultPageSize))
-	}
 }

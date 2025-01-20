@@ -51,6 +51,17 @@ func ParseResult(
 	// * or current page was empty.
 	// This will guarantee that Read is finite.
 	done := nextPage == "" || len(marshaledData) == 0
+	if done {
+		// It is possible that the provider doesn't reset the next page token when there are no more records.
+		// In this case, we should set the next page token to an empty string to indicate that we are done.
+		nextPage = ""
+	}
+
+	if len(marshaledData) == 0 {
+		// Either a JSON array is empty or it was nil.
+		// For consistency return empty array for missing records.
+		marshaledData = make([]ReadResultRow, 0)
+	}
 
 	return &ReadResult{
 		Rows:     int64(len(marshaledData)),
@@ -96,20 +107,17 @@ func GetMarshaledData(records []map[string]any, fields []string) ([]ReadResultRo
 	return data, nil
 }
 
-func GetRecordsUnderJSONPath(jsonPath string) RecordsFunc {
-	return func(node *ajson.Node) ([]map[string]any, error) {
-		arr, err := jsonquery.New(node).Array(jsonPath, false)
-		if err != nil {
-			return nil, err
-		}
-
-		return jsonquery.Convertor.ArrayToMap(arr)
-	}
+func GetRecordsUnderJSONPath(jsonPath string, nestedPath ...string) RecordsFunc {
+	return getRecords(false, jsonPath, nestedPath...)
 }
 
-func GetOptionalRecordsUnderJSONPath(jsonPath string) RecordsFunc {
+func GetOptionalRecordsUnderJSONPath(jsonPath string, nestedPath ...string) RecordsFunc {
+	return getRecords(true, jsonPath, nestedPath...)
+}
+
+func getRecords(optional bool, jsonPath string, nestedPath ...string) RecordsFunc {
 	return func(node *ajson.Node) ([]map[string]any, error) {
-		arr, err := jsonquery.New(node).Array(jsonPath, true)
+		arr, err := jsonquery.New(node, nestedPath...).Array(jsonPath, optional)
 		if err != nil {
 			return nil, err
 		}
