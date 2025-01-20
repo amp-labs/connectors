@@ -1,0 +1,105 @@
+{
+  "results": [
+    {
+      "label": "Sales Pipeline",
+      "displayOrder": 0,
+      "id": "default",
+      "stages": [
+        {
+          "label": "Appointment Scheduled",
+          "displayOrder": 0,
+          "metadata": {
+            "isClosed": "false",
+            "probability": "0.2"
+          },
+          "id": "appointmentscheduled",
+          "createdAt": "1970-01-01T00:00:00Z",
+          "updatedAt": "1970-01-01T00:00:00Z",
+          "writePermissions": "CRM_PERMISSIONS_ENFORCEMENT",
+          "archived": false
+        },
+        {
+          "label": "Qualified To Buy",
+          "displayOrder": 1,
+          "metadata": {
+            "isClosed": "false",
+            "probability": "0.4"
+          },
+          "id": "qualifiedtobuy",
+          "createdAt": "1970-01-01T00:00:00Z",
+          "updatedAt": "1970-01-01T00:00:00Z",
+          "writePermissions": "CRM_PERMISSIONS_ENFORCEMENT",
+          "archived": false
+        },
+        {
+          "label": "Presentation Scheduled",
+          "displayOrder": 2,
+          "metadata": {
+            "isClosed": "false",
+            "probability": "0.6"
+          },
+          "id": "presentationscheduled",
+          "createdAt": "1970-01-01T00:00:00Z",
+          "updatedAt": "1970-01-01T00:00:00Z",
+          "writePermissions": "CRM_PERMISSIONS_ENFORCEMENT",
+          "archived": false
+        },
+        {
+          "label": "Decision Maker Bought-In",
+          "displayOrder": 3,
+          "metadata": {
+            "isClosed": "false",
+            "probability": "0.8"
+          },
+          "id": "decisionmakerboughtin",
+          "createdAt": "1970-01-01T00:00:00Z",
+          "updatedAt": "1970-01-01T00:00:00Z",
+          "writePermissions": "CRM_PERMISSIONS_ENFORCEMENT",
+          "archived": false
+        },
+        {
+          "label": "Contract Sent",
+          "displayOrder": 4,
+          "metadata": {
+            "isClosed": "false",
+            "probability": "0.9"
+          },
+          "id": "contractsent",
+          "createdAt": "1970-01-01T00:00:00Z",
+          "updatedAt": "1970-01-01T00:00:00Z",
+          "writePermissions": "CRM_PERMISSIONS_ENFORCEMENT",
+          "archived": false
+        },
+        {
+          "label": "Closed Won",
+          "displayOrder": 5,
+          "metadata": {
+            "isClosed": "true",
+            "probability": "1.0"
+          },
+          "id": "closedwon",
+          "createdAt": "1970-01-01T00:00:00Z",
+          "updatedAt": "1970-01-01T00:00:00Z",
+          "writePermissions": "CRM_PERMISSIONS_ENFORCEMENT",
+          "archived": false
+        },
+        {
+          "label": "Closed Lost",
+          "displayOrder": 6,
+          "metadata": {
+            "isClosed": "true",
+            "probability": "0.0"
+          },
+          "id": "closedlost",
+          "createdAt": "1970-01-01T00:00:00Z",
+          "updatedAt": "1970-01-01T00:00:00Z",
+          "writePermissions": "CRM_PERMISSIONS_ENFORCEMENT",
+          "archived": false
+        }
+      ],
+      "createdAt": "1970-01-01T00:00:00Z",
+      "updatedAt": "1970-01-01T00:00:00Z",
+      "archived": false
+    }
+  ]
+}

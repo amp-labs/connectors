@@ -1,0 +1,28 @@
+{
+  "results": [
+    {
+      "updatedAt": "2024-09-05T17:14:04.747Z",
+      "createdAt": "2020-06-30T15:57:38.191Z",
+      "name": "pipeline",
+      "label": "Pipeline",
+      "type": "enumeration",
+      "fieldType": "select",
+      "description": "The pipeline the deal is in. This determines which stages are options for the deal.",
+      "groupName": "deal_activity",
+      "options": [],
+      "displayOrder": 4,
+      "calculated": false,
+      "externalOptions": true,
+      "hasUniqueValue": false,
+      "hidden": false,
+      "hubspotDefined": true,
+      "modificationMetadata": {
+        "archivable": true,
+        "readOnlyDefinition": true,
+        "readOnlyValue": false
+      },
+      "formField": false,
+      "dataSensitivity": "non_sensitive"
+    }
+  ]
+}
