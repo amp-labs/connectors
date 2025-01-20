@@ -357,31 +357,19 @@ func parsePipelineFieldValues(response *common.JSONHTTPResponse) ([]common.Field
 		return nil, fmt.Errorf("error unmarshalling pipelines into JSON: %w", err)
 	}
 
-	// Locate the default pipeline.
-	// Note: There can be multiple pipelines, but currently, enum options are returned only for the default pipeline.
+	// Aggregate stages across all pipelines.
+	// Note: Multiple pipelines can exist for each object type, with each instance referencing a specific pipeline.
 	//
 	// Problem: In HubSpot, field options are not defined at the object level but at the instance level.
 	// This means the object identifier is required to locate the pipeline and subsequently retrieve its options.
-	var defaultPipeline *pipeline
+	result := make([]common.FieldValue, 0)
 
-	for _, p := range resp.Pipelines {
-		if p.DisplayOrder == 0 {
-			defaultPipeline = &p
-
-			break
-		}
-	}
-
-	if defaultPipeline == nil {
-		// There is no default pipeline.
-		return nil, nil
-	}
-
-	result := make([]common.FieldValue, len(defaultPipeline.Stages))
-	for i, s := range defaultPipeline.Stages {
-		result[i] = common.FieldValue{
-			Value:        s.Value,
-			DisplayValue: s.DisplayName,
+	for _, pipelineItem := range resp.Pipelines {
+		for _, s := range pipelineItem.Stages {
+			result = append(result, common.FieldValue{
+				Value:        s.Value,
+				DisplayValue: s.DisplayName,
+			})
 		}
 	}
 
