@@ -9,9 +9,9 @@ import (
 )
 
 var (
-	errKeyNotFound       = errors.New("key not found")
-	errNotANumber        = errors.New("not a number")
-	errFieldTypeMismatch = errors.New("field type mismatch")
+	ErrKeyNotFound       = errors.New("key not found")
+	ErrNotANumber        = errors.New("not a number")
+	ErrFieldTypeMismatch = errors.New("field type mismatch")
 )
 
 type StringMap map[string]any
@@ -37,7 +37,7 @@ func (m StringMap) Len() int {
 func (m StringMap) Get(key string) (any, error) {
 	val, ok := m[key]
 	if !ok {
-		return nil, fmt.Errorf("%w: %s", errKeyNotFound, key)
+		return nil, fmt.Errorf("%w: %s", ErrKeyNotFound, key)
 	}
 
 	return val, nil
@@ -64,7 +64,7 @@ func (m StringMap) AsFloat(key string) (float64, error) {
 	case reflect.Float32, reflect.Float64:
 		return reflect.ValueOf(val).Float(), nil
 	default:
-		return 0, fmt.Errorf("%w: expected a number, but received %T", errNotANumber, val)
+		return 0, fmt.Errorf("%w: expected a number, but received %T", ErrNotANumber, val)
 	}
 }
 
@@ -88,7 +88,7 @@ func (m StringMap) AsInt(key string) (int64, error) {
 	case reflect.Float32, reflect.Float64:
 		return int64(reflect.ValueOf(val).Float()), nil
 	default:
-		return 0, fmt.Errorf("%w: expected a number, but received %T", errNotANumber, val)
+		return 0, fmt.Errorf("%w: expected a number, but received %T", ErrNotANumber, val)
 	}
 }
 
@@ -124,7 +124,7 @@ func (m StringMap) GetInt(key string) (int64, error) {
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		return reflect.ValueOf(val).Int(), nil
 	default:
-		return 0, fmt.Errorf("%w: expected an integer, but received %T", errFieldTypeMismatch, val)
+		return 0, fmt.Errorf("%w: expected an integer, but received %T", ErrFieldTypeMismatch, val)
 	}
 }
 
@@ -142,7 +142,7 @@ func (m StringMap) GetFloat(key string) (float64, error) {
 	case reflect.Float32, reflect.Float64:
 		return reflect.ValueOf(val).Float(), nil
 	default:
-		return 0, fmt.Errorf("%w: expected a float, but received %T", errFieldTypeMismatch, val)
+		return 0, fmt.Errorf("%w: expected a float, but received %T", ErrFieldTypeMismatch, val)
 	}
 }
 
@@ -150,7 +150,7 @@ func (m StringMap) GetFloat(key string) (float64, error) {
 func assertType[T any](val any) (T, error) {
 	of, ok := val.(T)
 	if !ok {
-		return of, fmt.Errorf("%w: expected type %T, but received %T", errFieldTypeMismatch, of, val)
+		return of, fmt.Errorf("%w: expected type %T, but received %T", ErrFieldTypeMismatch, of, val)
 	}
 
 	return of, nil
