@@ -15,6 +15,14 @@ import (
 	"github.com/gertd/go-pluralize"
 )
 
+//nolint:lll
+/*
+Older version doc: https://developers.hubspot.com/docs/guides/api/app-management/webhooks#webhook-subscriptions
+
+Newer version doc: https://developers.hubspot.com/docs/guides/apps/public-apps/create-generic-webhook-subscriptions#general
+
+*/
+
 /*
 Note:
 SubscriptionEvent is a map[string]any as opposed to a typed struct, because the structure of the event is not known .
@@ -89,7 +97,10 @@ var errSubscriptionSupportedForObject = errors.New("subscription is not supporte
 
 func (evt SubscriptionEvent) ObjectName() (string, error) {
 	objType, err := evt.ObjectTypeId()
-	if err == nil { // this is newer version of event case
+	if err == nil {
+		// this is newer version(generic webhook) of event case where objectTypeId is present that
+		// subscriptionType does not have reference to object name e.g) object.creation
+		// https://developers.hubspot.com/docs/guides/apps/public-apps/create-generic-webhook-subscriptions#general
 		objName, ok := KnownObjectTypes[objType]
 		if ok {
 			return pluralize.NewClient().Singular(objName), nil
