@@ -89,7 +89,7 @@ var errSubscriptionSupportedForObject = errors.New("subscription is not supporte
 
 func (evt SubscriptionEvent) ObjectName() (string, error) {
 	objType, err := evt.ObjectTypeId()
-	if err == nil {
+	if err == nil { // this is newer version of event case
 		objName, ok := KnownObjectTypes[objType]
 		if ok {
 			return pluralize.NewClient().Singular(objName), nil
