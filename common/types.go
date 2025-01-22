@@ -279,6 +279,12 @@ func NewListObjectMetadataResult() *ListObjectMetadataResult {
 	}
 }
 
+// AppendError will associate an error with the object.
+// It is possible that single object may have multiple errors.
+func (r ListObjectMetadataResult) AppendError(objectName string, err error) {
+	r.Errors[objectName] = errors.Join(r.Errors[objectName], err)
+}
+
 type ObjectMetadata struct {
 	// Provider's display name for the object.
 	DisplayName string

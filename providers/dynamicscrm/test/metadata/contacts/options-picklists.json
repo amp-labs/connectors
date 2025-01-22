@@ -1,0 +1,263 @@
+{
+  "@odata.context": "https://org6edbc606.api.crm.dynamics.com/api/data/v9.2/$metadata#EntityDefinitions('contact')/Attributes/Microsoft.Dynamics.CRM.PicklistAttributeMetadata(LogicalName,OptionSet(Options))",
+  "value": [
+    {
+      "LogicalName": "educationcode",
+      "MetadataId": "1f1a7b51-b139-453a-a1cb-e2899494e1a3",
+      "OptionSet": {
+        "MetadataId": "96b15669-cfc3-42f9-aa6a-8f0595182c30",
+        "Options": [
+          {
+            "Value": 1,
+            "Color": null,
+            "IsManaged": true,
+            "ExternalValue": null,
+            "ParentValues": [],
+            "Tag": null,
+            "IsHidden": false,
+            "MetadataId": null,
+            "HasChanged": null,
+            "Label": {
+              "LocalizedLabels": [
+                {
+                  "Label": "Default Value",
+                  "LanguageCode": 1033,
+                  "IsManaged": true,
+                  "MetadataId": "af41b506-2341-db11-898a-0007e9e17ebd",
+                  "HasChanged": null
+                }
+              ],
+              "UserLocalizedLabel": {
+                "Label": "Default Value",
+                "LanguageCode": 1033,
+                "IsManaged": true,
+                "MetadataId": "af41b506-2341-db11-898a-0007e9e17ebd",
+                "HasChanged": null
+              }
+            },
+            "Description": {
+              "LocalizedLabels": [],
+              "UserLocalizedLabel": null
+            }
+          }
+        ]
+      }
+    },
+    {
+      "LogicalName": "familystatuscode",
+      "MetadataId": "18d22cd0-f923-4d46-97e2-9decc997d285",
+      "OptionSet": {
+        "MetadataId": "2da4a488-81c9-419d-ad1c-fb0d33a1e0ef",
+        "Options": [
+          {
+            "Value": 1,
+            "Color": null,
+            "IsManaged": true,
+            "ExternalValue": null,
+            "ParentValues": [],
+            "Tag": null,
+            "IsHidden": false,
+            "MetadataId": null,
+            "HasChanged": null,
+            "Label": {
+              "LocalizedLabels": [
+                {
+                  "Label": "Single",
+                  "LanguageCode": 1033,
+                  "IsManaged": true,
+                  "MetadataId": "70abc7f4-2241-db11-898a-0007e9e17ebd",
+                  "HasChanged": null
+                }
+              ],
+              "UserLocalizedLabel": {
+                "Label": "Single",
+                "LanguageCode": 1033,
+                "IsManaged": true,
+                "MetadataId": "70abc7f4-2241-db11-898a-0007e9e17ebd",
+                "HasChanged": null
+              }
+            },
+            "Description": {
+              "LocalizedLabels": [],
+              "UserLocalizedLabel": null
+            }
+          },
+          {
+            "Value": 2,
+            "Color": null,
+            "IsManaged": true,
+            "ExternalValue": null,
+            "ParentValues": [],
+            "Tag": null,
+            "IsHidden": false,
+            "MetadataId": null,
+            "HasChanged": null,
+            "Label": {
+              "LocalizedLabels": [
+                {
+                  "Label": "Married",
+                  "LanguageCode": 1033,
+                  "IsManaged": true,
+                  "MetadataId": "72abc7f4-2241-db11-898a-0007e9e17ebd",
+                  "HasChanged": null
+                }
+              ],
+              "UserLocalizedLabel": {
+                "Label": "Married",
+                "LanguageCode": 1033,
+                "IsManaged": true,
+                "MetadataId": "72abc7f4-2241-db11-898a-0007e9e17ebd",
+                "HasChanged": null
+              }
+            },
+            "Description": {
+              "LocalizedLabels": [],
+              "UserLocalizedLabel": null
+            }
+          },
+          {
+            "Value": 3,
+            "Color": null,
+            "IsManaged": true,
+            "ExternalValue": null,
+            "ParentValues": [],
+            "Tag": null,
+            "IsHidden": false,
+            "MetadataId": null,
+            "HasChanged": null,
+            "Label": {
+              "LocalizedLabels": [
+                {
+                  "Label": "Divorced",
+                  "LanguageCode": 1033,
+                  "IsManaged": true,
+                  "MetadataId": "74abc7f4-2241-db11-898a-0007e9e17ebd",
+                  "HasChanged": null
+                }
+              ],
+              "UserLocalizedLabel": {
+                "Label": "Divorced",
+                "LanguageCode": 1033,
+                "IsManaged": true,
+                "MetadataId": "74abc7f4-2241-db11-898a-0007e9e17ebd",
+                "HasChanged": null
+              }
+            },
+            "Description": {
+              "LocalizedLabels": [],
+              "UserLocalizedLabel": null
+            }
+          },
+          {
+            "Value": 4,
+            "Color": null,
+            "IsManaged": true,
+            "ExternalValue": null,
+            "ParentValues": [],
+            "Tag": null,
+            "IsHidden": false,
+            "MetadataId": null,
+            "HasChanged": null,
+            "Label": {
+              "LocalizedLabels": [
+                {
+                  "Label": "Widowed",
+                  "LanguageCode": 1033,
+                  "IsManaged": true,
+                  "MetadataId": "76abc7f4-2241-db11-898a-0007e9e17ebd",
+                  "HasChanged": null
+                }
+              ],
+              "UserLocalizedLabel": {
+                "Label": "Widowed",
+                "LanguageCode": 1033,
+                "IsManaged": true,
+                "MetadataId": "76abc7f4-2241-db11-898a-0007e9e17ebd",
+                "HasChanged": null
+              }
+            },
+            "Description": {
+              "LocalizedLabels": [],
+              "UserLocalizedLabel": null
+            }
+          }
+        ]
+      }
+    },
+    {
+      "LogicalName": "gendercode",
+      "MetadataId": "a81e86c9-e2e1-4c1e-81ab-8913eedaab47",
+      "OptionSet": {
+        "MetadataId": "cb7f9ccb-21b2-45b5-acf5-0a62344d0860",
+        "Options": [
+          {
+            "Value": 1,
+            "Color": null,
+            "IsManaged": true,
+            "ExternalValue": null,
+            "ParentValues": [],
+            "Tag": null,
+            "IsHidden": false,
+            "MetadataId": null,
+            "HasChanged": null,
+            "Label": {
+              "LocalizedLabels": [
+                {
+                  "Label": "Male",
+                  "LanguageCode": 1033,
+                  "IsManaged": true,
+                  "MetadataId": "96a9c7f4-2241-db11-898a-0007e9e17ebd",
+                  "HasChanged": null
+                }
+              ],
+              "UserLocalizedLabel": {
+                "Label": "Male",
+                "LanguageCode": 1033,
+                "IsManaged": true,
+                "MetadataId": "96a9c7f4-2241-db11-898a-0007e9e17ebd",
+                "HasChanged": null
+              }
+            },
+            "Description": {
+              "LocalizedLabels": [],
+              "UserLocalizedLabel": null
+            }
+          },
+          {
+            "Value": 2,
+            "Color": null,
+            "IsManaged": true,
+            "ExternalValue": null,
+            "ParentValues": [],
+            "Tag": null,
+            "IsHidden": false,
+            "MetadataId": null,
+            "HasChanged": null,
+            "Label": {
+              "LocalizedLabels": [
+                {
+                  "Label": "Female",
+                  "LanguageCode": 1033,
+                  "IsManaged": true,
+                  "MetadataId": "98a9c7f4-2241-db11-898a-0007e9e17ebd",
+                  "HasChanged": null
+                }
+              ],
+              "UserLocalizedLabel": {
+                "Label": "Female",
+                "LanguageCode": 1033,
+                "IsManaged": true,
+                "MetadataId": "98a9c7f4-2241-db11-898a-0007e9e17ebd",
+                "HasChanged": null
+              }
+            },
+            "Description": {
+              "LocalizedLabels": [],
+              "UserLocalizedLabel": null
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
