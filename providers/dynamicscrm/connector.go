@@ -1,11 +1,8 @@
 package dynamicscrm
 
 import (
-	"fmt"
-
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
-	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers"
@@ -14,8 +11,9 @@ import (
 const apiVersion = "v9.2"
 
 type Connector struct {
-	BaseURL string
-	Client  *common.JSONHTTPClient
+	BaseURL                     string
+	Client                      *common.JSONHTTPClient
+	metadataDiscoveryRepository metadataDiscoveryRepository
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
@@ -41,6 +39,10 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	conn.Client.HTTPClient.ErrorHandler = interpreter.ErrorHandler{
 		JSON: interpreter.NewFaultyResponder(errorFormats, nil),
 	}.Handle
+	conn.metadataDiscoveryRepository = metadataDiscoveryRepository{
+		client:   conn.Client,
+		buildURL: conn.getURL,
+	}
 
 	return conn, nil
 }
@@ -55,22 +57,6 @@ func (c *Connector) String() string {
 
 func (c *Connector) getURL(arg string) (*urlbuilder.URL, error) {
 	return constructURL(c.BaseURL, apiVersion, arg)
-}
-
-func (c *Connector) getEntityDefinitionURL(arg naming.SingularString) (*urlbuilder.URL, error) {
-	// This endpoint returns schema of an object.
-	// Schema name must be singular.
-	path := fmt.Sprintf("EntityDefinitions(LogicalName='%v')", arg.String())
-
-	return c.getURL(path)
-}
-
-func (c *Connector) getEntityAttributesURL(arg naming.SingularString) (*urlbuilder.URL, error) {
-	// This endpoint will describe attributes present on schema and its properties.
-	// Schema name must be singular.
-	path := fmt.Sprintf("EntityDefinitions(LogicalName='%v')/Attributes", arg.String())
-
-	return c.getURL(path)
 }
 
 func (c *Connector) setBaseURL(newURL string) {

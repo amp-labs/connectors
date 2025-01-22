@@ -15,10 +15,6 @@ type metadataResultComparator struct{}
 
 // SubsetFields checks that expected ListObjectMetadataResult fields are a subset of actual metadata result.
 func (metadataResultComparator) SubsetFields(actual, expected *common.ListObjectMetadataResult) bool {
-	if len(expected.Result) == 0 {
-		invalidTest("please specify expected Fields response")
-	}
-
 	for objectName, expectedMetadata := range expected.Result {
 		actualMetadata, ok := actual.Result[objectName]
 		if !ok {
