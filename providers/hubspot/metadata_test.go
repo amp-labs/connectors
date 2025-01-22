@@ -295,7 +295,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 			ExpectedErrs: nil,
 		},
 		{
-			Name:  "Successfully describe lists, which is outside ObjectsAPI",
+			Name:  "Successfully describe lists, which is outside Properties API",
 			Input: []string{"lists"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),

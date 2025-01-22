@@ -14,7 +14,7 @@ var (
 	//go:embed schemas.json
 	schemas []byte
 
-	FileManager = scrapper.NewMetadataFileManager[staticschema.ObjectFieldsV2]( // nolint:gochecknoglobals
+	FileManager = scrapper.NewMetadataFileManager[staticschema.FieldMetadataMapV2]( // nolint:gochecknoglobals
 		schemas, fileconv.NewSiblingFileLocator())
 
 	// Schemas is cached Object schemas.

@@ -81,17 +81,17 @@ func (c *Connector) ListObjectMetadata( // nolint:cyclop,funlen
 
 // getObjectMetadata returns object metadata for the given object name.
 func (c *Connector) getObjectMetadata(ctx context.Context, objectName string) (*common.ObjectMetadata, error) {
-	if crmObjectsOutsideTheObjectAPI.Has(objectName) {
-		return c.getObjectMetadataCRM(ctx, objectName)
+	if crmObjectsOutsideThePropertiesAPI.Has(objectName) {
+		return c.getObjectMetadataFromObjectAPI(ctx, objectName)
 	}
 
-	return c.getObjectMetadataCRMCoreObjects(ctx, objectName)
+	return c.getObjectMetadataFromPropertyAPI(ctx, objectName)
 }
 
-// This method describes objects that are part of ObjectsAPI.
+// This method describes objects that are part of Objects API using properties endpoint.
 // There is a dedicated API endpoint that is used for discovery of object properties.
 // https://developers.hubspot.com/docs/guides/api/crm/properties
-func (c *Connector) getObjectMetadataCRMCoreObjects(
+func (c *Connector) getObjectMetadataFromPropertyAPI(
 	ctx context.Context, objectName string,
 ) (*common.ObjectMetadata, error) {
 	relativeURL := strings.Join([]string{"properties", objectName}, "/")
@@ -121,10 +121,10 @@ func (c *Connector) getObjectMetadataCRMCoreObjects(
 	), nil
 }
 
-// Method focuses on acquiring object properties for those objects that are not part of CRM ObjectsAPI.
+// Method focuses on acquiring object properties for those objects that are not part of CRM Properties API.
 // https://developers.hubspot.com/docs/guides/api/crm/objects/companies
 // There is no discovery endpoint to acquire object properties, therefore, manual read is used.
-func (c *Connector) getObjectMetadataCRM(
+func (c *Connector) getObjectMetadataFromObjectAPI(
 	ctx context.Context, objectName string,
 ) (*common.ObjectMetadata, error) {
 	readResult, err := c.SearchCRM(ctx, SearchCRMParams{
