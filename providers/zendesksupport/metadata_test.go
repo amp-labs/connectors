@@ -7,7 +7,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 )
@@ -26,7 +25,7 @@ func TestListObjectMetadataZendeskSupportModule(t *testing.T) { // nolint:funlen
 			Name:         "Object coming from different module is unknown",
 			Input:        []string{"articles"},
 			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{staticschema.ErrObjectNotFound},
+			ExpectedErrs: []error{common.ErrObjectNotSupported},
 		},
 		{
 			Name:   "Successfully describe one object with metadata",
@@ -114,7 +113,7 @@ func TestListObjectMetadataHelpCenterModule(t *testing.T) { // nolint:funlen,goc
 			Name:         "Object coming from different module is unknown",
 			Input:        []string{"brands"},
 			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{staticschema.ErrObjectNotFound},
+			ExpectedErrs: []error{common.ErrObjectNotSupported},
 		},
 		{
 			Name:   "Successfully describe one object with metadata",

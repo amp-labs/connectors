@@ -5,7 +5,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 )
@@ -24,7 +23,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Name:         "Unknown object requested",
 			Input:        []string{"butterflies"},
 			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{staticschema.ErrObjectNotFound},
+			ExpectedErrs: []error{common.ErrObjectNotSupported},
 		},
 		{
 			Name:       "Successfully describe multiple objects with metadata",

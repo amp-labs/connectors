@@ -10,27 +10,29 @@ const (
 	QueryParamStatsFile = "queryParamStats.json"
 )
 
-type MetadataFileManager struct {
-	staticschema.FileManager
+type MetadataFileManager[F staticschema.FieldMetadataMap] struct {
+	staticschema.FileManager[F]
 
 	locator fileconv.FileLocator
 	flush   fileconv.Flusher
 }
 
-func NewMetadataFileManager(schemas []byte, locator fileconv.FileLocator) *MetadataFileManager {
-	return &MetadataFileManager{
-		FileManager: *staticschema.NewFileManager(schemas, locator),
+func NewMetadataFileManager[F staticschema.FieldMetadataMap](
+	schemas []byte, locator fileconv.FileLocator,
+) *MetadataFileManager[F] {
+	return &MetadataFileManager[F]{
+		FileManager: *staticschema.NewFileManager[F](schemas, locator),
 		locator:     locator,
 	}
 }
 
-func (m MetadataFileManager) SaveIndex(index *ModelURLRegistry) error {
+func (m MetadataFileManager[F]) SaveIndex(index *ModelURLRegistry) error {
 	index.Sort()
 
 	return m.flush.ToFile(m.locator.AbsPathTo(IndexFile), index)
 }
 
-func (m MetadataFileManager) LoadIndex() (*ModelURLRegistry, error) {
+func (m MetadataFileManager[F]) LoadIndex() (*ModelURLRegistry, error) {
 	var registry *ModelURLRegistry
 
 	err := LoadFile(m.locator.AbsPathTo(IndexFile), &registry)
@@ -41,6 +43,6 @@ func (m MetadataFileManager) LoadIndex() (*ModelURLRegistry, error) {
 	return registry, nil
 }
 
-func (m MetadataFileManager) SaveQueryParamStats(stats *QueryParamStats) error {
+func (m MetadataFileManager[F]) SaveQueryParamStats(stats *QueryParamStats) error {
 	return m.flush.ToFile(m.locator.AbsPathTo(QueryParamStatsFile), stats)
 }

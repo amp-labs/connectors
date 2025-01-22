@@ -69,7 +69,7 @@ func createSchemas() {
 	index, err := metadata.FileManager.LoadIndex()
 	goutils.MustBeNil(err)
 
-	schemas := staticschema.NewMetadata()
+	schemas := staticschema.NewMetadata[staticschema.FieldMetadataMapV1]()
 
 	filteredListDocs := getFilteredListDocs(index)
 	for i := range filteredListDocs { // nolint:varnamelen
@@ -89,7 +89,10 @@ func createSchemas() {
 						newDisplayName, isList := handleDisplayName(model.DisplayName)
 						if isList {
 							schemas.Add("", modelName,
-								newDisplayName, fieldName, fmt.Sprintf("/%v", modelName), "data", &model.URL)
+								newDisplayName, fmt.Sprintf("/%v", modelName), "data",
+								staticschema.FieldMetadataMapV1{
+									fieldName: fieldName,
+								}, &model.URL)
 						}
 					}
 				})
