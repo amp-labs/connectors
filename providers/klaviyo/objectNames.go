@@ -31,7 +31,7 @@ func init() {
 		for objectName, object := range module.Objects {
 		Search:
 			for _, preferredSinceField := range prioritySinceFieldsForRead {
-				for currentField := range object.FieldsMap {
+				for currentField := range object.Fields {
 					if preferredSinceField == currentField {
 						objectsNameToSinceFieldName[moduleID][objectName] = preferredSinceField
 

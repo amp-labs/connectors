@@ -70,7 +70,7 @@ func main() {
 	)
 	goutils.MustBeNil(err)
 
-	schemas := staticschema.NewMetadata()
+	schemas := staticschema.NewMetadata[staticschema.FieldMetadataMapV1]()
 	registry := datautils.NamedLists[string]{}
 
 	for _, object := range objects {
@@ -82,8 +82,10 @@ func main() {
 		}
 
 		for _, field := range object.Fields {
-			schemas.Add("", object.ObjectName, object.DisplayName,
-				field, object.URLPath, object.ResponseKey, nil)
+			schemas.Add("", object.ObjectName, object.DisplayName, object.URLPath, object.ResponseKey,
+				staticschema.FieldMetadataMapV1{
+					field: field,
+				}, nil)
 		}
 
 		for _, queryParam := range object.QueryParams {
