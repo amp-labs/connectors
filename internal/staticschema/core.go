@@ -60,6 +60,9 @@ type (
 	}
 )
 
+// All maps must be copies of the original map, which remains immutable.
+// The immutable map serves as a unified registry of metadata for the connector.
+// ListObjectMetadata returns a copy that consumers are allowed to modify as needed.
 func (o Object[F]) getObjectMetadata() *common.ObjectMetadata {
 	if fieldsMap, isV1 := (any(o.Fields)).(FieldMetadataMapV1); isV1 {
 		return &common.ObjectMetadata{
@@ -82,7 +85,7 @@ func (o Object[F]) getObjectMetadata() *common.ObjectMetadata {
 
 // Add will appropriately store the data, abiding to data structure rules.
 // NOTE: empty module id is treated as root module.
-func (m *Metadata[F]) Add(
+func (m *Metadata[F]) Add( // nolint:funlen
 	moduleID common.ModuleID,
 	objectName, objectDisplayName, urlPath, responseKey string,
 	fieldMetadataMap F,
@@ -109,6 +112,18 @@ func (m *Metadata[F]) Add(
 		return
 	}
 
+	// This code acts as a bridge between a concrete type and a generic type.
+	//
+	// Key points:
+	// - The range operation is not supported for expressions without a core type.
+	//   Therefore, the map is type-asserted to its concrete type.
+	// - For the concrete type, old and new values are copied into a joined map of that type.
+	// - Finally, the map is converted back to the generic type.
+	//
+	// Note:
+	// - This is a workaround for limitations in Go generics.
+	// - During compilation, only one execution path is valid for each concrete type.
+	//   The other paths are unreachable and conceptually invalid, as they pertain to entirely different types.
 	if presentFields, isV1 := (any(object.Fields)).(FieldMetadataMapV1); isV1 {
 		fieldsMap := make(FieldMetadataMapV1)
 		for k, v := range presentFields {
