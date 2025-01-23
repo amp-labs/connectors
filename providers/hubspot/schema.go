@@ -1,13 +1,5 @@
 package hubspot
 
-import (
-	"context"
-	"encoding/json"
-
-	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/logging"
-)
-
 // https://developers.hubspot.com/docs/guides/api/crm/understanding-the-crm#object-type-ids
 //
 //nolint:gochecknoglobals
@@ -34,32 +26,4 @@ var KnownObjectTypes = map[string]string{
 	"0-69":  "subscriptions",
 	"0-27":  "tasks",
 	"0-115": "users",
-}
-
-func (c *Connector) GetSchema(ctx context.Context, objectNameOrTypeId string) (*common.StringMap, error) {
-	ctx = logging.With(ctx, "connector", "hubspot")
-
-	u := c.getSchemaURL(objectNameOrTypeId)
-
-	resp, err := c.Client.Get(ctx, u)
-	if err != nil {
-		return nil, err
-	}
-
-	resBody, ok := resp.Body()
-	if !ok {
-		return nil, common.ErrEmptyJSONHTTPResponse
-	}
-
-	schema := make(common.StringMap)
-
-	if err := json.Unmarshal(resBody.Source(), &schema); err != nil {
-		return nil, err
-	}
-
-	return &schema, nil
-}
-
-func (c *Connector) getSchemaURL(objectNameOrTypeId string) string {
-	return c.BaseURL + "/crm-object-schemas/v3/schemas/" + objectNameOrTypeId
 }
