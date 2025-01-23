@@ -1,0 +1,563 @@
+{
+  "success": true,
+  "errors": [],
+  "requestId": "1167b#194927caa59",
+  "warnings": [],
+  "result": [
+    {
+      "id": 3,
+      "name": "Online Advertising",
+      "applicableProgramType": "program",
+      "progressionStatuses": [
+        {
+          "name": "Not in Program",
+          "step": 0,
+          "type": "Not in Program",
+          "hidden": false,
+          "success": false
+        },
+        {
+          "name": "Filled-out Form",
+          "step": 10,
+          "type": "Filled-out Form",
+          "hidden": false,
+          "success": false
+        },
+        {
+          "name": "Influenced",
+          "step": 20,
+          "type": "Influenced",
+          "hidden": false,
+          "success": true
+        }
+      ],
+      "createdAt": "2024-03-10T09:24:11Z+0000",
+      "updatedAt": "2024-03-10T09:24:11Z+0000"
+    },
+    {
+      "id": 1,
+      "name": "Webinar",
+      "applicableProgramType": "webinar",
+      "progressionStatuses": [
+        {
+          "name": "Not in Program",
+          "step": 0,
+          "type": "Not in Program",
+          "hidden": false,
+          "success": false
+        },
+        {
+          "name": "Invited",
+          "step": 10,
+          "type": "Invited",
+          "hidden": false,
+          "success": false
+        },
+        {
+          "name": "Registration Error",
+          "step": 20,
+          "type": "Registration Error",
+          "hidden": false,
+          "success": false
+        },
+        {
+          "name": "Waitlisted",
+          "step": 20,
+          "type": "Waitlisted",
+          "hidden": false,
+          "success": false
+        },
+        {
+          "name": "Registered",
+          "step": 20,
+          "type": "Registered",
+          "hidden": false,
+          "success": false
+        },
+        {
+          "name": "No Show",
+          "step": 30,
+          "type": "No Show",
+          "hidden": false,
+          "success": false
+        },
+        {
+          "name": "Attended",
+          "step": 40,
+          "type": "Attended",
+          "hidden": false,
+          "success": true
+        },
+        {
+          "name": "Attended On-demand",
+          "step": 50,
+          "type": "Attended On-demand",
+          "hidden": false,
+          "success": true
+        }
+      ],
+      "createdAt": "2024-03-10T09:24:11Z+0000",
+      "updatedAt": "2024-03-10T09:24:11Z+0000"
+    },
+    {
+      "id": 2,
+      "name": "Webinar (Asynchronous)",
+      "applicableProgramType": "webinar",
+      "progressionStatuses": [
+        {
+          "name": "Not in Program",
+          "step": 0,
+          "type": "Not in Program",
+          "hidden": false,
+          "success": false
+        },
+        {
+          "name": "Invited",
+          "step": 10,
+          "type": "Invited",
+          "hidden": false,
+          "success": false
+        },
+        {
+          "name": "Registration Error",
+          "step": 20,
+          "type": "Registration Error",
+          "hidden": false,
+          "success": false
+        },
+        {
+          "name": "Registering",
+          "step": 20,
+          "type": "Registering",
+          "hidden": false,
+          "success": false
+        },
+        {
+          "name": "Waitlisted",
+          "step": 20,
+          "type": "Waitlisted",
+          "hidden": false,
+          "success": false
+        },
+        {
+          "name": "Registered",
+          "step": 20,
+          "type": "Registered",
+          "hidden": false,
+          "success": false
+        },
+        {
+          "name": "No Show",
+          "step": 30,
+          "type": "No Show",
+          "hidden": false,
+          "success": false
+        },
+        {
+          "name": "Attended",
+          "step": 40,
+          "type": "Attended",
+          "hidden": false,
+          "success": true
+        },
+        {
+          "name": "Attended On-demand",
+          "step": 50,
+          "type": "Attended On-demand",
+          "hidden": false,
+          "success": true
+        }
+      ],
+      "createdAt": "2024-03-10T09:24:11Z+0000",
+      "updatedAt": "2024-03-10T09:24:11Z+0000"
+    },
+    {
+      "id": 4,
+      "name": "Tradeshow",
+      "applicableProgramType": "event",
+      "progressionStatuses": [
+        {
+          "name": "Not in Program",
+          "step": 0,
+          "type": "Not in Program",
+          "hidden": false,
+          "success": false
+        },
+        {
+          "name": "Invited",
+          "step": 10,
+          "type": "Invited",
+          "hidden": false,
+          "success": false
+        },
+        {
+          "name": "Waitlisted",
+          "step": 20,
+          "type": "Waitlisted",
+          "hidden": false,
+          "success": false
+        },
+        {
+          "name": "Registered",
+          "step": 20,
+          "type": "Registered",
+          "hidden": false,
+          "success": false
+        },
+        {
+          "name": "Visited Booth",
+          "step": 30,
+          "type": "Visited",
+          "hidden": false,
+          "success": false
+        },
+        {
+          "name": "Influenced",
+          "step": 40,
+          "type": "Influenced",
+          "hidden": false,
+          "success": true
+        }
+      ],
+      "createdAt": "2024-03-10T09:24:11Z+0000",
+      "updatedAt": "2024-03-10T09:24:11Z+0000"
+    },
+    {
+      "id": 5,
+      "name": "Live Event",
+      "applicableProgramType": "event",
+      "progressionStatuses": [
+        {
+          "name": "Not in Program",
+          "step": 0,
+          "type": "Not in Program",
+          "hidden": false,
+          "success": false
+        },
+        {
+          "name": "Invited",
+          "step": 10,
+          "type": "Invited",
+          "hidden": false,
+          "success": false
+        },
+        {
+          "name": "Waitlisted",
+          "step": 20,
+          "type": "Waitlisted",
+          "hidden": false,
+          "success": false
+        },
+        {
+          "name": "Registered",
+          "step": 20,
+          "type": "Registered",
+          "hidden": false,
+          "success": false
+        },
+        {
+          "name": "No Show",
+          "step": 30,
+          "type": "No Show",
+          "hidden": false,
+          "success": false
+        },
+        {
+          "name": "Attended",
+          "step": 40,
+          "type": "Attended",
+          "hidden": false,
+          "success": true
+        }
+      ],
+      "createdAt": "2024-03-10T09:24:11Z+0000",
+      "updatedAt": "2024-03-10T09:24:11Z+0000"
+    },
+    {
+      "id": 6,
+      "name": "List Import",
+      "applicableProgramType": "program",
+      "progressionStatuses": [
+        {
+          "name": "Not in Program",
+          "step": 0,
+          "type": "Not in Program",
+          "hidden": false,
+          "success": false
+        },
+        {
+          "name": "On List",
+          "step": 10,
+          "type": "On List",
+          "hidden": false,
+          "success": false
+        },
+        {
+          "name": "Influenced",
+          "step": 20,
+          "type": "Influenced",
+          "hidden": false,
+          "success": true
+        }
+      ],
+      "createdAt": "2024-03-10T09:24:11Z+0000",
+      "updatedAt": "2024-03-10T09:24:11Z+0000"
+    },
+    {
+      "id": 7,
+      "name": "Web Content",
+      "applicableProgramType": "program",
+      "progressionStatuses": [
+        {
+          "name": "Not in Program",
+          "step": 0,
+          "type": "Not in Program",
+          "hidden": false,
+          "success": false
+        },
+        {
+          "name": "Filled-out Form",
+          "step": 10,
+          "type": "Filled-out Form",
+          "hidden": false,
+          "success": false
+        },
+        {
+          "name": "Influenced",
+          "step": 20,
+          "type": "Influenced",
+          "hidden": false,
+          "success": true
+        }
+      ],
+      "createdAt": "2024-03-10T09:24:11Z+0000",
+      "updatedAt": "2024-03-10T09:24:11Z+0000"
+    },
+    {
+      "id": 8,
+      "name": "Nurture",
+      "applicableProgramType": "nurture",
+      "progressionStatuses": [
+        {
+          "name": "Not in Program",
+          "step": 0,
+          "type": "Not in Program",
+          "hidden": false,
+          "success": false
+        },
+        {
+          "name": "Member",
+          "step": 10,
+          "type": "Member",
+          "hidden": false,
+          "success": false
+        },
+        {
+          "name": "Influenced",
+          "step": 20,
+          "type": "Influenced",
+          "hidden": false,
+          "success": true
+        }
+      ],
+      "createdAt": "2024-03-10T09:24:11Z+0000",
+      "updatedAt": "2024-03-10T09:24:11Z+0000"
+    },
+    {
+      "id": 9,
+      "name": "Email Send",
+      "applicableProgramType": "email_batch",
+      "progressionStatuses": [
+        {
+          "name": "Not in Program",
+          "step": 0,
+          "type": "Not in Program",
+          "hidden": false,
+          "success": false
+        },
+        {
+          "name": "Member",
+          "step": 10,
+          "type": "Member",
+          "hidden": false,
+          "success": false
+        },
+        {
+          "name": "Influenced",
+          "step": 20,
+          "type": "Influenced",
+          "hidden": false,
+          "success": true
+        }
+      ],
+      "createdAt": "2024-03-10T09:24:11Z+0000",
+      "updatedAt": "2024-03-10T09:24:11Z+0000"
+    },
+    {
+      "id": 10,
+      "name": "Newsletter",
+      "applicableProgramType": "email_batch",
+      "progressionStatuses": [
+        {
+          "name": "Not in Program",
+          "step": 0,
+          "type": "Not in Program",
+          "hidden": false,
+          "success": false
+        },
+        {
+          "name": "Member",
+          "step": 10,
+          "type": "Member",
+          "hidden": false,
+          "success": false
+        },
+        {
+          "name": "Influenced",
+          "step": 20,
+          "type": "Influenced",
+          "hidden": false,
+          "success": true
+        }
+      ],
+      "createdAt": "2024-03-10T09:24:11Z+0000",
+      "updatedAt": "2024-03-10T09:24:11Z+0000"
+    },
+    {
+      "id": 12,
+      "name": "Operational",
+      "applicableProgramType": "program",
+      "progressionStatuses": [
+        {
+          "name": "Not in Program",
+          "step": 0,
+          "type": "Not in Program",
+          "hidden": false,
+          "success": false
+        },
+        {
+          "name": "Member",
+          "step": 10,
+          "type": "Member",
+          "hidden": false,
+          "success": false
+        }
+      ],
+      "createdAt": "2024-03-10T09:24:11Z+0000",
+      "updatedAt": "2024-03-10T09:24:11Z+0000"
+    },
+    {
+      "id": 11,
+      "name": "Web Request",
+      "applicableProgramType": "program",
+      "progressionStatuses": [
+        {
+          "name": "Not in Program",
+          "step": 0,
+          "type": "Not in Program",
+          "hidden": false,
+          "success": false
+        },
+        {
+          "name": "Filled-out Form",
+          "step": 10,
+          "type": "Filled-out Form",
+          "hidden": false,
+          "success": true
+        }
+      ],
+      "createdAt": "2024-03-10T09:24:11Z+0000",
+      "updatedAt": "2024-03-10T09:24:11Z+0000"
+    },
+    {
+      "id": 13,
+      "name": "Mobile In-App",
+      "applicableProgramType": "in_app",
+      "progressionStatuses": [
+        {
+          "name": "Not in Program",
+          "step": 0,
+          "type": "Not in Program",
+          "hidden": false,
+          "success": false
+        },
+        {
+          "name": "Viewed",
+          "step": 10,
+          "type": "Viewed",
+          "hidden": false,
+          "success": false
+        },
+        {
+          "name": "Engaged",
+          "step": 20,
+          "type": "Engaged",
+          "hidden": false,
+          "success": false
+        }
+      ],
+      "createdAt": "2024-03-10T09:24:11Z+0000",
+      "updatedAt": "2024-03-10T09:24:11Z+0000"
+    },
+    {
+      "id": 14,
+      "name": "Web Personalization",
+      "applicableProgramType": "web",
+      "progressionStatuses": [
+        {
+          "name": "Viewed",
+          "step": 10,
+          "type": "Viewed",
+          "hidden": false,
+          "success": false
+        },
+        {
+          "name": "Engaged",
+          "step": 20,
+          "type": "Engaged",
+          "hidden": false,
+          "success": true
+        },
+        {
+          "name": "Converted",
+          "step": 30,
+          "type": "Converted",
+          "hidden": false,
+          "success": true
+        }
+      ],
+      "createdAt": "2024-03-10T09:24:11Z+0000",
+      "updatedAt": "2024-03-10T09:24:11Z+0000"
+    },
+    {
+      "id": 15,
+      "name": "Chat",
+      "applicableProgramType": "program",
+      "progressionStatuses": [
+        {
+          "name": "Not in Program",
+          "step": 0,
+          "type": "Not in Program",
+          "hidden": false,
+          "success": false
+        },
+        {
+          "name": "Member",
+          "step": 10,
+          "type": "Member",
+          "hidden": false,
+          "success": false
+        },
+        {
+          "name": "Engaged",
+          "step": 20,
+          "type": "Engaged",
+          "hidden": false,
+          "success": true
+        }
+      ],
+      "createdAt": "2024-03-10T09:24:11Z+0000",
+      "updatedAt": "2024-03-10T09:24:11Z+0000"
+    }
+  ]
+}
