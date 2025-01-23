@@ -5,6 +5,7 @@ const (
 	HighLevelWhiteLabel Provider = "highLevelWhiteLabel"
 )
 
+//nolint:funlen
 func init() {
 	// HighlevelStandard configuration
 	SetInfo(HighLevelStandard, ProviderInfo{
