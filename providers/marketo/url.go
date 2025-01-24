@@ -7,7 +7,7 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
-var restAPIPrefix = "rest" //nolint:gochecknoglobals
+const restAPIPrefix = "rest" //nolint:gochecknoglobals
 
 func (c *Connector) getURL(params common.ReadParams) (*urlbuilder.URL, error) {
 	url, err := c.getAPIURL(params.ObjectName)

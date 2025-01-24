@@ -1,0 +1,15 @@
+{
+  "requestId": "76cc#1949367e298",
+  "result": [
+    {
+      "id": 1023,
+      "name": "Meme",
+      "type": "batch",
+      "workspaceName": "Default",
+      "createdAt": "2024-08-23T12:09:55Z",
+      "updatedAt": "2024-08-23T12:09:55Z",
+      "active": false
+    }
+  ],
+  "success": true
+}
