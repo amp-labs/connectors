@@ -59,8 +59,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			}},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.MethodPOST(),
-				Then:  mockserver.Response(http.StatusOK, leadCreationResponse),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.PathSuffix("/v1/leads.json"),
+				},
+				Then: mockserver.Response(http.StatusOK, leadCreationResponse),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{

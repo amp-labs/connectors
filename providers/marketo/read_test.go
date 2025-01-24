@@ -37,7 +37,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Input: common.ReadParams{ObjectName: "arsenal", Fields: datautils.NewStringSet("testField")},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.ResponseString(http.StatusBadRequest, string(unsupportedResponse)),
+				Always: mockserver.Response(http.StatusBadRequest, unsupportedResponse),
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrCaller,
@@ -49,7 +49,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Input: common.ReadParams{ObjectName: "smartcampaigns", Fields: connectors.Fields("description", "id", "name")},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.ResponseString(http.StatusOK, string(zeroRecords)),
+				Always: mockserver.Response(http.StatusOK, zeroRecords),
 			}.Server(),
 			Expected:     &common.ReadResult{Rows: 0, Data: []common.ReadResultRow{}, Done: true},
 			ExpectedErrs: nil,
@@ -62,7 +62,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.ResponseString(http.StatusOK, string(campaignsResponse)),
+				Always: mockserver.Response(http.StatusOK, campaignsResponse),
 			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 1,
@@ -82,8 +82,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						"workspaceName": "Default",
 					},
 				}},
-				NextPage: "",
-				Done:     true,
+				Done: true,
 			},
 			ExpectedErrs: nil,
 		},

@@ -34,7 +34,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					Then: mockserver.Response(http.StatusOK, channelsResponse),
 				}},
 			}.Server(),
-			// Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"channels": {
