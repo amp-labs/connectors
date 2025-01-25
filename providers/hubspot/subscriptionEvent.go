@@ -12,7 +12,16 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/gertd/go-pluralize"
 )
+
+//nolint:lll
+/*
+Older version doc: https://developers.hubspot.com/docs/guides/api/app-management/webhooks#webhook-subscriptions
+
+Newer version doc: https://developers.hubspot.com/docs/guides/apps/public-apps/create-generic-webhook-subscriptions#general
+
+*/
 
 /*
 Note:
@@ -87,6 +96,19 @@ func (evt SubscriptionEvent) RawEventName() (string, error) {
 var errSubscriptionSupportedForObject = errors.New("subscription is not supported for the object")
 
 func (evt SubscriptionEvent) ObjectName() (string, error) {
+	objType, err := evt.ObjectTypeId()
+	if err == nil {
+		// this is newer version(generic webhook) of event case where objectTypeId is present that
+		// subscriptionType does not have reference to object name e.g) object.creation
+		// https://developers.hubspot.com/docs/guides/apps/public-apps/create-generic-webhook-subscriptions#general
+		objName, ok := KnownObjectTypes[objType]
+		if ok {
+			return pluralize.NewClient().Singular(objName), nil
+		}
+
+		return "", fmt.Errorf("%w '%s'", errSubscriptionSupportedForObject, objType)
+	}
+
 	rawEvent, err := evt.RawEventName()
 	if err != nil {
 		return "", fmt.Errorf("error getting raw event name: %w", err)
@@ -135,6 +157,12 @@ func (evt SubscriptionEvent) EventTimeStampNano() (int64, error) {
 
 func (evt SubscriptionEvent) asMap() common.StringMap {
 	return common.StringMap(evt)
+}
+
+func (evt SubscriptionEvent) ObjectTypeId() (string, error) {
+	m := evt.asMap()
+
+	return m.GetString("objectTypeId")
 }
 
 /*

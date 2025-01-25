@@ -34,6 +34,14 @@ func TestExtractObjectNameFromSubscriptionEvent(t *testing.T) {
 
 	_, err = emptyObjectEvent.ObjectName()
 	assert.ErrorContains(t, err, "subscription is not supported for the object ''")
+
+	withObjectTypeId := SubscriptionEvent{
+		"objectTypeId": "0-1",
+	}
+
+	objectName, err = withObjectTypeId.ObjectName()
+	assert.NilError(t, err, "error should be nil")
+	assert.Equal(t, objectName, "contact", "object name should be parsed correctly")
 }
 
 //nolint:funlen
