@@ -35,7 +35,7 @@ func (p SearchParams) ValidateParams() error {
 	return nil
 }
 
-type SearchCRMParams struct {
+type searchCRMParams struct {
 	// The name of the object we are reading, e.g. "Lists"
 	ObjectName string // required
 	// Fields is the list of fields to return in the result.
@@ -45,7 +45,7 @@ type SearchCRMParams struct {
 	PageSize int
 }
 
-func (p SearchCRMParams) ValidateParams() error {
+func (p searchCRMParams) ValidateParams() error {
 	if len(p.ObjectName) == 0 {
 		return common.ErrMissingObjects
 	}
@@ -57,7 +57,7 @@ func (p SearchCRMParams) ValidateParams() error {
 	return nil
 }
 
-func (p SearchCRMParams) Payload() (SearchCRMPayload, error) {
+func (p searchCRMParams) payload() (searchCRMPayload, error) {
 	offset := 0
 
 	if len(p.NextPage) != 0 {
@@ -65,7 +65,7 @@ func (p SearchCRMParams) Payload() (SearchCRMPayload, error) {
 
 		offset, err = strconv.Atoi(p.NextPage.String())
 		if err != nil {
-			return SearchCRMPayload{}, fmt.Errorf("%w: %w", common.ErrNextPageInvalid, err)
+			return searchCRMPayload{}, fmt.Errorf("%w: %w", common.ErrNextPageInvalid, err)
 		}
 	}
 
@@ -74,13 +74,13 @@ func (p SearchCRMParams) Payload() (SearchCRMPayload, error) {
 		pageSize = p.PageSize
 	}
 
-	return SearchCRMPayload{
+	return searchCRMPayload{
 		Offset: offset,
 		Count:  pageSize,
 	}, nil
 }
 
-type SearchCRMPayload struct {
+type searchCRMPayload struct {
 	Offset int `json:"offset"`
 	Count  int `json:"count"`
 }

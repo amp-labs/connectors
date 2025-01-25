@@ -127,7 +127,7 @@ func (c *Connector) getObjectMetadataFromPropertyAPI(
 func (c *Connector) getObjectMetadataFromObjectAPI(
 	ctx context.Context, objectName string,
 ) (*common.ObjectMetadata, error) {
-	readResult, err := c.SearchCRM(ctx, SearchCRMParams{
+	readResult, err := c.searchCRMOutsideThePropertiesAPI(ctx, searchCRMParams{
 		ObjectName: objectName,
 		Fields:     connectors.Fields(""), // passed to satisfy validation
 		NextPage:   "",
