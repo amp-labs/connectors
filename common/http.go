@@ -9,6 +9,7 @@ import (
 	"log/slog"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 
 	"github.com/amp-labs/connectors/common/logging"
@@ -18,6 +19,27 @@ import (
 type Header struct {
 	Key   string `json:"key"`
 	Value string `json:"value"`
+}
+
+func (h Header) equals(other Header) bool {
+	return h.Key == other.Key && h.Value == other.Value
+}
+
+var HeaderFormURLEncoded = Header{ // nolint:gochecknoglobals
+	Key:   "Content-Type",
+	Value: "application/x-www-form-urlencoded",
+}
+
+type Headers []Header
+
+func (h Headers) Has(target Header) bool {
+	for _, header := range h {
+		if header.equals(target) {
+			return true
+		}
+	}
+
+	return false
 }
 
 // ErrorHandler allows the caller to inject their own HTTP error handling logic.
@@ -249,17 +271,52 @@ func MakeGetRequest(ctx context.Context, url string, headers []Header) (*http.Re
 }
 
 // makePostRequest creates request that will post bytes of data. If no content type defaults to JSON.
-func makePostRequest(ctx context.Context, url string, headers []Header, data []byte) (*http.Request, error) {
-	buffer := bytes.NewBuffer(data)
+func makePostRequest(ctx context.Context, resourceURL string, headers Headers, data []byte) (*http.Request, error) {
+	reader, contentLength, err := bodyReader(headers, data)
+	if err != nil {
+		return nil, err
+	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, buffer)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, resourceURL, reader)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
 
-	req.ContentLength = int64(len(data))
+	req.ContentLength = contentLength
+	headers = append(headers, Header{
+		Key:   "Content-Length",
+		Value: strconv.FormatInt(contentLength, 10),
+	})
 
 	return addJSONContentTypeIfNotPresent(addHeaders(req, headers)), nil
+}
+
+// Determines how the payload should be provided to the HTTP request object based on the input headers.
+//   - For "application/x-www-form-urlencoded", a map of strings to strings is expected.
+//     The values are URL-encoded, and the new content length is calculated.
+//   - For other content types, the payload data is sent as-is.
+//
+// Returns: An io.Reader for the request body, the content length, and an optional error.
+func bodyReader(headers Headers, data []byte) (io.Reader, int64, error) {
+	if headers.Has(HeaderFormURLEncoded) {
+		var keyValuePairs map[string]string
+
+		err := json.Unmarshal(data, &keyValuePairs)
+		if err != nil {
+			return nil, 0, fmt.Errorf("%w: %w", ErrPayloadNotURLForm, err)
+		}
+
+		payloadValues := url.Values{}
+		for k, v := range keyValuePairs {
+			payloadValues.Set(k, v)
+		}
+
+		encodedPayload := payloadValues.Encode()
+
+		return strings.NewReader(encodedPayload), int64(len(encodedPayload)), nil
+	}
+
+	return bytes.NewBuffer(data), int64(len(data)), nil
 }
 
 // makePatchRequest creates a PATCH request with the given headers and body, and adds the
