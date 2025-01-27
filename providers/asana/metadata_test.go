@@ -6,16 +6,13 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
+	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
-	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
-func TestListObjectMetadata(t *testing.T) {
+func TestListObjectMetadata(t *testing.T) { //nolint:funlen,gocognit,cyclop
 	t.Parallel()
-
-	allocationresponse := testutils.DataFromFile(t, "allocations.json")
 
 	tests := []testroutines.Metadata{
 		{
@@ -23,31 +20,50 @@ func TestListObjectMetadata(t *testing.T) {
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
+
 		{
-			Name:  "Successfully describe multiple object with metadata",
-			Input: []string{"allocations"},
-			Server: mockserver.Switch{
-				Setup: mockserver.ContentJSON(),
-				Cases: []mockserver.Case{{
-					If:   mockcond.PathSuffix("/api/1.0/allocations"),
-					Then: mockserver.Response(http.StatusOK, allocationresponse),
-				}},
-			}.Server(),
+			Name:         "Unknown object requested",
+			Input:        []string{"groot"},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{staticschema.ErrObjectNotFound},
+		},
+
+		{
+			Name:       "Successfully describe multiple object with metadata",
+			Input:      []string{"projects", "tags", "users", "workspaces"},
+			Server:     mockserver.Dummy(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
-					"allocations": {
-						DisplayName: "allocations",
+					"projects": {
+						DisplayName: "Projects",
 						FieldsMap: map[string]string{
-							"gid":              "gid",
-							"resource_type":    "resource_type",
-							"start_date":       "start_date",
-							"end_date":         "end_date",
-							"effort":           "effort",
-							"assignee":         "assignee",
-							"created_by":       "created_by",
-							"parent":           "parent",
-							"resource_subtype": "resource_subtype",
+							"gid":           "gid",
+							"resource_type": "resource_type",
+							"name":          "name",
+						},
+					},
+					"tags": {
+						DisplayName: "Tags",
+						FieldsMap: map[string]string{
+							"gid":           "gid",
+							"resource_type": "resource_type",
+							"name":          "name",
+						},
+					},
+					"users": {
+						DisplayName: "Users",
+						FieldsMap: map[string]string{
+							"gid":           "gid",
+							"resource_type": "resource_type",
+							"name":          "name",
+						},
+					}, "workspaces": {
+						DisplayName: "Workspaces",
+						FieldsMap: map[string]string{
+							"gid":           "gid",
+							"resource_type": "resource_type",
+							"name":          "name",
 						},
 					},
 				},

@@ -12,6 +12,7 @@ const apiVersion = "/api/1.0"
 type Connector struct {
 	BaseURL string
 	Client  *common.JSONHTTPClient
+	Module  common.Module
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {

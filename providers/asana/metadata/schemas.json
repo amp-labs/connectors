@@ -1,0 +1,63 @@
+{
+    "modules": {
+        "root": {
+            "id": "root",
+            "path": "/api/1.0",
+            "objects": {
+                "projects": {
+                    "displayName": "Projects",
+                    "path": "/projects",
+                    "responseKey": "data",
+                    "fields": {
+                        "gid": "gid",
+                        "resource_type": "resource_type",
+                        "name": "name"
+                    }
+                },
+                "organization_exports": {
+                    "displayName": "Organization Exports",
+                    "path": "/organization_exports",
+                    "responseKey": "data",
+                    "fields": {
+                        "gid": "gid",
+                        "resource_type": "resource_type",
+                        "created_at": "created_at",
+                        "download_url": "download_url",
+                        "state": "state",
+                        "organization": "organization"
+                    }
+                },
+                "tags": {
+                    "displayName": "Tags",
+                    "path": "/tags",
+                    "responseKey": "data",
+                    "fields": {
+                        "gid": "gid",
+                        "resource_type": "resource_type",
+                        "name": "name"
+                    }
+                },
+                "users": {
+                    "displayName": "Users",
+                    "path": "/users",
+                    "responseKey": "data",
+                    "fields": {
+                        "gid": "gid",
+                        "resource_type": "resource_type",
+                        "name": "name"
+                    }
+                },
+                "workspaces": {
+                    "displayName": "Workspaces",
+                    "path": "/workspaces",
+                    "responseKey": "data",
+                    "fields": {
+                        "gid": "gid",
+                        "resource_type": "resource_type",
+                        "name": "name"
+                    }
+                }
+            }
+        }
+    }
+}
