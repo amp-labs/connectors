@@ -2,7 +2,6 @@ package chilipiper
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
@@ -46,7 +45,7 @@ func (conn *Connector) ListObjectMetadata(ctx context.Context,
 
 		url, err := conn.buildReadURL(object)
 		if err != nil {
-			return nil, fmt.Errorf("create url for %s: %w", object, err)
+			return nil, err
 		}
 
 		resp, err := conn.Client.Get(ctx, url.String())
@@ -58,8 +57,9 @@ func (conn *Connector) ListObjectMetadata(ctx context.Context,
 
 		res, err := common.UnmarshalJSON[Response](resp)
 		if err != nil {
-			// Todo: Fallback to OpenAPI
-			return nil, err
+			metadataResults.Errors[object] = err
+
+			continue
 		}
 
 		for fld := range res.Results[0] {
