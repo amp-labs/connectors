@@ -6,7 +6,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 )
@@ -25,7 +24,7 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			Name:         "Unknown object requested",
 			Input:        []string{"groot"},
 			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{staticschema.ErrObjectNotFound},
+			ExpectedErrs: []error{common.ErrObjectNotSupported},
 		},
 
 		{

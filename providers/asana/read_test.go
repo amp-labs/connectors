@@ -6,6 +6,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -39,13 +40,13 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
 		},
-
 		{
 			Name:  "Read list of all projects",
 			Input: common.ReadParams{ObjectName: "projects", Fields: connectors.Fields("")},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, responseProjects),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.PathSuffix("/projects"),
+				Then:  mockserver.Response(http.StatusOK, responseProjects),
 			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 1,
@@ -66,9 +67,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Read list of all users",
 			Input: common.ReadParams{ObjectName: "users", Fields: connectors.Fields("")},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, responseUsers),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.PathSuffix("/users"),
+				Then:  mockserver.Response(http.StatusOK, responseUsers),
 			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 1,
@@ -89,9 +91,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Read list of all tags",
 			Input: common.ReadParams{ObjectName: "tags", Fields: connectors.Fields("")},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, responseTags),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.PathSuffix("/tags"),
+				Then:  mockserver.Response(http.StatusOK, responseTags),
 			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 1,
