@@ -2,7 +2,6 @@ package asana
 
 import (
 	"context"
-	"log"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/jsonquery"
@@ -35,8 +34,6 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		url.AddPath(config.RecordId)
 	}
 
-	log.Println("recorddata", config.RecordData)
-
 	res, err := write(ctx, url.String(), config.RecordData)
 	if err != nil {
 		return nil, err
@@ -54,12 +51,17 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 }
 
 func constructWriteResult(body *ajson.Node) (*common.WriteResult, error) {
-	recordID, err := jsonquery.New(body, "data").StrWithDefault("gid", "")
+	nested, err := jsonquery.New(body).Object("data", false)
 	if err != nil {
 		return nil, err
 	}
 
-	response, err := jsonquery.Convertor.ObjectToMap(body)
+	recordID, err := jsonquery.New(nested).StrWithDefault("gid", "")
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := jsonquery.Convertor.ObjectToMap(nested)
 	if err != nil {
 		return nil, err
 	}
