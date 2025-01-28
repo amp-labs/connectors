@@ -1,0 +1,72 @@
+package chilipiper
+
+import (
+	"context"
+	"fmt"
+
+	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/naming"
+)
+
+// Sample OK Response
+// {
+// 	"results": [
+// 		...
+// 	],
+// 	"total": 0,
+// 	"page": 0,
+// 	"pageSize": 0
+// }
+
+type Response struct {
+	Results []map[string]any `json:"results"`
+	// The rest of the fields
+}
+
+// ListObjectMetadata creates metadata of objects via reading objects using ChiliPiper API.
+// If fails uses the OpenAPI specification files.
+func (conn *Connector) ListObjectMetadata(ctx context.Context,
+	objectNames []string,
+) (*common.ListObjectMetadataResult, error) {
+	// Ensure that objectNames is not empty
+	if len(objectNames) == 0 {
+		return nil, common.ErrMissingObjects
+	}
+
+	metadataResults := common.ListObjectMetadataResult{
+		Result: make(map[string]common.ObjectMetadata),
+		Errors: make(map[string]error),
+	}
+
+	for _, object := range objectNames {
+		objectMetadata := common.ObjectMetadata{
+			FieldsMap:   make(map[string]string),
+			DisplayName: naming.CapitalizeFirstLetterEveryWord(object),
+		}
+
+		url, err := conn.buildReadURL(object)
+		if err != nil {
+			return nil, fmt.Errorf("create url for %s: %w", object, err)
+		}
+
+		resp, err := conn.Client.Get(ctx, url.String())
+		if err != nil {
+			// Todo: Fallback to OpenAPI
+			return nil, err
+		}
+
+		res, err := common.UnmarshalJSON[Response](resp)
+		if err != nil {
+			// Todo: Fallback to OpenAPI
+			return nil, err
+		}
+
+		for fld := range res.Results[0] {
+			objectMetadata.FieldsMap[fld] = fld
+		}
+
+		metadataResults.Result[object] = objectMetadata
+	}
+
+	return &metadataResults, nil
+}
