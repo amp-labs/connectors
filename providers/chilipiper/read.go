@@ -11,17 +11,10 @@ func (conn *Connector) Read(ctx context.Context, config common.ReadParams) (*com
 		return nil, err
 	}
 
-	path, err := supportsRead(config.ObjectName)
+	readURL, err := conn.buildReadURL(config)
 	if err != nil {
 		return nil, err
 	}
-
-	readURL, err := conn.buildReadURL(path)
-	if err != nil {
-		return nil, err
-	}
-
-	readURL.WithQueryParam(pageSizeKey, pageSize)
 
 	resp, err := conn.Client.Get(ctx, readURL.String())
 	if err != nil {
@@ -35,5 +28,4 @@ func (conn *Connector) Read(ctx context.Context, config common.ReadParams) (*com
 		common.GetMarshaledData,
 		config.Fields,
 	)
-
 }

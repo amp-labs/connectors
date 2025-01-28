@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -23,9 +24,10 @@ func main() {
 	conn := chilipiper.GetChiliPiperConnector(ctx)
 
 	res, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: "workspace",
-		Fields:     connectors.Fields("name"),
-		// Read newsletters using pagination, where it omits first record.
+		ObjectName: "workspace_users",
+		Fields:     connectors.Fields("name", "id"),
+		Since:      time.Now().Add(-1000 * time.Hour),
+		// NextPage:   "https://fire.chilipiper.com/api/fire-edge/v1/org/workspace?page=2&pageSize=2",
 	})
 	if err != nil {
 		utils.Fail("error reading from ChiliPiper App", "error", err)
