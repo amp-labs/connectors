@@ -43,6 +43,7 @@ func nextRecordsURL(url *urlbuilder.URL) common.NextPageFunc {
 			pg := strconv.Itoa(int(*page + 1))
 
 			url.WithQueryParam(pageKey, pg)
+
 			return url.String(), nil
 		}
 

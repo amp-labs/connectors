@@ -3,20 +3,22 @@ package chilipiper
 import "github.com/amp-labs/connectors/common"
 
 const (
-	pageSize    = "2"
+	pageSize    = "50"
 	pageKey     = "page"
 	pageSizeKey = "pageSize"
 	totalKey    = "total"
+	startKey    = "start"
+	endKey      = "end"
 )
 
 // objectPath maps an object to it's read path.
-var objectReadPath = map[string]string{
-	"workspace_users": "workspace/users",
-	"meetings":        "meetings/meetings",
-	"export_meetings": "meeting/meetings/export",
+var objectReadPath = map[string]string{ //nolint:gochecknoglobals
 	"workspace":       "workspace",
 	"team":            "team",
 	"distribution":    "distribution",
+	"workspace_users": "workspace/users",
+	// "meetings":        "meetings/meetings",
+	// "export_meetings": "meeting/meetings/export",
 }
 
 // supportsRead returns a unique path for reading the object.
