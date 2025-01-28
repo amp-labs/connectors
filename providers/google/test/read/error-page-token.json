@@ -1,0 +1,13 @@
+{
+  "error": {
+    "errors": [
+      {
+        "domain": "global",
+        "reason": "invalid",
+        "message": "Invalid page token value."
+      }
+    ],
+    "code": 400,
+    "message": "Invalid page token value."
+  }
+}
