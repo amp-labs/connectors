@@ -1,0 +1,25 @@
+{
+  "kind": "calendar#settings",
+  "etag": "\"p32g95jc3lmf8m0o\"",
+  "nextSyncToken": "00001738271251188000",
+  "items": [
+    {
+      "kind": "calendar#setting",
+      "etag": "\"1738270902917000\"",
+      "id": "timezone",
+      "value": "America/Los_Angeles"
+    },
+    {
+      "kind": "calendar#setting",
+      "etag": "\"1589814000000000\"",
+      "id": "useKeyboardShortcuts",
+      "value": "true"
+    },
+    {
+      "kind": "calendar#setting",
+      "etag": "\"1589814000000000\"",
+      "id": "hideWeekends",
+      "value": "false"
+    }
+  ]
+}
