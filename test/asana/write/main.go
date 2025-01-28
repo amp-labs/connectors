@@ -2,13 +2,11 @@ package main
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
-	"log/slog"
 	"os"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/asana"
+	"github.com/amp-labs/connectors/test/utils"
 )
 
 func main() {
@@ -29,6 +27,8 @@ func MainFn() int {
 func testWriteProjects(ctx context.Context) error {
 	conn := asana.GetAsanaConnector(ctx)
 
+	utils.SetupLogging()
+
 	params := common.WriteParams{
 		ObjectName: "projects",
 		RecordData: map[string]any{
@@ -47,17 +47,11 @@ func testWriteProjects(ctx context.Context) error {
 
 	res, err := conn.Write(ctx, params)
 	if err != nil {
-		slog.Error(err.Error())
+		utils.Fail("error writing to Asana", "error", err)
 	}
 
-	// Print the results
-	jsonStr, err := json.MarshalIndent(res, "", "  ")
-	if err != nil {
-		return fmt.Errorf("error marshalling JSON: %w", err)
-	}
-
-	_, _ = os.Stdout.Write(jsonStr)
-	_, _ = os.Stdout.WriteString("\n")
+	// Dump the result.
+	utils.DumpJSON(res, os.Stdout)
 
 	return nil
 }
