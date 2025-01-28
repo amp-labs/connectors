@@ -51,8 +51,9 @@ func (conn *Connector) ListObjectMetadata(ctx context.Context,
 
 		resp, err := conn.Client.Get(ctx, url.String())
 		if err != nil {
-			// Todo: Fallback to OpenAPI
-			return nil, err
+			metadataResults.Errors[object] = err
+
+			continue
 		}
 
 		res, err := common.UnmarshalJSON[Response](resp)

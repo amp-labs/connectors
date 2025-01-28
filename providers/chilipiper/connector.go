@@ -34,3 +34,11 @@ func NewConnector(opts ...Option) (*Connector, error) {
 
 	return &connector, nil
 }
+
+func (conn *Connector) Provider() providers.Provider {
+	return providers.ChiliPiper
+}
+
+func (conn *Connector) String() string {
+	return conn.Provider() + ".Connector"
+}
