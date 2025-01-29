@@ -1,0 +1,25 @@
+{
+  "results": [
+    {
+      "id": "4edf8761-e5ee-48b2-81c8-c5e4849481fc",
+      "workspaceId": "cad33722-df27-4691-bc11-1f2c89c1dd31",
+      "name": "Dev Team",
+      "members": ["67929af0725ce43853fd2b8c"],
+      "metadata": {
+        "createdAt": "2025-01-24T09:37:47.321631Z",
+        "createdBy": "user/67929af0725ce43853fd2b8c",
+        "updatedAt": "2025-01-24T09:37:47.321631Z",
+        "updatedBy": "user/67929af0725ce43853fd2b8c",
+        "teamMembersMetadata": {
+          "addedAt": {
+            "67929af0725ce43853fd2b8c": "2025-01-24T09:37:47.321631Z"
+          }
+        },
+        "revision": 0
+      }
+    }
+  ],
+  "total": 1,
+  "page": 0,
+  "pageSize": 50
+}
