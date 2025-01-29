@@ -8,6 +8,6 @@ import "github.com/amp-labs/connectors/internal/datautils"
 //
 // On the contrary those objects that are part of Object Properties APIs can be found
 // in the table here https://developers.hubspot.com/docs/guides/api/crm/understanding-the-crm#object-type-ids
-var crmObjectsOutsideThePropertiesAPI = datautils.NewSet( //nolint:gochecknoglobals
+var crmObjectsWithoutPropertiesAPISupport = datautils.NewSet( //nolint:gochecknoglobals
 	"lists",
 )

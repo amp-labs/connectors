@@ -21,13 +21,15 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	if crmObjectsOutsideThePropertiesAPI.Has(config.ObjectName) {
+	if crmObjectsWithoutPropertiesAPISupport.Has(config.ObjectName) {
 		// Objects outside ObjectAPI have different endpoint while both are part of CRM module.
 		// For instance Lists are fully returned only via Search endpoint.
-		return c.SearchCRM(ctx, SearchCRMParams{
-			ObjectName: config.ObjectName,
-			Fields:     config.Fields,
-			NextPage:   config.NextPage,
+		return c.searchCRM(ctx, searchCRMParams{
+			SearchParams: SearchParams{
+				ObjectName: config.ObjectName,
+				NextPage:   config.NextPage,
+				Fields:     config.Fields,
+			},
 		})
 	}
 
