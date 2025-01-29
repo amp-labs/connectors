@@ -38,7 +38,7 @@ func (conn *Connector) buildMetadataURL(object string) (*urlbuilder.URL, error) 
 		return nil, err
 	}
 
-	readURL.WithQueryParam(pageSizeKey, "1")
+	readURL.WithQueryParam(pageSizeKey, metadataPageSize)
 
 	return readURL, nil
 }
