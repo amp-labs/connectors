@@ -81,8 +81,8 @@ func (c *Connector) ListObjectMetadata( // nolint:cyclop,funlen
 
 // getObjectMetadata returns object metadata for the given object name.
 func (c *Connector) getObjectMetadata(ctx context.Context, objectName string) (*common.ObjectMetadata, error) {
-	if crmObjectsOutsideThePropertiesAPI.Has(objectName) {
-		return c.getObjectMetadataFromObjectAPI(ctx, objectName)
+	if crmObjectsWithoutPropertiesAPISupport.Has(objectName) {
+		return c.getObjectMetadataFromCRMSearch(ctx, objectName)
 	}
 
 	return c.getObjectMetadataFromPropertyAPI(ctx, objectName)
@@ -124,14 +124,16 @@ func (c *Connector) getObjectMetadataFromPropertyAPI(
 // Method focuses on acquiring object properties for those objects that are not part of CRM Properties API.
 // https://developers.hubspot.com/docs/guides/api/crm/objects/companies
 // There is no discovery endpoint to acquire object properties, therefore, manual read is used.
-func (c *Connector) getObjectMetadataFromObjectAPI(
+func (c *Connector) getObjectMetadataFromCRMSearch(
 	ctx context.Context, objectName string,
 ) (*common.ObjectMetadata, error) {
-	readResult, err := c.searchCRMOutsideThePropertiesAPI(ctx, searchCRMParams{
-		ObjectName: objectName,
-		Fields:     connectors.Fields(""), // passed to satisfy validation
-		NextPage:   "",
-		PageSize:   1,
+	readResult, err := c.searchCRM(ctx, searchCRMParams{
+		SearchParams: SearchParams{
+			ObjectName: objectName,
+			Fields:     connectors.Fields(""), // passed to satisfy validation
+			NextPage:   "",
+		},
+		PageSize: 1,
 	})
 	if err != nil {
 		// Ignore an error and fallback to static schema.

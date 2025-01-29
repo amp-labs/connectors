@@ -21,13 +21,11 @@ func (c *Connector) Search(ctx context.Context, config SearchParams) (*common.Re
 		return nil, err
 	}
 
-	if crmObjectsOutsideThePropertiesAPI.Has(config.ObjectName) {
+	if crmObjectsWithoutPropertiesAPISupport.Has(config.ObjectName) {
 		// Objects outside ObjectAPI have different endpoint while both are part of CRM module.
 		// For instance such object is Lists.
-		return c.searchCRMOutsideThePropertiesAPI(ctx, searchCRMParams{
-			ObjectName: config.ObjectName,
-			NextPage:   config.NextPage,
-			Fields:     config.Fields,
+		return c.searchCRM(ctx, searchCRMParams{
+			SearchParams: config,
 		})
 	}
 
@@ -50,7 +48,7 @@ func (c *Connector) Search(ctx context.Context, config SearchParams) (*common.Re
 	)
 }
 
-// searchCRMOutsideThePropertiesAPI is intended for objects outside HubSpot's ObjectAPI.
+// searchCRM is intended for objects outside HubSpot's ObjectAPI.
 // For objects within ObjectAPI, refer to the Search method.
 //
 // Case-by-case explanation:
@@ -60,9 +58,13 @@ func (c *Connector) Search(ctx context.Context, config SearchParams) (*common.Re
 //   - Search always returns an array of items, unlike the usual "read" operation.
 //     Therefore, the "retrieve" API endpoint is not used
 //     https://developers.hubspot.com/docs/guides/api/crm/lists/overview#retrieve-lists
-func (c *Connector) searchCRMOutsideThePropertiesAPI(
+func (c *Connector) searchCRM(
 	ctx context.Context, config searchCRMParams,
 ) (*common.ReadResult, error) {
+	if err := config.ValidateParams(); err != nil {
+		return nil, err
+	}
+
 	url, err := c.getCRMSearchURL(config)
 	if err != nil {
 		return nil, err

@@ -36,25 +36,8 @@ func (p SearchParams) ValidateParams() error {
 }
 
 type searchCRMParams struct {
-	// The name of the object we are reading, e.g. "Lists"
-	ObjectName string // required
-	// Fields is the list of fields to return in the result.
-	Fields datautils.Set[string] // optional
-	// NextPage is an opaque token that can be used to get the next page of results.
-	NextPage common.NextPageToken // optional, only set this if you want to read the next page of results
+	SearchParams
 	PageSize int
-}
-
-func (p searchCRMParams) ValidateParams() error {
-	if len(p.ObjectName) == 0 {
-		return common.ErrMissingObjects
-	}
-
-	if len(p.Fields) == 0 {
-		return common.ErrMissingFields
-	}
-
-	return nil
 }
 
 func (p searchCRMParams) payload() (searchCRMPayload, error) {
