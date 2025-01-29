@@ -3,12 +3,13 @@ package chilipiper
 import "github.com/amp-labs/connectors/common"
 
 const (
-	pageSize    = "50"
-	pageKey     = "page"
-	pageSizeKey = "pageSize"
-	totalKey    = "total"
-	startKey    = "start"
-	endKey      = "end"
+	pageSize         = "50"
+	metadataPageSize = "1"
+	pageKey          = "page"
+	pageSizeKey      = "pageSize"
+	totalKey         = "total"
+	startKey         = "start"
+	endKey           = "end"
 )
 
 // objectPath maps an object to it's read path.
