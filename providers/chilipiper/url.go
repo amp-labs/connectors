@@ -21,3 +21,17 @@ func (conn *Connector) buildURL(objectName string, pageSize string) (string, err
 
 	return url.String(), nil
 }
+
+func (conn *Connector) buildWriteURL(object string) (*urlbuilder.URL, error) {
+	path, err := supportsWrite(object)
+	if err != nil {
+		return nil, err
+	}
+
+	writeURL, err := urlbuilder.New(conn.BaseURL, restAPIVersionPrefix, path)
+	if err != nil {
+		return nil, err
+	}
+
+	return writeURL, nil
+}
