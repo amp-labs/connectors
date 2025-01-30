@@ -22,7 +22,7 @@ var objectReadPath = map[string]string{ //nolint:gochecknoglobals
 	// "export_meetings": "meeting/meetings/export",
 }
 
-var objectWritePath = map[string]string{
+var objectWritePath = map[string]string{ //nolint:gochecknoglobals
 	"remove_users_workspace":     "workspace/users/remove",
 	"remoe_users_all_workspaces": "workspace/users/remove-from-all",
 	"add_users_workspace":        "workspace/users/add",
