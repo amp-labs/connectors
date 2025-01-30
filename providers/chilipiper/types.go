@@ -27,7 +27,7 @@ var objectWritePath = map[string]string{
 	"remoe_users_all_workspaces": "workspace/users/remove-from-all",
 	"add_users_workspace":        "workspace/users/add",
 	"remove_users_team":          "team/users/remove",
-	"add_user_team":              "team/users/add",
+	"add_users_team":             "team/users/add",
 	"distribution":               "distribution", // Allows updates only.
 	"update_license_users":       "user/licenses",
 	"invite_users":               "user/invite",
