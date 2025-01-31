@@ -301,19 +301,21 @@ func (o fieldDescription) implyEnumerationType() (common.ValueType, []common.Fie
 // Registry of objects to the fields with external metadata.
 // It provides information on location of data (URLs) and how to process JSON to infer enum options.
 // If you want to support more objects and their fields extend this registry.
+//
+// NOTE: ResponseProcessor may retrieve values for multiple fields in a single API call.
 var objectsWithExternalMetadataFields = datautils.Map[string, []externalFieldDiscovery]{ // nolint:gochecknoglobals
 	"contacts": {
 		{
-			FieldName:         "hs_pipeline",
+			FieldNames:        []string{"hs_pipeline"},
 			EndpointPath:      "/crm/v3/pipelines/contacts",
 			ResponseProcessor: parsePipelineFieldValues,
 		},
 	},
 	"deals": {
 		{
-			FieldName:         "pipeline",
+			FieldNames:        []string{"pipeline", "dealstage"},
 			EndpointPath:      "/crm/v3/pipelines/deals",
-			ResponseProcessor: parsePipelineFieldValues,
+			ResponseProcessor: parsePipelineFieldValuesWithStages,
 		},
 	},
 }
@@ -334,79 +336,123 @@ func (c *Connector) fetchExternalMetadataEnumValues(
 	// For each external field that we support make an API call to fetch enumeration options.
 	// Store this values for each field within each object.
 	for _, discovery := range externalFields {
-		fieldMetadata, ok := fields[discovery.FieldName]
-		if !ok {
-			// Provider no longer has this field.
-			continue
-		}
-
 		rsp, err := c.Client.Get(ctx, c.getRawURL()+discovery.EndpointPath)
 		if err != nil {
 			return nil, fmt.Errorf("error resolving external metadata values for HubSpot: %w", err)
 		}
 
-		values, err := discovery.ResponseProcessor(rsp)
+		perFieldValues, err := discovery.ResponseProcessor(rsp)
 		if err != nil {
 			return nil, err
 		}
 
-		// Store discovered values.
-		fieldMetadata.Values = values
-		fields[discovery.FieldName] = fieldMetadata
+		// Response processor returns an array for each field in that order.
+		if len(perFieldValues) != len(discovery.FieldNames) {
+			return nil, common.ErrInvalidImplementation
+		}
+
+		// Store field values associated with each field.
+		for index, discoveryFieldName := range discovery.FieldNames {
+			fieldMetadata, ok := fields[discoveryFieldName]
+			if !ok {
+				// Provider no longer has this field.
+				continue
+			}
+
+			// Store discovered values.
+			fieldMetadata.Values = perFieldValues[index]
+			fields[discoveryFieldName] = fieldMetadata
+		}
 	}
 
 	return fields, nil
 }
 
-// Holds information regarding Object's Field and how to discover external metadata.
+// Represents metadata discovery details for an object's fields.
 type externalFieldDiscovery struct {
-	// FieldName that has enum options found under EndpointPath.
-	FieldName string
-	// EndpointPath is a location where list of enum values can be found.
+	// FieldNames lists the fields that have enum options available at EndpointPath.
+	// A single API response may provide values for multiple fields.
+	FieldNames []string
+	// EndpointPath specifies the API location where the list of enum values can be retrieved.
 	EndpointPath string
-	// ResponseProcessor knows how to parse an extract []common.FieldValue for the endpoint.
+	// ResponseProcessor extracts and parses []common.FieldValue for each field.
 	ResponseProcessor externalFieldProcessor
 }
 
-type externalFieldProcessor func(response *common.JSONHTTPResponse) ([]common.FieldValue, error)
+// Extracts values for multiple fields from the response.
+// The number of returned lists must match externalFieldDiscovery.FieldNames, maintaining the same order.
+type externalFieldProcessor func(response *common.JSONHTTPResponse) ([]common.FieldValues, error)
 
-func parsePipelineFieldValues(response *common.JSONHTTPResponse) ([]common.FieldValue, error) {
-	type stage struct {
-		Value       string `json:"id"`
-		DisplayName string `json:"label"`
-	}
-
-	type pipeline struct {
-		Stages       []stage `json:"stages"`
-		DisplayOrder int     `json:"displayOrder"`
-	}
-
-	// For more details, refer to the HubSpot documentation on Pipelines.
-	// https://developers.hubspot.com/docs/guides/api/crm/pipelines#retrieve-pipelines
-	type pipelineResponse struct {
-		Pipelines []pipeline `json:"results"`
-	}
-
+// Parses field values from an API response, producing two value arrays:
+//  1. The first array contains pipeline values.
+//  2. The second array contains aggregated stage values,
+//     where each stage ID is prefixed with the ID of its corresponding pipeline.
+func parsePipelineFieldValuesWithStages(response *common.JSONHTTPResponse) ([]common.FieldValues, error) {
 	resp, err := common.UnmarshalJSON[pipelineResponse](response)
 	if err != nil {
 		return nil, fmt.Errorf("error unmarshalling pipelines into JSON: %w", err)
 	}
+
+	result := make([]common.FieldValues, 2) // nolint:mnd
 
 	// Aggregate stages across all pipelines.
 	// Note: Multiple pipelines can exist for each object type, with each instance referencing a specific pipeline.
 	//
 	// Problem: In HubSpot, field options are not defined at the object level but at the instance level.
 	// This means the object identifier is required to locate the pipeline and subsequently retrieve its options.
-	result := make([]common.FieldValue, 0)
+	pipelines := make(common.FieldValues, 0)
+	stages := make(common.FieldValues, 0)
 
 	for _, pipelineItem := range resp.Pipelines {
+		pipelines = append(pipelines, common.FieldValue{
+			Value:        pipelineItem.ID,
+			DisplayValue: pipelineItem.DisplayName,
+		})
+
 		for _, s := range pipelineItem.Stages {
-			result = append(result, common.FieldValue{
-				Value:        s.Value,
+			stages = append(stages, common.FieldValue{
+				Value:        fmt.Sprintf("%v:%v", pipelineItem.ID, s.Value),
 				DisplayValue: s.DisplayName,
 			})
 		}
 	}
 
+	result[0] = pipelines
+	result[1] = stages
+
 	return result, nil
+}
+
+// Parses and returns only pipeline values.
+// Stage values are not included, because there is no corresponding field on the object to store them.
+func parsePipelineFieldValues(response *common.JSONHTTPResponse) ([]common.FieldValues, error) {
+	listOfValues, err := parsePipelineFieldValuesWithStages(response)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(listOfValues) != 2 { // nolint:mnd
+		return nil, common.ErrInvalidImplementation
+	}
+
+	return []common.FieldValues{
+		listOfValues[0],
+	}, nil
+}
+
+// For more details, refer to the HubSpot documentation on Pipelines.
+// https://developers.hubspot.com/docs/guides/api/crm/pipelines#retrieve-pipelines
+type pipelineResponse struct {
+	Pipelines []pipeline `json:"results"`
+}
+
+type pipeline struct {
+	ID          string  `json:"id"`
+	DisplayName string  `json:"label"`
+	Stages      []stage `json:"stages"`
+}
+
+type stage struct {
+	Value       string `json:"id"`
+	DisplayName string `json:"label"`
 }
