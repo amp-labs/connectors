@@ -4,7 +4,6 @@ import (
 	"errors"
 	"net/http"
 	"testing"
-	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -20,7 +19,6 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseCatalogsFirst := testutils.DataFromFile(t, "read-catalogs-1-first-page.json")
 	responseCatalogsLast := testutils.DataFromFile(t, "read-catalogs-2-second-page.json")
 	errorTemplatesInvalidSince := testutils.DataFromFile(t, "read-templates-invalid-since.html")
-	responseTemplatesSince := testutils.DataFromFile(t, "read-templates-since.json")
 	errorInvalidRestMethod := testutils.DataFromFile(t, "error-wrong-method.html")
 
 	tests := []testroutines.Read{
@@ -99,7 +97,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: nil,
 		},
 		{
-			Name:  "Incremental read of templates with invalid time format",
+			Name:  "Read of templates with invalid time format error", // Test exists for diverse HTML error handling.
 			Input: common.ReadParams{ObjectName: "templates", Fields: connectors.Fields("templateId")},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentHTML(),
@@ -110,51 +108,6 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				errors.New( // nolint:goerr113
 					"Unable to bind 1734632773073 into a date time!Acceptable formats are ISO8601"),
 			},
-		},
-		{
-			Name: "Incremental read of templates with required query parameter",
-			Input: common.ReadParams{
-				ObjectName: "templates",
-				Fields:     connectors.Fields("templateId"),
-				Since:      time.Date(2024, 12, 19, 18, 28, 41, 0, time.UTC),
-			},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.PathSuffix("/api/templates"),
-					mockcond.QueryParam("startDateTime", "2024-12-19T18:28:41Z"),
-				},
-				Then: mockserver.Response(http.StatusOK, responseTemplatesSince),
-			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
-			Expected: &common.ReadResult{
-				Rows: 3,
-				Data: []common.ReadResultRow{{
-					Fields: map[string]any{
-						"templateid": float64(15870445),
-					},
-					Raw: map[string]any{
-						"creatorUserId": "iterablepartners@gmail.com",
-					},
-				}, {
-					Fields: map[string]any{
-						"templateid": float64(15870451),
-					},
-					Raw: map[string]any{
-						"creatorUserId": "john@gmail.com",
-					},
-				}, {
-					Fields: map[string]any{
-						"templateid": float64(15870455),
-					},
-					Raw: map[string]any{
-						"creatorUserId": "emily@gmail.com",
-					},
-				}},
-				NextPage: "",
-				Done:     true,
-			},
-			ExpectedErrs: nil,
 		},
 	}
 

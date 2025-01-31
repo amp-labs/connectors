@@ -1,0 +1,24 @@
+{
+  "breadcrumbs": [],
+  "opportunities": [
+    {
+      "id": "66d5746821ffc801b30a8967",
+      "team_id": "6508dea16d3b6400a3ed7030",
+      "owner_id": null,
+      "salesforce_owner_id": null,
+      "amount": 200.0
+    }
+  ],
+  "salesforce_users": [],
+  "partial_results_only": false,
+  "has_join": false,
+  "disable_eu_prospecting": false,
+  "partial_results_limit": 10000,
+  "pagination": {
+    "page": 1,
+    "per_page": 1,
+    "total_entries": 24,
+    "total_pages": 24
+  },
+  "num_fetch_result": null
+}

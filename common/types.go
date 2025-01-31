@@ -101,6 +101,9 @@ var (
 
 	// ErrFailedToUnmarshalBody is returned when response body cannot be marshalled into some type.
 	ErrFailedToUnmarshalBody = errors.New("failed to unmarshal response body")
+
+	// ErrNextPageInvalid is returned when next page token provided in Read operation cannot be understood.
+	ErrNextPageInvalid = errors.New("next page token is invalid")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.
@@ -186,10 +189,24 @@ type ReadResultRow struct {
 	// Fields is a map of requested provider field names to values.
 	// All field names are in lowercase (eg: accountid, name, billingcityid)
 	Fields map[string]any `json:"fields"`
+	// Associations is a map of associated objects to the main object.
+	// The key is the associated object name, and the value is an array of associated object ids.
+	Associations map[string][]Association `json:"associations,omitempty"`
 	// Raw is the raw JSON response from the provider.
 	Raw map[string]any `json:"raw"`
 	// RecordId is the ID of the record. Currently only populated for hubspot GetRecord and GetRecordsWithId function
 	Id string `json:"id,omitempty"`
+}
+
+// Association is a struct that represents an association between two objects.
+// If you think of an association as a directed edge between two nodes, then
+// the ObjectID is the target node, and the AssociationType is the type of edge.
+// The source node is represented by ReadResultRow.
+type Association struct {
+	// ObjectID is the ID of the associated object.
+	ObjectId string `json:"objectId"`
+	// AssociationType is the type of association.
+	AssociationType string `json:"associationType,omitempty"`
 }
 
 // WriteResult is what's returned from writing data via the Write call.
@@ -255,12 +272,64 @@ type ListObjectMetadataResult struct {
 	Errors map[string]error
 }
 
+func NewListObjectMetadataResult() *ListObjectMetadataResult {
+	return &ListObjectMetadataResult{
+		Result: make(map[string]ObjectMetadata),
+		Errors: make(map[string]error),
+	}
+}
+
+// AppendError will associate an error with the object.
+// It is possible that single object may have multiple errors.
+func (r ListObjectMetadataResult) AppendError(objectName string, err error) {
+	r.Errors[objectName] = errors.Join(r.Errors[objectName], err)
+}
+
 type ObjectMetadata struct {
-	// Provider's display name for the object
+	// Provider's display name for the object.
 	DisplayName string
 
-	// FieldsMap is a map of field names to field display names
+	// Fields is a map of field names to FieldMetadata.
+	Fields map[string]FieldMetadata
+
+	// FieldsMap is a map of field names to field display names.
+	// Deprecated: this map includes only display names.
+	// Refer to Fields for extended description of field properties.
 	FieldsMap map[string]string
+}
+
+// NewObjectMetadata constructs ObjectMetadata.
+// This will automatically infer fields map from field metadata map. This construct exists for such convenience.
+func NewObjectMetadata(displayName string, fields map[string]FieldMetadata) *ObjectMetadata {
+	return &ObjectMetadata{
+		DisplayName: displayName,
+		Fields:      fields,
+		FieldsMap:   inferDeprecatedFieldsMap(fields),
+	}
+}
+
+type FieldMetadata struct {
+	// DisplayName is a human-readable field name.
+	DisplayName string
+
+	// ValueType is a set of Ampersand defined field types.
+	ValueType ValueType
+
+	// ProviderType is the raw type, a term used by provider API.
+	// Each is mapped to an Ampersand ValueType.
+	ProviderType string
+
+	// ReadOnly would indicate if field can be modified or only read.
+	ReadOnly bool
+
+	// Values is a list of possible values for this field.
+	// It is applicable only if the type is either singleSelect or multiSelect, otherwise slice is nil.
+	Values []FieldValue
+}
+
+type FieldValue struct {
+	Value        string
+	DisplayValue string
 }
 
 type PostAuthInfo struct {
@@ -297,4 +366,14 @@ type WebhookVerificationParameters struct {
 	URL          string
 	ClientSecret string
 	Method       string
+}
+
+func inferDeprecatedFieldsMap(fields map[string]FieldMetadata) map[string]string {
+	fieldsMap := make(map[string]string)
+
+	for name, field := range fields {
+		fieldsMap[name] = field.DisplayName
+	}
+
+	return fieldsMap
 }

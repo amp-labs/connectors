@@ -1,7 +1,11 @@
 package hubspot
 
 import (
+	"context"
+	"strconv"
+
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 
@@ -115,29 +119,41 @@ func getRecords(node *ajson.Node) ([]map[string]interface{}, error) {
 }
 
 // getMarshalledData accepts a list of records and returns a list of structured data ([]ReadResultRow).
-func getMarshalledData(records []map[string]interface{}, fields []string) ([]common.ReadResultRow, error) {
-	data := make([]common.ReadResultRow, len(records))
+func (c *Connector) getMarshalledData(
+	ctx context.Context,
+	objName string,
+	associatedObjects []string,
+) func(records []map[string]interface{}, fields []string) ([]common.ReadResultRow, error) {
+	return func(records []map[string]interface{}, fields []string) ([]common.ReadResultRow, error) {
+		data := make([]common.ReadResultRow, len(records))
 
-	//nolint:varnamelen
-	for i, record := range records {
-		recordProperties, ok := record["properties"].(map[string]interface{})
-		if !ok {
-			return nil, ErrNotObject
+		//nolint:varnamelen
+		for i, record := range records {
+			recordProperties, ok := record["properties"].(map[string]interface{})
+			if !ok {
+				return nil, ErrNotObject
+			}
+
+			id, ok := record["id"].(string)
+			if !ok {
+				return nil, errMissingId
+			}
+
+			data[i] = common.ReadResultRow{
+				Fields: common.ExtractLowercaseFieldsFromRaw(fields, recordProperties),
+				Raw:    record,
+				Id:     id,
+			}
 		}
 
-		id, ok := record["id"].(string)
-		if !ok {
-			return nil, errMissingId
+		if len(associatedObjects) > 0 {
+			if err := c.fillAssociations(ctx, objName, &data, associatedObjects); err != nil {
+				return nil, err
+			}
 		}
 
-		data[i] = common.ReadResultRow{
-			Fields: common.ExtractLowercaseFieldsFromRaw(fields, recordProperties),
-			Raw:    record,
-			Id:     id,
-		}
+		return data, nil
 	}
-
-	return data, nil
 }
 
 // GetResultId returns the id of a hubspot result row.
@@ -172,4 +188,23 @@ func GetResultId(row *common.ReadResultRow) string {
 
 	// If everything fails, return an empty string
 	return ""
+}
+
+func getNextRecordsURLCRM(node *ajson.Node) (string, error) {
+	hasMore, err := jsonquery.New(node).BoolWithDefault("hasMore", false)
+	if err != nil {
+		return "", err
+	}
+
+	if !hasMore {
+		// Next page doesn't exist
+		return "", nil
+	}
+
+	offset, err := jsonquery.New(node).IntegerWithDefault("offset", 0)
+	if err != nil {
+		return "", err
+	}
+
+	return strconv.FormatInt(offset, 10), nil
 }

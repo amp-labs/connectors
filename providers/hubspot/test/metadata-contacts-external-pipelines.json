@@ -1,0 +1,118 @@
+{
+  "results": [
+    {
+      "label": "Lifecycle Stage Pipeline",
+      "displayOrder": 0,
+      "id": "contacts-lifecycle-pipeline",
+      "stages": [
+        {
+          "label": "Subscriber",
+          "displayOrder": 0,
+          "metadata": {
+            "isClosed": "false",
+            "state": "OPEN"
+          },
+          "id": "subscriber",
+          "createdAt": "1970-01-01T00:00:00Z",
+          "updatedAt": "1970-01-01T00:00:00Z",
+          "writePermissions": "CRM_PERMISSIONS_ENFORCEMENT",
+          "archived": false
+        },
+        {
+          "label": "Lead",
+          "displayOrder": 1,
+          "metadata": {
+            "isClosed": "false",
+            "state": "OPEN"
+          },
+          "id": "lead",
+          "createdAt": "1970-01-01T00:00:00Z",
+          "updatedAt": "1970-01-01T00:00:00Z",
+          "writePermissions": "CRM_PERMISSIONS_ENFORCEMENT",
+          "archived": false
+        },
+        {
+          "label": "Marketing Qualified Lead",
+          "displayOrder": 2,
+          "metadata": {
+            "isClosed": "false",
+            "state": "OPEN"
+          },
+          "id": "marketingqualifiedlead",
+          "createdAt": "1970-01-01T00:00:00Z",
+          "updatedAt": "1970-01-01T00:00:00Z",
+          "writePermissions": "CRM_PERMISSIONS_ENFORCEMENT",
+          "archived": false
+        },
+        {
+          "label": "Sales Qualified Lead",
+          "displayOrder": 3,
+          "metadata": {
+            "isClosed": "false",
+            "state": "OPEN"
+          },
+          "id": "salesqualifiedlead",
+          "createdAt": "1970-01-01T00:00:00Z",
+          "updatedAt": "1970-01-01T00:00:00Z",
+          "writePermissions": "CRM_PERMISSIONS_ENFORCEMENT",
+          "archived": false
+        },
+        {
+          "label": "Opportunity",
+          "displayOrder": 4,
+          "metadata": {
+            "isClosed": "false",
+            "state": "OPEN"
+          },
+          "id": "opportunity",
+          "createdAt": "1970-01-01T00:00:00Z",
+          "updatedAt": "1970-01-01T00:00:00Z",
+          "writePermissions": "CRM_PERMISSIONS_ENFORCEMENT",
+          "archived": false
+        },
+        {
+          "label": "Customer",
+          "displayOrder": 5,
+          "metadata": {
+            "isClosed": "false",
+            "state": "OPEN"
+          },
+          "id": "customer",
+          "createdAt": "1970-01-01T00:00:00Z",
+          "updatedAt": "1970-01-01T00:00:00Z",
+          "writePermissions": "CRM_PERMISSIONS_ENFORCEMENT",
+          "archived": false
+        },
+        {
+          "label": "Evangelist",
+          "displayOrder": 6,
+          "metadata": {
+            "isClosed": "false",
+            "state": "OPEN"
+          },
+          "id": "evangelist",
+          "createdAt": "1970-01-01T00:00:00Z",
+          "updatedAt": "1970-01-01T00:00:00Z",
+          "writePermissions": "CRM_PERMISSIONS_ENFORCEMENT",
+          "archived": false
+        },
+        {
+          "label": "Other",
+          "displayOrder": 7,
+          "metadata": {
+            "isClosed": "true",
+            "state": "CLOSED"
+          },
+          "id": "other",
+          "createdAt": "1970-01-01T00:00:00Z",
+          "updatedAt": "1970-01-01T00:00:00Z",
+          "writePermissions": "CRM_PERMISSIONS_ENFORCEMENT",
+          "archived": false
+        }
+      ],
+      "createdAt": "1970-01-01T00:00:00Z",
+      "updatedAt": "1970-01-01T00:00:00Z",
+      "archived": false
+    }
+  ]
+}

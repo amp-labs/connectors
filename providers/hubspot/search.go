@@ -2,7 +2,6 @@ package hubspot
 
 import (
 	"context"
-	"strings"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
@@ -22,19 +21,20 @@ func (c *Connector) Search(ctx context.Context, config SearchParams) (*common.Re
 		return nil, err
 	}
 
-	var (
-		rsp *common.JSONHTTPResponse
-		err error
-	)
+	if crmObjectsWithoutPropertiesAPISupport.Has(config.ObjectName) {
+		// Objects outside ObjectAPI have different endpoint while both are part of CRM module.
+		// For instance such object is Lists.
+		return c.searchCRM(ctx, searchCRMParams{
+			SearchParams: config,
+		})
+	}
 
-	relativeURL := strings.Join([]string{"objects", config.ObjectName, "search"}, "/")
-
-	u, err := c.getURL(relativeURL)
+	url, err := c.getCRMObjectsSearchURL(config)
 	if err != nil {
 		return nil, err
 	}
 
-	rsp, err = c.Client.Post(ctx, u, makeFilterBody(config))
+	rsp, err := c.Client.Post(ctx, url, makeFilterBody(config))
 	if err != nil {
 		return nil, err
 	}
@@ -43,7 +43,48 @@ func (c *Connector) Search(ctx context.Context, config SearchParams) (*common.Re
 		rsp,
 		getRecords,
 		getNextRecordsAfter,
-		getMarshalledData,
+		c.getMarshalledData(ctx, config.ObjectName, config.AssociatedObjects),
+		config.Fields,
+	)
+}
+
+// searchCRM is intended for objects outside HubSpot's ObjectAPI.
+// For objects within ObjectAPI, refer to the Search method.
+//
+// Case-by-case explanation:
+// * Lists
+//   - Provider API endpoint for search
+//     https://developers.hubspot.com/docs/guides/api/crm/lists/overview#search-for-a-list
+//   - Search always returns an array of items, unlike the usual "read" operation.
+//     Therefore, the "retrieve" API endpoint is not used
+//     https://developers.hubspot.com/docs/guides/api/crm/lists/overview#retrieve-lists
+func (c *Connector) searchCRM(
+	ctx context.Context, config searchCRMParams,
+) (*common.ReadResult, error) {
+	if err := config.ValidateParams(); err != nil {
+		return nil, err
+	}
+
+	url, err := c.getCRMSearchURL(config)
+	if err != nil {
+		return nil, err
+	}
+
+	payload, err := config.payload()
+	if err != nil {
+		return nil, err
+	}
+
+	rsp, err := c.Client.Post(ctx, url, payload)
+	if err != nil {
+		return nil, err
+	}
+
+	return common.ParseResult(
+		rsp,
+		common.GetOptionalRecordsUnderJSONPath(config.ObjectName),
+		getNextRecordsURLCRM,
+		common.GetMarshaledData,
 		config.Fields,
 	)
 }

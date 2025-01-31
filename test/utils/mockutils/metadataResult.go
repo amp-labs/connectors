@@ -3,6 +3,7 @@ package mockutils
 import (
 	"errors"
 	"fmt"
+	"reflect"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
@@ -14,10 +15,6 @@ type metadataResultComparator struct{}
 
 // SubsetFields checks that expected ListObjectMetadataResult fields are a subset of actual metadata result.
 func (metadataResultComparator) SubsetFields(actual, expected *common.ListObjectMetadataResult) bool {
-	if len(expected.Result) == 0 {
-		invalidTest("please specify expected FieldsMap response")
-	}
-
 	for objectName, expectedMetadata := range expected.Result {
 		actualMetadata, ok := actual.Result[objectName]
 		if !ok {
@@ -28,6 +25,18 @@ func (metadataResultComparator) SubsetFields(actual, expected *common.ListObject
 			return false
 		}
 
+		for k, v := range expectedMetadata.Fields {
+			value, ok := actualMetadata.Fields[k]
+			if !ok {
+				return false
+			}
+
+			if !reflect.DeepEqual(value, v) {
+				return false
+			}
+		}
+
+		// For backwards compatability the FieldsMap is checked alongside
 		for k, v := range expectedMetadata.FieldsMap {
 			value, ok := actualMetadata.FieldsMap[k]
 			if !ok {
@@ -37,6 +46,30 @@ func (metadataResultComparator) SubsetFields(actual, expected *common.ListObject
 			if value != v {
 				return false
 			}
+		}
+	}
+
+	return true
+}
+
+func (metadataResultComparator) SubsetErrors(actual, expected *common.ListObjectMetadataResult) bool {
+	for objectName, expectedError := range expected.Errors {
+		actualError, ok := actual.Errors[objectName]
+		if !ok {
+			return false
+		}
+
+		// The tester may specify ExpectedSubsetErrors with a list of errors to be present inside actualError.
+		var expectedErrors ExpectedSubsetErrors
+		if !errors.As(expectedError, &expectedErrors) {
+			// Single expected error.
+			expectedErrors = ExpectedSubsetErrors{expectedError}
+		}
+
+		if !errorsAre(actualError, expectedErrors) {
+			// Subset of errors is not found under actual error for current object name.
+			// No need to check other object names.
+			return false
 		}
 	}
 

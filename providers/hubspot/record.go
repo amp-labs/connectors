@@ -87,7 +87,7 @@ func (c *Connector) GetRecordsWithIds(
 
 	if len(fields) != 0 {
 		// If fields are specified, extract only those fields from the record.
-		return getMarshalledData(records, fields)
+		return c.getMarshalledData(ctx, objectName, associations)(records, fields)
 	}
 
 	data := make([]common.ReadResultRow, len(records))

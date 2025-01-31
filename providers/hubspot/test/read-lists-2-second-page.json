@@ -1,0 +1,24 @@
+{
+  "offset": 3,
+  "hasMore": false,
+  "lists": [
+    {
+      "listId": "5",
+      "listVersion": 1,
+      "createdAt": "2025-01-13T20:40:43.910Z",
+      "updatedAt": "2025-01-13T20:40:43.910Z",
+      "filtersUpdatedAt": "2025-01-13T20:40:43.910Z",
+      "processingStatus": "COMPLETE",
+      "createdById": "76070032",
+      "updatedById": "76070032",
+      "processingType": "MANUAL",
+      "objectTypeId": "0-1",
+      "name": "My static contacts list",
+      "additionalProperties": {
+        "hs_list_reference_count": "0",
+        "hs_list_size": "0"
+      }
+    }
+  ],
+  "total": 3
+}

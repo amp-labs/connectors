@@ -21,10 +21,17 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	var (
-		rsp *common.JSONHTTPResponse
-		err error
-	)
+	if crmObjectsWithoutPropertiesAPISupport.Has(config.ObjectName) {
+		// Objects outside ObjectAPI have different endpoint while both are part of CRM module.
+		// For instance Lists are fully returned only via Search endpoint.
+		return c.searchCRM(ctx, searchCRMParams{
+			SearchParams: SearchParams{
+				ObjectName: config.ObjectName,
+				NextPage:   config.NextPage,
+				Fields:     config.Fields,
+			},
+		})
+	}
 
 	// If filtering is required, then we have to use the search endpoint.
 	// The Search endpoint has a 10K record limit. In case this limit is reached,
@@ -45,32 +52,20 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 			SortBy: []SortBy{
 				BuildSort(ObjectFieldHsObjectId, SortDirectionAsc),
 			},
-			NextPage: config.NextPage,
-			Fields:   config.Fields,
+			NextPage:          config.NextPage,
+			Fields:            config.Fields,
+			AssociatedObjects: config.AssociatedObjects,
 		}
 
 		return c.Search(ctx, searchParams)
 	}
 
-	if len(config.NextPage) > 0 {
-		// If NextPage is set, then we're reading the next page of results.
-		// All that matters is the NextPage URL, the fields are ignored.
-		rsp, err = c.Client.Get(ctx, config.NextPage.String())
-	} else {
-		// If NextPage is not set, then we're reading the first page of results.
-		// We need to construct the query and then make the request.
-		// NB: The final slash is just to emulate prior behavior in earlier versions
-		// of this code. If it turns out to be unnecessary, remove it.
-		relativeURL := "objects/" + config.ObjectName + "/"
-
-		u, urlErr := c.getURL(relativeURL, makeQueryValues(config)...)
-		if urlErr != nil {
-			return nil, urlErr
-		}
-
-		rsp, err = c.Client.Get(ctx, u)
+	url, err := c.buildReadURL(config)
+	if err != nil {
+		return nil, err
 	}
 
+	rsp, err := c.Client.Get(ctx, url)
 	if err != nil {
 		return nil, err
 	}
@@ -79,13 +74,27 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		rsp,
 		getRecords,
 		getNextRecordsURL,
-		getMarshalledData,
+		c.getMarshalledData(ctx, config.ObjectName, config.AssociatedObjects),
 		config.Fields,
 	)
 }
 
-// makeQueryValues returns the query for the desired read operation.
-func makeQueryValues(config common.ReadParams) []string {
+func (c *Connector) buildReadURL(config common.ReadParams) (string, error) {
+	if len(config.NextPage) != 0 {
+		// If NextPage is set, then we're reading the next page of results.
+		// All that matters is the NextPage URL, the fields are ignored.
+		return config.NextPage.String(), nil
+	}
+
+	// If NextPage is not set, then we're reading the first page of results.
+	// We need to construct the query and then make the request.
+	// NB: The final slash is just to emulate prior behavior in earlier versions
+	// of this code. If it turns out to be unnecessary, remove it.
+	return c.getCRMObjectsReadURL(config)
+}
+
+// makeCRMObjectsQueryValues returns the query for the desired read operation.
+func makeCRMObjectsQueryValues(config common.ReadParams) []string {
 	var out []string
 
 	fields := config.Fields.List()
@@ -98,10 +107,6 @@ func makeQueryValues(config common.ReadParams) []string {
 	}
 
 	out = append(out, "limit", DefaultPageSize)
-
-	if len(config.AssociatedObjects) > 0 {
-		out = append(out, "associations", strings.Join(config.AssociatedObjects, ","))
-	}
 
 	return out
 }

@@ -42,9 +42,9 @@ func createDeals(ctx context.Context, conn *zohocrm.Connector) error {
 		ObjectName: "Deals",
 		RecordData: map[string]any{
 			"id":        "3652397000003852095",
-			"Deal_Name": "v6 Update",
-			"Stage":     "Closed Won",
-			"Pipeline":  "Standard (Standard)",
+			"deal_name": "v6 Update",
+			"stage":     "Closed Won",
+			"pipeline":  "Standard (Standard)",
 		},
 	}
 
@@ -65,15 +65,15 @@ func createDeals(ctx context.Context, conn *zohocrm.Connector) error {
 
 func createLeads(ctx context.Context, conn *zohocrm.Connector) error {
 	config := common.WriteParams{
-		ObjectName: "Leads",
+		ObjectName: "leads",
 		RecordData: []map[string]any{
 			{
-				"Lead_Source": "Employee Referral",
-				"Company":     "ABC",
-				"Last_Name":   "Daly",
-				"First_Name":  "Paul",
-				"Email":       "p.daly@zylker.com",
-				"State":       "Texas",
+				"lead_source": "Employee Referral",
+				"company":     "ABC",
+				"last_name":   "Daly",
+				"first_name":  "Paul",
+				"email":       "p.daly@zylker.com",
+				"state":       "Texas",
 			},
 		},
 	}

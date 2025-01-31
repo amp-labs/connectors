@@ -5,7 +5,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 )
@@ -24,11 +23,11 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Name:         "Unknown object requested",
 			Input:        []string{"butterflies"},
 			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{staticschema.ErrObjectNotFound},
+			ExpectedErrs: []error{common.ErrObjectNotSupported},
 		},
 		{
 			Name:       "Successfully describe multiple objects with metadata",
-			Input:      []string{"campaigns", "leads"},
+			Input:      []string{"campaigns", "email-accounts"},
 			Server:     mockserver.Dummy(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
@@ -44,15 +43,14 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							"name":       "Name",
 						},
 					},
-					"leads": {
-						DisplayName: "Leads",
+					"email-accounts": {
+						DisplayName: "Email Accounts",
 						FieldsMap: map[string]string{
-							"first_name":   "First name",
-							"last_name":    "Last name",
-							"email":        "Email",
-							"created_at":   "Created at",
-							"phone_number": "Phone number",
-							"company_name": "Company name",
+							"created_at": "Created at",
+							"updated_at": "Updated at",
+							"user_id":    "User ID",
+							"smtp_host":  "SMTP Host",
+							"smtp_port":  "SMTP Port",
 						},
 					},
 				},

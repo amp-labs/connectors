@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
 	"os/signal"
 	"syscall"
 
@@ -57,4 +58,6 @@ func main() {
 	}
 
 	fmt.Println("==> success fields requested from ListObjectMetadata are all present in Read.")
+
+	utils.DumpJSON(metadata, os.Stdout)
 }

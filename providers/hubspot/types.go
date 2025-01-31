@@ -1,6 +1,9 @@
 package hubspot
 
 import (
+	"fmt"
+	"strconv"
+
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
 )
@@ -16,6 +19,8 @@ type SearchParams struct {
 	FilterGroups []FilterGroup // optional
 	// Fields is the list of fields to return in the result.
 	Fields datautils.Set[string] // optional
+	// AssociatedObjects is a list of associated objects to fetch along with the main object.
+	AssociatedObjects []string // optional
 }
 
 func (p SearchParams) ValidateParams() error {
@@ -28,6 +33,39 @@ func (p SearchParams) ValidateParams() error {
 	}
 
 	return nil
+}
+
+type searchCRMParams struct {
+	SearchParams
+	PageSize int
+}
+
+func (p searchCRMParams) payload() (searchCRMPayload, error) {
+	offset := 0
+
+	if len(p.NextPage) != 0 {
+		var err error
+
+		offset, err = strconv.Atoi(p.NextPage.String())
+		if err != nil {
+			return searchCRMPayload{}, fmt.Errorf("%w: %w", common.ErrNextPageInvalid, err)
+		}
+	}
+
+	pageSize := DefaultPageSizeInt
+	if p.PageSize != 0 {
+		pageSize = p.PageSize
+	}
+
+	return searchCRMPayload{
+		Offset: offset,
+		Count:  pageSize,
+	}, nil
+}
+
+type searchCRMPayload struct {
+	Offset int `json:"offset"`
+	Count  int `json:"count"`
 }
 
 type SortBy struct {
