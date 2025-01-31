@@ -1,8 +1,10 @@
 package providers
 
-const SolarWindsServiceDeskUS Provider = "solarWindsServiceDeskUS"
-const SolarWindsServiceDeskEU Provider = "solarWindsServiceDeskEU"
-const SolarWindsServiceDeskAU Provider = "solarWindsServiceDeskAU"
+const (
+	SolarWindsServiceDeskUS Provider = "solarWindsServiceDeskUS"
+	SolarWindsServiceDeskEU Provider = "solarWindsServiceDeskEU"
+	SolarWindsServiceDeskAU Provider = "solarWindsServiceDeskAU"
+)
 
 //nolint:funlen
 func init() {
