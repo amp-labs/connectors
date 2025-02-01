@@ -207,29 +207,8 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								ProviderType: "enumeration.select",
 								ReadOnly:     false,
 								Values: []common.FieldValue{{
-									Value:        "subscriber",
-									DisplayValue: "Subscriber",
-								}, {
-									Value:        "lead",
-									DisplayValue: "Lead",
-								}, {
-									Value:        "marketingqualifiedlead",
-									DisplayValue: "Marketing Qualified Lead",
-								}, {
-									Value:        "salesqualifiedlead",
-									DisplayValue: "Sales Qualified Lead",
-								}, {
-									Value:        "opportunity",
-									DisplayValue: "Opportunity",
-								}, {
-									Value:        "customer",
-									DisplayValue: "Customer",
-								}, {
-									Value:        "evangelist",
-									DisplayValue: "Evangelist",
-								}, {
-									Value:        "other",
-									DisplayValue: "Other",
+									Value:        "contacts-lifecycle-pipeline",
+									DisplayValue: "Lifecycle Stage Pipeline",
 								}},
 							},
 						},
@@ -265,25 +244,35 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								ProviderType: "enumeration.select",
 								ReadOnly:     false,
 								Values: []common.FieldValue{{
-									Value:        "appointmentscheduled",
+									Value:        "default",
+									DisplayValue: "Sales Pipeline",
+								}},
+							},
+							"dealstage": {
+								DisplayName:  "Deal Stage",
+								ValueType:    "singleSelect",
+								ProviderType: "enumeration.radio",
+								ReadOnly:     false,
+								Values: []common.FieldValue{{
+									Value:        "default:appointmentscheduled",
 									DisplayValue: "Appointment Scheduled",
 								}, {
-									Value:        "qualifiedtobuy",
+									Value:        "default:qualifiedtobuy",
 									DisplayValue: "Qualified To Buy",
 								}, {
-									Value:        "presentationscheduled",
+									Value:        "default:presentationscheduled",
 									DisplayValue: "Presentation Scheduled",
 								}, {
-									Value:        "decisionmakerboughtin",
+									Value:        "default:decisionmakerboughtin",
 									DisplayValue: "Decision Maker Bought-In",
 								}, {
-									Value:        "contractsent",
+									Value:        "default:contractsent",
 									DisplayValue: "Contract Sent",
 								}, {
-									Value:        "closedwon",
+									Value:        "default:closedwon",
 									DisplayValue: "Closed Won",
 								}, {
-									Value:        "closedlost",
+									Value:        "default:closedlost",
 									DisplayValue: "Closed Lost",
 								}},
 							},

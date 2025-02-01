@@ -104,6 +104,10 @@ var (
 
 	// ErrNextPageInvalid is returned when next page token provided in Read operation cannot be understood.
 	ErrNextPageInvalid = errors.New("next page token is invalid")
+
+	// ErrInvalidImplementation is returned when implementation assumption is broken.
+	// This is not a client issue.
+	ErrInvalidImplementation = errors.New("invalid implementation")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.
@@ -331,6 +335,8 @@ type FieldValue struct {
 	Value        string
 	DisplayValue string
 }
+
+type FieldValues []FieldValue
 
 type PostAuthInfo struct {
 	CatalogVars          *map[string]string

@@ -23,6 +23,31 @@
       },
       "formField": false,
       "dataSensitivity": "non_sensitive"
+    },
+    {
+      "updatedAt": "2024-09-05T17:14:04.747Z",
+      "createdAt": "2020-06-30T15:57:38.180Z",
+      "name": "dealstage",
+      "label": "Deal Stage",
+      "type": "enumeration",
+      "fieldType": "radio",
+      "description": "The stage of the deal. Deal stages allow you to categorize and track the progress of the deals that you are working on.",
+      "groupName": "deal_activity",
+      "options": [],
+      "displayOrder": 3,
+      "calculated": false,
+      "externalOptions": true,
+      "hasUniqueValue": false,
+      "hidden": false,
+      "hubspotDefined": true,
+      "modificationMetadata": {
+        "archivable": true,
+        "readOnlyDefinition": true,
+        "readOnlyOptions": false,
+        "readOnlyValue": false
+      },
+      "formField": false,
+      "dataSensitivity": "non_sensitive"
     }
   ]
 }
