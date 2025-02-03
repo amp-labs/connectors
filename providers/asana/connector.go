@@ -7,7 +7,7 @@ import (
 	"github.com/amp-labs/connectors/providers"
 )
 
-const apiVersion = "/api/1.0"
+const apiVersion = "/1.0"
 
 type Connector struct {
 	BaseURL string
