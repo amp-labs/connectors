@@ -14,7 +14,7 @@ func main() {
 	conn := asana.GetAsanaConnector(ctx) // nolint
 
 	// nolint
-	m, err := conn.ListObjectMetadata(ctx, []string{"projects", "organization_exports", "tags", "users", "workspaces"})
+	m, err := conn.ListObjectMetadata(ctx, []string{"projects", "tags", "users", "workspaces"})
 
 	if err != nil {
 		log.Fatal(err)

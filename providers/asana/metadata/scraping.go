@@ -12,9 +12,9 @@ var (
 	// Static file containing a list of object metadata is embedded and can be served.
 	//
 	//go:embed schemas.json
-	schemas []byte
-
-	FileManager = scrapper.NewMetadataFileManager[staticschema.FieldMetadataMapV1](schemas, fileconv.NewSiblingFileLocator()) // nolint:gochecknoglobals
+	schemas     []byte
+	FileManager = scrapper.NewMetadataFileManager[staticschema.FieldMetadataMapV1]( // nolint:gochecknoglobals
+		schemas, fileconv.NewSiblingFileLocator())
 
 	// Schemas is cached Object schemas.
 	Schemas = FileManager.MustLoadSchemas() // nolint:gochecknoglobals
