@@ -5,6 +5,10 @@ import (
 	"github.com/amp-labs/connectors/providers/asana/metadata"
 )
 
+// Some of the objects (allocations, goals, memberships, portfolios, tasks)
+// require us to pass either the team ID or the workspace.
+// although the API documentation doesn’t explicitly state that these fields are mandatory for fetching data, they are.
+
 const (
 	objectNameProjects   = "projects"
 	objectNameTags       = "tags"
