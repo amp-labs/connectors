@@ -75,7 +75,11 @@ func TestReadV1(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Name: "Contacts first page has a link to next",
 			Input: common.ReadParams{
 				ObjectName: "contacts",
-				Fields:     connectors.Fields("given_name", "jobtitle"),
+				Fields: connectors.Fields("given_name",
+					// Next fields are custom fields which do NOT exist inside raw.
+					// However, they are surfaced to the user via ListObjectMetadata,
+					// so they will have context to request them.
+					"jobtitle", "jobdescription", "experience", "age"),
 			},
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
@@ -92,15 +96,15 @@ func TestReadV1(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Rows: 2,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
-						"given_name": "Erica",
-						"jobtitle":   "Product Owner",
-					},
-					Raw: map[string]any{
-						"id":             float64(22),
-						"family_name":    "Lewis",
+						"given_name":     "Erica",
+						"jobtitle":       "Product Owner",
 						"jobdescription": "AI application in commerce",
 						"experience":     "8 years in 3 companies",
 						"age":            float64(32),
+					},
+					Raw: map[string]any{
+						"id":          float64(22),
+						"family_name": "Lewis",
 						"custom_fields": []any{map[string]any{
 							"id":      float64(12),
 							"content": "8 years in 3 companies",
@@ -117,15 +121,15 @@ func TestReadV1(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					},
 				}, {
 					Fields: map[string]any{
-						"given_name": "John",
-						"jobtitle":   nil,
-					},
-					Raw: map[string]any{
-						"id":             float64(20),
-						"family_name":    "Doe",
+						"given_name":     "John",
+						"jobtitle":       nil,
 						"jobdescription": nil,
 						"experience":     nil,
 						"age":            nil,
+					},
+					Raw: map[string]any{
+						"id":          float64(20),
+						"family_name": "Doe",
 					},
 				}},
 				NextPage: "https://api.infusionsoft.com/crm/rest/v1/contacts/?limit=2&offset=2&since=2024-06-03T22:17:59.039Z&order=id", // nolint:lll
