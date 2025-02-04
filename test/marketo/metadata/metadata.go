@@ -13,7 +13,7 @@ func main() {
 
 	conn := marketo.GetMarketoConnector(ctx)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"channels", "emailTemplates", "files", "folders", "meandyou"})
+	m, err := conn.ListObjectMetadata(ctx, []string{"channels", "emailTemplates", "files", "folders", "meandyou", "leads"})
 	if err != nil {
 		log.Fatal(err)
 	}
