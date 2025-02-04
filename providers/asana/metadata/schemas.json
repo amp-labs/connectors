@@ -1,0 +1,50 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "",
+      "objects": {
+        "projects": {
+          "displayName": "Projects",
+          "path": "/projects",
+          "responseKey": "data",
+          "fields": {
+            "gid": "gid",
+            "name": "name",
+            "resource_type": "resource_type"
+          }
+        },
+        "tags": {
+          "displayName": "Tags",
+          "path": "/tags",
+          "responseKey": "data",
+          "fields": {
+            "gid": "gid",
+            "name": "name",
+            "resource_type": "resource_type"
+          }
+        },
+        "users": {
+          "displayName": "Users",
+          "path": "/users",
+          "responseKey": "data",
+          "fields": {
+            "gid": "gid",
+            "name": "name",
+            "resource_type": "resource_type"
+          }
+        },
+        "workspaces": {
+          "displayName": "Workspaces",
+          "path": "/workspaces",
+          "responseKey": "data",
+          "fields": {
+            "gid": "gid",
+            "name": "name",
+            "resource_type": "resource_type"
+          }
+        }
+      }
+    }
+  }
+}
