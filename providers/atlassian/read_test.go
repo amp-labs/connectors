@@ -228,10 +228,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"summary": "Another one",
 					},
 					Raw: map[string]any{
-						"id":                       "10001",
-						"description":              nil,
-						"created":                  "2024-07-22T22:41:48.474+0300",
-						"statuscategorychangedate": "2024-07-22T22:41:48.686+0300",
+						"id":  "10001",
+						"key": "AM-2",
 					},
 				}, {
 					Fields: map[string]any{
@@ -239,10 +237,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"summary": "First Issue on Jira",
 					},
 					Raw: map[string]any{
-						"id":                       "10000",
-						"description":              nil,
-						"created":                  "2024-07-22T22:41:35.069+0300",
-						"statuscategorychangedate": "2024-07-22T22:41:35.326+0300",
+						"id":  "10000",
+						"key": "AM-1",
 					},
 				}},
 				NextPage: "2",
