@@ -39,12 +39,10 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	responseFieldName := metadata.Schemas.LookupArrayFieldName(c.Module.ID, config.ObjectName)
-
 	return common.ParseResult(res,
-		c.parseReadRecords(ctx, config, responseFieldName),
+		makeGetRecords(c.Module.ID, config.ObjectName),
 		makeNextRecordsURL(c.Module.ID),
-		common.GetMarshaledData,
+		common.MakeMarshaledDataFunc(c.fetchReadCustomFields(ctx, config)),
 		config.Fields,
 	)
 }
