@@ -46,7 +46,7 @@ func testReadSequences(ctx context.Context, conn *outreach.Connector) error {
 	config := connectors.ReadParams{
 		ObjectName: "sequences",
 		Since:      time.Now().Add(-720 * time.Hour),
-		Fields:     connectors.Fields("openCount", "description", "id"),
+		Fields:     connectors.Fields("openCount", "description", "id", "links", "type"),
 	}
 
 	result, err := conn.Read(ctx, config)
