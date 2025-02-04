@@ -33,7 +33,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		rsp,
 		getRecords,
 		getNextRecords,
-		common.GetMarshaledData,
+		common.MakeMarshaledDataFunc(flattenRecord),
 		config.Fields,
 	)
 }
