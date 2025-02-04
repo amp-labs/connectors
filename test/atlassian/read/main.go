@@ -24,7 +24,8 @@ func main() {
 	conn := connTest.GetAtlassianConnector(ctx)
 
 	res, err := conn.Read(ctx, common.ReadParams{
-		Fields: connectors.Fields("id", "summary", "status"),
+		ObjectName: "issues",
+		Fields:     connectors.Fields("id", "summary", "status"),
 		// Below is the example to get issues that were updated in the last 15 min.
 		// Since: time.Now().Add(-15 * time.Minute),
 	})
