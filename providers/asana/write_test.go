@@ -70,6 +70,32 @@ func TestWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			},
 			ExpectedErrs: nil,
 		},
+		{
+			Name:  "Update objects as PUT",
+			Input: common.WriteParams{ObjectName: "projects", RecordId: "15", RecordData: "dummy"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPUT(),
+				Then:  mockserver.Response(http.StatusOK, responsePortfolios),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetWrite,
+			Expected: &common.WriteResult{
+				Success:  true,
+				RecordId: "15",
+				Errors:   nil,
+				Data: map[string]any{
+					"gid":           "15",
+					"resource_type": "project",
+					"name":          "Stuff to buy",
+					"archived":      false,
+					"color":         "light-green",
+					"created_at":    "2012-02-22T02:06:58.147Z",
+					"due_on":        "2019-09-15",
+					"start_on":      "2019-09-14",
+				},
+			},
+			ExpectedErrs: nil,
+		},
 	}
 
 	for _, tt := range tests {

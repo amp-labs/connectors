@@ -17,7 +17,7 @@ type parameters struct {
 }
 
 const (
-	DefaultPageSize = 10
+	DefaultPageSize = 100
 )
 
 func (p parameters) ValidateParams() error {

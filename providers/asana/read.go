@@ -9,12 +9,12 @@ import (
 )
 
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
-	err := config.ValidateParams((true))
+	err := config.ValidateParams(true)
 	if err != nil {
 		return nil, err
 	}
 
-	if !supportedObjectsByRead.Has(config.ObjectName) {
+	if !supportedObjectsByRead[c.Module.ID].Has(config.ObjectName) {
 		return nil, common.ErrOperationNotSupportedForObject
 	}
 
