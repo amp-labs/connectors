@@ -8,7 +8,7 @@ const SolarWindsServiceDeskUS Provider = "solarWindsServiceDeskUS"
 func init() {
 	// SolarWindsServiceDesk US configuration
 	SetInfo(SolarWindsServiceDeskUS, ProviderInfo{
-		DisplayName: "Solar Winds Service Desk US",
+		DisplayName: "SolarWinds Service Desk US",
 		AuthType:    ApiKey,
 		BaseURL:     "https://api.samanage.com",
 		ApiKeyOpts: &ApiKeyOpts{
