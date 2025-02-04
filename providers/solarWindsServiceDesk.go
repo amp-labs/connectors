@@ -3,9 +3,11 @@ package providers
 const SolarWindsServiceDeskUS Provider = "solarWindsServiceDeskUS"
 
 // SolarWinds Service Desk has data centers in three regions: US, EU, and APJ, each with a different base URL.
+//
+//nolint:lll
 func init() {
 	// SolarWindsServiceDesk US configuration
-	SetInfo(SolarWindsServiceDeskUS, ProviderInfo{ //nolint:lll
+	SetInfo(SolarWindsServiceDeskUS, ProviderInfo{
 		DisplayName: "Solar Winds Service Desk US",
 		AuthType:    ApiKey,
 		BaseURL:     "https://api.samanage.com",
