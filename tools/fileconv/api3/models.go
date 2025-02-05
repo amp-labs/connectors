@@ -5,9 +5,8 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
-	"strings"
 
-	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/metadatadef"
 	"github.com/getkin/kin-openapi/openapi3"
 )
 
@@ -33,39 +32,6 @@ type PathItem struct {
 	delegate   *openapi3.PathItem
 }
 
-type Schema struct {
-	ObjectName  string
-	DisplayName string
-	Fields      []string
-	QueryParams []string
-	URLPath     string
-	ResponseKey string
-	Problem     error
-}
-
-type Schemas []Schema
-
-func (s Schemas) Combine(others Schemas) Schemas {
-	registry := datautils.Map[string, Schema]{}
-	for _, schema := range append(s, others...) {
-		_, found := registry[schema.ObjectName]
-
-		if !found || len(schema.Fields) != 0 {
-			registry[schema.ObjectName] = schema
-		}
-	}
-
-	return registry.Values()
-}
-
-func (s Schema) String() string {
-	if s.Problem != nil {
-		return fmt.Sprintf("    {%v}    ", s.ObjectName)
-	}
-
-	return fmt.Sprintf("%v=[%v]", s.ObjectName, strings.Join(s.Fields, ","))
-}
-
 func (p PathItem) RetrieveSchemaOperation(
 	operationName string,
 	displayNameOverride map[string]string,
@@ -75,7 +41,7 @@ func (p PathItem) RetrieveSchemaOperation(
 	propertyFlattener PropertyFlattener,
 	mime string,
 	autoSelectArrayItem bool,
-) (*Schema, bool, error) {
+) (*metadatadef.Schema, bool, error) {
 	operation, _ := p.selectOperation(operationName)
 	if operation == nil {
 		return nil, false, nil
@@ -107,7 +73,7 @@ func (p PathItem) RetrieveSchemaOperation(
 		slog.Warn("not an array of objects", "object", p.objectName)
 	}
 
-	return &Schema{
+	return &metadatadef.Schema{
 		ObjectName:  p.objectName,
 		DisplayName: displayName,
 		Fields:      fields,
@@ -140,7 +106,7 @@ func extractObjectFields(
 	objectName string, schema *openapi3.Schema, locator ObjectArrayLocator,
 	propertyFlattener PropertyFlattener,
 	autoSelectArrayItem bool,
-) (fields []string, location string, err error) {
+) (fields metadatadef.Fields, location string, err error) {
 	switch getSchemaType(schema) {
 	case schemaTypeObject:
 		return extractFieldsFromArrayHolder(objectName, schema, locator, propertyFlattener, autoSelectArrayItem)
@@ -186,7 +152,7 @@ func extractFieldsFromArrayHolder(
 	objectName string, schema *openapi3.Schema, locator ObjectArrayLocator,
 	propertyFlattener PropertyFlattener,
 	autoSelectArrayItem bool,
-) (fields []string, location string, err error) {
+) (fields metadatadef.Fields, location string, err error) {
 	arrayOptions := extractPropertiesArrayType(schema)
 
 	// Only one array property exists. We can conclude that this is the array item we are looking for.
@@ -208,7 +174,7 @@ func extractFieldsFromArrayHolder(
 	if isBooleanTruthful(schema.AdditionalProperties.Has) {
 		// this schema is dynamic.
 		// the fields cannot be known.
-		return []string{}, "", nil
+		return make(metadatadef.Fields), "", nil
 	}
 
 	return nil, "", createUnprocessableObjectError(objectName)
@@ -245,7 +211,7 @@ func extractPropertiesArrayType(schema *openapi3.Schema) []Array {
 func extractFieldsFromArray(
 	objectName string, schema *openapi3.Schema,
 	propertyFlattener PropertyFlattener,
-) (fields []string, location string, err error) {
+) (fields metadatadef.Fields, location string, err error) {
 	items, isArray := getItems(schema.NewRef())
 	if !isArray {
 		return nil, "", createUnprocessableObjectError(objectName)
@@ -322,8 +288,8 @@ func extractSchema(operation *openapi3.Operation, mime string) *openapi3.Schema 
 func extractFields(
 	objectName string,
 	propertyFlattener PropertyFlattener, source *openapi3.Schema,
-) ([]string, error) {
-	combined := make(datautils.Set[string])
+) (metadatadef.Fields, error) {
+	combined := make(metadatadef.Fields)
 
 	if source.AnyOf != nil {
 		// this object can be represented by various definitions
@@ -335,7 +301,7 @@ func extractFields(
 				return nil, err
 			}
 
-			combined.Add(fields)
+			combined.AddMapValues(fields)
 		}
 	}
 
@@ -348,7 +314,7 @@ func extractFields(
 				return nil, err
 			}
 
-			combined.Add(fields)
+			combined.AddMapValues(fields)
 		}
 	}
 
@@ -361,14 +327,16 @@ func extractFields(
 				return nil, err
 			}
 
-			combined.Add(fields)
+			combined.AddMapValues(fields)
 		} else {
 			// This is just a normal usual case where top level fields are collected as is.
-			combined.AddOne(property)
+			combined[property] = metadatadef.Field{
+				Name: property,
+			}
 		}
 	}
 
-	return combined.List(), nil
+	return combined, nil
 }
 
 type definitionSchemaType int
