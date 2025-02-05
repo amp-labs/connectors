@@ -428,7 +428,7 @@ type SubscriptionResult struct { // this corresponds to each API call.
 
 // SubscribeConnector has 2 main responsibilities:
 // 1. Register a subscription with the provider.
-// Registering a subscription is a one-time operation that is requried
+// Registering a subscription is a one-time operation that is required
 // by providers that hold some master registration of all subscriptions.
 // Not all providers require this, but some do.
 // 2. Subscribe to events from the provider.
