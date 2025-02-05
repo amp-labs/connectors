@@ -1,0 +1,10 @@
+{
+  "error": {
+    "code": "parameter_unknown",
+    "doc_url": "https://stripe.com/docs/error-codes/parameter-unknown",
+    "message": "Received unknown parameter: pineapple",
+    "param": "pineapple",
+    "request_log_url": "https://dashboard.stripe.com/test/logs/req_y2LcUTcF5gNalE?t=1737592102",
+    "type": "invalid_request_error"
+  }
+}

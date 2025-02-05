@@ -1,0 +1,36 @@
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "cus_Rd3NKXxTV0Hzpp",
+      "object": "customer",
+      "address": null,
+      "balance": 0,
+      "created": 1737488261,
+      "currency": null,
+      "default_source": null,
+      "delinquent": false,
+      "description": null,
+      "discount": null,
+      "email": "sean.foster@example.com",
+      "invoice_prefix": "D6DCA1F0",
+      "invoice_settings": {
+        "custom_fields": null,
+        "default_payment_method": null,
+        "footer": null,
+        "rendering_options": null
+      },
+      "livemode": false,
+      "metadata": {},
+      "name": "Sean Foster",
+      "next_invoice_sequence": 1,
+      "phone": null,
+      "preferred_locales": [],
+      "shipping": null,
+      "tax_exempt": "none",
+      "test_clock": null
+    }
+  ],
+  "has_more": false,
+  "url": "/v1/customers"
+}

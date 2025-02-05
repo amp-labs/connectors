@@ -127,16 +127,21 @@ type ReadParams struct {
 	// Deleted is true if we want to read deleted records instead of active records.
 	Deleted bool // optional, defaults to false
 
-	// Filter is supported for the following connectors:
-	//	* Salesforce: it is a SOQL string that comes after the WHERE clause which will be used to filter the records.
+	// Filter defines the filtering criteria for supported connectors.
+	// It is optional and behaves differently depending on the connector:
+	//	* Salesforce: It is a SOQL string that comes after the WHERE clause which will be used to filter the records.
 	//		Reference: https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql.htm
-	//	* Klaviyo: comma separated methods following JSON:API filtering syntax.
+	//	* Klaviyo: Comma separated methods following JSON:API filtering syntax.
 	//		Note: timing is already handled by Since argument.
 	//		Reference: https://developers.klaviyo.com/en/docs/filtering_
 	Filter string // optional
 
-	// AssociatedObjects is a list of associated objects to fetch along with the main object.
-	// Only supported by HubSpot connector Read (not Search)
+	// AssociatedObjects specifies a list of related objects to fetch along with the main object.
+	// It is optional and supported by the following connectors:
+	//	* HubSpot: Supported in Read operation, but not Search.
+	//	* Stripe: Only nested objects can be expanded. Specify a dot-separated path
+	//		to the property to fetch and expand those objects.
+	//		Reference: https://docs.stripe.com/expand#how-it-works
 	AssociatedObjects []string // optional
 }
 
