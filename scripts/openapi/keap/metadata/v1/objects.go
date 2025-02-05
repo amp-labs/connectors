@@ -5,6 +5,7 @@ import (
 
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
+	"github.com/amp-labs/connectors/internal/metadatadef"
 	"github.com/amp-labs/connectors/providers/keap/openapi"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
 )
@@ -61,7 +62,7 @@ var (
 	)
 )
 
-func Objects() []api3.Schema {
+func Objects() []metadatadef.Schema {
 	explorer, err := openapi.Version1FileManager.GetExplorer(
 		api3.WithDisplayNamePostProcessors(
 			func(displayName string) string {
