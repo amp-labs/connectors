@@ -27,8 +27,9 @@ type ExtendedSchema[C any] struct {
 type Schemas[C any] []ExtendedSchema[C]
 
 type Field struct {
-	Name string
-	Type string
+	Name         string
+	Type         string
+	ValueOptions []string
 }
 
 type Fields = datautils.Map[string, Field]
