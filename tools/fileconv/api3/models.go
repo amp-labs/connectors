@@ -76,7 +76,7 @@ func (p PathItem) RetrieveSchemaOperation(
 	mime string,
 	autoSelectArrayItem bool,
 ) (*Schema, bool, error) {
-	operation := p.selectOperation(operationName)
+	operation, _ := p.selectOperation(operationName)
 	if operation == nil {
 		return nil, false, nil
 	}
@@ -118,16 +118,21 @@ func (p PathItem) RetrieveSchemaOperation(
 	}, true, nil
 }
 
-func (p PathItem) selectOperation(operationName string) *openapi3.Operation {
+func (p PathItem) selectOperation(operationName string) (*openapi3.Operation, bool) {
 	switch operationName {
-	case "POST":
-		return p.delegate.Post
-	case "PUT":
-		return p.delegate.Put
-	case "PATCH":
-		return p.delegate.Patch
+	case http.MethodGet:
+		return p.delegate.Get, p.delegate.Get != nil
+	case http.MethodPost:
+		return p.delegate.Post, p.delegate.Post != nil
+	case http.MethodPut:
+		return p.delegate.Put, p.delegate.Put != nil
+	case http.MethodPatch:
+		return p.delegate.Patch, p.delegate.Patch != nil
+	case http.MethodDelete:
+		return p.delegate.Delete, p.delegate.Delete != nil
 	default:
-		return p.delegate.Get
+		// Bool will always be false for the default case. This operation is not what we are looking for.
+		return p.delegate.Get, false
 	}
 }
 

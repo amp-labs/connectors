@@ -33,10 +33,20 @@ func NewDenyPathStrategy(paths []string) *StarRulePathResolver {
 	})
 }
 
+// PathMatcher categorizes paths based on specific criteria.
 type PathMatcher interface {
 	IsPathMatching(path string) bool
 }
 
+// DefaultPathMatcher matches any URL path without restrictions.
+type DefaultPathMatcher struct{}
+
+func (DefaultPathMatcher) IsPathMatching(path string) bool {
+	return true
+}
+
+// AndPathMatcher combines multiple path matchers.
+// A path matches only if all matchers in the list agree on the match.
 type AndPathMatcher []PathMatcher
 
 func (m AndPathMatcher) IsPathMatching(path string) bool {
@@ -116,5 +126,17 @@ type IDPathIgnorer struct{}
 func (IDPathIgnorer) IsPathMatching(path string) bool {
 	// There should be no slashes, curly brackets.
 	// If there are we are dealing with nester resources. Those are to be ignored.
+	return !strings.Contains(path, "{")
+}
+
+type NestedIDPathIgnorer struct{}
+
+func (NestedIDPathIgnorer) IsPathMatching(path string) bool {
+	// Remove the last URL part.
+	parts := strings.Split(path, "/")
+	parts = parts[:len(parts)-1]
+	path = strings.Join(parts, "/")
+
+	// We get the large prefix which may have variate parts. It shouldn't.
 	return !strings.Contains(path, "{")
 }
