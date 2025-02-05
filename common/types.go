@@ -426,6 +426,14 @@ type SubscriptionResult struct { // this corresponds to each API call.
 	// provider specific events ["contact.merged"] for hubspot or ["jira_issue:restored", "jira_issue:archived"] for jira.
 }
 
+// SubscribeConnector has 2 main responsibilities:
+// 1. Register a subscription with the provider.
+// Registering a subscription is a one-time operation that is requried
+// by providers that hold some master registration of all subscriptions.
+// Not all providers require this, but some do.
+// 2. Subscribe to events from the provider.
+// This is the actual subscription to events from the provider.
+// It will subscribe for events and objects as specified in SubscribeParams.
 type SubscribeConnector interface {
 	Register(
 		ctx context.Context,
