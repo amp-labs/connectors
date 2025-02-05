@@ -2,6 +2,7 @@ package support
 
 import (
 	"github.com/amp-labs/connectors/internal/goutils"
+	"github.com/amp-labs/connectors/internal/metadatadef"
 	"github.com/amp-labs/connectors/providers/zendesksupport"
 	"github.com/amp-labs/connectors/providers/zendesksupport/openapi"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
@@ -67,7 +68,7 @@ var (
 	}
 )
 
-func Objects() []api3.Schema {
+func Objects() []metadatadef.Schema {
 	explorer, err := openapi.SupportFileManager.GetExplorer(
 		api3.WithDisplayNamePostProcessors(
 			api3.CamelCaseToSpaceSeparated,
