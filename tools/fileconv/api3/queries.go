@@ -104,8 +104,9 @@ func (e Explorer) ReadObjects(
 // GetPathItems returns path items where object name is a single word.
 func (e Explorer) GetPathItems(
 	pathMatcher PathMatcher, endpointResources map[string]string,
-) []PathItem {
-	items := datautils.Map[string, PathItem]{}
+) []*PathItem {
+	items := datautils.Map[string, *PathItem]{}
+	duplicates := datautils.UniqueLists[string, *PathItem]{}
 
 	for path, pathObj := range e.schema.GetPaths() {
 		if !pathMatcher.IsPathMatching(path) {
@@ -119,8 +120,8 @@ func (e Explorer) GetPathItems(
 			continue
 		}
 
-		objectName, ok := endpointResources[path]
-		if !ok {
+		objectName, isDuplicate := endpointResources[path]
+		if !isDuplicate {
 			// ObjectName is empty at this time.
 			// We need to do some processing to infer ObjectName from URL path.
 			// By default, the last URL part is the ObjectName describing this REST resource.
@@ -128,19 +129,37 @@ func (e Explorer) GetPathItems(
 			objectName = parts[len(parts)-1]
 		}
 
-		if items.Has(objectName) {
-			slog.Warn("object name is not unique, ignoring",
-				"objectName", objectName,
-				"path", path,
-				"collidesWith", items[objectName].urlPath,
-			)
-		}
-
-		items[objectName] = PathItem{
+		item := PathItem{
 			objectName: objectName,
 			urlPath:    path,
 			delegate:   pathObj,
 		}
+
+		if oldItem, exists := items[objectName]; exists {
+			duplicates.Add(objectName, oldItem) // existing item is a duplicate
+			duplicates.Add(objectName, &item)   // new item is considered a duplicate too
+		} else {
+			// Associate item with object name.
+			items[objectName] = &item
+		}
+	}
+
+	// Report PathItems that use the same object name.
+	// They will be excluded from schema extraction and script user will be warned to take action.
+	for objectName, pathItems := range duplicates {
+		paths := make([]string, len(pathItems))
+		for index, item := range pathItems.List() {
+			paths[index] = item.urlPath
+		}
+
+		slog.Warn("object name is not unique, ignoring",
+			"objectName", objectName,
+			"collisions", strings.Join(paths, ", "),
+		)
+
+		// We have logged each path that shares the same object name.
+		// No such object will be included for consistency.
+		delete(items, objectName)
 	}
 
 	return items.Values()
