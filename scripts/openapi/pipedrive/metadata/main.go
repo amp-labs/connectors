@@ -8,6 +8,7 @@ import (
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers/pipedrive/metadata"
 	"github.com/amp-labs/connectors/providers/pipedrive/openapi"
+	utilsopenapi "github.com/amp-labs/connectors/scripts/openapi/utils"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
 	"github.com/amp-labs/connectors/tools/scrapper"
 )
@@ -87,7 +88,7 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	schemas := staticschema.NewMetadata[staticschema.FieldMetadataMapV1]()
+	schemas := staticschema.NewMetadata[staticschema.FieldMetadataMapV2]()
 	registry := datautils.NamedLists[string]{}
 
 	for _, object := range objects {
@@ -100,9 +101,7 @@ func main() {
 
 		for _, field := range object.Fields {
 			schemas.Add("", object.ObjectName, object.DisplayName, object.URLPath, object.ResponseKey,
-				staticschema.FieldMetadataMapV1{
-					field.Name: field.Name,
-				}, nil)
+				utilsopenapi.ConvertMetadataFieldToFieldMetadataMapV2(field), nil)
 		}
 
 		for _, queryParam := range object.QueryParams {
