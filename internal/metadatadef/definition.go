@@ -23,8 +23,9 @@ type Schema struct {
 type Schemas []Schema
 
 type Field struct {
-	Name string
-	Type string
+	Name        string
+	Type        string
+	EnumOptions []string
 }
 
 type Fields = datautils.Map[string, Field]
