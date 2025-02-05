@@ -40,7 +40,7 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 		return urlbuilder.New(config.NextPage.String())
 	}
 
-	url, err := c.getAPIURL(config.ObjectName)
+	url, err := c.getReadURL(config.ObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -48,8 +48,14 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 	// begin fetching objects at provided start date
 	// Supporting objects are: Activities & Notes only.
 	if !config.Since.IsZero() {
-		startDate := config.Since.Format(time.DateOnly)
-		url.WithQueryParam("start_date", startDate)
+		since := config.Since.UTC().Format(time.DateTime)
+
+		switch config.ObjectName {
+		case "organization_collection", "person_collection":
+			url.WithQueryParam("since", since)
+		default:
+			url.WithQueryParam("start_date", since)
+		}
 	}
 
 	return url, nil
