@@ -67,17 +67,16 @@ func metadataMapper(
 		return nil, err
 	}
 
-	mdt := &common.ObjectMetadata{
-		FieldsMap: make(map[string]string),
+	mdt, err := metadata.Schemas.SelectOne(moduleID, obj)
+	if err != nil {
+		return nil, err
 	}
 
 	// Ensure the response data array, has at least 1 record.
-	// If there is no data, we use the static schema file to generate the metadata.
+	// If there is no data, we use only the static schema file.
 	if len(response.Data) == 0 {
-		return metadata.Schemas.SelectOne(moduleID, obj)
+		return mdt, nil
 	}
-
-	mdt.DisplayName = obj
 
 	// Looping on the first index of the response data.
 	fields := response.Data[0]
