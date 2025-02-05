@@ -107,7 +107,7 @@ func extractObjectFields(
 	propertyFlattener PropertyFlattener,
 	autoSelectArrayItem bool,
 ) (fields metadatadef.Fields, location string, err error) {
-	switch getSchemaType(schema) {
+	switch getSchemaType(objectName, schema) {
 	case schemaTypeObject:
 		return extractFieldsFromArrayHolder(objectName, schema, locator, propertyFlattener, autoSelectArrayItem)
 	case schemaTypeArray:
@@ -289,7 +289,7 @@ func extractFields(
 	objectName string,
 	propertyFlattener PropertyFlattener, source *openapi3.Schema,
 ) (metadatadef.Fields, error) {
-	combined := make(metadatadef.Fields)
+	combinedFields := make(metadatadef.Fields)
 
 	if source.AnyOf != nil {
 		// this object can be represented by various definitions
@@ -301,7 +301,7 @@ func extractFields(
 				return nil, err
 			}
 
-			combined.AddMapValues(fields)
+			combinedFields.AddMapValues(fields)
 		}
 	}
 
@@ -314,7 +314,7 @@ func extractFields(
 				return nil, err
 			}
 
-			combined.AddMapValues(fields)
+			combinedFields.AddMapValues(fields)
 		}
 	}
 
@@ -327,16 +327,49 @@ func extractFields(
 				return nil, err
 			}
 
-			combined.AddMapValues(fields)
+			combinedFields.AddMapValues(fields)
 		} else {
 			// This is just a normal usual case where top level fields are collected as is.
-			combined[property] = metadatadef.Field{
-				Name: property,
+			propertyType := extractPropertyType(propertySchema)
+			enumOptions := extractEnumOptions(objectName, propertySchema)
+			combinedFields[property] = metadatadef.Field{
+				Name:        property,
+				Type:        propertyType,
+				EnumOptions: enumOptions,
 			}
 		}
 	}
 
-	return combined, nil
+	return combinedFields, nil
+}
+
+func extractPropertyType(propertySchema *openapi3.SchemaRef) string {
+	if propertySchema.Value == nil || propertySchema.Value.Type == nil {
+		return ""
+	}
+
+	types := *propertySchema.Value.Type
+	if len(types) == 0 {
+		return ""
+	}
+
+	return types[0]
+}
+
+func extractEnumOptions(objectName string, propertySchema *openapi3.SchemaRef) []string {
+	enumOptions := make([]string, 0)
+
+	if propertySchema.Value != nil && propertySchema.Value.Enum != nil {
+		for _, value := range propertySchema.Value.Enum {
+			if option, ok := value.(string); ok {
+				enumOptions = append(enumOptions, option)
+			} else {
+				slog.Warn("Enum option is not a string", "objectName", objectName)
+			}
+		}
+	}
+
+	return enumOptions
 }
 
 type definitionSchemaType int
@@ -356,9 +389,9 @@ const (
 // It is allowed to have an array without it being nested under object.
 //
 // Returns enum marking the type of schema. This can be used to adjust processing.
-func getSchemaType(schema *openapi3.Schema) definitionSchemaType {
+func getSchemaType(objectName string, schema *openapi3.Schema) definitionSchemaType {
 	if schema.Type == nil {
-		slog.Warn("Schema definition has no type")
+		slog.Warn("Schema definition has no type", "objectName", objectName)
 
 		return schemaTypeUnknown
 	}
