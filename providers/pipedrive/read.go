@@ -49,13 +49,7 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 	// Supporting objects are: Activities & Notes only.
 	if !config.Since.IsZero() {
 		since := config.Since.UTC().Format(time.DateTime)
-
-		switch config.ObjectName {
-		case "organization_collection", "person_collection":
-			url.WithQueryParam("since", since)
-		default:
-			url.WithQueryParam("start_date", since)
-		}
+		url.WithQueryParam("start_date", since)
 	}
 
 	return url, nil
