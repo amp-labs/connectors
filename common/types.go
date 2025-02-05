@@ -383,3 +383,83 @@ func inferDeprecatedFieldsMap(fields map[string]FieldMetadata) map[string]string
 
 	return fieldsMap
 }
+
+type RegistrationResult struct {
+	RegistrationRef string
+	Result          any // struct depends on the provider
+}
+
+type SubscriptionRegistrationParams struct {
+	Request any
+}
+
+type ObjectEvents struct {
+	Events []SubscriptionEventType
+	// ["create", "update", "delete"] our regular CRUD operation events
+	// we translate to provider-specific names contact.creation
+	WatchFields []string
+	// ["email", "fax"] fields to watch for an update subscription
+	PassThroughEvents []string
+	// any non CRUD operations with provider specific event names
+	// eg)  ["contact.merged"] for hubspot or ["jira_issue:restored", "jira_issue:archived"] for jira.
+}
+
+type ObjectName string
+
+type SubscribeParams struct {
+	RegistrationRef    string // optional, needed for some providers like Hubspot
+	SubscriptionEvents map[ObjectName]ObjectEvents
+	TargetURL          string // optional
+}
+
+type SubscriptionResult struct { // this corresponds to each API call.
+	RegistrationRef string
+	SubscriptionRef string
+	Result          any
+	Objects         []ObjectName
+	Events          []SubscriptionEventType
+	// ["create", "update", "delete"]
+	// our regular CRUD operation events we translate to provider-specific names contact.creation
+	UpdateFields []string
+	// ["email", "fax"]
+	PassThroughEvents []string
+	// provider specific events ["contact.merged"] for hubspot or ["jira_issue:restored", "jira_issue:archived"] for jira.
+}
+
+// SubscribeConnector has 2 main responsibilities:
+// 1. Register a subscription with the provider.
+// Registering a subscription is a one-time operation that is required
+// by providers that hold some master registration of all subscriptions.
+// Not all providers require this, but some do.
+// 2. Subscribe to events from the provider.
+// This is the actual subscription to events from the provider.
+// It will subscribe for events and objects as specified in SubscribeParams.
+type SubscribeConnector interface {
+	Register(
+		ctx context.Context,
+		params SubscriptionRegistrationParams,
+	) (*RegistrationResult, error)
+	UpdateRegistration(
+		ctx context.Context,
+		params SubscriptionRegistrationParams,
+		previousResult SubscriptionResult,
+	) (*SubscriptionResult, error)
+	DeleteRegistration(
+		ctx context.Context,
+		previousResult SubscriptionResult,
+	) error
+
+	Subscribe(
+		ctx context.Context,
+		params SubscribeParams,
+	) (*SubscriptionResult, error)
+	UpdateSubscription(
+		ctx context.Context,
+		params SubscribeParams,
+		previousResult SubscriptionResult,
+	) (*SubscriptionResult, error)
+	DeleteSubscription(
+		ctx context.Context,
+		previousResult SubscriptionResult,
+	) error
+}
