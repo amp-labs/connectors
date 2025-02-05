@@ -37,6 +37,23 @@ type PathMatcher interface {
 	IsPathMatching(path string) bool
 }
 
+type AndPathMatcher []PathMatcher
+
+func (m AndPathMatcher) IsPathMatching(path string) bool {
+	// Find the first not matching. Conclude doesn't match the combined goal.
+	for _, matcher := range m {
+		if matcher == nil {
+			continue
+		}
+
+		if !matcher.IsPathMatching(path) {
+			return false
+		}
+	}
+
+	return true
+}
+
 // StarRulePathResolver will report if path matches endpoint rule.
 // Match can occur in 3 different ways,
 // * exact value is inside the registry
@@ -92,4 +109,12 @@ func (s StarRulePathResolver) IsPathMatching(path string) bool {
 	}
 
 	return s.pathMatchingCallback(false)
+}
+
+type IDPathIgnorer struct{}
+
+func (IDPathIgnorer) IsPathMatching(path string) bool {
+	// There should be no slashes, curly brackets.
+	// If there are we are dealing with nester resources. Those are to be ignored.
+	return !strings.Contains(path, "{")
 }
