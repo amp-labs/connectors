@@ -1,3 +1,4 @@
+// nolint:ireturn
 package datautils
 
 import "encoding/json"
@@ -92,7 +93,7 @@ func (m DefaultMap[K, V]) Get(key K) V {
 	return empty
 }
 
-// Convert a struct to a map of string to any.
+// StructToMap convert a struct to a map of string to any.
 func StructToMap(obj any) (map[string]any, error) {
 	var result map[string]any
 
