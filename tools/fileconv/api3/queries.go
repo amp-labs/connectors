@@ -75,7 +75,12 @@ func (e Explorer) ReadObjects(
 ) (Schemas, error) {
 	schemas := make(Schemas, 0)
 
-	for _, path := range e.GetPathItems(pathMatcher, objectEndpoints) {
+	for _, path := range e.GetPathItems(AndPathMatcher{
+		pathMatcher,
+		// There should be no curly brackets no IDs, no nested resources.
+		// Read objects are those that have constant string path.
+		IDPathIgnorer{},
+	}, objectEndpoints) {
 		schema, found, err := path.RetrieveSchemaOperation(operationName,
 			displayNameOverride, locator,
 			e.displayPostProcessing,
@@ -111,12 +116,6 @@ func (e Explorer) GetPathItems(
 	for path, pathObj := range e.schema.GetPaths() {
 		if !pathMatcher.IsPathMatching(path) {
 			// Ignore this endpoint path.
-			continue
-		}
-
-		if strings.Contains(path, "{") {
-			// as of now only single word objects are supported
-			// there should be no slashes, curly brackets - nested resources
 			continue
 		}
 
