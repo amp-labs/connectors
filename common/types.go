@@ -108,6 +108,10 @@ var (
 	// ErrInvalidImplementation is returned when implementation assumption is broken.
 	// This is not a client issue.
 	ErrInvalidImplementation = errors.New("invalid implementation")
+
+	// ErrPayloadNotURLForm is returned when payload is not string key-value pair
+	// which could be encoded for POST with content type of application/x-www-form-urlencoded.
+	ErrPayloadNotURLForm = errors.New("payload cannot be url-form encoded")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.
@@ -359,7 +363,7 @@ const (
 	SubscriptionEventTypeOther             SubscriptionEventType = "other"
 )
 
-// SubscribeEvent is an interface for webhook events coming from the provider.
+// SubscriptionEvent is an interface for webhook events coming from the provider.
 // This interface defines methods to extract information from the webhook event.
 type SubscriptionEvent interface {
 	EventType() (SubscriptionEventType, error)
