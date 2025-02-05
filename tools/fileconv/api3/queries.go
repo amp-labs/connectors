@@ -31,6 +31,7 @@ func NewExplorer(data *openapi3.T, opts ...Option) *Explorer {
 // If you need schemas located under GET and POST operations,
 // make 2 calls as they will have different arguments in particular PathMatchingStrategy,
 // and then Combine two lists of schemas.
+// If all paths should be explored use DefaultPathMatcher.
 func (e Explorer) ReadObjectsGet(
 	pathMatcher PathMatcher,
 	objectEndpoints map[string]string,
@@ -41,6 +42,7 @@ func (e Explorer) ReadObjectsGet(
 }
 
 // ReadObjectsPost is the same as ReadObjectsGet but retrieves schemas for endpoints that perform reading via POST.
+// If all paths should be explored use DefaultPathMatcher.
 func (e Explorer) ReadObjectsPost(
 	pathMatcher PathMatcher,
 	objectEndpoints map[string]string,
@@ -54,7 +56,7 @@ func (e Explorer) ReadObjectsPost(
 // See every parameter for detailed customization.
 //
 // operationName - under which REST operation the schema resides. Ex: GET - list reading, POST - search reading.
-// pathMatcher - guides which URL paths to include in search or to ignore.
+// pathMatcher - guides which URL paths to include in search or to ignore. By default, use DefaultPathMatcher.
 // objectEndpoints - URL path mapped to ObjectName.
 // Ex: 	/customer/orders -> orders.
 //
@@ -75,12 +77,14 @@ func (e Explorer) ReadObjects(
 ) (Schemas, error) {
 	schemas := make(Schemas, 0)
 
-	for _, path := range e.GetPathItems(AndPathMatcher{
+	pathItems, _ := e.GetPathItems(AndPathMatcher{
 		pathMatcher,
 		// There should be no curly brackets no IDs, no nested resources.
 		// Read objects are those that have constant string path.
 		IDPathIgnorer{},
-	}, objectEndpoints) {
+	}, objectEndpoints, true)
+
+	for _, path := range pathItems {
 		schema, found, err := path.RetrieveSchemaOperation(operationName,
 			displayNameOverride, locator,
 			e.displayPostProcessing,
@@ -106,10 +110,10 @@ func (e Explorer) ReadObjects(
 	return schemas, nil
 }
 
-// GetPathItems returns path items where object name is a single word.
+// GetPathItems returns path items where object name is a single word. Second output is a list of duplicate path items.
 func (e Explorer) GetPathItems(
-	pathMatcher PathMatcher, endpointResources map[string]string,
-) []*PathItem {
+	pathMatcher PathMatcher, endpointResources map[string]string, logDuplicates bool,
+) ([]*PathItem, datautils.UniqueLists[string, *PathItem]) {
 	items := datautils.Map[string, *PathItem]{}
 	duplicates := datautils.UniqueLists[string, *PathItem]{}
 
@@ -151,15 +155,90 @@ func (e Explorer) GetPathItems(
 			paths[index] = item.urlPath
 		}
 
-		slog.Warn("object name is not unique, ignoring",
-			"objectName", objectName,
-			"collisions", strings.Join(paths, ", "),
-		)
+		if logDuplicates {
+			slog.Warn("object name is not unique, ignoring",
+				"objectName", objectName,
+				"collisions", strings.Join(paths, ", "),
+			)
+		}
 
 		// We have logged each path that shares the same object name.
 		// No such object will be included for consistency.
 		delete(items, objectName)
 	}
 
-	return items.Values()
+	return items.Values(), duplicates
+}
+
+type EndpointOperations struct {
+	URLPath           string
+	OperationsSupport map[string]bool
+}
+
+func (w EndpointOperations) String() string {
+	registry := datautils.FromMap(w.OperationsSupport)
+	keys := registry.Keys()
+	sort.Strings(keys)
+
+	var support string
+
+	for _, key := range keys {
+		if w.OperationsSupport[key] {
+			support += key
+		} else {
+			for range len(key) {
+				support += " "
+			}
+		}
+
+		support += " "
+	}
+
+	return support + "\t" + w.URLPath
+}
+
+// GetEndpointOperations retrieves URLs and a checklist of the operations they support.
+// Arguments:
+//   - PathMatcher: Used to filter and scope the returned URLs based on the specified path rules.
+//     If all paths should be explored use DefaultPathMatcher.
+//   - operationNames: A list of REST API operations to search for.
+func (e Explorer) GetEndpointOperations(
+	pathMatcher PathMatcher,
+	operationNames ...string,
+) ([]EndpointOperations, error) {
+	endpoints := make([]EndpointOperations, 0)
+
+	pathItems, duplicatePaths := e.GetPathItems(AndPathMatcher{pathMatcher, NestedIDPathIgnorer{}}, nil, false)
+	// We don't care about the object names. We want raw URL path.
+	// Since we are ignoring object names, the concept of duplicates is not relevant.
+	// Combine all paths into one registry. Look for paths that have operations of interest.
+	combinedPaths := duplicatePaths
+	combinedPaths.Add("", pathItems...)
+
+	for _, paths := range combinedPaths {
+		for path := range paths {
+			operations := datautils.Map[string, bool]{}
+
+			var found bool
+
+			for _, operationName := range operationNames {
+				_, ok := path.selectOperation(operationName)
+				operations[operationName] = ok
+				found = found || ok // at least one operation should be found
+			}
+
+			if found {
+				endpoints = append(endpoints, EndpointOperations{
+					URLPath:           path.urlPath,
+					OperationsSupport: operations,
+				})
+			}
+		}
+	}
+
+	sort.Slice(endpoints, func(i, j int) bool {
+		return endpoints[i].URLPath < endpoints[j].URLPath
+	})
+
+	return endpoints, nil
 }
