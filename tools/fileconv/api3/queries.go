@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/metadatadef"
 	"github.com/getkin/kin-openapi/openapi3"
 )
 
@@ -36,7 +37,7 @@ func (e Explorer) ReadObjectsGet(
 	objectEndpoints map[string]string,
 	displayNameOverride map[string]string,
 	locator ObjectArrayLocator,
-) (Schemas, error) {
+) (metadatadef.Schemas, error) {
 	return e.ReadObjects("GET", pathMatcher, objectEndpoints, displayNameOverride, locator)
 }
 
@@ -46,7 +47,7 @@ func (e Explorer) ReadObjectsPost(
 	objectEndpoints map[string]string,
 	displayNameOverride map[string]string,
 	locator ObjectArrayLocator,
-) (Schemas, error) {
+) (metadatadef.Schemas, error) {
 	return e.ReadObjects("POST", pathMatcher, objectEndpoints, displayNameOverride, locator)
 }
 
@@ -72,8 +73,8 @@ func (e Explorer) ReadObjects(
 	objectEndpoints map[string]string,
 	displayNameOverride map[string]string,
 	locator ObjectArrayLocator,
-) (Schemas, error) {
-	schemas := make(Schemas, 0)
+) (metadatadef.Schemas, error) {
+	schemas := make(metadatadef.Schemas, 0)
 
 	for _, path := range e.GetPathItems(pathMatcher, objectEndpoints) {
 		schema, found, err := path.RetrieveSchemaOperation(operationName,
