@@ -144,35 +144,6 @@
             "user_id": "user_id"
           }
         },
-        "collection": {
-          "displayName": "collection",
-          "path": "/organizations/collection",
-          "responseKey": "data",
-          "fields": {
-            "active_flag": "active_flag",
-            "add_time": "add_time",
-            "address": "address",
-            "address_admin_area_level_1": "address_admin_area_level_1",
-            "address_admin_area_level_2": "address_admin_area_level_2",
-            "address_country": "address_country",
-            "address_formatted_address": "address_formatted_address",
-            "address_locality": "address_locality",
-            "address_postal_code": "address_postal_code",
-            "address_route": "address_route",
-            "address_street_number": "address_street_number",
-            "address_sublocality": "address_sublocality",
-            "address_subpremise": "address_subpremise",
-            "cc_email": "cc_email",
-            "delete_time": "delete_time",
-            "id": "id",
-            "label": "label",
-            "label_ids": "label_ids",
-            "name": "name",
-            "owner_id": "owner_id",
-            "update_time": "update_time",
-            "visible_to": "visible_to"
-          }
-        },
         "currencies": {
           "displayName": "Currencies",
           "path": "/currencies",
@@ -235,7 +206,6 @@
             "org_hidden": "org_hidden",
             "org_id": "org_id",
             "org_name": "org_name",
-            "origin": "origin",
             "origin_id": "origin_id",
             "owner_name": "owner_name",
             "participants_count": "participants_count",
@@ -348,7 +318,6 @@
             "label_ids": "label_ids",
             "next_activity_id": "next_activity_id",
             "organization_id": "organization_id",
-            "origin": "origin",
             "origin_id": "origin_id",
             "owner_id": "owner_id",
             "person_id": "person_id",
@@ -509,6 +478,35 @@
             "update_time": "update_time"
           }
         },
+        "organization_collection": {
+          "displayName": "organization_collection",
+          "path": "/organizations/collection",
+          "responseKey": "data",
+          "fields": {
+            "active_flag": "active_flag",
+            "add_time": "add_time",
+            "address": "address",
+            "address_admin_area_level_1": "address_admin_area_level_1",
+            "address_admin_area_level_2": "address_admin_area_level_2",
+            "address_country": "address_country",
+            "address_formatted_address": "address_formatted_address",
+            "address_locality": "address_locality",
+            "address_postal_code": "address_postal_code",
+            "address_route": "address_route",
+            "address_street_number": "address_street_number",
+            "address_sublocality": "address_sublocality",
+            "address_subpremise": "address_subpremise",
+            "cc_email": "cc_email",
+            "delete_time": "delete_time",
+            "id": "id",
+            "label": "label",
+            "label_ids": "label_ids",
+            "name": "name",
+            "owner_id": "owner_id",
+            "update_time": "update_time",
+            "visible_to": "visible_to"
+          }
+        },
         "organizations": {
           "displayName": "Organizations",
           "path": "/organizations",
@@ -605,6 +603,28 @@
             "sortable_flag": "sortable_flag",
             "subfields": "subfields",
             "update_time": "update_time"
+          }
+        },
+        "person_collection": {
+          "displayName": "person_collection",
+          "path": "/persons/collection",
+          "responseKey": "data",
+          "fields": {
+            "active_flag": "active_flag",
+            "add_time": "add_time",
+            "cc_email": "cc_email",
+            "delete_time": "delete_time",
+            "email": "email",
+            "id": "id",
+            "label": "label",
+            "label_ids": "label_ids",
+            "name": "name",
+            "org_id": "org_id",
+            "owner_id": "owner_id",
+            "phone": "phone",
+            "picture_id": "picture_id",
+            "update_time": "update_time",
+            "visible_to": "visible_to"
           }
         },
         "persons": {

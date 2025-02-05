@@ -22,6 +22,18 @@ var ignoreEndpoints = []string{ // nolint:gochecknoglobals
 	"/activities/*",
 	"/deals/*",
 	"/billing/subscriptions/addons",
+	// Searching endpoints.
+	"*/search",
+	"/goals/find",
+	// Not an array.
+	"/filters/helpers",
+	"/userConnections",
+	"/userSettings",
+}
+
+var objectEndpoints = map[string]string{ // nolint:gochecknoglobals
+	"/organizations/collection": "organization_collection",
+	"/persons/collection":       "person_collection",
 }
 
 var displayName = map[string]string{ // nolint:gochecknoglobals
@@ -69,7 +81,7 @@ func main() {
 
 	objects, err := explorer.ReadObjectsGet(
 		api3.NewDenyPathStrategy(ignoreEndpoints),
-		nil, displayName,
+		objectEndpoints, displayName,
 		api3.DataObjectLocator)
 	if err != nil {
 		log.Fatalln(err)
