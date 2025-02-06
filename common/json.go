@@ -60,7 +60,7 @@ func (j *JSONHTTPClient) Get(ctx context.Context, url string, headers ...Header)
 		return nil, j.ErrorPostProcessor.handleError(err)
 	}
 
-	return parseJSONResponse(res, body)
+	return ParseJSONResponse(res, body)
 }
 
 // Post makes a POST request to the given URL and returns the response body as a JSON object.
@@ -81,7 +81,7 @@ func (j *JSONHTTPClient) Post(ctx context.Context,
 		return nil, j.ErrorPostProcessor.handleError(err)
 	}
 
-	return parseJSONResponse(res, body)
+	return ParseJSONResponse(res, body)
 }
 
 func (j *JSONHTTPClient) Put(ctx context.Context,
@@ -92,7 +92,7 @@ func (j *JSONHTTPClient) Put(ctx context.Context,
 		return nil, j.ErrorPostProcessor.handleError(err)
 	}
 
-	return parseJSONResponse(res, body)
+	return ParseJSONResponse(res, body)
 }
 
 func (j *JSONHTTPClient) Patch(ctx context.Context,
@@ -103,7 +103,7 @@ func (j *JSONHTTPClient) Patch(ctx context.Context,
 		return nil, j.ErrorPostProcessor.handleError(err)
 	}
 
-	return parseJSONResponse(res, body)
+	return ParseJSONResponse(res, body)
 }
 
 func (j *JSONHTTPClient) Delete(ctx context.Context, url string, headers ...Header) (*JSONHTTPResponse, error) {
@@ -112,11 +112,11 @@ func (j *JSONHTTPClient) Delete(ctx context.Context, url string, headers ...Head
 		return nil, j.ErrorPostProcessor.handleError(err)
 	}
 
-	return parseJSONResponse(res, body)
+	return ParseJSONResponse(res, body)
 }
 
-// parseJSONResponse parses the given HTTP response and returns a JSONHTTPResponse.
-func parseJSONResponse(res *http.Response, body []byte) (*JSONHTTPResponse, error) {
+// ParseJSONResponse parses the given HTTP response and returns a JSONHTTPResponse.
+func ParseJSONResponse(res *http.Response, body []byte) (*JSONHTTPResponse, error) {
 	// empty response body should not be parsed as JSON since it will cause ajson to err
 	if len(body) == 0 {
 		// Empty response. Both object and error are returned.
