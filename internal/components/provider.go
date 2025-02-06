@@ -7,27 +7,24 @@ import (
 	"github.com/amp-labs/connectors/providers"
 )
 
-// ProviderComponent is a component that adds provider information to a connector.
-type ProviderComponent struct {
+// ProviderContext is a component that adds provider information to a connector.
+type ProviderContext struct {
 	provider     providers.Provider
 	providerInfo *providers.ProviderInfo
 	module       common.ModuleID
 }
 
-func newProviderComponent(
+func NewProviderContext(
 	p providers.Provider,
 	module common.ModuleID,
 	workspace string,
 	metadata map[string]string,
-) (*ProviderComponent, error) {
-	component := &ProviderComponent{provider: p}
+) (*ProviderContext, error) {
+	component := &ProviderContext{provider: p}
 	metadata[catalogreplacer.VariableWorkspace] = workspace
 
 	// TODO: Use module to get provider info
-	providerInfo, err := providers.ReadInfo(
-		component.provider,
-		paramsbuilder.NewCatalogVariables(metadata)...,
-	)
+	providerInfo, err := providers.ReadInfo(p, paramsbuilder.NewCatalogVariables(metadata)...)
 	if err != nil {
 		return nil, err
 	}
@@ -38,18 +35,18 @@ func newProviderComponent(
 	return component, nil
 }
 
-func (p *ProviderComponent) String() string {
+func (p *ProviderContext) String() string {
 	return p.provider + ".Connector"
 }
 
-func (p *ProviderComponent) Provider() providers.Provider {
+func (p *ProviderContext) Provider() providers.Provider {
 	return p.provider
 }
 
-func (p *ProviderComponent) ProviderInfo() *providers.ProviderInfo {
+func (p *ProviderContext) ProviderInfo() *providers.ProviderInfo {
 	return p.providerInfo
 }
 
-func (p *ProviderComponent) Module() common.ModuleID {
+func (p *ProviderContext) Module() common.ModuleID {
 	return p.module
 }

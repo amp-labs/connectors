@@ -1,24 +1,37 @@
 package components
 
 import (
+	"fmt"
+
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/gobwas/glob"
 )
 
-// ProviderEndpointSupport defines the support for endpoints of a provider. All matches are merged to provide the final
-// support level for an endpoint/object. Explicit denies aren't considered *for now*, because this answers
-// 'What do we want to allow?'.
-type ProviderEndpointSupport struct {
-	registry map[common.ModuleID][]EndpointSupport
+// EndpointRegistry manages operation support for provider endpoints.
+// It uses glob pattern matching to determine support levels for endpoints.
+// Read more on how to write these patterns:
+// https://github.com/gobwas/glob
+type EndpointRegistry struct {
+	patterns EndpointRegistryInput
 }
 
-type EndpointSupport struct {
+// EndpointSupport defines support configuration for modules and their endpoints. Each key in this map
+// is a module that supports an array of endpoints. Each endpoint is defined by a string and a support level.
+// For example, you may define a root module that supports reading /users/* and /accounts/*, but only supports
+// writing to /users/:id.
+type EndpointRegistryInput map[common.ModuleID][]struct {
 	Endpoint string
 	Support  providers.Support
+	glob     glob.Glob // Compiled pattern for matching
+}
 
-	// Compiled glob from the endpoint string for pattern matching.
-	glob glob.Glob
+func NewEndpointRegistry(es EndpointRegistryInput) (*EndpointRegistry, error) {
+	if err := precompileEndpoints(es); err != nil {
+		return nil, fmt.Errorf("failed to compile endpoint patterns: %w", err)
+	}
+
+	return &EndpointRegistry{patterns: es}, nil
 }
 
 // Quick access to common support levels.
@@ -45,55 +58,47 @@ var (
 	}
 )
 
-func NewProviderEndpointSupport(mp map[common.ModuleID][]EndpointSupport) (*ProviderEndpointSupport, error) {
-	if err := precompileEndpoints(mp); err != nil {
-		return nil, err
+// GetSupport determines support for an endpoint by matching against registered patterns.
+// Multiple patterns can match, in which case their support levels are combined.
+func (p *EndpointRegistry) GetSupport(module common.ModuleID, path string) (*providers.Support, error) {
+	endpoints, exists := p.patterns[module]
+	if !exists {
+		return &NoSupport, nil
 	}
 
-	return &ProviderEndpointSupport{registry: mp}, nil
+	support := providers.Support{}
+	matched := false
+
+	for _, endpoint := range endpoints {
+		if endpoint.glob.Match(path) {
+			matched = true
+
+			mergeSupport(&support, endpoint.Support)
+		}
+	}
+
+	if !matched {
+		return &NoSupport, nil
+	}
+
+	return &support, nil
 }
 
-// nolint:cyclop
-func (pr *ProviderEndpointSupport) GetSupport(module common.ModuleID, path string) (*providers.Support, error) {
-	if endpoints, ok := pr.registry[module]; ok {
-		support := providers.Support{}
-
-		for _, esupport := range endpoints {
-			if esupport.glob == nil {
-				// We need to compile the glob.
-				g, err := glob.Compile(esupport.Endpoint)
-				if err != nil {
-					return nil, err
-				}
-
-				esupport.glob = g
-			}
-
-			// There might be multiple endpoint matches, so add matched support to the final object.
-			if esupport.glob.Match(path) {
-				// There's better ways to do this, but for now, this works.
-				support.Read = support.Read || esupport.Support.Read
-				support.Write = support.Write || esupport.Support.Write
-				support.Proxy = support.Proxy || esupport.Support.Proxy
-				support.Subscribe = support.Subscribe || esupport.Support.Subscribe
-
-				support.BulkWrite.Delete = support.BulkWrite.Delete || esupport.Support.BulkWrite.Delete
-				support.BulkWrite.Insert = support.BulkWrite.Insert || esupport.Support.BulkWrite.Insert
-				support.BulkWrite.Update = support.BulkWrite.Update || esupport.Support.BulkWrite.Update
-				support.BulkWrite.Upsert = support.BulkWrite.Upsert || esupport.Support.BulkWrite.Upsert
-			}
-		}
-
-		return &support, nil
-	}
-
-	// The module wasn't found in the registry. Reject - we don't support it.
-	return &NoSupport, nil
+// mergeSupport combines two support configurations using OR operations.
+func mergeSupport(base *providers.Support, additional providers.Support) {
+	base.Read = base.Read || additional.Read
+	base.Write = base.Write || additional.Write
+	base.Proxy = base.Proxy || additional.Proxy
+	base.Subscribe = base.Subscribe || additional.Subscribe
+	base.BulkWrite.Delete = base.BulkWrite.Delete || additional.BulkWrite.Delete
+	base.BulkWrite.Insert = base.BulkWrite.Insert || additional.BulkWrite.Insert
+	base.BulkWrite.Update = base.BulkWrite.Update || additional.BulkWrite.Update
+	base.BulkWrite.Upsert = base.BulkWrite.Upsert || additional.BulkWrite.Upsert
 }
 
 // precompileEndpoints compiles globs for all the URL endpoints in the support registry. The glob package recommends
 // doing this for better performance.
-func precompileEndpoints(registry map[common.ModuleID][]EndpointSupport) error {
+func precompileEndpoints(registry EndpointRegistryInput) error {
 	for _, endpoints := range registry {
 		for i := range endpoints {
 			if endpoints[i].glob != nil {
