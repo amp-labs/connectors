@@ -11,6 +11,9 @@ type Transport struct {
 	json *common.JSONHTTPClient
 }
 
+// TODO: The JSON client by itself is not providing any functionality right now - this is to only provide
+// continuity for the existing codebase. We should refactor the existing JSON/XML/CSV/HTTP clients to
+// satisfy a common interface, and then hook them up in here.
 func NewTransport(
 	provider providers.Provider,
 	params common.Parameters,

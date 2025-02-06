@@ -15,12 +15,12 @@ type ProviderContext struct {
 }
 
 func NewProviderContext(
-	p providers.Provider,
+	provider providers.Provider,
 	module common.ModuleID,
 	workspace string,
 	metadata map[string]string,
 ) (*ProviderContext, error) {
-	pctx := &ProviderContext{provider: p}
+	pctx := &ProviderContext{provider: provider}
 
 	if metadata == nil {
 		metadata = make(map[string]string)
@@ -29,7 +29,7 @@ func NewProviderContext(
 	metadata[catalogreplacer.VariableWorkspace] = workspace
 
 	// TODO: Use module to get provider info
-	providerInfo, err := providers.ReadInfo(p, paramsbuilder.NewCatalogVariables(metadata)...)
+	providerInfo, err := providers.ReadInfo(provider, paramsbuilder.NewCatalogVariables(metadata)...)
 	if err != nil {
 		return nil, err
 	}
