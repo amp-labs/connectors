@@ -62,6 +62,13 @@ func (conn *Connector) ListObjectMetadata(ctx context.Context,
 			continue
 		}
 
+		if len(res.Results) == 0 {
+			// Todo(Jkarage): Use OpenAPI Specifications file.
+			metadataResults.Errors[object] = common.ErrMissingExpectedValues
+
+			continue
+		}
+
 		for fld := range res.Results[0] {
 			objectMetadata.FieldsMap[fld] = fld
 		}
