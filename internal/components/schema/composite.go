@@ -24,7 +24,7 @@ func NewCompositeObjectSchemaProvider(schemaProviders ...HTTPObjectSchemaProvide
 // GetMetadata tries each schema provider in order, and returns the best result with the least errors.
 func (c *CompositeObjectSchemaProvider) GetMetadata(
 	ctx context.Context,
-	objects ...string,
+	objects []string,
 ) (*common.ListObjectMetadataResult, error) {
 	// Out of all the providers, we keep track of the best schema result
 	bestResult := &common.ListObjectMetadataResult{
@@ -37,7 +37,7 @@ func (c *CompositeObjectSchemaProvider) GetMetadata(
 	targetResults := len(objects)
 
 	for _, schemaProvider := range c.schemaProviders {
-		metadata, err := safeGetMetadata(schemaProvider, ctx, objects...)
+		metadata, err := safeGetMetadata(schemaProvider, ctx, objects)
 		if err != nil {
 			slog.Error("Schema provider failed with error", "schemaProvider", schemaProvider, "error", err)
 
@@ -71,7 +71,7 @@ func (c *CompositeObjectSchemaProvider) GetMetadata(
 func safeGetMetadata(
 	schemaProvider HTTPObjectSchemaProvider,
 	ctx context.Context,
-	objects ...string,
+	objects []string,
 ) (*common.ListObjectMetadataResult, error) {
 	var (
 		result *common.ListObjectMetadataResult
@@ -87,7 +87,7 @@ func safeGetMetadata(
 			}
 		}()
 
-		result, err = schemaProvider.GetMetadata(ctx, objects...)
+		result, err = schemaProvider.GetMetadata(ctx, objects)
 	}()
 
 	return result, err

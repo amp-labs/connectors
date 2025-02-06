@@ -24,7 +24,7 @@ func NewHTTPObjectSchemaProvider(
 
 func (p *HTTPObjectSchemaProvider) GetMetadata(
 	ctx context.Context,
-	objects ...string,
+	objects []string,
 ) (*common.ListObjectMetadataResult, error) {
 	if p.operation == nil {
 		return nil, fmt.Errorf("%w: %s", common.ErrNotImplemented, "schema provider is not implemented")

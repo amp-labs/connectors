@@ -25,7 +25,7 @@ func NewOpenAPISchemaProvider(
 
 func (p *OpenAPISchemaProvider) ListObjectMetadata(
 	ctx context.Context,
-	objects ...string,
+	objects []string,
 ) (*common.ListObjectMetadataResult, error) {
 	return p.schemas.Select(p.module, objects)
 }

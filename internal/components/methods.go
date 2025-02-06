@@ -24,5 +24,5 @@ type Deleter interface {
 
 // SchemaProvider represents the ability to retrieve metadata about objects.
 type SchemaProvider interface {
-	ListObjectMetadata(ctx context.Context, objects ...string) (*common.ListObjectMetadataResult, error)
+	ListObjectMetadata(ctx context.Context, objects []string) (*common.ListObjectMetadataResult, error)
 }

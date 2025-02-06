@@ -5,6 +5,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/goutils"
+	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -31,6 +32,11 @@ func Initialize[T any](
 		err = cause
 		conn = nil
 	})
+
+	// Default module is always the root module
+	if params.Module == "" {
+		params.Module = staticschema.RootModuleID
+	}
 
 	transport, err := NewTransport(provider, params)
 	if err != nil {

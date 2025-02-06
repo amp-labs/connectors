@@ -20,7 +20,12 @@ func NewProviderContext(
 	workspace string,
 	metadata map[string]string,
 ) (*ProviderContext, error) {
-	component := &ProviderContext{provider: p}
+	pctx := &ProviderContext{provider: p}
+
+	if metadata == nil {
+		metadata = make(map[string]string)
+	}
+
 	metadata[catalogreplacer.VariableWorkspace] = workspace
 
 	// TODO: Use module to get provider info
@@ -29,10 +34,10 @@ func NewProviderContext(
 		return nil, err
 	}
 
-	component.providerInfo = providerInfo
-	component.module = module
+	pctx.providerInfo = providerInfo
+	pctx.module = module
 
-	return component, nil
+	return pctx, nil
 }
 
 func (p *ProviderContext) String() string {

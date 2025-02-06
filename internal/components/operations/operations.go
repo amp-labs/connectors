@@ -18,6 +18,7 @@ type HTTPOperation[RequestType any, ResponseType any] struct {
 type HTTPHandlers[RequestType any, ResponseType any] struct {
 	BuildRequest  func(context.Context, RequestType) (*http.Request, error)
 	ParseResponse func(context.Context, RequestType, *common.JSONHTTPResponse) (ResponseType, error)
+	ErrorHandler  func(*http.Response, []byte) error
 }
 
 func NewHTTPOperation[RequestType any, ResponseType any](
@@ -51,6 +52,15 @@ func (op *HTTPOperation[RequestType, ResponseType]) ExecuteRequest(
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return response, err
+	}
+	// Check the response status code
+	if resp.StatusCode < 200 || resp.StatusCode > 299 {
+		if op.handlers.ErrorHandler != nil {
+			err = op.handlers.ErrorHandler(resp, body)
+			if err != nil {
+				return response, err
+			}
+		}
 	}
 
 	jsonResp, err := common.ParseJSONResponse(resp, body)
