@@ -26,7 +26,6 @@ func (c *CompositeObjectSchemaProvider) GetMetadata(
 	ctx context.Context,
 	objects []string,
 ) (*common.ListObjectMetadataResult, error) {
-
 	// Out of all the providers, we keep track of the best schema result
 	bestResult := &common.ListObjectMetadataResult{
 		Result: make(map[string]common.ObjectMetadata),

@@ -19,6 +19,7 @@ import (
 
 const apiVersion = "v1"
 
+// nolint:gochecknoglobals
 var (
 	//go:embed schemas.json
 	schemaContent []byte
