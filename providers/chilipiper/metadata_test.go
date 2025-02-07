@@ -1,7 +1,6 @@
 package chilipiper
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -56,8 +55,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				},
 				Errors: map[string]error{
 					"meme": mockutils.ExpectedSubsetErrors{
-						common.ErrRetryable,
-						errors.New(string(unsupportedResponse)), // nolint:goerr113
+						common.ErrObjectNotSupported,
 					},
 				},
 			},
