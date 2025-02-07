@@ -4,6 +4,12 @@ import (
 	"net/http"
 )
 
+func HeaderContentURLFormEncoded() Check {
+	return Header(http.Header{
+		"Content-Type": []string{"application/x-www-form-urlencoded"},
+	})
+}
+
 func Header(header http.Header) Check {
 	return func(w http.ResponseWriter, r *http.Request) bool {
 		return headerIsSubset(r.Header, header)

@@ -1,0 +1,29 @@
+{
+  "id": "cus_RfIicOKc1UqLHJ",
+  "object": "customer",
+  "address": null,
+  "balance": 0,
+  "created": 1738006596,
+  "currency": null,
+  "default_source": null,
+  "delinquent": false,
+  "description": null,
+  "discount": null,
+  "email": "leraquitzon@kovacek.com",
+  "invoice_prefix": "AE6FD764",
+  "invoice_settings": {
+    "custom_fields": null,
+    "default_payment_method": null,
+    "footer": null,
+    "rendering_options": null
+  },
+  "livemode": false,
+  "metadata": {},
+  "name": "DarkBlueLiterature",
+  "next_invoice_sequence": 1,
+  "phone": null,
+  "preferred_locales": [],
+  "shipping": null,
+  "tax_exempt": "none",
+  "test_clock": null
+}
