@@ -154,6 +154,10 @@ func (c *Connector) CreateEventChannel(ctx context.Context, channel *EventChanne
 	return channel, nil
 }
 
+func (c *Connector) DeleteEventChannel(ctx context.Context, channelId string) (*SFAPIResponseBody, error) {
+	return c.deleteToSFAPI(ctx, "tooling/sobjects/PlatformEventChannel/"+channelId, "PlatformEventChannel")
+}
+
 // nolint: lll
 // https://developer.salesforce.com/docs/atlas.en-us.api_tooling.meta/api_tooling/tooling_api_objects_platformeventchannelmember.htm
 func (c *Connector) CreateEventChannelMember(
@@ -266,6 +270,29 @@ func (c *Connector) postToSFAPI(ctx context.Context, body any, path string, enti
 	}
 
 	resp, err := c.Client.Post(ctx, location.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := common.UnmarshalJSON[SFAPIResponseBody](resp)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(res.Warnings) > 0 {
+		slog.Warn(entity, "warnings", res.Warnings)
+	}
+
+	return res, err
+}
+
+func (c *Connector) deleteToSFAPI(ctx context.Context, path string, entity string) (*SFAPIResponseBody, error) {
+	location, err := c.getRestApiURL(path)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := c.Client.Delete(ctx, location.String())
 	if err != nil {
 		return nil, err
 	}
