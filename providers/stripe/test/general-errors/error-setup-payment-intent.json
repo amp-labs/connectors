@@ -1,0 +1,127 @@
+{
+    "error": {
+        "code": "parameter_missing",
+        "doc_url": "https://stripe.com/docs/error-codes/parameter-missing",
+        "message": "Missing required param: mandate_data.",
+        "param": "mandate_data",
+        "payment_method": {
+            "id": "pm_1QjqTSES6gLOjP91lkVNkB81",
+            "object": "payment_method",
+            "allow_redisplay": "unspecified",
+            "billing_details": {
+                "address": {
+                    "city": null,
+                    "country": null,
+                    "line1": null,
+                    "line2": null,
+                    "postal_code": null,
+                    "state": null
+                },
+                "email": null,
+                "name": "Andrew Ross",
+                "phone": null
+            },
+            "created": 1737500590,
+            "customer": null,
+            "livemode": false,
+            "metadata": {},
+            "type": "us_bank_account",
+            "us_bank_account": {
+                "account_holder_type": "individual",
+                "account_type": "checking",
+                "bank_name": "STRIPE TEST BANK",
+                "financial_connections_account": null,
+                "fingerprint": "8uWn0GTh9ts6fjyh",
+                "last4": "6789",
+                "networks": {
+                    "preferred": "ach",
+                    "supported": [
+                        "ach"
+                    ]
+                },
+                "routing_number": "110000000",
+                "status_details": {}
+            }
+        },
+        "request_log_url": "https://dashboard.stripe.com/test/logs/req_E7VavFPPuR2sP2?t=1737500646",
+        "setup_intent": {
+            "id": "seti_1QjqUMES6gLOjP91KSC6KSEW",
+            "object": "setup_intent",
+            "application": null,
+            "automatic_payment_methods": null,
+            "cancellation_reason": null,
+            "client_secret": "seti_1QjqUMES6gLOjP91KSC6KSEW_secret_Rd6hy2IswSUwsWGPSSYRopPnK2Gv0TJ",
+            "created": 1737500646,
+            "customer": "cus_Rd3kcMGRvsoY8j",
+            "description": null,
+            "flow_directions": null,
+            "last_setup_error": {
+                "code": "parameter_missing",
+                "doc_url": "https://stripe.com/docs/error-codes/parameter-missing",
+                "message": "Missing required param: mandate_data.",
+                "param": "mandate_data",
+                "payment_method": {
+                    "id": "pm_1QjqTSES6gLOjP91lkVNkB81",
+                    "object": "payment_method",
+                    "allow_redisplay": "unspecified",
+                    "billing_details": {
+                        "address": {
+                            "city": null,
+                            "country": null,
+                            "line1": null,
+                            "line2": null,
+                            "postal_code": null,
+                            "state": null
+                        },
+                        "email": null,
+                        "name": "Andrew Ross",
+                        "phone": null
+                    },
+                    "created": 1737500590,
+                    "customer": null,
+                    "livemode": false,
+                    "metadata": {},
+                    "type": "us_bank_account",
+                    "us_bank_account": {
+                        "account_holder_type": "individual",
+                        "account_type": "checking",
+                        "bank_name": "STRIPE TEST BANK",
+                        "financial_connections_account": null,
+                        "fingerprint": "8uWn0GTh9ts6fjyh",
+                        "last4": "6789",
+                        "networks": {
+                            "preferred": "ach",
+                            "supported": [
+                                "ach"
+                            ]
+                        },
+                        "routing_number": "110000000",
+                        "status_details": {}
+                    }
+                },
+                "type": "invalid_request_error"
+            },
+            "latest_attempt": "setatt_1QjqUMES6gLOjP91o6SmU9sT",
+            "livemode": false,
+            "mandate": null,
+            "metadata": {},
+            "next_action": null,
+            "on_behalf_of": null,
+            "payment_method": null,
+            "payment_method_configuration_details": null,
+            "payment_method_options": {
+                "us_bank_account": {
+                    "mandate_options": {},
+                    "verification_method": "automatic"
+                }
+            },
+            "payment_method_types": [
+                "us_bank_account"
+            ],
+            "single_use_mandate": null,
+            "status": "requires_payment_method",
+            "usage": "off_session"
+        },
+        "type": "invalid_request_error"
+    }
+}

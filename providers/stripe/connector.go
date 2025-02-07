@@ -52,6 +52,16 @@ func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(c.BaseURL, path)
 }
 
+func (c *Connector) getWriteURL(objectName string) (*urlbuilder.URL, error) {
+	path := objectNameToWritePath.Get(objectName)
+
+	return urlbuilder.New(c.BaseURL, path)
+}
+
+func (c *Connector) getDeleteURL(objectName string) (*urlbuilder.URL, error) {
+	return c.getWriteURL(objectName)
+}
+
 func (c *Connector) setBaseURL(newURL string) {
 	c.BaseURL = newURL
 	c.Client.HTTPClient.Base = newURL
