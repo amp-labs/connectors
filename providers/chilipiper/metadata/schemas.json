@@ -1,0 +1,93 @@
+{
+  "modules": {
+    "root": {
+      "id": "",
+      "path": "",
+      "objects": {
+        "distribution": {
+          "displayName": "distribution",
+          "path": "",
+          "responseKey": "",
+          "fields": {
+            "id": "id"
+          }
+        },
+        "meetings_meetings": {
+          "displayName": "meetings_meetings",
+          "path": "",
+          "responseKey": "",
+          "fields": {
+            "data": "data",
+            "hasMore": "hasMore"
+          }
+        },
+        "team": {
+          "displayName": "team",
+          "path": "",
+          "responseKey": "",
+          "fields": {
+            "id": "id",
+            "members": "members",
+            "metadata": "metadata",
+            "name": "name",
+            "workspaceId": "workspaceId"
+          }
+        },
+        "user_find": {
+          "displayName": "user_find",
+          "path": "",
+          "responseKey": "",
+          "fields": {
+            "email": "email",
+            "id": "id",
+            "isSuperAdmin": "isSuperAdmin",
+            "licenses": "licenses",
+            "managedTeams": "managedTeams",
+            "managedWorkspaces": "managedWorkspaces",
+            "name": "name"
+          }
+        },
+        "user_read_{p1}": {
+          "displayName": "user_read_{p1}",
+          "path": "",
+          "responseKey": "",
+          "fields": {
+            "email": "email",
+            "id": "id",
+            "isSuperAdmin": "isSuperAdmin",
+            "licenses": "licenses",
+            "managedTeams": "managedTeams",
+            "managedWorkspaces": "managedWorkspaces",
+            "name": "name"
+          }
+        },
+        "workspace": {
+          "displayName": "workspace",
+          "path": "",
+          "responseKey": "",
+          "fields": {
+            "emoji": "emoji",
+            "id": "id",
+            "logo": "logo",
+            "metadata": "metadata",
+            "name": "name"
+          }
+        },
+        "workspace_users": {
+          "displayName": "workspace_users",
+          "path": "",
+          "responseKey": "",
+          "fields": {
+            "email": "email",
+            "id": "id",
+            "isSuperAdmin": "isSuperAdmin",
+            "licenses": "licenses",
+            "managedTeams": "managedTeams",
+            "managedWorkspaces": "managedWorkspaces",
+            "name": "name"
+          }
+        }
+      }
+    }
+  }
+}

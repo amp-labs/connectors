@@ -13,7 +13,7 @@ func main() {
 
 	conn := chilipiper.GetChiliPiperConnector(ctx)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"workspace", "team", "meme"})
+	m, err := conn.ListObjectMetadata(ctx, []string{"workspace", "team", "workspace_users", "meme"})
 	if err != nil {
 		slog.Error(err.Error())
 	}
