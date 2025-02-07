@@ -26,6 +26,7 @@ func (c *CompositeObjectSchemaProvider) GetMetadata(
 	ctx context.Context,
 	objects []string,
 ) (*common.ListObjectMetadataResult, error) {
+
 	// Out of all the providers, we keep track of the best schema result
 	bestResult := &common.ListObjectMetadataResult{
 		Result: make(map[string]common.ObjectMetadata),
@@ -78,17 +79,15 @@ func safeGetMetadata(
 		err    error
 	)
 
-	func() {
-		defer func() {
-			if r := recover(); r != nil {
-				slog.Error("Schema provider panicked",
-					"schemaProvider", schemaProvider,
-					"panic", r)
-			}
-		}()
-
-		result, err = schemaProvider.GetMetadata(ctx, objects)
+	defer func() {
+		if r := recover(); r != nil {
+			slog.Error("Schema provider panicked",
+				"schemaProvider", schemaProvider,
+				"panic", r)
+		}
 	}()
+
+	result, err = schemaProvider.GetMetadata(ctx, objects)
 
 	return result, err
 }

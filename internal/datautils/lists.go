@@ -32,7 +32,7 @@ func (l UniqueLists[ID, V]) Add(bucket ID, objects ...V) {
 	l[bucket].Add(objects)
 }
 
-func (l UniqueLists[ID, V]) GetObjects(bucket ID) []V {
+func (l UniqueLists[ID, V]) GetList(bucket ID) []V {
 	return l[bucket].List()
 }
 

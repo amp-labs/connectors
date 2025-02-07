@@ -27,7 +27,13 @@ func (c *Connector) parseReadResponse(
 	params common.ReadParams,
 	resp *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
-	return common.ParseResult(resp, getRecords, getNextRecordsURL, common.GetMarshaledData, params.Fields)
+	return common.ParseResult(
+		resp,
+		common.GetOptionalRecordsUnderJSONPath(""),
+		getNextRecordsURL,
+		common.GetMarshaledData,
+		params.Fields,
+	)
 }
 
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {

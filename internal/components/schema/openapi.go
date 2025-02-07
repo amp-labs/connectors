@@ -8,22 +8,22 @@ import (
 )
 
 // OpenAPIProvider implements Provider using OpenAPI schemas.
-type OpenAPISchemaProvider struct {
+type OpenAPISchemaProvider[F staticschema.FieldMetadataMap] struct {
 	module  common.ModuleID
-	schemas *staticschema.Metadata[staticschema.FieldMetadataMapV1]
+	schemas *staticschema.Metadata[F]
 }
 
-func NewOpenAPISchemaProvider(
+func NewOpenAPISchemaProvider[F staticschema.FieldMetadataMap](
 	module common.ModuleID,
-	schemas *staticschema.Metadata[staticschema.FieldMetadataMapV1],
-) *OpenAPISchemaProvider {
-	return &OpenAPISchemaProvider{
+	schemas *staticschema.Metadata[F],
+) *OpenAPISchemaProvider[F] {
+	return &OpenAPISchemaProvider[F]{
 		module:  module,
 		schemas: schemas,
 	}
 }
 
-func (p *OpenAPISchemaProvider) ListObjectMetadata(
+func (p *OpenAPISchemaProvider[F]) ListObjectMetadata(
 	ctx context.Context,
 	objects []string,
 ) (*common.ListObjectMetadataResult, error) {

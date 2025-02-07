@@ -19,15 +19,14 @@ import (
 
 const apiVersion = "v1"
 
-// nolint:gochecknoglobals
 var (
 	//go:embed schemas.json
-	schemas []byte
+	schemaContent []byte
 
-	FileManager = scrapper.NewMetadataFileManager[staticschema.FieldMetadataMapV1](
-		schemas, fileconv.NewSiblingFileLocator())
+	fileManager = scrapper.NewMetadataFileManager[staticschema.FieldMetadataMapV1](
+		schemaContent, fileconv.NewSiblingFileLocator())
 
-	Schemas = FileManager.MustLoadSchemas()
+	schemas = fileManager.MustLoadSchemas()
 )
 
 type Connector struct {
@@ -58,7 +57,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 	}
 
 	// Set the metadata provider for the connector
-	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), Schemas)
+	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), schemas)
 
 	// Set the reader for the connector
 	// TODO: Refactor to simplify clients
