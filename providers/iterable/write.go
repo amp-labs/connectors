@@ -156,7 +156,7 @@ func extractTemplateWriteRecordID(body *ajson.Node) (string, error) {
 	//	Input: "Upserted 1 templates with IDs: 15939824"
 	//	Output: "15939824"
 	parts := strings.Split(*message, "IDs: ")
-	if len(parts) != 2 { // nolint:mnd
+	if len(parts) != 2 { // nolint:mnd,gomnd
 		return "", nil
 	}
 

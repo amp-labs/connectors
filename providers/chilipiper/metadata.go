@@ -5,6 +5,8 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/internal/staticschema"
+	"github.com/amp-labs/connectors/providers/chilipiper/metadata"
 )
 
 // Sample OK Response
@@ -52,21 +54,20 @@ func (conn *Connector) ListObjectMetadata(ctx context.Context,
 
 		resp, err := conn.Client.Get(ctx, url)
 		if err != nil {
-			metadataResults.Errors[object] = err
+			openAPIFallback(object, &metadataResults)
 
 			continue
 		}
 
 		res, err := common.UnmarshalJSON[Response](resp)
 		if err != nil {
-			metadataResults.Errors[object] = err
+			openAPIFallback(object, &metadataResults)
 
 			continue
 		}
 
 		if len(res.Results) == 0 {
-			// Todo(Jkarage): Use OpenAPI Specifications file.
-			metadataResults.Errors[object] = common.ErrMissingExpectedValues
+			openAPIFallback(object, &metadataResults)
 
 			continue
 		}
@@ -79,4 +80,31 @@ func (conn *Connector) ListObjectMetadata(ctx context.Context,
 	}
 
 	return &metadataResults, nil
+}
+
+func metadataFallback(moduleID common.ModuleID, objectName string) (*common.ObjectMetadata, error) {
+	metadatResult, err := metadata.Schemas.Select(moduleID, []string{objectName})
+	if err != nil {
+		return nil, err
+	}
+
+	data := metadatResult.Result[objectName]
+
+	return &data, nil
+}
+
+func openAPIFallback(obj string, res *common.ListObjectMetadataResult,
+) *common.ListObjectMetadataResult { //nolint:unparam
+	// Try fallback function
+	data, err := metadataFallback(staticschema.RootModuleID, obj)
+	if err != nil {
+		res.Errors[obj] = err
+
+		return res
+	}
+
+	data.DisplayName = obj
+	res.Result[obj] = *data
+
+	return res
 }
