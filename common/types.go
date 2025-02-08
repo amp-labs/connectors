@@ -2,6 +2,7 @@ package common
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -163,6 +164,27 @@ type WriteParams struct {
 
 	// Associations contains associations between the object and other objects.
 	Associations any // optional
+}
+
+// RecordDataToMap converts WriteParams.RecordData into a map[string]any.
+// If RecordData is already a map, it is returned directly.
+// Otherwise, it is serialized to JSON and then deserialized back into a map.
+func RecordDataToMap(recordData any) (map[string]any, error) {
+	if object, ok := recordData.(map[string]any); ok {
+		return object, nil
+	}
+
+	bytes, err := json.Marshal(recordData)
+	if err != nil {
+		return nil, err
+	}
+
+	object := make(map[string]any)
+	if err = json.Unmarshal(bytes, &object); err != nil {
+		return nil, err
+	}
+
+	return object, nil
 }
 
 // DeleteParams defines how we are deleting data in SaaS API.
