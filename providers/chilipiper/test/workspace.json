@@ -1,0 +1,20 @@
+{
+  "results": [
+    {
+      "id": "ab144300-a649-4f10-b619-5eccc0c7c93e",
+      "name": "Management",
+      "emoji": "😀",
+      "logo": null,
+      "metadata": {
+        "createdAt": "2025-01-24T09:26:52.495792Z",
+        "createdBy": "user/67929af0725ce43853fd2b8c",
+        "updatedAt": "2025-01-24T09:26:52.495792Z",
+        "updatedBy": "user/67929af0725ce43853fd2b8c",
+        "revision": 0
+      }
+    }
+  ],
+  "total": 1,
+  "page": 0,
+  "pageSize": 10
+}
