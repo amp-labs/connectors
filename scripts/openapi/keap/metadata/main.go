@@ -6,19 +6,19 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
+	"github.com/amp-labs/connectors/internal/metadatadef"
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers/keap"
 	"github.com/amp-labs/connectors/providers/keap/metadata"
 	keapv1 "github.com/amp-labs/connectors/scripts/openapi/keap/metadata/v1"
 	keapv2 "github.com/amp-labs/connectors/scripts/openapi/keap/metadata/v2"
-	"github.com/amp-labs/connectors/tools/fileconv/api3"
 	"github.com/amp-labs/connectors/tools/scrapper"
 )
 
 func main() {
 	schemas := staticschema.NewMetadata[staticschema.FieldMetadataMapV1]()
 	registry := datautils.NamedLists[string]{}
-	lists := datautils.IndexedLists[common.ModuleID, api3.Schema]{}
+	lists := datautils.IndexedLists[common.ModuleID, metadatadef.Schema]{}
 
 	lists.Add(keap.ModuleV1, keapv1.Objects()...)
 	lists.Add(keap.ModuleV2, keapv2.Objects()...)
@@ -35,7 +35,7 @@ func main() {
 			for _, field := range object.Fields {
 				schemas.Add(module, object.ObjectName, object.DisplayName, object.URLPath, object.ResponseKey,
 					staticschema.FieldMetadataMapV1{
-						field: field,
+						field.Name: field.Name,
 					}, nil)
 			}
 
