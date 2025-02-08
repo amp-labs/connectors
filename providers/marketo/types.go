@@ -3,7 +3,10 @@ package marketo
 import (
 	"errors"
 	"fmt"
+	"slices"
 )
+
+const batchSize = 300 // nolint:gochecknoglobals
 
 type writeResponse struct {
 	Result  []map[string]any `json:"result"`
@@ -11,13 +14,17 @@ type writeResponse struct {
 	Errors  []map[string]any `json:"errors"`
 }
 
-// IdResponseObjects represents a list of objects that uses `id` as a unique field in the response.
-var IdResponseObjects = []string{"leads", "companies", "salespersons"} //nolint:gochecknoglobals
+// nolint:gochecknoglobals
+var (
+	// IdResponseObjects represents a list of objects that uses `id` as a unique field in the response.
+	IdResponseObjects = []string{"leads", "companies", "salespersons"}
 
-// marketoGUIDResponseObjects represents a list of objects that uses `marketoGUID` as the unique field in the response.
-var marketoGUIDResponseObjects = []string{ //nolint:gochecknoglobals
-	"namedAccountLists", "namedaccounts", "opportunities",
-}
+	// marketoGUIDResponseObjects represents a list of objects that uses `marketoGUID` as the unique field in the response.
+	marketoGUIDResponseObjects = []string{"namedAccountLists", "namedaccounts", "opportunities"}
+
+	// idFilteringObjects represents objects that uses id as filtering values in read connector.
+	idFilteringObjects = []string{"leads", "salespersons", "companies"}
+)
 
 func constructErrMessage(a any) (string, error) {
 	s, ok := a.([]map[string]any)
@@ -26,4 +33,10 @@ func constructErrMessage(a any) (string, error) {
 	}
 
 	return fmt.Sprint(s[0]["reasons"]), nil
+}
+
+func filtersByIDs(object string) bool {
+	// Most Marketo APIs requires filtering when reading, Important objects are Leads, Custom Objects, Companies
+	// With this we use the general filter parameter `id` and iterate over the records.
+	return slices.Contains(idFilteringObjects, object)
 }

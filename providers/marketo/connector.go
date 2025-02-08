@@ -56,9 +56,9 @@ func (c *Connector) Provider() providers.Provider {
 
 func (c *Connector) getAPIURL(objName string) (*urlbuilder.URL, error) {
 	objName = common.AddSuffixIfNotExists(objName, ".json")
-	bURL := strings.Join([]string{restAPIPrefix, c.Module.Path(), objName}, "/")
+	relativeURL := strings.Join([]string{restAPIPrefix, c.Module.Path(), objName}, "/")
 
-	return urlbuilder.New(c.BaseURL, bURL)
+	return urlbuilder.New(c.BaseURL, relativeURL)
 }
 
 func (c *Connector) String() string {

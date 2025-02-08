@@ -12,7 +12,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	url, err := c.getURL(config)
+	url, err := c.constructURL(config)
 	if err != nil {
 		return nil, err
 	}
@@ -24,7 +24,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 
 	return common.ParseResult(res,
 		getRecords,
-		getNextRecordsURL,
+		constructNextRecordsURL(config.ObjectName),
 		common.GetMarshaledData,
 		config.Fields,
 	)

@@ -27,7 +27,7 @@ func GetMarketoConnector(ctx context.Context) *marketo.Connector {
 	return conn
 }
 
-func GetMarketoConnectorW(ctx context.Context) *marketo.Connector {
+func GetMarketoConnectorLeads(ctx context.Context) *marketo.Connector {
 	reader := getMarketoJSONReader()
 
 	conn, err := marketo.NewConnector(
