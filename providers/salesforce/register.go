@@ -2,8 +2,10 @@ package salesforce
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"log/slog"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
@@ -19,41 +21,49 @@ type SalesforceRegistration struct {
 }
 
 type ResultData struct {
-	eventChannel     *EventChannel
-	namedCredential  *NamedCredential
-	eventRelayConfig *EventRelayConfig
+	EventChannel     *EventChannel
+	NamedCredential  *NamedCredential
+	EventRelayConfig *EventRelayConfig
 }
 
-// func (rb *rollbackData) rollback(ctx context.Context, c *Connector) error {
+func (c *Connector) RollbackRegister(ctx context.Context, res *ResultData) error {
+	if res.EventRelayConfig != nil {
+		_, err := c.DeleteEventRelayConfig(ctx, res.EventRelayConfig.Id)
+		if err != nil {
+			return fmt.Errorf("failed to delete event relay config: %w", err)
+		}
+	}
 
-// 	if rb.eventRelayConfig != nil {
-// 		if err := c.DeleteEventRelayConfig(ctx, rb.eventRelayConfig); err != nil {
-// 			slog.Error("failed to delete event relay config", "error", err)
-// 		}
-// 	}
+	if res.NamedCredential != nil {
+		_, err := c.DeleteNamedCredential(ctx, res.NamedCredential.Id)
+		if err != nil {
+			slog.Error("failed to delete named credential", "error", err)
 
-// 	if rb.namedCredential != nil {
-// 		if err := c.DeleteNamedCredential(ctx, rb.namedCredential); err != nil {
-// 			slog.Error("failed to delete named credential", "error", err)
-// 		}
-// 	}
-// 	if rb.eventChannel != nil {
-// 		resp, err := c.DeleteEventChannel(ctx, rb.eventChannel.Id)
-// 		if err != nil {
-// 			slog.Error("failed to delete event channel", "error", err)
-// 		}
+			return fmt.Errorf("failed to delete named credential: %w", err)
+		}
+	}
+	if res.EventChannel != nil {
+		_, err := c.DeleteEventChannel(ctx, res.EventChannel.Id)
+		if err != nil {
+			slog.Error("failed to delete event channel", "error", err)
 
-// 		fmt.Println("DeleteEventChannel", resp)
-// 	}
+			return fmt.Errorf("failed to delete event channel: %w", err)
+		}
 
-// 	return nil
+	}
 
-// }
+	return nil
+}
 
 func (c *Connector) Register(
 	ctx context.Context,
-	params common.SubscriptionRegistrationParams,
+	params *common.SubscriptionRegistrationParams,
 ) (*common.RegistrationResult, error) {
+	validate := validator.New()
+	if err := validate.Struct(params); err != nil {
+		return nil, fmt.Errorf("invalid registration params: %w", err)
+	}
+
 	sfRegistration, ok := params.Request.(*SalesforceRegistration)
 	if !ok {
 		return nil, fmt.Errorf(
@@ -64,27 +74,49 @@ func (c *Connector) Register(
 		)
 	}
 
-	validate := validator.New()
-
 	if err := validate.Struct(sfRegistration); err != nil {
 		return nil, fmt.Errorf("invalid registration request: %w", err)
 	}
 
-	eventChannel, err := c.createEventChannel(ctx, sfRegistration)
+	result, err := c.register(ctx, sfRegistration)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create event channel: %w", err)
+		if rollbackErr := c.RollbackRegister(ctx, result); rollbackErr != nil {
+			return &common.RegistrationResult{
+				Status: common.RegistartionStatusError,
+			}, errors.Join(rollbackErr, err)
+		}
+
+		return &common.RegistrationResult{
+			Status: common.RegistrationStatusFailed,
+		}, err
 	}
 
-	result := &ResultData{
-		eventChannel: eventChannel,
+	return &common.RegistrationResult{
+		RegistrationRef: result.EventRelayConfig.Id,
+		Result:          result,
+		Status:          common.RegistrationStatusSuccess,
+	}, err
+}
+
+func (c *Connector) register(
+	ctx context.Context,
+	sfRegistration *SalesforceRegistration,
+) (*ResultData, error) {
+	result := &ResultData{}
+
+	eventChannel, err := c.createEventChannel(ctx, sfRegistration)
+	if err != nil {
+		return result, fmt.Errorf("failed to create event channel: %w", err)
 	}
+
+	result.EventChannel = eventChannel
 
 	namedCred, err := c.createNamedCredential(ctx, sfRegistration)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create named credential: %w", err)
+		return result, fmt.Errorf("failed to create named credential: %w", err)
 	}
 
-	result.namedCredential = namedCred
+	result.NamedCredential = namedCred
 
 	evtCfg, err := c.createEventRelayConfing(
 		ctx,
@@ -93,19 +125,16 @@ func (c *Connector) Register(
 		eventChannel.FullName,
 	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create event relay config: %w", err)
+		return result, fmt.Errorf("failed to create event relay config: %w", err)
 	}
+
+	result.EventRelayConfig = evtCfg
 
 	if err := c.RunEventRelay(ctx, evtCfg); err != nil {
-		return nil, fmt.Errorf("failed to run event relay: %w", err)
+		return result, fmt.Errorf("failed to run event relay: %w", err)
 	}
 
-	result.eventRelayConfig = evtCfg
-
-	return &common.RegistrationResult{
-		RegistrationRef: result.eventRelayConfig.Id,
-		Result:          result,
-	}, nil
+	return result, nil
 }
 
 func (c *Connector) createEventChannel(ctx context.Context, reg *SalesforceRegistration) (*EventChannel, error) {
@@ -202,4 +231,13 @@ func GetChangeDataCaptureChannelMembershipName(rawChannelName string, eventName 
 
 func GetRawPEName(peName string) string {
 	return RemoveSuffix(peName, 3) //nolint:mnd
+}
+
+func prettyPrint(v any) string {
+	jsonBytes, err := json.MarshalIndent(v, "", "  ")
+	if err != nil {
+		panic(err)
+	}
+
+	return string(jsonBytes)
 }

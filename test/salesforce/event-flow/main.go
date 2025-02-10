@@ -50,7 +50,7 @@ func testCDC(conn *salesforce.Connector, ctx context.Context, creds salesforce.C
 
 	objectName := "Account"
 
-	_, err = testChangeDataCaptureChannelMembership(conn, ctx, cdcChannel.FullName, objectName)
+	membership, err := testChangeDataCaptureChannelMembership(conn, ctx, cdcChannel.FullName, objectName)
 	if err != nil {
 		return
 	}
@@ -70,6 +70,16 @@ func testCDC(conn *salesforce.Connector, ctx context.Context, creds salesforce.C
 
 	remoteResource := salesforce.GetRemoteResource(orgId, cdcChannel.FullName)
 	printWithField("RemoteResource", "resource", remoteResource)
+
+	deleteMember, err := conn.DeleteEventChannelMember(ctx, membership.Id)
+	if err != nil {
+		slog.Error("Error deleting event channel member", "error", err)
+
+		return
+	}
+
+	printWithField("Event channel member deleted", "member", deleteMember)
+
 }
 
 func testChangeDataCaptureChannelMembership(conn *salesforce.Connector, ctx context.Context, channelName string, objecName string) (*salesforce.EventChannelMember, error) {

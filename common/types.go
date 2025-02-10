@@ -396,10 +396,21 @@ func inferDeprecatedFieldsMap(fields map[string]FieldMetadata) map[string]string
 type RegistrationResult struct {
 	RegistrationRef string
 	Result          any // struct depends on the provider
+	Status          RegistartionStatus
 }
 
+type RegistartionStatus string
+
+const (
+	RegistrationStatusPending RegistartionStatus = "pending"
+	RegistrationStatusActive  RegistartionStatus = "active"
+	RegistrationStatusFailed  RegistartionStatus = "failed"
+	RegistrationStatusSuccess RegistartionStatus = "success"
+	RegistartionStatusError   RegistartionStatus = "error"
+)
+
 type SubscriptionRegistrationParams struct {
-	Request any
+	Request any `json:"request" validate:"required"`
 }
 
 type ObjectEvents struct {
