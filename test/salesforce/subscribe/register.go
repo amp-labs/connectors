@@ -32,7 +32,7 @@ func main() {
 	arn := os.Getenv("AWS_NAMED_CRED_ARN")
 
 	params := &common.SubscriptionRegistrationParams{
-		Request: &salesforce.SalesforceRegistration{
+		Request: &salesforce.RegistrationParams{
 			UniqueRef: "Amp" + uniqueString,
 			Label:     "Amp" + uniqueString,
 			AwsArn:    arn,

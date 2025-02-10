@@ -13,7 +13,9 @@ import (
 
 var errInvalidRequestType = errors.New("invalid request type")
 
-type SalesforceRegistration struct {
+type RegistrationParams struct {
+	// UniqueRef is a unique reference for the registration.
+	// It is used to create unique names for the Salesforce objects.
 	UniqueRef string `json:"uniqueRef" validate:"required"`
 	Label     string `json:"label"     validate:"required"`
 	AwsArn    string `json:"awsArn"    validate:"required"`
@@ -63,17 +65,17 @@ func (c *Connector) Register(
 		return nil, fmt.Errorf("invalid registration params: %w", err)
 	}
 
-	sfRegistration, ok := params.Request.(*SalesforceRegistration)
+	sfParams, ok := params.Request.(*RegistrationParams)
 	if !ok {
 		return nil, fmt.Errorf(
 			"%w: expected '%T', but received '%T'",
 			errInvalidRequestType,
-			sfRegistration,
+			sfParams,
 			params.Request,
 		)
 	}
 
-	result, err := c.register(ctx, sfRegistration)
+	result, err := c.register(ctx, sfParams)
 	if err != nil {
 		if rollbackErr := c.RollbackRegister(ctx, result); rollbackErr != nil {
 			return &common.RegistrationResult{
@@ -95,18 +97,18 @@ func (c *Connector) Register(
 
 func (c *Connector) register(
 	ctx context.Context,
-	sfRegistration *SalesforceRegistration,
+	params *RegistrationParams,
 ) (*ResultData, error) {
 	result := &ResultData{}
 
-	eventChannel, err := c.createEventChannel(ctx, sfRegistration)
+	eventChannel, err := c.createEventChannel(ctx, params)
 	if err != nil {
 		return result, fmt.Errorf("failed to create event channel: %w", err)
 	}
 
 	result.EventChannel = eventChannel
 
-	namedCred, err := c.createNamedCredential(ctx, sfRegistration)
+	namedCred, err := c.createNamedCredential(ctx, params)
 	if err != nil {
 		return result, fmt.Errorf("failed to create named credential: %w", err)
 	}
@@ -115,7 +117,7 @@ func (c *Connector) register(
 
 	evtCfg, err := c.createEventRelayConfing(
 		ctx,
-		sfRegistration,
+		params,
 		namedCred.DestinationResourceName(),
 		eventChannel.FullName,
 	)
@@ -132,29 +134,29 @@ func (c *Connector) register(
 	return result, nil
 }
 
-func (c *Connector) createEventChannel(ctx context.Context, reg *SalesforceRegistration) (*EventChannel, error) {
-	channelName := GetChannelName(reg.UniqueRef)
+func (c *Connector) createEventChannel(ctx context.Context, params *RegistrationParams) (*EventChannel, error) {
+	channelName := GetChannelName(params.UniqueRef)
 
 	channel := &EventChannel{
 		FullName: channelName,
 		Metadata: &EventChannelMetadata{
 			ChannelType: "data",
-			Label:       reg.UniqueRef,
+			Label:       params.UniqueRef,
 		},
 	}
 
 	return c.CreateEventChannel(ctx, channel)
 }
 
-func (c *Connector) createNamedCredential(ctx context.Context, reg *SalesforceRegistration) (*NamedCredential, error) {
+func (c *Connector) createNamedCredential(ctx context.Context, params *RegistrationParams) (*NamedCredential, error) {
 	namedCred := &NamedCredential{
-		FullName: reg.UniqueRef,
+		FullName: params.UniqueRef,
 		Metadata: &NamedCredentialMetadata{
 			GenerateAuthorizationHeader: true,
-			Label:                       reg.Label,
+			Label:                       params.Label,
 
 			// below are legacy fields
-			Endpoint:      reg.AwsArn,
+			Endpoint:      params.AwsArn,
 			PrincipalType: "NamedUser",
 			Protocol:      "NoAuthentication",
 		},
@@ -165,12 +167,12 @@ func (c *Connector) createNamedCredential(ctx context.Context, reg *SalesforceRe
 
 func (c *Connector) createEventRelayConfing(
 	ctx context.Context,
-	reg *SalesforceRegistration,
+	params *RegistrationParams,
 	destinationResource string,
 	channelName string,
 ) (*EventRelayConfig, error) {
 	config := &EventRelayConfig{
-		FullName: reg.UniqueRef,
+		FullName: params.UniqueRef,
 		Metadata: &EventRelayConfigMetadata{
 			DestinationResourceName: destinationResource,
 			EventChannel:            channelName,
