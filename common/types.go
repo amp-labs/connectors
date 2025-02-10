@@ -465,11 +465,11 @@ type SubscribeConnector interface {
 	UpdateRegistration(
 		ctx context.Context,
 		params SubscriptionRegistrationParams,
-		previousResult SubscriptionResult,
-	) (*SubscriptionResult, error)
+		previousResult RegistrationResult,
+	) (*RegistrationResult, error)
 	DeleteRegistration(
 		ctx context.Context,
-		previousResult SubscriptionResult,
+		previousResult RegistrationResult,
 	) error
 
 	Subscribe(

@@ -11,7 +11,10 @@ import (
 	"github.com/go-playground/validator"
 )
 
-var errInvalidRequestType = errors.New("invalid request type")
+var (
+	errInvalidRequestType = errors.New("invalid request type")
+	errMissingParams      = errors.New("missing required parameters")
+)
 
 type RegistrationParams struct {
 	// UniqueRef is a unique reference for the registration.
@@ -22,12 +25,12 @@ type RegistrationParams struct {
 }
 
 type ResultData struct {
-	EventChannel     *EventChannel
-	NamedCredential  *NamedCredential
-	EventRelayConfig *EventRelayConfig
+	EventChannel     *EventChannel     `json:"eventChannel"     validate:"required"`
+	NamedCredential  *NamedCredential  `json:"namedCredential"  validate:"required"`
+	EventRelayConfig *EventRelayConfig `json:"eventRelayConfig" validate:"required"`
 }
 
-func (c *Connector) RollbackRegister(ctx context.Context, res *ResultData) error {
+func (c *Connector) rollbackRegister(ctx context.Context, res *ResultData) error {
 	if res.EventRelayConfig != nil {
 		_, err := c.DeleteEventRelayConfig(ctx, res.EventRelayConfig.Id)
 		if err != nil {
@@ -77,7 +80,7 @@ func (c *Connector) Register(
 
 	result, err := c.register(ctx, sfParams)
 	if err != nil {
-		if rollbackErr := c.RollbackRegister(ctx, result); rollbackErr != nil {
+		if rollbackErr := c.rollbackRegister(ctx, result); rollbackErr != nil {
 			return &common.RegistrationResult{
 				Status: common.RegistrationStatusError,
 			}, errors.Join(rollbackErr, err)
@@ -132,6 +135,33 @@ func (c *Connector) register(
 	}
 
 	return result, nil
+}
+
+func (c *Connector) DeleteRegistration(ctx context.Context, registration *common.RegistrationResult) error {
+	if registration == nil {
+		return fmt.Errorf("%w: registration is null", errMissingParams)
+	}
+
+	if registration.Result == nil {
+		return fmt.Errorf("%w: registration result is null", errMissingParams)
+	}
+
+	validate := validator.New()
+	if err := validate.Struct(registration.Result); err != nil {
+		return fmt.Errorf("invalid registration result: %w", err)
+	}
+
+	result, ok := registration.Result.(*ResultData)
+	if !ok {
+		return fmt.Errorf(
+			"%w: expected result type '%T', but received '%T'",
+			errInvalidRequestType,
+			result,
+			registration.Result,
+		)
+	}
+
+	return c.rollbackRegister(ctx, result)
 }
 
 func (c *Connector) createEventChannel(ctx context.Context, params *RegistrationParams) (*EventChannel, error) {
