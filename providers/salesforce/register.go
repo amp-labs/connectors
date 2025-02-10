@@ -77,7 +77,7 @@ func (c *Connector) Register(
 	if err != nil {
 		if rollbackErr := c.RollbackRegister(ctx, result); rollbackErr != nil {
 			return &common.RegistrationResult{
-				Status: common.RegistartionStatusError,
+				Status: common.RegistrationStatusError,
 			}, errors.Join(rollbackErr, err)
 		}
 

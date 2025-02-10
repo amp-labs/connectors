@@ -71,14 +71,32 @@ func testCDC(conn *salesforce.Connector, ctx context.Context, creds salesforce.C
 	remoteResource := salesforce.GetRemoteResource(orgId, cdcChannel.FullName)
 	printWithField("RemoteResource", "resource", remoteResource)
 
-	deleteMember, err := conn.DeleteEventChannelMember(ctx, membership.Id)
+	resp, err := conn.DeleteEventChannelMember(ctx, membership.Id)
 	if err != nil {
 		slog.Error("Error deleting event channel member", "error", err)
 
 		return
 	}
 
-	printWithField("Event channel member deleted", "member", deleteMember)
+	printWithField("Event channel member deleted", "response", resp)
+
+	resp, err = conn.DeleteEventRelayConfig(ctx, evtCfg.Id)
+	if err != nil {
+		slog.Error("Error deleting event relay config", "error", err)
+
+		return
+	}
+
+	printWithField("Event relay config deleted", "response", resp)
+
+	resp, err = conn.DeleteEventChannel(ctx, cdcChannel.Id)
+	if err != nil {
+		slog.Error("Error deleting event channel", "error", err)
+
+		return
+	}
+
+	printWithField("Event channel deleted", "response", resp)
 }
 
 func testChangeDataCaptureChannelMembership(conn *salesforce.Connector, ctx context.Context, channelName string, objecName string) (*salesforce.EventChannelMember, error) {
@@ -125,27 +143,6 @@ func TestCDCChannel(conn *salesforce.Connector, ctx context.Context, channelName
 	return newChannel, nil
 }
 
-func TestPlatformEventChannel(conn *salesforce.Connector, ctx context.Context, channelName string) (*salesforce.EventChannel, error) {
-	channel := &salesforce.EventChannel{
-		FullName: getChannelName(channelName),
-		Metadata: &salesforce.EventChannelMetadata{
-			ChannelType: "event",
-			Label:       "Test Event Channel",
-		},
-	}
-
-	newChannel, err := conn.CreateEventChannel(ctx, channel)
-	if err != nil {
-		slog.Error("Error creating event channel", "error", err)
-
-		return nil, err
-	}
-
-	printWithField("Platform Event channel created", "body", newChannel)
-
-	return newChannel, nil
-}
-
 func TestEventRelayConfig(conn *salesforce.Connector, ctx context.Context, cred salesforce.Credential, channel *salesforce.EventChannel, uniqueString string) (*salesforce.EventRelayConfig, error) {
 	evtCfg := &salesforce.EventRelayConfig{
 		FullName: "TestEventRelayConfig" + uniqueString,
@@ -166,20 +163,6 @@ func TestEventRelayConfig(conn *salesforce.Connector, ctx context.Context, cred 
 	printWithField("Event relay config metadata", "metadata", evtCfg.Metadata)
 
 	return newEvtCfg, nil
-}
-
-func testOrganizationId(conn *salesforce.Connector, ctx context.Context) (string, error) {
-	fmt.Println("-----------------Testing Organization Id-----------------")
-
-	orgId, err := conn.GetOrganizationId(ctx)
-	if err != nil {
-		slog.Error("Error querying org", "error", err)
-		return "", err
-	}
-
-	printWithField("Org Id created", "id", orgId)
-
-	return orgId, nil
 }
 
 func TestCredentialsLegacy(conn *salesforce.Connector, ctx context.Context, uniqueString string) (*salesforce.NamedCredential, error) {
@@ -245,22 +228,6 @@ func getRawChannelNameFromChannel(channelName string) string {
 	return channelName
 }
 
-func getRawChannelNameFromObject(objectName string) string {
-	if strings.HasSuffix(objectName, "__e") {
-		return removeSuffix(objectName, 3)
-	}
-
-	return objectName
-}
-
-func getPEChannelMembershipName(channelName, eventName string) string {
-	return fmt.Sprintf("%s%sChannelEvent_e", channelName, eventName)
-}
-
 func getCDCChannelMembershipName(rawChannelName string, eventName string) string {
 	return fmt.Sprintf("%s_chn_%s", rawChannelName, eventName)
-}
-
-func getRawPEName(peName string) string {
-	return removeSuffix(peName, 3)
 }

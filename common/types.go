@@ -396,20 +396,20 @@ func inferDeprecatedFieldsMap(fields map[string]FieldMetadata) map[string]string
 type RegistrationResult struct {
 	RegistrationRef string
 	Result          any // struct depends on the provider
-	Status          RegistartionStatus
+	Status          RegistrationStatus
 }
 
-type RegistartionStatus string
+type RegistrationStatus string
 
 const (
 	// registration is pending and not yet complete.
-	RegistrationStatusPending RegistartionStatus = "pending"
+	RegistrationStatusPending RegistrationStatus = "pending"
 	// registration returned error, and all intermittent steps are rolled back.
-	RegistrationStatusFailed RegistartionStatus = "failed"
+	RegistrationStatusFailed RegistrationStatus = "failed"
 	// successful registration.
-	RegistrationStatusSuccess RegistartionStatus = "success"
+	RegistrationStatusSuccess RegistrationStatus = "success"
 	// registration returned error, and failed to rollback some intermittent steps.
-	RegistartionStatusError RegistartionStatus = "error"
+	RegistrationStatusError RegistrationStatus = "error"
 )
 
 type SubscriptionRegistrationParams struct {
