@@ -217,10 +217,10 @@ func (c *Connector) RunEventRelay(ctx context.Context, cfg *EventRelayConfig) er
 	// patch returns no content with 204. If it fails, it will return an error.
 	_, err = c.Client.Patch(ctx, location.String(), config)
 	if err != nil {
-		slog.Error("Run EventRelayConfig", "error", err)
-
-		return err
+		return fmt.Errorf("error running event relay: %w", err)
 	}
+
+	cfg.Metadata.State = "RUN"
 
 	return nil
 }
@@ -307,10 +307,6 @@ func (c *Connector) deleteToSFAPI(ctx context.Context, path string, entity strin
 	resp, err := c.Client.Delete(ctx, location.String())
 	if err != nil {
 		return nil, fmt.Errorf("error deleting %s: %w", entity, err)
-	}
-
-	if resp.Code > 299 {
-		return nil, fmt.Errorf("deleting %s returned '%d': %v", entity, resp)
 	}
 
 	return resp, nil

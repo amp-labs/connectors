@@ -54,7 +54,6 @@ func main() {
 	}
 
 	fmt.Println("Rollback successful")
-
 }
 
 func prettyPrint(v any) string {

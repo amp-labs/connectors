@@ -2,7 +2,6 @@ package salesforce
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"log/slog"
@@ -15,9 +14,9 @@ import (
 var errInvalidRequestType = errors.New("invalid request type")
 
 type SalesforceRegistration struct {
-	UniqueRef string `json:"uniqueIdentifier" validate:"required"`
-	Label     string `json:"label"            validate:"required"`
-	AwsArn    string `json:"awsArn"           validate:"required"`
+	UniqueRef string `json:"uniqueRef" validate:"required"`
+	Label     string `json:"label"     validate:"required"`
+	AwsArn    string `json:"awsArn"    validate:"required"`
 }
 
 type ResultData struct {
@@ -42,6 +41,7 @@ func (c *Connector) RollbackRegister(ctx context.Context, res *ResultData) error
 			return fmt.Errorf("failed to delete named credential: %w", err)
 		}
 	}
+
 	if res.EventChannel != nil {
 		_, err := c.DeleteEventChannel(ctx, res.EventChannel.Id)
 		if err != nil {
@@ -49,7 +49,6 @@ func (c *Connector) RollbackRegister(ctx context.Context, res *ResultData) error
 
 			return fmt.Errorf("failed to delete event channel: %w", err)
 		}
-
 	}
 
 	return nil
@@ -72,10 +71,6 @@ func (c *Connector) Register(
 			sfRegistration,
 			params.Request,
 		)
-	}
-
-	if err := validate.Struct(sfRegistration); err != nil {
-		return nil, fmt.Errorf("invalid registration request: %w", err)
 	}
 
 	result, err := c.register(ctx, sfRegistration)
@@ -231,13 +226,4 @@ func GetChangeDataCaptureChannelMembershipName(rawChannelName string, eventName 
 
 func GetRawPEName(peName string) string {
 	return RemoveSuffix(peName, 3) //nolint:mnd
-}
-
-func prettyPrint(v any) string {
-	jsonBytes, err := json.MarshalIndent(v, "", "  ")
-	if err != nil {
-		panic(err)
-	}
-
-	return string(jsonBytes)
 }

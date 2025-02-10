@@ -402,11 +402,14 @@ type RegistrationResult struct {
 type RegistartionStatus string
 
 const (
+	// registration is pending and not yet complete.
 	RegistrationStatusPending RegistartionStatus = "pending"
-	RegistrationStatusActive  RegistartionStatus = "active"
-	RegistrationStatusFailed  RegistartionStatus = "failed"
+	// registration returned error, and all intermittent steps are rolled back.
+	RegistrationStatusFailed RegistartionStatus = "failed"
+	// successful registration.
 	RegistrationStatusSuccess RegistartionStatus = "success"
-	RegistartionStatusError   RegistartionStatus = "error"
+	// registration returned error, and failed to rollback some intermittent steps.
+	RegistartionStatusError RegistartionStatus = "error"
 )
 
 type SubscriptionRegistrationParams struct {

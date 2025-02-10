@@ -79,7 +79,6 @@ func testCDC(conn *salesforce.Connector, ctx context.Context, creds salesforce.C
 	}
 
 	printWithField("Event channel member deleted", "member", deleteMember)
-
 }
 
 func testChangeDataCaptureChannelMembership(conn *salesforce.Connector, ctx context.Context, channelName string, objecName string) (*salesforce.EventChannelMember, error) {
