@@ -26,7 +26,7 @@ type RegistrationParams struct {
 
 type ResultData struct {
 	EventChannel     *EventChannel     `json:"eventChannel"     validate:"required"`
-	NamedCredential  *NamedCredential  `json:"namedCredential"  validate:"required"`
+	NamedCredential  *NamedCredential  `json:"namedCredential"  validate:"required,structonly"`
 	EventRelayConfig *EventRelayConfig `json:"eventRelayConfig" validate:"required"`
 }
 
