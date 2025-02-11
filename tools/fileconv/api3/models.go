@@ -332,6 +332,7 @@ func extractFields(
 			// This is just a normal usual case where top level fields are collected as is.
 			combined[property] = metadatadef.Field{
 				Name: property,
+				Type: (*propertySchema.Value.Type)[0],
 			}
 		}
 	}

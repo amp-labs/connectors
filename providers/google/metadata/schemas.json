@@ -1,0 +1,139 @@
+{
+  "modules": {
+    "calendar": {
+      "id": "calendar",
+      "path": "calendar/v3/users/me",
+      "objects": {
+        "calendarList": {
+          "displayName": "Calendars",
+          "path": "/calendarList",
+          "responseKey": "items",
+          "fields": {
+            "accessRole": {
+              "displayName": "Access Role",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "backgroundColor": {
+              "displayName": "Background Color",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "colorId": {
+              "displayName": "Color Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "conferenceProperties": {
+              "displayName": "Conference Properties",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "defaultReminders": {
+              "displayName": "Default Reminders",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "deleted": {
+              "displayName": "Deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "etag": {
+              "displayName": "Etag",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "foregroundColor": {
+              "displayName": "Foreground Color",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "hidden": {
+              "displayName": "Hidden",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "kind": {
+              "displayName": "Kind",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "location": {
+              "displayName": "Location",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "notificationSettings": {
+              "displayName": "Notification Settings",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "primary": {
+              "displayName": "Primary",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "selected": {
+              "displayName": "Selected",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "summary": {
+              "displayName": "Summary",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "summaryOverride": {
+              "displayName": "Summary Override",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "timeZone": {
+              "displayName": "Time Zone",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "settings": {
+          "displayName": "Settings",
+          "path": "/settings",
+          "responseKey": "items",
+          "fields": {
+            "etag": {
+              "displayName": "Etag",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "kind": {
+              "displayName": "Kind",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "value": {
+              "displayName": "Value",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}
