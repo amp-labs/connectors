@@ -51,14 +51,57 @@ type Object[F FieldMetadataMap] struct {
 	DocsURL *string `json:"docs,omitempty"`
 }
 
+type FieldMetadata struct {
+	DisplayName  string           `json:"displayName,omitempty"`
+	ValueType    common.ValueType `json:"valueType,omitempty"`
+	ProviderType string           `json:"providerType,omitempty"`
+	ReadOnly     bool             `json:"readOnly,omitempty"`
+	Values       FieldValues      `json:"values,omitempty"`
+}
+
+type FieldValues []FieldValue
+
+type FieldValue struct {
+	Value        string `json:"value,omitempty"`
+	DisplayValue string `json:"displayValue,omitempty"`
+}
+
 type (
 	FieldMetadataMapV1 map[string]string
-	FieldMetadataMapV2 map[string]common.FieldMetadata
+	FieldMetadataMapV2 map[string]FieldMetadata
 
 	FieldMetadataMap interface {
 		FieldMetadataMapV1 | FieldMetadataMapV2
 	}
 )
+
+func (m FieldMetadataMapV2) convertToCommon() map[string]common.FieldMetadata {
+	result := make(map[string]common.FieldMetadata)
+
+	for fieldName, field := range m {
+		values := make(common.FieldValues, len(field.Values))
+		for index, value := range field.Values {
+			values[index] = common.FieldValue{
+				Value:        value.Value,
+				DisplayValue: value.DisplayValue,
+			}
+		}
+
+		if len(values) == 0 {
+			values = nil
+		}
+
+		result[fieldName] = common.FieldMetadata{
+			DisplayName:  field.DisplayName,
+			ValueType:    field.ValueType,
+			ProviderType: field.ProviderType,
+			ReadOnly:     field.ReadOnly,
+			Values:       values,
+		}
+	}
+
+	return result
+}
 
 // All maps must be copies of the original map, which remains immutable.
 // The immutable map serves as a unified registry of metadata for the connector.
@@ -79,7 +122,7 @@ func (o Object[F]) getObjectMetadata() *common.ObjectMetadata {
 
 	return common.NewObjectMetadata(
 		o.DisplayName,
-		datautils.FromMap(fields).ShallowCopy(),
+		fields.convertToCommon(),
 	)
 }
 

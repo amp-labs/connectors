@@ -83,7 +83,7 @@ func main() {
 		for _, field := range object.Fields {
 			schemas.Add("", object.ObjectName, object.DisplayName, object.URLPath, object.ResponseKey,
 				staticschema.FieldMetadataMapV1{
-					field: field,
+					field.Name: field.Name,
 				}, nil)
 		}
 
