@@ -43,12 +43,14 @@ func (conn *Connector) ListObjectMetadata(ctx context.Context,
 			DisplayName: naming.CapitalizeFirstLetterEveryWord(object),
 		}
 
-		url, err := conn.buildReadURL(object)
+		url, err := conn.buildURL(object, metadataPageSize)
 		if err != nil {
-			return nil, err
+			metadataResults.Errors[object] = err
+
+			continue
 		}
 
-		resp, err := conn.Client.Get(ctx, url.String())
+		resp, err := conn.Client.Get(ctx, url)
 		if err != nil {
 			metadataResults.Errors[object] = err
 
