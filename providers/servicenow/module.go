@@ -7,7 +7,7 @@ const (
 	ModuleTable common.ModuleID = "table"
 )
 
-// supportedModules represents currently working and supported modules within the Marketo connector.
+// supportedModules represents currently working and supported modules within the ServiceNow connector.
 // Any added module should be appended here.
 var supportedModules = common.Modules{ // nolint: gochecknoglobals
 	ModuleTable: {
