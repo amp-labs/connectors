@@ -22,7 +22,7 @@ func run() error {
 	// construct connector instance conn
 	conn := servicenow.GetServiceNowConnector(ctx)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"incident"})
+	m, err := conn.ListObjectMetadata(ctx, []string{"incident", "cmdb_ci_email_server"})
 	if err != nil {
 		return err
 	}
