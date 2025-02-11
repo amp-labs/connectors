@@ -2,7 +2,6 @@ package klaviyo
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 
 	"github.com/amp-labs/connectors/common"
@@ -86,7 +85,7 @@ func prepareWritePayload(config common.WriteParams) (any, error) {
 	//
 	// Additionally, update operation must include identifier not only in URL path but in payload,
 	// for convenience this Klaviyo API requirement is automatically satisfied.
-	object, err := convertPayloadToMap(config.RecordData)
+	object, err := common.RecordDataToMap(config.RecordData)
 	if err != nil {
 		return nil, err
 	}
@@ -147,22 +146,4 @@ func constructWriteResult(body *ajson.Node) (*common.WriteResult, error) {
 		Errors:   nil,
 		Data:     data,
 	}, nil
-}
-
-func convertPayloadToMap(inputPayload any) (map[string]any, error) {
-	if object, ok := inputPayload.(map[string]any); ok {
-		return object, nil
-	}
-
-	bytes, err := json.Marshal(inputPayload)
-	if err != nil {
-		return nil, err
-	}
-
-	object := make(map[string]any)
-	if err = json.Unmarshal(bytes, &object); err != nil {
-		return nil, err
-	}
-
-	return object, nil
 }
