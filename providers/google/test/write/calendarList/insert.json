@@ -1,0 +1,18 @@
+{
+  "kind": "calendar#calendarListEntry",
+  "etag": "\"1738882575255000\"",
+  "id": "en.italian#holiday@group.v.calendar.google.com",
+  "summary": "Holidays in Italy",
+  "description": "Holidays and Observances in Italy",
+  "timeZone": "America/Los_Angeles",
+  "colorId": "7",
+  "backgroundColor": "#19f7f0",
+  "foregroundColor": "#ffffff",
+  "accessRole": "reader",
+  "defaultReminders": [],
+  "conferenceProperties": {
+    "allowedConferenceSolutionTypes": [
+      "hangoutsMeet"
+    ]
+  }
+}
