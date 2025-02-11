@@ -60,6 +60,12 @@ func (m Map[K, V]) Values() []V {
 	return values
 }
 
+func (m Map[K, V]) AddMapValues(source Map[K, V]) {
+	for k, v := range source {
+		m[k] = v
+	}
+}
+
 // DefaultMap wrapper of the map that allows setting default return value on missing keys.
 type DefaultMap[K comparable, V any] struct {
 	// Map is a delegate.
