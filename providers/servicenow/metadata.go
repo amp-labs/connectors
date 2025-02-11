@@ -2,7 +2,6 @@ package servicenow
 
 import (
 	"context"
-	"fmt"
 	"sync"
 
 	"github.com/amp-labs/connectors/common"
@@ -18,8 +17,9 @@ type responseObject struct {
 	// Other fields
 }
 
-// ListObjectMetadata
-func (c *Connector) ListObjectMetadata(ctx context.Context, objectNames []string) (*common.ListObjectMetadataResult, error) {
+func (c *Connector) ListObjectMetadata(
+	ctx context.Context, objectNames []string,
+) (*common.ListObjectMetadataResult, error) {
 	//nolint: varnamelen
 	var (
 		wg sync.WaitGroup
@@ -70,8 +70,6 @@ func (c *Connector) getMetadata(ctx context.Context, objectName string) (*common
 	}
 
 	capObj := naming.CapitalizeFirstLetterEveryWord(objectName)
-
-	fmt.Println("URL: ", url.String())
 
 	resp, err := c.Client.Get(ctx, url.String())
 	if err != nil {
