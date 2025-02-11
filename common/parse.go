@@ -125,3 +125,24 @@ func getRecords(optional bool, jsonPath string, nestedPath ...string) RecordsFun
 		return jsonquery.Convertor.ArrayToMap(arr)
 	}
 }
+
+// ParseLinkHeader extracts the next page URL from the Link Header response.
+func ParseNexPageLinkHeader(linkHeader string) string {
+	var url string
+
+	if linkHeader == "" {
+		return "" // this indicates we're done.
+	}
+
+	links := strings.Split(linkHeader, ",")
+	// [<https://dev269415.service-now.com/api/now/v2/table/incident?sysparm_limit=1&sysparm_offset=0>;rel="next" ...]
+	for _, link := range links {
+		if strings.Contains(link, `rel="next"`) {
+			urls := strings.Split(link, ";")
+			url = strings.TrimPrefix(urls[0], "<")
+			url = strings.TrimRight(url, ">")
+		}
+	}
+
+	return url
+}
