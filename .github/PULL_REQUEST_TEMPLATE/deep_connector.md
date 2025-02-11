@@ -1,11 +1,12 @@
-# Installation 
-MailMonkey installation screenshot:
-![image](https://github.com/user-attachments/assets/ebc027fb-b82b-4505-ac71-f2b61209fa4d)
+# Installation
+Mailmonkey using API key/Oauth2 with scopes/Password, etc.
 
 # Read
-- [ ] Screenshot of operations on dashboard
+For each read object:
 - [ ] Insert screenshot of metadata fields from read object installation.
+Ex: ![image](https://github.com/user-attachments/assets/ebc027fb-b82b-4505-ac71-f2b61209fa4d)
 - [ ] Insert screenshot of Svix destination.
+- [ ] Screenshot of operations on dashboard
 
 # Write
 For each write object:
