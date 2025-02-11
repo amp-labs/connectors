@@ -221,6 +221,14 @@ func (c *Connector) createEventRelayConfing(
 	return c.CreateEventRelayConfig(ctx, config)
 }
 
+/*
+  Below are helper functions to create Salesforce object names.
+  Salesforce has weired naming conventions, that object names are suffixed with '__c' or '__e'.
+  Channel names are suffixed with '__chn'.
+  Some naming conventions are not consistent across standard and custom objects.
+  e.g) event names for change data capture require __ChangeEvent for custom object whereas standard object requires ChangeEvent.
+*/
+
 func IsCustomObject(objName string) bool {
 	return strings.HasSuffix(objName, "__c")
 }
@@ -234,7 +242,7 @@ func GetChangeDataCaptureEventName(objName string) string {
 		return GetRawObjectName(objName) + "__ChangeEvent"
 	}
 
-	return objName + "%ChangeEvent"
+	return objName + "ChangeEvent"
 }
 
 func GetChannelName(rawChannelName string) string {
