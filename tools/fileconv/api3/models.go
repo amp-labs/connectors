@@ -330,13 +330,28 @@ func extractFields(
 			combined.AddMapValues(fields)
 		} else {
 			// This is just a normal usual case where top level fields are collected as is.
+			propertyType := extractPropertyType(propertySchema)
 			combined[property] = metadatadef.Field{
 				Name: property,
+				Type: propertyType,
 			}
 		}
 	}
 
 	return combined, nil
+}
+
+func extractPropertyType(propertySchema *openapi3.SchemaRef) string {
+	if propertySchema.Value == nil || propertySchema.Value.Type == nil {
+		return ""
+	}
+
+	types := *propertySchema.Value.Type
+	if len(types) == 0 {
+		return ""
+	}
+
+	return types[0]
 }
 
 type definitionSchemaType int
