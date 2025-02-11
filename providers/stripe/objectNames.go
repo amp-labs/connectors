@@ -27,7 +27,7 @@ const (
 	objectNameConfigurations              = "configurations"
 	objectNameBillingPortalSessions       = "billing_sessions"
 	objectNameCharges                     = "charges"
-	objectNameCheckoutSessions            = "checkout_sessions"
+	objectNameCheckoutSessions            = "sessions_checkout"
 	objectNameOrders                      = "orders"
 	objectNameCoupons                     = "coupons"
 	objectNameCreditNotes                 = "credit_notes"
@@ -47,12 +47,11 @@ const (
 	objectNameAuthorizations              = "authorizations"
 	objectNameCardholders                 = "cardholders"
 	objectNameCards                       = "cards"
-	objectNameIssuingDisputes             = "issuing_disputes"
+	objectNameIssuingDisputes             = "disputes_issuing"
 	objectNamePersonalizationDesigns      = "personalization_designs"
 	objectNameSettlements                 = "settlements"
 	objectNameIssuingTokens               = "issuing_tokens"
-	objectNameTransactions                = "transactions"
-	objectNameLinkAccountSessions         = "link_account_sessions"
+	objectNameTransactions                = "transactions_issuing"
 	objectNamePaymentIntents              = "payment_intents"
 	objectNamePaymentLinks                = "payment_links"
 	objectNamePaymentMethodConfigurations = "payment_method_configurations"
@@ -79,7 +78,7 @@ const (
 	objectNameTaxSettings                 = "settings"
 	objectNameTaxIDs                      = "tax_ids"
 	objectNameTaxRates                    = "tax_rates"
-	objectNameTerminalConfigurations      = "terminal_configurations"
+	objectNameTerminalConfigurations      = "configurations_terminal"
 	objectNameConnectionTokens            = "connection_tokens"
 	objectNameLocations                   = "locations"
 	objectNameReaders                     = "readers"
@@ -97,10 +96,14 @@ const (
 	objectNameCreditReversals             = "credit_reversals"
 	objectNameDebitReversals              = "debit_reversals"
 	objectNameFinancialAccounts           = "financial_accounts"
-	objectNameInboundTransfers            = "inbound_transfers"
-	objectNameOutboundPayments            = "outbound_payments"
-	objectNameOutboundTransfers           = "outbound_transfers"
 	objectNameWebhookEndpoints            = "webhook_endpoints"
+
+	// The READ endpoint exists, but according to the OpenAPI spec, at least one query parameter is required.
+	// Since treasury APIs are not enabled, making a valid request for verification is not possible.
+	// As a result, these objects are set to be write-only, which likely they are.
+	objectNameInboundTransfers  = "inbound_transfers"
+	objectNameOutboundPayments  = "outbound_payments"
+	objectNameOutboundTransfers = "outbound_transfers"
 )
 
 // Supported object names can be found under schemas.json.
@@ -141,7 +144,6 @@ var supportedObjectsByCreate = map[common.ModuleID]datautils.StringSet{ //nolint
 		objectNameCards,
 		objectNameIssuingDisputes,
 		objectNamePersonalizationDesigns,
-		objectNameLinkAccountSessions,
 		objectNamePaymentIntents,
 		objectNamePaymentLinks,
 		objectNamePaymentMethodConfigurations,
@@ -290,7 +292,7 @@ var objectNameToWritePath = datautils.NewDefaultMap(map[string]string{ //nolint:
 	objectNameRequests:               "/v1/forwarding/requests",
 	objectNameVerificationSessions:   "/v1/identity/verification_sessions",
 	objectNameInvoicesPreview:        "/v1/invoices/create_preview",
-	objectNameAuthorizations:         "/v1/issuing/authorizations/",
+	objectNameAuthorizations:         "/v1/issuing/authorizations",
 	objectNameCardholders:            "/v1/issuing/cardholders",
 	objectNameCards:                  "/v1/issuing/cards",
 	objectNameIssuingDisputes:        "/v1/issuing/disputes",
