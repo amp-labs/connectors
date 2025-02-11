@@ -45,6 +45,7 @@ func testReadWorkspaces(ctx context.Context, conn *cp.Connector) error {
 	params := common.ReadParams{
 		ObjectName: "workspace",
 		Fields:     connectors.Fields("id", "name"),
+		// NextPage:   "https://fire.chilipiper.com/api/fire-edge/v1/org/workspace?page=1\u0026pageSize=2",
 	}
 
 	res, err := conn.Read(ctx, params)
@@ -92,7 +93,7 @@ func testReadWorkspaceUsers(ctx context.Context, conn *cp.Connector) error {
 		ObjectName: "workspace_users",
 		Fields:     connectors.Fields("name", "id"),
 		Since:      time.Now().Add(-1000 * time.Hour),
-		// NextPage:   "https://fire.chilipiper.com/api/fire-edge/v1/org/workspace?page=2&pageSize=2",
+		// NextPage:   "https://fire.chilipiper.com/api/fire-edge/v1/org/workspace/users?page=1\u0026pageSize=2",
 	}
 
 	res, err := conn.Read(ctx, params)

@@ -20,7 +20,7 @@ import (
 
 // nextRecordsURL builds the next-page url func.
 // https://developer.close.com/topics/pagination/
-func nextRecordsURL(url *urlbuilder.URL) common.NextPageFunc {
+func nextRecordsURL(url string) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
 		jsonQuery := jsonquery.New(node)
 
@@ -34,7 +34,7 @@ func nextRecordsURL(url *urlbuilder.URL) common.NextPageFunc {
 			return "", err
 		}
 
-		pagesize, err := strconv.Atoi(pageSize)
+		pagesize, err := strconv.Atoi(readpageSize)
 		if err != nil {
 			return "", err
 		}
@@ -42,9 +42,14 @@ func nextRecordsURL(url *urlbuilder.URL) common.NextPageFunc {
 		if hasMorePages(pagesize, int(*page), int(*totalRecords)) {
 			pg := strconv.Itoa(int(*page + 1))
 
-			url.WithQueryParam(pageKey, pg)
+			nextURL, err := urlbuilder.New(url)
+			if err != nil {
+				return "", err
+			}
 
-			return url.String(), nil
+			nextURL.WithQueryParam(pageKey, pg)
+
+			return nextURL.String(), nil
 		}
 
 		return "", nil

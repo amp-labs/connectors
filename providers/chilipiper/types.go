@@ -3,7 +3,7 @@ package chilipiper
 import "github.com/amp-labs/connectors/common"
 
 const (
-	pageSize         = "50"
+	readpageSize     = "2"
 	metadataPageSize = "1"
 	pageKey          = "page"
 	pageSizeKey      = "pageSize"

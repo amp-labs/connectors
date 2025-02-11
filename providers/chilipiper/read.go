@@ -11,12 +11,17 @@ func (conn *Connector) Read(ctx context.Context, config common.ReadParams) (*com
 		return nil, err
 	}
 
-	readURL, err := conn.buildReadURL(config)
+	url, err := conn.buildURL(config.ObjectName, readpageSize)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := conn.Client.Get(ctx, readURL.String())
+	// Check if we're reading Next Page of Records.
+	if len(config.NextPage) > 0 {
+		url = config.NextPage.String()
+	}
+
+	resp, err := conn.Client.Get(ctx, url)
 	if err != nil {
 		return nil, err
 	}
@@ -24,7 +29,7 @@ func (conn *Connector) Read(ctx context.Context, config common.ReadParams) (*com
 	return common.ParseResult(
 		resp,
 		common.GetRecordsUnderJSONPath("results"),
-		nextRecordsURL(readURL),
+		nextRecordsURL(url),
 		common.GetMarshaledData,
 		config.Fields,
 	)
