@@ -25,12 +25,14 @@ type RegistrationParams struct {
 }
 
 type ResultData struct {
-	EventChannel *EventChannel `json:"eventChannel" validate:"required"`
-	// structonly
+	EventChannel     *EventChannel     `json:"eventChannel"     validate:"required"`
 	NamedCredential  *NamedCredential  `json:"namedCredential"  validate:"required"`
 	EventRelayConfig *EventRelayConfig `json:"eventRelayConfig" validate:"required"`
 }
 
+// rollbackRegister will delete the created Salesforce objects in reverse order.
+// rollBack can happen in any intermediate step, so it will check if the object exists before deleting it.
+// then continues to next step in reverse order.
 func (c *Connector) rollbackRegister(ctx context.Context, res *ResultData) error {
 	if res.EventRelayConfig != nil {
 		_, err := c.DeleteEventRelayConfig(ctx, res.EventRelayConfig.Id)
@@ -60,6 +62,10 @@ func (c *Connector) rollbackRegister(ctx context.Context, res *ResultData) error
 	return nil
 }
 
+// Register will create the necessary Salesforce objects to enable the event relay.
+// It will create an EventChannel, NamedCredential, and EventRelayConfig.
+// It will then start the event relay.
+// In case of an error, it will rollback the registration by deleting the created objects.
 func (c *Connector) Register(
 	ctx context.Context,
 	params *common.SubscriptionRegistrationParams,
@@ -138,6 +144,8 @@ func (c *Connector) register(
 	return result, nil
 }
 
+// DeleteRegistration will delete the Salesforce objects created during registration.
+// It will delete the EventRelayConfig, NamedCredential, and EventChannel.
 func (c *Connector) DeleteRegistration(ctx context.Context, registration *common.RegistrationResult) error {
 	if registration == nil {
 		return fmt.Errorf("%w: registration is null", errMissingParams)
