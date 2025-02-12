@@ -45,30 +45,32 @@ func (conn *Connector) ListObjectMetadata(ctx context.Context,
 			DisplayName: naming.CapitalizeFirstLetterEveryWord(object),
 		}
 
-		url, err := conn.buildURL(object, metadataPageSize)
-		if err != nil {
-			metadataResults.Errors[object] = err
-
-			continue
-		}
-
-		if !fetchDataFields(ctx, url.String(), object, conn, &objectMetadata, &metadataResults) {
+		if !fetchDataFields(ctx, conn, object, &objectMetadata, &metadataResults) {
 			openAPIFallback(object, &metadataResults)
 
 			continue
 		}
-
 	}
 
 	return &metadataResults, nil
 }
 
-// fetchDetails is a helper function that would help us to trigger fallback incase of false response (erroneous).
-func fetchDataFields(ctx context.Context, url string, object string, conn *Connector, objectMetadata *common.ObjectMetadata, res *common.ListObjectMetadataResult) bool {
-	jsonResp, err := conn.Client.Get(ctx, url)
+func fetchDataFields(
+	ctx context.Context,
+	conn *Connector, obj string,
+	mtd *common.ObjectMetadata,
+	res *common.ListObjectMetadataResult,
+) bool {
+	url, err := conn.buildReadURL(obj)
 	if err != nil {
 		return false
 	}
+
+	jsonResp, err := conn.Client.Get(ctx, url.String())
+	if err != nil {
+		return false
+	}
+
 	resp, err := common.UnmarshalJSON[Response](jsonResp)
 	if err != nil {
 		return false
@@ -79,10 +81,10 @@ func fetchDataFields(ctx context.Context, url string, object string, conn *Conne
 	}
 
 	for fld := range resp.Results[0] {
-		objectMetadata.FieldsMap[fld] = fld
+		mtd.FieldsMap[fld] = fld
 	}
 
-	res.Result[object] = *objectMetadata
+	res.Result[obj] = *mtd
 
 	return true
 }
