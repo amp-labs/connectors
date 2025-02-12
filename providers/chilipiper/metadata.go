@@ -5,6 +5,8 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/internal/staticschema"
+	"github.com/amp-labs/connectors/providers/chilipiper/metadata"
 )
 
 // Sample OK Response
@@ -43,40 +45,73 @@ func (conn *Connector) ListObjectMetadata(ctx context.Context,
 			DisplayName: naming.CapitalizeFirstLetterEveryWord(object),
 		}
 
-		url, err := conn.buildURL(object, metadataPageSize)
-		if err != nil {
-			metadataResults.Errors[object] = err
+		if !fetchDataFields(ctx, conn, object, &objectMetadata, &metadataResults) {
+			openAPIFallback(object, &metadataResults)
 
 			continue
 		}
-
-		resp, err := conn.Client.Get(ctx, url)
-		if err != nil {
-			metadataResults.Errors[object] = err
-
-			continue
-		}
-
-		res, err := common.UnmarshalJSON[Response](resp)
-		if err != nil {
-			metadataResults.Errors[object] = err
-
-			continue
-		}
-
-		if len(res.Results) == 0 {
-			// Todo(Jkarage): Use OpenAPI Specifications file.
-			metadataResults.Errors[object] = common.ErrMissingExpectedValues
-
-			continue
-		}
-
-		for fld := range res.Results[0] {
-			objectMetadata.FieldsMap[fld] = fld
-		}
-
-		metadataResults.Result[object] = objectMetadata
 	}
 
 	return &metadataResults, nil
+}
+
+func fetchDataFields(
+	ctx context.Context,
+	conn *Connector, obj string,
+	mtd *common.ObjectMetadata,
+	res *common.ListObjectMetadataResult,
+) bool {
+	url, err := conn.buildURL(obj, metadataPageSize)
+	if err != nil {
+		return false
+	}
+
+	jsonResp, err := conn.Client.Get(ctx, url)
+	if err != nil {
+		return false
+	}
+
+	resp, err := common.UnmarshalJSON[Response](jsonResp)
+	if err != nil {
+		return false
+	}
+
+	if len(resp.Results) == 0 {
+		return false
+	}
+
+	for fld := range resp.Results[0] {
+		mtd.FieldsMap[fld] = fld
+	}
+
+	res.Result[obj] = *mtd
+
+	return true
+}
+
+func metadataFallback(moduleID common.ModuleID, objectName string) (*common.ObjectMetadata, error) {
+	metadatResult, err := metadata.Schemas.Select(moduleID, []string{objectName})
+	if err != nil {
+		return nil, err
+	}
+
+	data := metadatResult.Result[objectName]
+
+	return &data, nil
+}
+
+func openAPIFallback(obj string, res *common.ListObjectMetadataResult,
+) *common.ListObjectMetadataResult { //nolint:unparam
+	// Try fallback function
+	data, err := metadataFallback(staticschema.RootModuleID, obj)
+	if err != nil {
+		res.Errors[obj] = err
+
+		return res
+	}
+
+	data.DisplayName = obj
+	res.Result[obj] = *data
+
+	return res
 }

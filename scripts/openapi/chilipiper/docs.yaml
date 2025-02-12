@@ -1,0 +1,2554 @@
+openapi: 3.1.0
+info:
+  title: Edge Org
+  version: 0.0.96
+servers:
+  - url: /api/fire-edge
+paths:
+  /v1/org/health/ping:
+    get:
+      tags:
+        - health
+      description: Ping api
+      operationId: Ping api
+      responses:
+        "200":
+          description: ""
+          headers:
+            Cache-Control:
+              required: true
+              schema:
+                type: string
+            X-Robots-Tag:
+              required: true
+              schema:
+                type: string
+            Pragma:
+              required: true
+              schema:
+                type: string
+            Expires:
+              required: true
+              schema:
+                type: string
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - errorCode
+                  - errorMessage
+                properties:
+                  errorCode:
+                    type: string
+                  errorMessage:
+                    type: string
+                  arguments:
+                    $ref: "#/components/schemas/Map_String"
+      security:
+        - apiKeyAuth: []
+        - apiKeyAuth1: []
+      X-Chili-Required-Permissions:
+        - api.ping
+  /v1/org/workspace:
+    get:
+      tags:
+        - workspace
+      description: Read all workspaces
+      operationId: Read all workspaces
+      parameters:
+        - name: page
+          in: query
+          description: Page number. First page has index 0.
+          required: false
+          schema:
+            default: 0
+            type: integer
+            format: int64
+            minimum: 0
+          example: 0
+        - name: pageSize
+          in: query
+          description: Number of items per page. Maximum is 50
+          required: false
+          schema:
+            default: 10
+            type: integer
+            format: int64
+            exclusiveMinimum: 0
+          example: 10
+      responses:
+        "200":
+          description: ""
+          headers:
+            Cache-Control:
+              required: true
+              schema:
+                type: string
+            X-Robots-Tag:
+              required: true
+              schema:
+                type: string
+            Pragma:
+              required: true
+              schema:
+                type: string
+            Expires:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedResult_Workspace"
+        "400":
+          description:
+            "Invalid value for: query parameter page, Invalid value for:
+            query parameter pageSize"
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - errorCode
+                  - errorMessage
+                properties:
+                  errorCode:
+                    type: string
+                  errorMessage:
+                    type: string
+                  arguments:
+                    $ref: "#/components/schemas/Map_String"
+      security:
+        - apiKeyAuth: []
+        - apiKeyAuth1: []
+      X-Chili-Required-Permissions:
+        - workspace.read
+  /v1/org/workspace/users/remove:
+    post:
+      tags:
+        - workspace
+      description: Remove users from a workspace
+      operationId: Remove users from a workspace
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RemoveUserFromWorkspaceRequest"
+        required: true
+      responses:
+        "200":
+          description: ""
+          headers:
+            Cache-Control:
+              required: true
+              schema:
+                type: string
+            X-Robots-Tag:
+              required: true
+              schema:
+                type: string
+            Pragma:
+              required: true
+              schema:
+                type: string
+            Expires:
+              required: true
+              schema:
+                type: string
+        "400":
+          description: "Invalid value for: body"
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - errorCode
+                  - errorMessage
+                properties:
+                  errorCode:
+                    type: string
+                  errorMessage:
+                    type: string
+                  arguments:
+                    $ref: "#/components/schemas/Map_String"
+      security:
+        - apiKeyAuth: []
+        - apiKeyAuth1: []
+      X-Chili-Required-Permissions:
+        - workspace.modify
+  /v1/org/workspace/users/remove-from-all:
+    post:
+      tags:
+        - workspace
+      description: Remove users from all workspaces
+      operationId: Remove users from all workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RemoveUserFromAllWorkspacesRequest"
+        required: true
+      responses:
+        "200":
+          description: ""
+          headers:
+            Cache-Control:
+              required: true
+              schema:
+                type: string
+            X-Robots-Tag:
+              required: true
+              schema:
+                type: string
+            Pragma:
+              required: true
+              schema:
+                type: string
+            Expires:
+              required: true
+              schema:
+                type: string
+        "400":
+          description: "Invalid value for: body"
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - errorCode
+                  - errorMessage
+                properties:
+                  errorCode:
+                    type: string
+                  errorMessage:
+                    type: string
+                  arguments:
+                    $ref: "#/components/schemas/Map_String"
+      security:
+        - apiKeyAuth: []
+        - apiKeyAuth1: []
+      X-Chili-Required-Permissions:
+        - workspace.modify
+  /v1/org/workspace/users/add:
+    post:
+      tags:
+        - workspace
+      description: Add users to a workspace
+      operationId: Add users to a workspace
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddUsersToWorkspaceRequest"
+        required: true
+      responses:
+        "200":
+          description: ""
+          headers:
+            Cache-Control:
+              required: true
+              schema:
+                type: string
+            X-Robots-Tag:
+              required: true
+              schema:
+                type: string
+            Pragma:
+              required: true
+              schema:
+                type: string
+            Expires:
+              required: true
+              schema:
+                type: string
+        "400":
+          description: "Invalid value for: body"
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - errorCode
+                  - errorMessage
+                properties:
+                  errorCode:
+                    type: string
+                  errorMessage:
+                    type: string
+                  arguments:
+                    $ref: "#/components/schemas/Map_String"
+      security:
+        - apiKeyAuth: []
+        - apiKeyAuth1: []
+      X-Chili-Required-Permissions:
+        - workspace.modify
+  /v1/org/workspace/users:
+    get:
+      tags:
+        - workspace
+      description: Read all users (or in a workspace)
+      operationId: Read all users (or in a workspace)
+      parameters:
+        - name: workspaceId
+          in: query
+          required: false
+          schema:
+            type: string
+            pattern: '[^\s\\/]+'
+        - name: page
+          in: query
+          description: Page number. First page has index 0.
+          required: false
+          schema:
+            default: 0
+            type: integer
+            format: int64
+            minimum: 0
+          example: 0
+        - name: pageSize
+          in: query
+          description: Number of items per page. Maximum is 50
+          required: false
+          schema:
+            default: 10
+            type: integer
+            format: int64
+            exclusiveMinimum: 0
+          example: 10
+      responses:
+        "200":
+          description: ""
+          headers:
+            Cache-Control:
+              required: true
+              schema:
+                type: string
+            X-Robots-Tag:
+              required: true
+              schema:
+                type: string
+            Pragma:
+              required: true
+              schema:
+                type: string
+            Expires:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedResult_User"
+        "400":
+          description:
+            "Invalid value for: query parameter workspaceId, Invalid value
+            for: query parameter page, Invalid value for: query parameter pageSize"
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - errorCode
+                  - errorMessage
+                properties:
+                  errorCode:
+                    type: string
+                  errorMessage:
+                    type: string
+                  arguments:
+                    $ref: "#/components/schemas/Map_String"
+      security:
+        - apiKeyAuth: []
+        - apiKeyAuth1: []
+      X-Chili-Required-Permissions:
+        - workspace.read
+  /v1/org/team/users/remove:
+    post:
+      tags:
+        - team
+      description: Remove users from a team
+      operationId: Remove users from a team
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RemoveUserFromTeamRequest"
+        required: true
+      responses:
+        "200":
+          description: ""
+          headers:
+            Cache-Control:
+              required: true
+              schema:
+                type: string
+            X-Robots-Tag:
+              required: true
+              schema:
+                type: string
+            Pragma:
+              required: true
+              schema:
+                type: string
+            Expires:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Team"
+        "400":
+          description: "Invalid value for: body"
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - errorCode
+                  - errorMessage
+                properties:
+                  errorCode:
+                    type: string
+                  errorMessage:
+                    type: string
+                  arguments:
+                    $ref: "#/components/schemas/Map_String"
+      security:
+        - apiKeyAuth: []
+        - apiKeyAuth1: []
+      X-Chili-Required-Permissions:
+        - team.modify
+  /v1/org/team/users/remove-from-all:
+    post:
+      tags:
+        - team
+      description: Remove users from all teams (within workspaces or from all workspaces)
+      operationId: Remove users from all teams (within workspaces or from all workspaces)
+      parameters:
+        - name: workspaceIds
+          in: query
+          description: List of workspace ids. If not provided, all workspaces are considered.
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+              pattern: '[^\s\\/]+'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RemoveUserFromAllTeamsRequest"
+        required: true
+      responses:
+        "200":
+          description: ""
+          headers:
+            Cache-Control:
+              required: true
+              schema:
+                type: string
+            X-Robots-Tag:
+              required: true
+              schema:
+                type: string
+            Pragma:
+              required: true
+              schema:
+                type: string
+            Expires:
+              required: true
+              schema:
+                type: string
+        "400":
+          description:
+            "Invalid value for: query parameter workspaceIds, Invalid value
+            for: body"
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - errorCode
+                  - errorMessage
+                properties:
+                  errorCode:
+                    type: string
+                  errorMessage:
+                    type: string
+                  arguments:
+                    $ref: "#/components/schemas/Map_String"
+      security:
+        - apiKeyAuth: []
+        - apiKeyAuth1: []
+      X-Chili-Required-Permissions:
+        - team.modify
+  /v1/org/team/users/add:
+    post:
+      tags:
+        - team
+      description: Add users to a team
+      operationId: Add users to a team
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddUsersToTeamRequest"
+        required: true
+      responses:
+        "200":
+          description: ""
+          headers:
+            Cache-Control:
+              required: true
+              schema:
+                type: string
+            X-Robots-Tag:
+              required: true
+              schema:
+                type: string
+            Pragma:
+              required: true
+              schema:
+                type: string
+            Expires:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Team"
+        "400":
+          description: "Invalid value for: body"
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - errorCode
+                  - errorMessage
+                properties:
+                  errorCode:
+                    type: string
+                  errorMessage:
+                    type: string
+                  arguments:
+                    $ref: "#/components/schemas/Map_String"
+      security:
+        - apiKeyAuth: []
+        - apiKeyAuth1: []
+      X-Chili-Required-Permissions:
+        - team.modify
+  /v1/org/team:
+    get:
+      tags:
+        - team
+      description: Read all teams
+      operationId: Read all teams
+      parameters:
+        - name: workspaceIds
+          in: query
+          description: List of workspace ids. If not provided, all workspaces are considered.
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+              pattern: '[^\s\\/]+'
+        - name: page
+          in: query
+          description: Page number. First page has index 0.
+          required: false
+          schema:
+            default: 0
+            type: integer
+            format: int64
+            minimum: 0
+          example: 0
+        - name: pageSize
+          in: query
+          description: Number of items per page. Maximum is 50
+          required: false
+          schema:
+            default: 10
+            type: integer
+            format: int64
+            exclusiveMinimum: 0
+          example: 10
+      responses:
+        "200":
+          description: ""
+          headers:
+            Cache-Control:
+              required: true
+              schema:
+                type: string
+            X-Robots-Tag:
+              required: true
+              schema:
+                type: string
+            Pragma:
+              required: true
+              schema:
+                type: string
+            Expires:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedResult_Team"
+        "400":
+          description:
+            "Invalid value for: query parameter workspaceIds, Invalid value
+            for: query parameter page, Invalid value for: query parameter pageSize"
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - errorCode
+                  - errorMessage
+                properties:
+                  errorCode:
+                    type: string
+                  errorMessage:
+                    type: string
+                  arguments:
+                    $ref: "#/components/schemas/Map_String"
+      security:
+        - apiKeyAuth: []
+        - apiKeyAuth1: []
+      X-Chili-Required-Permissions:
+        - team.read
+  /v1/org/distribution/{distributionId}:
+    post:
+      tags:
+        - distribution
+      description: Update distribution and publish it
+      operationId: Update distribution and publish it
+      parameters:
+        - name: distributionId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '[^\s\\/]+'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateDistributionRequest"
+        required: true
+      responses:
+        "200":
+          description: ""
+          headers:
+            Cache-Control:
+              required: true
+              schema:
+                type: string
+            X-Robots-Tag:
+              required: true
+              schema:
+                type: string
+            Pragma:
+              required: true
+              schema:
+                type: string
+            Expires:
+              required: true
+              schema:
+                type: string
+        "400":
+          description:
+            "Invalid value for: path parameter distributionId, Invalid
+            value for: body"
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - errorCode
+                  - errorMessage
+                properties:
+                  errorCode:
+                    type: string
+                  errorMessage:
+                    type: string
+                  arguments:
+                    $ref: "#/components/schemas/Map_String"
+      security:
+        - apiKeyAuth: []
+        - apiKeyAuth1: []
+      X-Chili-Required-Permissions:
+        - distribution.modify
+    delete:
+      tags:
+        - distribution
+      description: Delete distribution
+      operationId: Delete distribution
+      parameters:
+        - name: distributionId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '[^\s\\/]+'
+      responses:
+        "200":
+          description: ""
+          headers:
+            Cache-Control:
+              required: true
+              schema:
+                type: string
+            X-Robots-Tag:
+              required: true
+              schema:
+                type: string
+            Pragma:
+              required: true
+              schema:
+                type: string
+            Expires:
+              required: true
+              schema:
+                type: string
+        "400":
+          description: "Invalid value for: path parameter distributionId"
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - errorCode
+                  - errorMessage
+                properties:
+                  errorCode:
+                    type: string
+                  errorMessage:
+                    type: string
+                  arguments:
+                    $ref: "#/components/schemas/Map_String"
+      security:
+        - apiKeyAuth: []
+        - apiKeyAuth1: []
+      X-Chili-Required-Permissions:
+        - distribution.remove
+  /v1/org/distribution:
+    get:
+      tags:
+        - distribution
+      description: List all distributions
+      operationId: List all distributions
+      parameters:
+        - name: page
+          in: query
+          description: Page number. First page has index 0.
+          required: false
+          schema:
+            default: 0
+            type: integer
+            format: int64
+            minimum: 0
+          example: 0
+        - name: pageSize
+          in: query
+          description: Number of items per page. Maximum is 50
+          required: false
+          schema:
+            default: 10
+            type: integer
+            format: int64
+            exclusiveMinimum: 0
+          example: 10
+        - name: workspaceIds
+          in: query
+          description: List of workspace ids. If not provided, all workspaces are considered.
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+              pattern: '[^\s\\/]+'
+      responses:
+        "200":
+          description: ""
+          headers:
+            Cache-Control:
+              required: true
+              schema:
+                type: string
+            X-Robots-Tag:
+              required: true
+              schema:
+                type: string
+            Pragma:
+              required: true
+              schema:
+                type: string
+            Expires:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedResult_Distribution"
+        "400":
+          description:
+            "Invalid value for: query parameter page, Invalid value for:
+            query parameter pageSize, Invalid value for: query parameter workspaceIds"
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - errorCode
+                  - errorMessage
+                properties:
+                  errorCode:
+                    type: string
+                  errorMessage:
+                    type: string
+                  arguments:
+                    $ref: "#/components/schemas/Map_String"
+      security:
+        - apiKeyAuth: []
+        - apiKeyAuth1: []
+      X-Chili-Required-Permissions:
+        - distribution.read
+  /v1/org/user/licenses:
+    post:
+      tags:
+        - user
+      description: Updates licenses for users
+      operationId: Updates licenses for users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateLicensesRequest"
+        required: true
+      responses:
+        "200":
+          description: ""
+          headers:
+            Cache-Control:
+              required: true
+              schema:
+                type: string
+            X-Robots-Tag:
+              required: true
+              schema:
+                type: string
+            Pragma:
+              required: true
+              schema:
+                type: string
+            Expires:
+              required: true
+              schema:
+                type: string
+        "400":
+          description: "Invalid value for: body"
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - errorCode
+                  - errorMessage
+                properties:
+                  errorCode:
+                    type: string
+                  errorMessage:
+                    type: string
+                  arguments:
+                    $ref: "#/components/schemas/Map_String"
+      security:
+        - apiKeyAuth: []
+        - apiKeyAuth1: []
+      X-Chili-Required-Permissions:
+        - licenses.modify
+  /v1/org/user/invite:
+    post:
+      tags:
+        - user
+      description: Invites new user to the organization
+      operationId: Invites new user to the organization
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserInviteRequest"
+        required: true
+      responses:
+        "200":
+          description: ""
+          headers:
+            Cache-Control:
+              required: true
+              schema:
+                type: string
+            X-Robots-Tag:
+              required: true
+              schema:
+                type: string
+            Pragma:
+              required: true
+              schema:
+                type: string
+            Expires:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserInviteResponse"
+        "400":
+          description: "Invalid value for: body"
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - errorCode
+                  - errorMessage
+                properties:
+                  errorCode:
+                    type: string
+                  errorMessage:
+                    type: string
+                  arguments:
+                    $ref: "#/components/schemas/Map_String"
+      security:
+        - apiKeyAuth: []
+        - apiKeyAuth1: []
+      X-Chili-Required-Permissions:
+        - user.invite
+  /v1/org/user/read/{p1}:
+    get:
+      tags:
+        - user
+      description: Reads user information
+      operationId: Reads user information
+      parameters:
+        - name: p1
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '[^\s\\/]+'
+      responses:
+        "200":
+          description: ""
+          headers:
+            Cache-Control:
+              required: true
+              schema:
+                type: string
+            X-Robots-Tag:
+              required: true
+              schema:
+                type: string
+            Pragma:
+              required: true
+              schema:
+                type: string
+            Expires:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: "Invalid value for: path parameter p1"
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - errorCode
+                  - errorMessage
+                properties:
+                  errorCode:
+                    type: string
+                  errorMessage:
+                    type: string
+                  arguments:
+                    $ref: "#/components/schemas/Map_String"
+      security:
+        - apiKeyAuth: []
+        - apiKeyAuth1: []
+      X-Chili-Required-Permissions:
+        - user.read
+  /v1/org/user/find:
+    get:
+      tags:
+        - user
+      description: Finds user
+      operationId: Finds user
+      parameters:
+        - name: query
+          in: query
+          description: Search by email or name
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Page number. First page has index 0.
+          required: false
+          schema:
+            default: 0
+            type: integer
+            format: int64
+            minimum: 0
+          example: 0
+        - name: pageSize
+          in: query
+          description: Number of items per page. Maximum is 50
+          required: false
+          schema:
+            default: 10
+            type: integer
+            format: int64
+            exclusiveMinimum: 0
+          example: 10
+      responses:
+        "200":
+          description: ""
+          headers:
+            Cache-Control:
+              required: true
+              schema:
+                type: string
+            X-Robots-Tag:
+              required: true
+              schema:
+                type: string
+            Pragma:
+              required: true
+              schema:
+                type: string
+            Expires:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedResult_User"
+        "400":
+          description:
+            "Invalid value for: query parameter query, Invalid value for:
+            query parameter page, Invalid value for: query parameter pageSize"
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - errorCode
+                  - errorMessage
+                properties:
+                  errorCode:
+                    type: string
+                  errorMessage:
+                    type: string
+                  arguments:
+                    $ref: "#/components/schemas/Map_String"
+      security:
+        - apiKeyAuth: []
+        - apiKeyAuth1: []
+      X-Chili-Required-Permissions:
+        - user.read
+  /v1/org/crm/activity/{crmEventId}:
+    get:
+      tags:
+        - crm
+      description: Redirect to a meeting activity page via event id
+      operationId: Activity via crm event id
+      parameters:
+        - name: crmEventId
+          in: path
+          description: Crm Event Id
+          required: true
+          schema:
+            type: string
+            pattern: '[^\s\\/]+'
+      responses:
+        "200":
+          description: ""
+          headers:
+            Cache-Control:
+              required: true
+              schema:
+                type: string
+            X-Robots-Tag:
+              required: true
+              schema:
+                type: string
+            Pragma:
+              required: true
+              schema:
+                type: string
+            Expires:
+              required: true
+              schema:
+                type: string
+            Location:
+              required: true
+              schema:
+                type: string
+        "400":
+          description: "Invalid value for: path parameter crmEventId"
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - errorCode
+                  - errorMessage
+                properties:
+                  errorCode:
+                    type: string
+                  errorMessage:
+                    type: string
+                  arguments:
+                    $ref: "#/components/schemas/Map_String"
+      security:
+        - apiKeyAuth: []
+        - apiKeyAuth1: []
+      X-Chili-Required-Permissions:
+        - meeting.read
+  /v1/org/crm/cancel/{crmEventId}:
+    get:
+      tags:
+        - crm
+      description: Cancel a meeting by crm event id via visiting url
+      operationId: Cancel a crm event via crm event id
+      parameters:
+        - name: crmEventId
+          in: path
+          description: Crm Event Id
+          required: true
+          schema:
+            type: string
+            pattern: '[^\s\\/]+'
+        - name: redirectOnSuccess
+          in: query
+          description: Redirect to this url on success
+          required: false
+          schema:
+            examples:
+              - https://example.com
+            type: string
+        - name: redirectOnFailure
+          in: query
+          description: Redirect to this url on failure
+          required: false
+          schema:
+            examples:
+              - https://example.com
+            type: string
+      responses:
+        "200":
+          description: ""
+          headers:
+            Cache-Control:
+              required: true
+              schema:
+                type: string
+            X-Robots-Tag:
+              required: true
+              schema:
+                type: string
+            Pragma:
+              required: true
+              schema:
+                type: string
+            Expires:
+              required: true
+              schema:
+                type: string
+            Location:
+              required: false
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CrmEndpointsResponse"
+        "400":
+          description: "Invalid value for: path parameter crmEventId"
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - errorCode
+                  - errorMessage
+                properties:
+                  errorCode:
+                    type: string
+                  errorMessage:
+                    type: string
+                  arguments:
+                    $ref: "#/components/schemas/Map_String"
+      security:
+        - apiKeyAuth: []
+        - apiKeyAuth1: []
+      X-Chili-Required-Permissions:
+        - meeting.modify
+  /v1/org/crm/noshow/{crmEventId}:
+    get:
+      tags:
+        - crm
+      description: No show a meeting by crm event id via visiting url
+      operationId: No show a crm meeting via crm event id
+      parameters:
+        - name: crmEventId
+          in: path
+          description: Crm Event Id
+          required: true
+          schema:
+            type: string
+            pattern: '[^\s\\/]+'
+        - name: redirectOnSuccess
+          in: query
+          description: Redirect to this url on success
+          required: false
+          schema:
+            examples:
+              - https://example.com
+            type: string
+        - name: redirectOnFailure
+          in: query
+          description: Redirect to this url on failure
+          required: false
+          schema:
+            examples:
+              - https://example.com
+            type: string
+      responses:
+        "200":
+          description: ""
+          headers:
+            Cache-Control:
+              required: true
+              schema:
+                type: string
+            X-Robots-Tag:
+              required: true
+              schema:
+                type: string
+            Pragma:
+              required: true
+              schema:
+                type: string
+            Expires:
+              required: true
+              schema:
+                type: string
+            Location:
+              required: false
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CrmEndpointsResponse"
+        "400":
+          description: "Invalid value for: path parameter crmEventId"
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - errorCode
+                  - errorMessage
+                properties:
+                  errorCode:
+                    type: string
+                  errorMessage:
+                    type: string
+                  arguments:
+                    $ref: "#/components/schemas/Map_String"
+      security:
+        - apiKeyAuth: []
+        - apiKeyAuth1: []
+      X-Chili-Required-Permissions:
+        - meeting.modify
+  /v1/org/meetings/activity/{meetingId}:
+    get:
+      tags:
+        - meetings
+      description: Redirect to a meeting activity page
+      operationId: Activity
+      parameters:
+        - name: meetingId
+          in: path
+          description: Meeting Id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: ""
+          headers:
+            Cache-Control:
+              required: true
+              schema:
+                type: string
+            X-Robots-Tag:
+              required: true
+              schema:
+                type: string
+            Pragma:
+              required: true
+              schema:
+                type: string
+            Expires:
+              required: true
+              schema:
+                type: string
+            Location:
+              required: true
+              schema:
+                type: string
+        "400":
+          description: "Invalid value for: path parameter meetingId"
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - errorCode
+                  - errorMessage
+                properties:
+                  errorCode:
+                    type: string
+                  errorMessage:
+                    type: string
+                  arguments:
+                    $ref: "#/components/schemas/Map_String"
+      security:
+        - apiKeyAuth: []
+        - apiKeyAuth1: []
+      X-Chili-Required-Permissions:
+        - meeting.read
+  /v1/org/meetings/cancel/{meetingId}:
+    get:
+      tags:
+        - meetings
+      description: Cancel a meeting via visiting url
+      operationId: Cancel a meeting
+      parameters:
+        - name: meetingId
+          in: path
+          description: Meeting Id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: redirectOnSuccess
+          in: query
+          description: Redirect to this url on success
+          required: false
+          schema:
+            examples:
+              - https://example.com
+            type: string
+        - name: redirectOnFailure
+          in: query
+          description: Redirect to this url on failure
+          required: false
+          schema:
+            examples:
+              - https://example.com
+            type: string
+      responses:
+        "200":
+          description: ""
+          headers:
+            Cache-Control:
+              required: true
+              schema:
+                type: string
+            X-Robots-Tag:
+              required: true
+              schema:
+                type: string
+            Pragma:
+              required: true
+              schema:
+                type: string
+            Expires:
+              required: true
+              schema:
+                type: string
+            Location:
+              required: false
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeetingsEndpointsResponse"
+        "400":
+          description: "Invalid value for: path parameter meetingId"
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - errorCode
+                  - errorMessage
+                properties:
+                  errorCode:
+                    type: string
+                  errorMessage:
+                    type: string
+                  arguments:
+                    $ref: "#/components/schemas/Map_String"
+      security:
+        - apiKeyAuth: []
+        - apiKeyAuth1: []
+      X-Chili-Required-Permissions:
+        - meeting.modify
+  /v1/org/meetings/noshow/{meetingId}:
+    get:
+      tags:
+        - meetings
+      description: No show a meeting via visiting url
+      operationId: No show a meeting
+      parameters:
+        - name: meetingId
+          in: path
+          description: Meeting Id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: redirectOnSuccess
+          in: query
+          description: Redirect to this url on success
+          required: false
+          schema:
+            examples:
+              - https://example.com
+            type: string
+        - name: redirectOnFailure
+          in: query
+          description: Redirect to this url on failure
+          required: false
+          schema:
+            examples:
+              - https://example.com
+            type: string
+      responses:
+        "200":
+          description: ""
+          headers:
+            Cache-Control:
+              required: true
+              schema:
+                type: string
+            X-Robots-Tag:
+              required: true
+              schema:
+                type: string
+            Pragma:
+              required: true
+              schema:
+                type: string
+            Expires:
+              required: true
+              schema:
+                type: string
+            Location:
+              required: false
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeetingsEndpointsResponse"
+        "400":
+          description: "Invalid value for: path parameter meetingId"
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - errorCode
+                  - errorMessage
+                properties:
+                  errorCode:
+                    type: string
+                  errorMessage:
+                    type: string
+                  arguments:
+                    $ref: "#/components/schemas/Map_String"
+      security:
+        - apiKeyAuth: []
+        - apiKeyAuth1: []
+      X-Chili-Required-Permissions:
+        - meeting.modify
+  /v1/org/meetings/meetings:
+    get:
+      tags:
+        - meetings
+      description: Query a list of meetings
+      operationId: (BETA VERSION) Meetings
+      parameters:
+        - name: page
+          in: query
+          description: Page number. First page has index 0.
+          required: false
+          schema:
+            default: 0
+            type: integer
+            format: int64
+            minimum: 0
+          example: 0
+        - name: pageSize
+          in: query
+          description: Number of items per page. Maximum is 50
+          required: false
+          schema:
+            default: 10
+            type: integer
+            format: int64
+            exclusiveMinimum: 0
+          example: 10
+        - name: workspaceIds
+          in: query
+          description: List of workspace ids. If not provided, all workspaces are considered.
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+              pattern: '[^\s\\/]+'
+        - name: start
+          in: query
+          description: time of start such as 2025-01-08T13:46:18.681Z (ISO8601 format)
+          required: true
+          schema:
+            type: string
+            format: date-time
+        - name: end
+          in: query
+          description: time of end such as 2025-01-14T13:46:18.681Z (ISO8601 format)
+          required: true
+          schema:
+            type: string
+            format: date-time
+      responses:
+        "200":
+          description: List of meetings. Payload structure might change.
+          headers:
+            Cache-Control:
+              required: true
+              schema:
+                type: string
+            X-Robots-Tag:
+              required: true
+              schema:
+                type: string
+            Pragma:
+              required: true
+              schema:
+                type: string
+            Expires:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HttpQueryResponse_A"
+        "400":
+          description:
+            "Invalid value for: query parameter page, Invalid value for:
+            query parameter pageSize, Invalid value for: query parameter workspaceIds,
+            Invalid value for: query parameter start, Invalid value for: query parameter
+            end"
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - errorCode
+                  - errorMessage
+                properties:
+                  errorCode:
+                    type: string
+                  errorMessage:
+                    type: string
+                  arguments:
+                    $ref: "#/components/schemas/Map_String"
+      security:
+        - apiKeyAuth: []
+        - apiKeyAuth1: []
+      X-Chili-Required-Permissions:
+        - meeting.read
+  /v1/org/meetings/meetings/export:
+    get:
+      tags:
+        - meetings
+      description: Export meetings in CSV format
+      operationId: Export Meetings
+      parameters:
+        - name: workspaceIds
+          in: query
+          description: List of workspace ids. If not provided, all workspaces are considered.
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+              pattern: '[^\s\\/]+'
+        - name: start
+          in: query
+          description: time of start such as 2025-01-08T13:46:18.681Z (ISO8601 format)
+          required: true
+          schema:
+            type: string
+            format: date-time
+        - name: end
+          in: query
+          description: time of end such as 2025-01-14T13:46:18.681Z (ISO8601 format)
+          required: true
+          schema:
+            type: string
+            format: date-time
+      responses:
+        "200":
+          description: ""
+          headers:
+            Cache-Control:
+              required: true
+              schema:
+                type: string
+            X-Robots-Tag:
+              required: true
+              schema:
+                type: string
+            Pragma:
+              required: true
+              schema:
+                type: string
+            Expires:
+              required: true
+              schema:
+                type: string
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Content-Disposition:
+              required: true
+              schema:
+                type: string
+          content:
+            text/csv; charset=utf-8:
+              schema:
+                type: string
+        "400":
+          description:
+            "Invalid value for: query parameter workspaceIds, Invalid value
+            for: query parameter start, Invalid value for: query parameter end"
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - errorCode
+                  - errorMessage
+                properties:
+                  errorCode:
+                    type: string
+                  errorMessage:
+                    type: string
+                  arguments:
+                    $ref: "#/components/schemas/Map_String"
+      security:
+        - apiKeyAuth: []
+        - apiKeyAuth1: []
+      X-Chili-Required-Permissions:
+        - meeting.read
+  /v1/org/concierge/logs:
+    post:
+      tags:
+        - concierge
+      description: (BETA VERSION) Reads Concierge Logs
+      operationId: (BETA VERSION) Reads Concierge Logs
+      parameters:
+        - name: workspaceId
+          in: query
+          description: Id of the workspace
+          required: true
+          schema:
+            type: string
+            pattern: '[^\s\\/]+'
+        - name: routerId
+          in: query
+          description: Concierge Router Id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: start
+          in: query
+          description: time of start such as 2025-01-08T13:46:18.681Z (ISO8601 format)
+          required: true
+          schema:
+            type: string
+            format: date-time
+        - name: end of end such as 2025-01-14T13:46:18.681Z (ISO8601 format)
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date-time
+      responses:
+        "200":
+          description: Concierge logs. Payload structure might change.
+          headers:
+            Cache-Control:
+              required: true
+              schema:
+                type: string
+            X-Robots-Tag:
+              required: true
+              schema:
+                type: string
+            Pragma:
+              required: true
+              schema:
+                type: string
+            Expires:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: {}
+        "400":
+          description:
+            "Invalid value for: query parameter workspaceId, Invalid value
+            for: query parameter routerId, Invalid value for: query parameter start,
+            Invalid value for: query parameter end of end such as 2025-01-14T13:46:18.681Z
+            (ISO8601 format)"
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - errorCode
+                  - errorMessage
+                properties:
+                  errorCode:
+                    type: string
+                  errorMessage:
+                    type: string
+                  arguments:
+                    $ref: "#/components/schemas/Map_String"
+      security:
+        - apiKeyAuth: []
+        - apiKeyAuth1: []
+      X-Chili-Required-Permissions:
+        - logs.read
+components:
+  schemas:
+    AddUsersToTeamRequest:
+      title: AddUsersToTeamRequest
+      type: object
+      required:
+        - teamId
+      properties:
+        teamId:
+          $ref: "#/components/schemas/TeamId"
+        userIds:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/UserId"
+    AddUsersToWorkspaceRequest:
+      title: AddUsersToWorkspaceRequest
+      type: object
+      required:
+        - workspaceId
+      properties:
+        workspaceId:
+          $ref: "#/components/schemas/WorkspaceId"
+        userIds:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/UserId"
+    Admin:
+      title: Admin
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          const: Admin
+    CallerRef:
+      title: CallerRef
+      description: stringified caller reference in format $type/$id
+      examples:
+        - user/17a3d4563d5a67a3d456ad635
+      type: string
+    Chat:
+      title: Chat
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          const: Chat
+    ChiliCalOrg:
+      title: ChiliCalOrg
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          const: ChiliCalOrg
+    Concierge:
+      title: Concierge
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          const: Concierge
+    ConciergeLive:
+      title: ConciergeLive
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          const: ConciergeLive
+    CrmEndpointsResponse:
+      title: CrmEndpointsResponse
+      oneOf:
+        - $ref: "#/components/schemas/Failure"
+        - $ref: "#/components/schemas/Success"
+      discriminator:
+        propertyName: type
+        mapping:
+          Failure: "#/components/schemas/Failure"
+          Success: "#/components/schemas/Success"
+    Distribution:
+      title: Distribution
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          $ref: "#/components/schemas/DistributionId"
+    DistributionId:
+      title: DistributionId
+      type: string
+      pattern: '[^\s\\/]+'
+    Distro:
+      title: Distro
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          const: Distro
+    Email:
+      title: Email
+      type: string
+      pattern: .+@.+
+    Failure:
+      title: Failure
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          const: Failure
+    Failure1:
+      title: Failure
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          const: Failure
+    Handoff:
+      title: Handoff
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          const: Handoff
+    HasMore:
+      title: HasMore
+      type: string
+      enum:
+        - "Yes"
+        - "No"
+    HttpQueryResponse_A:
+      title: HttpQueryResponse_A
+      type: object
+      required:
+        - data
+        - hasMore
+      properties:
+        data: {}
+        hasMore:
+          $ref: "#/components/schemas/HasMore"
+    License:
+      title: License
+      oneOf:
+        - $ref: "#/components/schemas/Chat"
+        - $ref: "#/components/schemas/ChiliCalOrg"
+        - $ref: "#/components/schemas/Concierge"
+        - $ref: "#/components/schemas/ConciergeLive"
+        - $ref: "#/components/schemas/Distro"
+        - $ref: "#/components/schemas/Handoff"
+      discriminator:
+        propertyName: type
+        mapping:
+          Chat: "#/components/schemas/Chat"
+          ChiliCalOrg: "#/components/schemas/ChiliCalOrg"
+          Concierge: "#/components/schemas/Concierge"
+          ConciergeLive: "#/components/schemas/ConciergeLive"
+          Distro: "#/components/schemas/Distro"
+          Handoff: "#/components/schemas/Handoff"
+    Map_Refined_String_Refinement_V:
+      title: Map_Refined_String_Refinement_V
+      type: object
+      additionalProperties:
+        $ref: "#/components/schemas/UserLicenses"
+    Map_String:
+      title: Map_String
+      type: object
+      additionalProperties:
+        type: string
+    MeetingsEndpointsResponse:
+      title: MeetingsEndpointsResponse
+      oneOf:
+        - $ref: "#/components/schemas/Failure1"
+        - $ref: "#/components/schemas/Success1"
+      discriminator:
+        propertyName: type
+        mapping:
+          Failure: "#/components/schemas/Failure1"
+          Success: "#/components/schemas/Success1"
+    PaginatedResult_Distribution:
+      title: PaginatedResult_Distribution
+      type: object
+      required:
+        - total
+        - page
+        - pageSize
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/Distribution"
+        total:
+          type: integer
+          format: int64
+        page:
+          type: integer
+          format: int64
+          minimum: 0
+        pageSize:
+          type: integer
+          format: int64
+          exclusiveMinimum: 0
+    PaginatedResult_Team:
+      title: PaginatedResult_Team
+      type: object
+      required:
+        - total
+        - page
+        - pageSize
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/Team"
+        total:
+          type: integer
+          format: int64
+        page:
+          type: integer
+          format: int64
+          minimum: 0
+        pageSize:
+          type: integer
+          format: int64
+          exclusiveMinimum: 0
+    PaginatedResult_User:
+      title: PaginatedResult_User
+      type: object
+      required:
+        - total
+        - page
+        - pageSize
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/User"
+        total:
+          type: integer
+          format: int64
+        page:
+          type: integer
+          format: int64
+          minimum: 0
+        pageSize:
+          type: integer
+          format: int64
+          exclusiveMinimum: 0
+    PaginatedResult_Workspace:
+      title: PaginatedResult_Workspace
+      type: object
+      required:
+        - total
+        - page
+        - pageSize
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/Workspace"
+        total:
+          type: integer
+          format: int64
+        page:
+          type: integer
+          format: int64
+          minimum: 0
+        pageSize:
+          type: integer
+          format: int64
+          exclusiveMinimum: 0
+    RemoveUserFromAllTeamsRequest:
+      title: RemoveUserFromAllTeamsRequest
+      type: object
+      properties:
+        userIds:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/UserId"
+    RemoveUserFromAllWorkspacesRequest:
+      title: RemoveUserFromAllWorkspacesRequest
+      type: object
+      properties:
+        userIds:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/UserId"
+    RemoveUserFromTeamRequest:
+      title: RemoveUserFromTeamRequest
+      type: object
+      required:
+        - teamId
+      properties:
+        teamId:
+          $ref: "#/components/schemas/TeamId"
+        userIds:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/UserId"
+    RemoveUserFromWorkspaceRequest:
+      title: RemoveUserFromWorkspaceRequest
+      type: object
+      required:
+        - workspaceId
+      properties:
+        workspaceId:
+          $ref: "#/components/schemas/WorkspaceId"
+        userIds:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/UserId"
+    Role:
+      title: Role
+      oneOf:
+        - $ref: "#/components/schemas/Admin"
+        - $ref: "#/components/schemas/TeamManager"
+        - $ref: "#/components/schemas/User1"
+        - $ref: "#/components/schemas/WorkspaceManager"
+      discriminator:
+        propertyName: type
+        mapping:
+          Admin: "#/components/schemas/Admin"
+          TeamManager: "#/components/schemas/TeamManager"
+          User: "#/components/schemas/User1"
+          WorkspaceManager: "#/components/schemas/WorkspaceManager"
+    SimpleMetadata:
+      title: SimpleMetadata
+      type: object
+      required:
+        - createdAt
+        - createdBy
+        - updatedAt
+        - updatedBy
+        - revision
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+        createdBy:
+          $ref: "#/components/schemas/CallerRef"
+        updatedAt:
+          type: string
+          format: date-time
+        updatedBy:
+          $ref: "#/components/schemas/CallerRef"
+        revision:
+          type: integer
+          format: int32
+    Success:
+      title: Success
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          const: Success
+    Success1:
+      title: Success
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          const: Success
+    Team:
+      title: Team
+      type: object
+      required:
+        - id
+        - workspaceId
+        - name
+        - metadata
+      properties:
+        id:
+          $ref: "#/components/schemas/TeamId"
+        workspaceId:
+          $ref: "#/components/schemas/WorkspaceId"
+        name:
+          type: string
+        members:
+          type: array
+          items:
+            type: string
+            pattern: '[^\s\\/]+'
+        metadata: {}
+    TeamId:
+      title: TeamId
+      type: string
+      pattern: '[^\s\\/]+'
+    TeamManager:
+      title: TeamManager
+      type: object
+      required:
+        - teamId
+        - type
+      properties:
+        teamId:
+          $ref: "#/components/schemas/TeamId"
+        type:
+          type: string
+          const: TeamManager
+    UpdateDistributionRequest:
+      title: UpdateDistributionRequest
+      type: object
+      required:
+        - resetDistribution
+      properties:
+        resetDistribution:
+          type: boolean
+        weights:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserWeight"
+        manualCalibration:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserCalibration"
+    UpdateLicensesRequest:
+      title: UpdateLicensesRequest
+      type: object
+      required:
+        - update
+      properties:
+        update:
+          $ref: "#/components/schemas/Map_Refined_String_Refinement_V"
+    User:
+      title: User
+      type: object
+      required:
+        - id
+        - name
+        - email
+        - isSuperAdmin
+        - licenses
+      properties:
+        id:
+          $ref: "#/components/schemas/UserId"
+        name:
+          type: string
+          minLength: 1
+        email:
+          $ref: "#/components/schemas/Email"
+        isSuperAdmin:
+          type: boolean
+        managedWorkspaces:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+            pattern: '[^\s\\/]+'
+        managedTeams:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+            pattern: '[^\s\\/]+'
+        licenses:
+          $ref: "#/components/schemas/UserLicenses"
+    User1:
+      title: User
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          const: User
+    UserCalibration:
+      title: UserCalibration
+      type: object
+      required:
+        - userId
+        - calibration
+      properties:
+        userId:
+          $ref: "#/components/schemas/UserId"
+        calibration:
+          type: integer
+          format: int32
+    UserId:
+      title: UserId
+      type: string
+      pattern: '[^\s\\/]+'
+    UserInviteRequest:
+      title: UserInviteRequest
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          $ref: "#/components/schemas/Email"
+        name:
+          type: string
+          minLength: 1
+        salesforceId:
+          type: string
+          pattern: '[^\s\\/]+'
+        roles:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: "#/components/schemas/Role"
+        licenses:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: "#/components/schemas/License"
+        workspaces:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+            pattern: '[^\s\\/]+'
+    UserInviteResponse:
+      title: UserInviteResponse
+      type: object
+      required:
+        - userId
+      properties:
+        userId:
+          $ref: "#/components/schemas/UserId"
+    UserLicenses:
+      title: UserLicenses
+      type: object
+      required:
+        - distro
+        - chiliCalOrg
+        - concierge
+        - chat
+        - handoff
+      properties:
+        distro:
+          type: boolean
+        chiliCalOrg:
+          type: boolean
+        concierge:
+          type: boolean
+        chat:
+          type: boolean
+        handoff:
+          type: boolean
+    UserWeight:
+      title: UserWeight
+      type: object
+      required:
+        - userId
+        - weight
+      properties:
+        userId:
+          $ref: "#/components/schemas/UserId"
+        weight:
+          type: integer
+          format: int32
+          minimum: 0
+          maximum: 10000
+    Workspace:
+      title: Workspace
+      type: object
+      required:
+        - id
+        - name
+        - metadata
+      properties:
+        id:
+          $ref: "#/components/schemas/WorkspaceId"
+        name:
+          type: string
+        emoji:
+          type: string
+        logo:
+          type: string
+        metadata:
+          $ref: "#/components/schemas/SimpleMetadata"
+    WorkspaceId:
+      title: WorkspaceId
+      type: string
+      pattern: '[^\s\\/]+'
+    WorkspaceManager:
+      title: WorkspaceManager
+      type: object
+      required:
+        - workspaceId
+        - type
+      properties:
+        workspaceId:
+          $ref: "#/components/schemas/WorkspaceId"
+        type:
+          type: string
+          const: WorkspaceManager
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      description: API key provided via Authorization header with Bearer $ApiKey.
+      name: Authorization
+      in: header
+    apiKeyAuth1:
+      type: apiKey
+      description:
+        API key provided via query parameter. It is optional (useful for
+        integrations that need GET requests), alternatively use Authorization header
+        with Bearer $ApiKey.
+      name: apiKey
+      in: query
