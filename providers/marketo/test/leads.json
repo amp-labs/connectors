@@ -1,0 +1,14 @@
+{
+  "requestId": "2a95#194f92cb8fa",
+  "result": [
+    {
+      "id": 1,
+      "firstName": "example472first",
+      "lastName": "example472last",
+      "email": "example472@example.com",
+      "updatedAt": "2024-03-20T06:45:20Z",
+      "createdAt": "2024-03-20T06:45:12Z"
+    }
+  ],
+  "success": true
+}

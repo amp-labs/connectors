@@ -1,6 +1,7 @@
 package marketo
 
 import (
+	"errors"
 	"strconv"
 	"strings"
 	"time"
@@ -36,12 +37,13 @@ func (c *Connector) constructURL(params common.ReadParams) (*urlbuilder.URL, err
 	return url, nil
 }
 
+// ref: https://developer.adobe.com/marketo-apis/api/mapi/#operation/getLeadsByFilterUsingGET
 func addFilteringIDQueries(urlbuilder *urlbuilder.URL, startIdx string) error {
 	ids := make([]string, batchSize)
 
 	idx, err := strconv.Atoi(startIdx)
 	if err != nil {
-		return err
+		return errors.Join(err, common.ErrNextPageInvalid)
 	}
 
 	for i := range ids {
@@ -65,12 +67,9 @@ func constructURLQueries(url *urlbuilder.URL, params common.ReadParams) error {
 	// If NextPage is set, then we're reading the next page of results.
 	if len(params.NextPage) > 0 {
 		if filtersByIDs(params.ObjectName) {
-			if err := addFilteringIDQueries(url, params.NextPage.String()); err != nil {
-				return err
-			}
-		} else {
-			url.WithQueryParam("nextPageToken", params.NextPage.String())
+			return addFilteringIDQueries(url, params.NextPage.String())
 		}
+		url.WithQueryParam("nextPageToken", params.NextPage.String())
 	}
 
 	return nil
