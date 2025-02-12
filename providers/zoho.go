@@ -93,7 +93,7 @@ func init() {
 	SetInfo(ZohoBugTracker, ProviderInfo{
 		DisplayName: "Zoho BugTracker",
 		AuthType:    Oauth2,
-		BaseURL:     " https://bugtracker.zoho.com",
+		BaseURL:     "https://bugtracker.zoho.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://accounts.zoho.com/oauth/v2/auth",
