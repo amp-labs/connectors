@@ -32,6 +32,19 @@ const (
 	Password              Oauth2OptsGrantType = "password"
 )
 
+// Defines values for SubscribeOptsRegistrationTiming.
+const (
+	SubscribeOptsRegistrationTimingInstallation SubscribeOptsRegistrationTiming = "installation"
+	SubscribeOptsRegistrationTimingIntegration  SubscribeOptsRegistrationTiming = "integration"
+	SubscribeOptsRegistrationTimingProviderApp  SubscribeOptsRegistrationTiming = "providerApp"
+)
+
+// Defines values for SubscribeOptsSubscriptionScope.
+const (
+	SubscribeOptsSubscriptionScopeInstallation SubscribeOptsSubscriptionScope = "installation"
+	SubscribeOptsSubscriptionScopeIntegration  SubscribeOptsSubscriptionScope = "integration"
+)
+
 // ApiKeyAsBasicOpts when this object is present, it means that this provider uses Basic Auth to actually collect an API key
 type ApiKeyAsBasicOpts struct {
 	// FieldUsed whether the API key should be used as the username or password.
@@ -200,7 +213,8 @@ type ProviderInfo struct {
 	PostAuthInfoNeeded bool `json:"postAuthInfoNeeded,omitempty"`
 
 	// ProviderOpts Additional provider-specific metadata.
-	ProviderOpts ProviderOpts `json:"providerOpts"`
+	ProviderOpts  ProviderOpts   `json:"providerOpts"`
+	SubscribeOpts *SubscribeOpts `json:"subscribeOpts,omitempty"`
 
 	// Support The supported features for the provider.
 	Support Support `json:"support" validate:"required"`
@@ -209,13 +223,40 @@ type ProviderInfo struct {
 // ProviderOpts Additional provider-specific metadata.
 type ProviderOpts map[string]string
 
+// SubscribeOpts defines model for SubscribeOpts.
+type SubscribeOpts struct {
+	// RegistrationTiming The timing of the registration.
+	RegistrationTiming SubscribeOptsRegistrationTiming `json:"registrationTiming"`
+
+	// SubscriptionScope The scope of the subscription.
+	SubscriptionScope SubscribeOptsSubscriptionScope `json:"subscriptionScope"`
+
+	// TargetURLScope The scope of the target URL.
+	TargetURLScope interface{} `json:"targetURLScope"`
+}
+
+// SubscribeOptsRegistrationTiming The timing of the registration.
+type SubscribeOptsRegistrationTiming string
+
+// SubscribeOptsSubscriptionScope The scope of the subscription.
+type SubscribeOptsSubscriptionScope string
+
+// SubscribeSupport defines model for SubscribeSupport.
+type SubscribeSupport struct {
+	Create      *bool `json:"create,omitempty"`
+	Delete      *bool `json:"delete,omitempty"`
+	PassThrough *bool `json:"passThrough,omitempty"`
+	Update      *bool `json:"update,omitempty"`
+}
+
 // Support The supported features for the provider.
 type Support struct {
-	BulkWrite BulkWriteSupport `json:"bulkWrite" validate:"required"`
-	Proxy     bool             `json:"proxy"`
-	Read      bool             `json:"read"`
-	Subscribe bool             `json:"subscribe"`
-	Write     bool             `json:"write"`
+	BulkWrite        BulkWriteSupport  `json:"bulkWrite" validate:"required"`
+	Proxy            bool              `json:"proxy"`
+	Read             bool              `json:"read"`
+	Subscribe        bool              `json:"subscribe"`
+	SubscribeSupport *SubscribeSupport `json:"subscribeSupport,omitempty"`
+	Write            bool              `json:"write"`
 }
 
 // TokenMetadataFields Fields to be used to extract token metadata from the token response.
