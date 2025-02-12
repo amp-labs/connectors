@@ -1,0 +1,11 @@
+{
+  "result": {
+    "made_sla": "true",
+    "upon_reject": "cancel",
+    "sys_updated_on": "2025-02-12 10:49:28",
+    "child_incidents": "0",
+    "task_effective_number": "INC0010009",
+    "number": "INC0010009",
+    "category": "inquiry"
+  }
+}

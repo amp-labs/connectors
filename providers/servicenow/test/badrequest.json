@@ -1,0 +1,7 @@
+{
+  "error": {
+    "message": "Invalid table lalala",
+    "detail": null
+  },
+  "status": "failure"
+}

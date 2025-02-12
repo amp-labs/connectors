@@ -11,6 +11,7 @@ type Connector struct {
 	BaseURL string
 	Module  common.Module
 	Client  *common.JSONHTTPClient
+	// This allows using xml client as well, If required.
 }
 
 func NewConnector(opts ...Option) (*Connector, error) {

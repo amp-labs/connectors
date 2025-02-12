@@ -1,0 +1,22 @@
+{
+  "result": [
+    {
+      "made_sla": "true",
+      "upon_reject": "cancel",
+      "sys_updated_on": "2021-01-21 23:31:42",
+      "child_incidents": "0",
+      "task_effective_number": "INC0008001",
+      "number": "INC0008001",
+      "sys_updated_by": "admin",
+      "opened_by": {
+        "link": "https://dev269415.service-now.com/api/now/v2/table/sys_user/6816f79cc0a8016401c5a33be04be441",
+        "value": "6816f79cc0a8016401c5a33be04be441"
+      },
+      "sys_created_on": "2021-01-15 21:04:34",
+      "sys_domain": {
+        "link": "https://dev269415.service-now.com/api/now/v2/table/sys_user_group/global",
+        "value": "global"
+      }
+    }
+  ]
+}
