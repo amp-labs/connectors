@@ -61,12 +61,12 @@ func fetchDataFields(
 	mtd *common.ObjectMetadata,
 	res *common.ListObjectMetadataResult,
 ) bool {
-	url, err := conn.buildReadURL(obj)
+	url, err := conn.buildURL(obj, metadataPageSize)
 	if err != nil {
 		return false
 	}
 
-	jsonResp, err := conn.Client.Get(ctx, url.String())
+	jsonResp, err := conn.Client.Get(ctx, url)
 	if err != nil {
 		return false
 	}
