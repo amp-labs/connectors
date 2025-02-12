@@ -69,6 +69,7 @@ func constructURLQueries(url *urlbuilder.URL, params common.ReadParams) error {
 		if filtersByIDs(params.ObjectName) {
 			return addFilteringIDQueries(url, params.NextPage.String())
 		}
+
 		url.WithQueryParam("nextPageToken", params.NextPage.String())
 	}
 

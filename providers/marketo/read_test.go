@@ -86,7 +86,8 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Done: true,
 			},
 			ExpectedErrs: nil,
-		}, {
+		},
+		{
 			Name: "Reading Next Page of Filtered Leads",
 			Input: common.ReadParams{
 				ObjectName: "leads",
