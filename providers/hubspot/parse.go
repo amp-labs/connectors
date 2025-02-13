@@ -140,7 +140,7 @@ func (c *Connector) getDataMarshaller(
 				Id:  id,
 			}
 
-			if len(fields) == 0 {
+			if len(fields) != 0 {
 				recordProperties, ok := record["properties"].(map[string]interface{})
 				if !ok {
 					return nil, ErrNotObject
