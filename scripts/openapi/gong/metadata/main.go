@@ -14,7 +14,22 @@ import (
 
 var (
 	ignoreEndpoints = []string{ // nolint:gochecknoglobals
+		"/me",
 
+		// I am guessing that custom field processing should be part of the deep connector
+		// implementation. Its possible that we would surface made up objects.
+		// Ex: /contacts/custom_fields => contacts_custom_fields object
+		// Ex: /inboxes/custom_fields => inboxes_custom_fields object
+		// Ignoring all endpoints concerning custom fields:
+		"*/custom_fields",
+
+		// You should go over docs and see if we need "rules" objects alongside "company_rules".
+		// Ignoring for now. If needed search for `objectEndpoints` variable for more info.
+		"/company/rules",
+		"/company/tags",
+	}
+	objectEndpoints = map[string]string{
+		// TODO maybe map company/tags to company_tags
 	}
 )
 
@@ -44,7 +59,7 @@ func main() {
 
 	objects, err := explorer.ReadObjectsGet(
 		api3.NewDenyPathStrategy(ignoreEndpoints),
-		nil, nil, locator,
+		objectEndpoints, nil, locator,
 	)
 	goutils.MustBeNil(err)
 
