@@ -184,6 +184,18 @@
             "subject": "subject"
           }
         },
+        "rules": {
+          "displayName": "Rules",
+          "path": "/rules",
+          "responseKey": "_results",
+          "fields": {
+            "_links": "_links",
+            "actions": "actions",
+            "id": "id",
+            "is_private": "is_private",
+            "name": "name"
+          }
+        },
         "shifts": {
           "displayName": "Shifts",
           "path": "/shifts",
@@ -196,6 +208,22 @@
             "name": "name",
             "times": "times",
             "timezone": "timezone",
+            "updated_at": "updated_at"
+          }
+        },
+        "tags": {
+          "displayName": "Tags",
+          "path": "/tags",
+          "responseKey": "_results",
+          "fields": {
+            "_links": "_links",
+            "created_at": "created_at",
+            "description": "description",
+            "highlight": "highlight",
+            "id": "id",
+            "is_private": "is_private",
+            "is_visible_in_conversation_lists": "is_visible_in_conversation_lists",
+            "name": "name",
             "updated_at": "updated_at"
           }
         },

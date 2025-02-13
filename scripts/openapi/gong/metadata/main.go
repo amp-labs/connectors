@@ -14,24 +14,37 @@ import (
 
 var (
 	ignoreEndpoints = []string{ // nolint:gochecknoglobals
+
 	}
 )
 
 func main() {
+	// Use either `explorerOption` or `locator`.
+	// Locator is intended when response has more than one field holding an array to resolve ambiguity.
+	// (Feel free to suggest naming improvements.)
+	// It seems locator is never called (given you pass `explorerOption`) because all responses have at max one array
+	// in the response, which is stored under the same "_results" key.
+	//
+	// In other words even if array would be called differently `explorerOption` would pick that, and you will see
+	// correct field at schema.json/modules/objects/<objectName>/responseKey.
+	explorerOption := api3.WithArrayItemAutoSelection()
+	locator := func(objectName, fieldName string) bool {
+		return fieldName == "_results"
+	}
+
 	explorer, err := openapi.FileManager.GetExplorer(
 		api3.WithDisplayNamePostProcessors(
 			api3.CamelCaseToSpaceSeparated,
 			api3.CapitalizeFirstLetterEveryWord,
 		),
 		api3.WithParameterFilterGetMethod(api3.OnlyOptionalQueryParameters),
+		explorerOption,
 	)
 	goutils.MustBeNil(err)
 
 	objects, err := explorer.ReadObjectsGet(
 		api3.NewDenyPathStrategy(ignoreEndpoints),
-		nil, nil, func(objectName, fieldName string) bool {
-			return fieldName == "_results"
-		},
+		nil, nil, locator,
 	)
 	goutils.MustBeNil(err)
 
