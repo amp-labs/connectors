@@ -12,7 +12,7 @@ import (
 
 const restAPIPrefix = "rest" //nolint:gochecknoglobals
 
-func (c *Connector) constructURL(params common.ReadParams) (*urlbuilder.URL, error) {
+func (c *Connector) constructReadURL(params common.ReadParams) (*urlbuilder.URL, error) {
 	url, err := c.getAPIURL(params.ObjectName)
 	if err != nil {
 		return nil, err
@@ -37,7 +37,15 @@ func (c *Connector) constructURL(params common.ReadParams) (*urlbuilder.URL, err
 	return url, nil
 }
 
-// ref: https://developer.adobe.com/marketo-apis/api/mapi/#operation/getLeadsByFilterUsingGET
+func (c *Connector) constructMetadataURL(objectName string) (*urlbuilder.URL, error) {
+	path, ok := hasMetadataResource(objectName)
+	if !ok {
+		return c.getAPIURL(objectName)
+	}
+
+	return urlbuilder.New(c.BaseURL, path)
+}
+
 func addFilteringIDQueries(urlbuilder *urlbuilder.URL, startIdx string) error {
 	ids := make([]string, batchSize)
 
