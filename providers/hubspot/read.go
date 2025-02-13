@@ -74,7 +74,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		rsp,
 		getRecords,
 		getNextRecordsURL,
-		c.getMarshalledData(ctx, config.ObjectName, config.AssociatedObjects),
+		c.getDataMarshaller(ctx, config.ObjectName, config.AssociatedObjects),
 		config.Fields,
 	)
 }
