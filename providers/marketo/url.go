@@ -37,6 +37,15 @@ func (c *Connector) constructReadURL(params common.ReadParams) (*urlbuilder.URL,
 	return url, nil
 }
 
+func (c *Connector) constructMetadataURL(objectName string) (*urlbuilder.URL, error) {
+	path, ok := hasMetadataResource(objectName)
+	if !ok {
+		return c.getAPIURL(objectName)
+	}
+
+	return urlbuilder.New(c.BaseURL, path)
+}
+
 func addFilteringIDQueries(urlbuilder *urlbuilder.URL, startIdx string) error {
 	ids := make([]string, batchSize)
 
