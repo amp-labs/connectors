@@ -12,7 +12,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	url, err := c.constructURL(config)
+	url, err := c.constructReadURL(config)
 	if err != nil {
 		return nil, err
 	}
