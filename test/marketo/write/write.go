@@ -41,7 +41,7 @@ func MainFn() int {
 }
 
 func testWriteLeads(ctx context.Context) error {
-	conn := marketo.GetMarketoConnectorW(ctx)
+	conn := marketo.GetMarketoConnectorLeads(ctx)
 
 	params := common.WriteParams{
 		ObjectName: "leads",
@@ -76,7 +76,7 @@ func testWriteLeads(ctx context.Context) error {
 }
 
 func testWriteOpportunities(ctx context.Context) error {
-	conn := marketo.GetMarketoConnectorW(ctx)
+	conn := marketo.GetMarketoConnectorLeads(ctx)
 
 	params := common.WriteParams{
 		ObjectName: "opportunities",
@@ -108,7 +108,7 @@ func testWriteOpportunities(ctx context.Context) error {
 }
 
 func testWriteOpportunitiesFail(ctx context.Context) error {
-	conn := marketo.GetMarketoConnectorW(ctx)
+	conn := marketo.GetMarketoConnectorLeads(ctx)
 
 	params := common.WriteParams{
 		ObjectName: "opportunities",
