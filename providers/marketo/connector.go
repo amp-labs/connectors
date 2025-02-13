@@ -1,8 +1,6 @@
 package marketo
 
 import (
-	"strings"
-
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -56,9 +54,8 @@ func (c *Connector) Provider() providers.Provider {
 
 func (c *Connector) getAPIURL(objName string) (*urlbuilder.URL, error) {
 	objName = common.AddSuffixIfNotExists(objName, ".json")
-	bURL := strings.Join([]string{restAPIPrefix, c.Module.Path(), objName}, "/")
 
-	return urlbuilder.New(c.BaseURL, bURL)
+	return urlbuilder.New(c.BaseURL, restAPIPrefix, c.Module.Path(), objName)
 }
 
 func (c *Connector) String() string {

@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
+	"log/slog"
 	"os"
 	"time"
 
@@ -14,26 +14,27 @@ import (
 )
 
 func main() {
-	os.Exit(MainFn())
-}
+	ctx := context.Background()
 
-func MainFn() int {
-	err := testReadChannels(context.Background())
+	err := testReadChannels(ctx)
 	if err != nil {
-		return 1
+		slog.Error(err.Error())
 	}
 
-	err = testReadSmartCampaigns(context.Background())
+	err = testReadSmartCampaigns(ctx)
 	if err != nil {
-		return 1
+		slog.Error(err.Error())
 	}
 
-	err = testReadCampaigns(context.Background())
+	err = testReadCampaigns(ctx)
 	if err != nil {
-		return 1
+		slog.Error(err.Error())
 	}
 
-	return 0
+	err = testReadLeads(ctx)
+	if err != nil {
+		slog.Error(err.Error())
+	}
 }
 
 func testReadChannels(ctx context.Context) error {
@@ -46,7 +47,7 @@ func testReadChannels(ctx context.Context) error {
 
 	res, err := conn.Read(ctx, params)
 	if err != nil {
-		log.Fatal(err.Error())
+		return err
 	}
 
 	// Print the results
@@ -72,7 +73,7 @@ func testReadSmartCampaigns(ctx context.Context) error {
 
 	res, err := conn.Read(ctx, params)
 	if err != nil {
-		log.Fatal(err.Error())
+		return err
 	}
 
 	// Print the results
@@ -88,7 +89,7 @@ func testReadSmartCampaigns(ctx context.Context) error {
 }
 
 func testReadCampaigns(ctx context.Context) error {
-	conn := mk.GetMarketoConnectorW(ctx)
+	conn := mk.GetMarketoConnectorLeads(ctx)
 
 	params := common.ReadParams{
 		ObjectName: "campaigns",
@@ -98,7 +99,33 @@ func testReadCampaigns(ctx context.Context) error {
 
 	res, err := conn.Read(ctx, params)
 	if err != nil {
-		log.Fatal(err.Error())
+		return err
+	}
+
+	// Print the results
+	jsonStr, err := json.MarshalIndent(res, "", "  ")
+	if err != nil {
+		return fmt.Errorf("error marshalling JSON: %w", err)
+	}
+
+	_, _ = os.Stdout.Write(jsonStr)
+	_, _ = os.Stdout.WriteString("\n")
+
+	return nil
+}
+
+func testReadLeads(ctx context.Context) error {
+	conn := mk.GetMarketoConnectorLeads(ctx)
+
+	params := common.ReadParams{
+		ObjectName: "leads",
+		Fields:     connectors.Fields("id", "email"),
+		// NextPage:   "301",
+	}
+
+	res, err := conn.Read(ctx, params)
+	if err != nil {
+		return err
 	}
 
 	// Print the results
