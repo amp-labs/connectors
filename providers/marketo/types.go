@@ -35,7 +35,7 @@ func constructErrMessage(a any) (string, error) {
 	return fmt.Sprint(s[0]["reasons"]), nil
 }
 
-func filtersByIDs(object string) bool {
+func paginatesByIDs(object string) bool {
 	// Most Marketo APIs requires filtering when reading, Important objects are Leads, Custom Objects, Companies
 	// With this we use the general filter parameter `id` and iterate over the records.
 	return slices.Contains(idFilteringObjects, object)

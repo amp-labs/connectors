@@ -14,7 +14,7 @@ func getNextRecordsURL(node *ajson.Node) (string, error) {
 }
 
 func constructNextRecordsURL(object string) common.NextPageFunc {
-	if filtersByIDs(object) {
+	if paginatesByIDs(object) {
 		// Incase of Reading Records from the Objects requiring Filtering.
 		// we construct Next-Page URLs using the filtered ids.
 		// constructNextPageFilteredURL creates the next-page url by appendig the next page ids in the query parameters

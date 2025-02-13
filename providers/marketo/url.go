@@ -58,7 +58,7 @@ func addFilteringIDQueries(urlbuilder *urlbuilder.URL, startIdx string) error {
 }
 
 func constructURLQueries(url *urlbuilder.URL, params common.ReadParams) error {
-	if filtersByIDs(params.ObjectName) && len(params.NextPage) == 0 {
+	if paginatesByIDs(params.ObjectName) && len(params.NextPage) == 0 {
 		if err := addFilteringIDQueries(url, "1"); err != nil {
 			return err
 		}
@@ -66,7 +66,7 @@ func constructURLQueries(url *urlbuilder.URL, params common.ReadParams) error {
 
 	// If NextPage is set, then we're reading the next page of results.
 	if len(params.NextPage) > 0 {
-		if filtersByIDs(params.ObjectName) {
+		if paginatesByIDs(params.ObjectName) {
 			return addFilteringIDQueries(url, params.NextPage.String())
 		}
 
