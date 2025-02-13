@@ -430,9 +430,9 @@ type ObjectEvents struct {
 type ObjectName string
 
 type SubscribeParams struct {
-	RegistrationRef    string // optional, needed for some providers like Hubspot
+	Request            any
+	RegistrationResult *RegistrationResult // optional, needed for some providers like Hubspot, Salesforce
 	SubscriptionEvents map[ObjectName]ObjectEvents
-	TargetURL          string // optional
 }
 
 type SubscriptionResult struct { // this corresponds to each API call.
