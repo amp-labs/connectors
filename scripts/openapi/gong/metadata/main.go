@@ -30,7 +30,7 @@ func main() {
 	objects, err := explorer.ReadObjectsGet(
 		api3.NewDenyPathStrategy(ignoreEndpoints),
 		nil, nil, func(objectName, fieldName string) bool {
-			return fieldName == ""
+			return fieldName == "_results"
 		},
 	)
 	goutils.MustBeNil(err)

@@ -1,3 +1,246 @@
 {
-  "modules": {}
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "",
+      "objects": {
+        "accounts": {
+          "displayName": "Accounts",
+          "path": "/accounts",
+          "responseKey": "_results",
+          "fields": {
+            "_links": "_links",
+            "created_at": "created_at",
+            "custom_fields": "custom_fields",
+            "description": "description",
+            "domains": "domains",
+            "external_id": "external_id",
+            "id": "id",
+            "logo_url": "logo_url",
+            "name": "name",
+            "updated_at": "updated_at"
+          }
+        },
+        "channels": {
+          "displayName": "Channels",
+          "path": "/channels",
+          "responseKey": "_results",
+          "fields": {
+            "_links": "_links",
+            "address": "address",
+            "id": "id",
+            "is_private": "is_private",
+            "is_valid": "is_valid",
+            "name": "name",
+            "send_as": "send_as",
+            "settings": "settings",
+            "types": "types"
+          }
+        },
+        "contact_groups": {
+          "displayName": "Contact Groups",
+          "path": "/contact_groups",
+          "responseKey": "_results",
+          "fields": {
+            "_links": "_links",
+            "id": "id",
+            "is_private": "is_private",
+            "name": "name"
+          }
+        },
+        "contact_lists": {
+          "displayName": "Contact Lists",
+          "path": "/contact_lists",
+          "responseKey": "_results",
+          "fields": {
+            "_links": "_links",
+            "id": "id",
+            "is_private": "is_private",
+            "name": "name"
+          }
+        },
+        "contacts": {
+          "displayName": "Contacts",
+          "path": "/contacts",
+          "responseKey": "_results",
+          "fields": {
+            "_links": "_links",
+            "avatar_url": "avatar_url",
+            "custom_fields": "custom_fields",
+            "description": "description",
+            "groups": "groups",
+            "handles": "handles",
+            "id": "id",
+            "is_private": "is_private",
+            "is_spammer": "is_spammer",
+            "links": "links",
+            "lists": "lists",
+            "name": "name"
+          }
+        },
+        "conversations": {
+          "displayName": "Conversations",
+          "path": "/conversations",
+          "responseKey": "_results",
+          "fields": {
+            "_links": "_links",
+            "assignee": "assignee",
+            "created_at": "created_at",
+            "custom_fields": "custom_fields",
+            "id": "id",
+            "is_private": "is_private",
+            "links": "links",
+            "metadata": "metadata",
+            "recipient": "recipient",
+            "scheduled_reminders": "scheduled_reminders",
+            "status": "status",
+            "status_category": "status_category",
+            "status_id": "status_id",
+            "subject": "subject",
+            "tags": "tags",
+            "ticket_ids": "ticket_ids",
+            "waiting_since": "waiting_since"
+          }
+        },
+        "events": {
+          "displayName": "Events",
+          "path": "/events",
+          "responseKey": "_results",
+          "fields": {
+            "_links": "_links",
+            "conversation": "conversation",
+            "emitted_at": "emitted_at",
+            "id": "id",
+            "source": "source",
+            "target": "target",
+            "type": "type"
+          }
+        },
+        "inboxes": {
+          "displayName": "Inboxes",
+          "path": "/inboxes",
+          "responseKey": "_results",
+          "fields": {
+            "_links": "_links",
+            "custom_fields": "custom_fields",
+            "id": "id",
+            "is_private": "is_private",
+            "is_public": "is_public",
+            "name": "name"
+          }
+        },
+        "knowledge_bases": {
+          "displayName": "Knowledge Bases",
+          "path": "/knowledge_bases",
+          "responseKey": "_results",
+          "fields": {
+            "_links": "_links",
+            "created_at": "created_at",
+            "id": "id",
+            "locale": "locale",
+            "name": "name",
+            "status": "status",
+            "type": "type",
+            "updated_at": "updated_at"
+          }
+        },
+        "links": {
+          "displayName": "Links",
+          "path": "/links",
+          "responseKey": "_results",
+          "fields": {
+            "_links": "_links",
+            "custom_fields": "custom_fields",
+            "external_url": "external_url",
+            "id": "id",
+            "name": "name",
+            "type": "type"
+          }
+        },
+        "message_template_folders": {
+          "displayName": "Message Template Folders",
+          "path": "/message_template_folders",
+          "responseKey": "_results",
+          "fields": {
+            "_links": "_links",
+            "created_at": "created_at",
+            "id": "id",
+            "name": "name",
+            "updated_at": "updated_at"
+          }
+        },
+        "message_templates": {
+          "displayName": "Message Templates",
+          "path": "/message_templates",
+          "responseKey": "_results",
+          "fields": {
+            "_links": "_links",
+            "attachments": "attachments",
+            "body": "body",
+            "id": "id",
+            "inbox_ids": "inbox_ids",
+            "is_available_for_all_inboxes": "is_available_for_all_inboxes",
+            "name": "name",
+            "subject": "subject"
+          }
+        },
+        "shifts": {
+          "displayName": "Shifts",
+          "path": "/shifts",
+          "responseKey": "_results",
+          "fields": {
+            "_links": "_links",
+            "color": "color",
+            "created_at": "created_at",
+            "id": "id",
+            "name": "name",
+            "times": "times",
+            "timezone": "timezone",
+            "updated_at": "updated_at"
+          }
+        },
+        "teammate_groups": {
+          "displayName": "Teammate Groups",
+          "path": "/teammate_groups",
+          "responseKey": "_results",
+          "fields": {
+            "_links": "_links",
+            "description": "description",
+            "id": "id",
+            "is_managed_by_scim": "is_managed_by_scim",
+            "name": "name",
+            "permissions": "permissions"
+          }
+        },
+        "teammates": {
+          "displayName": "Teammates",
+          "path": "/teammates",
+          "responseKey": "_results",
+          "fields": {
+            "_links": "_links",
+            "custom_fields": "custom_fields",
+            "email": "email",
+            "first_name": "first_name",
+            "id": "id",
+            "is_admin": "is_admin",
+            "is_available": "is_available",
+            "is_blocked": "is_blocked",
+            "last_name": "last_name",
+            "type": "type",
+            "username": "username"
+          }
+        },
+        "teams": {
+          "displayName": "Teams",
+          "path": "/teams",
+          "responseKey": "_results",
+          "fields": {
+            "_links": "_links",
+            "id": "id",
+            "name": "name"
+          }
+        }
+      }
+    }
+  }
 }
