@@ -8,6 +8,7 @@ const (
 	nextURLKey          = "next"
 	metadataPageSize    = "1"
 	pageSize            = "100"
+	dataResponseKey     = "_results"
 )
 
 func (conn *Connector) buildURL(objectName string, pageSize string) (string, error) {
