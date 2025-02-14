@@ -1,0 +1,20 @@
+{
+  "_pagination": { "next": null },
+  "_links": { "self": "https://ampersand.api.frontapp.com/teams?limit=1" },
+  "_results": [
+    {
+      "_links": {
+        "self": "https://ampersand.api.frontapp.com/teams/tim_692ho"
+      },
+      "id": "tim_692ho",
+      "name": "Ampersand"
+    },
+    {
+      "_links": {
+        "self": "https://ampersand.api.frontapp.com/teams/tim_692jg"
+      },
+      "id": "tim_692jg",
+      "name": "Sandbox workspace"
+    }
+  ]
+}
