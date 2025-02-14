@@ -18,6 +18,7 @@ require (
 	github.com/spf13/viper v1.19.0
 	github.com/spyzhov/ajson v0.9.6
 	github.com/stretchr/testify v1.10.0
+	gitlab.com/c0b/go-ordered-json v0.0.0-20201030195603-febf46534d5a
 	golang.org/x/exp v0.0.0-20250103183323-7d7fa50e5329
 	golang.org/x/oauth2 v0.26.0
 	golang.org/x/text v0.22.0
@@ -63,6 +64,6 @@ require (
 require (
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
+	gopkg.in/yaml.v3 v3.0.1
 	gotest.tools/v3 v3.5.2
 )
