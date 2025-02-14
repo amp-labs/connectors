@@ -35,7 +35,7 @@ func nextRecordsURL(url *urlbuilder.URL) common.NextPageFunc {
 			return "", err
 		}
 
-		startValue, err := jsonquery.New(node, "additional_data", "pagination").Integer("next_start", true)
+		startValue, err := jsonquery.New(node, "additional_data", "pagination").IntegerOptional("next_start")
 		if err != nil {
 			return "", err
 		}

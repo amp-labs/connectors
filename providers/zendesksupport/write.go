@@ -68,7 +68,7 @@ func constructWriteResult(config common.WriteParams, body *ajson.Node) (*common.
 	}
 	// nested node now must be not null, carry on
 
-	rawID, err := jsonquery.New(nested).Integer("id", true)
+	rawID, err := jsonquery.New(nested).IntegerOptional("id")
 	if err != nil {
 		return nil, err
 	}

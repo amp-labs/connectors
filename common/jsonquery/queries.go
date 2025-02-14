@@ -51,10 +51,26 @@ func (q *Query) Object(key string, optional bool) (*ajson.Node, error) {
 	return node, nil
 }
 
-// Integer returns integer.
-// Optional argument set to false will create error in case of missing value.
+// IntegerOptional returns integer if present.
+// If the entity at the key path is not an integer, an error is returned.
 // Empty key is interpreter as "this", in other words current node.
-func (q *Query) Integer(key string, optional bool) (*int64, error) {
+func (q *Query) IntegerOptional(key string) (*int64, error) {
+	return q.queryInteger(key, true)
+}
+
+// IntegerRequired returns integer.
+// If the entity at the key path is not an integer or is missing, an error is returned.
+// Empty key is interpreter as "this", in other words current node.
+func (q *Query) IntegerRequired(key string) (int64, error) {
+	integer, err := q.queryInteger(key, false)
+	if err != nil {
+		return 0, err
+	}
+
+	return *integer, nil
+}
+
+func (q *Query) queryInteger(key string, optional bool) (*int64, error) {
 	node, err := q.getInnerKey(key, optional)
 	if err != nil {
 		return nil, err

@@ -36,12 +36,12 @@ func constructNextPageFilteredURL(node *ajson.Node) (string, error) {
 	// We'd have to check for the next page records, also due deletes the is also a probability of having more records
 	// even if the size do not reach 300.
 	if len(data) > 0 {
-		lastRecordID, err := jsonquery.New(data[len(data)-1]).Integer("id", false)
+		lastRecordID, err := jsonquery.New(data[len(data)-1]).IntegerRequired("id")
 		if err != nil {
 			return "", err
 		}
 
-		return strconv.Itoa(int(*lastRecordID) + 1), nil
+		return strconv.Itoa(int(lastRecordID) + 1), nil
 	}
 
 	return "", nil

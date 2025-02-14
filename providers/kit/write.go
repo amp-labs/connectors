@@ -61,7 +61,7 @@ func constructWriteResult(objName string, body *ajson.Node) (*common.WriteResult
 		return nil, err
 	}
 
-	recordID, err := jsonquery.New(objectResponse).Integer("id", true)
+	recordID, err := jsonquery.New(objectResponse).IntegerOptional("id")
 	if err != nil {
 		return nil, err
 	}

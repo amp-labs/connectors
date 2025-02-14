@@ -23,7 +23,7 @@ func getNextRecords(node *ajson.Node) (string, error) {
 			return "", err
 		}
 
-		totalPages, err := jsonquery.New(pagination).Integer("total_pages", true)
+		totalPages, err := jsonquery.New(pagination).IntegerOptional("total_pages")
 		if err != nil {
 			return "", err
 		}

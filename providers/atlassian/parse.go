@@ -77,7 +77,7 @@ func getNextRecords(node *ajson.Node) (string, error) {
 		return "", nil
 	}
 
-	startAt, err := jsonquery.New(node).Integer("startAt", true)
+	startAt, err := jsonquery.New(node).IntegerOptional("startAt")
 	if err != nil {
 		return "", err
 	}

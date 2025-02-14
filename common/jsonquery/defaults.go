@@ -6,7 +6,7 @@ import (
 )
 
 func (q *Query) IntegerWithDefault(key string, defaultValue int64) (int64, error) {
-	result, err := q.Integer(key, true)
+	result, err := q.IntegerOptional(key)
 	if err != nil {
 		return 0, err
 	}
@@ -44,7 +44,7 @@ func (q *Query) TextWithDefault(key string, defaultValue string) (string, error)
 		// Current data under `key` is not a string.
 		// Explore other data types.
 		// NOTE: as of now we check only if it is an integer.
-		number, err := q.Integer(key, true)
+		number, err := q.IntegerOptional(key)
 		if err != nil {
 			return "", err
 		}

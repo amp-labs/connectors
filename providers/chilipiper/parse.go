@@ -24,12 +24,12 @@ func nextRecordsURL(url string) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
 		jsonQuery := jsonquery.New(node)
 
-		page, err := jsonQuery.Integer(pageKey, false)
+		page, err := jsonQuery.IntegerRequired(pageKey)
 		if err != nil {
 			return "", err
 		}
 
-		totalRecords, err := jsonQuery.Integer(totalKey, false)
+		totalRecords, err := jsonQuery.IntegerRequired(totalKey)
 		if err != nil {
 			return "", err
 		}
@@ -39,8 +39,8 @@ func nextRecordsURL(url string) common.NextPageFunc {
 			return "", err
 		}
 
-		if hasMorePages(pagesize, int(*page), int(*totalRecords)) {
-			pg := strconv.Itoa(int(*page + 1))
+		if hasMorePages(pagesize, int(page), int(totalRecords)) {
+			pg := strconv.Itoa(int(page + 1))
 
 			nextURL, err := urlbuilder.New(url)
 			if err != nil {

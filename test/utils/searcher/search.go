@@ -58,14 +58,14 @@ func Find[T any](res *common.ReadResult, keys []Key, value T) map[string]any {
 					return data.Fields
 				}
 			case Integer:
-				actual, err := jsonquery.New(node).Integer(key.At, false)
+				actual, err := jsonquery.New(node).IntegerRequired(key.At)
 				if err != nil {
 					slog.Warn("integer", "error", err)
 
 					continue
 				}
 
-				if fmt.Sprintf("%v", *actual) == fmt.Sprintf("%v", value) {
+				if fmt.Sprintf("%v", actual) == fmt.Sprintf("%v", value) {
 					return data.Fields
 				}
 			case Array:
