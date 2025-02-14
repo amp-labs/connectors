@@ -52,7 +52,7 @@ func constructWriteResult(body *ajson.Node) (*common.WriteResult, error) {
 		return nil, err
 	}
 
-	nested, err := jsonquery.New(body).Object("data", false)
+	nested, err := jsonquery.New(body).ObjectRequired("data")
 	if err != nil {
 		return nil, err
 	}

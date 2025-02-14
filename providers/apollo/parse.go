@@ -12,7 +12,7 @@ import (
 func getNextRecords(node *ajson.Node) (string, error) {
 	var nextPage string
 
-	pagination, err := jsonquery.New(node).Object("pagination", true)
+	pagination, err := jsonquery.New(node).ObjectOptional("pagination")
 	if err != nil {
 		return "", err
 	}

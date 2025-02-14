@@ -9,7 +9,7 @@ import (
 
 func makeNextRecordsURL(reqLink *urlbuilder.URL) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
-		pagination, err := jsonquery.New(node).Object("pagination", true)
+		pagination, err := jsonquery.New(node).ObjectOptional("pagination")
 		if err != nil {
 			return "", err
 		}

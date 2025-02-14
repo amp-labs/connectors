@@ -125,7 +125,7 @@ func prepareWritePayload(config common.WriteParams) (any, error) {
 }
 
 func constructWriteResult(body *ajson.Node) (*common.WriteResult, error) {
-	nested, err := jsonquery.New(body).Object("data", false)
+	nested, err := jsonquery.New(body).ObjectRequired("data")
 	if err != nil {
 		return nil, err
 	}

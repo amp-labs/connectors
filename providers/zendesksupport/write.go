@@ -50,7 +50,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 }
 
 func constructWriteResult(config common.WriteParams, body *ajson.Node) (*common.WriteResult, error) {
-	nested, err := jsonquery.New(body).Object(config.ObjectName, true)
+	nested, err := jsonquery.New(body).ObjectOptional(config.ObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -58,9 +58,8 @@ func constructWriteResult(config common.WriteParams, body *ajson.Node) (*common.
 	if nested == nil {
 		// Field should be in singular form. Either one will be matched.
 		// This one is NOT optional.
-		nested, err = jsonquery.New(body).Object(
+		nested, err = jsonquery.New(body).ObjectOptional(
 			naming.NewSingularString(config.ObjectName).String(),
-			false,
 		)
 		if err != nil {
 			return nil, err

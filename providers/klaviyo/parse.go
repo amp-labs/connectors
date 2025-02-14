@@ -39,7 +39,7 @@ func flattenRecords(arr []*ajson.Node) ([]map[string]any, error) {
 	for index, element := range arr {
 		const keyAttributes = "attributes"
 
-		attributes, err := jsonquery.New(element).Object(keyAttributes, true)
+		attributes, err := jsonquery.New(element).ObjectOptional(keyAttributes)
 		if err != nil {
 			return nil, err
 		}

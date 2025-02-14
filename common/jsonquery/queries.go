@@ -27,10 +27,24 @@ func New(node *ajson.Node, zoom ...string) *Query {
 	}
 }
 
+// ObjectOptional returns node object if present.
+// If the entity at the key path is not a node object, an error is returned.
+// Empty key is interpreter as "this", in other words current node.
+func (q *Query) ObjectOptional(key string) (*ajson.Node, error) {
+	return q.queryObject(key, true)
+}
+
+// ObjectRequired returns node object.
+// If the entity at the key path is not a node object or is missing, an error is returned.
+// Empty key is interpreter as "this", in other words current node.
+func (q *Query) ObjectRequired(key string) (*ajson.Node, error) {
+	return q.queryObject(key, false)
+}
+
 // Object returns json object.
 // Optional argument set to false will create error in case of missing value.
 // Empty key is interpreter as "this", in other words current node.
-func (q *Query) Object(key string, optional bool) (*ajson.Node, error) {
+func (q *Query) queryObject(key string, optional bool) (*ajson.Node, error) {
 	node, err := q.getInnerKey(key, optional)
 	if err != nil {
 		return nil, err

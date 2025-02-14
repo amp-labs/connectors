@@ -82,7 +82,7 @@ func Find[T any](res *common.ReadResult, keys []Key, value T) map[string]any {
 			case Object:
 				fallthrough
 			default:
-				node, err = jsonquery.New(node).Object(key.At, false)
+				node, err = jsonquery.New(node).ObjectRequired(key.At)
 				if err != nil {
 					slog.Warn("object", "error", err)
 
