@@ -139,10 +139,26 @@ func (q *Query) queryString(key string, optional bool) (*string, error) {
 	return &txt, nil
 }
 
-// Bool returns boolean.
-// Optional argument set to false will create error in case of missing value.
-// Empty key is interpreter as "this", in other words current node.
-func (q *Query) Bool(key string, optional bool) (*bool, error) {
+// BoolOptional returns boolean if present.
+// If the entity at the key path is not a boolean, an error is returned.
+// Empty key is interpreted as "this", in other words a current node.
+func (q *Query) BoolOptional(key string) (*bool, error) {
+	return q.queryBool(key, true)
+}
+
+// BoolRequired returns boolean.
+// If the entity at the key path is not a boolean or is missing, an error is returned.
+// Empty key is interpreted as "this", in other words a current node.
+func (q *Query) BoolRequired(key string) (bool, error) {
+	flag, err := q.queryBool(key, false)
+	if err != nil {
+		return false, err
+	}
+
+	return *flag, nil
+}
+
+func (q *Query) queryBool(key string, optional bool) (*bool, error) {
 	node, err := q.getInnerKey(key, optional)
 	if err != nil {
 		return nil, err

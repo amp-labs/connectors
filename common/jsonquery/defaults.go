@@ -60,7 +60,7 @@ func (q *Query) TextWithDefault(key string, defaultValue string) (string, error)
 }
 
 func (q *Query) BoolWithDefault(key string, defaultValue bool) (bool, error) {
-	result, err := q.Bool(key, true)
+	result, err := q.BoolOptional(key)
 	if err != nil {
 		return false, err
 	}

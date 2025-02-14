@@ -15,7 +15,7 @@ func makeNextRecordsURL(reqLink *urlbuilder.URL) common.NextPageFunc {
 		}
 
 		if pagination != nil {
-			hasNextPage, err := jsonquery.New(pagination).Bool("has_next_page", true)
+			hasNextPage, err := jsonquery.New(pagination).BoolOptional("has_next_page")
 			if err != nil {
 				return "", err
 			}

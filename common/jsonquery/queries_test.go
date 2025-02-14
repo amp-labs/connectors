@@ -310,7 +310,7 @@ func TestQueryBool(t *testing.T) { // nolint:funlen
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			output, err := New(j, tt.input.zoom...).Bool(tt.input.key, tt.input.optional)
+			output, err := New(j, tt.input.zoom...).queryBool(tt.input.key, tt.input.optional)
 			testutils.CheckOutputWithError(t, tt.name, tt.expected, tt.expectedErr, output, err)
 		})
 	}

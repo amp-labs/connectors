@@ -52,7 +52,7 @@ func parseWriteResult(rsp *common.JSONHTTPResponse) (*common.WriteResult, error)
 		return nil, err
 	}
 
-	success, err := jsonquery.New(body).Bool("success", false)
+	success, err := jsonquery.New(body).BoolRequired("success")
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +62,7 @@ func parseWriteResult(rsp *common.JSONHTTPResponse) (*common.WriteResult, error)
 	return &common.WriteResult{
 		RecordId: recordID,
 		Errors:   errors,
-		Success:  *success,
+		Success:  success,
 	}, nil
 }
 
