@@ -1,0 +1,9 @@
+{
+  "_pagination": {
+    "next": null
+  },
+  "_links": {
+    "self": "https://ampersand.api.frontapp.com/contact_lists"
+  },
+  "_results": []
+}

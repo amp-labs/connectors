@@ -1,0 +1,21 @@
+{
+  "_pagination": { "next": null },
+  "_links": { "self": "https://ampersand.api.frontapp.com/contacts?limit=100" },
+  "_results": [
+    {
+      "_links": {
+        "self": "https://ampersand.api.frontapp.com/contacts/crd_41fx7bw",
+        "related": {
+          "notes": "https://ampersand.api.frontapp.com/contacts/crd_41fx7bw/notes",
+          "conversations": "https://ampersand.api.frontapp.com/contacts/crd_41fx7bw/conversations",
+          "owner": null
+        }
+      },
+      "id": "crd_41fx7bw",
+      "name": "Willy Hernandez",
+      "description": "",
+      "updated_at": 1715626085.049,
+      "is_private": false
+    }
+  ]
+}
