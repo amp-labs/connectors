@@ -39,7 +39,7 @@ func getNextRecords(node *ajson.Node) (string, error) {
 // recordsWrapperFunc returns the records using the objectName dynamically.
 func recordsWrapperFunc(obj string) common.RecordsFunc {
 	return func(node *ajson.Node) ([]map[string]any, error) {
-		result, err := jsonquery.New(node).Array(obj, true)
+		result, err := jsonquery.New(node).ArrayOptional(obj)
 		if err != nil {
 			return nil, err
 		}
@@ -55,7 +55,7 @@ func searchRecords(fld string) common.RecordsFunc {
 	fld = constructSupportedObjectName(fld)
 
 	return func(node *ajson.Node) ([]map[string]any, error) {
-		result, err := jsonquery.New(node).Array(fld, true)
+		result, err := jsonquery.New(node).ArrayOptional(fld)
 		if err != nil {
 			return nil, err
 		}

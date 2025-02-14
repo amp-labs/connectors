@@ -71,7 +71,7 @@ func Find[T any](res *common.ReadResult, keys []Key, value T) map[string]any {
 			case Array:
 				var nodes []*ajson.Node
 
-				nodes, err = jsonquery.New(node).Array(key.At, false)
+				nodes, err = jsonquery.New(node).ArrayRequired(key.At)
 				if err != nil {
 					slog.Warn("array", "error", err)
 

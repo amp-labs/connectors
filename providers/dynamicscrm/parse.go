@@ -6,7 +6,7 @@ import (
 )
 
 func getRecords(node *ajson.Node) ([]map[string]any, error) {
-	arr, err := jsonquery.New(node).Array("value", false)
+	arr, err := jsonquery.New(node).ArrayRequired("value")
 	if err != nil {
 		return nil, err
 	}

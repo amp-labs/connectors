@@ -410,7 +410,7 @@ func TestQueryArray(t *testing.T) { // nolint:funlen
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			output, err := New(j, tt.input.zoom...).Array(tt.input.key, tt.input.optional)
+			output, err := New(j, tt.input.zoom...).queryArray(tt.input.key, tt.input.optional)
 
 			if !errors.Is(err, tt.expectedErr) {
 				t.Fatalf("%s: expected: (%v), got: (%v)", tt.name, tt.expectedErr, err)

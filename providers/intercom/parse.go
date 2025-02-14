@@ -38,7 +38,7 @@ func getRecords(node *ajson.Node) ([]map[string]any, error) {
 		return nil, err
 	}
 
-	arr, err := jsonquery.New(node).Array(arrKey, false)
+	arr, err := jsonquery.New(node).ArrayRequired(arrKey)
 	if err != nil {
 		return nil, err
 	}

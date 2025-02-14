@@ -68,7 +68,7 @@ func parseWriteResult(rsp *common.JSONHTTPResponse) (*common.WriteResult, error)
 
 // getErrors returns the errors from the response.
 func getErrors(node *ajson.Node) ([]any, error) {
-	arr, err := jsonquery.New(node).Array("errors", true)
+	arr, err := jsonquery.New(node).ArrayOptional("errors")
 	if err != nil {
 		return nil, err
 	}

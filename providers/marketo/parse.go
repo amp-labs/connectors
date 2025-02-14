@@ -27,7 +27,7 @@ func constructNextRecordsURL(object string) common.NextPageFunc {
 func constructNextPageFilteredURL(node *ajson.Node) (string, error) {
 	jsonParser := jsonquery.New(node)
 
-	data, err := jsonParser.Array("result", false)
+	data, err := jsonParser.ArrayRequired("result")
 	if err != nil {
 		return "", err
 	}
@@ -49,7 +49,7 @@ func constructNextPageFilteredURL(node *ajson.Node) (string, error) {
 
 // getRecords returns the records from the response.
 func getRecords(node *ajson.Node) ([]map[string]any, error) {
-	result, err := jsonquery.New(node).Array("result", true)
+	result, err := jsonquery.New(node).ArrayOptional("result")
 	if err != nil {
 		return nil, err
 	}

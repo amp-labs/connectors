@@ -180,10 +180,24 @@ func (q *Query) queryBool(key string, optional bool) (*bool, error) {
 	return &flag, nil
 }
 
+// ArrayOptional returns array of nodes if present.
+// If the entity at the key path is not an array, an error is returned.
+// Empty key is interpreted as "this", in other words a current node.
+func (q *Query) ArrayOptional(key string) ([]*ajson.Node, error) {
+	return q.queryArray(key, true)
+}
+
+// ArrayRequired returns array of nodes.
+// If the entity at the key path is not an array or is missing, an error is returned.
+// Empty key is interpreted as "this", in other words a current node.
+func (q *Query) ArrayRequired(key string) ([]*ajson.Node, error) {
+	return q.queryArray(key, false)
+}
+
 // Array returns list of nodes.
 // Optional argument set to false will create error in case of missing value.
 // Empty key is interpreter as "this", in other words current node.
-func (q *Query) Array(key string, optional bool) ([]*ajson.Node, error) {
+func (q *Query) queryArray(key string, optional bool) ([]*ajson.Node, error) {
 	node, err := q.getInnerKey(key, optional)
 	if err != nil {
 		return nil, err
@@ -203,16 +217,4 @@ func (q *Query) Array(key string, optional bool) ([]*ajson.Node, error) {
 	}
 
 	return arr, nil
-}
-
-// ArraySize returns the array size located under key.
-// It is assumed that array value must be not null and present.
-// Empty key is interpreter as "this", in other words current node.
-func (q *Query) ArraySize(key string) (int64, error) {
-	arr, err := q.Array(key, false)
-	if err != nil {
-		return 0, err
-	}
-
-	return int64(len(arr)), nil
 }

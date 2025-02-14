@@ -31,7 +31,7 @@ Visual example of what will happen to each property:
 	}
 */
 func getRecords(node *ajson.Node) ([]map[string]any, error) {
-	arr, err := jsonquery.New(node).Array("issues", false)
+	arr, err := jsonquery.New(node).ArrayRequired("issues")
 	if err != nil {
 		return nil, err
 	}

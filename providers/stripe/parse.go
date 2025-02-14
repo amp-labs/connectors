@@ -25,7 +25,7 @@ func makeNextRecordsURL(url *urlbuilder.URL) common.NextPageFunc {
 			return "", nil
 		}
 
-		data, err := jsonquery.New(node).Array("data", true)
+		data, err := jsonquery.New(node).ArrayOptional("data")
 		if err != nil {
 			return "", err
 		}

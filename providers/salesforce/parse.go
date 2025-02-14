@@ -7,7 +7,7 @@ import (
 
 // getRecords returns the records from the response.
 func getRecords(node *ajson.Node) ([]map[string]any, error) {
-	records, err := jsonquery.New(node).Array("records", false)
+	records, err := jsonquery.New(node).ArrayRequired("records")
 	if err != nil {
 		return nil, err
 	}
