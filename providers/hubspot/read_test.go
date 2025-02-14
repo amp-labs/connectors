@@ -36,7 +36,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Name: "Contacts uses object API endpoint",
 			Input: common.ReadParams{
 				ObjectName: "contacts",
-				Fields:     connectors.Fields("hs_object_id"),
+				Fields:     connectors.Fields("email"),
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -46,28 +46,57 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 3,
-				Data: []common.ReadResultRow{{
-					Fields: map[string]any{
-						"hs_object_id": "1",
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{
+							"email": "a@example.com",
+						},
+						Id: "1",
+						Raw: map[string]any{
+							"id": "1",
+							"properties": map[string]any{
+								"createdate":       "2023-10-26T17:55:48.301Z",
+								"email":            "a@example.com",
+								"lastmodifieddate": "2024-12-24T17:31:54.727Z",
+							},
+							"createdAt": "2023-10-26T17:55:48.301Z",
+							"updatedAt": "2024-12-24T17:31:54.727Z",
+							"archived":  false,
+						},
+					}, {
+						Fields: map[string]any{
+							"email": "b@example.com",
+						},
+						Id: "51",
+						Raw: map[string]any{
+							"id": "51",
+							"properties": map[string]any{
+								"createdate":       "2023-10-26T17:55:48.691Z",
+								"email":            "b@example.com",
+								"lastmodifieddate": "2023-12-13T22:45:30.353Z",
+							},
+							"createdAt": "2023-10-26T17:55:48.691Z",
+							"updatedAt": "2023-12-13T22:45:30.353Z",
+							"archived":  false,
+						},
+					}, {
+						Fields: map[string]any{
+							"email": "c@example.com",
+						},
+						Id: "101",
+						Raw: map[string]any{
+							"id": "101",
+							"properties": map[string]any{
+								"createdate":       "2023-12-13T22:20:02.649Z",
+								"email":            "c@example.com",
+								"lastmodifieddate": "2023-12-13T22:20:05.498Z",
+							},
+							"createdAt": "2023-12-13T22:20:02.649Z",
+							"updatedAt": "2023-12-13T22:20:05.498Z",
+							"archived":  false,
+						},
 					},
-					Raw: map[string]any{
-						"createdAt": "2023-10-26T17:55:48.301Z",
-					},
-				}, {
-					Fields: map[string]any{
-						"hs_object_id": "51",
-					},
-					Raw: map[string]any{
-						"createdAt": "2023-10-26T17:55:48.691Z",
-					},
-				}, {
-					Fields: map[string]any{
-						"hs_object_id": "101",
-					},
-					Raw: map[string]any{
-						"createdAt": "2023-12-13T22:20:02.649Z",
-					},
-				}},
+				},
 				NextPage: "https://api.hubapi.com/crm/v3/objects/contacts?limit=100&properties=listId%2Cname&after=394", // nolint:lll
 				Done:     false,
 			},
