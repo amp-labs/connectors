@@ -1,0 +1,17 @@
+{
+  "_links": {
+    "self": "https://ampersand.api.frontapp.com/accounts/acc_fkb9lo",
+    "related": {
+      "contacts": "https://ampersand.api.frontapp.com/accounts/acc_fkb9lo/contacts"
+    }
+  },
+  "id": "acc_fkb9lo",
+  "name": "Test Users",
+  "logo_url": null,
+  "description": "A test user account creation",
+  "domains": [],
+  "external_id": null,
+  "custom_fields": {},
+  "created_at": 1739533550.22,
+  "updated_at": 1739533550.22
+}
