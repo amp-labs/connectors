@@ -216,7 +216,7 @@ func TestQueryString(t *testing.T) { // nolint:funlen
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			output, err := New(j, tt.input.zoom...).Str(tt.input.key, tt.input.optional)
+			output, err := New(j, tt.input.zoom...).queryString(tt.input.key, tt.input.optional)
 			testutils.CheckOutputWithError(t, tt.name, tt.expected, tt.expectedErr, output, err)
 		})
 	}

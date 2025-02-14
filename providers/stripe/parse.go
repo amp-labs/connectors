@@ -36,7 +36,7 @@ func makeNextRecordsURL(url *urlbuilder.URL) common.NextPageFunc {
 
 		lastElement := data[len(data)-1]
 
-		lastItemID, err := jsonquery.New(lastElement).Str("id", true)
+		lastItemID, err := jsonquery.New(lastElement).StringOptional("id")
 		if err != nil {
 			return "", err
 		}

@@ -59,7 +59,7 @@ func makeNextRecordsURL(reqLink *urlbuilder.URL) common.NextPageFunc {
 		}
 
 		// Probably, we are dealing with an object under `pages.next`
-		startingAfter, err := jsonquery.New(node, "pages", "next").Str("starting_after", true)
+		startingAfter, err := jsonquery.New(node, "pages", "next").StringOptional("starting_after")
 		if err != nil {
 			return "", err
 		}
@@ -95,7 +95,7 @@ func extractListFieldName(node *ajson.Node) (string, error) {
 	// default field at which list is stored
 	defaultFieldName := "data"
 
-	fieldName, err := jsonquery.New(node).Str("type", true)
+	fieldName, err := jsonquery.New(node).StringOptional("type")
 	if err != nil {
 		return "", err
 	}

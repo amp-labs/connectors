@@ -49,13 +49,13 @@ func getRecords(node *ajson.Node) ([]map[string]any, error) {
 			return nil, errors.Join(common.ErrParseError, err)
 		}
 
-		id, err := jsonquery.New(item).Str("id", false)
+		id, err := jsonquery.New(item).StringRequired("id")
 		if err != nil {
 			return nil, errors.Join(common.ErrParseError, err)
 		}
 
 		// Enhance response with id property.
-		fields["id"] = *id
+		fields["id"] = id
 		list[index] = fields
 	}
 

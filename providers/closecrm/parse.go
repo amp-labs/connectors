@@ -66,7 +66,7 @@ Search Response schema:
 	}
 */
 func getNextRecordCursor(node *ajson.Node) (string, error) {
-	crs, err := jsonquery.New(node).Str("cursor", true)
+	crs, err := jsonquery.New(node).StringOptional("cursor")
 	if err != nil {
 		return "", err
 	}

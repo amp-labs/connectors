@@ -24,7 +24,7 @@ func makeNextRecordsURL(reqLink *urlbuilder.URL) common.NextPageFunc {
 				return "", nil
 			}
 
-			endCursorToken, err := jsonquery.New(pagination).Str("end_cursor", true)
+			endCursorToken, err := jsonquery.New(pagination).StringOptional("end_cursor")
 			if err != nil {
 				return "", err
 			}

@@ -147,7 +147,7 @@ func locateWriteRecordID(body *ajson.Node, objectName string) (string, error) {
 }
 
 func extractTemplateWriteRecordID(body *ajson.Node) (string, error) {
-	message, err := jsonquery.New(body).Str("msg", true)
+	message, err := jsonquery.New(body).StringOptional("msg")
 	if err != nil {
 		return "", err
 	}

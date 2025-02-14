@@ -19,7 +19,7 @@ func (q *Query) IntegerWithDefault(key string, defaultValue int64) (int64, error
 }
 
 func (q *Query) StrWithDefault(key string, defaultValue string) (string, error) {
-	result, err := q.Str(key, true)
+	result, err := q.StringOptional(key)
 	if err != nil {
 		return "", err
 	}

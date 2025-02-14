@@ -98,10 +98,26 @@ func (q *Query) queryInteger(key string, optional bool) (*int64, error) {
 	return &result, nil
 }
 
-// Str returns string.
-// Optional argument set to false will create error in case of missing value.
-// Empty key is interpreter as "this", in other words current node.
-func (q *Query) Str(key string, optional bool) (*string, error) {
+// StringOptional returns string if present.
+// If the entity at the key path is not a string, an error is returned.
+// Empty key is interpreted as "this", in other words a current node.
+func (q *Query) StringOptional(key string) (*string, error) {
+	return q.queryString(key, true)
+}
+
+// StringRequired returns string.
+// If the entity at the key path is not a string or is missing, an error is returned.
+// Empty key is interpreted as "this", in other words a current node.
+func (q *Query) StringRequired(key string) (string, error) {
+	text, err := q.queryString(key, false)
+	if err != nil {
+		return "", err
+	}
+
+	return *text, nil
+}
+
+func (q *Query) queryString(key string, optional bool) (*string, error) {
 	node, err := q.getInnerKey(key, optional)
 	if err != nil {
 		return nil, err

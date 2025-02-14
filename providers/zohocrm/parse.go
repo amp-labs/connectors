@@ -35,7 +35,7 @@ func getNextRecordsURL(url *urlbuilder.URL) common.NextPageFunc {
 		}
 
 		if *hasMoreRecords {
-			pageToken, err := jsonquery.New(node, "info").Str("next_page_token", true)
+			pageToken, err := jsonquery.New(node, "info").StringOptional("next_page_token")
 			if err != nil {
 				return "", err
 			}

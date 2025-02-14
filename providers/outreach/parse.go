@@ -10,7 +10,7 @@ import (
 // getNextRecords returns the "next" url for the next page of results,
 // If available, else returns an empty string.
 func getNextRecordsURL(node *ajson.Node) (string, error) {
-	nextPageURL, err := jsonquery.New(node, "links").Str("next", true)
+	nextPageURL, err := jsonquery.New(node, "links").StringOptional("next")
 	if err != nil {
 		return "", err
 	}

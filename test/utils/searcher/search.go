@@ -47,14 +47,14 @@ func Find[T any](res *common.ReadResult, keys []Key, value T) map[string]any {
 		for _, key := range keys {
 			switch key.Type {
 			case String:
-				actual, err := jsonquery.New(node).Str(key.At, false)
+				actual, err := jsonquery.New(node).StringRequired(key.At)
 				if err != nil {
 					slog.Warn("string", "error", err)
 
 					continue
 				}
 
-				if fmt.Sprintf("%v", *actual) == fmt.Sprintf("%v", value) {
+				if fmt.Sprintf("%v", actual) == fmt.Sprintf("%v", value) {
 					return data.Fields
 				}
 			case Integer:
