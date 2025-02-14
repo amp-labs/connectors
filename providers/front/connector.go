@@ -44,6 +44,6 @@ func (conn *Connector) String() string {
 	return conn.Provider() + ".Connector"
 }
 
-func (c *Connector) getAPIURL(object string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.BaseURL, object)
+func (conn *Connector) getAPIURL(object string) (*urlbuilder.URL, error) {
+	return urlbuilder.New(conn.BaseURL, object)
 }
