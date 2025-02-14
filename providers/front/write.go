@@ -27,6 +27,7 @@ func (conn *Connector) Write(ctx context.Context, config common.WriteParams) (*c
 		}
 
 		url.AddPath(config.RecordId)
+
 		write = conn.Client.Patch
 	}
 
