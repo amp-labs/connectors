@@ -39,7 +39,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	return conn, nil
 }
 
-func (c *Connector) geAPIURL(object string) (*urlbuilder.URL, error) {
+func (c *Connector) getAPIURL(object string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(c.BaseURL, apiVersion, object)
 }
 

@@ -42,7 +42,7 @@ func (c *Connector) buildURL(config common.ReadParams) (*urlbuilder.URL, error) 
 		return urlbuilder.New(config.NextPage.String())
 	}
 
-	url, err := c.geAPIURL(config.ObjectName)
+	url, err := c.getAPIURL(config.ObjectName)
 	if err != nil {
 		return nil, err
 	}
