@@ -20,7 +20,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 
 	var write common.WriteMethod
 
-	url, err := c.geAPIURL(config.ObjectName)
+	url, err := c.getAPIURL(config.ObjectName)
 	if err != nil {
 		return nil, err
 	}
