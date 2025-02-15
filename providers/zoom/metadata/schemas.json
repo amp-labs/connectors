@@ -1,0 +1,127 @@
+{
+  "modules": {
+    "Users": {
+      "id": "Users",
+      "path": "users/v2/users",
+      "objects": {
+        "users": {
+          "displayName": "Users",
+          "path": "",
+          "responseKey": "users",
+          "fields": {
+            "created_at": {
+              "displayName": "Created At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "custom_attributes": {
+              "displayName": "Custom Attributes",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "dept": {
+              "displayName": "Dept",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "display_name": {
+              "displayName": "Display Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "Email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "employee_unique_id": {
+              "displayName": "Employee Unique Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "first_name": {
+              "displayName": "First Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "group_ids": {
+              "displayName": "Group Ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "host_key": {
+              "displayName": "Host Key",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "im_group_ids": {
+              "displayName": "Im Group Ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "last_client_version": {
+              "displayName": "Last Client Version",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_login_time": {
+              "displayName": "Last Login Time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_name": {
+              "displayName": "Last Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "plan_united_type": {
+              "displayName": "Plan United Type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "pmi": {
+              "displayName": "Pmi",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "role_id": {
+              "displayName": "Role Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "Status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "timezone": {
+              "displayName": "Timezone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "Type",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "user_created_at": {
+              "displayName": "User Created At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "verified": {
+              "displayName": "Verified",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        }
+      }
+    }
+  }
+}
