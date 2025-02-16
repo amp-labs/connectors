@@ -9,9 +9,13 @@ import (
 // Static file containing openapi spec.
 //
 
-//go:embed Users.json
-var usersFile []byte
-
 var (
-	UsersFileManager = api3.NewOpenapiFileManager(usersFile)
+	//go:embed user.json
+	usersFile []byte
+
+	//go:embed meeting.json
+	meetingFile []byte
+
+	UsersFileManager   = api3.NewOpenapiFileManager(usersFile)
+	MeetingFileManager = api3.NewOpenapiFileManager(meetingFile)
 )

@@ -1,4 +1,4 @@
-package user
+package meeting
 
 import (
 	"log"
@@ -11,14 +11,20 @@ import (
 
 var (
 	allowedEndpoints = []string{ // nolint:gochecknoglobals
-		"/groups",
-		"/users",
+		// "/archive_files",
+		"/devices/groups",
+		"/devices",
+		// "/meetings/meeting_summaries",
+		// "/report/billing",
+		// "/report/activities",
+		"/sip_phones/phones",
+		"/tracking_fields",
 	}
 )
 
 func Objects() []metadatadef.Schema {
 	log.Println("Starting user objects")
-	explorer, err := openapi.UsersFileManager.GetExplorer(
+	explorer, err := openapi.MeetingFileManager.GetExplorer(
 		api3.WithDisplayNamePostProcessors(
 			api3.CamelCaseToSpaceSeparated,
 			api3.CapitalizeFirstLetterEveryWord,

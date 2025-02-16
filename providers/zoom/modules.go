@@ -6,7 +6,9 @@ import (
 )
 
 const (
-	Users common.ModuleID = "Users"
+	ModuleUser common.ModuleID = "user"
+
+	ModuleMeeting common.ModuleID = "meeting"
 )
 
 var SupportedModules = metadata.Schemas.ModuleRegistry() // nolint: gochecknoglobals

@@ -1,124 +1,117 @@
 {
   "modules": {
-    "Users": {
-      "id": "Users",
-      "path": "users/v2/users",
+    "meeting": {
+      "id": "meeting",
+      "path": "",
       "objects": {
+        "devices": {
+          "displayName": "Devices",
+          "path": "/devices",
+          "responseKey": "devices",
+          "fields": {
+            "app_version": "app_version",
+            "connected_to_zdm": "connected_to_zdm",
+            "device_id": "device_id",
+            "device_name": "device_name",
+            "device_status": "device_status",
+            "device_type": "device_type",
+            "enrolled_in_zdm": "enrolled_in_zdm",
+            "last_online": "last_online",
+            "mac_address": "mac_address",
+            "model": "model",
+            "platform_os": "platform_os",
+            "room_id": "room_id",
+            "room_name": "room_name",
+            "serial_number": "serial_number",
+            "skd_version": "skd_version",
+            "tag": "tag",
+            "user_email": "user_email",
+            "vendor": "vendor"
+          }
+        },
+        "groups": {
+          "displayName": "Groups",
+          "path": "/devices/groups",
+          "responseKey": "groups",
+          "fields": {
+            "description": "description",
+            "name": "name",
+            "zdm_group_id": "zdm_group_id"
+          }
+        },
+        "phones": {
+          "displayName": "Phones",
+          "path": "/sip_phones/phones",
+          "responseKey": "phones",
+          "fields": {
+            "authorization_name": "authorization_name",
+            "domain": "domain",
+            "password": "password",
+            "phone_id": "phone_id",
+            "registration_expire_time": "registration_expire_time",
+            "server": "server",
+            "server_2": "server_2",
+            "server_3": "server_3",
+            "user_email": "user_email",
+            "user_name": "user_name",
+            "voice_mail": "voice_mail"
+          }
+        },
+        "tracking_fields": {
+          "displayName": "Tracking Fields",
+          "path": "/tracking_fields",
+          "responseKey": "tracking_fields",
+          "fields": {
+            "field": "field",
+            "id": "id",
+            "recommended_values": "recommended_values",
+            "required": "required",
+            "visible": "visible"
+          }
+        }
+      }
+    },
+    "user": {
+      "id": "user",
+      "path": "",
+      "objects": {
+        "groups": {
+          "displayName": "Groups",
+          "path": "/groups",
+          "responseKey": "groups",
+          "fields": {
+            "id": "id",
+            "name": "name",
+            "total_members": "total_members"
+          }
+        },
         "users": {
           "displayName": "Users",
-          "path": "",
+          "path": "/users",
           "responseKey": "users",
           "fields": {
-            "created_at": {
-              "displayName": "Created At",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "custom_attributes": {
-              "displayName": "Custom Attributes",
-              "valueType": "other",
-              "providerType": "array"
-            },
-            "dept": {
-              "displayName": "Dept",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "display_name": {
-              "displayName": "Display Name",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "email": {
-              "displayName": "Email",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "employee_unique_id": {
-              "displayName": "Employee Unique Id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "first_name": {
-              "displayName": "First Name",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "group_ids": {
-              "displayName": "Group Ids",
-              "valueType": "other",
-              "providerType": "array"
-            },
-            "host_key": {
-              "displayName": "Host Key",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "Id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "im_group_ids": {
-              "displayName": "Im Group Ids",
-              "valueType": "other",
-              "providerType": "array"
-            },
-            "last_client_version": {
-              "displayName": "Last Client Version",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "last_login_time": {
-              "displayName": "Last Login Time",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "last_name": {
-              "displayName": "Last Name",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "plan_united_type": {
-              "displayName": "Plan United Type",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "pmi": {
-              "displayName": "Pmi",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "role_id": {
-              "displayName": "Role Id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "status": {
-              "displayName": "Status",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "timezone": {
-              "displayName": "Timezone",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "type": {
-              "displayName": "Type",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "user_created_at": {
-              "displayName": "User Created At",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "verified": {
-              "displayName": "Verified",
-              "valueType": "int",
-              "providerType": "integer"
-            }
+            "created_at": "created_at",
+            "custom_attributes": "custom_attributes",
+            "dept": "dept",
+            "display_name": "display_name",
+            "email": "email",
+            "employee_unique_id": "employee_unique_id",
+            "first_name": "first_name",
+            "group_ids": "group_ids",
+            "host_key": "host_key",
+            "id": "id",
+            "im_group_ids": "im_group_ids",
+            "last_client_version": "last_client_version",
+            "last_login_time": "last_login_time",
+            "last_name": "last_name",
+            "plan_united_type": "plan_united_type",
+            "pmi": "pmi",
+            "role_id": "role_id",
+            "status": "status",
+            "timezone": "timezone",
+            "type": "type",
+            "user_created_at": "user_created_at",
+            "verified": "verified"
           }
         }
       }

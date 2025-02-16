@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"log/slog"
 
 	"github.com/amp-labs/connectors/common"
@@ -11,17 +12,19 @@ import (
 
 	"github.com/amp-labs/connectors/providers/zoom"
 	"github.com/amp-labs/connectors/providers/zoom/metadata"
+	"github.com/amp-labs/connectors/scripts/openapi/zoom/metadata/meeting"
 	"github.com/amp-labs/connectors/scripts/openapi/zoom/metadata/user"
-	"github.com/amp-labs/connectors/tools/fileconv/api3"
 	"github.com/amp-labs/connectors/tools/scrapper"
 )
 
 func main() {
-	schemas := staticschema.NewMetadata[staticschema.FieldMetadataMapV2]()
+	log.Println("Starting openapi metadata extraction for zoom")
+	schemas := staticschema.NewMetadata[staticschema.FieldMetadataMapV1]()
 	registry := datautils.NamedLists[string]{}
 	lists := datautils.IndexedLists[common.ModuleID, metadatadef.Schema]{}
 
-	lists.Add(zoom.Users, user.Objects()...)
+	lists.Add(zoom.ModuleUser, user.Objects()...)
+	lists.Add(zoom.ModuleMeeting, meeting.Objects()...)
 
 	for module, objects := range lists {
 		for _, object := range objects {
@@ -33,16 +36,10 @@ func main() {
 			}
 
 			for _, field := range object.Fields {
-				path := "users/v2" + object.URLPath
-				schemas.Add(module, object.ObjectName, object.DisplayName, path, object.ResponseKey,
-					staticschema.FieldMetadataMapV2{
-						field.Name: staticschema.FieldMetadata{
-							DisplayName:  fieldNameConvertToDisplayName(field.Name),
-							ValueType:    providerTypeConvertToValueType(field.Type),
-							ProviderType: field.Type,
-							ReadOnly:     false,
-							Values:       nil,
-						},
+				log.Println("fields", field)
+				schemas.Add(module, object.ObjectName, object.DisplayName, object.URLPath, object.ResponseKey,
+					staticschema.FieldMetadataMapV1{
+						field.Name: field.Name,
 					}, nil)
 			}
 
@@ -57,24 +54,4 @@ func main() {
 
 	slog.Info("Completed.")
 
-}
-
-func fieldNameConvertToDisplayName(fieldName string) string {
-	return api3.CapitalizeFirstLetterEveryWord(
-		api3.CamelCaseToSpaceSeparated(fieldName),
-	)
-}
-
-func providerTypeConvertToValueType(providerType string) common.ValueType {
-	switch providerType {
-	case "integer":
-		return common.ValueTypeInt
-	case "string":
-		return common.ValueTypeString
-	case "boolean":
-		return common.ValueTypeBoolean
-	default:
-		// Ex: object, array
-		return common.ValueTypeOther
-	}
 }

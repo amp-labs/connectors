@@ -15,7 +15,8 @@ type Connector struct {
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	params, err := paramsbuilder.Apply(parameters{}, opts)
+
+	params, err := paramsbuilder.Apply(parameters{}, opts, WithModule(ModuleUser))
 	if err != nil {
 		return nil, err
 	}
@@ -24,6 +25,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		Client: &common.JSONHTTPClient{
 			HTTPClient: params.Client.Caller,
 		},
+		Module: params.Selection,
 	}
 
 	providerInfo, err := providers.ReadInfo(conn.Provider())

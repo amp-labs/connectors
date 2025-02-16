@@ -3,6 +3,7 @@ package zoom
 import (
 	"context"
 	"errors"
+	"log"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
@@ -14,11 +15,13 @@ type Option = func(params *parameters)
 
 type parameters struct {
 	paramsbuilder.Client
+	paramsbuilder.Module
 }
 
 func (p parameters) ValidateParams() error {
 	return errors.Join(
 		p.Client.ValidateParams(),
+		p.Module.ValidateParams(),
 	)
 }
 
@@ -33,5 +36,12 @@ func WithClient(ctx context.Context, client *http.Client,
 func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
 	return func(params *parameters) {
 		params.WithAuthenticatedClient(client)
+	}
+}
+
+func WithModule(module common.ModuleID) Option {
+	log.Println("module: ", module)
+	return func(params *parameters) {
+		params.WithModule(module, SupportedModules, ModuleUser)
 	}
 }

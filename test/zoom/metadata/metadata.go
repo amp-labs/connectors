@@ -8,17 +8,15 @@ import (
 	"github.com/amp-labs/connectors/test/zoom"
 )
 
-var objectName = "users"
-
 func main() {
 	ctx := context.Background()
 
 	conn := zoom.GetZoomConnector(ctx)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{objectName})
+	m, err := conn.ListObjectMetadata(ctx, []string{"users"})
 
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("error listing metadata for Zoom: ", err)
 	}
 
 	// Print the results
