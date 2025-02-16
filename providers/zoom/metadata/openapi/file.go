@@ -17,5 +17,5 @@ var (
 	meetingFile []byte
 
 	UsersFileManager   = api3.NewOpenapiFileManager(usersFile)   // nolint:gochecknoglobals
-	MeetingFileManager = api3.NewOpenapiFileManager(meetingFile) // nolint:gochecknoglobalsw
+	MeetingFileManager = api3.NewOpenapiFileManager(meetingFile) // nolint:gochecknoglobals
 )

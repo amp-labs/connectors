@@ -7,9 +7,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	connTest "github.com/amp-labs/connectors/test/zoom"
-
 	"github.com/amp-labs/connectors/test/utils"
+	connTest "github.com/amp-labs/connectors/test/zoom"
 )
 
 func main() {
