@@ -14,7 +14,6 @@ func main() {
 	conn := zoom.GetZoomConnector(ctx)
 
 	m, err := conn.ListObjectMetadata(ctx, []string{"users"})
-
 	if err != nil {
 		log.Fatal("error listing metadata for Zoom: ", err)
 	}

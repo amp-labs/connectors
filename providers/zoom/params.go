@@ -3,7 +3,6 @@ package zoom
 import (
 	"context"
 	"errors"
-	"log"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
@@ -40,7 +39,6 @@ func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
 }
 
 func WithModule(module common.ModuleID) Option {
-	log.Println("module: ", module)
 	return func(params *parameters) {
 		params.WithModule(module, SupportedModules, ModuleUser)
 	}

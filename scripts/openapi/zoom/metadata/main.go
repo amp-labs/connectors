@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"log/slog"
 
 	"github.com/amp-labs/connectors/common"
@@ -9,7 +8,6 @@ import (
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/metadatadef"
 	"github.com/amp-labs/connectors/internal/staticschema"
-
 	"github.com/amp-labs/connectors/providers/zoom"
 	"github.com/amp-labs/connectors/providers/zoom/metadata"
 	"github.com/amp-labs/connectors/scripts/openapi/zoom/metadata/meeting"
@@ -18,7 +16,6 @@ import (
 )
 
 func main() {
-	log.Println("Starting openapi metadata extraction for zoom")
 	schemas := staticschema.NewMetadata[staticschema.FieldMetadataMapV1]()
 	registry := datautils.NamedLists[string]{}
 	lists := datautils.IndexedLists[common.ModuleID, metadatadef.Schema]{}
@@ -36,7 +33,6 @@ func main() {
 			}
 
 			for _, field := range object.Fields {
-				log.Println("fields", field)
 				schemas.Add(module, object.ObjectName, object.DisplayName, object.URLPath, object.ResponseKey,
 					staticschema.FieldMetadataMapV1{
 						field.Name: field.Name,
@@ -53,5 +49,4 @@ func main() {
 	goutils.MustBeNil(metadata.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
 
 	slog.Info("Completed.")
-
 }

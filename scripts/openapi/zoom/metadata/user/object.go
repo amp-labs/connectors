@@ -1,23 +1,18 @@
 package user
 
 import (
-	"log"
-
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/metadatadef"
 	"github.com/amp-labs/connectors/providers/zoom/metadata/openapi"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
 )
 
-var (
-	allowedEndpoints = []string{ // nolint:gochecknoglobals
-		"/groups",
-		"/users",
-	}
-)
+var allowedEndpoints = []string{ // nolint:gochecknoglobals
+	"/groups",
+	"/users",
+}
 
 func Objects() []metadatadef.Schema {
-	log.Println("Starting user objects")
 	explorer, err := openapi.UsersFileManager.GetExplorer(
 		api3.WithDisplayNamePostProcessors(
 			api3.CamelCaseToSpaceSeparated,
