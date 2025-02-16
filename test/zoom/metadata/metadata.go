@@ -3,23 +3,31 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
+	"os"
+	"os/signal"
+	"syscall"
 
-	"github.com/amp-labs/connectors/test/zoom"
+	connTest "github.com/amp-labs/connectors/test/zoom"
+
+	"github.com/amp-labs/connectors/test/utils"
 )
 
 func main() {
-	ctx := context.Background()
+	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer done()
 
-	conn := zoom.GetZoomConnector(ctx)
+	// Set up slog logging.
+	utils.SetupLogging()
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"users"})
+	conn := connTest.GetZoomConnector(ctx)
+	defer utils.Close(conn)
+
+	metadata, err := conn.ListObjectMetadata(ctx, []string{"users", "groups"})
+
 	if err != nil {
-		log.Fatal("error listing metadata for Zoom: ", err)
+		utils.Fail("error listing metadata for zoom", "error", err)
 	}
 
-	// Print the results
-	fmt.Println("Results: ", m.Result)
-
-	fmt.Println("Errors: ", m.Errors)
+	fmt.Println("zoom metadata...")
+	utils.DumpJSON(metadata, os.Stdout)
 }
