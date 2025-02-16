@@ -17,6 +17,10 @@ type parameters struct {
 	paramsbuilder.Module
 }
 
+const (
+	DefaultPageSize = 300
+)
+
 func (p parameters) ValidateParams() error {
 	return errors.Join(
 		p.Client.ValidateParams(),
