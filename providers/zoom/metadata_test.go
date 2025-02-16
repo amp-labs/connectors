@@ -13,7 +13,7 @@ import (
 func TestListObjectMeta(t *testing.T) {
 	t.Parallel()
 
-	tests := []testroutines.Metadata{
+	tests := []testroutines.Metadata{ // nolint:gochecknoglobals
 		{
 			Name:         "At least one object name must be queried",
 			Input:        nil,

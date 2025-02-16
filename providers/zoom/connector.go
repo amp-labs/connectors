@@ -35,6 +35,14 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	return conn, nil
 }
 
+// func (c *Connector) getURL(objectName string) (*urlbuilder.URL, error) {
+// 	path, err := metadata.Schemas.LookupURLPath(c.Module.ID, objectName)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	return urlbuilder.New(c.BaseURL + path)
+// }
+
 func (c *Connector) Provider() providers.Provider {
 	return providers.Zoom
 }
