@@ -6,8 +6,6 @@ import (
 	"github.com/amp-labs/connectors/providers"
 )
 
-// const apiVersion = "/v2"
-
 type Connector struct {
 	BaseURL string
 	Client  *common.JSONHTTPClient
@@ -36,10 +34,6 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 
 	return conn, nil
 }
-
-// func (c *Connector) getAPIURL(object string) (*urlbuilder.URL, error) {
-// 	return urlbuilder.New(c.BaseURL, apiVersion, object)
-// }
 
 func (c *Connector) Provider() providers.Provider {
 	return providers.Zoom
