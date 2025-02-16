@@ -10,7 +10,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 )
 
-func TestListObjectMeta(t *testing.T) {
+func TestListObjectMetaUserModule(t *testing.T) {
 	t.Parallel()
 
 	tests := []testroutines.Metadata{ // nolint:gochecknoglobals
@@ -61,15 +61,61 @@ func TestListObjectMeta(t *testing.T) {
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
-				return constructTestConnector(tt.Server.URL)
+				return constructTestConnector(tt.Server.URL, ModuleUser)
 			})
 		})
 	}
 }
 
-func constructTestConnector(serverURL string) (*Connector, error) {
+func TestListObjectMetaMeetingModule(t *testing.T) {
+	t.Parallel()
+
+	tests := []testroutines.Metadata{ // nolint:gochecknoglobals
+		{
+			Name:       "Successfully describe multiple objects with metadata",
+			Input:      []string{"activities_report", "device_groups"},
+			Server:     mockserver.Dummy(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"activities_report": {
+						DisplayName: "Activities Report",
+						FieldsMap: map[string]string{
+							"client_type": "client_type",
+							"type":        "type",
+							"email":       "email",
+							"version":     "version",
+						},
+					},
+					"device_groups": {
+						DisplayName: "Device Groups",
+						FieldsMap: map[string]string{
+							"name":        "name",
+							"description": "description",
+						},
+					},
+				},
+				Errors: nil,
+			},
+			ExpectedErrs: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		// nolint:varnamelen
+		t.Run(tt.Name, func(t *testing.T) {
+			t.Parallel()
+			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
+				return constructTestConnector(tt.Server.URL, ModuleMeeting)
+			})
+		})
+	}
+}
+
+func constructTestConnector(serverURL string, moduleID common.ModuleID) (*Connector, error) {
 	connector, err := NewConnector(
 		WithAuthenticatedClient(http.DefaultClient),
+		WithModule(moduleID),
 	)
 	if err != nil {
 		return nil, err
