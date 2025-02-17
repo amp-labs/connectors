@@ -37,7 +37,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 }
 
 func (conn *Connector) Provider() providers.Provider {
-	return providers.ChiliPiper
+	return providers.Freshdesk
 }
 
 func (conn *Connector) getAPIURL(objectName string) (*urlbuilder.URL, error) {
