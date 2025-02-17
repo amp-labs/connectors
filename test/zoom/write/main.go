@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log/slog"
+	"os"
 	"os/signal"
 	"syscall"
 
@@ -38,17 +39,17 @@ func main() {
 
 	conn := connTest.GetZoomConnector(ctx, zoom.ModuleUser)
 
-	slog.Info("> TEST Create/Update/Delete User")
+	slog.Info("> TEST Create User")
 	slog.Info("Creating a user...")
 
 	createUser(ctx, conn, &CreateUserPaylod{
 		Action: "create",
 		UserInfo: UserInfo{
-			Email:       "tiger@gmail.com",
-			FirstName:   "Tiger",
-			LastName:    "Woods",
-			DisplayName: "Tiger Woods",
-			Password:    "password",
+			Email:       "peter@gmail.com",
+			FirstName:   "peter",
+			LastName:    "parker",
+			DisplayName: "peter parker",
+			Password:    "uncleben123",
 			Type:        1,
 		},
 	})
@@ -69,4 +70,7 @@ func createUser(ctx context.Context, conn *zoom.Connector, payload *CreateUserPa
 	if !res.Success {
 		utils.Fail("failed to create a user")
 	}
+
+	utils.DumpJSON(res, os.Stdout)
+
 }
