@@ -7,6 +7,12 @@ import (
 )
 
 var supportedObjectsByRead = metadata.Schemas.ObjectNames() // nolint: gochecknoglobals
+var (
+	ObjectNameContactGroup  = "contacts_groups" // nolint: gochecknoglobals
+	ObjectNameUser          = "users"           // nolint: gochecknoglobals
+	ObjectNameGroup         = "groups"          // nolint: gochecknoglobals
+	objectNameTrackingField = "tracking_fields" // nolint: gochecknoglobals
+)
 
 // ObjectNameToResponseField maps ObjectName to the response field name which contains that object.
 var ObjectNameToResponseField = common.ModuleObjectNameToFieldName{ // nolint: gochecknoglobals
@@ -22,9 +28,23 @@ var ObjectNameToResponseField = common.ModuleObjectNameToFieldName{ // nolint: g
 			return objectName
 		},
 	),
-	ModuleUser: datautils.NewDefaultMap(map[string]string{},
+	ModuleUser: datautils.NewDefaultMap(map[string]string{
+		"contacts_groups": "groups",
+	},
 		func(objectName string) (fieldName string) {
 			return objectName
 		},
+	),
+}
+
+var supportedObjectsByWrite = map[common.ModuleID]datautils.StringSet{ // nolint: gochecknoglobals
+	ModuleUser: datautils.NewSet(
+		ObjectNameContactGroup,
+		ObjectNameUser,
+		ObjectNameGroup,
+	),
+
+	ModuleMeeting: datautils.NewSet(
+		objectNameTrackingField,
 	),
 }

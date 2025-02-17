@@ -145,6 +145,17 @@
       "id": "user",
       "path": "",
       "objects": {
+        "contacts_groups": {
+          "displayName": "Contacts Groups",
+          "path": "/contacts/groups",
+          "responseKey": "groups",
+          "fields": {
+            "description": "description",
+            "group_id": "group_id",
+            "group_name": "group_name",
+            "group_privacy": "group_privacy"
+          }
+        },
         "groups": {
           "displayName": "Groups",
           "path": "/groups",

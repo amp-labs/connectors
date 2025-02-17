@@ -104,7 +104,7 @@ func TestReadModuleUser(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	}
 }
 
-func TestReadModuleMeeting(t *testing.T) {
+func TestReadModuleMeeting(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
 	responseArchiveFilesFirstPage := testutils.DataFromFile(t, "archive-files-first-page.json")
@@ -180,5 +180,4 @@ func TestReadModuleMeeting(t *testing.T) {
 			})
 		})
 	}
-
 }
