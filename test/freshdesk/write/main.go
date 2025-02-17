@@ -9,14 +9,14 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	fd "github.com/amp-labs/connectors/providers/freshdesk"
-	"github.com/brianvoe/gofakeit/v6"
-
 	"github.com/amp-labs/connectors/test/freshdesk"
+	"github.com/brianvoe/gofakeit/v6"
 )
 
 func main() {
 	if err := run(); err != nil {
 		slog.Error(err.Error())
+		os.Exit(-1)
 	}
 }
 
