@@ -1,0 +1,49 @@
+{
+    "from": "2021-03-12T02:12:27Z",
+    "meetings": [
+      {
+        "account_name": "account_01",
+        "archive_files": [
+          {
+            "download_url": "https://example.com/recording/download/Qg75t7xZBtEbAkjdlgbfdngBBBB",
+            "file_extension": "JSON",
+            "file_path": "/9090876528/path01/demo.mp4",
+            "file_size": 165743,
+            "file_type": "CHAT",
+            "id": "a2f19f96-9294-4f51-8134-6f0eea108eb2",
+            "individual": true,
+            "participant_email": "jchill@example.com",
+            "participant_join_time": "2021-03-12T02:07:27Z",
+            "participant_leave_time": "2021-03-12T02:12:27Z",
+            "recording_type": "chat_message",
+            "status": "completed",
+            "encryption_fingerprint": "abf85f0fe6a4db3cdd8c37e505e1dd18a34d9696170a14b5bc6395677472cf43",
+            "number_of_messages": 150,
+            "storage_location": "US",
+            "auto_delete": false
+          }
+        ],
+        "complete_time": "2021-03-12T02:57:27Z",
+        "duration": 1,
+        "duration_in_second": 1800,
+        "host_id": "Dhjdfgdkg8w",
+        "id": 553068284,
+        "is_breakout_room": false,
+        "meeting_type": "internal",
+        "parent_meeting_id": "atsXxhSEQWit9t+U02HXNQ==",
+        "recording_count": 2,
+        "start_time": "2021-04-26T05:23:18Z",
+        "timezone": "Asia/Shanghai",
+        "topic": "My Personal Meeting Room",
+        "total_size": 364463,
+        "type": 1,
+        "uuid": "yO3dfhh3t467UkQ==",
+        "status": "completed",
+        "group_id": "pvFIYKSDTum9iCDOOtQL4w,_FsqLyI0RlO6LVPeUVWi8g"
+      }
+    ],
+    "next_page_token": "At6eWnFZ1FB3arCXnRxqHLXKhbDW18yz2i2",
+    "page_size": 20,
+    "to": "2021-03-12T02:12:27Z",
+    "total_records": 20
+  }
