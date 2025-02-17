@@ -43,7 +43,7 @@ func (conn *Connector) ListObjectMetadata(ctx context.Context,
 		}
 
 		if err := buildMetadataFields(object, response, &metadataResults); err != nil {
-			return nil, err
+			metadataResults.Errors[object] = err
 		}
 	}
 
@@ -63,7 +63,7 @@ func buildMetadataFields(object string, response *common.JSONHTTPResponse, res *
 	}
 
 	if len(*data) == 0 {
-		return err
+		return common.ErrMissingExpectedValues
 	}
 
 	for fld := range (*data)[0] {
