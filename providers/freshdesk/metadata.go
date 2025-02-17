@@ -7,6 +7,8 @@ import (
 	"github.com/amp-labs/connectors/common/naming"
 )
 
+const restAPIPrefix = "api/v2"
+
 func (conn *Connector) ListObjectMetadata(ctx context.Context,
 	objectNames []string,
 ) (*common.ListObjectMetadataResult, error) {
@@ -41,7 +43,7 @@ func (conn *Connector) ListObjectMetadata(ctx context.Context,
 		}
 
 		if err := buildMetadataFields(object, response, &metadataResults); err != nil {
-			metadataResults.Errors[object] = err
+			return nil, err
 		}
 	}
 
@@ -61,7 +63,7 @@ func buildMetadataFields(object string, response *common.JSONHTTPResponse, res *
 	}
 
 	if len(*data) == 0 {
-		return common.ErrMissingExpectedValues
+		return err
 	}
 
 	for fld := range (*data)[0] {
