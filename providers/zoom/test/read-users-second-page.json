@@ -1,0 +1,43 @@
+{
+    "next_page_token": "",
+    "page_count": 2,
+    "page_number": 2,
+    "page_size": 300,
+    "total_records": 1,
+    "users": [
+      {
+        "user_created_at": "2020-06-01T07:58:03Z",
+        "created_at": "2029-10-31T04:32:37Z",
+        "custom_attributes": [
+          {
+            "key": "cbf_fywdkexrtqc73f97gd4w6g",
+            "name": "B1",
+            "value": "2fd23"
+          }
+        ],
+        "dept": "Sales",
+        "email": "john@example.com",
+        "employee_unique_id": "HqDyIdfe7Qjili1kNsSIrIg",
+        "first_name": "Jll",
+        "group_ids": [
+          "t-_-jdfg-7BF15LLrOw"
+        ],
+        "host_key": "2994fd2849",
+        "id": "KfDcuGIdfdlfdQgePTO8WbOqwIQ",
+        "im_group_ids": [
+          "t-_-d56fdWG-7BF15LLrOw"
+        ],
+        "last_client_version": "5.2.45120.09034(win)",
+        "last_login_time": "2023-03-25T05:40:55Z",
+        "last_name": "Don",
+        "plan_united_type": "2",
+        "pmi": 65893410093,
+        "role_id": "2",
+        "status": "active",
+        "timezone": "Asia/Shanghai",
+        "type": 1,
+        "verified": 1,
+        "display_name": "John Don"
+      }
+    ]
+  }
