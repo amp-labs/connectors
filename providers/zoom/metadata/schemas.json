@@ -1,0 +1,201 @@
+{
+  "modules": {
+    "meeting": {
+      "id": "meeting",
+      "path": "",
+      "objects": {
+        "activities_report": {
+          "displayName": "Activities Report",
+          "path": "/report/activities",
+          "responseKey": "activity_logs",
+          "fields": {
+            "client_type": "client_type",
+            "email": "email",
+            "ip_address": "ip_address",
+            "time": "time",
+            "type": "type",
+            "version": "version"
+          }
+        },
+        "archive_files": {
+          "displayName": "Archive Files",
+          "path": "/archive_files",
+          "responseKey": "meetings",
+          "fields": {
+            "account_name": "account_name",
+            "archive_files": "archive_files",
+            "complete_time": "complete_time",
+            "duration": "duration",
+            "duration_in_second": "duration_in_second",
+            "group_id": "group_id",
+            "host_id": "host_id",
+            "id": "id",
+            "is_breakout_room": "is_breakout_room",
+            "meeting_type": "meeting_type",
+            "parent_meeting_id": "parent_meeting_id",
+            "recording_count": "recording_count",
+            "start_time": "start_time",
+            "status": "status",
+            "timezone": "timezone",
+            "topic": "topic",
+            "total_size": "total_size",
+            "type": "type",
+            "uuid": "uuid"
+          }
+        },
+        "billing_report": {
+          "displayName": "Billing Report",
+          "path": "/report/billing",
+          "responseKey": "billing_reports",
+          "fields": {
+            "end_date": "end_date",
+            "id": "id",
+            "start_date": "start_date",
+            "tax_amount": "tax_amount",
+            "total_amount": "total_amount",
+            "type": "type"
+          }
+        },
+        "device_groups": {
+          "displayName": "Device Groups",
+          "path": "/devices/groups",
+          "responseKey": "groups",
+          "fields": {
+            "description": "description",
+            "name": "name",
+            "zdm_group_id": "zdm_group_id"
+          }
+        },
+        "devices": {
+          "displayName": "Devices",
+          "path": "/devices",
+          "responseKey": "devices",
+          "fields": {
+            "app_version": "app_version",
+            "connected_to_zdm": "connected_to_zdm",
+            "device_id": "device_id",
+            "device_name": "device_name",
+            "device_status": "device_status",
+            "device_type": "device_type",
+            "enrolled_in_zdm": "enrolled_in_zdm",
+            "last_online": "last_online",
+            "mac_address": "mac_address",
+            "model": "model",
+            "platform_os": "platform_os",
+            "room_id": "room_id",
+            "room_name": "room_name",
+            "serial_number": "serial_number",
+            "skd_version": "skd_version",
+            "tag": "tag",
+            "user_email": "user_email",
+            "vendor": "vendor"
+          }
+        },
+        "meeting_summaries": {
+          "displayName": "Meeting Summaries",
+          "path": "/meetings/meeting_summaries",
+          "responseKey": "summaries",
+          "fields": {
+            "meeting_end_time": "meeting_end_time",
+            "meeting_host_email": "meeting_host_email",
+            "meeting_host_id": "meeting_host_id",
+            "meeting_id": "meeting_id",
+            "meeting_start_time": "meeting_start_time",
+            "meeting_topic": "meeting_topic",
+            "meeting_uuid": "meeting_uuid",
+            "summary_created_time": "summary_created_time",
+            "summary_end_time": "summary_end_time",
+            "summary_last_modified_time": "summary_last_modified_time",
+            "summary_start_time": "summary_start_time"
+          }
+        },
+        "phones": {
+          "displayName": "Phones",
+          "path": "/sip_phones/phones",
+          "responseKey": "phones",
+          "fields": {
+            "authorization_name": "authorization_name",
+            "domain": "domain",
+            "password": "password",
+            "phone_id": "phone_id",
+            "registration_expire_time": "registration_expire_time",
+            "server": "server",
+            "server_2": "server_2",
+            "server_3": "server_3",
+            "user_email": "user_email",
+            "user_name": "user_name",
+            "voice_mail": "voice_mail"
+          }
+        },
+        "tracking_fields": {
+          "displayName": "Tracking Fields",
+          "path": "/tracking_fields",
+          "responseKey": "tracking_fields",
+          "fields": {
+            "field": "field",
+            "id": "id",
+            "recommended_values": "recommended_values",
+            "required": "required",
+            "visible": "visible"
+          }
+        }
+      }
+    },
+    "user": {
+      "id": "user",
+      "path": "",
+      "objects": {
+        "contacts_groups": {
+          "displayName": "Contacts Groups",
+          "path": "/contacts/groups",
+          "responseKey": "groups",
+          "fields": {
+            "description": "description",
+            "group_id": "group_id",
+            "group_name": "group_name",
+            "group_privacy": "group_privacy"
+          }
+        },
+        "groups": {
+          "displayName": "Groups",
+          "path": "/groups",
+          "responseKey": "groups",
+          "fields": {
+            "id": "id",
+            "name": "name",
+            "total_members": "total_members"
+          }
+        },
+        "users": {
+          "displayName": "Users",
+          "path": "/users",
+          "responseKey": "users",
+          "fields": {
+            "created_at": "created_at",
+            "custom_attributes": "custom_attributes",
+            "dept": "dept",
+            "display_name": "display_name",
+            "email": "email",
+            "employee_unique_id": "employee_unique_id",
+            "first_name": "first_name",
+            "group_ids": "group_ids",
+            "host_key": "host_key",
+            "id": "id",
+            "im_group_ids": "im_group_ids",
+            "last_client_version": "last_client_version",
+            "last_login_time": "last_login_time",
+            "last_name": "last_name",
+            "plan_united_type": "plan_united_type",
+            "pmi": "pmi",
+            "role_id": "role_id",
+            "status": "status",
+            "timezone": "timezone",
+            "type": "type",
+            "user_created_at": "user_created_at",
+            "verified": "verified"
+          }
+        }
+      }
+    }
+  }
+}
