@@ -6,6 +6,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/providers/asana/metadata"
 )
 
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
@@ -27,7 +28,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	responseFieldName := ObjectNameToResponseField[c.Module.ID].Get(config.ObjectName)
+	responseFieldName := metadata.Schemas.LookupArrayFieldName(c.Module.ID, config.ObjectName)
 
 	return common.ParseResult(
 		rsp,

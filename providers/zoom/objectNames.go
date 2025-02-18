@@ -58,3 +58,26 @@ var objectNameToWritePath = datautils.NewDefaultMap(map[string]string{ // nolint
 	return objectName
 },
 )
+
+// Each object has different fields that represent the record id.
+// This map is used to get the record id field for each object.
+var objectNameToWriteResponseIdentifier = common.ModuleObjectNameToFieldName{ // nolint: gochecknoglobals
+
+	ModuleMeeting: datautils.NewDefaultMap(map[string]string{
+		objectNameTrackingField: "id",
+	},
+		func(objectName string) (fieldName string) {
+			return "id"
+		},
+	),
+
+	ModuleUser: datautils.NewDefaultMap(map[string]string{
+		ObjectNameContactGroup: "group_id",
+		ObjectNameUser:         "id",
+		ObjectNameGroup:        "id",
+	},
+		func(objectName string) (fieldName string) {
+			return "id"
+		},
+	),
+}

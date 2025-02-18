@@ -8,15 +8,6 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-// Each object has different fields that represent the record id.
-// This map is used to get the record id field for each object.
-var recordIdPaths = map[string]string{ //nolint:gochecknoglobals
-	ObjectNameUser:          "id",
-	ObjectNameContactGroup:  "group_id",
-	ObjectNameGroup:         "id",
-	objectNameTrackingField: "id",
-}
-
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) { //nolint:funlen
 	err := config.ValidateParams()
 	if err != nil {
@@ -55,7 +46,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		}, nil
 	}
 
-	recordIdPath := recordIdPaths[config.ObjectName]
+	recordIdPath := objectNameToWriteResponseIdentifier[c.Module.ID].Get(config.ObjectName)
 
 	// write response with payload
 	return constructWriteResult(body, recordIdPath)
