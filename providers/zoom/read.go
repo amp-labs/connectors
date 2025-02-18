@@ -45,7 +45,7 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 	}
 
 	// First page
-	url, err := c.getURL(config.ObjectName)
+	url, err := c.getReadURL(config.ObjectName)
 	if err != nil {
 		return nil, err
 	}

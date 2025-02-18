@@ -39,11 +39,17 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	return conn, nil
 }
 
-func (c *Connector) getURL(objectName string) (*urlbuilder.URL, error) {
+func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
 	path, err := metadata.Schemas.LookupURLPath(c.Module.ID, objectName)
 	if err != nil {
 		return nil, err
 	}
+
+	return urlbuilder.New(c.BaseURL, apiVersion, path)
+}
+
+func (c *Connector) getWriteURL(objectName string) (*urlbuilder.URL, error) {
+	path := objectNameToWritePath.Get(objectName)
 
 	return urlbuilder.New(c.BaseURL, apiVersion, path)
 }

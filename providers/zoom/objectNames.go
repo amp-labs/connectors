@@ -48,3 +48,13 @@ var supportedObjectsByWrite = map[common.ModuleID]datautils.StringSet{ // nolint
 		objectNameTrackingField,
 	),
 }
+
+var objectNameToWritePath = datautils.NewDefaultMap(map[string]string{ // nolint: gochecknoglobals
+	ObjectNameContactGroup:  "/contacts/groups",
+	ObjectNameUser:          "/users",
+	ObjectNameGroup:         "/groups",
+	objectNameTrackingField: "/tracking_fields",
+}, func(objectName string) (path string) {
+	return objectName
+},
+)
