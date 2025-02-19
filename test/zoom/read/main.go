@@ -17,7 +17,6 @@ import (
 var objectName = "users" // nolint: gochecknoglobals
 
 func main() {
-
 	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer done()
 	// Set up slog logging.
@@ -36,5 +35,4 @@ func main() {
 
 	fmt.Println("Reading users..")
 	utils.DumpJSON(res, os.Stdout)
-
 }

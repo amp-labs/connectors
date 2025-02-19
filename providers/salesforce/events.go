@@ -99,7 +99,7 @@ type NamedCredentialMetadata struct {
 	AllowMergeFieldsInBody      bool                        `json:"allowMergeFieldsInBody,omitempty"`
 	AllowMergeFieldsInHeader    bool                        `json:"allowMergeFieldsInHeader,omitempty"`
 	GenerateAuthorizationHeader bool                        `json:"generateAuthorizationHeader,omitempty"`
-	FullName                    string                      `json:"fullName,omitempty"                    validate:"required"`
+	FullName                    string                      `json:"fullName,omitempty"`
 	Label                       string                      `json:"label,omitempty"`
 	NamedCredentialParameters   []*NamedCredentialParameter `json:"namedCredentialParameters,omitempty"`
 	NamedCredentialType         string                      `json:"namedCredentialType,omitempty"`
