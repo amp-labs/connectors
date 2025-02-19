@@ -89,7 +89,7 @@ func constructURLPathUpdate(config common.WriteParams, url *urlbuilder.URL) {
 
 func constructWriteResult(body *ajson.Node, recordIdLocation string) (*common.WriteResult, error) {
 	// ID is integer that is always stored under different field name.
-	rawID, err := jsonquery.New(body).Integer(recordIdLocation, true)
+	rawID, err := jsonquery.New(body).IntegerOptional(recordIdLocation)
 	if err != nil {
 		return nil, err
 	}

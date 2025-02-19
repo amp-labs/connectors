@@ -27,7 +27,7 @@ func constructNextRecordsURL(object string) common.NextPageFunc {
 func constructNextPageFilteredURL(node *ajson.Node) (string, error) {
 	jsonParser := jsonquery.New(node)
 
-	data, err := jsonParser.Array("result", false)
+	data, err := jsonParser.ArrayRequired("result")
 	if err != nil {
 		return "", err
 	}
@@ -36,12 +36,12 @@ func constructNextPageFilteredURL(node *ajson.Node) (string, error) {
 	// We'd have to check for the next page records, also due deletes the is also a probability of having more records
 	// even if the size do not reach 300.
 	if len(data) > 0 {
-		lastRecordID, err := jsonquery.New(data[len(data)-1]).Integer("id", false)
+		lastRecordID, err := jsonquery.New(data[len(data)-1]).IntegerRequired("id")
 		if err != nil {
 			return "", err
 		}
 
-		return strconv.Itoa(int(*lastRecordID) + 1), nil
+		return strconv.Itoa(int(lastRecordID) + 1), nil
 	}
 
 	return "", nil
@@ -49,7 +49,7 @@ func constructNextPageFilteredURL(node *ajson.Node) (string, error) {
 
 // getRecords returns the records from the response.
 func getRecords(node *ajson.Node) ([]map[string]any, error) {
-	result, err := jsonquery.New(node).Array("result", true)
+	result, err := jsonquery.New(node).ArrayOptional("result")
 	if err != nil {
 		return nil, err
 	}

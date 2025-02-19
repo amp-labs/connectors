@@ -9,13 +9,13 @@ import (
 
 func makeNextRecordsURL(reqLink *urlbuilder.URL) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
-		pagination, err := jsonquery.New(node).Object("pagination", true)
+		pagination, err := jsonquery.New(node).ObjectOptional("pagination")
 		if err != nil {
 			return "", err
 		}
 
 		if pagination != nil {
-			hasNextPage, err := jsonquery.New(pagination).Bool("has_next_page", true)
+			hasNextPage, err := jsonquery.New(pagination).BoolOptional("has_next_page")
 			if err != nil {
 				return "", err
 			}
@@ -24,7 +24,7 @@ func makeNextRecordsURL(reqLink *urlbuilder.URL) common.NextPageFunc {
 				return "", nil
 			}
 
-			endCursorToken, err := jsonquery.New(pagination).Str("end_cursor", true)
+			endCursorToken, err := jsonquery.New(pagination).StringOptional("end_cursor")
 			if err != nil {
 				return "", err
 			}

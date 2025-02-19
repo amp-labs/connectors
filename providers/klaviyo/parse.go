@@ -25,7 +25,7 @@ import (
 //
 // The resulting fields for the above will be: type, id, test_account, contact_information, locale, links.
 func getRecords(node *ajson.Node) ([]map[string]any, error) {
-	arr, err := jsonquery.New(node).Array("data", true)
+	arr, err := jsonquery.New(node).ArrayOptional("data")
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +39,7 @@ func flattenRecords(arr []*ajson.Node) ([]map[string]any, error) {
 	for index, element := range arr {
 		const keyAttributes = "attributes"
 
-		attributes, err := jsonquery.New(element).Object(keyAttributes, true)
+		attributes, err := jsonquery.New(element).ObjectOptional(keyAttributes)
 		if err != nil {
 			return nil, err
 		}

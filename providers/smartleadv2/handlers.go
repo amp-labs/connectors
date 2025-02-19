@@ -99,7 +99,7 @@ func (c *Connector) parseWriteResponse(
 	}
 
 	// ID is integer that is always stored under different field name.
-	rawID, err := jsonquery.New(node).Integer(idPath, true)
+	rawID, err := jsonquery.New(node).IntegerOptional(idPath)
 	if err != nil {
 		return nil, err
 	}

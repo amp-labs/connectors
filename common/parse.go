@@ -117,7 +117,17 @@ func GetOptionalRecordsUnderJSONPath(jsonPath string, nestedPath ...string) Reco
 
 func getRecords(optional bool, jsonPath string, nestedPath ...string) RecordsFunc {
 	return func(node *ajson.Node) ([]map[string]any, error) {
-		arr, err := jsonquery.New(node, nestedPath...).Array(jsonPath, optional)
+		var (
+			arr []*ajson.Node
+			err error
+		)
+
+		if optional {
+			arr, err = jsonquery.New(node, nestedPath...).ArrayOptional(jsonPath)
+		} else {
+			arr, err = jsonquery.New(node, nestedPath...).ArrayRequired(jsonPath)
+		}
+
 		if err != nil {
 			return nil, err
 		}

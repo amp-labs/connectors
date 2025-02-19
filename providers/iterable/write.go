@@ -138,16 +138,16 @@ func locateWriteRecordID(body *ajson.Node, objectName string) (string, error) {
 	}
 
 	// ID is integer that is always stored under different field name.
-	intIdentifier, err := jsonquery.New(body, recordIDLocation.zoom...).Integer(recordIDLocation.id, false)
+	intIdentifier, err := jsonquery.New(body, recordIDLocation.zoom...).IntegerRequired(recordIDLocation.id)
 	if err != nil {
 		return "", err
 	}
 
-	return strconv.FormatInt(*intIdentifier, 10), nil
+	return strconv.FormatInt(intIdentifier, 10), nil
 }
 
 func extractTemplateWriteRecordID(body *ajson.Node) (string, error) {
-	message, err := jsonquery.New(body).Str("msg", true)
+	message, err := jsonquery.New(body).StringOptional("msg")
 	if err != nil {
 		return "", err
 	}

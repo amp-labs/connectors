@@ -25,7 +25,7 @@ func (c *Connector) parseReadRecords(
 	ctx context.Context, config common.ReadParams, jsonPath string,
 ) common.RecordsFunc {
 	return func(node *ajson.Node) ([]map[string]any, error) {
-		arr, err := jsonquery.New(node).Array(jsonPath, true)
+		arr, err := jsonquery.New(node).ArrayOptional(jsonPath)
 		if err != nil {
 			return nil, err
 		}

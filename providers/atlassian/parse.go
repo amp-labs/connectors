@@ -31,7 +31,7 @@ Visual example of what will happen to each property:
 	}
 */
 func getRecords(node *ajson.Node) ([]map[string]any, error) {
-	arr, err := jsonquery.New(node).Array("issues", false)
+	arr, err := jsonquery.New(node).ArrayRequired("issues")
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +39,7 @@ func getRecords(node *ajson.Node) ([]map[string]any, error) {
 	list := make([]map[string]any, len(arr))
 
 	for index, item := range arr {
-		fieldsObject, err := jsonquery.New(item).Object("fields", false)
+		fieldsObject, err := jsonquery.New(item).ObjectRequired("fields")
 		if err != nil {
 			return nil, errors.Join(common.ErrParseError, err)
 		}
@@ -49,13 +49,13 @@ func getRecords(node *ajson.Node) ([]map[string]any, error) {
 			return nil, errors.Join(common.ErrParseError, err)
 		}
 
-		id, err := jsonquery.New(item).Str("id", false)
+		id, err := jsonquery.New(item).StringRequired("id")
 		if err != nil {
 			return nil, errors.Join(common.ErrParseError, err)
 		}
 
 		// Enhance response with id property.
-		fields["id"] = *id
+		fields["id"] = id
 		list[index] = fields
 	}
 
@@ -77,7 +77,7 @@ func getNextRecords(node *ajson.Node) (string, error) {
 		return "", nil
 	}
 
-	startAt, err := jsonquery.New(node).Integer("startAt", true)
+	startAt, err := jsonquery.New(node).IntegerOptional("startAt")
 	if err != nil {
 		return "", err
 	}

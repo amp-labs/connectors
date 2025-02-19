@@ -42,7 +42,7 @@ func parseWriteResult(rsp *common.JSONHTTPResponse) (*common.WriteResult, error)
 		}, nil
 	}
 
-	recordID, err := jsonquery.New(body).Str("id", false)
+	recordID, err := jsonquery.New(body).StringRequired("id")
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +52,7 @@ func parseWriteResult(rsp *common.JSONHTTPResponse) (*common.WriteResult, error)
 		return nil, err
 	}
 
-	success, err := jsonquery.New(body).Bool("success", false)
+	success, err := jsonquery.New(body).BoolRequired("success")
 	if err != nil {
 		return nil, err
 	}
@@ -60,15 +60,15 @@ func parseWriteResult(rsp *common.JSONHTTPResponse) (*common.WriteResult, error)
 	// Salesforce does not return record data upon successful write so we do not populate
 	// the corresponding result field
 	return &common.WriteResult{
-		RecordId: *recordID,
+		RecordId: recordID,
 		Errors:   errors,
-		Success:  *success,
+		Success:  success,
 	}, nil
 }
 
 // getErrors returns the errors from the response.
 func getErrors(node *ajson.Node) ([]any, error) {
-	arr, err := jsonquery.New(node).Array("errors", true)
+	arr, err := jsonquery.New(node).ArrayOptional("errors")
 	if err != nil {
 		return nil, err
 	}

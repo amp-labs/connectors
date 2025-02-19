@@ -14,7 +14,7 @@ func makeNextRecordsURL(reqLink *urlbuilder.URL) common.NextPageFunc {
 		previousStart := 0
 
 		// Extract the data key value from the response.
-		value, err := jsonquery.New(node).Array("data", false)
+		value, err := jsonquery.New(node).ArrayRequired("data")
 		if err != nil {
 			return "", err
 		}
