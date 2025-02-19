@@ -33,9 +33,9 @@ func main() {
 
 	params := &common.SubscriptionRegistrationParams{
 		Request: &salesforce.RegistrationParams{
-			UniqueRef: "Amp" + uniqueString,
-			Label:     "Amp" + uniqueString,
-			AwsArn:    arn,
+			UniqueRef:             "Amp" + uniqueString,
+			Label:                 "Amp" + uniqueString,
+			AwsNamedCredentialArn: arn,
 		},
 	}
 
@@ -47,13 +47,13 @@ func main() {
 
 	fmt.Println("Registration result:", prettyPrint(result))
 
-	if err := conn.RollbackRegister(ctx, result.Result.(*salesforce.ResultData)); err != nil {
+	if err := conn.DeleteRegistration(ctx, result); err != nil {
 		logging.Logger(ctx).Error("Error rolling back registration", "error", err)
 
 		return
 	}
 
-	fmt.Println("Rollback successful")
+	fmt.Println("Delete successful")
 }
 
 func prettyPrint(v any) string {

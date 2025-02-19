@@ -11,14 +11,17 @@ import (
 	"github.com/go-playground/validator"
 )
 
-var errInvalidRequestType = errors.New("invalid request type")
+var (
+	errInvalidRequestType = errors.New("invalid request type")
+	errMissingParams      = errors.New("missing required parameters")
+)
 
 type RegistrationParams struct {
 	// UniqueRef is a unique reference for the registration.
 	// It is used to create unique names for the Salesforce objects.
-	UniqueRef string `json:"uniqueRef" validate:"required"`
-	Label     string `json:"label"     validate:"required"`
-	AwsArn    string `json:"awsArn"    validate:"required"`
+	UniqueRef             string `json:"uniqueRef"             validate:"required"`
+	Label                 string `json:"label"                 validate:"required"`
+	AwsNamedCredentialArn string `json:"awsNamedCredentialArn" validate:"required"`
 }
 
 type ResultData struct {
@@ -27,7 +30,7 @@ type ResultData struct {
 	EventRelayConfig *EventRelayConfig
 }
 
-func (c *Connector) RollbackRegister(ctx context.Context, res *ResultData) error {
+func (c *Connector) rollbackRegister(ctx context.Context, res *ResultData) error {
 	if res.EventRelayConfig != nil {
 		_, err := c.DeleteEventRelayConfig(ctx, res.EventRelayConfig.Id)
 		if err != nil {
@@ -77,7 +80,7 @@ func (c *Connector) Register(
 
 	result, err := c.register(ctx, sfParams)
 	if err != nil {
-		if rollbackErr := c.RollbackRegister(ctx, result); rollbackErr != nil {
+		if rollbackErr := c.rollbackRegister(ctx, result); rollbackErr != nil {
 			return &common.RegistrationResult{
 				Status: common.RegistrationStatusError,
 			}, errors.Join(rollbackErr, err)
@@ -134,6 +137,35 @@ func (c *Connector) register(
 	return result, nil
 }
 
+// DeleteRegistration will delete the Salesforce objects created during registration.
+// It will delete the EventRelayConfig, NamedCredential, and EventChannel.
+func (c *Connector) DeleteRegistration(ctx context.Context, registration *common.RegistrationResult) error {
+	if registration == nil {
+		return fmt.Errorf("%w: registration is null", errMissingParams)
+	}
+
+	if registration.Result == nil {
+		return fmt.Errorf("%w: registration result is null", errMissingParams)
+	}
+
+	validate := validator.New()
+	if err := validate.Struct(registration.Result); err != nil {
+		return fmt.Errorf("invalid registration result: %w", err)
+	}
+
+	result, ok := registration.Result.(*ResultData)
+	if !ok {
+		return fmt.Errorf(
+			"%w: expected result type '%T', but received '%T'",
+			errInvalidRequestType,
+			result,
+			registration.Result,
+		)
+	}
+
+	return c.rollbackRegister(ctx, result)
+}
+
 func (c *Connector) createEventChannel(ctx context.Context, params *RegistrationParams) (*EventChannel, error) {
 	channelName := GetChannelName(params.UniqueRef)
 
@@ -156,7 +188,7 @@ func (c *Connector) createNamedCredential(ctx context.Context, params *Registrat
 			Label:                       params.Label,
 
 			// below are legacy fields
-			Endpoint:      params.AwsArn,
+			Endpoint:      params.AwsNamedCredentialArn,
 			PrincipalType: "NamedUser",
 			Protocol:      "NoAuthentication",
 		},
