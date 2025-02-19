@@ -31,20 +31,18 @@ func New(node *ajson.Node, zoom ...string) *Query {
 // If the entity at the key path is not a node object, an error is returned.
 // Empty key is interpreter as "this", in other words current node.
 func (q *Query) ObjectOptional(key string) (*ajson.Node, error) {
-	return q.queryObject(key, true)
+	return q.internalQueryObject(key, true)
 }
 
 // ObjectRequired returns node object.
 // If the entity at the key path is not a node object or is missing, an error is returned.
 // Empty key is interpreter as "this", in other words current node.
+// Missing key returns ErrKeyNotFound. Null value returns ErrNullJSON.
 func (q *Query) ObjectRequired(key string) (*ajson.Node, error) {
-	return q.queryObject(key, false)
+	return q.internalQueryObject(key, false)
 }
 
-// Object returns json object.
-// Optional argument set to false will create error in case of missing value.
-// Empty key is interpreter as "this", in other words current node.
-func (q *Query) queryObject(key string, optional bool) (*ajson.Node, error) {
+func (q *Query) internalQueryObject(key string, optional bool) (*ajson.Node, error) {
 	node, err := q.getInnerKey(key, optional)
 	if err != nil {
 		return nil, err
@@ -69,14 +67,15 @@ func (q *Query) queryObject(key string, optional bool) (*ajson.Node, error) {
 // If the entity at the key path is not an integer, an error is returned.
 // Empty key is interpreter as "this", in other words current node.
 func (q *Query) IntegerOptional(key string) (*int64, error) {
-	return q.queryInteger(key, true)
+	return q.internalQueryInteger(key, true)
 }
 
 // IntegerRequired returns integer.
 // If the entity at the key path is not an integer or is missing, an error is returned.
 // Empty key is interpreter as "this", in other words current node.
+// Missing key returns ErrKeyNotFound. Null value returns ErrNullJSON.
 func (q *Query) IntegerRequired(key string) (int64, error) {
-	integer, err := q.queryInteger(key, false)
+	integer, err := q.internalQueryInteger(key, false)
 	if err != nil {
 		return 0, err
 	}
@@ -84,7 +83,7 @@ func (q *Query) IntegerRequired(key string) (int64, error) {
 	return *integer, nil
 }
 
-func (q *Query) queryInteger(key string, optional bool) (*int64, error) {
+func (q *Query) internalQueryInteger(key string, optional bool) (*int64, error) {
 	node, err := q.getInnerKey(key, optional)
 	if err != nil {
 		return nil, err
@@ -116,14 +115,15 @@ func (q *Query) queryInteger(key string, optional bool) (*int64, error) {
 // If the entity at the key path is not a string, an error is returned.
 // Empty key is interpreted as "this", in other words a current node.
 func (q *Query) StringOptional(key string) (*string, error) {
-	return q.queryString(key, true)
+	return q.internalQueryString(key, true)
 }
 
 // StringRequired returns string.
 // If the entity at the key path is not a string or is missing, an error is returned.
 // Empty key is interpreted as "this", in other words a current node.
+// Missing key returns ErrKeyNotFound. Null value returns ErrNullJSON.
 func (q *Query) StringRequired(key string) (string, error) {
-	text, err := q.queryString(key, false)
+	text, err := q.internalQueryString(key, false)
 	if err != nil {
 		return "", err
 	}
@@ -131,7 +131,7 @@ func (q *Query) StringRequired(key string) (string, error) {
 	return *text, nil
 }
 
-func (q *Query) queryString(key string, optional bool) (*string, error) {
+func (q *Query) internalQueryString(key string, optional bool) (*string, error) {
 	node, err := q.getInnerKey(key, optional)
 	if err != nil {
 		return nil, err
@@ -157,14 +157,15 @@ func (q *Query) queryString(key string, optional bool) (*string, error) {
 // If the entity at the key path is not a boolean, an error is returned.
 // Empty key is interpreted as "this", in other words a current node.
 func (q *Query) BoolOptional(key string) (*bool, error) {
-	return q.queryBool(key, true)
+	return q.internalQueryBool(key, true)
 }
 
 // BoolRequired returns boolean.
 // If the entity at the key path is not a boolean or is missing, an error is returned.
 // Empty key is interpreted as "this", in other words a current node.
+// Missing key returns ErrKeyNotFound. Null value returns ErrNullJSON.
 func (q *Query) BoolRequired(key string) (bool, error) {
-	flag, err := q.queryBool(key, false)
+	flag, err := q.internalQueryBool(key, false)
 	if err != nil {
 		return false, err
 	}
@@ -172,7 +173,7 @@ func (q *Query) BoolRequired(key string) (bool, error) {
 	return *flag, nil
 }
 
-func (q *Query) queryBool(key string, optional bool) (*bool, error) {
+func (q *Query) internalQueryBool(key string, optional bool) (*bool, error) {
 	node, err := q.getInnerKey(key, optional)
 	if err != nil {
 		return nil, err
@@ -198,20 +199,18 @@ func (q *Query) queryBool(key string, optional bool) (*bool, error) {
 // If the entity at the key path is not an array, an error is returned.
 // Empty key is interpreted as "this", in other words a current node.
 func (q *Query) ArrayOptional(key string) ([]*ajson.Node, error) {
-	return q.queryArray(key, true)
+	return q.internalQueryArray(key, true)
 }
 
 // ArrayRequired returns array of nodes.
 // If the entity at the key path is not an array or is missing, an error is returned.
 // Empty key is interpreted as "this", in other words a current node.
+// Missing key returns ErrKeyNotFound. Null value returns ErrNullJSON.
 func (q *Query) ArrayRequired(key string) ([]*ajson.Node, error) {
-	return q.queryArray(key, false)
+	return q.internalQueryArray(key, false)
 }
 
-// Array returns list of nodes.
-// Optional argument set to false will create error in case of missing value.
-// Empty key is interpreter as "this", in other words current node.
-func (q *Query) queryArray(key string, optional bool) ([]*ajson.Node, error) {
+func (q *Query) internalQueryArray(key string, optional bool) ([]*ajson.Node, error) {
 	node, err := q.getInnerKey(key, optional)
 	if err != nil {
 		return nil, err
