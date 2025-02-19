@@ -170,6 +170,7 @@ func (a *OAuthApp) processCallback(writer http.ResponseWriter, request *http.Req
 
 	// Print the token which will also print raw metadata
 	fmt.Printf("%+v", tok)
+
 	if a.WriteCreds {
 		// Update the creds.json file with the new token values.
 		if err = credutils.WriteToken(DefaultCredsFile, tok); err != nil {
@@ -279,6 +280,7 @@ func setup() *OAuthApp {
 	callback := flag.String("callback", DefaultCallbackPath, "the full OAuth callback path (arbitrary)")
 	writeCreds := flag.Bool("writeCreds", false,
 		"Enable updating creds.json and <provider>-creds.json files")
+
 	flag.Parse()
 
 	if err := registry.AddReaders(readers...); err != nil {

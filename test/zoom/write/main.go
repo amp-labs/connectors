@@ -72,5 +72,4 @@ func createUser(ctx context.Context, conn *zoom.Connector, payload *CreateUserPa
 	}
 
 	utils.DumpJSON(res, os.Stdout)
-
 }
