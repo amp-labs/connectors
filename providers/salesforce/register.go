@@ -19,9 +19,9 @@ var (
 type RegistrationParams struct {
 	// UniqueRef is a unique reference for the registration.
 	// It is used to create unique names for the Salesforce objects.
-	UniqueRef string `json:"uniqueRef" validate:"required"`
-	Label     string `json:"label"     validate:"required"`
-	AwsArn    string `json:"awsArn"    validate:"required"`
+	UniqueRef             string `json:"uniqueRef" validate:"required"`
+	Label                 string `json:"label"     validate:"required"`
+	AwsNamedCredentialArn string `json:"awsNamedCredentialArn"    validate:"required"`
 }
 
 type ResultData struct {
@@ -188,7 +188,7 @@ func (c *Connector) createNamedCredential(ctx context.Context, params *Registrat
 			Label:                       params.Label,
 
 			// below are legacy fields
-			Endpoint:      params.AwsArn,
+			Endpoint:      params.AwsNamedCredentialArn,
 			PrincipalType: "NamedUser",
 			Protocol:      "NoAuthentication",
 		},

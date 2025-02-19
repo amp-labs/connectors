@@ -33,9 +33,9 @@ func main() {
 
 	params := &common.SubscriptionRegistrationParams{
 		Request: &salesforce.RegistrationParams{
-			UniqueRef: "Amp" + uniqueString,
-			Label:     "Amp" + uniqueString,
-			AwsArn:    arn,
+			UniqueRef:             "Amp" + uniqueString,
+			Label:                 "Amp" + uniqueString,
+			AwsNamedCredentialArn: arn,
 		},
 	}
 
