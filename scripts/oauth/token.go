@@ -23,6 +23,7 @@ import (
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/scripts/utils/credutils"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
 )
@@ -101,6 +102,7 @@ type OAuthApp struct {
 	SSLKey          string
 	CodeVerifier    *string
 	PasswordParams  *providers.BasicParams
+	WriteCreds      bool
 }
 
 // ServeHTTP implements the http.Handler interface.
@@ -168,6 +170,12 @@ func (a *OAuthApp) processCallback(writer http.ResponseWriter, request *http.Req
 
 	// Print the token which will also print raw metadata
 	fmt.Printf("%+v", tok)
+	if a.WriteCreds {
+		// Update the creds.json file with the new token values.
+		if err = credutils.WriteToken(DefaultCredsFile, tok); err != nil {
+			slog.Warn("Couldn't write token information to creds file", "error", err)
+		}
+	}
 
 	writer.Header().Set("Content-Type", "application/json")
 	writer.Header().Set("Content-Length", strconv.FormatInt(int64(len(jsonBody)), 10))
@@ -269,6 +277,8 @@ func setup() *OAuthApp {
 	proto := flag.String("proto", HttpProtocol, "http or https protocol")
 
 	callback := flag.String("callback", DefaultCallbackPath, "the full OAuth callback path (arbitrary)")
+	writeCreds := flag.Bool("writeCreds", false,
+		"Enable updating creds.json and <provider>-creds.json files")
 	flag.Parse()
 
 	if err := registry.AddReaders(readers...); err != nil {
@@ -351,6 +361,7 @@ func setup() *OAuthApp {
 			},
 			AuthOptions:     make([]oauth2.AuthCodeOption, 0),
 			ExchangeOptions: make([]oauth2.AuthCodeOption, 0),
+			WriteCreds:      *writeCreds,
 		}
 		if state != "" {
 			app.State = state
