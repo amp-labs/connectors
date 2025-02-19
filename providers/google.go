@@ -16,7 +16,7 @@ func init() {
 	SetInfo(Google, ProviderInfo{
 		DisplayName: "Google",
 		AuthType:    Oauth2,
-		BaseURL:     "https://www.googleapis.com",
+		BaseURL:     "https://{{.subdomain}}.googleapis.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://accounts.google.com/o/oauth2/v2/auth",
