@@ -3,8 +3,8 @@ package common
 import (
 	"strings"
 
-	"github.com/amp-labs/connectors/common/jsonquery"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 
