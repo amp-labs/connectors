@@ -47,12 +47,12 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 }
 
 func constructWriteResult(body *ajson.Node) (*common.WriteResult, error) {
-	success, err := jsonquery.New(body).Bool("success", false)
+	success, err := jsonquery.New(body).BoolRequired("success")
 	if err != nil {
 		return nil, err
 	}
 
-	nested, err := jsonquery.New(body).Object("data", false)
+	nested, err := jsonquery.New(body).ObjectRequired("data")
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +68,7 @@ func constructWriteResult(body *ajson.Node) (*common.WriteResult, error) {
 	}
 
 	return &common.WriteResult{
-		Success:  *success,
+		Success:  success,
 		RecordId: recordID,
 		Errors:   nil,
 		Data:     data,

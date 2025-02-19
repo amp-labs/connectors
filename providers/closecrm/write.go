@@ -48,7 +48,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 }
 
 func constructWriteResult(node *ajson.Node) (*common.WriteResult, error) {
-	recordID, err := jsonquery.New(node).Str("id", false)
+	recordID, err := jsonquery.New(node).StringRequired("id")
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +60,7 @@ func constructWriteResult(node *ajson.Node) (*common.WriteResult, error) {
 
 	return &common.WriteResult{
 		Success:  true,
-		RecordId: *recordID,
+		RecordId: recordID,
 		Errors:   nil,
 		Data:     data,
 	}, nil

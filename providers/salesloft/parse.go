@@ -31,7 +31,7 @@ Response example:
 	}
 */
 func getRecords(node *ajson.Node) ([]map[string]any, error) {
-	arr, err := jsonquery.New(node).Array("data", false)
+	arr, err := jsonquery.New(node).ArrayRequired("data")
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +41,7 @@ func getRecords(node *ajson.Node) ([]map[string]any, error) {
 
 func makeNextRecordsURL(reqLink *urlbuilder.URL) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
-		nextPageNum, err := jsonquery.New(node, "metadata", "paging").Integer("next_page", true)
+		nextPageNum, err := jsonquery.New(node, "metadata", "paging").IntegerOptional("next_page")
 		if err != nil {
 			if errors.Is(err, jsonquery.ErrKeyNotFound) {
 				// list resource doesn't support pagination, hence no next page

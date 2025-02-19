@@ -8,7 +8,7 @@ import (
 
 func makeNextRecordsURL() common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
-		nextPageURL, err := jsonquery.New(node, "next_page").Str("uri", true)
+		nextPageURL, err := jsonquery.New(node, "next_page").StringOptional("uri")
 		if err != nil {
 			return "", err
 		}

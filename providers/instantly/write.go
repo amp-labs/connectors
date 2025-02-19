@@ -110,14 +110,14 @@ func constructWriteResult(body *ajson.Node, recordIdLocation *string) (*common.W
 	}
 
 	// ID is integer that is always stored under different field name.
-	recordID, err := jsonquery.New(body).Str(*recordIdLocation, false)
+	recordID, err := jsonquery.New(body).StringRequired(*recordIdLocation)
 	if err != nil {
 		return nil, err
 	}
 
 	return &common.WriteResult{
 		Success:  true,
-		RecordId: *recordID,
+		RecordId: recordID,
 		Errors:   nil,
 		Data:     nil,
 	}, nil

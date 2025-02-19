@@ -62,7 +62,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 func constructWriteResult(config common.WriteParams, body *ajson.Node) (*common.WriteResult, error) {
 	fieldName := ObjectNameToWriteResponseField.Get(config.ObjectName)
 
-	nested, err := jsonquery.New(body).Object(fieldName, false)
+	nested, err := jsonquery.New(body).ObjectRequired(fieldName)
 	if err != nil {
 		return nil, err
 	}

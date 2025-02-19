@@ -68,7 +68,7 @@ func constructWriteResult(
 	if config.ObjectName == objectNameFiles {
 		var err error
 		// Identifier is nested under "file_descriptor" object.
-		identifierHolder, err = jsonquery.New(body).Object("file_descriptor", false)
+		identifierHolder, err = jsonquery.New(body).ObjectRequired("file_descriptor")
 		if err != nil {
 			return nil, err
 		}
