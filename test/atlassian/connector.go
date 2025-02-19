@@ -12,7 +12,7 @@ import (
 	"golang.org/x/oauth2"
 )
 
-const cloudId = "ebc887b2-7e61-4059-ab35-71f15cc16e12"
+const cloudId = "35745fff-f0de-466c-b08e-a63f69888611"
 
 func GetAtlassianConnector(ctx context.Context) *atlassian.Connector {
 	filePath := credscanning.LoadPath(providers.Atlassian)
@@ -25,6 +25,7 @@ func GetAtlassianConnector(ctx context.Context) *atlassian.Connector {
 		atlassian.WithMetadata(map[string]string{
 			// This value can be obtained by following this API reference.
 			// https://developer.atlassian.com/cloud/confluence/oauth-2-3lo-apps/#3-1-get-the-cloudid-for-your-site
+			// Another simplest solution is to run `connectors/test/atlassian/auth-metadata/main.go` script.
 			"cloudId": cloudId,
 		}),
 	)
