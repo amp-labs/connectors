@@ -1,9 +1,9 @@
 package support
 
 import (
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/metadatadef"
-	"github.com/amp-labs/connectors/providers/zendesksupport"
 	"github.com/amp-labs/connectors/providers/zendesksupport/openapi"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
 )
@@ -66,6 +66,13 @@ var (
 		"satisfaction_reasons": "Satisfaction Rating Reasons",
 		"ticket_audits":        "Ticket Audits",
 	}
+	objectNameToResponseField = datautils.NewDefaultMap(map[string]string{ // nolint:gochecknoglobals
+		"ticket_audits":        "audits",
+		"search":               "results", // This is "/api/v2/search"
+		"satisfaction_reasons": "reasons",
+	}, func(objectName string) (fieldName string) {
+		return objectName
+	})
 )
 
 func Objects() []metadatadef.Schema {
@@ -80,7 +87,7 @@ func Objects() []metadatadef.Schema {
 	objects, err := explorer.ReadObjectsGet(
 		api3.NewDenyPathStrategy(ignoreEndpoints),
 		nil, displayNameOverride,
-		api3.CustomMappingObjectCheck(zendesksupport.ObjectNameToResponseField[zendesksupport.ModuleTicketing]),
+		api3.CustomMappingObjectCheck(objectNameToResponseField),
 	)
 	goutils.MustBeNil(err)
 
