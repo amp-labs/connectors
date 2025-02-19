@@ -1,7 +1,7 @@
 package gong
 
 import (
-	"github.com/amp-labs/connectors/common/jsonquery"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 

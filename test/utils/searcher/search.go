@@ -6,7 +6,7 @@ import (
 	"log/slog"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/jsonquery"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/test/utils"
 	"github.com/spyzhov/ajson"
 )
