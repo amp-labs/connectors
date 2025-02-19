@@ -4,10 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log/slog"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/logging"
 	"github.com/go-playground/validator"
 )
 
@@ -44,7 +44,7 @@ func (c *Connector) rollbackRegister(ctx context.Context, res *ResultData) error
 	if res.NamedCredential != nil {
 		_, err := c.DeleteNamedCredential(ctx, res.NamedCredential.Id)
 		if err != nil {
-			slog.Error("failed to delete named credential", "error", err)
+			logging.Logger(ctx).Error("failed to delete named credential", "error", err)
 
 			return fmt.Errorf("failed to delete named credential: %w", err)
 		}
@@ -53,7 +53,7 @@ func (c *Connector) rollbackRegister(ctx context.Context, res *ResultData) error
 	if res.EventChannel != nil {
 		_, err := c.DeleteEventChannel(ctx, res.EventChannel.Id)
 		if err != nil {
-			slog.Error("failed to delete event channel", "error", err)
+			logging.Logger(ctx).Error("failed to delete event channel", "error", err)
 
 			return fmt.Errorf("failed to delete event channel: %w", err)
 		}
@@ -251,6 +251,10 @@ func GetChannelName(rawChannelName string) string {
 }
 
 func RemoveSuffix(objName string, suffixLength int) string {
+	if len(objName) < suffixLength {
+		return ""
+	}
+
 	return objName[:len(objName)-suffixLength]
 }
 

@@ -3,13 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
-	"log/slog"
 	"os/signal"
 	"strconv"
 	"strings"
 	"syscall"
 	"time"
 
+	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/providers/salesforce"
 	connTest "github.com/amp-labs/connectors/test/salesforce"
 	"github.com/amp-labs/connectors/test/utils"
@@ -56,15 +56,15 @@ func testCDC(conn *salesforce.Connector, ctx context.Context, creds salesforce.C
 	}
 
 	if conn.RunEventRelay(ctx, evtCfg) != nil {
-		slog.Error("Error running event relay", "error", err)
+		logging.Logger(ctx).Error("Error running event relay", "error", err)
 		return
 	}
 
-	slog.Info("Event relay config updated", "state", "RUN")
+	logging.Logger(ctx).Info("Event relay config updated", "state", "RUN")
 
 	orgId, err := conn.GetOrganizationId(ctx)
 	if err != nil {
-		slog.Error("Failed to get orgId", "error", err)
+		logging.Logger(ctx).Error("Failed to get orgId", "error", err)
 		return
 	}
 
@@ -73,7 +73,7 @@ func testCDC(conn *salesforce.Connector, ctx context.Context, creds salesforce.C
 
 	resp, err := conn.DeleteEventChannelMember(ctx, membership.Id)
 	if err != nil {
-		slog.Error("Error deleting event channel member", "error", err)
+		logging.Logger(ctx).Error("Error deleting event channel member", "error", err)
 
 		return
 	}
@@ -82,7 +82,7 @@ func testCDC(conn *salesforce.Connector, ctx context.Context, creds salesforce.C
 
 	resp, err = conn.DeleteEventRelayConfig(ctx, evtCfg.Id)
 	if err != nil {
-		slog.Error("Error deleting event relay config", "error", err)
+		logging.Logger(ctx).Error("Error deleting event relay config", "error", err)
 
 		return
 	}
@@ -91,7 +91,7 @@ func testCDC(conn *salesforce.Connector, ctx context.Context, creds salesforce.C
 
 	resp, err = conn.DeleteEventChannel(ctx, cdcChannel.Id)
 	if err != nil {
-		slog.Error("Error deleting event channel", "error", err)
+		logging.Logger(ctx).Error("Error deleting event channel", "error", err)
 
 		return
 	}
@@ -113,7 +113,7 @@ func testChangeDataCaptureChannelMembership(conn *salesforce.Connector, ctx cont
 
 	newChannelMember, err := conn.CreateEventChannelMember(ctx, member)
 	if err != nil {
-		slog.Error("Error event channel member", "error", err)
+		logging.Logger(ctx).Error("Error event channel member", "error", err)
 
 		return nil, err
 	}
@@ -134,7 +134,7 @@ func TestCDCChannel(conn *salesforce.Connector, ctx context.Context, channelName
 
 	newChannel, err := conn.CreateEventChannel(ctx, channel)
 	if err != nil {
-		slog.Error("Error creating data channel", "error", err)
+		logging.Logger(ctx).Error("Error creating data channel", "error", err)
 		return nil, err
 	}
 
@@ -154,7 +154,7 @@ func TestEventRelayConfig(conn *salesforce.Connector, ctx context.Context, cred 
 
 	newEvtCfg, err := conn.CreateEventRelayConfig(ctx, evtCfg)
 	if err != nil {
-		slog.Error("Error event relay config", "error", err)
+		logging.Logger(ctx).Error("Error event relay config", "error", err)
 
 		return nil, err
 	}
@@ -183,7 +183,7 @@ func TestCredentialsLegacy(conn *salesforce.Connector, ctx context.Context, uniq
 
 	newNamedCred, err := conn.CreateNamedCredential(ctx, namedCred)
 	if err != nil {
-		slog.Error("Error named cred", "error", err)
+		logging.Logger(ctx).Error("Error named cred", "error", err)
 		return nil, err
 	}
 
@@ -193,7 +193,8 @@ func TestCredentialsLegacy(conn *salesforce.Connector, ctx context.Context, uniq
 }
 
 func printWithField(header string, key string, v interface{}) {
-	slog.Info(header, key, fmt.Sprintf("%+v", v))
+	ctx := context.Background()
+	logging.Logger(ctx).Info(header, key, fmt.Sprintf("%+v", v))
 }
 
 func isCustomObject(objName string) bool {

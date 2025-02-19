@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log/slog"
 	"os"
 	"os/signal"
 	"strconv"
@@ -12,6 +11,7 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/providers/salesforce"
 	connTest "github.com/amp-labs/connectors/test/salesforce"
 	"github.com/amp-labs/connectors/test/utils"
@@ -41,14 +41,14 @@ func main() {
 
 	result, err := conn.Register(ctx, params)
 	if err != nil {
-		slog.Error("Error registering", "error", err)
+		logging.Logger(ctx).Error("Error registering", "error", err)
 		return
 	}
 
 	fmt.Println("Registration result:", prettyPrint(result))
 
 	if err := conn.DeleteRegistration(ctx, result); err != nil {
-		slog.Error("Error rolling back registration", "error", err)
+		logging.Logger(ctx).Error("Error rolling back registration", "error", err)
 
 		return
 	}
