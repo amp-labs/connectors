@@ -12,6 +12,8 @@ var (
 	ObjectNameUser          = "users"           // nolint: gochecknoglobals
 	ObjectNameGroup         = "groups"          // nolint: gochecknoglobals
 	objectNameTrackingField = "tracking_fields" // nolint: gochecknoglobals
+	objectNameDevice        = "devices"         // nolint: gochecknoglobals
+	objectNameH322Device    = "h323_devices"    // nolint: gochecknoglobals
 )
 
 // ObjectNameToResponseField maps ObjectName to the response field name which contains that object.
@@ -23,6 +25,7 @@ var ObjectNameToResponseField = common.ModuleObjectNameToFieldName{ // nolint: g
 		"meeting_summaries": "summaries",
 		"billing_report":    "billing_reports",
 		"activities_report": "activity_logs",
+		"h323_devices":      "devices",
 	},
 		func(objectName string) (fieldName string) {
 			return objectName
@@ -46,6 +49,8 @@ var supportedObjectsByWrite = map[common.ModuleID]datautils.StringSet{ // nolint
 
 	ModuleMeeting: datautils.NewSet(
 		objectNameTrackingField,
+		objectNameDevice,
+		objectNameH322Device,
 	),
 }
 
@@ -54,6 +59,8 @@ var objectNameToWritePath = datautils.NewDefaultMap(map[string]string{ // nolint
 	ObjectNameUser:          "/users",
 	ObjectNameGroup:         "/groups",
 	objectNameTrackingField: "/tracking_fields",
+	objectNameDevice:        "/devices",
+	objectNameH322Device:    "/h323/devices",
 }, func(objectName string) (path string) {
 	return objectName
 },
@@ -65,6 +72,8 @@ var objectNameToWriteResponseIdentifier = common.ModuleObjectNameToFieldName{ //
 
 	ModuleMeeting: datautils.NewDefaultMap(map[string]string{
 		objectNameTrackingField: "id",
+		objectNameDevice:        "",
+		objectNameH322Device:    "id",
 	},
 		func(objectName string) (fieldName string) {
 			return "id"
@@ -74,7 +83,7 @@ var objectNameToWriteResponseIdentifier = common.ModuleObjectNameToFieldName{ //
 	ModuleUser: datautils.NewDefaultMap(map[string]string{
 		ObjectNameContactGroup: "group_id",
 		ObjectNameUser:         "id",
-		ObjectNameGroup:        "id",
+		ObjectNameGroup:        "",
 	},
 		func(objectName string) (fieldName string) {
 			return "id"
