@@ -1,9 +1,11 @@
 package freshdesk
 
-import "slices"
+import (
+	"github.com/amp-labs/connectors/internal/datautils"
+)
 
 // readSupportedObjects represents a list of objects supported by Read Connector.
-var readSupportedObjects = []string{ //nolint:gochecknoglobals
+var readSupportedObjects = datautils.NewSet( //nolint:gochecknoglobals
 	"agents",
 	"business_hours",
 	"canned_response_folders",
@@ -25,9 +27,9 @@ var readSupportedObjects = []string{ //nolint:gochecknoglobals
 	"ticket-forms",
 	"tickets",
 	"time_entries",
-}
+)
 
-var writeSupportedObjects = []string{ //nolint:gochecknoglobals
+var writeSupportedObjects = datautils.NewSet( //nolint:gochecknoglobals
 	"agents",
 	"canned_response_folders",
 	"companies",
@@ -43,7 +45,7 @@ var writeSupportedObjects = []string{ //nolint:gochecknoglobals
 	"ticket-fields",
 	"ticket-forms",
 	"tickets",
-}
+)
 
 // objectResourcePath represents a mapping of an object to it's read/write resource.
 var objectResourcePath = map[string]string{ //nolint:gochecknoglobals
@@ -52,12 +54,4 @@ var objectResourcePath = map[string]string{ //nolint:gochecknoglobals
 	"skills":        "admin/skills",
 	"thread":        "collaboration/threads",
 	"ticket-fields": "admin/ticket_fields",
-}
-
-func objectReadSupported(objectName string) bool {
-	return slices.Contains(readSupportedObjects, objectName)
-}
-
-func objectWriteSupported(objectName string) bool {
-	return slices.Contains(writeSupportedObjects, objectName)
 }

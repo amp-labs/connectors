@@ -19,7 +19,7 @@ func (conn *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, 
 		return urlbuilder.New(string(config.NextPage))
 	}
 
-	if !objectReadSupported(config.ObjectName) {
+	if !readSupportedObjects.Has(config.ObjectName) {
 		return nil, common.ErrObjectNotSupported
 	}
 
