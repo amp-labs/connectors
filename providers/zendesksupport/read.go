@@ -50,9 +50,17 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 		return nil, err
 	}
 
-	// Always opt into cursor based pagination to avoid data limits by specifying page size.
+	// Different objects have different pagination types.
 	// https://developer.zendesk.com/api-reference/introduction/pagination/#using-offset-pagination
-	url.WithQueryParam("page[size]", "100")
+	ptype, ok := metadata.Schemas.LookupPaginationType(c.Module.ID, config.ObjectName)
+	if !ok {
+		// If no pagination type is found, the API assumes offset pagination.
+		return url, nil
+	}
+
+	if ptype == "cursor" {
+		url.WithQueryParam("page[size]", "100")
+	}
 
 	return url, nil
 }
