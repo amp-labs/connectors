@@ -18,6 +18,7 @@ var (
 		"/report/activities",
 		"/sip_phones/phones",
 		"/tracking_fields",
+		"/h323/devices",
 	}
 
 	objectEndpoints = map[string]string{ // nolint:gochecknoglobals
@@ -26,6 +27,7 @@ var (
 		"/meetings/meeting_summaries": "meeting_summaries",
 		"/report/billing":             "billing_report",
 		"/report/activities":          "activities_report",
+		"/h323/devices":               "h323_devices",
 	}
 )
 
