@@ -50,6 +50,7 @@ var supportedObjectsByWrite = map[common.ModuleID]datautils.StringSet{ // nolint
 	ModuleMeeting: datautils.NewSet(
 		objectNameTrackingField,
 		objectNameDevice,
+		objectNameH322Devices,
 	),
 }
 
