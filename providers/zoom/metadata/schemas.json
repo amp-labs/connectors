@@ -91,6 +91,18 @@
             "vendor": "vendor"
           }
         },
+        "h323_devices": {
+          "displayName": "H 323/Sip Device List",
+          "path": "/h323/devices",
+          "responseKey": "devices",
+          "fields": {
+            "encryption": "encryption",
+            "id": "id",
+            "ip": "ip",
+            "name": "name",
+            "protocol": "protocol"
+          }
+        },
         "meeting_summaries": {
           "displayName": "Meeting Summaries",
           "path": "/meetings/meeting_summaries",

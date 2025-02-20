@@ -25,6 +25,7 @@ var ObjectNameToResponseField = common.ModuleObjectNameToFieldName{ // nolint: g
 		"meeting_summaries": "summaries",
 		"billing_report":    "billing_reports",
 		"activities_report": "activity_logs",
+		"h323_devices":      "devices",
 	},
 		func(objectName string) (fieldName string) {
 			return objectName
