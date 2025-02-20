@@ -45,5 +45,22 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 	}
 
 	// First page
-	return c.getURL(config.ObjectName)
+	url, err := c.getURL(config.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	// Different objects have different pagination types.
+	// https://developer.zendesk.com/api-reference/introduction/pagination/#using-offset-pagination
+	ptype, ok := metadata.Schemas.LookupPaginationType(c.Module.ID, config.ObjectName)
+	if !ok {
+		// If no pagination type is found, the API assumes offset pagination.
+		return url, nil
+	}
+
+	if ptype == "cursor" {
+		url.WithQueryParam("page[size]", "100")
+	}
+
+	return url, nil
 }

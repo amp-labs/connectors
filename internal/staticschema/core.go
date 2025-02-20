@@ -49,6 +49,8 @@ type Object[F FieldMetadataMap] struct {
 
 	// DocsURL points to docs endpoint. Optional.
 	DocsURL *string `json:"docs,omitempty"`
+
+	Pagination string `json:"pagination,omitempty"`
 }
 
 type FieldMetadata struct {
@@ -276,6 +278,17 @@ func (m *Metadata[F]) LookupURLPath(moduleID common.ModuleID, objectName string)
 	fullPath := m.LookupModuleURLPath(moduleID) + path
 
 	return fullPath, nil
+}
+
+func (m *Metadata[F]) LookupPaginationType(moduleID common.ModuleID, objectName string) (string, bool) {
+	moduleID = moduleIdentifier(moduleID)
+
+	ptype := m.Modules[moduleID].Objects[objectName].Pagination
+	if len(ptype) == 0 {
+		return "", false
+	}
+
+	return ptype, true
 }
 
 func (m *Metadata[F]) LookupModuleURLPath(moduleID common.ModuleID) string {
