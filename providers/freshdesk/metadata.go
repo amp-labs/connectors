@@ -21,7 +21,7 @@ func (conn *Connector) ListObjectMetadata(ctx context.Context,
 	}
 
 	for _, object := range objectNames {
-		if !objectReadSupported(object) {
+		if !readSupportedObjects.Has(object) {
 			metadataResults.Errors[object] = common.ErrObjectNotSupported
 
 			continue
