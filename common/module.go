@@ -72,3 +72,4 @@ func (a Module) Path() string {
 //			}),
 //		}
 type ModuleObjectNameToFieldName map[ModuleID]datautils.DefaultMap[string, string]
+type ModuleObjectNameToURLPath map[ModuleID]datautils.DefaultMap[string, string]

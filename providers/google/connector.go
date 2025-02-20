@@ -53,6 +53,20 @@ func (c *Connector) getURL(objectName string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(c.BaseURL, path)
 }
 
+func (c *Connector) getWriteURL(withRecordID bool, objectName string) (*urlbuilder.URL, error) {
+	registry := supportedObjectsByCreate
+	if withRecordID {
+		registry = supportedObjectsByUpdate
+	}
+
+	path := registry[c.Module.ID].Get(objectName)
+	if len(path) == 0 {
+		return nil, common.ErrOperationNotSupportedForObject
+	}
+
+	return urlbuilder.New(c.BaseURL, path)
+}
+
 func (c *Connector) setBaseURL(newURL string) {
 	c.BaseURL = newURL
 	c.Client.HTTPClient.Base = newURL

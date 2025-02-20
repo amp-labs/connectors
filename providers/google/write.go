@@ -14,22 +14,23 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, err
 	}
 
-	url, err := c.getURL(config.ObjectName)
+	withRecordID := len(config.RecordId) != 0
+	url, err := c.getWriteURL(withRecordID, config.ObjectName)
 	if err != nil {
 		return nil, err
 	}
 
 	var write common.WriteMethod
 
-	if len(config.RecordId) == 0 {
-		if supportedObjectsByCreate[c.Module.ID].Has(config.ObjectName) {
-			write = c.Client.Post
-		}
-	} else {
+	if withRecordID {
 		if supportedObjectsByUpdate[c.Module.ID].Has(config.ObjectName) {
 			write = c.Client.Put
 
 			url.AddPath(config.RecordId)
+		}
+	} else {
+		if supportedObjectsByCreate[c.Module.ID].Has(config.ObjectName) {
+			write = c.Client.Post
 		}
 	}
 
@@ -47,7 +48,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 	}
 
 	if c.Module.ID == ModulePeople {
-
+		// objectNameContactGroups - no-op.
 	}
 
 	res, err := write(ctx, url.String(), config.RecordData)
