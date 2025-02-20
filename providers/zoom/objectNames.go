@@ -13,7 +13,7 @@ var (
 	ObjectNameGroup         = "groups"          // nolint: gochecknoglobals
 	objectNameTrackingField = "tracking_fields" // nolint: gochecknoglobals
 	objectNameDevice        = "devices"         // nolint: gochecknoglobals
-	objectNameH322Devices   = "h323_devices"    // nolint: gochecknoglobals
+	objectNameH322Device    = "h323_devices"    // nolint: gochecknoglobals
 )
 
 // ObjectNameToResponseField maps ObjectName to the response field name which contains that object.
@@ -50,7 +50,7 @@ var supportedObjectsByWrite = map[common.ModuleID]datautils.StringSet{ // nolint
 	ModuleMeeting: datautils.NewSet(
 		objectNameTrackingField,
 		objectNameDevice,
-		objectNameH322Devices,
+		objectNameH322Device,
 	),
 }
 
@@ -60,7 +60,7 @@ var objectNameToWritePath = datautils.NewDefaultMap(map[string]string{ // nolint
 	ObjectNameGroup:         "/groups",
 	objectNameTrackingField: "/tracking_fields",
 	objectNameDevice:        "/devices",
-	objectNameH322Devices:   "/h323/devices",
+	objectNameH322Device:    "/h323/devices",
 }, func(objectName string) (path string) {
 	return objectName
 },
@@ -73,7 +73,7 @@ var objectNameToWriteResponseIdentifier = common.ModuleObjectNameToFieldName{ //
 	ModuleMeeting: datautils.NewDefaultMap(map[string]string{
 		objectNameTrackingField: "id",
 		objectNameDevice:        "",
-		objectNameH322Devices:   "id",
+		objectNameH322Device:    "id",
 	},
 		func(objectName string) (fieldName string) {
 			return "id"
