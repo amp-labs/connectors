@@ -4,7 +4,7 @@ go 1.23.0
 
 require (
 	github.com/PuerkitoBio/goquery v1.10.2
-	github.com/antchfx/xmlquery v1.4.3
+	github.com/antchfx/xmlquery v1.4.4
 	github.com/brianvoe/gofakeit/v6 v6.28.0
 	github.com/gertd/go-pluralize v0.2.1
 	github.com/getkin/kin-openapi v0.129.0
