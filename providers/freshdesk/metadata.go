@@ -7,8 +7,6 @@ import (
 	"github.com/amp-labs/connectors/common/naming"
 )
 
-const restAPIPrefix = "api/v2"
-
 func (conn *Connector) ListObjectMetadata(ctx context.Context,
 	objectNames []string,
 ) (*common.ListObjectMetadataResult, error) {
