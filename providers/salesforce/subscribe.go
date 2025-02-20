@@ -57,17 +57,18 @@ func (conn *Connector) Subscribe(
 		eventName := GetChangeDataCaptureEventName(string(objName))
 		rawChannelName := GetRawChannelNameFromChannel(regstrationParams.EventChannel.FullName)
 
+		channelMetadata := &EventChannelMemberMetadata{
+			EventChannel:   GetChannelName(rawChannelName),
+			SelectedEntity: eventName,
+		}
 		channelMember := &EventChannelMember{
 			FullName: GetChangeDataCaptureChannelMembershipName(rawChannelName, eventName),
-			Metadata: &EventChannelMemberMetadata{
-				EventChannel:   GetChannelName(rawChannelName),
-				SelectedEntity: eventName,
-			},
+			Metadata: channelMetadata,
 		}
 
 		newChannelMember, err := conn.CreateEventChannelMember(ctx, channelMember)
 		if err != nil {
-			failError = fmt.Errorf("failed to create event channel member for object %s: %w", objName, err)
+			failError = fmt.Errorf("failed to create event channel member for object %s, %w", objName, err)
 
 			break
 		}

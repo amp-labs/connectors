@@ -64,15 +64,17 @@ func main() {
 
 	subscribeResult, err := conn.Subscribe(ctx, subscribeParams)
 	if err != nil {
-		logging.Logger(ctx).Error("Error subscribing", "error", err)
+		logging.Logger(ctx).Error("Error subscribing", "error", err, "subscribeResult", prettyPrint(subscribeResult))
 	}
 
 	fmt.Println("Subscribe result:", prettyPrint(subscribeResult))
 
-	if err := conn.DeleteSubscription(ctx, *subscribeResult); err != nil {
-		logging.Logger(ctx).Error("Error unsubscribing", "error", err)
+	if subscribeResult != nil && subscribeResult.Status == common.SubscriptionStatusSuccess {
+		if err := conn.DeleteSubscription(ctx, *subscribeResult); err != nil {
+			logging.Logger(ctx).Error("Error unsubscribing", "error", err)
 
-		return
+			return
+		}
 	}
 
 	fmt.Println("Delete subscription successful")

@@ -227,7 +227,7 @@ func GetChangeDataCaptureEventName(objName string) string {
 		return GetRawObjectName(objName) + "__ChangeEvent"
 	}
 
-	return objName + "%ChangeEvent"
+	return objName + "ChangeEvent"
 }
 
 func GetChannelName(rawChannelName string) string {
