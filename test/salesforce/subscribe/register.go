@@ -3,12 +3,11 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"flag"
 	"fmt"
-	"os"
+	"log"
 	"os/signal"
-	"strconv"
 	"syscall"
-	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
@@ -25,13 +24,22 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
+	var uniqueString string
+	var namedCredArn string
+
+	flag.StringVar(&uniqueString, "unique", "", "Unique string to append to the registration label")
+	flag.StringVar(&namedCredArn, "arn", "", "AWS Named Credential ARN")
+	flag.Parse()
+
+	if uniqueString == "" || namedCredArn == "" {
+		log.Fatalf("missing flags: go run <your path>.go -unique <unique string> -arn <AWS Named Credential ARN>")
+	}
+
 	conn := connTest.GetSalesforceConnector(ctx)
 
-	uniqueString := strconv.Itoa(int(time.Now().UnixMilli()))
+	arn := namedCredArn
 
-	arn := os.Getenv("AWS_NAMED_CRED_ARN")
-
-	params := &common.SubscriptionRegistrationParams{
+	params := common.SubscriptionRegistrationParams{
 		Request: &salesforce.RegistrationParams{
 			UniqueRef:             "Amp" + uniqueString,
 			Label:                 "Amp" + uniqueString,
@@ -47,13 +55,35 @@ func main() {
 
 	fmt.Println("Registration result:", prettyPrint(result))
 
+	subscribeParams := common.SubscribeParams{
+		RegistrationResult: result,
+		SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
+			"Account": {},
+		},
+	}
+
+	subscribeResult, err := conn.Subscribe(ctx, subscribeParams)
+	if err != nil {
+		logging.Logger(ctx).Error("Error subscribing", "error", err)
+	}
+
+	fmt.Println("Subscribe result:", prettyPrint(subscribeResult))
+
+	if err := conn.DeleteSubscription(ctx, *subscribeResult); err != nil {
+		logging.Logger(ctx).Error("Error unsubscribing", "error", err)
+
+		return
+	}
+
+	fmt.Println("Delete subscription successful")
+
 	if err := conn.DeleteRegistration(ctx, result); err != nil {
 		logging.Logger(ctx).Error("Error rolling back registration", "error", err)
 
 		return
 	}
 
-	fmt.Println("Delete successful")
+	fmt.Println("Delete registration successful")
 }
 
 func prettyPrint(v any) string {
