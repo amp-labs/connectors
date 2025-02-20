@@ -18,6 +18,7 @@ type SubscribeResult struct {
 // If any of the event channel members fail to be created, it will rollback the operation.
 // If the rollback fails, it will return the partial result along with the error.
 // If the rollback is successful, it will return the original error on object.
+// Registration is required prior to subscribing.
 //
 //nolint:funlen,cyclop
 func (conn *Connector) Subscribe(
@@ -132,6 +133,8 @@ func (conn *Connector) Subscribe(
 	return res, nil
 }
 
+// DeleteSubscription deletes the subscription by deleting all the event channel members.
+// If any of the event channel members fail to be deleted, it will return an error.
 func (conn *Connector) DeleteSubscription(ctx context.Context, params common.SubscriptionResult) error {
 	if params.Result == nil {
 		return fmt.Errorf("%w: missing SubscriptionResult.Result", errMissingParams)
