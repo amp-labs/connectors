@@ -24,7 +24,7 @@ func ParseNexPageLinkHeader(linkHeader string) string {
 	}
 
 	links := strings.Split(linkHeader, ",")
-	// [<https://dev269415.service-now.com/api/now/v2/table/incident?sysparm_limit=1&sysparm_offset=0>;rel="next" ...]
+	// `<https://ampersand.freshdesk.com/api/v2/contacts?per_page=1&page=2>; rel="next"
 	for _, link := range links {
 		if strings.Contains(link, `rel="next"`) {
 			urls := strings.Split(link, ";")
