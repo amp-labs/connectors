@@ -2,9 +2,10 @@ package google
 
 import (
 	"context"
+	"errors"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/jsonquery"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 
@@ -37,10 +38,16 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, common.ErrOperationNotSupportedForObject
 	}
 
-	if config.ObjectName == objectNameCalendarList {
-		if needsCalendarColorQueryParam(config) {
-			url.WithQueryParam("colorRgbFormat", "true")
+	if c.Module.ID == ModuleCalendar {
+		if config.ObjectName == objectNameCalendarList {
+			if needsCalendarColorQueryParam(config) {
+				url.WithQueryParam("colorRgbFormat", "true")
+			}
 		}
+	}
+
+	if c.Module.ID == ModulePeople {
+
 	}
 
 	res, err := write(ctx, url.String(), config.RecordData)
@@ -60,7 +67,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 }
 
 func constructWriteResult(node *ajson.Node) (*common.WriteResult, error) {
-	recordID, err := jsonquery.New(node).Str("id", false)
+	resourceName, err := jsonquery.New(node).StringRequired("resourceName")
 	if err != nil {
 		return nil, err
 	}
@@ -70,9 +77,19 @@ func constructWriteResult(node *ajson.Node) (*common.WriteResult, error) {
 		return nil, err
 	}
 
+	_, recordID, ok := resourceIdentifierFormat(resourceName)
+	if !ok {
+		return &common.WriteResult{
+			Success:  true,
+			RecordId: "",
+			Errors:   []any{errors.New("cannot infer record identifier")},
+			Data:     data,
+		}, nil
+	}
+
 	return &common.WriteResult{
 		Success:  true,
-		RecordId: *recordID,
+		RecordId: recordID,
 		Errors:   nil,
 		Data:     data,
 	}, nil

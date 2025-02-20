@@ -16,7 +16,7 @@ func init() {
 	SetInfo(Google, ProviderInfo{
 		DisplayName: "Google",
 		AuthType:    Oauth2,
-		BaseURL:     "https://{{.subdomain}}.googleapis.com",
+		BaseURL:     "https://people.googleapis.com", // TODO should be dynamic subdomain (depends on the other PR)
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://accounts.google.com/o/oauth2/v2/auth",

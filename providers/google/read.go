@@ -35,7 +35,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	return common.ParseResult(res,
 		common.GetOptionalRecordsUnderJSONPath(responseFieldName),
 		makeNextRecordsURL(url),
-		common.GetMarshaledData,
+		getMarshaledData,
 		config.Fields,
 	)
 }
