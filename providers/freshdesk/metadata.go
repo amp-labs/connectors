@@ -32,8 +32,7 @@ func (conn *Connector) ListObjectMetadata(ctx context.Context,
 			return nil, err
 		}
 
-		url.WithQueryParam("page", "1")
-		url.WithQueryParam("per_page", "1")
+		url.WithQueryParam(pageKey, metadataPage)
 
 		response, err := conn.Client.Get(ctx, url.String())
 		if err != nil {
