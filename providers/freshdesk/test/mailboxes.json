@@ -1,0 +1,63 @@
+[
+  {
+    "id": 1,
+    "name": "Test Account",
+    "support_email": "testemail@gmail.com",
+    "group_id": 1,
+    "default_reply_email": true,
+    "active": true,
+    "mailbox_type": "freshdesk_mailbox",
+    "created_at": "2019-08-20T05:55:38Z",
+    "updated_at": "2019-08-20T05:55:38Z",
+    "product_id": 2,
+    "freshdesk_mailbox": {
+      "forward_email": "gmailcomtestemail@freshdesk.com"
+    }
+  },
+  {
+    "id": 4,
+    "name": "mailbox",
+    "support_email": "superman@gmail.com",
+    "group_id": 6,
+    "default_reply_email": true,
+    "active": false,
+    "mailbox_type": "custom_mailbox",
+    "created_at": "2019-09-04T08:17:26Z",
+    "updated_at": "2019-09-18T11:42:32Z",
+    "product_id": 1,
+    "custom_mailbox": {
+      "access_type": "both",
+      "incoming": {
+        "mail_server": "imap.gmail.com",
+        "port": 993,
+        "use_ssl": true,
+        "delete_from_server": false,
+        "authentication": "plain",
+        "user_name": "superman@gmail.com",
+        "failure_code": "null"
+      },
+      "outgoing": {
+        "mail_server": "smtp.gmail.com",
+        "port": 587,
+        "use_ssl": true,
+        "authentication": "plain",
+        "user_name": "superman@gmail.com"
+      }
+    }
+  },
+  {
+    "id": 5,
+    "name": "Test 2",
+    "support_email": "batman@gmail.com",
+    "group_id": null,
+    "default_reply_email": true,
+    "active": true,
+    "mailbox_type": "freshdesk_mailbox",
+    "created_at": "2019-08-21T05:14:48Z",
+    "updated_at": "2019-09-05T07:19:30Z",
+    "product_id": 2,
+    "freshdesk_mailbox": {
+      "forward_email": "gmailcombatman@gmail.com"
+    }
+  }
+]
