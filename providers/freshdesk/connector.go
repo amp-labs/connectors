@@ -7,6 +7,8 @@ import (
 	"github.com/amp-labs/connectors/providers"
 )
 
+const restAPIPrefix = "api/v2"
+
 type Connector struct {
 	BaseURL string
 	Client  *common.JSONHTTPClient
