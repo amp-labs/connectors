@@ -7,6 +7,7 @@
         "article_labels": {
           "displayName": "Article Labels",
           "path": "/help_center/articles/labels",
+          "pagination": "cursor",
           "responseKey": "labels",
           "fields": {
             "created_at": "created_at",
@@ -18,6 +19,7 @@
         },
         "articles": {
           "displayName": "Articles",
+          "pagination": "offset",
           "path": "/help_center/articles/search",
           "responseKey": "results",
           "fields": {
@@ -51,6 +53,7 @@
         "community_posts": {
           "displayName": "Community Posts",
           "path": "/help_center/community_posts/search",
+          "pagination": "offset",
           "responseKey": "results",
           "fields": {
             "author_id": "author_id",
@@ -78,6 +81,7 @@
         "posts": {
           "displayName": "Posts",
           "path": "/community/posts",
+          "pagination": "cursor",
           "responseKey": "posts",
           "fields": {
             "author_id": "author_id",
@@ -105,6 +109,7 @@
         "topics": {
           "displayName": "Topics",
           "path": "/community/topics",
+          "pagination": "cursor",
           "responseKey": "topics",
           "fields": {
             "created_at": "created_at",
@@ -123,6 +128,7 @@
         "user_segments": {
           "displayName": "User Segments",
           "path": "/help_center/user_segments",
+          "pagination": "cursor",
           "responseKey": "user_segments",
           "fields": {
             "built_in": "built_in",
@@ -146,6 +152,7 @@
         "activities": {
           "displayName": "Activities",
           "path": "/activities",
+          "pagination": "cursor",
           "responseKey": "activities",
           "fields": {
             "actor": "actor",
@@ -165,6 +172,7 @@
         "attributes": {
           "displayName": "Attributes",
           "path": "/routing/attributes",
+          "pagination": "offset",
           "responseKey": "attributes",
           "fields": {
             "created_at": "created_at",
@@ -177,6 +185,7 @@
         "audit_logs": {
           "displayName": "Audit Logs",
           "path": "/audit_logs",
+          "pagination": "cursor",
           "responseKey": "audit_logs",
           "fields": {
             "action": "action",
@@ -196,6 +205,7 @@
         "automations": {
           "displayName": "Automations",
           "path": "/automations",
+          "pagination": "cursor",
           "responseKey": "automations",
           "fields": {
             "actions": "actions",
@@ -213,6 +223,7 @@
         "bookmarks": {
           "displayName": "Bookmarks",
           "path": "/bookmarks",
+          "pagination": "offset",
           "responseKey": "bookmarks",
           "fields": {
             "created_at": "created_at",
@@ -224,6 +235,7 @@
         "brands": {
           "displayName": "Brands",
           "path": "/brands",
+          "pagination": "cursor",
           "responseKey": "brands",
           "fields": {
             "active": "active",
@@ -247,6 +259,7 @@
         "custom_objects": {
           "displayName": "Custom Objects",
           "path": "/custom_objects",
+          "pagination": "offset",
           "responseKey": "custom_objects",
           "fields": {
             "created_at": "created_at",
@@ -267,6 +280,7 @@
           "displayName": "Custom Roles",
           "path": "/custom_roles",
           "responseKey": "custom_roles",
+          "pagination": "offset",
           "fields": {
             "configuration": "configuration",
             "created_at": "created_at",
@@ -302,6 +316,7 @@
         "deleted_tickets": {
           "displayName": "Deleted Tickets",
           "path": "/deleted_tickets",
+          "pagination": "cursor",
           "responseKey": "deleted_tickets",
           "fields": {
             "actor": "actor",
@@ -315,6 +330,7 @@
           "displayName": "Deleted Users",
           "path": "/deleted_users",
           "responseKey": "deleted_users",
+          "pagination": "cursor",
           "fields": {
             "active": "active",
             "created_at": "created_at",
@@ -352,6 +368,7 @@
         "email_notifications": {
           "displayName": "Email Notifications",
           "path": "/email_notifications",
+          "pagination": "cursor",
           "responseKey": "email_notifications",
           "fields": {
             "comment_id": "comment_id",
@@ -368,6 +385,7 @@
         "group_memberships": {
           "displayName": "Group Memberships",
           "path": "/group_memberships",
+          "pagination": "cursor",
           "responseKey": "group_memberships",
           "fields": {
             "created_at": "created_at",
@@ -382,6 +400,7 @@
         "groups": {
           "displayName": "Groups",
           "path": "/groups",
+          "pagination": "cursor",
           "responseKey": "groups",
           "fields": {
             "created_at": "created_at",
@@ -399,6 +418,7 @@
           "displayName": "Job Statuses",
           "path": "/job_statuses",
           "responseKey": "job_statuses",
+          "pagination": "cursor",
           "fields": {
             "id": "id",
             "job_type": "job_type",
@@ -413,6 +433,7 @@
         "locales": {
           "displayName": "Locales",
           "path": "/locales",
+          "pagination": "offset",
           "responseKey": "locales",
           "fields": {
             "created_at": "created_at",
@@ -426,6 +447,7 @@
         "macros": {
           "displayName": "Macros",
           "path": "/macros",
+          "pagination": "cursor",
           "responseKey": "macros",
           "fields": {
             "actions": "actions",
@@ -451,6 +473,7 @@
         "monitored_twitter_handles": {
           "displayName": "Monitored Twitter Handles",
           "path": "/channels/twitter/monitored_twitter_handles",
+          "pagination": "offset",
           "responseKey": "monitored_twitter_handles",
           "fields": {
             "allow_reply": "allow_reply",
@@ -468,6 +491,7 @@
         "organization_fields": {
           "displayName": "Organization Fields",
           "path": "/organization_fields",
+          "pagination": "cursor",
           "responseKey": "organization_fields",
           "fields": {
             "active": "active",
@@ -493,6 +517,7 @@
         "organization_memberships": {
           "displayName": "Organization Memberships",
           "path": "/organization_memberships",
+          "pagination": "cursor",
           "responseKey": "organization_memberships",
           "fields": {
             "created_at": "created_at",
@@ -509,6 +534,7 @@
         "organization_subscriptions": {
           "displayName": "Organization Subscriptions",
           "path": "/organization_subscriptions",
+          "pagination": "cursor",
           "responseKey": "organization_subscriptions",
           "fields": {
             "created_at": "created_at",
@@ -520,6 +546,7 @@
         "organizations": {
           "displayName": "Organizations",
           "path": "/organizations",
+          "pagination": "cursor",
           "responseKey": "organizations",
           "fields": {
             "created_at": "created_at",
@@ -542,6 +569,7 @@
           "displayName": "Queues",
           "path": "/queues",
           "responseKey": "queues",
+          "pagination": "offset",
           "fields": {
             "created_at": "created_at",
             "definition": "definition",
@@ -559,6 +587,7 @@
         "recipient_addresses": {
           "displayName": "Recipient Addresses",
           "path": "/recipient_addresses",
+          "pagination": "cursor",
           "responseKey": "recipient_addresses",
           "fields": {
             "brand_id": "brand_id",
@@ -579,6 +608,7 @@
         "requests": {
           "displayName": "Requests",
           "path": "/requests",
+          "pagination": "cursor",
           "responseKey": "requests",
           "fields": {
             "assignee_id": "assignee_id",
@@ -611,6 +641,7 @@
         "resource_collections": {
           "displayName": "Resource Collections",
           "path": "/resource_collections",
+          "pagination": "offset",
           "responseKey": "resource_collections",
           "fields": {
             "created_at": "created_at",
@@ -623,6 +654,7 @@
           "displayName": "Satisfaction Ratings",
           "path": "/satisfaction_ratings",
           "responseKey": "satisfaction_ratings",
+          "pagination": "cursor",
           "fields": {
             "assignee_id": "assignee_id",
             "comment": "comment",
@@ -641,6 +673,7 @@
         },
         "satisfaction_reasons": {
           "displayName": "Satisfaction Rating Reasons",
+          "pagination": "offset",
           "path": "/satisfaction_reasons",
           "responseKey": "reasons",
           "fields": {
@@ -657,6 +690,7 @@
         "search": {
           "displayName": "Search Results",
           "path": "/search",
+          "pagination": "offset",
           "responseKey": "results",
           "fields": {
             "created_at": "created_at",
@@ -698,6 +732,7 @@
           "displayName": "Sharing Agreements",
           "path": "/sharing_agreements",
           "responseKey": "sharing_agreements",
+          "pagination": "offset",
           "fields": {
             "created_at": "created_at",
             "id": "id",
@@ -713,6 +748,7 @@
         "suspended_tickets": {
           "displayName": "Suspended Tickets",
           "path": "/suspended_tickets",
+          "pagination": "cursor",
           "responseKey": "suspended_tickets",
           "fields": {
             "attachments": "attachments",
@@ -736,6 +772,7 @@
         "tags": {
           "displayName": "Tags",
           "path": "/tags",
+          "pagination": "cursor",
           "responseKey": "tags",
           "fields": {
             "count": "count",
@@ -745,6 +782,7 @@
         "target_failures": {
           "displayName": "Target Failures",
           "path": "/target_failures",
+          "pagination": "offset",
           "responseKey": "target_failures",
           "fields": {
             "consecutive_failure_count": "consecutive_failure_count",
@@ -761,6 +799,7 @@
           "displayName": "Targets",
           "path": "/targets",
           "responseKey": "targets",
+          "pagination": "offset",
           "fields": {
             "account_name": "account_name",
             "active": "active",
@@ -802,6 +841,7 @@
         "ticket_audits": {
           "displayName": "Ticket Audits",
           "path": "/ticket_audits",
+          "pagination": "cursor",
           "responseKey": "audits",
           "fields": {
             "author_id": "author_id",
@@ -817,6 +857,7 @@
           "displayName": "Ticket Fields",
           "path": "/ticket_fields",
           "responseKey": "ticket_fields",
+          "pagination": "cursor",
           "fields": {
             "active": "active",
             "agent_description": "agent_description",
@@ -853,6 +894,7 @@
         "ticket_forms": {
           "displayName": "Ticket Forms",
           "path": "/ticket_forms",
+          "pagination": "offset",
           "responseKey": "ticket_forms",
           "fields": {
             "active": "active",
@@ -878,6 +920,7 @@
           "displayName": "Ticket Metrics",
           "path": "/ticket_metrics",
           "responseKey": "ticket_metrics",
+          "pagination": "cursor",
           "fields": {
             "agent_wait_time_in_minutes": "agent_wait_time_in_minutes",
             "assigned_at": "assigned_at",
@@ -909,6 +952,7 @@
           "displayName": "Tickets",
           "path": "/tickets",
           "responseKey": "tickets",
+          "pagination": "cursor",
           "fields": {
             "allow_attachments": "allow_attachments",
             "allow_channelback": "allow_channelback",
@@ -968,6 +1012,7 @@
           "displayName": "Trigger Categories",
           "path": "/trigger_categories",
           "responseKey": "trigger_categories",
+          "pagination": "cursor",
           "fields": {
             "active_count": "active_count",
             "created_at": "created_at",
@@ -981,6 +1026,7 @@
         "triggers": {
           "displayName": "Triggers",
           "path": "/triggers",
+          "pagination": "cursor",
           "responseKey": "triggers",
           "fields": {
             "actions": "actions",
@@ -1001,6 +1047,7 @@
         "user_fields": {
           "displayName": "User Fields",
           "path": "/user_fields",
+          "pagination": "cursor",
           "responseKey": "user_fields",
           "fields": {
             "active": "active",
@@ -1027,6 +1074,7 @@
           "displayName": "Users",
           "path": "/users",
           "responseKey": "users",
+          "pagination": "cursor",
           "fields": {
             "active": "active",
             "alias": "alias",
@@ -1072,6 +1120,7 @@
         "views": {
           "displayName": "Views",
           "path": "/views",
+          "pagination": "cursor",
           "responseKey": "views",
           "fields": {
             "active": "active",
@@ -1090,6 +1139,7 @@
         "workspaces": {
           "displayName": "Workspaces",
           "path": "/workspaces",
+          "pagination": "offset",
           "responseKey": "workspaces",
           "fields": {
             "activated": "activated",
