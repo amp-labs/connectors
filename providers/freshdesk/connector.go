@@ -43,7 +43,7 @@ func (conn *Connector) Provider() providers.Provider {
 }
 
 func (conn *Connector) getAPIURL(objectName string) (*urlbuilder.URL, error) {
-	path, exists := objectReadPath[objectName]
+	path, exists := objectResourcePath[objectName]
 	if !exists {
 		path = objectName
 	}
