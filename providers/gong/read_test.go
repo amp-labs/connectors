@@ -20,6 +20,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 
 	fakeServerResp := testutils.DataFromFile(t, "read.json")
 	fakeServerResp2 := testutils.DataFromFile(t, "read_cursor.json")
+	responseTranscripts := testutils.DataFromFile(t, "read_transcripts.json")
 
 	tests := []testroutines.Read{
 		{
@@ -195,6 +196,30 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				}`),
 			}.Server(),
 			ExpectedErrs: []error{jsonquery.ErrNotArray},
+		},
+
+		{
+			Name:  "Successful read transcripts using POST",
+			Input: common.ReadParams{ObjectName: "transcripts", Fields: connectors.Fields("callId", "transcript")},
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseTranscripts),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"callId": "7782342274025937895",
+					},
+					Raw: map[string]any{
+						"callId": "7782342274025937895",
+					},
+				}},
+				NextPage: "eyJhbGciOiJIUzI1NiJ9.eyJjYWxsSWQiM1M30.6qKwpOcvnuweTZmFRzYdtjs_YwJphJU4QIwWFM", // nolint:lll
+				Done:     false,
+			},
+			ExpectedErrs: nil,
 		},
 	}
 

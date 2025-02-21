@@ -6,6 +6,7 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/staticschema"
+	"github.com/amp-labs/connectors/providers/gong"
 	"github.com/amp-labs/connectors/providers/gong/metadata"
 	"github.com/amp-labs/connectors/providers/gong/openapi"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
@@ -48,6 +49,14 @@ var (
 		// Requires query parameters: flowOwnerEmail.
 		"/v2/flows",
 	}
+
+	postReadAllowedEndPoints = []string{ // nolint:gochecknoglobals
+		"/v2/calls/transcript",
+	}
+
+	postObjectEndpoints = map[string]string{ // nolint:gochecknoglobals
+		"/v2/calls/transcript": "transcripts",
+	}
 )
 
 func main() {
@@ -63,11 +72,21 @@ func main() {
 	)
 	goutils.MustBeNil(err)
 
-	objects, err := explorer.ReadObjectsGet(
+	getReadObjects, err := explorer.ReadObjectsGet(
 		api3.NewDenyPathStrategy(ignoreEndpoints),
 		nil, nil, api3.IdenticalObjectLocator,
 	)
+
 	goutils.MustBeNil(err)
+
+	postReadObjects, err := explorer.ReadObjectsPost(
+		api3.NewAllowPathStrategy(postReadAllowedEndPoints),
+		postObjectEndpoints, nil, api3.CustomMappingObjectCheck(gong.ObjectNameToResponseField),
+	)
+
+	goutils.MustBeNil(err)
+
+	objects := postReadObjects.Combine(getReadObjects)
 
 	schemas := staticschema.NewMetadata[staticschema.FieldMetadataMapV1]()
 	registry := datautils.NamedLists[string]{}
