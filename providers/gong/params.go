@@ -57,15 +57,18 @@ func buildReadParams(url *urlbuilder.URL, config common.ReadParams) {
 }
 
 func buildReadbody(config common.ReadParams) map[string]any {
-	body := map[string]any{}
 
+	filter := make(map[string]any)
+
+	if !config.Since.IsZero() {
+		filter["fromDateTime"] = datautils.Time.FormatRFC3339inUTC(config.Since)
+	}
+
+	body := map[string]any{
+		"filter": filter,
+	}
 	if len(config.NextPage) != 0 {
 		body["cursor"] = config.NextPage.String()
 	}
-
-	if !config.Since.IsZero() {
-		body["fromDateTime"] = datautils.Time.FormatRFC3339inUTC(config.Since)
-	}
-
 	return body
 }

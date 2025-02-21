@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers/gong/metadata"
 )
 
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
@@ -16,7 +17,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, common.ErrOperationNotSupportedForObject
 	}
 
-	url, err := c.getURL(config.ObjectName)
+	url, err := c.getReadURL(config.ObjectName)
 
 	if err != nil {
 		return nil, err
@@ -46,8 +47,10 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
+	responseFieldName := metadata.Schemas.LookupArrayFieldName(c.Module.ID, config.ObjectName)
+
 	return common.ParseResult(res,
-		common.GetRecordsUnderJSONPath(config.ObjectName),
+		common.GetRecordsUnderJSONPath(responseFieldName),
 		getNextRecordsURL,
 		common.GetMarshaledData,
 		config.Fields,
