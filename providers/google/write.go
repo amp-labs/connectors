@@ -14,29 +14,9 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, err
 	}
 
-	withRecordID := len(config.RecordId) != 0
-	url, err := c.getWriteURL(withRecordID, config.ObjectName)
+	write, url, err := c.selectEndpointOperation(config.ObjectName, config.RecordId)
 	if err != nil {
 		return nil, err
-	}
-
-	var write common.WriteMethod
-
-	if withRecordID {
-		if supportedObjectsByUpdate[c.Module.ID].Has(config.ObjectName) {
-			write = c.Client.Put
-
-			url.AddPath(config.RecordId)
-		}
-	} else {
-		if supportedObjectsByCreate[c.Module.ID].Has(config.ObjectName) {
-			write = c.Client.Post
-		}
-	}
-
-	if write == nil {
-		// No supported REST operation was found for current object.
-		return nil, common.ErrOperationNotSupportedForObject
 	}
 
 	if c.Module.ID == ModuleCalendar {
@@ -48,6 +28,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 	}
 
 	if c.Module.ID == ModulePeople {
+		// TODO are there any exceptions for this Module that are not covered by EndpointLibrary
 		// objectNameContactGroups - no-op.
 	}
 

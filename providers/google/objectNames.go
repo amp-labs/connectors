@@ -1,10 +1,10 @@
 package google
 
 import (
+	"net/http"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/providers/google/metadata"
 )
 
@@ -21,38 +21,64 @@ const (
 // Supported object names can be found under schemas.json.
 var supportedObjectsByRead = metadata.Schemas.ObjectNames() //nolint:gochecknoglobals
 
-var supportedObjectsByCreate = common.ModuleObjectNameToURLPath{ //nolint:gochecknoglobals
-	ModuleCalendar: datautils.NewDefaultMap(map[string]string{
-		objectNameCalendarList: "/calendar/v3/users/me/calendarList",
-	}, emptyURL),
-	ModulePeople: datautils.NewDefaultMap(map[string]string{
-		// https://developers.google.com/people/api/rest/v1/people/createContact
-		objectNameMyConnections: "/v1/people:createContact", // TODO testing
-		objectNameContactGroups: "/v1/contactGroups",
-	}, emptyURL),
-}
+var supportedObjectsByCreate = common.NewModuleObjectNameToOperationDescription(http.MethodPost,
+	map[common.ModuleID]map[string]common.OperationDescription{
+		ModuleCalendar: {
+			objectNameCalendarList: {
+				Path: "/calendar/v3/users/me/calendarList",
+			},
+		},
+		ModulePeople: {
+			objectNameMyConnections: {
+				// https://developers.google.com/people/api/rest/v1/people/createContact
+				Path: "/v1/people:createContact", // TODO testing
+			},
+			objectNameContactGroups: {
+				Path: "/v1/contactGroups",
+			},
+		},
+	},
+)
 
-var supportedObjectsByUpdate = common.ModuleObjectNameToURLPath{ //nolint:gochecknoglobals
-	ModuleCalendar: datautils.NewDefaultMap(map[string]string{
-		objectNameCalendarList: "/calendar/v3/users/me/calendarList",
-	}, emptyURL),
-	ModulePeople: datautils.NewDefaultMap(map[string]string{
-		// https://developers.google.com/people/api/rest/v1/people/updateContact
-		objectNameMyConnections: "/v1/people:updateContact", // TODO testing MUST BE PATCH!!!!!!!!!!!!!!!!!!!
-		objectNameContactGroups: "/v1/contactGroups",
-	}, emptyURL),
-}
+var supportedObjectsByUpdate = common.NewModuleObjectNameToOperationDescription(http.MethodPut,
+	map[common.ModuleID]map[string]common.OperationDescription{
+		ModuleCalendar: {
+			objectNameCalendarList: {
+				Path: "/calendar/v3/users/me/calendarList",
+			},
+		},
+		ModulePeople: {
+			objectNameMyConnections: {
+				// https://developers.google.com/people/api/rest/v1/people/updateContact
+				Operation: http.MethodPatch,
+				Path:      "/v1/people/{{.recordID}}:updateContact", // TODO testing MUST BE PATCH!!!!!!!!!!!!!!!!!!!
+			},
+			objectNameContactGroups: {
+				Path: "/v1/contactGroups",
+			},
+		},
+	},
+)
 
-var supportedObjectsByDelete = common.ModuleObjectNameToURLPath{ //nolint:gochecknoglobals
-	ModuleCalendar: datautils.NewDefaultMap(map[string]string{
-		objectNameCalendarList: "/calendar/v3/users/me/calendarList",
-	}, emptyURL),
-	ModulePeople: datautils.NewDefaultMap(map[string]string{
-		// https://developers.google.com/people/api/rest/v1/people/deleteContact
-		objectNameMyConnections: "/v1/people:deleteContact", // TODO testing
-		objectNameContactGroups: "/v1/contactGroups",
-	}, emptyURL),
-}
+var supportedObjectsByDelete = common.NewModuleObjectNameToOperationDescription(http.MethodDelete,
+	map[common.ModuleID]map[string]common.OperationDescription{
+		ModuleCalendar: {
+			objectNameCalendarList: {
+				Path: "/calendar/v3/users/me/calendarList",
+			},
+		},
+		ModulePeople: {
+			objectNameMyConnections: {
+				// https://developers.google.com/people/api/rest/v1/people/deleteContact
+				Operation: http.MethodPatch,
+				Path:      "/v1/people/{{.recordID}}:deleteContact", // TODO testing
+			},
+			objectNameContactGroups: {
+				Path: "/v1/contactGroups",
+			},
+		},
+	},
+)
 
 // resourceIdentifierFormat breaks resourceName into parts, where format is: "name/identifier".
 func resourceIdentifierFormat(resourceName string) (objectName string, recordID string, ok bool) {
@@ -62,8 +88,4 @@ func resourceIdentifierFormat(resourceName string) (objectName string, recordID 
 	}
 
 	return parts[0], parts[1], true
-}
-
-func emptyURL(string) (urlPath string) {
-	return ""
 }

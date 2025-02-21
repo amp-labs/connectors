@@ -1,6 +1,8 @@
 package google
 
 import (
+	"net/http"
+
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
@@ -53,18 +55,44 @@ func (c *Connector) getURL(objectName string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(c.BaseURL, path)
 }
 
-func (c *Connector) getWriteURL(withRecordID bool, objectName string) (*urlbuilder.URL, error) {
+// TODO there should be a generic object that accepts declarative object registries.
+// Given registries construct URL path. The core URL can be constructed using template and recordID.
+// Accept common.Client and use switch case to produce either WriteMethod or DeleteMethod.
+//
+// DefaultMap still could be relevant.
+// This object could be called EndpointLibrary/EndpointCollection.
+//
+// If we are talking about the read operation this is largely driven by `schema.json`.
+// EndpointOperation should be created from schema.json or from similar hard coded EndpointCollection.
+//
+// Headers/Query parameters can be attached as usual. Payload processing likewise.
+//
+func (c *Connector) selectEndpointOperation(
+	objectName string, recordID string,
+) (common.WriteMethod, *urlbuilder.URL, error) {
 	registry := supportedObjectsByCreate
-	if withRecordID {
+	if len(recordID) != 0 {
 		registry = supportedObjectsByUpdate
 	}
 
-	path := registry[c.Module.ID].Get(objectName)
-	if len(path) == 0 {
-		return nil, common.ErrOperationNotSupportedForObject
+	description := registry[c.Module.ID].Get(objectName)
+	if description.IsEmpty() {
+		return nil, nil, common.ErrOperationNotSupportedForObject
 	}
 
-	return urlbuilder.New(c.BaseURL, path)
+	url, err := urlbuilder.New(c.BaseURL, description.GetURLPath(recordID))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	switch description.Operation {
+	case http.MethodPost:
+		return c.Client.Put, url, nil
+	case http.MethodPatch:
+		return c.Client.Patch, url, nil
+	default:
+		return nil, nil, common.ErrOperationNotSupportedForObject
+	}
 }
 
 func (c *Connector) setBaseURL(newURL string) {

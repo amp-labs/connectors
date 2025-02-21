@@ -3,6 +3,7 @@ package common
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/amp-labs/connectors/internal/datautils"
 )
@@ -72,4 +73,57 @@ func (a Module) Path() string {
 //			}),
 //		}
 type ModuleObjectNameToFieldName map[ModuleID]datautils.DefaultMap[string, string]
-type ModuleObjectNameToURLPath map[ModuleID]datautils.DefaultMap[string, string]
+
+type OperationDescription struct {
+	Operation string
+	Path      string
+}
+
+func (d OperationDescription) IsEmpty() bool {
+	return len(d.Operation) == 0 && len(d.Path) == 0
+}
+
+func (d OperationDescription) GetURLPath(recordID string) string {
+	if len(recordID) == 0 {
+		// Usually this is a create or command endpoint.
+		return d.Path
+	}
+
+	// No template. Usually record identifier is attached at the end of endpoint.
+	if !strings.Contains(d.Path, "{{.recordID}}") {
+		return d.Path + "/" + recordID
+	}
+
+	// Insert recordID inside URL according to the template format.
+	return strings.ReplaceAll(d.Path, "{{.recordID}}", recordID)
+}
+
+type ModuleObjectNameToOperationDescription map[ModuleID]datautils.DefaultMap[string, OperationDescription]
+
+func NewModuleObjectNameToOperationDescription(
+	defaultHTTPMethod string,
+	registry map[ModuleID]map[string]OperationDescription,
+) ModuleObjectNameToOperationDescription {
+	result := make(map[ModuleID]datautils.DefaultMap[string, OperationDescription])
+
+	for moduleID, mapping := range registry {
+
+		// OperationDescription should have default value if none is specified.
+		// Usually most write operations have identical operations,
+		// this makes the registry shorter, drawing attention to exceptions.
+		for objectName, description := range mapping {
+			if len(description.Operation) == 0 {
+				description.Operation = defaultHTTPMethod
+				mapping[objectName] = description
+			}
+		}
+
+		result[moduleID] = datautils.NewDefaultMap(mapping,
+			func(name string) OperationDescription {
+				return OperationDescription{}
+			},
+		)
+	}
+
+	return result
+}
