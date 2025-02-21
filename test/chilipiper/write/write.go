@@ -37,7 +37,7 @@ func MainFn() int {
 
 func removeUsersTeam(ctx context.Context, conn *ch.Connector) error {
 	prms := common.WriteParams{
-		ObjectName: "remove_users_team",
+		ObjectName: "team/users/remove",
 		RecordData: map[string]any{
 			"teamId": "4edf8761-e5ee-48b2-81c8-c5e4849481fc",
 			"userIds": []string{
@@ -67,7 +67,7 @@ func updateDistribution(ctx context.Context, conn *ch.Connector) error {
 		ObjectName: "distribution",
 		RecordId:   "3b3baa8f-ee2c-40ed-92a0-a08aae954925",
 		RecordData: map[string]any{
-			"resetDistribution": true,
+			"resetDistribution": false,
 		},
 	}
 
@@ -89,9 +89,9 @@ func updateDistribution(ctx context.Context, conn *ch.Connector) error {
 
 func inviteUsers(ctx context.Context, conn *ch.Connector) error {
 	prms := common.WriteParams{
-		ObjectName: "invite_users",
+		ObjectName: "user/invite",
 		RecordData: map[string]any{
-			"email": "josephkarage@gmail.com",
+			"email": "pepkarage@gmail.com",
 		},
 	}
 

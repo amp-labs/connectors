@@ -17,20 +17,20 @@ var objectReadPath = map[string]string{ //nolint:gochecknoglobals
 	"workspace":       "workspace",
 	"team":            "team",
 	"distribution":    "distribution",
-	"workspace_users": "workspace/users",
+	"workspace/users": "workspace/users",
 	// "meetings":        "meetings/meetings",
 	// "export_meetings": "meeting/meetings/export",
 }
 
 var objectWritePath = map[string]string{ //nolint:gochecknoglobals
-	"remove_users_workspace":     "workspace/users/remove",
-	"remoe_users_all_workspaces": "workspace/users/remove-from-all",
-	"add_users_workspace":        "workspace/users/add",
-	"remove_users_team":          "team/users/remove",
-	"add_users_team":             "team/users/add",
-	"distribution":               "distribution", // Allows updates only.
-	"update_license_users":       "user/licenses",
-	"invite_users":               "user/invite",
+	"user/invite":                     "user/invite",
+	"user/licenses":                   "user/licenses",
+	"distribution":                    "distribution", // Allows updates only.
+	"team/users/add":                  "team/users/add",
+	"team/users/remove":               "team/users/remove",
+	"workspace/users/add":             "workspace/users/add",
+	"workspace/users/remove":          "workspace/users/remove",
+	"workspace/users/remove-from-all": "workspace/users/remove-from-all",
 }
 
 // supportsRead returns a unique path for reading the object.
