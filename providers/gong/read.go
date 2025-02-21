@@ -25,7 +25,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	var res *common.JSONHTTPResponse
 
 	if postReadObjects.Has(config.ObjectName) {
-		body := buildReadbody(config)
+		body := buildReadBody(config)
 		res, err = c.Client.Post(ctx, url.String(), body)
 	} else {
 		buildReadParams(url, config)

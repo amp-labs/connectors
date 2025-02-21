@@ -52,7 +52,7 @@ func buildReadParams(url *urlbuilder.URL, config common.ReadParams) {
 	}
 }
 
-func buildReadbody(config common.ReadParams) map[string]any {
+func buildReadBody(config common.ReadParams) map[string]any {
 	filter := make(map[string]any)
 
 	if !config.Since.IsZero() {
