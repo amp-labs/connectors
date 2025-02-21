@@ -7,6 +7,8 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
+	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"golang.org/x/oauth2"
 )
 
@@ -35,4 +37,34 @@ func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
 	return func(params *parameters) {
 		params.WithAuthenticatedClient(client)
 	}
+}
+
+func buildReadParams(url *urlbuilder.URL, config common.ReadParams) {
+	if len(config.NextPage) != 0 { // not the first page, add a cursor
+		url.WithQueryParam("cursor", config.NextPage.String())
+	}
+
+	if !config.Since.IsZero() {
+		// This time format is RFC3339 but in UTC only.
+		// See calls or users object for query parameter requirements.
+		// https://gong.app.gong.io/settings/api/documentation#get-/v2/calls
+		url.WithQueryParam("fromDateTime", datautils.Time.FormatRFC3339inUTC(config.Since))
+	}
+}
+
+func buildReadBody(config common.ReadParams) map[string]any {
+	filter := make(map[string]any)
+
+	if !config.Since.IsZero() {
+		filter["fromDateTime"] = datautils.Time.FormatRFC3339inUTC(config.Since)
+	}
+
+	body := map[string]any{
+		"filter": filter,
+	}
+	if len(config.NextPage) != 0 {
+		body["cursor"] = config.NextPage.String()
+	}
+
+	return body
 }
