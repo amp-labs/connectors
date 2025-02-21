@@ -24,13 +24,13 @@ func main() {
 	conn := connTest.GetGongConnector(ctx)
 
 	res, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: "calls",
-		Fields:     connectors.Fields("url"),
+		ObjectName: "transcripts",
+		Fields:     connectors.Fields("callId"),
 	})
 	if err != nil {
 		utils.Fail("error reading from Gong", "error", err)
 	}
 
-	slog.Info("Reading calls..")
+	slog.Info("Reading transcripts..")
 	utils.DumpJSON(res, os.Stdout)
 }

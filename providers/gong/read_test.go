@@ -200,7 +200,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 
 		{
 			Name:  "Successful read transcripts using POST",
-			Input: common.ReadParams{ObjectName: "transcripts", Fields: connectors.Fields("callId", "transcript")},
+			Input: common.ReadParams{ObjectName: "transcripts", Fields: connectors.Fields("callid")},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseTranscripts),
@@ -210,10 +210,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				Rows: 1,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
-						"callId": "7782342274025937895",
+						"callid": "7782342274025937895",
 					},
 					Raw: map[string]any{
-						"callId": "7782342274025937895",
+						"callid": "7782342274025937895",
 					},
 				}},
 				NextPage: "eyJhbGciOiJIUzI1NiJ9.eyJjYWxsSWQiM1M30.6qKwpOcvnuweTZmFRzYdtjs_YwJphJU4QIwWFM", // nolint:lll
