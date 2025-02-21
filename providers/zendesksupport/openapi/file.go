@@ -3,6 +3,7 @@ package openapi
 import (
 	_ "embed"
 
+	"github.com/amp-labs/connectors/providers/zendesksupport/metadata"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
 )
 
@@ -14,6 +15,6 @@ var (
 	//go:embed help-center-api.yaml
 	helpCenterAPIFile []byte
 
-	SupportFileManager    = api3.NewOpenapiFileManager(supportAPIFile)    // nolint:gochecknoglobals
-	HelpCenterFileManager = api3.NewOpenapiFileManager(helpCenterAPIFile) // nolint:gochecknoglobals
+	SupportFileManager    = api3.NewOpenapiFileManager[metadata.CustomProperties](supportAPIFile)    // nolint:gochecknoglobals,lll
+	HelpCenterFileManager = api3.NewOpenapiFileManager[metadata.CustomProperties](helpCenterAPIFile) // nolint:gochecknoglobals,lll
 )

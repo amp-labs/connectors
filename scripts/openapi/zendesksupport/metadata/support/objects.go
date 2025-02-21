@@ -4,6 +4,7 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/metadatadef"
+	"github.com/amp-labs/connectors/providers/zendesksupport/metadata"
 	"github.com/amp-labs/connectors/providers/zendesksupport/openapi"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
 )
@@ -73,9 +74,59 @@ var (
 	}, func(objectName string) (fieldName string) {
 		return objectName
 	})
+	objectNameToPagination = map[string]string{ // nolint:gochecknoglobals
+		"activities":                 "cursor",
+		"attributes":                 "offset",
+		"audit_logs":                 "cursor",
+		"automations":                "cursor",
+		"bookmarks":                  "offset",
+		"brands":                     "cursor",
+		"custom_objects":             "offset",
+		"custom_roles":               "offset",
+		"custom_statuses":            "",
+		"deleted_tickets":            "cursor",
+		"deleted_users":              "cursor",
+		"deletion_schedules":         "",
+		"email_notifications":        "cursor",
+		"group_memberships":          "cursor",
+		"groups":                     "cursor",
+		"job_statuses":               "cursor",
+		"locales":                    "offset",
+		"macros":                     "cursor",
+		"monitored_twitter_handles":  "offset",
+		"organization_fields":        "cursor",
+		"organization_memberships":   "cursor",
+		"organization_subscriptions": "cursor",
+		"organizations":              "cursor",
+		"queues":                     "offset",
+		"recipient_addresses":        "cursor",
+		"requests":                   "cursor",
+		"resource_collections":       "offset",
+		"satisfaction_ratings":       "cursor",
+		"satisfaction_reasons":       "offset",
+		"search":                     "offset",
+		"session":                    "",
+		"sessions":                   "",
+		"sharing_agreements":         "offset",
+		"suspended_tickets":          "cursor",
+		"tags":                       "cursor",
+		"target_failures":            "offset",
+		"targets":                    "offset",
+		"ticket_audits":              "cursor",
+		"ticket_fields":              "cursor",
+		"ticket_forms":               "offset",
+		"ticket_metrics":             "cursor",
+		"tickets":                    "cursor",
+		"trigger_categories":         "cursor",
+		"triggers":                   "cursor",
+		"user_fields":                "cursor",
+		"users":                      "cursor",
+		"views":                      "cursor",
+		"workspaces":                 "offset",
+	}
 )
 
-func Objects() []metadatadef.Schema {
+func Objects() []metadatadef.ExtendedSchema[metadata.CustomProperties] {
 	explorer, err := openapi.SupportFileManager.GetExplorer(
 		api3.WithDisplayNamePostProcessors(
 			api3.CamelCaseToSpaceSeparated,
@@ -90,6 +141,11 @@ func Objects() []metadatadef.Schema {
 		api3.CustomMappingObjectCheck(objectNameToResponseField),
 	)
 	goutils.MustBeNil(err)
+
+	for index, object := range objects {
+		object.Custom.Pagination = objectNameToPagination[object.ObjectName]
+		objects[index] = object
+	}
 
 	return objects
 }

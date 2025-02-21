@@ -10,7 +10,10 @@ import (
 // Schema is a model that describes a REST API object.
 // This is usually created when metadata is coming not from API but alternative sources, example: OpenAPI.
 // This model holds more information than common.ObjectMetadata.
-type Schema struct {
+// It may include custom properties.
+type Schema = ExtendedSchema[any]
+
+type ExtendedSchema[C any] struct {
 	ObjectName  string
 	DisplayName string
 	Fields      Fields
@@ -18,9 +21,10 @@ type Schema struct {
 	URLPath     string
 	ResponseKey string
 	Problem     error
+	Custom      C
 }
 
-type Schemas []Schema
+type Schemas[C any] []ExtendedSchema[C]
 
 type Field struct {
 	Name string
@@ -29,8 +33,8 @@ type Field struct {
 
 type Fields = datautils.Map[string, Field]
 
-func (s Schemas) Combine(others Schemas) Schemas {
-	registry := datautils.Map[string, Schema]{}
+func (s Schemas[C]) Combine(others Schemas[C]) Schemas[C] {
+	registry := datautils.Map[string, ExtendedSchema[C]]{}
 	for _, schema := range append(s, others...) {
 		_, found := registry[schema.ObjectName]
 
@@ -42,7 +46,7 @@ func (s Schemas) Combine(others Schemas) Schemas {
 	return registry.Values()
 }
 
-func (s Schema) String() string {
+func (s ExtendedSchema[C]) String() string {
 	if s.Problem != nil {
 		return fmt.Sprintf("    {%v}    ", s.ObjectName)
 	}

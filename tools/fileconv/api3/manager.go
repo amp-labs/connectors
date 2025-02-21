@@ -7,17 +7,17 @@ import (
 // OpenapiFileManager locates openapi file.
 // Allows to read data of interest.
 // Use it when dealing with OpenAPI v3.
-type OpenapiFileManager struct {
+type OpenapiFileManager[C any] struct {
 	file []byte
 }
 
-func NewOpenapiFileManager(file []byte) *OpenapiFileManager {
-	return &OpenapiFileManager{
+func NewOpenapiFileManager[C any](file []byte) *OpenapiFileManager[C] {
+	return &OpenapiFileManager[C]{
 		file: file,
 	}
 }
 
-func (m OpenapiFileManager) GetExplorer(opts ...Option) (*Explorer, error) {
+func (m OpenapiFileManager[C]) GetExplorer(opts ...Option) (*Explorer[C], error) {
 	loader := openapi3.NewLoader()
 
 	data, err := loader.LoadFromData(m.file)
@@ -25,5 +25,5 @@ func (m OpenapiFileManager) GetExplorer(opts ...Option) (*Explorer, error) {
 		return nil, err
 	}
 
-	return NewExplorer(data, opts...), nil
+	return NewExplorer[C](data, opts...), nil
 }

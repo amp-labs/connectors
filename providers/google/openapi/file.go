@@ -12,5 +12,5 @@ var (
 	//go:embed calendar.json
 	calendarAPIFile []byte
 
-	CalendarFileManager = api3.NewOpenapiFileManager(calendarAPIFile) // nolint:gochecknoglobals
+	CalendarFileManager = api3.NewOpenapiFileManager[any](calendarAPIFile) // nolint:gochecknoglobals
 )

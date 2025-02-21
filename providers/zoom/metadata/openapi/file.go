@@ -16,6 +16,6 @@ var (
 	//go:embed meeting.json
 	meetingFile []byte
 
-	UsersFileManager   = api3.NewOpenapiFileManager(usersFile)   // nolint:gochecknoglobals
-	MeetingFileManager = api3.NewOpenapiFileManager(meetingFile) // nolint:gochecknoglobals
+	UsersFileManager   = api3.NewOpenapiFileManager[any](usersFile)   // nolint:gochecknoglobals
+	MeetingFileManager = api3.NewOpenapiFileManager[any](meetingFile) // nolint:gochecknoglobals
 )
