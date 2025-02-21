@@ -18,7 +18,6 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	}
 
 	url, err := c.getReadURL(config.ObjectName)
-
 	if err != nil {
 		return nil, err
 	}
@@ -28,7 +27,6 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	if postReadObjects.Has(config.ObjectName) {
 		body := buildReadbody(config)
 		res, err = c.Client.Post(ctx, url.String(), body)
-
 	} else {
 		buildReadParams(url, config)
 		res, err = c.Client.Get(ctx, url.String())

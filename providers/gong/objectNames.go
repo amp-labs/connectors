@@ -17,7 +17,7 @@ var supportedObjectsByWrite = datautils.NewSet( //nolint:gochecknoglobals
 	objectNameCalls,
 )
 
-var postReadObjects = datautils.NewSet(
+var postReadObjects = datautils.NewSet( //nolint:gochecknoglobals
 	objectNameTranscript,
 )
 

@@ -40,11 +40,8 @@ func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
 }
 
 func buildReadParams(url *urlbuilder.URL, config common.ReadParams) {
-
 	if len(config.NextPage) != 0 { // not the first page, add a cursor
-
 		url.WithQueryParam("cursor", config.NextPage.String())
-
 	}
 
 	if !config.Since.IsZero() {
@@ -53,11 +50,9 @@ func buildReadParams(url *urlbuilder.URL, config common.ReadParams) {
 		// https://gong.app.gong.io/settings/api/documentation#get-/v2/calls
 		url.WithQueryParam("fromDateTime", datautils.Time.FormatRFC3339inUTC(config.Since))
 	}
-
 }
 
 func buildReadbody(config common.ReadParams) map[string]any {
-
 	filter := make(map[string]any)
 
 	if !config.Since.IsZero() {
@@ -70,5 +65,6 @@ func buildReadbody(config common.ReadParams) map[string]any {
 	if len(config.NextPage) != 0 {
 		body["cursor"] = config.NextPage.String()
 	}
+
 	return body
 }

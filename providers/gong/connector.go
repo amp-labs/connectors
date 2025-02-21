@@ -54,6 +54,7 @@ func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return urlbuilder.New(c.BaseURL, path)
 }
 
