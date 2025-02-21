@@ -1,6 +1,8 @@
 package chilipiper
 
-import "github.com/amp-labs/connectors/common"
+import (
+	"github.com/amp-labs/connectors/internal/datautils"
+)
 
 const (
 	readpageSize     = "50"
@@ -13,22 +15,20 @@ const (
 )
 
 // objectPath maps an object to it's read path.
-var objectReadPath = map[string]string{ //nolint:gochecknoglobals
-	"workspace":       "workspace",
-	"team":            "team",
-	"distribution":    "distribution",
-	"workspace_users": "workspace/users",
-	// "meetings":        "meetings/meetings",
-	// "export_meetings": "meeting/meetings/export",
-}
+var supportedReadObjects = datautils.NewSet( //nolint:gochecknoglobals
+	"workspace",
+	"team",
+	"distribution",
+	"workspace/users",
+)
 
-// supportsRead returns a unique path for reading the object.
-// or an error if the provided object is not supported.
-func supportsRead(object string) (string, error) {
-	path, ok := objectReadPath[object]
-	if !ok {
-		return "", common.ErrObjectNotSupported
-	}
-
-	return path, nil
-}
+var supportedWriteObjects = datautils.NewSet( //nolint:gochecknoglobals
+	"distribution", // Allows updates only.
+	"user/invite",
+	"user/licenses",
+	"team/users/add",
+	"team/users/remove",
+	"workspace/users/add",
+	"workspace/users/remove",
+	"workspace/users/remove-from-all",
+)
