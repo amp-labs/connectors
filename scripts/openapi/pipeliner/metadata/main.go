@@ -60,7 +60,7 @@ func main() {
 			schemas.Add("", object.ObjectName, object.DisplayName, object.URLPath, object.ResponseKey,
 				staticschema.FieldMetadataMapV1{
 					field.Name: field.Name,
-				}, nil)
+				}, nil, nil)
 		}
 
 		for _, queryParam := range object.QueryParams {

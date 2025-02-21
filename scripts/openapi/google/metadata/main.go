@@ -42,7 +42,7 @@ func main() {
 							ReadOnly:     false,
 							Values:       nil,
 						},
-					}, nil)
+					}, nil, nil)
 			}
 
 			for _, queryParam := range object.QueryParams {

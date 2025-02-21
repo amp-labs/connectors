@@ -33,7 +33,7 @@ func main() {
 	goutils.MustBeNil(err)
 
 	// Initializes an empty ObjectMetadata variable
-	objectMetadata := make(map[string]staticschema.Object[staticschema.FieldMetadataMapV1])
+	objectMetadata := make(map[string]staticschema.Object[staticschema.FieldMetadataMapV1, any])
 
 	// Add Lead metadata details
 	objectMetadata = generateMetadata(ldef, docL, objectMetadata)
@@ -41,8 +41,8 @@ func main() {
 	// Adds Assets Metadata details to the same variable declared above.
 	objectMetadata = generateMetadata(def, docA, objectMetadata)
 
-	goutils.MustBeNil(metadata.FileManager.SaveSchemas(&staticschema.Metadata[staticschema.FieldMetadataMapV1]{
-		Modules: map[common.ModuleID]staticschema.Module[staticschema.FieldMetadataMapV1]{
+	goutils.MustBeNil(metadata.FileManager.SaveSchemas(&staticschema.Metadata[staticschema.FieldMetadataMapV1, any]{
+		Modules: map[common.ModuleID]staticschema.Module[staticschema.FieldMetadataMapV1, any]{
 			staticschema.RootModuleID: {
 				Objects: objectMetadata,
 			},
@@ -95,8 +95,8 @@ func cleanDefinitions(def string) string {
 }
 
 func generateMetadata(objDefs map[string]string,
-	doc openapi2.T, objectMetadata map[string]staticschema.Object[staticschema.FieldMetadataMapV1],
-) map[string]staticschema.Object[staticschema.FieldMetadataMapV1] {
+	doc openapi2.T, objectMetadata map[string]staticschema.Object[staticschema.FieldMetadataMapV1, any],
+) map[string]staticschema.Object[staticschema.FieldMetadataMapV1, any] {
 	for obj, dfn := range objDefs {
 		schem := doc.Definitions[dfn].Value.Properties
 
@@ -112,7 +112,7 @@ func generateMetadata(objDefs map[string]string,
 			fields[k] = k
 		}
 
-		om := staticschema.Object[staticschema.FieldMetadataMapV1]{
+		om := staticschema.Object[staticschema.FieldMetadataMapV1, any]{
 			DisplayName: obj,
 			URLPath:     fmt.Sprintf("/%v", obj),
 			Fields:      fields,
