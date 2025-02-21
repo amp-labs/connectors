@@ -8,21 +8,21 @@ import (
 	"github.com/amp-labs/connectors/internal/components/operations"
 )
 
-// HTTPObjectSchemaProvider implements Provider using HTTP.
-type HTTPObjectSchemaProvider struct {
+// BatchSchemaProvider implements Provider using a single batch request
+type BatchSchemaProvider struct {
 	operation *operations.ListObjectMetadataOperation
 }
 
-func NewHTTPObjectSchemaProvider(
+func NewBatchSchemaProvider(
 	client common.AuthenticatedHTTPClient,
 	list operations.ListObjectMetadataHandlers,
-) *HTTPObjectSchemaProvider {
-	return &HTTPObjectSchemaProvider{
+) *BatchSchemaProvider {
+	return &BatchSchemaProvider{
 		operation: operations.NewHTTPOperation(client, list),
 	}
 }
 
-func (p *HTTPObjectSchemaProvider) GetMetadata(
+func (p *BatchSchemaProvider) ListObjectMetadata(
 	ctx context.Context,
 	objects []string,
 ) (*common.ListObjectMetadataResult, error) {

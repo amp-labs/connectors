@@ -2,10 +2,16 @@ package operations
 
 import (
 	"context"
+	"errors"
 	"io"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
+)
+
+var (
+	ErrInvalidRequest = errors.New("invalid request")
+	ErrNoResponse     = errors.New("no response")
 )
 
 // HTTPOperation provides a generic implementation for HTTP-based operations like read, write, delete, etc.
@@ -43,10 +49,19 @@ func (op *HTTPOperation[RequestType, ResponseType]) ExecuteRequest(
 		return response, err
 	}
 
+	if req == nil {
+		return response, ErrInvalidRequest
+	}
+
 	resp, err := op.client.Do(req)
 	if err != nil {
 		return response, err
 	}
+
+	if resp == nil {
+		return response, ErrNoResponse
+	}
+
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)

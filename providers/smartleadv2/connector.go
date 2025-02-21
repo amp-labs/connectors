@@ -59,6 +59,23 @@ func constructor(base *components.Connector) (*Connector, error) {
 
 	// Set the metadata provider for the connector
 	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), schemas)
+	// Other examples:
+	// 	schema.NewBatchSchemaProvider(
+	// 		connector.HTTPClient().Client,
+	// 		operations.ListObjectMetadataHandlers{
+	// 			BuildRequest:  connector.buildListObjectMetadataRequest,
+	// 			ParseResponse: connector.parseListObjectMetadataResponse,
+	// 		},
+	// 	),
+
+	//  schema.NewIndividualSchemaProvider(
+	// 		connector.HTTPClient().Client,
+	// 		schema.FetchTypeParallel,
+	// 		operations.SingleObjectMetadataHandlers{
+	// 			BuildRequest:  connector.buildSingleObjectMetadataRequest,
+	// 			ParseResponse: connector.parseSingleObjectMetadataResponse,
+	// 		},
+	//  ),
 
 	// Set the reader for the connector
 	// TODO: Refactor to simplify clients
