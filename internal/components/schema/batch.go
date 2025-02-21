@@ -8,7 +8,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components/operations"
 )
 
-// BatchSchemaProvider implements Provider using a single batch request
+// BatchSchemaProvider implements Provider using a single batch request.
 type BatchSchemaProvider struct {
 	operation *operations.ListObjectMetadataOperation
 }

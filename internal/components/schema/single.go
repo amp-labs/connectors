@@ -10,14 +10,14 @@ import (
 )
 
 var (
-	FetchTypeParallel = "parallel"
-	FetchTypeSerial   = "serial"
+	FetchTypeParallel = "parallel" // nolint:gochecknoglobals
+	FetchTypeSerial   = "serial"   // nolint:gochecknoglobals
 
 	ErrInvalidFetchType = errors.New("invalid fetch type")
 	ErrNoMetadata       = errors.New("no metadata found")
 )
 
-// IndividualSchemaProvider implements Provider by fetching each object individually
+// IndividualSchemaProvider implements Provider by fetching each object individually.
 type IndividualSchemaProvider struct {
 	operation *operations.SingleObjectMetadataOperation
 	fetchType string
@@ -68,7 +68,10 @@ type objectMetadataError struct {
 	Error      error
 }
 
-func (p *IndividualSchemaProvider) fetchParallel(ctx context.Context, objects []string) (*common.ListObjectMetadataResult, error) {
+func (p *IndividualSchemaProvider) fetchParallel(
+	ctx context.Context,
+	objects []string,
+) (*common.ListObjectMetadataResult, error) {
 	metadataChannel := make(chan *objectMetadataResult, len(objects))
 	errChannel := make(chan *objectMetadataError, len(objects))
 
@@ -122,7 +125,10 @@ func (p *IndividualSchemaProvider) fetchParallel(ctx context.Context, objects []
 	return result, nil
 }
 
-func (p *IndividualSchemaProvider) fetchSerial(ctx context.Context, objects []string) (*common.ListObjectMetadataResult, error) {
+func (p *IndividualSchemaProvider) fetchSerial(
+	ctx context.Context,
+	objects []string,
+) (*common.ListObjectMetadataResult, error) {
 	result := &common.ListObjectMetadataResult{
 		Result: make(map[string]common.ObjectMetadata),
 		Errors: make(map[string]error),

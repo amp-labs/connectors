@@ -49,6 +49,7 @@ func NewConnector(params common.Parameters) (*Connector, error) {
 	return components.Initialize(providers.Smartlead, params, constructor)
 }
 
+// nolint:funlen
 func constructor(base *components.Connector) (*Connector, error) {
 	connector := &Connector{Connector: base}
 

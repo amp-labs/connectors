@@ -37,7 +37,7 @@ func NewHTTPOperation[RequestType any, ResponseType any](
 	}
 }
 
-// nolint:ireturn
+// nolint:ireturn,cyclop
 func (op *HTTPOperation[RequestType, ResponseType]) ExecuteRequest(
 	ctx context.Context,
 	params RequestType,
