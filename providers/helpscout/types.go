@@ -13,3 +13,10 @@ var supportedReadObjects = datautils.NewSet( //nolint:gochecknoglobals
 	"webhooks",
 	"workflows",
 )
+
+var supportedWriteObjects = datautils.NewSet( //nolint:gochecknoglobals
+	"conversations",
+	"customers",
+	"customer-properties",
+	"webhooks",
+)
