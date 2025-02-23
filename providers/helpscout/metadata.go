@@ -9,8 +9,8 @@ import (
 )
 
 type readResponse struct {
-	Embedded map[string]any `json:"_embedded"`
-	Links    map[string]any `json:"_links"`
+	Embedded map[string]any `json:"_embedded"` //nolint:tagliatelle
+	Links    map[string]any `json:"_links"`    //nolint:tagliatelle
 }
 
 func (conn *Connector) ListObjectMetadata(ctx context.Context,
@@ -65,17 +65,17 @@ func buildMetadataFields(object string, response *common.JSONHTTPResponse, res *
 
 	rawRecords, exists := data.Embedded[object]
 	if !exists {
-		return fmt.Errorf("missing expected values for object: %s, error: %w", object, common.ErrMissingExpectedValues)
+		return fmt.Errorf("missing expected values for object: %s, error: %w", object, common.ErrMissingExpectedValues) //nolint:lll
 	}
 
 	records, ok := rawRecords.([]any)
 	if len(records) == 0 || !ok {
-		return fmt.Errorf("unexpected type or empty records for object: %s, error: %w", object, common.ErrMissingExpectedValues)
+		return fmt.Errorf("unexpected type or empty records for object: %s, error: %w", object, common.ErrMissingExpectedValues) //nolint:lll
 	}
 
 	firstRecord, ok := records[0].(map[string]any)
 	if !ok {
-		return fmt.Errorf("unexpected record format for object: %s, error: %w", object, common.ErrMissingExpectedValues)
+		return fmt.Errorf("unexpected record format for object: %s, error: %w", object, common.ErrMissingExpectedValues) //nolint:lll
 	}
 
 	for fld := range firstRecord {

@@ -42,7 +42,7 @@ type JSONHTTPResponse struct {
 }
 
 // validMimeTypes represents allowed valid JSON MIME types.
-var validMimeTypes = datautils.NewSet(
+var validMimeTypes = datautils.NewSet( //nolint:gochecknoglobals
 	"application/json",
 	"application/vnd.api+json",
 	"application/hal+json",
@@ -146,9 +146,10 @@ func ParseJSONResponse(res *http.Response, body []byte) (*JSONHTTPResponse, erro
 
 		// Providers implementing JSONAPISpeicifcations returns application/vnd.api+json
 		if !validMimeTypes.Has(mimeType) {
-			return nil, fmt.Errorf("%w: expected content type to be one of application/json,application/vnd.api+json,application/hal+json, got %s",
-				ErrNotJSON, mimeType,
-			)
+			return nil,
+				fmt.Errorf("%w: expected content type to be one of application/json,application/vnd.api+json,application/hal+json, got %s", //nolint:lll
+					ErrNotJSON, mimeType,
+				)
 		}
 	}
 
