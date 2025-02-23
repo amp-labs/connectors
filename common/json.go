@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/spyzhov/ajson"
 )
 
@@ -39,6 +40,13 @@ type JSONHTTPResponse struct {
 	// If there were no bytes this will be nil.
 	body *ajson.Node
 }
+
+// validMimeTypes represents allowed valid JSON MIME types.
+var validMimeTypes = datautils.NewSet(
+	"application/json",
+	"application/vnd.api+json",
+	"application/hal+json",
+)
 
 // Body returns JSON node. If it is empty the flag will indicate so.
 // Empty response body is a special case and should be handled explicitly.
@@ -137,8 +145,8 @@ func ParseJSONResponse(res *http.Response, body []byte) (*JSONHTTPResponse, erro
 		}
 
 		// Providers implementing JSONAPISpeicifcations returns application/vnd.api+json
-		if mimeType != "application/json" && mimeType != "application/vnd.api+json" {
-			return nil, fmt.Errorf("%w: expected content type to be application/json or application/vnd.api+json , got %s",
+		if !validMimeTypes.Has(mimeType) {
+			return nil, fmt.Errorf("%w: expected content type to be one of application/json,application/vnd.api+json,application/hal+json, got %s",
 				ErrNotJSON, mimeType,
 			)
 		}
