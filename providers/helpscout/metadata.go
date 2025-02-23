@@ -2,10 +2,16 @@ package helpscout
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 )
+
+type readResponse struct {
+	Embedded map[string]any `json:"_embedded"`
+	Links    map[string]any `json:"_links"`
+}
 
 func (conn *Connector) ListObjectMetadata(ctx context.Context,
 	objectNames []string,
@@ -51,17 +57,28 @@ func buildMetadataFields(object string, response *common.JSONHTTPResponse, res *
 		DisplayName: naming.CapitalizeFirstLetterEveryWord(object),
 	}
 
-	// We're unmarshaling the data to []map[string]any, all supported objects returns this data type.
-	data, err := common.UnmarshalJSON[[]map[string]any](response)
+	// We're unmarshaling the data to readResponse, all supported objects returns this data type.
+	data, err := common.UnmarshalJSON[readResponse](response)
 	if err != nil {
 		return common.ErrFailedToUnmarshalBody
 	}
 
-	if len(*data) == 0 {
-		return common.ErrMissingExpectedValues
+	rawRecords, exists := data.Embedded[object]
+	if !exists {
+		return fmt.Errorf("missing expected values for object: %s, error: %w", object, common.ErrMissingExpectedValues)
 	}
 
-	for fld := range (*data)[0] {
+	records, ok := rawRecords.([]any)
+	if len(records) == 0 || !ok {
+		return fmt.Errorf("unexpected type or empty records for object: %s, error: %w", object, common.ErrMissingExpectedValues)
+	}
+
+	firstRecord, ok := records[0].(map[string]any)
+	if !ok {
+		return fmt.Errorf("unexpected record format for object: %s, error: %w", object, common.ErrMissingExpectedValues)
+	}
+
+	for fld := range firstRecord {
 		objectMetadata.FieldsMap[fld] = fld
 	}
 
