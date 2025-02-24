@@ -21,19 +21,19 @@ func init() {
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     true,
+			Proxy:     false,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "",
-				LogoURL: "",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1740403711/media/netsuite_1740403705.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1740411027/netsuite_xtpygf.svg",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "",
-				LogoURL: "",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1740403711/media/netsuite_1740403705.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1740404009/media/netsuite_1740403997.svg",
 			},
 		},
 	})
