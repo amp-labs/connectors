@@ -9,8 +9,7 @@ func init() {
 		AuthType:    Oauth2,
 		BaseURL:     "https://api.helpscout.net",
 		Oauth2Opts: &Oauth2Opts{
-			GrantType:                 AuthorizationCode,
-			AuthURL:                   "https://secure.helpscout.net/authentication/authorizeClientApplication",
+			GrantType:                 ClientCredentials,
 			TokenURL:                  "https://api.helpscout.net/v2/oauth2/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
