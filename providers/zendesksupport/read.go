@@ -58,15 +58,14 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 		// Incremental endpoints requires start query parameter.
 		// Even if no Since parameter is empty the start_time must be set to 0.
 		// This is effectively to say read everything since the beginning of time.
+		// https://developer.zendesk.com/api-reference/ticketing/ticket-management/incremental_exports/#start_time
 		startTime := "0"
 		if !config.Since.IsZero() {
 			startTime = strconv.FormatInt(config.Since.Unix(), 10)
 		}
 
 		url.WithQueryParam("start_time", startTime)
-
-		pageSizeQueryParam := metadata.Schemas.LookupPageSizeQP(c.Module.ID, config.ObjectName)
-		url.WithQueryParam(pageSizeQueryParam, DefaultPageSizeStr)
+		url.WithQueryParam("per_page", DefaultPageSizeStr)
 	} else {
 		// Different objects have different pagination types.
 		// https://developer.zendesk.com/api-reference/introduction/pagination/#using-offset-pagination

@@ -651,7 +651,6 @@
           },
           "custom": {
             "pagination": "time",
-            "pageSize": "per_page",
             "incremental": true
           }
         },
@@ -985,7 +984,6 @@
           },
           "custom": {
             "pagination": "time",
-            "pageSize": "per_page",
             "incremental": true
           }
         },
@@ -1167,7 +1165,6 @@
           },
           "custom": {
             "pagination": "cursor",
-            "pageSize": "per_page",
             "incremental": true
           }
         },
@@ -1286,7 +1283,6 @@
           },
           "custom": {
             "pagination": "cursor",
-            "pageSize": "per_page",
             "incremental": true
           }
         },

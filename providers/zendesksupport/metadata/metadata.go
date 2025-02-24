@@ -30,7 +30,6 @@ type ZendeskSchemas struct {
 
 type CustomProperties struct {
 	Pagination  string `json:"pagination,omitempty"`
-	PageSize    string `json:"pageSize,omitempty"`
 	Incremental bool   `json:"incremental,omitempty"`
 }
 
@@ -48,22 +47,6 @@ func (s ZendeskSchemas) LookupPaginationType(
 	}
 
 	return ptype
-}
-
-func (s ZendeskSchemas) LookupPageSizeQP(
-	moduleID common.ModuleID, objectName string,
-) string {
-	if len(moduleID) == 0 {
-		moduleID = staticschema.RootModuleID
-	}
-
-	// https://developer.zendesk.com/api-reference/ticketing/ticket-management/incremental_exports/#per_page
-	pageSizeQueryParam := s.Modules[moduleID].Objects[objectName].Custom.PageSize
-	if len(pageSizeQueryParam) == 0 {
-		return "count"
-	}
-
-	return pageSizeQueryParam
 }
 
 func (s ZendeskSchemas) IsIncrementalRead(
