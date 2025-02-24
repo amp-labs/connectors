@@ -288,7 +288,7 @@ func makePostRequest(ctx context.Context, resourceURL string, headers Headers, d
 		Value: strconv.FormatInt(contentLength, 10),
 	})
 
-	return addJSONContentTypeIfNotPresent(addHeaders(req, headers)), nil
+	return AddJSONContentTypeIfNotPresent(addHeaders(req, headers)), nil
 }
 
 // Determines how the payload should be provided to the HTTP request object based on the input headers.
@@ -339,7 +339,7 @@ func makePatchRequest(ctx context.Context, url string, headers []Header, body an
 		"headers", redactSensitiveHeaders(headers),
 		"bodySize", len(jBody))
 
-	return addJSONContentTypeIfNotPresent(addHeaders(req, headers)), nil
+	return AddJSONContentTypeIfNotPresent(addHeaders(req, headers)), nil
 }
 
 // makePutRequest creates a PUT request with the given headers and body, and adds the
@@ -362,7 +362,7 @@ func makePutRequest(ctx context.Context, url string, headers []Header, body any)
 		"headers", redactSensitiveHeaders(headers),
 		"bodySize", len(jBody))
 
-	return addJSONContentTypeIfNotPresent(addHeaders(req, headers)), nil
+	return AddJSONContentTypeIfNotPresent(addHeaders(req, headers)), nil
 }
 
 // makeDeleteRequest creates a DELETE request with the given headers. It then returns the request.
@@ -441,8 +441,8 @@ func addHeaders(req *http.Request, headers []Header) *http.Request {
 	return req
 }
 
-// addJSONContentTypeIfNotPresent adds the Content-Type header if it is not already present.
-func addJSONContentTypeIfNotPresent(req *http.Request) *http.Request {
+// AddJSONContentTypeIfNotPresent adds the Content-Type header if it is not already present.
+func AddJSONContentTypeIfNotPresent(req *http.Request) *http.Request {
 	if req.Header.Get("Content-Type") == "" {
 		req.Header.Add("Content-Type", "application/json")
 	}
