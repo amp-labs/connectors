@@ -6,23 +6,24 @@ import (
 	"log/slog"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/components"
 )
 
 var ErrUnableToGetMetadata = errors.New("unable to get metadata")
 
 // CompositeSchemaProvider gets metadata from multiple providers with fallback.
-type CompositeObjectSchemaProvider struct {
-	schemaProviders []HTTPObjectSchemaProvider
+type CompositeSchemaProvider struct {
+	schemaProviders []components.SchemaProvider
 }
 
-func NewCompositeObjectSchemaProvider(schemaProviders ...HTTPObjectSchemaProvider) *CompositeObjectSchemaProvider {
-	return &CompositeObjectSchemaProvider{
+func NewCompositeSchemaProvider(schemaProviders ...components.SchemaProvider) *CompositeSchemaProvider {
+	return &CompositeSchemaProvider{
 		schemaProviders: schemaProviders,
 	}
 }
 
-// GetMetadata tries each schema provider in order, and returns the best result with the least errors.
-func (c *CompositeObjectSchemaProvider) GetMetadata(
+// ListObjectMetadata tries each schema provider in order, and returns the best result with the least errors.
+func (c *CompositeSchemaProvider) ListObjectMetadata(
 	ctx context.Context,
 	objects []string,
 ) (*common.ListObjectMetadataResult, error) {
@@ -63,21 +64,18 @@ func (c *CompositeObjectSchemaProvider) GetMetadata(
 		return nil, ErrUnableToGetMetadata
 	}
 
+	// TODO: Do a better implementation of best effort
+
 	return bestResult, nil
 }
 
-// safeGetMetadata is a helper function that safely executes the provider's GetMetadata method
+// safeGetMetadata is a helper function that safely executes the provider's ListObjectMetadata method
 // and recovers from panics.
 func safeGetMetadata(
-	schemaProvider HTTPObjectSchemaProvider,
+	schemaProvider components.SchemaProvider,
 	ctx context.Context,
 	objects []string,
 ) (*common.ListObjectMetadataResult, error) {
-	var (
-		result *common.ListObjectMetadataResult
-		err    error
-	)
-
 	defer func() {
 		if r := recover(); r != nil {
 			slog.Error("Schema provider panicked",
@@ -86,7 +84,5 @@ func safeGetMetadata(
 		}
 	}()
 
-	result, err = schemaProvider.GetMetadata(ctx, objects)
-
-	return result, err
+	return schemaProvider.ListObjectMetadata(ctx, objects)
 }
