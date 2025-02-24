@@ -1,7 +1,9 @@
 package helpscout
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -20,9 +22,6 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 	if err != nil {
 		return nil, err
 	}
-
-	// Limit the response record data.
-	url.WithQueryParam(perPageQuery, metadataPageSize)
 
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 }
@@ -71,4 +70,36 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	}
 
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+}
+
+func (c *Connector) parseReadResponse(ctx context.Context, params common.ReadParams, response *common.JSONHTTPResponse) (*common.ReadResult, error) {
+	return common.ParseResult(
+		response,
+		getRecords(params.ObjectName),
+		nextRecordsURL,
+		common.GetMarshaledData,
+		params.Fields,
+	)
+}
+
+func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+	var method = http.MethodPost
+
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIVersion, params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(params.RecordId) > 0 {
+		url.AddPath(params.RecordId)
+
+		method = http.MethodPatch
+	}
+
+	jsonData, err := json.Marshal(params.RecordData)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal record data: %w", err)
+	}
+
+	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
 }

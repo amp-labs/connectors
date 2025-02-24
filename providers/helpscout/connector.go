@@ -10,9 +10,7 @@ import (
 )
 
 const (
-	restAPIVersion   = "v2"
-	perPageQuery     = "per_page"
-	metadataPageSize = "1"
+	restAPIVersion = "v2"
 )
 
 type Connector struct {
