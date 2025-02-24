@@ -53,6 +53,8 @@ func (op *HTTPOperation[RequestType, ResponseType]) ExecuteRequest(
 		return response, ErrInvalidRequest
 	}
 
+	req = common.AddJSONContentTypeIfNotPresent(req)
+
 	resp, err := op.client.Do(req)
 	if err != nil {
 		return response, err
