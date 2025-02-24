@@ -12,15 +12,15 @@ import (
 
 // Explorer allows to traverse schema in most common ways
 // relevant for connectors metadata extraction.
-type Explorer struct {
+type Explorer[C any] struct {
 	schema *Document
 	*parameters
 }
 
 // NewExplorer creates explorer on openAPI v3 file.
 // See Option to discover how explorer can be customized.
-func NewExplorer(data *openapi3.T, opts ...Option) *Explorer {
-	return &Explorer{
+func NewExplorer[C any](data *openapi3.T, opts ...Option) *Explorer[C] {
+	return &Explorer[C]{
 		schema: &Document{
 			delegate: data,
 		},
@@ -33,23 +33,23 @@ func NewExplorer(data *openapi3.T, opts ...Option) *Explorer {
 // make 2 calls as they will have different arguments in particular PathMatchingStrategy,
 // and then Combine two lists of schemas.
 // If all paths should be explored use DefaultPathMatcher.
-func (e Explorer) ReadObjectsGet(
+func (e Explorer[C]) ReadObjectsGet(
 	pathMatcher PathMatcher,
 	objectEndpoints map[string]string,
 	displayNameOverride map[string]string,
 	locator ObjectArrayLocator,
-) (metadatadef.Schemas, error) {
+) (metadatadef.Schemas[C], error) {
 	return e.ReadObjects("GET", pathMatcher, objectEndpoints, displayNameOverride, locator)
 }
 
 // ReadObjectsPost is the same as ReadObjectsGet but retrieves schemas for endpoints that perform reading via POST.
 // If all paths should be explored use DefaultPathMatcher.
-func (e Explorer) ReadObjectsPost(
+func (e Explorer[C]) ReadObjectsPost(
 	pathMatcher PathMatcher,
 	objectEndpoints map[string]string,
 	displayNameOverride map[string]string,
 	locator ObjectArrayLocator,
-) (metadatadef.Schemas, error) {
+) (metadatadef.Schemas[C], error) {
 	return e.ReadObjects("POST", pathMatcher, objectEndpoints, displayNameOverride, locator)
 }
 
@@ -69,14 +69,14 @@ func (e Explorer) ReadObjectsPost(
 //
 //	Given response with fields {meta{}, data{}, pagination{}} for orders object,
 //	the implementation indicates that schema will be located under `data`.
-func (e Explorer) ReadObjects(
+func (e Explorer[C]) ReadObjects(
 	operationName string,
 	pathMatcher PathMatcher,
 	objectEndpoints map[string]string,
 	displayNameOverride map[string]string,
 	locator ObjectArrayLocator,
-) (metadatadef.Schemas, error) {
-	schemas := make(metadatadef.Schemas, 0)
+) (metadatadef.Schemas[C], error) {
+	schemas := make(metadatadef.Schemas[C], 0)
 
 	pathItems, _ := e.GetPathItems(AndPathMatcher{
 		pathMatcher,
@@ -112,11 +112,11 @@ func (e Explorer) ReadObjects(
 }
 
 // GetPathItems returns path items where object name is a single word. Second output is a list of duplicate path items.
-func (e Explorer) GetPathItems(
+func (e Explorer[C]) GetPathItems(
 	pathMatcher PathMatcher, endpointResources map[string]string, logDuplicates bool,
-) ([]*PathItem, datautils.UniqueLists[string, *PathItem]) {
-	items := datautils.Map[string, *PathItem]{}
-	duplicates := datautils.UniqueLists[string, *PathItem]{}
+) ([]*PathItem[C], datautils.UniqueLists[string, *PathItem[C]]) {
+	items := datautils.Map[string, *PathItem[C]]{}
+	duplicates := datautils.UniqueLists[string, *PathItem[C]]{}
 
 	for path, pathObj := range e.schema.GetPaths() {
 		if !pathMatcher.IsPathMatching(path) {
@@ -133,7 +133,7 @@ func (e Explorer) GetPathItems(
 			objectName = parts[len(parts)-1]
 		}
 
-		item := PathItem{
+		item := PathItem[C]{
 			objectName: objectName,
 			urlPath:    path,
 			delegate:   pathObj,
@@ -203,7 +203,7 @@ func (w EndpointOperations) String() string {
 //   - PathMatcher: Used to filter and scope the returned URLs based on the specified path rules.
 //     If all paths should be explored use DefaultPathMatcher.
 //   - operationNames: A list of REST API operations to search for.
-func (e Explorer) GetEndpointOperations(
+func (e Explorer[C]) GetEndpointOperations(
 	pathMatcher PathMatcher,
 	operationNames ...string,
 ) ([]EndpointOperations, error) {

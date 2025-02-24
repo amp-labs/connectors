@@ -88,11 +88,10 @@ func createSchemas() {
 					if len(fieldName) != 0 {
 						newDisplayName, isList := handleDisplayName(model.DisplayName)
 						if isList {
-							schemas.Add("", modelName,
-								newDisplayName, fmt.Sprintf("/%v", modelName), "data",
+							schemas.Add("", modelName, newDisplayName, fmt.Sprintf("/%v", modelName), "data",
 								staticschema.FieldMetadataMapV1{
 									fieldName: fieldName,
-								}, &model.URL)
+								}, &model.URL, nil)
 						}
 					}
 				})

@@ -7,7 +7,6 @@
         "article_labels": {
           "displayName": "Article Labels",
           "path": "/help_center/articles/labels",
-          "pagination": "cursor",
           "responseKey": "labels",
           "fields": {
             "created_at": "created_at",
@@ -15,11 +14,13 @@
             "name": "name",
             "updated_at": "updated_at",
             "url": "url"
+          },
+          "custom": {
+            "pagination": "cursor"
           }
         },
         "articles": {
           "displayName": "Articles",
-          "pagination": "offset",
           "path": "/help_center/articles/search",
           "responseKey": "results",
           "fields": {
@@ -48,12 +49,14 @@
             "user_segment_ids": "user_segment_ids",
             "vote_count": "vote_count",
             "vote_sum": "vote_sum"
+          },
+          "custom": {
+            "pagination": "offset"
           }
         },
         "community_posts": {
           "displayName": "Community Posts",
           "path": "/help_center/community_posts/search",
-          "pagination": "offset",
           "responseKey": "results",
           "fields": {
             "author_id": "author_id",
@@ -76,12 +79,14 @@
             "url": "url",
             "vote_count": "vote_count",
             "vote_sum": "vote_sum"
+          },
+          "custom": {
+            "pagination": "offset"
           }
         },
         "posts": {
           "displayName": "Posts",
           "path": "/community/posts",
-          "pagination": "cursor",
           "responseKey": "posts",
           "fields": {
             "author_id": "author_id",
@@ -104,12 +109,14 @@
             "url": "url",
             "vote_count": "vote_count",
             "vote_sum": "vote_sum"
+          },
+          "custom": {
+            "pagination": "cursor"
           }
         },
         "topics": {
           "displayName": "Topics",
           "path": "/community/topics",
-          "pagination": "cursor",
           "responseKey": "topics",
           "fields": {
             "created_at": "created_at",
@@ -123,12 +130,14 @@
             "updated_at": "updated_at",
             "url": "url",
             "user_segment_id": "user_segment_id"
+          },
+          "custom": {
+            "pagination": "cursor"
           }
         },
         "user_segments": {
           "displayName": "User Segments",
           "path": "/help_center/user_segments",
-          "pagination": "cursor",
           "responseKey": "user_segments",
           "fields": {
             "built_in": "built_in",
@@ -141,6 +150,9 @@
             "tags": "tags",
             "updated_at": "updated_at",
             "user_type": "user_type"
+          },
+          "custom": {
+            "pagination": "cursor"
           }
         }
       }
@@ -152,7 +164,6 @@
         "activities": {
           "displayName": "Activities",
           "path": "/activities",
-          "pagination": "cursor",
           "responseKey": "activities",
           "fields": {
             "actor": "actor",
@@ -167,12 +178,14 @@
             "user": "user",
             "user_id": "user_id",
             "verb": "verb"
+          },
+          "custom": {
+            "pagination": "cursor"
           }
         },
         "attributes": {
           "displayName": "Attributes",
           "path": "/routing/attributes",
-          "pagination": "offset",
           "responseKey": "attributes",
           "fields": {
             "created_at": "created_at",
@@ -180,12 +193,14 @@
             "name": "name",
             "updated_at": "updated_at",
             "url": "url"
+          },
+          "custom": {
+            "pagination": "offset"
           }
         },
         "audit_logs": {
           "displayName": "Audit Logs",
           "path": "/audit_logs",
-          "pagination": "cursor",
           "responseKey": "audit_logs",
           "fields": {
             "action": "action",
@@ -200,12 +215,14 @@
             "source_label": "source_label",
             "source_type": "source_type",
             "url": "url"
+          },
+          "custom": {
+            "pagination": "cursor"
           }
         },
         "automations": {
           "displayName": "Automations",
           "path": "/automations",
-          "pagination": "cursor",
           "responseKey": "automations",
           "fields": {
             "actions": "actions",
@@ -218,24 +235,28 @@
             "raw_title": "raw_title",
             "title": "title",
             "updated_at": "updated_at"
+          },
+          "custom": {
+            "pagination": "cursor"
           }
         },
         "bookmarks": {
           "displayName": "Bookmarks",
           "path": "/bookmarks",
-          "pagination": "offset",
           "responseKey": "bookmarks",
           "fields": {
             "created_at": "created_at",
             "id": "id",
             "ticket": "ticket",
             "url": "url"
+          },
+          "custom": {
+            "pagination": "offset"
           }
         },
         "brands": {
           "displayName": "Brands",
           "path": "/brands",
-          "pagination": "cursor",
           "responseKey": "brands",
           "fields": {
             "active": "active",
@@ -254,12 +275,14 @@
             "ticket_form_ids": "ticket_form_ids",
             "updated_at": "updated_at",
             "url": "url"
+          },
+          "custom": {
+            "pagination": "cursor"
           }
         },
         "custom_objects": {
           "displayName": "Custom Objects",
           "path": "/custom_objects",
-          "pagination": "offset",
           "responseKey": "custom_objects",
           "fields": {
             "created_at": "created_at",
@@ -274,13 +297,15 @@
             "updated_at": "updated_at",
             "updated_by_user_id": "updated_by_user_id",
             "url": "url"
+          },
+          "custom": {
+            "pagination": "offset"
           }
         },
         "custom_roles": {
           "displayName": "Custom Roles",
           "path": "/custom_roles",
           "responseKey": "custom_roles",
-          "pagination": "offset",
           "fields": {
             "configuration": "configuration",
             "created_at": "created_at",
@@ -290,6 +315,9 @@
             "role_type": "role_type",
             "team_member_count": "team_member_count",
             "updated_at": "updated_at"
+          },
+          "custom": {
+            "pagination": "offset"
           }
         },
         "custom_statuses": {
@@ -311,12 +339,12 @@
             "raw_end_user_label": "raw_end_user_label",
             "status_category": "status_category",
             "updated_at": "updated_at"
-          }
+          },
+          "custom": {}
         },
         "deleted_tickets": {
           "displayName": "Deleted Tickets",
           "path": "/deleted_tickets",
-          "pagination": "cursor",
           "responseKey": "deleted_tickets",
           "fields": {
             "actor": "actor",
@@ -324,13 +352,15 @@
             "id": "id",
             "previous_state": "previous_state",
             "subject": "subject"
+          },
+          "custom": {
+            "pagination": "cursor"
           }
         },
         "deleted_users": {
           "displayName": "Deleted Users",
           "path": "/deleted_users",
           "responseKey": "deleted_users",
-          "pagination": "cursor",
           "fields": {
             "active": "active",
             "created_at": "created_at",
@@ -347,6 +377,9 @@
             "time_zone": "time_zone",
             "updated_at": "updated_at",
             "url": "url"
+          },
+          "custom": {
+            "pagination": "cursor"
           }
         },
         "deletion_schedules": {
@@ -363,12 +396,12 @@
             "title": "title",
             "updated_at": "updated_at",
             "url": "url"
-          }
+          },
+          "custom": {}
         },
         "email_notifications": {
           "displayName": "Email Notifications",
           "path": "/email_notifications",
-          "pagination": "cursor",
           "responseKey": "email_notifications",
           "fields": {
             "comment_id": "comment_id",
@@ -380,12 +413,14 @@
             "ticket_id": "ticket_id",
             "updated_at": "updated_at",
             "url": "url"
+          },
+          "custom": {
+            "pagination": "cursor"
           }
         },
         "group_memberships": {
           "displayName": "Group Memberships",
           "path": "/group_memberships",
-          "pagination": "cursor",
           "responseKey": "group_memberships",
           "fields": {
             "created_at": "created_at",
@@ -395,12 +430,14 @@
             "updated_at": "updated_at",
             "url": "url",
             "user_id": "user_id"
+          },
+          "custom": {
+            "pagination": "cursor"
           }
         },
         "groups": {
           "displayName": "Groups",
           "path": "/groups",
-          "pagination": "cursor",
           "responseKey": "groups",
           "fields": {
             "created_at": "created_at",
@@ -412,13 +449,15 @@
             "name": "name",
             "updated_at": "updated_at",
             "url": "url"
+          },
+          "custom": {
+            "pagination": "cursor"
           }
         },
         "job_statuses": {
           "displayName": "Job Statuses",
           "path": "/job_statuses",
           "responseKey": "job_statuses",
-          "pagination": "cursor",
           "fields": {
             "id": "id",
             "job_type": "job_type",
@@ -428,12 +467,14 @@
             "status": "status",
             "total": "total",
             "url": "url"
+          },
+          "custom": {
+            "pagination": "cursor"
           }
         },
         "locales": {
           "displayName": "Locales",
           "path": "/locales",
-          "pagination": "offset",
           "responseKey": "locales",
           "fields": {
             "created_at": "created_at",
@@ -442,12 +483,14 @@
             "name": "name",
             "updated_at": "updated_at",
             "url": "url"
+          },
+          "custom": {
+            "pagination": "offset"
           }
         },
         "macros": {
           "displayName": "Macros",
           "path": "/macros",
-          "pagination": "cursor",
           "responseKey": "macros",
           "fields": {
             "actions": "actions",
@@ -468,12 +511,14 @@
             "usage_24h": "usage_24h",
             "usage_30d": "usage_30d",
             "usage_7d": "usage_7d"
+          },
+          "custom": {
+            "pagination": "cursor"
           }
         },
         "monitored_twitter_handles": {
           "displayName": "Monitored Twitter Handles",
           "path": "/channels/twitter/monitored_twitter_handles",
-          "pagination": "offset",
           "responseKey": "monitored_twitter_handles",
           "fields": {
             "allow_reply": "allow_reply",
@@ -486,12 +531,14 @@
             "screen_name": "screen_name",
             "twitter_user_id": "twitter_user_id",
             "updated_at": "updated_at"
+          },
+          "custom": {
+            "pagination": "offset"
           }
         },
         "organization_fields": {
           "displayName": "Organization Fields",
           "path": "/organization_fields",
-          "pagination": "cursor",
           "responseKey": "organization_fields",
           "fields": {
             "active": "active",
@@ -512,12 +559,14 @@
             "type": "type",
             "updated_at": "updated_at",
             "url": "url"
+          },
+          "custom": {
+            "pagination": "cursor"
           }
         },
         "organization_memberships": {
           "displayName": "Organization Memberships",
           "path": "/organization_memberships",
-          "pagination": "cursor",
           "responseKey": "organization_memberships",
           "fields": {
             "created_at": "created_at",
@@ -529,24 +578,28 @@
             "url": "url",
             "user_id": "user_id",
             "view_tickets": "view_tickets"
+          },
+          "custom": {
+            "pagination": "cursor"
           }
         },
         "organization_subscriptions": {
           "displayName": "Organization Subscriptions",
           "path": "/organization_subscriptions",
-          "pagination": "cursor",
           "responseKey": "organization_subscriptions",
           "fields": {
             "created_at": "created_at",
             "id": "id",
             "organization_id": "organization_id",
             "user_id": "user_id"
+          },
+          "custom": {
+            "pagination": "cursor"
           }
         },
         "organizations": {
           "displayName": "Organizations",
           "path": "/organizations",
-          "pagination": "cursor",
           "responseKey": "organizations",
           "fields": {
             "created_at": "created_at",
@@ -563,13 +616,15 @@
             "tags": "tags",
             "updated_at": "updated_at",
             "url": "url"
+          },
+          "custom": {
+            "pagination": "cursor"
           }
         },
         "queues": {
           "displayName": "Queues",
           "path": "/queues",
           "responseKey": "queues",
-          "pagination": "offset",
           "fields": {
             "created_at": "created_at",
             "definition": "definition",
@@ -582,12 +637,14 @@
             "secondary_groups": "secondary_groups",
             "updated_at": "updated_at",
             "url": "url"
+          },
+          "custom": {
+            "pagination": "offset"
           }
         },
         "recipient_addresses": {
           "displayName": "Recipient Addresses",
           "path": "/recipient_addresses",
-          "pagination": "cursor",
           "responseKey": "recipient_addresses",
           "fields": {
             "brand_id": "brand_id",
@@ -603,12 +660,14 @@
             "name": "name",
             "spf_status": "spf_status",
             "updated_at": "updated_at"
+          },
+          "custom": {
+            "pagination": "cursor"
           }
         },
         "requests": {
           "displayName": "Requests",
           "path": "/requests",
-          "pagination": "cursor",
           "responseKey": "requests",
           "fields": {
             "assignee_id": "assignee_id",
@@ -636,25 +695,29 @@
             "updated_at": "updated_at",
             "url": "url",
             "via": "via"
+          },
+          "custom": {
+            "pagination": "cursor"
           }
         },
         "resource_collections": {
           "displayName": "Resource Collections",
           "path": "/resource_collections",
-          "pagination": "offset",
           "responseKey": "resource_collections",
           "fields": {
             "created_at": "created_at",
             "id": "id",
             "resources": "resources",
             "updated_at": "updated_at"
+          },
+          "custom": {
+            "pagination": "offset"
           }
         },
         "satisfaction_ratings": {
           "displayName": "Satisfaction Ratings",
           "path": "/satisfaction_ratings",
           "responseKey": "satisfaction_ratings",
-          "pagination": "cursor",
           "fields": {
             "assignee_id": "assignee_id",
             "comment": "comment",
@@ -669,11 +732,13 @@
             "ticket_id": "ticket_id",
             "updated_at": "updated_at",
             "url": "url"
+          },
+          "custom": {
+            "pagination": "cursor"
           }
         },
         "satisfaction_reasons": {
           "displayName": "Satisfaction Rating Reasons",
-          "pagination": "offset",
           "path": "/satisfaction_reasons",
           "responseKey": "reasons",
           "fields": {
@@ -685,12 +750,14 @@
             "updated_at": "updated_at",
             "url": "url",
             "value": "value"
+          },
+          "custom": {
+            "pagination": "offset"
           }
         },
         "search": {
           "displayName": "Search Results",
           "path": "/search",
-          "pagination": "offset",
           "responseKey": "results",
           "fields": {
             "created_at": "created_at",
@@ -702,6 +769,9 @@
             "result_type": "result_type",
             "updated_at": "updated_at",
             "url": "url"
+          },
+          "custom": {
+            "pagination": "offset"
           }
         },
         "session": {
@@ -714,7 +784,8 @@
             "last_seen_at": "last_seen_at",
             "url": "url",
             "user_id": "user_id"
-          }
+          },
+          "custom": {}
         },
         "sessions": {
           "displayName": "Sessions",
@@ -726,13 +797,13 @@
             "last_seen_at": "last_seen_at",
             "url": "url",
             "user_id": "user_id"
-          }
+          },
+          "custom": {}
         },
         "sharing_agreements": {
           "displayName": "Sharing Agreements",
           "path": "/sharing_agreements",
           "responseKey": "sharing_agreements",
-          "pagination": "offset",
           "fields": {
             "created_at": "created_at",
             "id": "id",
@@ -743,12 +814,14 @@
             "type": "type",
             "updated_at": "updated_at",
             "url": "url"
+          },
+          "custom": {
+            "pagination": "offset"
           }
         },
         "suspended_tickets": {
           "displayName": "Suspended Tickets",
           "path": "/suspended_tickets",
-          "pagination": "cursor",
           "responseKey": "suspended_tickets",
           "fields": {
             "attachments": "attachments",
@@ -767,22 +840,26 @@
             "updated_at": "updated_at",
             "url": "url",
             "via": "via"
+          },
+          "custom": {
+            "pagination": "cursor"
           }
         },
         "tags": {
           "displayName": "Tags",
           "path": "/tags",
-          "pagination": "cursor",
           "responseKey": "tags",
           "fields": {
             "count": "count",
             "name": "name"
+          },
+          "custom": {
+            "pagination": "cursor"
           }
         },
         "target_failures": {
           "displayName": "Target Failures",
           "path": "/target_failures",
-          "pagination": "offset",
           "responseKey": "target_failures",
           "fields": {
             "consecutive_failure_count": "consecutive_failure_count",
@@ -793,13 +870,15 @@
             "status_code": "status_code",
             "target_name": "target_name",
             "url": "url"
+          },
+          "custom": {
+            "pagination": "offset"
           }
         },
         "targets": {
           "displayName": "Targets",
           "path": "/targets",
           "responseKey": "targets",
-          "pagination": "offset",
           "fields": {
             "account_name": "account_name",
             "active": "active",
@@ -836,12 +915,14 @@
             "type": "type",
             "us_small_business_account": "us_small_business_account",
             "username": "username"
+          },
+          "custom": {
+            "pagination": "offset"
           }
         },
         "ticket_audits": {
           "displayName": "Ticket Audits",
           "path": "/ticket_audits",
-          "pagination": "cursor",
           "responseKey": "audits",
           "fields": {
             "author_id": "author_id",
@@ -851,13 +932,15 @@
             "metadata": "metadata",
             "ticket_id": "ticket_id",
             "via": "via"
+          },
+          "custom": {
+            "pagination": "cursor"
           }
         },
         "ticket_fields": {
           "displayName": "Ticket Fields",
           "path": "/ticket_fields",
           "responseKey": "ticket_fields",
-          "pagination": "cursor",
           "fields": {
             "active": "active",
             "agent_description": "agent_description",
@@ -889,12 +972,14 @@
             "updated_at": "updated_at",
             "url": "url",
             "visible_in_portal": "visible_in_portal"
+          },
+          "custom": {
+            "pagination": "cursor"
           }
         },
         "ticket_forms": {
           "displayName": "Ticket Forms",
           "path": "/ticket_forms",
-          "pagination": "offset",
           "responseKey": "ticket_forms",
           "fields": {
             "active": "active",
@@ -914,13 +999,15 @@
             "ticket_field_ids": "ticket_field_ids",
             "updated_at": "updated_at",
             "url": "url"
+          },
+          "custom": {
+            "pagination": "offset"
           }
         },
         "ticket_metrics": {
           "displayName": "Ticket Metrics",
           "path": "/ticket_metrics",
           "responseKey": "ticket_metrics",
-          "pagination": "cursor",
           "fields": {
             "agent_wait_time_in_minutes": "agent_wait_time_in_minutes",
             "assigned_at": "assigned_at",
@@ -946,13 +1033,15 @@
             "ticket_id": "ticket_id",
             "updated_at": "updated_at",
             "url": "url"
+          },
+          "custom": {
+            "pagination": "cursor"
           }
         },
         "tickets": {
           "displayName": "Tickets",
           "path": "/tickets",
           "responseKey": "tickets",
-          "pagination": "cursor",
           "fields": {
             "allow_attachments": "allow_attachments",
             "allow_channelback": "allow_channelback",
@@ -1006,13 +1095,15 @@
             "via_followup_source_id": "via_followup_source_id",
             "via_id": "via_id",
             "voice_comment": "voice_comment"
+          },
+          "custom": {
+            "pagination": "cursor"
           }
         },
         "trigger_categories": {
           "displayName": "Trigger Categories",
           "path": "/trigger_categories",
           "responseKey": "trigger_categories",
-          "pagination": "cursor",
           "fields": {
             "active_count": "active_count",
             "created_at": "created_at",
@@ -1021,12 +1112,14 @@
             "name": "name",
             "position": "position",
             "updated_at": "updated_at"
+          },
+          "custom": {
+            "pagination": "cursor"
           }
         },
         "triggers": {
           "displayName": "Triggers",
           "path": "/triggers",
-          "pagination": "cursor",
           "responseKey": "triggers",
           "fields": {
             "actions": "actions",
@@ -1042,12 +1135,14 @@
             "title": "title",
             "updated_at": "updated_at",
             "url": "url"
+          },
+          "custom": {
+            "pagination": "cursor"
           }
         },
         "user_fields": {
           "displayName": "User Fields",
           "path": "/user_fields",
-          "pagination": "cursor",
           "responseKey": "user_fields",
           "fields": {
             "active": "active",
@@ -1068,13 +1163,15 @@
             "type": "type",
             "updated_at": "updated_at",
             "url": "url"
+          },
+          "custom": {
+            "pagination": "cursor"
           }
         },
         "users": {
           "displayName": "Users",
           "path": "/users",
           "responseKey": "users",
-          "pagination": "cursor",
           "fields": {
             "active": "active",
             "alias": "alias",
@@ -1115,12 +1212,14 @@
             "url": "url",
             "user_fields": "user_fields",
             "verified": "verified"
+          },
+          "custom": {
+            "pagination": "cursor"
           }
         },
         "views": {
           "displayName": "Views",
           "path": "/views",
-          "pagination": "cursor",
           "responseKey": "views",
           "fields": {
             "active": "active",
@@ -1134,12 +1233,14 @@
             "restriction": "restriction",
             "title": "title",
             "updated_at": "updated_at"
+          },
+          "custom": {
+            "pagination": "cursor"
           }
         },
         "workspaces": {
           "displayName": "Workspaces",
           "path": "/workspaces",
-          "pagination": "offset",
           "responseKey": "workspaces",
           "fields": {
             "activated": "activated",
@@ -1157,6 +1258,9 @@
             "title": "title",
             "updated_at": "updated_at",
             "url": "url"
+          },
+          "custom": {
+            "pagination": "offset"
           }
         }
       }

@@ -10,15 +10,15 @@ import (
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
 )
 
-type WriteExplorerArgs struct {
+type WriteExplorerArgs[C any] struct {
 	// Name is useful when more than one explorer is passed into PrintWriteEndpointsSummary.
 	Name        string
-	Explorer    *api3.Explorer
+	Explorer    *api3.Explorer[C]
 	PathMatcher api3.PathMatcher
 }
 
-func PrintWriteEndpointsSummary(args ...WriteExplorerArgs) {
-	inputs := make(datautils.Map[string, WriteExplorerArgs])
+func PrintWriteEndpointsSummary[C any](args ...WriteExplorerArgs[C]) {
+	inputs := make(datautils.Map[string, WriteExplorerArgs[C]])
 
 	for _, arg := range args {
 		if arg.PathMatcher == nil {

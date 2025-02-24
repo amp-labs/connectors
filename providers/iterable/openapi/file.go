@@ -12,5 +12,5 @@ var (
 	//go:embed api-docs.json
 	apiFile []byte
 
-	FileManager = api2.NewOpenapiFileManager(apiFile) // nolint:gochecknoglobals
+	FileManager = api2.NewOpenapiFileManager[any](apiFile) // nolint:gochecknoglobals
 )
