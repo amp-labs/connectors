@@ -2,7 +2,6 @@ package helpscout
 
 import (
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/reader"
@@ -10,7 +9,11 @@ import (
 	"github.com/amp-labs/connectors/providers"
 )
 
-const restAPIVersion = "v2"
+const (
+	restAPIVersion   = "v2"
+	perPageQuery     = "per_page"
+	metadataPageSize = "1"
+)
 
 type Connector struct {
 	// Basic connector
@@ -27,7 +30,7 @@ type Connector struct {
 }
 
 func NewConnector(params common.Parameters) (*Connector, error) {
-	return components.Initialize(providers.Smartlead, params, constructor)
+	return components.Initialize(providers.HelpScoutMailbox, params, constructor)
 }
 
 func constructor(base *components.Connector) (*Connector, error) {
@@ -39,8 +42,16 @@ func constructor(base *components.Connector) (*Connector, error) {
 	}
 
 	// Set the metadata provider for the connector
-	connector.SchemaProvider = 
+	connector.SchemaProvider = schema.NewObjectSchemaProvider(
+		connector.HTTPClient().Client,
+		schema.FetchModeParallel,
+		operations.SingleObjectMetadataHandlers{
+			BuildRequest:  connector.buildSingleObjectMetadataRequest,
+			ParseResponse: connector.parseSingleObjectMetadataResponse,
+		},
+	)
 
+	// Set The reader provider for the connector
 	connector.Reader = reader.NewHTTPReader(
 		connector.HTTPClient().Client,
 		registry,
@@ -48,10 +59,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 		operations.ReadHandlers{
 			BuildRequest:  connector.buildReadRequest,
 			ParseResponse: connector.parseReadResponse,
-			ErrorHandler: interpreter.ErrorHandler{
-				JSON: interpreter.NewFaultyResponder(errorFormats, nil),
-				HTML: &interpreter.DirectFaultyResponder{Callback: interpretHTMLError},
-			}.Handle,
+			ErrorHandler:  common.InterpretError,
 		},
 	)
 

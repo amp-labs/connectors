@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/helpscout"
@@ -15,9 +16,18 @@ func GetHelpScoutConnector(ctx context.Context) *helpscout.Connector {
 	filePath := credscanning.LoadPath(providers.HelpScoutMailbox)
 	reader := utils.MustCreateProvCredJSON(filePath, true, false)
 
-	conn, err := helpscout.NewConnector(
-		helpscout.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
+	client, err := common.NewOAuthHTTPClient(ctx,
+		common.WithOAuthClient(http.DefaultClient),
+		common.WithOAuthConfig(getConfig(reader)),
+		common.WithOAuthToken(reader.GetOauthToken()),
 	)
+	if err != nil {
+		utils.Fail(err.Error())
+	}
+
+	conn, err := helpscout.NewConnector(common.Parameters{
+		AuthenticatedClient: client,
+	})
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)
 	}
