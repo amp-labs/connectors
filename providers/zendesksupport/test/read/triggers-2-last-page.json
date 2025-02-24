@@ -1,0 +1,46 @@
+{
+  "triggers": [
+    {
+      "url": "https://d3v-ampersand.zendesk.com/api/v2/triggers/26363596909203.json",
+      "id": 26363596909203,
+      "title": "Notify all agents of received request",
+      "active": true,
+      "updated_at": "2025-02-05T18:49:09Z",
+      "created_at": "2024-02-15T16:23:04Z",
+      "default": false,
+      "actions": [
+        {
+          "field": "notification_user",
+          "value": [
+            "all_agents",
+            "[{{ticket.account}}] {{ticket.title}}",
+            "A ticket (#{{ticket.id}}) by {{ticket.requester.name}} has been received. It is unassigned.\n\n{{ticket.latest_comment_html}}"
+          ]
+        }
+      ],
+      "conditions": {
+        "all": [
+          {
+            "field": "update_type",
+            "operator": "is",
+            "value": "Create"
+          }
+        ],
+        "any": []
+      },
+      "description": "Sends an email to every agent when a new ticket is received.",
+      "position": 2,
+      "raw_title": "Notify all agents of received request",
+      "category_id": "26363596868115"
+    }
+  ],
+  "meta": {
+    "has_more": false,
+    "after_cursor": "eyJvIjoicG9zaXRpb24scG9zaXRpb24sdGl0bGUsaWQiLCJ2IjoiYVFFQUFBQUFBQUFBYVFJQUFBQUFBQUFBY3lVQUFBQk9iM1JwWm5rZ1lXeHNJR0ZuWlc1MGN5QnZaaUJ5WldObGFYWmxaQ0J5WlhGMVpYTjBhWk1xMUVENkZ3QUEifQ==",
+    "before_cursor": "eyJvIjoicG9zaXRpb24scG9zaXRpb24sdGl0bGUsaWQiLCJ2IjoiYVFFQUFBQUFBQUFBYVFJQUFBQUFBQUFBY3lVQUFBQk9iM1JwWm5rZ1lXeHNJR0ZuWlc1MGN5QnZaaUJ5WldObGFYWmxaQ0J5WlhGMVpYTjBhWk1xMUVENkZ3QUEifQ=="
+  },
+  "links": {
+    "prev": "https://d3v-ampersand.zendesk.com/api/v2/triggers?page%5Bbefore%5D=eyJvIjoicG9zaXRpb24scG9zaXRpb24sdGl0bGUsaWQiLCJ2IjoiYVFFQUFBQUFBQUFBYVFJQUFBQUFBQUFBY3lVQUFBQk9iM1JwWm5rZ1lXeHNJR0ZuWlc1MGN5QnZaaUJ5WldObGFYWmxaQ0J5WlhGMVpYTjBhWk1xMUVENkZ3QUEifQ%3D%3D&page%5Bsize%5D=6",
+    "next": "https://d3v-ampersand.zendesk.com/api/v2/triggers?page%5Bafter%5D=eyJvIjoicG9zaXRpb24scG9zaXRpb24sdGl0bGUsaWQiLCJ2IjoiYVFFQUFBQUFBQUFBYVFJQUFBQUFBQUFBY3lVQUFBQk9iM1JwWm5rZ1lXeHNJR0ZuWlc1MGN5QnZaaUJ5WldObGFYWmxaQ0J5WlhGMVpYTjBhWk1xMUVENkZ3QUEifQ%3D%3D&page%5Bsize%5D=6"
+  }
+}

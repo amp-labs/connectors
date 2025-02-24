@@ -64,9 +64,9 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 		}
 
 		url.WithQueryParam("start_time", startTime)
+
 		pageSizeQueryParam := metadata.Schemas.LookupPageSizeQP(c.Module.ID, config.ObjectName)
 		url.WithQueryParam(pageSizeQueryParam, DefaultPageSizeStr)
-
 	} else {
 		// Different objects have different pagination types.
 		// https://developer.zendesk.com/api-reference/introduction/pagination/#using-offset-pagination

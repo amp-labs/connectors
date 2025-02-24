@@ -66,7 +66,6 @@ func (s ZendeskSchemas) LookupPageSizeQP(
 	return pageSizeQueryParam
 }
 
-
 func (s ZendeskSchemas) IsIncrementalRead(
 	moduleID common.ModuleID, objectName string,
 ) bool {

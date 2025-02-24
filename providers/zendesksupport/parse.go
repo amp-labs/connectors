@@ -7,6 +7,26 @@ import (
 
 // https://developer.zendesk.com/api-reference/ticketing/ticket-management/incremental_exports/#json-format
 func getNextRecordsURL(node *ajson.Node) (string, error) {
+	isStreamEnd, err := jsonquery.New(node).BoolWithDefault("end_of_stream", false)
+	if err != nil {
+		return "", err
+	}
+
+	if isStreamEnd {
+		// Time-based pagination would still return next page even thought he next page doesn't exist.
+		// We must stop paginating if the end of stream is reached.
+		return "", nil
+	}
+
+	hasMore, err := jsonquery.New(node, "meta").BoolWithDefault("has_more", true)
+	if err != nil {
+		return "", err
+	}
+
+	if !hasMore {
+		return "", nil
+	}
+
 	nextPage, err := jsonquery.New(node, "links").StrWithDefault("next", "")
 	if err != nil {
 		return "", err

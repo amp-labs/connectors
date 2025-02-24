@@ -140,7 +140,7 @@ var (
 		"views":                      "cursor",
 		"workspaces":                 "offset",
 	}
-	objectNameIncremental = datautils.NewSet(
+	objectNameIncremental = datautils.NewSet( // nolint:gochecknoglobals
 		"attribute_values",
 		"attributes",
 		"instance_values",
@@ -152,7 +152,7 @@ var (
 	)
 	// PageSize using `page_size` instead of `count`.
 	// https://developer.zendesk.com/api-reference/ticketing/ticket-management/incremental_exports/#per_page
-	pageSizeViaPerPage = datautils.NewSet(
+	pageSizeViaPerPage = datautils.NewSet( // nolint:gochecknoglobals
 		"organizations",
 		"ticket_events",
 		"tickets",
@@ -179,9 +179,11 @@ func Objects() []metadatadef.ExtendedSchema[metadata.CustomProperties] {
 	for index, object := range objects {
 		object.Custom.Pagination = objectNameToPagination[object.ObjectName]
 		object.Custom.Incremental = objectNameIncremental.Has(object.ObjectName)
+
 		if pageSizeViaPerPage.Has(object.ObjectName) {
 			object.Custom.PageSize = "per_page"
 		}
+
 		objects[index] = object
 	}
 
