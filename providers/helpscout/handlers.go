@@ -72,7 +72,11 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 }
 
-func (c *Connector) parseReadResponse(ctx context.Context, params common.ReadParams, response *common.JSONHTTPResponse) (*common.ReadResult, error) {
+func (c *Connector) parseReadResponse(
+	ctx context.Context,
+	params common.ReadParams,
+	response *common.JSONHTTPResponse,
+) (*common.ReadResult, error) {
 	return common.ParseResult(
 		response,
 		getRecords(params.ObjectName),
@@ -83,7 +87,7 @@ func (c *Connector) parseReadResponse(ctx context.Context, params common.ReadPar
 }
 
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
-	var method = http.MethodPost
+	method := http.MethodPost
 
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIVersion, params.ObjectName)
 	if err != nil {
@@ -106,7 +110,11 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
 }
 
-func (c *Connector) parseWriteResponse(ctx context.Context, params common.WriteParams, response *common.JSONHTTPResponse) (*common.WriteResult, error) {
+func (c *Connector) parseWriteResponse(
+	ctx context.Context,
+	params common.WriteParams,
+	response *common.JSONHTTPResponse,
+) (*common.WriteResult, error) {
 	// The response is always an empty response body.
 	return &common.WriteResult{
 		Success: true,
