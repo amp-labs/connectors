@@ -11,7 +11,7 @@ func init() {
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://{{.workspace}}.app.netsuite.com/app/login/oauth2/authorize.nl",
 			TokenURL:                  "https://{{.workspace}}.suitetalk.api.netsuite.com/services/rest/auth/oauth2/v1/token",
-			ExplicitScopesRequired:    false,
+			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: true,
 		},
 		Support: Support{
