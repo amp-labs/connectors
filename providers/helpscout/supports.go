@@ -11,12 +11,17 @@ import (
 // How to read & build these patterns: https://github.com/gobwas/glob
 func supportedOperations() components.EndpointRegistryInput {
 	readSupport := []string{"conversations", "customers", "mailboxes", "customer-properties", "tags", "teams", "users", "webhooks", "workflows"}
+	writeSupport := []string{"conversations", "customers", "customer-properties", "webhooks"}
 
 	return components.EndpointRegistryInput{
 		staticschema.RootModuleID: {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
+				Support:  components.WriteSupport,
 			},
 		},
 	}

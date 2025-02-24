@@ -101,5 +101,14 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		return nil, fmt.Errorf("failed to marshal record data: %w", err)
 	}
 
+	// Set the content type header to `application/json`
+
 	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
+}
+
+func (c *Connector) parseWriteResponse(ctx context.Context, params common.WriteParams, response *common.JSONHTTPResponse) (*common.WriteResult, error) {
+	// The response is always an empty response body.
+	return &common.WriteResult{
+		Success: true,
+	}, nil
 }
