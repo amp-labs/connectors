@@ -136,9 +136,10 @@ func ParseJSONResponse(res *http.Response, body []byte) (*JSONHTTPResponse, erro
 			return nil, fmt.Errorf("failed to parse content type: %w", err)
 		}
 
-		// Providers implementing JSONAPISpeicifcations returns application/vnd.api+json
-		if mimeType != "application/json" && mimeType != "application/vnd.api+json" {
-			return nil, fmt.Errorf("%w: expected content type to be application/json or application/vnd.api+json , got %s",
+		// Check if the mimeType follows the pattern application/*json (e.g.
+		// application/vnd.api+json, application/schema+json, etc.)
+		if !strings.HasPrefix(mimeType, "application/") || !strings.HasSuffix(mimeType, "json") {
+			return nil, fmt.Errorf("%w: expected content type to be application/*json, got %s",
 				ErrNotJSON, mimeType,
 			)
 		}
@@ -163,6 +164,7 @@ func UnmarshalJSON[T any](rsp *JSONHTTPResponse) (*T, error) {
 	var data T
 
 	if len(rsp.bodyBytes) == 0 {
+
 		// Empty struct.
 		return &data, nil
 	}
