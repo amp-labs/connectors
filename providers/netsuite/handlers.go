@@ -2,7 +2,6 @@ package netsuite
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -32,6 +31,7 @@ func (c *Connector) buildObjectMetadataRequest(ctx context.Context, object strin
 	return req, nil
 }
 
+// nolint:funlen,cyclop
 func (c *Connector) parseObjectMetadataResponse(
 	ctx context.Context,
 	object string,
@@ -39,7 +39,7 @@ func (c *Connector) parseObjectMetadataResponse(
 ) (*common.ObjectMetadata, error) {
 	body, ok := resp.Body()
 	if !ok || body == nil {
-		return nil, errors.New("response missing body")
+		return nil, common.ErrEmptyJSONHTTPResponse
 	}
 
 	// Get the properties object which has all the fields.

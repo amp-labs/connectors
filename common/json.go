@@ -164,7 +164,6 @@ func UnmarshalJSON[T any](rsp *JSONHTTPResponse) (*T, error) {
 	var data T
 
 	if len(rsp.bodyBytes) == 0 {
-
 		// Empty struct.
 		return &data, nil
 	}

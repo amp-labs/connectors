@@ -107,27 +107,27 @@ func TestUnmarshalJSON(t *testing.T) { // nolint:funlen
 		},
 	}
 
-	for _, tt := range tests {
+	for _, ttc := range tests {
 		// nolint:varnamelen
-		t.Run(tt.name, func(t *testing.T) {
+		t.Run(ttc.name, func(t *testing.T) {
 			t.Parallel()
 
 			resp := &http.Response{
 				Header: http.Header{
-					"Content-Type": []string{tt.contentType},
+					"Content-Type": []string{ttc.contentType},
 				},
-				Body: io.NopCloser(bytes.NewReader(tt.input)),
+				Body: io.NopCloser(bytes.NewReader(ttc.input)),
 			}
 
-			output, err := ParseJSONResponse(resp, tt.input)
+			output, err := ParseJSONResponse(resp, ttc.input)
 			if err != nil {
-				testutils.CheckErrors(t, tt.name, []error{tt.expectedErr}, err)
+				testutils.CheckErrors(t, ttc.name, []error{ttc.expectedErr}, err)
 
 				return
 			}
 
 			story, outErr := UnmarshalJSON[Story](output)
-			testutils.CheckOutputWithError(t, tt.name, tt.expected, tt.expectedErr, story, outErr)
+			testutils.CheckOutputWithError(t, ttc.name, ttc.expected, ttc.expectedErr, story, outErr)
 		})
 	}
 }
