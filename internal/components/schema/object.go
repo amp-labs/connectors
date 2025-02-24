@@ -10,31 +10,31 @@ import (
 )
 
 var (
-	FetchTypeParallel = "parallel" // nolint:gochecknoglobals
-	FetchTypeSerial   = "serial"   // nolint:gochecknoglobals
+	FetchModeParallel = "parallel" // nolint:gochecknoglobals
+	FetchModeSerial   = "serial"   // nolint:gochecknoglobals
 
 	ErrInvalidFetchType = errors.New("invalid fetch type")
 	ErrNoMetadata       = errors.New("no metadata found")
 )
 
-// IndividualSchemaProvider implements Provider by fetching each object individually.
-type IndividualSchemaProvider struct {
+// ObjectSchemaProvider implements Provider by fetching each object individually.
+type ObjectSchemaProvider struct {
 	operation *operations.SingleObjectMetadataOperation
 	fetchType string
 }
 
-func NewIndividualSchemaProvider(
+func NewObjectSchemaProvider(
 	client common.AuthenticatedHTTPClient,
 	fetchType string,
 	list operations.SingleObjectMetadataHandlers,
-) *IndividualSchemaProvider {
-	return &IndividualSchemaProvider{
+) *ObjectSchemaProvider {
+	return &ObjectSchemaProvider{
 		operation: operations.NewHTTPOperation(client, list),
 		fetchType: fetchType,
 	}
 }
 
-func (p *IndividualSchemaProvider) ListObjectMetadata(
+func (p *ObjectSchemaProvider) ListObjectMetadata(
 	ctx context.Context,
 	objects []string,
 ) (*common.ListObjectMetadataResult, error) {
@@ -49,9 +49,9 @@ func (p *IndividualSchemaProvider) ListObjectMetadata(
 	}
 
 	switch p.fetchType {
-	case FetchTypeParallel:
+	case FetchModeParallel:
 		return p.fetchParallel(ctx, objects)
-	case FetchTypeSerial:
+	case FetchModeSerial:
 		return p.fetchSerial(ctx, objects)
 	default:
 		return nil, fmt.Errorf("%w: %s", ErrInvalidFetchType, p.fetchType)
@@ -68,7 +68,7 @@ type objectMetadataError struct {
 	Error      error
 }
 
-func (p *IndividualSchemaProvider) fetchParallel(
+func (p *ObjectSchemaProvider) fetchParallel(
 	ctx context.Context,
 	objects []string,
 ) (*common.ListObjectMetadataResult, error) {
@@ -125,7 +125,7 @@ func (p *IndividualSchemaProvider) fetchParallel(
 	return result, nil
 }
 
-func (p *IndividualSchemaProvider) fetchSerial(
+func (p *ObjectSchemaProvider) fetchSerial(
 	ctx context.Context,
 	objects []string,
 ) (*common.ListObjectMetadataResult, error) {

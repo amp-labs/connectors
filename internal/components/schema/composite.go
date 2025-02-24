@@ -22,7 +22,7 @@ func NewCompositeSchemaProvider(schemaProviders ...components.SchemaProvider) *C
 	}
 }
 
-// GetMetadata tries each schema provider in order, and returns the best result with the least errors.
+// ListObjectMetadata tries each schema provider in order, and returns the best result with the least errors.
 func (c *CompositeSchemaProvider) ListObjectMetadata(
 	ctx context.Context,
 	objects []string,
@@ -69,18 +69,13 @@ func (c *CompositeSchemaProvider) ListObjectMetadata(
 	return bestResult, nil
 }
 
-// safeGetMetadata is a helper function that safely executes the provider's GetMetadata method
+// safeGetMetadata is a helper function that safely executes the provider's ListObjectMetadata method
 // and recovers from panics.
 func safeGetMetadata(
 	schemaProvider components.SchemaProvider,
 	ctx context.Context,
 	objects []string,
 ) (*common.ListObjectMetadataResult, error) {
-	var (
-		result *common.ListObjectMetadataResult
-		err    error
-	)
-
 	defer func() {
 		if r := recover(); r != nil {
 			slog.Error("Schema provider panicked",
@@ -89,7 +84,5 @@ func safeGetMetadata(
 		}
 	}()
 
-	result, err = schemaProvider.ListObjectMetadata(ctx, objects)
-
-	return result, err
+	return schemaProvider.ListObjectMetadata(ctx, objects)
 }

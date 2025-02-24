@@ -8,21 +8,21 @@ import (
 	"github.com/amp-labs/connectors/internal/components/operations"
 )
 
-// BatchSchemaProvider implements Provider using a single batch request.
-type BatchSchemaProvider struct {
+// AggregateSchemaProvider gets the schema for multiple objects using a single batch request.
+type AggregateSchemaProvider struct {
 	operation *operations.ListObjectMetadataOperation
 }
 
-func NewBatchSchemaProvider(
+func NewAggregateSchemaProvider(
 	client common.AuthenticatedHTTPClient,
 	list operations.ListObjectMetadataHandlers,
-) *BatchSchemaProvider {
-	return &BatchSchemaProvider{
+) *AggregateSchemaProvider {
+	return &AggregateSchemaProvider{
 		operation: operations.NewHTTPOperation(client, list),
 	}
 }
 
-func (p *BatchSchemaProvider) ListObjectMetadata(
+func (p *AggregateSchemaProvider) ListObjectMetadata(
 	ctx context.Context,
 	objects []string,
 ) (*common.ListObjectMetadataResult, error) {
