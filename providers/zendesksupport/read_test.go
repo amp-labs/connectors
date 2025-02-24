@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -141,6 +142,66 @@ func TestReadZendeskSupportModule(t *testing.T) { //nolint:funlen,gocognit,cyclo
 				NextPage: "https://d3v-ampersand.zendesk.com/api/v2/tickets.json" +
 					"?page%5Bafter%5D=eyJvIjoibmljZV9pZCIsInYiOiJhUUVBQUFBQUFBQUEifQ%3D%3D&page%5Bsize%5D=1",
 				Done: false,
+			},
+			ExpectedErrs: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		// nolint:varnamelen
+		t.Run(tt.Name, func(t *testing.T) {
+			t.Parallel()
+
+			tt.Run(t, func() (connectors.ReadConnector, error) {
+				return constructTestConnector(tt.Server.URL, ModuleTicketing)
+			})
+		})
+	}
+}
+
+func TestIncrementalReadZendeskSupportModule(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
+	t.Parallel()
+
+	responseUsersFirstPage := testutils.DataFromFile(t, "read-users-1-first-page.json")
+
+	tests := []testroutines.Read{
+		{
+			Name: "",
+			Input: common.ReadParams{
+				ObjectName: "attribute_values",
+				Fields:     connectors.Fields("id"),
+				Since:      time.Unix(1726674883, 0),
+			},
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseUsersFirstPage),
+			}.Server(),
+			Comparator: testroutines.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     0,
+				NextPage: "",
+				Done:     false,
+			},
+			ExpectedErrs: nil,
+		},
+
+		{
+			Name: "",
+			Input: common.ReadParams{
+				ObjectName: "attribute_values",
+				Fields:     connectors.Fields("id"),
+				NextPage:   "", // TODO
+				Since:      time.Unix(1726674883, 0),
+			},
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseUsersFirstPage),
+			}.Server(),
+			Comparator: testroutines.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     0,
+				NextPage: "",
+				Done:     false,
 			},
 			ExpectedErrs: nil,
 		},

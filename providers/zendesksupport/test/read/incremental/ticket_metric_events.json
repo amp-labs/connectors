@@ -1,0 +1,16 @@
+{
+  "ticket_metric_events": [
+    {
+      "id": 26363626661651,
+      "ticket_id": 1,
+      "metric": "agent_work_time",
+      "instance_id": 0,
+      "type": "measure",
+      "time": "2024-02-15T16:23:07Z"
+    }
+  ],
+  "next_page": "https://d3v-ampersand.zendesk.com/api/v2/incremental/ticket_metric_events.json?start_time=1735108434",
+  "count": 341,
+  "end_of_stream": true,
+  "end_time": 1735108434
+}

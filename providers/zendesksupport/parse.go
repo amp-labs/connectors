@@ -5,6 +5,7 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
+// https://developer.zendesk.com/api-reference/ticketing/ticket-management/incremental_exports/#json-format
 func getNextRecordsURL(node *ajson.Node) (string, error) {
 	nextPage, err := jsonquery.New(node, "links").StrWithDefault("next", "")
 	if err != nil {
@@ -17,5 +18,14 @@ func getNextRecordsURL(node *ajson.Node) (string, error) {
 
 	// Next page can be found under different location.
 	// This format was noticed via Zendesk HelpCenter module.
-	return jsonquery.New(node).StrWithDefault("next_page", "")
+	nextPage, err = jsonquery.New(node).StrWithDefault("next_page", "")
+	if err != nil {
+		return "", err
+	}
+
+	if len(nextPage) != 0 {
+		return nextPage, nil
+	}
+
+	return jsonquery.New(node).StrWithDefault("after_url", "")
 }

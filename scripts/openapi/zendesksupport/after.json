@@ -1,0 +1,235 @@
+[
+  {
+    "": "/api/v2/incremental/organizations",
+    "organizations": {
+      "displayName": "Organizations",
+      "path": "/incremental/organizations",
+      "responseKey": "organizations",
+      "fields": {
+        "created_at": "created_at",
+        "details": "details",
+        "domain_names": "domain_names",
+        "external_id": "external_id",
+        "group_id": "group_id",
+        "id": "id",
+        "name": "name",
+        "notes": "notes",
+        "organization_fields": "organization_fields",
+        "shared_comments": "shared_comments",
+        "shared_tickets": "shared_tickets",
+        "tags": "tags",
+        "updated_at": "updated_at",
+        "url": "url"
+      },
+      "custom": {
+        "pagination": "cursor"
+      }
+    }
+  },
+  {
+    "": "/api/v2/incremental/routing/attribute_values",
+    "attribute_values": {
+      "displayName": "Incremental Skill Based Routing",
+      "path": "/incremental/routing/attribute_values",
+      "responseKey": "attribute_values",
+      "fields": {
+        "attribute_id": "attribute_id",
+        "id": "id",
+        "name": "name",
+        "time": "time",
+        "type": "type"
+      },
+      "custom": {}
+    }
+  },
+  {
+    "": "/api/v2/incremental/routing/attributes",
+    "attributes": {
+      "displayName": "Incremental Skill Based Routing",
+      "path": "/incremental/routing/attributes",
+      "responseKey": "attributes",
+      "fields": {
+        "id": "id",
+        "name": "name",
+        "time": "time",
+        "type": "type"
+      },
+      "custom": {
+        "pagination": "offset"
+      }
+    }
+  },
+  {
+    "": "/api/v2/incremental/routing/instance_values",
+    "instance_values": {
+      "displayName": "Incremental Skill Based Routing",
+      "path": "/incremental/routing/instance_values",
+      "responseKey": "instance_values",
+      "fields": {
+        "attribute_value_id": "attribute_value_id",
+        "id": "id",
+        "instance_id": "instance_id",
+        "time": "time",
+        "type": "type"
+      },
+      "custom": {}
+    }
+  },
+  {
+    "": "/api/v2/incremental/ticket_events",
+    "ticket_events": {
+      "displayName": "Ticket Events",
+      "path": "/incremental/ticket_events",
+      "responseKey": "ticket_events",
+      "fields": {
+        "id": "id",
+        "instance_id": "instance_id",
+        "metric": "metric",
+        "ticket_id": "ticket_id",
+        "time": "time",
+        "type": "type"
+      },
+      "custom": {}
+    }
+  },
+  {
+    "": "/api/v2/incremental/ticket_metric_events",
+    "ticket_metric_events": {
+      "displayName": "Ticket Metric Events",
+      "path": "/incremental/ticket_metric_events",
+      "responseKey": "ticket_metric_events",
+      "fields": {
+        "id": "id",
+        "instance_id": "instance_id",
+        "metric": "metric",
+        "ticket_id": "ticket_id",
+        "time": "time",
+        "type": "type"
+      },
+      "custom": {}
+    }
+  },
+  {
+    "": "/api/v2/incremental/tickets",
+    "tickets": {
+      "displayName": "Tickets",
+      "path": "/incremental/tickets",
+      "responseKey": "tickets",
+      "fields": {
+        "allow_attachments": "allow_attachments",
+        "allow_channelback": "allow_channelback",
+        "assignee_email": "assignee_email",
+        "assignee_id": "assignee_id",
+        "attribute_value_ids": "attribute_value_ids",
+        "brand_id": "brand_id",
+        "collaborator_ids": "collaborator_ids",
+        "collaborators": "collaborators",
+        "comment": "comment",
+        "created_at": "created_at",
+        "custom_fields": "custom_fields",
+        "custom_status_id": "custom_status_id",
+        "description": "description",
+        "due_at": "due_at",
+        "email_cc_ids": "email_cc_ids",
+        "email_ccs": "email_ccs",
+        "external_id": "external_id",
+        "follower_ids": "follower_ids",
+        "followers": "followers",
+        "followup_ids": "followup_ids",
+        "forum_topic_id": "forum_topic_id",
+        "from_messaging_channel": "from_messaging_channel",
+        "group_id": "group_id",
+        "has_incidents": "has_incidents",
+        "id": "id",
+        "is_public": "is_public",
+        "macro_id": "macro_id",
+        "macro_ids": "macro_ids",
+        "metadata": "metadata",
+        "organization_id": "organization_id",
+        "priority": "priority",
+        "problem_id": "problem_id",
+        "raw_subject": "raw_subject",
+        "recipient": "recipient",
+        "requester": "requester",
+        "requester_id": "requester_id",
+        "safe_update": "safe_update",
+        "satisfaction_rating": "satisfaction_rating",
+        "sharing_agreement_ids": "sharing_agreement_ids",
+        "status": "status",
+        "subject": "subject",
+        "submitter_id": "submitter_id",
+        "tags": "tags",
+        "ticket_form_id": "ticket_form_id",
+        "type": "type",
+        "updated_at": "updated_at",
+        "updated_stamp": "updated_stamp",
+        "url": "url",
+        "via": "via",
+        "via_followup_source_id": "via_followup_source_id",
+        "via_id": "via_id",
+        "voice_comment": "voice_comment"
+      },
+      "custom": {
+        "pagination": "cursor"
+      }
+    }
+  },
+  {
+    "": "/api/v2/incremental/tickets/cursor"
+  },
+  {
+    "": "/api/v2/incremental/users",
+    "users": {
+      "displayName": "Users",
+      "path": "/incremental/users",
+      "responseKey": "users",
+      "fields": {
+        "active": "active",
+        "alias": "alias",
+        "chat_only": "chat_only",
+        "created_at": "created_at",
+        "custom_role_id": "custom_role_id",
+        "default_group_id": "default_group_id",
+        "details": "details",
+        "email": "email",
+        "external_id": "external_id",
+        "iana_time_zone": "iana_time_zone",
+        "id": "id",
+        "last_login_at": "last_login_at",
+        "locale": "locale",
+        "locale_id": "locale_id",
+        "moderator": "moderator",
+        "name": "name",
+        "notes": "notes",
+        "only_private_comments": "only_private_comments",
+        "organization_id": "organization_id",
+        "phone": "phone",
+        "photo": "photo",
+        "remote_photo_url": "remote_photo_url",
+        "report_csv": "report_csv",
+        "restricted_agent": "restricted_agent",
+        "role": "role",
+        "role_type": "role_type",
+        "shared": "shared",
+        "shared_agent": "shared_agent",
+        "shared_phone_number": "shared_phone_number",
+        "signature": "signature",
+        "suspended": "suspended",
+        "tags": "tags",
+        "ticket_restriction": "ticket_restriction",
+        "time_zone": "time_zone",
+        "two_factor_auth_enabled": "two_factor_auth_enabled",
+        "updated_at": "updated_at",
+        "url": "url",
+        "user_fields": "user_fields",
+        "verified": "verified"
+      },
+      "custom": {
+        "pagination": "cursor"
+      }
+    }
+  },
+  {
+    "": "/api/v2/incremental/users/cursor"
+  }
+]

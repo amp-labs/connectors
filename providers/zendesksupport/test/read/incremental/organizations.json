@@ -1,0 +1,25 @@
+{
+  "organizations": [
+    {
+      "url": "https://d3v-ampersand.zendesk.com/api/v2/organizations/26363643450387.json",
+      "id": 26363643450387,
+      "name": "Ampersand",
+      "shared_tickets": false,
+      "shared_comments": false,
+      "external_id": null,
+      "created_at": "2024-02-15T16:23:04Z",
+      "updated_at": "2024-02-15T16:23:04Z",
+      "domain_names": [],
+      "details": null,
+      "notes": null,
+      "group_id": null,
+      "tags": [],
+      "organization_fields": {},
+      "deleted_at": null
+    }
+  ],
+  "next_page": "https://d3v-ampersand.zendesk.com/api/v2/incremental/organizations.json?start_time=1708014184",
+  "count": 1,
+  "end_of_stream": true,
+  "end_time": 1708014184
+}

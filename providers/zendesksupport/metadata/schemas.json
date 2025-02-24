@@ -183,19 +183,35 @@
             "pagination": "cursor"
           }
         },
-        "attributes": {
-          "displayName": "Attributes",
-          "path": "/routing/attributes",
-          "responseKey": "attributes",
+        "attribute_values": {
+          "displayName": "Incremental Skill Based Routing",
+          "path": "/incremental/routing/attribute_values",
+          "responseKey": "attribute_values",
           "fields": {
-            "created_at": "created_at",
+            "attribute_id": "attribute_id",
             "id": "id",
             "name": "name",
-            "updated_at": "updated_at",
-            "url": "url"
+            "time": "time",
+            "type": "type"
           },
           "custom": {
-            "pagination": "offset"
+            "pagination": "time",
+            "incremental": true
+          }
+        },
+        "attributes": {
+          "displayName": "Incremental Skill Based Routing",
+          "path": "/incremental/routing/attributes",
+          "responseKey": "attributes",
+          "fields": {
+            "id": "id",
+            "name": "name",
+            "time": "time",
+            "type": "type"
+          },
+          "custom": {
+            "pagination": "time",
+            "incremental": true
           }
         },
         "audit_logs": {
@@ -454,6 +470,22 @@
             "pagination": "cursor"
           }
         },
+        "instance_values": {
+          "displayName": "Incremental Skill Based Routing",
+          "path": "/incremental/routing/instance_values",
+          "responseKey": "instance_values",
+          "fields": {
+            "attribute_value_id": "attribute_value_id",
+            "id": "id",
+            "instance_id": "instance_id",
+            "time": "time",
+            "type": "type"
+          },
+          "custom": {
+            "pagination": "time",
+            "incremental": true
+          }
+        },
         "job_statuses": {
           "displayName": "Job Statuses",
           "path": "/job_statuses",
@@ -599,7 +631,7 @@
         },
         "organizations": {
           "displayName": "Organizations",
-          "path": "/organizations",
+          "path": "/incremental/organizations",
           "responseKey": "organizations",
           "fields": {
             "created_at": "created_at",
@@ -618,7 +650,9 @@
             "url": "url"
           },
           "custom": {
-            "pagination": "cursor"
+            "pagination": "time",
+            "pageSize": "per_page",
+            "incremental": true
           }
         },
         "queues": {
@@ -937,6 +971,24 @@
             "pagination": "cursor"
           }
         },
+        "ticket_events": {
+          "displayName": "Ticket Events",
+          "path": "/incremental/ticket_events",
+          "responseKey": "ticket_events",
+          "fields": {
+            "id": "id",
+            "instance_id": "instance_id",
+            "metric": "metric",
+            "ticket_id": "ticket_id",
+            "time": "time",
+            "type": "type"
+          },
+          "custom": {
+            "pagination": "time",
+            "pageSize": "per_page",
+            "incremental": true
+          }
+        },
         "ticket_fields": {
           "displayName": "Ticket Fields",
           "path": "/ticket_fields",
@@ -1004,6 +1056,23 @@
             "pagination": "offset"
           }
         },
+        "ticket_metric_events": {
+          "displayName": "Ticket Metric Events",
+          "path": "/incremental/ticket_metric_events",
+          "responseKey": "ticket_metric_events",
+          "fields": {
+            "id": "id",
+            "instance_id": "instance_id",
+            "metric": "metric",
+            "ticket_id": "ticket_id",
+            "time": "time",
+            "type": "type"
+          },
+          "custom": {
+            "pagination": "time",
+            "incremental": true
+          }
+        },
         "ticket_metrics": {
           "displayName": "Ticket Metrics",
           "path": "/ticket_metrics",
@@ -1040,7 +1109,7 @@
         },
         "tickets": {
           "displayName": "Tickets",
-          "path": "/tickets",
+          "path": "/incremental/tickets/cursor",
           "responseKey": "tickets",
           "fields": {
             "allow_attachments": "allow_attachments",
@@ -1097,7 +1166,9 @@
             "voice_comment": "voice_comment"
           },
           "custom": {
-            "pagination": "cursor"
+            "pagination": "cursor",
+            "pageSize": "per_page",
+            "incremental": true
           }
         },
         "trigger_categories": {
@@ -1170,7 +1241,7 @@
         },
         "users": {
           "displayName": "Users",
-          "path": "/users",
+          "path": "/incremental/users/cursor",
           "responseKey": "users",
           "fields": {
             "active": "active",
@@ -1214,7 +1285,9 @@
             "verified": "verified"
           },
           "custom": {
-            "pagination": "cursor"
+            "pagination": "cursor",
+            "pageSize": "per_page",
+            "incremental": true
           }
         },
         "views": {
