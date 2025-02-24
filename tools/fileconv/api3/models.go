@@ -26,13 +26,13 @@ func (s Document) GetPaths() map[string]*openapi3.PathItem {
 	return paths.Map()
 }
 
-type PathItem struct {
+type PathItem[C any] struct {
 	objectName string
 	urlPath    string
 	delegate   *openapi3.PathItem
 }
 
-func (p PathItem) RetrieveSchemaOperation(
+func (p PathItem[C]) RetrieveSchemaOperation(
 	operationName string,
 	displayNameOverride map[string]string,
 	locator ObjectArrayLocator,
@@ -41,7 +41,7 @@ func (p PathItem) RetrieveSchemaOperation(
 	propertyFlattener PropertyFlattener,
 	mime string,
 	autoSelectArrayItem bool,
-) (*metadatadef.Schema, bool, error) {
+) (*metadatadef.ExtendedSchema[C], bool, error) {
 	operation, _ := p.selectOperation(operationName)
 	if operation == nil {
 		return nil, false, nil
@@ -73,7 +73,7 @@ func (p PathItem) RetrieveSchemaOperation(
 		slog.Warn("not an array of objects", "object", p.objectName)
 	}
 
-	return &metadatadef.Schema{
+	return &metadatadef.ExtendedSchema[C]{
 		ObjectName:  p.objectName,
 		DisplayName: displayName,
 		Fields:      fields,
@@ -84,7 +84,7 @@ func (p PathItem) RetrieveSchemaOperation(
 	}, true, nil
 }
 
-func (p PathItem) selectOperation(operationName string) (*openapi3.Operation, bool) {
+func (p PathItem[C]) selectOperation(operationName string) (*openapi3.Operation, bool) {
 	switch operationName {
 	case http.MethodGet:
 		return p.delegate.Get, p.delegate.Get != nil

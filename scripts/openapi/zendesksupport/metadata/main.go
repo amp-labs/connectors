@@ -16,9 +16,9 @@ import (
 )
 
 func main() {
-	schemas := staticschema.NewMetadata[staticschema.FieldMetadataMapV1]()
+	schemas := staticschema.NewExtendedMetadata[staticschema.FieldMetadataMapV1, metadata.CustomProperties]()
 	registry := datautils.NamedLists[string]{}
-	lists := datautils.IndexedLists[common.ModuleID, metadatadef.Schema]{}
+	lists := datautils.IndexedLists[common.ModuleID, metadatadef.ExtendedSchema[metadata.CustomProperties]]{}
 
 	lists.Add(zendesksupport.ModuleTicketing, support.Objects()...)
 	lists.Add(zendesksupport.ModuleHelpCenter, helpcenter.Objects()...)
@@ -36,7 +36,7 @@ func main() {
 				schemas.Add(module, object.ObjectName, object.DisplayName, object.URLPath, object.ResponseKey,
 					staticschema.FieldMetadataMapV1{
 						field.Name: field.Name,
-					}, nil)
+					}, nil, object.Custom)
 			}
 
 			for _, queryParam := range object.QueryParams {

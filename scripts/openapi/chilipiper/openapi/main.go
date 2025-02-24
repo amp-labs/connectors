@@ -130,7 +130,7 @@ func constructProperties(data OpenAPI, schemas map[string]string) map[string][]s
 }
 
 func saveSchemas(properties map[string][]string) {
-	objectMetadata := make(map[string]staticschema.Object[staticschema.FieldMetadataMapV1])
+	objectMetadata := make(map[string]staticschema.Object[staticschema.FieldMetadataMapV1, any])
 
 	for object, flds := range properties {
 		fldsMap := make(map[string]string)
@@ -138,15 +138,15 @@ func saveSchemas(properties map[string][]string) {
 			fldsMap[fld] = fld
 		}
 
-		om := staticschema.Object[staticschema.FieldMetadataMapV1]{
+		om := staticschema.Object[staticschema.FieldMetadataMapV1, any]{
 			DisplayName: object,
 			Fields:      fldsMap,
 		}
 		objectMetadata[object] = om
 	}
 
-	goutils.MustBeNil(metadata.FileManager.SaveSchemas(&staticschema.Metadata[staticschema.FieldMetadataMapV1]{
-		Modules: map[common.ModuleID]staticschema.Module[staticschema.FieldMetadataMapV1]{
+	goutils.MustBeNil(metadata.FileManager.SaveSchemas(&staticschema.Metadata[staticschema.FieldMetadataMapV1, any]{
+		Modules: map[common.ModuleID]staticschema.Module[staticschema.FieldMetadataMapV1, any]{
 			staticschema.RootModuleID: {
 				Objects: objectMetadata,
 			},

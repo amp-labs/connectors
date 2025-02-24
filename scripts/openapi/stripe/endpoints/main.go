@@ -12,7 +12,7 @@ func main() {
 	explorer, err := openapi.FileManager.GetExplorer()
 	goutils.MustBeNil(err)
 
-	utilsopenapi.PrintWriteEndpointsSummary(utilsopenapi.WriteExplorerArgs{
+	utilsopenapi.PrintWriteEndpointsSummary(utilsopenapi.WriteExplorerArgs[any]{
 		Explorer: explorer,
 	})
 

@@ -12,5 +12,5 @@ var (
 	//go:embed swagger.yaml
 	apiFile []byte
 
-	FileManager = api2.NewOpenapiFileManager(apiFile) // nolint:gochecknoglobals
+	FileManager = api2.NewOpenapiFileManager[any](apiFile) // nolint:gochecknoglobals
 )

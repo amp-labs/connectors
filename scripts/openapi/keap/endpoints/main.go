@@ -14,7 +14,7 @@ func main() {
 	exp2, err := openapi.Version2FileManager.GetExplorer()
 	goutils.MustBeNil(err)
 
-	utilsopenapi.PrintWriteEndpointsSummary([]utilsopenapi.WriteExplorerArgs{{
+	utilsopenapi.PrintWriteEndpointsSummary([]utilsopenapi.WriteExplorerArgs[any]{{
 		Name:     "file1",
 		Explorer: exp1,
 	}, {

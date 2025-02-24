@@ -7,23 +7,23 @@ import (
 	"github.com/amp-labs/connectors/internal/staticschema"
 )
 
-// OpenAPIProvider implements Provider using OpenAPI schemas.
-type OpenAPISchemaProvider[F staticschema.FieldMetadataMap] struct {
+// OpenAPISchemaProvider implements Provider using OpenAPI schemas.
+type OpenAPISchemaProvider[F staticschema.FieldMetadataMap, C any] struct {
 	module  common.ModuleID
-	schemas *staticschema.Metadata[F]
+	schemas *staticschema.Metadata[F, C]
 }
 
-func NewOpenAPISchemaProvider[F staticschema.FieldMetadataMap](
+func NewOpenAPISchemaProvider[F staticschema.FieldMetadataMap, C any](
 	module common.ModuleID,
-	schemas *staticschema.Metadata[F],
-) *OpenAPISchemaProvider[F] {
-	return &OpenAPISchemaProvider[F]{
+	schemas *staticschema.Metadata[F, C],
+) *OpenAPISchemaProvider[F, C] {
+	return &OpenAPISchemaProvider[F, C]{
 		module:  module,
 		schemas: schemas,
 	}
 }
 
-func (p *OpenAPISchemaProvider[F]) ListObjectMetadata(
+func (p *OpenAPISchemaProvider[F, C]) ListObjectMetadata(
 	ctx context.Context,
 	objects []string,
 ) (*common.ListObjectMetadataResult, error) {
