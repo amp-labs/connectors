@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"slices"
+	"strings"
 )
 
 // Parameters can be used to pass input parameters to the connector.
@@ -96,6 +97,8 @@ type metadataValidator interface {
 	validateMetadata(parameters Parameters) error
 }
 
+// RequireMetadata defines required metadata for validation.
+// Metadata keys are case-insensitive.
 type RequireMetadata struct {
 	ExpectedMetadataKeys []string
 }
@@ -105,8 +108,14 @@ func (m RequireMetadata) validateMetadata(parameters Parameters) error {
 		return ErrMissingMetadata
 	}
 
+	metadataLower := make(map[string]string)
+	for k, v := range parameters.Metadata {
+		metadataLower[strings.ToLower(k)] = v
+	}
+
 	for _, key := range m.ExpectedMetadataKeys {
-		if parameters.Metadata[key] == "" {
+		lowerKey := strings.ToLower(key)
+		if metadataLower[lowerKey] == "" {
 			return fmt.Errorf("%w: expected key %s not found", ErrMissingMetadata, key)
 		}
 	}
@@ -130,7 +139,7 @@ func (r RequireModule) validateModule(parameters Parameters) error {
 	}
 
 	if !slices.Contains(r.ExpectedModules, parameters.Module) {
-		return ErrMissingModule
+		return ErrUnsupportedModule
 	}
 
 	return nil

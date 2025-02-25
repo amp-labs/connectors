@@ -14,6 +14,9 @@ var (
 
 	// ErrMissingModule can be returned when connector cannot resolve ModuleID.
 	ErrMissingModule = errors.New("module not found")
+
+	// ErrUnsupportedModule returned when provided module is not supported.
+	ErrUnsupportedModule = errors.New("provided module is not supported")
 )
 
 type ModuleID string
