@@ -1,0 +1,209 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "/api/v",
+      "objects": {
+        "campaigns": {
+          "displayName": "Campaigns",
+          "path": "2/campaigns.json",
+          "responseKey": "campaigns",
+          "fields": {
+            "archived": "archived",
+            "author": "author",
+            "exec_term": "exec_term",
+            "holdout_percentage": "holdout_percentage",
+            "name": "name",
+            "next_execution_scheduled_at": "next_execution_scheduled_at",
+            "segment_name": "segment_name",
+            "segment_uuid": "segment_uuid",
+            "startdate": "startdate",
+            "status": "status",
+            "updated_at": "updated_at",
+            "uuid": "uuid"
+          }
+        },
+        "catalogs": {
+          "displayName": "Catalogs",
+          "path": "1/catalogs",
+          "responseKey": "catalogs",
+          "fields": {
+            "access_key": "access_key",
+            "archived": "archived",
+            "author": "author",
+            "bucket": "bucket",
+            "catalog_file_name": "catalog_file_name",
+            "catalog_headers": "catalog_headers",
+            "catalog_type": "catalog_type",
+            "category_options": "category_options",
+            "default_root_category": "default_root_category",
+            "end_at": "end_at",
+            "error_access_key": "error_access_key",
+            "file_options": "file_options",
+            "file_settings": "file_settings",
+            "host": "host",
+            "is_active": "is_active",
+            "is_passive": "is_passive",
+            "last_catalog_file": "last_catalog_file",
+            "last_processed": "last_processed",
+            "login": "login",
+            "name": "name",
+            "parent_sku_column_name": "parent_sku_column_name",
+            "password": "password",
+            "path": "path",
+            "port": "port",
+            "product_brand_column_name": "product_brand_column_name",
+            "product_category_column_name": "product_category_column_name",
+            "product_count": "product_count",
+            "product_end_date_column_name": "product_end_date_column_name",
+            "product_id_column_name": "product_id_column_name",
+            "product_image_column_name": "product_image_column_name",
+            "product_inventory_column_name": "product_inventory_column_name",
+            "product_msrp_column_name": "product_msrp_column_name",
+            "product_name_column_name": "product_name_column_name",
+            "product_price_column_name": "product_price_column_name",
+            "product_start_date_column_name": "product_start_date_column_name",
+            "product_tag_column_name": "product_tag_column_name",
+            "product_url_column_name": "product_url_column_name",
+            "s3_access_key": "s3_access_key",
+            "s3_aws_region": "s3_aws_region",
+            "s3_path": "s3_path",
+            "secret_access_key": "secret_access_key",
+            "sftp_host": "sftp_host",
+            "sftp_login": "sftp_login",
+            "sftp_password": "sftp_password",
+            "sftp_path": "sftp_path",
+            "sftp_port": "sftp_port",
+            "start_at": "start_at",
+            "status": "status",
+            "tag_options": "tag_options",
+            "update_frequency": "update_frequency",
+            "upload_method": "upload_method",
+            "url": "url",
+            "uuid": "uuid"
+          }
+        },
+        "email_templates": {
+          "displayName": "Email Templates",
+          "path": "1/email_templates.json",
+          "responseKey": "template",
+          "fields": {
+            "author": "author",
+            "created_at": "created_at",
+            "name": "name",
+            "resource": "resource",
+            "updated_at": "updated_at",
+            "uuid": "uuid"
+          }
+        },
+        "external_fetches": {
+          "displayName": "External Fetches",
+          "path": "1/external_fetches.json",
+          "responseKey": "template",
+          "fields": {
+            "author": "author",
+            "created_at": "created_at",
+            "name": "name",
+            "resource": "resource",
+            "updated_at": "updated_at",
+            "uuid": "uuid"
+          }
+        },
+        "onsite_slots.json": {
+          "displayName": "Onsite Slots Json",
+          "path": "1/onsite_slots.json",
+          "responseKey": "",
+          "fields": {
+            "format": "format",
+            "name": "name",
+            "uuid": "uuid"
+          }
+        },
+        "push_templates": {
+          "displayName": "Push Templates",
+          "path": "1/push_templates.json",
+          "responseKey": "template",
+          "fields": {
+            "author": "author",
+            "created_at": "created_at",
+            "name": "name",
+            "resource": "resource",
+            "updated_at": "updated_at",
+            "uuid": "uuid"
+          }
+        },
+        "seed_lists": {
+          "displayName": "Seed Lists",
+          "path": "1/custom_user_lists/seed_lists",
+          "responseKey": "",
+          "fields": {
+            "account_id": "account_id",
+            "author": "author",
+            "created_at": "created_at",
+            "deleted_at": "deleted_at",
+            "description": "description",
+            "filename": "filename",
+            "filesize": "filesize",
+            "id": "id",
+            "import_method": "import_method",
+            "is_exported": "is_exported",
+            "is_seed_list": "is_seed_list",
+            "source": "source",
+            "status": "status",
+            "updated_at": "updated_at",
+            "user_count": "user_count",
+            "user_id": "user_id",
+            "uuid": "uuid",
+            "version": "version"
+          }
+        },
+        "segments/list": {
+          "displayName": "Segments/List",
+          "path": "1/segments/list",
+          "responseKey": "segments",
+          "fields": {
+            "approxusers": "approxusers",
+            "approxusers_updated_at": "approxusers_updated_at",
+            "created_at": "created_at",
+            "email_users": "email_users",
+            "mixin_key": "mixin_key",
+            "name": "name",
+            "push_users": "push_users",
+            "sms_users": "sms_users",
+            "status": "status",
+            "updated_at": "updated_at",
+            "uuid": "uuid",
+            "version": "version"
+          }
+        },
+        "sms_templates": {
+          "displayName": "Sms Templates",
+          "path": "1/sms_templates.json",
+          "responseKey": "",
+          "fields": {
+            "archived": "archived",
+            "author": "author",
+            "created_at": "created_at",
+            "is_destroy": "is_destroy",
+            "name": "name",
+            "updated_at": "updated_at",
+            "uuid": "uuid"
+          }
+        },
+        "tag_contexts/list": {
+          "displayName": "Tag Contexts/List",
+          "path": "1/tag_contexts/list",
+          "responseKey": "",
+          "fields": {
+            "account_id": "account_id",
+            "allowed_tags": "allowed_tags",
+            "color": "color",
+            "description": "description",
+            "id": "id",
+            "tagged_items": "tagged_items"
+          }
+        }
+      }
+    }
+  }
+}
