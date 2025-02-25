@@ -12,6 +12,19 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
+/*
+Response Schema for 200 Status OK
+{
+	"_embedded":{
+		"objectName":[...]
+	}
+	"_links":{
+		"first":{...},
+		"next":{...}
+	}
+}
+*/
+
 type readResponse struct {
 	Embedded map[string]any `json:"_embedded"` //nolint:tagliatelle
 	Links    map[string]any `json:"_links"`    //nolint:tagliatelle
@@ -104,8 +117,6 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal record data: %w", err)
 	}
-
-	// Set the content type header to `application/json`
 
 	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
 }
