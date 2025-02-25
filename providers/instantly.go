@@ -1,7 +1,9 @@
 package providers
 
-const Instantly Provider = "instantly"
-const InstantlyAI Provider = "instantlyAI"
+const (
+	Instantly   Provider = "instantly"
+	InstantlyAI Provider = "instantlyAI"
+)
 
 //nolint:funlen
 func init() {
