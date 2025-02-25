@@ -34,32 +34,6 @@
             "type": "type"
           }
         },
-        "accounts_financial_connections": {
-          "displayName": "Financial Connection Accounts",
-          "path": "/financial_connections/accounts",
-          "responseKey": "data",
-          "fields": {
-            "account_holder": "account_holder",
-            "balance": "balance",
-            "balance_refresh": "balance_refresh",
-            "category": "category",
-            "created": "created",
-            "display_name": "display_name",
-            "id": "id",
-            "institution_name": "institution_name",
-            "last4": "last4",
-            "livemode": "livemode",
-            "object": "object",
-            "ownership": "ownership",
-            "ownership_refresh": "ownership_refresh",
-            "permissions": "permissions",
-            "status": "status",
-            "subcategory": "subcategory",
-            "subscriptions": "subscriptions",
-            "supported_payment_method_types": "supported_payment_method_types",
-            "transaction_refresh": "transaction_refresh"
-          }
-        },
         "alerts": {
           "displayName": "Alerts",
           "path": "/billing/alerts",
@@ -96,42 +70,6 @@
             "refunds": "refunds"
           }
         },
-        "authorizations": {
-          "displayName": "Issuing Authorizations",
-          "path": "/issuing/authorizations",
-          "responseKey": "data",
-          "fields": {
-            "amount": "amount",
-            "amount_details": "amount_details",
-            "approved": "approved",
-            "authorization_method": "authorization_method",
-            "balance_transactions": "balance_transactions",
-            "card": "card",
-            "cardholder": "cardholder",
-            "created": "created",
-            "currency": "currency",
-            "fleet": "fleet",
-            "fraud_challenges": "fraud_challenges",
-            "fuel": "fuel",
-            "id": "id",
-            "livemode": "livemode",
-            "merchant_amount": "merchant_amount",
-            "merchant_currency": "merchant_currency",
-            "merchant_data": "merchant_data",
-            "metadata": "metadata",
-            "network_data": "network_data",
-            "object": "object",
-            "pending_request": "pending_request",
-            "request_history": "request_history",
-            "status": "status",
-            "token": "token",
-            "transactions": "transactions",
-            "treasury": "treasury",
-            "verification_data": "verification_data",
-            "verified_by_fraud_challenge": "verified_by_fraud_challenge",
-            "wallet": "wallet"
-          }
-        },
         "balance_transactions": {
           "displayName": "Balance Transactions",
           "path": "/balance_transactions",
@@ -152,6 +90,26 @@
             "source": "source",
             "status": "status",
             "type": "type"
+          }
+        },
+        "billing_portal/configurations": {
+          "displayName": "Configurations",
+          "path": "/billing_portal/configurations",
+          "responseKey": "data",
+          "fields": {
+            "active": "active",
+            "application": "application",
+            "business_profile": "business_profile",
+            "created": "created",
+            "default_return_url": "default_return_url",
+            "features": "features",
+            "id": "id",
+            "is_default": "is_default",
+            "livemode": "livemode",
+            "login_page": "login_page",
+            "metadata": "metadata",
+            "object": "object",
+            "updated": "updated"
           }
         },
         "cardholders": {
@@ -260,42 +218,83 @@
             "transfer_group": "transfer_group"
           }
         },
-        "configurations": {
-          "displayName": "Configurations",
-          "path": "/billing_portal/configurations",
+        "checkout/sessions": {
+          "displayName": "Payment Checkout Sessions",
+          "path": "/checkout/sessions",
           "responseKey": "data",
           "fields": {
-            "active": "active",
-            "application": "application",
-            "business_profile": "business_profile",
+            "adaptive_pricing": "adaptive_pricing",
+            "after_expiration": "after_expiration",
+            "allow_promotion_codes": "allow_promotion_codes",
+            "amount_subtotal": "amount_subtotal",
+            "amount_total": "amount_total",
+            "automatic_tax": "automatic_tax",
+            "billing_address_collection": "billing_address_collection",
+            "cancel_url": "cancel_url",
+            "client_reference_id": "client_reference_id",
+            "client_secret": "client_secret",
+            "consent": "consent",
+            "consent_collection": "consent_collection",
             "created": "created",
-            "default_return_url": "default_return_url",
-            "features": "features",
+            "currency": "currency",
+            "currency_conversion": "currency_conversion",
+            "custom_fields": "custom_fields",
+            "custom_text": "custom_text",
+            "customer": "customer",
+            "customer_creation": "customer_creation",
+            "customer_details": "customer_details",
+            "customer_email": "customer_email",
+            "expires_at": "expires_at",
             "id": "id",
-            "is_default": "is_default",
+            "invoice": "invoice",
+            "invoice_creation": "invoice_creation",
+            "line_items": "line_items",
             "livemode": "livemode",
-            "login_page": "login_page",
+            "locale": "locale",
             "metadata": "metadata",
+            "mode": "mode",
             "object": "object",
-            "updated": "updated"
+            "payment_intent": "payment_intent",
+            "payment_link": "payment_link",
+            "payment_method_collection": "payment_method_collection",
+            "payment_method_configuration_details": "payment_method_configuration_details",
+            "payment_method_options": "payment_method_options",
+            "payment_method_types": "payment_method_types",
+            "payment_status": "payment_status",
+            "phone_number_collection": "phone_number_collection",
+            "recovered_from": "recovered_from",
+            "redirect_on_completion": "redirect_on_completion",
+            "return_url": "return_url",
+            "saved_payment_method_options": "saved_payment_method_options",
+            "setup_intent": "setup_intent",
+            "shipping_address_collection": "shipping_address_collection",
+            "shipping_cost": "shipping_cost",
+            "shipping_details": "shipping_details",
+            "shipping_options": "shipping_options",
+            "status": "status",
+            "submit_type": "submit_type",
+            "subscription": "subscription",
+            "success_url": "success_url",
+            "tax_id_collection": "tax_id_collection",
+            "total_details": "total_details",
+            "ui_mode": "ui_mode",
+            "url": "url"
           }
         },
-        "configurations_terminal": {
-          "displayName": "Terminal Configurations",
-          "path": "/terminal/configurations",
+        "climate/products": {
+          "displayName": "Climate Removals Products",
+          "path": "/climate/products",
           "responseKey": "data",
           "fields": {
-            "bbpos_wisepos_e": "bbpos_wisepos_e",
+            "created": "created",
+            "current_prices_per_metric_ton": "current_prices_per_metric_ton",
+            "delivery_year": "delivery_year",
             "id": "id",
-            "is_account_default": "is_account_default",
             "livemode": "livemode",
+            "metric_tons_available": "metric_tons_available",
             "name": "name",
             "object": "object",
-            "offline": "offline",
-            "reboot_window": "reboot_window",
-            "stripe_s700": "stripe_s700",
-            "tipping": "tipping",
-            "verifone_p400": "verifone_p400"
+            "suppliers": "suppliers"
           }
         },
         "country_specs": {
@@ -456,26 +455,6 @@
             "status": "status"
           }
         },
-        "disputes_issuing": {
-          "displayName": "Issuing Disputes",
-          "path": "/issuing/disputes",
-          "responseKey": "data",
-          "fields": {
-            "amount": "amount",
-            "balance_transactions": "balance_transactions",
-            "created": "created",
-            "currency": "currency",
-            "evidence": "evidence",
-            "id": "id",
-            "livemode": "livemode",
-            "loss_reason": "loss_reason",
-            "metadata": "metadata",
-            "object": "object",
-            "status": "status",
-            "transaction": "transaction",
-            "treasury": "treasury"
-          }
-        },
         "domains": {
           "displayName": "Apple Pay Domains",
           "path": "/apple_pay/domains",
@@ -589,6 +568,32 @@
             "status": "status",
             "status_details": "status_details",
             "supported_currencies": "supported_currencies"
+          }
+        },
+        "financial_connections/accounts": {
+          "displayName": "Financial Connection Accounts",
+          "path": "/financial_connections/accounts",
+          "responseKey": "data",
+          "fields": {
+            "account_holder": "account_holder",
+            "balance": "balance",
+            "balance_refresh": "balance_refresh",
+            "category": "category",
+            "created": "created",
+            "display_name": "display_name",
+            "id": "id",
+            "institution_name": "institution_name",
+            "last4": "last4",
+            "livemode": "livemode",
+            "object": "object",
+            "ownership": "ownership",
+            "ownership_refresh": "ownership_refresh",
+            "permissions": "permissions",
+            "status": "status",
+            "subcategory": "subcategory",
+            "subscriptions": "subscriptions",
+            "supported_payment_method_types": "supported_payment_method_types",
+            "transaction_refresh": "transaction_refresh"
           }
         },
         "history": {
@@ -746,6 +751,91 @@
             "total_tax_amounts": "total_tax_amounts",
             "transfer_data": "transfer_data",
             "webhooks_delivered_at": "webhooks_delivered_at"
+          }
+        },
+        "issuing/authorizations": {
+          "displayName": "Issuing Authorizations",
+          "path": "/issuing/authorizations",
+          "responseKey": "data",
+          "fields": {
+            "amount": "amount",
+            "amount_details": "amount_details",
+            "approved": "approved",
+            "authorization_method": "authorization_method",
+            "balance_transactions": "balance_transactions",
+            "card": "card",
+            "cardholder": "cardholder",
+            "created": "created",
+            "currency": "currency",
+            "fleet": "fleet",
+            "fraud_challenges": "fraud_challenges",
+            "fuel": "fuel",
+            "id": "id",
+            "livemode": "livemode",
+            "merchant_amount": "merchant_amount",
+            "merchant_currency": "merchant_currency",
+            "merchant_data": "merchant_data",
+            "metadata": "metadata",
+            "network_data": "network_data",
+            "object": "object",
+            "pending_request": "pending_request",
+            "request_history": "request_history",
+            "status": "status",
+            "token": "token",
+            "transactions": "transactions",
+            "treasury": "treasury",
+            "verification_data": "verification_data",
+            "verified_by_fraud_challenge": "verified_by_fraud_challenge",
+            "wallet": "wallet"
+          }
+        },
+        "issuing/disputes": {
+          "displayName": "Issuing Disputes",
+          "path": "/issuing/disputes",
+          "responseKey": "data",
+          "fields": {
+            "amount": "amount",
+            "balance_transactions": "balance_transactions",
+            "created": "created",
+            "currency": "currency",
+            "evidence": "evidence",
+            "id": "id",
+            "livemode": "livemode",
+            "loss_reason": "loss_reason",
+            "metadata": "metadata",
+            "object": "object",
+            "status": "status",
+            "transaction": "transaction",
+            "treasury": "treasury"
+          }
+        },
+        "issuing/transactions": {
+          "displayName": "Issuing Transactions",
+          "path": "/issuing/transactions",
+          "responseKey": "data",
+          "fields": {
+            "amount": "amount",
+            "amount_details": "amount_details",
+            "authorization": "authorization",
+            "balance_transaction": "balance_transaction",
+            "card": "card",
+            "cardholder": "cardholder",
+            "created": "created",
+            "currency": "currency",
+            "dispute": "dispute",
+            "id": "id",
+            "livemode": "livemode",
+            "merchant_amount": "merchant_amount",
+            "merchant_currency": "merchant_currency",
+            "merchant_data": "merchant_data",
+            "metadata": "metadata",
+            "network_data": "network_data",
+            "object": "object",
+            "purchase_details": "purchase_details",
+            "token": "token",
+            "treasury": "treasury",
+            "type": "type",
+            "wallet": "wallet"
           }
         },
         "locations": {
@@ -1181,22 +1271,6 @@
             "url": "url"
           }
         },
-        "products_climate": {
-          "displayName": "Climate Removals Products",
-          "path": "/climate/products",
-          "responseKey": "data",
-          "fields": {
-            "created": "created",
-            "current_prices_per_metric_ton": "current_prices_per_metric_ton",
-            "delivery_year": "delivery_year",
-            "id": "id",
-            "livemode": "livemode",
-            "metric_tons_available": "metric_tons_available",
-            "name": "name",
-            "object": "object",
-            "suppliers": "suppliers"
-          }
-        },
         "promotion_codes": {
           "displayName": "Promotion Codes",
           "path": "/promotion_codes",
@@ -1411,69 +1485,6 @@
             "title": "title"
           }
         },
-        "sessions_checkout": {
-          "displayName": "Payment Checkout Sessions",
-          "path": "/checkout/sessions",
-          "responseKey": "data",
-          "fields": {
-            "adaptive_pricing": "adaptive_pricing",
-            "after_expiration": "after_expiration",
-            "allow_promotion_codes": "allow_promotion_codes",
-            "amount_subtotal": "amount_subtotal",
-            "amount_total": "amount_total",
-            "automatic_tax": "automatic_tax",
-            "billing_address_collection": "billing_address_collection",
-            "cancel_url": "cancel_url",
-            "client_reference_id": "client_reference_id",
-            "client_secret": "client_secret",
-            "consent": "consent",
-            "consent_collection": "consent_collection",
-            "created": "created",
-            "currency": "currency",
-            "currency_conversion": "currency_conversion",
-            "custom_fields": "custom_fields",
-            "custom_text": "custom_text",
-            "customer": "customer",
-            "customer_creation": "customer_creation",
-            "customer_details": "customer_details",
-            "customer_email": "customer_email",
-            "expires_at": "expires_at",
-            "id": "id",
-            "invoice": "invoice",
-            "invoice_creation": "invoice_creation",
-            "line_items": "line_items",
-            "livemode": "livemode",
-            "locale": "locale",
-            "metadata": "metadata",
-            "mode": "mode",
-            "object": "object",
-            "payment_intent": "payment_intent",
-            "payment_link": "payment_link",
-            "payment_method_collection": "payment_method_collection",
-            "payment_method_configuration_details": "payment_method_configuration_details",
-            "payment_method_options": "payment_method_options",
-            "payment_method_types": "payment_method_types",
-            "payment_status": "payment_status",
-            "phone_number_collection": "phone_number_collection",
-            "recovered_from": "recovered_from",
-            "redirect_on_completion": "redirect_on_completion",
-            "return_url": "return_url",
-            "saved_payment_method_options": "saved_payment_method_options",
-            "setup_intent": "setup_intent",
-            "shipping_address_collection": "shipping_address_collection",
-            "shipping_cost": "shipping_cost",
-            "shipping_details": "shipping_details",
-            "shipping_options": "shipping_options",
-            "status": "status",
-            "submit_type": "submit_type",
-            "subscription": "subscription",
-            "success_url": "success_url",
-            "tax_id_collection": "tax_id_collection",
-            "total_details": "total_details",
-            "ui_mode": "ui_mode",
-            "url": "url"
-          }
-        },
         "setup_intents": {
           "displayName": "Payment Setup Intents",
           "path": "/setup_intents",
@@ -1670,6 +1681,24 @@
             "tax_type": "tax_type"
           }
         },
+        "terminal/configurations": {
+          "displayName": "Terminal Configurations",
+          "path": "/terminal/configurations",
+          "responseKey": "data",
+          "fields": {
+            "bbpos_wisepos_e": "bbpos_wisepos_e",
+            "id": "id",
+            "is_account_default": "is_account_default",
+            "livemode": "livemode",
+            "name": "name",
+            "object": "object",
+            "offline": "offline",
+            "reboot_window": "reboot_window",
+            "stripe_s700": "stripe_s700",
+            "tipping": "tipping",
+            "verifone_p400": "verifone_p400"
+          }
+        },
         "test_clocks": {
           "displayName": "Billing Clocks",
           "path": "/test_helpers/test_clocks",
@@ -1707,35 +1736,6 @@
             "statement_descriptor": "statement_descriptor",
             "status": "status",
             "transfer_group": "transfer_group"
-          }
-        },
-        "transactions_issuing": {
-          "displayName": "Issuing Transactions",
-          "path": "/issuing/transactions",
-          "responseKey": "data",
-          "fields": {
-            "amount": "amount",
-            "amount_details": "amount_details",
-            "authorization": "authorization",
-            "balance_transaction": "balance_transaction",
-            "card": "card",
-            "cardholder": "cardholder",
-            "created": "created",
-            "currency": "currency",
-            "dispute": "dispute",
-            "id": "id",
-            "livemode": "livemode",
-            "merchant_amount": "merchant_amount",
-            "merchant_currency": "merchant_currency",
-            "merchant_data": "merchant_data",
-            "metadata": "metadata",
-            "network_data": "network_data",
-            "object": "object",
-            "purchase_details": "purchase_details",
-            "token": "token",
-            "treasury": "treasury",
-            "type": "type",
-            "wallet": "wallet"
           }
         },
         "transfers": {
