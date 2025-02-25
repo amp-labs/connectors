@@ -4,6 +4,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/operations"
+	"github.com/amp-labs/connectors/internal/components/reader"
 	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/providers"
 )
@@ -32,6 +33,11 @@ func NewConnector(params common.Parameters) (*Connector, error) {
 func constructor(base *components.Connector) (*Connector, error) {
 	connector := &Connector{Connector: base}
 
+	registry, err := components.NewEndpointRegistry(supportedOperations())
+	if err != nil {
+		return nil, err
+	}
+
 	// Set the metadata provider for the connector
 	connector.SchemaProvider = schema.NewObjectSchemaProvider(
 		connector.HTTPClient().Client,
@@ -41,6 +47,18 @@ func constructor(base *components.Connector) (*Connector, error) {
 			// Additionally, the rate limits may vary depending on the caller's roles.
 			BuildRequest:  connector.buildSingleObjectMetadataRequest,
 			ParseResponse: connector.parseSingleObjectMetadataResponse,
+		},
+	)
+
+	// Set the read provider for the connector
+	connector.Reader = reader.NewHTTPReader(
+		connector.HTTPClient().Client,
+		registry,
+		ModuleTable,
+		operations.ReadHandlers{
+			BuildRequest:  connector.buildReadRquest,
+			ParseResponse: connector.parseReadResponse,
+			ErrorHandler:  common.InterpretError,
 		},
 	)
 
