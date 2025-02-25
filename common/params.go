@@ -3,6 +3,7 @@ package common
 import (
 	"errors"
 	"fmt"
+	"slices"
 )
 
 // Parameters can be used to pass input parameters to the connector.
@@ -96,7 +97,7 @@ type metadataValidator interface {
 }
 
 type RequireMetadata struct {
-	Expected []string
+	ExpectedMetadataKeys []string
 }
 
 func (RequireMetadata) validateMetadata(parameters Parameters) error {
@@ -119,10 +120,16 @@ type moduleValidator interface {
 	validateModule(parameters Parameters) error
 }
 
-type RequireModule struct{}
+type RequireModule struct {
+	ExpectedModules []ModuleID
+}
 
-func (RequireModule) validateModule(parameters Parameters) error {
+func (r RequireModule) validateModule(parameters Parameters) error {
 	if parameters.Module == "" {
+		return ErrMissingModule
+	}
+
+	if !slices.Contains(r.ExpectedModules, parameters.Module) {
 		return ErrMissingModule
 	}
 
