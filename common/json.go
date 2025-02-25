@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"mime"
 	"net/http"
+	"regexp"
 	"strings"
 
 	"github.com/spyzhov/ajson"
@@ -128,21 +129,10 @@ func ParseJSONResponse(res *http.Response, body []byte) (*JSONHTTPResponse, erro
 			body:      nil,
 		}, nil
 	}
-	// Ensure the response is JSON
-	ct := res.Header.Get("Content-Type")
-	if len(ct) > 0 {
-		mimeType, _, err := mime.ParseMediaType(ct)
-		if err != nil {
-			return nil, fmt.Errorf("failed to parse content type: %w", err)
-		}
 
-		// Check if the mimeType follows the pattern application/*json (e.g.
-		// application/vnd.api+json, application/schema+json, etc.)
-		if !strings.HasPrefix(mimeType, "application/") || !strings.HasSuffix(mimeType, "json") {
-			return nil, fmt.Errorf("%w: expected content type to be application/*json, got %s",
-				ErrNotJSON, mimeType,
-			)
-		}
+	// Ensure the response is JSON
+	if err := EnsureContentType(`^application/.*json$`, res, false); err != nil {
+		return nil, err
 	}
 
 	// Unmarshall the response body into JSON
@@ -197,4 +187,43 @@ func AddSuffixIfNotExists(str string, suffix string) string {
 	}
 
 	return str
+}
+
+var ErrMissingContentType = errors.New("missing content type")
+
+// EnsureContentType ensures that the content type matches the given pattern.
+// If errOnMissing is true, an error is returned if the content type is missing.
+// Otherwise, the function returns nil.
+func EnsureContentType(pattern string, res *http.Response, errOnMissing bool) error {
+	ct := res.Header.Get("Content-Type")
+
+	// If the content type is missing, return an error if errOnMissing is true,
+	// otherwise return nil.
+	if len(ct) == 0 {
+		if errOnMissing {
+			return fmt.Errorf("%w: expected content type to be application/*json", ErrMissingContentType)
+		}
+
+		return nil
+	}
+
+	mimeType, _, err := mime.ParseMediaType(ct)
+	if err != nil {
+		return fmt.Errorf("failed to parse content type: %w", err)
+	}
+
+	// Check if the mimeType follows the pattern application/*json (e.g.
+	// application/vnd.api+json, application/schema+json, etc.)
+	re, err := regexp.Compile(pattern)
+	if err != nil {
+		return fmt.Errorf("failed to compile regex: %w", err)
+	}
+
+	if !re.MatchString(mimeType) {
+		return fmt.Errorf("%w: expected content type to be %s, got %s",
+			ErrNotJSON, pattern, mimeType,
+		)
+	}
+
+	return nil
 }

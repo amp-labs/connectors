@@ -13,6 +13,7 @@ func init() {
 			TokenURL:                  "https://{{.workspace}}.suitetalk.api.netsuite.com/services/rest/auth/oauth2/v1/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: true,
+			DocsURL:                   "https://docs.oracle.com/en/cloud/saas/netsuite/ns-online-help/section_157771733782.html#procedure_157838925981",
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{

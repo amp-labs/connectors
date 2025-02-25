@@ -4,12 +4,9 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
-	"github.com/amp-labs/connectors/internal/jsonquery"
-	"github.com/spyzhov/ajson"
 )
 
 func (c *Connector) buildObjectMetadataRequest(ctx context.Context, object string) (*http.Request, error) {
@@ -31,67 +28,48 @@ func (c *Connector) buildObjectMetadataRequest(ctx context.Context, object strin
 	return req, nil
 }
 
-// nolint:funlen,cyclop
+// Example of a raw response is in test/netsuite/metadata/example.json
 func (c *Connector) parseObjectMetadataResponse(
 	ctx context.Context,
 	object string,
 	resp *common.JSONHTTPResponse,
 ) (*common.ObjectMetadata, error) {
-	body, ok := resp.Body()
-	if !ok || body == nil {
-		return nil, common.ErrEmptyJSONHTTPResponse
+	metadata, err := common.UnmarshalJSON[metadataResponse](resp)
+	if err != nil {
+		return nil, err
 	}
 
-	// Get the properties object which has all the fields.
-	properties, err := jsonquery.New(body).ObjectRequired("properties")
-	if err != nil {
-		return nil, fmt.Errorf("getting properties object: %w", err)
-	}
-
-	fields, err := properties.GetObject()
-	if err != nil {
-		return nil, fmt.Errorf("getting properties object: %w", err)
+	if metadata == nil || metadata.Type != "object" || metadata.Properties == nil {
+		return nil, fmt.Errorf("%w: invalid metadata response: %+v", common.ErrMissingExpectedValues, metadata)
 	}
 
 	result := &common.ObjectMetadata{
-		Fields: make(map[string]common.FieldMetadata),
+		Fields:    make(map[string]common.FieldMetadata),
+		FieldsMap: make(map[string]string),
 	}
 
-	// Iterate through fields
-	for property, metadata := range fields {
-		// Skip links
-		if strings.EqualFold(property, "links") {
-			continue
+	for field, metadata := range metadata.Properties {
+		if metadata.Type == "object" {
+			continue // Skip nested associated objects
 		}
 
-		// If the field is actually a related object and not a first class field, skip it.
-		// If it doesn't have a type, skip it.
-		ftype, err := metadata.GetKey("type")
-		if err != nil {
-			continue
+		title := field
+		if metadata.Title != "" {
+			title = metadata.Title
 		}
 
-		if ftype.IsNull() || ftype.MustString() != "object" {
-			continue
+		format := metadata.Type
+		if metadata.Format != "" {
+			format = metadata.Format
 		}
 
-		// Title can be missing, so we default to the property name.
-		title, err := metadata.GetKey("title")
-		if err != nil {
-			title = ajson.StringNode(property, property)
+		result.Fields[field] = common.FieldMetadata{
+			DisplayName:  title,
+			ProviderType: format,
 		}
 
-		// Format is more specific than a type, so we use it if it exists.
-		// Ex: A field could have a date-time format but a string type.
-		format, err := metadata.GetKey("format")
-		if err != nil {
-			format = ftype
-		}
-
-		result.Fields[property] = common.FieldMetadata{
-			DisplayName:  title.MustString(),
-			ProviderType: format.MustString(),
-		}
+		// Deprecated: this map includes only display names.
+		result.FieldsMap[field] = title
 	}
 
 	return result, nil
