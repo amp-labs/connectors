@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"os"
 
 	"github.com/amp-labs/connectors/test/front"
 )
@@ -14,9 +15,10 @@ func main() {
 
 	conn := front.GetFrontConnector(ctx)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"accounts", "teams", "company_rules", "meme"})
+	m, err := conn.ListObjectMetadata(ctx, []string{"accounts", "teams", "company_rules"})
 	if err != nil {
 		slog.Error(err.Error())
+		os.Exit(-1)
 	}
 
 	// Print the results

@@ -1,16 +1,11 @@
-package smartleadv2
+package front
 
 import (
 	_ "embed"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/internal/components"
-	"github.com/amp-labs/connectors/internal/components/deleter"
-	"github.com/amp-labs/connectors/internal/components/operations"
-	"github.com/amp-labs/connectors/internal/components/reader"
 	"github.com/amp-labs/connectors/internal/components/schema"
-	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/tools/fileconv"
@@ -44,83 +39,15 @@ type Connector struct {
 
 func NewConnector(params common.Parameters) (*Connector, error) {
 	// Create base connector with provider info
-	return components.Initialize(providers.Smartlead, params, constructor)
+	return components.Initialize(providers.Front, params, constructor)
 }
 
 // nolint:funlen
 func constructor(base *components.Connector) (*Connector, error) {
 	connector := &Connector{Connector: base}
 
-	registry, err := components.NewEndpointRegistry(supportedOperations())
-	if err != nil {
-		return nil, err
-	}
-
 	// Set the metadata provider for the connector
 	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), schemas)
-	// Other examples:
-	// 	schema.NewAggregateSchemaProvider(
-	// 		connector.HTTPClient().Client,
-	// 		operations.ListObjectMetadataHandlers{
-	// 			BuildRequest:  connector.buildListObjectMetadataRequest,
-	// 			ParseResponse: connector.parseListObjectMetadataResponse,
-	// 		},
-	// 	),
-
-	//  schema.NewObjectSchemaProvider(
-	// 		connector.HTTPClient().Client,
-	// 		schema.FetchModeParallel,
-	// 		operations.SingleObjectMetadataHandlers{
-	// 			BuildRequest:  connector.buildSingleObjectMetadataRequest,
-	// 			ParseResponse: connector.parseSingleObjectMetadataResponse,
-	// 		},
-	//  ),
-
-	// Set the reader for the connector
-	// TODO: Refactor to simplify clients
-	connector.Reader = reader.NewHTTPReader(
-		connector.HTTPClient().Client,
-		registry,
-		connector.ProviderContext.Module(),
-		operations.ReadHandlers{
-			BuildRequest:  connector.buildReadRequest,
-			ParseResponse: connector.parseReadResponse,
-			ErrorHandler: interpreter.ErrorHandler{
-				JSON: interpreter.NewFaultyResponder(errorFormats, nil),
-				HTML: &interpreter.DirectFaultyResponder{Callback: interpretHTMLError},
-			}.Handle,
-		},
-	)
-
-	// Set the writer for the connector
-	connector.Writer = writer.NewHTTPWriter(
-		connector.HTTPClient().Client,
-		registry,
-		connector.ProviderContext.Module(),
-		operations.WriteHandlers{
-			BuildRequest:  connector.buildWriteRequest,
-			ParseResponse: connector.parseWriteResponse,
-			ErrorHandler: interpreter.ErrorHandler{
-				JSON: interpreter.NewFaultyResponder(errorFormats, nil),
-				HTML: &interpreter.DirectFaultyResponder{Callback: interpretHTMLError},
-			}.Handle,
-		},
-	)
-
-	// Set the deleter for the connector
-	connector.Deleter = deleter.NewHTTPDeleter(
-		connector.HTTPClient().Client,
-		registry,
-		connector.ProviderContext.Module(),
-		operations.DeleteHandlers{
-			BuildRequest:  connector.buildDeleteRequest,
-			ParseResponse: connector.parseDeleteResponse,
-			ErrorHandler: interpreter.ErrorHandler{
-				JSON: interpreter.NewFaultyResponder(errorFormats, nil),
-				HTML: &interpreter.DirectFaultyResponder{Callback: interpretHTMLError},
-			}.Handle,
-		},
-	)
 
 	return connector, nil
 }
