@@ -24,7 +24,9 @@ func (p parameters) ValidateParams() error {
 }
 
 func WithClient(ctx context.Context, client *http.Client,
-	username string, password string, opts ...common.HeaderAuthClientOption) Option {
+	username string, password string,
+	opts ...common.HeaderAuthClientOption,
+) Option {
 	return func(p *parameters) {
 		p.WithBasicClient(ctx, client, username, password, opts...)
 	}

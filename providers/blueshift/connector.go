@@ -18,7 +18,6 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	}
 
 	providerInfo, err := providers.ReadInfo(providers.Blueshift)
-
 	if err != nil {
 		return nil, err
 	}
