@@ -2,6 +2,7 @@ package providers
 
 const Netsuite Provider = "netsuite"
 
+// nolint:lll
 func init() {
 	SetInfo(Netsuite, ProviderInfo{
 		DisplayName: "Netsuite",

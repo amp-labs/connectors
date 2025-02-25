@@ -195,11 +195,11 @@ var ErrMissingContentType = errors.New("missing content type")
 // If errOnMissing is true, an error is returned if the content type is missing.
 // Otherwise, the function returns nil.
 func EnsureContentType(pattern string, res *http.Response, errOnMissing bool) error {
-	ct := res.Header.Get("Content-Type")
+	ctype := res.Header.Get("Content-Type")
 
 	// If the content type is missing, return an error if errOnMissing is true,
 	// otherwise return nil.
-	if len(ct) == 0 {
+	if len(ctype) == 0 {
 		if errOnMissing {
 			return fmt.Errorf("%w: expected content type to be application/*json", ErrMissingContentType)
 		}
@@ -207,7 +207,7 @@ func EnsureContentType(pattern string, res *http.Response, errOnMissing bool) er
 		return nil
 	}
 
-	mimeType, _, err := mime.ParseMediaType(ct)
+	mimeType, _, err := mime.ParseMediaType(ctype)
 	if err != nil {
 		return fmt.Errorf("failed to parse content type: %w", err)
 	}

@@ -24,6 +24,8 @@ type Connector struct {
 	components.SchemaProvider
 }
 
+// API Reference: https://td2972271.app.netsuite.com/app/help/helpcenter.nl?fid=section_158151234003.html
+// NewConnector.
 func NewConnector(params common.Parameters) (*Connector, error) {
 	// Create base connector with provider info
 	return components.Initialize(providers.Netsuite, params, constructor)

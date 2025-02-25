@@ -28,7 +28,7 @@ func (c *Connector) buildObjectMetadataRequest(ctx context.Context, object strin
 	return req, nil
 }
 
-// Example of a raw response is in test/netsuite/metadata/example.json
+// Example of a raw response is in test/netsuite/metadata/example.json.
 func (c *Connector) parseObjectMetadataResponse(
 	ctx context.Context,
 	object string,
@@ -44,8 +44,9 @@ func (c *Connector) parseObjectMetadataResponse(
 	}
 
 	result := &common.ObjectMetadata{
-		Fields:    make(map[string]common.FieldMetadata),
-		FieldsMap: make(map[string]string),
+		DisplayName: object,
+		Fields:      make(map[string]common.FieldMetadata),
+		FieldsMap:   make(map[string]string),
 	}
 
 	for field, metadata := range metadata.Properties {

@@ -10,7 +10,7 @@ type metadataResponse struct {
 	Properties map[string]fieldMetadata `json:"properties"`
 
 	// The fields that the object can be filtered by.
-	Filterable []string `json:"x-ns-filterable"`
+	Filterable []string `json:"x-ns-filterable"` // nolint:tagliatelle
 }
 
 type fieldMetadata struct {
