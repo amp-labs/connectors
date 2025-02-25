@@ -100,13 +100,13 @@ type RequireMetadata struct {
 	ExpectedMetadataKeys []string
 }
 
-func (RequireMetadata) validateMetadata(parameters Parameters) error {
+func (m RequireMetadata) validateMetadata(parameters Parameters) error {
 	if parameters.Metadata == nil {
 		return ErrMissingMetadata
 	}
 
-	for _, key := range parameters.Metadata {
-		if key == "" {
+	for _, key := range m.ExpectedMetadataKeys {
+		if parameters.Metadata[key] == "" {
 			return fmt.Errorf("%w: expected key %s not found", ErrMissingMetadata, key)
 		}
 	}
