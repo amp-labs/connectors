@@ -13,6 +13,7 @@ func init() {
 			TokenURL:                  "https://api.helpscout.net/v2/oauth2/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
+			DocsURL:                   "https://developer.helpscout.com/mailbox-api/overview/authentication/",
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
