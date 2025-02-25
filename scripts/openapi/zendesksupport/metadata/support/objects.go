@@ -20,7 +20,6 @@ var (
 		"*/count",
 		"*/create_or_update",
 		"*/show_many",
-		"/api/v2/incremental/*",
 		"/api/v2/autocomplete/*",
 		"*/autocomplete",
 		"*/active",
@@ -60,6 +59,19 @@ var (
 		"/api/v2/users/me",
 		"/api/v2/custom_objects/limits/record_limit",
 		"/api/v2/account/settings",
+		// Alternative endpoints are used instead.
+		// Each endpoint has a corresponding endpoint supporting incremental read.
+		"/api/v2/organizations",       // => /api/v2/incremental/organizations
+		"/api/v2/routing/attributes",  // => /api/v2/incremental/routing/attributes
+		"/api/v2/tickets",             // => /api/v2/incremental/tickets/cursor
+		"/api/v2/users",               // => /api/v2/incremental/users/cursor
+		"/api/v2/incremental/tickets", // cursor is preferred over raw incremental
+		"/api/v2/incremental/users",   // cursor is preferred over raw incremental
+	}
+	objectEndpoints = map[string]string{ // nolint:gochecknoglobals
+		"/api/v2/incremental/routing/attributes": "attributes",
+		"/api/v2/incremental/tickets/cursor":     "tickets",
+		"/api/v2/incremental/users/cursor":       "users",
 	}
 	displayNameOverride = map[string]string{ // nolint:gochecknoglobals
 		"search":               "Search Results",
@@ -76,7 +88,8 @@ var (
 	})
 	objectNameToPagination = map[string]string{ // nolint:gochecknoglobals
 		"activities":                 "cursor",
-		"attributes":                 "offset",
+		"attribute_values":           "time",
+		"attributes":                 "time",
 		"audit_logs":                 "cursor",
 		"automations":                "cursor",
 		"bookmarks":                  "offset",
@@ -90,6 +103,7 @@ var (
 		"email_notifications":        "cursor",
 		"group_memberships":          "cursor",
 		"groups":                     "cursor",
+		"instance_values":            "time",
 		"job_statuses":               "cursor",
 		"locales":                    "offset",
 		"macros":                     "cursor",
@@ -97,7 +111,7 @@ var (
 		"organization_fields":        "cursor",
 		"organization_memberships":   "cursor",
 		"organization_subscriptions": "cursor",
-		"organizations":              "cursor",
+		"organizations":              "time",
 		"queues":                     "offset",
 		"recipient_addresses":        "cursor",
 		"requests":                   "cursor",
@@ -113,8 +127,10 @@ var (
 		"target_failures":            "offset",
 		"targets":                    "offset",
 		"ticket_audits":              "cursor",
+		"ticket_events":              "time",
 		"ticket_fields":              "cursor",
 		"ticket_forms":               "offset",
+		"ticket_metric_events":       "time",
 		"ticket_metrics":             "cursor",
 		"tickets":                    "cursor",
 		"trigger_categories":         "cursor",
@@ -124,6 +140,16 @@ var (
 		"views":                      "cursor",
 		"workspaces":                 "offset",
 	}
+	objectNameIncremental = datautils.NewSet( // nolint:gochecknoglobals
+		"attribute_values",
+		"attributes",
+		"instance_values",
+		"organizations",
+		"ticket_events",
+		"ticket_metric_events",
+		"tickets",
+		"users",
+	)
 )
 
 func Objects() []metadatadef.ExtendedSchema[metadata.CustomProperties] {
@@ -137,13 +163,15 @@ func Objects() []metadatadef.ExtendedSchema[metadata.CustomProperties] {
 
 	objects, err := explorer.ReadObjectsGet(
 		api3.NewDenyPathStrategy(ignoreEndpoints),
-		nil, displayNameOverride,
+		objectEndpoints, displayNameOverride,
 		api3.CustomMappingObjectCheck(objectNameToResponseField),
 	)
 	goutils.MustBeNil(err)
 
 	for index, object := range objects {
 		object.Custom.Pagination = objectNameToPagination[object.ObjectName]
+		object.Custom.Incremental = objectNameIncremental.Has(object.ObjectName)
+
 		objects[index] = object
 	}
 

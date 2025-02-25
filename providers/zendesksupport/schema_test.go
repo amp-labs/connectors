@@ -46,8 +46,8 @@ func TestLookupPaginationType(t *testing.T) {
 		t.Run(test.object, func(t *testing.T) {
 			t.Parallel()
 
-			got, ok := metadata.Schemas.LookupPaginationType(test.module, test.object)
-			if test.want != got || !ok {
+			got := metadata.Schemas.LookupPaginationType(test.module, test.object)
+			if test.want != got {
 				t.Errorf("LookupPaginationType(%s) = %v, want %v", test.object, got, test.want)
 			}
 		})
