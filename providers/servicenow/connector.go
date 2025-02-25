@@ -2,55 +2,50 @@ package servicenow
 
 import (
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/paramsbuilder"
-	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/components"
+	"github.com/amp-labs/connectors/internal/components/operations"
+	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/providers"
 )
 
+const (
+	restAPIPrefix = "api"
+)
+
 type Connector struct {
-	BaseURL string
-	Module  common.Module
-	Client  *common.JSONHTTPClient
+	// Basic connector
+	*components.Connector
+
+	// Require authenticated client
+	common.RequireAuthenticatedClient
+	// Require workspace
+	common.RequireWorkspace
+	// Require module
+	common.RequireModule
+
+	// Supported operations
+	components.SchemaProvider
+	components.Reader
+	components.Writer
+	components.Deleter
 }
 
-func NewConnector(opts ...Option) (*Connector, error) {
-	params, err := paramsbuilder.Apply(parameters{}, opts)
-	if err != nil {
-		return nil, err
-	}
-
-	httpClient := params.Client.Caller
-	jsonClient := common.JSONHTTPClient{HTTPClient: httpClient}
-
-	conn := &Connector{
-		Client: &jsonClient,
-		Module: params.Module.Selection,
-	}
-
-	providerInfo, err := providers.ReadInfo(conn.Provider(), &params.Workspace)
-	if err != nil {
-		return nil, err
-	}
-
-	conn.setBaseURL(providerInfo.BaseURL)
-
-	return conn, nil
+func NewConnector(params common.Parameters) (*Connector, error) {
+	return components.Initialize(providers.ServiceNow, params, constructor)
 }
 
-func (c *Connector) Provider() providers.Provider {
-	return providers.ServiceNow
-}
+func constructor(base *components.Connector) (*Connector, error) {
+	connector := &Connector{Connector: base}
 
-func (c *Connector) String() string {
-	return c.Provider() + ".Connector"
-}
+	// Set the metadata provider for the connector
+	connector.SchemaProvider = schema.NewObjectSchemaProvider(
+		connector.HTTPClient().Client,
+		schema.FetchModeParallel,
+		operations.SingleObjectMetadataHandlers{
+			BuildRequest:  connector.buildSingleObjectMetadataRequest,
+			ParseResponse: connector.parseSingleObjectMetadataResponse,
+		},
+	)
 
-func (c *Connector) getAPIURL(objectName string) (*urlbuilder.URL, error) {
-	// https://{{.workspace}}.servicenow.com/api/now/v2/table/{objectName}
-	return urlbuilder.New(c.BaseURL, restAPIPrefix, c.Module.Path(), objectName)
-}
-
-func (c *Connector) setBaseURL(newURL string) {
-	c.BaseURL = newURL
-	c.Client.HTTPClient.Base = newURL
+	return connector, nil
 }

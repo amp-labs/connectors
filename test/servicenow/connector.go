@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/servicenow"
@@ -16,11 +17,20 @@ func GetServiceNowConnector(ctx context.Context) *servicenow.Connector {
 	filePath := credscanning.LoadPath(providers.ServiceNow)
 	reader := utils.MustCreateProvCredJSON(filePath, true, true)
 
-	conn, err := servicenow.NewConnector(
-		servicenow.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
-		servicenow.WithModule(servicenow.ModuleTable),
-		servicenow.WithWorkspace("dev269415"),
+	client, err := common.NewOAuthHTTPClient(ctx,
+		common.WithOAuthClient(http.DefaultClient),
+		common.WithOAuthConfig(getConfig(reader)),
+		common.WithOAuthToken(reader.GetOauthToken()),
 	)
+	if err != nil {
+		utils.Fail(err.Error())
+	}
+
+	conn, err := servicenow.NewConnector((common.Parameters{
+		AuthenticatedClient: client,
+		Module:              servicenow.ModuleTable,
+		Workspace:           reader.Get(credscanning.Fields.Workspace),
+	}))
 	if err != nil {
 		utils.Fail("create servicenow connector", "error: ", err)
 	}
