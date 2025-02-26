@@ -9,6 +9,7 @@ import (
 type Connector struct {
 	BaseURL string
 	Client  *common.JSONHTTPClient
+	Module  common.Module
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
@@ -36,4 +37,12 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 func (c *Connector) setBaseURL(newURL string) {
 	c.BaseURL = newURL
 	c.Client.HTTPClient.Base = newURL
+}
+
+func (c *Connector) Provider() providers.Provider {
+	return providers.Blueshift
+}
+
+func (c *Connector) String() string {
+	return c.Provider() + ".Connector"
 }
