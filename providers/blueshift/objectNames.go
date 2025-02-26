@@ -7,13 +7,11 @@ import (
 // var supportedObjectsByRead = metadata.Schemas.ObjectNames()
 
 var ObjectNametoResponseField = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
-	"email_templates":   "template",
-	"sms_templates":     "template",
-	"campaigns":         "campaigns",
-	"external_fetches":  "template",
-	"push_templates":    "template",
-	"segments/list":     "segments",
-	"tag_contexts/list": "list",
+	"email_templates":  "results",
+	"campaigns":        "results",
+	"external_fetches": "results",
+	"push_templates":   "results",
+	"sms_templates":    "results",
 },
 	func(objectName string) (fieldName string) {
 		return objectName

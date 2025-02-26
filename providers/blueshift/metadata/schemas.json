@@ -7,7 +7,7 @@
         "campaigns": {
           "displayName": "Campaigns",
           "path": "2/campaigns.json",
-          "responseKey": "campaigns",
+          "responseKey": "results",
           "fields": {
             "archived": "archived",
             "author": "author",
@@ -86,7 +86,7 @@
         "email_templates": {
           "displayName": "Email Templates",
           "path": "1/email_templates.json",
-          "responseKey": "template",
+          "responseKey": "results",
           "fields": {
             "author": "author",
             "created_at": "created_at",
@@ -99,7 +99,7 @@
         "external_fetches": {
           "displayName": "External Fetches",
           "path": "1/external_fetches.json",
-          "responseKey": "template",
+          "responseKey": "results",
           "fields": {
             "author": "author",
             "created_at": "created_at",
@@ -122,7 +122,7 @@
         "push_templates": {
           "displayName": "Push Templates",
           "path": "1/push_templates.json",
-          "responseKey": "template",
+          "responseKey": "results",
           "fields": {
             "author": "author",
             "created_at": "created_at",
@@ -160,7 +160,7 @@
         "segments/list": {
           "displayName": "Segments/List",
           "path": "1/segments/list",
-          "responseKey": "segments",
+          "responseKey": "",
           "fields": {
             "approxusers": "approxusers",
             "approxusers_updated_at": "approxusers_updated_at",
@@ -179,7 +179,7 @@
         "sms_templates": {
           "displayName": "Sms Templates",
           "path": "1/sms_templates.json",
-          "responseKey": "",
+          "responseKey": "results",
           "fields": {
             "archived": "archived",
             "author": "author",

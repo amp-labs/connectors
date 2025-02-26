@@ -3439,10 +3439,7 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "segments": {
+                "schema": {                
                       "type": "array",
                       "items": {
                         "type": "object",
@@ -3496,8 +3493,6 @@
                           }
                         }
                       }
-                    }
-                  }
                 }
               }
             }
@@ -5521,7 +5516,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "campaigns": {
+                    "results": {
                       "type": "array",
                       "items": {
                         "type": "object",
@@ -5907,7 +5902,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "campaigns": {
+                    "results": {
                       "type": "array",
                       "items": {
                         "type": "object",
@@ -6441,7 +6436,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "template": {
+                    "results": {
                       "type": "array",
                       "description": "The list of email templates.",
                       "items": {
@@ -7196,7 +7191,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "template": {
+                    "results": {
                       "type": "array",
                       "items": {
                         "type": "object",
@@ -7649,6 +7644,9 @@
             "content": {
               "application/json": {
                 "schema": {
+                "type":"object",
+                "properties":{
+                "results":{
                   "type": "array",
                   "items": {
                     "type": "object",
@@ -7692,6 +7690,8 @@
                       }
                     }
                   }
+                }
+                }
                 }
               }
             }
@@ -8975,7 +8975,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "template": {
+                    "results": {
                       "type": "array",
                       "items": {
                         "type": "object",
