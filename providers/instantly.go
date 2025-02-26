@@ -47,7 +47,7 @@ func init() {
 	SetInfo(InstantlyAI, ProviderInfo{
 		DisplayName: "Instantly",
 		AuthType:    ApiKey,
-		BaseURL:     "https://api.instantly.ai/api",
+		BaseURL:     "https://developer.instantly.ai/getting-started/getting-started#generate-a-new-api-key",
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Header,
 			Header: &ApiKeyOptsHeader{
