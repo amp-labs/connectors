@@ -37,10 +37,16 @@ func TestWriteZendeskSupportModule(t *testing.T) { // nolint:funlen,cyclop
 			ExpectedErrs: []error{common.ErrMissingRecordData},
 		},
 		{
-			Name:         "Unsupported object name",
+			Name:         "URL cannot be identified for an object",
 			Input:        common.WriteParams{ObjectName: "signals", RecordData: "dummy"},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrResolvingURLPathForObject},
+		},
+		{
+			Name:         "Object is not supported for write, while it is defined for read",
+			Input:        common.WriteParams{ObjectName: "ticket_events", RecordData: "dummy"},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
 		},
 		{
 			Name:  "Missing write parameter",
@@ -133,6 +139,23 @@ func TestWriteZendeskSupportModule(t *testing.T) { // nolint:funlen,cyclop
 					"default":   false,
 				},
 			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Writing tickets delegates to correct URL",
+			Input: common.WriteParams{
+				ObjectName: "tickets",
+				RecordData: "dummy",
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.PathSuffix("/api/v2/tickets"),
+				},
+				Then: mockserver.Response(http.StatusOK),
+			}.Server(),
+			Expected:     &common.WriteResult{Success: true},
 			ExpectedErrs: nil,
 		},
 	}

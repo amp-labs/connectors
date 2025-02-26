@@ -3,6 +3,7 @@ package zendesksupport
 import (
 	"context"
 	"strconv"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -48,7 +49,7 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 	}
 
 	// First page
-	url, err := c.getURL(config.ObjectName)
+	url, err := c.getReadURL(config.ObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -59,12 +60,7 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 		// Even if no Since parameter is empty the start_time must be set to 0.
 		// This is effectively to say read everything since the beginning of time.
 		// https://developer.zendesk.com/api-reference/ticketing/ticket-management/incremental_exports/#start_time
-		startTime := "0"
-		if !config.Since.IsZero() {
-			startTime = strconv.FormatInt(config.Since.Unix(), 10)
-		}
-
-		url.WithQueryParam("start_time", startTime)
+		url.WithQueryParam("start_time", formatStartTime(config))
 		url.WithQueryParam("per_page", DefaultPageSizeStr)
 	} else {
 		// Different objects have different pagination types.
@@ -76,4 +72,20 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 	}
 
 	return url, nil
+}
+
+func formatStartTime(config common.ReadParams) string {
+	if config.Since.IsZero() {
+		return "0"
+	}
+
+	// Records cannot be requested if they are less than 1 minute old.
+	unixTime := config.Since.Unix()
+	timeWindow := time.Since(config.Since)
+
+	if timeWindow.Minutes() < 1 {
+		unixTime = time.Now().Add(-1 * time.Minute).Unix()
+	}
+
+	return strconv.FormatInt(unixTime, 10)
 }
