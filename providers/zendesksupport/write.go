@@ -15,7 +15,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, err
 	}
 
-	url, err := c.getURL(config.ObjectName)
+	url, err := c.getWriteURL(config.ObjectName)
 	if err != nil {
 		return nil, err
 	}
