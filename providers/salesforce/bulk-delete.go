@@ -13,6 +13,8 @@ import (
 // * GetJobInfo
 // * GetJobResults
 // * GetSuccessfulJobResults.
+//
+//nolint:stylecheck
 func (c *Connector) BulkDelete(ctx context.Context, params BulkOperationParams) (*BulkOperationResult, error) {
 	if len(params.ObjectName) == 0 {
 		return nil, common.ErrMissingObjects
