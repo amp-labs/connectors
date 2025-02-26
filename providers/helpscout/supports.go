@@ -8,7 +8,6 @@ import (
 	"github.com/amp-labs/connectors/internal/staticschema"
 )
 
-// How to read & build these patterns: https://github.com/gobwas/glob
 func supportedOperations() components.EndpointRegistryInput {
 	readSupport := []string{"conversations", "customers", "mailboxes", "customer-properties", "tags", "teams", "users", "webhooks", "workflows"} //nolint:lll
 	writeSupport := []string{"conversations", "customers", "customer-properties", "webhooks"}

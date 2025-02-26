@@ -14,6 +14,7 @@ import (
 
 /*
 Response Schema for 200 Status OK
+Doc link: https://developer.helpscout.com/mailbox-api/
 {
 	"_embedded":{
 		"objectName":[...]
