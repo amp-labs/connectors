@@ -452,8 +452,12 @@ type ObjectEvents struct {
 type ObjectName string
 
 type SubscribeParams struct {
-	Request            any
-	RegistrationResult *RegistrationResult // optional, needed for some providers like Hubspot, Salesforce
+	Request any
+	// RegistrationResult is the result of the Connector.Register call.
+	// Connector.Subscribe requires information from the registration.
+	// Not all providers require registration, so this is optional.
+	// eg) Salesforce and HubSpot require registration because
+	RegistrationResult *RegistrationResult
 	SubscriptionEvents map[ObjectName]ObjectEvents
 }
 

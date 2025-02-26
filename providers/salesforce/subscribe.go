@@ -41,7 +41,7 @@ func (conn *Connector) Subscribe(
 	regstrationParams, ok := params.RegistrationResult.Result.(*ResultData)
 	if !ok {
 		return nil, fmt.Errorf(
-			"%w: expeted SubscribeParams.RegistrationResult.Result to be type '%T', but got '%T'", errInvalidRequestType,
+			"%w: expected SubscribeParams.RegistrationResult.Result to be type '%T', but got '%T'", errInvalidRequestType,
 			regstrationParams,
 			params.RegistrationResult.Result,
 		)
