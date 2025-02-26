@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"mime"
 	"net/http"
+	"regexp"
 	"strings"
 
-	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/spyzhov/ajson"
 )
 
@@ -40,13 +40,6 @@ type JSONHTTPResponse struct {
 	// If there were no bytes this will be nil.
 	body *ajson.Node
 }
-
-// validMimeTypes represents allowed valid JSON MIME types.
-var validMimeTypes = datautils.NewSet( //nolint:gochecknoglobals
-	"application/json",
-	"application/vnd.api+json",
-	"application/hal+json",
-)
 
 // Body returns JSON node. If it is empty the flag will indicate so.
 // Empty response body is a special case and should be handled explicitly.
@@ -136,21 +129,10 @@ func ParseJSONResponse(res *http.Response, body []byte) (*JSONHTTPResponse, erro
 			body:      nil,
 		}, nil
 	}
-	// Ensure the response is JSON
-	ct := res.Header.Get("Content-Type")
-	if len(ct) > 0 {
-		mimeType, _, err := mime.ParseMediaType(ct)
-		if err != nil {
-			return nil, fmt.Errorf("failed to parse content type: %w", err)
-		}
 
-		// Providers implementing JSONAPISpeicifcations returns application/vnd.api+json
-		if !validMimeTypes.Has(mimeType) {
-			return nil,
-				fmt.Errorf("%w: expected content type to be one of application/json,application/vnd.api+json,application/hal+json, got %s", //nolint:lll
-					ErrNotJSON, mimeType,
-				)
-		}
+	// Ensure the response is JSON
+	if err := EnsureContentType(`^application/.*json$`, res, false); err != nil {
+		return nil, err
 	}
 
 	// Unmarshall the response body into JSON
@@ -205,4 +187,43 @@ func AddSuffixIfNotExists(str string, suffix string) string {
 	}
 
 	return str
+}
+
+var ErrMissingContentType = errors.New("missing content type")
+
+// EnsureContentType ensures that the content type matches the given pattern.
+// If errOnMissing is true, an error is returned if the content type is missing.
+// Otherwise, the function returns nil.
+func EnsureContentType(pattern string, res *http.Response, errOnMissing bool) error {
+	ctype := res.Header.Get("Content-Type")
+
+	// If the content type is missing, return an error if errOnMissing is true,
+	// otherwise return nil.
+	if len(ctype) == 0 {
+		if errOnMissing {
+			return fmt.Errorf("%w: expected content type to be application/*json", ErrMissingContentType)
+		}
+
+		return nil
+	}
+
+	mimeType, _, err := mime.ParseMediaType(ctype)
+	if err != nil {
+		return fmt.Errorf("failed to parse content type: %w", err)
+	}
+
+	// Check if the mimeType follows the pattern application/*json (e.g.
+	// application/vnd.api+json, application/schema+json, etc.)
+	re, err := regexp.Compile(pattern)
+	if err != nil {
+		return fmt.Errorf("failed to compile regex: %w", err)
+	}
+
+	if !re.MatchString(mimeType) {
+		return fmt.Errorf("%w: expected content type to be %s, got %s",
+			ErrNotJSON, pattern, mimeType,
+		)
+	}
+
+	return nil
 }
