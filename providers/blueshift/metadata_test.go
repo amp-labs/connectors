@@ -51,7 +51,7 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen,gocognit,cyclop
 						},
 					},
 					"segments/list": {
-						DisplayName: "Segments/List",
+						DisplayName: "Segments",
 						FieldsMap: map[string]string{
 							"approxusers": "approxusers",
 							"status":      "status",
