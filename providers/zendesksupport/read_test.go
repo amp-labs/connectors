@@ -153,6 +153,7 @@ func TestIncrementalReadZendeskSupportModule(t *testing.T) { //nolint:funlen,goc
 				If: mockcond.And{
 					mockcond.QueryParam("per_page", "100"),
 					mockcond.QueryParam("start_time", "0"),
+					mockcond.PathSuffix("/api/v2/incremental/tickets/cursor"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseTickets),
 			}.Server(),
@@ -180,6 +181,7 @@ func TestIncrementalReadZendeskSupportModule(t *testing.T) { //nolint:funlen,goc
 				If: mockcond.And{
 					mockcond.QueryParam("per_page", "100"),
 					mockcond.QueryParam("start_time", "1726674883"),
+					mockcond.PathSuffix("/api/v2/incremental/tickets/cursor"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseTickets),
 			}.Server(),
@@ -197,6 +199,7 @@ func TestIncrementalReadZendeskSupportModule(t *testing.T) { //nolint:funlen,goc
 				If: mockcond.And{
 					mockcond.QueryParam("per_page", "100"),
 					mockcond.QueryParam("start_time", "0"),
+					mockcond.PathSuffix("/api/v2/incremental/users/cursor"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseUsersFirstPage),
 			}.Server(),
@@ -223,6 +226,7 @@ func TestIncrementalReadZendeskSupportModule(t *testing.T) { //nolint:funlen,goc
 				If: mockcond.And{
 					mockcond.QueryParam("per_page", "100"),
 					mockcond.QueryParam("start_time", "0"),
+					mockcond.PathSuffix("/api/v2/incremental/users/cursor"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseUsersLastPage),
 			}.Server(),
@@ -249,6 +253,7 @@ func TestIncrementalReadZendeskSupportModule(t *testing.T) { //nolint:funlen,goc
 				If: mockcond.And{
 					mockcond.QueryParam("per_page", "100"),
 					mockcond.QueryParam("start_time", "0"),
+					mockcond.PathSuffix("/api/v2/incremental/organizations"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseOrganizations),
 			}.Server(),
