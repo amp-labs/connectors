@@ -39,6 +39,12 @@ var (
 		"/api/v1/external_fetches.json": "external_fetches",
 		"/api/v1/push_templates.json":   "push_templates",
 	}
+
+	overrideDisplayName = map[string]string{
+		"tag_contexts/list": "Tag Contexts",
+		"segments/list":     "Segments",
+		"onsite_slots.json": "Onsite Slots",
+	}
 )
 
 func main() {
@@ -50,7 +56,7 @@ func main() {
 
 	readObjects, err := explorer.ReadObjectsGet(
 		api3.NewDenyPathStrategy(ignoreEndpoints),
-		objectEndpoints, nil, api3.CustomMappingObjectCheck(blueshift.ObjectNametoResponseField),
+		objectEndpoints, overrideDisplayName, api3.CustomMappingObjectCheck(blueshift.ObjectNametoResponseField),
 	)
 
 	goutils.MustBeNil(err)

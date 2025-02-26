@@ -110,7 +110,7 @@
           }
         },
         "onsite_slots.json": {
-          "displayName": "Onsite Slots Json",
+          "displayName": "Onsite Slots",
           "path": "1/onsite_slots.json",
           "responseKey": "",
           "fields": {
@@ -158,7 +158,7 @@
           }
         },
         "segments/list": {
-          "displayName": "Segments/List",
+          "displayName": "Segments",
           "path": "1/segments/list",
           "responseKey": "",
           "fields": {
@@ -191,7 +191,7 @@
           }
         },
         "tag_contexts/list": {
-          "displayName": "Tag Contexts/List",
+          "displayName": "Tag Contexts",
           "path": "1/tag_contexts/list",
           "responseKey": "",
           "fields": {

@@ -14,7 +14,7 @@ func main() {
 
 	conn := blueshift.GetBlueshiftConnector(ctx)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"campaigns", "push_templates", "external_fetches"})
+	m, err := conn.ListObjectMetadata(ctx, []string{"campaigns", "tag_contexts/list", "external_fetches"})
 
 	if err != nil {
 		log.Fatal(err)
