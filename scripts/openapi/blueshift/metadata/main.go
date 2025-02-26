@@ -40,7 +40,7 @@ var (
 		"/api/v1/push_templates.json":   "push_templates",
 	}
 
-	overrideDisplayName = map[string]string{
+	overrideDisplayName = map[string]string{ //nolint:gochecknoglobals
 		"tag_contexts/list": "Tag Contexts",
 		"segments/list":     "Segments",
 		"onsite_slots.json": "Onsite Slots",
