@@ -9,6 +9,13 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
+const account = "account"
+
+type dataResponse struct {
+	Data []map[string]any `json:"data"`
+	// Request Metadata Fields
+}
+
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, objectName)
 	if err != nil {
@@ -28,17 +35,31 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		DisplayName: naming.CapitalizeFirstLetterEveryWord(objectName),
 	}
 
-	data, err := common.UnmarshalJSON[[]map[string]any](response)
-	if err != nil {
-		return nil, common.ErrFailedToUnmarshalBody
-	}
+	// All supported objects return a response following the `dataResponse` schema,
+	// with the exception of the `account` object.
+	switch objectName {
+	case account:
+		record, err := common.UnmarshalJSON[map[string]any](response)
+		if err != nil {
+			return nil, common.ErrFailedToUnmarshalBody
+		}
 
-	if len(*data) == 0 {
-		return nil, common.ErrMissingExpectedValues
-	}
+		for fld := range *record {
+			objectMetadata.FieldsMap[fld] = fld
+		}
+	default:
+		records, err := common.UnmarshalJSON[dataResponse](response)
+		if err != nil {
+			return nil, common.ErrFailedToUnmarshalBody
+		}
 
-	for fld := range (*data)[0] {
-		objectMetadata.FieldsMap[fld] = fld
+		if len(records.Data) == 0 {
+			return nil, common.ErrMissingExpectedValues
+		}
+
+		for fld := range records.Data[0] {
+			objectMetadata.FieldsMap[fld] = fld
+		}
 	}
 
 	return &objectMetadata, nil
