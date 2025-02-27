@@ -16,7 +16,7 @@ var (
 	//go:embed schemas.json
 	schemas []byte
 
-	FileManager = scrapper.NewExtendedMetadataFileManager[staticschema.FieldMetadataMapV1, CustomProperties]( // nolint:gochecknoglobals,lll
+	FileManager = scrapper.NewExtendedMetadataFileManager[staticschema.FieldMetadataMapV2, CustomProperties]( // nolint:gochecknoglobals,lll
 		schemas, fileconv.NewSiblingFileLocator())
 
 	// Schemas is cached Object schemas.
@@ -26,7 +26,7 @@ var (
 )
 
 type ZendeskSchemas struct {
-	*staticschema.Metadata[staticschema.FieldMetadataMapV1, CustomProperties]
+	*staticschema.Metadata[staticschema.FieldMetadataMapV2, CustomProperties]
 }
 
 type CustomProperties struct {

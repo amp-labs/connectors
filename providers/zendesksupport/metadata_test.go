@@ -28,9 +28,10 @@ func TestListObjectMetadataZendeskSupportModule(t *testing.T) { // nolint:funlen
 			ExpectedErrs: []error{common.ErrObjectNotSupported},
 		},
 		{
-			Name:   "Successfully describe one object with metadata",
-			Input:  []string{"brands"},
-			Server: mockserver.Dummy(),
+			Name:       "Successfully describe one object with metadata",
+			Input:      []string{"brands"},
+			Server:     mockserver.Dummy(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"brands": {
@@ -60,9 +61,10 @@ func TestListObjectMetadataZendeskSupportModule(t *testing.T) { // nolint:funlen
 			ExpectedErrs: nil,
 		},
 		{
-			Name:   "Successfully describe multiple objects with metadata",
-			Input:  []string{"bookmarks", "ticket_audits"},
-			Server: mockserver.Dummy(),
+			Name:       "Successfully describe multiple objects with metadata",
+			Input:      []string{"bookmarks", "ticket_audits"},
+			Server:     mockserver.Dummy(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"bookmarks": {
@@ -116,9 +118,10 @@ func TestListObjectMetadataHelpCenterModule(t *testing.T) { // nolint:funlen,goc
 			ExpectedErrs: []error{common.ErrObjectNotSupported},
 		},
 		{
-			Name:   "Successfully describe one object with metadata",
-			Input:  []string{"articles/labels"},
-			Server: mockserver.Dummy(),
+			Name:       "Successfully describe one object with metadata",
+			Input:      []string{"articles/labels"},
+			Server:     mockserver.Dummy(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"articles/labels": {
