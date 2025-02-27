@@ -34,6 +34,9 @@ func NewConnector(params common.Parameters) (*Connector, error) {
 func constructor(base *components.Connector) (*Connector, error) {
 	connector := &Connector{Connector: base}
 
+	// Add supported modules
+	connector.RequireModule = modules
+
 	// Set the metadata provider for the connector
 	connector.SchemaProvider = schema.NewObjectSchemaProvider(
 		connector.HTTPClient().Client,
