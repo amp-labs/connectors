@@ -1,8 +1,6 @@
 package gorgias
 
 import (
-	_ "embed"
-
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/operations"
@@ -18,6 +16,7 @@ type Connector struct {
 
 	// Require authenticated client
 	common.RequireAuthenticatedClient
+	// Require workspace
 	common.RequireWorkspace
 
 	// Supported operations
