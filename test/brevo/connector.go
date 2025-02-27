@@ -11,7 +11,7 @@ import (
 )
 
 func GetBrevoConnector(ctx context.Context) *brevo.Connector {
-	filePath := credscanning.LoadPath(providers.Blueshift)
+	filePath := credscanning.LoadPath(providers.Brevo)
 
 	reader := utils.MustCreateProvCredJSON(filePath, false, false)
 
