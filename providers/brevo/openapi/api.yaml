@@ -7023,8 +7023,6 @@ paths:
           $ref: "#/definitions/orderBatch"
         x-exportParamName: "OrderBatch"
       responses:
-        "202":
-          $ref: "#/definitions/createdBatchId"
         "400":
           description: "bad request"
           schema:
