@@ -2,7 +2,6 @@ package salesforce
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -166,10 +165,5 @@ func (conn *Connector) GetSubscriptionResultUnMarshalFunc() common.UnmarshalFunc
 }
 
 func subscriptionResultUnMarshalFunc(data []byte) (any, error) {
-	res := &SubscribeResult{}
-	if err := json.Unmarshal(data, res); err != nil {
-		return nil, err
-	}
-
-	return res, nil
+	return common.Unmarshal[SubscribeResult](data)
 }

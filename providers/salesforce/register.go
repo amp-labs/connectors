@@ -257,3 +257,10 @@ func GetChangeDataCaptureChannelMembershipName(rawChannelName string, eventName 
 func GetRawPEName(peName string) string {
 	return RemoveSuffix(peName, 3) //nolint:mnd
 }
+
+func (conn *Connector) GetRegistrationResultUnMarshalFunc() common.UnmarshalFunc {
+	return registrationResultUnMarshalFunc
+}
+func registrationResultUnMarshalFunc(data []byte) (any, error) {
+	return common.Unmarshal[ResultData](data)
+}

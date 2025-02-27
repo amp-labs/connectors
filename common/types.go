@@ -510,6 +510,7 @@ type SubscribeConnector interface {
 		ctx context.Context,
 		previousResult RegistrationResult,
 	) error
+	GetRegistrationResultUnMarshalFunc() UnmarshalFunc
 
 	Subscribe(
 		ctx context.Context,
@@ -529,3 +530,9 @@ type SubscribeConnector interface {
 }
 
 type UnmarshalFunc func(data []byte) (any, error)
+
+func Unmarshal[T any](data []byte) (T, error) {
+	var v T
+	err := json.Unmarshal(data, &v)
+	return v, err
+}
