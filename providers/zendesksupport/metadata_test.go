@@ -8,12 +8,16 @@ import (
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
 func TestListObjectMetadataZendeskSupportModule(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
+
+	responseTicketsCustomFields := testutils.DataFromFile(t, "read/custom_fields/ticket_fields.json")
 
 	tests := []testroutines.Metadata{
 		{
@@ -87,6 +91,72 @@ func TestListObjectMetadataZendeskSupportModule(t *testing.T) { // nolint:funlen
 							"metadata":   "metadata",
 							"ticket_id":  "ticket_id",
 							"via":        "via",
+						},
+					},
+				},
+				Errors: make(map[string]error),
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Successfully describe ticket custom fields",
+			Input: []string{"tickets"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.PathSuffix("/api/v2/ticket_fields"),
+				Then:  mockserver.Response(http.StatusOK, responseTicketsCustomFields),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"tickets": {
+						DisplayName: "Tickets",
+						Fields: map[string]common.FieldMetadata{
+							"comment": {
+								DisplayName:  "comment",
+								ValueType:    "other",
+								ProviderType: "object",
+								ReadOnly:     false,
+							},
+							"priority": {
+								DisplayName:  "priority",
+								ValueType:    "singleSelect",
+								ProviderType: "string",
+								ReadOnly:     false,
+								Values: []common.FieldValue{{
+									Value:        "urgent",
+									DisplayValue: "urgent",
+								}, {
+									Value:        "high",
+									DisplayValue: "high",
+								}, {
+									Value:        "normal",
+									DisplayValue: "normal",
+								}, {
+									Value:        "low",
+									DisplayValue: "low",
+								}},
+							},
+							// Custom field
+							"Customer Type": {
+								DisplayName:  "Customer Type",
+								ValueType:    "singleSelect",
+								ProviderType: "tagger",
+								ReadOnly:     false,
+								Values: []common.FieldValue{{
+									Value:        "vip_customer",
+									DisplayValue: "VIP Customer",
+								}, {
+									Value:        "standard_customer",
+									DisplayValue: "Standard Customer",
+								}},
+							},
+						},
+						FieldsMap: map[string]string{
+							"comment": "comment",
+							// Custom fields
+							"Customer Type": "Customer Type",
+							"Topic":         "Topic",
 						},
 					},
 				},

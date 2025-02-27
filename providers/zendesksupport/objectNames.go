@@ -7,6 +7,11 @@ import (
 	"github.com/amp-labs/connectors/providers/zendesksupport/metadata"
 )
 
+const (
+	objectNameTickets  = "tickets"
+	objectNameRequests = "requests"
+)
+
 // Supported object names can be found under schemas.json.
 var supportedObjectsByRead = metadata.Schemas.ObjectNames() //nolint:gochecknoglobals
 
@@ -28,4 +33,13 @@ var writeURLExceptions = map[common.ModuleID]datautils.Map[string, string]{ //no
 		"users":         "/api/v2/users",
 	},
 	providers.ModuleZendeskHelpCenter: {},
+}
+
+var objectsWithCustomFields = map[common.ModuleID]datautils.StringSet{ // nolint:gochecknoglobals
+	ModuleTicketing: datautils.NewStringSet(
+		// https://developer.zendesk.com/api-reference/ticketing/tickets/tickets/#json-format
+		objectNameTickets,
+		// https://developer.zendesk.com/api-reference/ticketing/tickets/ticket-requests/#json-format
+		objectNameRequests,
+	),
 }

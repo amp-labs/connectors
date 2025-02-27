@@ -12,8 +12,6 @@ import (
 	"github.com/amp-labs/connectors/providers/keap/metadata"
 )
 
-var ErrResolvingCustomFields = errors.New("cannot resolve custom fields")
-
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
 	if err := config.ValidateParams(true); err != nil {
 		return nil, err
@@ -98,17 +96,17 @@ func (c *Connector) requestCustomFields(
 
 	url, err := c.getURL(modulePath, objectName, "model")
 	if err != nil {
-		return nil, errors.Join(ErrResolvingCustomFields, err)
+		return nil, errors.Join(common.ErrResolvingCustomFields, err)
 	}
 
 	res, err := c.Client.Get(ctx, url.String())
 	if err != nil {
-		return nil, errors.Join(ErrResolvingCustomFields, err)
+		return nil, errors.Join(common.ErrResolvingCustomFields, err)
 	}
 
 	fieldsResponse, err := common.UnmarshalJSON[modelCustomFieldsResponse](res)
 	if err != nil {
-		return nil, errors.Join(ErrResolvingCustomFields, err)
+		return nil, errors.Join(common.ErrResolvingCustomFields, err)
 	}
 
 	fields := make(map[int]modelCustomField)

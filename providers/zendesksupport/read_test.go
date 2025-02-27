@@ -138,32 +138,54 @@ func TestIncrementalReadZendeskSupportModule(t *testing.T) { //nolint:funlen,goc
 	t.Parallel()
 
 	responseTickets := testutils.DataFromFile(t, "read/incremental/tickets.json")
+	responseTicketsCustomFields := testutils.DataFromFile(t, "read/custom_fields/ticket_fields.json")
 	responseUsersFirstPage := testutils.DataFromFile(t, "read/incremental/users-1-first-page.json")
 	responseUsersLastPage := testutils.DataFromFile(t, "read/incremental/users-2-last-page.json")
 	responseOrganizations := testutils.DataFromFile(t, "read/incremental/organizations.json")
 
 	tests := []testroutines.Read{
 		{
-			Name: "Incremental Tickets no since",
+			Name: "Incremental Tickets no since with custom fields",
 			Input: common.ReadParams{
 				ObjectName: "tickets",
-				Fields:     connectors.Fields("id"),
+				Fields:     connectors.Fields("id", "Customer Type", "Topic"),
 			},
-			Server: mockserver.Conditional{
+			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.QueryParam("per_page", "2000"),
-					mockcond.QueryParam("start_time", "0"),
-					mockcond.PathSuffix("/api/v2/incremental/tickets/cursor"),
-				},
-				Then: mockserver.Response(http.StatusOK, responseTickets),
+				Cases: []mockserver.Case{{
+					If: mockcond.And{
+						mockcond.QueryParam("per_page", "2000"),
+						mockcond.QueryParam("start_time", "0"),
+						mockcond.PathSuffix("/api/v2/incremental/tickets/cursor"),
+					},
+					Then: mockserver.Response(http.StatusOK, responseTickets),
+				}, {
+					If:   mockcond.PathSuffix("/api/v2/ticket_fields"),
+					Then: mockserver.Response(http.StatusOK, responseTicketsCustomFields),
+				}},
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
-					Fields: map[string]any{"id": float64(5)},
-					Raw:    map[string]any{"priority": "normal"},
+					Fields: map[string]any{
+						"id":            float64(5),
+						"customer type": "standard_customer",
+						"topic":         "inquiry",
+					},
+					Raw: map[string]any{
+						"priority": "normal",
+						"custom_fields": []any{
+							map[string]any{
+								"id":    float64(26363655924371),
+								"value": "standard_customer",
+							},
+							map[string]any{
+								"id":    float64(26363685850259),
+								"value": "inquiry",
+							},
+						},
+					},
 				}},
 				NextPage: "",
 				Done:     true,
@@ -177,14 +199,19 @@ func TestIncrementalReadZendeskSupportModule(t *testing.T) { //nolint:funlen,goc
 				Fields:     connectors.Fields("id"),
 				Since:      time.Unix(1726674883, 0),
 			},
-			Server: mockserver.Conditional{
+			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.QueryParam("per_page", "2000"),
-					mockcond.QueryParam("start_time", "1726674883"),
-					mockcond.PathSuffix("/api/v2/incremental/tickets/cursor"),
-				},
-				Then: mockserver.Response(http.StatusOK, responseTickets),
+				Cases: []mockserver.Case{{
+					If: mockcond.And{
+						mockcond.QueryParam("per_page", "2000"),
+						mockcond.QueryParam("start_time", "1726674883"),
+						mockcond.PathSuffix("/api/v2/incremental/tickets/cursor"),
+					},
+					Then: mockserver.Response(http.StatusOK, responseTickets),
+				}, {
+					If:   mockcond.PathSuffix("/api/v2/ticket_fields"),
+					Then: mockserver.Response(http.StatusOK, responseTicketsCustomFields),
+				}},
 			}.Server(),
 			Comparator: testroutines.ComparatorPagination,
 			Expected:   &common.ReadResult{Rows: 1, NextPage: "", Done: true},
