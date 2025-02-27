@@ -1,6 +1,8 @@
 package gorgias
 
 import (
+	_ "embed"
+
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/operations"
