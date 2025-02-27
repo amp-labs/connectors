@@ -9,7 +9,6 @@ import (
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/tools/fileconv"
-	"github.com/amp-labs/connectors/tools/fileconv/api3"
 	"github.com/amp-labs/connectors/tools/scrapper"
 )
 
@@ -17,14 +16,10 @@ import (
 var (
 	//go:embed schemas.json
 	schemaContent []byte
-	fileManager   = scrapper.NewMetadataFileManager[staticschema.FieldMetadataMapV2](
+	FileManager   = scrapper.NewMetadataFileManager[staticschema.FieldMetadataMapV2](
 		schemaContent, fileconv.NewSiblingFileLocator())
 
-	schemas = fileManager.MustLoadSchemas()
-
-	//go:embed api.yaml
-	apiFile     []byte
-	FileManager = api3.NewOpenapiFileManager[any](apiFile)
+	schemas = FileManager.MustLoadSchemas()
 )
 
 type Connector struct {

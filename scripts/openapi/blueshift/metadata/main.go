@@ -3,11 +3,12 @@ package main
 import (
 	"log/slog"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers/blueshift"
-	"github.com/amp-labs/connectors/providers/kit/metadata"
+	"github.com/amp-labs/connectors/providers/blueshift/openapi"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
 	"github.com/amp-labs/connectors/tools/scrapper"
 )
@@ -59,7 +60,7 @@ var (
 )
 
 func main() {
-	explorer, err := blueshift.FileManager.GetExplorer(
+	explorer, err := openapi.ApiManager.GetExplorer(
 		api3.WithDisplayNamePostProcessors(api3.CamelCaseToSpaceSeparated, api3.CapitalizeFirstLetterEveryWord),
 	)
 
@@ -72,7 +73,7 @@ func main() {
 
 	goutils.MustBeNil(err)
 
-	schemas := staticschema.NewMetadata[staticschema.FieldMetadataMapV1]()
+	schemas := staticschema.NewMetadata[staticschema.FieldMetadataMapV2]()
 	registry := datautils.NamedLists[string]{}
 
 	for _, object := range readObjects { //nolint:gochecknoglobals
@@ -85,8 +86,14 @@ func main() {
 
 		for _, field := range object.Fields {
 			schemas.Add("", object.ObjectName, object.DisplayName, object.URLPath, object.ResponseKey,
-				staticschema.FieldMetadataMapV1{
-					field.Name: field.Name,
+				staticschema.FieldMetadataMapV2{
+					field.Name: staticschema.FieldMetadata{
+						DisplayName:  fieldNameConvertToDisplayName(field.Name),
+						ValueType:    providerTypeConvertToValueType(field.Type),
+						ProviderType: field.Type,
+						ReadOnly:     false,
+						Values:       nil,
+					},
 				}, nil, object.Custom)
 		}
 
@@ -95,8 +102,28 @@ func main() {
 		}
 	}
 
-	goutils.MustBeNil(metadata.FileManager.SaveSchemas(schemas))
-	goutils.MustBeNil(metadata.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
+	goutils.MustBeNil(blueshift.FileManager.SaveSchemas(schemas))
+	goutils.MustBeNil(blueshift.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
 
 	slog.Info("Completed.")
+}
+
+func fieldNameConvertToDisplayName(fieldName string) string {
+	return api3.CapitalizeFirstLetterEveryWord(
+		api3.CamelCaseToSpaceSeparated(fieldName),
+	)
+}
+
+func providerTypeConvertToValueType(providerType string) common.ValueType {
+	switch providerType {
+	case "integer":
+		return common.ValueTypeInt
+	case "string":
+		return common.ValueTypeString
+	case "boolean":
+		return common.ValueTypeBoolean
+	default:
+		// Ex: object, array
+		return common.ValueTypeOther
+	}
 }
