@@ -23,6 +23,7 @@ func supportedOperations() components.EndpointRegistryInput {
 		"knowledge_bases", "links", "message_templates", "message_template_folders",
 		"shifts", "tags", "teammate_groups", "teams",
 	}
+
 	return components.EndpointRegistryInput{
 		staticschema.RootModuleID: {
 			{
