@@ -531,8 +531,10 @@ type SubscribeConnector interface {
 
 type UnmarshalFunc func(data []byte) (any, error)
 
+//nolint:ireturn
 func Unmarshal[T any](data []byte) (T, error) {
 	var v T
 	err := json.Unmarshal(data, &v)
+
 	return v, err
 }

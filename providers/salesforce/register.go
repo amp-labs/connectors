@@ -261,6 +261,7 @@ func GetRawPEName(peName string) string {
 func (conn *Connector) GetRegistrationResultUnMarshalFunc() common.UnmarshalFunc {
 	return registrationResultUnMarshalFunc
 }
+
 func registrationResultUnMarshalFunc(data []byte) (any, error) {
 	return common.Unmarshal[ResultData](data)
 }
