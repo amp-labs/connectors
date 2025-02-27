@@ -60,8 +60,8 @@ func constructor(base *components.Connector) (*Connector, error) {
 		registry,
 		connector.ProviderContext.Module(),
 		operations.ReadHandlers{
-			BuildRequest:  connector.buildRequest,
-			ParseResponse: connector.parseWriteResponse,
+			BuildRequest:  connector.buildReadRequest,
+			ParseResponse: connector.parseReadResponse,
 			ErrorHandler:  common.InterpretError,
 		},
 	)

@@ -8,7 +8,7 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
-func (c *Connector) buildRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
 	var (
 		url *urlbuilder.URL
 		err error
@@ -31,7 +31,7 @@ func (c *Connector) buildRequest(ctx context.Context, params common.ReadParams) 
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 }
 
-func (c *Connector) parseWriteResponse(
+func (c *Connector) parseReadResponse(
 	ctx context.Context,
 	params common.ReadParams,
 	response *common.JSONHTTPResponse,
