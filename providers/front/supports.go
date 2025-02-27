@@ -15,7 +15,7 @@ func supportedOperations() components.EndpointRegistryInput {
 		"links", "rules", "message_templates", "message_template_folders",
 		"shifts", "tags", "teammates", "teammate_groups", "teams",
 	}
-  
+
 	writeSupports := []string{
 		"accounts", "contacts", "contact_lists", "conversations",
 		"inboxes", // Create an inbox in the default team (workspace)
@@ -23,8 +23,6 @@ func supportedOperations() components.EndpointRegistryInput {
 		"knowledge_bases", "links", "message_templates", "message_template_folders",
 		"shifts", "tags", "teammate_groups", "teams",
 	}
-
-
 	return components.EndpointRegistryInput{
 		staticschema.RootModuleID: {
 			{
