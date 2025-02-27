@@ -15,9 +15,18 @@ func GetFrontConnector(ctx context.Context) *front.Connector {
 	filePath := credscanning.LoadPath(providers.Front)
 	reader := testUtils.MustCreateProvCredJSON(filePath, false, false)
 
+	info, err := providers.ReadInfo(providers.Front)
+	if err != nil {
+		utils.Fail(err.Error())
+	}
+
+	headerName, headerValue, err := info.GetApiKeyHeader(reader.Get(credscanning.Fields.ApiKey))
+	if err != nil {
+		utils.Fail(err.Error())
+	}
+
 	client, err := common.NewApiKeyHeaderAuthHTTPClient(
-		ctx, "Authorization", reader.Get(credscanning.Fields.ApiKey),
-	)
+		ctx, headerName, headerValue)
 	if err != nil {
 		utils.Fail(err.Error())
 	}
