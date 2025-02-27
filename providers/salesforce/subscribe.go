@@ -2,6 +2,7 @@ package salesforce
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -158,4 +159,17 @@ func (conn *Connector) DeleteSubscription(ctx context.Context, params common.Sub
 	}
 
 	return nil
+}
+
+func (conn *Connector) GetSubscriptionResultUnMarshalFunc() common.UnmarshalFunc {
+	return subscriptionResultUnMarshalFunc
+}
+
+func subscriptionResultUnMarshalFunc(data []byte) (any, error) {
+	res := &SubscribeResult{}
+	if err := json.Unmarshal(data, res); err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }

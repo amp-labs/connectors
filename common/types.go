@@ -525,4 +525,7 @@ type SubscribeConnector interface {
 		ctx context.Context,
 		previousResult SubscriptionResult,
 	) error
+	GetSubscriptionResultUnMarshalFunc() UnmarshalFunc
 }
+
+type UnmarshalFunc func(data []byte) (any, error)
