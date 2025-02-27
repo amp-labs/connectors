@@ -18,3 +18,7 @@ var supportedModules = common.Modules{ // nolint: gochecknoglobals
 	},
 	// Add other modules.
 }
+
+var modules = common.RequireModule{ //nolint:gochecknoglobals
+	ExpectedModules: []common.ModuleID{ModuleTable},
+}
