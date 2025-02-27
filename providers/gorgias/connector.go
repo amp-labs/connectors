@@ -1,56 +1,46 @@
 package gorgias
 
 import (
+	_ "embed"
+
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/paramsbuilder"
-	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/components"
+	"github.com/amp-labs/connectors/internal/components/operations"
+	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/providers"
 )
 
 const restAPIPrefix = "api"
 
 type Connector struct {
-	BaseURL string
-	Client  *common.JSONHTTPClient
+	// Basic connector
+	*components.Connector
+
+	// Require authenticated client
+	common.RequireAuthenticatedClient
+	common.RequireWorkspace
+
+	// Supported operations
+	components.SchemaProvider
 }
 
-func NewConnector(opts ...Option) (*Connector, error) {
-	params, err := paramsbuilder.Apply(parameters{}, opts)
-	if err != nil {
-		return nil, err
-	}
-
-	providerInfo, err := providers.ReadInfo(providers.Freshdesk, &params.Workspace)
-	if err != nil {
-		return nil, err
-	}
-
-	jsonClient := common.JSONHTTPClient{
-		HTTPClient: params.Caller,
-	}
-
-	connector := Connector{
-		Client: &jsonClient,
-	}
-
-	connector.setBaseURL(providerInfo.BaseURL)
-
-	return &connector, nil
+func NewConnector(params common.Parameters) (*Connector, error) {
+	// Create base connector with provider info
+	return components.Initialize(providers.Gorgias, params, constructor)
 }
 
-func (conn *Connector) Provider() providers.Provider {
-	return providers.Gorgias
-}
+func constructor(base *components.Connector) (*Connector, error) {
+	connector := &Connector{Connector: base}
 
-func (conn *Connector) getAPIURL(objectName string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(conn.BaseURL, restAPIPrefix, objectName)
-}
+	// Set the metadata provider for the connector
+	connector.SchemaProvider = schema.NewObjectSchemaProvider(
+		connector.HTTPClient().Client,
+		schema.FetchModeParallel,
+		operations.SingleObjectMetadataHandlers{
+			BuildRequest:  connector.buildSingleObjectMetadataRequest,
+			ParseResponse: connector.parseSingleObjectMetadataResponse,
+		},
+	)
 
-func (conn *Connector) setBaseURL(newURL string) {
-	conn.BaseURL = newURL
-	conn.Client.HTTPClient.Base = newURL
-}
-
-func (conn *Connector) String() string {
-	return conn.Provider() + ".Connector"
+	return connector, nil
 }
