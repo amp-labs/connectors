@@ -46,7 +46,7 @@ var (
 		"onsite_slots.json": "Onsite Slots",
 	}
 
-	ObjectNametoResponseField = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
+	objectNametoResponseField = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
 		"email_templates":  "results",
 		"campaigns":        "results",
 		"external_fetches": "results",
@@ -68,7 +68,7 @@ func main() {
 
 	readObjects, err := explorer.ReadObjectsGet(
 		api3.NewDenyPathStrategy(ignoreEndpoints),
-		objectEndpoints, overrideDisplayName, api3.CustomMappingObjectCheck(ObjectNametoResponseField),
+		objectEndpoints, overrideDisplayName, api3.CustomMappingObjectCheck(objectNametoResponseField),
 	)
 
 	goutils.MustBeNil(err)
