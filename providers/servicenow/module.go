@@ -10,6 +10,7 @@ const (
 // supportedModules represents currently working and supported modules within the Marketo connector.
 // Any added module should be appended here.
 var supportedModules = common.Modules{ // nolint: gochecknoglobals
+	// Module Table expectedURLSuffix: /now/v2/table/{tableName}
 	ModuleTable: {
 		ID:      ModuleTable,
 		Label:   "now",

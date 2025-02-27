@@ -48,10 +48,6 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		return nil, common.ErrMissingExpectedValues
 	}
 
-	if len(res.Result) == 0 {
-		return nil, common.ErrMissingMetadata
-	}
-
 	// Using the first result data to generate the metadata.
 	for k := range res.Result[0] {
 		objectMetadata.FieldsMap[k] = k
