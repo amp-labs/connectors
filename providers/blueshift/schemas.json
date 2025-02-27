@@ -417,7 +417,7 @@
             }
           }
         },
-        "onsite_slots.json": {
+        "onsite_slots": {
           "displayName": "Onsite Slots",
           "path": "1/onsite_slots.json",
           "responseKey": "",

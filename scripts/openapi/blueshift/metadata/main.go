@@ -38,12 +38,13 @@ var (
 		"/api/v2/campaigns.json":        "campaigns",
 		"/api/v1/external_fetches.json": "external_fetches",
 		"/api/v1/push_templates.json":   "push_templates",
+		"/api/v1/onsite_slots.json":     "onsite_slots",
 	}
 
 	overrideDisplayName = map[string]string{ //nolint:gochecknoglobals
 		"tag_contexts/list": "Tag Contexts",
 		"segments/list":     "Segments",
-		"onsite_slots.json": "Onsite Slots",
+		"onsite_slots":      "Onsite Slots",
 	}
 
 	objectNametoResponseField = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
