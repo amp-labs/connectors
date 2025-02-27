@@ -7,8 +7,8 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/staticschema"
-	"github.com/amp-labs/connectors/providers/blueshift"
-	"github.com/amp-labs/connectors/providers/blueshift/openapi"
+	"github.com/amp-labs/connectors/providers/blueshift/metadata"
+	"github.com/amp-labs/connectors/providers/blueshift/metadata/openapi"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
 	"github.com/amp-labs/connectors/tools/scrapper"
 )
@@ -103,8 +103,8 @@ func main() {
 		}
 	}
 
-	goutils.MustBeNil(blueshift.FileManager.SaveSchemas(schemas))
-	goutils.MustBeNil(blueshift.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
+	goutils.MustBeNil(metadata.FileManager.SaveSchemas(schemas))
+	goutils.MustBeNil(metadata.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
 
 	slog.Info("Completed.")
 }
