@@ -12,7 +12,7 @@ func init() {
 			Header: &ApiKeyOptsHeader{
 				Name: "Authorization",
 			},
-			DocsURL: "https://developers.ringover.com/docs/api/authentication",
+			DocsURL: "https://developer.ringover.com",
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
