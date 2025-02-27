@@ -9,7 +9,11 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
-const account = "account"
+const (
+	account          = "account"
+	limitQuery       = "limit"
+	metadataPageSize = "1"
+)
 
 type dataResponse struct {
 	Data []map[string]any `json:"data"`
@@ -21,6 +25,9 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 	if err != nil {
 		return nil, err
 	}
+
+	// Limit response to 1 record data.
+	url.WithQueryParam(limitQuery, metadataPageSize)
 
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 }
