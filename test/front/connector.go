@@ -26,8 +26,7 @@ func GetFrontConnector(ctx context.Context) *front.Connector {
 	}
 
 	client, err := common.NewApiKeyHeaderAuthHTTPClient(
-		ctx, headerName, headerValue,
-	)
+		ctx, headerName, headerValue)
 	if err != nil {
 		utils.Fail(err.Error())
 	}

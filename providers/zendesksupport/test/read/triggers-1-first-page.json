@@ -1,0 +1,51 @@
+{
+  "triggers": [
+    {
+      "url": "https://d3v-ampersand.zendesk.com/api/v2/triggers/26363596896147.json",
+      "id": 26363596896147,
+      "title": "Notify assignee of assignment",
+      "active": true,
+      "updated_at": "2025-02-05T18:49:09Z",
+      "created_at": "2024-02-15T16:23:04Z",
+      "default": false,
+      "actions": [
+        {
+          "field": "notification_user",
+          "value": [
+            "assignee_id",
+            "[{{ticket.account}}] Assignment: {{ticket.title}}",
+            "You have been assigned to this ticket (#{{ticket.id}}).\n\n{{ticket.latest_comment_html}}"
+          ]
+        }
+      ],
+      "conditions": {
+        "all": [
+          {
+            "field": "assignee_id",
+            "operator": "changed",
+            "value": null
+          },
+          {
+            "field": "assignee_id",
+            "operator": "is_not",
+            "value": "current_user"
+          }
+        ],
+        "any": []
+      },
+      "description": "Sends an email to an agent when they have been assigned a ticket.",
+      "position": 1,
+      "raw_title": "Notify assignee of assignment",
+      "category_id": "26363596868115"
+    }
+  ],
+  "meta": {
+    "has_more": true,
+    "after_cursor": "eyJvIjoicG9zaXRpb24scG9zaXRpb24sdGl0bGUsaWQiLCJ2IjoiYVFFQUFBQUFBQUFBYVFFQUFBQUFBQUFBY3gwQUFBQk9iM1JwWm5rZ1lYTnphV2R1WldVZ2IyWWdZWE56YVdkdWJXVnVkR21UOTlOQStoY0FBQT09In0=",
+    "before_cursor": "eyJvIjoicG9zaXRpb24scG9zaXRpb24sdGl0bGUsaWQiLCJ2IjoiYVFFQUFBQUFBQUFBYVFFQUFBQUFBQUFBY3gwQUFBQk9iM1JwWm5rZ1lYTnphV2R1WldVZ2IyWWdZWE56YVdkdWJXVnVkR21UOTlOQStoY0FBQT09In0="
+  },
+  "links": {
+    "prev": "https://d3v-ampersand.zendesk.com/api/v2/triggers?page%5Bbefore%5D=eyJvIjoicG9zaXRpb24scG9zaXRpb24sdGl0bGUsaWQiLCJ2IjoiYVFFQUFBQUFBQUFBYVFFQUFBQUFBQUFBY3gwQUFBQk9iM1JwWm5rZ1lYTnphV2R1WldVZ2IyWWdZWE56YVdkdWJXVnVkR21UOTlOQStoY0FBQT09In0%3D&page%5Bsize%5D=1",
+    "next": "https://d3v-ampersand.zendesk.com/api/v2/triggers?page%5Bafter%5D=eyJvIjoicG9zaXRpb24scG9zaXRpb24sdGl0bGUsaWQiLCJ2IjoiYVFFQUFBQUFBQUFBYVFFQUFBQUFBQUFBY3gwQUFBQk9iM1JwWm5rZ1lYTnphV2R1WldVZ2IyWWdZWE56YVdkdWJXVnVkR21UOTlOQStoY0FBQT09In0%3D&page%5Bsize%5D=1"
+  }
+}

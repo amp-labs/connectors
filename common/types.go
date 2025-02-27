@@ -431,7 +431,7 @@ const (
 	// successful registration.
 	RegistrationStatusSuccess RegistrationStatus = "success"
 	// registration returned error, and failed to rollback some intermittent steps.
-	RegistrationStatusError RegistrationStatus = "error"
+	RegistrationStatusFailedToRollback RegistrationStatus = "failed_to_rollback"
 )
 
 type SubscriptionRegistrationParams struct {
@@ -452,24 +452,40 @@ type ObjectEvents struct {
 type ObjectName string
 
 type SubscribeParams struct {
-	RegistrationRef    string // optional, needed for some providers like Hubspot
+	Request any
+	// RegistrationResult is the result of the Connector.Register call.
+	// Connector.Subscribe requires information from the registration.
+	// Not all providers require registration, so this is optional.
+	// eg) Salesforce and HubSpot require registration because
+	RegistrationResult *RegistrationResult
 	SubscriptionEvents map[ObjectName]ObjectEvents
-	TargetURL          string // optional
 }
 
 type SubscriptionResult struct { // this corresponds to each API call.
-	RegistrationRef string
-	SubscriptionRef string
-	Result          any
-	Objects         []ObjectName
-	Events          []SubscriptionEventType
+	Result  any
+	Objects []ObjectName
+	Events  []SubscriptionEventType
 	// ["create", "update", "delete"]
 	// our regular CRUD operation events we translate to provider-specific names contact.creation
 	UpdateFields []string
 	// ["email", "fax"]
 	PassThroughEvents []string
 	// provider specific events ["contact.merged"] for hubspot or ["jira_issue:restored", "jira_issue:archived"] for jira.
+	Status SubscriptionStatus
 }
+
+type SubscriptionStatus string
+
+const (
+	// registration is pending and not yet complete.
+	SubscriptionStatusPending SubscriptionStatus = "pending"
+	// registration returned error, and all intermittent steps are rolled back.
+	SubscriptionStatusFailed SubscriptionStatus = "failed"
+	// successful registration.
+	SubscriptionStatusSuccess SubscriptionStatus = "success"
+	// registration returned error, and failed to rollback some intermittent steps.
+	SubscriptionStatusFailedToRollback SubscriptionStatus = "failed_to_rollback"
+)
 
 // SubscribeConnector has 2 main responsibilities:
 // 1. Register a subscription with the provider.
