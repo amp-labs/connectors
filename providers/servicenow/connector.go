@@ -25,9 +25,6 @@ type Connector struct {
 
 	// Supported operations
 	components.SchemaProvider
-	components.Reader
-	components.Writer
-	components.Deleter
 }
 
 func NewConnector(params common.Parameters) (*Connector, error) {
@@ -42,6 +39,8 @@ func constructor(base *components.Connector) (*Connector, error) {
 		connector.HTTPClient().Client,
 		schema.FetchModeParallel,
 		operations.SingleObjectMetadataHandlers{
+			// Retrieving metadata using individual object calls can lead to rate limiting issues.
+			// Additionally, the rate limits may vary depending on the caller's roles.
 			BuildRequest:  connector.buildSingleObjectMetadataRequest,
 			ParseResponse: connector.parseSingleObjectMetadataResponse,
 		},
