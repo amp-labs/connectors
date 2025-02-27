@@ -5,6 +5,7 @@ import (
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/pipedrive/metadata"
 )
 
 const (
@@ -62,4 +63,13 @@ func (c *Connector) setBaseURL(newURL string) {
 // `{{baseURL}}/{{version}}/{{objectName}}`.
 func (c *Connector) getAPIURL(arg string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(c.BaseURL, apiVersion, arg)
+}
+
+func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
+	path, err := metadata.Schemas.LookupURLPath(c.Module.ID, objectName)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.getAPIURL(path)
 }

@@ -61,7 +61,7 @@ func (c *Connector) rollbackRegister(ctx context.Context, res *ResultData) error
 
 func (c *Connector) Register(
 	ctx context.Context,
-	params *common.SubscriptionRegistrationParams,
+	params common.SubscriptionRegistrationParams,
 ) (*common.RegistrationResult, error) {
 	validate := validator.New()
 	if err := validate.Struct(params); err != nil {
@@ -82,7 +82,7 @@ func (c *Connector) Register(
 	if err != nil {
 		if rollbackErr := c.rollbackRegister(ctx, result); rollbackErr != nil {
 			return &common.RegistrationResult{
-				Status: common.RegistrationStatusError,
+				Status: common.RegistrationStatusFailedToRollback,
 			}, errors.Join(rollbackErr, err)
 		}
 
@@ -227,7 +227,7 @@ func GetChangeDataCaptureEventName(objName string) string {
 		return GetRawObjectName(objName) + "__ChangeEvent"
 	}
 
-	return objName + "%ChangeEvent"
+	return objName + "ChangeEvent"
 }
 
 func GetChannelName(rawChannelName string) string {
