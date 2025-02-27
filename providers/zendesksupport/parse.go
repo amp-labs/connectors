@@ -1,7 +1,9 @@
 package zendesksupport
 
 import (
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/amp-labs/connectors/providers/zendesksupport/metadata"
 	"github.com/spyzhov/ajson"
 )
 
@@ -48,4 +50,12 @@ func getNextRecordsURL(node *ajson.Node) (string, error) {
 	}
 
 	return jsonquery.New(node).StrWithDefault("after_url", "")
+}
+
+func makeGetRecords(moduleID common.ModuleID, objectName string) common.NodeRecordsFunc {
+	return func(node *ajson.Node) ([]*ajson.Node, error) {
+		responseFieldName := metadata.Schemas.LookupArrayFieldName(moduleID, objectName)
+
+		return jsonquery.New(node).ArrayRequired(responseFieldName)
+	}
 }
