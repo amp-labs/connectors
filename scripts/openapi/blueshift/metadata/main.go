@@ -7,8 +7,7 @@ import (
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers/blueshift"
-	"github.com/amp-labs/connectors/providers/blueshift/metadata"
-	"github.com/amp-labs/connectors/providers/blueshift/metadata/openapi"
+	"github.com/amp-labs/connectors/providers/kit/metadata"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
 	"github.com/amp-labs/connectors/tools/scrapper"
 )
@@ -45,10 +44,22 @@ var (
 		"segments/list":     "Segments",
 		"onsite_slots.json": "Onsite Slots",
 	}
+
+	ObjectNametoResponseField = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
+		"email_templates":  "results",
+		"campaigns":        "results",
+		"external_fetches": "results",
+		"push_templates":   "results",
+		"sms_templates":    "results",
+	},
+		func(objectName string) (fieldName string) {
+			return objectName
+		},
+	)
 )
 
 func main() {
-	explorer, err := openapi.FileManager.GetExplorer(
+	explorer, err := blueshift.FileManager.GetExplorer(
 		api3.WithDisplayNamePostProcessors(api3.CamelCaseToSpaceSeparated, api3.CapitalizeFirstLetterEveryWord),
 	)
 
@@ -56,7 +67,7 @@ func main() {
 
 	readObjects, err := explorer.ReadObjectsGet(
 		api3.NewDenyPathStrategy(ignoreEndpoints),
-		objectEndpoints, overrideDisplayName, api3.CustomMappingObjectCheck(blueshift.ObjectNametoResponseField),
+		objectEndpoints, overrideDisplayName, api3.CustomMappingObjectCheck(ObjectNametoResponseField),
 	)
 
 	goutils.MustBeNil(err)

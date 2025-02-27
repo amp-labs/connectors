@@ -1,48 +1,57 @@
 package blueshift
 
 import (
+	_ "embed"
+
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/paramsbuilder"
+	"github.com/amp-labs/connectors/internal/components"
+	"github.com/amp-labs/connectors/internal/components/schema"
+	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/tools/fileconv"
+	"github.com/amp-labs/connectors/tools/fileconv/api3"
+	"github.com/amp-labs/connectors/tools/scrapper"
+)
+
+// nolint:gochecknoglobals
+var (
+	//go:embed schemas.json
+	schemaContent []byte
+	fileManager   = scrapper.NewMetadataFileManager[staticschema.FieldMetadataMapV2](
+		schemaContent, fileconv.NewSiblingFileLocator())
+
+	schemas = fileManager.MustLoadSchemas()
+
+	//go:embed api.yaml
+	apiFile     []byte
+	FileManager = api3.NewOpenapiFileManager[any](apiFile)
 )
 
 type Connector struct {
-	BaseURL string
-	Client  *common.JSONHTTPClient
-	Module  common.Module
+	// Basic connector
+	*components.Connector
+
+	// Require authenticated client
+	common.RequireAuthenticatedClient
+
+	// supported operations
+	components.SchemaProvider
+	components.Reader
+	components.Writer
+	components.Deleter
 }
 
-func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	params, err := paramsbuilder.Apply(parameters{}, opts)
-	if err != nil {
-		return nil, err
-	}
-
-	providerInfo, err := providers.ReadInfo(providers.Blueshift)
-	if err != nil {
-		return nil, err
-	}
-
-	conn = &Connector{
-		Client: &common.JSONHTTPClient{
-			HTTPClient: params.Client.Caller,
-		},
-	}
-
-	conn.setBaseURL(providerInfo.BaseURL)
-
-	return conn, nil
+func NewConnector(params common.Parameters) (*Connector, error) {
+	// Create base connector with provider info
+	return components.Initialize(providers.Blueshift, params, constructor)
 }
 
-func (c *Connector) setBaseURL(newURL string) {
-	c.BaseURL = newURL
-	c.Client.HTTPClient.Base = newURL
-}
+//nolint:funlen
+func constructor(base *components.Connector) (*Connector, error) {
+	connector := &Connector{Connector: base}
 
-func (c *Connector) Provider() providers.Provider {
-	return providers.Blueshift
-}
+	// Set the metadata provider for the connector
+	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), schemas)
 
-func (c *Connector) String() string {
-	return c.Provider() + ".Connector"
+	return connector, nil
 }
