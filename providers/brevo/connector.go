@@ -6,8 +6,8 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/operations"
-	"github.com/amp-labs/connectors/internal/components/reader"
 	"github.com/amp-labs/connectors/internal/components/schema"
+	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/brevo/metadata"
 )
@@ -42,13 +42,13 @@ func constructor(base *components.Connector) (*Connector, error) {
 	// Set the metadata provider for the connector
 	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), metadata.Schemas)
 
-	connector.Reader = reader.NewHTTPReader(
+	connector.Writer = writer.NewHTTPWriter(
 		connector.HTTPClient().Client,
 		registry,
 		connector.ProviderContext.Module(),
-		operations.ReadHandlers{
-			BuildRequest:  connector.buildReadRequest,
-			ParseResponse: connector.parseReadResponse,
+		operations.WriteHandlers{
+			BuildRequest:  connector.buildWriteRequest,
+			ParseResponse: connector.parseWriteResponse,
 			ErrorHandler:  common.InterpretError,
 		},
 	)
