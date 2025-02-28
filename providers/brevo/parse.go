@@ -1,34 +1,16 @@
 package brevo
 
 import (
-	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 
 const (
-	pageSizeKey         = "limit"
-	paginationResultKey = "_pagination"
-	nextURLKey          = "next"
-	pageSize            = "200"
-	dataResponseKey     = "_results"
+	pageSizeKey = "limit"
+	pageSize    = 200
 )
 
-func nextRecordsURL() common.NextPageFunc {
-	return func(node *ajson.Node) (string, error) {
-		jsonQuery := jsonquery.New(node, paginationResultKey)
+func nextRecordsURL(node *ajson.Node) (string, error) {
 
-		nextURL, err := jsonQuery.StringOptional(nextURLKey)
-		if err != nil {
-			return "", err
-		}
+	return "", nil
 
-		// If  received null value,set the url to empty string
-		if nextURL == nil {
-			var emptyString string
-			nextURL = &emptyString
-		}
-
-		return *nextURL, nil
-	}
 }

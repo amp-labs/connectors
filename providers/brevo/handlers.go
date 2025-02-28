@@ -3,6 +3,7 @@ package brevo
 import (
 	"context"
 	"net/http"
+	"strconv"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -24,6 +25,19 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
+	if supportLimitAndOffset.Has(params.ObjectName) {
+		if len(params.NextPage) != 0 {
+			// Next page
+			url.WithQueryParam("offset", params.NextPage.String())
+		} else {
+			// First page
+			url.WithQueryParam("offset", "0")
+		}
+
+		url.WithQueryParam("limit", strconv.Itoa(pageSize))
+
+	}
+
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 }
 
@@ -38,7 +52,7 @@ func (c *Connector) parseReadResponse(
 	return common.ParseResult(
 		response,
 		common.GetRecordsUnderJSONPath(responseFieldName),
-		nextRecordsURL(),
+		nextRecordsURL,
 		common.GetMarshaledData,
 		params.Fields,
 	)
