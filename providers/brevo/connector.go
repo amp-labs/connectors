@@ -48,7 +48,6 @@ func constructor(base *components.Connector) (*Connector, error) {
 	connector := &Connector{Connector: base}
 
 	registry, err := components.NewEndpointRegistry(supportedOperations())
-
 	if err != nil {
 		return nil, err
 	}
