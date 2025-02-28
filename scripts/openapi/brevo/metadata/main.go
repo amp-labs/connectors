@@ -3,12 +3,12 @@ package main
 import (
 	"log/slog"
 
-	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers/brevo"
 	"github.com/amp-labs/connectors/providers/brevo/openapi"
+	utilsopenapi "github.com/amp-labs/connectors/scripts/openapi/utils"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
 	"github.com/amp-labs/connectors/tools/scrapper"
 )
@@ -105,15 +105,7 @@ func main() {
 
 		for _, field := range object.Fields {
 			schemas.Add("", object.ObjectName, object.DisplayName, object.URLPath, object.ResponseKey,
-				staticschema.FieldMetadataMapV2{
-					field.Name: staticschema.FieldMetadata{
-						DisplayName:  fieldNameConvertToDisplayName(field.Name),
-						ValueType:    providerTypeConvertToValueType(field.Type),
-						ProviderType: field.Type,
-						ReadOnly:     false,
-						Values:       nil,
-					},
-				}, nil, object.Custom)
+				utilsopenapi.ConvertMetadataFieldToFieldMetadataMapV2(field), nil, object.Custom)
 		}
 
 		for _, queryParam := range object.QueryParams {
@@ -125,24 +117,4 @@ func main() {
 	goutils.MustBeNil(brevo.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
 
 	slog.Info("Completed.")
-}
-
-func fieldNameConvertToDisplayName(fieldName string) string {
-	return api3.CapitalizeFirstLetterEveryWord(
-		api3.CamelCaseToSpaceSeparated(fieldName),
-	)
-}
-
-func providerTypeConvertToValueType(providerType string) common.ValueType {
-	switch providerType {
-	case "integer":
-		return common.ValueTypeInt
-	case "string":
-		return common.ValueTypeString
-	case "boolean":
-		return common.ValueTypeBoolean
-	default:
-		// Ex: object, array
-		return common.ValueTypeOther
-	}
 }
