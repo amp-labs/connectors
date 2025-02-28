@@ -5,6 +5,7 @@ const (
 	RingOverUS Provider = "ringOverUS"
 )
 
+//nolint:funlen
 func init() {
 	SetInfo(RingOverUS, ProviderInfo{
 		DisplayName: "RingOver US",
@@ -75,5 +76,4 @@ func init() {
 			Write:     false,
 		},
 	})
-
 }
