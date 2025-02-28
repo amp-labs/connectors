@@ -13,6 +13,9 @@ import (
 	connTest "github.com/amp-labs/connectors/test/zendesksupport"
 )
 
+// READ:
+// * paginated		- cursor
+// * incremental	- yes
 var objectName = "users" // nolint: gochecknoglobals
 
 func main() {
@@ -28,6 +31,11 @@ func main() {
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: objectName,
 		Fields:     connectors.Fields("name", "time_zone", "role"),
+		// Since:      time.Now().Add(-1 * time.Hour * 24 * 180),
+		// Pagination returned when since was not specified:
+		// NextPage: "https://d3v-ampersand.zendesk.com/api/v2/incremental/users/cursor?cursor=MTcwODAxNDE4OC4wfHwyNjM2MzU5NzM1NDM4N3w%3D&per_page=1", // nolint:lll
+		// Pagination returned when since was set:
+		// NextPage: "https://d3v-ampersand.zendesk.com/api/v2/incremental/users/cursor?cursor=MTczMDgyNTkzNi4wfHwyNzc3NDI5ODMzNTI1MXw%3D&per_page=1", // nolint:lll
 	})
 	if err != nil {
 		utils.Fail("error reading from Zendesk Support", "error", err)

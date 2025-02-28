@@ -53,13 +53,26 @@ func (c *Connector) String() string {
 	return c.Provider() + ".Connector"
 }
 
-func (c *Connector) getURL(objectName string) (*urlbuilder.URL, error) {
+func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
 	path, err := metadata.Schemas.LookupURLPath(c.Module.ID, objectName)
 	if err != nil {
 		return nil, err
 	}
 
 	return urlbuilder.New(c.BaseURL, path)
+}
+
+func (c *Connector) getWriteURL(objectName string) (*urlbuilder.URL, error) {
+	if objectsUnsupportedWrite[c.Module.ID].Has(objectName) {
+		return nil, common.ErrOperationNotSupportedForObject
+	}
+
+	if path, ok := writeURLExceptions[c.Module.ID][objectName]; ok {
+		// URL for write differs from read.
+		return urlbuilder.New(c.BaseURL, path)
+	}
+
+	return c.getReadURL(objectName)
 }
 
 func (c *Connector) setBaseURL(newURL string) {

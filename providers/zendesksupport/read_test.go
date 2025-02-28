@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -19,9 +20,8 @@ func TestReadZendeskSupportModule(t *testing.T) { //nolint:funlen,gocognit,cyclo
 
 	responseErrorFormat := testutils.DataFromFile(t, "resource-not-found.json")
 	responseForbiddenError := testutils.DataFromFile(t, "forbidden.json")
-	responseUsersFirstPage := testutils.DataFromFile(t, "read-users-1-first-page.json")
-	responseUsersEmptyPage := testutils.DataFromFile(t, "read-users-2-empty-page.json")
-	responseReadTickets := testutils.DataFromFile(t, "read-list-tickets.json")
+	responseTriggersFirstPage := testutils.DataFromFile(t, "read/triggers-1-first-page.json")
+	responseTriggersLastPage := testutils.DataFromFile(t, "read/triggers-2-last-page.json")
 
 	tests := []testroutines.Read{
 		{
@@ -86,61 +86,182 @@ func TestReadZendeskSupportModule(t *testing.T) { //nolint:funlen,gocognit,cyclo
 			ExpectedErrs: []error{jsonquery.ErrNotArray},
 		},
 		{
-			Name:  "Next page cursor may be missing in payload",
-			Input: common.ReadParams{ObjectName: "users", Fields: connectors.Fields("id")},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, responseUsersEmptyPage),
-			}.Server(),
-			Expected:     &common.ReadResult{Done: true, Data: []common.ReadResultRow{}},
-			ExpectedErrs: nil,
-		},
-		{
 			Name:  "Next page URL is resolved, when provided with a string",
-			Input: common.ReadParams{ObjectName: "users", Fields: connectors.Fields("id")},
+			Input: common.ReadParams{ObjectName: "triggers", Fields: connectors.Fields("id")},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, responseUsersFirstPage),
+				Always: mockserver.Response(http.StatusOK, responseTriggersFirstPage),
 			}.Server(),
 			Comparator: testroutines.ComparatorPagination,
 			Expected: &common.ReadResult{
-				Rows: 3,
-				NextPage: "https://d3v-ampersand.zendesk.com/api/v2/users" +
-					"?page%5Bafter%5D=eyJvIjoiaWQiLCJ2IjoiYVJOc1cwVDZGd0FBIn0%3D&page%5Bsize%5D=3",
-				Done: false,
+				Rows:     1,
+				NextPage: "https://d3v-ampersand.zendesk.com/api/v2/triggers?page%5Bafter%5D=eyJvIjoicG9zaXRpb24scG9zaXRpb24sdGl0bGUsaWQiLCJ2IjoiYVFFQUFBQUFBQUFBYVFFQUFBQUFBQUFBY3gwQUFBQk9iM1JwWm5rZ1lYTnphV2R1WldVZ2IyWWdZWE56YVdkdWJXVnVkR21UOTlOQStoY0FBQT09In0%3D&page%5Bsize%5D=1", // nolint:lll
+				Done:     false,
 			},
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Successful read with chosen fields",
-			Input: common.ReadParams{
-				ObjectName: "tickets",
-				Fields:     connectors.Fields("type", "subject", "status"),
-			},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If:    mockcond.PathSuffix("/v2/tickets"),
-				Then:  mockserver.Response(http.StatusOK, responseReadTickets),
+			Name:  "Triggers is the last page",
+			Input: common.ReadParams{ObjectName: "triggers", Fields: connectors.Fields("id")},
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseTriggersLastPage),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
-					Fields: map[string]any{
-						"type":    "incident",
-						"subject": "Updated to: Hello World",
-						"status":  "open",
-					},
-					Raw: map[string]any{
-						"url":           "https://d3v-ampersand.zendesk.com/api/v2/tickets/1.json",
-						"problem_id":    nil,
-						"has_incidents": false,
-						"brand_id":      float64(26363596759827),
-					},
+					Fields: map[string]any{"id": float64(26363596909203)},
+					Raw:    map[string]any{"title": "Notify all agents of received request"},
 				}},
-				NextPage: "https://d3v-ampersand.zendesk.com/api/v2/tickets.json" +
-					"?page%5Bafter%5D=eyJvIjoibmljZV9pZCIsInYiOiJhUUVBQUFBQUFBQUEifQ%3D%3D&page%5Bsize%5D=1",
-				Done: false,
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		// nolint:varnamelen
+		t.Run(tt.Name, func(t *testing.T) {
+			t.Parallel()
+
+			tt.Run(t, func() (connectors.ReadConnector, error) {
+				return constructTestConnector(tt.Server.URL, ModuleTicketing)
+			})
+		})
+	}
+}
+
+func TestIncrementalReadZendeskSupportModule(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
+	t.Parallel()
+
+	responseTickets := testutils.DataFromFile(t, "read/incremental/tickets.json")
+	responseUsersFirstPage := testutils.DataFromFile(t, "read/incremental/users-1-first-page.json")
+	responseUsersLastPage := testutils.DataFromFile(t, "read/incremental/users-2-last-page.json")
+	responseOrganizations := testutils.DataFromFile(t, "read/incremental/organizations.json")
+
+	tests := []testroutines.Read{
+		{
+			Name: "Incremental Tickets no since",
+			Input: common.ReadParams{
+				ObjectName: "tickets",
+				Fields:     connectors.Fields("id"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.QueryParam("per_page", "100"),
+					mockcond.QueryParam("start_time", "0"),
+					mockcond.PathSuffix("/api/v2/incremental/tickets/cursor"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseTickets),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{"id": float64(5)},
+					Raw:    map[string]any{"priority": "normal"},
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Incremental Tickets with Since",
+			Input: common.ReadParams{
+				ObjectName: "tickets",
+				Fields:     connectors.Fields("id"),
+				Since:      time.Unix(1726674883, 0),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.QueryParam("per_page", "100"),
+					mockcond.QueryParam("start_time", "1726674883"),
+					mockcond.PathSuffix("/api/v2/incremental/tickets/cursor"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseTickets),
+			}.Server(),
+			Comparator: testroutines.ComparatorPagination,
+			Expected:   &common.ReadResult{Rows: 1, NextPage: "", Done: true},
+		},
+		{
+			Name: "Users first page no since",
+			Input: common.ReadParams{
+				ObjectName: "users",
+				Fields:     connectors.Fields("name"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.QueryParam("per_page", "100"),
+					mockcond.QueryParam("start_time", "0"),
+					mockcond.PathSuffix("/api/v2/incremental/users/cursor"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseUsersFirstPage),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{"name": "The Customer"},
+					Raw:    map[string]any{"email": "customer@example.com"},
+				}},
+				NextPage: "https://d3v-ampersand.zendesk.com/api/v2/incremental/users/cursor?cursor=MTczOTkwMTY5OC4wfHwzODYzNDM4MTYyMDM3MXw%3D&per_page=19", // nolint:lll
+				Done:     false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Users last page is missing",
+			Input: common.ReadParams{
+				ObjectName: "users",
+				Fields:     connectors.Fields("name"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.QueryParam("per_page", "100"),
+					mockcond.QueryParam("start_time", "0"),
+					mockcond.PathSuffix("/api/v2/incremental/users/cursor"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseUsersLastPage),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{"name": "TEST USER"},
+					Raw:    map[string]any{"email": "admin@test.com"},
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Organizations has no next page, response body returns time-based URL alongside indication of the end",
+			Input: common.ReadParams{
+				ObjectName: "organizations",
+				Fields:     connectors.Fields("name"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.QueryParam("per_page", "100"),
+					mockcond.QueryParam("start_time", "0"),
+					mockcond.PathSuffix("/api/v2/incremental/organizations"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseOrganizations),
+			}.Server(),
+			Comparator: testroutines.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     1,
+				NextPage: "",
+				Done:     true,
 			},
 			ExpectedErrs: nil,
 		},

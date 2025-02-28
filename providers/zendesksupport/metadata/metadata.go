@@ -29,20 +29,32 @@ type ZendeskSchemas struct {
 }
 
 type CustomProperties struct {
-	Pagination string `json:"pagination,omitempty"`
+	Pagination  string `json:"pagination,omitempty"`
+	Incremental bool   `json:"incremental,omitempty"`
 }
 
 func (s ZendeskSchemas) LookupPaginationType(
 	moduleID common.ModuleID, objectName string,
-) (string, bool) {
+) string {
 	if len(moduleID) == 0 {
 		moduleID = staticschema.RootModuleID
 	}
 
 	ptype := s.Modules[moduleID].Objects[objectName].Custom.Pagination
 	if len(ptype) == 0 {
-		return "", false
+		// If no pagination type is found, the API assumes offset pagination.
+		return "offset"
 	}
 
-	return ptype, true
+	return ptype
+}
+
+func (s ZendeskSchemas) IsIncrementalRead(
+	moduleID common.ModuleID, objectName string,
+) bool {
+	if len(moduleID) == 0 {
+		moduleID = staticschema.RootModuleID
+	}
+
+	return s.Modules[moduleID].Objects[objectName].Custom.Incremental
 }
