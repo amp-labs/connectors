@@ -10,7 +10,7 @@ const (
 	pageSizeKey         = "limit"
 	paginationResultKey = "_pagination"
 	nextURLKey          = "next"
-	pageSize            = "1"
+	pageSize            = "200"
 	dataResponseKey     = "_results"
 )
 

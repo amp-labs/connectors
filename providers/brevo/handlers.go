@@ -6,6 +6,11 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/providers/brevo/metadata"
+)
+
+var (
+	apiVersion = "v3"
 )
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
@@ -14,18 +19,9 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		err error
 	)
 
-	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName)
+	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, params.ObjectName)
 	if err != nil {
 		return nil, err
-	}
-
-	url.WithQueryParam(pageSizeKey, pageSize)
-
-	if params.NextPage != "" {
-		url, err = urlbuilder.New(params.NextPage.String())
-		if err != nil {
-			return nil, err
-		}
 	}
 
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
@@ -36,9 +32,12 @@ func (c *Connector) parseReadResponse(
 	params common.ReadParams,
 	response *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
+
+	responseFieldName := metadata.Schemas.LookupArrayFieldName(c.Module(), params.ObjectName)
+
 	return common.ParseResult(
 		response,
-		common.GetRecordsUnderJSONPath(dataResponseKey),
+		common.GetRecordsUnderJSONPath(responseFieldName),
 		nextRecordsURL(),
 		common.GetMarshaledData,
 		params.Fields,
