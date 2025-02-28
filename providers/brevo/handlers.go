@@ -13,9 +13,7 @@ import (
 	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
-var (
-	apiVersion = "v3"
-)
+var apiVersion = "v3" //nolint:gochecknoglobals
 
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
 	var (
@@ -25,7 +23,6 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	)
 
 	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, params.ObjectName)
-
 	if err != nil {
 		return nil, err
 	}
@@ -39,16 +36,15 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal record data: %w", err)
 	}
+
 	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
 }
 
-func (c *Connector) parseWriteResponse(
+func (c *Connector) parseWriteResponse( //nolint:funlen
 	ctx context.Context,
 	params common.WriteParams,
 	response *common.JSONHTTPResponse,
 ) (*common.WriteResult, error) {
-
-	// Get the json node from the response
 	node, ok := response.Body()
 	if !ok {
 		// Handle empty response
@@ -57,21 +53,65 @@ func (c *Connector) parseWriteResponse(
 		}, nil
 	}
 
-	recordIDPaths := map[string]string{
-		"smtp/email":     "messageId",
-		"smtp/templates": "id",
+	recordIDPaths := map[string]string{ //nolint:lll
+		"smtp/email":                           "messageId",
+		"transactionalSMS/sms":                 "messageId",
+		"whatsapp/sendMessage":                 "messageId",
+		"smtp/templates":                       "id",
+		"emailCampaigns":                       "id",
+		"emailCampaigns/images":                "url",
+		"smsCampaigns":                         "id",
+		"whatsappCampaigns":                    "id",
+		"whatsappCampaigns/template":           "id",
+		"contacts":                             "id",
+		"contacts/folders":                     "id",
+		"contacts/export":                      "processId",
+		"contacts/import":                      "processId",
+		"senders":                              "id",
+		"senders/domains":                      "id",
+		"webhooks":                             "id",
+		"webhooks/export":                      "processId",
+		"corporate/subAccount":                 "id",
+		"corporate/ssoToken":                   "token",
+		"corporate/subAccount/ssoToken":        "token",
+		"corporate/subAccount/key":             "key",
+		"corporate/group":                      "id",
+		"corporate/user/invitation/send":       "id",
+		"organization/user/invitation/send":    "invoice_id",
+		"organization/user/update/permissions": "invoice_id",
+		"feeds":                                "id",
+		"companies":                            "id",
+		"events":                               "id",
+		"crm/attributes":                       "id",
+		"companies/import":                     "processId",
+		"crm/deals":                            "id",
+		"crm/deals/import":                     "processId",
+		"crm/tasks":                            "id",
+		"crm/notes":                            "id",
+		"conversations/messages":               "id",
+		"conversations/pushedMessages":         "id",
+		"orders/status/batch":                  "batchId",
+		"categories":                           "id",
+		"products":                             "id",
+		"couponCollections":                    "id",
+		"payments/requests":                    "id",
+		"loyalty/config/programs":              "id",
+		"ecommerce/activate":                   "id",
 	}
 
 	idPath, valid := recordIDPaths[params.ObjectName]
 	if !valid {
-		return nil, fmt.Errorf("%w: %s", common.ErrOperationNotSupportedForObject, params.ObjectName)
+		return &common.WriteResult{
+			Success: true,
+			Errors:  nil,
+			Data:    nil,
+		}, nil
 	}
 
 	// Try string first
-	rawID, err := jsonquery.New(node).StringOptional(idPath)
+	rawID, err := jsonquery.New(node).StrWithDefault(idPath, "id")
 
 	if err != nil {
-
 		// Try integer
 		IntID, err := jsonquery.New(node).IntegerOptional(idPath)
 		if err != nil {
@@ -79,13 +119,12 @@ func (c *Connector) parseWriteResponse(
 		}
 
 		str := strconv.FormatInt(*IntID, 10)
-		rawID = &str
-
+		rawID = str
 	}
 
 	return &common.WriteResult{
 		Success:  true,
-		RecordId: *rawID,
+		RecordId: rawID,
 		Errors:   nil,
 		Data:     nil,
 	}, nil

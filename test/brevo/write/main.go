@@ -32,6 +32,9 @@ func main() {
 		slog.Error(err.Error())
 	}
 
+	if err := AddBlockedDomains(ctx, conn); err != nil {
+		slog.Error(err.Error())
+	}
 }
 
 func createSmtpEmail(ctx context.Context, conn *brevo.Connector) error {
@@ -80,6 +83,30 @@ func createSmtpTemplates(ctx context.Context, conn *brevo.Connector) error {
 			"subject":      "Thanks for your purchase !",
 			"templateName": "Order Confirmation - EN",
 			"htmlContent":  "The order n°xxxxx has been confirmed. Thanks for your purchase",
+		},
+	}
+
+	result, err := conn.Write(ctx, config)
+	if err != nil {
+		return err
+	}
+
+	// Print the results
+	jsonStr, err := json.MarshalIndent(result, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(string(jsonStr))
+
+	return nil
+}
+
+func AddBlockedDomains(ctx context.Context, conn *brevo.Connector) error {
+	config := common.WriteParams{
+		ObjectName: "smtp/blockedDomains",
+		RecordData: map[string]any{
+			"domain": "chaurfdfdasdfdiy.com",
 		},
 	}
 
