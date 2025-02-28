@@ -8,20 +8,8 @@ import (
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/reader"
 	"github.com/amp-labs/connectors/internal/components/schema"
-	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/tools/fileconv"
-	"github.com/amp-labs/connectors/tools/scrapper"
-)
-
-// nolint:gochecknoglobals
-var (
-	//go:embed schemas.json
-	schemaContent []byte
-	FileManager   = scrapper.NewMetadataFileManager[staticschema.FieldMetadataMapV2](
-		schemaContent, fileconv.NewSiblingFileLocator())
-
-	schemas = FileManager.MustLoadSchemas()
+	"github.com/amp-labs/connectors/providers/brevo/metadata"
 )
 
 type Connector struct {
@@ -52,7 +40,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 		return nil, err
 	}
 	// Set the metadata provider for the connector
-	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), schemas)
+	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), metadata.Schemas)
 
 	connector.Reader = reader.NewHTTPReader(
 		connector.HTTPClient().Client,
