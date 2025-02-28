@@ -29,6 +29,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 
 	if len(params.RecordId) > 0 {
 		url.AddPath(params.RecordId)
+
 		method = http.MethodPatch
 	}
 
@@ -53,7 +54,7 @@ func (c *Connector) parseWriteResponse( //nolint:funlen
 		}, nil
 	}
 
-	recordIDPaths := map[string]string{ //nolint:lll
+	recordIDPaths := map[string]string{ //nolint:unconvert
 		"smtp/email":                           "messageId",
 		"transactionalSMS/sms":                 "messageId",
 		"whatsapp/sendMessage":                 "messageId",
@@ -110,7 +111,6 @@ func (c *Connector) parseWriteResponse( //nolint:funlen
 
 	// Try string first
 	rawID, err := jsonquery.New(node).StrWithDefault(idPath, "id")
-
 	if err != nil {
 		// Try integer
 		IntID, err := jsonquery.New(node).IntegerOptional(idPath)
