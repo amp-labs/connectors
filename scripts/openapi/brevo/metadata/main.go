@@ -6,8 +6,8 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/staticschema"
-	"github.com/amp-labs/connectors/providers/brevo"
-	"github.com/amp-labs/connectors/providers/brevo/openapi"
+	"github.com/amp-labs/connectors/providers/brevo/metadata"
+	"github.com/amp-labs/connectors/providers/brevo/metadata/openapi"
 	utilsopenapi "github.com/amp-labs/connectors/scripts/openapi/utils"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
 	"github.com/amp-labs/connectors/tools/scrapper"
@@ -113,8 +113,8 @@ func main() {
 		}
 	}
 
-	goutils.MustBeNil(brevo.FileManager.SaveSchemas(schemas))
-	goutils.MustBeNil(brevo.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
+	goutils.MustBeNil(metadata.FileManager.SaveSchemas(schemas))
+	goutils.MustBeNil(metadata.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
 
 	slog.Info("Completed.")
 }
