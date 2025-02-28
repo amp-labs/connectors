@@ -529,6 +529,8 @@ type SubscribeConnector interface {
 	GetSubscriptionResultUnMarshalFunc() UnmarshalFunc
 }
 
+// The return type any abstraction of provider specific types.
+// see GetSubscriptionResultUnMarshalFunc in salesforce/subscribe.go for an example.
 type UnmarshalFunc func(data []byte) (any, error)
 
 //nolint:ireturn
