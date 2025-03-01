@@ -139,15 +139,7 @@ func (c *Connector) register(
 
 // DeleteRegistration will delete the Salesforce objects created during registration.
 // It will delete the EventRelayConfig, NamedCredential, and EventChannel.
-func (c *Connector) DeleteRegistration(ctx context.Context, registration *common.RegistrationResult) error {
-	if registration == nil {
-		return fmt.Errorf("%w: registration is null", errMissingParams)
-	}
-
-	if registration.Result == nil {
-		return fmt.Errorf("%w: registration result is null", errMissingParams)
-	}
-
+func (c *Connector) DeleteRegistration(ctx context.Context, registration common.RegistrationResult) error {
 	validate := validator.New()
 	if err := validate.Struct(registration.Result); err != nil {
 		return fmt.Errorf("invalid registration result: %w", err)
