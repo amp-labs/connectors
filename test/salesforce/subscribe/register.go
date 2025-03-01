@@ -79,7 +79,7 @@ func main() {
 
 	fmt.Println("Delete subscription successful")
 
-	if err := conn.DeleteRegistration(ctx, result); err != nil {
+	if err := conn.DeleteRegistration(ctx, *result); err != nil {
 		logging.Logger(ctx).Error("Error rolling back registration", "error", err)
 
 		return
