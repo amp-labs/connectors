@@ -500,11 +500,12 @@ type SubscribeConnector interface {
 		ctx context.Context,
 		params SubscriptionRegistrationParams,
 	) (*RegistrationResult, error)
-	UpdateRegistration(
-		ctx context.Context,
-		params SubscriptionRegistrationParams,
-		previousResult RegistrationResult,
-	) (*RegistrationResult, error)
+	// TODO: Uncomment when we implement UpdateRegistration in Salesforce
+	// UpdateRegistration(
+	// 	ctx context.Context,
+	// 	params SubscriptionRegistrationParams,
+	// 	previousResult RegistrationResult,
+	// ) (*RegistrationResult, error)
 	DeleteRegistration(
 		ctx context.Context,
 		previousResult RegistrationResult,
@@ -514,11 +515,12 @@ type SubscribeConnector interface {
 		ctx context.Context,
 		params SubscribeParams,
 	) (*SubscriptionResult, error)
-	UpdateSubscription(
-		ctx context.Context,
-		params SubscribeParams,
-		previousResult SubscriptionResult,
-	) (*SubscriptionResult, error)
+	// TODO: Uncomment when we implement UpdateSubscription in Salesforce
+	// UpdateSubscription(
+	// 	ctx context.Context,
+	// 	params SubscribeParams,
+	// 	previousResult SubscriptionResult,
+	// ) (*SubscriptionResult, error)
 	DeleteSubscription(
 		ctx context.Context,
 		previousResult SubscriptionResult,
