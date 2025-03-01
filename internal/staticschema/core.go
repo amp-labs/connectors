@@ -292,6 +292,19 @@ func (m *Metadata[F, C]) LookupURLPath(moduleID common.ModuleID, objectName stri
 	return fullPath, nil
 }
 
+// LookupObjectURLPath will give you the URL path for the object located under the module.
+// NOTE: empty module id is treated as root module.
+func (m *Metadata[F, C]) LookupObjectURLPath(moduleID common.ModuleID, objectName string) (string, error) {
+	moduleID = moduleIdentifier(moduleID)
+
+	path := m.Modules[moduleID].Objects[objectName].URLPath
+	if len(path) == 0 {
+		return "", common.ErrResolvingURLPathForObject
+	}
+
+	return path, nil
+}
+
 func (m *Metadata[F, C]) LookupModuleURLPath(moduleID common.ModuleID) string {
 	moduleID = moduleIdentifier(moduleID)
 

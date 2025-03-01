@@ -2,6 +2,8 @@ package blueshift
 
 import (
 	"context"
+	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
@@ -16,15 +18,19 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		err error
 	)
 
-	path, err := metadata.Schemas.LookupURLPath(c.Module(), params.ObjectName)
+	path, err := metadata.Schemas.LookupObjectURLPath(c.Module(), params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
 
-	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, path)
+	fullPath := fmt.Sprintf("%s%s", "v", path)
+
+	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, fullPath)
 	if err != nil {
 		return nil, err
 	}
+
+	log.Printf("URL: %s", url.String())
 
 	if supportPagination.Has(params.ObjectName) {
 		url.WithQueryParam(pageSizeKey, pageSize)
@@ -46,12 +52,14 @@ func (c *Connector) parseReadResponse(
 	params common.ReadParams,
 	response *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
-	path, err := metadata.Schemas.LookupURLPath(c.Module(), params.ObjectName)
+	path, err := metadata.Schemas.LookupObjectURLPath(c.Module(), params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
 
-	baseURL, err := urlbuilder.New(c.ProviderInfo().BaseURL, path)
+	fullPath := fmt.Sprintf("%s%s", "v", path)
+
+	baseURL, err := urlbuilder.New(c.ProviderInfo().BaseURL, fullPath)
 	if err != nil {
 		return nil, err
 	}
