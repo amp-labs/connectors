@@ -10,7 +10,7 @@ func init() {
 	SetInfo(Blueshift, ProviderInfo{
 		DisplayName: "Blueshift",
 		AuthType:    Basic,
-		BaseURL:     "https://api.getblueshift.com/api",
+		BaseURL:     "https://api.getblueshift.com",
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722324992/media/blueshift_1722324992.svg",
@@ -40,7 +40,7 @@ func init() {
 	SetInfo(BlueshiftEU, ProviderInfo{
 		DisplayName: "Blueshift (EU)",
 		AuthType:    Basic,
-		BaseURL:     "https://api.eu.getblueshift.com/api",
+		BaseURL:     "https://api.eu.getblueshift.com",
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722324992/media/blueshift_1722324992.svg",

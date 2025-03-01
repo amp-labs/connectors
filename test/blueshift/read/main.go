@@ -21,28 +21,8 @@ func run() error {
 	connector := blueshift.GetBlueshiftConnector(ctx)
 
 	res, err := connector.Read(ctx, common.ReadParams{
-		ObjectName: "mailboxes",
-		Fields:     datautils.NewStringSet("id", "name"),
-	})
-	if err != nil {
-		return err
-	}
-
-	utils.DumpJSON(res, os.Stdout)
-
-	res, err = connector.Read(ctx, common.ReadParams{
-		ObjectName: "conversations",
-		Fields:     datautils.NewStringSet("id", "mailboxId"),
-	})
-	if err != nil {
-		return err
-	}
-
-	utils.DumpJSON(res, os.Stdout)
-
-	res, err = connector.Read(ctx, common.ReadParams{
-		ObjectName: "tags",
-		Fields:     datautils.NewStringSet("id", "name"),
+		ObjectName: "campaigns",
+		Fields:     datautils.NewStringSet("uuid", "name"),
 	})
 	if err != nil {
 		return err

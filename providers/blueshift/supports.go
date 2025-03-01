@@ -6,10 +6,11 @@ import (
 
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/staticschema"
+	"github.com/amp-labs/connectors/providers/blueshift/metadata"
 )
 
 func supportedOperations() components.EndpointRegistryInput {
-	readSupport := schemas.
+	readSupport := metadata.Schemas.ObjectNames().GetList(staticschema.RootModuleID)
 
 	return components.EndpointRegistryInput{
 		staticschema.RootModuleID: {
