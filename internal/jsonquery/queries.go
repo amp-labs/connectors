@@ -19,6 +19,10 @@ type Query struct {
 	zoom []string
 }
 
+func (q *Query) Float64Optional(s string) (any, any) {
+	panic("unimplemented")
+}
+
 // New constructs query searching for key. Extra keys are preceding forming a zoom path.
 func New(node *ajson.Node, zoom ...string) *Query {
 	return &Query{
