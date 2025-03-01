@@ -1,16 +1,21 @@
 package blueshift
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/providers/blueshift/metadata"
 )
+
+const writeVersion = "v1"
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
 	var (
@@ -102,4 +107,64 @@ func (c *Connector) parseReadResponse(
 		common.GetMarshaledData,
 		params.Fields,
 	)
+}
+
+func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+	var (
+		url    *urlbuilder.URL
+		err    error
+		method = http.MethodPost
+	)
+
+	if writeObjectWithSuffix.Has(params.ObjectName) {
+		params.ObjectName = fmt.Sprintf("%s.json", params.ObjectName) //nolint:perfsprint
+	}
+
+	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, writeVersion, params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	jsonData, errr := json.Marshal(params.RecordData)
+
+	if errr != nil {
+		return nil, errr
+	}
+
+	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
+}
+
+func (c *Connector) parseWriteResponse(
+	ctx context.Context,
+	params common.WriteParams,
+	response *common.JSONHTTPResponse,
+) (*common.WriteResult, error) {
+	node, ok := response.Body()
+	if !ok {
+		return &common.WriteResult{
+			Success: false,
+		}, nil
+	}
+
+	rawID, err := jsonquery.New(node).IntegerOptional("id")
+	if err != nil { //nolint:nilerr
+		return &common.WriteResult{
+			Success: true,
+		}, nil
+	}
+
+	if rawID == nil {
+		return &common.WriteResult{
+			Success: true,
+		}, nil
+	}
+
+	recordID := strconv.FormatInt(*rawID, 10)
+
+	return &common.WriteResult{
+		Success:  true,
+		RecordId: recordID,
+		Errors:   nil,
+		Data:     nil,
+	}, nil
 }
