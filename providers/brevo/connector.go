@@ -19,9 +19,6 @@ type Connector struct {
 
 	// supported operations
 	components.SchemaProvider
-	components.Reader
-	components.Writer
-	components.Deleter
 }
 
 func NewConnector(params common.Parameters) (*Connector, error) {
