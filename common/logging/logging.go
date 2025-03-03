@@ -5,6 +5,11 @@ import (
 	"log/slog"
 )
 
+// It's considered good practice to use unexported custom types for context keys.
+// This avoids collisions with other packages that might be using the same string
+// values for their own keys.
+type contextKey string
+
 // WithLoggerEnabled returns a new context with the logger
 // explicitly enabled or disabled. If the key is not set, the
 // logger will be enabled by default.
@@ -38,30 +43,6 @@ func With(ctx context.Context, values ...any) context.Context {
 	vals := append(getValues(ctx), values...)
 
 	return context.WithValue(ctx, contextKey("loggerValues"), vals)
-}
-
-// It's considered good practice to use unexported custom types for context keys.
-// This avoids collisions with other packages that might be using the same string
-// values for their own keys.
-type contextKey string
-
-func getValues(ctx context.Context) []any { //nolint:contextcheck
-	if ctx == nil {
-		ctx = context.Background()
-	}
-
-	// Check for a subsystem override.
-	sub := ctx.Value(contextKey("loggerValues"))
-	if sub != nil {
-		val, ok := sub.([]any)
-		if ok {
-			return val
-		} else {
-			return nil
-		}
-	} else {
-		return nil
-	}
 }
 
 // IsLoggerEnabled returns true if the logger is enabled in the context.
@@ -102,26 +83,7 @@ func IsVerboseLogging(ctx context.Context) bool {
 //
 //nolint:contextcheck,cyclop
 func Logger(ctx ...context.Context) *slog.Logger {
-	if len(ctx) == 0 {
-		return slog.Default()
-	}
-
-	var realCtx context.Context
-
-	// Honestly we only care if there's zero or one contexts.
-	// If there's more than one, we'll just use the first one.
-	for _, c := range ctx {
-		if c != nil {
-			realCtx = c //nolint:fatcontext
-
-			break
-		}
-	}
-
-	if realCtx == nil {
-		// No context provided, so we'll just use a sane default
-		realCtx = context.Background()
-	}
+	realCtx := getCtx(ctx)
 
 	if !IsLoggerEnabled(realCtx) {
 		// The logger has been explicitly disabled.
@@ -149,26 +111,7 @@ func Logger(ctx ...context.Context) *slog.Logger {
 //
 //nolint:contextcheck,cyclop
 func VerboseLogger(ctx ...context.Context) *slog.Logger {
-	if len(ctx) == 0 {
-		return slog.Default()
-	}
-
-	var realCtx context.Context
-
-	// Honestly we only care if there's zero or one contexts.
-	// If there's more than one, we'll just use the first one.
-	for _, c := range ctx {
-		if c != nil {
-			realCtx = c //nolint:fatcontext
-
-			break
-		}
-	}
-
-	if realCtx == nil {
-		// No context provided, so we'll just use a sane default
-		realCtx = context.Background()
-	}
+	realCtx := getCtx(ctx)
 
 	if !IsLoggerEnabled(realCtx) {
 		// The logger has been explicitly disabled.
@@ -197,4 +140,35 @@ func VerboseLogger(ctx ...context.Context) *slog.Logger {
 
 	// Return the logger
 	return logger
+}
+
+func getValues(ctx context.Context) []any { //nolint:contextcheck
+	if ctx == nil {
+		ctx = context.Background()
+	}
+
+	// Check for a subsystem override.
+	sub := ctx.Value(contextKey("loggerValues"))
+	if sub != nil {
+		val, ok := sub.([]any)
+		if ok {
+			return val
+		} else {
+			return nil
+		}
+	} else {
+		return nil
+	}
+}
+
+func getCtx(ctx []context.Context) context.Context {
+	// Honestly we only care if there's zero or one contexts.
+	// If there's more than one, we'll just use the first one.
+	for _, c := range ctx {
+		if c != nil {
+			return c
+		}
+	}
+
+	return context.Background()
 }
