@@ -49,7 +49,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		return nil, common.ErrMissingExpectedValues
 	}
 
-	field := responseField[objectName]
+	field := responseField(objectName)
 	firstRecord := *data
 
 	// checks if the response data field is available, else assumes we are in the data object.
@@ -107,7 +107,7 @@ func (c *Connector) parseReadResponse(
 ) (*common.ReadResult, error) {
 	return common.ParseResult(
 		response,
-		common.GetRecordsUnderJSONPath(responseField[params.ObjectName]),
+		common.GetRecordsUnderJSONPath(responseField(params.ObjectName)),
 		nextRecordsURL(),
 		common.GetMarshaledData,
 		params.Fields,
