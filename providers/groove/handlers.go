@@ -151,20 +151,20 @@ func (c *Connector) parseWriteResponse(
 		}, nil
 	}
 
-	recordID, err := jsonquery.New(body).StringRequired("id")
+	writeResponseField := naming.NewSingularString(params.ObjectName).String()
+
+	resp, err := jsonquery.New(body).ObjectRequired(writeResponseField)
 	if err != nil {
 		return nil, err
 	}
 
-	data, err := jsonquery.Convertor.ObjectToMap(body)
+	data, err := jsonquery.Convertor.ObjectToMap(resp)
 	if err != nil {
 		return nil, err
 	}
 
 	return &common.WriteResult{
-		Success:  true,
-		RecordId: recordID,
-		Errors:   nil,
-		Data:     data,
+		Success: true,
+		Data:    data,
 	}, nil
 }
