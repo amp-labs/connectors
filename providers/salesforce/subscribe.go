@@ -13,6 +13,16 @@ type SubscribeResult struct {
 	EventChannelMembers map[common.ObjectName]*EventChannelMember
 }
 
+func (conn *Connector) NewSubscritpionParams() *common.SubscribeParams {
+	return &common.SubscribeParams{}
+}
+
+func (conn *Connector) NewSubscriptionResult() *common.SubscriptionResult {
+	return &common.SubscriptionResult{
+		Result: &SubscribeResult{},
+	}
+}
+
 // Subscribe subscribes to the events for the given objects.
 // It creates event channel members for each object in the subscription.
 // If any of the event channel members fail to be created, it will rollback the operation.
@@ -158,12 +168,4 @@ func (conn *Connector) DeleteSubscription(ctx context.Context, params common.Sub
 	}
 
 	return nil
-}
-
-func (conn *Connector) GetSubscriptionResultUnMarshalFunc() common.UnmarshalFunc {
-	return subscriptionResultUnMarshalFunc
-}
-
-func subscriptionResultUnMarshalFunc(data []byte) (any, error) {
-	return common.Unmarshal[SubscribeResult](data)
 }

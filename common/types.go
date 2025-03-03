@@ -510,7 +510,8 @@ type SubscribeConnector interface {
 		ctx context.Context,
 		previousResult RegistrationResult,
 	) error
-	GetRegistrationResultUnMarshalFunc() UnmarshalFunc
+	NewRegistrationParams() *SubscriptionRegistrationParams
+	NewRegistrationResult() *RegistrationResult
 
 	Subscribe(
 		ctx context.Context,
@@ -526,17 +527,6 @@ type SubscribeConnector interface {
 		ctx context.Context,
 		previousResult SubscriptionResult,
 	) error
-	GetSubscriptionResultUnMarshalFunc() UnmarshalFunc
-}
-
-// The return type any abstraction of provider specific types.
-// see GetSubscriptionResultUnMarshalFunc in salesforce/subscribe.go for an example.
-type UnmarshalFunc func(data []byte) (any, error)
-
-//nolint:ireturn
-func Unmarshal[T any](data []byte) (T, error) {
-	var v T
-	err := json.Unmarshal(data, &v)
-
-	return v, err
+	NewSubscritpionParams() *SubscribeParams
+	NewSubscriptionResult() *SubscriptionResult
 }

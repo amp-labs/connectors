@@ -30,6 +30,18 @@ type ResultData struct {
 	EventRelayConfig *EventRelayConfig
 }
 
+func (c *Connector) NewRegistrationParams() *common.SubscriptionRegistrationParams {
+	return &common.SubscriptionRegistrationParams{
+		Request: &RegistrationParams{},
+	}
+}
+
+func (c *Connector) NewRegistrationResult() *common.RegistrationResult {
+	return &common.RegistrationResult{
+		Result: &ResultData{},
+	}
+}
+
 func (c *Connector) rollbackRegister(ctx context.Context, res *ResultData) error {
 	if res.EventRelayConfig != nil {
 		_, err := c.DeleteEventRelayConfig(ctx, res.EventRelayConfig.Id)
@@ -256,12 +268,4 @@ func GetChangeDataCaptureChannelMembershipName(rawChannelName string, eventName 
 
 func GetRawPEName(peName string) string {
 	return RemoveSuffix(peName, 3) //nolint:mnd
-}
-
-func (conn *Connector) GetRegistrationResultUnMarshalFunc() common.UnmarshalFunc {
-	return registrationResultUnMarshalFunc
-}
-
-func registrationResultUnMarshalFunc(data []byte) (any, error) {
-	return common.Unmarshal[ResultData](data)
 }
