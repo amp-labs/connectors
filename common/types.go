@@ -510,7 +510,11 @@ type SubscribeConnector interface {
 		ctx context.Context,
 		previousResult RegistrationResult,
 	) error
+	// NewRegistrationParams returns a new instance of SubscriptionRegistrationParams.
+	// if there is any provider specific initialization required, it should be done here.
 	NewRegistrationParams() *SubscriptionRegistrationParams
+	// NewRegistrationResult returns a new instance of RegistrationResult.
+	// if there is any provider specific initialization required, it should be done here.
 	NewRegistrationResult() *RegistrationResult
 
 	Subscribe(
@@ -527,6 +531,10 @@ type SubscribeConnector interface {
 		ctx context.Context,
 		previousResult SubscriptionResult,
 	) error
+	// NewSubscritpionParams returns a new instance of SubscribeParams.
+	// if there is any provider specific initialization required, it should be done here.
 	NewSubscritpionParams() *SubscribeParams
+	// NewSubscriptionResult returns a new instance of SubscriptionResult.
+	// if there is any provider specific initialization required, it should be done here.
 	NewSubscriptionResult() *SubscriptionResult
 }
