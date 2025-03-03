@@ -23,8 +23,9 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	// Turn on logging
+	// Turn on verbose logging
 	ctx = logging.WithLoggerEnabled(ctx, true)
+	ctx = logging.WithVerboseLogging(ctx, true)
 
 	// Get the Hubspot connector.
 	conn := connTest.GetHubspotConnector(ctx)

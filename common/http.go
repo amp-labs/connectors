@@ -103,9 +103,14 @@ func (h *HTTPClient) Get(ctx context.Context, url string, headers ...Header) (*h
 		return nil, nil, err
 	}
 
-	logging.Logger(ctx).Debug("HTTP request",
-		"method", "GET", "url", fullURL,
-		"headers", redactSensitiveHeaders(headers))
+	if logging.IsVerboseLogging(ctx) {
+		logging.VerboseLogger(ctx).Debug("HTTP request",
+			"method", "GET", "url", fullURL,
+			"headers", redactSensitiveHeaders(headers))
+	} else {
+		logging.Logger(ctx).Debug("HTTP request",
+			"method", "GET", "url", fullURL)
+	}
 
 	// Make the request, get the response body
 	res, body, err := h.httpGet(ctx, fullURL, headers) //nolint:bodyclose
@@ -128,10 +133,15 @@ func (h *HTTPClient) Post(ctx context.Context,
 		return nil, nil, err
 	}
 
-	logging.Logger(ctx).Debug("HTTP request",
-		"method", "POST", "url", fullURL,
-		"headers", redactSensitiveHeaders(headers),
-		"bodySize", len(reqBody))
+	if logging.IsVerboseLogging(ctx) {
+		logging.VerboseLogger(ctx).Debug("HTTP request",
+			"method", "POST", "url", fullURL,
+			"headers", redactSensitiveHeaders(headers),
+			"bodySize", len(reqBody))
+	} else {
+		logging.Logger(ctx).Debug("HTTP request",
+			"method", "POST", "url", fullURL)
+	}
 
 	// Make the request, get the response body
 	res, body, err := h.httpPost(ctx, fullURL, headers, reqBody) //nolint:bodyclose
@@ -187,9 +197,14 @@ func (h *HTTPClient) Delete(ctx context.Context,
 		return nil, nil, err
 	}
 
-	logging.Logger(ctx).Debug("HTTP request",
-		"method", "DELETE", "url", fullURL,
-		"headers", redactSensitiveHeaders(headers))
+	if logging.IsVerboseLogging(ctx) {
+		logging.VerboseLogger(ctx).Debug("HTTP request",
+			"method", "DELETE", "url", fullURL,
+			"headers", redactSensitiveHeaders(headers))
+	} else {
+		logging.Logger(ctx).Debug("HTTP request",
+			"method", "DELETE", "url", fullURL)
+	}
 
 	// Make the request, get the response body
 	res, body, err := h.httpDelete(ctx, fullURL, headers) //nolint:bodyclose
@@ -334,10 +349,15 @@ func makePatchRequest(ctx context.Context, url string, headers []Header, body an
 
 	req.ContentLength = int64(len(jBody))
 
-	logging.Logger(ctx).Debug("HTTP request",
-		"method", "PATCH", "url", url,
-		"headers", redactSensitiveHeaders(headers),
-		"bodySize", len(jBody))
+	if logging.IsVerboseLogging(ctx) {
+		logging.VerboseLogger(ctx).Debug("HTTP request",
+			"method", "PATCH", "url", url,
+			"headers", redactSensitiveHeaders(headers),
+			"bodySize", len(jBody))
+	} else {
+		logging.Logger(ctx).Debug("HTTP request",
+			"method", "PATCH", "url", url)
+	}
 
 	return AddJSONContentTypeIfNotPresent(addHeaders(req, headers)), nil
 }
@@ -357,10 +377,15 @@ func makePutRequest(ctx context.Context, url string, headers []Header, body any)
 
 	req.ContentLength = int64(len(jBody))
 
-	logging.Logger(ctx).Debug("HTTP request",
-		"method", "PUT", "url", url,
-		"headers", redactSensitiveHeaders(headers),
-		"bodySize", len(jBody))
+	if logging.IsVerboseLogging(ctx) {
+		logging.VerboseLogger(ctx).Debug("HTTP request",
+			"method", "PUT", "url", url,
+			"headers", redactSensitiveHeaders(headers),
+			"bodySize", len(jBody))
+	} else {
+		logging.Logger(ctx).Debug("HTTP request",
+			"method", "PUT", "url", url)
+	}
 
 	return AddJSONContentTypeIfNotPresent(addHeaders(req, headers)), nil
 }
