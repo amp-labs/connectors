@@ -39,6 +39,9 @@ type JSONHTTPResponse struct {
 	// that it's JSON-unmarshalled, it's identical to bodyBytes.
 	// If there were no bytes this will be nil.
 	body *ajson.Node
+
+	// Request is the original http.Request that generated this response
+	Request *http.Request
 }
 
 // Body returns JSON node. If it is empty the flag will indicate so.
@@ -127,6 +130,7 @@ func ParseJSONResponse(res *http.Response, body []byte) (*JSONHTTPResponse, erro
 			Code:      res.StatusCode,
 			Headers:   res.Header,
 			body:      nil,
+			Request:   res.Request,
 		}, nil
 	}
 
@@ -146,6 +150,7 @@ func ParseJSONResponse(res *http.Response, body []byte) (*JSONHTTPResponse, erro
 		Code:      res.StatusCode,
 		Headers:   res.Header,
 		body:      jsonBody,
+		Request:   res.Request,
 	}, nil
 }
 
