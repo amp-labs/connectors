@@ -10,7 +10,6 @@ import (
 )
 
 func main() {
-
 	ctx := context.Background()
 
 	conn := front.GetFrontConnector(ctx)
