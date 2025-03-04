@@ -28,11 +28,18 @@ func supportedOperations() components.EndpointRegistryInput {
 		"kb", "tickets/count",
 	}
 
+	writeSupport := []string{
+		"tickets", "webhooks", "groups", "widgets",
+	}
+
 	return components.EndpointRegistryInput{
 		staticschema.RootModuleID: {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,
+			}, {
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
+				Support:  components.WriteSupport,
 			},
 		},
 	}
