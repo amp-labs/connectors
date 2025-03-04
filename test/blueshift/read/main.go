@@ -22,6 +22,7 @@ func run() error {
 	connector := blueshift.GetBlueshiftConnector(ctx)
 
 	slog.Info("Reading campaigns")
+
 	res, err := connector.Read(ctx, common.ReadParams{
 		ObjectName: "campaigns",
 		Fields:     datautils.NewStringSet("uuid", "name"),
@@ -33,6 +34,7 @@ func run() error {
 	utils.DumpJSON(res, os.Stdout)
 
 	slog.Info("Reading email templates")
+
 	res, err = connector.Read(ctx, common.ReadParams{
 		ObjectName: "email_templates",
 		Fields:     datautils.NewStringSet("uuid", "name"),
@@ -44,6 +46,7 @@ func run() error {
 	utils.DumpJSON(res, os.Stdout)
 
 	slog.Info("Reading sms templates")
+
 	res, err = connector.Read(ctx, common.ReadParams{
 		ObjectName: "sms_templates",
 		Fields:     datautils.NewStringSet("uuid", "author"),
