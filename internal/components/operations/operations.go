@@ -23,7 +23,7 @@ type HTTPOperation[RequestType any, ResponseType any] struct {
 // HTTPHandlers contains operation-specific HTTP handlers for building and parsing HTTP requests and responses.
 type HTTPHandlers[RequestType any, ResponseType any] struct {
 	BuildRequest  func(context.Context, RequestType) (*http.Request, error)
-	ParseResponse func(context.Context, RequestType, *common.JSONHTTPResponse) (ResponseType, error)
+	ParseResponse func(context.Context, RequestType, *http.Request, *common.JSONHTTPResponse) (ResponseType, error)
 	ErrorHandler  func(*http.Response, []byte) error
 }
 
@@ -85,5 +85,5 @@ func (op *HTTPOperation[RequestType, ResponseType]) ExecuteRequest(
 		return response, err
 	}
 
-	return op.handlers.ParseResponse(ctx, params, jsonResp)
+	return op.handlers.ParseResponse(ctx, params, req, jsonResp)
 }
