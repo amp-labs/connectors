@@ -1,0 +1,1296 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "",
+      "objects": {
+        "attributes/deals": {
+          "displayName": "Deals Attributes",
+          "path": "/crm/attributes/deals",
+          "responseKey": "",
+          "fields": {
+            "attributeOptions": {
+              "displayName": "Attribute Options",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "attributeTypeName": {
+              "displayName": "Attribute Type Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "internalName": {
+              "displayName": "Internal Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "isRequired": {
+              "displayName": "Is Required",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "label": {
+              "displayName": "Label",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "blockedContacts": {
+          "displayName": "Blocked Contacts",
+          "path": "/smtp/blockedContacts",
+          "responseKey": "contacts",
+          "fields": {
+            "blockedAt": {
+              "displayName": "Blocked At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "Email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "reason": {
+              "displayName": "Reason",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "senderEmail": {
+              "displayName": "Sender Email",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "categories": {
+          "displayName": "Categories",
+          "path": "/categories",
+          "responseKey": "categories",
+          "fields": {
+            "createdAt": {
+              "displayName": "Created At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "modifiedAt": {
+              "displayName": "Modified At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "Url",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "children": {
+          "displayName": "Children",
+          "path": "/reseller/children",
+          "responseKey": "children",
+          "fields": {
+            "apiKeys": {
+              "displayName": "Api Keys",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "companyName": {
+              "displayName": "Company Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "credits": {
+              "displayName": "Credits",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "email": {
+              "displayName": "Email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "firstName": {
+              "displayName": "First Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "ips": {
+              "displayName": "Ips",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "lastName": {
+              "displayName": "Last Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "password": {
+              "displayName": "Password",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "statistics": {
+              "displayName": "Statistics",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "companies": {
+          "displayName": "Companies",
+          "path": "/companies",
+          "responseKey": "items",
+          "fields": {
+            "attributes": {
+              "displayName": "Attributes",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "linkedContactsIds": {
+              "displayName": "Linked Contacts Ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "linkedDealsIds": {
+              "displayName": "Linked Deals Ids",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "companies/attributes": {
+          "displayName": "Companies Attributes",
+          "path": "/companies/attributes",
+          "responseKey": "",
+          "fields": {
+            "attributeOptions": {
+              "displayName": "Attribute Options",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "attributeTypeName": {
+              "displayName": "Attribute Type Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "internalName": {
+              "displayName": "Internal Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "isRequired": {
+              "displayName": "Is Required",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "label": {
+              "displayName": "Label",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "contacts": {
+          "displayName": "Contacts",
+          "path": "/contacts",
+          "responseKey": "contacts",
+          "fields": {
+            "attributes": {
+              "displayName": "Attributes",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "createdAt": {
+              "displayName": "Created At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "Email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "emailBlacklisted": {
+              "displayName": "Email Blacklisted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "listIds": {
+              "displayName": "List Ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "listUnsubscribed": {
+              "displayName": "List Unsubscribed",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "modifiedAt": {
+              "displayName": "Modified At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "smsBlacklisted": {
+              "displayName": "Sms Blacklisted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "contacts/attributes": {
+          "displayName": "Contacts Attributes",
+          "path": "/contacts/attributes",
+          "responseKey": "attributes",
+          "fields": {
+            "calculatedValue": {
+              "displayName": "Calculated Value",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "category": {
+              "displayName": "Category",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "enumeration": {
+              "displayName": "Enumeration",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "Type",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "deals": {
+          "displayName": "Deals",
+          "path": "/crm/deals",
+          "responseKey": "items",
+          "fields": {
+            "attributes": {
+              "displayName": "Attributes",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "linkedCompaniesIds": {
+              "displayName": "Linked Companies Ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "linkedContactsIds": {
+              "displayName": "Linked Contacts Ids",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "emailCampaigns": {
+          "displayName": "Email Campaigns",
+          "path": "/emailCampaigns",
+          "responseKey": "campaigns",
+          "fields": {
+            "abTesting": {
+              "displayName": "Ab Testing",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "createdAt": {
+              "displayName": "Created At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "footer": {
+              "displayName": "Footer",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "header": {
+              "displayName": "Header",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "htmlContent": {
+              "displayName": "Html Content",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "inlineImageActivation": {
+              "displayName": "Inline Image Activation",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "mirrorActive": {
+              "displayName": "Mirror Active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "modifiedAt": {
+              "displayName": "Modified At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "recipients": {
+              "displayName": "Recipients",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "recurring": {
+              "displayName": "Recurring",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "replyTo": {
+              "displayName": "Reply To",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "returnBounce": {
+              "displayName": "Return Bounce",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "scheduledAt": {
+              "displayName": "Scheduled At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "sendAtBestTime": {
+              "displayName": "Send At Best Time",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "sender": {
+              "displayName": "Sender",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "sentDate": {
+              "displayName": "Sent Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "shareLink": {
+              "displayName": "Share Link",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "splitRule": {
+              "displayName": "Split Rule",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "statistics": {
+              "displayName": "Statistics",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "status": {
+              "displayName": "Status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subject": {
+              "displayName": "Subject",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subjectA": {
+              "displayName": "Subject A",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subjectB": {
+              "displayName": "Subject B",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "tag": {
+              "displayName": "Tag",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "testSent": {
+              "displayName": "Test Sent",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "toField": {
+              "displayName": "To Field",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "Type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "winnerCriteria": {
+              "displayName": "Winner Criteria",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "winnerDelay": {
+              "displayName": "Winner Delay",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "files": {
+          "displayName": "Files",
+          "path": "/crm/files",
+          "responseKey": "",
+          "fields": {
+            "authorId": {
+              "displayName": "Author Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "companyId": {
+              "displayName": "Company Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "contactId": {
+              "displayName": "Contact Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "createdAt": {
+              "displayName": "Created At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "dealId": {
+              "displayName": "Deal Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "size": {
+              "displayName": "Size",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "folders": {
+          "displayName": "Folders",
+          "path": "/contacts/folders",
+          "responseKey": "folders",
+          "fields": {
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "totalBlacklisted": {
+              "displayName": "Total Blacklisted",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "totalSubscribers": {
+              "displayName": "Total Subscribers",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "uniqueSubscribers": {
+              "displayName": "Unique Subscribers",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "inbound/events": {
+          "displayName": "Inbound Events",
+          "path": "/inbound/events",
+          "responseKey": "events",
+          "fields": {
+            "date": {
+              "displayName": "Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "recipient": {
+              "displayName": "Recipient",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "sender": {
+              "displayName": "Sender",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "uuid": {
+              "displayName": "Uuid",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "ips": {
+          "displayName": "Ips",
+          "path": "/senders/ips",
+          "responseKey": "ips",
+          "fields": {
+            "active": {
+              "displayName": "Active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "domain": {
+              "displayName": "Domain",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "ip": {
+              "displayName": "Ip",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "lists": {
+          "displayName": "Lists",
+          "path": "/contacts/lists",
+          "responseKey": "lists",
+          "fields": {
+            "folderId": {
+              "displayName": "Folder Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "totalBlacklisted": {
+              "displayName": "Total Blacklisted",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "totalSubscribers": {
+              "displayName": "Total Subscribers",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "uniqueSubscribers": {
+              "displayName": "Unique Subscribers",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "notes": {
+          "displayName": "Notes",
+          "path": "/crm/notes",
+          "responseKey": "",
+          "fields": {
+            "authorId": {
+              "displayName": "Author Id",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "contactIds": {
+              "displayName": "Contact Ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "createdAt": {
+              "displayName": "Created At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "dealIds": {
+              "displayName": "Deal Ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "text": {
+              "displayName": "Text",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedAt": {
+              "displayName": "Updated At",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "processes": {
+          "displayName": "Processes",
+          "path": "/processes",
+          "responseKey": "processes",
+          "fields": {
+            "export_url": {
+              "displayName": "Export Url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "Status",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "products": {
+          "displayName": "Products",
+          "path": "/products",
+          "responseKey": "products",
+          "fields": {
+            "categories": {
+              "displayName": "Categories",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "createdAt": {
+              "displayName": "Created At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "imageUrl": {
+              "displayName": "Image Url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "modifiedAt": {
+              "displayName": "Modified At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "parentId": {
+              "displayName": "Parent Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "price": {
+              "displayName": "Price",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "s3Original": {
+              "displayName": "S 3 Original",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "s3ThumbAnalytics": {
+              "displayName": "S 3 Thumb Analytics",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "s3ThumbEditor": {
+              "displayName": "S 3 Thumb Editor",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "sku": {
+              "displayName": "Sku",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "Url",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "senders": {
+          "displayName": "Senders",
+          "path": "/senders",
+          "responseKey": "senders",
+          "fields": {
+            "active": {
+              "displayName": "Active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "email": {
+              "displayName": "Email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "ips": {
+              "displayName": "Ips",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "smsCampaigns": {
+          "displayName": "Sms Campaigns",
+          "path": "/smsCampaigns",
+          "responseKey": "campaigns",
+          "fields": {
+            "content": {
+              "displayName": "Content",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdAt": {
+              "displayName": "Created At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "modifiedAt": {
+              "displayName": "Modified At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "recipients": {
+              "displayName": "Recipients",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "scheduledAt": {
+              "displayName": "Scheduled At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "sender": {
+              "displayName": "Sender",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "statistics": {
+              "displayName": "Statistics",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "status": {
+              "displayName": "Status",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "smtp/statistics/events": {
+          "displayName": "SMTP Statistics Events",
+          "path": "/smtp/statistics/events",
+          "responseKey": "events",
+          "fields": {
+            "date": {
+              "displayName": "Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "Email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "event": {
+              "displayName": "Event",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "from": {
+              "displayName": "From",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "ip": {
+              "displayName": "Ip",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "link": {
+              "displayName": "Link",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "messageId": {
+              "displayName": "Message Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "reason": {
+              "displayName": "Reason",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subject": {
+              "displayName": "Subject",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "tag": {
+              "displayName": "Tag",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "templateId": {
+              "displayName": "Template Id",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "smtp/statistics/reports": {
+          "displayName": "SMTP Statistics Reports",
+          "path": "/smtp/statistics/reports",
+          "responseKey": "reports",
+          "fields": {
+            "blocked": {
+              "displayName": "Blocked",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "clicks": {
+              "displayName": "Clicks",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "date": {
+              "displayName": "Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "delivered": {
+              "displayName": "Delivered",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "hardBounces": {
+              "displayName": "Hard Bounces",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "invalid": {
+              "displayName": "Invalid",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "opens": {
+              "displayName": "Opens",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "requests": {
+              "displayName": "Requests",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "softBounces": {
+              "displayName": "Soft Bounces",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "spamReports": {
+              "displayName": "Spam Reports",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "uniqueClicks": {
+              "displayName": "Unique Clicks",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "uniqueOpens": {
+              "displayName": "Unique Opens",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "unsubscribed": {
+              "displayName": "Unsubscribed",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "subAccount": {
+          "displayName": "Sub Account",
+          "path": "/corporate/subAccount",
+          "responseKey": "subAccounts",
+          "fields": {
+            "active": {
+              "displayName": "Active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "companyName": {
+              "displayName": "Company Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdAt": {
+              "displayName": "Created At",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "tasks": {
+          "displayName": "Tasks",
+          "path": "/crm/tasks",
+          "responseKey": "items",
+          "fields": {
+            "companiesIds": {
+              "displayName": "Companies Ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "contactsIds": {
+              "displayName": "Contacts Ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "dealsIds": {
+              "displayName": "Deals Ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "taskTypeId": {
+              "displayName": "Task Type Id",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "templates": {
+          "displayName": "Templates",
+          "path": "/smtp/templates",
+          "responseKey": "templates",
+          "fields": {
+            "createdAt": {
+              "displayName": "Created At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "doiTemplate": {
+              "displayName": "Doi Template",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "htmlContent": {
+              "displayName": "Html Content",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "isActive": {
+              "displayName": "Is Active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "modifiedAt": {
+              "displayName": "Modified At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "replyTo": {
+              "displayName": "Reply To",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "sender": {
+              "displayName": "Sender",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "subject": {
+              "displayName": "Subject",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "tag": {
+              "displayName": "Tag",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "testSent": {
+              "displayName": "Test Sent",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "toField": {
+              "displayName": "To Field",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "transactionalSMS/statistics/events": {
+          "displayName": "Transactional SMS Statistics Events",
+          "path": "/transactionalSMS/statistics/events",
+          "responseKey": "events",
+          "fields": {
+            "date": {
+              "displayName": "Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "event": {
+              "displayName": "Event",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "messageId": {
+              "displayName": "Message Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "phoneNumber": {
+              "displayName": "Phone Number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "reason": {
+              "displayName": "Reason",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "reply": {
+              "displayName": "Reply",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "tag": {
+              "displayName": "Tag",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "transactionalSMS/statistics/reports": {
+          "displayName": "Transactional SMS Statistics Reports",
+          "path": "/transactionalSMS/statistics/reports",
+          "responseKey": "reports",
+          "fields": {
+            "accepted": {
+              "displayName": "Accepted",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "blocked": {
+              "displayName": "Blocked",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "date": {
+              "displayName": "Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "delivered": {
+              "displayName": "Delivered",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "hardBounces": {
+              "displayName": "Hard Bounces",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "rejected": {
+              "displayName": "Rejected",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "replied": {
+              "displayName": "Replied",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "requests": {
+              "displayName": "Requests",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "softBounces": {
+              "displayName": "Soft Bounces",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "unsubscribed": {
+              "displayName": "Unsubscribed",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "webhooks": {
+          "displayName": "Webhooks",
+          "path": "/webhooks",
+          "responseKey": "webhooks",
+          "fields": {
+            "createdAt": {
+              "displayName": "Created At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "events": {
+              "displayName": "Events",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "modifiedAt": {
+              "displayName": "Modified At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "Type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "Url",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}
