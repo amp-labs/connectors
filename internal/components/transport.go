@@ -40,5 +40,10 @@ func NewTransport(
 	}, nil
 }
 
-func (c *Transport) JSONHTTPClient() *common.JSONHTTPClient { return c.json }
-func (c *Transport) HTTPClient() *common.HTTPClient         { return c.json.HTTPClient }
+func (t *Transport) SetBaseURL(newURL string) {
+	t.ProviderContext.providerInfo.BaseURL = newURL
+	t.json.HTTPClient.Base = newURL
+}
+
+func (t *Transport) JSONHTTPClient() *common.JSONHTTPClient { return t.json }
+func (t *Transport) HTTPClient() *common.HTTPClient         { return t.json.HTTPClient }

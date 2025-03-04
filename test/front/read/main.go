@@ -58,6 +58,7 @@ func testRead(ctx context.Context, conn *fr.Connector, objectName string, fields
 	if _, err := os.Stdout.Write(jsonStr); err != nil {
 		return fmt.Errorf("error writing to stdout: %w", err)
 	}
+
 	if _, err := os.Stdout.WriteString("\n"); err != nil {
 		return fmt.Errorf("error writing to stdout: %w", err)
 	}
