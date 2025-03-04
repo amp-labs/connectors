@@ -30,6 +30,18 @@ type ResultData struct {
 	EventRelayConfig *EventRelayConfig
 }
 
+func (c *Connector) EmptyRegistrationParams() *common.SubscriptionRegistrationParams {
+	return &common.SubscriptionRegistrationParams{
+		Request: &RegistrationParams{},
+	}
+}
+
+func (c *Connector) EmptyRegistrationResult() *common.RegistrationResult {
+	return &common.RegistrationResult{
+		Result: &ResultData{},
+	}
+}
+
 func (c *Connector) rollbackRegister(ctx context.Context, res *ResultData) error {
 	if res.EventRelayConfig != nil {
 		_, err := c.DeleteEventRelayConfig(ctx, res.EventRelayConfig.Id)
