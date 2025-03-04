@@ -13,6 +13,16 @@ type SubscribeResult struct {
 	EventChannelMembers map[common.ObjectName]*EventChannelMember
 }
 
+func (conn *Connector) EmptySubscritpionParams() *common.SubscribeParams {
+	return &common.SubscribeParams{}
+}
+
+func (conn *Connector) EmptySubscriptionResult() *common.SubscriptionResult {
+	return &common.SubscriptionResult{
+		Result: &SubscribeResult{},
+	}
+}
+
 // Subscribe subscribes to the events for the given objects.
 // It creates event channel members for each object in the subscription.
 // If any of the event channel members fail to be created, it will rollback the operation.
