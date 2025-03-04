@@ -50,6 +50,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 func (c *Connector) parseReadResponse(
 	ctx context.Context,
 	params common.ReadParams,
+	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
 	path, err := metadata.Schemas.LookupURLPath(c.Module(), params.ObjectName)
@@ -102,6 +103,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 func (c *Connector) parseWriteResponse(
 	ctx context.Context,
 	params common.WriteParams,
+	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.WriteResult, error) {
 	node, ok := response.Body()

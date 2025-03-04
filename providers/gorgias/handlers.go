@@ -35,6 +35,7 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 func (c *Connector) parseSingleObjectMetadataResponse(
 	ctx context.Context,
 	objectName string,
+	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ObjectMetadata, error) {
 	objectMetadata := common.ObjectMetadata{
