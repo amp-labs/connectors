@@ -2,7 +2,7 @@
   "modules": {
     "root": {
       "id": "root",
-      "path": "/api/v",
+      "path": "/v",
       "objects": {
         "campaigns": {
           "displayName": "Campaigns",
@@ -10,62 +10,62 @@
           "responseKey": "results",
           "fields": {
             "archived": {
-              "displayName": "Archived",
+              "displayName": "archived",
               "valueType": "string",
               "providerType": "string"
             },
             "author": {
-              "displayName": "Author",
+              "displayName": "author",
               "valueType": "string",
               "providerType": "string"
             },
             "exec_term": {
-              "displayName": "Exec Term",
+              "displayName": "exec_term",
               "valueType": "string",
               "providerType": "string"
             },
             "holdout_percentage": {
-              "displayName": "Holdout Percentage",
+              "displayName": "holdout_percentage",
               "valueType": "string",
               "providerType": "string"
             },
             "name": {
-              "displayName": "Name",
+              "displayName": "name",
               "valueType": "string",
               "providerType": "string"
             },
             "next_execution_scheduled_at": {
-              "displayName": "Next Execution Scheduled At",
+              "displayName": "next_execution_scheduled_at",
               "valueType": "string",
               "providerType": "string"
             },
             "segment_name": {
-              "displayName": "Segment Name",
+              "displayName": "segment_name",
               "valueType": "string",
               "providerType": "string"
             },
             "segment_uuid": {
-              "displayName": "Segment Uuid",
+              "displayName": "segment_uuid",
               "valueType": "string",
               "providerType": "string"
             },
             "startdate": {
-              "displayName": "Startdate",
+              "displayName": "startdate",
               "valueType": "string",
               "providerType": "string"
             },
             "status": {
-              "displayName": "Status",
+              "displayName": "status",
               "valueType": "string",
               "providerType": "string"
             },
             "updated_at": {
-              "displayName": "Updated At",
+              "displayName": "updated_at",
               "valueType": "string",
               "providerType": "string"
             },
             "uuid": {
-              "displayName": "Uuid",
+              "displayName": "uuid",
               "valueType": "string",
               "providerType": "string"
             }
@@ -77,267 +77,267 @@
           "responseKey": "catalogs",
           "fields": {
             "access_key": {
-              "displayName": "Access Key",
+              "displayName": "access_key",
               "valueType": "string",
               "providerType": "string"
             },
             "archived": {
-              "displayName": "Archived",
+              "displayName": "archived",
               "valueType": "boolean",
               "providerType": "boolean"
             },
             "author": {
-              "displayName": "Author",
+              "displayName": "author",
               "valueType": "string",
               "providerType": "string"
             },
             "bucket": {
-              "displayName": "Bucket",
+              "displayName": "bucket",
               "valueType": "string",
               "providerType": "string"
             },
             "catalog_file_name": {
-              "displayName": "Catalog File Name",
+              "displayName": "catalog_file_name",
               "valueType": "string",
               "providerType": "string"
             },
             "catalog_headers": {
-              "displayName": "Catalog Headers",
+              "displayName": "catalog_headers",
               "valueType": "other",
               "providerType": "array"
             },
             "catalog_type": {
-              "displayName": "Catalog Type",
+              "displayName": "catalog_type",
               "valueType": "string",
               "providerType": "string"
             },
             "category_options": {
-              "displayName": "Category Options",
+              "displayName": "category_options",
               "valueType": "other",
               "providerType": "array"
             },
             "default_root_category": {
-              "displayName": "Default Root Category",
+              "displayName": "default_root_category",
               "valueType": "string",
               "providerType": "string"
             },
             "end_at": {
-              "displayName": "End At",
+              "displayName": "end_at",
               "valueType": "string",
               "providerType": "string"
             },
             "error_access_key": {
-              "displayName": "Error Access Key",
+              "displayName": "error_access_key",
               "valueType": "string",
               "providerType": "string"
             },
             "file_options": {
-              "displayName": "File Options",
+              "displayName": "file_options",
               "valueType": "other",
               "providerType": "object"
             },
             "file_settings": {
-              "displayName": "File Settings",
+              "displayName": "file_settings",
               "valueType": "other",
               "providerType": "array"
             },
             "host": {
-              "displayName": "Host",
+              "displayName": "host",
               "valueType": "string",
               "providerType": "string"
             },
             "is_active": {
-              "displayName": "Is Active",
+              "displayName": "is_active",
               "valueType": "boolean",
               "providerType": "boolean"
             },
             "is_passive": {
-              "displayName": "Is Passive",
+              "displayName": "is_passive",
               "valueType": "boolean",
               "providerType": "boolean"
             },
             "last_catalog_file": {
-              "displayName": "Last Catalog File",
+              "displayName": "last_catalog_file",
               "valueType": "other",
               "providerType": "object"
             },
             "last_processed": {
-              "displayName": "Last Processed",
+              "displayName": "last_processed",
               "valueType": "string",
               "providerType": "string"
             },
             "login": {
-              "displayName": "Login",
+              "displayName": "login",
               "valueType": "string",
               "providerType": "string"
             },
             "name": {
-              "displayName": "Name",
+              "displayName": "name",
               "valueType": "string",
               "providerType": "string"
             },
             "parent_sku_column_name": {
-              "displayName": "Parent Sku Column Name",
+              "displayName": "parent_sku_column_name",
               "valueType": "string",
               "providerType": "string"
             },
             "password": {
-              "displayName": "Password",
+              "displayName": "password",
               "valueType": "string",
               "providerType": "string"
             },
             "path": {
-              "displayName": "Path",
+              "displayName": "path",
               "valueType": "string",
               "providerType": "string"
             },
             "port": {
-              "displayName": "Port",
+              "displayName": "port",
               "valueType": "string",
               "providerType": "string"
             },
             "product_brand_column_name": {
-              "displayName": "Product Brand Column Name",
+              "displayName": "product_brand_column_name",
               "valueType": "string",
               "providerType": "string"
             },
             "product_category_column_name": {
-              "displayName": "Product Category Column Name",
+              "displayName": "product_category_column_name",
               "valueType": "other",
               "providerType": "array"
             },
             "product_count": {
-              "displayName": "Product Count",
+              "displayName": "product_count",
               "valueType": "int",
               "providerType": "integer"
             },
             "product_end_date_column_name": {
-              "displayName": "Product End Date Column Name",
+              "displayName": "product_end_date_column_name",
               "valueType": "string",
               "providerType": "string"
             },
             "product_id_column_name": {
-              "displayName": "Product Id Column Name",
+              "displayName": "product_id_column_name",
               "valueType": "string",
               "providerType": "string"
             },
             "product_image_column_name": {
-              "displayName": "Product Image Column Name",
+              "displayName": "product_image_column_name",
               "valueType": "string",
               "providerType": "string"
             },
             "product_inventory_column_name": {
-              "displayName": "Product Inventory Column Name",
+              "displayName": "product_inventory_column_name",
               "valueType": "string",
               "providerType": "string"
             },
             "product_msrp_column_name": {
-              "displayName": "Product Msrp Column Name",
+              "displayName": "product_msrp_column_name",
               "valueType": "string",
               "providerType": "string"
             },
             "product_name_column_name": {
-              "displayName": "Product Name Column Name",
+              "displayName": "product_name_column_name",
               "valueType": "string",
               "providerType": "string"
             },
             "product_price_column_name": {
-              "displayName": "Product Price Column Name",
+              "displayName": "product_price_column_name",
               "valueType": "string",
               "providerType": "string"
             },
             "product_start_date_column_name": {
-              "displayName": "Product Start Date Column Name",
+              "displayName": "product_start_date_column_name",
               "valueType": "string",
               "providerType": "string"
             },
             "product_tag_column_name": {
-              "displayName": "Product Tag Column Name",
+              "displayName": "product_tag_column_name",
               "valueType": "other",
               "providerType": "array"
             },
             "product_url_column_name": {
-              "displayName": "Product Url Column Name",
+              "displayName": "product_url_column_name",
               "valueType": "string",
               "providerType": "string"
             },
             "s3_access_key": {
-              "displayName": "S 3 Access Key",
+              "displayName": "s3_access_key",
               "valueType": "string",
               "providerType": "string"
             },
             "s3_aws_region": {
-              "displayName": "S 3 Aws Region",
+              "displayName": "s3_aws_region",
               "valueType": "string",
               "providerType": "string"
             },
             "s3_path": {
-              "displayName": "S 3 Path",
+              "displayName": "s3_path",
               "valueType": "string",
               "providerType": "string"
             },
             "secret_access_key": {
-              "displayName": "Secret Access Key",
+              "displayName": "secret_access_key",
               "valueType": "string",
               "providerType": "string"
             },
             "sftp_host": {
-              "displayName": "Sftp Host",
+              "displayName": "sftp_host",
               "valueType": "string",
               "providerType": "string"
             },
             "sftp_login": {
-              "displayName": "Sftp Login",
+              "displayName": "sftp_login",
               "valueType": "string",
               "providerType": "string"
             },
             "sftp_password": {
-              "displayName": "Sftp Password",
+              "displayName": "sftp_password",
               "valueType": "string",
               "providerType": "string"
             },
             "sftp_path": {
-              "displayName": "Sftp Path",
+              "displayName": "sftp_path",
               "valueType": "string",
               "providerType": "string"
             },
             "sftp_port": {
-              "displayName": "Sftp Port",
+              "displayName": "sftp_port",
               "valueType": "string",
               "providerType": "string"
             },
             "start_at": {
-              "displayName": "Start At",
+              "displayName": "start_at",
               "valueType": "string",
               "providerType": "string"
             },
             "status": {
-              "displayName": "Status",
+              "displayName": "status",
               "valueType": "string",
               "providerType": "string"
             },
             "tag_options": {
-              "displayName": "Tag Options",
+              "displayName": "tag_options",
               "valueType": "string",
               "providerType": "string"
             },
             "update_frequency": {
-              "displayName": "Update Frequency",
+              "displayName": "update_frequency",
               "valueType": "string",
               "providerType": "string"
             },
             "upload_method": {
-              "displayName": "Upload Method",
+              "displayName": "upload_method",
               "valueType": "string",
               "providerType": "string"
             },
             "url": {
-              "displayName": "Url",
+              "displayName": "url",
               "valueType": "string",
               "providerType": "string"
             },
             "uuid": {
-              "displayName": "Uuid",
+              "displayName": "uuid",
               "valueType": "string",
               "providerType": "string"
             }
@@ -349,32 +349,32 @@
           "responseKey": "results",
           "fields": {
             "author": {
-              "displayName": "Author",
+              "displayName": "author",
               "valueType": "string",
               "providerType": "string"
             },
             "created_at": {
-              "displayName": "Created At",
+              "displayName": "created_at",
               "valueType": "string",
               "providerType": "string"
             },
             "name": {
-              "displayName": "Name",
+              "displayName": "name",
               "valueType": "string",
               "providerType": "string"
             },
             "resource": {
-              "displayName": "Resource",
+              "displayName": "resource",
               "valueType": "other",
               "providerType": "object"
             },
             "updated_at": {
-              "displayName": "Updated At",
+              "displayName": "updated_at",
               "valueType": "string",
               "providerType": "string"
             },
             "uuid": {
-              "displayName": "Uuid",
+              "displayName": "uuid",
               "valueType": "string",
               "providerType": "string"
             }
@@ -386,32 +386,32 @@
           "responseKey": "results",
           "fields": {
             "author": {
-              "displayName": "Author",
+              "displayName": "author",
               "valueType": "string",
               "providerType": "string"
             },
             "created_at": {
-              "displayName": "Created At",
+              "displayName": "created_at",
               "valueType": "string",
               "providerType": "string"
             },
             "name": {
-              "displayName": "Name",
+              "displayName": "name",
               "valueType": "string",
               "providerType": "string"
             },
             "resource": {
-              "displayName": "Resource",
+              "displayName": "resource",
               "valueType": "other",
               "providerType": "object"
             },
             "updated_at": {
-              "displayName": "Updated At",
+              "displayName": "updated_at",
               "valueType": "string",
               "providerType": "string"
             },
             "uuid": {
-              "displayName": "Uuid",
+              "displayName": "uuid",
               "valueType": "string",
               "providerType": "string"
             }
@@ -423,17 +423,17 @@
           "responseKey": "",
           "fields": {
             "format": {
-              "displayName": "Format",
+              "displayName": "format",
               "valueType": "string",
               "providerType": "string"
             },
             "name": {
-              "displayName": "Name",
+              "displayName": "name",
               "valueType": "string",
               "providerType": "string"
             },
             "uuid": {
-              "displayName": "Uuid",
+              "displayName": "uuid",
               "valueType": "string",
               "providerType": "string"
             }
@@ -445,32 +445,32 @@
           "responseKey": "results",
           "fields": {
             "author": {
-              "displayName": "Author",
+              "displayName": "author",
               "valueType": "string",
               "providerType": "string"
             },
             "created_at": {
-              "displayName": "Created At",
+              "displayName": "created_at",
               "valueType": "string",
               "providerType": "string"
             },
             "name": {
-              "displayName": "Name",
+              "displayName": "name",
               "valueType": "string",
               "providerType": "string"
             },
             "resource": {
-              "displayName": "Resource",
+              "displayName": "resource",
               "valueType": "other",
               "providerType": "object"
             },
             "updated_at": {
-              "displayName": "Updated At",
+              "displayName": "updated_at",
               "valueType": "string",
               "providerType": "string"
             },
             "uuid": {
-              "displayName": "Uuid",
+              "displayName": "uuid",
               "valueType": "string",
               "providerType": "string"
             }
@@ -482,92 +482,92 @@
           "responseKey": "",
           "fields": {
             "account_id": {
-              "displayName": "Account Id",
+              "displayName": "account_id",
               "valueType": "int",
               "providerType": "integer"
             },
             "author": {
-              "displayName": "Author",
+              "displayName": "author",
               "valueType": "string",
               "providerType": "string"
             },
             "created_at": {
-              "displayName": "Created At",
+              "displayName": "created_at",
               "valueType": "string",
               "providerType": "string"
             },
             "deleted_at": {
-              "displayName": "Deleted At",
+              "displayName": "deleted_at",
               "valueType": "string",
               "providerType": "string"
             },
             "description": {
-              "displayName": "Description",
+              "displayName": "description",
               "valueType": "string",
               "providerType": "string"
             },
             "filename": {
-              "displayName": "Filename",
+              "displayName": "filename",
               "valueType": "string",
               "providerType": "string"
             },
             "filesize": {
-              "displayName": "Filesize",
+              "displayName": "filesize",
               "valueType": "int",
               "providerType": "integer"
             },
             "id": {
-              "displayName": "Id",
+              "displayName": "id",
               "valueType": "int",
               "providerType": "integer"
             },
             "import_method": {
-              "displayName": "Import Method",
+              "displayName": "import_method",
               "valueType": "string",
               "providerType": "string"
             },
             "is_exported": {
-              "displayName": "Is Exported",
+              "displayName": "is_exported",
               "valueType": "boolean",
               "providerType": "boolean"
             },
             "is_seed_list": {
-              "displayName": "Is Seed List",
+              "displayName": "is_seed_list",
               "valueType": "boolean",
               "providerType": "boolean"
             },
             "source": {
-              "displayName": "Source",
+              "displayName": "source",
               "valueType": "string",
               "providerType": "string"
             },
             "status": {
-              "displayName": "Status",
+              "displayName": "status",
               "valueType": "string",
               "providerType": "string"
             },
             "updated_at": {
-              "displayName": "Updated At",
+              "displayName": "updated_at",
               "valueType": "string",
               "providerType": "string"
             },
             "user_count": {
-              "displayName": "User Count",
+              "displayName": "user_count",
               "valueType": "int",
               "providerType": "integer"
             },
             "user_id": {
-              "displayName": "User Id",
+              "displayName": "user_id",
               "valueType": "int",
               "providerType": "integer"
             },
             "uuid": {
-              "displayName": "Uuid",
+              "displayName": "uuid",
               "valueType": "string",
               "providerType": "string"
             },
             "version": {
-              "displayName": "Version",
+              "displayName": "version",
               "valueType": "string",
               "providerType": "string"
             }
@@ -579,62 +579,62 @@
           "responseKey": "",
           "fields": {
             "approxusers": {
-              "displayName": "Approxusers",
+              "displayName": "approxusers",
               "valueType": "int",
               "providerType": "integer"
             },
             "approxusers_updated_at": {
-              "displayName": "Approxusers Updated At",
+              "displayName": "approxusers_updated_at",
               "valueType": "int",
               "providerType": "integer"
             },
             "created_at": {
-              "displayName": "Created At",
+              "displayName": "created_at",
               "valueType": "string",
               "providerType": "string"
             },
             "email_users": {
-              "displayName": "Email Users",
+              "displayName": "email_users",
               "valueType": "int",
               "providerType": "integer"
             },
             "mixin_key": {
-              "displayName": "Mixin Key",
+              "displayName": "mixin_key",
               "valueType": "int",
               "providerType": "integer"
             },
             "name": {
-              "displayName": "Name",
+              "displayName": "name",
               "valueType": "string",
               "providerType": "string"
             },
             "push_users": {
-              "displayName": "Push Users",
+              "displayName": "push_users",
               "valueType": "int",
               "providerType": "integer"
             },
             "sms_users": {
-              "displayName": "Sms Users",
+              "displayName": "sms_users",
               "valueType": "int",
               "providerType": "integer"
             },
             "status": {
-              "displayName": "Status",
+              "displayName": "status",
               "valueType": "string",
               "providerType": "string"
             },
             "updated_at": {
-              "displayName": "Updated At",
+              "displayName": "updated_at",
               "valueType": "string",
               "providerType": "string"
             },
             "uuid": {
-              "displayName": "Uuid",
+              "displayName": "uuid",
               "valueType": "string",
               "providerType": "string"
             },
             "version": {
-              "displayName": "Version",
+              "displayName": "version",
               "valueType": "int",
               "providerType": "integer"
             }
@@ -646,37 +646,37 @@
           "responseKey": "results",
           "fields": {
             "archived": {
-              "displayName": "Archived",
+              "displayName": "archived",
               "valueType": "boolean",
               "providerType": "boolean"
             },
             "author": {
-              "displayName": "Author",
+              "displayName": "author",
               "valueType": "string",
               "providerType": "string"
             },
             "created_at": {
-              "displayName": "Created At",
+              "displayName": "created_at",
               "valueType": "string",
               "providerType": "string"
             },
             "is_destroy": {
-              "displayName": "Is Destroy",
+              "displayName": "is_destroy",
               "valueType": "boolean",
               "providerType": "boolean"
             },
             "name": {
-              "displayName": "Name",
+              "displayName": "name",
               "valueType": "string",
               "providerType": "string"
             },
             "updated_at": {
-              "displayName": "Updated At",
+              "displayName": "updated_at",
               "valueType": "string",
               "providerType": "string"
             },
             "uuid": {
-              "displayName": "Uuid",
+              "displayName": "uuid",
               "valueType": "string",
               "providerType": "string"
             }
@@ -688,32 +688,32 @@
           "responseKey": "",
           "fields": {
             "account_id": {
-              "displayName": "Account Id",
+              "displayName": "account_id",
               "valueType": "int",
               "providerType": "integer"
             },
             "allowed_tags": {
-              "displayName": "Allowed Tags",
+              "displayName": "allowed_tags",
               "valueType": "string",
               "providerType": "string"
             },
             "color": {
-              "displayName": "Color",
+              "displayName": "color",
               "valueType": "string",
               "providerType": "string"
             },
             "description": {
-              "displayName": "Description",
+              "displayName": "description",
               "valueType": "string",
               "providerType": "string"
             },
             "id": {
-              "displayName": "Id",
+              "displayName": "id",
               "valueType": "int",
               "providerType": "integer"
             },
             "tagged_items": {
-              "displayName": "Tagged Items",
+              "displayName": "tagged_items",
               "valueType": "other",
               "providerType": "array"
             }
