@@ -91,7 +91,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		return nil, err
 	}
 
-	jsonData, errr := json.Marshal(params.RecordData)
+	jsonData, err := json.Marshal(params.RecordData)
 
 	if errr != nil {
 		return nil, errr
