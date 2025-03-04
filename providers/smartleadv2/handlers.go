@@ -25,6 +25,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 func (c *Connector) parseReadResponse(
 	ctx context.Context,
 	params common.ReadParams,
+	request *http.Request,
 	resp *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
 	return common.ParseResult(
@@ -74,6 +75,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 func (c *Connector) parseWriteResponse(
 	ctx context.Context,
 	params common.WriteParams,
+	request *http.Request,
 	resp *common.JSONHTTPResponse,
 ) (*common.WriteResult, error) {
 	// Get the JSON node from response
@@ -133,6 +135,7 @@ func (c *Connector) buildDeleteRequest(ctx context.Context, params common.Delete
 func (c *Connector) parseDeleteResponse(
 	ctx context.Context,
 	params common.DeleteParams,
+	request *http.Request,
 	resp *common.JSONHTTPResponse,
 ) (*common.DeleteResult, error) {
 	if resp.Code != http.StatusOK && resp.Code != http.StatusNoContent {
