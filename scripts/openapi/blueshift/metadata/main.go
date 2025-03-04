@@ -2,6 +2,7 @@ package main
 
 import (
 	"log/slog"
+	"strings"
 
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
@@ -85,8 +86,11 @@ func main() {
 			)
 		}
 
+		// Remove /api prefix from URLPath
+		urlPath := strings.TrimPrefix(object.URLPath, "/api")
+
 		for _, field := range object.Fields {
-			schemas.Add("", object.ObjectName, object.DisplayName, object.URLPath, object.ResponseKey,
+			schemas.Add("", object.ObjectName, object.DisplayName, urlPath, object.ResponseKey,
 				utilsopenapi.ConvertMetadataFieldToFieldMetadataMapV2(field), nil, object.Custom)
 		}
 

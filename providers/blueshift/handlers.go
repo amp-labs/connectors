@@ -17,14 +17,12 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		err error
 	)
 
-	path, err := metadata.Schemas.LookupObjectURLPath(c.Module(), params.ObjectName)
+	path, err := metadata.Schemas.LookupURLPath(c.Module(), params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
 
-	fullPath := fmt.Sprintf("%s%s", "v", path)
-
-	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, fullPath)
+	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, path)
 	if err != nil {
 		return nil, err
 	}
