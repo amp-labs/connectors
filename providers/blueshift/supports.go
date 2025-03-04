@@ -17,6 +17,10 @@ const (
 	objectNameOnsiteSlots     = "onsite_slots"
 	objectNameSmsTemplates    = "sms_templates"
 	objectNamePushTemplates   = "push_templates"
+	objectNameCatalogs        = "catalogs"
+	objectNameCustomers       = "customers"
+	objectNameCustomUserLists = "custom_user_lists/create"
+	objectNameEvent           = "event"
 )
 
 var nestedObjects = datautils.NewSet( //nolint:gochecknoglobals
@@ -32,14 +36,26 @@ var supportPagination = datautils.NewSet( //nolint:gochecknoglobals
 	objectNamePushTemplates,
 )
 
+var writeObjectWithSuffix = datautils.NewSet( //nolint:gochecknoglobals
+	objectNameEmailTemplates,
+	objectNamePushTemplates,
+	objectNameSmsTemplates,
+	objectNameExternalFetches,
+)
+
 func supportedOperations() components.EndpointRegistryInput {
 	readSupport := metadata.Schemas.ObjectNames().GetList(staticschema.RootModuleID)
+	writeSupport := []string{objectNameCampaigns, objectNameCustomers, objectNameCustomUserLists, objectNameEvent, objectNameEmailTemplates, objectNamePushTemplates, objectNameSmsTemplates, objectNameExternalFetches} //nolint:lll
 
 	return components.EndpointRegistryInput{
 		staticschema.RootModuleID: {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
+				Support:  components.WriteSupport,
 			},
 		},
 	}
