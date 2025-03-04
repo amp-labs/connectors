@@ -510,6 +510,12 @@ type SubscribeConnector interface {
 		ctx context.Context,
 		previousResult RegistrationResult,
 	) error
+	// EmptyRegistrationParams returns a empty instance of SubscriptionRegistrationParams.
+	// if there is any provider specific initialization required, it should be done here.
+	EmptyRegistrationParams() *SubscriptionRegistrationParams
+	// EmptyRegistrationResult returns a empty instance of RegistrationResult.
+	// if there is any provider specific initialization required, it should be done here.
+	EmptyRegistrationResult() *RegistrationResult
 
 	Subscribe(
 		ctx context.Context,
@@ -525,4 +531,10 @@ type SubscribeConnector interface {
 		ctx context.Context,
 		previousResult SubscriptionResult,
 	) error
+	// EmptySubscritpionParams returns a empty instance of SubscribeParams.
+	// if there is any provider specific initialization required, it should be done here.
+	EmptySubscritpionParams() *SubscribeParams
+	// EmptySubscriptionResult returns a empty instance of SubscriptionResult.
+	// if there is any provider specific initialization required, it should be done here.
+	EmptySubscriptionResult() *SubscriptionResult
 }
