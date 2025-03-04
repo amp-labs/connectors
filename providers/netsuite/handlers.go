@@ -32,6 +32,7 @@ func (c *Connector) buildObjectMetadataRequest(ctx context.Context, object strin
 func (c *Connector) parseObjectMetadataResponse(
 	ctx context.Context,
 	object string,
+	request *http.Request,
 	resp *common.JSONHTTPResponse,
 ) (*common.ObjectMetadata, error) {
 	metadata, err := common.UnmarshalJSON[metadataResponse](resp)

@@ -37,6 +37,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 func (c *Connector) parseReadResponse(
 	ctx context.Context,
 	params common.ReadParams,
+	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
 	return common.ParseResult(
@@ -73,6 +74,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 func (c *Connector) parseWriteResponse(
 	ctx context.Context,
 	params common.WriteParams,
+	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.WriteResult, error) {
 	body, ok := response.Body()
