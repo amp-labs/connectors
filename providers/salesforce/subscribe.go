@@ -13,11 +13,11 @@ type SubscribeResult struct {
 	EventChannelMembers map[common.ObjectName]*EventChannelMember
 }
 
-func (conn *Connector) NewSubscritpionParams() *common.SubscribeParams {
+func (conn *Connector) EmptySubscritpionParams() *common.SubscribeParams {
 	return &common.SubscribeParams{}
 }
 
-func (conn *Connector) NewSubscriptionResult() *common.SubscriptionResult {
+func (conn *Connector) EmptySubscriptionResult() *common.SubscriptionResult {
 	return &common.SubscriptionResult{
 		Result: &SubscribeResult{},
 	}

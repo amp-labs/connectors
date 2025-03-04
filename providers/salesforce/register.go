@@ -30,13 +30,13 @@ type ResultData struct {
 	EventRelayConfig *EventRelayConfig
 }
 
-func (c *Connector) NewRegistrationParams() *common.SubscriptionRegistrationParams {
+func (c *Connector) EmptyRegistrationParams() *common.SubscriptionRegistrationParams {
 	return &common.SubscriptionRegistrationParams{
 		Request: &RegistrationParams{},
 	}
 }
 
-func (c *Connector) NewRegistrationResult() *common.RegistrationResult {
+func (c *Connector) EmptyRegistrationResult() *common.RegistrationResult {
 	return &common.RegistrationResult{
 		Result: &ResultData{},
 	}
