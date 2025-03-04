@@ -113,14 +113,8 @@ func (c *Connector) parseWriteResponse(
 	}
 
 	rawID, err := jsonquery.New(node).IntegerOptional("id")
-	if err != nil { //nolint:nilerr
-		return &common.WriteResult{
-			Success: true,
-		}, nil
-	}
-
-	if rawID == nil {
-		return &common.WriteResult{
+	if err != nil || rawID == nil {
+		return &common.WriteResult{ //nolint:nilerr
 			Success: true,
 		}, nil
 	}
