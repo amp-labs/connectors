@@ -92,9 +92,8 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	}
 
 	jsonData, err := json.Marshal(params.RecordData)
-
-	if errr != nil {
-		return nil, errr
+	if err != nil {
+		return nil, err
 	}
 
 	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
