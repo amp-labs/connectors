@@ -6,12 +6,12 @@ func init() {
 	SetInfo(Bitbucket, ProviderInfo{
 		DisplayName: "Bitbucket",
 		AuthType:    Oauth2,
-		BaseURL:     " https://api.bitbucket.org",
+		BaseURL:     "https://api.bitbucket.org",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://bitbucket.org/site/oauth2/authorize",
 			TokenURL:                  "https://bitbucket.org/site/oauth2/access_token",
-			ExplicitScopesRequired:    true,
+			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false, // Needed for GetPostAuthInfo call
 		},
 		PostAuthInfoNeeded: false,
