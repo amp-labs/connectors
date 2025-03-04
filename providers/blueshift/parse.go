@@ -5,7 +5,6 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/jsonquery"
-	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers/blueshift/metadata"
 	"github.com/spyzhov/ajson"
 )
@@ -17,9 +16,9 @@ const (
 	pageNumber  = "0"
 )
 
-func getRecords(objectName string) common.RecordsFunc {
+func getRecords(objectName string, moduleID common.ModuleID) common.RecordsFunc {
 	return func(node *ajson.Node) ([]map[string]any, error) {
-		responseKey := metadata.Schemas.LookupArrayFieldName(staticschema.RootModuleID, objectName)
+		responseKey := metadata.Schemas.LookupArrayFieldName(moduleID, objectName)
 
 		rcds, err := jsonquery.New(node).ArrayOptional(responseKey)
 		if err != nil {

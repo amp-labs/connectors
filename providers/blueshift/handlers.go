@@ -2,7 +2,6 @@ package blueshift
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
@@ -47,53 +46,55 @@ func (c *Connector) parseReadResponse(
 	params common.ReadParams,
 	response *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
-	path, err := metadata.Schemas.LookupObjectURLPath(c.Module(), params.ObjectName)
+	path, err := metadata.Schemas.LookupURLPath(c.Module(), params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
 
-	fullPath := fmt.Sprintf("%s%s", "v", path)
-
-	baseURL, err := urlbuilder.New(c.ProviderInfo().BaseURL, fullPath)
+	baseURL, err := urlbuilder.New(c.ProviderInfo().BaseURL, path)
 	if err != nil {
 		return nil, err
 	}
 
 	if nestedObjects.Has(params.ObjectName) {
-		body, ok := response.Body()
-		if !ok {
-			return nil, common.ErrEmptyJSONHTTPResponse
-		}
-
-		templatesNode, err := jsonquery.New(body).ObjectRequired("templates")
-		if err != nil {
-			return nil, err
-		}
-
-		jsonResponse, err := common.ParseJSONResponse(
-			&http.Response{
-				StatusCode: response.Code,
-				Header:     response.Headers,
-			},
-			templatesNode.Source(),
-		)
-		if err != nil {
-			return nil, err
-		}
-
-		return common.ParseResult(
-			jsonResponse,
-			getRecords(params.ObjectName),
-			makeNextRecordsURL(baseURL.String()),
-			common.GetMarshaledData,
-			params.Fields,
-		)
+		return c.parseNestedResponse(response, params, baseURL.String())
 	}
 
 	return common.ParseResult(
 		response,
-		getRecords(params.ObjectName),
+		getRecords(params.ObjectName, c.Module()),
 		makeNextRecordsURL(baseURL.String()),
+		common.GetMarshaledData,
+		params.Fields,
+	)
+}
+
+func (c *Connector) parseNestedResponse(response *common.JSONHTTPResponse, params common.ReadParams, baseURL string) (*common.ReadResult, error) { //nolint:lll
+	body, ok := response.Body()
+	if !ok {
+		return nil, common.ErrEmptyJSONHTTPResponse
+	}
+
+	templatesNode, err := jsonquery.New(body).ObjectRequired("templates")
+	if err != nil {
+		return nil, err
+	}
+
+	jsonResponse, err := common.ParseJSONResponse(
+		&http.Response{
+			StatusCode: response.Code,
+			Header:     response.Headers,
+		},
+		templatesNode.Source(),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return common.ParseResult(
+		jsonResponse,
+		getRecords(params.ObjectName, c.Module()),
+		makeNextRecordsURL(baseURL),
 		common.GetMarshaledData,
 		params.Fields,
 	)

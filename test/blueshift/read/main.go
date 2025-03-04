@@ -33,7 +33,7 @@ func run() error {
 	utils.DumpJSON(res, os.Stdout)
 
 	slog.Info("Reading email templates")
-	res2, err := connector.Read(ctx, common.ReadParams{
+	res, err = connector.Read(ctx, common.ReadParams{
 		ObjectName: "email_templates",
 		Fields:     datautils.NewStringSet("uuid", "name"),
 	})
@@ -41,10 +41,10 @@ func run() error {
 		return err
 	}
 
-	utils.DumpJSON(res2, os.Stdout)
+	utils.DumpJSON(res, os.Stdout)
 
 	slog.Info("Reading sms templates")
-	res3, err := connector.Read(ctx, common.ReadParams{
+	res, err = connector.Read(ctx, common.ReadParams{
 		ObjectName: "sms_templates",
 		Fields:     datautils.NewStringSet("uuid", "author"),
 	})
@@ -52,7 +52,7 @@ func run() error {
 		return err
 	}
 
-	utils.DumpJSON(res3, os.Stdout)
+	utils.DumpJSON(res, os.Stdout)
 
 	return nil
 }
