@@ -52,5 +52,8 @@ func constructor(base *components.Connector) (*Connector, error) {
 		},
 	)
 
+	// Set the metadata provider for the connector
+	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), metadata.Schemas)
+
 	return connector, nil
 }
