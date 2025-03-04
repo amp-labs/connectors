@@ -127,3 +127,34 @@ func (c *Connector) parseWriteResponse(
 		Data:     nil,
 	}, nil
 }
+
+func (c *Connector) parseNestedResponse(response *common.JSONHTTPResponse, params common.ReadParams, baseURL string) (*common.ReadResult, error) { //nolint:lll
+	body, ok := response.Body()
+	if !ok {
+		return nil, common.ErrEmptyJSONHTTPResponse
+	}
+
+	templatesNode, err := jsonquery.New(body).ObjectRequired("templates")
+	if err != nil {
+		return nil, err
+	}
+
+	jsonResponse, err := common.ParseJSONResponse(
+		&http.Response{
+			StatusCode: response.Code,
+			Header:     response.Headers,
+		},
+		templatesNode.Source(),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return common.ParseResult(
+		jsonResponse,
+		getRecords(params.ObjectName, c.Module()),
+		makeNextRecordsURL(baseURL),
+		common.GetMarshaledData,
+		params.Fields,
+	)
+}
