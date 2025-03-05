@@ -37,7 +37,7 @@ func GetGithubConnector(ctx context.Context) *github.Connector {
 		},
 	)
 	if err != nil {
-		utils.Fail("error creating asana connector", "error", err)
+		utils.Fail("error creating github connector", "error", err)
 	}
 
 	return conn
