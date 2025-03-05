@@ -76,7 +76,6 @@ func makeNextRecordsURL(responseHeaders http.Header) common.NextPageFunc {
 			return "", nil
 		}
 
-		// Extract URL from Link format
 		// Format: <https://api.github.com/...>; rel="next"
 		start := strings.Index(nextLink, "<")
 		end := strings.Index(nextLink, ">")
