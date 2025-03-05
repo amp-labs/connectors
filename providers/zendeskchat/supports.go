@@ -1,6 +1,14 @@
 package zendeskchat
 
-func responseFields(objectName string) string {
+import (
+	"fmt"
+	"strings"
+
+	"github.com/amp-labs/connectors/internal/components"
+	"github.com/amp-labs/connectors/internal/staticschema"
+)
+
+func responseField(objectName string) string {
 	switch objectName {
 	case "chats", "incremental/chats":
 		return "chats"
@@ -14,5 +22,23 @@ func responseFields(objectName string) string {
 		return "department_events"
 	default:
 		return ""
+	}
+}
+
+func supportedOperations() components.EndpointRegistryInput {
+	readSupport := []string{
+		"account", "agents", "bans", "bans/ip", "chats", "departments", "goals",
+		"incremental/agent_events", "incremental/agent_timeline",
+		"incremental/chats", "incremental/conversions", "incremental/department_events",
+		"roles", "routing_settings/agents", "shortcuts", "skills", "triggers",
+	}
+
+	return components.EndpointRegistryInput{
+		staticschema.RootModuleID: {
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
+				Support:  components.ReadSupport,
+			},
+		},
 	}
 }
