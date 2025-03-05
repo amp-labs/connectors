@@ -17,12 +17,8 @@ const (
 func nextRecordsURL(previousURL *url.URL) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
 		totalCount, err := jsonquery.New(node).IntegerOptional("count")
-		if err != nil {
+		if err != nil || totalCount == nil {
 			return "", err
-		}
-
-		if totalCount == nil || *totalCount == pageSize {
-			return "", nil
 		}
 
 		nextURL := *previousURL
