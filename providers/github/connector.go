@@ -1,4 +1,4 @@
-package blueshift
+package github
 
 import (
 	_ "embed"
