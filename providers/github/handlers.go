@@ -6,11 +6,10 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/datautils"
-	"github.com/spyzhov/ajson"
-
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/providers/github/metadata"
+	"github.com/spyzhov/ajson"
 )
 
 const (
@@ -55,7 +54,6 @@ func (c *Connector) parseReadResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
-
 	return common.ParseResult(
 		response,
 		getRecords(params.ObjectName, c.Module()),
@@ -82,6 +80,7 @@ func makeNextRecordsURL(responseHeaders http.Header) common.NextPageFunc {
 		// Format: <https://api.github.com/...>; rel="next"
 		start := strings.Index(nextLink, "<")
 		end := strings.Index(nextLink, ">")
+
 		if start == -1 || end == -1 || !strings.Contains(nextLink, `rel="next"`) {
 			return "", nil
 		}

@@ -11,21 +11,21 @@ import (
 )
 
 var (
-	supportPagination = datautils.NewSet(
+	supportPagination = datautils.NewSet( //nolint: gochecknoglobals
 		"advisories", "blocks", "classrooms", "codespaces",
 		"deliveries", "emails", "events", "followers", "following", "gists",
 		"gists/starred", "gpg_keys", "installation-requests", "installation/repositories",
 		"issues", "keys", "licenses", "marketplace_listing/plans",
 		"marketplace_listing/stubbed/plans", "marketplace_purchases", "migrations",
-		"notifications", "orgs", "packages", "public", "public_emails", "repos",
+		"notifications", "orgs", "packages", "gists/public", "public_emails", "repos",
 		"repository_invitations", "secrets", "social_accounts", "ssh_signing_keys",
 		"stubbed", "subscriptions", "teams", "user/installations", "user/issues",
 		"user/memberships/orgs", "user/starred",
 	)
 
-	supportSince = datautils.NewSet(
+	supportSince = datautils.NewSet( //nolint: gochecknoglobals
 		"gists", "gists/starred", "issues",
-		"public", "repos", "user/issues",
+		"gists/public", "repos", "user/issues",
 	)
 )
 

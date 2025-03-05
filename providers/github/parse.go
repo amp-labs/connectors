@@ -9,8 +9,8 @@ import (
 
 func getRecords(objectName string, moduleID common.ModuleID) common.RecordsFunc {
 	return func(node *ajson.Node) ([]map[string]any, error) {
-
 		responseKey := metadata.Schemas.LookupArrayFieldName(moduleID, objectName)
+
 		rcds, err := jsonquery.New(node).ArrayOptional(responseKey)
 		if err != nil {
 			return nil, err
