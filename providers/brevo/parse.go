@@ -11,7 +11,7 @@ import (
 
 const (
 	pageSizeKey = "limit"
-	pageSize    = 2
+	pageSize    = 200
 )
 
 func nextRecordsURL(previousURL *url.URL) common.NextPageFunc {
