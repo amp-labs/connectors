@@ -5,6 +5,11 @@ import (
 	"encoding/gob"
 )
 
+func init() {
+	gob.Register(map[string]any{})
+	gob.Register([]any{})
+}
+
 // Clone uses gob to deep copy objects.
 func Clone[T any](input T) (T, error) { // nolint:ireturn
 	var buf bytes.Buffer

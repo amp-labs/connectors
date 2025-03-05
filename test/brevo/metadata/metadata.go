@@ -19,5 +19,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	utils.DumpJSON(m, os.Stdout)
 }

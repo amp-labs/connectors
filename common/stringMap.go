@@ -146,6 +146,25 @@ func (m StringMap) GetFloat(key string) (float64, error) {
 	}
 }
 
+func (m StringMap) GetNumber(key string) (float64, error) {
+	val, err := m.Get(key)
+	if err != nil {
+		return 0, err
+	}
+
+	t := reflect.TypeOf(val)
+
+	//nolint:exhaustive
+	switch t.Kind() {
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		return float64(reflect.ValueOf(val).Int()), nil
+	case reflect.Float32, reflect.Float64:
+		return reflect.ValueOf(val).Float(), nil
+	default:
+		return 0, fmt.Errorf("%w: expected a number, but received %T", errFieldTypeMismatch, val)
+	}
+}
+
 //nolint:ireturn
 func assertType[T any](val any) (T, error) {
 	of, ok := val.(T)
