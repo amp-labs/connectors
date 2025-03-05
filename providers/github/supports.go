@@ -7,29 +7,26 @@ import (
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/staticschema"
-	"github.com/amp-labs/connectors/providers/asana/metadata"
+	"github.com/amp-labs/connectors/providers/github/metadata"
 )
 
-const (
-	objectNameCampaigns       = "campaigns"
-	objectNameEmailTemplates  = "email_templates"
-	objectNameExternalFetches = "external_fetches"
-	objectNameOnsiteSlots     = "onsite_slots"
-	objectNameSmsTemplates    = "sms_templates"
-	objectNamePushTemplates   = "push_templates"
-	objectNameCatalogs        = "catalogs"
-	objectNameCustomers       = "customers"
-	objectNameCustomUserLists = "custom_user_lists/create"
-	objectNameEvent           = "event"
-)
+var (
+	supportPagination = datautils.NewSet(
+		"advisories", "blocks", "classrooms", "codespaces",
+		"deliveries", "emails", "events", "followers", "following", "gists",
+		"gists/starred", "gpg_keys", "installation-requests", "installation/repositories",
+		"issues", "keys", "licenses", "marketplace_listing/plans",
+		"marketplace_listing/stubbed/plans", "marketplace_purchases", "migrations",
+		"notifications", "orgs", "packages", "public", "public_emails", "repos",
+		"repository_invitations", "secrets", "social_accounts", "ssh_signing_keys",
+		"stubbed", "subscriptions", "teams", "user/installations", "user/issues",
+		"user/memberships/orgs", "user/starred",
+	)
 
-var supportPagination = datautils.NewSet( //nolint:gochecknoglobals
-	objectNameCampaigns,
-	objectNameEmailTemplates,
-	objectNameExternalFetches,
-	objectNameOnsiteSlots,
-	objectNameSmsTemplates,
-	objectNamePushTemplates,
+	supportSince = datautils.NewSet(
+		"gists", "gists/starred", "issues",
+		"public", "repos", "user/issues",
+	)
 )
 
 func supportedOperations() components.EndpointRegistryInput {
