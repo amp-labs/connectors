@@ -24,7 +24,6 @@ Newer version doc: https://developers.hubspot.com/docs/guides/apps/public-apps/c
 */
 
 /*
-Note:
 SubscriptionEvent is a map[string]any as opposed to a typed struct, because the structure of the event is not known .
 We may define the latest structure of the event, but in the future, the provider may add more fields.
 In that case, we won't be receiving those fields in the event.
@@ -33,7 +32,7 @@ This form also prevents null fields to be sent out as zero values.
 type SubscriptionEvent map[string]any
 
 // VerifyWebhookMessage verifies the signature of a webhook message from Hubspot.
-func (c *Connector) VerifyWebhookMessage(
+func (*Connector) VerifyWebhookMessage(
 	_ context.Context, params *common.WebhookVerificationParameters,
 ) (bool, error) {
 	ts := params.Headers.Get(string(xHubspotRequestTimestamp))
