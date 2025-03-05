@@ -4,6 +4,7 @@ import (
 	"context"
 	"log/slog"
 	"os"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
@@ -38,6 +39,7 @@ func run() error {
 	res, err = connector.Read(ctx, common.ReadParams{
 		ObjectName: "repos",
 		Fields:     datautils.NewStringSet("full_name", "downloads_url", "description", "default_branch"),
+		Since:      time.Date(2024, 03, 1, 0, 0, 0, 0, time.UTC),
 	})
 	if err != nil {
 		return err
