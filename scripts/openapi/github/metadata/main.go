@@ -34,6 +34,8 @@ var (
 		"/search/labels",
 		"/search/topics",
 		"/search/code",
+		"/app/installations",
+		"/notifications",
 	}
 
 	objectEndpoints = map[string]string{ //nolint:gochecknoglobals
@@ -44,9 +46,22 @@ var (
 		"/marketplace_listing/stubbed/plans": "marketplace_listing/stubbed/plans",
 		"/marketplace_listing/plans":         "marketplace_listing/plans",
 		"/user/installations":                "user/installations",
-		"/app/installations":                 "app/installations",
 		"/gists/starred":                     "gists/starred",
 		"/user/starred":                      "user/starred",
+		"/gists/public":                      "gists/public",
+	}
+
+	overrideDisplayName = map[string]string{ //nolint:gochecknoglobals
+		"search/issues":                     "Search Issues",
+		"user/issues":                       "User Issues",
+		"user/starred":                      "User Starred",
+		"gists/starred":                     "Gists Starred",
+		"gists/public":                      "Gists Public",
+		"user/installations":                "User Installations",
+		"installation/repositories":         "Installation Repositories",
+		"marketplace_listing/plans":         "Marketplace Listing Plans",
+		"marketplace_listing/stubbed/plans": "Marketplace Listing Stubbed Plans",
+		"user/memberships/orgs":             "User Memberships Orgs",
 	}
 
 	objectNametoResponseField = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
@@ -68,7 +83,7 @@ func main() {
 
 	readObjects, err := explorer.ReadObjectsGet(
 		api3.NewDenyPathStrategy(ignoreEndpoints),
-		objectEndpoints, nil, api3.CustomMappingObjectCheck(objectNametoResponseField),
+		objectEndpoints, overrideDisplayName, api3.CustomMappingObjectCheck(objectNametoResponseField),
 	)
 
 	goutils.MustBeNil(err)

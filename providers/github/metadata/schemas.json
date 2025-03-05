@@ -162,122 +162,6 @@
             }
           }
         },
-        "app/installations": {
-          "displayName": "App/Installations",
-          "path": "/app/installations",
-          "responseKey": "",
-          "fields": {
-            "access_tokens_url": {
-              "displayName": "access_tokens_url",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "account": {
-              "displayName": "account",
-              "valueType": "other"
-            },
-            "app_id": {
-              "displayName": "app_id",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "app_slug": {
-              "displayName": "app_slug",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "contact_email": {
-              "displayName": "contact_email",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "created_at": {
-              "displayName": "created_at",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "events": {
-              "displayName": "events",
-              "valueType": "other",
-              "providerType": "array"
-            },
-            "has_multiple_single_files": {
-              "displayName": "has_multiple_single_files",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "html_url": {
-              "displayName": "html_url",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "permissions": {
-              "displayName": "permissions",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "repositories_url": {
-              "displayName": "repositories_url",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "repository_selection": {
-              "displayName": "repository_selection",
-              "valueType": "singleSelect",
-              "providerType": "string",
-              "values": [
-                {
-                  "value": "all",
-                  "displayValue": "all"
-                },
-                {
-                  "value": "selected",
-                  "displayValue": "selected"
-                }
-              ]
-            },
-            "single_file_name": {
-              "displayName": "single_file_name",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "single_file_paths": {
-              "displayName": "single_file_paths",
-              "valueType": "other",
-              "providerType": "array"
-            },
-            "suspended_at": {
-              "displayName": "suspended_at",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "suspended_by": {
-              "displayName": "suspended_by",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "target_id": {
-              "displayName": "target_id",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "target_type": {
-              "displayName": "target_type",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "updated_at": {
-              "displayName": "updated_at",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
         "blocks": {
           "displayName": "Blocks",
           "path": "/user/blocks",
@@ -1294,8 +1178,120 @@
             }
           }
         },
+        "gists/public": {
+          "displayName": "Gists Public",
+          "path": "/gists/public",
+          "responseKey": "",
+          "fields": {
+            "comments": {
+              "displayName": "comments",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "comments_enabled": {
+              "displayName": "comments_enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "comments_url": {
+              "displayName": "comments_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "commits_url": {
+              "displayName": "commits_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "files": {
+              "displayName": "files",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "forks": {
+              "displayName": "forks",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "forks_url": {
+              "displayName": "forks_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "git_pull_url": {
+              "displayName": "git_pull_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "git_push_url": {
+              "displayName": "git_push_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "history": {
+              "displayName": "history",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "html_url": {
+              "displayName": "html_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "node_id": {
+              "displayName": "node_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "owner": {
+              "displayName": "owner",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "public": {
+              "displayName": "public",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "truncated": {
+              "displayName": "truncated",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user": {
+              "displayName": "user",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
         "gists/starred": {
-          "displayName": "Gists/Starred",
+          "displayName": "Gists Starred",
           "path": "/gists/starred",
           "responseKey": "",
           "fields": {
@@ -1520,7 +1516,7 @@
           }
         },
         "installation/repositories": {
-          "displayName": "Installation/Repositories",
+          "displayName": "Installation Repositories",
           "path": "/installation/repositories",
           "responseKey": "repositories",
           "fields": {
@@ -2359,7 +2355,7 @@
           }
         },
         "marketplace_listing/plans": {
-          "displayName": "Marketplace Listing/Plans",
+          "displayName": "Marketplace Listing Plans",
           "path": "/marketplace_listing/plans",
           "responseKey": "",
           "fields": {
@@ -2445,7 +2441,7 @@
           }
         },
         "marketplace_listing/stubbed/plans": {
-          "displayName": "Marketplace Listing/Stubbed/Plans",
+          "displayName": "Marketplace Listing Stubbed Plans",
           "path": "/marketplace_listing/stubbed/plans",
           "responseKey": "",
           "fields": {
@@ -2661,58 +2657,6 @@
               "displayName": "state",
               "valueType": "string",
               "providerType": "string"
-            },
-            "updated_at": {
-              "displayName": "updated_at",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "url": {
-              "displayName": "url",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "notifications": {
-          "displayName": "Notifications",
-          "path": "/notifications",
-          "responseKey": "",
-          "fields": {
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "last_read_at": {
-              "displayName": "last_read_at",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "reason": {
-              "displayName": "reason",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "repository": {
-              "displayName": "repository",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "subject": {
-              "displayName": "subject",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "subscription_url": {
-              "displayName": "subscription_url",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "unread": {
-              "displayName": "unread",
-              "valueType": "boolean",
-              "providerType": "boolean"
             },
             "updated_at": {
               "displayName": "updated_at",
@@ -2955,118 +2899,6 @@
                   "displayValue": "public"
                 }
               ]
-            }
-          }
-        },
-        "public": {
-          "displayName": "Public",
-          "path": "/gists/public",
-          "responseKey": "",
-          "fields": {
-            "comments": {
-              "displayName": "comments",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "comments_enabled": {
-              "displayName": "comments_enabled",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "comments_url": {
-              "displayName": "comments_url",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "commits_url": {
-              "displayName": "commits_url",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "created_at": {
-              "displayName": "created_at",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "description": {
-              "displayName": "description",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "files": {
-              "displayName": "files",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "forks": {
-              "displayName": "forks",
-              "valueType": "other",
-              "providerType": "array"
-            },
-            "forks_url": {
-              "displayName": "forks_url",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "git_pull_url": {
-              "displayName": "git_pull_url",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "git_push_url": {
-              "displayName": "git_push_url",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "history": {
-              "displayName": "history",
-              "valueType": "other",
-              "providerType": "array"
-            },
-            "html_url": {
-              "displayName": "html_url",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "node_id": {
-              "displayName": "node_id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "owner": {
-              "displayName": "owner",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "public": {
-              "displayName": "public",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "truncated": {
-              "displayName": "truncated",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "updated_at": {
-              "displayName": "updated_at",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "url": {
-              "displayName": "url",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "user": {
-              "displayName": "user",
-              "valueType": "other",
-              "providerType": "object"
             }
           }
         },
@@ -4850,7 +4682,7 @@
           }
         },
         "user/installations": {
-          "displayName": "User/Installations",
+          "displayName": "User Installations",
           "path": "/user/installations",
           "responseKey": "installations",
           "fields": {
@@ -4966,7 +4798,7 @@
           }
         },
         "user/issues": {
-          "displayName": "User/Issues",
+          "displayName": "User Issues",
           "path": "/user/issues",
           "responseKey": "",
           "fields": {
@@ -5196,7 +5028,7 @@
           }
         },
         "user/memberships/orgs": {
-          "displayName": "User/Memberships/Orgs",
+          "displayName": "User Memberships Orgs",
           "path": "/user/memberships/orgs",
           "responseKey": "",
           "fields": {
@@ -5262,7 +5094,7 @@
           }
         },
         "user/starred": {
-          "displayName": "User/Starred",
+          "displayName": "User Starred",
           "path": "/user/starred",
           "responseKey": "",
           "fields": {
