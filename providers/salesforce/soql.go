@@ -3,6 +3,16 @@ package salesforce
 import (
 	"fmt"
 	"strings"
+
+	"github.com/amp-labs/connectors/common"
+)
+
+// nolint:lll
+const (
+	// See `Limiting Result Rows` section on this webpage:
+	// https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_fields.htm
+	identifiersLimit    = 200
+	identifiersLimitStr = "200"
 )
 
 // soqlBuilder builder of Salesforce Object Query Language.
@@ -20,7 +30,7 @@ func (s *soqlBuilder) SelectFields(fields []string) *soqlBuilder {
 			s.fields = "FIELDS(ALL)"
 			// if all fields are to be returned then we must limit to avoid error.
 			// Error example: `The SOQL FIELDS function must have a LIMIT of at most 200`
-			s.limit = "200"
+			s.limit = identifiersLimitStr
 
 			return s
 		}
@@ -45,6 +55,25 @@ func (s *soqlBuilder) Where(condition string) *soqlBuilder {
 	s.where = append(s.where, condition)
 
 	return s
+}
+
+func (s *soqlBuilder) WithIDs(identifiers []string) error {
+	if len(identifiers) > identifiersLimit {
+		return common.ErrTooManyRecordIDs
+	}
+
+	// Decorate each id with quotes.
+	for index, id := range identifiers {
+		identifiers[index] = fmt.Sprintf("'%v'", id)
+	}
+
+	identifiersList := strings.Join(identifiers, ",")
+
+	// nolint:lll
+	// https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_fields.htm
+	s.Where(fmt.Sprintf("Id IN (%v)", identifiersList))
+
+	return nil
 }
 
 func (s *soqlBuilder) String() string {
