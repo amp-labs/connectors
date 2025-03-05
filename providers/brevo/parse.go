@@ -37,7 +37,6 @@ func nextRecordsURL(previousURL *url.URL) common.NextPageFunc {
 
 		// calcuate the next offset value
 		nextOffset := currentOffset + pageSize
-
 		// if nextOffset would exceed total count, we've fetched all records
 		if nextOffset >= int(*totalCount) {
 			return "", nil
