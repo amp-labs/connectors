@@ -3,8 +3,21 @@ package salesforce
 
 import (
 	"context"
+	"errors"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/goutils"
+)
+
+const (
+	keyEventRecordID          = "recordId"
+	keyEventRecordIdentifiers = "recordIds"
+	keyEventChangeEventHeader = "ChangeEventHeader"
+)
+
+var (
+	errChangeEventHeaderType = errors.New("key ChangeEventHeader is not of map[string]any type")
+	errRecordIDsType         = errors.New("key recordIds is not of []any type")
 )
 
 func (*Connector) VerifyWebhookMessage(context.Context, *common.WebhookVerificationParameters) (bool, error) {
@@ -16,77 +29,72 @@ func (*Connector) VerifyWebhookMessage(context.Context, *common.WebhookVerificat
 //
 // Structure reference:
 // https://developer.salesforce.com/docs/atlas.en-us.change_data_capture.meta/change_data_capture/cdc_event_fields_header.htm.
-type ChangeEvent struct {
-	ChangeEventHeader ChangeEventHeader `json:"ChangeEventHeader"`
-	// ...
-	// Additional fields represent changes to the record and vary based on the record's model type.
-	// They are situated on the same level as ChangeEventHeader.
-	// ...
-}
+type ChangeEvent map[string]any
 
-// ChangeEventHeader holds event data.
-//
-// Record ID can have wildcard symbols:
-// https://developer.salesforce.com/docs/atlas.en-us.change_data_capture.meta/change_data_capture/cdc_field_conversion_single_event.htm.
-type ChangeEventHeader struct {
-	EntityName      string   `json:"entityName"`
-	RecordIDs       []string `json:"recordIds"`
-	ChangeType      string   `json:"changeType"`
-	ChangeOrigin    string   `json:"changeOrigin"`
-	TransactionKey  string   `json:"transactionKey"`
-	SequenceNumber  int      `json:"sequenceNumber"`
-	CommitTimestamp int64    `json:"commitTimestamp"`
-	CommitNumber    int64    `json:"commitNumber"`
-	CommitUser      string   `json:"commitUser"`
-	NulledFields    []any    `json:"nulledFields"`
-	DiffFields      []any    `json:"diffFields"`
-	ChangedFields   []any    `json:"changedFields"`
-}
-
-// Unwrap splits bundled event into per record event.
-func (e ChangeEvent) Unwrap() []SubscriptionEvent {
-	header := e.ChangeEventHeader
-	events := make([]SubscriptionEvent, len(header.RecordIDs))
-
-	for index, recordID := range header.RecordIDs {
-		events[index] = SubscriptionEvent{
-			EntityName:       header.EntityName,
-			RecordIdentifier: recordID,
-			ChangeType:       header.ChangeType,
-			ChangeOrigin:     header.ChangeOrigin,
-			TransactionKey:   header.TransactionKey,
-			SequenceNumber:   header.SequenceNumber,
-			CommitTimestamp:  header.CommitTimestamp,
-			CommitNumber:     header.CommitNumber,
-			CommitUser:       header.CommitUser,
-			NulledFields:     header.NulledFields,
-			DiffFields:       header.DiffFields,
-			ChangedFields:    header.ChangedFields,
-		}
+// ToRecordList splits bundled event into per record event.
+// Every property is duplicated across SubscriptionEvent. RecordIds is spread as RecordId.
+func (e ChangeEvent) ToRecordList() ([]SubscriptionEvent, error) {
+	eventHeaderMap, err := extractChangeEventHeader(e)
+	if err != nil {
+		return nil, err
 	}
 
-	return events
+	recordIDsAny, err := eventHeaderMap.Get(keyEventRecordIdentifiers)
+	if err != nil {
+		return nil, err
+	}
+
+	recordIDs, ok := recordIDsAny.([]any)
+	if !ok {
+		return nil, errRecordIDsType
+	}
+
+	events := make([]SubscriptionEvent, len(recordIDs))
+
+	for index, recordID := range recordIDs {
+		event, err := goutils.Clone[map[string]any](e)
+		if err != nil {
+			return nil, err
+		}
+
+		// Reach out to the nested object and remove record identifiers and attach record id.
+		changeEventHeader, ok := event[keyEventChangeEventHeader].(map[string]any)
+		if !ok {
+			return nil, errChangeEventHeaderType
+		}
+
+		changeEventHeader[keyEventRecordID] = recordID
+		delete(changeEventHeader, keyEventRecordIdentifiers)
+
+		// Save changes.
+		event[keyEventChangeEventHeader] = changeEventHeader
+		events[index] = event
+	}
+
+	return events, nil
 }
 
 var _ common.SubscriptionEvent = SubscriptionEvent{}
 
-type SubscriptionEvent struct {
-	EntityName       string
-	RecordIdentifier string
-	ChangeType       string
-	ChangeOrigin     string
-	TransactionKey   string
-	SequenceNumber   int
-	CommitTimestamp  int64
-	CommitNumber     int64
-	CommitUser       string
-	NulledFields     []any
-	DiffFields       []any
-	ChangedFields    []any
+// SubscriptionEvent holds event data.
+//
+// Record ID can have wildcard symbols:
+// https://developer.salesforce.com/docs/atlas.en-us.change_data_capture.meta/change_data_capture/cdc_field_conversion_single_event.htm.
+type SubscriptionEvent map[string]any
+
+func (s SubscriptionEvent) asMap() (common.StringMap, error) {
+	return extractChangeEventHeader(s)
 }
 
+// EventType
+// https://developer.salesforce.com/docs/atlas.en-us.change_data_capture.meta/change_data_capture/cdc_event_fields_header.htm.
 func (s SubscriptionEvent) EventType() (common.SubscriptionEventType, error) {
-	switch s.ChangeType {
+	changeType, err := s.RawEventName()
+	if err != nil {
+		return "", err
+	}
+
+	switch changeType {
 	case "CREATE", "GAP_CREATE":
 		return common.SubscriptionEventTypeCreate, nil
 	case "UPDATE", "GAP_UPDATE":
@@ -101,13 +109,23 @@ func (s SubscriptionEvent) EventType() (common.SubscriptionEventType, error) {
 }
 
 func (s SubscriptionEvent) RawEventName() (string, error) {
-	return s.ChangeType, nil
+	registry, err := s.asMap()
+	if err != nil {
+		return "", err
+	}
+
+	return registry.GetString("changeType")
 }
 
 func (s SubscriptionEvent) ObjectName() (string, error) {
+	registry, err := s.asMap()
+	if err != nil {
+		return "", err
+	}
+
 	// The API name of the standard or custom object that the change pertains to.
 	// For example, Account or MyObject__c.
-	return s.EntityName, nil
+	return registry.GetString("entityName")
 }
 
 func (s SubscriptionEvent) Workspace() (string, error) {
@@ -118,11 +136,42 @@ func (s SubscriptionEvent) Workspace() (string, error) {
 // RecordId
 // https://developer.salesforce.com/docs/atlas.en-us.change_data_capture.meta/change_data_capture/cdc_field_conversion_single_event.htm.
 func (s SubscriptionEvent) RecordId() (string, error) {
-	return s.RecordIdentifier, nil
+	registry, err := s.asMap()
+	if err != nil {
+		return "", err
+	}
+
+	return registry.GetString(keyEventRecordID)
 }
 
 func (s SubscriptionEvent) EventTimeStampNano() (int64, error) {
+	registry, err := s.asMap()
+	if err != nil {
+		return 0, err
+	}
+
 	// The date and time when the change occurred,
 	// represented as the number of milliseconds since January 1, 1970 00:00:00 GMT.
-	return s.CommitTimestamp, nil
+	num, err := registry.GetNumber("commitTimestamp")
+	if err != nil {
+		return 0, err
+	}
+
+	return int64(num), nil
+}
+
+func extractChangeEventHeader(registry map[string]any) (common.StringMap, error) {
+	eventMap := common.StringMap(registry)
+
+	eventHeaderAny, err := eventMap.Get(keyEventChangeEventHeader)
+	if err != nil {
+		return nil, err
+	}
+
+	eventHeader, ok := eventHeaderAny.(map[string]any)
+	if !ok {
+		return nil, errChangeEventHeaderType
+	}
+
+	return eventHeader, nil
 }

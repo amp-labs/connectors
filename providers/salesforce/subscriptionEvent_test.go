@@ -19,7 +19,9 @@ func TestSubscriptionEventProperties(t *testing.T) {
 		t.Fatalf("failed to start a test, cannot parse data; error (%v)", err)
 	}
 
-	events := changeEvent.Unwrap()
+	events, err := changeEvent.ToRecordList()
+	assert.NilError(t, err, "error should be nil")
+
 	if len(events) != 1 {
 		t.Fatalf("failed to start a test, expected to have only one event")
 	}
