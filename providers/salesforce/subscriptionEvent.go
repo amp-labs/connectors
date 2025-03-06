@@ -20,8 +20,9 @@ var (
 	errRecordIDsType         = errors.New("key recordIds is not of []any type")
 )
 
-const (
-	example = `{
+//nolint:unused
+/*
+{
             "LastModifiedDate": "2025-03-06T04:59:25.000Z",
             "Phone": "6502911123",
             "ChangeEventHeader": {
@@ -41,8 +42,8 @@ const (
                     "001bm00000kDuEnAAK"
                 ]
             }
-        }`
-)
+        }
+*/
 
 func (*Connector) VerifyWebhookMessage(context.Context, *common.WebhookVerificationParameters) (bool, error) {
 	return true, nil
