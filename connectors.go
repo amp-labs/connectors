@@ -86,9 +86,22 @@ type AuthMetadataConnector interface {
 	GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, error)
 }
 
+type WebhookVerifierConnector interface {
+	Connector
+	GetRecordsWithIds(
+		ctx context.Context,
+		objectName string,
+		recordIds []string,
+		fields []string,
+		associations []string) ([]common.ReadResultRow, error)
+
+	// VerifyWebhookMessage verifies the signature of a webhook message.
+	VerifyWebhookMessage(ctx context.Context, params *common.WebhookVerificationParameters) (bool, error)
+}
+
 //nolint:interfacebloat
 type SubscribeConnector interface {
-	Connector
+	WebhookVerifierConnector
 	// SubscribeConnector has 2 main responsibilities:
 	// 1. Register a subscription with the provider.
 	// Registering a subscription is a one-time operation that is required
@@ -140,15 +153,6 @@ type SubscribeConnector interface {
 	EmptySubscriptionResult() *common.SubscriptionResult
 	// GetRecordsWithId is a helper function to get records by their IDs.
 	//nolint:revive
-	GetRecordsWithIds(
-		ctx context.Context,
-		objectName string,
-		recordIds []string,
-		fields []string,
-		associations []string) ([]common.ReadResultRow, error)
-
-	// VerifyWebhookMessage verifies the signature of a webhook message.
-	VerifyWebhookMessage(ctx context.Context, params *common.WebhookVerificationParameters) (bool, error)
 }
 
 // We re-export the following types so that they can be used by consumers of this library.
