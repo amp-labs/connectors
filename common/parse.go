@@ -118,6 +118,7 @@ func GetMarshalledDataWithId(records []map[string]any, fields []string) ([]ReadR
 	data := make([]ReadResultRow, len(records))
 
 	fields = append(fields, "id")
+
 	//nolint:varnamelen
 	for i, record := range records {
 		data[i] = ReadResultRow{
