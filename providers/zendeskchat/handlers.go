@@ -163,10 +163,9 @@ func (c *Connector) buildWriteRequest(
 		method = http.MethodPut
 	}
 
-	// For endpoints like `routing_settings/account`, `routing_settings/agents/me`,
-	// and `routing_settings/agents/{agent_id}`,
+	// Endpoints routing_settings/account,routing_settings/agents/me,
+	// and routing_settings/agents/{agent_id},
 	// uses the PATCH method and these endpoints perform only updates.
-	// Placing this logic here is appropriate and should not cause issues.
 	if _, exists := updatesByPatch[params.ObjectName]; exists {
 		method = http.MethodPatch
 	}
