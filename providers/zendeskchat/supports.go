@@ -25,12 +25,24 @@ func responseField(objectName string) string {
 	}
 }
 
+var updatesByPatch = map[string]string{ //nolint:gochecknoglobals
+	"routing_settings/account":   "routing_settings/account",
+	"routing_settings/agents":    "routing_settings/agents",
+	"routing_settings/agents/me": "routing_settings/agents/me",
+}
+
 func supportedOperations() components.EndpointRegistryInput {
 	readSupport := []string{
 		"account", "agents", "bans", "bans/ip", "chats", "departments", "goals",
 		"incremental/agent_events", "incremental/agent_timeline",
 		"incremental/chats", "incremental/conversions", "incremental/department_events",
 		"roles", "routing_settings/agents", "shortcuts", "skills", "triggers",
+		"oauth/clients", "oauth/tokens",
+	}
+
+	writeSupport := []string{
+		"account", "bans", "visitors", "triggers", "oauth/clients",
+		"shortcuts", "goals", "skills", "roles", "chats",
 	}
 
 	return components.EndpointRegistryInput{
@@ -38,6 +50,10 @@ func supportedOperations() components.EndpointRegistryInput {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
+				Support:  components.WriteSupport,
 			},
 		},
 	}
