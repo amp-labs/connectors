@@ -7,11 +7,11 @@ import (
 	"os/signal"
 	"syscall"
 
-	connTest "github.com/amp-labs/connectors/test/keap"
+	connTest "github.com/amp-labs/connectors/test/capsule"
 	"github.com/amp-labs/connectors/test/utils"
 )
 
-var objectName = "contacts"
+var objectName = "parties"
 
 func main() {
 	// Handle Ctrl-C gracefully.
@@ -21,14 +21,13 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := connTest.GetKeapConnector(ctx)
-	defer utils.Close(conn)
+	conn := connTest.GetCapsuleConnector(ctx)
 
 	metadata, err := conn.ListObjectMetadata(ctx, []string{
 		objectName,
 	})
 	if err != nil {
-		utils.Fail("error listing metadata for Keap", "error", err)
+		utils.Fail("error listing metadata", "error", err)
 	}
 
 	fmt.Println("Metadata...")
