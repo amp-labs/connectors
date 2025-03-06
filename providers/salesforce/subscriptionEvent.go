@@ -23,7 +23,7 @@ var (
 //nolint:unused
 /*
 {
-            "LastModifiedDate": "2025-03-06T04:59:25.000Z",
+            "LastModifiedDate": "2025-03-06T04:59:25.000Z"
             "Phone": "6502911123",
             "ChangeEventHeader": {
                 "commitNumber": 1741237165146390500,

@@ -86,8 +86,66 @@ type AuthMetadataConnector interface {
 	GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, error)
 }
 
-type WebhookVerifierConnector interface {
+//nolint:interfacebloat
+type SubscribeConnector interface {
 	Connector
+	// SubscribeConnector has 2 main responsibilities:
+	// 1. Register a subscription with the provider.
+	// Registering a subscription is a one-time operation that is required
+	// by providers that hold some master registration of all subscriptions.
+	// Not all providers require this, but some do.
+	// 2. Subscribe to events from the provider.
+	// This is the actual subscription to events from the provider.
+	// It will subscribe for events and objects as specified in SubscribeParams.
+	Register(
+		ctx context.Context,
+		params common.SubscriptionRegistrationParams,
+	) (*common.RegistrationResult, error)
+	// TODO: Uncomment when we implement UpdateRegistration in Salesforce
+	// UpdateRegistration(
+	// 	ctx context.Context,
+	// 	params SubscriptionRegistrationParams,
+	// 	previousResult RegistrationResult,
+	// ) (*RegistrationResult, error)
+	DeleteRegistration(
+		ctx context.Context,
+		previousResult common.RegistrationResult,
+	) error
+	// EmptyRegistrationParams returns a empty instance of SubscriptionRegistrationParams.
+	// if there is any provider specific initialization required, it should be done here.
+	EmptyRegistrationParams() *common.SubscriptionRegistrationParams
+	// EmptyRegistrationResult returns a empty instance of RegistrationResult.
+	// if there is any provider specific initialization required, it should be done here.
+	EmptyRegistrationResult() *common.RegistrationResult
+
+	Subscribe(
+		ctx context.Context,
+		params common.SubscribeParams,
+	) (*common.SubscriptionResult, error)
+	// TODO: Uncomment when we implement UpdateSubscription in Salesforce
+	// UpdateSubscription(
+	// 	ctx context.Context,
+	// 	params SubscribeParams,
+	// 	previousResult SubscriptionResult,
+	// ) (*SubscriptionResult, error)
+	DeleteSubscription(
+		ctx context.Context,
+		previousResult common.SubscriptionResult,
+	) error
+	// EmptySubscritpionParams returns a empty instance of SubscribeParams.
+	// if there is any provider specific initialization required, it should be done here.
+	EmptySubscritpionParams() *common.SubscribeParams
+	// EmptySubscriptionResult returns a empty instance of SubscriptionResult.
+	// if there is any provider specific initialization required, it should be done here.
+	EmptySubscriptionResult() *common.SubscriptionResult
+	// GetRecordsWithId is a helper function to get records by their IDs.
+	//nolint:revive
+	GetRecordsWithIds(
+		ctx context.Context,
+		objectName string,
+		recordIds []string,
+		fields []string,
+		associations []string) ([]common.ReadResultRow, error)
 
 	// VerifyWebhookMessage verifies the signature of a webhook message.
 	VerifyWebhookMessage(ctx context.Context, params *common.WebhookVerificationParameters) (bool, error)
