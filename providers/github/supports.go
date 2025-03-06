@@ -31,12 +31,17 @@ var (
 
 func supportedOperations() components.EndpointRegistryInput {
 	readSupport := metadata.Schemas.ObjectNames().GetList(staticschema.RootModuleID)
+	writeSupport := []string{"gists", "user/emails", "user/gpg_keys", "user/keys", "user/ssh_signing_keys", "user/social_accounts"} //nolint:lll
 
 	return components.EndpointRegistryInput{
 		staticschema.RootModuleID: {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
+				Support:  components.WriteSupport,
 			},
 		},
 	}
