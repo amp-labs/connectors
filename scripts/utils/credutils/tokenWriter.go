@@ -53,9 +53,18 @@ func internalCredsFileWrite(filePath string, token *oauth2.Token) (*ordered.Orde
 	}
 
 	orderedMap.Set(credscanning.Fields.AccessToken.PathJSON, token.AccessToken)
-	orderedMap.Set(credscanning.Fields.RefreshToken.PathJSON, token.RefreshToken)
-	orderedMap.Set(credscanning.Fields.ExpiryFormat.PathJSON, "RFC3339Nano")
-	orderedMap.Set(credscanning.Fields.Expiry.PathJSON, token.Expiry.UTC().Format(time.RFC3339Nano))
+
+	if len(token.RefreshToken) == 0 {
+		// Refresh token and data associated with are not relevant for the connector.
+		orderedMap.Delete(credscanning.Fields.RefreshToken.PathJSON)
+		orderedMap.Delete(credscanning.Fields.ExpiryFormat.PathJSON)
+		orderedMap.Delete(credscanning.Fields.Expiry.PathJSON)
+	} else {
+		// Store data related to refresh token.
+		orderedMap.Set(credscanning.Fields.RefreshToken.PathJSON, token.RefreshToken)
+		orderedMap.Set(credscanning.Fields.ExpiryFormat.PathJSON, "RFC3339Nano")
+		orderedMap.Set(credscanning.Fields.Expiry.PathJSON, token.Expiry.UTC().Format(time.RFC3339Nano))
+	}
 
 	outputData, err := json.MarshalIndent(orderedMap, "", "  ")
 	if err != nil {
