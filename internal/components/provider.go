@@ -48,6 +48,10 @@ func (p *ProviderContext) Provider() providers.Provider {
 	return p.provider
 }
 
+func (p *ProviderContext) BaseURL() string {
+	return p.providerInfo.BaseURL
+}
+
 func (p *ProviderContext) ProviderInfo() *providers.ProviderInfo {
 	return p.providerInfo
 }
