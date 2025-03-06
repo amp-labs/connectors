@@ -114,6 +114,7 @@ var (
 	errUnexpectedIdType = errors.New("unexpected id type")
 )
 
+// GetMarshalledDataWithId is very similar to GetMarshaledData, but it also extracts the "id" field from the raw record.
 func GetMarshalledDataWithId(records []map[string]any, fields []string) ([]ReadResultRow, error) {
 	data := make([]ReadResultRow, len(records))
 

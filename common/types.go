@@ -396,6 +396,9 @@ type SubscriptionEvent interface {
 	EventTimeStampNano() (int64, error)
 }
 
+// Some providers send multiple events in a single webhook payload.
+// This interface is used to extract individual events to SubscriptionEvent type
+// from a collapsed event for webhook parsing and processing.
 type CollapsedSubscriptionEvent interface {
 	SubscriptionEventList() ([]SubscriptionEvent, error)
 }
