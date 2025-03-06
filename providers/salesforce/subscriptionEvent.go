@@ -23,26 +23,40 @@ var (
 //nolint:unused
 /*
 {
-            "LastModifiedDate": "2025-03-06T04:59:25.000Z"
-            "Phone": "6502911123",
-            "ChangeEventHeader": {
-                "commitNumber": 1741237165146390500,
-                "commitUser": "005bm00000AYB9lAAH",
-                "sequenceNumber": 1,
-                "entityName": "Account",
-                "changeType": "UPDATE",
-                "changedFields": [
-                    "Phone",
-                    "LastModifiedDate"
-                ],
-                "changeOrigin": "com/salesforce/api/soap/63.0;client=SfdcInternalAPI/",
-                "transactionKey": "0001bd03-47e4-7bed-ee8d-96a5dc46f446",
-                "commitTimestamp": 1741237165000,
-                "recordIds": [
-                    "001bm00000kDuEnAAK"
-                ]
-            }
-        }
+	"account": "471112904037",
+	"detail": {
+	  "id": "7e57f1e0-f965-48e2-a69a-9d8ded1b33dc",
+	  "payload": {
+	    "ChangeEventHeader": {
+	      "changeOrigin": "com/salesforce/api/soap/63.0;client=SfdcInternalAPI/",
+	      "changeType": "UPDATE",
+	      "changedFields": [
+	        "Phone",
+	        "LastModifiedDate"
+	      ],
+	      "commitNumber": 1741246056548614100,
+	      "commitTimestamp": 1741246056000,
+	      "commitUser": "005bm00000AYB9lAAH",
+	      "entityName": "Account",
+	      "recordIds": [
+	        "001bm00000kDuEnAAK"
+	      ],
+	      "sequenceNumber": 1,
+	      "transactionKey": "0000f024-ef0e-2a4b-8cc1-dc920ea74b76"
+	    },
+	    "LastModifiedDate": "2025-03-06T07:27:36.000Z",
+	    "Phone": "6502911122"
+	  },
+	  "schemaId": "V2MGwDA2aIP0yQS98S2L6Q"
+	},
+	"detail-type": "AccountChangeEvent",
+	"id": "e5e2a23d-57cb-0ad5-791d-99c0204f5464",
+	"region": "us-east-1",
+	"resources": [],
+	"source": "aws.partner/salesforce.com/00Dbm00000HlCufEAF/0YLbm0000000VobGAE",
+	"time": "2025-03-06T07:27:36Z",
+	"version": "0"
+}
 */
 
 func (*Connector) VerifyWebhookMessage(context.Context, *common.WebhookVerificationParameters) (bool, error) {

@@ -2,6 +2,7 @@ package salesforce
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -69,6 +70,8 @@ func (c *Connector) buildReadByIdentifierURL(config recordsByIDsParams) (*urlbui
 	query := makeSOQL(config.ReadParams).
 		WithIDs(config.RecordIdentifiers.List()).
 		String()
+
+	fmt.Println("query", query)
 
 	url.WithQueryParam("q", query)
 

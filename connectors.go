@@ -91,6 +91,7 @@ type WebhookVerifierConnector interface {
 	GetRecordsWithIds(
 		ctx context.Context,
 		objectName string,
+		//nolint:revive
 		recordIds []string,
 		fields []string,
 		associations []string) ([]common.ReadResultRow, error)
