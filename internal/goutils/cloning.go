@@ -6,7 +6,9 @@ import (
 )
 
 // Clone uses gob to deep copy objects.
-func Clone[T any](input T) (T, error) { // nolint:ireturn
+//
+//nolint:ireturn
+func Clone[T any](input T) (T, error) {
 	var buf bytes.Buffer
 	enc := gob.NewEncoder(&buf)
 	dec := gob.NewDecoder(&buf)
