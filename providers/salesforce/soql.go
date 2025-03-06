@@ -3,15 +3,12 @@ package salesforce
 import (
 	"fmt"
 	"strings"
-
-	"github.com/amp-labs/connectors/common"
 )
 
 // nolint:lll
 const (
 	// See `Limiting Result Rows` section on this webpage:
 	// https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_fields.htm
-	identifiersLimit    = 200
 	identifiersLimitStr = "200"
 )
 
@@ -57,11 +54,7 @@ func (s *soqlBuilder) Where(condition string) *soqlBuilder {
 	return s
 }
 
-func (s *soqlBuilder) WithIDs(identifiers []string) error {
-	if len(identifiers) > identifiersLimit {
-		return common.ErrTooManyRecordIDs
-	}
-
+func (s *soqlBuilder) WithIDs(identifiers []string) *soqlBuilder {
 	// Decorate each id with quotes.
 	for index, id := range identifiers {
 		identifiers[index] = fmt.Sprintf("'%v'", id)
@@ -71,9 +64,7 @@ func (s *soqlBuilder) WithIDs(identifiers []string) error {
 
 	// nolint:lll
 	// https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_fields.htm
-	s.Where(fmt.Sprintf("Id IN (%v)", identifiersList))
-
-	return nil
+	return s.Where(fmt.Sprintf("Id IN (%v)", identifiersList))
 }
 
 func (s *soqlBuilder) String() string {

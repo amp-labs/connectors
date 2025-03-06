@@ -91,9 +91,6 @@ var (
 	// ErrRecordDataNotJSON is returned when the record data in WriteParams is not JSON.
 	ErrRecordDataNotJSON = errors.New("record data is not JSON")
 
-	// ErrTooManyRecordIDs is returned when querying by identifiers exceeds the limit.
-	ErrTooManyRecordIDs = errors.New("too many record identifiers to query")
-
 	// ErrOperationNotSupportedForObject is returned when operation is not supported for this object.
 	ErrOperationNotSupportedForObject = errors.New("operation is not supported for this object in this module")
 

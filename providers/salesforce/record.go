@@ -66,13 +66,11 @@ func (c *Connector) buildReadByIdentifierURL(config recordsByIDsParams) (*urlbui
 		return nil, err
 	}
 
-	soql := makeSOQL(config.ReadParams)
+	query := makeSOQL(config.ReadParams).
+		WithIDs(config.RecordIdentifiers.List()).
+		String()
 
-	if err = soql.WithIDs(config.RecordIdentifiers.List()); err != nil {
-		return nil, err
-	}
-
-	url.WithQueryParam("q", soql.String())
+	url.WithQueryParam("q", query)
 
 	return url, nil
 }
