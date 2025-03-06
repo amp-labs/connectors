@@ -396,6 +396,10 @@ type SubscriptionEvent interface {
 	EventTimeStampNano() (int64, error)
 }
 
+type CollapsedSubscriptionEvent interface {
+	SubscriptionEventList() ([]SubscriptionEvent, error)
+}
+
 // WebhookVerificationParameters is a struct that contains the parameters required to verify a webhook.
 type WebhookVerificationParameters struct {
 	Headers      http.Header

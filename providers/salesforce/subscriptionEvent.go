@@ -20,20 +20,46 @@ var (
 	errRecordIDsType         = errors.New("key recordIds is not of []any type")
 )
 
+const (
+	example = `{
+            "LastModifiedDate": "2025-03-06T04:59:25.000Z",
+            "Phone": "6502911123",
+            "ChangeEventHeader": {
+                "commitNumber": 1741237165146390500,
+                "commitUser": "005bm00000AYB9lAAH",
+                "sequenceNumber": 1,
+                "entityName": "Account",
+                "changeType": "UPDATE",
+                "changedFields": [
+                    "Phone",
+                    "LastModifiedDate"
+                ],
+                "changeOrigin": "com/salesforce/api/soap/63.0;client=SfdcInternalAPI/",
+                "transactionKey": "0001bd03-47e4-7bed-ee8d-96a5dc46f446",
+                "commitTimestamp": 1741237165000,
+                "recordIds": [
+                    "001bm00000kDuEnAAK"
+                ]
+            }
+        }`
+)
+
 func (*Connector) VerifyWebhookMessage(context.Context, *common.WebhookVerificationParameters) (bool, error) {
 	return true, nil
 }
+
+var _ common.CollapsedSubscriptionEvent = CollapsedSubscriptionEvent{}
 
 // ChangeEvent represents data received from a subscription.
 // A single event may contain multiple record identifiers and can be expanded into multiple SubscriptionEvent instances.
 //
 // Structure reference:
 // https://developer.salesforce.com/docs/atlas.en-us.change_data_capture.meta/change_data_capture/cdc_event_fields_header.htm.
-type ChangeEvent map[string]any
+type CollapsedSubscriptionEvent map[string]any
 
 // ToRecordList splits bundled event into per record event.
 // Every property is duplicated across SubscriptionEvent. RecordIds is spread as RecordId.
-func (e ChangeEvent) ToRecordList() ([]SubscriptionEvent, error) {
+func (e CollapsedSubscriptionEvent) SubscriptionEventList() ([]common.SubscriptionEvent, error) {
 	eventHeaderMap, err := extractChangeEventHeader(e)
 	if err != nil {
 		return nil, err
@@ -49,13 +75,17 @@ func (e ChangeEvent) ToRecordList() ([]SubscriptionEvent, error) {
 		return nil, errRecordIDsType
 	}
 
-	events := make([]SubscriptionEvent, len(recordIDs))
+	events := make([]common.SubscriptionEvent, len(recordIDs))
 
 	for index, recordID := range recordIDs {
 		event, err := goutils.Clone[map[string]any](e)
 		if err != nil {
 			return nil, err
 		}
+
+		subEvent := SubscriptionEvent(event)
+
+		evt := common.SubscriptionEvent(subEvent)
 
 		// Reach out to the nested object and remove record identifiers and attach record id.
 		changeEventHeader, ok := event[keyEventChangeEventHeader].(map[string]any)
@@ -68,7 +98,7 @@ func (e ChangeEvent) ToRecordList() ([]SubscriptionEvent, error) {
 
 		// Save changes.
 		event[keyEventChangeEventHeader] = changeEventHeader
-		events[index] = event
+		events[index] = evt
 	}
 
 	return events, nil
@@ -95,14 +125,12 @@ func (s SubscriptionEvent) EventType() (common.SubscriptionEventType, error) {
 	}
 
 	switch changeType {
-	case "CREATE", "GAP_CREATE":
+	case "CREATE":
 		return common.SubscriptionEventTypeCreate, nil
-	case "UPDATE", "GAP_UPDATE":
+	case "UPDATE":
 		return common.SubscriptionEventTypeUpdate, nil
-	case "DELETE", "GAP_DELETE":
+	case "DELETE":
 		return common.SubscriptionEventTypeDelete, nil
-	case "UNDELETE", "SNAPSHOT", "GAP_UNDELETE", "GAP_OVERFLOW":
-		fallthrough
 	default:
 		return common.SubscriptionEventTypeOther, nil
 	}
