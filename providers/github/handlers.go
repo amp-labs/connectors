@@ -1,13 +1,16 @@
 package github
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"net/http"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/providers/github/metadata"
 	"github.com/spyzhov/ajson"
 )
@@ -86,4 +89,65 @@ func makeNextRecordsURL(responseHeaders http.Header) common.NextPageFunc {
 
 		return nextLink[start+1 : end], nil
 	}
+}
+
+func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) { //nolint:lll
+	method := http.MethodPost
+
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.RecordId != "" {
+		url.AddPath(params.RecordId)
+
+		method = http.MethodPatch
+	}
+
+	jsonData, err := json.Marshal(params.RecordData)
+	if err != nil {
+		return nil, err
+	}
+
+	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
+}
+
+func (c *Connector) parseWriteResponse(
+	ctx context.Context,
+	params common.WriteParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.WriteResult, error) {
+	body, ok := response.Body()
+	if !ok {
+		return &common.WriteResult{
+			Success: true,
+		}, nil
+	}
+
+	data, err := jsonquery.Convertor.ObjectToMap(body)
+	if err != nil { //nolint:nilerr
+		return &common.WriteResult{
+			Success: true,
+			Errors:  nil,
+			Data:    nil,
+		}, nil
+	}
+
+	recordID, err := jsonquery.New(body).StringOptional("id")
+	if err != nil { // nolint:nilerr
+		return &common.WriteResult{
+			Success: true,
+			Errors:  nil,
+			Data:    data,
+		}, nil
+	}
+
+	return &common.WriteResult{
+		Success:  true,
+		RecordId: *recordID,
+		Errors:   nil,
+		Data:     data,
+	}, nil
 }
