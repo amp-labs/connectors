@@ -65,6 +65,10 @@ func metadataMapper(resp *common.JSONHTTPResponse) (*common.ObjectMetadata, erro
 		FieldsMap: make(map[string]string),
 	}
 
+	if len(response.Data) == 0 {
+		return nil, common.ErrMissingExpectedValues
+	}
+
 	attributes := response.Data[0].Attributes
 	for k := range attributes {
 		metadata.FieldsMap[k] = k
