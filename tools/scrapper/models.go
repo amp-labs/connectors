@@ -56,6 +56,16 @@ func (r *ModelURLRegistry) Add(displayName, url string) {
 	})
 }
 
+func (r *ModelURLRegistry) AddModelByName(name, url string) {
+	url, _ = strings.CutSuffix(url, "/")
+
+	r.ModelDocs = append(r.ModelDocs, ModelDocLink{
+		DisplayName: name,
+		Name:        name,
+		URL:         url,
+	})
+}
+
 func (r *ModelURLRegistry) Sort() {
 	sort.Slice(r.ModelDocs, func(i, j int) bool {
 		return r.ModelDocs[i].Name < r.ModelDocs[j].Name

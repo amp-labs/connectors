@@ -7,7 +7,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strings"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -37,11 +36,6 @@ func QueryHTML(url string) *goquery.Document { //nolint:gocritic
 }
 
 func makeRequest(sourceURL string) (*http.Response, error) {
-	// must end with `/` to avoid stupid redirect with then without then again with and without slash
-	if !strings.HasSuffix(sourceURL, "/") {
-		sourceURL += "/"
-	}
-
 	client := &http.Client{
 		CheckRedirect: func() func(req *http.Request, via []*http.Request) error {
 			redirects := 0
