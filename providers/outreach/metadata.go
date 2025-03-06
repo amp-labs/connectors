@@ -45,7 +45,9 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 
 		metadata, err := metadataMapper(res)
 		if err != nil {
-			return nil, err
+			objMetadata.Errors[obj] = err
+
+			continue
 		}
 
 		metadata.DisplayName = obj
