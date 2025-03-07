@@ -8,13 +8,12 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
-	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/providers/ashby/metadata"
 )
 
 const (
 	pageSizeKey = "limit"
-	pageSize    = "2"
+	pageSize    = "100"
 	pageKey     = "cursor"
 	sinceKey    = "createdAfter"
 )
@@ -42,13 +41,6 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
-	if params.NextPage != "" {
-		url, err = urlbuilder.New(params.NextPage.String())
-		if err != nil {
-			return nil, err
-		}
-	}
-
 	return http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonData))
 }
 
@@ -58,7 +50,7 @@ func buildRequestbody(params common.ReadParams) map[string]any {
 	body[pageSizeKey] = pageSize
 
 	if supportSince.Has(params.ObjectName) && !params.Since.IsZero() {
-		body[sinceKey] = datautils.Time.FormatRFC3339inUTC(params.Since)
+		body[sinceKey] = params.Since.UnixMilli()
 	}
 
 	if supportPagination.Has(params.ObjectName) && params.NextPage != "" {
