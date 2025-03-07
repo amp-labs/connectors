@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -23,9 +24,12 @@ func main() {
 
 	conn := connTest.GetAshbyConnector(ctx)
 
+	sinceTime := time.Date(2024, 12, 2, 6, 14, 0, 0, time.UTC)
+
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "application.list",
 		Fields:     connectors.Fields("id", "createdAt", "archivedAt"),
+		Since:      sinceTime,
 	})
 	if err != nil {
 		utils.Fail("error reading from Ashby", "error", err)
