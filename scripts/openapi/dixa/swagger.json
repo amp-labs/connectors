@@ -12,9 +12,7 @@
   "paths": {
     "/v1/analytics/metrics": {
       "get": {
-        "tags": [
-          "Analytics"
-        ],
+        "tags": ["Analytics"],
         "summary": "Metrics Catalogue",
         "description": "This endpoint lists all available metric IDs that can be used to fetch data in Get Metric Data",
         "operationId": "getAnalyticsMetrics",
@@ -84,9 +82,7 @@
                           "description": "Calculated Percentage"
                         }
                       ],
-                      "relatedRecordIds": [
-                        "ratings"
-                      ]
+                      "relatedRecordIds": ["ratings"]
                     },
                     {
                       "id": "closed_conversations",
@@ -119,9 +115,7 @@
                           "description": "Conversation closed count"
                         }
                       ],
-                      "relatedRecordIds": [
-                        "closed_conversations"
-                      ]
+                      "relatedRecordIds": ["closed_conversations"]
                     }
                   ]
                 }
@@ -157,9 +151,7 @@
         }
       },
       "post": {
-        "tags": [
-          "Analytics"
-        ],
+        "tags": ["Analytics"],
         "summary": "Get Metric Data",
         "description": "Get data of a specific metric (aggregated)",
         "operationId": "postAnalyticsMetrics",
@@ -183,36 +175,24 @@
                     "filters": [
                       {
                         "attribute": "channel",
-                        "values": [
-                          "email"
-                        ]
+                        "values": ["email"]
                       }
                     ],
-                    "aggregations": [
-                      "Count"
-                    ],
+                    "aggregations": ["Count"],
                     "timezone": "Europe/Copenhagen"
                   }
                 },
                 "Example1": {
                   "value": {
                     "id": "closed_conversations",
-                    "csidFilter": [
-                      42,
-                      43,
-                      44
-                    ],
+                    "csidFilter": [42, 43, 44],
                     "filters": [
                       {
                         "attribute": "channel",
-                        "values": [
-                          "email"
-                        ]
+                        "values": ["email"]
                       }
                     ],
-                    "aggregations": [
-                      "Count"
-                    ],
+                    "aggregations": ["Count"],
                     "timezone": "Europe/Copenhagen"
                   }
                 }
@@ -275,9 +255,7 @@
     },
     "/v1/analytics/metrics/{metricId}": {
       "get": {
-        "tags": [
-          "Analytics"
-        ],
+        "tags": ["Analytics"],
         "summary": "Metric Description",
         "description": "This endpoint lists all available properties of a metric to use for querying its data",
         "operationId": "getAnalyticsMetricsMetricid",
@@ -335,9 +313,7 @@
                         "description": "Calculated Percentage"
                       }
                     ],
-                    "relatedRecordIds": [
-                      "ratings"
-                    ]
+                    "relatedRecordIds": ["ratings"]
                   }
                 }
               }
@@ -374,9 +350,7 @@
     },
     "/v1/analytics/filter/{filterAttribute}": {
       "get": {
-        "tags": [
-          "Analytics"
-        ],
+        "tags": ["Analytics"],
         "summary": "Filter values",
         "description": "Get possible values to be used with a given filter attribute. Filter attributes are not metric or record specific, so one filter attribute can be used with multiple metrics/records. When a filter value is not relevant for a specific metric/record, it is simply ignored.",
         "operationId": "getAnalyticsFilterFilterattribute",
@@ -463,9 +437,7 @@
     },
     "/v1/analytics/records": {
       "get": {
-        "tags": [
-          "Analytics"
-        ],
+        "tags": ["Analytics"],
         "summary": "Metric Records Catalogue",
         "description": "This endpoint lists all available record IDs that can be used to fetch data in Get Metric Records Data",
         "operationId": "getAnalyticsRecords",
@@ -529,9 +501,7 @@
                           "description": "Used to filter by the contact_point"
                         }
                       ],
-                      "relatedMetricIds": [
-                        "csat"
-                      ],
+                      "relatedMetricIds": ["csat"],
                       "fieldsMetadata": [
                         {
                           "field": "conversation_id",
@@ -575,9 +545,7 @@
                           "description": "Used to filter by the contact_point"
                         }
                       ],
-                      "relatedMetricIds": [
-                        "closed_conversations"
-                      ],
+                      "relatedMetricIds": ["closed_conversations"],
                       "fieldsMetadata": [
                         {
                           "field": "closed_at",
@@ -640,9 +608,7 @@
         }
       },
       "post": {
-        "tags": [
-          "Analytics"
-        ],
+        "tags": ["Analytics"],
         "summary": "Get Metric Records Data",
         "description": "Get data of specific metric records (unaggregated)",
         "operationId": "postAnalyticsRecords",
@@ -687,9 +653,7 @@
                     "filters": [
                       {
                         "attribute": "initial_direction",
-                        "values": [
-                          "INBOUND"
-                        ]
+                        "values": ["INBOUND"]
                       }
                     ],
                     "timezone": "Europe/Copenhagen"
@@ -698,17 +662,11 @@
                 "Example1": {
                   "value": {
                     "id": "closed_conversations",
-                    "csidFilter": [
-                      42,
-                      43,
-                      44
-                    ],
+                    "csidFilter": [42, 43, 44],
                     "filters": [
                       {
                         "attribute": "initial_direction",
-                        "values": [
-                          "INBOUND"
-                        ]
+                        "values": ["INBOUND"]
                       }
                     ],
                     "timezone": "Europe/Copenhagen"
@@ -923,9 +881,7 @@
     },
     "/v1/analytics/records/{recordId}": {
       "get": {
-        "tags": [
-          "Analytics"
-        ],
+        "tags": ["Analytics"],
         "summary": "Metric Record Description",
         "description": "This endpoint lists all available properties of a record to use for querying its data",
         "operationId": "getAnalyticsRecordsRecordid",
@@ -977,9 +933,7 @@
                         "description": "Used to filter by the contact_point"
                       }
                     ],
-                    "relatedMetricIds": [
-                      "csat"
-                    ],
+                    "relatedMetricIds": ["csat"],
                     "fieldsMetadata": [
                       {
                         "field": "conversation_id",
@@ -1033,9 +987,7 @@
     },
     "/v1/agents/presence": {
       "get": {
-        "tags": [
-          "Agents"
-        ],
+        "tags": ["Agents"],
         "summary": "List presence",
         "description": "List the presence status for all agents/admins in an organization.",
         "operationId": "getAgentsPresence",
@@ -1057,10 +1009,7 @@
                     "lastSeen": "2021-12-01T12:46:35.935",
                     "presenceStatus": "Working",
                     "connectionStatus": "Online",
-                    "activeChannels": [
-                      "Email",
-                      "FacebookMessenger"
-                    ]
+                    "activeChannels": ["Email", "FacebookMessenger"]
                   },
                   {
                     "userId": "8026cb51-184b-424f-8686-c6bc7bcf88eb",
@@ -1109,9 +1058,7 @@
     },
     "/v1/agents": {
       "get": {
-        "tags": [
-          "Agents"
-        ],
+        "tags": ["Agents"],
         "summary": "List agents",
         "description": "Lists all agents/admins in an organization. It is possible to filter by one of the mutually exclusive parameters: email or phone number. In case both are provided, an error is returned.",
         "operationId": "getAgents",
@@ -1173,9 +1120,7 @@
                       "additionalEmails": [],
                       "additionalPhoneNumbers": [],
                       "middleNames": [],
-                      "roles": [
-                        "Agent"
-                      ]
+                      "roles": ["Agent"]
                     },
                     {
                       "id": "55a54008-ad1b-3589-aa21-0d2629c1df41",
@@ -1186,9 +1131,7 @@
                       "additionalEmails": [],
                       "additionalPhoneNumbers": [],
                       "middleNames": [],
-                      "roles": [
-                        "Agent"
-                      ]
+                      "roles": ["Agent"]
                     },
                     {
                       "id": "9e688c58-a548-3b8e-af69-c9e1005ad0bf",
@@ -1199,9 +1142,7 @@
                       "additionalEmails": [],
                       "additionalPhoneNumbers": [],
                       "middleNames": [],
-                      "roles": [
-                        "Agent"
-                      ]
+                      "roles": ["Agent"]
                     },
                     {
                       "id": "86666835-06aa-3d90-8bbd-5a74ac4edf68",
@@ -1212,9 +1153,7 @@
                       "additionalEmails": [],
                       "additionalPhoneNumbers": [],
                       "middleNames": [],
-                      "roles": [
-                        "Agent"
-                      ]
+                      "roles": ["Agent"]
                     }
                   ]
                 }
@@ -1263,9 +1202,7 @@
         }
       },
       "put": {
-        "tags": [
-          "Agents"
-        ],
+        "tags": ["Agents"],
         "summary": "Update agents",
         "description": "Bulk update agents/admins.",
         "operationId": "putAgents",
@@ -1314,18 +1251,12 @@
                         "email": "alice@brown.com",
                         "avatarUrl": "https://files.dixa.io/public/image_id",
                         "phoneNumber": "+551155256325",
-                        "additionalEmails": [
-                          "alice@secondary.email"
-                        ],
-                        "additionalPhoneNumbers": [
-                          "+5566778899"
-                        ],
+                        "additionalEmails": ["alice@secondary.email"],
+                        "additionalPhoneNumbers": ["+5566778899"],
                         "firstName": "Alice",
                         "lastName": "Brown",
                         "middleNames": [],
-                        "roles": [
-                          "Agent"
-                        ]
+                        "roles": ["Agent"]
                       },
                       "_type": "BulkActionSuccess"
                     }
@@ -1363,9 +1294,7 @@
         }
       },
       "post": {
-        "tags": [
-          "Agents"
-        ],
+        "tags": ["Agents"],
         "summary": "Create agent",
         "description": "Create an agent.",
         "operationId": "postAgents",
@@ -1380,12 +1309,8 @@
                 "displayName": "Alice Brown",
                 "email": "alice@brown.com",
                 "phoneNumber": "+551155256325",
-                "additionalEmails": [
-                  "alice@secondary.email"
-                ],
-                "additionalPhoneNumbers": [
-                  "+5566778899"
-                ],
+                "additionalEmails": ["alice@secondary.email"],
+                "additionalPhoneNumbers": ["+5566778899"],
                 "firstName": "Alice",
                 "lastName": "Brown",
                 "middleNames": [],
@@ -1411,18 +1336,12 @@
                     "email": "alice@brown.com",
                     "avatarUrl": "https://files.dixa.io/public/image_id",
                     "phoneNumber": "+551155256325",
-                    "additionalEmails": [
-                      "alice@secondary.email"
-                    ],
-                    "additionalPhoneNumbers": [
-                      "+5566778899"
-                    ],
+                    "additionalEmails": ["alice@secondary.email"],
+                    "additionalPhoneNumbers": ["+5566778899"],
                     "firstName": "Alice",
                     "lastName": "Brown",
                     "middleNames": [],
-                    "roles": [
-                      "Agent"
-                    ]
+                    "roles": ["Agent"]
                   }
                 }
               }
@@ -1457,9 +1376,7 @@
         }
       },
       "patch": {
-        "tags": [
-          "Agents"
-        ],
+        "tags": ["Agents"],
         "summary": "Patch agents",
         "description": "Bulk patch agents/admins.",
         "operationId": "patchAgents",
@@ -1513,9 +1430,7 @@
                         "additionalEmails": [],
                         "additionalPhoneNumbers": [],
                         "middleNames": [],
-                        "roles": [
-                          "Agent"
-                        ]
+                        "roles": ["Agent"]
                       },
                       "_type": "BulkActionSuccess"
                     },
@@ -1563,9 +1478,7 @@
     },
     "/v1/agents/{agentId}/teams": {
       "get": {
-        "tags": [
-          "Agents"
-        ],
+        "tags": ["Agents"],
         "summary": "List teams",
         "description": "List the teams in which the agent/admin is a member.",
         "operationId": "getAgentsAgentidTeams",
@@ -1646,9 +1559,7 @@
     },
     "/v1/agents/{agentId}/presence": {
       "get": {
-        "tags": [
-          "Agents"
-        ],
+        "tags": ["Agents"],
         "summary": "Get presence",
         "description": "Get the presence status for an agent/admin.",
         "operationId": "getAgentsAgentidPresence",
@@ -1679,10 +1590,7 @@
                     "lastSeen": "2021-12-01T12:46:35.935",
                     "presenceStatus": "Working",
                     "connectionStatus": "Online",
-                    "activeChannels": [
-                      "Email",
-                      "FacebookMessenger"
-                    ]
+                    "activeChannels": ["Email", "FacebookMessenger"]
                   }
                 }
               }
@@ -1732,9 +1640,7 @@
     },
     "/v1/agents/bulk": {
       "post": {
-        "tags": [
-          "Agents"
-        ],
+        "tags": ["Agents"],
         "summary": "Create agents",
         "description": "Create agents in bulk.",
         "operationId": "postAgentsBulk",
@@ -1784,9 +1690,7 @@
                         "additionalEmails": [],
                         "additionalPhoneNumbers": [],
                         "middleNames": [],
-                        "roles": [
-                          "Agent"
-                        ]
+                        "roles": ["Agent"]
                       },
                       "_type": "BulkActionSuccess"
                     },
@@ -1800,9 +1704,7 @@
                         "additionalEmails": [],
                         "additionalPhoneNumbers": [],
                         "middleNames": [],
-                        "roles": [
-                          "Agent"
-                        ]
+                        "roles": ["Agent"]
                       },
                       "_type": "BulkActionSuccess"
                     },
@@ -1816,9 +1718,7 @@
                         "additionalEmails": [],
                         "additionalPhoneNumbers": [],
                         "middleNames": [],
-                        "roles": [
-                          "Agent"
-                        ]
+                        "roles": ["Agent"]
                       },
                       "_type": "BulkActionSuccess"
                     },
@@ -1832,9 +1732,7 @@
                         "additionalEmails": [],
                         "additionalPhoneNumbers": [],
                         "middleNames": [],
-                        "roles": [
-                          "Agent"
-                        ]
+                        "roles": ["Agent"]
                       },
                       "_type": "BulkActionSuccess"
                     },
@@ -1882,9 +1780,7 @@
     },
     "/v1/agents/{agentId}": {
       "get": {
-        "tags": [
-          "Agents"
-        ],
+        "tags": ["Agents"],
         "summary": "Get agent",
         "description": "Get an agent/admin by id.",
         "operationId": "getAgentsAgentid",
@@ -1916,18 +1812,12 @@
                     "email": "alice@brown.com",
                     "avatarUrl": "https://files.dixa.io/public/image_id",
                     "phoneNumber": "+551155256325",
-                    "additionalEmails": [
-                      "alice@secondary.email"
-                    ],
-                    "additionalPhoneNumbers": [
-                      "+5566778899"
-                    ],
+                    "additionalEmails": ["alice@secondary.email"],
+                    "additionalPhoneNumbers": ["+5566778899"],
                     "firstName": "Alice",
                     "lastName": "Brown",
                     "middleNames": [],
-                    "roles": [
-                      "Agent"
-                    ]
+                    "roles": ["Agent"]
                   }
                 }
               }
@@ -1975,9 +1865,7 @@
         }
       },
       "put": {
-        "tags": [
-          "Agents"
-        ],
+        "tags": ["Agents"],
         "summary": "Update agent",
         "description": "Update an agent/admin.",
         "operationId": "putAgentsAgentid",
@@ -2007,9 +1895,7 @@
                 "additionalPhoneNumbers": [],
                 "firstName": "Alice",
                 "lastName": "Brown",
-                "middleNames": [
-                  "Julia"
-                ],
+                "middleNames": ["Julia"],
                 "avatarUrl": "http://avatar.url"
               }
             }
@@ -2032,20 +1918,12 @@
                     "email": "alice@brown.com",
                     "avatarUrl": "https://files.dixa.io/public/image_id",
                     "phoneNumber": "+551155256325",
-                    "additionalEmails": [
-                      "alice@secondary.email"
-                    ],
-                    "additionalPhoneNumbers": [
-                      "+5566778899"
-                    ],
+                    "additionalEmails": ["alice@secondary.email"],
+                    "additionalPhoneNumbers": ["+5566778899"],
                     "firstName": "Alice",
                     "lastName": "Brown",
-                    "middleNames": [
-                      "Julia"
-                    ],
-                    "roles": [
-                      "Agent"
-                    ]
+                    "middleNames": ["Julia"],
+                    "roles": ["Agent"]
                   }
                 }
               }
@@ -2093,9 +1971,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Agents"
-        ],
+        "tags": ["Agents"],
         "summary": "Delete agent",
         "description": "Downgrade an agent/admin to become an end user.",
         "operationId": "deleteAgentsAgentid",
@@ -2144,9 +2020,7 @@
         }
       },
       "patch": {
-        "tags": [
-          "Agents"
-        ],
+        "tags": ["Agents"],
         "summary": "Patch agent",
         "description": "Patch an agent/admin.",
         "operationId": "patchAgentsAgentid",
@@ -2198,18 +2072,12 @@
                     "email": "alice@brown.com",
                     "avatarUrl": "https://files.dixa.io/public/image_id",
                     "phoneNumber": "+551155256325",
-                    "additionalEmails": [
-                      "alice@secondary.email"
-                    ],
-                    "additionalPhoneNumbers": [
-                      "+5566778899"
-                    ],
+                    "additionalEmails": ["alice@secondary.email"],
+                    "additionalPhoneNumbers": ["+5566778899"],
                     "firstName": "Alice",
                     "lastName": "Brown",
                     "middleNames": [],
-                    "roles": [
-                      "Agent"
-                    ]
+                    "roles": ["Agent"]
                   }
                 }
               }
@@ -2259,9 +2127,7 @@
     },
     "/v1/endusers": {
       "get": {
-        "tags": [
-          "End Users"
-        ],
+        "tags": ["End Users"],
         "summary": "List end users",
         "description": "Lists all end users in an organization. It is possible to filter by one of the mutually exclusive parameters: email or phone number. In case both are provided, an error is returned.",
         "operationId": "getEndusers",
@@ -2446,9 +2312,7 @@
         }
       },
       "put": {
-        "tags": [
-          "End Users"
-        ],
+        "tags": ["End Users"],
         "summary": "Update end users",
         "description": "Bulk update end users.",
         "operationId": "putEndusers",
@@ -2466,17 +2330,11 @@
                     "displayName": "Alice Brown",
                     "email": "alice@brown.com",
                     "phoneNumber": "+551155256325",
-                    "additionalEmails": [
-                      "alice@secondary.email"
-                    ],
-                    "additionalPhoneNumbers": [
-                      "+5566778899"
-                    ],
+                    "additionalEmails": ["alice@secondary.email"],
+                    "additionalPhoneNumbers": ["+5566778899"],
                     "firstName": "Alice",
                     "lastName": "Brown",
-                    "middleNames": [
-                      "J."
-                    ],
+                    "middleNames": ["J."],
                     "avatarUrl": "http://avatar.url",
                     "externalId": "#12345678"
                   }
@@ -2503,17 +2361,11 @@
                         "displayName": "Alice Brown",
                         "email": "alice@brown.com",
                         "phoneNumber": "+551155256325",
-                        "additionalEmails": [
-                          "alice@secondary.email"
-                        ],
-                        "additionalPhoneNumbers": [
-                          "+5566778899"
-                        ],
+                        "additionalEmails": ["alice@secondary.email"],
+                        "additionalPhoneNumbers": ["+5566778899"],
                         "firstName": "Alice",
                         "lastName": "Brown",
-                        "middleNames": [
-                          "J."
-                        ],
+                        "middleNames": ["J."],
                         "avatarUrl": "https://files.dixa.io/public/image_id",
                         "externalId": "#12345678",
                         "customAttributes": [
@@ -2569,10 +2421,7 @@
         }
       },
       "post": {
-        "tags": [
-          "End Users",
-          "Chatbots"
-        ],
+        "tags": ["End Users", "Chatbots"],
         "summary": "Create end user",
         "description": "Create an end user.",
         "operationId": "postEndusers",
@@ -2587,12 +2436,8 @@
                 "displayName": "Alice Brown",
                 "email": "alice@brown.com",
                 "phoneNumber": "+551155256325",
-                "additionalEmails": [
-                  "alice@secondary.email"
-                ],
-                "additionalPhoneNumbers": [
-                  "+5566778899"
-                ],
+                "additionalEmails": ["alice@secondary.email"],
+                "additionalPhoneNumbers": ["+5566778899"],
                 "firstName": "Alice",
                 "lastName": "Brown",
                 "middleNames": [],
@@ -2618,12 +2463,8 @@
                     "displayName": "Alice Brown",
                     "email": "alice@brown.com",
                     "phoneNumber": "+551155256325",
-                    "additionalEmails": [
-                      "alice@secondary.email"
-                    ],
-                    "additionalPhoneNumbers": [
-                      "+5566778899"
-                    ],
+                    "additionalEmails": ["alice@secondary.email"],
+                    "additionalPhoneNumbers": ["+5566778899"],
                     "firstName": "Alice",
                     "lastName": "Brown",
                     "middleNames": [],
@@ -2671,9 +2512,7 @@
         }
       },
       "patch": {
-        "tags": [
-          "End Users"
-        ],
+        "tags": ["End Users"],
         "summary": "Patch end users",
         "description": "Bulk patch end users.",
         "operationId": "patchEndusers",
@@ -2691,12 +2530,8 @@
                     "displayName": "Alice Brown",
                     "email": "alice@brown.com",
                     "phoneNumber": "+551155256325",
-                    "additionalEmails": [
-                      "alice@secondary.email"
-                    ],
-                    "additionalPhoneNumbers": [
-                      "+5566778899"
-                    ],
+                    "additionalEmails": ["alice@secondary.email"],
+                    "additionalPhoneNumbers": ["+5566778899"],
                     "firstName": "Alice",
                     "lastName": "Brown",
                     "middleNames": [],
@@ -2726,12 +2561,8 @@
                         "displayName": "Alice Brown",
                         "email": "alice@brown.com",
                         "phoneNumber": "+551155256325",
-                        "additionalEmails": [
-                          "alice@secondary.email"
-                        ],
-                        "additionalPhoneNumbers": [
-                          "+5566778899"
-                        ],
+                        "additionalEmails": ["alice@secondary.email"],
+                        "additionalPhoneNumbers": ["+5566778899"],
                         "firstName": "Alice",
                         "lastName": "Brown",
                         "middleNames": [],
@@ -2792,9 +2623,7 @@
     },
     "/v1/endusers/bulk": {
       "post": {
-        "tags": [
-          "End Users"
-        ],
+        "tags": ["End Users"],
         "summary": "Create end users",
         "description": "Create multiple end users in a single bulk action",
         "operationId": "postEndusersBulk",
@@ -2967,10 +2796,7 @@
     },
     "/v1/endusers/{userId}": {
       "get": {
-        "tags": [
-          "End Users",
-          "Chatbots"
-        ],
+        "tags": ["End Users", "Chatbots"],
         "summary": "Get end user",
         "description": "Get an end user by id.",
         "operationId": "getEndusersUserid",
@@ -3001,12 +2827,8 @@
                     "displayName": "Alice Brown",
                     "email": "alice@brown.com",
                     "phoneNumber": "+551155256325",
-                    "additionalEmails": [
-                      "alice@secondary.email"
-                    ],
-                    "additionalPhoneNumbers": [
-                      "+5566778899"
-                    ],
+                    "additionalEmails": ["alice@secondary.email"],
+                    "additionalPhoneNumbers": ["+5566778899"],
                     "firstName": "Alice",
                     "lastName": "Brown",
                     "middleNames": [],
@@ -3067,9 +2889,7 @@
         }
       },
       "put": {
-        "tags": [
-          "End Users"
-        ],
+        "tags": ["End Users"],
         "summary": "Update end user",
         "description": "Update an end user.",
         "operationId": "putEndusersUserid",
@@ -3096,17 +2916,11 @@
                 "displayName": "Alice Brown",
                 "email": "alice@brown.com",
                 "phoneNumber": "+551155256325",
-                "additionalEmails": [
-                  "alice@secondary.email"
-                ],
-                "additionalPhoneNumbers": [
-                  "+5566778899"
-                ],
+                "additionalEmails": ["alice@secondary.email"],
+                "additionalPhoneNumbers": ["+5566778899"],
                 "firstName": "Alice",
                 "lastName": "Brown",
-                "middleNames": [
-                  "J."
-                ],
+                "middleNames": ["J."],
                 "avatarUrl": "http://avatar.url",
                 "externalId": "#12345678"
               }
@@ -3129,17 +2943,11 @@
                     "displayName": "Alice Brown",
                     "email": "alice@brown.com",
                     "phoneNumber": "+551155256325",
-                    "additionalEmails": [
-                      "alice@secondary.email"
-                    ],
-                    "additionalPhoneNumbers": [
-                      "+5566778899"
-                    ],
+                    "additionalEmails": ["alice@secondary.email"],
+                    "additionalPhoneNumbers": ["+5566778899"],
                     "firstName": "Alice",
                     "lastName": "Brown",
-                    "middleNames": [
-                      "J."
-                    ],
+                    "middleNames": ["J."],
                     "avatarUrl": "https://files.dixa.io/public/image_id",
                     "externalId": "#12345678",
                     "customAttributes": [
@@ -3197,9 +3005,7 @@
         }
       },
       "patch": {
-        "tags": [
-          "End Users"
-        ],
+        "tags": ["End Users"],
         "summary": "Patch end user",
         "description": "Patch an end user.",
         "operationId": "patchEndusersUserid",
@@ -3226,12 +3032,8 @@
                 "displayName": "Alice Brown",
                 "email": "alice@brown.com",
                 "phoneNumber": "+551155256325",
-                "additionalEmails": [
-                  "alice@secondary.email"
-                ],
-                "additionalPhoneNumbers": [
-                  "+5566778899"
-                ],
+                "additionalEmails": ["alice@secondary.email"],
+                "additionalPhoneNumbers": ["+5566778899"],
                 "firstName": "Alice",
                 "lastName": "Brown",
                 "middleNames": [],
@@ -3257,12 +3059,8 @@
                     "displayName": "Alice Brown",
                     "email": "alice@brown.com",
                     "phoneNumber": "+551155256325",
-                    "additionalEmails": [
-                      "alice@secondary.email"
-                    ],
-                    "additionalPhoneNumbers": [
-                      "+5566778899"
-                    ],
+                    "additionalEmails": ["alice@secondary.email"],
+                    "additionalPhoneNumbers": ["+5566778899"],
                     "firstName": "Alice",
                     "lastName": "Brown",
                     "middleNames": [],
@@ -3325,10 +3123,7 @@
     },
     "/v1/endusers/{userId}/anonymize": {
       "patch": {
-        "tags": [
-          "End Users",
-          "Anonymization"
-        ],
+        "tags": ["End Users", "Anonymization"],
         "summary": "Anonymize end user",
         "description": "Request the anonymization of an end user.",
         "operationId": "patchEndusersUseridAnonymize",
@@ -3420,10 +3215,7 @@
     },
     "/v1/endusers/{userId}/custom-attributes": {
       "patch": {
-        "tags": [
-          "End Users",
-          "Custom Attributes"
-        ],
+        "tags": ["End Users", "Custom Attributes"],
         "summary": "Patch end user custom attributes",
         "description": "Patch custom attributes of an end user",
         "operationId": "patchEndusersUseridCustom-attributes",
@@ -3447,10 +3239,7 @@
               },
               "example": {
                 "274e5a2c-be0d-42c0-b725-3dd533729f68": "abcdef",
-                "befae0d9-9679-42b9-af76-e76f64e28429": [
-                  "example1",
-                  "example2"
-                ]
+                "befae0d9-9679-42b9-af76-e76f64e28429": ["example1", "example2"]
               }
             }
           },
@@ -3476,10 +3265,7 @@
                       "id": "befae0d9-9679-42b9-af76-e76f64e28429",
                       "name": "End user attribute 2",
                       "identifier": "end_user_attribute_2",
-                      "value": [
-                        "example1",
-                        "example2"
-                      ]
+                      "value": ["example1", "example2"]
                     }
                   ]
                 }
@@ -3530,10 +3316,7 @@
     },
     "/v1/endusers/{userId}/conversations": {
       "get": {
-        "tags": [
-          "End Users",
-          "Chatbots"
-        ],
+        "tags": ["End Users", "Chatbots"],
         "summary": "List end user conversations",
         "description": "Lists conversations requested by an end user. <br/> Note: Custom attributes are not part of the response at this point. If you need to get custom attributes for a conversation use the [GET /conversations/{conversationId}](../Conversations/#tag/Conversations/operation/getConversationsConversationid) endpoint",
         "operationId": "getEndusersUseridConversations",
@@ -3655,9 +3438,7 @@
     },
     "/v1/teams": {
       "get": {
-        "tags": [
-          "Teams"
-        ],
+        "tags": ["Teams"],
         "summary": "List teams",
         "description": "Lists all teams in an organization.",
         "operationId": "getTeams",
@@ -3713,9 +3494,7 @@
         }
       },
       "post": {
-        "tags": [
-          "Teams"
-        ],
+        "tags": ["Teams"],
         "summary": "Create team",
         "description": "Create a team.",
         "operationId": "postTeams",
@@ -3781,9 +3560,7 @@
     },
     "/v1/teams/{teamId}/agents": {
       "get": {
-        "tags": [
-          "Teams"
-        ],
+        "tags": ["Teams"],
         "summary": "List members",
         "description": "Lists all agents/admins in a team.",
         "operationId": "getTeamsTeamidAgents",
@@ -3853,9 +3630,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Teams"
-        ],
+        "tags": ["Teams"],
         "summary": "Remove members",
         "description": "Remove agents/admins from a team.",
         "operationId": "deleteTeamsTeamidAgents",
@@ -3921,9 +3696,7 @@
         }
       },
       "patch": {
-        "tags": [
-          "Teams"
-        ],
+        "tags": ["Teams"],
         "summary": "Add members",
         "description": "Add agents/admins to a team.",
         "operationId": "patchTeamsTeamidAgents",
@@ -3991,9 +3764,7 @@
     },
     "/v1/teams/{teamId}/presence": {
       "get": {
-        "tags": [
-          "Teams"
-        ],
+        "tags": ["Teams"],
         "summary": "List presence",
         "description": "List the presence status of all agents/admins in a team.",
         "operationId": "getTeamsTeamidPresence",
@@ -4044,10 +3815,7 @@
                       "lastSeen": "2021-12-01T12:46:35.935",
                       "presenceStatus": "Working",
                       "connectionStatus": "Online",
-                      "activeChannels": [
-                        "Email",
-                        "FacebookMessenger"
-                      ]
+                      "activeChannels": ["Email", "FacebookMessenger"]
                     },
                     {
                       "userId": "e8ecd53b-2f6c-4471-a3a0-34d94caff8c8",
@@ -4055,10 +3823,7 @@
                       "lastSeen": "2021-12-01T12:46:35.935",
                       "presenceStatus": "Working",
                       "connectionStatus": "Online",
-                      "activeChannels": [
-                        "Email",
-                        "FacebookMessenger"
-                      ]
+                      "activeChannels": ["Email", "FacebookMessenger"]
                     }
                   ]
                 }
@@ -4109,9 +3874,7 @@
     },
     "/v1/teams/{teamId}": {
       "get": {
-        "tags": [
-          "Teams"
-        ],
+        "tags": ["Teams"],
         "summary": "Get team",
         "description": "Get a team by id.",
         "operationId": "getTeamsTeamid",
@@ -4173,9 +3936,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Teams"
-        ],
+        "tags": ["Teams"],
         "summary": "Delete team",
         "description": "Delete a team.",
         "operationId": "deleteTeamsTeamid",
@@ -4226,10 +3987,7 @@
     },
     "/v1/conversations/{conversationId}/anonymize": {
       "patch": {
-        "tags": [
-          "Conversations",
-          "Anonymization"
-        ],
+        "tags": ["Conversations", "Anonymization"],
         "summary": "Anonymize conversation",
         "description": "Request the anonymization of a conversation.",
         "operationId": "patchConversationsConversationidAnonymize",
@@ -4324,10 +4082,7 @@
     },
     "/v1/conversations/{conversationId}/messages/{messageId}/anonymize": {
       "patch": {
-        "tags": [
-          "Conversations",
-          "Anonymization"
-        ],
+        "tags": ["Conversations", "Anonymization"],
         "summary": "Anonymize message",
         "description": "Request the anonymization of a single message in a conversation.",
         "operationId": "patchConversationsConversationidMessagesMessageidAnonymize",
@@ -4422,10 +4177,7 @@
     },
     "/v1/conversations/{conversationId}/close": {
       "put": {
-        "tags": [
-          "Conversations",
-          "Chatbots"
-        ],
+        "tags": ["Conversations", "Chatbots"],
         "summary": "Close conversation",
         "description": "Mark a conversation as closed by providing its id.",
         "operationId": "putConversationsConversationidClose",
@@ -4489,10 +4241,7 @@
     },
     "/v1/conversations/{conversationId}/followup": {
       "put": {
-        "tags": [
-          "Conversations",
-          "Chatbots"
-        ],
+        "tags": ["Conversations", "Chatbots"],
         "summary": "Followup conversation",
         "description": "Follow up a conversation by providing its id and expiration timestamp.",
         "operationId": "putConversationsConversationidFollowup",
@@ -4557,9 +4306,7 @@
     },
     "/v1/conversations/{conversationId}/reopen": {
       "put": {
-        "tags": [
-          "Conversations"
-        ],
+        "tags": ["Conversations"],
         "summary": "Reopen conversation",
         "description": "Reopen a conversation and offer it in the same queue. Falls back to the default organization queue if the conversation has no target queue.",
         "operationId": "putConversationsConversationidReopen",
@@ -4636,10 +4383,7 @@
     },
     "/v1/conversations/{conversationId}/transfer/queue": {
       "put": {
-        "tags": [
-          "Conversations",
-          "Chatbots"
-        ],
+        "tags": ["Conversations", "Chatbots"],
         "summary": "Transfer conversation",
         "description": "Transfer a conversation to a target queue.",
         "operationId": "putConversationsConversationidTransferQueue",
@@ -4717,10 +4461,7 @@
     },
     "/v1/conversations/{conversationId}/notes/bulk": {
       "post": {
-        "tags": [
-          "Conversations",
-          "Internal Notes"
-        ],
+        "tags": ["Conversations", "Internal Notes"],
         "summary": "Add internal notes",
         "description": "Create internal notes in a conversation by providing the conversation id.",
         "operationId": "postConversationsConversationidNotesBulk",
@@ -4841,10 +4582,7 @@
     },
     "/v1/conversations/{conversationId}/notes": {
       "get": {
-        "tags": [
-          "Conversations",
-          "Internal Notes"
-        ],
+        "tags": ["Conversations", "Internal Notes"],
         "summary": "List internal notes",
         "description": "Get all internal notes for a particular conversation by providing the conversation id.",
         "operationId": "getConversationsConversationidNotes",
@@ -4930,10 +4668,7 @@
         }
       },
       "post": {
-        "tags": [
-          "Conversations",
-          "Internal Notes"
-        ],
+        "tags": ["Conversations", "Internal Notes"],
         "summary": "Add internal note",
         "description": "Create an internal note in a conversation by providing the conversation id.",
         "operationId": "postConversationsConversationidNotes",
@@ -5041,11 +4776,7 @@
     },
     "/v1/conversations/{conversationId}/ratings/{ratingId}/submit": {
       "post": {
-        "tags": [
-          "Conversations",
-          "Ratings",
-          "Chatbots"
-        ],
+        "tags": ["Conversations", "Ratings", "Chatbots"],
         "summary": "Create conversation rating result",
         "description": "Create a rating result for a specific conversation.",
         "operationId": "postConversationsConversationidRatingsRatingidSubmit",
@@ -5142,11 +4873,7 @@
     },
     "/v1/conversations/{conversationId}/ratings/offer": {
       "post": {
-        "tags": [
-          "Conversations",
-          "Ratings",
-          "Chatbots"
-        ],
+        "tags": ["Conversations", "Ratings", "Chatbots"],
         "summary": "Create conversation rating offer",
         "description": "Create a rating offer for a specific conversation.",
         "operationId": "postConversationsConversationidRatingsOffer",
@@ -5229,10 +4956,7 @@
     },
     "/v1/conversations/{conversationId}/rating": {
       "get": {
-        "tags": [
-          "Conversations",
-          "Ratings"
-        ],
+        "tags": ["Conversations", "Ratings"],
         "summary": "List rating",
         "description": "Deprecated rating endpoint. Use '/ratings'.",
         "operationId": "getConversationsConversationidRating",
@@ -5319,10 +5043,7 @@
     },
     "/v1/conversations/{conversationId}/ratings": {
       "get": {
-        "tags": [
-          "Conversations",
-          "Ratings"
-        ],
+        "tags": ["Conversations", "Ratings"],
         "summary": "List the ratings for a conversation",
         "description": "Get the ratings for a particular conversation by providing the conversation id.",
         "operationId": "getConversationsConversationidRatings",
@@ -5408,9 +5129,7 @@
     },
     "/v1/conversations/activitylog": {
       "get": {
-        "tags": [
-          "Conversations"
-        ],
+        "tags": ["Conversations"],
         "summary": "List organization activity log",
         "description": "List all activity logs for an organization.",
         "operationId": "getConversationsActivitylog",
@@ -5527,9 +5246,7 @@
     },
     "/v1/conversations/flows": {
       "get": {
-        "tags": [
-          "Conversations"
-        ],
+        "tags": ["Conversations"],
         "summary": "List flows",
         "description": "List all conversations flows in an organization.",
         "operationId": "getConversationsFlows",
@@ -5596,10 +5313,7 @@
     },
     "/v1/conversations/{conversationId}/tags/{tagId}": {
       "put": {
-        "tags": [
-          "Conversations",
-          "Tags"
-        ],
+        "tags": ["Conversations", "Tags"],
         "summary": "Tag conversation",
         "description": "Tag a conversation. You may only use active tags to tag conversations.",
         "operationId": "putConversationsConversationidTagsTagid",
@@ -5669,10 +5383,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Conversations",
-          "Tags"
-        ],
+        "tags": ["Conversations", "Tags"],
         "summary": "Untag conversation",
         "description": "Untag a conversation. You may remove active or inactive tags from a conversation.",
         "operationId": "deleteConversationsConversationidTagsTagid",
@@ -5744,10 +5455,7 @@
     },
     "/v1/conversations/{conversationId}/tags/bulk": {
       "post": {
-        "tags": [
-          "Conversations",
-          "Tags"
-        ],
+        "tags": ["Conversations", "Tags"],
         "summary": "Bulk tag conversation",
         "description": "Initiate bulk tag of a conversation and process it asynchronously. If a tag with corresponding name does not exist it will be created.",
         "operationId": "postConversationsConversationidTagsBulk",
@@ -5831,10 +5539,7 @@
     },
     "/v1/conversations/{conversationId}/tags": {
       "get": {
-        "tags": [
-          "Conversations",
-          "Tags"
-        ],
+        "tags": ["Conversations", "Tags"],
         "summary": "List tags",
         "description": "Get the tags for a particular conversation by providing the conversation id.",
         "operationId": "getConversationsConversationidTags",
@@ -5928,10 +5633,7 @@
     },
     "/v1/conversations/{conversationId}/messages": {
       "get": {
-        "tags": [
-          "Conversations",
-          "Messages"
-        ],
+        "tags": ["Conversations", "Messages"],
         "summary": "List messages",
         "description": "Get all messages for a particular conversation by providing the conversation id. Note that messages in `ContactForm` conversations can have attributes of `\"_type\": \"EmailAttributes\"` if they are created through a webform, or `\"_type\": \"ContactFormAttributes\"` when created through a chat widget.",
         "operationId": "getConversationsConversationidMessages",
@@ -6030,9 +5732,7 @@
         }
       },
       "post": {
-        "tags": [
-          "Conversations"
-        ],
+        "tags": ["Conversations"],
         "summary": "Add message",
         "description": "Add a message to a conversation. For inbound messages the author is assumed to be the requester of the conversation (end user). For outbound messages the author is specified using the agentId field. Currently Email, WidgetChat and Messenger channels are supported.",
         "operationId": "postConversationsConversationidMessages",
@@ -6138,10 +5838,7 @@
     },
     "/v1/conversations": {
       "post": {
-        "tags": [
-          "Conversations",
-          "Chatbots"
-        ],
+        "tags": ["Conversations", "Chatbots"],
         "summary": "Create conversation",
         "description": "Create a conversation. For inbound messages the author is assumed to be the requester of the conversation (end user). For outbound messages the author is specified using the agentId field.",
         "operationId": "postConversations",
@@ -6231,10 +5928,7 @@
     },
     "/v1/conversations/import": {
       "post": {
-        "tags": [
-          "Conversations",
-          "Chatbots"
-        ],
+        "tags": ["Conversations", "Chatbots"],
         "summary": "Import conversation",
         "description": "Import a previously created conversation into Dixa. For inbound messages the author is assumed to be the requester of the conversation (end user), unless the specific channel supports overriding the message author through its attributes. For outbound messages the author is specified using the agentId field.",
         "operationId": "postConversationsImport",
@@ -6327,10 +6021,7 @@
                         "createdAt": "2021-12-01T14:00:00.004Z",
                         "attributes": {
                           "emailIntegrationId": "sample-integration@email.dixa.io",
-                          "cc": [
-                            "a@b.com",
-                            "b@c.com"
-                          ],
+                          "cc": ["a@b.com", "b@c.com"],
                           "bcc": []
                         },
                         "_type": "OutboundImport"
@@ -6494,10 +6185,7 @@
     },
     "/v1/conversations/{conversationId}/custom-attributes": {
       "patch": {
-        "tags": [
-          "Conversations",
-          "Custom Attributes"
-        ],
+        "tags": ["Conversations", "Custom Attributes"],
         "summary": "Patch conversation custom attributes",
         "description": "Patch custom attributes of a conversation",
         "operationId": "patchConversationsConversationidCustom-attributes",
@@ -6521,10 +6209,7 @@
               },
               "example": {
                 "2f5515b6-7e98-4f4d-9010-bfd2a27d4f35": "012345",
-                "e14708a6-eed9-495c-9d88-c72331e9e247": [
-                  "str1",
-                  "str2"
-                ]
+                "e14708a6-eed9-495c-9d88-c72331e9e247": ["str1", "str2"]
               }
             }
           },
@@ -6550,10 +6235,7 @@
                       "id": "e14708a6-eed9-495c-9d88-c72331e9e247",
                       "name": "Conversation attribute 2",
                       "identifier": "conversation_attribute_2",
-                      "value": [
-                        "str1",
-                        "str2"
-                      ]
+                      "value": ["str1", "str2"]
                     }
                   ]
                 }
@@ -6604,10 +6286,7 @@
     },
     "/v1/conversations/{conversationId}/claim": {
       "put": {
-        "tags": [
-          "Conversations",
-          "Chatbots"
-        ],
+        "tags": ["Conversations", "Chatbots"],
         "summary": "Claim conversation",
         "description": "Claim a conversation for a given agent. To avoid taking over assigned conversations, set the `force` paremeter to false",
         "operationId": "putConversationsConversationidClaim",
@@ -6684,9 +6363,7 @@
     },
     "/v1/conversations/{conversationId}/activitylog": {
       "get": {
-        "tags": [
-          "Conversations"
-        ],
+        "tags": ["Conversations"],
         "summary": "List activity log",
         "description": "Get the activity log for a conversation by providing the conversation id.",
         "operationId": "getConversationsConversationidActivitylog",
@@ -6760,9 +6437,7 @@
     },
     "/v1/conversations/{conversationId}": {
       "get": {
-        "tags": [
-          "Conversations"
-        ],
+        "tags": ["Conversations"],
         "summary": "Get conversation",
         "description": "Get a conversation by id.",
         "operationId": "getConversationsConversationid",
@@ -6871,9 +6546,7 @@
     },
     "/v1/conversations/{conversationId}/linked": {
       "get": {
-        "tags": [
-          "Conversations"
-        ],
+        "tags": ["Conversations"],
         "summary": "List linked conversations",
         "description": "Lists all linked child conversations for the given conversation ID, such as transcripts and side conversations.",
         "operationId": "getConversationsConversationidLinked",
@@ -6974,9 +6647,7 @@
     },
     "/v1/queues": {
       "get": {
-        "tags": [
-          "Queues"
-        ],
+        "tags": ["Queues"],
         "summary": "List queues",
         "description": "List all queues in an organization.",
         "operationId": "getQueues",
@@ -7009,12 +6680,8 @@
                             "c6f50127-7f0a-418f-943e-c62b96d8a742",
                             "b2ac94ac-379a-4f24-995a-6473809eef6b"
                           ],
-                          "PstnPhone": [
-                            "+4589977790"
-                          ],
-                          "Email": [
-                            "info@mycorp.dixa.io"
-                          ]
+                          "PstnPhone": ["+4589977790"],
+                          "Email": ["info@mycorp.dixa.io"]
                         }
                       },
                       "wrapupTimeout": 10,
@@ -7054,9 +6721,7 @@
                       "usages": {
                         "queueId": "921a6e00-0845-417e-9c67-f7cb872d45f0",
                         "usages": {
-                          "Email": [
-                            "info@mycorp.dixa.io"
-                          ]
+                          "Email": ["info@mycorp.dixa.io"]
                         }
                       },
                       "wrapupTimeout": 10,
@@ -7105,9 +6770,7 @@
         }
       },
       "post": {
-        "tags": [
-          "Queues"
-        ],
+        "tags": ["Queues"],
         "summary": "Create queue",
         "description": "Create a queue.",
         "operationId": "postQueues",
@@ -7197,9 +6860,7 @@
     },
     "/v1/queues/{queueId}/members": {
       "get": {
-        "tags": [
-          "Queues"
-        ],
+        "tags": ["Queues"],
         "summary": "List agents",
         "description": "List all agents/admins that are members of a queue by providing the queue id.",
         "operationId": "getQueuesQueueidMembers",
@@ -7279,9 +6940,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Queues"
-        ],
+        "tags": ["Queues"],
         "summary": "Remove agents",
         "description": "Bulk remove agents/admins from the specified queue.",
         "operationId": "deleteQueuesQueueidMembers",
@@ -7359,9 +7018,7 @@
         }
       },
       "patch": {
-        "tags": [
-          "Queues"
-        ],
+        "tags": ["Queues"],
         "summary": "Assign agents",
         "description": "Assign one or more agents/admins to a given queue.",
         "operationId": "patchQueuesQueueidMembers",
@@ -7472,10 +7129,7 @@
     },
     "/v1/queues/{queueId}/availability": {
       "get": {
-        "tags": [
-          "Queues",
-          "Chatbots"
-        ],
+        "tags": ["Queues", "Chatbots"],
         "summary": "Get queue availability",
         "description": "Get availability of supported channels for a given queue. Currently supported channels are adachat, kindlychat, digitalgeniuschat.",
         "operationId": "getQueuesQueueidAvailability",
@@ -7563,9 +7217,7 @@
     },
     "/v1/queues/{queueId}": {
       "get": {
-        "tags": [
-          "Queues"
-        ],
+        "tags": ["Queues"],
         "summary": "Get queue",
         "description": "Get a queue by id.",
         "operationId": "getQueuesQueueid",
@@ -7608,12 +7260,8 @@
                           "c6f50127-7f0a-418f-943e-c62b96d8a742",
                           "b2ac94ac-379a-4f24-995a-6473809eef6b"
                         ],
-                        "PstnPhone": [
-                          "+4589977790"
-                        ],
-                        "Email": [
-                          "info@mycorp.dixa.io"
-                        ]
+                        "PstnPhone": ["+4589977790"],
+                        "Email": ["info@mycorp.dixa.io"]
                       }
                     },
                     "wrapupTimeout": 10,
@@ -7686,10 +7334,7 @@
     },
     "/v1/queues/conversation-position/{csid}": {
       "get": {
-        "tags": [
-          "Queues",
-          "Chatbots"
-        ],
+        "tags": ["Queues", "Chatbots"],
         "summary": "Get the position of the conversation in its current queue",
         "description": "Get the approximate position of a given conversation in its current queue.",
         "operationId": "getQueuesConversation-positionCsid",
@@ -7765,9 +7410,7 @@
     },
     "/v1/tags": {
       "get": {
-        "tags": [
-          "Tags"
-        ],
+        "tags": ["Tags"],
         "summary": "List tags",
         "description": "List all tags in an organization.",
         "operationId": "getTags",
@@ -7840,9 +7483,7 @@
         }
       },
       "post": {
-        "tags": [
-          "Tags"
-        ],
+        "tags": ["Tags"],
         "summary": "Create tag",
         "description": "Create a tag.",
         "operationId": "postTags",
@@ -7910,9 +7551,7 @@
     },
     "/v1/tags/{tagId}": {
       "get": {
-        "tags": [
-          "Tags"
-        ],
+        "tags": ["Tags"],
         "summary": "Get tag",
         "description": "Get a tag by id.",
         "operationId": "getTagsTagid",
@@ -7989,9 +7628,7 @@
     },
     "/v1/tags/{tagId}/deactivate": {
       "patch": {
-        "tags": [
-          "Tags"
-        ],
+        "tags": ["Tags"],
         "summary": "Deactivate tag",
         "description": "Deactivate a tag.",
         "operationId": "patchTagsTagidDeactivate",
@@ -8055,9 +7692,7 @@
     },
     "/v1/tags/{tagId}/activate": {
       "patch": {
-        "tags": [
-          "Tags"
-        ],
+        "tags": ["Tags"],
         "summary": "Activate tag",
         "description": "Activate a tag.",
         "operationId": "patchTagsTagidActivate",
@@ -8121,9 +7756,7 @@
     },
     "/v1/anonymization/request/{requestId}": {
       "get": {
-        "tags": [
-          "Anonymization"
-        ],
+        "tags": ["Anonymization"],
         "summary": "Get anonymization status",
         "description": "Retrieve an anonymization request submitted earlier (user or conversation).",
         "operationId": "getAnonymizationRequestRequestid",
@@ -8216,9 +7849,7 @@
     },
     "/v1/anonymization": {
       "post": {
-        "tags": [
-          "Anonymization"
-        ],
+        "tags": ["Anonymization"],
         "summary": "Anonymize entity",
         "description": "Anonymize the requested entity (user or conversation). For a conversation to be successfully anonymized, it should be in the status `closed`. Otherwise, it requires `forceAnonymization` parameter set to `true` in the input body. NOTE: This endpoint is deprecated. Prefer using the anonymization endpoints of specific resources instead.",
         "operationId": "postAnonymization",
@@ -8290,9 +7921,7 @@
     },
     "/v1/contact-endpoints/{contactEndpointId}": {
       "get": {
-        "tags": [
-          "Contact Endpoints"
-        ],
+        "tags": ["Contact Endpoints"],
         "summary": "Get contact endpoint",
         "description": "Get contact endpoint by id (email or phone number).",
         "operationId": "getContact-endpointsContactendpointid",
@@ -8356,9 +7985,7 @@
     },
     "/v1/contact-endpoints": {
       "get": {
-        "tags": [
-          "Contact Endpoints"
-        ],
+        "tags": ["Contact Endpoints"],
         "summary": "List contact endpoints",
         "description": "List all available contact endpoints in an organization.",
         "operationId": "getContact-endpoints",
@@ -8385,10 +8012,7 @@
                   "data": [
                     {
                       "number": "+4531434343",
-                      "functionality": [
-                        "VoiceInbound",
-                        "VoiceOutbound"
-                      ],
+                      "functionality": ["VoiceInbound", "VoiceOutbound"],
                       "name": "DK Sms",
                       "_type": "TelephonyEndpoint"
                     },
@@ -8434,9 +8058,7 @@
     },
     "/v1/custom-attributes/{customAttributeId}": {
       "get": {
-        "tags": [
-          "Custom Attributes"
-        ],
+        "tags": ["Custom Attributes"],
         "summary": "Get custom attribute definition by id",
         "description": "Get custom attribute in an organization by id.",
         "operationId": "getCustom-attributesCustomattributeid",
@@ -8543,9 +8165,7 @@
     },
     "/v1/custom-attributes": {
       "get": {
-        "tags": [
-          "Custom Attributes"
-        ],
+        "tags": ["Custom Attributes"],
         "summary": "List custom attributes definitions",
         "description": "List all custom attributes in an organization.",
         "operationId": "getCustom-attributes",
@@ -8702,10 +8322,7 @@
     },
     "/v1/search/conversations": {
       "get": {
-        "tags": [
-          "Search",
-          "Conversations"
-        ],
+        "tags": ["Search", "Conversations"],
         "summary": "Search conversations",
         "description": "Search for conversations containing a particular text.",
         "operationId": "getSearchConversations",
@@ -8826,9 +8443,7 @@
     },
     "/v1/webhooks/{webhookSubscriptionId}": {
       "get": {
-        "tags": [
-          "Webhooks"
-        ],
+        "tags": ["Webhooks"],
         "summary": "Webhook Subscription",
         "description": "Get a Webhook Subscription by ID.",
         "operationId": "getWebhooksWebhooksubscriptionid",
@@ -8875,17 +8490,12 @@
                         "conditions": [
                           {
                             "field": "InitialChannel",
-                            "values": [
-                              "email",
-                              "pstn_phone"
-                            ],
+                            "values": ["email", "pstn_phone"],
                             "_type": "IsOneOf"
                           },
                           {
                             "field": "QueueId",
-                            "values": [
-                              "f0475e4c-64ae-4c8e-8644-4ed10dc8d752"
-                            ],
+                            "values": ["f0475e4c-64ae-4c8e-8644-4ed10dc8d752"],
                             "_type": "IsNotOneOf"
                           }
                         ],
@@ -8939,9 +8549,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Webhooks"
-        ],
+        "tags": ["Webhooks"],
         "summary": "Delete Webhook Subscription",
         "description": "Delete a Webhook Subscription.",
         "operationId": "deleteWebhooksWebhooksubscriptionid",
@@ -9002,9 +8610,7 @@
         }
       },
       "patch": {
-        "tags": [
-          "Webhooks"
-        ],
+        "tags": ["Webhooks"],
         "summary": "Patch Webhook Subscription",
         "description": "Patch a Webhook Subscription.",
         "operationId": "patchWebhooksWebhooksubscriptionid",
@@ -9028,11 +8634,9 @@
               },
               "example": {
                 "name": "New name",
-                "events": [
-                  "ConversationNoteAdded"
-                ],
+                "events": ["ConversationNoteAdded"],
                 "authorization": {
-                  "value": "eyDoiGciOqGYUzI1NiJ4.eyJ0eQJRUapoYXBpIiwib4JxA5lkIjoiNTVmMmE6MmItYjU4NF33MDMxLTk2NTktOTE2M.qPoOZoQYDn4rn-akaLmVFka15JAV7TF6QT8UHOUTIy0",
+                  "value": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
                   "_type": "TokenAuth"
                 },
                 "filters": {
@@ -9041,17 +8645,12 @@
                     "conditions": [
                       {
                         "field": "InitialChannel",
-                        "values": [
-                          "email",
-                          "pstn_phone"
-                        ],
+                        "values": ["email", "pstn_phone"],
                         "_type": "IsOneOf"
                       },
                       {
                         "field": "QueueId",
-                        "values": [
-                          "f0475e4c-64ae-4c8e-8644-4ed10dc8d752"
-                        ],
+                        "values": ["f0475e4c-64ae-4c8e-8644-4ed10dc8d752"],
                         "_type": "IsNotOneOf"
                       }
                     ],
@@ -9075,12 +8674,10 @@
                   "data": {
                     "id": "cb452b81-6748-40ab-af85-6559b371bc5d",
                     "name": "New name",
-                    "subscribedEvents": [
-                      "ConversationNoteAdded"
-                    ],
+                    "subscribedEvents": ["ConversationNoteAdded"],
                     "url": "https://example.webhook/dashboard_integration",
                     "headers": {
-                      "Authorization": "Bearer eyDoiGciOqGYUzI1NiJ4.eyJ0eQJRUapoYXBpIiwib4JxA5lkIjoiNTVmMmE6MmItYjU4NF33MDMxLTk2NTktOTE2M.qPoOZoQYDn4rn-akaLmVFka15JAV7TF6QT8UHOUTIy0"
+                      "Authorization": "Bearer xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
                     },
                     "secretKey": "4g4h988p468g785965b780684bde5546c52gge658d76b4q33fb69c526ea4bdbc",
                     "enabled": true,
@@ -9094,17 +8691,12 @@
                         "conditions": [
                           {
                             "field": "InitialChannel",
-                            "values": [
-                              "email",
-                              "pstn_phone"
-                            ],
+                            "values": ["email", "pstn_phone"],
                             "_type": "IsOneOf"
                           },
                           {
                             "field": "QueueId",
-                            "values": [
-                              "f0475e4c-64ae-4c8e-8644-4ed10dc8d752"
-                            ],
+                            "values": ["f0475e4c-64ae-4c8e-8644-4ed10dc8d752"],
                             "_type": "IsNotOneOf"
                           }
                         ],
@@ -9147,9 +8739,7 @@
     },
     "/v1/webhooks": {
       "get": {
-        "tags": [
-          "Webhooks"
-        ],
+        "tags": ["Webhooks"],
         "summary": "List all Webhook Subscriptions",
         "description": "List of all Webhook Subscriptions in an organization.",
         "operationId": "getWebhooks",
@@ -9186,10 +8776,7 @@
                           "conditions": [
                             {
                               "field": "InitialChannel",
-                              "values": [
-                                "email",
-                                "pstn_phone"
-                              ],
+                              "values": ["email", "pstn_phone"],
                               "_type": "IsOneOf"
                             },
                             {
@@ -9238,9 +8825,7 @@
         }
       },
       "post": {
-        "tags": [
-          "Webhooks"
-        ],
+        "tags": ["Webhooks"],
         "summary": "Create Webhook Subscription",
         "description": "Create a Webhook Subscription.",
         "operationId": "postWebhooks",
@@ -9253,10 +8838,7 @@
               },
               "example": {
                 "name": "Dashboard Integration",
-                "events": [
-                  "ConversationCreated",
-                  "ConversationClosed"
-                ],
+                "events": ["ConversationCreated", "ConversationClosed"],
                 "url": "https://example.webhook/dashboard_integration",
                 "authorization": {
                   "username": "webhook_user",
@@ -9270,17 +8852,12 @@
                     "conditions": [
                       {
                         "field": "InitialChannel",
-                        "values": [
-                          "email",
-                          "pstn_phone"
-                        ],
+                        "values": ["email", "pstn_phone"],
                         "_type": "IsOneOf"
                       },
                       {
                         "field": "QueueId",
-                        "values": [
-                          "f0475e4c-64ae-4c8e-8644-4ed10dc8d752"
-                        ],
+                        "values": ["f0475e4c-64ae-4c8e-8644-4ed10dc8d752"],
                         "_type": "IsNotOneOf"
                       }
                     ],
@@ -9324,17 +8901,12 @@
                         "conditions": [
                           {
                             "field": "InitialChannel",
-                            "values": [
-                              "email",
-                              "pstn_phone"
-                            ],
+                            "values": ["email", "pstn_phone"],
                             "_type": "IsOneOf"
                           },
                           {
                             "field": "QueueId",
-                            "values": [
-                              "f0475e4c-64ae-4c8e-8644-4ed10dc8d752"
-                            ],
+                            "values": ["f0475e4c-64ae-4c8e-8644-4ed10dc8d752"],
                             "_type": "IsNotOneOf"
                           }
                         ],
@@ -9377,9 +8949,7 @@
     },
     "/v1/webhooks/{webhookSubscriptionId}/delivery-status": {
       "get": {
-        "tags": [
-          "Webhooks"
-        ],
+        "tags": ["Webhooks"],
         "summary": "Webhook Subscription Last Delivery Statuses",
         "description": "Get the latest delivery statuses of a Webhook Subscription.",
         "operationId": "getWebhooksWebhooksubscriptionidDelivery-status",
@@ -9469,9 +9039,7 @@
     },
     "/v1/webhooks/{webhookSubscriptionId}/delivery-status/logs/{event}": {
       "get": {
-        "tags": [
-          "Webhooks"
-        ],
+        "tags": ["Webhooks"],
         "summary": "Webhook Subscription Event Logs",
         "description": "Get the latest Webhook Subscription Event logs.",
         "operationId": "getWebhooksWebhooksubscriptionidDelivery-statusLogsEvent",
@@ -9571,9 +9139,7 @@
     },
     "/v1/templates": {
       "get": {
-        "tags": [
-          "Templates"
-        ],
+        "tags": ["Templates"],
         "summary": "List templates",
         "description": "Lists all templates belonging to an organization.",
         "operationId": "getTemplates",
@@ -9604,10 +9170,7 @@
             "required": false,
             "schema": {
               "type": "string",
-              "enum": [
-                "EmailAutoReply",
-                "QuickResponse"
-              ]
+              "enum": ["EmailAutoReply", "QuickResponse"]
             },
             "example": "QuickResponse"
           }
@@ -9697,9 +9260,7 @@
     },
     "/v1/business-hours/schedules": {
       "get": {
-        "tags": [
-          "Business Hours"
-        ],
+        "tags": ["Business Hours"],
         "summary": "List business hours schedules",
         "description": "List business hours schedules in an organization with pagination.",
         "operationId": "getBusiness-hoursSchedules",
@@ -9763,9 +9324,7 @@
     },
     "/v1/business-hours/schedules/{scheduleId}/status": {
       "get": {
-        "tags": [
-          "Business Hours"
-        ],
+        "tags": ["Business Hours"],
         "summary": "Check if a business is open",
         "description": "Check if a business is open either right now or at the specified timestamp.",
         "operationId": "getBusiness-hoursSchedulesScheduleidStatus",
@@ -9837,9 +9396,7 @@
     },
     "/v1/knowledge/collections/{collectionId}": {
       "get": {
-        "tags": [
-          "Knowledge"
-        ],
+        "tags": ["Knowledge"],
         "summary": "Get collection",
         "description": "Get a knowledge collection by id",
         "operationId": "getKnowledgeCollectionsCollectionid",
@@ -9925,9 +9482,7 @@
     },
     "/v1/knowledge/collections/{collectionId}/catalog": {
       "get": {
-        "tags": [
-          "Knowledge"
-        ],
+        "tags": ["Knowledge"],
         "summary": "Get collection catalog",
         "description": "Get collection catalog, including all categories and articles",
         "operationId": "getKnowledgeCollectionsCollectionidCatalog",
@@ -10056,9 +9611,7 @@
     },
     "/v1/knowledge/categories/{categoryId}": {
       "get": {
-        "tags": [
-          "Knowledge"
-        ],
+        "tags": ["Knowledge"],
         "summary": "Get category",
         "description": "Get a knowledge category by id",
         "operationId": "getKnowledgeCategoriesCategoryid",
@@ -10160,9 +9713,7 @@
     },
     "/v1/knowledge/categories/{categoryId}/translations": {
       "get": {
-        "tags": [
-          "Knowledge"
-        ],
+        "tags": ["Knowledge"],
         "summary": "Get category translations",
         "description": "Get the knowledge category translations",
         "operationId": "getKnowledgeCategoriesCategoryidTranslations",
@@ -10242,9 +9793,7 @@
     },
     "/v1/knowledge/articles/{articleId}": {
       "get": {
-        "tags": [
-          "Knowledge"
-        ],
+        "tags": ["Knowledge"],
         "summary": "Get article",
         "description": "Get a knowledge article by id",
         "operationId": "getKnowledgeArticlesArticleid",
@@ -10318,9 +9867,7 @@
                         }
                       }
                     },
-                    "tags": [
-                      "f6020a03-5a7a-4d9e-81e6-f1b76a855a5e"
-                    ],
+                    "tags": ["f6020a03-5a7a-4d9e-81e6-f1b76a855a5e"],
                     "createdAt": "2021-12-01T12:46:36.581Z[GMT]",
                     "updatedAt": "2021-12-01T12:46:36.581Z[GMT]",
                     "indexedAt": "2021-12-01T12:46:36.581Z[GMT]",
@@ -10389,9 +9936,7 @@
     },
     "/v1/knowledge/articles/{articleId}/translations": {
       "get": {
-        "tags": [
-          "Knowledge"
-        ],
+        "tags": ["Knowledge"],
         "summary": "Get article translations",
         "description": "Get a knowledge article translations",
         "operationId": "getKnowledgeArticlesArticleidTranslations",
@@ -10507,9 +10052,7 @@
     },
     "/v1/knowledge/collections": {
       "get": {
-        "tags": [
-          "Knowledge"
-        ],
+        "tags": ["Knowledge"],
         "summary": "List collections",
         "description": "Paginated list knowledge collections",
         "operationId": "getKnowledgeCollections",
@@ -10705,9 +10248,7 @@
       "ActivityLogUser": {
         "title": "ActivityLogUser",
         "type": "object",
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "properties": {
           "id": {
             "type": "string"
@@ -10726,12 +10267,7 @@
       "Agent": {
         "title": "Agent",
         "type": "object",
-        "required": [
-          "id",
-          "createdAt",
-          "displayName",
-          "email"
-        ],
+        "required": ["id", "createdAt", "displayName", "email"],
         "properties": {
           "id": {
             "description": "Unique identifier for the agent",
@@ -10803,9 +10339,7 @@
       "AgentOutput": {
         "title": "AgentOutput",
         "type": "object",
-        "required": [
-          "data"
-        ],
+        "required": ["data"],
         "properties": {
           "data": {
             "$ref": "#/components/schemas/Agent"
@@ -10855,9 +10389,7 @@
       "AggregateMetadata": {
         "title": "AggregateMetadata",
         "type": "object",
-        "required": [
-          "measure"
-        ],
+        "required": ["measure"],
         "properties": {
           "measure": {
             "description": "values: [Min, Max, Sum, Count, Percentage, AgentPresenceDuration, StdDev, Average]",
@@ -10925,9 +10457,7 @@
       "AnonymizeEntityInput": {
         "title": "AnonymizeEntityInput",
         "type": "object",
-        "required": [
-          "entityId"
-        ],
+        "required": ["entityId"],
         "properties": {
           "entityId": {
             "type": "string"
@@ -10947,9 +10477,7 @@
       "AnonymizeEntityOutput": {
         "title": "AnonymizeEntityOutput",
         "type": "object",
-        "required": [
-          "data"
-        ],
+        "required": ["data"],
         "properties": {
           "data": {
             "$ref": "#/components/schemas/AnonymizationRequestStatus"
@@ -11013,12 +10541,7 @@
       "Article": {
         "title": "Article",
         "type": "object",
-        "required": [
-          "id",
-          "createdAt",
-          "updatedAt",
-          "restrictions"
-        ],
+        "required": ["id", "createdAt", "updatedAt", "restrictions"],
         "properties": {
           "id": {
             "type": "string"
@@ -11076,9 +10599,7 @@
       "ArticleCatalogItem": {
         "title": "ArticleCatalogItem",
         "type": "object",
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "properties": {
           "id": {
             "type": "string"
@@ -11091,10 +10612,7 @@
       "ArticleContent": {
         "title": "ArticleContent",
         "type": "object",
-        "required": [
-          "html",
-          "plaintext"
-        ],
+        "required": ["html", "plaintext"],
         "properties": {
           "html": {
             "type": "string"
@@ -11135,9 +10653,7 @@
       "ArticleTranslations": {
         "title": "ArticleTranslations",
         "type": "object",
-        "required": [
-          "translations"
-        ],
+        "required": ["translations"],
         "properties": {
           "translations": {
             "$ref": "#/components/schemas/TranslationList"
@@ -11147,10 +10663,7 @@
       "Assignment": {
         "title": "Assignment",
         "type": "object",
-        "required": [
-          "agentId",
-          "assignedAt"
-        ],
+        "required": ["agentId", "assignedAt"],
         "properties": {
           "agentId": {
             "type": "string",
@@ -11227,9 +10740,7 @@
       "BadRequest": {
         "title": "BadRequest",
         "type": "object",
-        "required": [
-          "message"
-        ],
+        "required": ["message"],
         "properties": {
           "message": {
             "type": "string"
@@ -11239,10 +10750,7 @@
       "BasicAuth": {
         "title": "BasicAuth",
         "type": "object",
-        "required": [
-          "username",
-          "password"
-        ],
+        "required": ["username", "password"],
         "properties": {
           "username": {
             "type": "string"
@@ -11255,9 +10763,7 @@
       "BooleanField": {
         "title": "BooleanField",
         "type": "object",
-        "required": [
-          "value"
-        ],
+        "required": ["value"],
         "properties": {
           "value": {
             "type": "boolean"
@@ -11267,9 +10773,7 @@
       "BrowserInfo": {
         "title": "BrowserInfo",
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "properties": {
           "name": {
             "type": "string"
@@ -11288,9 +10792,7 @@
       "BulkActionFailure_BulkError_Agent": {
         "title": "BulkActionFailure_BulkError_Agent",
         "type": "object",
-        "required": [
-          "error"
-        ],
+        "required": ["error"],
         "properties": {
           "error": {
             "$ref": "#/components/schemas/BulkError"
@@ -11300,9 +10802,7 @@
       "BulkActionFailure_BulkError_EndUser": {
         "title": "BulkActionFailure_BulkError_EndUser",
         "type": "object",
-        "required": [
-          "error"
-        ],
+        "required": ["error"],
         "properties": {
           "error": {
             "$ref": "#/components/schemas/BulkError"
@@ -11312,9 +10812,7 @@
       "BulkActionFailure_BulkError_UUID": {
         "title": "BulkActionFailure_BulkError_UUID",
         "type": "object",
-        "required": [
-          "error"
-        ],
+        "required": ["error"],
         "properties": {
           "error": {
             "$ref": "#/components/schemas/BulkError"
@@ -11324,9 +10822,7 @@
       "BulkActionFailure_ErrorResponse_InternalNoteData": {
         "title": "BulkActionFailure_ErrorResponse_InternalNoteData",
         "type": "object",
-        "required": [
-          "error"
-        ],
+        "required": ["error"],
         "properties": {
           "error": {
             "$ref": "#/components/schemas/ErrorResponse"
@@ -11380,9 +10876,7 @@
       "BulkActionSuccess_BulkError_Agent": {
         "title": "BulkActionSuccess_BulkError_Agent",
         "type": "object",
-        "required": [
-          "data"
-        ],
+        "required": ["data"],
         "properties": {
           "data": {
             "$ref": "#/components/schemas/Agent"
@@ -11392,9 +10886,7 @@
       "BulkActionSuccess_BulkError_EndUser": {
         "title": "BulkActionSuccess_BulkError_EndUser",
         "type": "object",
-        "required": [
-          "data"
-        ],
+        "required": ["data"],
         "properties": {
           "data": {
             "$ref": "#/components/schemas/EndUser"
@@ -11404,9 +10896,7 @@
       "BulkActionSuccess_BulkError_UUID": {
         "title": "BulkActionSuccess_BulkError_UUID",
         "type": "object",
-        "required": [
-          "data"
-        ],
+        "required": ["data"],
         "properties": {
           "data": {
             "type": "string",
@@ -11417,9 +10907,7 @@
       "BulkActionSuccess_ErrorResponse_InternalNoteData": {
         "title": "BulkActionSuccess_ErrorResponse_InternalNoteData",
         "type": "object",
-        "required": [
-          "data"
-        ],
+        "required": ["data"],
         "properties": {
           "data": {
             "$ref": "#/components/schemas/InternalNoteData"
@@ -11476,9 +10964,7 @@
       "BulkPatchAgentInput": {
         "title": "BulkPatchAgentInput",
         "type": "object",
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "properties": {
           "id": {
             "description": "Unique identifier for the agent",
@@ -11532,9 +11018,7 @@
       "BulkPatchEndUserInput": {
         "title": "BulkPatchEndUserInput",
         "type": "object",
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "properties": {
           "id": {
             "type": "string",
@@ -11648,10 +11132,7 @@
       "BulkUpdateAgentInput": {
         "title": "BulkUpdateAgentInput",
         "type": "object",
-        "required": [
-          "id",
-          "displayName"
-        ],
+        "required": ["id", "displayName"],
         "properties": {
           "id": {
             "description": "Unique identifier for the agent",
@@ -11717,10 +11198,7 @@
       "BulkUpdateEndUserInput": {
         "title": "BulkUpdateEndUserInput",
         "type": "object",
-        "required": [
-          "id",
-          "displayName"
-        ],
+        "required": ["id", "displayName"],
         "properties": {
           "id": {
             "type": "string",
@@ -11796,10 +11274,7 @@
       "BusinessHoursSchedule": {
         "title": "BusinessHoursSchedule",
         "type": "object",
-        "required": [
-          "name",
-          "id"
-        ],
+        "required": ["name", "id"],
         "properties": {
           "name": {
             "type": "string"
@@ -11812,9 +11287,7 @@
       "CallRecordingAttributes": {
         "title": "CallRecordingAttributes",
         "type": "object",
-        "required": [
-          "recording"
-        ],
+        "required": ["recording"],
         "properties": {
           "duration": {
             "type": "integer",
@@ -11855,11 +11328,7 @@
       "Category": {
         "title": "Category",
         "type": "object",
-        "required": [
-          "id",
-          "isLocked",
-          "restrictions"
-        ],
+        "required": ["id", "isLocked", "restrictions"],
         "properties": {
           "id": {
             "type": "string"
@@ -11890,9 +11359,7 @@
       "CategoryCatalogItem": {
         "title": "CategoryCatalogItem",
         "type": "object",
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "properties": {
           "id": {
             "type": "string"
@@ -11956,11 +11423,7 @@
       "Chat": {
         "title": "Chat",
         "type": "object",
-        "required": [
-          "requesterId",
-          "widgetId",
-          "message"
-        ],
+        "required": ["requesterId", "widgetId", "message"],
         "properties": {
           "requesterId": {
             "type": "string",
@@ -11984,9 +11447,7 @@
       "ChatAttributes": {
         "title": "ChatAttributes",
         "type": "object",
-        "required": [
-          "isAutomated"
-        ],
+        "required": ["isAutomated"],
         "properties": {
           "content": {
             "$ref": "#/components/schemas/Content"
@@ -12009,12 +11470,7 @@
       "ChatConversation": {
         "title": "ChatConversation",
         "type": "object",
-        "required": [
-          "id",
-          "requesterId",
-          "channel",
-          "createdAt"
-        ],
+        "required": ["id", "requesterId", "channel", "createdAt"],
         "properties": {
           "id": {
             "type": "integer",
@@ -12070,10 +11526,7 @@
       "Checksum": {
         "title": "Checksum",
         "type": "object",
-        "required": [
-          "algorithm",
-          "hex"
-        ],
+        "required": ["algorithm", "hex"],
         "properties": {
           "algorithm": {
             "type": "string"
@@ -12086,9 +11539,7 @@
       "ClaimConversationInput": {
         "title": "ClaimConversationInput",
         "type": "object",
-        "required": [
-          "agentId"
-        ],
+        "required": ["agentId"],
         "properties": {
           "agentId": {
             "description": "The id of the agent who is claiming the conversation",
@@ -12115,10 +11566,7 @@
         "title": "Closing",
         "description": "Triggers the closing of the conversation",
         "type": "object",
-        "required": [
-          "closedAt",
-          "closedBy"
-        ],
+        "required": ["closedAt", "closedBy"],
         "properties": {
           "closedAt": {
             "type": "string",
@@ -12133,12 +11581,7 @@
       "Collection": {
         "title": "Collection",
         "type": "object",
-        "required": [
-          "id",
-          "title",
-          "internalKbEnabled",
-          "restrictions"
-        ],
+        "required": ["id", "title", "internalKbEnabled", "restrictions"],
         "properties": {
           "id": {
             "type": "string"
@@ -12178,10 +11621,7 @@
       "CombinedFilters": {
         "title": "CombinedFilters",
         "type": "object",
-        "required": [
-          "strategy",
-          "conditions"
-        ],
+        "required": ["strategy", "conditions"],
         "properties": {
           "strategy": {
             "description": "values: [All, Any]",
@@ -12210,9 +11650,7 @@
       "Conflict": {
         "title": "Conflict",
         "type": "object",
-        "required": [
-          "message"
-        ],
+        "required": ["message"],
         "properties": {
           "message": {
             "type": "string"
@@ -12233,12 +11671,7 @@
       "ContactForm": {
         "title": "ContactForm",
         "type": "object",
-        "required": [
-          "requesterId",
-          "emailIntegrationId",
-          "subject",
-          "message"
-        ],
+        "required": ["requesterId", "emailIntegrationId", "subject", "message"],
         "properties": {
           "requesterId": {
             "type": "string",
@@ -12261,9 +11694,7 @@
       "ContactFormAttributes": {
         "title": "ContactFormAttributes",
         "type": "object",
-        "required": [
-          "isAutoReply"
-        ],
+        "required": ["isAutoReply"],
         "properties": {
           "emailContent": {
             "$ref": "#/components/schemas/EmailContent"
@@ -12325,13 +11756,7 @@
       "ContactFormConversation": {
         "title": "ContactFormConversation",
         "type": "object",
-        "required": [
-          "id",
-          "requesterId",
-          "channel",
-          "createdAt",
-          "fromEmail"
-        ],
+        "required": ["id", "requesterId", "channel", "createdAt", "fromEmail"],
         "properties": {
           "id": {
             "type": "integer",
@@ -12453,9 +11878,7 @@
       "ConversationAssignedAttribute": {
         "title": "ConversationAssignedAttribute",
         "type": "object",
-        "required": [
-          "agentId"
-        ],
+        "required": ["agentId"],
         "properties": {
           "agentId": {
             "type": "string"
@@ -12468,9 +11891,7 @@
       "ConversationAutoReplySentAttribute": {
         "title": "ConversationAutoReplySentAttribute",
         "type": "object",
-        "required": [
-          "templateName"
-        ],
+        "required": ["templateName"],
         "properties": {
           "templateName": {
             "type": "string"
@@ -12525,10 +11946,7 @@
       "ConversationEndUserReplacedAttribute": {
         "title": "ConversationEndUserReplacedAttribute",
         "type": "object",
-        "required": [
-          "oldUser",
-          "newUser"
-        ],
+        "required": ["oldUser", "newUser"],
         "properties": {
           "oldUser": {
             "$ref": "#/components/schemas/ActivityLogUser"
@@ -12541,12 +11959,7 @@
       "ConversationFlow": {
         "title": "ConversationFlow",
         "type": "object",
-        "required": [
-          "id",
-          "name",
-          "channel",
-          "contactEndpointId"
-        ],
+        "required": ["id", "name", "channel", "contactEndpointId"],
         "properties": {
           "id": {
             "type": "string",
@@ -12571,9 +11984,7 @@
       "ConversationLanguageUpdatedAttribute": {
         "title": "ConversationLanguageUpdatedAttribute",
         "type": "object",
-        "required": [
-          "language"
-        ],
+        "required": ["language"],
         "properties": {
           "language": {
             "type": "string"
@@ -12708,10 +12119,7 @@
       "ConversationRatingOfferedAttribute": {
         "title": "ConversationRatingOfferedAttribute",
         "type": "object",
-        "required": [
-          "agent",
-          "user"
-        ],
+        "required": ["agent", "user"],
         "properties": {
           "agent": {
             "$ref": "#/components/schemas/ActivityLogUser"
@@ -12728,9 +12136,7 @@
       "ConversationRatingScheduledAttribute": {
         "title": "ConversationRatingScheduledAttribute",
         "type": "object",
-        "required": [
-          "ratingScheduledTime"
-        ],
+        "required": ["ratingScheduledTime"],
         "properties": {
           "ratingScheduledTime": {
             "type": "string"
@@ -12780,9 +12186,7 @@
       "ConversationResponse": {
         "title": "ConversationResponse",
         "type": "object",
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "properties": {
           "id": {
             "type": "integer",
@@ -12793,10 +12197,7 @@
       "ConversationSearchHit": {
         "title": "ConversationSearchHit",
         "type": "object",
-        "required": [
-          "id",
-          "highlights"
-        ],
+        "required": ["id", "highlights"],
         "properties": {
           "id": {
             "description": "Identifier of a Conversation where a match was found",
@@ -12818,10 +12219,7 @@
       "ConversationSearchInnerHit": {
         "title": "ConversationSearchInnerHit",
         "type": "object",
-        "required": [
-          "id",
-          "highlight"
-        ],
+        "required": ["id", "highlight"],
         "properties": {
           "id": {
             "description": "Identifier of a sub-entity (such as a Message) where a match was found",
@@ -12848,11 +12246,7 @@
       "ConversationTransferredAttribute": {
         "title": "ConversationTransferredAttribute",
         "type": "object",
-        "required": [
-          "transferType",
-          "destinationType",
-          "destinationId"
-        ],
+        "required": ["transferType", "destinationType", "destinationId"],
         "properties": {
           "transferType": {
             "type": "string"
@@ -12878,9 +12272,7 @@
       "ConversationUnassignedAttribute": {
         "title": "ConversationUnassignedAttribute",
         "type": "object",
-        "required": [
-          "agent"
-        ],
+        "required": ["agent"],
         "properties": {
           "agent": {
             "$ref": "#/components/schemas/ActivityLogUser"
@@ -12890,10 +12282,7 @@
       "CreateAgentInput": {
         "title": "CreateAgentInput",
         "type": "object",
-        "required": [
-          "displayName",
-          "email"
-        ],
+        "required": ["displayName", "email"],
         "properties": {
           "displayName": {
             "description": "The agent's display name",
@@ -12991,9 +12380,7 @@
       "CreateConversationOutput": {
         "title": "CreateConversationOutput",
         "type": "object",
-        "required": [
-          "data"
-        ],
+        "required": ["data"],
         "properties": {
           "data": {
             "$ref": "#/components/schemas/ConversationResponse"
@@ -13060,9 +12447,7 @@
       "CreateEndUserOutput": {
         "title": "CreateEndUserOutput",
         "type": "object",
-        "required": [
-          "data"
-        ],
+        "required": ["data"],
         "properties": {
           "data": {
             "$ref": "#/components/schemas/EndUser"
@@ -13096,9 +12481,7 @@
       "CreateInternalNoteInput": {
         "title": "CreateInternalNoteInput",
         "type": "object",
-        "required": [
-          "message"
-        ],
+        "required": ["message"],
         "properties": {
           "message": {
             "type": "string"
@@ -13128,9 +12511,7 @@
       "CreateMessageOutput": {
         "title": "CreateMessageOutput",
         "type": "object",
-        "required": [
-          "data"
-        ],
+        "required": ["data"],
         "properties": {
           "data": {
             "$ref": "#/components/schemas/CreateMessageOutputData"
@@ -13140,11 +12521,7 @@
       "CreateMessageOutputData": {
         "title": "CreateMessageOutputData",
         "type": "object",
-        "required": [
-          "content",
-          "direction",
-          "authorId"
-        ],
+        "required": ["content", "direction", "authorId"],
         "properties": {
           "content": {
             "$ref": "#/components/schemas/Content"
@@ -13172,9 +12549,7 @@
       "CreateNoteOutput": {
         "title": "CreateNoteOutput",
         "type": "object",
-        "required": [
-          "data"
-        ],
+        "required": ["data"],
         "properties": {
           "data": {
             "$ref": "#/components/schemas/InternalNoteData"
@@ -13250,9 +12625,7 @@
       "CreateQueueInput": {
         "title": "CreateQueueInput",
         "type": "object",
-        "required": [
-          "request"
-        ],
+        "required": ["request"],
         "properties": {
           "request": {
             "$ref": "#/components/schemas/CreateOrUpdateQueueRequest"
@@ -13262,9 +12635,7 @@
       "CreateQueueOutput": {
         "title": "CreateQueueOutput",
         "type": "object",
-        "required": [
-          "data"
-        ],
+        "required": ["data"],
         "properties": {
           "data": {
             "$ref": "#/components/schemas/Queue1"
@@ -13274,11 +12645,7 @@
       "CreateRatingOfferInput": {
         "title": "CreateRatingOfferInput",
         "type": "object",
-        "required": [
-          "userId",
-          "agentId",
-          "ratingType"
-        ],
+        "required": ["userId", "agentId", "ratingType"],
         "properties": {
           "userId": {
             "type": "string"
@@ -13299,9 +12666,7 @@
       "CreateRatingOfferOutput": {
         "title": "CreateRatingOfferOutput",
         "type": "object",
-        "required": [
-          "data"
-        ],
+        "required": ["data"],
         "properties": {
           "data": {
             "$ref": "#/components/schemas/RatingOffer"
@@ -13311,10 +12676,7 @@
       "CreateRatingResultInput": {
         "title": "CreateRatingResultInput",
         "type": "object",
-        "required": [
-          "userId",
-          "ratingResult"
-        ],
+        "required": ["userId", "ratingResult"],
         "properties": {
           "userId": {
             "type": "string"
@@ -13334,9 +12696,7 @@
       "CreateRatingResultOutput": {
         "title": "CreateRatingResultOutput",
         "type": "object",
-        "required": [
-          "data"
-        ],
+        "required": ["data"],
         "properties": {
           "data": {
             "$ref": "#/components/schemas/RatingResult"
@@ -13346,9 +12706,7 @@
       "CreateTagInput": {
         "title": "CreateTagInput",
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "properties": {
           "name": {
             "type": "string"
@@ -13361,9 +12719,7 @@
       "CreateTagOutput": {
         "title": "CreateTagOutput",
         "type": "object",
-        "required": [
-          "data"
-        ],
+        "required": ["data"],
         "properties": {
           "data": {
             "$ref": "#/components/schemas/Tag"
@@ -13373,9 +12729,7 @@
       "CreateTeamInput": {
         "title": "CreateTeamInput",
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "properties": {
           "name": {
             "type": "string"
@@ -13385,9 +12739,7 @@
       "CreateTeamOutput": {
         "title": "CreateTeamOutput",
         "type": "object",
-        "required": [
-          "data"
-        ],
+        "required": ["data"],
         "properties": {
           "data": {
             "$ref": "#/components/schemas/Team1"
@@ -13397,11 +12749,7 @@
       "CreateWebhookSubscriptionInput": {
         "title": "CreateWebhookSubscriptionInput",
         "type": "object",
-        "required": [
-          "name",
-          "url",
-          "authorization"
-        ],
+        "required": ["name", "url", "authorization"],
         "properties": {
           "name": {
             "description": "The Webhook Subscription name",
@@ -13436,9 +12784,7 @@
       "CreateWebhookSubscriptionOutput": {
         "title": "CreateWebhookSubscriptionOutput",
         "type": "object",
-        "required": [
-          "data"
-        ],
+        "required": ["data"],
         "properties": {
           "data": {
             "$ref": "#/components/schemas/WebhookSubscription"
@@ -13448,9 +12794,7 @@
       "Csat": {
         "title": "Csat",
         "type": "object",
-        "required": [
-          "value"
-        ],
+        "required": ["value"],
         "properties": {
           "value": {
             "description": "Numeric value between 1 and 5.",
@@ -13462,12 +12806,7 @@
       "CustomAttribute": {
         "title": "CustomAttribute",
         "type": "object",
-        "required": [
-          "id",
-          "name",
-          "identifier",
-          "value"
-        ],
+        "required": ["id", "name", "identifier", "value"],
         "properties": {
           "id": {
             "type": "string",
@@ -13737,10 +13076,7 @@
       "DoubleAggregateValue": {
         "title": "DoubleAggregateValue",
         "type": "object",
-        "required": [
-          "value",
-          "measure"
-        ],
+        "required": ["value", "measure"],
         "properties": {
           "value": {
             "type": "number",
@@ -13755,9 +13091,7 @@
       "DoubleField": {
         "title": "DoubleField",
         "type": "object",
-        "required": [
-          "value"
-        ],
+        "required": ["value"],
         "properties": {
           "value": {
             "type": "number",
@@ -13768,12 +13102,7 @@
       "Email": {
         "title": "Email",
         "type": "object",
-        "required": [
-          "requesterId",
-          "emailIntegrationId",
-          "subject",
-          "message"
-        ],
+        "required": ["requesterId", "emailIntegrationId", "subject", "message"],
         "properties": {
           "requesterId": {
             "type": "string",
@@ -13796,10 +13125,7 @@
       "EmailAttributes": {
         "title": "EmailAttributes",
         "type": "object",
-        "required": [
-          "from",
-          "isAutoReply"
-        ],
+        "required": ["from", "isAutoReply"],
         "properties": {
           "emailContent": {
             "$ref": "#/components/schemas/EmailContent"
@@ -13855,13 +13181,7 @@
       "EmailAutoReply": {
         "title": "EmailAutoReply",
         "type": "object",
-        "required": [
-          "id",
-          "name",
-          "content",
-          "createdBy",
-          "createdAt"
-        ],
+        "required": ["id", "name", "content", "createdBy", "createdAt"],
         "properties": {
           "id": {
             "type": "string"
@@ -13899,9 +13219,7 @@
       "EmailContact": {
         "title": "EmailContact",
         "type": "object",
-        "required": [
-          "email"
-        ],
+        "required": ["email"],
         "properties": {
           "email": {
             "type": "string"
@@ -13998,9 +13316,7 @@
       "EmailEndpoint": {
         "title": "EmailEndpoint",
         "type": "object",
-        "required": [
-          "address"
-        ],
+        "required": ["address"],
         "properties": {
           "address": {
             "type": "string"
@@ -14016,9 +13332,7 @@
       "EmailForward": {
         "title": "EmailForward",
         "type": "object",
-        "required": [
-          "parentId"
-        ],
+        "required": ["parentId"],
         "properties": {
           "parentId": {
             "type": "integer",
@@ -14029,10 +13343,7 @@
       "EmptyPatchSet": {
         "title": "EmptyPatchSet",
         "type": "object",
-        "required": [
-          "id",
-          "message"
-        ],
+        "required": ["id", "message"],
         "properties": {
           "id": {
             "type": "string"
@@ -14045,10 +13356,7 @@
       "EndUser": {
         "title": "EndUser",
         "type": "object",
-        "required": [
-          "id",
-          "createdAt"
-        ],
+        "required": ["id", "createdAt"],
         "properties": {
           "id": {
             "description": "Unique identifier for the contact",
@@ -14123,9 +13431,7 @@
       "ErrorResponse": {
         "title": "ErrorResponse",
         "type": "object",
-        "required": [
-          "message"
-        ],
+        "required": ["message"],
         "properties": {
           "message": {
             "type": "string"
@@ -14135,10 +13441,7 @@
       "EventDeliveryLog": {
         "title": "EventDeliveryLog",
         "type": "object",
-        "required": [
-          "deliveryDetail",
-          "payload"
-        ],
+        "required": ["deliveryDetail", "payload"],
         "properties": {
           "deliveryDetail": {
             "$ref": "#/components/schemas/DeliveryDetail"
@@ -14151,10 +13454,7 @@
       "EventDeliveryStatus": {
         "title": "EventDeliveryStatus",
         "type": "object",
-        "required": [
-          "event",
-          "deliveryStatus"
-        ],
+        "required": ["event", "deliveryStatus"],
         "properties": {
           "event": {
             "description": "values: [ConversationPending, AgentUnbannedEnduser, ConversationMessageAdded, ConversationTagAdded, AgentBannedIp, ConversationAssigned, ConversationPendingExpired, ConversationTransferred, ConversationEnqueued, ConversationCreated, ConversationUnassigned, ConversationOpen, ConversationAbandoned, ConversationClosed, ConversationNoteAdded, AgentBannedEnduser, ConversationEndUserReplaced, AgentUnbannedIp, ConversationTagRemoved, ConversationRated]",
@@ -14187,12 +13487,7 @@
       "FacebookMessengerConversation": {
         "title": "FacebookMessengerConversation",
         "type": "object",
-        "required": [
-          "id",
-          "requesterId",
-          "channel",
-          "createdAt"
-        ],
+        "required": ["id", "requesterId", "channel", "createdAt"],
         "properties": {
           "id": {
             "type": "integer",
@@ -14242,9 +13537,7 @@
       "Failure": {
         "title": "Failure",
         "type": "object",
-        "required": [
-          "error"
-        ],
+        "required": ["error"],
         "properties": {
           "error": {
             "$ref": "#/components/schemas/ChannelAvailabilityError"
@@ -14254,9 +13547,7 @@
       "Field": {
         "title": "Field",
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "properties": {
           "name": {
             "type": "string"
@@ -14269,11 +13560,7 @@
       "FieldMetadata": {
         "title": "FieldMetadata",
         "type": "object",
-        "required": [
-          "field",
-          "description",
-          "nullable"
-        ],
+        "required": ["field", "description", "nullable"],
         "properties": {
           "field": {
             "type": "string"
@@ -14321,9 +13608,7 @@
       "File": {
         "title": "File",
         "type": "object",
-        "required": [
-          "url"
-        ],
+        "required": ["url"],
         "properties": {
           "url": {
             "description": "url",
@@ -14337,13 +13622,7 @@
       "FileMeta": {
         "title": "FileMeta",
         "type": "object",
-        "required": [
-          "url",
-          "name",
-          "mediaType",
-          "bytesLength",
-          "checksum"
-        ],
+        "required": ["url", "name", "mediaType", "bytesLength", "checksum"],
         "properties": {
           "url": {
             "type": "string"
@@ -14366,9 +13645,7 @@
       "Filter": {
         "title": "Filter",
         "type": "object",
-        "required": [
-          "attribute"
-        ],
+        "required": ["attribute"],
         "properties": {
           "attribute": {
             "type": "string"
@@ -14384,9 +13661,7 @@
       "FilterMetadata": {
         "title": "FilterMetadata",
         "type": "object",
-        "required": [
-          "filterAttribute"
-        ],
+        "required": ["filterAttribute"],
         "properties": {
           "filterAttribute": {
             "type": "string"
@@ -14399,9 +13674,7 @@
       "FilterValue": {
         "title": "FilterValue",
         "type": "object",
-        "required": [
-          "value"
-        ],
+        "required": ["value"],
         "properties": {
           "value": {
             "type": "string"
@@ -14422,9 +13695,7 @@
       "FollowUp": {
         "title": "FollowUp",
         "type": "object",
-        "required": [
-          "parentId"
-        ],
+        "required": ["parentId"],
         "properties": {
           "parentId": {
             "type": "integer",
@@ -14439,9 +13710,7 @@
       "FollowupConversationInput": {
         "title": "FollowupConversationInput",
         "type": "object",
-        "required": [
-          "timestamp"
-        ],
+        "required": ["timestamp"],
         "properties": {
           "timestamp": {
             "description": "A timestamp for when the followup should expire",
@@ -14480,9 +13749,7 @@
       "FormSubmission": {
         "title": "FormSubmission",
         "type": "object",
-        "required": [
-          "values"
-        ],
+        "required": ["values"],
         "properties": {
           "values": {
             "$ref": "#/components/schemas/Map_FormAttributeValue"
@@ -14511,10 +13778,7 @@
       "GenericChannel": {
         "title": "GenericChannel",
         "type": "object",
-        "required": [
-          "genericChannelName",
-          "availability"
-        ],
+        "required": ["genericChannelName", "availability"],
         "properties": {
           "genericChannelName": {
             "type": "string"
@@ -14533,12 +13797,7 @@
       "GenericConversation": {
         "title": "GenericConversation",
         "type": "object",
-        "required": [
-          "id",
-          "requesterId",
-          "channel",
-          "createdAt"
-        ],
+        "required": ["id", "requesterId", "channel", "createdAt"],
         "properties": {
           "id": {
             "type": "integer",
@@ -14656,9 +13915,7 @@
       "GetBusinessOpenStatusOutput": {
         "title": "GetBusinessOpenStatusOutput",
         "type": "object",
-        "required": [
-          "data"
-        ],
+        "required": ["data"],
         "properties": {
           "data": {
             "$ref": "#/components/schemas/GetBusinessOpenStatusResult"
@@ -14668,10 +13925,7 @@
       "GetBusinessOpenStatusResult": {
         "title": "GetBusinessOpenStatusResult",
         "type": "object",
-        "required": [
-          "isOpen",
-          "timestamp"
-        ],
+        "required": ["isOpen", "timestamp"],
         "properties": {
           "isOpen": {
             "type": "boolean"
@@ -14685,9 +13939,7 @@
       "GetContactPointByIdOutput": {
         "title": "GetContactPointByIdOutput",
         "type": "object",
-        "required": [
-          "data"
-        ],
+        "required": ["data"],
         "properties": {
           "data": {
             "$ref": "#/components/schemas/ContactEndpoint"
@@ -14697,9 +13949,7 @@
       "GetConversationOutput": {
         "title": "GetConversationOutput",
         "type": "object",
-        "required": [
-          "data"
-        ],
+        "required": ["data"],
         "properties": {
           "data": {
             "$ref": "#/components/schemas/Conversation"
@@ -14709,9 +13959,7 @@
       "GetCustomAttributesDefinitionsOutput": {
         "title": "GetCustomAttributesDefinitionsOutput",
         "type": "object",
-        "required": [
-          "data"
-        ],
+        "required": ["data"],
         "properties": {
           "data": {
             "$ref": "#/components/schemas/CustomAttributeDefinition"
@@ -14721,9 +13969,7 @@
       "GetEndUserOutput": {
         "title": "GetEndUserOutput",
         "type": "object",
-        "required": [
-          "data"
-        ],
+        "required": ["data"],
         "properties": {
           "data": {
             "$ref": "#/components/schemas/EndUser"
@@ -14748,9 +13994,7 @@
       "GetKnowledgeArticleOutput": {
         "title": "GetKnowledgeArticleOutput",
         "type": "object",
-        "required": [
-          "data"
-        ],
+        "required": ["data"],
         "properties": {
           "data": {
             "$ref": "#/components/schemas/Article"
@@ -14760,9 +14004,7 @@
       "GetKnowledgeArticleTranslationsOutput": {
         "title": "GetKnowledgeArticleTranslationsOutput",
         "type": "object",
-        "required": [
-          "data"
-        ],
+        "required": ["data"],
         "properties": {
           "data": {
             "$ref": "#/components/schemas/ArticleTranslations"
@@ -14772,9 +14014,7 @@
       "GetKnowledgeCategoryOutput": {
         "title": "GetKnowledgeCategoryOutput",
         "type": "object",
-        "required": [
-          "data"
-        ],
+        "required": ["data"],
         "properties": {
           "data": {
             "$ref": "#/components/schemas/Category"
@@ -14784,9 +14024,7 @@
       "GetKnowledgeCategoryTranslationsOutput": {
         "title": "GetKnowledgeCategoryTranslationsOutput",
         "type": "object",
-        "required": [
-          "data"
-        ],
+        "required": ["data"],
         "properties": {
           "data": {
             "$ref": "#/components/schemas/CategoryTranslations"
@@ -14796,9 +14034,7 @@
       "GetKnowledgeCollectionCatalogOutput": {
         "title": "GetKnowledgeCollectionCatalogOutput",
         "type": "object",
-        "required": [
-          "data"
-        ],
+        "required": ["data"],
         "properties": {
           "data": {
             "$ref": "#/components/schemas/CollectionCatalogItem"
@@ -14808,9 +14044,7 @@
       "GetKnowledgeCollectionOutput": {
         "title": "GetKnowledgeCollectionOutput",
         "type": "object",
-        "required": [
-          "data"
-        ],
+        "required": ["data"],
         "properties": {
           "data": {
             "$ref": "#/components/schemas/Collection"
@@ -14831,10 +14065,7 @@
       "GetMetricDataInputCsidFilter": {
         "title": "GetMetricDataInputCsidFilter",
         "type": "object",
-        "required": [
-          "id",
-          "timezone"
-        ],
+        "required": ["id", "timezone"],
         "properties": {
           "id": {
             "type": "string"
@@ -14868,11 +14099,7 @@
       "GetMetricDataInputPeriodFilter": {
         "title": "GetMetricDataInputPeriodFilter",
         "type": "object",
-        "required": [
-          "id",
-          "periodFilter",
-          "timezone"
-        ],
+        "required": ["id", "periodFilter", "timezone"],
         "properties": {
           "id": {
             "type": "string"
@@ -14901,9 +14128,7 @@
       "GetMetricDataOutput": {
         "title": "GetMetricDataOutput",
         "type": "object",
-        "required": [
-          "data"
-        ],
+        "required": ["data"],
         "properties": {
           "data": {
             "$ref": "#/components/schemas/MetricData"
@@ -14913,9 +14138,7 @@
       "GetMetricOutput": {
         "title": "GetMetricOutput",
         "type": "object",
-        "required": [
-          "data"
-        ],
+        "required": ["data"],
         "properties": {
           "data": {
             "$ref": "#/components/schemas/MetricMetadata"
@@ -14925,9 +14148,7 @@
       "GetMetricRecordOutput": {
         "title": "GetMetricRecordOutput",
         "type": "object",
-        "required": [
-          "data"
-        ],
+        "required": ["data"],
         "properties": {
           "data": {
             "$ref": "#/components/schemas/MetricRecordMetadata"
@@ -14948,10 +14169,7 @@
       "GetMetricRecordsDataInputCsidFilter": {
         "title": "GetMetricRecordsDataInputCsidFilter",
         "type": "object",
-        "required": [
-          "id",
-          "timezone"
-        ],
+        "required": ["id", "timezone"],
         "properties": {
           "id": {
             "type": "string"
@@ -14978,11 +14196,7 @@
       "GetMetricRecordsDataInputPeriodFilter": {
         "title": "GetMetricRecordsDataInputPeriodFilter",
         "type": "object",
-        "required": [
-          "id",
-          "periodFilter",
-          "timezone"
-        ],
+        "required": ["id", "periodFilter", "timezone"],
         "properties": {
           "id": {
             "type": "string"
@@ -15049,9 +14263,7 @@
       "GetQueueByIdOutput": {
         "title": "GetQueueByIdOutput",
         "type": "object",
-        "required": [
-          "data"
-        ],
+        "required": ["data"],
         "properties": {
           "data": {
             "$ref": "#/components/schemas/Queue1"
@@ -15061,9 +14273,7 @@
       "GetQueuedConversationPositionOutput": {
         "title": "GetQueuedConversationPositionOutput",
         "type": "object",
-        "required": [
-          "data"
-        ],
+        "required": ["data"],
         "properties": {
           "data": {
             "$ref": "#/components/schemas/QueuedConversation"
@@ -15073,9 +14283,7 @@
       "GetTagOutput": {
         "title": "GetTagOutput",
         "type": "object",
-        "required": [
-          "data"
-        ],
+        "required": ["data"],
         "properties": {
           "data": {
             "$ref": "#/components/schemas/Tag"
@@ -15109,9 +14317,7 @@
       "GetWebhookSubscriptionOutput": {
         "title": "GetWebhookSubscriptionOutput",
         "type": "object",
-        "required": [
-          "data"
-        ],
+        "required": ["data"],
         "properties": {
           "data": {
             "$ref": "#/components/schemas/WebhookSubscription"
@@ -15121,11 +14327,7 @@
       "HelpCenterLink": {
         "title": "HelpCenterLink",
         "type": "object",
-        "required": [
-          "id",
-          "name",
-          "url"
-        ],
+        "required": ["id", "name", "url"],
         "properties": {
           "id": {
             "type": "string"
@@ -15141,9 +14343,7 @@
       "Html": {
         "title": "Html",
         "type": "object",
-        "required": [
-          "value"
-        ],
+        "required": ["value"],
         "properties": {
           "value": {
             "type": "string"
@@ -15161,9 +14361,7 @@
       "ImportConversationOutput": {
         "title": "ImportConversationOutput",
         "type": "object",
-        "required": [
-          "data"
-        ],
+        "required": ["data"],
         "properties": {
           "data": {
             "$ref": "#/components/schemas/ImportConversationResponse"
@@ -15173,9 +14371,7 @@
       "ImportConversationResponse": {
         "title": "ImportConversationResponse",
         "type": "object",
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "properties": {
           "id": {
             "description": "The id of the newly imported conversation",
@@ -15205,9 +14401,7 @@
       "Inbound": {
         "title": "Inbound",
         "type": "object",
-        "required": [
-          "content"
-        ],
+        "required": ["content"],
         "properties": {
           "content": {
             "$ref": "#/components/schemas/Content"
@@ -15231,10 +14425,7 @@
       "InboundImport": {
         "title": "InboundImport",
         "type": "object",
-        "required": [
-          "content",
-          "createdAt"
-        ],
+        "required": ["content", "createdAt"],
         "properties": {
           "content": {
             "$ref": "#/components/schemas/Content"
@@ -15260,10 +14451,7 @@
       "Infrastructure": {
         "title": "Infrastructure",
         "type": "object",
-        "required": [
-          "id",
-          "message"
-        ],
+        "required": ["id", "message"],
         "properties": {
           "id": {
             "type": "string"
@@ -15288,9 +14476,7 @@
       "InstantField": {
         "title": "InstantField",
         "type": "object",
-        "required": [
-          "value"
-        ],
+        "required": ["value"],
         "properties": {
           "value": {
             "type": "string",
@@ -15301,9 +14487,7 @@
       "IntField": {
         "title": "IntField",
         "type": "object",
-        "required": [
-          "value"
-        ],
+        "required": ["value"],
         "properties": {
           "value": {
             "type": "integer",
@@ -15314,10 +14498,7 @@
       "Integrity": {
         "title": "Integrity",
         "type": "object",
-        "required": [
-          "id",
-          "message"
-        ],
+        "required": ["id", "message"],
         "properties": {
           "id": {
             "type": "string"
@@ -15330,13 +14511,7 @@
       "InternalNoteData": {
         "title": "InternalNoteData",
         "type": "object",
-        "required": [
-          "id",
-          "authorId",
-          "createdAt",
-          "csid",
-          "message"
-        ],
+        "required": ["id", "authorId", "createdAt", "csid", "message"],
         "properties": {
           "id": {
             "type": "string",
@@ -15362,10 +14537,7 @@
       "Interval": {
         "title": "Interval",
         "type": "object",
-        "required": [
-          "start",
-          "end"
-        ],
+        "required": ["start", "end"],
         "properties": {
           "start": {
             "type": "string",
@@ -15380,10 +14552,7 @@
       "IsNotOneOf": {
         "title": "IsNotOneOf",
         "type": "object",
-        "required": [
-          "field",
-          "values"
-        ],
+        "required": ["field", "values"],
         "properties": {
           "field": {
             "description": "values: [InitialChannel, QueueId]",
@@ -15401,10 +14570,7 @@
       "IsOneOf": {
         "title": "IsOneOf",
         "type": "object",
-        "required": [
-          "field",
-          "values"
-        ],
+        "required": ["field", "values"],
         "properties": {
           "field": {
             "description": "values: [InitialChannel, QueueId]",
@@ -15452,9 +14618,7 @@
       "ListBusinessHoursSchedulesOutput": {
         "title": "ListBusinessHoursSchedulesOutput",
         "type": "object",
-        "required": [
-          "data"
-        ],
+        "required": ["data"],
         "properties": {
           "data": {
             "$ref": "#/components/schemas/ListBusinessHoursSchedulesResult"
@@ -15704,10 +14868,7 @@
       "LongAggregateValue": {
         "title": "LongAggregateValue",
         "type": "object",
-        "required": [
-          "value",
-          "measure"
-        ],
+        "required": ["value", "measure"],
         "properties": {
           "value": {
             "type": "integer",
@@ -15722,9 +14883,7 @@
       "LongField": {
         "title": "LongField",
         "type": "object",
-        "required": [
-          "value"
-        ],
+        "required": ["value"],
         "properties": {
           "value": {
             "type": "integer",
@@ -15815,12 +14974,7 @@
       "Message": {
         "title": "Message",
         "type": "object",
-        "required": [
-          "id",
-          "authorId",
-          "createdAt",
-          "attributes"
-        ],
+        "required": ["id", "authorId", "createdAt", "attributes"],
         "properties": {
           "id": {
             "type": "string",
@@ -15845,9 +14999,7 @@
       "MessageAddedAttribute": {
         "title": "MessageAddedAttribute",
         "type": "object",
-        "required": [
-          "messageId"
-        ],
+        "required": ["messageId"],
         "properties": {
           "messageId": {
             "type": "string"
@@ -15875,12 +15027,7 @@
       "MessengerConversation": {
         "title": "MessengerConversation",
         "type": "object",
-        "required": [
-          "id",
-          "requesterId",
-          "channel",
-          "createdAt"
-        ],
+        "required": ["id", "requesterId", "channel", "createdAt"],
         "properties": {
           "id": {
             "type": "integer",
@@ -15933,9 +15080,7 @@
       "MessengerFormAttributes": {
         "title": "MessengerFormAttributes",
         "type": "object",
-        "required": [
-          "formSubmission"
-        ],
+        "required": ["formSubmission"],
         "properties": {
           "formSubmission": {
             "$ref": "#/components/schemas/FormSubmission"
@@ -15945,9 +15090,7 @@
       "MetricData": {
         "title": "MetricData",
         "type": "object",
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "properties": {
           "id": {
             "type": "string"
@@ -15963,9 +15106,7 @@
       "MetricMetadata": {
         "title": "MetricMetadata",
         "type": "object",
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "properties": {
           "id": {
             "description": "The metric ID",
@@ -16001,9 +15142,7 @@
       "MetricRecord": {
         "title": "MetricRecord",
         "type": "object",
-        "required": [
-          "primaryTimestampField"
-        ],
+        "required": ["primaryTimestampField"],
         "properties": {
           "primaryTimestampField": {
             "$ref": "#/components/schemas/TimestampField"
@@ -16022,10 +15161,7 @@
       "MetricRecordMetadata": {
         "title": "MetricRecordMetadata",
         "type": "object",
-        "required": [
-          "id",
-          "description"
-        ],
+        "required": ["id", "description"],
         "properties": {
           "id": {
             "description": "The record ID",
@@ -16069,10 +15205,7 @@
       "MimeTypeImpl": {
         "title": "MimeTypeImpl",
         "type": "object",
-        "required": [
-          "primary",
-          "sub"
-        ],
+        "required": ["primary", "sub"],
         "properties": {
           "primary": {
             "type": "string"
@@ -16093,9 +15226,7 @@
       "NotFound": {
         "title": "NotFound",
         "type": "object",
-        "required": [
-          "message"
-        ],
+        "required": ["message"],
         "properties": {
           "message": {
             "type": "string"
@@ -16105,10 +15236,7 @@
       "NotFound1": {
         "title": "NotFound",
         "type": "object",
-        "required": [
-          "id",
-          "message"
-        ],
+        "required": ["id", "message"],
         "properties": {
           "id": {
             "type": "string"
@@ -16125,9 +15253,7 @@
       "NoteAddedAttribute": {
         "title": "NoteAddedAttribute",
         "type": "object",
-        "required": [
-          "message"
-        ],
+        "required": ["message"],
         "properties": {
           "message": {
             "type": "string"
@@ -16140,10 +15266,7 @@
       "Outbound": {
         "title": "Outbound",
         "type": "object",
-        "required": [
-          "content",
-          "agentId"
-        ],
+        "required": ["content", "agentId"],
         "properties": {
           "content": {
             "$ref": "#/components/schemas/Content"
@@ -16183,11 +15306,7 @@
       "OutboundImport": {
         "title": "OutboundImport",
         "type": "object",
-        "required": [
-          "content",
-          "agentId",
-          "createdAt"
-        ],
+        "required": ["content", "agentId", "createdAt"],
         "properties": {
           "content": {
             "$ref": "#/components/schemas/Content"
@@ -16231,9 +15350,7 @@
       "PartialError": {
         "title": "PartialError",
         "type": "object",
-        "required": [
-          "message"
-        ],
+        "required": ["message"],
         "properties": {
           "message": {
             "type": "string"
@@ -16363,9 +15480,7 @@
       "PatchEndUserOutput": {
         "title": "PatchEndUserOutput",
         "type": "object",
-        "required": [
-          "data"
-        ],
+        "required": ["data"],
         "properties": {
           "data": {
             "$ref": "#/components/schemas/EndUser"
@@ -16409,9 +15524,7 @@
       "PatchWebhookSubscriptionOutput": {
         "title": "PatchWebhookSubscriptionOutput",
         "type": "object",
-        "required": [
-          "data"
-        ],
+        "required": ["data"],
         "properties": {
           "data": {
             "$ref": "#/components/schemas/WebhookSubscription"
@@ -16432,10 +15545,7 @@
       "PhoneAttributes": {
         "title": "PhoneAttributes",
         "type": "object",
-        "required": [
-          "from",
-          "to"
-        ],
+        "required": ["from", "to"],
         "properties": {
           "from": {
             "type": "string"
@@ -16456,10 +15566,7 @@
       "PresenceDuration": {
         "title": "PresenceDuration",
         "type": "object",
-        "required": [
-          "value",
-          "status"
-        ],
+        "required": ["value", "status"],
         "properties": {
           "value": {
             "type": "number",
@@ -16473,9 +15580,7 @@
       "Preset": {
         "title": "Preset",
         "type": "object",
-        "required": [
-          "value"
-        ],
+        "required": ["value"],
         "properties": {
           "value": {
             "description": "values: [PreviousQuarter, ThisWeek, PreviousWeek, Yesterday, Today, ThisMonth, PreviousMonth, ThisQuarter, ThisYear]",
@@ -16512,12 +15617,7 @@
       "PstnPhoneConversation": {
         "title": "PstnPhoneConversation",
         "type": "object",
-        "required": [
-          "id",
-          "requesterId",
-          "channel",
-          "createdAt"
-        ],
+        "required": ["id", "requesterId", "channel", "createdAt"],
         "properties": {
           "id": {
             "type": "integer",
@@ -16567,9 +15667,7 @@
       "Queue": {
         "title": "Queue",
         "type": "object",
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "properties": {
           "id": {
             "type": "string",
@@ -16680,9 +15778,7 @@
       "QueueMember": {
         "title": "QueueMember",
         "type": "object",
-        "required": [
-          "agentId"
-        ],
+        "required": ["agentId"],
         "properties": {
           "agentId": {
             "type": "string"
@@ -16708,10 +15804,7 @@
       "QueueUsages": {
         "title": "QueueUsages",
         "type": "object",
-        "required": [
-          "queueId",
-          "usages"
-        ],
+        "required": ["queueId", "usages"],
         "properties": {
           "queueId": {
             "type": "string"
@@ -16724,9 +15817,7 @@
       "QueuedConversation": {
         "title": "QueuedConversation",
         "type": "object",
-        "required": [
-          "queuedAt"
-        ],
+        "required": ["queuedAt"],
         "properties": {
           "position": {
             "description": "Approximate position of the conversation in the current queue",
@@ -16742,13 +15833,7 @@
       "QuickResponse": {
         "title": "QuickResponse",
         "type": "object",
-        "required": [
-          "id",
-          "name",
-          "content",
-          "createdBy",
-          "createdAt"
-        ],
+        "required": ["id", "name", "content", "createdBy", "createdAt"],
         "properties": {
           "id": {
             "type": "string"
@@ -16786,12 +15871,7 @@
       "RatingOffer": {
         "title": "RatingOffer",
         "type": "object",
-        "required": [
-          "id",
-          "userId",
-          "agentId",
-          "ratingType"
-        ],
+        "required": ["id", "userId", "agentId", "ratingType"],
         "properties": {
           "id": {
             "type": "string"
@@ -16815,11 +15895,7 @@
       "RatingResult": {
         "title": "RatingResult",
         "type": "object",
-        "required": [
-          "ratingId",
-          "userId",
-          "ratingResult"
-        ],
+        "required": ["ratingId", "userId", "ratingResult"],
         "properties": {
           "ratingId": {
             "type": "string"
@@ -16842,9 +15918,7 @@
       "Regular": {
         "title": "Regular",
         "type": "object",
-        "required": [
-          "content"
-        ],
+        "required": ["content"],
         "properties": {
           "content": {
             "$ref": "#/components/schemas/Content"
@@ -16864,9 +15938,7 @@
       "Restrictions": {
         "title": "Restrictions",
         "type": "object",
-        "required": [
-          "isRestricted"
-        ],
+        "required": ["isRestricted"],
         "properties": {
           "isRestricted": {
             "type": "boolean"
@@ -16929,13 +16001,7 @@
       "SelectOption": {
         "title": "SelectOption",
         "type": "object",
-        "required": [
-          "id",
-          "label",
-          "value",
-          "isDeactivated",
-          "orderIndex"
-        ],
+        "required": ["id", "label", "value", "isDeactivated", "orderIndex"],
         "properties": {
           "id": {
             "type": "string",
@@ -16965,9 +16031,7 @@
       "ServerError": {
         "title": "ServerError",
         "type": "object",
-        "required": [
-          "message"
-        ],
+        "required": ["message"],
         "properties": {
           "message": {
             "type": "string"
@@ -16977,9 +16041,7 @@
       "SideConversation": {
         "title": "SideConversation",
         "type": "object",
-        "required": [
-          "parentId"
-        ],
+        "required": ["parentId"],
         "properties": {
           "parentId": {
             "type": "integer",
@@ -16990,11 +16052,7 @@
       "Sms": {
         "title": "Sms",
         "type": "object",
-        "required": [
-          "requesterId",
-          "contactEndpointId",
-          "message"
-        ],
+        "required": ["requesterId", "contactEndpointId", "message"],
         "properties": {
           "requesterId": {
             "type": "string",
@@ -17031,12 +16089,7 @@
       "SmsConversation": {
         "title": "SmsConversation",
         "type": "object",
-        "required": [
-          "id",
-          "requesterId",
-          "channel",
-          "createdAt"
-        ],
+        "required": ["id", "requesterId", "channel", "createdAt"],
         "properties": {
           "id": {
             "type": "integer",
@@ -17092,9 +16145,7 @@
       "Status": {
         "title": "Status",
         "type": "object",
-        "required": [
-          "status"
-        ],
+        "required": ["status"],
         "properties": {
           "status": {
             "type": "string"
@@ -17107,9 +16158,7 @@
       "StringField": {
         "title": "StringField",
         "type": "object",
-        "required": [
-          "value"
-        ],
+        "required": ["value"],
         "properties": {
           "value": {
             "type": "string"
@@ -17133,9 +16182,7 @@
       "Success": {
         "title": "Success",
         "type": "object",
-        "required": [
-          "channelAvailability"
-        ],
+        "required": ["channelAvailability"],
         "properties": {
           "channelAvailability": {
             "$ref": "#/components/schemas/ChannelAvailability"
@@ -17145,11 +16192,7 @@
       "Tag": {
         "title": "Tag",
         "type": "object",
-        "required": [
-          "id",
-          "name",
-          "state"
-        ],
+        "required": ["id", "name", "state"],
         "properties": {
           "id": {
             "type": "string",
@@ -17174,9 +16217,7 @@
       "TagAddedAttribute": {
         "title": "TagAddedAttribute",
         "type": "object",
-        "required": [
-          "tag"
-        ],
+        "required": ["tag"],
         "properties": {
           "tag": {
             "type": "string"
@@ -17186,9 +16227,7 @@
       "TagConversationInput": {
         "title": "TagConversationInput",
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "properties": {
           "name": {
             "type": "string"
@@ -17202,9 +16241,7 @@
       "TagRemovedAttribute": {
         "title": "TagRemovedAttribute",
         "type": "object",
-        "required": [
-          "tag"
-        ],
+        "required": ["tag"],
         "properties": {
           "tag": {
             "type": "string"
@@ -17214,9 +16251,7 @@
       "Team": {
         "title": "Team",
         "type": "object",
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "properties": {
           "id": {
             "type": "string",
@@ -17227,10 +16262,7 @@
       "Team1": {
         "title": "Team",
         "type": "object",
-        "required": [
-          "id",
-          "name"
-        ],
+        "required": ["id", "name"],
         "properties": {
           "id": {
             "type": "string"
@@ -17243,9 +16275,7 @@
       "TeamMember": {
         "title": "TeamMember",
         "type": "object",
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "properties": {
           "id": {
             "type": "string"
@@ -17264,9 +16294,7 @@
       "TelephonyEndpoint": {
         "title": "TelephonyEndpoint",
         "type": "object",
-        "required": [
-          "number"
-        ],
+        "required": ["number"],
         "properties": {
           "number": {
             "type": "string"
@@ -17297,9 +16325,7 @@
       "Text": {
         "title": "Text",
         "type": "object",
-        "required": [
-          "value"
-        ],
+        "required": ["value"],
         "properties": {
           "value": {
             "type": "string"
@@ -17309,9 +16335,7 @@
       "Text1": {
         "title": "Text",
         "type": "object",
-        "required": [
-          "value"
-        ],
+        "required": ["value"],
         "properties": {
           "value": {
             "type": "string"
@@ -17330,9 +16354,7 @@
       "ThumbsUpOrDown": {
         "title": "ThumbsUpOrDown",
         "type": "object",
-        "required": [
-          "value"
-        ],
+        "required": ["value"],
         "properties": {
           "value": {
             "description": "One of the the numeric values 0 and 1.",
@@ -17344,10 +16366,7 @@
       "TimestampField": {
         "title": "TimestampField",
         "type": "object",
-        "required": [
-          "name",
-          "timestamp"
-        ],
+        "required": ["name", "timestamp"],
         "properties": {
           "name": {
             "type": "string"
@@ -17361,9 +16380,7 @@
       "TokenAuth": {
         "title": "TokenAuth",
         "type": "object",
-        "required": [
-          "value"
-        ],
+        "required": ["value"],
         "properties": {
           "value": {
             "description": "Token value. It will be added in the headers of the request as: 'Authorization': 'Bearer \\<value\\>'",
@@ -17374,9 +16391,7 @@
       "TooLarge": {
         "title": "TooLarge",
         "type": "object",
-        "required": [
-          "file"
-        ],
+        "required": ["file"],
         "properties": {
           "file": {
             "$ref": "#/components/schemas/File"
@@ -17386,9 +16401,7 @@
       "TransferConversationInput": {
         "title": "TransferConversationInput",
         "type": "object",
-        "required": [
-          "queueId"
-        ],
+        "required": ["queueId"],
         "properties": {
           "queueId": {
             "description": "The target queue for the conversation transfer",
@@ -17417,11 +16430,7 @@
       "Translation": {
         "title": "Translation",
         "type": "object",
-        "required": [
-          "locale",
-          "content",
-          "isDeactivated"
-        ],
+        "required": ["locale", "content", "isDeactivated"],
         "properties": {
           "locale": {
             "description": "Format for locale is {language}-{script}-{country}, e.g. \"en-US\", \"uz-Arab-AF\", \"da\"",
@@ -17441,9 +16450,7 @@
       "Translation1": {
         "title": "Translation",
         "type": "object",
-        "required": [
-          "draft"
-        ],
+        "required": ["draft"],
         "properties": {
           "draft": {
             "$ref": "#/components/schemas/ArticleTranslation"
@@ -17474,10 +16481,7 @@
       "TranslationTitle": {
         "title": "TranslationTitle",
         "type": "object",
-        "required": [
-          "languageId",
-          "title"
-        ],
+        "required": ["languageId", "title"],
         "properties": {
           "languageId": {
             "type": "string"
@@ -17575,9 +16579,7 @@
       "UUIDField": {
         "title": "UUIDField",
         "type": "object",
-        "required": [
-          "value"
-        ],
+        "required": ["value"],
         "properties": {
           "value": {
             "type": "string",
@@ -17591,9 +16593,7 @@
       "Unauthorized": {
         "title": "Unauthorized",
         "type": "object",
-        "required": [
-          "message"
-        ],
+        "required": ["message"],
         "properties": {
           "message": {
             "type": "string"
@@ -17603,10 +16603,7 @@
       "UnexpectedError": {
         "title": "UnexpectedError",
         "type": "object",
-        "required": [
-          "channel",
-          "message"
-        ],
+        "required": ["channel", "message"],
         "properties": {
           "channel": {
             "type": "string"
@@ -17627,9 +16624,7 @@
       "UpdateAgentInput": {
         "title": "UpdateAgentInput",
         "type": "object",
-        "required": [
-          "displayName"
-        ],
+        "required": ["displayName"],
         "properties": {
           "displayName": {
             "description": "The agent's display name",
@@ -17679,9 +16674,7 @@
       "UpdateEndUserInput": {
         "title": "UpdateEndUserInput",
         "type": "object",
-        "required": [
-          "displayName"
-        ],
+        "required": ["displayName"],
         "properties": {
           "displayName": {
             "type": "string"
@@ -17729,9 +16722,7 @@
       "UpdateEndUserOutput": {
         "title": "UpdateEndUserOutput",
         "type": "object",
-        "required": [
-          "data"
-        ],
+        "required": ["data"],
         "properties": {
           "data": {
             "$ref": "#/components/schemas/EndUser"
@@ -17745,11 +16736,7 @@
       "UserPresence": {
         "title": "UserPresence",
         "type": "object",
-        "required": [
-          "userId",
-          "requestTime",
-          "connectionStatus"
-        ],
+        "required": ["userId", "requestTime", "connectionStatus"],
         "properties": {
           "userId": {
             "type": "string"
@@ -17780,9 +16767,7 @@
       "UserPresenceOutput": {
         "title": "UserPresenceOutput",
         "type": "object",
-        "required": [
-          "data"
-        ],
+        "required": ["data"],
         "properties": {
           "data": {
             "$ref": "#/components/schemas/UserPresence"
@@ -17792,9 +16777,7 @@
       "Validation": {
         "title": "Validation",
         "type": "object",
-        "required": [
-          "message"
-        ],
+        "required": ["message"],
         "properties": {
           "id": {
             "type": "string"
@@ -17924,12 +16907,7 @@
       "WhatsAppConversation": {
         "title": "WhatsAppConversation",
         "type": "object",
-        "required": [
-          "id",
-          "requesterId",
-          "channel",
-          "createdAt"
-        ],
+        "required": ["id", "requesterId", "channel", "createdAt"],
         "properties": {
           "id": {
             "type": "integer",
