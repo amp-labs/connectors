@@ -12,7 +12,7 @@ func init() {
 			AuthURL:                   "https://bitbucket.org/site/oauth2/authorize",
 			TokenURL:                  "https://bitbucket.org/site/oauth2/access_token",
 			ExplicitScopesRequired:    false,
-			ExplicitWorkspaceRequired: false, // Needed for GetPostAuthInfo call
+			ExplicitWorkspaceRequired: false,
 		},
 		PostAuthInfoNeeded: false,
 		//nolint:lll
