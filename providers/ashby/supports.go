@@ -11,7 +11,9 @@ import (
 )
 
 var (
-	supportPagination = datautils.NewSet("application.list") //nolint:gochecknoglobals
+	//nolint:gochecknoglobals,lll
+	supportPagination = datautils.NewSet("application.list", "candidate.list", "interview.list", "feedbackFormDefinition.list",
+		"job.list", "jobPosting.list", "offer.list")
 
 	supportSince = datautils.NewSet("application.list") //nolint:gochecknoglobals
 )
