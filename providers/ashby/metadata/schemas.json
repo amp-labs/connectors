@@ -1,0 +1,48 @@
+{
+    "modules": {
+        "root": {
+            "id": "root",
+            "path": "",
+            "objects": {
+                "opening.list": {
+                    "displayName": "Opening list",
+                    "path": "opening.list",
+                    "responseKey": "results",
+                    "fields": {
+                        "id": {
+                            "displayName": "Id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "openedAt": {
+                            "displayName": "OpenedAt",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "closedAt": {
+                            "displayName": "ClosedAt",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "isArchived": {
+                            "displayName": "Is Archived",
+                            "valueType": "boolean",
+                            "providerType": "boolean"
+                        },
+                        "archivedAt": {
+                            "displayName": "ArchivedAt",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "openingState": {
+                            "displayName": "OpeningState",
+                            "valueType": "string",
+                            "providerType": "string"
+                        }
+                    
+                    }
+                }
+            }
+        }
+    }
+}
