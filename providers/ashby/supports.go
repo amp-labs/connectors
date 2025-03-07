@@ -5,8 +5,15 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/internal/components"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers/ashby/metadata"
+)
+
+var (
+	supportPagination = datautils.NewSet("application.list") //nolint:gochecknoglobals
+
+	supportSince = datautils.NewSet("application.list") //nolint:gochecknoglobals
 )
 
 func supportedOperations() components.EndpointRegistryInput {

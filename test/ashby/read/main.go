@@ -24,13 +24,13 @@ func main() {
 	conn := connTest.GetAshbyConnector(ctx)
 
 	res, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: "opening.list",
-		Fields:     connectors.Fields("id", "openedAt", "archivedAt"),
+		ObjectName: "application.list",
+		Fields:     connectors.Fields("id", "createdAt", "archivedAt"),
 	})
 	if err != nil {
 		utils.Fail("error reading from Ashby", "error", err)
 	}
 
-	slog.Info("Reading Opening list..")
+	slog.Info("Reading application list..")
 	utils.DumpJSON(res, os.Stdout)
 }
