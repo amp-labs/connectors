@@ -86,7 +86,7 @@ type AuthMetadataConnector interface {
 	GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, error)
 }
 
-type WebhookVerifierConnector interface {
+type BatchRecordReaderConnector interface {
 	Connector
 	GetRecordsWithIds(
 		ctx context.Context,
@@ -95,6 +95,10 @@ type WebhookVerifierConnector interface {
 		recordIds []string,
 		fields []string,
 		associations []string) ([]common.ReadResultRow, error)
+}
+type WebhookVerifierConnector interface {
+	Connector
+	BatchRecordReaderConnector
 
 	// VerifyWebhookMessage verifies the signature of a webhook message.
 	VerifyWebhookMessage(ctx context.Context, params *common.WebhookVerificationParameters) (bool, error)
