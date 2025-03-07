@@ -12,7 +12,6 @@ import (
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	dx "github.com/amp-labs/connectors/providers/dixa"
-
 	"github.com/amp-labs/connectors/test/dixa"
 	"github.com/amp-labs/connectors/test/utils"
 )
