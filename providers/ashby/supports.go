@@ -6,7 +6,7 @@ import (
 
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/staticschema"
-	"github.com/amp-labs/connectors/providers/blueshift/metadata"
+	"github.com/amp-labs/connectors/providers/ashby/metadata"
 )
 
 func supportedOperations() components.EndpointRegistryInput {

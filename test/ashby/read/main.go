@@ -28,7 +28,7 @@ func main() {
 		Fields:     connectors.Fields("id", "openedAt", "archivedAt"),
 	})
 	if err != nil {
-		utils.Fail("error reading from Brevo", "error", err)
+		utils.Fail("error reading from Ashby", "error", err)
 	}
 
 	slog.Info("Reading Opening list..")
