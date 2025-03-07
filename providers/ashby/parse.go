@@ -1,19 +1,10 @@
 package ashby
 
 import (
-	"fmt"
-
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/providers/ashby/metadata"
 	"github.com/spyzhov/ajson"
-)
-
-const (
-	pageSizeKey = "per_page"
-	pageSize    = "200"
-	pageKey     = "page"
-	pageNumber  = "0"
 )
 
 func getRecords(objectName string, moduleID common.ModuleID) common.RecordsFunc {
@@ -29,24 +20,16 @@ func getRecords(objectName string, moduleID common.ModuleID) common.RecordsFunc 
 	}
 }
 
-func makeNextRecordsURL(baseURL string) common.NextPageFunc {
-	return func(node *ajson.Node) (string, error) {
-		totalPages, err := jsonquery.New(node).IntegerOptional("total_pages")
-		if err != nil {
-			return "", err
-		}
-
-		currentPage, err := jsonquery.New(node).IntegerOptional("page")
-		if err != nil {
-			return "", err
-		}
-
-		if totalPages == nil || currentPage == nil || *currentPage >= *totalPages-1 {
-			return "", nil
-		}
-
-		nextURL := fmt.Sprintf("%s?page=%d&per_page=%s", baseURL, int(*currentPage+1), pageSize)
-
-		return nextURL, nil
+func makeNextRecordsURL(node *ajson.Node) (string, error) {
+	moreDataAvailable, err := jsonquery.New(node).BoolWithDefault("moreDataAvailable", true)
+	if !moreDataAvailable || err != nil {
+		return "", nil //nolint:nilerr
 	}
+
+	cursor, err := jsonquery.New(node).StringOptional("nextCursor")
+	if err != nil {
+		return "", nil //nolint:nilerr
+	}
+
+	return *cursor, nil
 }
