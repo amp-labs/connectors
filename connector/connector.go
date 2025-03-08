@@ -30,7 +30,7 @@ func NewConnector(
 	}
 
 	// Read provider info & replace catalog variables with given substitutions, if any
-	providerInfo, err := providers.ReadInfo(conn.provider, &params.Workspace)
+	providerInfo, err := providers.ReadInfo(conn.provider, params.GetCatalogVars()...)
 	if err != nil {
 		return nil, err
 	}
