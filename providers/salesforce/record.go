@@ -44,7 +44,7 @@ func (c *Connector) GetRecordsWithIds( // nolint:revive
 		rsp,
 		getRecords,
 		getNextRecordsURL,
-		common.GetMarshaledData,
+		common.GetMarshalledDataWithId,
 		config.Fields,
 	)
 	if err != nil {
