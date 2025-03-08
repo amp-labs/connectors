@@ -3,7 +3,7 @@ package salesforce
 import (
 	"testing"
 
-	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors"
 )
 
 func TestSubscribeConnector(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
@@ -14,7 +14,7 @@ func TestSubscribeConnector(t *testing.T) { //nolint:funlen,gocognit,cyclop,main
 		t.Fatalf("failed to construct test connector: %v", err)
 	}
 
-	_, ok := any(conn).(common.SubscribeConnector)
+	_, ok := any(conn).(connectors.SubscribeConnector)
 	if !ok {
 		t.Fatalf("expected SubscribeConnector, got %T", conn)
 	}

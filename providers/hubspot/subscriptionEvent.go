@@ -31,6 +31,8 @@ This form also prevents null fields to be sent out as zero values.
 */
 type SubscriptionEvent map[string]any
 
+var _ common.SubscriptionEvent = SubscriptionEvent{}
+
 // VerifyWebhookMessage verifies the signature of a webhook message from Hubspot.
 func (*Connector) VerifyWebhookMessage(
 	_ context.Context, params *common.WebhookVerificationParameters,

@@ -14,12 +14,12 @@ func TestSubscriptionEventProperties(t *testing.T) {
 
 	eventNewAccountData := testutils.DataFromFile(t, "subscription/new_account.json")
 
-	changeEvent := ChangeEvent{}
+	changeEvent := CollapsedSubscriptionEvent{}
 	if err := json.Unmarshal(eventNewAccountData, &changeEvent); err != nil {
 		t.Fatalf("failed to start a test, cannot parse data; error (%v)", err)
 	}
 
-	events, err := changeEvent.ToRecordList()
+	events, err := changeEvent.SubscriptionEventList()
 	assert.NilError(t, err, "error should be nil")
 
 	if len(events) != 1 {
