@@ -1,0 +1,94 @@
+{
+  "data": [
+    {
+      "name": "activitytypes",
+      "displayName": "activitytypes",
+      "url": "https://developer.capsulecrm.com/v2/models/activity_type"
+    },
+    {
+      "name": "boards",
+      "displayName": "boards",
+      "url": "https://developer.capsulecrm.com/v2/models/board"
+    },
+    {
+      "name": "cases",
+      "displayName": "cases",
+      "url": "https://developer.capsulecrm.com/v2/models/case"
+    },
+    {
+      "name": "categories",
+      "displayName": "categories",
+      "url": "https://developer.capsulecrm.com/v2/models/category"
+    },
+    {
+      "name": "countries",
+      "displayName": "countries",
+      "url": "https://developer.capsulecrm.com/v2/models/country"
+    },
+    {
+      "name": "lostreasons",
+      "displayName": "lostreasons",
+      "url": "https://developer.capsulecrm.com/v2/models/lost_reason"
+    },
+    {
+      "name": "milestones",
+      "displayName": "milestones",
+      "url": "https://developer.capsulecrm.com/v2/models/milestone"
+    },
+    {
+      "name": "opportunities",
+      "displayName": "opportunities",
+      "url": "https://developer.capsulecrm.com/v2/models/opportunity"
+    },
+    {
+      "name": "parties",
+      "displayName": "parties",
+      "url": "https://developer.capsulecrm.com/v2/models/party"
+    },
+    {
+      "name": "pipelines",
+      "displayName": "pipelines",
+      "url": "https://developer.capsulecrm.com/v2/models/pipeline"
+    },
+    {
+      "name": "projects",
+      "displayName": "projects",
+      "url": "https://developer.capsulecrm.com/v2/models/project"
+    },
+    {
+      "name": "resthooks",
+      "displayName": "resthooks",
+      "url": "https://developer.capsulecrm.com/v2/models/rest_hook"
+    },
+    {
+      "name": "stages",
+      "displayName": "stages",
+      "url": "https://developer.capsulecrm.com/v2/models/stage"
+    },
+    {
+      "name": "tasks",
+      "displayName": "tasks",
+      "url": "https://developer.capsulecrm.com/v2/models/task"
+    },
+    {
+      "name": "teams",
+      "displayName": "teams",
+      "url": "https://developer.capsulecrm.com/v2/models/team"
+    },
+    {
+      "name": "titles",
+      "displayName": "titles",
+      "url": "https://developer.capsulecrm.com/v2/models/title"
+    },
+    {
+      "name": "trackdefinitions",
+      "displayName": "trackdefinitions",
+      "url": "https://developer.capsulecrm.com/v2/models/track_definition"
+    },
+    {
+      "name": "users",
+      "displayName": "users",
+      "url": "https://developer.capsulecrm.com/v2/models/user"
+    }
+  ]
+}

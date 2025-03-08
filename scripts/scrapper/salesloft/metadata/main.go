@@ -51,7 +51,7 @@ func createIndex() {
 	registry := scrapper.NewModelURLRegistry()
 
 	for i, section := range sections {
-		doc := scrapper.QueryHTML(SalesloftDocsPrefixURL + "/" + section)
+		doc := queryHTML(SalesloftDocsPrefixURL + "/" + section)
 
 		doc.Find(".theme-doc-markdown article").Each(func(i int, s *goquery.Selection) {
 			cell := s.Find("a")
@@ -74,7 +74,7 @@ func createSchemas() {
 	filteredListDocs := getFilteredListDocs(index)
 	for i := range filteredListDocs { // nolint:varnamelen
 		model := filteredListDocs[i]
-		doc := scrapper.QueryHTML(model.URL)
+		doc := queryHTML(model.URL)
 
 		// There are 2 unordered lists that describe response schema
 		modelName := strcase.ToSnake(model.Name)
@@ -113,7 +113,7 @@ func createQueryParamStats() {
 	numObjects := len(filteredListDocs)
 
 	for i, model := range filteredListDocs { // nolint:varnamelen
-		doc := scrapper.QueryHTML(model.URL)
+		doc := queryHTML(model.URL)
 
 		modelName := strcase.ToSnake(model.Name)
 
@@ -157,7 +157,7 @@ func getFilteredListDocs(index *scrapper.ModelURLRegistry) scrapper.ModelDocLink
 }
 
 func getSectionLinks() []string {
-	doc := scrapper.QueryHTML(ModelIndexURL)
+	doc := queryHTML(ModelIndexURL)
 
 	links := make([]string, 0)
 
@@ -198,4 +198,13 @@ func handleDisplayName(name string) (displayName string, isListResource bool) {
 	}
 
 	return name, true
+}
+
+func queryHTML(sourceURL string) *goquery.Document {
+	// must end with `/` to avoid stupid redirect with then without then again with and without slash
+	if !strings.HasSuffix(sourceURL, "/") {
+		sourceURL += "/"
+	}
+
+	return scrapper.QueryHTML(sourceURL)
 }
