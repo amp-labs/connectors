@@ -8,29 +8,19 @@ import (
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers/ashby/metadata"
 	"github.com/amp-labs/connectors/providers/ashby/metadata/openapi"
-	utilsopenapi "github.com/amp-labs/connectors/scripts/openapi/utils"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
 	"github.com/amp-labs/connectors/tools/scrapper"
 )
 
 var (
 	ignoreEndpoints = []string{ //nolint:gochecknoglobals
-		"/api/v1/data_connectors",
-	}
-
-	objectEndpoints = map[string]string{ //nolint:gochecknoglobals
-		"/api/v1/tag_contexts/list": "tag_contexts/list",
-	}
-
-	overrideDisplayName = map[string]string{ //nolint:gochecknoglobals
-		"tag_contexts/list": "Tag Contexts",
+		"interviewEvent.list",
 	}
 
 	objectNametoResponseField = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
-		"email_templates": "results",
 	},
 		func(objectName string) (fieldName string) {
-			return objectName
+			return "results"
 		},
 	)
 )
@@ -44,12 +34,12 @@ func main() {
 
 	readObjects, err := explorer.ReadObjectsPost(
 		api3.NewDenyPathStrategy(ignoreEndpoints),
-		objectEndpoints, overrideDisplayName, api3.CustomMappingObjectCheck(objectNametoResponseField),
+		nil, nil, api3.CustomMappingObjectCheck(objectNametoResponseField),
 	)
 
 	goutils.MustBeNil(err)
 
-	schemas := staticschema.NewMetadata[staticschema.FieldMetadataMapV2]()
+	schemas := staticschema.NewMetadata[staticschema.FieldMetadataMapV1]()
 	registry := datautils.NamedLists[string]{}
 
 	for _, object := range readObjects { //nolint:gochecknoglobals
@@ -62,7 +52,9 @@ func main() {
 
 		for _, field := range object.Fields {
 			schemas.Add("", object.ObjectName, object.DisplayName, object.URLPath, object.ResponseKey,
-				utilsopenapi.ConvertMetadataFieldToFieldMetadataMapV2(field), nil, object.Custom)
+				staticschema.FieldMetadataMapV1{
+					field.Name: field.Name,
+				}, nil, object.Custom)
 		}
 
 		for _, queryParam := range object.QueryParams {
