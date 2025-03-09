@@ -70,7 +70,7 @@
                     }
                 },
                 
-                "assessment.list.list": {
+                "assessment.list": {
                     "displayName": "Assessment List",
                     "path": "assessment.list.list",
                     "responseKey": "results",
