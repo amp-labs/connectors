@@ -77,6 +77,8 @@ func (c *Connector) parseReadResponse(
 	)
 }
 
+// Note: Ashby API uses POST method for all operations (create/update/delete)
+
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
 	var (
 		url *urlbuilder.URL
