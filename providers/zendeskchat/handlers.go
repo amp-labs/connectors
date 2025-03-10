@@ -1,13 +1,16 @@
 package zendeskchat
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
 const (
@@ -104,7 +107,10 @@ func parseListResponse(response *common.JSONHTTPResponse) (map[string]any, error
 	return (*resp)[0], nil
 }
 
-func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+func (c *Connector) buildReadRequest(
+	ctx context.Context,
+	params common.ReadParams,
+) (*http.Request, error) {
 	var (
 		url *urlbuilder.URL
 		err error
@@ -138,4 +144,60 @@ func (c *Connector) parseReadResponse(
 		common.GetMarshaledData,
 		params.Fields,
 	)
+}
+
+func (c *Connector) buildWriteRequest(
+	ctx context.Context,
+	params common.WriteParams,
+) (*http.Request, error) {
+	method := http.MethodPost
+
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIVersion, params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.RecordId != "" {
+		url.AddPath(params.RecordId)
+
+		method = http.MethodPut
+	}
+
+	// Endpoints routing_settings/account,routing_settings/agents/me,
+	// and routing_settings/agents/{agent_id},
+	// uses the PATCH method and these endpoints perform only updates.
+	if _, exists := updatesByPatch[params.ObjectName]; exists {
+		method = http.MethodPatch
+	}
+
+	jsonData, err := json.Marshal(params.RecordData)
+	if err != nil {
+		return nil, err
+	}
+
+	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
+}
+
+func (c *Connector) parseWriteResponse(
+	ctx context.Context,
+	params common.WriteParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.WriteResult, error) {
+	node, ok := response.Body()
+	if !ok {
+		return &common.WriteResult{
+			Success: true,
+		}, nil
+	}
+
+	data, err := jsonquery.Convertor.ObjectToMap(node)
+	if err != nil {
+		return nil, err
+	}
+
+	return &common.WriteResult{
+		Success: true,
+		Data:    data,
+	}, nil
 }
