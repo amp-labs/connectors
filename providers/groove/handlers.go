@@ -65,6 +65,10 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 			return nil, fmt.Errorf("couldn't convert the data response field data to an array: %w", common.ErrMissingExpectedValues) // nolint:lll
 		}
 
+		if len(records) == 0 {
+			return nil, fmt.Errorf("%w: could not find a record to sample fields from", common.ErrMissingExpectedValues)
+		}
+
 		// Iterate over the first record.
 		firstRecord, ok = records[0].(map[string]any)
 		if !ok {
