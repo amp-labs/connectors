@@ -89,7 +89,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	}
 
 	// request the maximum allowed retrieval records per request.
-	url.WithQueryParam(limitQuery, "10")
+	url.WithQueryParam(limitQuery, readPageSize)
 
 	if params.NextPage != "" {
 		url.WithQueryParam(cursorQuery, params.NextPage.String())
@@ -138,6 +138,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 func (c *Connector) parseWriteResponse(
 	ctx context.Context,
 	params common.WriteParams,
+	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.WriteResult, error) {
 	ctx = logging.With(ctx, "gorgias")
