@@ -16,11 +16,19 @@ func supportedOperations() components.EndpointRegistryInput {
 		"business-hours/schedules", "templates",
 	}
 
+	writeSupport := []string{
+		"agents", "agents/bulk", "conversations", "conversations/import", "endusers",
+		"endusers/bulk", "queues", "tags", "teams", "webhooks",
+	}
+
 	return components.EndpointRegistryInput{
 		staticschema.RootModuleID: {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,
+			}, {
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
+				Support:  components.WriteSupport,
 			},
 		},
 	}

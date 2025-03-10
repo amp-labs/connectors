@@ -7,7 +7,6 @@ import (
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 )
@@ -84,9 +83,7 @@ func (c *Connector) parseWriteResponse(
 		}, nil
 	}
 
-	writeResponseField := naming.NewSingularString(params.ObjectName).String()
-
-	resp, err := jsonquery.New(body).ObjectRequired(writeResponseField)
+	resp, err := jsonquery.New(body).ObjectRequired("") // reading the current node.
 	if err != nil {
 		return nil, err
 	}
