@@ -60,14 +60,18 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	if field != "" {
 		// If this is the case, we're expecting the data in a certain field
 		// in this current map.
-		records, ok := (*data)[field].([]any)
-		if !ok {
+		records, okay := (*data)[field].([]any)
+		if !okay {
 			return nil, fmt.Errorf("couldn't convert the data response field data to an array: %w", common.ErrMissingExpectedValues) // nolint:lll
 		}
 
+		if len(records) == 0 {
+			return nil, fmt.Errorf("%w: could not find a record to sample fields from", common.ErrMissingExpectedValues)
+		}
+
 		// Iterate over the first record.
-		firstRecord, ok = records[0].(map[string]any)
-		if !ok {
+		firstRecord, okay = records[0].(map[string]any)
+		if !okay {
 			return nil, fmt.Errorf("couldn't convert the first record data to a map: %w", common.ErrMissingExpectedValues)
 		}
 	}
