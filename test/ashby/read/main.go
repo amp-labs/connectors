@@ -28,7 +28,7 @@ func main() {
 
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "application.list",
-		Fields:     connectors.Fields("id", "createdAt", "archivedAt"),
+		Fields:     connectors.Fields("id", "createdAt", "archivedAt", "source", "status"),
 		Since:      sinceTime,
 	})
 	if err != nil {
@@ -37,4 +37,18 @@ func main() {
 
 	slog.Info("Reading application list..")
 	utils.DumpJSON(res, os.Stdout)
+
+	res, err = conn.Read(ctx, common.ReadParams{
+		ObjectName: "user.list",
+		Fields:     connectors.Fields("id", "firstName", "lastName", "email"),
+		Since:      sinceTime,
+		NextPage:   res.NextPage,
+	})
+	if err != nil {
+		utils.Fail("error reading from Ashby", "error", err)
+	}
+
+	slog.Info("Reading user list")
+	utils.DumpJSON(res, os.Stdout)
+
 }
