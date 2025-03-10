@@ -181,6 +181,7 @@ func (c *Connector) buildWriteRequest(
 func (c *Connector) parseWriteResponse(
 	ctx context.Context,
 	params common.WriteParams,
+	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.WriteResult, error) {
 	node, ok := response.Body()
