@@ -1,0 +1,420 @@
+{
+    "modules": {
+        "root": {
+            "id": "",
+            "path": "",
+            "objects": {
+                "application.list": {
+                    "displayName": "Application List",
+                    "path": "application.list",
+                    "responseKey": "results",
+                    "fields": {
+                        "id": "id",
+                        "createdAt": "createdAt",
+                        "updatedAt": "updatedAt",
+                        "status": "status",
+                        "customFields": "customFields",
+                        "candidate": "candidate",
+                        "currentInterviewStage": "currentInterviewStage",
+                        "source": "source",
+                        "creditedToUser": "creditedToUser",
+                        "archiveReason": "archiveReason",
+                        "job": "job",
+                        "hiringTeam": "hiringTeam",
+                        "appliedViaJobPostingId": "appliedViaJobPostingId",
+                        "submitterClientIp": "submitterClientIp",
+                        "submitterUserAgent": "submitterUserAgent",
+                        "openings": "openings"
+                    }
+                },
+                "applicationFeedback.list": {
+                    "displayName": "ApplicationFeedback List",
+                    "path": "applicationFeedback.list",
+                    "responseKey": "results",
+                    "fields": {
+                        "id": "id",
+                        "createdAt": "createdAt",
+                        "updatedAt": "updatedAt",
+                        "candidate": "candidate",
+                        "status": "status",
+                        "customFields": "customFields",
+                        "currentInterviewStage": "currentInterviewStage",
+                        "source": "source",
+                        "creditedToUser": "creditedToUser",
+                        "archiveReason": "archiveReason",
+                        "job": "job",
+                        "hiringTeam": "hiringTeam",
+                        "appliedViaJobPostingId": "appliedViaJobPostingId",
+                        "submitterClientIp": "submitterClientIp",
+                        "submitterUserAgent": "submitterUserAgent"
+                    }
+                },
+                "applicationHiringTeamRole.list": {
+                    "displayName": "Application Hiring Team Role List",
+                    "path": "applicationHiringTeamRole.list",
+                    "responseKey": "results",
+                    "fields": {
+                        "id": "id",
+                        "title": "title"
+                    }
+                },
+                "archiveReason.list": {
+                    "displayName": "Archive Reason List",
+                    "path": "archiveReason.list",
+                    "responseKey": "results",
+                    "fields": {
+                        "id": "id",
+                        "text": "text",
+                        "reasonType": "reasonType",
+                        "isArchived": "isArchived"
+                    }
+                },
+                
+                "assessment.list": {
+                    "displayName": "Assessment List",
+                    "path": "assessment.list.list",
+                    "responseKey": "results",
+                    "fields": {
+                        "assessment_type_id": "assessment_type_id",
+                        "name": "name",
+                        "description": "description"
+                    }
+                },
+
+                "candidate.list": {
+                    "displayName": "Candidate List",
+                    "path": "candidate.list",
+                    "responseKey": "results",
+                    "fields": {
+                        "id": "id",
+                        "createdAt": "createdAt",
+                        "updatedAt": "updatedAt",
+                        "name": "name",
+                        "primaryEmailAddress": "primaryEmailAddress",
+                        "emailAddresses": "emailAddresses",
+                        "primaryPhoneNumber": "primaryPhoneNumber",
+                        "phoneNumbers": "phoneNumbers",
+                        "socialLinks": "socialLinks",
+                        "tags": "tags",
+                        "applicationIds": "applicationIds",
+                        "fileHandles": "fileHandles",
+                        "customFields": "customFields",
+                        "profileUrl": "profileUrl",
+                        "source": "source",
+                        "creditedToUser": "creditedToUser",
+                        "timezone": "timezone",
+                        "location": "location"
+                    }
+                },
+                "candidateTag.list": {
+                    "displayName": "Candidate Tag List",
+                    "path": "candidateTag",
+                    "responseKey": "results",
+                    "fields": {
+                        "id": "id",
+                        "title": "title",
+                        "isArchived": "isArchived"
+                    }
+                },
+                "communicationTemplate.list": {
+                    "displayName": "Communication Template List",
+                    "path": "communicationTemplate.list",
+                    "responseKey": "results",
+                    "fields": {
+                        "id": "id",
+                        "title": "title",
+                        "intendedTypes": "intendedTypes",
+                        "createdAt": "createdAt",
+                        "updatedAt": "updatedAt"
+                    }
+                },
+                "customField.list": {
+                    "displayName": "Custom Field List",
+                    "path": "customField.list",
+                    "responseKey": "results",
+                    "fields": {
+                        "id": "id",
+                        "title": "title",
+                        "objectType": "objectType",
+                        "isArchived": "isArchived",
+                        "isPrivate": "isPrivate",
+                        "fieldType": "fieldType",
+                        "selectableValues": "selectableValues"
+                    }
+                },
+                "department.list": {
+                    "displayName": "Department List",
+                    "path": "department.list",
+                    "responseKey": "results",
+                    "fields": {
+                        "id": "id",
+                        "name": "name",
+                        "isArchived": "isArchived",
+                        "parentId": "parentId"
+                    }
+                },
+                "feedbackFormDefinition.list": {
+                    "displayName": "Feedback Form Definition List",
+                    "path": "feedbackFormDefinition.list",
+                    "responseKey": "results",
+                    "fields": {
+                        "id": "id",
+                        "organizationId": "organizationId",
+                        "title": "title",
+                        "isArchived": "isArchived",
+                        "isDefaultForm": "isDefaultForm",
+                        "formDefinition": "formDefinition",
+                        "interviewId": "interviewId"
+                    }
+                },
+                "interview.list": {
+                    "displayName": "Interview List",
+                    "path": "interview.list",
+                    "responseKey": "results",
+                    "fields": {
+                        "id": "id",
+                        "title": "title",
+                        "isArchived": "isArchived",
+                        "isDebrief": "isDebrief",
+                        "instructionsHtml": "instructionsHtml",
+                        "instructionsPlain": "instructionsPlain",
+                        "feedbackFormDefinitionId": "feedbackFormDefinitionId"
+                    }
+                },
+                "interviewPlan.list": {
+                    "displayName": "Interview Plan List",
+                    "path": "interviewPlan.list",
+                    "responseKey": "results",
+                    "fields": {
+                        "id": "id",
+                        "title": "title",
+                        "isArchived": "isArchived"
+                    }
+                },
+                "interviewSchedule.list": {
+                    "displayName": "Interview Schedule List",
+                    "path": "interviewSchedule.list",
+                    "responseKey": "results",
+                    "fields": {
+                        "id": "id",
+                        "status": "status",
+                        "applicationId": "applicationId",
+                        "interviewStageId": "interviewStageId",
+                        "interviewEvents": "interviewEvents"
+                    }
+                },
+                "interviewStageGroup.list": {
+                    "displayName": "Interview Stage Group List",
+                    "path": "interviewStageGroup.list",
+                    "responseKey": "results",
+                    "fields": {
+                        "id": "id",
+                        "title": "title",
+                        "stageType": "stageType",
+                        "order": "order"
+                    }
+                },
+                "interviewerPool.list": {
+                    "displayName": "Interviewer Pool List",
+                    "path": "interviewerPool.list",
+                    "responseKey": "results",
+                    "fields": {
+                        "id": "id",
+                        "title": "title",
+                        "isArchived": "isArchived"
+                    }
+                },
+                "job.list": {
+                    "displayName": "Job List",
+                    "path": "job.list",
+                    "responseKey": "results",
+                    "fields": {
+                        "id": "id",
+                        "title": "title",
+                        "confidential": "confidential",
+                        "status": "status",
+                        "employmentType": "employmentType",
+                        "locationId": "locationId",
+                        "departmentId": "departmentId",
+                        "defaultInterviewPlanId": "defaultInterviewPlanId",
+                        "interviewPlanIds": "interviewPlanIds",
+                        "jobPostingIds": "jobPostingIds",
+                        "customFields": "customFields",
+                        "hiringTeam": "hiringTeam",
+                        "customRequisitionId": "customRequisitionId",
+                        "brandId": "brandId",
+                        "author": "author",
+                        "createdAt": "createdAt",
+                        "updatedAt": "updatedAt",
+                        "openedAt": "openedAt",
+                        "closedAt": "closedAt"
+                    }
+                },
+                "jobBoard.list": {
+                    "displayName": "Job Board List",
+                    "path": "jobBoard.list",
+                    "responseKey": "results",
+                    "fields": {
+                        "id": "id",
+                        "title": "title",
+                        "isInternal": "isInternal"
+                    }
+                },
+                "jobPosting.list": {
+                    "displayName": "Job Posting List",
+                    "path": "jobPosting.list",
+                    "responseKey": "results",
+                    "fields": {
+                        "id": "id",
+                        "title": "title",
+                        "jobId": "jobId",
+                        "departmentName": "departmentName",
+                        "teamName": "teamName",
+                        "locationName": "locationName",
+                        "workplaceType": "workplaceType",
+                        "employmentType": "employmentType",
+                        "isListed": "isListed",
+                        "publishedDate": "publishedDate",
+                        "applicationDeadline": "applicationDeadline",
+                        "externalLink": "externalLink",
+                        "applyLink": "applyLink",
+                        "locationIds": "locationIds",
+                        "compensationTierSummary": "compensationTierSummary",
+                        "shouldDisplayCompensationOnJobBoard": "shouldDisplayCompensationOnJobBoard",
+                        "updatedAt": "updatedAt"
+                    }
+                },
+                "jobTemplate.list": {
+                    "displayName": "Job Template List",
+                    "path": "jobTemplate.list",
+                    "responseKey": "results",
+                    "fields": {
+                        "id": "id",
+                        "title": "title",
+                        "status": "status",
+                        "locationId": "locationId",
+                        "departmentId": "departmentId",
+                        "defaultInterviewPlanId": "defaultInterviewPlanId",
+                        "interviewPlanIds": "interviewPlanIds",
+                        "createdAt": "createdAt",
+                        "updatedAt": "updatedAt",
+                        "location": "location"
+                    }
+                },
+                "location.list": {
+                    "displayName": "Location List",
+                    "path": "location.list",
+                    "responseKey": "results",
+                    "fields": {
+                        "id": "id",
+                        "name": "name",
+                        "isArchived": "isArchived",
+                        "address": "address",
+                        "isRemote": "isRemote",
+                        "workplaceType": "workplaceType",
+                        "parentLocationId": "parentLocationId",
+                        "type": "type"
+                    }
+                },
+                "offer.list": {
+                    "displayName": "Offer List",
+                    "path": "offer.list",
+                    "responseKey": "results",
+                    "fields": {
+                        "id": "id",
+                        "decidedAt": "decidedAt",
+                        "applicationId": "applicationId",
+                        "acceptanceStatus" : "acceptanceStatus",
+                        "offerStatus":"offerStatus",
+                        "latestVersion":"latestVersion",
+                        "versions":"versions"
+                    }
+                },
+                "opening.list": {
+                    "displayName": "Opening List",
+                    "path": "opening.list",
+                    "responseKey": "results",
+                    "fields": {
+                        "id": "id",
+                        "openedAt": "openedAt",
+                        "closedAt": "closedAt",
+                        "isArchived": "isArchived",
+                        "archivedAt": "archivedAt",
+                        "openingState": "openingState",
+                        "latestVersion": "latestVersion"
+                    }
+                },
+                
+                "project.list": {
+                    "displayName": "Project List",
+                    "path": "project.list",
+                    "responseKey": "results",
+                    "fields": {
+                        "id": "id",
+                        "createdAt": "createdAt",
+                        "title": "title",
+                        "isArchived": "isArchived",
+                        "authorId": "authorId",
+                        "description": "description",
+                        "confidential": "confidential",
+                        "customFieldEntries": "customFieldEntries"
+                    }
+                },
+
+                "source.list": {
+                    "displayName": "Source List",
+                    "path": "source.list",
+                    "responseKey": "results",
+                    "fields": {
+                        "id": "id",
+                        "title": "title",
+                        "isArchived": "isArchived",
+                        "sourceType": "sourceType"
+                    }
+                }, 
+
+                "sourceTrackingLink.list": {
+                    "displayName": "Source Tracking List",
+                    "path": "sourceTrackingLink.list",
+                    "responseKey": "results",
+                    "fields": {
+                        "id": "id",
+                        "title": "title",
+                        "isArchived": "isArchived",
+                        "sourceType": "sourceType"
+                    }
+                }, 
+
+                "surveyFormDefinition.list": {
+                    "displayName": "Survey Form Definition List",
+                    "path": "surveyFormDefinition.list",
+                    "responseKey": "results",
+                    "fields": {
+                        "id": "id",
+                        "title": "title",
+                        "isArchived": "isArchived",
+                        "formDefinition": "formDefinition",
+                        "surveyType": "surveyType"
+                    }
+                },
+
+                "user.list": {
+                    "displayName": "User List",
+                    "path": "user.list",
+                    "responseKey": "results",
+                    "fields": {
+                        "id": "id",
+                        "firstName": "firstName",
+                        "lastName": "lastName",
+                        "email": "email",
+                        "globalRole": "globalRole",
+                        "isEnabled": "isEnabled",
+                        "updatedAt": "updatedAt"
+                    }
+                }
+
+                
+            }
+        }
+    }
+}
