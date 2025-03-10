@@ -23,12 +23,23 @@ var (
 
 func supportedOperations() components.EndpointRegistryInput {
 	readSupport := metadata.Schemas.ObjectNames().GetList(staticschema.RootModuleID)
+	writeSupport := []string{
+		"application.create", "candidate.create", "candidate.createNote", "candidate.addTag",
+		"candidate.addProject", "candidateTag.create", "customField.create", "department.create",
+		"hiringTeam.addMember", "interviewSchedule.create", "interviewerPool.create", "interviewerPool.addUser",
+		"job.create", "location.create", "offer.create", "offerProcess.start", "opening.create", "referral.create",
+		"surveyRequest.create", "surveySubmission.create", "webhook.create",
+	}
 
 	return components.EndpointRegistryInput{
 		staticschema.RootModuleID: {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
+				Support:  components.WriteSupport,
 			},
 		},
 	}
