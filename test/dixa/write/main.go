@@ -28,10 +28,15 @@ func run() error {
 		return err
 	}
 
-	err = testCreatingWebhooks(ctx, conn)
+	err = patchAgent(ctx, conn)
 	if err != nil {
 		return err
 	}
+
+	// err = testCreatingWebhooks(ctx, conn)
+	// if err != nil {
+	// 	return err
+	// }
 
 	return nil
 }
@@ -63,6 +68,33 @@ func testCreatingAgent(ctx context.Context, conn *dx.Connector) error {
 	_, _ = os.Stdout.WriteString("\n")
 
 	return nil
+}
+
+func patchAgent(ctx context.Context, conn *dx.Connector) error {
+	params := common.WriteParams{
+		ObjectName: "agents",
+		RecordId:   "af34671b-f191-4ecf-884f-6e28abe82b39",
+		RecordData: map[string]any{
+			"firstName": "Charles",
+		},
+	}
+
+	res, err := conn.Write(ctx, params)
+	if err != nil {
+		return err
+	}
+
+	// Print the results
+	jsonStr, err := json.MarshalIndent(res, "", "  ")
+	if err != nil {
+		return fmt.Errorf("error marshalling JSON: %w", err)
+	}
+
+	_, _ = os.Stdout.Write(jsonStr)
+	_, _ = os.Stdout.WriteString("\n")
+
+	return nil
+
 }
 
 func testCreatingWebhooks(ctx context.Context, conn *dx.Connector) error {
