@@ -11,11 +11,14 @@ import (
 )
 
 var (
-	//nolint:gochecknoglobals,lll
-	supportPagination = datautils.NewSet("application.list", "candidate.list", "interview.list", "feedbackFormDefinition.list",
-		"job.list", "jobPosting.list", "offer.list")
+	// nolint:gochecknoglobals,lll
+	supportPagination = datautils.NewSet("application.list", "applicationFeedback.list", "candidate.list",
+		"candidateTag.list", "customField.list", "feedbackFormDefinition.list", "interview.list", "interviewSchedule.list",
+		"feedbackFormDefinition.list", "interviewerPool.list", "job.list", "jobTemplate.list", "offer.list", "opening.list",
+		"project.list", "surveyFormDefinition.list", "user.list")
 
-	supportSince = datautils.NewSet("application.list") //nolint:gochecknoglobals
+	//nolint:gochecknoglobals
+	supportSince = datautils.NewSet("application.list", "applicationFeedback.list", "interviewSchedule.list")
 )
 
 func supportedOperations() components.EndpointRegistryInput {
