@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/staticschema"
+	"github.com/spyzhov/ajson"
 )
 
 const (
@@ -35,5 +37,13 @@ func supportedOperations() components.EndpointRegistryInput {
 				Support:  components.DeleteSupport,
 			},
 		},
+	}
+}
+
+func makeNextRecordsURL(baseURL string) common.NextPageFunc {
+	return func(node *ajson.Node) (string, error) {
+		// Monday.com uses GraphQL cursor-based pagination
+		// Pagination is handled in the GraphQL query itself, not via URLs
+		return baseURL, nil
 	}
 }

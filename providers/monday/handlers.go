@@ -11,6 +11,8 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/spyzhov/ajson"
 )
 
 var (
@@ -18,6 +20,8 @@ var (
 	ErrUnsupportedObject = errors.New("unsupported object")
 	// ErrInvalidResponseFormat is returned when the API response format is unexpected.
 	ErrInvalidResponseFormat = errors.New("invalid response format")
+	// ErrUnsupportedObjectName is returned when an unsupported object name is provided.
+	ErrUnsupportedObjectName = errors.New("unsupported object name")
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
@@ -130,4 +134,167 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	}
 
 	return &objectMetadata, nil
+}
+
+func getBoardsBaseFields() string {
+	return `
+		id
+		name
+		state
+		permissions
+		items_count
+		type
+		updated_at
+		url
+		workspace_id`
+}
+
+func getBoardsNestedFields() string {
+	return `
+		columns {
+			id
+			title
+			type
+		}
+		groups {
+			id
+			title
+			position
+		}
+		owner {
+			id
+			name
+		}
+		owners {
+			id
+			name
+		}
+		subscribers {
+			id
+			name
+		}
+		tags {
+			id
+			name
+		}
+		team_owners {
+			id
+			name
+		}
+		team_subscribers {
+			id
+			name
+		}
+		top_group {
+			id
+			title
+		}
+		updates {
+			id
+			body
+			created_at
+		}
+		views {
+			id
+			name
+			type
+		}
+		workspace {
+			id
+			name
+		}`
+}
+
+func getBoardsQuery() string {
+	return fmt.Sprintf(`query {
+		boards {
+			%s
+			%s
+		}
+	}`, getBoardsBaseFields(), getBoardsNestedFields())
+}
+
+func getUsersQuery() string {
+	return `query {
+		users {
+			id
+			email
+			name
+			enabled
+		}
+	}`
+}
+
+func getQueryForObject(objectName string) (string, error) {
+	switch objectName {
+	case "boards":
+		return getBoardsQuery(), nil
+	case "users":
+		return getUsersQuery(), nil
+	default:
+		return "", fmt.Errorf("%w: %s", ErrUnsupportedObjectName, objectName)
+	}
+}
+
+func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion)
+	if err != nil {
+		return nil, err
+	}
+
+	query, err := getQueryForObject(params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	requestBody := map[string]string{
+		"query": query,
+	}
+
+	jsonBody, err := json.Marshal(requestBody)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonBody))
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	return req, nil
+}
+
+func (c *Connector) parseReadResponse(
+	ctx context.Context,
+	params common.ReadParams,
+	request *http.Request,
+	resp *common.JSONHTTPResponse,
+) (*common.ReadResult, error) {
+	return common.ParseResult(
+		resp,
+		getRecords(params.ObjectName),
+		makeNextRecordsURL(c.ProviderInfo().BaseURL),
+		common.GetMarshaledData,
+		params.Fields,
+	)
+}
+
+func getRecords(objectName string) func(*ajson.Node) ([]map[string]any, error) {
+	return func(node *ajson.Node) ([]map[string]any, error) {
+		// First get the data object
+		dataNode, err := node.GetKey("data")
+		if err != nil {
+			return nil, err
+		}
+
+		// Then get the array under the object name (e.g., "boards" or "users")
+		records, err := jsonquery.New(dataNode).ArrayOptional(objectName)
+		if err != nil {
+			return nil, err
+		}
+
+		return jsonquery.Convertor.ArrayToMap(records)
+	}
 }
