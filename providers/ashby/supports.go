@@ -24,11 +24,33 @@ var (
 func supportedOperations() components.EndpointRegistryInput {
 	readSupport := metadata.Schemas.ObjectNames().GetList(staticschema.RootModuleID)
 
+	//nolint:lll
+	writeSupport := []string{
+		"application.create", "candidate.create", "candidate.createNote", "candidate.addTag",
+		"candidate.addProject", "candidateTag.create", "customField.create", "department.create",
+		"hiringTeam.addMember", "interviewSchedule.create", "interviewerPool.create", "interviewerPool.addUser",
+		"job.create", "location.create", "offer.create", "offerProcess.start", "opening.create", "referral.create",
+		"surveyRequest.create", "surveySubmission.create", "webhook.create",
+
+		"application.change_source", "application.change_stage", "application.transfer", "application.update",
+		"application.updateHistory", "application.addHiringTeamMember", "application.removeHiringTeamMember",
+		"applicationFeedback.submit", "applicationForm.submit", "approvalDefinition.update", "assessment.addCompletedToCandidate",
+		"assessment.start", "assessment.update", "assessment.cancel", "candidate.anonymize", "candidate.update", "customField.setValue",
+		"hiringTeam.addMember", "interviewSchedule.cancel", "interviewSchedule.update", "interviewerPool.update", "interviewerPool.archive",
+		"interviewerPool.restore", "interviewerPool.addUser", "interviewerPool.removeUser", "job.setStatus", "job.update", "jobPosting.update",
+		"offer.start", "opening.addJob", "opening.removeJob", "opening.addLocation", "opening.removeLocation", "opening.setOpeningState", "opening.setArchived",
+		"opening.update", "webhook.update",
+	}
+
 	return components.EndpointRegistryInput{
 		staticschema.RootModuleID: {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
+				Support:  components.WriteSupport,
 			},
 		},
 	}
