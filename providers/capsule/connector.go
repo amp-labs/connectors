@@ -6,10 +6,12 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/internal/components"
+	"github.com/amp-labs/connectors/internal/components/deleter"
 	"github.com/amp-labs/connectors/internal/components/endpoints"
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/reader"
 	"github.com/amp-labs/connectors/internal/components/schema"
+	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/capsule/metadata"
 )
@@ -24,9 +26,12 @@ type Connector struct {
 	// Supported operations
 	components.SchemaProvider
 	components.Reader
+	components.Writer
+	components.Deleter
 
 	// Utilities.
 	endpointsCatalog *endpoints.Catalog
+	responseLocator  *endpoints.ResponseDataLocator
 }
 
 func NewConnector(params common.Parameters) (*Connector, error) {
@@ -38,9 +43,16 @@ func constructor(base *components.Connector) (*Connector, error) {
 	connector := &Connector{
 		Connector: base,
 		endpointsCatalog: &endpoints.Catalog{
-			Transport:     base.Transport,
-			ReadOperation: endpoints.OperationRegistryFromStaticSchema(metadata.Schemas),
+			Transport:       base.Transport,
+			ReadOperation:   endpoints.OperationRegistryFromStaticSchema(metadata.Schemas),
+			CreateOperation: createEndpoints,
+			UpdateOperation: updateEndpoints,
+			DeleteOperation: deleteEndpoints,
 		},
+		responseLocator: endpoints.NewResponseDataLocator(
+			&base.ProviderContext,
+			writeIdentifiers,
+		),
 	}
 
 	registry, err := components.NewEndpointRegistry(supportedOperations(connector.endpointsCatalog))
@@ -61,6 +73,29 @@ func constructor(base *components.Connector) (*Connector, error) {
 		operations.ReadHandlers{
 			BuildRequest:  connector.buildReadRequest,
 			ParseResponse: connector.parseReadResponse,
+			ErrorHandler:  errorHandler,
+		},
+	)
+
+	connector.Writer = writer.NewHTTPWriter(
+		connector.HTTPClient().Client,
+		registry,
+		connector.ProviderContext.Module(),
+		operations.WriteHandlers{
+			BuildRequest:  connector.buildWriteRequest,
+			ParseResponse: connector.parseWriteResponse,
+			ErrorHandler:  errorHandler,
+		},
+	)
+
+	// Set the deleter for the connector
+	connector.Deleter = deleter.NewHTTPDeleter(
+		connector.HTTPClient().Client,
+		registry,
+		connector.ProviderContext.Module(),
+		operations.DeleteHandlers{
+			BuildRequest:  connector.buildDeleteRequest,
+			ParseResponse: connector.parseDeleteResponse,
 			ErrorHandler:  errorHandler,
 		},
 	)

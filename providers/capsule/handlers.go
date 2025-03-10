@@ -1,7 +1,10 @@
 package capsule
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -70,4 +73,70 @@ func makeNextRecordsURL(resp *common.JSONHTTPResponse) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
 		return httpkit.HeaderLink(resp, "next"), nil
 	}
+}
+
+func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+	operation, err := c.endpointsCatalog.CreateWriteOperation(params)
+	if err != nil {
+		return nil, err
+	}
+
+	jsonData, err := json.Marshal(params.RecordData)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal record data: %w", err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, operation.Method, operation.URL.String(), bytes.NewReader(jsonData))
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+
+	return req, nil
+}
+
+func (c *Connector) parseWriteResponse(ctx context.Context, params common.WriteParams,
+	request *http.Request, response *common.JSONHTTPResponse,
+) (*common.WriteResult, error) {
+	body, ok := response.Body()
+	if !ok {
+		// it is unlikely to have no payload
+		return &common.WriteResult{
+			Success: true,
+		}, nil
+	}
+
+	recordID, err := c.responseLocator.ExtractRecordID(body, params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	return &common.WriteResult{
+		Success:  true,
+		RecordId: recordID,
+		Errors:   nil,
+		Data:     nil,
+	}, nil
+}
+
+func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
+	operation, err := c.endpointsCatalog.CreateDeleteOperation(params)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, operation.Method, operation.URL.String(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+
+	return req, nil
+}
+
+func (c *Connector) parseDeleteResponse(ctx context.Context, params common.DeleteParams,
+	request *http.Request, response *common.JSONHTTPResponse,
+) (*common.DeleteResult, error) {
+	// Response body is not used.
+	return &common.DeleteResult{
+		Success: true,
+	}, nil
 }
