@@ -10,6 +10,7 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/providers/ashby/metadata"
+	"github.com/spyzhov/ajson"
 )
 
 const (
@@ -103,26 +104,60 @@ func (c *Connector) parseWriteResponse(
 ) (*common.WriteResult, error) {
 	node, ok := response.Body()
 	if !ok {
-		return &common.WriteResult{
-			Success: true,
-		}, nil
+		return &common.WriteResult{Success: true}, nil
 	}
 
-	rawID, err := jsonquery.New(node, "results").StrWithDefault("id", "")
+	success, err := jsonquery.New(node).BoolRequired("success")
 	if err != nil {
 		return nil, err
 	}
 
-	if rawID == "" {
+	if !success {
+		return handleErrorResponse(node)
+	}
+
+	results, err := jsonquery.New(node).ObjectRequired("results")
+	if err != nil {
+		//nolint:nilerr
+		return &common.WriteResult{Success: true}, nil
+	}
+
+	rawID, err := jsonquery.New(node, "results").StringOptional("id")
+	if err != nil {
+		//nolint:nilerr
+		return &common.WriteResult{Success: true}, nil
+	}
+
+	data, err := jsonquery.Convertor.ObjectToMap(results)
+	if err != nil {
+		//nolint:nilerr
 		return &common.WriteResult{
-			Success: true,
+			Success:  true,
+			RecordId: *rawID,
 		}, nil
 	}
 
 	return &common.WriteResult{
 		Success:  true,
-		RecordId: rawID,
-		Errors:   nil,
-		Data:     nil,
+		RecordId: *rawID,
+		Data:     data,
+	}, nil
+}
+
+func handleErrorResponse(node *ajson.Node) (*common.WriteResult, error) {
+	errors, err := jsonquery.New(node).ArrayOptional("errors")
+	if err != nil {
+		return &common.WriteResult{Success: false}, nil //nolint:nilerr
+	}
+
+	errorArr, err := jsonquery.Convertor.ArrayToObjects(errors)
+	if err != nil {
+		//nolint:nilerr
+		return &common.WriteResult{Success: false}, nil
+	}
+
+	return &common.WriteResult{
+		Success: false,
+		Errors:  errorArr,
 	}, nil
 }
