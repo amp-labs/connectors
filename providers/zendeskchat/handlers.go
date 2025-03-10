@@ -11,8 +11,10 @@ import (
 )
 
 const (
-	bans    = "bans"
-	account = "account"
+	bans            = "bans"
+	account         = "account"
+	chats           = "chats"
+	defaultPageSize = 1000
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
@@ -27,6 +29,7 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 func (c *Connector) parseSingleObjectMetadataResponse(
 	ctx context.Context,
 	objectName string,
+	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ObjectMetadata, error) {
 	objectMetadata := common.ObjectMetadata{
@@ -47,7 +50,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 }
 
 func parseIndividualResponse(objectName string, response *common.JSONHTTPResponse) (map[string]any, error) {
-	field := responseFields(objectName)
+	field := responseField(objectName)
 	if field != "" {
 		resp, err := common.UnmarshalJSON[map[string]any](response)
 		if err != nil {
@@ -99,4 +102,40 @@ func parseListResponse(response *common.JSONHTTPResponse) (map[string]any, error
 	}
 
 	return (*resp)[0], nil
+}
+
+func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+	var (
+		url *urlbuilder.URL
+		err error
+	)
+
+	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, restAPIVersion, params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.NextPage != "" {
+		url, err = urlbuilder.New(params.NextPage.String())
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+}
+
+func (c *Connector) parseReadResponse(
+	ctx context.Context,
+	params common.ReadParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.ReadResult, error) {
+	return common.ParseResult(
+		response,
+		common.GetRecordsUnderJSONPath(responseField(params.ObjectName)),
+		nextRecordsURL(params.ObjectName),
+		common.GetMarshaledData,
+		params.Fields,
+	)
 }
