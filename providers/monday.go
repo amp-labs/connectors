@@ -7,7 +7,7 @@ func init() {
 	SetInfo(Monday, ProviderInfo{
 		DisplayName: "Monday",
 		AuthType:    Oauth2,
-		BaseURL:     "https://api.monday.com",
+		BaseURL:     "https://api.monday.com/v2",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://auth.monday.com/oauth2/authorize",
