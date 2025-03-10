@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
@@ -72,4 +73,47 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	}
 
 	return &objectMetadata, nil
+}
+
+func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+	var (
+		url *urlbuilder.URL
+		err error
+	)
+
+	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, restAPIVersion, params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.NextPage != "" {
+		url, err = urlbuilder.New(params.NextPage.String())
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// The object `audit/events` supports using the query parameters `dateFrom`, `dateTo`.
+	// We use these for querying data using the `Since` parameter.
+	if !params.Since.IsZero() {
+		url.WithQueryParam("dateFrom", params.Since.Format(time.RFC3339))
+		url.WithQueryParam("dateTo", time.Now().Format(time.RFC3339))
+	}
+
+	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+}
+
+func (c *Connector) parseReadResponse(
+	ctx context.Context,
+	params common.ReadParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.ReadResult, error) {
+	return common.ParseResult(
+		response,
+		records(params.ObjectName),
+		nextRecordsURL(),
+		common.GetMarshaledData,
+		params.Fields,
+	)
 }
