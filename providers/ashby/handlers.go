@@ -47,14 +47,13 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 func buildRequestbody(params common.ReadParams) map[string]any {
 	body := make(map[string]any)
 
-	body[pageSizeKey] = pageSize
-
 	if supportSince.Has(params.ObjectName) && !params.Since.IsZero() {
 		body[sinceKey] = params.Since.UnixMilli()
 	}
 
 	if supportPagination.Has(params.ObjectName) && params.NextPage != "" {
 		body[pageKey] = params.NextPage
+		body[pageSizeKey] = pageSize
 	}
 
 	return body
