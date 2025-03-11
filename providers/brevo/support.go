@@ -46,7 +46,6 @@ func supportedOperations() components.EndpointRegistryInput {
 		"contacts/export", "contacts/import", "events", "senders", "senders/domains", "webhooks", "webhooks/export",
 		"corporate/subAccount", "corporate/ssoToken", "corporate/subAccount/ssoToken", "corporate/subAccount/key",
 
-		// Split these long lines
 		"corporate/group", "corporate/user/invitation/send",
 		"organization/user/invitation/send", "organization/user/update/permissions",
 

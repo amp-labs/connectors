@@ -10,6 +10,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/providers/brevo/metadata"
 )
@@ -103,7 +104,7 @@ func (c *Connector) parseWriteResponse(
 		}, nil
 	}
 
-	recordIDPaths := map[string]string{ //nolint:unconvert
+	recordIDPaths := datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
 		"smtp/email":                           "messageId",
 		"transactionalSMS/sms":                 "messageId",
 		"whatsapp/sendMessage":                 "messageId",
@@ -118,28 +119,17 @@ func (c *Connector) parseWriteResponse(
 		"companies/import":                     "processId",
 		"crm/deals/import":                     "processId",
 		"orders/status/batch":                  "batchId",
-	}
+	},
+		func(objectName string) string {
+			return "id"
+		},
+	)
 
-	// Get ID path, defaulting to "id" if not specifically mapped
-	idPath := "id"
-	mappedPath, exists := recordIDPaths[params.ObjectName]
+	idPath := recordIDPaths.Get(params.ObjectName)
 
-	if exists {
-		idPath = mappedPath
-	}
-
-	// Try string first
-	rawID, err := jsonquery.New(node).StrWithDefault(idPath, "")
+	rawID, err := jsonquery.New(node).TextWithDefault(idPath, "")
 	if err != nil {
-		// Try integer
-		IntID, err := jsonquery.New(node).IntegerOptional(idPath)
-		if err != nil {
-			return nil, err
-		}
-
-		if IntID != nil {
-			rawID = strconv.FormatInt(*IntID, 10)
-		}
+		return nil, err
 	}
 
 	return &common.WriteResult{
