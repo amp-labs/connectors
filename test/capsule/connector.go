@@ -2,6 +2,7 @@ package smartlead
 
 import (
 	"context"
+	"crypto/tls"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
@@ -16,9 +17,15 @@ func GetCapsuleConnector(ctx context.Context) *capsule.Connector {
 	filePath := credscanning.LoadPath(providers.Capsule)
 	reader := utils.MustCreateProvCredJSON(filePath, false, false)
 
+	client := http.DefaultClient
+	client.Transport = &http.Transport{
+		TLSClientConfig:   &tls.Config{InsecureSkipVerify: true},
+		ForceAttemptHTTP2: false,
+	}
+
 	clientBuilder := &paramsbuilder.Client{}
 	clientBuilder.WithApiKeyHeaderClient(ctx,
-		http.DefaultClient, providers.Capsule,
+		client, providers.Capsule,
 		reader.Get(credscanning.Fields.ApiKey),
 	)
 
