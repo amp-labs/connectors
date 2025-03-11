@@ -1,4 +1,4 @@
-package gorgias
+package zendeskchat
 
 import (
 	"github.com/amp-labs/connectors/common"
@@ -11,7 +11,7 @@ import (
 	"github.com/amp-labs/connectors/providers"
 )
 
-const restAPIPrefix = "api"
+const restAPIVersion = "api/v2/chat"
 
 type Connector struct {
 	// Basic connector
@@ -19,7 +19,6 @@ type Connector struct {
 
 	// Require authenticated client
 	common.RequireAuthenticatedClient
-	// Require workspace
 	common.RequireWorkspace
 
 	// Supported operations
@@ -29,8 +28,7 @@ type Connector struct {
 }
 
 func NewConnector(params common.Parameters) (*Connector, error) {
-	// Create base connector with provider info
-	return components.Initialize(providers.Gorgias, params, constructor)
+	return components.Initialize(providers.ZendeskChat, params, constructor)
 }
 
 func constructor(base *components.Connector) (*Connector, error) {
@@ -63,6 +61,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 		},
 	)
 
+	// Set the write provider for the connector
 	connector.Writer = writer.NewHTTPWriter(
 		connector.HTTPClient().Client,
 		registry,
@@ -70,6 +69,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 		operations.WriteHandlers{
 			BuildRequest:  connector.buildWriteRequest,
 			ParseResponse: connector.parseWriteResponse,
+			ErrorHandler:  common.InterpretError,
 		},
 	)
 

@@ -1,6 +1,8 @@
 package common
 
 import (
+	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/amp-labs/connectors/internal/datautils"
@@ -102,6 +104,40 @@ func GetMarshaledData(records []map[string]any, fields []string) ([]ReadResultRo
 			Fields: ExtractLowercaseFieldsFromRaw(fields, record),
 			Raw:    record,
 		}
+	}
+
+	return data, nil
+}
+
+var (
+	errMissingId        = errors.New("missing id field in raw record")
+	errUnexpectedIdType = errors.New("unexpected id type")
+)
+
+// GetMarshalledDataWithId is very similar to GetMarshaledData, but it also extracts the "id" field from the raw record.
+func GetMarshalledDataWithId(records []map[string]any, fields []string) ([]ReadResultRow, error) {
+	data := make([]ReadResultRow, len(records))
+
+	fields = append(fields, "id")
+
+	//nolint:varnamelen
+	for i, record := range records {
+		data[i] = ReadResultRow{
+			Fields: ExtractLowercaseFieldsFromRaw(fields, record),
+			Raw:    record,
+		}
+
+		idAny := data[i].Fields["id"]
+		if idAny == nil {
+			return nil, errMissingId
+		}
+
+		id, ok := idAny.(string)
+		if !ok {
+			return nil, fmt.Errorf("%w: %T", errUnexpectedIdType, idAny)
+		}
+
+		data[i].Id = id
 	}
 
 	return data, nil

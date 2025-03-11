@@ -50,7 +50,7 @@ func init() { // nolint:funlen
 		// Reference docs
 		// https://developer.zendesk.com/documentation/live-chat/getting-started/auth/
 
-		BaseURL: "https://{{.workspace}}.zendesk.com/api/v2/chat",
+		BaseURL: "https://{{.workspace}}.zendesk.com",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://{{.workspace}}.zendesk.com/oauth2/chat/authorizations/new",
