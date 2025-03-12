@@ -8,7 +8,9 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/providers/ashby/metadata"
+	"github.com/spyzhov/ajson"
 )
 
 const (
@@ -69,4 +71,90 @@ func (c *Connector) parseReadResponse(
 		common.GetMarshaledData,
 		params.Fields,
 	)
+}
+
+// Note: Ashby API uses POST method for all operations (create/update/delete).
+func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+	var (
+		url *urlbuilder.URL
+		err error
+	)
+
+	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	jsonData, err := json.Marshal(params.RecordData)
+	if err != nil {
+		return nil, err
+	}
+
+	return http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonData))
+}
+
+func (c *Connector) parseWriteResponse(
+	ctx context.Context,
+	params common.WriteParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.WriteResult, error) {
+	node, ok := response.Body()
+	if !ok {
+		return &common.WriteResult{Success: true}, nil
+	}
+
+	success, err := jsonquery.New(node).BoolWithDefault("success", true)
+	if err != nil {
+		return nil, err
+	}
+
+	if !success {
+		return handleErrorResponse(node)
+	}
+
+	results, err := jsonquery.New(node).ObjectRequired("results")
+	if err != nil {
+		//nolint:nilerr
+		return &common.WriteResult{Success: true}, nil
+	}
+
+	rawID, err := jsonquery.New(node, "results").StringOptional("id")
+	if err != nil {
+		//nolint:nilerr
+		return &common.WriteResult{Success: true}, nil
+	}
+
+	data, err := jsonquery.Convertor.ObjectToMap(results)
+	if err != nil {
+		//nolint:nilerr
+		return &common.WriteResult{
+			Success:  true,
+			RecordId: *rawID,
+		}, nil
+	}
+
+	return &common.WriteResult{
+		Success:  true,
+		RecordId: *rawID,
+		Data:     data,
+	}, nil
+}
+
+func handleErrorResponse(node *ajson.Node) (*common.WriteResult, error) {
+	errors, err := jsonquery.New(node).ArrayOptional("errors")
+	if err != nil {
+		return &common.WriteResult{Success: false}, nil //nolint:nilerr
+	}
+
+	errorArr, err := jsonquery.Convertor.ArrayToObjects(errors)
+	if err != nil {
+		//nolint:nilerr
+		return &common.WriteResult{Success: false}, nil
+	}
+
+	return &common.WriteResult{
+		Success: false,
+		Errors:  errorArr,
+	}, nil
 }
