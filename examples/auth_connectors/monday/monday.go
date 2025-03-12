@@ -11,7 +11,7 @@ import (
 	"github.com/amp-labs/connectors/providers"
 )
 
-const ApiKey = "<api key>"
+const ApiKey = "eyJhbGciOiJIUzI1NiJ9.eyJ0aWQiOjQ4MzgxOTA5NywiYWFpIjoxMSwidWlkIjo3MzI4NTAxNywiaWFkIjoiMjAyNS0wMy0xMVQxMDo1OToxOC40MTNaIiwicGVyIjoibWU6d3JpdGUiLCJhY3RpZCI6Mjg0Nzg0OTgsInJnbiI6ImFwc2UyIn0.l_t8z3HITnS_6HkKHEGtxJehO9_YgSgV0BP9js-x2UE"
 
 // Run this example with `go run anthropic.go`
 func main() {
