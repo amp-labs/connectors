@@ -104,7 +104,7 @@ func (c *Connector) parseWriteResponse(
 		return &common.WriteResult{Success: true}, nil
 	}
 
-	success, err := jsonquery.New(node).BoolRequired("success")
+	success, err := jsonquery.New(node).BoolWithDefault("success", true)
 	if err != nil {
 		return nil, err
 	}
