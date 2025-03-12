@@ -1,0 +1,22 @@
+{
+  "modules": {
+    "root": {
+      "id": "",
+      "path": "",
+      "objects": {
+        "team": {
+          "displayName": "Team",
+          "path": "team",
+          "responseKey": "teams",
+          "fields": {
+            "id": "id",
+            "name": "name",
+            "color": "color",
+            "avatar": "avatar",
+            "members": "members"
+          }
+        }
+      }
+    }
+  }
+}
