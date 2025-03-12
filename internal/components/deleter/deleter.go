@@ -30,12 +30,12 @@ func NewHTTPDeleter(
 
 // Delete performs the delete operation.
 func (d *HTTPDeleter) Delete(ctx context.Context, params common.DeleteParams) (*common.DeleteResult, error) {
-	if d.operation == nil {
-		return nil, fmt.Errorf("%w: %s", common.ErrNotImplemented, "deleter is not implemented")
+	if err := params.ValidateParams(); err != nil {
+		return nil, err
 	}
 
-	if params.ObjectName == "" {
-		return nil, common.ErrMissingObjects
+	if d.operation == nil {
+		return nil, fmt.Errorf("%w: %s", common.ErrNotImplemented, "deleter is not implemented")
 	}
 
 	if d.registry == nil {
