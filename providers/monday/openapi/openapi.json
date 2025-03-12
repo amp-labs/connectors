@@ -1,6 +1,10 @@
 {
   "components": {
     "schemas": {
+      "JSON": {
+        "type": "object",
+        "additionalProperties": true
+      },
       "Account": {
         "properties": {
           "active_members_count": {
