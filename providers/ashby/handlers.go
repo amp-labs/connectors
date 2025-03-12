@@ -60,9 +60,11 @@ func (c *Connector) parseReadResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
+	responseKey := metadata.Schemas.LookupArrayFieldName(c.Module(), params.ObjectName)
+
 	return common.ParseResult(
 		response,
-		getRecords(params.ObjectName, c.Module()),
+		common.GetRecordsUnderJSONPath(responseKey),
 		makeNextRecordsURL,
 		common.GetMarshaledData,
 		params.Fields,
