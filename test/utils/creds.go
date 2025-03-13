@@ -1,7 +1,12 @@
 package utils
 
 import (
+	"context"
+	"net/http"
+
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
+	"golang.org/x/oauth2"
 )
 
 func MustCreateProvCredJSON(filePath string,
@@ -25,4 +30,21 @@ func MustCreateProvCredENV(providerName string,
 	}
 
 	return reader
+}
+
+func NewOauth2Client(
+	ctx context.Context,
+	reader *credscanning.ProviderCredentials,
+	configProvider func(*credscanning.ProviderCredentials) *oauth2.Config,
+) common.AuthenticatedHTTPClient {
+	client, err := common.NewOAuthHTTPClient(ctx,
+		common.WithOAuthClient(http.DefaultClient),
+		common.WithOAuthConfig(configProvider(reader)),
+		common.WithOAuthToken(reader.GetOauthToken()),
+	)
+	if err != nil {
+		Fail("failure", "error", err)
+	}
+
+	return client
 }
