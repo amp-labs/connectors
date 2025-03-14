@@ -49,7 +49,6 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 		}
 
 		resp, err := getResponse(c, ctx, objName)
-
 		if err != nil {
 			metadataResult.Errors[obj] = err
 
@@ -108,8 +107,7 @@ func getResponse(c *Connector, ctx context.Context, objName string) (*common.JSO
 	return resp, nil
 }
 
-//nolint:funlen
-func parseMetadataFromResponse(resp *common.JSONHTTPResponse, isAttioStandardOrCustomObj bool) (*common.ObjectMetadata, error) {
+func parseMetadataFromResponse(resp *common.JSONHTTPResponse, isAttioStandardOrCustomObj bool) (*common.ObjectMetadata, error) { //nolint:funlen
 	response, err := common.UnmarshalJSON[responseObject](resp)
 	if err != nil {
 		return nil, err
