@@ -1,9 +1,17 @@
 package lemlist
 
+import (
+	"fmt"
+	"strings"
+
+	"github.com/amp-labs/connectors/internal/components"
+	"github.com/amp-labs/connectors/internal/staticschema"
+)
+
 func responseSchema(objectName string) (string, string) {
 	// team --> an object
 	// api/team/senders --> an array of objects
-	// api/team/credits -->object
+	// api/team/credits --> object
 	// api/campaigns --> object campaigns array
 	// api/activities --> an array of objects
 	// api/unsubscirbes --> an array of objects
@@ -18,5 +26,22 @@ func responseSchema(objectName string) (string, string) {
 		return list, ""
 	default:
 		return object, ""
+	}
+}
+
+func supportedOperations() components.EndpointRegistryInput {
+	readSupport := []string{
+		"team", "team/senders", "team/credits", "campaigns",
+		"activities", "unsubscribes", "hooks", "database/filters",
+		"schema/people", "schema/companies", "schedules",
+	}
+
+	return components.EndpointRegistryInput{
+		staticschema.RootModuleID: {
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
+				Support:  components.ReadSupport,
+			},
+		},
 	}
 }
