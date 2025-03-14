@@ -16,12 +16,12 @@ import (
 func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
-	objectresponse := testutils.DataFromFile(t, "objects.json")
 	listresponse := testutils.DataFromFile(t, "lists.json")
 	notesresponse := testutils.DataFromFile(t, "notes.json")
 	workspacemembersresponse := testutils.DataFromFile(t, "workspace_members.json")
-	webhooksresponse := testutils.DataFromFile(t, "webhooks.json")
 	tasksresponse := testutils.DataFromFile(t, "tasks.json")
+	companiesresponse := testutils.DataFromFile(t, "companies.json")
+	companiesObjectResponse := []byte(`{"data": {"plural_noun": "Companies"}}`)
 
 	tests := []testroutines.Metadata{
 		{
@@ -31,13 +31,10 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:  "Successfully describe multiple object with metadata",
-			Input: []string{"objects", "lists", "workspace_members", "notes", "webhooks", "tasks"},
+			Input: []string{"lists", "workspace_members", "notes", "tasks", "companies"},
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
-					If:   mockcond.PathSuffix("/v2/objects"),
-					Then: mockserver.Response(http.StatusOK, objectresponse),
-				}, {
 					If:   mockcond.PathSuffix("/v2/lists"),
 					Then: mockserver.Response(http.StatusOK, listresponse),
 				}, {
@@ -50,23 +47,17 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					If:   mockcond.PathSuffix("/v2/tasks"),
 					Then: mockserver.Response(http.StatusOK, tasksresponse),
 				}, {
-					If:   mockcond.PathSuffix("/v2/webhooks"),
-					Then: mockserver.Response(http.StatusOK, webhooksresponse),
-				}},
+					If:   mockcond.PathSuffix("/v2/objects/companies/attributes"),
+					Then: mockserver.Response(http.StatusOK, companiesresponse),
+				}, {
+					If:   mockcond.PathSuffix("/v2/objects/companies"),
+					Then: mockserver.Response(http.StatusOK, companiesObjectResponse),
+				},
+				},
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
-					"objects": {
-						DisplayName: "objects",
-						FieldsMap: map[string]string{
-							"api_slug":      "api_slug",
-							"created_at":    "created_at",
-							"id":            "id",
-							"plural_noun":   "plural_noun",
-							"singular_noun": "singular_noun",
-						},
-					},
 					"lists": {
 						DisplayName: "lists",
 						FieldsMap: map[string]string{
@@ -92,16 +83,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							"last_name":     "last_name",
 						},
 					},
-					"webhooks": {
-						DisplayName: "webhooks",
-						FieldsMap: map[string]string{
-							"created_at":    "created_at",
-							"id":            "id",
-							"status":        "status",
-							"subscriptions": "subscriptions",
-							"target_url":    "target_url",
-						},
-					},
 					"notes": {
 						DisplayName: "notes",
 						FieldsMap: map[string]string{
@@ -125,6 +106,48 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							"id":                "id",
 							"is_completed":      "is_completed",
 							"linked_records":    "linked_records",
+						},
+					},
+					"companies": {
+						DisplayName: "Companies",
+						FieldsMap: map[string]string{
+							"record_id":                            "record_id",
+							"domains":                              "domains",
+							"name":                                 "name",
+							"description":                          "description",
+							"team":                                 "team",
+							"categories":                           "categories",
+							"primary_location":                     "primary_location",
+							"logo_url":                             "logo_url",
+							"angellist":                            "angellist",
+							"facebook":                             "facebook",
+							"instagram":                            "instagram",
+							"linkedin":                             "linkedin",
+							"twitter":                              "twitter",
+							"twitter_follower_count":               "twitter_follower_count",
+							"estimated_arr_usd":                    "estimated_arr_usd",
+							"funding_raised_usd":                   "funding_raised_usd",
+							"foundation_date":                      "foundation_date",
+							"employee_range":                       "employee_range",
+							"first_calendar_interaction":           "first_calendar_interaction",
+							"last_calendar_interaction":            "last_calendar_interaction",
+							"next_calendar_interaction":            "next_calendar_interaction",
+							"first_email_interaction":              "first_email_interaction",
+							"last_email_interaction":               "last_email_interaction",
+							"first_call_interaction":               "first_call_interaction",
+							"last_call_interaction":                "last_call_interaction",
+							"next_call_interaction":                "next_call_interaction",
+							"first_in_person_meeting_interaction":  "first_in_person_meeting_interaction",
+							"last_in_person_meeting_interaction":   "last_in_person_meeting_interaction",
+							"next_in_person_meeting_interaction":   "next_in_person_meeting_interaction",
+							"first_interaction":                    "first_interaction",
+							"last_interaction":                     "last_interaction",
+							"next_interaction":                     "next_interaction",
+							"strongest_connection_strength_legacy": "strongest_connection_strength_legacy",
+							"strongest_connection_strength":        "strongest_connection_strength",
+							"strongest_connection_user":            "strongest_connection_user",
+							"created_at":                           "created_at",
+							"created_by":                           "created_by",
 						},
 					},
 				},

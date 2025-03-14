@@ -1,0 +1,1128 @@
+{
+    "data": [
+      {
+        "id": {
+          "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+          "object_id": "1fa986a6-952e-4e92-ba01-acca61a7b616",
+          "attribute_id": "14447479-3006-4c0d-8855-61f3001c4990"
+        },
+        "title": "Record ID",
+        "description": null,
+        "api_slug": "record_id",
+        "type": "text",
+        "is_system_attribute": true,
+        "is_writable": false,
+        "is_required": false,
+        "is_unique": true,
+        "is_multiselect": false,
+        "is_default_value_enabled": false,
+        "is_archived": false,
+        "default_value": null,
+        "relationship": null,
+        "created_at": "2025-03-12T07:55:28.407000000Z",
+        "config": {
+          "currency": {
+            "default_currency_code": null,
+            "display_type": null
+          },
+          "record_reference": {
+            "allowed_object_ids": null
+          }
+        }
+      },
+      {
+        "id": {
+          "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+          "object_id": "1fa986a6-952e-4e92-ba01-acca61a7b616",
+          "attribute_id": "c86ffb39-178e-48cd-a613-c125ee2f439f"
+        },
+        "title": "Domains",
+        "description": null,
+        "api_slug": "domains",
+        "type": "domain",
+        "is_system_attribute": true,
+        "is_writable": true,
+        "is_required": false,
+        "is_unique": true,
+        "is_multiselect": true,
+        "is_default_value_enabled": false,
+        "is_archived": false,
+        "default_value": null,
+        "relationship": null,
+        "created_at": "2025-03-12T07:55:28.407000000Z",
+        "config": {
+          "currency": {
+            "default_currency_code": null,
+            "display_type": null
+          },
+          "record_reference": {
+            "allowed_object_ids": null
+          }
+        }
+      },
+      {
+        "id": {
+          "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+          "object_id": "1fa986a6-952e-4e92-ba01-acca61a7b616",
+          "attribute_id": "3646a06e-28bb-444f-8335-1df342a4c1f4"
+        },
+        "title": "Name",
+        "description": null,
+        "api_slug": "name",
+        "type": "text",
+        "is_system_attribute": true,
+        "is_writable": true,
+        "is_required": false,
+        "is_unique": false,
+        "is_multiselect": false,
+        "is_default_value_enabled": false,
+        "is_archived": false,
+        "default_value": null,
+        "relationship": null,
+        "created_at": "2025-03-12T07:55:28.407000000Z",
+        "config": {
+          "currency": {
+            "default_currency_code": null,
+            "display_type": null
+          },
+          "record_reference": {
+            "allowed_object_ids": null
+          }
+        }
+      },
+      {
+        "id": {
+          "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+          "object_id": "1fa986a6-952e-4e92-ba01-acca61a7b616",
+          "attribute_id": "0e71bb75-7dd7-4274-8408-33e9399c1a4e"
+        },
+        "title": "Description",
+        "description": null,
+        "api_slug": "description",
+        "type": "text",
+        "is_system_attribute": true,
+        "is_writable": true,
+        "is_required": false,
+        "is_unique": false,
+        "is_multiselect": false,
+        "is_default_value_enabled": false,
+        "is_archived": false,
+        "default_value": null,
+        "relationship": null,
+        "created_at": "2025-03-12T07:55:28.407000000Z",
+        "config": {
+          "currency": {
+            "default_currency_code": null,
+            "display_type": null
+          },
+          "record_reference": {
+            "allowed_object_ids": null
+          }
+        }
+      },
+      {
+        "id": {
+          "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+          "object_id": "1fa986a6-952e-4e92-ba01-acca61a7b616",
+          "attribute_id": "6ae72bca-9421-4fa8-bae2-19ced262607a"
+        },
+        "title": "Team",
+        "description": null,
+        "api_slug": "team",
+        "type": "record-reference",
+        "is_system_attribute": true,
+        "is_writable": true,
+        "is_required": false,
+        "is_unique": false,
+        "is_multiselect": true,
+        "is_default_value_enabled": false,
+        "is_archived": false,
+        "default_value": null,
+        "relationship": {
+          "id": {
+            "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+            "object_id": "1a4b88cf-520e-4394-886b-941c07c78854",
+            "attribute_id": "23dce744-db0d-458d-be57-87e656fdcc9a"
+          }
+        },
+        "created_at": "2025-03-12T07:55:28.407000000Z",
+        "config": {
+          "currency": {
+            "default_currency_code": null,
+            "display_type": null
+          },
+          "record_reference": {
+            "allowed_object_ids": [
+              "1a4b88cf-520e-4394-886b-941c07c78854"
+            ]
+          }
+        }
+      },
+      {
+        "id": {
+          "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+          "object_id": "1fa986a6-952e-4e92-ba01-acca61a7b616",
+          "attribute_id": "3500b55d-dcf9-407d-95fa-43fe8d61c588"
+        },
+        "title": "Categories",
+        "description": null,
+        "api_slug": "categories",
+        "type": "select",
+        "is_system_attribute": true,
+        "is_writable": true,
+        "is_required": false,
+        "is_unique": false,
+        "is_multiselect": true,
+        "is_default_value_enabled": false,
+        "is_archived": false,
+        "default_value": null,
+        "relationship": null,
+        "created_at": "2025-03-12T07:55:28.407000000Z",
+        "config": {
+          "currency": {
+            "default_currency_code": null,
+            "display_type": null
+          },
+          "record_reference": {
+            "allowed_object_ids": null
+          }
+        }
+      },
+      {
+        "id": {
+          "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+          "object_id": "1fa986a6-952e-4e92-ba01-acca61a7b616",
+          "attribute_id": "0fae27be-69df-4352-b10a-731eef931aa5"
+        },
+        "title": "Primary location",
+        "description": null,
+        "api_slug": "primary_location",
+        "type": "location",
+        "is_system_attribute": true,
+        "is_writable": true,
+        "is_required": false,
+        "is_unique": false,
+        "is_multiselect": false,
+        "is_default_value_enabled": false,
+        "is_archived": false,
+        "default_value": null,
+        "relationship": null,
+        "created_at": "2025-03-12T07:55:28.407000000Z",
+        "config": {
+          "currency": {
+            "default_currency_code": null,
+            "display_type": null
+          },
+          "record_reference": {
+            "allowed_object_ids": null
+          }
+        }
+      },
+      {
+        "id": {
+          "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+          "object_id": "1fa986a6-952e-4e92-ba01-acca61a7b616",
+          "attribute_id": "a0bb4367-637f-4ab5-94f3-4e99330215d9"
+        },
+        "title": "Logo URL",
+        "description": null,
+        "api_slug": "logo_url",
+        "type": "text",
+        "is_system_attribute": true,
+        "is_writable": false,
+        "is_required": false,
+        "is_unique": false,
+        "is_multiselect": false,
+        "is_default_value_enabled": false,
+        "is_archived": false,
+        "default_value": null,
+        "relationship": null,
+        "created_at": "2025-03-12T07:55:28.407000000Z",
+        "config": {
+          "currency": {
+            "default_currency_code": null,
+            "display_type": null
+          },
+          "record_reference": {
+            "allowed_object_ids": null
+          }
+        }
+      },
+      {
+        "id": {
+          "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+          "object_id": "1fa986a6-952e-4e92-ba01-acca61a7b616",
+          "attribute_id": "e553d1d3-1214-4593-b257-a771c1a3ed3c"
+        },
+        "title": "AngelList",
+        "description": null,
+        "api_slug": "angellist",
+        "type": "text",
+        "is_system_attribute": true,
+        "is_writable": true,
+        "is_required": false,
+        "is_unique": false,
+        "is_multiselect": false,
+        "is_default_value_enabled": false,
+        "is_archived": false,
+        "default_value": null,
+        "relationship": null,
+        "created_at": "2025-03-12T07:55:28.407000000Z",
+        "config": {
+          "currency": {
+            "default_currency_code": null,
+            "display_type": null
+          },
+          "record_reference": {
+            "allowed_object_ids": null
+          }
+        }
+      },
+      {
+        "id": {
+          "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+          "object_id": "1fa986a6-952e-4e92-ba01-acca61a7b616",
+          "attribute_id": "484f4977-ee31-4136-aee4-bff7802ac1ac"
+        },
+        "title": "Facebook",
+        "description": null,
+        "api_slug": "facebook",
+        "type": "text",
+        "is_system_attribute": true,
+        "is_writable": true,
+        "is_required": false,
+        "is_unique": false,
+        "is_multiselect": false,
+        "is_default_value_enabled": false,
+        "is_archived": false,
+        "default_value": null,
+        "relationship": null,
+        "created_at": "2025-03-12T07:55:28.407000000Z",
+        "config": {
+          "currency": {
+            "default_currency_code": null,
+            "display_type": null
+          },
+          "record_reference": {
+            "allowed_object_ids": null
+          }
+        }
+      },
+      {
+        "id": {
+          "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+          "object_id": "1fa986a6-952e-4e92-ba01-acca61a7b616",
+          "attribute_id": "3fd48134-3d3d-4e4d-91a8-a876463cd9a3"
+        },
+        "title": "Instagram",
+        "description": null,
+        "api_slug": "instagram",
+        "type": "text",
+        "is_system_attribute": true,
+        "is_writable": true,
+        "is_required": false,
+        "is_unique": false,
+        "is_multiselect": false,
+        "is_default_value_enabled": false,
+        "is_archived": false,
+        "default_value": null,
+        "relationship": null,
+        "created_at": "2025-03-12T07:55:28.407000000Z",
+        "config": {
+          "currency": {
+            "default_currency_code": null,
+            "display_type": null
+          },
+          "record_reference": {
+            "allowed_object_ids": null
+          }
+        }
+      },
+      {
+        "id": {
+          "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+          "object_id": "1fa986a6-952e-4e92-ba01-acca61a7b616",
+          "attribute_id": "265264c3-71e0-4154-9008-601149f00d83"
+        },
+        "title": "LinkedIn",
+        "description": null,
+        "api_slug": "linkedin",
+        "type": "text",
+        "is_system_attribute": true,
+        "is_writable": true,
+        "is_required": false,
+        "is_unique": false,
+        "is_multiselect": false,
+        "is_default_value_enabled": false,
+        "is_archived": false,
+        "default_value": null,
+        "relationship": null,
+        "created_at": "2025-03-12T07:55:28.407000000Z",
+        "config": {
+          "currency": {
+            "default_currency_code": null,
+            "display_type": null
+          },
+          "record_reference": {
+            "allowed_object_ids": null
+          }
+        }
+      },
+      {
+        "id": {
+          "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+          "object_id": "1fa986a6-952e-4e92-ba01-acca61a7b616",
+          "attribute_id": "9e01f573-b34b-40ba-85de-8e03aa5690cb"
+        },
+        "title": "Twitter",
+        "description": null,
+        "api_slug": "twitter",
+        "type": "text",
+        "is_system_attribute": true,
+        "is_writable": true,
+        "is_required": false,
+        "is_unique": false,
+        "is_multiselect": false,
+        "is_default_value_enabled": false,
+        "is_archived": false,
+        "default_value": null,
+        "relationship": null,
+        "created_at": "2025-03-12T07:55:28.407000000Z",
+        "config": {
+          "currency": {
+            "default_currency_code": null,
+            "display_type": null
+          },
+          "record_reference": {
+            "allowed_object_ids": null
+          }
+        }
+      },
+      {
+        "id": {
+          "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+          "object_id": "1fa986a6-952e-4e92-ba01-acca61a7b616",
+          "attribute_id": "e7625f84-6ac4-4c13-8ca0-d29c698bfea9"
+        },
+        "title": "Twitter follower count",
+        "description": null,
+        "api_slug": "twitter_follower_count",
+        "type": "number",
+        "is_system_attribute": true,
+        "is_writable": false,
+        "is_required": false,
+        "is_unique": false,
+        "is_multiselect": false,
+        "is_default_value_enabled": false,
+        "is_archived": false,
+        "default_value": null,
+        "relationship": null,
+        "created_at": "2025-03-12T07:55:28.407000000Z",
+        "config": {
+          "currency": {
+            "default_currency_code": null,
+            "display_type": null
+          },
+          "record_reference": {
+            "allowed_object_ids": null
+          }
+        }
+      },
+      {
+        "id": {
+          "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+          "object_id": "1fa986a6-952e-4e92-ba01-acca61a7b616",
+          "attribute_id": "80c72bbe-cd2a-4eb9-aad5-bacbb7533f0b"
+        },
+        "title": "Estimated ARR",
+        "description": null,
+        "api_slug": "estimated_arr_usd",
+        "type": "select",
+        "is_system_attribute": true,
+        "is_writable": true,
+        "is_required": false,
+        "is_unique": false,
+        "is_multiselect": false,
+        "is_default_value_enabled": false,
+        "is_archived": false,
+        "default_value": null,
+        "relationship": null,
+        "created_at": "2025-03-12T07:55:28.407000000Z",
+        "config": {
+          "currency": {
+            "default_currency_code": null,
+            "display_type": null
+          },
+          "record_reference": {
+            "allowed_object_ids": null
+          }
+        }
+      },
+      {
+        "id": {
+          "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+          "object_id": "1fa986a6-952e-4e92-ba01-acca61a7b616",
+          "attribute_id": "dcd7540b-c6fe-4fc1-8b19-5517e2e30dfe"
+        },
+        "title": "Funding raised",
+        "description": null,
+        "api_slug": "funding_raised_usd",
+        "type": "currency",
+        "is_system_attribute": true,
+        "is_writable": true,
+        "is_required": false,
+        "is_unique": false,
+        "is_multiselect": false,
+        "is_default_value_enabled": false,
+        "is_archived": false,
+        "default_value": null,
+        "relationship": null,
+        "created_at": "2025-03-12T07:55:28.407000000Z",
+        "config": {
+          "currency": {
+            "default_currency_code": "USD",
+            "display_type": "symbol"
+          },
+          "record_reference": {
+            "allowed_object_ids": null
+          }
+        }
+      },
+      {
+        "id": {
+          "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+          "object_id": "1fa986a6-952e-4e92-ba01-acca61a7b616",
+          "attribute_id": "b9d6bb80-1a73-4b49-9e87-2d1ffb64040a"
+        },
+        "title": "Foundation date",
+        "description": null,
+        "api_slug": "foundation_date",
+        "type": "date",
+        "is_system_attribute": true,
+        "is_writable": true,
+        "is_required": false,
+        "is_unique": false,
+        "is_multiselect": false,
+        "is_default_value_enabled": false,
+        "is_archived": false,
+        "default_value": null,
+        "relationship": null,
+        "created_at": "2025-03-12T07:55:28.407000000Z",
+        "config": {
+          "currency": {
+            "default_currency_code": null,
+            "display_type": null
+          },
+          "record_reference": {
+            "allowed_object_ids": null
+          }
+        }
+      },
+      {
+        "id": {
+          "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+          "object_id": "1fa986a6-952e-4e92-ba01-acca61a7b616",
+          "attribute_id": "e3c77e1d-15e7-4d89-b32e-5081967d78cf"
+        },
+        "title": "Employee range",
+        "description": null,
+        "api_slug": "employee_range",
+        "type": "select",
+        "is_system_attribute": true,
+        "is_writable": true,
+        "is_required": false,
+        "is_unique": false,
+        "is_multiselect": false,
+        "is_default_value_enabled": false,
+        "is_archived": false,
+        "default_value": null,
+        "relationship": null,
+        "created_at": "2025-03-12T07:55:28.407000000Z",
+        "config": {
+          "currency": {
+            "default_currency_code": null,
+            "display_type": null
+          },
+          "record_reference": {
+            "allowed_object_ids": null
+          }
+        }
+      },
+      {
+        "id": {
+          "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+          "object_id": "1fa986a6-952e-4e92-ba01-acca61a7b616",
+          "attribute_id": "5958ed0b-e083-4417-9235-284d119b4915"
+        },
+        "title": "First calendar interaction",
+        "description": null,
+        "api_slug": "first_calendar_interaction",
+        "type": "interaction",
+        "is_system_attribute": true,
+        "is_writable": false,
+        "is_required": false,
+        "is_unique": false,
+        "is_multiselect": false,
+        "is_default_value_enabled": false,
+        "is_archived": false,
+        "default_value": null,
+        "relationship": null,
+        "created_at": "2025-03-12T07:55:28.407000000Z",
+        "config": {
+          "currency": {
+            "default_currency_code": null,
+            "display_type": null
+          },
+          "record_reference": {
+            "allowed_object_ids": null
+          }
+        }
+      },
+      {
+        "id": {
+          "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+          "object_id": "1fa986a6-952e-4e92-ba01-acca61a7b616",
+          "attribute_id": "fa98cb18-0f4b-47f5-becc-a61a98bb4a98"
+        },
+        "title": "Last calendar interaction",
+        "description": null,
+        "api_slug": "last_calendar_interaction",
+        "type": "interaction",
+        "is_system_attribute": true,
+        "is_writable": false,
+        "is_required": false,
+        "is_unique": false,
+        "is_multiselect": false,
+        "is_default_value_enabled": false,
+        "is_archived": false,
+        "default_value": null,
+        "relationship": null,
+        "created_at": "2025-03-12T07:55:28.407000000Z",
+        "config": {
+          "currency": {
+            "default_currency_code": null,
+            "display_type": null
+          },
+          "record_reference": {
+            "allowed_object_ids": null
+          }
+        }
+      },
+      {
+        "id": {
+          "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+          "object_id": "1fa986a6-952e-4e92-ba01-acca61a7b616",
+          "attribute_id": "8c427a2d-953a-49d1-8ef7-8b7b34faed98"
+        },
+        "title": "Next calendar interaction",
+        "description": null,
+        "api_slug": "next_calendar_interaction",
+        "type": "interaction",
+        "is_system_attribute": true,
+        "is_writable": false,
+        "is_required": false,
+        "is_unique": false,
+        "is_multiselect": false,
+        "is_default_value_enabled": false,
+        "is_archived": false,
+        "default_value": null,
+        "relationship": null,
+        "created_at": "2025-03-12T07:55:28.407000000Z",
+        "config": {
+          "currency": {
+            "default_currency_code": null,
+            "display_type": null
+          },
+          "record_reference": {
+            "allowed_object_ids": null
+          }
+        }
+      },
+      {
+        "id": {
+          "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+          "object_id": "1fa986a6-952e-4e92-ba01-acca61a7b616",
+          "attribute_id": "cb1665c8-b645-4520-86de-d868ac6592dd"
+        },
+        "title": "First email interaction",
+        "description": null,
+        "api_slug": "first_email_interaction",
+        "type": "interaction",
+        "is_system_attribute": true,
+        "is_writable": false,
+        "is_required": false,
+        "is_unique": false,
+        "is_multiselect": false,
+        "is_default_value_enabled": false,
+        "is_archived": false,
+        "default_value": null,
+        "relationship": null,
+        "created_at": "2025-03-12T07:55:28.407000000Z",
+        "config": {
+          "currency": {
+            "default_currency_code": null,
+            "display_type": null
+          },
+          "record_reference": {
+            "allowed_object_ids": null
+          }
+        }
+      },
+      {
+        "id": {
+          "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+          "object_id": "1fa986a6-952e-4e92-ba01-acca61a7b616",
+          "attribute_id": "95367d9f-9107-44ca-9729-cc458c17ec00"
+        },
+        "title": "Last email interaction",
+        "description": null,
+        "api_slug": "last_email_interaction",
+        "type": "interaction",
+        "is_system_attribute": true,
+        "is_writable": false,
+        "is_required": false,
+        "is_unique": false,
+        "is_multiselect": false,
+        "is_default_value_enabled": false,
+        "is_archived": false,
+        "default_value": null,
+        "relationship": null,
+        "created_at": "2025-03-12T07:55:28.407000000Z",
+        "config": {
+          "currency": {
+            "default_currency_code": null,
+            "display_type": null
+          },
+          "record_reference": {
+            "allowed_object_ids": null
+          }
+        }
+      },
+      {
+        "id": {
+          "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+          "object_id": "1fa986a6-952e-4e92-ba01-acca61a7b616",
+          "attribute_id": "01324398-d876-44f3-bf5a-cb0f826cc237"
+        },
+        "title": "First call interaction",
+        "description": null,
+        "api_slug": "first_call_interaction",
+        "type": "interaction",
+        "is_system_attribute": true,
+        "is_writable": false,
+        "is_required": false,
+        "is_unique": false,
+        "is_multiselect": false,
+        "is_default_value_enabled": false,
+        "is_archived": false,
+        "default_value": null,
+        "relationship": null,
+        "created_at": "2025-03-12T07:55:28.407000000Z",
+        "config": {
+          "currency": {
+            "default_currency_code": null,
+            "display_type": null
+          },
+          "record_reference": {
+            "allowed_object_ids": null
+          }
+        }
+      },
+      {
+        "id": {
+          "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+          "object_id": "1fa986a6-952e-4e92-ba01-acca61a7b616",
+          "attribute_id": "a230a936-a34a-48c8-8b30-294544384a46"
+        },
+        "title": "Last call interaction",
+        "description": null,
+        "api_slug": "last_call_interaction",
+        "type": "interaction",
+        "is_system_attribute": true,
+        "is_writable": false,
+        "is_required": false,
+        "is_unique": false,
+        "is_multiselect": false,
+        "is_default_value_enabled": false,
+        "is_archived": false,
+        "default_value": null,
+        "relationship": null,
+        "created_at": "2025-03-12T07:55:28.407000000Z",
+        "config": {
+          "currency": {
+            "default_currency_code": null,
+            "display_type": null
+          },
+          "record_reference": {
+            "allowed_object_ids": null
+          }
+        }
+      },
+      {
+        "id": {
+          "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+          "object_id": "1fa986a6-952e-4e92-ba01-acca61a7b616",
+          "attribute_id": "ed79de35-2609-4f82-94a1-2feff92ce24e"
+        },
+        "title": "Next call interaction",
+        "description": null,
+        "api_slug": "next_call_interaction",
+        "type": "interaction",
+        "is_system_attribute": true,
+        "is_writable": false,
+        "is_required": false,
+        "is_unique": false,
+        "is_multiselect": false,
+        "is_default_value_enabled": false,
+        "is_archived": false,
+        "default_value": null,
+        "relationship": null,
+        "created_at": "2025-03-12T07:55:28.407000000Z",
+        "config": {
+          "currency": {
+            "default_currency_code": null,
+            "display_type": null
+          },
+          "record_reference": {
+            "allowed_object_ids": null
+          }
+        }
+      },
+      {
+        "id": {
+          "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+          "object_id": "1fa986a6-952e-4e92-ba01-acca61a7b616",
+          "attribute_id": "49fef59e-20e8-4588-961c-377d8b3dedbd"
+        },
+        "title": "First in-person meeting interaction",
+        "description": null,
+        "api_slug": "first_in_person_meeting_interaction",
+        "type": "interaction",
+        "is_system_attribute": true,
+        "is_writable": false,
+        "is_required": false,
+        "is_unique": false,
+        "is_multiselect": false,
+        "is_default_value_enabled": false,
+        "is_archived": false,
+        "default_value": null,
+        "relationship": null,
+        "created_at": "2025-03-12T07:55:28.407000000Z",
+        "config": {
+          "currency": {
+            "default_currency_code": null,
+            "display_type": null
+          },
+          "record_reference": {
+            "allowed_object_ids": null
+          }
+        }
+      },
+      {
+        "id": {
+          "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+          "object_id": "1fa986a6-952e-4e92-ba01-acca61a7b616",
+          "attribute_id": "b74ff818-6872-4846-b467-94e30f5f0a7d"
+        },
+        "title": "Last in-person meeting interaction",
+        "description": null,
+        "api_slug": "last_in_person_meeting_interaction",
+        "type": "interaction",
+        "is_system_attribute": true,
+        "is_writable": false,
+        "is_required": false,
+        "is_unique": false,
+        "is_multiselect": false,
+        "is_default_value_enabled": false,
+        "is_archived": false,
+        "default_value": null,
+        "relationship": null,
+        "created_at": "2025-03-12T07:55:28.407000000Z",
+        "config": {
+          "currency": {
+            "default_currency_code": null,
+            "display_type": null
+          },
+          "record_reference": {
+            "allowed_object_ids": null
+          }
+        }
+      },
+      {
+        "id": {
+          "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+          "object_id": "1fa986a6-952e-4e92-ba01-acca61a7b616",
+          "attribute_id": "1aa1b433-0cb0-4c7f-b71f-0d68e843bd1b"
+        },
+        "title": "Next in-person meeting interaction",
+        "description": null,
+        "api_slug": "next_in_person_meeting_interaction",
+        "type": "interaction",
+        "is_system_attribute": true,
+        "is_writable": false,
+        "is_required": false,
+        "is_unique": false,
+        "is_multiselect": false,
+        "is_default_value_enabled": false,
+        "is_archived": false,
+        "default_value": null,
+        "relationship": null,
+        "created_at": "2025-03-12T07:55:28.407000000Z",
+        "config": {
+          "currency": {
+            "default_currency_code": null,
+            "display_type": null
+          },
+          "record_reference": {
+            "allowed_object_ids": null
+          }
+        }
+      },
+      {
+        "id": {
+          "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+          "object_id": "1fa986a6-952e-4e92-ba01-acca61a7b616",
+          "attribute_id": "7e9d1a8a-b1dd-4b95-9584-c822c62b2bb6"
+        },
+        "title": "First interaction",
+        "description": null,
+        "api_slug": "first_interaction",
+        "type": "interaction",
+        "is_system_attribute": true,
+        "is_writable": false,
+        "is_required": false,
+        "is_unique": false,
+        "is_multiselect": false,
+        "is_default_value_enabled": false,
+        "is_archived": false,
+        "default_value": null,
+        "relationship": null,
+        "created_at": "2025-03-12T07:55:28.407000000Z",
+        "config": {
+          "currency": {
+            "default_currency_code": null,
+            "display_type": null
+          },
+          "record_reference": {
+            "allowed_object_ids": null
+          }
+        }
+      },
+      {
+        "id": {
+          "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+          "object_id": "1fa986a6-952e-4e92-ba01-acca61a7b616",
+          "attribute_id": "3f21cb88-e42b-4b01-ba43-8507daa81241"
+        },
+        "title": "Last interaction",
+        "description": null,
+        "api_slug": "last_interaction",
+        "type": "interaction",
+        "is_system_attribute": true,
+        "is_writable": false,
+        "is_required": false,
+        "is_unique": false,
+        "is_multiselect": false,
+        "is_default_value_enabled": false,
+        "is_archived": false,
+        "default_value": null,
+        "relationship": null,
+        "created_at": "2025-03-12T07:55:28.407000000Z",
+        "config": {
+          "currency": {
+            "default_currency_code": null,
+            "display_type": null
+          },
+          "record_reference": {
+            "allowed_object_ids": null
+          }
+        }
+      },
+      {
+        "id": {
+          "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+          "object_id": "1fa986a6-952e-4e92-ba01-acca61a7b616",
+          "attribute_id": "974e830d-b4c2-496a-adbf-5ee273470210"
+        },
+        "title": "Next interaction",
+        "description": null,
+        "api_slug": "next_interaction",
+        "type": "interaction",
+        "is_system_attribute": true,
+        "is_writable": false,
+        "is_required": false,
+        "is_unique": false,
+        "is_multiselect": false,
+        "is_default_value_enabled": false,
+        "is_archived": false,
+        "default_value": null,
+        "relationship": null,
+        "created_at": "2025-03-12T07:55:28.407000000Z",
+        "config": {
+          "currency": {
+            "default_currency_code": null,
+            "display_type": null
+          },
+          "record_reference": {
+            "allowed_object_ids": null
+          }
+        }
+      },
+      {
+        "id": {
+          "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+          "object_id": "1fa986a6-952e-4e92-ba01-acca61a7b616",
+          "attribute_id": "629e1e82-1d9a-4340-845d-a128bbbb1d6d"
+        },
+        "title": "Connection strength (legacy)",
+        "description": null,
+        "api_slug": "strongest_connection_strength_legacy",
+        "type": "number",
+        "is_system_attribute": true,
+        "is_writable": false,
+        "is_required": false,
+        "is_unique": false,
+        "is_multiselect": false,
+        "is_default_value_enabled": false,
+        "is_archived": false,
+        "default_value": null,
+        "relationship": null,
+        "created_at": "2025-03-12T07:55:28.407000000Z",
+        "config": {
+          "currency": {
+            "default_currency_code": null,
+            "display_type": null
+          },
+          "record_reference": {
+            "allowed_object_ids": null
+          }
+        }
+      },
+      {
+        "id": {
+          "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+          "object_id": "1fa986a6-952e-4e92-ba01-acca61a7b616",
+          "attribute_id": "e15fb842-9a04-4968-a193-8430c1ba14c2"
+        },
+        "title": "Connection strength",
+        "description": null,
+        "api_slug": "strongest_connection_strength",
+        "type": "select",
+        "is_system_attribute": true,
+        "is_writable": false,
+        "is_required": false,
+        "is_unique": false,
+        "is_multiselect": false,
+        "is_default_value_enabled": false,
+        "is_archived": false,
+        "default_value": null,
+        "relationship": null,
+        "created_at": "2025-03-12T07:55:28.407000000Z",
+        "config": {
+          "currency": {
+            "default_currency_code": null,
+            "display_type": null
+          },
+          "record_reference": {
+            "allowed_object_ids": null
+          }
+        }
+      },
+      {
+        "id": {
+          "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+          "object_id": "1fa986a6-952e-4e92-ba01-acca61a7b616",
+          "attribute_id": "aa7c4fa1-b835-48c1-b24b-f95df611180d"
+        },
+        "title": "Strongest connection",
+        "description": null,
+        "api_slug": "strongest_connection_user",
+        "type": "actor-reference",
+        "is_system_attribute": true,
+        "is_writable": false,
+        "is_required": false,
+        "is_unique": false,
+        "is_multiselect": false,
+        "is_default_value_enabled": false,
+        "is_archived": false,
+        "default_value": null,
+        "relationship": null,
+        "created_at": "2025-03-12T07:55:28.407000000Z",
+        "config": {
+          "currency": {
+            "default_currency_code": null,
+            "display_type": null
+          },
+          "record_reference": {
+            "allowed_object_ids": null
+          }
+        }
+      },
+      {
+        "id": {
+          "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+          "object_id": "1fa986a6-952e-4e92-ba01-acca61a7b616",
+          "attribute_id": "548a073b-c739-46c7-878a-91739a2fac9c"
+        },
+        "title": "Created at",
+        "description": null,
+        "api_slug": "created_at",
+        "type": "timestamp",
+        "is_system_attribute": true,
+        "is_writable": false,
+        "is_required": false,
+        "is_unique": false,
+        "is_multiselect": false,
+        "is_default_value_enabled": true,
+        "is_archived": false,
+        "default_value": {
+          "type": "dynamic",
+          "template": "PT0S"
+        },
+        "relationship": null,
+        "created_at": "2025-03-12T07:55:28.407000000Z",
+        "config": {
+          "currency": {
+            "default_currency_code": null,
+            "display_type": null
+          },
+          "record_reference": {
+            "allowed_object_ids": null
+          }
+        }
+      },
+      {
+        "id": {
+          "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+          "object_id": "1fa986a6-952e-4e92-ba01-acca61a7b616",
+          "attribute_id": "9a748587-a979-4682-9a35-5b97d2f6d478"
+        },
+        "title": "Created by",
+        "description": null,
+        "api_slug": "created_by",
+        "type": "actor-reference",
+        "is_system_attribute": true,
+        "is_writable": false,
+        "is_required": false,
+        "is_unique": false,
+        "is_multiselect": false,
+        "is_default_value_enabled": true,
+        "is_archived": false,
+        "default_value": {
+          "type": "dynamic",
+          "template": "current-user"
+        },
+        "relationship": null,
+        "created_at": "2025-03-12T07:55:28.407000000Z",
+        "config": {
+          "currency": {
+            "default_currency_code": null,
+            "display_type": null
+          },
+          "record_reference": {
+            "allowed_object_ids": null
+          }
+        }
+      }
+    ]
+  }
