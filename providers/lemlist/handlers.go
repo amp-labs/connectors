@@ -110,3 +110,38 @@ func parseList(response *common.JSONHTTPResponse) (map[string]any, error) {
 
 	return (*data)[0], nil
 }
+
+func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+	var (
+		url *urlbuilder.URL
+		err error
+	)
+
+	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	url.WithQueryParam("version", "v2")
+
+	if params.NextPage != "" {
+		url.WithQueryParam("page", params.NextPage.String())
+	}
+
+	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+}
+
+func (c *Connector) parseReadResponse(
+	ctx context.Context,
+	params common.ReadParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.ReadResult, error) {
+	return common.ParseResult(
+		response,
+		records(params.ObjectName),
+		nextRecordsURL(params.ObjectName),
+		common.GetMarshaledData,
+		params.Fields,
+	)
+}
