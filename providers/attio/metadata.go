@@ -17,6 +17,8 @@ type singleResponseObject struct {
 }
 
 // ListObjectMetadata creates metadata of object via reading objects using Attio API.
+//
+//nolint:funlen
 func (c *Connector) ListObjectMetadata(ctx context.Context,
 	objectNames []string,
 ) (*common.ListObjectMetadataResult, error) {
@@ -42,6 +44,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 			objName = obj
 		} else {
 			isAttioStandardOrCustomObj = true
+
 			objName = c.getObjectsURL(obj)
 		}
 
@@ -64,6 +67,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 
 		if isAttioStandardOrCustomObj {
 			objName = c.getObjects(obj)
+
 			res, err := getResponse(c, ctx, objName)
 			if err != nil {
 				metadataResult.Errors[obj] = err
@@ -79,7 +83,6 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 			}
 
 			metadata.DisplayName = displayName
-
 		} else {
 			metadata.DisplayName = obj
 		}
@@ -90,7 +93,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 	return &metadataResult, nil
 }
 
-// Getting the response
+// Getting the response.
 func getResponse(c *Connector, ctx context.Context, objName string) (*common.JSONHTTPResponse, error) {
 	url, err := c.getApiURL(objName)
 	if err != nil {
@@ -105,6 +108,7 @@ func getResponse(c *Connector, ctx context.Context, objName string) (*common.JSO
 	return resp, nil
 }
 
+//nolint:funlen
 func parseMetadataFromResponse(resp *common.JSONHTTPResponse, isAttioStandardOrCustomObj bool) (*common.ObjectMetadata, error) {
 	response, err := common.UnmarshalJSON[responseObject](resp)
 	if err != nil {
@@ -153,7 +157,9 @@ func getDisplayName(resp *common.JSONHTTPResponse) (string, error) {
 
 	for key, value := range response.Data {
 		if key == "plural_noun" {
-			return value.(string), nil
+			if val, ok := value.(string); ok {
+				return val, nil
+			}
 		}
 	}
 
