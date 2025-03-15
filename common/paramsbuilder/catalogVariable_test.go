@@ -17,19 +17,17 @@ func TestNewCatalogVariables(t *testing.T) {
 		expected []catalogreplacer.CatalogVariable
 	}{
 		{
-			name: "Unknown substitutions are not translated to Variables",
+			name: "Unknown substitutions is translated to Variables",
 			input: substitutions.Registry[string]{
-				"insect":  "butterfly",
-				"fish":    "catfish",
-				"nothing": "",
-				"":        "something",
+				"subdomain": "www",
 			},
-			expected: []catalogreplacer.CatalogVariable{},
+			expected: []catalogreplacer.CatalogVariable{
+				createCustomVariable("subdomain", "www"),
+			},
 		},
 		{
-			name: "Only workspace Variable is captured",
+			name: "Workspace Variable is captured",
 			input: substitutions.Registry[string]{
-				"insect":    "butterfly",
 				"workspace": "office",
 			},
 			expected: []catalogreplacer.CatalogVariable{
@@ -83,5 +81,14 @@ func TestNewCatalogSubstitutionRegistry(t *testing.T) {
 				t.Fatalf("%s: expected: (%v), got: (%v)", tt.name, tt.expected, output)
 			}
 		})
+	}
+}
+
+func createCustomVariable(from, to string) *catalogreplacer.CustomCatalogVariable {
+	return &catalogreplacer.CustomCatalogVariable{
+		Plan: catalogreplacer.SubstitutionPlan{
+			From: from,
+			To:   to,
+		},
 	}
 }

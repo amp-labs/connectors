@@ -15,7 +15,7 @@ func (f Factory) CreateProxyOAuth2AuthCode(ctx context.Context) *Proxy {
 	tokens := getTokensFromRegistry(f.CredsFilePath)
 	providerInfo := getProviderConfig(f.Provider, f.CatalogVariables)
 	cfg := configureOAuthAuthCode(params.ID, params.Secret, params.Scopes, providerInfo)
-	httpClient := setupOAuth2AuthCodeHTTPClient(ctx, providerInfo, cfg, tokens, f.Debug)
+	httpClient := setupOAuth2AuthCodeHTTPClient(ctx, providerInfo, cfg, tokens, f.Debug, f.Substitutions)
 	baseURL := getBaseURL(providerInfo)
 
 	return newProxy(baseURL, httpClient)
@@ -39,6 +39,7 @@ func configureOAuthAuthCode(
 // This helps with refreshing tokens automatically.
 func setupOAuth2AuthCodeHTTPClient(
 	ctx context.Context, prov *providers.ProviderInfo, cfg *oauth2.Config, tokens *oauth2.Token, debug bool,
+	metadata map[string]string,
 ) common.AuthenticatedHTTPClient {
 	client, err := prov.NewClient(ctx, &providers.NewClientParams{
 		Debug: debug,
@@ -51,7 +52,10 @@ func setupOAuth2AuthCodeHTTPClient(
 		panic(err)
 	}
 
-	cc, err := connector.NewConnector(prov.Name, connector.WithAuthenticatedClient(client))
+	cc, err := connector.NewConnector(prov.Name,
+		connector.WithAuthenticatedClient(client),
+		connector.WithMetadata(metadata),
+	)
 	if err != nil {
 		panic(err)
 	}
