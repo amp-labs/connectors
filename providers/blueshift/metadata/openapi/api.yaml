@@ -9245,6 +9245,9 @@
             "content": {
               "application/json": {
                 "schema": {
+                   "type": "object",
+                    "properties": {
+                      "results": {
                   "type": "array",
                   "description": "The list of live content slots.",
                   "items": {
@@ -9267,6 +9270,8 @@
                       }
                     }
                   }
+                  }
+                }
                 }
               }
             }

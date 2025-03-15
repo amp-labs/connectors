@@ -54,6 +54,7 @@ var (
 		"external_fetches": "results",
 		"push_templates":   "results",
 		"sms_templates":    "results",
+		"onsite_slots":     "results",
 	},
 		func(objectName string) (fieldName string) {
 			return objectName

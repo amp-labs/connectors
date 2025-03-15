@@ -57,5 +57,17 @@ func run() error {
 
 	utils.DumpJSON(res, os.Stdout)
 
+	slog.Info("Reading onsite slots")
+
+	res, err = connector.Read(ctx, common.ReadParams{
+		ObjectName: "onsite_slots",
+		Fields:     datautils.NewStringSet("uuid", "name"),
+	})
+	if err != nil {
+		return err
+	}
+
+	utils.DumpJSON(res, os.Stdout)
+
 	return nil
 }

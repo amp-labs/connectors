@@ -420,7 +420,7 @@
         "onsite_slots": {
           "displayName": "Onsite Slots",
           "path": "1/onsite_slots.json",
-          "responseKey": "",
+          "responseKey": "results",
           "fields": {
             "format": {
               "displayName": "format",
