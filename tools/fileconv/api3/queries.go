@@ -1,7 +1,6 @@
 package api3
 
 import (
-	"log/slog"
 	"sort"
 	"strings"
 
@@ -78,12 +77,12 @@ func (e Explorer[C]) ReadObjects(
 ) (metadatadef.Schemas[C], error) {
 	schemas := make(metadatadef.Schemas[C], 0)
 
-	pathItems, _ := e.GetPathItems(AndPathMatcher{
+	pathItems := e.GetPathItems(AndPathMatcher{
 		pathMatcher,
 		// There should be no curly brackets no IDs, no nested resources.
 		// Read objects are those that have constant string path.
 		IDPathIgnorer{},
-	}, objectEndpoints, true)
+	}, objectEndpoints)
 
 	for _, path := range pathItems {
 		schema, found, err := path.RetrieveSchemaOperation(operationName,
@@ -111,12 +110,12 @@ func (e Explorer[C]) ReadObjects(
 	return schemas, nil
 }
 
-// GetPathItems returns path items where object name is a single word. Second output is a list of duplicate path items.
+// GetPathItems returns path items where object name is a single word.
 func (e Explorer[C]) GetPathItems(
-	pathMatcher PathMatcher, endpointResources map[string]string, logDuplicates bool,
-) ([]*PathItem[C], datautils.UniqueLists[string, *PathItem[C]]) {
-	items := datautils.Map[string, *PathItem[C]]{}
-	duplicates := datautils.UniqueLists[string, *PathItem[C]]{}
+	pathMatcher PathMatcher, endpointResources map[string]string,
+) []*PathItem[C] {
+	items := datautils.Map[string, *PathItem[C]]{} // URL path to item
+	namedPaths := datautils.NamedLists[string]{}
 
 	for path, pathObj := range e.schema.GetPaths() {
 		if !pathMatcher.IsPathMatching(path) {
@@ -124,8 +123,8 @@ func (e Explorer[C]) GetPathItems(
 			continue
 		}
 
-		objectName, isDuplicate := endpointResources[path]
-		if !isDuplicate {
+		objectName, found := endpointResources[path]
+		if !found {
 			// ObjectName is empty at this time.
 			// We need to do some processing to infer ObjectName from URL path.
 			// By default, the last URL part is the ObjectName describing this REST resource.
@@ -133,42 +132,38 @@ func (e Explorer[C]) GetPathItems(
 			objectName = parts[len(parts)-1]
 		}
 
-		item := PathItem[C]{
+		items[path] = &PathItem[C]{
 			objectName: objectName,
 			urlPath:    path,
 			delegate:   pathObj,
 		}
 
-		if oldItem, exists := items[objectName]; exists {
-			duplicates.Add(objectName, oldItem) // existing item is a duplicate
-			duplicates.Add(objectName, &item)   // new item is considered a duplicate too
+		namedPaths.Add(objectName, path)
+	}
+
+	// Items that have repeated names
+	collisions := make([][]string, 0)
+
+	for _, paths := range namedPaths {
+		if len(paths) > 1 {
+			collisions = append(collisions, paths)
+		}
+	}
+
+	result := datautils.Map[string, *PathItem[C]]{} // object name to item
+
+	duplicatesMapping := e.duplicatesResolver(collisions)
+	for _, object := range items {
+		if nonCollidingName, wasDuplicate := duplicatesMapping[object.urlPath]; wasDuplicate {
+			// The name of this object was colliding with other objects.
+			object.objectName = nonCollidingName
+			result[nonCollidingName] = object
 		} else {
-			// Associate item with object name.
-			items[objectName] = &item
+			result[object.objectName] = object
 		}
 	}
 
-	// Report PathItems that use the same object name.
-	// They will be excluded from schema extraction and script user will be warned to take action.
-	for objectName, pathItems := range duplicates {
-		paths := make([]string, len(pathItems))
-		for index, item := range pathItems.List() {
-			paths[index] = item.urlPath
-		}
-
-		if logDuplicates {
-			slog.Warn("object name is not unique, ignoring",
-				"objectName", objectName,
-				"collisions", strings.Join(paths, ", "),
-			)
-		}
-
-		// We have logged each path that shares the same object name.
-		// No such object will be included for consistency.
-		delete(items, objectName)
-	}
-
-	return items.Values(), duplicates
+	return result.Values()
 }
 
 type EndpointOperations struct {
@@ -209,31 +204,24 @@ func (e Explorer[C]) GetEndpointOperations(
 ) ([]EndpointOperations, error) {
 	endpoints := make([]EndpointOperations, 0)
 
-	pathItems, duplicatePaths := e.GetPathItems(AndPathMatcher{pathMatcher, NestedIDPathIgnorer{}}, nil, false)
-	// We don't care about the object names. We want raw URL path.
-	// Since we are ignoring object names, the concept of duplicates is not relevant.
-	// Combine all paths into one registry. Look for paths that have operations of interest.
-	combinedPaths := duplicatePaths
-	combinedPaths.Add("", pathItems...)
+	pathItems := e.GetPathItems(AndPathMatcher{pathMatcher, NestedIDPathIgnorer{}}, nil)
 
-	for _, paths := range combinedPaths {
-		for path := range paths {
-			operations := datautils.Map[string, bool]{}
+	for _, path := range pathItems {
+		operations := datautils.Map[string, bool]{}
 
-			var found bool
+		var found bool
 
-			for _, operationName := range operationNames {
-				_, ok := path.selectOperation(operationName)
-				operations[operationName] = ok
-				found = found || ok // at least one operation should be found
-			}
+		for _, operationName := range operationNames {
+			_, ok := path.selectOperation(operationName)
+			operations[operationName] = ok
+			found = found || ok // at least one operation should be found
+		}
 
-			if found {
-				endpoints = append(endpoints, EndpointOperations{
-					URLPath:           path.urlPath,
-					OperationsSupport: operations,
-				})
-			}
+		if found {
+			endpoints = append(endpoints, EndpointOperations{
+				URLPath:           path.urlPath,
+				OperationsSupport: operations,
+			})
 		}
 	}
 
