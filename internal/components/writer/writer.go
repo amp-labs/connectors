@@ -30,12 +30,12 @@ func NewHTTPWriter(
 }
 
 func (w *HTTPWriter) Write(ctx context.Context, params common.WriteParams) (*common.WriteResult, error) {
-	if w.operation == nil {
-		return nil, fmt.Errorf("%w: %s", common.ErrNotImplemented, "writer is not implemented")
+	if err := params.ValidateParams(); err != nil {
+		return nil, err
 	}
 
-	if params.ObjectName == "" {
-		return nil, common.ErrMissingObjects
+	if w.operation == nil {
+		return nil, fmt.Errorf("%w: %s", common.ErrNotImplemented, "writer is not implemented")
 	}
 
 	// If there's no support, we can't validate the operation.
