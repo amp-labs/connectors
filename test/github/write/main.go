@@ -52,7 +52,6 @@ func addUserEmails(ctx context.Context, conn *github.Connector) error {
 		return err
 	}
 
-	// Print the results
 	jsonStr, err := json.MarshalIndent(result, "", "  ")
 	if err != nil {
 		return err
@@ -80,7 +79,6 @@ func createGist(ctx context.Context, conn *github.Connector) error {
 		return err
 	}
 
-	// Print the results
 	jsonStr, err := json.MarshalIndent(result, "", "  ")
 	if err != nil {
 		return err

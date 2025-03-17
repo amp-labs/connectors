@@ -34,7 +34,7 @@ func main() {
 func deleteGist(ctx context.Context, conn *github.Connector) error {
 	config := common.DeleteParams{
 		ObjectName: "gists",
-		RecordId:   "d4e45740e4c6edd1a329436244718fc2", // Replace with a valid Gist ID
+		RecordId:   "d4e45740e4c6edd1a329436244718fc2",
 	}
 
 	result, err := conn.Delete(ctx, config)
@@ -42,7 +42,6 @@ func deleteGist(ctx context.Context, conn *github.Connector) error {
 		return err
 	}
 
-	// Print the results
 	jsonStr, err := json.MarshalIndent(result, "", "  ")
 	if err != nil {
 		return err
