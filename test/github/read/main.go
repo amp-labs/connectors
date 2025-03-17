@@ -4,6 +4,8 @@ import (
 	"context"
 	"log/slog"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
@@ -13,23 +15,24 @@ import (
 )
 
 func main() {
-	if err := run(); err != nil {
-		utils.Fail(err.Error())
-	}
-}
+	// Handle Ctrl-C gracefully.
+	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer done()
 
-func run() error {
-	ctx := context.Background()
-	connector := github.GetGithubConnector(ctx)
+	// Set up slog logging.
+	utils.SetupLogging()
 
 	slog.Info("Reading emails")
+
+	connector := github.GetGithubConnector(ctx)
 
 	res, err := connector.Read(ctx, common.ReadParams{
 		ObjectName: "emails",
 		Fields:     datautils.NewStringSet("email", "primary"),
 	})
+
 	if err != nil {
-		return err
+		slog.Error(err.Error())
 	}
 
 	utils.DumpJSON(res, os.Stdout)
@@ -42,10 +45,9 @@ func run() error {
 		Since:      time.Date(2024, 03, 1, 0, 0, 0, 0, time.UTC),
 	})
 	if err != nil {
-		return err
+		slog.Error(err.Error())
 	}
 
 	utils.DumpJSON(res, os.Stdout)
 
-	return nil
 }
