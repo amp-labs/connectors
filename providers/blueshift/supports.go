@@ -45,7 +45,7 @@ var writeObjectWithSuffix = datautils.NewSet( //nolint:gochecknoglobals
 
 func supportedOperations() components.EndpointRegistryInput {
 	readSupport := metadata.Schemas.ObjectNames().GetList(staticschema.RootModuleID)
-	writeSupport := []string{objectNameCampaigns, objectNameCustomers, objectNameCustomUserLists, objectNameEvent, objectNameEmailTemplates, objectNamePushTemplates, objectNameSmsTemplates, objectNameExternalFetches} //nolint:lll
+	writeSupport := []string{objectNameCustomers, objectNameCustomUserLists, objectNameEvent, objectNameEmailTemplates, objectNamePushTemplates, objectNameSmsTemplates, objectNameExternalFetches} //nolint:lll
 
 	return components.EndpointRegistryInput{
 		staticschema.RootModuleID: {
