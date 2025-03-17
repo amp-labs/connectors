@@ -31,11 +31,12 @@ func main() {
 	}
 
 	slog.Info("> TEST Create Candidate Note")
+
 	if err := createCandidateNote(ctx, conn); err != nil {
 		slog.Error(err.Error())
 	}
-	slog.Info("Done")
 
+	slog.Info("Done")
 }
 
 func createApplication(ctx context.Context, conn *ashby.Connector) error {
