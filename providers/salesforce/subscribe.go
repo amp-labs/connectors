@@ -169,3 +169,12 @@ func (c *Connector) DeleteSubscription(ctx context.Context, params common.Subscr
 
 	return nil
 }
+
+func (c *Connector) UpdateSubscription(
+	ctx context.Context,
+	params common.SubscribeParams,
+	previousResult *common.SubscriptionResult,
+) (*common.SubscriptionResult, error) {
+	// TODO: Implement this
+	return nil, common.ErrOperationNotSupportedForObject
+}
