@@ -33,9 +33,10 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name:  "Correct error message is understood from JSON response",
 			Input: common.DeleteParams{ObjectName: "signals", RecordId: "22165"},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusUnprocessableEntity, listSchema),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.PathSuffix("/v2/signals/22165"),
+				Then:  mockserver.Response(http.StatusUnprocessableEntity, listSchema),
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
@@ -47,8 +48,11 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			Input: common.DeleteParams{ObjectName: "signals", RecordId: "22165"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.MethodDELETE(),
-				Then:  mockserver.Response(http.StatusNoContent),
+				If: mockcond.And{
+					mockcond.PathSuffix("/v2/signals/22165"),
+					mockcond.MethodDELETE(),
+				},
+				Then: mockserver.Response(http.StatusNoContent),
 			}.Server(),
 			Expected:     &common.DeleteResult{Success: true},
 			ExpectedErrs: nil,
