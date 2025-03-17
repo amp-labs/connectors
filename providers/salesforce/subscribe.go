@@ -213,6 +213,11 @@ func (c *Connector) UpdateSubscription(
 		delete(prevState.EventChannelMembers, objName)
 	}
 
+	objectsToDelete := []common.ObjectName{}
+	for objName := range prevState.EventChannelMembers {
+		objectsToDelete = append(objectsToDelete, objName)
+	}
+
 	if err := c.DeleteSubscription(ctx, *previousResult); err != nil {
 		return nil, fmt.Errorf("failed to delete previous subscription: %w", err)
 	}
@@ -225,6 +230,10 @@ func (c *Connector) UpdateSubscription(
 	//nolint:forcetypeassert
 	for objName, objectMembership := range createRes.Result.(*SubscribeResult).EventChannelMembers {
 		prevState.EventChannelMembers[objName] = objectMembership
+	}
+
+	for _, objName := range objectsToDelete {
+		delete(prevState.EventChannelMembers, objName)
 	}
 
 	objectsSubscribed := []common.ObjectName{}
