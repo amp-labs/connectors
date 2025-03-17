@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 	"log/slog"
 	"strings"
@@ -12,6 +11,7 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/staticschema"
+	"github.com/amp-labs/connectors/providers/salesloft"
 	"github.com/amp-labs/connectors/providers/salesloft/metadata"
 	"github.com/amp-labs/connectors/tools/scrapper"
 	"github.com/iancoleman/strcase"
@@ -22,6 +22,8 @@ const (
 	SalesloftDocsPrefixURL = "https://developers.salesloft.com"
 	// ModelIndexURL - on this page all links to dedicated Models can be found.
 	ModelIndexURL = "https://developers.salesloft.com/docs/api"
+
+	ConnectorBaseURL = "https://api.salesloft.com"
 )
 
 var withQueryParamStats bool // nolint:gochecknoglobals
@@ -45,13 +47,19 @@ func main() {
 	slog.Info("Completed.")
 }
 
+func formatObjectURL(fullPath string) string {
+	urlPath, _ := strings.CutPrefix(fullPath, ConnectorBaseURL+"/"+salesloft.ApiVersion)
+
+	return urlPath
+}
+
 func createIndex() {
 	sections := getSectionLinks()
 
 	registry := scrapper.NewModelURLRegistry()
 
 	for i, section := range sections {
-		doc := queryHTML(SalesloftDocsPrefixURL + "/" + section)
+		doc := queryHTML(SalesloftDocsPrefixURL + section)
 
 		doc.Find(".theme-doc-markdown article").Each(func(i int, s *goquery.Selection) {
 			cell := s.Find("a")
@@ -60,9 +68,10 @@ func createIndex() {
 			registry.Add(name, SalesloftDocsPrefixURL+path)
 		})
 		log.Printf("Index completed %.2f%%\n", getPercentage(i, len(sections))) // nolint:forbidigo
-	}
 
-	goutils.MustBeNil(metadata.FileManager.SaveIndex(registry))
+		// Update file after each iteration.
+		goutils.MustBeNil(metadata.FileManager.SaveIndex(registry))
+	}
 }
 
 func createSchemas() {
@@ -76,30 +85,37 @@ func createSchemas() {
 		model := filteredListDocs[i]
 		doc := queryHTML(model.URL)
 
-		// There are 2 unordered lists that describe response schema
 		modelName := strcase.ToSnake(model.Name)
+		endpointPath := doc.Find(".openapi__method-endpoint-path").Text()
+		urlPath := formatObjectURL(endpointPath)
 
-		doc.Find(`.openapi-tabs__schema-container ul`).
-			Each(func(i int, list *goquery.Selection) {
-				list.Children().Each(func(i int, property *goquery.Selection) {
-					// Sometimes there are nested fields we ignore them
-					// Only the first most field represents top level fields of response payload
-					fieldName := property.Find(`strong`).First().Text()
-					if len(fieldName) != 0 {
-						newDisplayName, isList := handleDisplayName(model.DisplayName)
-						if isList {
-							schemas.Add("", modelName, newDisplayName, fmt.Sprintf("/%v", modelName), "data",
-								staticschema.FieldMetadataMapV1{
-									fieldName: fieldName,
-								}, &model.URL, nil)
-						}
+		doc.Find(`.openapi-tabs__schema-container .openapi-schema__property`).
+			Each(func(i int, property *goquery.Selection) {
+				// Sometimes there are nested fields we ignore them
+				// Only the first most field represents top level fields of response payload
+				if !scrapper.Query.IsVisible(property) {
+					return
+				}
+
+				fieldName := property.Text()
+				if len(fieldName) != 0 {
+					newDisplayName, isList := handleDisplayName(model.DisplayName)
+					if isList {
+						schemas.Add("", modelName, newDisplayName, urlPath, "data",
+							staticschema.FieldMetadataMapV1{
+								fieldName: fieldName,
+							}, &model.URL, nil)
 					}
-				})
+				}
 			})
 
 		log.Printf("Schemas completed %.2f%% [%v]\n", getPercentage(i, len(filteredListDocs)), modelName)
+
+		// Update file after each iteration.
+		goutils.MustBeNil(metadata.FileManager.FlushSchemas(schemas))
 	}
 
+	// Finalized save.
 	goutils.MustBeNil(metadata.FileManager.SaveSchemas(schemas))
 }
 
@@ -201,10 +217,7 @@ func handleDisplayName(name string) (displayName string, isListResource bool) {
 }
 
 func queryHTML(sourceURL string) *goquery.Document {
-	// must end with `/` to avoid stupid redirect with then without then again with and without slash
-	if !strings.HasSuffix(sourceURL, "/") {
-		sourceURL += "/"
-	}
+	const waitInterval = 2 // seconds
 
-	return scrapper.QueryHTML(sourceURL)
+	return scrapper.QueryLoadableHTML(sourceURL, waitInterval)
 }

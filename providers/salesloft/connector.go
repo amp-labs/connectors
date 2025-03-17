@@ -8,7 +8,7 @@ import (
 	"github.com/amp-labs/connectors/providers"
 )
 
-const apiVersion = "v2"
+const ApiVersion = "v2"
 
 type Connector struct {
 	BaseURL string
@@ -51,7 +51,7 @@ func (c *Connector) String() string {
 }
 
 func (c *Connector) getURL(arg string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.BaseURL, apiVersion, arg)
+	return urlbuilder.New(c.BaseURL, ApiVersion, arg)
 }
 
 func (c *Connector) setBaseURL(newURL string) {

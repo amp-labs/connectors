@@ -11,6 +11,11 @@
       "url": "https://developers.salesloft.com/docs/api/account-stages-show"
     },
     {
+      "name": "account-team-member-roles-index",
+      "displayName": "List CRM Account Team Member Roles",
+      "url": "https://developers.salesloft.com/docs/api/account-team-member-roles-index"
+    },
+    {
       "name": "account-tiers-index",
       "displayName": "List Account Tiers",
       "url": "https://developers.salesloft.com/docs/api/account-tiers-index"
@@ -607,17 +612,17 @@
     },
     {
       "name": "opportunity-people-create",
-      "displayName": "Create a Sales Opportunity Person",
+      "displayName": "Create an Opportunity and Person Association",
       "url": "https://developers.salesloft.com/docs/api/opportunity-people-create"
     },
     {
       "name": "opportunity-people-destroy",
-      "displayName": "Delete a Opportunity Association",
+      "displayName": "Delete an Opportunity and Person Association",
       "url": "https://developers.salesloft.com/docs/api/opportunity-people-destroy"
     },
     {
       "name": "opportunity-people-index",
-      "displayName": "List opportunity/person associations",
+      "displayName": "List Opportunity and Person Associations",
       "url": "https://developers.salesloft.com/docs/api/opportunity-people-index"
     },
     {
@@ -852,12 +857,12 @@
     },
     {
       "name": "users-show",
-      "displayName": "Fetch a user",
+      "displayName": "Fetch a user, by User ID or User GUID",
       "url": "https://developers.salesloft.com/docs/api/users-show"
     },
     {
       "name": "users-update",
-      "displayName": "Update a user",
+      "displayName": "Update a user, by User ID or User GUID",
       "url": "https://developers.salesloft.com/docs/api/users-update"
     },
     {

@@ -50,5 +50,4 @@ func main() {
 
 	slog.Info("Reading user list")
 	utils.DumpJSON(res, os.Stdout)
-
 }

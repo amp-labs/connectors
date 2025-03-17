@@ -7,7 +7,7 @@
         "account_stages": {
           "displayName": "Account Stages",
           "path": "/account_stages",
-          "locatedAt": "data",
+          "responseKey": "data",
           "fields": {
             "active": "active",
             "created_at": "created_at",
@@ -18,10 +18,20 @@
           },
           "docs": "https://developers.salesloft.com/docs/api/account-stages-index"
         },
+        "account_team_member_roles": {
+          "displayName": "Crm Account Team Member Roles",
+          "path": "/account_team_member_roles",
+          "responseKey": "data",
+          "fields": {
+            "id": "id",
+            "name": "name"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/account-team-member-roles-index"
+        },
         "account_tiers": {
           "displayName": "Account Tiers",
           "path": "/account_tiers",
-          "locatedAt": "data",
+          "responseKey": "data",
           "fields": {
             "active": "active",
             "created_at": "created_at",
@@ -35,7 +45,7 @@
         "accounts": {
           "displayName": "Accounts",
           "path": "/accounts",
-          "locatedAt": "data",
+          "responseKey": "data",
           "fields": {
             "account_tier": "account_tier",
             "archived_at": "archived_at",
@@ -82,8 +92,8 @@
         },
         "action_details_call_instructions": {
           "displayName": "Call Instructions",
-          "path": "/action_details_call_instructions",
-          "locatedAt": "data",
+          "path": "/action_details/call_instructions",
+          "responseKey": "data",
           "fields": {
             "created_at": "created_at",
             "id": "id",
@@ -95,7 +105,7 @@
         "actions": {
           "displayName": "Actions",
           "path": "/actions",
-          "locatedAt": "data",
+          "responseKey": "data",
           "fields": {
             "action_details": "action_details",
             "cadence": "cadence",
@@ -116,18 +126,20 @@
         },
         "activities_calls": {
           "displayName": "Calls",
-          "path": "/activities_calls",
-          "locatedAt": "data",
+          "path": "/activities/calls",
+          "responseKey": "data",
           "fields": {
             "action": "action",
             "cadence": "cadence",
             "called_person": "called_person",
+            "connected": "connected",
             "created_at": "created_at",
             "crm_activity": "crm_activity",
             "disposition": "disposition",
             "duration": "duration",
             "id": "id",
             "note": "note",
+            "positive": "positive",
             "recordings": "recordings",
             "sentiment": "sentiment",
             "step": "step",
@@ -140,8 +152,8 @@
         },
         "activities_emails": {
           "displayName": "Emails",
-          "path": "/activities_emails",
-          "locatedAt": "data",
+          "path": "/activities/emails",
+          "responseKey": "data",
           "fields": {
             "action": "action",
             "additional_recipients": "additional_recipients",
@@ -176,7 +188,7 @@
         "activity_histories": {
           "displayName": "Past Activities",
           "path": "/activity_histories",
-          "locatedAt": "data",
+          "responseKey": "data",
           "fields": {
             "created_at": "created_at",
             "dynamic_data": "dynamic_data",
@@ -197,7 +209,7 @@
         "bulk_jobs": {
           "displayName": "Bulk Jobs",
           "path": "/bulk_jobs",
-          "locatedAt": "data",
+          "responseKey": "data",
           "fields": {
             "created_at": "created_at",
             "errors": "errors",
@@ -218,8 +230,8 @@
         },
         "bulk_jobs_job_data": {
           "displayName": "Job Data for a Bulk Job",
-          "path": "/bulk_jobs_job_data",
-          "locatedAt": "data",
+          "path": "/bulk_jobs/:bulk_jobs_id/job_data",
+          "responseKey": "data",
           "fields": {
             "error": "error",
             "id": "id",
@@ -231,8 +243,8 @@
         },
         "bulk_jobs_results": {
           "displayName": "Job Data for a Completed Bulk Job.",
-          "path": "/bulk_jobs_results",
-          "locatedAt": "data",
+          "path": "/bulk_jobs/:bulk_jobs_id/results",
+          "responseKey": "data",
           "fields": {
             "error": "error",
             "id": "id",
@@ -245,7 +257,7 @@
         "cadence_memberships": {
           "displayName": "Cadence Memberships",
           "path": "/cadence_memberships",
-          "locatedAt": "data",
+          "responseKey": "data",
           "fields": {
             "added_at": "added_at",
             "cadence": "cadence",
@@ -265,7 +277,7 @@
         "cadences": {
           "displayName": "Cadences",
           "path": "/cadences",
-          "locatedAt": "data",
+          "responseKey": "data",
           "fields": {
             "added_stage": "added_stage",
             "archived": "archived",
@@ -301,8 +313,8 @@
         },
         "calendar_events": {
           "displayName": "Calendar Events",
-          "path": "/calendar_events",
-          "locatedAt": "data",
+          "path": "/calendar/events",
+          "responseKey": "data",
           "fields": {
             "all_day": "all_day",
             "attendees": "attendees",
@@ -338,7 +350,7 @@
         "call_data_records": {
           "displayName": "Call Data Records",
           "path": "/call_data_records",
-          "locatedAt": "data",
+          "responseKey": "data",
           "fields": {
             "call": "call",
             "call_type": "call_type",
@@ -363,7 +375,7 @@
         "call_dispositions": {
           "displayName": "Call Dispositions",
           "path": "/call_dispositions",
-          "locatedAt": "data",
+          "responseKey": "data",
           "fields": {
             "created_at": "created_at",
             "id": "id",
@@ -375,7 +387,7 @@
         "call_sentiments": {
           "displayName": "Call Sentiments",
           "path": "/call_sentiments",
-          "locatedAt": "data",
+          "responseKey": "data",
           "fields": {
             "created_at": "created_at",
             "id": "id",
@@ -387,7 +399,7 @@
         "crm_account_team_members": {
           "displayName": "Crm Account Team Members",
           "path": "/crm_account_team_members",
-          "locatedAt": "data",
+          "responseKey": "data",
           "fields": {
             "account_access_level": "account_access_level",
             "account_crm_id": "account_crm_id",
@@ -402,7 +414,7 @@
         "crm_activities": {
           "displayName": "Crm Activities",
           "path": "/crm_activities",
-          "locatedAt": "data",
+          "responseKey": "data",
           "fields": {
             "activity_type": "activity_type",
             "created_at": "created_at",
@@ -421,7 +433,7 @@
         "crm_activity_fields": {
           "displayName": "Crm Activity Fields",
           "path": "/crm_activity_fields",
-          "locatedAt": "data",
+          "responseKey": "data",
           "fields": {
             "created_at": "created_at",
             "crm_object_type": "crm_object_type",
@@ -440,7 +452,7 @@
         "crm_users": {
           "displayName": "Crm Users",
           "path": "/crm_users",
-          "locatedAt": "data",
+          "responseKey": "data",
           "fields": {
             "created_at": "created_at",
             "crm_id": "crm_id",
@@ -456,7 +468,7 @@
         "custom_fields": {
           "displayName": "Custom Fields",
           "path": "/custom_fields",
-          "locatedAt": "data",
+          "responseKey": "data",
           "fields": {
             "created_at": "created_at",
             "field_type": "field_type",
@@ -470,7 +482,7 @@
         "custom_roles": {
           "displayName": "Custom Roles",
           "path": "/custom_roles",
-          "locatedAt": "data",
+          "responseKey": "data",
           "fields": {
             "id": "id",
             "name": "name"
@@ -479,8 +491,8 @@
         },
         "data_control_requests": {
           "displayName": "Requests",
-          "path": "/data_control_requests",
-          "locatedAt": "data",
+          "path": "/data_control/requests",
+          "responseKey": "data",
           "fields": {
             "dry_run": "dry_run",
             "events": "events",
@@ -495,7 +507,7 @@
         "email_template_attachments": {
           "displayName": "Email Template Attachments",
           "path": "/email_template_attachments",
-          "locatedAt": "data",
+          "responseKey": "data",
           "fields": {
             "attachment_content_type": "attachment_content_type",
             "attachment_file_size": "attachment_file_size",
@@ -512,7 +524,7 @@
         "email_templates": {
           "displayName": "Email Templates",
           "path": "/email_templates",
-          "locatedAt": "data",
+          "responseKey": "data",
           "fields": {
             "_links": "_links",
             "archived_at": "archived_at",
@@ -538,8 +550,8 @@
         },
         "external_configurations": {
           "displayName": "Team Configurations",
-          "path": "/external_configurations",
-          "locatedAt": "data",
+          "path": "/external/configurations",
+          "responseKey": "data",
           "fields": {
             "deleted": "deleted",
             "external_type": "external_type",
@@ -552,8 +564,8 @@
         },
         "external_mappings": {
           "displayName": "Team Mappings",
-          "path": "/external_mappings",
-          "locatedAt": "data",
+          "path": "/external/mappings",
+          "responseKey": "data",
           "fields": {
             "deleted": "deleted",
             "external_id": "external_id",
@@ -569,7 +581,7 @@
         "groups": {
           "displayName": "Groups",
           "path": "/groups",
-          "locatedAt": "data",
+          "responseKey": "data",
           "fields": {
             "accessible_groups": "accessible_groups",
             "id": "id",
@@ -581,7 +593,7 @@
         "imports": {
           "displayName": "Imports",
           "path": "/imports",
-          "locatedAt": "data",
+          "responseKey": "data",
           "fields": {
             "created_at": "created_at",
             "current_people_count": "current_people_count",
@@ -597,8 +609,8 @@
         },
         "integrations_signals_registrations": {
           "displayName": "Signal Registrations",
-          "path": "/integrations_signals_registrations",
-          "locatedAt": "data",
+          "path": "/integrations/signals/registrations",
+          "responseKey": "data",
           "fields": {
             "attribution": "attribution",
             "created_at": "created_at",
@@ -617,8 +629,8 @@
         },
         "integrations_signals_registrations_plays": {
           "displayName": "Play Registrations",
-          "path": "/integrations_signals_registrations_plays",
-          "locatedAt": "data",
+          "path": "/integrations/signals/registrations/plays",
+          "responseKey": "data",
           "fields": {
             "attributes": "attributes",
             "created_at": "created_at",
@@ -641,7 +653,7 @@
         "meetings": {
           "displayName": "Meetings",
           "path": "/meetings",
-          "locatedAt": "data",
+          "responseKey": "data",
           "fields": {
             "account_id": "account_id",
             "all_day": "all_day",
@@ -652,6 +664,8 @@
             "calendar_id": "calendar_id",
             "calendar_type": "calendar_type",
             "canceled_at": "canceled_at",
+            "count_towards_meetings_attended_metric": "count_towards_meetings_attended_metric",
+            "count_towards_meetings_booked_metric": "count_towards_meetings_booked_metric",
             "created_at": "created_at",
             "crm": "crm",
             "crm_custom_fields": "crm_custom_fields",
@@ -692,7 +706,7 @@
         "notes": {
           "displayName": "Notes",
           "path": "/notes",
-          "locatedAt": "data",
+          "responseKey": "data",
           "fields": {
             "associated_type": "associated_type",
             "associated_with": "associated_with",
@@ -708,7 +722,7 @@
         "opportunities": {
           "displayName": "Opportunities",
           "path": "/opportunities",
-          "locatedAt": "data",
+          "responseKey": "data",
           "fields": {
             "account": "account",
             "account_crm_id": "account_crm_id",
@@ -747,9 +761,9 @@
           "docs": "https://developers.salesloft.com/docs/api/opportunities-index"
         },
         "opportunity_people": {
-          "displayName": "Opportunity/Person Associations",
+          "displayName": "Opportunity And Person Associations",
           "path": "/opportunity_people",
-          "locatedAt": "data",
+          "responseKey": "data",
           "fields": {
             "created_at": "created_at",
             "id": "id",
@@ -764,7 +778,7 @@
         "opportunity_stages": {
           "displayName": "Opportunity Stages",
           "path": "/opportunity_stages",
-          "locatedAt": "data",
+          "responseKey": "data",
           "fields": {
             "active": "active",
             "created_at": "created_at",
@@ -778,7 +792,7 @@
         "pending_emails": {
           "displayName": "Pending Emails",
           "path": "/pending_emails",
-          "locatedAt": "data",
+          "responseKey": "data",
           "fields": {
             "id": "id",
             "mailbox": "mailbox",
@@ -789,7 +803,7 @@
         "people": {
           "displayName": "People",
           "path": "/people",
-          "locatedAt": "data",
+          "responseKey": "data",
           "fields": {
             "account": "account",
             "account_crm_id": "account_crm_id",
@@ -855,7 +869,7 @@
         "person_stages": {
           "displayName": "Person Stages",
           "path": "/person_stages",
-          "locatedAt": "data",
+          "responseKey": "data",
           "fields": {
             "active": "active",
             "created_at": "created_at",
@@ -869,7 +883,7 @@
         "phone_number_assignments": {
           "displayName": "Phone Number Assignments",
           "path": "/phone_number_assignments",
-          "locatedAt": "data",
+          "responseKey": "data",
           "fields": {
             "id": "id",
             "number": "number",
@@ -879,8 +893,8 @@
         },
         "phone_numbers_caller_ids": {
           "displayName": "Caller Ids",
-          "path": "/phone_numbers_caller_ids",
-          "locatedAt": "data",
+          "path": "/phone_numbers/caller_ids",
+          "responseKey": "data",
           "fields": {
             "account_name": "account_name",
             "display_name": "display_name",
@@ -892,7 +906,7 @@
         "saved_list_views": {
           "displayName": "Saved List Views",
           "path": "/saved_list_views",
-          "locatedAt": "data",
+          "responseKey": "data",
           "fields": {
             "id": "id",
             "is_default": "is_default",
@@ -906,7 +920,7 @@
         "steps": {
           "displayName": "Steps",
           "path": "/steps",
-          "locatedAt": "data",
+          "responseKey": "data",
           "fields": {
             "cadence": "cadence",
             "created_at": "created_at",
@@ -926,7 +940,7 @@
         "successes": {
           "displayName": "Successes",
           "path": "/successes",
-          "locatedAt": "data",
+          "responseKey": "data",
           "fields": {
             "counts": "counts",
             "created_at": "created_at",
@@ -947,7 +961,7 @@
         "tags": {
           "displayName": "Team Tags",
           "path": "/tags",
-          "locatedAt": "data",
+          "responseKey": "data",
           "fields": {
             "id": "id",
             "name": "name"
@@ -957,7 +971,7 @@
         "tasks": {
           "displayName": "Tasks",
           "path": "/tasks",
-          "locatedAt": "data",
+          "responseKey": "data",
           "fields": {
             "completed_at": "completed_at",
             "completed_by": "completed_by",
@@ -982,7 +996,7 @@
         "team_template_attachments": {
           "displayName": "Team Template Attachments",
           "path": "/team_template_attachments",
-          "locatedAt": "data",
+          "responseKey": "data",
           "fields": {
             "attachment_file_size": "attachment_file_size",
             "attachment_id": "attachment_id",
@@ -996,7 +1010,7 @@
         "team_templates": {
           "displayName": "Team Templates",
           "path": "/team_templates",
-          "locatedAt": "data",
+          "responseKey": "data",
           "fields": {
             "_links": "_links",
             "archived_at": "archived_at",
@@ -1020,7 +1034,7 @@
         "users": {
           "displayName": "Users",
           "path": "/users",
-          "locatedAt": "data",
+          "responseKey": "data",
           "fields": {
             "email": "email",
             "guid": "guid",
@@ -1032,7 +1046,7 @@
         "webhook_subscriptions": {
           "displayName": "Webhook Subscriptions",
           "path": "/webhook_subscriptions",
-          "locatedAt": "data",
+          "responseKey": "data",
           "fields": {
             "callback_token": "callback_token",
             "callback_url": "callback_url",

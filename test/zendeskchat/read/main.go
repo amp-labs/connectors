@@ -37,7 +37,6 @@ func main() {
 	if err := testRead(ctx, conn, "triggers", []string{"name", "enabled", "id"}); err != nil {
 		slog.Error(err.Error())
 	}
-
 }
 
 func testRead(ctx context.Context, conn *zc.Connector, objectName string, fields []string) error {
@@ -59,6 +58,7 @@ func testRead(ctx context.Context, conn *zc.Connector, objectName string, fields
 	if _, err := os.Stdout.Write(jsonStr); err != nil {
 		return fmt.Errorf("error writing to stdout: %w", err)
 	}
+
 	if _, err := os.Stdout.WriteString("\n"); err != nil {
 		return fmt.Errorf("error writing to stdout: %w", err)
 	}
