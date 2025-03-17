@@ -33,4 +33,16 @@ func main() {
 
 	slog.Info("Reading projects..")
 	utils.DumpJSON(res, os.Stdout)
+
+	slog.Info("Reading projects..")
+	res, err = conn.Read(ctx, common.ReadParams{
+		ObjectName: "attributes/deals",
+		Fields:     connectors.Fields("attributeOptions", "isRequired", "label"),
+	})
+	if err != nil {
+		utils.Fail("error reading from Brevo", "error", err)
+	}
+
+	utils.DumpJSON(res, os.Stdout)
+
 }
