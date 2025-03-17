@@ -123,6 +123,7 @@ func testCreatingChat(ctx context.Context, conn *zc.Connector) error {
 			},
 		},
 	}
+
 	res, err := conn.Write(ctx, params)
 	if err != nil {
 		return err

@@ -170,11 +170,78 @@ func (c *Connector) DeleteSubscription(ctx context.Context, params common.Subscr
 	return nil
 }
 
+//nolint:funlen,cyclop
 func (c *Connector) UpdateSubscription(
 	ctx context.Context,
 	params common.SubscribeParams,
 	previousResult *common.SubscriptionResult,
 ) (*common.SubscriptionResult, error) {
-	// TODO: Implement this
-	return nil, common.ErrOperationNotSupportedForObject
+	if previousResult.Result == nil {
+		return nil, fmt.Errorf("%w: missing previousResult.Result", errMissingParams)
+	}
+
+	prevState, ok := previousResult.Result.(*SubscribeResult)
+	if !ok {
+		return nil, fmt.Errorf(
+			"%w: expected previousResult.Result to be type '%T', but got '%T'",
+			errInvalidRequestType,
+			prevState,
+			previousResult.Result,
+		)
+	}
+
+	objectsToExcludeFromSubscription := []common.ObjectName{}
+	objectsExcludeFromDelete := []common.ObjectName{}
+
+	for objName := range params.SubscriptionEvents {
+		if _, ok := prevState.EventChannelMembers[objName]; ok {
+			objectsToExcludeFromSubscription = append(objectsToExcludeFromSubscription, objName)
+		}
+	}
+
+	for objName := range prevState.EventChannelMembers {
+		if _, ok := params.SubscriptionEvents[objName]; ok {
+			objectsExcludeFromDelete = append(objectsExcludeFromDelete, objName)
+		}
+	}
+
+	for _, objName := range objectsToExcludeFromSubscription {
+		delete(params.SubscriptionEvents, objName)
+	}
+
+	for _, objName := range objectsExcludeFromDelete {
+		delete(prevState.EventChannelMembers, objName)
+	}
+
+	if err := c.DeleteSubscription(ctx, *previousResult); err != nil {
+		return nil, fmt.Errorf("failed to delete previous subscription: %w", err)
+	}
+
+	createRes, err := c.Subscribe(ctx, params)
+	if err != nil {
+		return nil, fmt.Errorf("failed to subscribe to new objects: %w", err)
+	}
+
+	//nolint:forcetypeassert
+	for objName, objectMembership := range createRes.Result.(*SubscribeResult).EventChannelMembers {
+		prevState.EventChannelMembers[objName] = objectMembership
+	}
+
+	objectsSubscribed := []common.ObjectName{}
+	for objName := range prevState.EventChannelMembers {
+		objectsSubscribed = append(objectsSubscribed, objName)
+	}
+
+	res := &common.SubscriptionResult{
+		Status: common.SubscriptionStatusSuccess,
+		Result: prevState,
+		Events: []common.SubscriptionEventType{
+			common.SubscriptionEventTypeCreate,
+			common.SubscriptionEventTypeUpdate,
+			common.SubscriptionEventTypeDelete,
+		},
+		Objects: objectsSubscribed,
+	}
+
+	return res, nil
 }
