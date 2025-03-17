@@ -42,6 +42,8 @@ func main() {
 		createIndex()
 		// using index file collect response fields for every object
 		createSchemas()
+
+		namingPostProcessSchemas()
 	}
 
 	slog.Info("Completed.")
@@ -116,6 +118,29 @@ func createSchemas() {
 	}
 
 	// Finalized save.
+	goutils.MustBeNil(metadata.FileManager.SaveSchemas(schemas))
+}
+
+func namingPostProcessSchemas() {
+	schemas := metadata.FileManager.MustLoadSchemas()
+
+	apiEndpoints := naming.NewAPIEndpoints()
+
+	for _, module := range schemas.Modules {
+		for _, object := range module.Objects {
+			apiEndpoints.Add(object.URLPath)
+		}
+
+		endpointNames := apiEndpoints.ShortestNonCollidingNames()
+
+		for oldObjectName, object := range module.Objects {
+			delete(module.Objects, oldObjectName)
+
+			newName := endpointNames[object.URLPath]
+			module.Objects[newName] = object
+		}
+	}
+
 	goutils.MustBeNil(metadata.FileManager.SaveSchemas(schemas))
 }
 
