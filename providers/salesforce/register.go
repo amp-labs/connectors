@@ -25,9 +25,9 @@ type RegistrationParams struct {
 }
 
 type ResultData struct {
-	EventChannel     *EventChannel
-	NamedCredential  *NamedCredential
-	EventRelayConfig *EventRelayConfig
+	EventChannel     *EventChannel     `json:"eventChannel"     validate:"required"`
+	NamedCredential  *NamedCredential  `json:"namedCredential"  validate:"required"`
+	EventRelayConfig *EventRelayConfig `json:"eventRelayConfig" validate:"required"`
 }
 
 func (c *Connector) EmptyRegistrationParams() *common.SubscriptionRegistrationParams {
