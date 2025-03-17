@@ -140,12 +140,11 @@ type SubscribeConnector interface {
 		ctx context.Context,
 		params common.SubscribeParams,
 	) (*common.SubscriptionResult, error)
-	// TODO: Uncomment when we implement UpdateSubscription in Salesforce
-	// UpdateSubscription(
-	// 	ctx context.Context,
-	// 	params SubscribeParams,
-	// 	previousResult SubscriptionResult,
-	// ) (*SubscriptionResult, error)
+	UpdateSubscription(
+		ctx context.Context,
+		params common.SubscribeParams,
+		previousResult *common.SubscriptionResult,
+	) (*common.SubscriptionResult, error)
 	DeleteSubscription(
 		ctx context.Context,
 		previousResult common.SubscriptionResult,
