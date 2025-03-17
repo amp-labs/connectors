@@ -170,12 +170,18 @@ func (c *Connector) DeleteSubscription(ctx context.Context, params common.Subscr
 	return nil
 }
 
+// UpdateSubscription will update the subscription by:
+// 1. Removing objects from the previous subscription that are not in the new subscription.
+// 2. Adding new objects to the subscription that are in the new subscription but not in the previous subscription.
+// 3. Returning the updated subscription result.
+//
 //nolint:funlen,cyclop
 func (c *Connector) UpdateSubscription(
 	ctx context.Context,
 	params common.SubscribeParams,
 	previousResult *common.SubscriptionResult,
 ) (*common.SubscriptionResult, error) {
+	// validate the previous result
 	if previousResult.Result == nil {
 		return nil, fmt.Errorf("%w: missing previousResult.Result", errMissingParams)
 	}
@@ -193,27 +199,33 @@ func (c *Connector) UpdateSubscription(
 	objectsToExcludeFromSubscription := []common.ObjectName{}
 	objectsExcludeFromDelete := []common.ObjectName{}
 
+	// collect objects to exclude from subscription
 	for objName := range params.SubscriptionEvents {
 		if _, ok := prevState.EventChannelMembers[objName]; ok {
 			objectsToExcludeFromSubscription = append(objectsToExcludeFromSubscription, objName)
 		}
 	}
 
+	// collect objects to exclude from delete
 	for objName := range prevState.EventChannelMembers {
 		if _, ok := params.SubscriptionEvents[objName]; ok {
 			objectsExcludeFromDelete = append(objectsExcludeFromDelete, objName)
 		}
 	}
 
+	// remove objects to exclude from subscription and delete
 	for _, objName := range objectsToExcludeFromSubscription {
 		delete(params.SubscriptionEvents, objName)
 	}
 
+	// remove objects to exclude from delete
 	for _, objName := range objectsExcludeFromDelete {
 		delete(prevState.EventChannelMembers, objName)
 	}
 
 	objectsToDelete := []common.ObjectName{}
+
+	// get list of objects to delete to remove from result of update after delete
 	for objName := range prevState.EventChannelMembers {
 		objectsToDelete = append(objectsToDelete, objName)
 	}
@@ -222,28 +234,34 @@ func (c *Connector) UpdateSubscription(
 		return nil, fmt.Errorf("failed to delete previous subscription: %w", err)
 	}
 
+	// create new subscription
 	createRes, err := c.Subscribe(ctx, params)
 	if err != nil {
 		return nil, fmt.Errorf("failed to subscribe to new objects: %w", err)
 	}
 
+	// for clarity, rename the state since we will return the object as the result of update
+	newState := prevState
+
 	//nolint:forcetypeassert
+	// update the previous result with the new subscription result
 	for objName, objectMembership := range createRes.Result.(*SubscribeResult).EventChannelMembers {
-		prevState.EventChannelMembers[objName] = objectMembership
+		newState.EventChannelMembers[objName] = objectMembership
 	}
 
+	// remove delete objects from the previous result to return
 	for _, objName := range objectsToDelete {
-		delete(prevState.EventChannelMembers, objName)
+		delete(newState.EventChannelMembers, objName)
 	}
 
 	objectsSubscribed := []common.ObjectName{}
-	for objName := range prevState.EventChannelMembers {
+	for objName := range newState.EventChannelMembers {
 		objectsSubscribed = append(objectsSubscribed, objName)
 	}
 
 	res := &common.SubscriptionResult{
 		Status: common.SubscriptionStatusSuccess,
-		Result: prevState,
+		Result: newState,
 		Events: []common.SubscriptionEventType{
 			common.SubscriptionEventTypeCreate,
 			common.SubscriptionEventTypeUpdate,
