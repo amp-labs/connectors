@@ -126,16 +126,6 @@
       "url": "https://developers.salesloft.com/docs/api/bulk-jobs-job-data-create"
     },
     {
-      "name": "bulk-jobs-job-data-index",
-      "displayName": "List job data for a bulk job",
-      "url": "https://developers.salesloft.com/docs/api/bulk-jobs-job-data-index"
-    },
-    {
-      "name": "bulk-jobs-results-index",
-      "displayName": "List job data for a completed bulk job.",
-      "url": "https://developers.salesloft.com/docs/api/bulk-jobs-results-index"
-    },
-    {
       "name": "bulk-jobs-show",
       "displayName": "Fetch a bulk job",
       "url": "https://developers.salesloft.com/docs/api/bulk-jobs-show"

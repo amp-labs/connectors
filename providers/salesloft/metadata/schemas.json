@@ -90,7 +90,7 @@
           },
           "docs": "https://developers.salesloft.com/docs/api/accounts-index"
         },
-        "action_details_call_instructions": {
+        "action_details/call_instructions": {
           "displayName": "Call Instructions",
           "path": "/action_details/call_instructions",
           "responseKey": "data",
@@ -124,7 +124,7 @@
           },
           "docs": "https://developers.salesloft.com/docs/api/actions-index"
         },
-        "activities_calls": {
+        "activities/calls": {
           "displayName": "Calls",
           "path": "/activities/calls",
           "responseKey": "data",
@@ -150,7 +150,7 @@
           },
           "docs": "https://developers.salesloft.com/docs/api/activities-calls-index"
         },
-        "activities_emails": {
+        "activities/emails": {
           "displayName": "Emails",
           "path": "/activities/emails",
           "responseKey": "data",
@@ -228,32 +228,6 @@
           },
           "docs": "https://developers.salesloft.com/docs/api/bulk-jobs-index"
         },
-        "bulk_jobs_job_data": {
-          "displayName": "Job Data for a Bulk Job",
-          "path": "/bulk_jobs/:bulk_jobs_id/job_data",
-          "responseKey": "data",
-          "fields": {
-            "error": "error",
-            "id": "id",
-            "record": "record",
-            "resource": "resource",
-            "status": "status"
-          },
-          "docs": "https://developers.salesloft.com/docs/api/bulk-jobs-job-data-index"
-        },
-        "bulk_jobs_results": {
-          "displayName": "Job Data for a Completed Bulk Job.",
-          "path": "/bulk_jobs/:bulk_jobs_id/results",
-          "responseKey": "data",
-          "fields": {
-            "error": "error",
-            "id": "id",
-            "record": "record",
-            "resource": "resource",
-            "status": "status"
-          },
-          "docs": "https://developers.salesloft.com/docs/api/bulk-jobs-results-index"
-        },
         "cadence_memberships": {
           "displayName": "Cadence Memberships",
           "path": "/cadence_memberships",
@@ -311,7 +285,7 @@
           },
           "docs": "https://developers.salesloft.com/docs/api/cadences-index"
         },
-        "calendar_events": {
+        "calendar/events": {
           "displayName": "Calendar Events",
           "path": "/calendar/events",
           "responseKey": "data",
@@ -489,7 +463,7 @@
           },
           "docs": "https://developers.salesloft.com/docs/api/custom-roles-index"
         },
-        "data_control_requests": {
+        "data_control/requests": {
           "displayName": "Requests",
           "path": "/data_control/requests",
           "responseKey": "data",
@@ -548,7 +522,7 @@
           },
           "docs": "https://developers.salesloft.com/docs/api/email-templates-index"
         },
-        "external_configurations": {
+        "external/configurations": {
           "displayName": "Team Configurations",
           "path": "/external/configurations",
           "responseKey": "data",
@@ -562,7 +536,7 @@
           },
           "docs": "https://developers.salesloft.com/docs/api/external-configurations-index"
         },
-        "external_mappings": {
+        "external/mappings": {
           "displayName": "Team Mappings",
           "path": "/external/mappings",
           "responseKey": "data",
@@ -607,7 +581,7 @@
           },
           "docs": "https://developers.salesloft.com/docs/api/imports-index"
         },
-        "integrations_signals_registrations": {
+        "integrations/signals/registrations": {
           "displayName": "Signal Registrations",
           "path": "/integrations/signals/registrations",
           "responseKey": "data",
@@ -627,7 +601,7 @@
           },
           "docs": "https://developers.salesloft.com/docs/api/integrations-signals-registrations-index"
         },
-        "integrations_signals_registrations_plays": {
+        "integrations/signals/registrations/plays": {
           "displayName": "Play Registrations",
           "path": "/integrations/signals/registrations/plays",
           "responseKey": "data",
@@ -891,7 +865,7 @@
           },
           "docs": "https://developers.salesloft.com/docs/api/phone-number-assignments-index"
         },
-        "phone_numbers_caller_ids": {
+        "phone_numbers/caller_ids": {
           "displayName": "Caller Ids",
           "path": "/phone_numbers/caller_ids",
           "responseKey": "data",

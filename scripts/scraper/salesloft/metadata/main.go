@@ -26,6 +26,11 @@ const (
 	ConnectorBaseURL = "https://api.salesloft.com"
 )
 
+var excludedDocumentation = datautils.NewSet( // nolint:gochecknoglobals
+	"/docs/api/bulk-jobs-job-data-index/",
+	"/docs/api/bulk-jobs-results-index/",
+)
+
 var withQueryParamStats bool // nolint:gochecknoglobals
 
 func init() {
@@ -65,6 +70,10 @@ func createIndex() {
 			cell := s.Find("a")
 			path, _ := cell.Attr("href")
 			name, _ := cell.Find("h2").Attr("title")
+			if excludedDocumentation.Has(path) {
+				return
+			}
+
 			registry.Add(name, SalesloftDocsPrefixURL+path)
 		})
 		log.Printf("Index completed %.2f%%\n", getPercentage(i, len(sections))) // nolint:forbidigo
@@ -85,9 +94,9 @@ func createSchemas() {
 		model := filteredListDocs[i]
 		doc := queryHTML(model.URL)
 
-		modelName := strcase.ToSnake(model.Name)
 		endpointPath := doc.Find(".openapi__method-endpoint-path").Text()
 		urlPath := formatObjectURL(endpointPath)
+		objectName, _ := strings.CutPrefix(urlPath, "/")
 
 		doc.Find(`.openapi-tabs__schema-container .openapi-schema__property`).
 			Each(func(i int, property *goquery.Selection) {
@@ -101,7 +110,7 @@ func createSchemas() {
 				if len(fieldName) != 0 {
 					newDisplayName, isList := handleDisplayName(model.DisplayName)
 					if isList {
-						schemas.Add("", modelName, newDisplayName, urlPath, "data",
+						schemas.Add("", objectName, newDisplayName, urlPath, "data",
 							staticschema.FieldMetadataMapV1{
 								fieldName: fieldName,
 							}, &model.URL, nil)
@@ -109,7 +118,7 @@ func createSchemas() {
 				}
 			})
 
-		log.Printf("Schemas completed %.2f%% [%v]\n", getPercentage(i, len(filteredListDocs)), modelName)
+		log.Printf("Schemas completed %.2f%% [%v]\n", getPercentage(i, len(filteredListDocs)), objectName)
 
 		// Update file after each iteration.
 		goutils.MustBeNil(metadata.FileManager.FlushSchemas(schemas))
