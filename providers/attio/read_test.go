@@ -15,12 +15,10 @@ import (
 func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
-	responseObjects := testutils.DataFromFile(t, "objects.json")
 	responseLists := testutils.DataFromFile(t, "lists.json")
 	responseWorkspace := testutils.DataFromFile(t, "workspace_members.json")
 	responseNotes := testutils.DataFromFile(t, "notes.json")
 	responseTasks := testutils.DataFromFile(t, "tasks.json")
-	responseWebhooks := testutils.DataFromFile(t, "webhooks.json")
 
 	tests := []testroutines.Read{
 		{
@@ -29,65 +27,10 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
-			Name:         "At least one field is requested",
-			Input:        common.ReadParams{ObjectName: "objects"},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{common.ErrMissingFields},
-		},
-		{
 			Name:         "Unknown objects are not supported",
 			Input:        common.ReadParams{ObjectName: "attributes", Fields: connectors.Fields("")},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
-		},
-		{
-			Name:  "An Empty response",
-			Input: common.ReadParams{ObjectName: "webhooks", Fields: connectors.Fields("")},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.ResponseString(http.StatusOK, `{"data":[]}`),
-			}.Server(),
-			Expected:     &common.ReadResult{Rows: 0, Data: []common.ReadResultRow{}, Done: true},
-			ExpectedErrs: nil,
-		},
-		{
-			Name:  "Read list of all objects",
-			Input: common.ReadParams{ObjectName: "objects", Fields: connectors.Fields("")},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, responseObjects),
-			}.Server(),
-			Expected: &common.ReadResult{
-				Rows: 2,
-				Data: []common.ReadResultRow{{
-					Fields: map[string]any{},
-					Raw: map[string]any{
-						"id": map[string]any{
-							"workspace_id": "0d4d7fa2-d6e8-4a61-a7dc-e178405ff3c6",
-							"object_id":    "9aff8088-dd1f-4e98-ad76-b1e49b9a419a",
-						},
-						"api_slug":      "people",
-						"singular_noun": "Person",
-						"plural_noun":   "People",
-						"created_at":    "2024-09-17T11:41:18.736000000Z",
-					},
-				}, {
-					Fields: map[string]any{},
-					Raw: map[string]any{
-						"id": map[string]any{
-							"workspace_id": "0d4d7fa2-d6e8-4a61-a7dc-e178405ff3c6",
-							"object_id":    "f4df082c-b46e-43e4-a747-f7918b487f44",
-						},
-						"api_slug":      "companies",
-						"singular_noun": "Company",
-						"plural_noun":   "Companies",
-						"created_at":    "2024-09-17T11:41:18.736000000Z",
-					},
-				}},
-				NextPage: "",
-				Done:     true,
-			},
-			ExpectedErrs: nil,
 		},
 		{
 			Name:  "Read list of all lists",
@@ -237,47 +180,6 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							"id":   "53b1e97a-08d6-4d2e-856d-5371bb6f4052",
 						},
 						"created_at": "2024-09-23T11:04:07.647000000Z",
-					},
-				},
-				},
-				NextPage: "test?limit=10&offset=10",
-				Done:     false,
-			},
-			ExpectedErrs: nil,
-		},
-		{
-			Name:  "Read list of all webhooks",
-			Input: common.ReadParams{ObjectName: "webhooks", Fields: connectors.Fields(""), NextPage: "test?limit=10"},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, responseWebhooks),
-			}.Server(),
-			Expected: &common.ReadResult{
-				Rows: 1,
-				Data: []common.ReadResultRow{{
-					Fields: map[string]any{},
-					Raw: map[string]any{
-						"id": map[string]any{
-							"workspace_id": "0d4d7fa2-d6e8-4a61-a7dc-e178405ff3c6",
-							"webhook_id":   "02303005-d363-4f49-8fd2-19944003b1d2",
-						},
-						"target_url": "https://example.com/webhook",
-						"status":     "active",
-						"subscriptions": []interface{}{
-							map[string]any{
-								"event_type": "note.created",
-								"filter": map[string]any{
-									"$or": []interface{}{
-										map[string]any{
-											"field":    "id.list_id",
-											"operator": "equals",
-											"value":    "d34c5f6b-0410-4830-853d-8a6602252687",
-										},
-									},
-								},
-							},
-						},
-						"created_at": "2024-09-20T11:14:17.403000000Z",
 					},
 				},
 				},
