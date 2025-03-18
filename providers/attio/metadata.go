@@ -90,6 +90,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 		}
 
 		displayName := obj
+
 		if isCustom {
 			name, err := c.getObjectDisplayName(ctx, obj)
 			if err != nil {
@@ -97,6 +98,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 
 				continue
 			}
+
 			if name != "" {
 				displayName = name
 			}
@@ -114,10 +116,12 @@ func (c *Connector) getObjectAttributes(
 	ctx context.Context, obj string,
 ) (map[string]common.FieldMetadata, bool, error) {
 	isAttioStandardOrCustomObj := !supportAttioApiObj.Has(obj)
+
 	var (
 		url *urlbuilder.URL
 		err error
 	)
+
 	if isAttioStandardOrCustomObj {
 		url, err = c.getObjectAttributesURL(obj)
 		if err != nil {
@@ -181,11 +185,10 @@ func parseMetadataFromResponse(resp *common.JSONHTTPResponse,
 
 		for _, value := range response.Data {
 			apiSlug := value.APISlug
-			providerType := value.Type
 			metadata[apiSlug] = common.FieldMetadata{
 				DisplayName:  apiSlug,
 				ValueType:    getFieldValueType(value.Type),
-				ProviderType: providerType,
+				ProviderType: value.Type,
 				ReadOnly:     false,
 				Values:       nil,
 			}
@@ -238,7 +241,7 @@ func getFieldValueType(field string) common.ValueType {
 	case "timestamp":
 		return common.ValueTypeDateTime
 	default:
-		// location, currency, interaction, actor-reference
+		// location, currency, interaction, actor-reference, record-reference
 		return common.ValueTypeOther
 	}
 }
