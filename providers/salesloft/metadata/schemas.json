@@ -370,6 +370,36 @@
           },
           "docs": "https://developers.salesloft.com/docs/api/call-sentiments-index"
         },
+        "conversations": {
+          "displayName": "Conversations",
+          "path": "/conversations",
+          "responseKey": "data",
+          "fields": {
+            "account": "account",
+            "call_id": "call_id",
+            "created_at": "created_at",
+            "duration": "duration",
+            "event_end_date": "event_end_date",
+            "event_start_date": "event_start_date",
+            "id": "id",
+            "is_api": "is_api",
+            "language_code": "language_code",
+            "media_type": "media_type",
+            "organization_id": "organization_id",
+            "owner_id": "owner_id",
+            "person": "person",
+            "platform": "platform",
+            "recording": "recording",
+            "started_recording_at": "started_recording_at",
+            "title": "title",
+            "transcription": "transcription",
+            "transcription_artifact": "transcription_artifact",
+            "transcription_sentences": "transcription_sentences",
+            "updated_at": "updated_at",
+            "user_guid": "user_guid"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/conversations-find-all"
+        },
         "crm_account_team_members": {
           "displayName": "Crm Account Team Members",
           "path": "/crm_account_team_members",
@@ -1004,6 +1034,21 @@
             "updated_at": "updated_at"
           },
           "docs": "https://developers.salesloft.com/docs/api/team-templates-index"
+        },
+        "transcriptions": {
+          "displayName": "Transcriptions",
+          "path": "/transcriptions",
+          "responseKey": "data",
+          "fields": {
+            "conversation": "conversation",
+            "created_at": "created_at",
+            "id": "id",
+            "language_code": "language_code",
+            "transcription_artifact": "transcription_artifact",
+            "transcription_sentences": "transcription_sentences",
+            "updated_at": "updated_at"
+          },
+          "docs": "https://developers.salesloft.com/docs/api/conversations-transcriptions-find-all-transcripts"
         },
         "users": {
           "displayName": "Users",

@@ -26,9 +26,19 @@ const (
 	ConnectorBaseURL = "https://api.salesloft.com"
 )
 
-var excludedDocumentation = datautils.NewSet( // nolint:gochecknoglobals
-	"/docs/api/bulk-jobs-job-data-index/",
-	"/docs/api/bulk-jobs-results-index/",
+var (
+	excludedDocumentation = datautils.NewSet( // nolint:gochecknoglobals
+		"/docs/api/bulk-jobs-job-data-index/",
+		"/docs/api/bulk-jobs-results-index/",
+	)
+	suffixesOfIndexForSchemas = []string{ // nolint:gochecknoglobals
+		"-index", // majority of indexes ending with this suffix are LIST operations.
+		"-transcriptions-find-all-transcripts",
+		"-find-all",
+	}
+	objectNameDisplayExceptions = map[string]string{ // nolint:gochecknoglobals
+		"Fetch conversations": "Conversations",
+	}
 )
 
 var withQueryParamStats bool // nolint:gochecknoglobals
@@ -170,12 +180,14 @@ func getFilteredListDocs(index *scrapper.ModelURLRegistry) scrapper.ModelDocLink
 	list := make(scrapper.ModelDocLinks, 0)
 
 	for _, doc := range index.ModelDocs {
-		if name, found := strings.CutSuffix(doc.Name, "-index"); found {
-			list = append(list, scrapper.ModelDocLink{
-				Name:        name,
-				DisplayName: doc.DisplayName,
-				URL:         doc.URL,
-			})
+		for _, suffix := range suffixesOfIndexForSchemas {
+			if name, found := strings.CutSuffix(doc.Name, suffix); found {
+				list = append(list, scrapper.ModelDocLink{
+					Name:        name,
+					DisplayName: doc.DisplayName,
+					URL:         doc.URL,
+				})
+			}
 		}
 	}
 
@@ -210,6 +222,10 @@ func getPercentage(i int, i2 int) float64 {
 // Any fetch operations are not list operations.
 // Those are the inconsistencies that Salesloft has in its docs.
 func handleDisplayName(name string) (displayName string, isListResource bool) {
+	if exception, found := objectNameDisplayExceptions[name]; found {
+		return exception, true
+	}
+
 	if stripped, ok := strings.CutPrefix(name, "List "); ok {
 		return naming.CapitalizeFirstLetterEveryWord(stripped), true
 	} else {
