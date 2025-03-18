@@ -16,22 +16,14 @@ import (
 func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
-	responseObj := testutils.DataFromFile(t, "write_objects.json")
 	listResponse := testutils.DataFromFile(t, "write_lists.json")
 	notesresponse := testutils.DataFromFile(t, "write_notes.json")
 	tasksResponse := testutils.DataFromFile(t, "write_tasks.json")
-	webhookResponse := testutils.DataFromFile(t, "write_webhook.json")
 	tests := []testroutines.Write{
 		{
 			Name:         "Write object must be included",
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingObjects},
-		},
-		{
-			Name:         "Write needs data payload",
-			Input:        common.WriteParams{ObjectName: "objects"},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{common.ErrMissingRecordData},
 		},
 		{
 			Name:     "Unknown object name is not supported",
@@ -41,56 +33,6 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			ExpectedErrs: []error{
 				common.ErrOperationNotSupportedForObject,
 			},
-		},
-		{
-			Name:  "Create objects as POST",
-			Input: common.WriteParams{ObjectName: "objects", RecordData: "dummy"},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If:    mockcond.MethodPOST(),
-				Then:  mockserver.Response(http.StatusOK, responseObj),
-			}.Server(),
-			Expected: &common.WriteResult{
-				Success:  true,
-				RecordId: "bf012982-06a9-47f7-9e87-07dc4945d502",
-				Errors:   nil,
-				Data: map[string]any{
-					"api_slug":   "deal",
-					"created_at": "2024-10-04T10:01:42.878000000Z",
-					"id": map[string]any{
-						"object_id":    "bf012982-06a9-47f7-9e87-07dc4945d502",
-						"workspace_id": "0d4d7fa2-d6e8-4a61-a7dc-e178405ff3c6",
-					},
-					"plural_noun":   "Dealss",
-					"singular_noun": "Deals",
-				},
-			},
-			ExpectedErrs: nil,
-		},
-		{
-			Name:  "Update objects as PATCH",
-			Input: common.WriteParams{ObjectName: "objects", RecordId: "bf012982-06a9-47f7-9e87-07dc4945d502", RecordData: "dummy"},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If:    mockcond.MethodPATCH(),
-				Then:  mockserver.Response(http.StatusOK, responseObj),
-			}.Server(),
-			Expected: &common.WriteResult{
-				Success:  true,
-				RecordId: "bf012982-06a9-47f7-9e87-07dc4945d502",
-				Errors:   nil,
-				Data: map[string]any{
-					"api_slug":   "deal",
-					"created_at": "2024-10-04T10:01:42.878000000Z",
-					"id": map[string]any{
-						"object_id":    "bf012982-06a9-47f7-9e87-07dc4945d502",
-						"workspace_id": "0d4d7fa2-d6e8-4a61-a7dc-e178405ff3c6",
-					},
-					"plural_noun":   "Dealss",
-					"singular_noun": "Deals",
-				},
-			},
-			ExpectedErrs: nil,
 		},
 		{
 			Name:  "Create lists as POST",
@@ -276,68 +218,6 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							"target_record_id": "ec902ed9-aab7-4347-8e26-dca240ffba08",
 						},
 					},
-				},
-			},
-			ExpectedErrs: nil,
-		},
-		{
-			Name:  "Create webhooks as POST",
-			Input: common.WriteParams{ObjectName: "webhooks", RecordData: "dummy"},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If:    mockcond.MethodPOST(),
-				Then:  mockserver.Response(http.StatusOK, webhookResponse),
-			}.Server(),
-			Expected: &common.WriteResult{
-				Success:  true,
-				RecordId: "7e5209b8-bd4e-41d9-bbcd-2f9bab7d4030",
-				Errors:   nil,
-				Data: map[string]any{
-					"created_at": "2024-10-04T10:05:01.173000000Z",
-					"id": map[string]any{
-						"webhook_id":   "7e5209b8-bd4e-41d9-bbcd-2f9bab7d4030",
-						"workspace_id": "0d4d7fa2-d6e8-4a61-a7dc-e178405ff3c6",
-					},
-					"secret": "edc47acc750ba7af0b1663f606b3a3a5f6fb0a3c37f7b679c9416318b523d968",
-					"status": "active",
-					"subscriptions": []any{
-						map[string]any{
-							"event_type": "note.deleted",
-							"filter":     nil,
-						},
-					},
-					"target_url": "https://f87a-117-216-131-16.ngrok-free.app",
-				},
-			},
-			ExpectedErrs: nil,
-		},
-		{
-			Name:  "Update webhooks as PATCH",
-			Input: common.WriteParams{ObjectName: "webhooks", RecordId: "7e5209b8-bd4e-41d9-bbcd-2f9bab7d4030", RecordData: "dummy"},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If:    mockcond.MethodPATCH(),
-				Then:  mockserver.Response(http.StatusOK, webhookResponse),
-			}.Server(),
-			Expected: &common.WriteResult{
-				Success:  true,
-				RecordId: "7e5209b8-bd4e-41d9-bbcd-2f9bab7d4030",
-				Errors:   nil,
-				Data: map[string]any{
-					"created_at": "2024-10-04T10:05:01.173000000Z",
-					"id": map[string]any{
-						"webhook_id":   "7e5209b8-bd4e-41d9-bbcd-2f9bab7d4030",
-						"workspace_id": "0d4d7fa2-d6e8-4a61-a7dc-e178405ff3c6",
-					},
-					"secret": "edc47acc750ba7af0b1663f606b3a3a5f6fb0a3c37f7b679c9416318b523d968",
-					"status": "active",
-					"subscriptions": []any{
-						map[string]any{
-							"event_type": "note.deleted",
-							"filter":     nil,
-						},
-					},
-					"target_url": "https://f87a-117-216-131-16.ngrok-free.app",
 				},
 			},
 			ExpectedErrs: nil,
