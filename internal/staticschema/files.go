@@ -26,6 +26,11 @@ func NewFileManager[F FieldMetadataMap, C any](schemas []byte, locator fileconv.
 func (m FileManager[F, C]) SaveSchemas(schemas *Metadata[F, C]) error {
 	schemas.refactorLongestCommonPath()
 
+	return m.FlushSchemas(schemas)
+}
+
+// FlushSchemas stores schemas into the file without any modifications.
+func (m FileManager[F, C]) FlushSchemas(schemas *Metadata[F, C]) error {
 	return m.flush.ToFile(m.locator.AbsPathTo(SchemasFile), schemas)
 }
 
