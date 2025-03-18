@@ -2,8 +2,10 @@ package attio
 
 import (
 	"context"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
 // This struct is used for when the response data having slice of data.
@@ -12,8 +14,59 @@ type responseObject struct {
 }
 
 // This struct is used for when the response data having single data.
-type singleResponseObject struct {
-	Data map[string]any `json:"data"`
+type objectAttribute struct {
+	Data []struct {
+		ID struct {
+			WorkspaceID string `json:"workspace_id"`
+			ObjectID    string `json:"object_id"`
+			AttributeID string `json:"attribute_id"`
+		} `json:"id"`
+		Title                 string  `json:"title"`
+		Description           *string `json:"description"`
+		APISlug               string  `json:"api_slug"`
+		Type                  string  `json:"type"`
+		IsSystemAttribute     bool    `json:"is_system_attribute"`
+		IsWritable            bool    `json:"is_writable"`
+		IsRequired            bool    `json:"is_required"`
+		IsUnique              bool    `json:"is_unique"`
+		IsMultiselect         bool    `json:"is_multiselect"`
+		IsDefaultValueEnabled bool    `json:"is_default_value_enabled"`
+		IsArchived            bool    `json:"is_archived"`
+		DefaultValue          struct {
+			Type     string `json:"type"`
+			Template string `json:"template"`
+		} `json:"default_value"`
+		Relationship struct {
+			ID struct {
+				WorkspaceID string `json:"workspace_id"`
+				ObjectID    string `json:"object_id"`
+				AttributeID string `json:"attribute_id"`
+			} `json:"id"`
+		} `json:"relationship"`
+		CreatedAt time.Time `json:"created_at"`
+		Config    struct {
+			Currency struct {
+				DefaultCurrencyCode *string `json:"default_currency_code"`
+				DisplayType         *string `json:"display_type"`
+			} `json:"currency"`
+			RecordReference struct {
+				AllowedObjectIDs []string `json:"allowed_object_ids"`
+			} `json:"record_reference"`
+		} `json:"config"`
+	} `json:"data"`
+}
+
+type objectResponse struct {
+	Data struct {
+		Id struct {
+			WorkspaceId string `json:"workspace_id"`
+			ObjectId    string `json:"object_id"`
+		} `json:"id"`
+		ApiSlug      string    `json:"api_slug"`
+		SingularNoun string    `json:"singular_noun"`
+		PluralNoun   string    `json:"plural_noun"`
+		CreatedAt    time.Time `json:"created_at"`
+	} `json:"data"`
 }
 
 // ListObjectMetadata creates metadata of object via reading objects using Attio API.
@@ -26,92 +79,84 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 		return nil, common.ErrMissingObjects
 	}
 
-	metadataResult := common.ListObjectMetadataResult{
-		Result: make(map[string]common.ObjectMetadata),
-		Errors: make(map[string]error),
-	}
-
-	var (
-		objName                    string
-		isAttioStandardOrCustomObj bool
-	)
+	metadataResult := common.NewListObjectMetadataResult()
 
 	for _, obj := range objectNames {
-		isAttioStandardOrCustomObj = false
-
-		// Constructing the request url.
-		if supportAttioApiObj.Has(obj) {
-			objName = obj
-		} else {
-			isAttioStandardOrCustomObj = true
-
-			objName = c.getObjectsURL(obj)
-		}
-
-		resp, err := getResponse(c, ctx, objName)
+		metadata, isCustom, err := c.getObjectAttributes(ctx, obj)
 		if err != nil {
 			metadataResult.Errors[obj] = err
-
 			continue
 		}
 
-		var metadata *common.ObjectMetadata
-
-		metadata, err = parseMetadataFromResponse(resp, isAttioStandardOrCustomObj)
-		if err != nil {
-			metadataResult.Errors[obj] = err
-
-			continue
-		}
-
-		if isAttioStandardOrCustomObj {
-			objName = c.getObjects(obj)
-
-			res, err := getResponse(c, ctx, objName)
+		displayName := obj
+		if isCustom {
+			name, err := c.getObjectDisplayName(ctx, obj)
 			if err != nil {
 				metadataResult.Errors[obj] = err
-
 				continue
 			}
-
-			displayName, err := getDisplayName(res)
-			if err != nil {
-				metadataResult.Errors[obj] = err
-
-				continue
+			if name != "" {
+				displayName = name
 			}
-
-			metadata.DisplayName = displayName
-		} else {
-			metadata.DisplayName = obj
 		}
 
-		metadataResult.Result[obj] = *metadata
+		metadataResult.Result[obj] = *common.NewObjectMetadata(
+			displayName, metadata,
+		)
 	}
 
-	return &metadataResult, nil
+	return metadataResult, nil
 }
 
-// Getting the response.
-func getResponse(c *Connector, ctx context.Context,
-	objName string,
-) (*common.JSONHTTPResponse, error) {
-	url, err := c.getApiURL(objName)
-	if err != nil {
-		return nil, err
+func (c *Connector) getObjectAttributes(ctx context.Context, obj string) (map[string]common.FieldMetadata, bool, error) {
+	isAttioStandardOrCustomObj := !supportAttioApiObj.Has(obj)
+	var (
+		url *urlbuilder.URL
+		err error
+	)
+	if isAttioStandardOrCustomObj {
+		url, err = c.getObjectAttributesURL(obj)
+		if err != nil {
+			return nil, false, err
+		}
+	} else {
+		url, err = c.getApiURL(obj)
+		if err != nil {
+			return nil, false, err
+		}
 	}
 
 	resp, err := c.Client.Get(ctx, url.String())
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
 
-	return resp, nil
+	metadata, err := parseMetadataFromResponse(resp, isAttioStandardOrCustomObj)
+	if err != nil {
+		return nil, false, err
+	}
+
+	return metadata, isAttioStandardOrCustomObj, nil
+}
+
+// getObjectDisplayName fetches the display name for custom objects.
+func (c *Connector) getObjectDisplayName(ctx context.Context, obj string) (string, error) {
+	url, err := c.getObjectsURL(obj)
+	if err != nil {
+		return "", err
+	}
+
+	resp, err := c.Client.Get(ctx, url.String())
+	if err != nil {
+		return "", err
+	}
+
+	return getDisplayName(resp)
 }
 
 func parseMetadataFromResponse(resp *common.JSONHTTPResponse,
 	isAttioStandardOrCustomObj bool,
-) (*common.ObjectMetadata, error) {
+) (map[string]common.FieldMetadata, error) {
 	response, err := common.UnmarshalJSON[responseObject](resp)
 	if err != nil {
 		return nil, err
@@ -121,25 +166,36 @@ func parseMetadataFromResponse(resp *common.JSONHTTPResponse,
 		return nil, common.ErrMissingExpectedValues
 	}
 
-	metadata := &common.ObjectMetadata{
-		FieldsMap: make(map[string]string),
-	}
+	metadata := make(map[string]common.FieldMetadata)
 
 	// Retrieving metadata for standard and custom objects in Attio using the api_slug field.
 	if isAttioStandardOrCustomObj {
+		response, err := common.UnmarshalJSON[objectAttribute](resp)
+		if err != nil {
+			return nil, err
+		}
+
 		for _, value := range response.Data {
-			for k, objData := range value {
-				if k == "api_slug" {
-					if strValue, ok := objData.(string); ok {
-						metadata.FieldsMap[strValue] = strValue
-					}
-				}
+			apiSlug := value.APISlug
+			providerType := value.Type
+			metadata[apiSlug] = common.FieldMetadata{
+				DisplayName:  apiSlug,
+				ValueType:    getFieldValueType(value.Type),
+				ProviderType: providerType,
+				ReadOnly:     false,
+				Values:       nil,
 			}
 		}
 	} else {
 		// Using the first result data to generate the metadata.
 		for k := range response.Data[0] {
-			metadata.FieldsMap[k] = k
+			metadata[k] = common.FieldMetadata{
+				DisplayName:  k,
+				ValueType:    common.ValueTypeOther,
+				ProviderType: "", // not available
+				ReadOnly:     false,
+				Values:       nil,
+			}
 		}
 	}
 
@@ -148,22 +204,37 @@ func parseMetadataFromResponse(resp *common.JSONHTTPResponse,
 
 // Getting display name for both standard and custom objects.
 func getDisplayName(resp *common.JSONHTTPResponse) (string, error) {
-	response, err := common.UnmarshalJSON[singleResponseObject](resp)
+	response, err := common.UnmarshalJSON[objectResponse](resp)
 	if err != nil {
 		return "", err
 	}
 
-	if len(response.Data) == 0 {
+	if response == nil {
 		return "", common.ErrMissingExpectedValues
 	}
 
-	for key, value := range response.Data {
-		if key == "plural_noun" {
-			if val, ok := value.(string); ok {
-				return val, nil
-			}
-		}
+	res := response.Data.PluralNoun
+	if res == "" {
+		return "", common.ErrNotFound
 	}
 
-	return "", common.ErrNotFound
+	return res, nil
+}
+
+func getFieldValueType(field string) common.ValueType {
+	switch field {
+	case "number":
+		return common.ValueTypeInt
+	case "text":
+		return common.ValueTypeString
+	case "select":
+		return common.ValueTypeSingleSelect
+	case "date":
+		return common.ValueTypeDate
+	case "timestamp":
+		return common.ValueTypeDateTime
+	default:
+		// location, currency, interaction, actor-reference
+		return common.ValueTypeOther
+	}
 }
