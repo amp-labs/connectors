@@ -63,20 +63,21 @@ func createIndex() {
 
 	registry := scrapper.NewModelURLRegistry()
 
-	for i, section := range sections {
+	for index, section := range sections {
 		doc := queryHTML(SalesloftDocsPrefixURL + section)
 
 		doc.Find(".theme-doc-markdown article").Each(func(i int, s *goquery.Selection) {
 			cell := s.Find("a")
 			path, _ := cell.Attr("href")
 			name, _ := cell.Find("h2").Attr("title")
+
 			if excludedDocumentation.Has(path) {
 				return
 			}
 
 			registry.Add(name, SalesloftDocsPrefixURL+path)
 		})
-		log.Printf("Index completed %.2f%%\n", getPercentage(i, len(sections))) // nolint:forbidigo
+		log.Printf("Index completed %.2f%%\n", getPercentage(index, len(sections))) // nolint:forbidigo
 
 		// Update file after each iteration.
 		goutils.MustBeNil(metadata.FileManager.SaveIndex(registry))
