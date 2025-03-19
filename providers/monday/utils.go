@@ -10,27 +10,23 @@ import (
 )
 
 const (
-	objectBoard   = "boards"
-	objectItem    = "items"
-	objectColumn  = "columns"
-	objectComment = "comments"
-	objectUser    = "users"
+	objectBoard = "boards"
+	objectItem  = "items"
+	objectUser  = "users"
 )
 
 // Map of object names to their ID field paths in the response
 var RecordIDPaths = map[string]string{
-	objectBoard:   "ID",
-	objectItem:    "ID",
-	objectColumn:  "ID",
-	objectComment: "ID",
-	objectUser:    "ID",
+	objectBoard: "ID",
+	objectItem:  "ID",
+	objectUser:  "ID",
 }
 
 // How to read & build these patterns: https://github.com/gobwas/glob
 func supportedOperations() components.EndpointRegistryInput {
 	// We support reading everything under schema.json, so we get all the objects and join it into a pattern.
-	readSupport := []string{objectBoard, objectItem, objectColumn, objectComment, objectUser}
-	writeSupport := []string{objectBoard, objectItem, objectColumn, objectComment, objectUser}
+	readSupport := []string{objectBoard, objectItem, objectUser}
+	writeSupport := []string{objectBoard, objectItem, objectUser}
 
 	return components.EndpointRegistryInput{
 		staticschema.RootModuleID: {

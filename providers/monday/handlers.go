@@ -1,7 +1,9 @@
 package monday
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -13,12 +15,41 @@ import (
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, objectName)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion)
+	if err != nil {
+		return nil, fmt.Errorf("failed to build URL: %w", err)
+	}
+
+	query := ""
+	switch objectName {
+	case "boards":
+		query = fmt.Sprintf("query { boards { id name state permissions items_count columns { id title type } " +
+			"groups { id title position } owner { id name } owners { id name } subscribers { id name } tags { id name } " +
+			"team_owners { id name } team_subscribers { id name } top_group { id title } type updated_at " +
+			"updates { id body created_at } url views { id name type } workspace { id name } workspace_id } }")
+	case "users":
+		query = "query { users { id email name enabled } }"
+	default:
+		return nil, fmt.Errorf("unsupported object name: %s", objectName)
+	}
+
+	// Create the request body as a map
+	requestBody := map[string]string{
+		"query": query,
+	}
+
+	// Marshal the request body to JSON
+	jsonBody, err := json.Marshal(requestBody)
 	if err != nil {
 		return nil, err
 	}
 
-	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonBody))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	return req, nil
 }
 
 func (c *Connector) parseSingleObjectMetadataResponse(
@@ -37,7 +68,12 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		return nil, common.ErrFailedToUnmarshalBody
 	}
 
-	rawRecords, exists := (*data)[objectName]
+	dataMap, ok := (*data)["data"].(map[string]any)
+	if !ok {
+		return nil, fmt.Errorf("unexpected response format: missing data field")
+	}
+
+	rawRecords, exists := dataMap[objectName]
 	if !exists {
 		return nil, fmt.Errorf("missing expected values for object: %s, error: %w", objectName, common.ErrMissingExpectedValues) //nolint:lll
 	}
