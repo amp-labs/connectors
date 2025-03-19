@@ -13,11 +13,12 @@ import (
 
 func GetAhaConnector(ctx context.Context) *aha.Connector {
 	filePath := credscanning.LoadPath(providers.Aha)
-	reader := utils.MustCreateProvCredJSON(filePath, false, false)
+	reader := utils.MustCreateProvCredJSON(filePath, true, true)
 
 	conn, err := aha.NewConnector(
 		common.Parameters{
 			AuthenticatedClient: utils.NewOauth2Client(ctx, reader, getConfig),
+			Workspace:           "ampersand2",
 		},
 	)
 	if err != nil {
@@ -28,10 +29,12 @@ func GetAhaConnector(ctx context.Context) *aha.Connector {
 }
 
 func getConfig(reader *credscanning.ProviderCredentials) *oauth2.Config {
+
 	return &oauth2.Config{
 		ClientID:     reader.Get(credscanning.Fields.ClientId),
 		ClientSecret: reader.Get(credscanning.Fields.ClientSecret),
-		RedirectURL:  "https://api.withampersand.com/callbacks/v1/oauth",
+
+		RedirectURL: "https://api.withampersand.com/callbacks/v1/oauth",
 		Endpoint: oauth2.Endpoint{
 			AuthURL:   "https://{{.workspace}}.aha.io/oauth/authorize",
 			TokenURL:  "https://{{.workspace}}.aha.io/oauth/token",
