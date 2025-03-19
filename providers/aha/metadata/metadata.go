@@ -8,6 +8,7 @@ import (
 	"github.com/amp-labs/connectors/tools/scrapper"
 )
 
+// There is no OpenAPI available. The schemas.json file is created manually.
 // nolint:gochecknoglobals
 var (
 	//go:embed schemas.json
