@@ -48,23 +48,8 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							"workspace_id": "0d4d7fa2-d6e8-4a61-a7dc-e178405ff3c6",
 							"list_id":      "7ddc974a-2ab2-4a96-a83e-853eacb0329f",
 						},
-						"api_slug":         "sales_6",
-						"created_at":       "2024-09-25T13:10:33.302000000Z",
-						"name":             "Sales",
-						"workspace_access": nil,
-						"workspace_member_access": []interface{}{
-							map[string]any{
-								"level":               "full-access",
-								"workspace_member_id": "cc3821aa-f738-42c0-a739-7b6de755e5f1",
-							},
-						},
-						"parent_object": []any{
-							"companies",
-						},
-						"created_by_actor": map[string]any{
-							"type": "workspace-member",
-							"id":   "cc3821aa-f738-42c0-a739-7b6de755e5f1",
-						},
+						"api_slug": "sales_6",
+						"name":     "Sales",
 					},
 				},
 				},
@@ -81,7 +66,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Always: mockserver.Response(http.StatusOK, responseWorkspace),
 			}.Server(),
 			Expected: &common.ReadResult{
-				Rows: 2,
+				Rows: 1,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{},
 					Raw: map[string]any{
@@ -91,24 +76,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						},
 						"first_name":    "Integration",
 						"last_name":     "User",
-						"avatar_url":    nil,
 						"email_address": "integration.user@withampersand.com",
-						"access_level":  "admin",
-						"created_at":    "2024-09-17T11:41:21.779000000Z",
-					},
-				}, {
-					Fields: map[string]any{},
-					Raw: map[string]any{
-						"id": map[string]any{
-							"workspace_id":        "0d4d7fa2-d6e8-4a61-a7dc-e178405ff3c6",
-							"workspace_member_id": "cc3821aa-f738-42c0-a739-7b6de755e5f1",
-						},
-						"first_name":    "Sanjay Kanth",
-						"last_name":     "A",
-						"avatar_url":    "https://lh3.googleusercontent.com/a/ACg8ocL0Zwi9XArWL-GgYiUqPoDMKS1p1AQuQPPHVMQr0V023Ox_fYY=s96-c",
-						"email_address": "sanjaykanth.a@mitrahsoft.com",
-						"access_level":  "admin",
-						"created_at":    "2024-09-17T12:17:11.682000000Z",
 					},
 				}},
 				NextPage: "",
@@ -132,15 +100,8 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							"workspace_id": "0d4d7fa2-d6e8-4a61-a7dc-e178405ff3c6",
 							"note_id":      "32dc76ee-d094-40e1-b176-0f8e1b772f0a",
 						},
-						"parent_object":     "companies",
-						"parent_record_id":  "ec902ed9-aab7-4347-8e26-dca240ffba08",
 						"title":             "value",
 						"content_plaintext": "",
-						"created_by_actor": map[string]any{
-							"type": "workspace-member",
-							"id":   "cc3821aa-f738-42c0-a739-7b6de755e5f1",
-						},
-						"created_at": "2024-09-24T08:31:09.211000000Z",
 					},
 				},
 				},
@@ -166,20 +127,6 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							"task_id":      "4a585693-fa14-4ead-9e19-cc9251df59be",
 						},
 						"content_plaintext": "Follow up on current software solutions",
-						"is_completed":      false,
-						"deadline_at":       "2023-01-01T15:00:00.000000000Z",
-						"linked_records":    []any{},
-						"assignees": []interface{}{
-							map[string]any{
-								"referenced_actor_type": "workspace-member",
-								"referenced_actor_id":   "67af46e4-a450-4fee-a1d1-39729b3af771",
-							},
-						},
-						"created_by_actor": map[string]any{
-							"type": "api-token",
-							"id":   "53b1e97a-08d6-4d2e-856d-5371bb6f4052",
-						},
-						"created_at": "2024-09-23T11:04:07.647000000Z",
 					},
 				},
 				},

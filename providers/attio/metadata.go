@@ -165,14 +165,6 @@ func (c *Connector) getObjectDisplayName(ctx context.Context, obj string) (strin
 func parseMetadataFromResponse(resp *common.JSONHTTPResponse,
 	isAttioStandardOrCustomObj bool,
 ) (map[string]common.FieldMetadata, error) {
-	response, err := common.UnmarshalJSON[responseObject](resp)
-	if err != nil {
-		return nil, err
-	}
-
-	if len(response.Data) == 0 {
-		return nil, common.ErrMissingExpectedValues
-	}
 
 	metadata := make(map[string]common.FieldMetadata)
 
@@ -183,26 +175,40 @@ func parseMetadataFromResponse(resp *common.JSONHTTPResponse,
 			return nil, err
 		}
 
+		if len(response.Data) == 0 {
+			return nil, common.ErrMissingExpectedValues
+		}
+
 		for _, value := range response.Data {
 			apiSlug := value.APISlug
 			metadata[apiSlug] = common.FieldMetadata{
 				DisplayName:  apiSlug,
 				ValueType:    getFieldValueType(value.Type),
 				ProviderType: value.Type,
-				ReadOnly:     false,
+				ReadOnly:     !value.IsWritable,
 				Values:       nil,
 			}
 		}
-	} else {
-		// Using the first result data to generate the metadata.
-		for k := range response.Data[0] {
-			metadata[k] = common.FieldMetadata{
-				DisplayName:  k,
-				ValueType:    common.ValueTypeOther,
-				ProviderType: "", // not available
-				ReadOnly:     false,
-				Values:       nil,
-			}
+
+		return metadata, nil
+	}
+
+	response, err := common.UnmarshalJSON[responseObject](resp)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(response.Data) == 0 {
+		return nil, common.ErrMissingExpectedValues
+	}
+	// Using the first result data to generate the metadata.
+	for k := range response.Data[0] {
+		metadata[k] = common.FieldMetadata{
+			DisplayName:  k,
+			ValueType:    common.ValueTypeOther,
+			ProviderType: "", // not available
+			ReadOnly:     false,
+			Values:       nil,
 		}
 	}
 
