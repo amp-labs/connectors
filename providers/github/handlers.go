@@ -69,6 +69,7 @@ func makeNextRecordsURL(responseHeaders http.Header) common.NextPageFunc {
 		if nextURL == "" {
 			return "", nil
 		}
+
 		return nextURL, nil
 	}
 }
