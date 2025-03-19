@@ -20,7 +20,7 @@ func main() {
 
 	conn := connTest.GetOutreachConnector(ctx)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"sequences"})
+	m, err := conn.ListObjectMetadata(ctx, []string{"snippets", "duties", "phoneNumbers"})
 	if err != nil {
 		utils.Fail("error listing metadata for Outreach", "error", err)
 	}

@@ -2,6 +2,7 @@ package outreach
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/amp-labs/connectors/common"
 )
@@ -45,7 +46,9 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 
 		metadata, err := metadataMapper(res)
 		if err != nil {
-			return nil, err
+			objMetadata.Errors[obj] = err
+
+			continue
 		}
 
 		metadata.DisplayName = obj
@@ -63,6 +66,10 @@ func metadataMapper(resp *common.JSONHTTPResponse) (*common.ObjectMetadata, erro
 
 	metadata := &common.ObjectMetadata{
 		FieldsMap: make(map[string]string),
+	}
+
+	if len(response.Data) == 0 {
+		return nil, fmt.Errorf("%w: could not find a record to sample fields from", common.ErrMissingExpectedValues)
 	}
 
 	attributes := response.Data[0].Attributes

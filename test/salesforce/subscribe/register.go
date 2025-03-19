@@ -69,8 +69,22 @@ func main() {
 
 	fmt.Println("Subscribe result:", prettyPrint(subscribeResult))
 
-	if subscribeResult != nil && subscribeResult.Status == common.SubscriptionStatusSuccess {
-		if err := conn.DeleteSubscription(ctx, *subscribeResult); err != nil {
+	updateParams := common.SubscribeParams{
+		RegistrationResult: result,
+		SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
+			"Contact": {},
+		},
+	}
+
+	updateResult, err := conn.UpdateSubscription(ctx, updateParams, subscribeResult)
+	if err != nil {
+		logging.Logger(ctx).Error("Error updating subscription", "error", err)
+	}
+
+	fmt.Println("Update subscription result:", prettyPrint(updateResult))
+
+	if updateResult != nil && updateResult.Status == common.SubscriptionStatusSuccess {
+		if err := conn.DeleteSubscription(ctx, *updateResult); err != nil {
 			logging.Logger(ctx).Error("Error unsubscribing", "error", err)
 
 			return

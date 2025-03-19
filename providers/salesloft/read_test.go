@@ -93,9 +93,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name:  "Next page URL is correctly inferred",
 			Input: common.ReadParams{ObjectName: "people", Fields: connectors.Fields("id")},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, responseListPeople),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.PathSuffix("/v2/people"),
+				Then:  mockserver.Response(http.StatusOK, responseListPeople),
 			}.Server(),
 			Comparator: testroutines.ComparatorPagination,
 			Expected: &common.ReadResult{
@@ -108,9 +109,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name:  "Successful read with 25 entries, checking one row",
 			Input: common.ReadParams{ObjectName: "people", Fields: connectors.Fields("id")},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, responseListPeople),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.PathSuffix("/v2/people"),
+				Then:  mockserver.Response(http.StatusOK, responseListPeople),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
@@ -138,9 +140,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				ObjectName: "people",
 				Fields:     connectors.Fields("email_address", "person_company_website"),
 			},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, responseListPeople),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.PathSuffix("/v2/people"),
+				Then:  mockserver.Response(http.StatusOK, responseListPeople),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
@@ -168,9 +171,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				ObjectName: "users",
 				Fields:     connectors.Fields("email", "guid"),
 			},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, responseListUsers),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.PathSuffix("/v2/users"),
+				Then:  mockserver.Response(http.StatusOK, responseListUsers),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
@@ -196,8 +200,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Input: common.ReadParams{ObjectName: "accounts", Fields: connectors.Fields("id")},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.QueryParamsMissing("updated_at[gte]"),
-				Then:  mockserver.Response(http.StatusOK, responseListAccounts),
+				If: mockcond.And{
+					mockcond.PathSuffix("/v2/accounts"),
+					mockcond.QueryParamsMissing("updated_at[gte]"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseListAccounts),
 			}.Server(),
 			Comparator:   testroutines.ComparatorPagination,
 			Expected:     &common.ReadResult{Rows: 4, NextPage: "", Done: true},
@@ -212,8 +219,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.QueryParam("updated_at[gte]", "2024-06-07T10:51:20.851224-04:00"),
-				Then:  mockserver.Response(http.StatusOK, responseListAccountsSince),
+				If: mockcond.And{
+					mockcond.PathSuffix("/v2/accounts"),
+					mockcond.QueryParam("updated_at[gte]", "2024-06-07T10:51:20.851224-04:00"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseListAccountsSince),
 			}.Server(),
 			Comparator:   testroutines.ComparatorPagination,
 			Expected:     &common.ReadResult{Rows: 2, NextPage: "", Done: true},

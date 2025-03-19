@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 	"log/slog"
 	"strings"
@@ -12,6 +11,7 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/staticschema"
+	"github.com/amp-labs/connectors/providers/salesloft"
 	"github.com/amp-labs/connectors/providers/salesloft/metadata"
 	"github.com/amp-labs/connectors/tools/scrapper"
 	"github.com/iancoleman/strcase"
@@ -22,6 +22,23 @@ const (
 	SalesloftDocsPrefixURL = "https://developers.salesloft.com"
 	// ModelIndexURL - on this page all links to dedicated Models can be found.
 	ModelIndexURL = "https://developers.salesloft.com/docs/api"
+
+	ConnectorBaseURL = "https://api.salesloft.com"
+)
+
+var (
+	excludedDocumentation = datautils.NewSet( // nolint:gochecknoglobals
+		"/docs/api/bulk-jobs-job-data-index/",
+		"/docs/api/bulk-jobs-results-index/",
+	)
+	suffixesOfIndexForSchemas = []string{ // nolint:gochecknoglobals
+		"-index", // majority of indexes ending with this suffix are LIST operations.
+		"-transcriptions-find-all-transcripts",
+		"-find-all",
+	}
+	objectNameDisplayExceptions = map[string]string{ // nolint:gochecknoglobals
+		"Fetch conversations": "Conversations",
+	}
 )
 
 var withQueryParamStats bool // nolint:gochecknoglobals
@@ -45,24 +62,36 @@ func main() {
 	slog.Info("Completed.")
 }
 
+func formatObjectURL(fullPath string) string {
+	urlPath, _ := strings.CutPrefix(fullPath, ConnectorBaseURL+"/"+salesloft.ApiVersion)
+
+	return urlPath
+}
+
 func createIndex() {
 	sections := getSectionLinks()
 
 	registry := scrapper.NewModelURLRegistry()
 
-	for i, section := range sections {
-		doc := scrapper.QueryHTML(SalesloftDocsPrefixURL + "/" + section)
+	for index, section := range sections {
+		doc := queryHTML(SalesloftDocsPrefixURL + section)
 
 		doc.Find(".theme-doc-markdown article").Each(func(i int, s *goquery.Selection) {
 			cell := s.Find("a")
 			path, _ := cell.Attr("href")
 			name, _ := cell.Find("h2").Attr("title")
+
+			if excludedDocumentation.Has(path) {
+				return
+			}
+
 			registry.Add(name, SalesloftDocsPrefixURL+path)
 		})
-		log.Printf("Index completed %.2f%%\n", getPercentage(i, len(sections))) // nolint:forbidigo
-	}
+		log.Printf("Index completed %.2f%%\n", getPercentage(index, len(sections))) // nolint:forbidigo
 
-	goutils.MustBeNil(metadata.FileManager.SaveIndex(registry))
+		// Update file after each iteration.
+		goutils.MustBeNil(metadata.FileManager.SaveIndex(registry))
+	}
 }
 
 func createSchemas() {
@@ -74,32 +103,39 @@ func createSchemas() {
 	filteredListDocs := getFilteredListDocs(index)
 	for i := range filteredListDocs { // nolint:varnamelen
 		model := filteredListDocs[i]
-		doc := scrapper.QueryHTML(model.URL)
+		doc := queryHTML(model.URL)
 
-		// There are 2 unordered lists that describe response schema
-		modelName := strcase.ToSnake(model.Name)
+		endpointPath := doc.Find(".openapi__method-endpoint-path").Text()
+		urlPath := formatObjectURL(endpointPath)
+		objectName, _ := strings.CutPrefix(urlPath, "/")
 
-		doc.Find(`.openapi-tabs__schema-container ul`).
-			Each(func(i int, list *goquery.Selection) {
-				list.Children().Each(func(i int, property *goquery.Selection) {
-					// Sometimes there are nested fields we ignore them
-					// Only the first most field represents top level fields of response payload
-					fieldName := property.Find(`strong`).First().Text()
-					if len(fieldName) != 0 {
-						newDisplayName, isList := handleDisplayName(model.DisplayName)
-						if isList {
-							schemas.Add("", modelName, newDisplayName, fmt.Sprintf("/%v", modelName), "data",
-								staticschema.FieldMetadataMapV1{
-									fieldName: fieldName,
-								}, &model.URL, nil)
-						}
+		doc.Find(`.openapi-tabs__schema-container .openapi-schema__property`).
+			Each(func(i int, property *goquery.Selection) {
+				// Sometimes there are nested fields we ignore them
+				// Only the first most field represents top level fields of response payload
+				if !scrapper.Query.IsVisible(property) {
+					return
+				}
+
+				fieldName := property.Text()
+				if len(fieldName) != 0 {
+					newDisplayName, isList := handleDisplayName(model.DisplayName)
+					if isList {
+						schemas.Add("", objectName, newDisplayName, urlPath, "data",
+							staticschema.FieldMetadataMapV1{
+								fieldName: fieldName,
+							}, &model.URL, nil)
 					}
-				})
+				}
 			})
 
-		log.Printf("Schemas completed %.2f%% [%v]\n", getPercentage(i, len(filteredListDocs)), modelName)
+		log.Printf("Schemas completed %.2f%% [%v]\n", getPercentage(i, len(filteredListDocs)), objectName)
+
+		// Update file after each iteration.
+		goutils.MustBeNil(metadata.FileManager.FlushSchemas(schemas))
 	}
 
+	// Finalized save.
 	goutils.MustBeNil(metadata.FileManager.SaveSchemas(schemas))
 }
 
@@ -113,7 +149,7 @@ func createQueryParamStats() {
 	numObjects := len(filteredListDocs)
 
 	for i, model := range filteredListDocs { // nolint:varnamelen
-		doc := scrapper.QueryHTML(model.URL)
+		doc := queryHTML(model.URL)
 
 		modelName := strcase.ToSnake(model.Name)
 
@@ -144,12 +180,14 @@ func getFilteredListDocs(index *scrapper.ModelURLRegistry) scrapper.ModelDocLink
 	list := make(scrapper.ModelDocLinks, 0)
 
 	for _, doc := range index.ModelDocs {
-		if name, found := strings.CutSuffix(doc.Name, "-index"); found {
-			list = append(list, scrapper.ModelDocLink{
-				Name:        name,
-				DisplayName: doc.DisplayName,
-				URL:         doc.URL,
-			})
+		for _, suffix := range suffixesOfIndexForSchemas {
+			if name, found := strings.CutSuffix(doc.Name, suffix); found {
+				list = append(list, scrapper.ModelDocLink{
+					Name:        name,
+					DisplayName: doc.DisplayName,
+					URL:         doc.URL,
+				})
+			}
 		}
 	}
 
@@ -157,7 +195,7 @@ func getFilteredListDocs(index *scrapper.ModelURLRegistry) scrapper.ModelDocLink
 }
 
 func getSectionLinks() []string {
-	doc := scrapper.QueryHTML(ModelIndexURL)
+	doc := queryHTML(ModelIndexURL)
 
 	links := make([]string, 0)
 
@@ -184,6 +222,10 @@ func getPercentage(i int, i2 int) float64 {
 // Any fetch operations are not list operations.
 // Those are the inconsistencies that Salesloft has in its docs.
 func handleDisplayName(name string) (displayName string, isListResource bool) {
+	if exception, found := objectNameDisplayExceptions[name]; found {
+		return exception, true
+	}
+
 	if stripped, ok := strings.CutPrefix(name, "List "); ok {
 		return naming.CapitalizeFirstLetterEveryWord(stripped), true
 	} else {
@@ -198,4 +240,10 @@ func handleDisplayName(name string) (displayName string, isListResource bool) {
 	}
 
 	return name, true
+}
+
+func queryHTML(sourceURL string) *goquery.Document {
+	const waitInterval = 2 // seconds
+
+	return scrapper.QueryLoadableHTML(sourceURL, waitInterval)
 }

@@ -26,19 +26,22 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			ExpectedErrs: []error{common.ErrObjectNotSupported},
 		},
 		{
-			Name:   "Successfully describe one object with metadata",
-			Input:  []string{"bulk_jobs_results"},
-			Server: mockserver.Dummy(),
+			Name:       "Successfully describe one object with metadata",
+			Input:      []string{"activities/calls"},
+			Server:     mockserver.Dummy(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
-					"bulk_jobs_results": {
-						DisplayName: "Job Data for a Completed Bulk Job.",
+					"activities/calls": {
+						DisplayName: "Calls",
 						FieldsMap: map[string]string{
-							"error":    "error",
-							"id":       "id",
-							"record":   "record",
-							"resource": "resource",
-							"status":   "status",
+							"disposition": "disposition",
+							"duration":    "duration",
+							"id":          "id",
+							"note":        "note",
+							"positive":    "positive",
+							"recordings":  "recordings",
+							"sentiment":   "sentiment",
 						},
 					},
 				},
