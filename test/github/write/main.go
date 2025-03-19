@@ -35,6 +35,11 @@ func main() {
 		slog.Error(err.Error())
 	}
 
+	slog.Info("> TEST update user codespaces")
+	if err := updateUserCodespaces(ctx, conn); err != nil {
+		slog.Error(err.Error())
+	}
+
 }
 
 func addUserEmails(ctx context.Context, conn *github.Connector) error {
@@ -71,6 +76,30 @@ func createGist(ctx context.Context, conn *github.Connector) error {
 			"files": map[string]any{
 				"README.md": map[string]string{"content": "Hello World"},
 			},
+		},
+	}
+
+	result, err := conn.Write(ctx, config)
+	if err != nil {
+		return err
+	}
+
+	jsonStr, err := json.MarshalIndent(result, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(string(jsonStr))
+
+	return nil
+}
+
+func updateUserCodespaces(ctx context.Context, conn *github.Connector) error {
+	config := common.WriteParams{
+		ObjectName: "user/codespaces",
+		RecordId:   "fuzzy-fishstick-jj457pqw4q7g2565v",
+		RecordData: map[string]any{
+			"display_name": "test",
 		},
 	}
 
