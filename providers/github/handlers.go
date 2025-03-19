@@ -3,11 +3,11 @@ package github
 import (
 	"context"
 	"net/http"
-	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/httpkit"
 	"github.com/amp-labs/connectors/providers/github/metadata"
 	"github.com/spyzhov/ajson"
 )
@@ -65,25 +65,10 @@ func (c *Connector) parseReadResponse(
 
 func makeNextRecordsURL(responseHeaders http.Header) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
-		// GitHub uses Link header for pagination
-		links := responseHeaders["Link"]
-		if len(links) == 0 {
+		nextURL := httpkit.HeaderLink(&common.JSONHTTPResponse{Headers: responseHeaders}, "next")
+		if nextURL == "" {
 			return "", nil
 		}
-
-		nextLink := links[0]
-		if nextLink == "" {
-			return "", nil
-		}
-
-		// Format: <https://api.github.com/...>; rel="next"
-		start := strings.Index(nextLink, "<")
-		end := strings.Index(nextLink, ">")
-
-		if start == -1 || end == -1 || !strings.Contains(nextLink, `rel="next"`) {
-			return "", nil
-		}
-
-		return nextLink[start+1 : end], nil
+		return nextURL, nil
 	}
 }
