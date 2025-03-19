@@ -1,0 +1,41 @@
+package aha
+
+import (
+	"context"
+
+	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/scanning/credscanning"
+	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/aha"
+	"github.com/amp-labs/connectors/test/utils"
+	"golang.org/x/oauth2"
+)
+
+func GetAhaConnector(ctx context.Context) *aha.Connector {
+	filePath := credscanning.LoadPath(providers.Aha)
+	reader := utils.MustCreateProvCredJSON(filePath, false, false)
+
+	conn, err := aha.NewConnector(
+		common.Parameters{
+			AuthenticatedClient: utils.NewOauth2Client(ctx, reader, getConfig),
+		},
+	)
+	if err != nil {
+		utils.Fail("error creating connector", "error", err)
+	}
+
+	return conn
+}
+
+func getConfig(reader *credscanning.ProviderCredentials) *oauth2.Config {
+	return &oauth2.Config{
+		ClientID:     reader.Get(credscanning.Fields.ClientId),
+		ClientSecret: reader.Get(credscanning.Fields.ClientSecret),
+		RedirectURL:  "https://api.withampersand.com/callbacks/v1/oauth",
+		Endpoint: oauth2.Endpoint{
+			AuthURL:   "https://{{.workspace}}.aha.io/oauth/authorize",
+			TokenURL:  "https://{{.workspace}}.aha.io/oauth/token",
+			AuthStyle: oauth2.AuthStyleAutoDetect,
+		},
+	}
+}
