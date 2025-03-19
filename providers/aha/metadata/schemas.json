@@ -1,0 +1,1483 @@
+{
+    "modules": {
+        "root": {
+            "id": "root",
+            "path": "",
+            "objects": {
+                "audits": {
+                    "displayName": "Audits",
+                    "path": "/audits",
+                    "responseKey": "audits",
+                    "fields": {
+                        "id": {
+                            "displayName": "Id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "audit_action": {
+                            "displayName": "Audit Action",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "created_at": {
+                            "displayName": "Created At",
+                            "valueType": "datetime",
+                            "providerType": "datetime"
+                        },
+                        "interesting": {
+                            "displayName": "Interesting",
+                            "valueType": "boolean",
+                            "providerType": "boolean"
+                        },
+                        "user": {
+                            "displayName": "User",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "contributors": {
+                            "displayName": "Contributors",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "auditable_type": {
+                            "displayName": "Auditable Type",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "auditable_id": {
+                            "displayName": "Auditable Id",
+                            "valueType": "int",
+                            "providerType": "integer"
+                        },
+                        "associated_type": {
+                            "displayName": "Associated Type",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "associated_id": {
+                            "displayName": "Associated Id",
+                            "valueType": "int",
+                            "providerType": "integer"
+                        },
+                        "description": {
+                            "displayName": "Description",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "auditable_url": {
+                            "displayName": "Auditable Url",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "changes": {
+                            "displayName": "Changes",
+                            "valueType": "other",
+                            "providerType": "array"
+                        }
+                    }
+                },
+                "capacity_scenarios": {
+                    "displayName": "Capacity Scenarios",
+                    "path": "/capacity_scenarios",
+                    "responseKey": "capacity_scenarios",
+                    "fields": {
+                        "id": {
+                            "displayName": "Id",
+                            "valueType": "int",
+                            "providerType": "integer"
+                        },
+                        "name": {
+                            "displayName": "Name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "planning_interval": {
+                            "displayName": "Planning Interval",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "planning_start_date": {
+                            "displayName": "Planning Start Date",
+                            "valueType": "date",
+                            "providerType": "date"
+                        },
+                        "planning_end_date": {
+                            "displayName": "Planning End Date",
+                            "valueType": "date",
+                            "providerType": "date"
+                        },
+                        "estimate_value_layout": {
+                            "displayName": "Estimate Value Layout",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "data_entry_units": {
+                            "displayName": "Data Entry Units",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "archived": {
+                            "displayName": "Archived",
+                            "valueType": "boolean",
+                            "providerType": "boolean"
+                        }
+                    }
+                },
+                "screen_definitions": {
+                    "displayName": "Screen Definitions",
+                    "path": "/screen_definitions",
+                    "responseKey": "screen_definitions",
+                    "fields": {
+                        "id": {
+                            "displayName": "Id",
+                            "valueType": "int",
+                            "providerType": "integer"
+                        },
+                        "screenable_type": {
+                            "displayName": "Screenable Type",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "name": {
+                            "displayName": "Name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "custom_field_definitions": {
+                            "displayName": "Custom Field Definitions",
+                            "valueType": "other",
+                            "providerType": "array"
+                        }
+                    }
+                },
+                "custom_field_definitions": {
+                    "displayName": "Custom Field Definitions",
+                    "path": "/custom_field_definitions",
+                    "responseKey": "custom_field_definitions",
+                    "fields": {
+                        "id": {
+                            "displayName": "Id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "name": {
+                            "displayName": "Name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "key": {
+                            "displayName": "Key",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "type": {
+                            "displayName": "Type",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "custom_fieldable_type": {
+                            "displayName": "Custom Fieldable Type",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "internal_name": {
+                            "displayName": "Internal Name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        }
+                    }
+                },
+                "epics": {
+                    "displayName": "Epics",
+                    "path": "/epics",
+                    "responseKey": "epics",
+                    "fields": {
+                        "id": {
+                            "displayName": "Id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "reference_num": {
+                            "displayName": "Reference Num",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "name": {
+                            "displayName": "Name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "created_at": {
+                            "displayName": "Created At",
+                            "valueType": "datetime",
+                            "providerType": "datetime"
+                        },
+                        "url": {
+                            "displayName": "Url",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "resource": {
+                            "displayName": "Resource",
+                            "valueType": "string",
+                            "providerType": "string"
+                        }
+                    }
+                },
+                "features": {
+                    "displayName": "Features",
+                    "path": "/features",
+                    "responseKey": "features",
+                    "fields": {
+                        "id": {
+                            "displayName": "Id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "reference_num": {
+                            "displayName": "Reference Num",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "name": {
+                            "displayName": "Name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "created_at": {
+                            "displayName": "Created At",
+                            "valueType": "datetime",
+                            "providerType": "datetime"
+                        },
+                        "url": {
+                            "displayName": "Url",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "resource": {
+                            "displayName": "Resource",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "product_id": {
+                            "displayName": "Product Id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        }
+                    }
+                },
+                "goals": {
+                    "displayName": "Goals",
+                    "path": "/goals",
+                    "responseKey": "goals",
+                    "fields": {
+                        "id": {
+                            "displayName": "Id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "name": {
+                            "displayName": "Name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "reference_num": {
+                            "displayName": "Reference Num",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "effort": {
+                            "displayName": "Effort",
+                            "valueType": "int",
+                            "providerType": "integer"
+                        },
+                        "value": {
+                            "displayName": "Value",
+                            "valueType": "int",
+                            "providerType": "integer"
+                        },
+                        "color": {
+                            "displayName": "Color",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "position": {
+                            "displayName": "Position",
+                            "valueType": "int",
+                            "providerType": "integer"
+                        },
+                        "created_at": {
+                            "displayName": "Created At",
+                            "valueType": "datetime",
+                            "providerType": "datetime"
+                        },
+                        "updated_at": {
+                            "displayName": "Updated At",
+                            "valueType": "datetime",
+                            "providerType": "datetime"
+                        },
+                        "product_id": {
+                            "displayName": "Product Id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "progress": {
+                            "displayName": "Progress",
+                            "valueType": "float",
+                            "providerType": "number"
+                        },
+                        "progress_source": {
+                            "displayName": "Progress Source",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "url": {
+                            "displayName": "Url",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "resource": {
+                            "displayName": "Resource",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "description": {
+                            "displayName": "Description",
+                            "valueType": "object",
+                            "providerType": "object"
+                        },
+                        "success_metric": {
+                            "displayName": "Success Metric",
+                            "valueType": "object",
+                            "providerType": "object"
+                        },
+                        "project": {
+                            "displayName": "Project",
+                            "valueType": "object",
+                            "providerType": "object"
+                        },
+                        "parent": {
+                            "displayName": "Parent",
+                            "valueType": "object",
+                            "providerType": "object"
+                        },
+                        "parents": {
+                            "displayName": "Parents",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "initiatives": {
+                            "displayName": "Initiatives",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "key_results": {
+                            "displayName": "Key Results",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "comments_count": {
+                            "displayName": "Comments Count",
+                            "valueType": "int",
+                            "providerType": "integer"
+                        },
+                        "features": {
+                            "displayName": "Features",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "releases": {
+                            "displayName": "Releases",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "custom_fields": {
+                            "displayName": "Custom Fields",
+                            "valueType": "other",
+                            "providerType": "array"
+                        }
+                    }
+                },
+                "historical_audits": {
+                    "displayName": "Historical Audits",
+                    "path": "/historical_audits",
+                    "responseKey": "historical_audits",
+                    "fields": {
+                        "auditable_id": {
+                            "displayName": "Auditable Id",
+                            "valueType": "int",
+                            "providerType": "integer"
+                        },
+                        "auditable_type": {
+                            "displayName": "Auditable Type",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "id": {
+                            "displayName": "Id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "name": {
+                            "displayName": "Name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "email": {
+                            "displayName": "Email",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "created_at": {
+                            "displayName": "Created At",
+                            "valueType": "datetime",
+                            "providerType": "datetime"
+                        },
+                        "updated_at": {
+                            "displayName": "Updated At",
+                            "valueType": "datetime",
+                            "providerType": "datetime"
+                        },
+                        "dates_active": {
+                            "displayName": "Dates Active",
+                            "valueType": "other",
+                            "providerType": "array"
+                        }
+                    }
+                },
+                "idea_portals": {
+                    "displayName": "Idea Portals",
+                    "path": "/idea_portals",
+                    "responseKey": "idea_portals",
+                    "fields": {
+                        "id": {
+                            "displayName": "Id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "title": {
+                            "displayName": "Title",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "portal_enabled": {
+                            "displayName": "Portal Enabled",
+                            "valueType": "boolean",
+                            "providerType": "boolean"
+                        },
+                        "access_type": {
+                            "displayName": "Access Type",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "external_url": {
+                            "displayName": "External Url",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "created_at": {
+                            "displayName": "Created At",
+                            "valueType": "datetime",
+                            "providerType": "datetime"
+                        }
+                    }
+                },
+                "idea_organizations": {
+                    "displayName": "Idea Organizations",
+                    "path": "/idea_organizations",
+                    "responseKey": "idea_organizations",
+                    "fields": {
+                        "id": {
+                            "displayName": "Id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "name": {
+                            "displayName": "Name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "created_at": {
+                            "displayName": "Created At",
+                            "valueType": "datetime",
+                            "providerType": "datetime"
+                        },
+                        "url": {
+                            "displayName": "Url",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "resource": {
+                            "displayName": "Resource",
+                            "valueType": "string",
+                            "providerType": "string"
+                        }
+                    }
+                },
+                "idea_users": {
+                    "displayName": "Idea Users",
+                    "path": "/idea_users",
+                    "responseKey": "idea_users",
+                    "fields": {
+                        "id": {
+                            "displayName": "Id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "name": {
+                            "displayName": "Name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "email": {
+                            "displayName": "Email",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "created_at": {
+                            "displayName": "Created At",
+                            "valueType": "datetime",
+                            "providerType": "datetime"
+                        },
+                        "idea_organizations": {
+                            "displayName": "Idea Organizations",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "custom_fields": {
+                            "displayName": "Custom Fields",
+                            "valueType": "other",
+                            "providerType": "array"
+                        }
+                    }
+                },
+                "ideas/endorsements": {
+                    "displayName": "Ideas Endorsements",
+                    "path": "/ideas/endorsements",
+                    "responseKey": "idea_endorsements",
+                    "fields": {
+                        "id": {
+                            "displayName": "Id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "idea_id": {
+                            "displayName": "Idea Id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "created_at": {
+                            "displayName": "Created At",
+                            "valueType": "datetime",
+                            "providerType": "datetime"
+                        },
+                        "updated_at": {
+                            "displayName": "Updated At",
+                            "valueType": "datetime",
+                            "providerType": "datetime"
+                        },
+                        "value": {
+                            "displayName": "Value",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "link": {
+                            "displayName": "Link",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "weight": {
+                            "displayName": "Weight",
+                            "valueType": "int",
+                            "providerType": "integer"
+                        },
+                        "endorsed_by_portal_user": {
+                            "displayName": "Endorsed By Portal User",
+                            "valueType": "object",
+                            "providerType": "object"
+                        },
+                        "endorsed_by_idea_user": {
+                            "displayName": "Endorsed By Idea User",
+                            "valueType": "object",
+                            "providerType": "object"
+                        },
+                        "idea_organization": {
+                            "displayName": "Idea Organization",
+                            "valueType": "object",
+                            "providerType": "object"
+                        }
+                    }
+                },
+                "ideas": {
+                    "displayName": "Ideas",
+                    "path": "/ideas",
+                    "responseKey": "ideas",
+                    "fields": {
+                        "id": {
+                            "displayName": "Id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "reference_num": {
+                            "displayName": "Reference Num",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "name": {
+                            "displayName": "Name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "created_at": {
+                            "displayName": "Created At",
+                            "valueType": "datetime",
+                            "providerType": "datetime"
+                        },
+                        "updated_at": {
+                            "displayName": "Updated At",
+                            "valueType": "datetime",
+                            "providerType": "datetime"
+                        },
+                        "workflow_status": {
+                            "displayName": "Workflow Status",
+                            "valueType": "object",
+                            "providerType": "object"
+                        },
+                        "description": {
+                            "displayName": "Description",
+                            "valueType": "object",
+                            "providerType": "object"
+                        },
+                        "url": {
+                            "displayName": "Url",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "resource": {
+                            "displayName": "Resource",
+                            "valueType": "string",
+                            "providerType": "string"
+                        }
+                    }
+                },
+                "identity_providers": {
+                    "displayName": "Identity Providers",
+                    "path": "/identity_providers",
+                    "responseKey": "identity_providers",
+                    "fields": {
+                        "id": {
+                            "displayName": "Id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "enabled": {
+                            "displayName": "Enabled",
+                            "valueType": "boolean",
+                            "providerType": "boolean"
+                        },
+                        "name": {
+                            "displayName": "Name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "sso_endpoint": {
+                            "displayName": "SSO Endpoint",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "created_at": {
+                            "displayName": "Created At",
+                            "valueType": "datetime",
+                            "providerType": "datetime"
+                        },
+                        "updated_at": {
+                            "displayName": "Updated At",
+                            "valueType": "datetime",
+                            "providerType": "datetime"
+                        }
+                    }
+                },
+                "initiatives": {
+                    "displayName": "Initiatives",
+                    "path": "/initiatives",
+                    "responseKey": "initiatives",
+                    "fields": {
+                        "id": {
+                            "displayName": "Id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "name": {
+                            "displayName": "Name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "reference_num": {
+                            "displayName": "Reference Num",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "status": {
+                            "displayName": "Status",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "effort": {
+                            "displayName": "Effort",
+                            "valueType": "int",
+                            "providerType": "integer"
+                        },
+                        "value": {
+                            "displayName": "Value",
+                            "valueType": "int",
+                            "providerType": "integer"
+                        },
+                        "presented": {
+                            "displayName": "Presented",
+                            "valueType": "boolean",
+                            "providerType": "boolean"
+                        },
+                        "color": {
+                            "displayName": "Color",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "start_date": {
+                            "displayName": "Start Date",
+                            "valueType": "datetime",
+                            "providerType": "datetime"
+                        },
+                        "end_date": {
+                            "displayName": "End Date",
+                            "valueType": "datetime",
+                            "providerType": "datetime"
+                        },
+                        "position": {
+                            "displayName": "Position",
+                            "valueType": "int",
+                            "providerType": "integer"
+                        },
+                        "score": {
+                            "displayName": "Score",
+                            "valueType": "int",
+                            "providerType": "integer"
+                        },
+                        "created_at": {
+                            "displayName": "Created At",
+                            "valueType": "datetime",
+                            "providerType": "datetime"
+                        },
+                        "updated_at": {
+                            "displayName": "Updated At",
+                            "valueType": "datetime",
+                            "providerType": "datetime"
+                        },
+                        "product_id": {
+                            "displayName": "Product Id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "progress": {
+                            "displayName": "Progress",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "progress_source": {
+                            "displayName": "Progress Source",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "duration_source": {
+                            "displayName": "Duration Source",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "url": {
+                            "displayName": "Url",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "resource": {
+                            "displayName": "Resource",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "project": {
+                            "displayName": "Project",
+                            "valueType": "object",
+                            "providerType": "object"
+                        },
+                        "workflow_status": {
+                            "displayName": "Workflow Status",
+                            "valueType": "object",
+                            "providerType": "object"
+                        },
+                        "description": {
+                            "displayName": "Description",
+                            "valueType": "object",
+                            "providerType": "object"
+                        },
+                        "attachments": {
+                            "displayName": "Attachments",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "assigned_to_user": {
+                            "displayName": "Assigned To User",
+                            "valueType": "object",
+                            "providerType": "object"
+                        },
+                        "comments_count": {
+                            "displayName": "Comments Count",
+                            "valueType": "int",
+                            "providerType": "integer"
+                        },
+                        "goals": {
+                            "displayName": "Goals",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "key_results": {
+                            "displayName": "Key Results",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "score_facts": {
+                            "displayName": "Score Facts",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "integration_fields": {
+                            "displayName": "Integration Fields",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "created_by_user": {
+                            "displayName": "Created By User",
+                            "valueType": "object",
+                            "providerType": "object"
+                        }
+                    }
+                },
+                "integrations": {
+                    "displayName": "Integrations",
+                    "path": "/integrations",
+                    "responseKey": "integrations",
+                    "fields": {
+                        "id": {
+                            "displayName": "Id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "name": {
+                            "displayName": "Name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "service_name": {
+                            "displayName": "Service Name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "created_at": {
+                            "displayName": "Created At",
+                            "valueType": "datetime",
+                            "providerType": "datetime"
+                        }
+                    }
+                },
+                "me/tasks": {
+                    "displayName": "My Tasks",
+                    "path": "/me/tasks",
+                    "responseKey": "tasks",
+                    "fields": {
+                        "id": {
+                            "displayName": "Id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "name": {
+                            "displayName": "Name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "due_date": {
+                            "displayName": "Due Date",
+                            "valueType": "datetime",
+                            "providerType": "datetime"
+                        },
+                        "status": {
+                            "displayName": "Status",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "created_at": {
+                            "displayName": "Created At",
+                            "valueType": "datetime",
+                            "providerType": "datetime"
+                        }
+                    }
+                },
+                "me/assigned": {
+                    "displayName": "My Assignments",
+                    "path": "/me/assigned",
+                    "responseKey": "assigned",
+                    "fields": {
+                        "record_type": {
+                            "displayName": "Record Type",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "id": {
+                            "displayName": "Id",
+                            "valueType": "int",
+                            "providerType": "integer"
+                        },
+                        "name": {
+                            "displayName": "Name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "reference_num": {
+                            "displayName": "Reference Num",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "workflow_status": {
+                            "displayName": "Workflow Status",
+                            "valueType": "object",
+                            "providerType": "object"
+                        }
+                    }
+                },
+                "paid_seat_groups": {
+                    "displayName": "Paid Seat Groups",
+                    "path": "/paid_seat_groups",
+                    "responseKey": "paid_seat_groups",
+                    "fields": {
+                        "id": {
+                            "displayName": "Id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "name": {
+                            "displayName": "Name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "administrators": {
+                            "displayName": "Administrators",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "capacity": {
+                            "displayName": "Capacity",
+                            "valueType": "int",
+                            "providerType": "integer"
+                        },
+                        "allocated_seats": {
+                            "displayName": "Allocated Seats",
+                            "valueType": "int",
+                            "providerType": "integer"
+                        },
+                        "description": {
+                            "displayName": "Description",
+                            "valueType": "object",
+                            "providerType": "object"
+                        }
+                    }
+                },
+                "products": {
+                    "displayName": "Products",
+                    "path": "/products",
+                    "responseKey": "products",
+                    "fields": {
+                        "id": {
+                            "displayName": "Id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "reference_prefix": {
+                            "displayName": "Reference Prefix",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "name": {
+                            "displayName": "Name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "product_line": {
+                            "displayName": "Product Line",
+                            "valueType": "boolean",
+                            "providerType": "boolean"
+                        },
+                        "created_at": {
+                            "displayName": "Created At",
+                            "valueType": "datetime",
+                            "providerType": "datetime"
+                        },
+                        "workspace_type": {
+                            "displayName": "Workspace Type",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "url": {
+                            "displayName": "Url",
+                            "valueType": "string",
+                            "providerType": "string"
+                        }
+                    }
+                },
+                "release_phases": {
+                    "displayName": "Release Phases",
+                    "path": "/release_phases",
+                    "responseKey": "release_phases",
+                    "fields": {
+                        "id": {
+                            "displayName": "Id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "name": {
+                            "displayName": "Name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "start_on": {
+                            "displayName": "Start On",
+                            "valueType": "date",
+                            "providerType": "date"
+                        },
+                        "end_on": {
+                            "displayName": "End On",
+                            "valueType": "date",
+                            "providerType": "date"
+                        },
+                        "type": {
+                            "displayName": "Type",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "release_id": {
+                            "displayName": "Release Id",
+                            "valueType": "int",
+                            "providerType": "integer"
+                        },
+                        "created_at": {
+                            "displayName": "Created At",
+                            "valueType": "datetime",
+                            "providerType": "datetime"
+                        },
+                        "updated_at": {
+                            "displayName": "Updated At",
+                            "valueType": "datetime",
+                            "providerType": "datetime"
+                        },
+                        "progress": {
+                            "displayName": "Progress",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "progress_source": {
+                            "displayName": "Progress Source",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "duration_source": {
+                            "displayName": "Duration Source",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "description": {
+                            "displayName": "Description",
+                            "valueType": "object",
+                            "providerType": "object"
+                        }
+                    }
+                },
+                "schedules": {
+                    "displayName": "Schedules",
+                    "path": "/schedules",
+                    "responseKey": "schedules",
+                    "fields": {
+                        "id": {
+                            "displayName": "Id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "name": {
+                            "displayName": "Name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "hours_per_day": {
+                            "displayName": "Hours Per Day",
+                            "valueType": "float",
+                            "providerType": "number"
+                        },
+                        "story_points_per_day": {
+                            "displayName": "Story Points Per Day",
+                            "valueType": "float",
+                            "providerType": "number"
+                        },
+                        "velocity": {
+                            "displayName": "Velocity",
+                            "valueType": "float",
+                            "providerType": "number"
+                        }
+                    }
+                },
+                "strategy_models": {
+                    "displayName": "Strategy Models",
+                    "path": "/strategy_models",
+                    "responseKey": "strategy_models",
+                    "fields": {
+                        "id": {
+                            "displayName": "Id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "name": {
+                            "displayName": "Name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "kind": {
+                            "displayName": "Kind",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "components": {
+                            "displayName": "Components",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "url": {
+                            "displayName": "Url",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "resource": {
+                            "displayName": "Resource",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "project": {
+                            "displayName": "Project",
+                            "valueType": "object",
+                            "providerType": "object"
+                        }
+                    }
+                },
+                "strategy_positions": {
+                    "displayName": "Strategy Positions",
+                    "path": "/strategy_positions",
+                    "responseKey": "strategy_positions",
+                    "fields": {
+                        "id": {
+                            "displayName": "Id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "name": {
+                            "displayName": "Name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "kind": {
+                            "displayName": "Kind",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "components": {
+                            "displayName": "Components",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "url": {
+                            "displayName": "Url",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "resource": {
+                            "displayName": "Resource",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "project": {
+                            "displayName": "Project",
+                            "valueType": "object",
+                            "providerType": "object"
+                        }
+                    }
+                },
+                "strategy_visions": {
+                    "displayName": "Strategy Visions",
+                    "path": "/strategy_visions",
+                    "responseKey": "strategy_visions",
+                    "fields": {
+                        "id": {
+                            "displayName": "Id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "name": {
+                            "displayName": "Name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "created_at": {
+                            "displayName": "Created At",
+                            "valueType": "datetime",
+                            "providerType": "datetime"
+                        },
+                        "updated_at": {
+                            "displayName": "Updated At",
+                            "valueType": "datetime",
+                            "providerType": "datetime"
+                        },
+                        "description": {
+                            "displayName": "Description",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "strategy_vision_components": {
+                            "displayName": "Strategy Vision Components",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "url": {
+                            "displayName": "Url",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "resource": {
+                            "displayName": "Resource",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "project": {
+                            "displayName": "Project",
+                            "valueType": "object",
+                            "providerType": "object"
+                        }
+                    }
+                },
+                "team_members": {
+                    "displayName": "Team Members",
+                    "path": "/team_members",
+                    "responseKey": "team_members",
+                    "fields": {
+                        "id": {
+                            "displayName": "Id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "name": {
+                            "displayName": "Name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "email": {
+                            "displayName": "Email",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "user_id": {
+                            "displayName": "User Id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "virtual": {
+                            "displayName": "Virtual",
+                            "valueType": "boolean",
+                            "providerType": "boolean"
+                        }
+                    }
+                },
+                "teams": {
+                    "displayName": "Teams",
+                    "path": "/teams",
+                    "responseKey": "teams",
+                    "fields": {
+                        "id": {
+                            "displayName": "Id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "name": {
+                            "displayName": "Name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "team_members_count": {
+                            "displayName": "Team Members Count",
+                            "valueType": "int",
+                            "providerType": "integer"
+                        },
+                        "automatically_calculate_team_members_count": {
+                            "displayName": "Automatically Calculate Team Members Count",
+                            "valueType": "boolean",
+                            "providerType": "boolean"
+                        },
+                        "capacity": {
+                            "displayName": "Capacity",
+                            "valueType": "float",
+                            "providerType": "number"
+                        },
+                        "hourly_rate": {
+                            "displayName": "Hourly Rate",
+                            "valueType": "float",
+                            "providerType": "number"
+                        },
+                        "color": {
+                            "displayName": "Color",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "start_date": {
+                            "displayName": "Start Date",
+                            "valueType": "date",
+                            "providerType": "date"
+                        },
+                        "end_date": {
+                            "displayName": "End Date",
+                            "valueType": "date",
+                            "providerType": "date"
+                        },
+                        "project": {
+                            "displayName": "Project",
+                            "valueType": "object",
+                            "providerType": "object"
+                        },
+                        "schedule": {
+                            "displayName": "Schedule",
+                            "valueType": "object",
+                            "providerType": "object"
+                        },
+                        "custom_fields": {
+                            "displayName": "Custom Fields",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "team_members": {
+                            "displayName": "Team Members",
+                            "valueType": "object",
+                            "providerType": "object"
+                        }
+                    }
+                },
+                "tasks": {
+                    "displayName": "Tasks",
+                    "path": "/tasks",
+                    "responseKey": "tasks",
+                    "fields": {
+                        "id": {
+                            "displayName": "Id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "name": {
+                            "displayName": "Name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "due_date": {
+                            "displayName": "Due Date",
+                            "valueType": "date",
+                            "providerType": "date"
+                        },
+                        "status": {
+                            "displayName": "Status",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "created_at": {
+                            "displayName": "Created At",
+                            "valueType": "datetime",
+                            "providerType": "datetime"
+                        }
+                    }
+                },
+                "users": {
+                    "displayName": "Users",
+                    "path": "/users",
+                    "responseKey": "users",
+                    "fields": {
+                      "id": {
+                        "displayName": "Id",
+                        "valueType": "string",
+                        "providerType": "string"
+                      },
+                      "name": {
+                        "displayName": "Name",
+                        "valueType": "string",
+                        "providerType": "string"
+                      },
+                      "email": {
+                        "displayName": "Email",
+                        "valueType": "string",
+                        "providerType": "string"
+                      },
+                      "created_at": {
+                        "displayName": "Created At",
+                        "valueType": "datetime",
+                        "providerType": "datetime"
+                      },
+                      "updated_at": {
+                        "displayName": "Updated At",
+                        "valueType": "datetime",
+                        "providerType": "datetime"
+                      },
+                      "accessed_at": {
+                        "displayName": "Accessed At",
+                        "valueType": "datetime",
+                        "providerType": "datetime"
+                      },
+                      "product_roles": {
+                        "displayName": "Product Roles",
+                        "valueType": "other",
+                        "providerType": "array"
+                      },
+                      "user_roles": {
+                        "displayName": "User Roles",
+                        "valueType": "other",
+                        "providerType": "array"
+                      },
+                      "enabled": {
+                        "displayName": "Enabled",
+                        "valueType": "boolean",
+                        "providerType": "boolean"
+                      },
+                      "paid_seat": {
+                        "displayName": "Paid Seat",
+                        "valueType": "boolean",
+                        "providerType": "boolean"
+                      },
+                      "administrator": {
+                        "displayName": "Administrator",
+                        "valueType": "boolean",
+                        "providerType": "boolean"
+                      },
+                      "administrator_roles": {
+                        "displayName": "Administrator Roles",
+                        "valueType": "object",
+                        "providerType": "object"
+                      },
+                      "paid_seat_group": {
+                        "displayName": "Paid Seat Group",
+                        "valueType": "object",
+                        "providerType": "object"
+                      },
+                      "identity_provider": {
+                        "displayName": "Identity Provider",
+                        "valueType": "object",
+                        "providerType": "object"
+                      }
+                    }
+                  }
+            }
+        }
+    }
+}
