@@ -1,0 +1,1135 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "/v2",
+      "objects": {
+        "activitytypes": {
+          "displayName": "Activity Types",
+          "path": "/activitytypes",
+          "responseKey": "activityTypes",
+          "fields": {
+            "icon": {
+              "displayName": "Icon",
+              "valueType": "other",
+              "providerType": "Activity Type Icon"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "Long",
+              "readOnly": true
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "updateLastContacted": {
+              "displayName": "Update Last Contacted",
+              "valueType": "boolean",
+              "providerType": "Boolean"
+            }
+          },
+          "docs": "https://developer.capsulecrm.com/v2/models/activity_type"
+        },
+        "boards": {
+          "displayName": "Boards",
+          "path": "/boards",
+          "responseKey": "boards",
+          "fields": {
+            "createdAt": {
+              "displayName": "Created At",
+              "valueType": "date",
+              "providerType": "Date",
+              "readOnly": true
+            },
+            "deleted": {
+              "displayName": "Deleted",
+              "valueType": "boolean",
+              "providerType": "Boolean"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "Long",
+              "readOnly": true
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "updatedAt": {
+              "displayName": "Updated At",
+              "valueType": "date",
+              "providerType": "Date",
+              "readOnly": true
+            }
+          },
+          "docs": "https://developer.capsulecrm.com/v2/models/board"
+        },
+        "categories": {
+          "displayName": "Categories",
+          "path": "/categories",
+          "responseKey": "categories",
+          "fields": {
+            "colour": {
+              "displayName": "Colour",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "Long",
+              "readOnly": true
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "String"
+            }
+          },
+          "docs": "https://developer.capsulecrm.com/v2/models/category"
+        },
+        "countries": {
+          "displayName": "Countries",
+          "path": "/countries",
+          "responseKey": "countries",
+          "fields": {
+            "alpha2Code": {
+              "displayName": "Alpha 2 Code",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "alpha3Code": {
+              "displayName": "Alpha 3 Code",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "numericCode": {
+              "displayName": "Numeric Code",
+              "valueType": "string",
+              "providerType": "String"
+            }
+          },
+          "docs": "https://developer.capsulecrm.com/v2/models/country"
+        },
+        "lostreasons": {
+          "displayName": "Lost Reasons",
+          "path": "/lostreasons",
+          "responseKey": "lostReasons",
+          "fields": {
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "Long"
+            },
+            "includedForConversion": {
+              "displayName": "Included for Conversion",
+              "valueType": "boolean",
+              "providerType": "Boolean"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "String"
+            }
+          },
+          "docs": "https://developer.capsulecrm.com/v2/models/lost_reason"
+        },
+        "milestones": {
+          "displayName": "Milestones",
+          "path": "/milestones",
+          "responseKey": "milestones",
+          "fields": {
+            "complete": {
+              "displayName": "Complete",
+              "valueType": "boolean",
+              "providerType": "Boolean"
+            },
+            "createdAt": {
+              "displayName": "Created At",
+              "valueType": "date",
+              "providerType": "Date",
+              "readOnly": true
+            },
+            "daysUntilStale": {
+              "displayName": "Days Until Stale",
+              "valueType": "int",
+              "providerType": "Integer"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "Long",
+              "readOnly": true
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "pipeline": {
+              "displayName": "Pipeline",
+              "valueType": "other",
+              "providerType": "Nested Pipeline"
+            },
+            "probability": {
+              "displayName": "Probability",
+              "valueType": "int",
+              "providerType": "Integer"
+            },
+            "updatedAt": {
+              "displayName": "Updated At",
+              "valueType": "date",
+              "providerType": "Date",
+              "readOnly": true
+            }
+          },
+          "docs": "https://developer.capsulecrm.com/v2/models/milestone"
+        },
+        "opportunities": {
+          "displayName": "Opportunities",
+          "path": "/opportunities",
+          "responseKey": "opportunities",
+          "fields": {
+            "closedOn": {
+              "displayName": "Closed On",
+              "valueType": "date",
+              "providerType": "Date"
+            },
+            "createdAt": {
+              "displayName": "Created At",
+              "valueType": "date",
+              "providerType": "Date",
+              "readOnly": true
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "duration": {
+              "displayName": "Duration",
+              "valueType": "int",
+              "providerType": "Integer"
+            },
+            "durationBasis": {
+              "displayName": "Duration Basis",
+              "valueType": "singleSelect",
+              "providerType": "String",
+              "values": [
+                {
+                  "value": "FIXED",
+                  "displayValue": "FIXED"
+                },
+                {
+                  "value": "HOUR",
+                  "displayValue": "HOUR"
+                },
+                {
+                  "value": "DAY",
+                  "displayValue": "DAY"
+                },
+                {
+                  "value": "WEEK",
+                  "displayValue": "WEEK"
+                },
+                {
+                  "value": "MONTH",
+                  "displayValue": "MONTH"
+                },
+                {
+                  "value": "QUARTER",
+                  "displayValue": "QUARTER"
+                },
+                {
+                  "value": "YEAR",
+                  "displayValue": "YEAR"
+                }
+              ]
+            },
+            "expectedCloseOn": {
+              "displayName": "Expected Close On",
+              "valueType": "date",
+              "providerType": "Date"
+            },
+            "fields": {
+              "displayName": "Fields",
+              "valueType": "other",
+              "providerType": "Array"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "Long",
+              "readOnly": true
+            },
+            "lastContactedAt": {
+              "displayName": "Last Contacted At",
+              "valueType": "date",
+              "providerType": "Date",
+              "readOnly": true
+            },
+            "lastOpenMilestone": {
+              "displayName": "Last Open Milestone",
+              "valueType": "other",
+              "providerType": "Nested Milestone",
+              "readOnly": true
+            },
+            "lastStageChangedAt": {
+              "displayName": "Last Stage Changed At",
+              "valueType": "date",
+              "providerType": "Date",
+              "readOnly": true
+            },
+            "lostReason": {
+              "displayName": "Lost Reason",
+              "valueType": "other",
+              "providerType": "Nested Lost Reason"
+            },
+            "milestone": {
+              "displayName": "Milestone",
+              "valueType": "other",
+              "providerType": "Nested Milestone"
+            },
+            "missingImportantFields": {
+              "displayName": "Missing Important Fields",
+              "valueType": "boolean",
+              "providerType": "Boolean"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "owner": {
+              "displayName": "Owner",
+              "valueType": "other",
+              "providerType": "Nested User"
+            },
+            "party": {
+              "displayName": "Party",
+              "valueType": "other",
+              "providerType": "Nested Party"
+            },
+            "probability": {
+              "displayName": "Probability",
+              "valueType": "int",
+              "providerType": "Long"
+            },
+            "tags": {
+              "displayName": "Tags",
+              "valueType": "other",
+              "providerType": "Array"
+            },
+            "team": {
+              "displayName": "Team",
+              "valueType": "other",
+              "providerType": "Nested Team"
+            },
+            "updatedAt": {
+              "displayName": "Updated At",
+              "valueType": "date",
+              "providerType": "Date",
+              "readOnly": true
+            },
+            "value": {
+              "displayName": "Value",
+              "valueType": "other",
+              "providerType": "Opportunity Value"
+            }
+          },
+          "docs": "https://developer.capsulecrm.com/v2/models/opportunity"
+        },
+        "parties": {
+          "displayName": "Parties",
+          "path": "/parties",
+          "responseKey": "parties",
+          "fields": {
+            "about": {
+              "displayName": "About",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "addresses": {
+              "displayName": "Addresses",
+              "valueType": "other",
+              "providerType": "Array"
+            },
+            "createdAt": {
+              "displayName": "Created At",
+              "valueType": "date",
+              "providerType": "Date",
+              "readOnly": true
+            },
+            "emailAddresses": {
+              "displayName": "Email Addresses",
+              "valueType": "other",
+              "providerType": "Array"
+            },
+            "fields": {
+              "displayName": "Fields",
+              "valueType": "other",
+              "providerType": "Array"
+            },
+            "firstName": {
+              "displayName": "First Name",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "Long",
+              "readOnly": true
+            },
+            "jobTitle": {
+              "displayName": "Job Title",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "lastContactedAt": {
+              "displayName": "Last Contacted At",
+              "valueType": "date",
+              "providerType": "Date",
+              "readOnly": true
+            },
+            "lastName": {
+              "displayName": "Last Name",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "missingImportantFields": {
+              "displayName": "Missing Important Fields",
+              "valueType": "boolean",
+              "providerType": "Boolean"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "organisation": {
+              "displayName": "Organisation",
+              "valueType": "other",
+              "providerType": "Nested Party"
+            },
+            "owner": {
+              "displayName": "Owner",
+              "valueType": "other",
+              "providerType": "Nested User"
+            },
+            "phoneNumbers": {
+              "displayName": "Phone Numbers",
+              "valueType": "other",
+              "providerType": "Array"
+            },
+            "pictureURL": {
+              "displayName": "Picture Url",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "tags": {
+              "displayName": "Tags",
+              "valueType": "other",
+              "providerType": "Array"
+            },
+            "team": {
+              "displayName": "Team",
+              "valueType": "other",
+              "providerType": "Nested Team"
+            },
+            "title": {
+              "displayName": "Title",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "type": {
+              "displayName": "Type",
+              "valueType": "singleSelect",
+              "providerType": "String",
+              "values": [
+                {
+                  "value": "person",
+                  "displayValue": "person"
+                },
+                {
+                  "value": "organisation",
+                  "displayValue": "organisation"
+                }
+              ]
+            },
+            "updatedAt": {
+              "displayName": "Updated At",
+              "valueType": "date",
+              "providerType": "Date",
+              "readOnly": true
+            },
+            "websites": {
+              "displayName": "Websites",
+              "valueType": "other",
+              "providerType": "Array"
+            }
+          },
+          "docs": "https://developer.capsulecrm.com/v2/models/party"
+        },
+        "pipelines": {
+          "displayName": "Pipelines",
+          "path": "/pipelines",
+          "responseKey": "pipelines",
+          "fields": {
+            "createdAt": {
+              "displayName": "Created At",
+              "valueType": "date",
+              "providerType": "Date",
+              "readOnly": true
+            },
+            "deleted": {
+              "displayName": "Deleted",
+              "valueType": "boolean",
+              "providerType": "Boolean"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "Long",
+              "readOnly": true
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "updatedAt": {
+              "displayName": "Updated At",
+              "valueType": "date",
+              "providerType": "Date",
+              "readOnly": true
+            }
+          },
+          "docs": "https://developer.capsulecrm.com/v2/models/pipeline"
+        },
+        "projects": {
+          "displayName": "Projects",
+          "path": "/kases",
+          "responseKey": "kases",
+          "fields": {
+            "closedOn": {
+              "displayName": "Closed On",
+              "valueType": "date",
+              "providerType": "Date",
+              "readOnly": true
+            },
+            "createdAt": {
+              "displayName": "Created At",
+              "valueType": "date",
+              "providerType": "Date",
+              "readOnly": true
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "expectedCloseOn": {
+              "displayName": "Expected Close On",
+              "valueType": "date",
+              "providerType": "Date"
+            },
+            "fields": {
+              "displayName": "Fields",
+              "valueType": "other",
+              "providerType": "Array"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "Long",
+              "readOnly": true
+            },
+            "lastContactedAt": {
+              "displayName": "Last Contacted At",
+              "valueType": "date",
+              "providerType": "Date",
+              "readOnly": true
+            },
+            "missingImportantFields": {
+              "displayName": "Missing Important Fields",
+              "valueType": "boolean",
+              "providerType": "Boolean"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "opportunity": {
+              "displayName": "Opportunity",
+              "valueType": "other",
+              "providerType": "Nested Opportunity"
+            },
+            "owner": {
+              "displayName": "Owner",
+              "valueType": "other",
+              "providerType": "Nested User"
+            },
+            "party": {
+              "displayName": "Party",
+              "valueType": "other",
+              "providerType": "Nested Party"
+            },
+            "stage": {
+              "displayName": "Stage",
+              "valueType": "other",
+              "providerType": "Nested Stage"
+            },
+            "status": {
+              "displayName": "Status",
+              "valueType": "singleSelect",
+              "providerType": "String",
+              "values": [
+                {
+                  "value": "OPEN",
+                  "displayValue": "OPEN"
+                },
+                {
+                  "value": "CLOSED",
+                  "displayValue": "CLOSED"
+                }
+              ]
+            },
+            "tags": {
+              "displayName": "Tags",
+              "valueType": "other",
+              "providerType": "Array"
+            },
+            "team": {
+              "displayName": "Team",
+              "valueType": "other",
+              "providerType": "Nested Team"
+            },
+            "updatedAt": {
+              "displayName": "Updated At",
+              "valueType": "date",
+              "providerType": "Date",
+              "readOnly": true
+            }
+          },
+          "docs": "https://developer.capsulecrm.com/v2/models/project"
+        },
+        "resthooks": {
+          "displayName": "REST Hooks",
+          "path": "/resthooks",
+          "responseKey": "restHooks",
+          "fields": {
+            "clientId": {
+              "displayName": "Client Id",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "createdAt": {
+              "displayName": "Created At",
+              "valueType": "date",
+              "providerType": "Date",
+              "readOnly": true
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "embed": {
+              "displayName": "Embed",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "event": {
+              "displayName": "Event",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "Long",
+              "readOnly": true
+            },
+            "targetUrl": {
+              "displayName": "Target Url",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "updatedAt": {
+              "displayName": "Updated At",
+              "valueType": "date",
+              "providerType": "Date",
+              "readOnly": true
+            },
+            "user": {
+              "displayName": "User",
+              "valueType": "other",
+              "providerType": "Nested User",
+              "readOnly": true
+            }
+          },
+          "docs": "https://developer.capsulecrm.com/v2/models/rest_hook"
+        },
+        "stages": {
+          "displayName": "Stages",
+          "path": "/stages",
+          "responseKey": "stages",
+          "fields": {
+            "board": {
+              "displayName": "Board",
+              "valueType": "other",
+              "providerType": "Nested Board"
+            },
+            "createdAt": {
+              "displayName": "Created At",
+              "valueType": "date",
+              "providerType": "Date",
+              "readOnly": true
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "displayOrder": {
+              "displayName": "Display Order",
+              "valueType": "int",
+              "providerType": "Integer"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "Long",
+              "readOnly": true
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "updatedAt": {
+              "displayName": "Updated At",
+              "valueType": "date",
+              "providerType": "Date",
+              "readOnly": true
+            }
+          },
+          "docs": "https://developer.capsulecrm.com/v2/models/stage"
+        },
+        "tasks": {
+          "displayName": "Tasks",
+          "path": "/tasks",
+          "responseKey": "tasks",
+          "fields": {
+            "category": {
+              "displayName": "Category",
+              "valueType": "other",
+              "providerType": "Category"
+            },
+            "completedAt": {
+              "displayName": "Completed At",
+              "valueType": "date",
+              "providerType": "Date"
+            },
+            "completedBy": {
+              "displayName": "Completed By",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "createdAt": {
+              "displayName": "Created At",
+              "valueType": "date",
+              "providerType": "Date",
+              "readOnly": true
+            },
+            "daysAfter": {
+              "displayName": "Days After",
+              "valueType": "int",
+              "providerType": "Integer"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "detail": {
+              "displayName": "Detail",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "dueOn": {
+              "displayName": "Due On",
+              "valueType": "date",
+              "providerType": "Date"
+            },
+            "dueTime": {
+              "displayName": "Due Time",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "hasTrack": {
+              "displayName": "Has Track",
+              "valueType": "boolean",
+              "providerType": "Boolean"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "Long",
+              "readOnly": true
+            },
+            "kase": {
+              "displayName": "Kase",
+              "valueType": "other",
+              "providerType": "Nested Project"
+            },
+            "nextTask": {
+              "displayName": "Next Task",
+              "valueType": "other",
+              "providerType": "Nested Task"
+            },
+            "opportunity": {
+              "displayName": "Opportunity",
+              "valueType": "other",
+              "providerType": "Nested Opportunity"
+            },
+            "owner": {
+              "displayName": "Owner",
+              "valueType": "other",
+              "providerType": "Nested User"
+            },
+            "party": {
+              "displayName": "Party",
+              "valueType": "other",
+              "providerType": "Nested Party"
+            },
+            "repeat": {
+              "displayName": "Repeat",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "status": {
+              "displayName": "Status",
+              "valueType": "singleSelect",
+              "providerType": "String",
+              "values": [
+                {
+                  "value": "OPEN",
+                  "displayValue": "OPEN"
+                },
+                {
+                  "value": "COMPLETED",
+                  "displayValue": "COMPLETED"
+                },
+                {
+                  "value": "PENDING",
+                  "displayValue": "PENDING"
+                }
+              ]
+            },
+            "taskDayDelayRule": {
+              "displayName": "Task Day Delay Rule",
+              "valueType": "singleSelect",
+              "providerType": "String",
+              "values": [
+                {
+                  "value": "TRACK_DAYS",
+                  "displayValue": "TRACK_DAYS"
+                },
+                {
+                  "value": "TRACK_WORKDAYS",
+                  "displayValue": "TRACK_WORKDAYS"
+                },
+                {
+                  "value": "TRACK_WEEKS",
+                  "displayValue": "TRACK_WEEKS"
+                }
+              ]
+            },
+            "taskDelayRule": {
+              "displayName": "Task Delay Rule",
+              "valueType": "singleSelect",
+              "providerType": "String",
+              "values": [
+                {
+                  "value": "TRACK_START",
+                  "displayValue": "TRACK_START"
+                },
+                {
+                  "value": "END_DATE",
+                  "displayValue": "END_DATE"
+                },
+                {
+                  "value": "LAST_TASK",
+                  "displayValue": "LAST_TASK"
+                }
+              ]
+            },
+            "updatedAt": {
+              "displayName": "Updated At",
+              "valueType": "date",
+              "providerType": "Date",
+              "readOnly": true
+            }
+          },
+          "docs": "https://developer.capsulecrm.com/v2/models/task"
+        },
+        "teams": {
+          "displayName": "Teams",
+          "path": "/teams",
+          "responseKey": "teams",
+          "fields": {
+            "createdAt": {
+              "displayName": "Created At",
+              "valueType": "date",
+              "providerType": "Date",
+              "readOnly": true
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "Long",
+              "readOnly": true
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "updatedAt": {
+              "displayName": "Updated At",
+              "valueType": "date",
+              "providerType": "Date",
+              "readOnly": true
+            }
+          },
+          "docs": "https://developer.capsulecrm.com/v2/models/team"
+        },
+        "titles": {
+          "displayName": "Titles",
+          "path": "/titles",
+          "responseKey": "personTitles",
+          "fields": {
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "Long",
+              "readOnly": true
+            },
+            "title": {
+              "displayName": "Title",
+              "valueType": "string",
+              "providerType": "String"
+            }
+          },
+          "docs": "https://developer.capsulecrm.com/v2/models/title"
+        },
+        "trackdefinitions": {
+          "displayName": "Track Definitions",
+          "path": "/trackdefinitions",
+          "responseKey": "trackDefinitions",
+          "fields": {
+            "captureRule": {
+              "displayName": "Capture Rule",
+              "valueType": "singleSelect",
+              "providerType": "String",
+              "values": [
+                {
+                  "value": "CASEFILE",
+                  "displayValue": "CASEFILE"
+                },
+                {
+                  "value": "OPPORTUNITY",
+                  "displayValue": "OPPORTUNITY"
+                }
+              ]
+            },
+            "createdAt": {
+              "displayName": "Created At",
+              "valueType": "date",
+              "providerType": "Date",
+              "readOnly": true
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "direction": {
+              "displayName": "Direction",
+              "valueType": "singleSelect",
+              "providerType": "String",
+              "values": [
+                {
+                  "value": "START_DATE",
+                  "displayValue": "START_DATE"
+                },
+                {
+                  "value": "END_DATE",
+                  "displayValue": "END_DATE"
+                }
+              ]
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "Long",
+              "readOnly": true
+            },
+            "tag": {
+              "displayName": "Tag",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "taskDefinitions": {
+              "displayName": "Task Definitions",
+              "valueType": "other",
+              "providerType": "Array"
+            },
+            "updatedAt": {
+              "displayName": "Updated At",
+              "valueType": "date",
+              "providerType": "Date",
+              "readOnly": true
+            }
+          },
+          "docs": "https://developer.capsulecrm.com/v2/models/track_definition"
+        },
+        "users": {
+          "displayName": "Users",
+          "path": "/users",
+          "responseKey": "users",
+          "fields": {
+            "clickToCallPreference": {
+              "displayName": "Click To Call Preference",
+              "valueType": "singleSelect",
+              "providerType": "String",
+              "values": [
+                {
+                  "value": "SIP",
+                  "displayValue": "SIP"
+                },
+                {
+                  "value": "TEL",
+                  "displayValue": "TEL"
+                },
+                {
+                  "value": "CALLTO",
+                  "displayValue": "CALLTO"
+                },
+                {
+                  "value": "CIRCLELOOP",
+                  "displayValue": "CIRCLELOOP"
+                }
+              ]
+            },
+            "currency": {
+              "displayName": "Currency",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "emailPreference": {
+              "displayName": "Email Preference",
+              "valueType": "singleSelect",
+              "providerType": "String",
+              "values": [
+                {
+                  "value": "GMAIL",
+                  "displayValue": "GMAIL"
+                }
+              ]
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "Long",
+              "readOnly": true
+            },
+            "locale": {
+              "displayName": "Locale",
+              "valueType": "singleSelect",
+              "providerType": "String",
+              "values": [
+                {
+                  "value": "en_US",
+                  "displayValue": "en_US"
+                },
+                {
+                  "value": "en_GB",
+                  "displayValue": "en_GB"
+                },
+                {
+                  "value": "es_ES",
+                  "displayValue": "es_ES"
+                }
+              ]
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "party": {
+              "displayName": "Party",
+              "valueType": "other",
+              "providerType": "Nested Party"
+            },
+            "preferredEmailFromAddress": {
+              "displayName": "Preferred Email From Address",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "taskReminder": {
+              "displayName": "Task Reminder",
+              "valueType": "boolean",
+              "providerType": "Boolean"
+            },
+            "timezone": {
+              "displayName": "Timezone",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "username": {
+              "displayName": "Username",
+              "valueType": "string",
+              "providerType": "String"
+            }
+          },
+          "docs": "https://developer.capsulecrm.com/v2/models/user"
+        }
+      }
+    }
+  }
+}

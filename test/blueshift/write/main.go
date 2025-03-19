@@ -31,10 +31,10 @@ func main() {
 	}
 
 	slog.Info("> TEST Create Custom User List")
+
 	if err := createCustomUserList(ctx, conn); err != nil {
 		slog.Error(err.Error())
 	}
-
 }
 
 func createCustomer(ctx context.Context, conn *blueshift.Connector) error {
