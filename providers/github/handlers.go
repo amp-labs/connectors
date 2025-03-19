@@ -140,7 +140,7 @@ func (c *Connector) parseWriteResponse(
 		}, nil
 	}
 
-	recordID, err := jsonquery.New(body).StringOptional("id")
+	recordID, err := jsonquery.New(body).StrWithDefault("id", "")
 	if err != nil { // nolint:nilerr
 		return &common.WriteResult{
 			Success: true,
@@ -151,19 +151,17 @@ func (c *Connector) parseWriteResponse(
 
 	return &common.WriteResult{
 		Success:  true,
-		RecordId: *recordID,
+		RecordId: recordID,
 		Errors:   nil,
 		Data:     data,
 	}, nil
 }
 
 func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName, params.RecordId)
 	if err != nil {
 		return nil, err
 	}
-
-	url.AddPath(params.RecordId)
 
 	return http.NewRequestWithContext(ctx, http.MethodDelete, url.String(), nil)
 }
