@@ -17,7 +17,6 @@ const (
 	pageSizeKey = "per_page"
 	pageSize    = "200"
 	pageKey     = "page"
-	pageNumber  = "1"
 	sinceKey    = "created_since"
 	apiVersion  = "v1"
 )
@@ -42,12 +41,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
-	url.WithQueryParam(pageSizeKey, pageSize)
-	url.WithQueryParam(pageKey, pageNumber)
-
-	if supportSince.Has(params.ObjectName) {
-		url.WithQueryParam(sinceKey, datautils.Time.FormatRFC3339inUTC(params.Since))
-	}
+	addQueryParams(url, params, 1)
 
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 }
@@ -102,13 +96,17 @@ func makeNextRecordsURL(baseURL *urlbuilder.URL, params common.ReadParams) commo
 
 		nextPage := currentPage + 1
 
-		baseURL.WithQueryParam(pageSizeKey, pageSize)
-		baseURL.WithQueryParam(pageKey, strconv.FormatInt(nextPage, 10))
-
-		if supportSince.Has(params.ObjectName) {
-			baseURL.WithQueryParam(sinceKey, datautils.Time.FormatRFC3339inUTC(params.Since))
-		}
+		addQueryParams(baseURL, params, nextPage)
 
 		return baseURL.String(), nil
+	}
+}
+
+func addQueryParams(url *urlbuilder.URL, params common.ReadParams, page int64) {
+	url.WithQueryParam(pageSizeKey, pageSize)
+	url.WithQueryParam(pageKey, strconv.FormatInt(page, 10))
+
+	if supportSince.Has(params.ObjectName) {
+		url.WithQueryParam(sinceKey, datautils.Time.FormatRFC3339inUTC(params.Since))
 	}
 }
