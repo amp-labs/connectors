@@ -93,12 +93,12 @@ func makeNextRecordsURL(responseHeaders http.Header) common.NextPageFunc {
 }
 
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) { //nolint:lll
-	method := http.MethodPost
-
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
+
+	method := http.MethodPost
 
 	if params.RecordId != "" {
 		if !supportByUpdate.Has(params.ObjectName) {
