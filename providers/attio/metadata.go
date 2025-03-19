@@ -165,7 +165,6 @@ func (c *Connector) getObjectDisplayName(ctx context.Context, obj string) (strin
 func parseMetadataFromResponse(resp *common.JSONHTTPResponse,
 	isAttioStandardOrCustomObj bool,
 ) (map[string]common.FieldMetadata, error) {
-
 	metadata := make(map[string]common.FieldMetadata)
 
 	// Retrieving metadata for standard and custom objects in Attio using the api_slug field.
