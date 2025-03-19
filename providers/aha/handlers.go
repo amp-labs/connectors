@@ -26,17 +26,12 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return http.NewRequestWithContext(ctx, http.MethodGet, params.NextPage.String(), nil)
 	}
 
-	var (
-		url *urlbuilder.URL
-		err error
-	)
-
 	path, err := metadata.Schemas.LookupURLPath(c.Module(), params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
 
-	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, path)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, path)
 	if err != nil {
 		return nil, err
 	}
