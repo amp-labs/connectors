@@ -40,7 +40,9 @@ func (c *Connector) readGeneralAPI(ctx context.Context, config common.ReadParams
 	)
 }
 
-func (c *Connector) readStandardOrCustomObject(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
+func (c *Connector) readStandardOrCustomObject(
+	ctx context.Context, config common.ReadParams,
+) (*common.ReadResult, error) {
 	// To handle standarad/custom objects
 	url, err := c.getObjectReadURL(config.ObjectName)
 	if err != nil {
