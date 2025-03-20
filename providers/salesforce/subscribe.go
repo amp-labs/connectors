@@ -2,7 +2,6 @@ package salesforce
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -207,16 +206,12 @@ func (c *Connector) UpdateSubscription(
 		}
 	}
 
-	fmt.Println("to exclude from subscription:", prettyFormat(objectsToExcludeFromSubscription))
-
 	// collect objects to exclude from delete
 	for objName := range prevState.EventChannelMembers {
 		if _, ok := params.SubscriptionEvents[objName]; ok {
 			objectsExcludeFromDelete = append(objectsExcludeFromDelete, objName)
 		}
 	}
-
-	fmt.Println("to exclude from delete:", prettyFormat(objectsExcludeFromDelete))
 
 	// remove objects to exclude from subscription and delete
 	for _, objName := range objectsToExcludeFromSubscription {
@@ -240,15 +235,11 @@ func (c *Connector) UpdateSubscription(
 
 	prevState.EventChannelMembers = channelMembersToKeep
 
-	fmt.Println("objects to delete:", prettyFormat(objectsToDelete))
-
 	previousResult.Objects = objectsToDelete
 
 	if err := c.DeleteSubscription(ctx, *previousResult); err != nil {
 		return nil, fmt.Errorf("failed to delete previous subscription: %w", err)
 	}
-
-	fmt.Println("params", prettyFormat(params))
 
 	// create new subscription
 	createRes, err := c.Subscribe(ctx, params)
@@ -258,9 +249,6 @@ func (c *Connector) UpdateSubscription(
 
 	// for clarity, rename the state since we will return the object as the result of update
 	newState := prevState
-
-	fmt.Println("createRes", prettyFormat(createRes))
-	fmt.Println("newState right after", prettyFormat(newState))
 
 	//nolint:forcetypeassert
 	// update the previous result with the new subscription result
@@ -290,10 +278,4 @@ func (c *Connector) UpdateSubscription(
 	}
 
 	return res, nil
-}
-
-func prettyFormat(v any) string {
-	data, _ := json.MarshalIndent(v, "", "  ")
-	return string(data)
-
 }
