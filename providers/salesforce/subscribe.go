@@ -223,8 +223,11 @@ func (c *Connector) UpdateSubscription(
 		delete(params.SubscriptionEvents, objName)
 	}
 
+	channelMembersToKeep := make(map[common.ObjectName]*EventChannelMember)
+
 	// remove objects to exclude from delete
 	for _, objName := range objectsExcludeFromDelete {
+		channelMembersToKeep[objName] = prevState.EventChannelMembers[objName]
 		delete(prevState.EventChannelMembers, objName)
 	}
 
@@ -235,7 +238,11 @@ func (c *Connector) UpdateSubscription(
 		objectsToDelete = append(objectsToDelete, objName)
 	}
 
+	prevState.EventChannelMembers = channelMembersToKeep
+
 	fmt.Println("objects to delete:", prettyFormat(objectsToDelete))
+
+	previousResult.Objects = objectsToDelete
 
 	if err := c.DeleteSubscription(ctx, *previousResult); err != nil {
 		return nil, fmt.Errorf("failed to delete previous subscription: %w", err)
@@ -253,6 +260,7 @@ func (c *Connector) UpdateSubscription(
 	newState := prevState
 
 	fmt.Println("createRes", prettyFormat(createRes))
+	fmt.Println("newState right after", prettyFormat(newState))
 
 	//nolint:forcetypeassert
 	// update the previous result with the new subscription result
