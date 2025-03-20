@@ -234,19 +234,20 @@ func (c *Connector) UpdateSubscription(
 		objectsToDelete = append(objectsToDelete, objName)
 	}
 
-	prevState.EventChannelMembers = channelMembersToKeep
-
-	previousResult.Objects = objectsToDelete
-
-	fmt.Println("Objects To Delete: ", prettyFormat(objectsToDelete))
-	fmt.Println("Previous Result: ", prettyFormat(previousResult))
+	// rename the previous result to deleteParam for clarity
+	// we will use this to delete the previous subscription
+	deleteParams := *previousResult
+	deleteParams.Result = prevState
+	deleteParams.Objects = objectsToDelete
 
 	// this is the delete step, but it looks for only object that were selected to delete
 	// in objectsToDelete array, so we are still preserving some objects
 	// that needs to remain in the subscription
-	if err := c.DeleteSubscription(ctx, *previousResult); err != nil {
+	if err := c.DeleteSubscription(ctx, deleteParams); err != nil {
 		return nil, fmt.Errorf("failed to delete previous subscription: %w", err)
 	}
+
+	prevState.EventChannelMembers = channelMembersToKeep
 
 	// create new subscription
 	createRes, err := c.Subscribe(ctx, params)
