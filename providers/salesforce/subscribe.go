@@ -2,6 +2,7 @@ package salesforce
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -237,6 +238,9 @@ func (c *Connector) UpdateSubscription(
 
 	previousResult.Objects = objectsToDelete
 
+	fmt.Println("Objects To Delete: ", prettyFormat(objectsToDelete))
+	fmt.Println("Previous Result: ", prettyFormat(previousResult))
+
 	// this is the delete step, but it looks for only object that were selected to delete
 	// in objectsToDelete array, so we are still preserving some objects
 	// that needs to remain in the subscription
@@ -281,4 +285,9 @@ func (c *Connector) UpdateSubscription(
 	}
 
 	return res, nil
+}
+
+func prettyFormat(v any) string {
+	data, _ := json.MarshalIndent(v, "", "  ")
+	return string(data)
 }
