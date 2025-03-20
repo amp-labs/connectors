@@ -1,0 +1,1604 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "/api/v4",
+      "objects": {
+        "all": {
+          "displayName": "All",
+          "path": "/snippets/all",
+          "responseKey": "",
+          "fields": {
+            "author": {
+              "displayName": "author",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "file_name": {
+              "displayName": "file_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "files": {
+              "displayName": "files",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "http_url_to_repo": {
+              "displayName": "http_url_to_repo",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "imported": {
+              "displayName": "imported",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "imported_from": {
+              "displayName": "imported_from",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "project_id": {
+              "displayName": "project_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "raw_url": {
+              "displayName": "raw_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "repository_storage": {
+              "displayName": "repository_storage",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "ssh_url_to_repo": {
+              "displayName": "ssh_url_to_repo",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "visibility": {
+              "displayName": "visibility",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "web_url": {
+              "displayName": "web_url",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "applications": {
+          "displayName": "Applications",
+          "path": "/applications",
+          "responseKey": "",
+          "fields": {
+            "application_id": {
+              "displayName": "application_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "application_name": {
+              "displayName": "application_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "callback_url": {
+              "displayName": "callback_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "confidential": {
+              "displayName": "confidential",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "batched_background_migrations": {
+          "displayName": "Batched Background Migrations",
+          "path": "/admin/batched_background_migrations",
+          "responseKey": "",
+          "fields": {
+            "column_name": {
+              "displayName": "column_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "job_class_name": {
+              "displayName": "job_class_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "progress": {
+              "displayName": "progress",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "table_name": {
+              "displayName": "table_name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "bulk_imports": {
+          "displayName": "Bulk Imports",
+          "path": "/bulk_imports",
+          "responseKey": "",
+          "fields": {
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "has_failures": {
+              "displayName": "has_failures",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "source_type": {
+              "displayName": "source_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "source_url": {
+              "displayName": "source_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "created",
+                  "displayValue": "created"
+                },
+                {
+                  "value": "started",
+                  "displayValue": "started"
+                },
+                {
+                  "value": "finished",
+                  "displayValue": "finished"
+                },
+                {
+                  "value": "timeout",
+                  "displayValue": "timeout"
+                },
+                {
+                  "value": "failed",
+                  "displayValue": "failed"
+                }
+              ]
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "clusters": {
+          "displayName": "Clusters",
+          "path": "/admin/clusters",
+          "responseKey": "",
+          "fields": {
+            "cluster_type": {
+              "displayName": "cluster_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "domain": {
+              "displayName": "domain",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "enabled": {
+              "displayName": "enabled",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "environment_scope": {
+              "displayName": "environment_scope",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "managed": {
+              "displayName": "managed",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "management_project": {
+              "displayName": "management_project",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "namespace_per_environment": {
+              "displayName": "namespace_per_environment",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "platform_kubernetes": {
+              "displayName": "platform_kubernetes",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "platform_type": {
+              "displayName": "platform_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "provider_gcp": {
+              "displayName": "provider_gcp",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "provider_type": {
+              "displayName": "provider_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user": {
+              "displayName": "user",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "definitions": {
+          "displayName": "Definitions",
+          "path": "/features/definitions",
+          "responseKey": "",
+          "fields": {
+            "default_enabled": {
+              "displayName": "default_enabled",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "feature_issue_url": {
+              "displayName": "feature_issue_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "group": {
+              "displayName": "group",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "introduced_by_url": {
+              "displayName": "introduced_by_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "log_state_changes": {
+              "displayName": "log_state_changes",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "milestone": {
+              "displayName": "milestone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "rollout_issue_url": {
+              "displayName": "rollout_issue_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "deploy_keys": {
+          "displayName": "Deploy Keys",
+          "path": "/deploy_keys",
+          "responseKey": "",
+          "fields": {
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "expires_at": {
+              "displayName": "expires_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "fingerprint": {
+              "displayName": "fingerprint",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "fingerprint_sha256": {
+              "displayName": "fingerprint_sha256",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "projects_with_readonly_access": {
+              "displayName": "projects_with_readonly_access",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "projects_with_write_access": {
+              "displayName": "projects_with_write_access",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "usage_type": {
+              "displayName": "usage_type",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "deploy_tokens": {
+          "displayName": "Deploy Tokens",
+          "path": "/deploy_tokens",
+          "responseKey": "",
+          "fields": {
+            "expired": {
+              "displayName": "expired",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "expires_at": {
+              "displayName": "expires_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "revoked": {
+              "displayName": "revoked",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "scopes": {
+              "displayName": "scopes",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "username": {
+              "displayName": "username",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "entities": {
+          "displayName": "Entities",
+          "path": "/bulk_imports/entities",
+          "responseKey": "",
+          "fields": {
+            "bulk_import_id": {
+              "displayName": "bulk_import_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "destination_full_path": {
+              "displayName": "destination_full_path",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "destination_name": {
+              "displayName": "destination_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "destination_namespace": {
+              "displayName": "destination_namespace",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "destination_slug": {
+              "displayName": "destination_slug",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "entity_type": {
+              "displayName": "entity_type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "group",
+                  "displayValue": "group"
+                },
+                {
+                  "value": "project",
+                  "displayValue": "project"
+                }
+              ]
+            },
+            "failures": {
+              "displayName": "failures",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "has_failures": {
+              "displayName": "has_failures",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "migrate_memberships": {
+              "displayName": "migrate_memberships",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "migrate_projects": {
+              "displayName": "migrate_projects",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "namespace_id": {
+              "displayName": "namespace_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "parent_id": {
+              "displayName": "parent_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "project_id": {
+              "displayName": "project_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "source_full_path": {
+              "displayName": "source_full_path",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "stats": {
+              "displayName": "stats",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "created",
+                  "displayValue": "created"
+                },
+                {
+                  "value": "started",
+                  "displayValue": "started"
+                },
+                {
+                  "value": "finished",
+                  "displayValue": "finished"
+                },
+                {
+                  "value": "timeout",
+                  "displayValue": "timeout"
+                },
+                {
+                  "value": "failed",
+                  "displayValue": "failed"
+                }
+              ]
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "events": {
+          "displayName": "Events",
+          "path": "/events",
+          "responseKey": "",
+          "fields": {
+            "action_name": {
+              "displayName": "action_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "author": {
+              "displayName": "author",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "author_id": {
+              "displayName": "author_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "author_username": {
+              "displayName": "author_username",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "imported": {
+              "displayName": "imported",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "imported_from": {
+              "displayName": "imported_from",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "note": {
+              "displayName": "note",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "project_id": {
+              "displayName": "project_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "push_data": {
+              "displayName": "push_data",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "target_id": {
+              "displayName": "target_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "target_iid": {
+              "displayName": "target_iid",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "target_title": {
+              "displayName": "target_title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "target_type": {
+              "displayName": "target_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "wiki_page": {
+              "displayName": "wiki_page",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "features": {
+          "displayName": "Features",
+          "path": "/features",
+          "responseKey": "",
+          "fields": {
+            "definition": {
+              "displayName": "definition",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "gates": {
+              "displayName": "gates",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "state": {
+              "displayName": "state",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "groups": {
+          "displayName": "Groups",
+          "path": "/groups",
+          "responseKey": "",
+          "fields": {
+            "auto_devops_enabled": {
+              "displayName": "auto_devops_enabled",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "avatar_url": {
+              "displayName": "avatar_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "custom_attributes": {
+              "displayName": "custom_attributes",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "default_branch": {
+              "displayName": "default_branch",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "default_branch_protection": {
+              "displayName": "default_branch_protection",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "default_branch_protection_defaults": {
+              "displayName": "default_branch_protection_defaults",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "duo_features_enabled": {
+              "displayName": "duo_features_enabled",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "emails_disabled": {
+              "displayName": "emails_disabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "emails_enabled": {
+              "displayName": "emails_enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "file_template_project_id": {
+              "displayName": "file_template_project_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "full_name": {
+              "displayName": "full_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "full_path": {
+              "displayName": "full_path",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "ldap_access": {
+              "displayName": "ldap_access",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "ldap_cn": {
+              "displayName": "ldap_cn",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "ldap_group_links": {
+              "displayName": "ldap_group_links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "lfs_enabled": {
+              "displayName": "lfs_enabled",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lock_duo_features_enabled": {
+              "displayName": "lock_duo_features_enabled",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lock_math_rendering_limits_enabled": {
+              "displayName": "lock_math_rendering_limits_enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "marked_for_deletion_on": {
+              "displayName": "marked_for_deletion_on",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "math_rendering_limits_enabled": {
+              "displayName": "math_rendering_limits_enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "max_artifacts_size": {
+              "displayName": "max_artifacts_size",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "mentions_disabled": {
+              "displayName": "mentions_disabled",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "organization_id": {
+              "displayName": "organization_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "parent_id": {
+              "displayName": "parent_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "path": {
+              "displayName": "path",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "project_creation_level": {
+              "displayName": "project_creation_level",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "repository_storage": {
+              "displayName": "repository_storage",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "request_access_enabled": {
+              "displayName": "request_access_enabled",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "require_two_factor_authentication": {
+              "displayName": "require_two_factor_authentication",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "root_storage_statistics": {
+              "displayName": "root_storage_statistics",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "saml_group_links": {
+              "displayName": "saml_group_links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "share_with_group_lock": {
+              "displayName": "share_with_group_lock",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "shared_runners_setting": {
+              "displayName": "shared_runners_setting",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "statistics": {
+              "displayName": "statistics",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "subgroup_creation_level": {
+              "displayName": "subgroup_creation_level",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "two_factor_grace_period": {
+              "displayName": "two_factor_grace_period",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "visibility": {
+              "displayName": "visibility",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "web_url": {
+              "displayName": "web_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "wiki_access_level": {
+              "displayName": "wiki_access_level",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "hooks": {
+          "displayName": "Hooks",
+          "path": "/hooks",
+          "responseKey": "",
+          "fields": {
+            "alert_status": {
+              "displayName": "alert_status",
+              "valueType": "other",
+              "providerType": "symbol"
+            },
+            "branch_filter_strategy": {
+              "displayName": "branch_filter_strategy",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "custom_headers": {
+              "displayName": "custom_headers",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "custom_webhook_template": {
+              "displayName": "custom_webhook_template",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "disabled_until": {
+              "displayName": "disabled_until",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "enable_ssl_verification": {
+              "displayName": "enable_ssl_verification",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "merge_requests_events": {
+              "displayName": "merge_requests_events",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "push_events": {
+              "displayName": "push_events",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "push_events_branch_filter": {
+              "displayName": "push_events_branch_filter",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "repository_update_events": {
+              "displayName": "repository_update_events",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "tag_push_events": {
+              "displayName": "tag_push_events",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url_variables": {
+              "displayName": "url_variables",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "namespaces": {
+          "displayName": "Namespaces",
+          "path": "/namespaces",
+          "responseKey": "",
+          "fields": {
+            "additional_purchased_storage_ends_on": {
+              "displayName": "additional_purchased_storage_ends_on",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "additional_purchased_storage_size": {
+              "displayName": "additional_purchased_storage_size",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "avatar_url": {
+              "displayName": "avatar_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "billable_members_count": {
+              "displayName": "billable_members_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "end_date": {
+              "displayName": "end_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "extra_shared_runners_minutes_limit": {
+              "displayName": "extra_shared_runners_minutes_limit",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "full_path": {
+              "displayName": "full_path",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "kind": {
+              "displayName": "kind",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "max_seats_used": {
+              "displayName": "max_seats_used",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "max_seats_used_changed_at": {
+              "displayName": "max_seats_used_changed_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "members_count_with_descendants": {
+              "displayName": "members_count_with_descendants",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "parent_id": {
+              "displayName": "parent_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "path": {
+              "displayName": "path",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "plan": {
+              "displayName": "plan",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "projects_count": {
+              "displayName": "projects_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "root_repository_size": {
+              "displayName": "root_repository_size",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "seats_in_use": {
+              "displayName": "seats_in_use",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "shared_runners_minutes_limit": {
+              "displayName": "shared_runners_minutes_limit",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "trial": {
+              "displayName": "trial",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "trial_ends_on": {
+              "displayName": "trial_ends_on",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "web_url": {
+              "displayName": "web_url",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "personal_access_tokens": {
+          "displayName": "Personal Access Tokens",
+          "path": "/personal_access_tokens",
+          "responseKey": "",
+          "fields": {
+            "active": {
+              "displayName": "active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "expires_at": {
+              "displayName": "expires_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "last_used_at": {
+              "displayName": "last_used_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "revoked": {
+              "displayName": "revoked",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "scopes": {
+              "displayName": "scopes",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "user_id": {
+              "displayName": "user_id",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "project_repository_storage_moves": {
+          "displayName": "Project Repository Storage Moves",
+          "path": "/project_repository_storage_moves",
+          "responseKey": "",
+          "fields": {
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "destination_storage_name": {
+              "displayName": "destination_storage_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "error_message": {
+              "displayName": "error_message",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "project": {
+              "displayName": "project",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "source_storage_name": {
+              "displayName": "source_storage_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "state": {
+              "displayName": "state",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "projects": {
+          "displayName": "Projects",
+          "path": "/projects",
+          "responseKey": "",
+          "fields": {
+            "avatar_url": {
+              "displayName": "avatar_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "custom_attributes": {
+              "displayName": "custom_attributes",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "default_branch": {
+              "displayName": "default_branch",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "forks_count": {
+              "displayName": "forks_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "http_url_to_repo": {
+              "displayName": "http_url_to_repo",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "last_activity_at": {
+              "displayName": "last_activity_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "license": {
+              "displayName": "license",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "license_url": {
+              "displayName": "license_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name_with_namespace": {
+              "displayName": "name_with_namespace",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "namespace": {
+              "displayName": "namespace",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "path": {
+              "displayName": "path",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "path_with_namespace": {
+              "displayName": "path_with_namespace",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "readme_url": {
+              "displayName": "readme_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "repository_storage": {
+              "displayName": "repository_storage",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "ssh_url_to_repo": {
+              "displayName": "ssh_url_to_repo",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "star_count": {
+              "displayName": "star_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "tag_list": {
+              "displayName": "tag_list",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "topics": {
+              "displayName": "topics",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "web_url": {
+              "displayName": "web_url",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "public": {
+          "displayName": "Public",
+          "path": "/snippets/public",
+          "responseKey": "",
+          "fields": {
+            "author": {
+              "displayName": "author",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "file_name": {
+              "displayName": "file_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "files": {
+              "displayName": "files",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "http_url_to_repo": {
+              "displayName": "http_url_to_repo",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "imported": {
+              "displayName": "imported",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "imported_from": {
+              "displayName": "imported_from",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "project_id": {
+              "displayName": "project_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "raw_url": {
+              "displayName": "raw_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "repository_storage": {
+              "displayName": "repository_storage",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "ssh_url_to_repo": {
+              "displayName": "ssh_url_to_repo",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "visibility": {
+              "displayName": "visibility",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "web_url": {
+              "displayName": "web_url",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "snippet_repository_storage_moves": {
+          "displayName": "Snippet Repository Storage Moves",
+          "path": "/snippet_repository_storage_moves",
+          "responseKey": "",
+          "fields": {
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "destination_storage_name": {
+              "displayName": "destination_storage_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "error_message": {
+              "displayName": "error_message",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "snippet": {
+              "displayName": "snippet",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "source_storage_name": {
+              "displayName": "source_storage_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "state": {
+              "displayName": "state",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "snippets": {
+          "displayName": "Snippets",
+          "path": "/snippets",
+          "responseKey": "",
+          "fields": {
+            "author": {
+              "displayName": "author",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "file_name": {
+              "displayName": "file_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "files": {
+              "displayName": "files",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "http_url_to_repo": {
+              "displayName": "http_url_to_repo",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "imported": {
+              "displayName": "imported",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "imported_from": {
+              "displayName": "imported_from",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "project_id": {
+              "displayName": "project_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "raw_url": {
+              "displayName": "raw_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "repository_storage": {
+              "displayName": "repository_storage",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "ssh_url_to_repo": {
+              "displayName": "ssh_url_to_repo",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "visibility": {
+              "displayName": "visibility",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "web_url": {
+              "displayName": "web_url",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}
