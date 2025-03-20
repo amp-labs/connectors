@@ -218,8 +218,11 @@ func (c *Connector) UpdateSubscription(
 		delete(params.SubscriptionEvents, objName)
 	}
 
+	channelMembersToKeep := make(map[common.ObjectName]*EventChannelMember)
+
 	// remove objects to exclude from delete
 	for _, objName := range objectsExcludeFromDelete {
+		channelMembersToKeep[objName] = prevState.EventChannelMembers[objName]
 		delete(prevState.EventChannelMembers, objName)
 	}
 
@@ -230,6 +233,13 @@ func (c *Connector) UpdateSubscription(
 		objectsToDelete = append(objectsToDelete, objName)
 	}
 
+	prevState.EventChannelMembers = channelMembersToKeep
+
+	previousResult.Objects = objectsToDelete
+
+	// this is the delete step, but it looks for only object that were selected to delete
+	// in objectsToDelete array, so we are still preserving some objects
+	// that needs to remain in the subscription
 	if err := c.DeleteSubscription(ctx, *previousResult); err != nil {
 		return nil, fmt.Errorf("failed to delete previous subscription: %w", err)
 	}
