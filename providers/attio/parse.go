@@ -53,7 +53,7 @@ func makeNextRecordStandardObj(body map[string]any) common.NextPageFunc {
 		}
 
 		if len(value) != 0 {
-			//To determine the offset value.
+			// To determine the offset value.
 			if offset, ok := body["offset"].(int); ok {
 				previousStart = offset
 			}
