@@ -82,7 +82,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:  "Read list of all notes",
-			Input: common.ReadParams{ObjectName: "notes", Fields: connectors.Fields(""), NextPage: "test?limit=10"},
+			Input: common.ReadParams{ObjectName: "notes", Fields: connectors.Fields(""), NextPage: "test?limit=50"},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseNotes),
@@ -101,14 +101,14 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					},
 				},
 				},
-				NextPage: "test?limit=10&offset=10",
+				NextPage: "test?limit=50&offset=50",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
 		},
 		{
 			Name:  "Read list of all tasks",
-			Input: common.ReadParams{ObjectName: "tasks", Fields: connectors.Fields(""), NextPage: "test?limit=10"},
+			Input: common.ReadParams{ObjectName: "tasks", Fields: connectors.Fields(""), NextPage: "test?limit=50"},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseTasks),
@@ -126,14 +126,14 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					},
 				},
 				},
-				NextPage: "test?limit=10&offset=10",
+				NextPage: "test?limit=50&offset=50",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
 		},
 		{
 			Name:  "Read list of all companies",
-			Input: common.ReadParams{ObjectName: "companies", Fields: connectors.Fields(""), Since: time.Date(2025, 3, 1, 0, 0, 0, 0, time.UTC), NextPage: "test?limit=10"},
+			Input: common.ReadParams{ObjectName: "companies", Fields: connectors.Fields(""), Since: time.Date(2025, 3, 1, 0, 0, 0, 0, time.UTC), NextPage: "test?limit=50"},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseCompanies),
@@ -166,7 +166,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					},
 				},
 				},
-				NextPage: "10",
+				NextPage: "50",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
