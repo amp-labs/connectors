@@ -7,7 +7,6 @@ import (
 	"log/slog"
 	"os/signal"
 	"syscall"
-	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers/aha"
@@ -25,9 +24,9 @@ func main() {
 
 	conn := hs.GetAhaConnector(ctx)
 
-	slog.Info("> TEST Creating Historic Audits")
+	slog.Info("> TEST Creating Products")
 
-	if err := createHistoricAudits(ctx, conn); err != nil {
+	if err := createProducts(ctx, conn); err != nil {
 		slog.Error(err.Error())
 	}
 
@@ -47,16 +46,14 @@ func main() {
 
 }
 
-func createHistoricAudits(ctx context.Context, conn *aha.Connector) error {
+func createProducts(ctx context.Context, conn *aha.Connector) error {
 	config := common.WriteParams{
-		ObjectName: "historical_audits",
+		ObjectName: "products",
 		RecordData: map[string]any{
-
-			"search": map[string]any{
-				"created_since":  "2019-01-01T00:00:00Z",
-				"created_before": "2019-01-01T00:00:00Z",
-				"auditable_type": "Feature",
-				"auditable_id":   1007868956,
+			"product": map[string]any{
+				"name":        "New Product",
+				"description": "An amazing new product",
+				"prefix":      "NEWPRtest",
 			},
 		},
 	}
@@ -82,7 +79,7 @@ func createIdeaUsers(ctx context.Context, conn *aha.Connector) (string, error) {
 		ObjectName: "idea_users",
 		RecordData: map[string]any{
 			"idea_user": map[string]any{
-				"email":      "samsdsfafsd@example.com",
+				"email":      "samsdfdd@example.com",
 				"first_name": "sam",
 				"last_name":  "doe",
 			},
@@ -111,7 +108,7 @@ func updateIdeaUsers(ctx context.Context, conn *aha.Connector, recordId string) 
 		RecordId:   recordId,
 		RecordData: map[string]any{
 			"idea_user": map[string]any{
-				"first_name": "sam" + time.Now().String(),
+				"first_name": "samdsfa",
 			},
 		},
 	}
