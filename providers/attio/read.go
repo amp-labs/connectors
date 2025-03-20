@@ -20,19 +20,9 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	)
 
 	if supportAttioGeneralApi.Has(config.ObjectName) {
-		if len(config.NextPage) != 0 {
-			// Next page.
-			url, err = urlbuilder.New(config.NextPage.String())
-		} else {
-			url, err = c.getApiURL(config.ObjectName)
-			if err != nil {
-				return nil, err
-			}
-		}
-
-		if supportLimitAndOffset.Has(config.ObjectName) {
-			url.WithQueryParam("limit", strconv.Itoa(DefaultPageSize))
-			url.WithQueryParam("offset", "0")
+		url, err = c.buildURL(config)
+		if err != nil {
+			return nil, err
 		}
 
 		rsp, err = c.Client.Get(ctx, url.String())
@@ -50,6 +40,9 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	} else {
 		// To handle standarad/custom objects
 		url, err = c.getObjectReadURL(config.ObjectName)
+		if err != nil {
+			return nil, err
+		}
 
 		body := constructBody(config)
 
@@ -68,7 +61,26 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	}
 }
 
-// construct body params for filter the data using since field
+func (c *Connector) buildURL(config common.ReadParams) (*urlbuilder.URL, error) {
+	if len(config.NextPage) != 0 {
+		// Next page.
+		return urlbuilder.New(config.NextPage.String())
+	}
+
+	url, err := c.getApiURL(config.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	if supportLimitAndOffset.Has(config.ObjectName) {
+		url.WithQueryParam("limit", strconv.Itoa(DefaultPageSize))
+		url.WithQueryParam("offset", "0")
+	}
+
+	return url, nil
+}
+
+// construct body params for filter the data using since field.
 func constructBody(config common.ReadParams) map[string]any {
 	filter := make(map[string]any)
 
