@@ -13,7 +13,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	if !supportAttioApiObj.Has(config.ObjectName) {
+	if !supportAttioGeneralApi.Has(config.ObjectName) {
 		return nil, common.ErrOperationNotSupportedForObject
 	}
 

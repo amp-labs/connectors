@@ -20,7 +20,7 @@ var supportLimitAndOffset = datautils.NewSet( //nolint:gochecknoglobals
 	objectNameNotes,
 )
 
-var supportAttioApiObj = datautils.NewSet( //nolint:gochecknoglobals
+var supportAttioGeneralApi = datautils.NewSet( //nolint:gochecknoglobals
 	objectNameLists,
 	objectNameWorkspacemembers,
 	objectNameTasks,
