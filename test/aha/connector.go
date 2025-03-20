@@ -18,7 +18,7 @@ func GetAhaConnector(ctx context.Context) *aha.Connector {
 	conn, err := aha.NewConnector(
 		common.Parameters{
 			AuthenticatedClient: utils.NewOauth2Client(ctx, reader, getConfig),
-			Workspace:           "ampersand2",
+			Workspace:           reader.Get(credscanning.Fields.Workspace),
 		},
 	)
 	if err != nil {

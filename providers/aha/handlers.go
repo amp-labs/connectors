@@ -77,16 +77,16 @@ func makeNextRecordsURL(baseURL *urlbuilder.URL, params common.ReadParams) commo
 
 		totalPage, err := jsonquery.New(pagination).IntegerRequired("total_pages")
 		if err != nil {
-			return "", err
+			return "", nil //nolint:nilerr
 		}
 
 		currentPage, err := jsonquery.New(pagination).IntegerRequired("current_page")
 		if err != nil {
-			return "", err
+			return "", nil //nolint:nilerr
 		}
 
 		if currentPage == totalPage {
-			return "", nil
+			return "", nil //nolint:nilerr
 		}
 
 		nextPage := currentPage + 1
@@ -102,6 +102,7 @@ func addQueryParams(url *urlbuilder.URL, params common.ReadParams, page int64) {
 	url.WithQueryParam(pageKey, strconv.FormatInt(page, 10))
 
 	if supportSince.Has(params.ObjectName) {
+		// https://www.aha.io/api/resources/ideas/list_ideas
 		url.WithQueryParam(sinceKey, datautils.Time.FormatRFC3339inUTC(params.Since))
 	}
 }
