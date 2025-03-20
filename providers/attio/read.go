@@ -13,52 +13,54 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	var (
-		url *urlbuilder.URL
-		err error
-		rsp *common.JSONHTTPResponse
-	)
-
 	if supportAttioGeneralApi.Has(config.ObjectName) {
-		url, err = c.buildURL(config)
-		if err != nil {
-			return nil, err
-		}
-
-		rsp, err = c.Client.Get(ctx, url.String())
-		if err != nil {
-			return nil, err
-		}
-
-		return common.ParseResult(
-			rsp,
-			common.GetRecordsUnderJSONPath("data"),
-			makeNextRecordsURL(url),
-			common.GetMarshaledData,
-			config.Fields,
-		)
-	} else {
-		// To handle standarad/custom objects
-		url, err = c.getObjectReadURL(config.ObjectName)
-		if err != nil {
-			return nil, err
-		}
-
-		body := constructBody(config)
-
-		rsp, err = c.Client.Post(ctx, url.String(), body)
-		if err != nil {
-			return nil, err
-		}
-
-		return common.ParseResult(
-			rsp,
-			common.GetRecordsUnderJSONPath("data"),
-			makeNextRecordStandardObj(body),
-			common.GetMarshaledData,
-			config.Fields,
-		)
+		return c.readGeneralAPI(ctx, config)
 	}
+
+	return c.readStandardOrCustomObject(ctx, config)
+}
+
+func (c *Connector) readGeneralAPI(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
+	url, err := c.buildURL(config)
+	if err != nil {
+		return nil, err
+	}
+
+	rsp, err := c.Client.Get(ctx, url.String())
+	if err != nil {
+		return nil, err
+	}
+
+	return common.ParseResult(
+		rsp,
+		common.GetRecordsUnderJSONPath("data"),
+		makeNextRecordsURL(url),
+		common.GetMarshaledData,
+		config.Fields,
+	)
+}
+
+func (c *Connector) readStandardOrCustomObject(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
+	// To handle standarad/custom objects
+	url, err := c.getObjectReadURL(config.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	body := constructBody(config)
+
+	rsp, err := c.Client.Post(ctx, url.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	return common.ParseResult(
+		rsp,
+		common.GetRecordsUnderJSONPath("data"),
+		makeNextRecordStandardObj(body),
+		common.GetMarshaledData,
+		config.Fields,
+	)
 }
 
 func (c *Connector) buildURL(config common.ReadParams) (*urlbuilder.URL, error) {
