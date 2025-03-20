@@ -49,5 +49,4 @@ func main() {
 	}
 
 	utils.DumpJSON(res, os.Stdout)
-
 }
