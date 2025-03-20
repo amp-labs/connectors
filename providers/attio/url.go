@@ -27,5 +27,4 @@ func (c *Connector) getObjectReadURL(objName string) (*urlbuilder.URL, error) {
 	relativeURL := strings.Join([]string{"objects", objName, "records", "query"}, "/")
 
 	return urlbuilder.New(c.BaseURL, apiVersion, relativeURL)
-
 }
