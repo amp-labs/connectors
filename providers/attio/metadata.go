@@ -115,7 +115,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 func (c *Connector) getObjectAttributes(
 	ctx context.Context, obj string,
 ) (map[string]common.FieldMetadata, bool, error) {
-	isAttioStandardOrCustomObj := !supportAttioApiObj.Has(obj)
+	isAttioStandardOrCustomObj := !supportAttioGeneralApi.Has(obj)
 
 	var (
 		url *urlbuilder.URL

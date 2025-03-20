@@ -6,6 +6,8 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
+// A trailing slash is added to the relative URL to ensure proper concatenation of dynamic values.
+//
 // Relative URL for retrieving metadata for standard and custom objects in Attio.
 func (c *Connector) getObjectAttributesURL(objName string) (*urlbuilder.URL, error) {
 	relativeURL := strings.Join([]string{"objects", objName, "attributes"}, "/")
