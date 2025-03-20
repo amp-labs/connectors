@@ -1,6 +1,7 @@
 package common
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"strings"
@@ -127,6 +128,8 @@ func GetMarshalledDataWithId(records []map[string]any, fields []string) ([]ReadR
 			Raw:    record,
 		}
 
+		fmt.Println("data:", prettyPrint(data[i]))
+
 		idAny := data[i].Fields["id"]
 		if idAny == nil {
 			return nil, errMissingId
@@ -170,4 +173,9 @@ func getRecords(optional bool, jsonPath string, nestedPath ...string) RecordsFun
 
 		return jsonquery.Convertor.ArrayToMap(arr)
 	}
+}
+
+func prettyPrint(v any) string {
+	data, _ := json.MarshalIndent(v, "", "  ")
+	return string(data)
 }
