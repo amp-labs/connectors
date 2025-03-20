@@ -13,44 +13,85 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	if !supportAttioGeneralApi.Has(config.ObjectName) {
-		return nil, common.ErrOperationNotSupportedForObject
-	}
-
-	url, err := c.buildURL(config)
-	if err != nil {
-		return nil, err
-	}
-
-	rsp, err := c.Client.Get(ctx, url.String())
-	if err != nil {
-		return nil, err
-	}
-
-	return common.ParseResult(
-		rsp,
-		common.GetRecordsUnderJSONPath("data"),
-		makeNextRecordsURL(url),
-		common.GetMarshaledData,
-		config.Fields,
+	var (
+		url *urlbuilder.URL
+		err error
+		rsp *common.JSONHTTPResponse
 	)
+
+	if supportAttioGeneralApi.Has(config.ObjectName) {
+		if len(config.NextPage) != 0 {
+			// Next page.
+			url, err = urlbuilder.New(config.NextPage.String())
+		} else {
+			url, err = c.getApiURL(config.ObjectName)
+			if err != nil {
+				return nil, err
+			}
+		}
+
+		if supportLimitAndOffset.Has(config.ObjectName) {
+			url.WithQueryParam("limit", strconv.Itoa(DefaultPageSize))
+			url.WithQueryParam("offset", "0")
+		}
+
+		rsp, err = c.Client.Get(ctx, url.String())
+		if err != nil {
+			return nil, err
+		}
+
+		return common.ParseResult(
+			rsp,
+			common.GetRecordsUnderJSONPath("data"),
+			makeNextRecordsURL(url),
+			common.GetMarshaledData,
+			config.Fields,
+		)
+	} else {
+		// To handle standarad/custom objects
+		url, err = c.getObjectReadURL(config.ObjectName)
+
+		body := constructBody(config)
+
+		rsp, err = c.Client.Post(ctx, url.String(), body)
+		if err != nil {
+			return nil, err
+		}
+
+		return common.ParseResult(
+			rsp,
+			common.GetRecordsUnderJSONPath("data"),
+			makeNextRecordStandardObj(body),
+			common.GetMarshaledData,
+			config.Fields,
+		)
+	}
 }
 
-func (c *Connector) buildURL(config common.ReadParams) (*urlbuilder.URL, error) {
+// construct body params for filter the data using since field
+func constructBody(config common.ReadParams) map[string]any {
+	filter := make(map[string]any)
+
+	body := map[string]any{}
+
 	if len(config.NextPage) != 0 {
-		// Next page.
-		return urlbuilder.New(config.NextPage.String())
+		offset, err := strconv.Atoi(config.NextPage.String())
+		if err != nil {
+			return nil
+		}
+
+		body["offset"] = offset
 	}
 
-	url, err := c.getApiURL(config.ObjectName)
-	if err != nil {
-		return nil, err
+	if !config.Since.IsZero() {
+		filter["created_at"] = map[string]string{
+			"$gte": config.Since.Format("2006-01-02T15:04:05.999999999Z"),
+		}
 	}
 
-	if supportLimitAndOffset.Has(config.ObjectName) {
-		url.WithQueryParam("limit", strconv.Itoa(DefaultPageSize))
-		url.WithQueryParam("offset", "0")
-	}
+	body["limit"] = DefaultPageSize
 
-	return url, nil
+	body["filter"] = filter
+
+	return body
 }
