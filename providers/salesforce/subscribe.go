@@ -246,9 +246,6 @@ func (c *Connector) UpdateSubscription(
 		return nil, fmt.Errorf("failed to delete previous subscription: %w", err)
 	}
 
-	// reset the ChannelMembers that was not deleted
-	prevState.EventChannelMembers = channelMembersToKeep
-
 	// create new subscription
 	createRes, err := c.Subscribe(ctx, params)
 	if err != nil {
@@ -257,6 +254,8 @@ func (c *Connector) UpdateSubscription(
 
 	// for clarity, rename the state since we will return the object as the result of update
 	newState := prevState
+	// reset the ChannelMembers that was not deleted
+	newState.EventChannelMembers = channelMembersToKeep
 
 	//nolint:forcetypeassert
 	// update the previous result with the new subscription result
