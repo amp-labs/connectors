@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -36,6 +37,11 @@ func MainFn() int {
 	}
 
 	err = testReadNotes(context.Background(), conn)
+	if err != nil {
+		return 1
+	}
+
+	err = testReadCompanies(context.Background(), conn)
 	if err != nil {
 		return 1
 	}
@@ -116,6 +122,30 @@ func testReadNotes(ctx context.Context, conn *ap.Connector) error {
 	params := common.ReadParams{
 		ObjectName: "notes",
 		Fields:     connectors.Fields(""),
+	}
+
+	res, err := conn.Read(ctx, params)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	// Print the results.
+	jsonStr, err := json.MarshalIndent(res, "", "  ")
+	if err != nil {
+		return fmt.Errorf("error marshalling JSON: %w", err)
+	}
+
+	_, _ = os.Stdout.Write(jsonStr)
+	_, _ = os.Stdout.WriteString("\n")
+
+	return nil
+}
+
+func testReadCompanies(ctx context.Context, conn *ap.Connector) error {
+	params := common.ReadParams{
+		ObjectName: "companies",
+		Fields:     connectors.Fields(""),
+		Since:      time.Date(2025, 3, 1, 0, 0, 0, 0, time.UTC),
 	}
 
 	res, err := conn.Read(ctx, params)

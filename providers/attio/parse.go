@@ -40,3 +40,29 @@ func makeNextRecordsURL(reqLink *urlbuilder.URL) common.NextPageFunc {
 		return "", nil
 	}
 }
+
+// To determine the next page records for the standard/custom objects.
+func makeNextRecordStandardObj(body map[string]any) common.NextPageFunc {
+	return func(node *ajson.Node) (string, error) {
+		previousStart := 0
+
+		// Extract the data key value from the response.
+		value, err := jsonquery.New(node).ArrayRequired("data")
+		if err != nil {
+			return "", err
+		}
+
+		if len(value) != 0 {
+			//To determine the offset value.
+			if offset, ok := body["offset"].(int); ok {
+				previousStart = offset
+			}
+
+			nextStart := previousStart + DefaultPageSize
+
+			return strconv.Itoa(nextStart), nil
+		}
+
+		return "", nil
+	}
+}
