@@ -2,7 +2,6 @@ package salesforce
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -247,6 +246,7 @@ func (c *Connector) UpdateSubscription(
 		return nil, fmt.Errorf("failed to delete previous subscription: %w", err)
 	}
 
+	// reset the ChannelMembers that was not deleted
 	prevState.EventChannelMembers = channelMembersToKeep
 
 	// create new subscription
@@ -286,9 +286,4 @@ func (c *Connector) UpdateSubscription(
 	}
 
 	return res, nil
-}
-
-func prettyFormat(v any) string {
-	data, _ := json.MarshalIndent(v, "", "  ")
-	return string(data)
 }
