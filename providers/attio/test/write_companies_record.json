@@ -1,0 +1,23 @@
+{
+    "data": {
+        "id": {
+            "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+            "object_id": "1fa986a6-952e-4e92-ba01-acca61a7b616",
+            "record_id": "238747c9-6dce-4475-8928-fe66ddfe8526"
+        },
+        "values": {
+            "name": [
+                {
+                    "active_from": "2025-03-21T10:27:09.906000000Z",
+                    "active_until": null,
+                    "created_by_actor": {
+                        "type": "api-token",
+                        "id": "0d91718e-9193-47e7-8b6c-6feeae40dcc1"
+                    },
+                    "value": "pay",
+                    "attribute_type": "text"
+                }
+            ]
+        }
+    }
+}

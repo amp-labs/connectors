@@ -9,7 +9,7 @@ const (
 	objectNameNotes            = "notes"
 )
 
-var supportedObjectsByWrite = datautils.NewSet( //nolint:gochecknoglobals
+var supportAttioGeneralApiWrite = datautils.NewSet( //nolint:gochecknoglobals
 	objectNameLists,
 	objectNameTasks,
 	objectNameNotes,
