@@ -10,10 +10,10 @@ type (
 	WriteHandlers  = HTTPHandlers[common.WriteParams, *common.WriteResult]
 	DeleteHandlers = HTTPHandlers[common.DeleteParams, *common.DeleteResult]
 
-	// Gets metadata for a list of objects in a single request.
+	// ListObjectMetadataHandlers gets metadata for a list of objects in a single request.
 	ListObjectMetadataHandlers = HTTPHandlers[[]string, *common.ListObjectMetadataResult]
 
-	// Gets metadata for a single object.
+	// SingleObjectMetadataHandlers gets metadata for a single object.
 	SingleObjectMetadataHandlers = HTTPHandlers[string, *common.ObjectMetadata]
 )
 
@@ -23,9 +23,9 @@ type (
 	WriteOperation  = HTTPOperation[common.WriteParams, *common.WriteResult]
 	DeleteOperation = HTTPOperation[common.DeleteParams, *common.DeleteResult]
 
-	// Gets metadata for a list of objects in a single request.
+	// ListObjectMetadataOperation gets metadata for a list of objects in a single request.
 	ListObjectMetadataOperation = HTTPOperation[[]string, *common.ListObjectMetadataResult]
 
-	// Gets metadata for a single object.
+	// SingleObjectMetadataOperation gets metadata for a single object.
 	SingleObjectMetadataOperation = HTTPOperation[string, *common.ObjectMetadata]
 )
