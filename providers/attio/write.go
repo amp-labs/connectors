@@ -7,6 +7,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
@@ -19,13 +20,21 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, err
 	}
 
-	if !supportedObjectsByWrite.Has(config.ObjectName) {
-		return nil, common.ErrOperationNotSupportedForObject
-	}
+	var (
+		url *urlbuilder.URL
+		err error
+	)
 
-	url, err := c.getApiURL(config.ObjectName)
-	if err != nil {
-		return nil, err
+	if supportedObjectsByWrite.Has(config.ObjectName) {
+		url, err = c.getApiURL(config.ObjectName)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		url, err = c.getObjectWriteURL(config.ObjectName)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	var write common.WriteMethod
