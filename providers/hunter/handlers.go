@@ -1,7 +1,9 @@
 package hunter
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -9,6 +11,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
 const (
@@ -108,4 +111,61 @@ func (c *Connector) parseReadResponse(
 		common.GetMarshaledData,
 		params.Fields,
 	)
+}
+
+func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+	method := http.MethodPost
+
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIVersion, params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.RecordId != "" {
+		url.AddPath(params.RecordId)
+
+		method = http.MethodPut
+	}
+
+	jsonData, err := json.Marshal(params.RecordData)
+	if err != nil {
+		return nil, err
+	}
+
+	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
+}
+
+func (c *Connector) parseWriteResponse(
+	ctx context.Context,
+	params common.WriteParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.WriteResult, error) {
+	body, ok := response.Body()
+	if !ok {
+		return &common.WriteResult{
+			Success: true,
+		}, nil
+	}
+
+	resp, err := jsonquery.New(body).ObjectRequired("data")
+	if err != nil {
+		return nil, err
+	}
+
+	recordId, err := jsonquery.New(resp).IntegerOptional("id")
+	if err != nil {
+		return nil, err
+	}
+
+	data, err := jsonquery.Convertor.ObjectToMap(resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return &common.WriteResult{
+		Success:  true,
+		RecordId: strconv.Itoa(int(*recordId)),
+		Data:     data,
+	}, nil
 }
