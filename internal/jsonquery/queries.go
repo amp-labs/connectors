@@ -6,7 +6,7 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-// Query is a helpful wrapper of ajson library that adds errors when querying JSON payload.
+// Query is a helpful wrapper of jsonType library that adds errors when querying JSON payload.
 //
 // Usage examples, where node is JSON parsed via ajson library:
 //
@@ -14,23 +14,64 @@ import (
 //	->	Optional *string:					jsonquery.New(node).String("text", true)
 //	->	Nested array:						jsonquery.New(node, "your", "path", "to", "array").Array("list", false)
 //	->	Convert current obj to list:		jsonquery.New(node).Array("", false)
-type Query struct {
+type Query[T any] interface {
+	ObjectOptional(key string) (T, error)
+	ObjectRequired(key string) (T, error)
+	ArrayOptional(key string) ([]T, error)
+	ArrayRequired(key string) ([]T, error)
+
+	IntegerOptional(key string) (*int64, error)
+	IntegerRequired(key string) (int64, error)
+	StringOptional(key string) (*string, error)
+	StringRequired(key string) (string, error)
+	BoolOptional(key string) (*bool, error)
+	BoolRequired(key string) (bool, error)
+
+	IntegerWithDefault(key string, defaultValue int64) (int64, error)
+	StrWithDefault(key string, defaultValue string) (string, error)
+	TextWithDefault(key string, defaultValue string) (string, error)
+	BoolWithDefault(key string, defaultValue bool) (bool, error)
+
+	This() T
+}
+
+type jsonType interface {
+	*ajson.Node | map[string]any
+}
+type NodeQuery struct {
 	node *ajson.Node
+	zoom []string
+}
+type MapQuery struct {
+	node map[string]any
 	zoom []string
 }
 
 // New constructs query searching for key. Extra keys are preceding forming a zoom path.
-func New(node *ajson.Node, zoom ...string) *Query {
-	return &Query{
-		node: node,
-		zoom: zoom,
+func New[T jsonType](json T, zoom ...string) Query[T] {
+	switch data := any(json).(type) {
+	case *ajson.Node:
+		return any(&NodeQuery{
+			node: data,
+			zoom: zoom,
+		}).(Query[T])
+	case map[string]any:
+		return any(&MapQuery{
+			node: data,
+			zoom: zoom,
+		}).(Query[T])
+	default:
+		return any(&MapQuery{
+			node: map[string]any{}, // empty map
+			zoom: zoom,
+		}).(Query[T]) // empty map
 	}
 }
 
 // ObjectOptional returns node object if present.
 // If the entity at the key path is not a node object, an error is returned.
 // Empty key is interpreter as "this", in other words current node.
-func (q *Query) ObjectOptional(key string) (*ajson.Node, error) {
+func (q *NodeQuery) ObjectOptional(key string) (*ajson.Node, error) {
 	return q.internalQueryObject(key, true)
 }
 
@@ -38,11 +79,11 @@ func (q *Query) ObjectOptional(key string) (*ajson.Node, error) {
 // If the entity at the key path is not a node object or is missing, an error is returned.
 // Empty key is interpreter as "this", in other words current node.
 // Missing key returns ErrKeyNotFound. Null value returns ErrNullJSON.
-func (q *Query) ObjectRequired(key string) (*ajson.Node, error) {
+func (q *NodeQuery) ObjectRequired(key string) (*ajson.Node, error) {
 	return q.internalQueryObject(key, false)
 }
 
-func (q *Query) internalQueryObject(key string, optional bool) (*ajson.Node, error) {
+func (q *NodeQuery) internalQueryObject(key string, optional bool) (*ajson.Node, error) {
 	node, err := q.getInnerKey(key, optional)
 	if err != nil {
 		return nil, err
@@ -66,7 +107,7 @@ func (q *Query) internalQueryObject(key string, optional bool) (*ajson.Node, err
 // IntegerOptional returns integer if present.
 // If the entity at the key path is not an integer, an error is returned.
 // Empty key is interpreter as "this", in other words current node.
-func (q *Query) IntegerOptional(key string) (*int64, error) {
+func (q *NodeQuery) IntegerOptional(key string) (*int64, error) {
 	return q.internalQueryInteger(key, true)
 }
 
@@ -74,7 +115,7 @@ func (q *Query) IntegerOptional(key string) (*int64, error) {
 // If the entity at the key path is not an integer or is missing, an error is returned.
 // Empty key is interpreter as "this", in other words current node.
 // Missing key returns ErrKeyNotFound. Null value returns ErrNullJSON.
-func (q *Query) IntegerRequired(key string) (int64, error) {
+func (q *NodeQuery) IntegerRequired(key string) (int64, error) {
 	integer, err := q.internalQueryInteger(key, false)
 	if err != nil {
 		return 0, err
@@ -83,7 +124,7 @@ func (q *Query) IntegerRequired(key string) (int64, error) {
 	return *integer, nil
 }
 
-func (q *Query) internalQueryInteger(key string, optional bool) (*int64, error) {
+func (q *NodeQuery) internalQueryInteger(key string, optional bool) (*int64, error) {
 	node, err := q.getInnerKey(key, optional)
 	if err != nil {
 		return nil, err
@@ -114,7 +155,7 @@ func (q *Query) internalQueryInteger(key string, optional bool) (*int64, error) 
 // StringOptional returns string if present.
 // If the entity at the key path is not a string, an error is returned.
 // Empty key is interpreted as "this", in other words a current node.
-func (q *Query) StringOptional(key string) (*string, error) {
+func (q *NodeQuery) StringOptional(key string) (*string, error) {
 	return q.internalQueryString(key, true)
 }
 
@@ -122,7 +163,7 @@ func (q *Query) StringOptional(key string) (*string, error) {
 // If the entity at the key path is not a string or is missing, an error is returned.
 // Empty key is interpreted as "this", in other words a current node.
 // Missing key returns ErrKeyNotFound. Null value returns ErrNullJSON.
-func (q *Query) StringRequired(key string) (string, error) {
+func (q *NodeQuery) StringRequired(key string) (string, error) {
 	text, err := q.internalQueryString(key, false)
 	if err != nil {
 		return "", err
@@ -131,7 +172,7 @@ func (q *Query) StringRequired(key string) (string, error) {
 	return *text, nil
 }
 
-func (q *Query) internalQueryString(key string, optional bool) (*string, error) {
+func (q *NodeQuery) internalQueryString(key string, optional bool) (*string, error) {
 	node, err := q.getInnerKey(key, optional)
 	if err != nil {
 		return nil, err
@@ -156,7 +197,7 @@ func (q *Query) internalQueryString(key string, optional bool) (*string, error) 
 // BoolOptional returns boolean if present.
 // If the entity at the key path is not a boolean, an error is returned.
 // Empty key is interpreted as "this", in other words a current node.
-func (q *Query) BoolOptional(key string) (*bool, error) {
+func (q *NodeQuery) BoolOptional(key string) (*bool, error) {
 	return q.internalQueryBool(key, true)
 }
 
@@ -164,7 +205,7 @@ func (q *Query) BoolOptional(key string) (*bool, error) {
 // If the entity at the key path is not a boolean or is missing, an error is returned.
 // Empty key is interpreted as "this", in other words a current node.
 // Missing key returns ErrKeyNotFound. Null value returns ErrNullJSON.
-func (q *Query) BoolRequired(key string) (bool, error) {
+func (q *NodeQuery) BoolRequired(key string) (bool, error) {
 	flag, err := q.internalQueryBool(key, false)
 	if err != nil {
 		return false, err
@@ -173,7 +214,7 @@ func (q *Query) BoolRequired(key string) (bool, error) {
 	return *flag, nil
 }
 
-func (q *Query) internalQueryBool(key string, optional bool) (*bool, error) {
+func (q *NodeQuery) internalQueryBool(key string, optional bool) (*bool, error) {
 	node, err := q.getInnerKey(key, optional)
 	if err != nil {
 		return nil, err
@@ -198,7 +239,7 @@ func (q *Query) internalQueryBool(key string, optional bool) (*bool, error) {
 // ArrayOptional returns array of nodes if present.
 // If the entity at the key path is not an array, an error is returned.
 // Empty key is interpreted as "this", in other words a current node.
-func (q *Query) ArrayOptional(key string) ([]*ajson.Node, error) {
+func (q *NodeQuery) ArrayOptional(key string) ([]*ajson.Node, error) {
 	return q.internalQueryArray(key, true)
 }
 
@@ -206,11 +247,11 @@ func (q *Query) ArrayOptional(key string) ([]*ajson.Node, error) {
 // If the entity at the key path is not an array or is missing, an error is returned.
 // Empty key is interpreted as "this", in other words a current node.
 // Missing key returns ErrKeyNotFound. Null value returns ErrNullJSON.
-func (q *Query) ArrayRequired(key string) ([]*ajson.Node, error) {
+func (q *NodeQuery) ArrayRequired(key string) ([]*ajson.Node, error) {
 	return q.internalQueryArray(key, false)
 }
 
-func (q *Query) internalQueryArray(key string, optional bool) ([]*ajson.Node, error) {
+func (q *NodeQuery) internalQueryArray(key string, optional bool) ([]*ajson.Node, error) {
 	node, err := q.getInnerKey(key, optional)
 	if err != nil {
 		return nil, err
@@ -230,4 +271,82 @@ func (q *Query) internalQueryArray(key string, optional bool) ([]*ajson.Node, er
 	}
 
 	return arr, nil
+}
+
+func (q *NodeQuery) This() *ajson.Node {
+	return q.node
+}
+
+func (m MapQuery) ObjectOptional(key string) (map[string]any, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m MapQuery) ObjectRequired(key string) (map[string]any, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m MapQuery) ArrayOptional(key string) ([]map[string]any, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m MapQuery) ArrayRequired(key string) ([]map[string]any, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m MapQuery) IntegerOptional(key string) (*int64, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m MapQuery) IntegerRequired(key string) (int64, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m MapQuery) StringOptional(key string) (*string, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m MapQuery) StringRequired(key string) (string, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m MapQuery) BoolOptional(key string) (*bool, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m MapQuery) BoolRequired(key string) (bool, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m MapQuery) IntegerWithDefault(key string, defaultValue int64) (int64, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m MapQuery) StrWithDefault(key string, defaultValue string) (string, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m MapQuery) TextWithDefault(key string, defaultValue string) (string, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m MapQuery) BoolWithDefault(key string, defaultValue bool) (bool, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m MapQuery) This() map[string]any {
+	return m.node
 }

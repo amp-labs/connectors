@@ -5,7 +5,7 @@ import (
 	"strconv"
 )
 
-func (q *Query) IntegerWithDefault(key string, defaultValue int64) (int64, error) {
+func (q *NodeQuery) IntegerWithDefault(key string, defaultValue int64) (int64, error) {
 	result, err := q.IntegerOptional(key)
 	if err != nil {
 		return 0, err
@@ -18,7 +18,7 @@ func (q *Query) IntegerWithDefault(key string, defaultValue int64) (int64, error
 	return *result, nil
 }
 
-func (q *Query) StrWithDefault(key string, defaultValue string) (string, error) {
+func (q *NodeQuery) StrWithDefault(key string, defaultValue string) (string, error) {
 	result, err := q.StringOptional(key)
 	if err != nil {
 		return "", err
@@ -33,7 +33,7 @@ func (q *Query) StrWithDefault(key string, defaultValue string) (string, error) 
 
 // TextWithDefault returns a string under the key regardless of JSON data type.
 // If data is not a string it will be converted to such.
-func (q *Query) TextWithDefault(key string, defaultValue string) (string, error) {
+func (q *NodeQuery) TextWithDefault(key string, defaultValue string) (string, error) {
 	result, err := q.StrWithDefault(key, defaultValue)
 	if err != nil {
 		if !errors.Is(err, ErrNotString) {
@@ -59,7 +59,7 @@ func (q *Query) TextWithDefault(key string, defaultValue string) (string, error)
 	return result, nil
 }
 
-func (q *Query) BoolWithDefault(key string, defaultValue bool) (bool, error) {
+func (q *NodeQuery) BoolWithDefault(key string, defaultValue bool) (bool, error) {
 	result, err := q.BoolOptional(key)
 	if err != nil {
 		return false, err
