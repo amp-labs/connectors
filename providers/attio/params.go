@@ -18,7 +18,7 @@ type parameters struct {
 
 const (
 	// DefaultPageSize is number of elements per page.
-	DefaultPageSize = 10
+	DefaultPageSize = 50
 )
 
 func (p parameters) ValidateParams() error {
