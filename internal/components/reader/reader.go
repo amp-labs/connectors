@@ -31,12 +31,12 @@ func NewHTTPReader(
 }
 
 func (r *HTTPReader) Read(ctx context.Context, params common.ReadParams) (*common.ReadResult, error) {
-	if r.operation == nil {
-		return nil, fmt.Errorf("%w: reader is not implemented", common.ErrNotImplemented)
+	if err := params.ValidateParams(true); err != nil {
+		return nil, err
 	}
 
-	if params.ObjectName == "" {
-		return nil, common.ErrMissingObjects
+	if r.operation == nil {
+		return nil, fmt.Errorf("%w: reader is not implemented", common.ErrNotImplemented)
 	}
 
 	// If there's no support, we can't validate the operation.
