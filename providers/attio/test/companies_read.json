@@ -1,0 +1,26 @@
+{
+    "data": [
+      {
+        "id": {
+          "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+          "object_id": "1fa986a6-952e-4e92-ba01-acca61a7b616",
+          "record_id": "2db97cee-6c6b-4486-ae52-db8e4b6f44e9"
+        },
+        "created_at": "2025-03-12T07:55:38.327000000Z",
+        "values": {
+          "name": [
+            {
+              "active_from": "2025-03-12T07:55:38.981000000Z",
+              "active_until": null,
+              "created_by_actor": {
+                "type": "system",
+                "id": null
+              },
+              "value": "Attio",
+              "attribute_type": "text"
+            }
+          ]
+        }
+      }
+    ]
+  }

@@ -13,7 +13,7 @@ func main() {
 
 	conn := attio.GetAttioConnector(ctx)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"objects", "lists", "workspace_members", "webhooks", "tasks", "notes"})
+	m, err := conn.ListObjectMetadata(ctx, []string{"lists", "workspace_members", "tasks", "notes", "companies"})
 	if err != nil {
 		utils.Fail(err.Error())
 	}
