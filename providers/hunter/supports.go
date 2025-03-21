@@ -10,7 +10,11 @@ import (
 
 func supportedOperations() components.EndpointRegistryInput {
 	readSupport := []string{
-		"leads", "leads_custom_attributes", "leads_lists", "campaigns",
+		"leads", "leads_custom_attributes", "leads_lists", "campaigns", "account",
+	}
+
+	writeSupport := []string{
+		"leads", "leads_custom_attributes", "leads_lists",
 	}
 
 	return components.EndpointRegistryInput{
@@ -18,6 +22,10 @@ func supportedOperations() components.EndpointRegistryInput {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
+				Support:  components.WriteSupport,
 			},
 		},
 	}
