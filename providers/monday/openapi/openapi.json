@@ -1,0 +1,4803 @@
+{
+  "components": {
+    "schemas": {
+      "JSON": {
+        "type": "object",
+        "additionalProperties": true
+      },
+      "Account": {
+        "properties": {
+          "active_members_count": {
+            "type": "integer"
+          },
+          "country_code": {
+            "type": "string"
+          },
+          "first_day_of_the_week": {
+            "type": "object"
+          },
+          "id": {
+            "type": "object"
+          },
+          "logo": {
+            "type": "string"
+          },
+          "name": {
+            "type": "object"
+          },
+          "plan": {
+            "type": "Plan"
+          },
+          "products": {
+            "type": "array"
+          },
+          "show_timeline_weekends": {
+            "type": "object"
+          },
+          "sign_up_product_kind": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "object"
+          },
+          "tier": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "AccountProduct": {
+        "properties": {
+          "default_workspace_id": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ActivateUsersError": {
+        "properties": {
+          "code": {
+            "type": "ActivateUsersErrorCode"
+          },
+          "message": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ActivateUsersResult": {
+        "properties": {
+          "activated_users": {
+            "type": "array"
+          },
+          "errors": {
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "ActivityLogType": {
+        "properties": {
+          "account_id": {
+            "type": "object"
+          },
+          "created_at": {
+            "type": "object"
+          },
+          "data": {
+            "type": "object"
+          },
+          "entity": {
+            "type": "object"
+          },
+          "event": {
+            "type": "object"
+          },
+          "id": {
+            "type": "object"
+          },
+          "user_id": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "AppFeatureType": {
+        "properties": {
+          "app_id": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "Date"
+          },
+          "data": {
+            "type": "JSON"
+          },
+          "id": {
+            "type": "object"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "updated_at": {
+            "type": "Date"
+          }
+        },
+        "type": "object"
+      },
+      "AppInstall": {
+        "properties": {
+          "app_id": {
+            "type": "object"
+          },
+          "app_install_account": {
+            "type": "object"
+          },
+          "app_install_user": {
+            "type": "object"
+          },
+          "app_version": {
+            "type": "AppVersion"
+          },
+          "permissions": {
+            "type": "AppInstallPermissions"
+          },
+          "timestamp": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "AppInstallAccount": {
+        "properties": {
+          "id": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "AppInstallPermissions": {
+        "properties": {
+          "approved_scopes": {
+            "type": "object"
+          },
+          "required_scopes": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "AppInstallUser": {
+        "properties": {
+          "id": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "AppMonetizationStatus": {
+        "properties": {
+          "is_supported": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "AppSubscription": {
+        "properties": {
+          "billing_period": {
+            "type": "string"
+          },
+          "days_left": {
+            "type": "integer"
+          },
+          "is_trial": {
+            "type": "boolean"
+          },
+          "plan_id": {
+            "type": "object"
+          },
+          "pricing_version": {
+            "type": "integer"
+          },
+          "renewal_date": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "AppSubscriptionDetails": {
+        "properties": {
+          "account_id": {
+            "type": "object"
+          },
+          "currency": {
+            "type": "object"
+          },
+          "days_left": {
+            "type": "object"
+          },
+          "discounts": {
+            "type": "object"
+          },
+          "monthly_price": {
+            "type": "object"
+          },
+          "period_type": {
+            "type": "object"
+          },
+          "plan_id": {
+            "type": "object"
+          },
+          "pricing_version_id": {
+            "type": "object"
+          },
+          "renewal_date": {
+            "type": "string"
+          },
+          "status": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "AppSubscriptionOperationsCounter": {
+        "properties": {
+          "app_subscription": {
+            "type": "AppSubscription"
+          },
+          "counter_value": {
+            "type": "integer"
+          },
+          "kind": {
+            "type": "object"
+          },
+          "period_key": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "AppSubscriptions": {
+        "properties": {
+          "cursor": {
+            "type": "string"
+          },
+          "subscriptions": {
+            "type": "object"
+          },
+          "total_count": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "AppType": {
+        "properties": {
+          "api_app_id": {
+            "type": "string"
+          },
+          "client_id": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "Date"
+          },
+          "features": {
+            "type": "array"
+          },
+          "id": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "updated_at": {
+            "type": "Date"
+          },
+          "user_id": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "AppVersion": {
+        "properties": {
+          "major": {
+            "type": "object"
+          },
+          "minor": {
+            "type": "object"
+          },
+          "patch": {
+            "type": "object"
+          },
+          "text": {
+            "type": "object"
+          },
+          "type": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "AppsMonetizationInfo": {
+        "properties": {
+          "seats_count": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "Asset": {
+        "properties": {
+          "created_at": {
+            "type": "Date"
+          },
+          "file_extension": {
+            "type": "object"
+          },
+          "file_size": {
+            "type": "object"
+          },
+          "id": {
+            "type": "object"
+          },
+          "name": {
+            "type": "object"
+          },
+          "original_geometry": {
+            "type": "string"
+          },
+          "public_url": {
+            "type": "object"
+          },
+          "uploaded_by": {
+            "type": "object"
+          },
+          "url": {
+            "type": "object"
+          },
+          "url_thumbnail": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "AssignTeamOwnersError": {
+        "properties": {
+          "code": {
+            "type": "AssignTeamOwnersErrorCode"
+          },
+          "message": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "AssignTeamOwnersResult": {
+        "properties": {
+          "errors": {
+            "type": "array"
+          },
+          "team": {
+            "type": "Team"
+          }
+        },
+        "type": "object"
+      },
+      "BatchExtendTrialPeriod": {
+        "properties": {
+          "details": {
+            "type": "array"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "success": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "Board": {
+        "properties": {
+          "activity_logs": {
+            "type": "array"
+          },
+          "board_folder_id": {
+            "type": "string"
+          },
+          "board_kind": {
+            "type": "object"
+          },
+          "collaborators": {
+            "type": "object"
+          },
+          "columns": {
+            "type": "array"
+          },
+          "communication": {
+            "type": "JSON"
+          },
+          "creator": {
+            "type": "object"
+          },
+          "description": {
+            "type": "string"
+          },
+          "groups": {
+            "type": "array"
+          },
+          "id": {
+            "type": "object"
+          },
+          "item_terminology": {
+            "type": "string"
+          },
+          "items_count": {
+            "type": "integer"
+          },
+          "items_limit": {
+            "type": "integer"
+          },
+          "items_page": {
+            "type": "object"
+          },
+          "name": {
+            "type": "object"
+          },
+          "owners": {
+            "type": "object"
+          },
+          "permissions": {
+            "type": "object"
+          },
+          "state": {
+            "type": "object"
+          },
+          "subscribers": {
+            "type": "object"
+          },
+          "tags": {
+            "type": "array"
+          },
+          "team_owners": {
+            "type": "array"
+          },
+          "team_subscribers": {
+            "type": "array"
+          },
+          "top_group": {
+            "type": "object"
+          },
+          "type": {
+            "type": "BoardObjectType"
+          },
+          "updated_at": {
+            "type": "ISO8601DateTime"
+          },
+          "updates": {
+            "type": "array"
+          },
+          "url": {
+            "type": "object"
+          },
+          "views": {
+            "type": "array"
+          },
+          "workspace": {
+            "type": "Workspace"
+          },
+          "workspace_id": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "BoardDuplication": {
+        "properties": {
+          "board": {
+            "type": "object"
+          },
+          "is_async": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "BoardRelationValue": {
+        "properties": {
+          "column": {
+            "type": "object"
+          },
+          "display_value": {
+            "type": "object"
+          },
+          "id": {
+            "type": "object"
+          },
+          "linked_item_ids": {
+            "type": "object"
+          },
+          "linked_items": {
+            "type": "object"
+          },
+          "text": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object"
+          },
+          "updated_at": {
+            "type": "Date"
+          },
+          "value": {
+            "type": "JSON"
+          }
+        },
+        "type": "object"
+      },
+      "BoardView": {
+        "properties": {
+          "id": {
+            "type": "object"
+          },
+          "name": {
+            "type": "object"
+          },
+          "settings_str": {
+            "type": "object"
+          },
+          "source_view_id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object"
+          },
+          "view_specific_data_str": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "ButtonValue": {
+        "properties": {
+          "color": {
+            "type": "string"
+          },
+          "column": {
+            "type": "object"
+          },
+          "id": {
+            "type": "object"
+          },
+          "label": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object"
+          },
+          "value": {
+            "type": "JSON"
+          }
+        },
+        "type": "object"
+      },
+      "ChangeTeamMembershipsResult": {
+        "properties": {
+          "failed_users": {
+            "type": "array"
+          },
+          "successful_users": {
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "CheckboxValue": {
+        "properties": {
+          "checked": {
+            "type": "boolean"
+          },
+          "column": {
+            "type": "object"
+          },
+          "id": {
+            "type": "object"
+          },
+          "text": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object"
+          },
+          "updated_at": {
+            "type": "Date"
+          },
+          "value": {
+            "type": "JSON"
+          }
+        },
+        "type": "object"
+      },
+      "ColorPickerValue": {
+        "properties": {
+          "color": {
+            "type": "string"
+          },
+          "column": {
+            "type": "object"
+          },
+          "id": {
+            "type": "object"
+          },
+          "text": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object"
+          },
+          "updated_at": {
+            "type": "Date"
+          },
+          "value": {
+            "type": "JSON"
+          }
+        },
+        "type": "object"
+      },
+      "Column": {
+        "properties": {
+          "archived": {
+            "type": "object"
+          },
+          "description": {
+            "type": "string"
+          },
+          "id": {
+            "type": "object"
+          },
+          "settings_str": {
+            "type": "object"
+          },
+          "title": {
+            "type": "object"
+          },
+          "type": {
+            "type": "object"
+          },
+          "width": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "Complexity": {
+        "properties": {
+          "after": {
+            "type": "object"
+          },
+          "before": {
+            "type": "object"
+          },
+          "query": {
+            "type": "object"
+          },
+          "reset_in_x_seconds": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "Country": {
+        "properties": {
+          "code": {
+            "type": "object"
+          },
+          "name": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "CountryValue": {
+        "properties": {
+          "column": {
+            "type": "object"
+          },
+          "country": {
+            "type": "Country"
+          },
+          "id": {
+            "type": "object"
+          },
+          "text": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object"
+          },
+          "updated_at": {
+            "type": "Date"
+          },
+          "value": {
+            "type": "JSON"
+          }
+        },
+        "type": "object"
+      },
+      "CreationLogValue": {
+        "properties": {
+          "column": {
+            "type": "object"
+          },
+          "created_at": {
+            "type": "object"
+          },
+          "creator": {
+            "type": "object"
+          },
+          "creator_id": {
+            "type": "object"
+          },
+          "id": {
+            "type": "object"
+          },
+          "text": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object"
+          },
+          "value": {
+            "type": "JSON"
+          }
+        },
+        "type": "object"
+      },
+      "CustomActivity": {
+        "properties": {
+          "color": {
+            "type": "CustomActivityColor"
+          },
+          "icon_id": {
+            "type": "CustomActivityIcon"
+          },
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "CustomFieldMetas": {
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "editable": {
+            "type": "boolean"
+          },
+          "field_type": {
+            "type": "string"
+          },
+          "flagged": {
+            "type": "boolean"
+          },
+          "icon": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "position": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "CustomFieldValue": {
+        "properties": {
+          "custom_field_meta_id": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "DateValue": {
+        "properties": {
+          "column": {
+            "type": "object"
+          },
+          "date": {
+            "type": "string"
+          },
+          "icon": {
+            "type": "string"
+          },
+          "id": {
+            "type": "object"
+          },
+          "text": {
+            "type": "string"
+          },
+          "time": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object"
+          },
+          "updated_at": {
+            "type": "Date"
+          },
+          "value": {
+            "type": "JSON"
+          }
+        },
+        "type": "object"
+      },
+      "DeactivateUsersError": {
+        "properties": {
+          "code": {
+            "type": "DeactivateUsersErrorCode"
+          },
+          "message": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "DeactivateUsersResult": {
+        "properties": {
+          "deactivated_users": {
+            "type": "array"
+          },
+          "errors": {
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "DeleteMarketplaceAppDiscount": {
+        "properties": {
+          "account_slug": {
+            "type": "object"
+          },
+          "app_id": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "DeleteMarketplaceAppDiscountResult": {
+        "properties": {
+          "deleted_discount": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "DependencyValue": {
+        "properties": {
+          "column": {
+            "type": "object"
+          },
+          "display_value": {
+            "type": "object"
+          },
+          "id": {
+            "type": "object"
+          },
+          "linked_item_ids": {
+            "type": "object"
+          },
+          "linked_items": {
+            "type": "object"
+          },
+          "text": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object"
+          },
+          "updated_at": {
+            "type": "Date"
+          },
+          "value": {
+            "type": "JSON"
+          }
+        },
+        "type": "object"
+      },
+      "DocValue": {
+        "properties": {
+          "column": {
+            "type": "object"
+          },
+          "file": {
+            "type": "FileDocValue"
+          },
+          "id": {
+            "type": "object"
+          },
+          "text": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object"
+          },
+          "value": {
+            "type": "JSON"
+          }
+        },
+        "type": "object"
+      },
+      "Document": {
+        "properties": {
+          "blocks": {
+            "type": "array"
+          },
+          "created_at": {
+            "type": "Date"
+          },
+          "created_by": {
+            "type": "User"
+          },
+          "doc_folder_id": {
+            "type": "string"
+          },
+          "doc_kind": {
+            "type": "object"
+          },
+          "id": {
+            "type": "object"
+          },
+          "name": {
+            "type": "object"
+          },
+          "object_id": {
+            "type": "object"
+          },
+          "relative_url": {
+            "type": "string"
+          },
+          "settings": {
+            "type": "JSON"
+          },
+          "url": {
+            "type": "string"
+          },
+          "workspace": {
+            "type": "Workspace"
+          },
+          "workspace_id": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "DocumentBlock": {
+        "properties": {
+          "content": {
+            "type": "JSON"
+          },
+          "created_at": {
+            "type": "Date"
+          },
+          "created_by": {
+            "type": "User"
+          },
+          "doc_id": {
+            "type": "string"
+          },
+          "id": {
+            "type": "object"
+          },
+          "parent_block_id": {
+            "type": "string"
+          },
+          "position": {
+            "type": "Float"
+          },
+          "type": {
+            "type": "string"
+          },
+          "updated_at": {
+            "type": "Date"
+          }
+        },
+        "type": "object"
+      },
+      "DocumentBlockIdOnly": {
+        "properties": {
+          "id": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "DropdownValue": {
+        "properties": {
+          "column": {
+            "type": "object"
+          },
+          "id": {
+            "type": "object"
+          },
+          "text": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object"
+          },
+          "value": {
+            "type": "JSON"
+          },
+          "values": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "DropdownValueOption": {
+        "properties": {
+          "id": {
+            "type": "object"
+          },
+          "label": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "EmailValue": {
+        "properties": {
+          "column": {
+            "type": "object"
+          },
+          "email": {
+            "type": "string"
+          },
+          "id": {
+            "type": "object"
+          },
+          "label": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object"
+          },
+          "updated_at": {
+            "type": "Date"
+          },
+          "value": {
+            "type": "JSON"
+          }
+        },
+        "type": "object"
+      },
+      "ExtendTrialPeriod": {
+        "properties": {
+          "account_slug": {
+            "type": "object"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "success": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "FileAssetValue": {
+        "properties": {
+          "asset": {
+            "type": "object"
+          },
+          "asset_id": {
+            "type": "object"
+          },
+          "created_at": {
+            "type": "object"
+          },
+          "creator": {
+            "type": "User"
+          },
+          "creator_id": {
+            "type": "string"
+          },
+          "is_image": {
+            "type": "object"
+          },
+          "name": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "FileDocValue": {
+        "properties": {
+          "created_at": {
+            "type": "object"
+          },
+          "creator": {
+            "type": "User"
+          },
+          "creator_id": {
+            "type": "string"
+          },
+          "doc": {
+            "type": "object"
+          },
+          "file_id": {
+            "type": "object"
+          },
+          "object_id": {
+            "type": "object"
+          },
+          "url": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "FileLinkValue": {
+        "properties": {
+          "created_at": {
+            "type": "object"
+          },
+          "creator": {
+            "type": "User"
+          },
+          "creator_id": {
+            "type": "string"
+          },
+          "file_id": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "object"
+          },
+          "name": {
+            "type": "object"
+          },
+          "url": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "FileValue": {
+        "properties": {
+          "column": {
+            "type": "object"
+          },
+          "files": {
+            "type": "object"
+          },
+          "id": {
+            "type": "object"
+          },
+          "text": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object"
+          },
+          "value": {
+            "type": "JSON"
+          }
+        },
+        "type": "object"
+      },
+      "Folder": {
+        "properties": {
+          "children": {
+            "type": "object"
+          },
+          "color": {
+            "type": "FolderColor"
+          },
+          "created_at": {
+            "type": "object"
+          },
+          "custom_icon": {
+            "type": "FolderCustomIcon"
+          },
+          "font_weight": {
+            "type": "FolderFontWeight"
+          },
+          "id": {
+            "type": "object"
+          },
+          "name": {
+            "type": "object"
+          },
+          "owner_id": {
+            "type": "string"
+          },
+          "parent": {
+            "type": "Folder"
+          },
+          "sub_folders": {
+            "type": "object"
+          },
+          "workspace": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "FormulaValue": {
+        "properties": {
+          "column": {
+            "type": "object"
+          },
+          "display_value": {
+            "type": "object"
+          },
+          "id": {
+            "type": "object"
+          },
+          "text": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object"
+          },
+          "value": {
+            "type": "JSON"
+          }
+        },
+        "type": "object"
+      },
+      "GrantMarketplaceAppDiscount": {
+        "properties": {
+          "app_id": {
+            "type": "object"
+          },
+          "app_plan_ids": {
+            "type": "object"
+          },
+          "days_valid": {
+            "type": "object"
+          },
+          "discount": {
+            "type": "object"
+          },
+          "is_recurring": {
+            "type": "object"
+          },
+          "period": {
+            "type": "DiscountPeriod"
+          }
+        },
+        "type": "object"
+      },
+      "GrantMarketplaceAppDiscountResult": {
+        "properties": {
+          "granted_discount": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "Group": {
+        "properties": {
+          "archived": {
+            "type": "boolean"
+          },
+          "color": {
+            "type": "object"
+          },
+          "deleted": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "object"
+          },
+          "items_page": {
+            "type": "object"
+          },
+          "position": {
+            "type": "object"
+          },
+          "title": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "GroupValue": {
+        "properties": {
+          "column": {
+            "type": "object"
+          },
+          "group": {
+            "type": "Group"
+          },
+          "group_id": {
+            "type": "string"
+          },
+          "id": {
+            "type": "object"
+          },
+          "text": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object"
+          },
+          "value": {
+            "type": "JSON"
+          }
+        },
+        "type": "object"
+      },
+      "HourValue": {
+        "properties": {
+          "column": {
+            "type": "object"
+          },
+          "hour": {
+            "type": "integer"
+          },
+          "id": {
+            "type": "object"
+          },
+          "minute": {
+            "type": "integer"
+          },
+          "text": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object"
+          },
+          "updated_at": {
+            "type": "Date"
+          },
+          "value": {
+            "type": "JSON"
+          }
+        },
+        "type": "object"
+      },
+      "IntegrationValue": {
+        "properties": {
+          "column": {
+            "type": "object"
+          },
+          "entity_id": {
+            "type": "string"
+          },
+          "id": {
+            "type": "object"
+          },
+          "issue_api_url": {
+            "type": "string"
+          },
+          "issue_id": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object"
+          },
+          "value": {
+            "type": "JSON"
+          }
+        },
+        "type": "object"
+      },
+      "Item": {
+        "properties": {
+          "assets": {
+            "type": "array"
+          },
+          "board": {
+            "type": "Board"
+          },
+          "column_values": {
+            "type": "object"
+          },
+          "created_at": {
+            "type": "Date"
+          },
+          "creator": {
+            "type": "User"
+          },
+          "creator_id": {
+            "type": "object"
+          },
+          "email": {
+            "type": "object"
+          },
+          "group": {
+            "type": "Group"
+          },
+          "id": {
+            "type": "object"
+          },
+          "linked_items": {
+            "type": "object"
+          },
+          "name": {
+            "type": "object"
+          },
+          "parent_item": {
+            "type": "Item"
+          },
+          "relative_link": {
+            "type": "string"
+          },
+          "state": {
+            "type": "State"
+          },
+          "subitems": {
+            "type": "array"
+          },
+          "subscribers": {
+            "type": "object"
+          },
+          "updated_at": {
+            "type": "Date"
+          },
+          "updates": {
+            "type": "array"
+          },
+          "url": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "ItemIdValue": {
+        "properties": {
+          "column": {
+            "type": "object"
+          },
+          "id": {
+            "type": "object"
+          },
+          "item_id": {
+            "type": "object"
+          },
+          "text": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object"
+          },
+          "value": {
+            "type": "JSON"
+          }
+        },
+        "type": "object"
+      },
+      "ItemsResponse": {
+        "properties": {
+          "cursor": {
+            "type": "string"
+          },
+          "items": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "LastUpdatedValue": {
+        "properties": {
+          "column": {
+            "type": "object"
+          },
+          "id": {
+            "type": "object"
+          },
+          "text": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object"
+          },
+          "updated_at": {
+            "type": "Date"
+          },
+          "updater": {
+            "type": "User"
+          },
+          "updater_id": {
+            "type": "string"
+          },
+          "value": {
+            "type": "JSON"
+          }
+        },
+        "type": "object"
+      },
+      "Like": {
+        "properties": {
+          "created_at": {
+            "type": "Date"
+          },
+          "creator": {
+            "type": "User"
+          },
+          "creator_id": {
+            "type": "string"
+          },
+          "id": {
+            "type": "object"
+          },
+          "reaction_type": {
+            "type": "string"
+          },
+          "updated_at": {
+            "type": "Date"
+          }
+        },
+        "type": "object"
+      },
+      "LinkValue": {
+        "properties": {
+          "column": {
+            "type": "object"
+          },
+          "id": {
+            "type": "object"
+          },
+          "text": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object"
+          },
+          "updated_at": {
+            "type": "Date"
+          },
+          "url": {
+            "type": "string"
+          },
+          "url_text": {
+            "type": "string"
+          },
+          "value": {
+            "type": "JSON"
+          }
+        },
+        "type": "object"
+      },
+      "LocationValue": {
+        "properties": {
+          "address": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "city_short": {
+            "type": "string"
+          },
+          "column": {
+            "type": "object"
+          },
+          "country": {
+            "type": "string"
+          },
+          "country_short": {
+            "type": "string"
+          },
+          "id": {
+            "type": "object"
+          },
+          "lat": {
+            "type": "Float"
+          },
+          "lng": {
+            "type": "Float"
+          },
+          "place_id": {
+            "type": "string"
+          },
+          "street": {
+            "type": "string"
+          },
+          "street_number": {
+            "type": "string"
+          },
+          "street_number_short": {
+            "type": "string"
+          },
+          "street_short": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object"
+          },
+          "updated_at": {
+            "type": "Date"
+          },
+          "value": {
+            "type": "JSON"
+          }
+        },
+        "type": "object"
+      },
+      "LongTextValue": {
+        "properties": {
+          "column": {
+            "type": "object"
+          },
+          "id": {
+            "type": "object"
+          },
+          "text": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object"
+          },
+          "updated_at": {
+            "type": "Date"
+          },
+          "value": {
+            "type": "JSON"
+          }
+        },
+        "type": "object"
+      },
+      "MarketplaceAppDiscount": {
+        "properties": {
+          "account_id": {
+            "type": "object"
+          },
+          "account_slug": {
+            "type": "object"
+          },
+          "app_plan_ids": {
+            "type": "object"
+          },
+          "created_at": {
+            "type": "object"
+          },
+          "discount": {
+            "type": "object"
+          },
+          "is_recurring": {
+            "type": "object"
+          },
+          "period": {
+            "type": "DiscountPeriod"
+          },
+          "valid_until": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "MirrorValue": {
+        "properties": {
+          "column": {
+            "type": "object"
+          },
+          "display_value": {
+            "type": "object"
+          },
+          "id": {
+            "type": "object"
+          },
+          "mirrored_items": {
+            "type": "object"
+          },
+          "text": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object"
+          },
+          "value": {
+            "type": "JSON"
+          }
+        },
+        "type": "object"
+      },
+      "MirroredItem": {
+        "properties": {
+          "linked_board": {
+            "type": "object"
+          },
+          "linked_board_id": {
+            "type": "object"
+          },
+          "linked_item": {
+            "type": "object"
+          },
+          "mirrored_value": {
+            "type": "MirroredValue"
+          }
+        },
+        "type": "object"
+      },
+      "Notification": {
+        "properties": {
+          "id": {
+            "type": "object"
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "NumbersValue": {
+        "properties": {
+          "column": {
+            "type": "object"
+          },
+          "direction": {
+            "type": "NumberValueUnitDirection"
+          },
+          "id": {
+            "type": "object"
+          },
+          "number": {
+            "type": "Float"
+          },
+          "symbol": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object"
+          },
+          "value": {
+            "type": "JSON"
+          }
+        },
+        "type": "object"
+      },
+      "OutOfOffice": {
+        "properties": {
+          "active": {
+            "type": "boolean"
+          },
+          "disable_notifications": {
+            "type": "boolean"
+          },
+          "end_date": {
+            "type": "Date"
+          },
+          "start_date": {
+            "type": "Date"
+          },
+          "type": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "PeopleEntity": {
+        "properties": {
+          "id": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "Kind"
+          }
+        },
+        "type": "object"
+      },
+      "PeopleValue": {
+        "properties": {
+          "column": {
+            "type": "object"
+          },
+          "id": {
+            "type": "object"
+          },
+          "persons_and_teams": {
+            "type": "array"
+          },
+          "text": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object"
+          },
+          "updated_at": {
+            "type": "Date"
+          },
+          "value": {
+            "type": "JSON"
+          }
+        },
+        "type": "object"
+      },
+      "PersonValue": {
+        "properties": {
+          "column": {
+            "type": "object"
+          },
+          "id": {
+            "type": "object"
+          },
+          "person_id": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object"
+          },
+          "updated_at": {
+            "type": "Date"
+          },
+          "value": {
+            "type": "JSON"
+          }
+        },
+        "type": "object"
+      },
+      "PhoneValue": {
+        "properties": {
+          "column": {
+            "type": "object"
+          },
+          "country_short_name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "object"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object"
+          },
+          "updated_at": {
+            "type": "Date"
+          },
+          "value": {
+            "type": "JSON"
+          }
+        },
+        "type": "object"
+      },
+      "Plan": {
+        "properties": {
+          "max_users": {
+            "type": "object"
+          },
+          "period": {
+            "type": "string"
+          },
+          "tier": {
+            "type": "string"
+          },
+          "version": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "ProgressValue": {
+        "properties": {
+          "column": {
+            "type": "object"
+          },
+          "id": {
+            "type": "object"
+          },
+          "text": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object"
+          },
+          "value": {
+            "type": "JSON"
+          }
+        },
+        "type": "object"
+      },
+      "RatingValue": {
+        "properties": {
+          "column": {
+            "type": "object"
+          },
+          "id": {
+            "type": "object"
+          },
+          "rating": {
+            "type": "integer"
+          },
+          "text": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object"
+          },
+          "updated_at": {
+            "type": "Date"
+          },
+          "value": {
+            "type": "JSON"
+          }
+        },
+        "type": "object"
+      },
+      "RemoveTeamOwnersError": {
+        "properties": {
+          "code": {
+            "type": "RemoveTeamOwnersErrorCode"
+          },
+          "message": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "RemoveTeamOwnersResult": {
+        "properties": {
+          "errors": {
+            "type": "array"
+          },
+          "team": {
+            "type": "Team"
+          }
+        },
+        "type": "object"
+      },
+      "Reply": {
+        "properties": {
+          "body": {
+            "type": "object"
+          },
+          "created_at": {
+            "type": "Date"
+          },
+          "creator": {
+            "type": "User"
+          },
+          "creator_id": {
+            "type": "string"
+          },
+          "edited_at": {
+            "type": "object"
+          },
+          "id": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "object"
+          },
+          "likes": {
+            "type": "object"
+          },
+          "pinned_to_top": {
+            "type": "object"
+          },
+          "text_body": {
+            "type": "string"
+          },
+          "updated_at": {
+            "type": "Date"
+          },
+          "viewers": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "StatusLabelStyle": {
+        "properties": {
+          "border": {
+            "type": "object"
+          },
+          "color": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "StatusValue": {
+        "properties": {
+          "column": {
+            "type": "object"
+          },
+          "id": {
+            "type": "object"
+          },
+          "index": {
+            "type": "integer"
+          },
+          "is_done": {
+            "type": "boolean"
+          },
+          "label": {
+            "type": "string"
+          },
+          "label_style": {
+            "type": "StatusLabelStyle"
+          },
+          "text": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object"
+          },
+          "update_id": {
+            "type": "string"
+          },
+          "updated_at": {
+            "type": "Date"
+          },
+          "value": {
+            "type": "JSON"
+          }
+        },
+        "type": "object"
+      },
+      "SubscriptionDiscount": {
+        "properties": {
+          "discount_model_type": {
+            "type": "object"
+          },
+          "discount_type": {
+            "type": "object"
+          },
+          "value": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "SubtasksValue": {
+        "properties": {
+          "column": {
+            "type": "object"
+          },
+          "display_value": {
+            "type": "object"
+          },
+          "id": {
+            "type": "object"
+          },
+          "subitems": {
+            "type": "object"
+          },
+          "subitems_ids": {
+            "type": "object"
+          },
+          "text": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object"
+          },
+          "value": {
+            "type": "JSON"
+          }
+        },
+        "type": "object"
+      },
+      "Tag": {
+        "properties": {
+          "color": {
+            "type": "object"
+          },
+          "id": {
+            "type": "object"
+          },
+          "name": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "TagsValue": {
+        "properties": {
+          "column": {
+            "type": "object"
+          },
+          "id": {
+            "type": "object"
+          },
+          "tag_ids": {
+            "type": "object"
+          },
+          "tags": {
+            "type": "object"
+          },
+          "text": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object"
+          },
+          "value": {
+            "type": "JSON"
+          }
+        },
+        "type": "object"
+      },
+      "Team": {
+        "properties": {
+          "id": {
+            "type": "object"
+          },
+          "is_guest": {
+            "type": "boolean"
+          },
+          "name": {
+            "type": "object"
+          },
+          "owners": {
+            "type": "object"
+          },
+          "picture_url": {
+            "type": "string"
+          },
+          "users": {
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "TeamValue": {
+        "properties": {
+          "column": {
+            "type": "object"
+          },
+          "id": {
+            "type": "object"
+          },
+          "team_id": {
+            "type": "integer"
+          },
+          "text": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object"
+          },
+          "updated_at": {
+            "type": "Date"
+          },
+          "value": {
+            "type": "JSON"
+          }
+        },
+        "type": "object"
+      },
+      "Template": {
+        "properties": {
+          "process_id": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "TextValue": {
+        "properties": {
+          "column": {
+            "type": "object"
+          },
+          "id": {
+            "type": "object"
+          },
+          "text": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object"
+          },
+          "value": {
+            "type": "JSON"
+          }
+        },
+        "type": "object"
+      },
+      "TimeTrackingHistoryItem": {
+        "properties": {
+          "created_at": {
+            "type": "object"
+          },
+          "ended_at": {
+            "type": "Date"
+          },
+          "ended_user_id": {
+            "type": "string"
+          },
+          "id": {
+            "type": "object"
+          },
+          "manually_entered_end_date": {
+            "type": "object"
+          },
+          "manually_entered_end_time": {
+            "type": "object"
+          },
+          "manually_entered_start_date": {
+            "type": "object"
+          },
+          "manually_entered_start_time": {
+            "type": "object"
+          },
+          "started_at": {
+            "type": "Date"
+          },
+          "started_user_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "object"
+          },
+          "updated_at": {
+            "type": "Date"
+          }
+        },
+        "type": "object"
+      },
+      "TimeTrackingValue": {
+        "properties": {
+          "column": {
+            "type": "object"
+          },
+          "duration": {
+            "type": "integer"
+          },
+          "history": {
+            "type": "object"
+          },
+          "id": {
+            "type": "object"
+          },
+          "running": {
+            "type": "boolean"
+          },
+          "started_at": {
+            "type": "Date"
+          },
+          "text": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object"
+          },
+          "updated_at": {
+            "type": "Date"
+          },
+          "value": {
+            "type": "JSON"
+          }
+        },
+        "type": "object"
+      },
+      "TimelineItem": {
+        "properties": {
+          "board": {
+            "type": "Board"
+          },
+          "content": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "object"
+          },
+          "custom_activity_id": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "item": {
+            "type": "Item"
+          },
+          "title": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "user": {
+            "type": "User"
+          }
+        },
+        "type": "object"
+      },
+      "TimelineItemsPage": {
+        "properties": {
+          "cursor": {
+            "type": "string"
+          },
+          "timeline_items": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "TimelineResponse": {
+        "properties": {
+          "timeline_items_page": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "TimelineValue": {
+        "properties": {
+          "column": {
+            "type": "object"
+          },
+          "from": {
+            "type": "Date"
+          },
+          "id": {
+            "type": "object"
+          },
+          "text": {
+            "type": "string"
+          },
+          "to": {
+            "type": "Date"
+          },
+          "type": {
+            "type": "object"
+          },
+          "updated_at": {
+            "type": "Date"
+          },
+          "value": {
+            "type": "JSON"
+          },
+          "visualization_type": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "UnsupportedValue": {
+        "properties": {
+          "column": {
+            "type": "object"
+          },
+          "id": {
+            "type": "object"
+          },
+          "text": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object"
+          },
+          "value": {
+            "type": "JSON"
+          }
+        },
+        "type": "object"
+      },
+      "Update": {
+        "properties": {
+          "assets": {
+            "type": "array"
+          },
+          "body": {
+            "type": "object"
+          },
+          "created_at": {
+            "type": "Date"
+          },
+          "creator": {
+            "type": "User"
+          },
+          "creator_id": {
+            "type": "string"
+          },
+          "edited_at": {
+            "type": "object"
+          },
+          "id": {
+            "type": "object"
+          },
+          "item": {
+            "type": "Item"
+          },
+          "item_id": {
+            "type": "string"
+          },
+          "likes": {
+            "type": "object"
+          },
+          "pinned_to_top": {
+            "type": "object"
+          },
+          "replies": {
+            "type": "array"
+          },
+          "text_body": {
+            "type": "string"
+          },
+          "updated_at": {
+            "type": "Date"
+          },
+          "viewers": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "UpdateEmailDomainError": {
+        "properties": {
+          "code": {
+            "type": "UpdateEmailDomainErrorCode"
+          },
+          "message": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "UpdateEmailDomainResult": {
+        "properties": {
+          "errors": {
+            "type": "array"
+          },
+          "updated_users": {
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "UpdatePin": {
+        "properties": {
+          "item_id": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "UpdateUsersRoleError": {
+        "properties": {
+          "code": {
+            "type": "UpdateUsersRoleErrorCode"
+          },
+          "message": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "UpdateUsersRoleResult": {
+        "properties": {
+          "errors": {
+            "type": "array"
+          },
+          "updated_users": {
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "User": {
+        "properties": {
+          "account": {
+            "type": "object"
+          },
+          "account_products": {
+            "type": "array"
+          },
+          "birthday": {
+            "type": "Date"
+          },
+          "country_code": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "Date"
+          },
+          "current_language": {
+            "type": "string"
+          },
+          "custom_field_metas": {
+            "type": "array"
+          },
+          "custom_field_values": {
+            "type": "array"
+          },
+          "email": {
+            "type": "object"
+          },
+          "enabled": {
+            "type": "object"
+          },
+          "encrypt_api_token": {
+            "type": "string"
+          },
+          "id": {
+            "type": "object"
+          },
+          "is_admin": {
+            "type": "boolean"
+          },
+          "is_guest": {
+            "type": "boolean"
+          },
+          "is_pending": {
+            "type": "boolean"
+          },
+          "is_verified": {
+            "type": "boolean"
+          },
+          "is_view_only": {
+            "type": "boolean"
+          },
+          "join_date": {
+            "type": "Date"
+          },
+          "last_activity": {
+            "type": "Date"
+          },
+          "location": {
+            "type": "string"
+          },
+          "mobile_phone": {
+            "type": "string"
+          },
+          "name": {
+            "type": "object"
+          },
+          "out_of_office": {
+            "type": "OutOfOffice"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "photo_original": {
+            "type": "string"
+          },
+          "photo_small": {
+            "type": "string"
+          },
+          "photo_thumb": {
+            "type": "string"
+          },
+          "photo_thumb_small": {
+            "type": "string"
+          },
+          "photo_tiny": {
+            "type": "string"
+          },
+          "sign_up_product_kind": {
+            "type": "string"
+          },
+          "teams": {
+            "type": "array"
+          },
+          "time_zone_identifier": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "url": {
+            "type": "object"
+          },
+          "utc_hours_diff": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "Version": {
+        "properties": {
+          "display_name": {
+            "type": "object"
+          },
+          "kind": {
+            "type": "object"
+          },
+          "value": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "VoteValue": {
+        "properties": {
+          "column": {
+            "type": "object"
+          },
+          "id": {
+            "type": "object"
+          },
+          "text": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object"
+          },
+          "updated_at": {
+            "type": "Date"
+          },
+          "value": {
+            "type": "JSON"
+          },
+          "vote_count": {
+            "type": "object"
+          },
+          "voter_ids": {
+            "type": "object"
+          },
+          "voters": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "Watcher": {
+        "properties": {
+          "medium": {
+            "type": "object"
+          },
+          "user": {
+            "type": "User"
+          },
+          "user_id": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "Webhook": {
+        "properties": {
+          "board_id": {
+            "type": "object"
+          },
+          "config": {
+            "type": "string"
+          },
+          "event": {
+            "type": "object"
+          },
+          "id": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "WeekValue": {
+        "properties": {
+          "column": {
+            "type": "object"
+          },
+          "end_date": {
+            "type": "Date"
+          },
+          "id": {
+            "type": "object"
+          },
+          "start_date": {
+            "type": "Date"
+          },
+          "text": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object"
+          },
+          "value": {
+            "type": "JSON"
+          }
+        },
+        "type": "object"
+      },
+      "Workspace": {
+        "properties": {
+          "account_product": {
+            "type": "AccountProduct"
+          },
+          "created_at": {
+            "type": "Date"
+          },
+          "description": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "is_default_workspace": {
+            "type": "boolean"
+          },
+          "kind": {
+            "type": "WorkspaceKind"
+          },
+          "name": {
+            "type": "object"
+          },
+          "owners_subscribers": {
+            "type": "array"
+          },
+          "settings": {
+            "type": "WorkspaceSettings"
+          },
+          "state": {
+            "type": "State"
+          },
+          "team_owners_subscribers": {
+            "type": "array"
+          },
+          "teams_subscribers": {
+            "type": "array"
+          },
+          "users_subscribers": {
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "WorkspaceIcon": {
+        "properties": {
+          "color": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "WorkspaceSettings": {
+        "properties": {
+          "icon": {
+            "type": "WorkspaceIcon"
+          }
+        },
+        "type": "object"
+      },
+      "WorldClockValue": {
+        "properties": {
+          "column": {
+            "type": "object"
+          },
+          "id": {
+            "type": "object"
+          },
+          "text": {
+            "type": "string"
+          },
+          "timezone": {
+            "type": "string"
+          },
+          "type": {
+            "type": "object"
+          },
+          "updated_at": {
+            "type": "Date"
+          },
+          "value": {
+            "type": "JSON"
+          }
+        },
+        "type": "object"
+      },
+      "__Directive": {
+        "properties": {
+          "args": {
+            "type": "object"
+          },
+          "description": {
+            "type": "string"
+          },
+          "isRepeatable": {
+            "type": "object"
+          },
+          "locations": {
+            "type": "object"
+          },
+          "name": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "__EnumValue": {
+        "properties": {
+          "deprecationReason": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "isDeprecated": {
+            "type": "object"
+          },
+          "name": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "__Field": {
+        "properties": {
+          "args": {
+            "type": "object"
+          },
+          "deprecationReason": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "isDeprecated": {
+            "type": "object"
+          },
+          "name": {
+            "type": "object"
+          },
+          "type": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "__InputValue": {
+        "properties": {
+          "defaultValue": {
+            "type": "string"
+          },
+          "deprecationReason": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "isDeprecated": {
+            "type": "object"
+          },
+          "name": {
+            "type": "object"
+          },
+          "type": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "__Schema": {
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "directives": {
+            "type": "object"
+          },
+          "mutationType": {
+            "type": "__Type"
+          },
+          "queryType": {
+            "type": "object"
+          },
+          "subscriptionType": {
+            "type": "__Type"
+          },
+          "types": {
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "__Type": {
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "enumValues": {
+            "type": "array"
+          },
+          "fields": {
+            "type": "array"
+          },
+          "inputFields": {
+            "type": "array"
+          },
+          "interfaces": {
+            "type": "array"
+          },
+          "isOneOf": {
+            "type": "boolean"
+          },
+          "kind": {
+            "type": "object"
+          },
+          "name": {
+            "type": "string"
+          },
+          "ofType": {
+            "type": "__Type"
+          },
+          "possibleTypes": {
+            "type": "array"
+          },
+          "specifiedByURL": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "title": "Monday GraphQL API",
+    "version": "1.0.0"
+  },
+  "openapi": "3.0.0",
+  "paths": {
+    "/account": {
+      "get": {
+        "operationId": "account",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Account"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/activate_users": {
+      "post": {
+        "operationId": "activate_users",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActivateUsersResult"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/add_file_to_column": {
+      "post": {
+        "operationId": "add_file_to_column",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Asset"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/add_file_to_update": {
+      "post": {
+        "operationId": "add_file_to_update",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Asset"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/add_teams_to_board": {
+      "post": {
+        "operationId": "add_teams_to_board",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": ""
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/add_teams_to_workspace": {
+      "post": {
+        "operationId": "add_teams_to_workspace",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": ""
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/add_users_to_board": {
+      "post": {
+        "operationId": "add_users_to_board",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": ""
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/add_users_to_team": {
+      "post": {
+        "operationId": "add_users_to_team",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChangeTeamMembershipsResult"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/add_users_to_workspace": {
+      "post": {
+        "operationId": "add_users_to_workspace",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": ""
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/app": {
+      "get": {
+        "operationId": "app",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppType"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/app_installs": {
+      "get": {
+        "operationId": "app_installs",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": ""
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/app_subscription": {
+      "get": {
+        "operationId": "app_subscription",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": ""
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/app_subscription_operations": {
+      "get": {
+        "operationId": "app_subscription_operations",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppSubscriptionOperationsCounter"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/app_subscriptions": {
+      "get": {
+        "operationId": "app_subscriptions",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": ""
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/apps_monetization_info": {
+      "get": {
+        "operationId": "apps_monetization_info",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppsMonetizationInfo"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/apps_monetization_status": {
+      "get": {
+        "operationId": "apps_monetization_status",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppMonetizationStatus"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/archive_board": {
+      "post": {
+        "operationId": "archive_board",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Board"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/archive_group": {
+      "post": {
+        "operationId": "archive_group",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Group"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/archive_item": {
+      "post": {
+        "operationId": "archive_item",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Item"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/assets": {
+      "get": {
+        "operationId": "assets",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": ""
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/assign_team_owners": {
+      "post": {
+        "operationId": "assign_team_owners",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssignTeamOwnersResult"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/batch_extend_trial_period": {
+      "post": {
+        "operationId": "batch_extend_trial_period",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchExtendTrialPeriod"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/boards": {
+      "get": {
+        "operationId": "boards",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": ""
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/change_column_metadata": {
+      "post": {
+        "operationId": "change_column_metadata",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Column"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/change_column_title": {
+      "post": {
+        "operationId": "change_column_title",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Column"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/change_column_value": {
+      "post": {
+        "operationId": "change_column_value",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Item"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/change_multiple_column_values": {
+      "post": {
+        "operationId": "change_multiple_column_values",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Item"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/change_simple_column_value": {
+      "post": {
+        "operationId": "change_simple_column_value",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Item"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/clear_item_updates": {
+      "post": {
+        "operationId": "clear_item_updates",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Item"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/complexity": {
+      "post": {
+        "operationId": "complexity",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Complexity"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/create_board": {
+      "post": {
+        "operationId": "create_board",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Board"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/create_column": {
+      "post": {
+        "operationId": "create_column",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Column"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/create_custom_activity": {
+      "post": {
+        "operationId": "create_custom_activity",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomActivity"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/create_doc": {
+      "post": {
+        "operationId": "create_doc",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Document"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/create_doc_block": {
+      "post": {
+        "operationId": "create_doc_block",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentBlock"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/create_folder": {
+      "post": {
+        "operationId": "create_folder",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Folder"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/create_group": {
+      "post": {
+        "operationId": "create_group",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Group"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/create_item": {
+      "post": {
+        "operationId": "create_item",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Item"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/create_notification": {
+      "post": {
+        "operationId": "create_notification",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Notification"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/create_or_get_tag": {
+      "post": {
+        "operationId": "create_or_get_tag",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tag"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/create_subitem": {
+      "post": {
+        "operationId": "create_subitem",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Item"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/create_team": {
+      "post": {
+        "operationId": "create_team",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Team"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/create_timeline_item": {
+      "post": {
+        "operationId": "create_timeline_item",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimelineItem"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/create_update": {
+      "post": {
+        "operationId": "create_update",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Update"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/create_webhook": {
+      "post": {
+        "operationId": "create_webhook",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Webhook"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/create_workspace": {
+      "post": {
+        "operationId": "create_workspace",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Workspace"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/custom_activity": {
+      "get": {
+        "operationId": "custom_activity",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": ""
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/deactivate_users": {
+      "post": {
+        "operationId": "deactivate_users",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeactivateUsersResult"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/delete_board": {
+      "post": {
+        "operationId": "delete_board",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Board"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/delete_column": {
+      "post": {
+        "operationId": "delete_column",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Column"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/delete_custom_activity": {
+      "post": {
+        "operationId": "delete_custom_activity",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomActivity"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/delete_doc_block": {
+      "post": {
+        "operationId": "delete_doc_block",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentBlockIdOnly"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/delete_folder": {
+      "post": {
+        "operationId": "delete_folder",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Folder"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/delete_group": {
+      "post": {
+        "operationId": "delete_group",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Group"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/delete_item": {
+      "post": {
+        "operationId": "delete_item",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Item"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/delete_marketplace_app_discount": {
+      "post": {
+        "operationId": "delete_marketplace_app_discount",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": ""
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/delete_subscribers_from_board": {
+      "post": {
+        "operationId": "delete_subscribers_from_board",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": ""
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/delete_team": {
+      "post": {
+        "operationId": "delete_team",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Team"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/delete_teams_from_board": {
+      "post": {
+        "operationId": "delete_teams_from_board",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": ""
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/delete_teams_from_workspace": {
+      "post": {
+        "operationId": "delete_teams_from_workspace",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": ""
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/delete_timeline_item": {
+      "post": {
+        "operationId": "delete_timeline_item",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimelineItem"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/delete_update": {
+      "post": {
+        "operationId": "delete_update",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Update"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/delete_users_from_workspace": {
+      "post": {
+        "operationId": "delete_users_from_workspace",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": ""
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/delete_webhook": {
+      "post": {
+        "operationId": "delete_webhook",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Webhook"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/delete_workspace": {
+      "post": {
+        "operationId": "delete_workspace",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Workspace"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/docs": {
+      "get": {
+        "operationId": "docs",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": ""
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/duplicate_board": {
+      "post": {
+        "operationId": "duplicate_board",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BoardDuplication"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/duplicate_group": {
+      "post": {
+        "operationId": "duplicate_group",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Group"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/duplicate_item": {
+      "post": {
+        "operationId": "duplicate_item",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Item"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/edit_update": {
+      "post": {
+        "operationId": "edit_update",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": ""
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/folders": {
+      "get": {
+        "operationId": "folders",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": ""
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/grant_marketplace_app_discount": {
+      "post": {
+        "operationId": "grant_marketplace_app_discount",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": ""
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/increase_app_subscription_operations": {
+      "post": {
+        "operationId": "increase_app_subscription_operations",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppSubscriptionOperationsCounter"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/items": {
+      "get": {
+        "operationId": "items",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": ""
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/items_page_by_column_values": {
+      "get": {
+        "operationId": "items_page_by_column_values",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": ""
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/like_update": {
+      "post": {
+        "operationId": "like_update",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Update"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/marketplace_app_discounts": {
+      "get": {
+        "operationId": "marketplace_app_discounts",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": ""
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/me": {
+      "get": {
+        "operationId": "me",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/move_item_to_board": {
+      "post": {
+        "operationId": "move_item_to_board",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Item"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/move_item_to_group": {
+      "post": {
+        "operationId": "move_item_to_group",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Item"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/next_items_page": {
+      "get": {
+        "operationId": "next_items_page",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": ""
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/pin_to_top": {
+      "post": {
+        "operationId": "pin_to_top",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": ""
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/remove_mock_app_subscription": {
+      "post": {
+        "operationId": "remove_mock_app_subscription",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppSubscription"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/remove_team_owners": {
+      "post": {
+        "operationId": "remove_team_owners",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RemoveTeamOwnersResult"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/remove_users_from_team": {
+      "post": {
+        "operationId": "remove_users_from_team",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChangeTeamMembershipsResult"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/set_mock_app_subscription": {
+      "post": {
+        "operationId": "set_mock_app_subscription",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppSubscription"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/tags": {
+      "get": {
+        "operationId": "tags",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": ""
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/teams": {
+      "get": {
+        "operationId": "teams",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": ""
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/timeline": {
+      "get": {
+        "operationId": "timeline",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimelineResponse"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/timeline_item": {
+      "get": {
+        "operationId": "timeline_item",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimelineItem"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/unlike_update": {
+      "post": {
+        "operationId": "unlike_update",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": ""
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/unpin_from_top": {
+      "post": {
+        "operationId": "unpin_from_top",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": ""
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/update_board": {
+      "post": {
+        "operationId": "update_board",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JSON"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/update_doc_block": {
+      "post": {
+        "operationId": "update_doc_block",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentBlock"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/update_email_domain": {
+      "post": {
+        "operationId": "update_email_domain",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateEmailDomainResult"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/update_folder": {
+      "post": {
+        "operationId": "update_folder",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Folder"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/update_group": {
+      "post": {
+        "operationId": "update_group",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Group"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/update_users_role": {
+      "post": {
+        "operationId": "update_users_role",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateUsersRoleResult"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/update_workspace": {
+      "post": {
+        "operationId": "update_workspace",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Workspace"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/updates": {
+      "get": {
+        "operationId": "updates",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": ""
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/use_template": {
+      "post": {
+        "operationId": "use_template",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Template"
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "operationId": "users",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": ""
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/version": {
+      "get": {
+        "operationId": "version",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": ""
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/versions": {
+      "get": {
+        "operationId": "versions",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": ""
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/webhooks": {
+      "get": {
+        "operationId": "webhooks",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": ""
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/workspaces": {
+      "get": {
+        "operationId": "workspaces",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": ""
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        }
+      }
+    }
+  }
+}
