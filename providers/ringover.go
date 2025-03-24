@@ -43,7 +43,7 @@ func init() {
 	})
 
 	SetInfo(RingOverEU, ProviderInfo{
-		DisplayName: "RingOver EU",
+		DisplayName: "RingOver (EU)",
 		AuthType:    ApiKey,
 		BaseURL:     "https://public-api.ringover.com",
 		ApiKeyOpts: &ApiKeyOpts{
