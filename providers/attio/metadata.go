@@ -115,6 +115,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 func (c *Connector) getObjectAttributes(
 	ctx context.Context, obj string,
 ) (map[string]common.FieldMetadata, bool, error) {
+	// Standard isn't a term we commonly use, but rather a concept defined by Attio itself.
 	isAttioStandardOrCustomObj := !supportAttioGeneralApi.Has(obj)
 
 	var (

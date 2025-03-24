@@ -2,9 +2,12 @@ package urlbuilder
 
 import (
 	"errors"
+	"net/url"
 	"reflect"
 	"strings"
 	"testing"
+
+	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
 func TestNewURL(t *testing.T) { // nolint:funlen
@@ -186,6 +189,68 @@ func TestAddPath(t *testing.T) { // nolint:funlen
 			if !reflect.DeepEqual(path, tt.expected) {
 				t.Fatalf("%s: expected: (%v), got: (%v)", tt.name, tt.expected, path)
 			}
+		})
+	}
+}
+
+func TestFromRawURL(t *testing.T) { // nolint:funlen
+	t.Parallel()
+
+	tests := []struct {
+		name     string
+		input    string
+		expected string
+	}{
+		{
+			name:     "URL with path",
+			input:    "http://video.google.co.uk:80/videoplay",
+			expected: "http://video.google.co.uk:80/videoplay",
+		},
+		{
+			name:     "Trailing slash is preserved",
+			input:    "http://video.google.co.uk:80/",
+			expected: "http://video.google.co.uk:80/",
+		},
+		{
+			name:     "URL with query parameters",
+			input:    "https://video.google.co.uk:80/videoplay?docid=-7246927612831078230&hl=en",
+			expected: "https://video.google.co.uk:80/videoplay?docid=-7246927612831078230&hl=en",
+		},
+		{
+			name:     "Fragment identifier",
+			input:    "https://example.com/page#section",
+			expected: "https://example.com/page#section",
+		},
+		{
+			name:     "Spaces in query params are encoded with plus sign (+)",
+			input:    "https://example.com/data?id=123&info=Hello%20World",
+			expected: "https://example.com/data?id=123&info=Hello+World",
+		},
+		{
+			name:     "IP address instead of hostname",
+			input:    "http://192.168.1.1/admin",
+			expected: "http://192.168.1.1/admin",
+		},
+		{
+			name:     "WebSocket protocol",
+			input:    "ws://example.com/socket",
+			expected: "ws://example.com/socket",
+		},
+	}
+
+	for _, tt := range tests { // nolint:varnamelen
+		// nolint:varnamelen
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			endpoint, err := url.Parse(tt.input)
+			if err != nil {
+				t.Fatalf("%s: is an invalid test, check input", tt.name)
+			}
+
+			outputURL, err := FromRawURL(endpoint)
+			output := outputURL.String()
+			testutils.CheckOutputWithError(t, tt.name, tt.expected, nil, output, err)
 		})
 	}
 }
