@@ -40,6 +40,21 @@ func New(base string, path ...string) (*URL, error) {
 	return u, nil
 }
 
+// FromRawURL converts a core Go `url.URL` into `urlbuilder.URL`,
+// providing better control over query parameters and encoding.
+func FromRawURL(rawURL *url.URL) (*URL, error) {
+	values, err := url.ParseQuery(rawURL.RawQuery)
+	if err != nil {
+		return nil, errors.Join(err, ErrInvalidURL)
+	}
+
+	return &URL{
+		delegate:           rawURL,
+		queryParams:        values,
+		encodingExceptions: nil,
+	}, nil
+}
+
 func (u *URL) WithQueryParamList(name string, values []string) {
 	u.queryParams[name] = values
 }
