@@ -8,7 +8,7 @@ const (
 //nolint:funlen
 func init() {
 	SetInfo(RingOverUS, ProviderInfo{
-		DisplayName: "RingOver US",
+		DisplayName: "RingOver (US)",
 		AuthType:    ApiKey,
 		BaseURL:     "https://public-api-us.ringover.com",
 		ApiKeyOpts: &ApiKeyOpts{
