@@ -4,7 +4,7 @@
       "id": "help-center",
       "path": "/api/v2",
       "objects": {
-        "article_labels": {
+        "articles/labels": {
           "displayName": "Article Labels",
           "path": "/help_center/articles/labels",
           "responseKey": "labels",
@@ -17,71 +17,6 @@
           },
           "custom": {
             "pagination": "cursor"
-          }
-        },
-        "articles": {
-          "displayName": "Articles",
-          "path": "/help_center/articles/search",
-          "responseKey": "results",
-          "fields": {
-            "author_id": "author_id",
-            "body": "body",
-            "comments_disabled": "comments_disabled",
-            "content_tag_ids": "content_tag_ids",
-            "created_at": "created_at",
-            "draft": "draft",
-            "edited_at": "edited_at",
-            "html_url": "html_url",
-            "id": "id",
-            "label_names": "label_names",
-            "locale": "locale",
-            "outdated": "outdated",
-            "outdated_locales": "outdated_locales",
-            "permission_group_id": "permission_group_id",
-            "position": "position",
-            "promoted": "promoted",
-            "section_id": "section_id",
-            "source_locale": "source_locale",
-            "title": "title",
-            "updated_at": "updated_at",
-            "url": "url",
-            "user_segment_id": "user_segment_id",
-            "user_segment_ids": "user_segment_ids",
-            "vote_count": "vote_count",
-            "vote_sum": "vote_sum"
-          },
-          "custom": {
-            "pagination": "offset"
-          }
-        },
-        "community_posts": {
-          "displayName": "Community Posts",
-          "path": "/help_center/community_posts/search",
-          "responseKey": "results",
-          "fields": {
-            "author_id": "author_id",
-            "closed": "closed",
-            "comment_count": "comment_count",
-            "content_tag_ids": "content_tag_ids",
-            "created_at": "created_at",
-            "details": "details",
-            "featured": "featured",
-            "follower_count": "follower_count",
-            "html_url": "html_url",
-            "id": "id",
-            "non_author_editor_id": "non_author_editor_id",
-            "non_author_updated_at": "non_author_updated_at",
-            "pinned": "pinned",
-            "status": "status",
-            "title": "title",
-            "topic_id": "topic_id",
-            "updated_at": "updated_at",
-            "url": "url",
-            "vote_count": "vote_count",
-            "vote_sum": "vote_sum"
-          },
-          "custom": {
-            "pagination": "offset"
           }
         },
         "posts": {
@@ -787,38 +722,6 @@
           "custom": {
             "pagination": "offset"
           }
-        },
-        "search": {
-          "displayName": "Search Results",
-          "path": "/search",
-          "responseKey": "results",
-          "fields": {
-            "created_at": "created_at",
-            "default": "default",
-            "deleted": "deleted",
-            "description": "description",
-            "id": "id",
-            "name": "name",
-            "result_type": "result_type",
-            "updated_at": "updated_at",
-            "url": "url"
-          },
-          "custom": {
-            "pagination": "offset"
-          }
-        },
-        "session": {
-          "displayName": "Session",
-          "path": "/users/me/session",
-          "responseKey": "session",
-          "fields": {
-            "authenticated_at": "authenticated_at",
-            "id": "id",
-            "last_seen_at": "last_seen_at",
-            "url": "url",
-            "user_id": "user_id"
-          },
-          "custom": {}
         },
         "sessions": {
           "displayName": "Sessions",

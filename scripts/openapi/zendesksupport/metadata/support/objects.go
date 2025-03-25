@@ -46,11 +46,13 @@ var (
 		"/api/v2/automations/search",
 		"/api/v2/views/search",
 		"/api/v2/triggers/search",
+		"/api/v2/search",
 		// Not applicable.
 		"/api/v2/channels/voice/tickets", // only POST method for create.
 		"/api/v2/imports/tickets",        // only POST method for create.
 		"/api/v2/custom_objects/limits/object_limit",
 		"/api/v2/users/me/session/renew",
+		"/api/v2/users/me/session",
 		"/api/v2/locales/current",
 		"/api/v2/locales/detect_best_locale",
 		"/api/v2/brands/check_host_mapping",
@@ -74,14 +76,12 @@ var (
 		"/api/v2/incremental/users/cursor":       "users",
 	}
 	displayNameOverride = map[string]string{ // nolint:gochecknoglobals
-		"search":               "Search Results",
 		"trigger_categories":   "Trigger Categories",
 		"satisfaction_reasons": "Satisfaction Rating Reasons",
 		"ticket_audits":        "Ticket Audits",
 	}
 	objectNameToResponseField = datautils.NewDefaultMap(map[string]string{ // nolint:gochecknoglobals
 		"ticket_audits":        "audits",
-		"search":               "results", // This is "/api/v2/search"
 		"satisfaction_reasons": "reasons",
 	}, func(objectName string) (fieldName string) {
 		return objectName
@@ -118,8 +118,6 @@ var (
 		"resource_collections":       "offset",
 		"satisfaction_ratings":       "cursor",
 		"satisfaction_reasons":       "offset",
-		"search":                     "offset",
-		"session":                    "",
 		"sessions":                   "",
 		"sharing_agreements":         "offset",
 		"suspended_tickets":          "cursor",
