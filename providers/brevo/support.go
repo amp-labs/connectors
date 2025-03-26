@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/datautils"
-	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers/brevo/metadata"
 )
 
@@ -36,7 +36,7 @@ var supportLimitAndOffset = datautils.NewSet( //nolint:gochecknoglobals
 
 func supportedOperations() components.EndpointRegistryInput {
 	// We support reading everything under schema.json, so we get all the objects and join it into a pattern.
-	readSupport := metadata.Schemas.ObjectNames().GetList(staticschema.RootModuleID)
+	readSupport := metadata.Schemas.ObjectNames().GetList(common.ModuleRoot)
 
 	writeSupport := []string{
 		"smtp/email", "smtp/templates", "smtp/blockedDomains",
@@ -61,7 +61,7 @@ func supportedOperations() components.EndpointRegistryInput {
 	}
 
 	return components.EndpointRegistryInput{
-		staticschema.RootModuleID: {
+		common.ModuleRoot: {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,

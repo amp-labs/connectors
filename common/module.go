@@ -19,6 +19,8 @@ var (
 	ErrUnsupportedModule = errors.New("provided module is not supported")
 )
 
+const ModuleRoot ModuleID = "root"
+
 type ModuleID string
 
 type Modules = datautils.Map[ModuleID, Module]
