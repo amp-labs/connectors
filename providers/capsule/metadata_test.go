@@ -6,7 +6,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 )
@@ -82,7 +81,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 
 func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(common.Parameters{
-		Module:              staticschema.RootModuleID,
+		Module:              common.ModuleRoot,
 		AuthenticatedClient: http.DefaultClient,
 	})
 	if err != nil {
