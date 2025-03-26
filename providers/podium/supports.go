@@ -2,6 +2,7 @@ package podium
 
 import (
 	"fmt"
+	"net/http"
 	"strings"
 
 	"github.com/amp-labs/connectors/internal/components"
@@ -19,6 +20,15 @@ func supportsPagination(objectName string) bool {
 	}
 }
 
+func updateMethod(objectName string) string {
+	switch objectName {
+	case "campaigns", "conversations", "templates", "webhooks":
+		return http.MethodPut
+	default:
+		return http.MethodPatch
+	}
+}
+
 func supportedOperations() components.EndpointRegistryInput {
 	readSupport := []string{
 		"locations", "users", "campaign_interactions", "campaigns",
@@ -27,11 +37,21 @@ func supportedOperations() components.EndpointRegistryInput {
 		"reviews/summary", "webhooks",
 	}
 
+	writeSupport := []string{
+		"locations", "appointments", "campaigns", "contact_attributes",
+		"contact_tags", "contacts", "conversations", "import/messages", "messages", "messages/attachment",
+		"templates", "invoices", "refunds", "reviews/invites", "webhooks",
+	}
+
 	return components.EndpointRegistryInput{
 		staticschema.RootModuleID: {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
+				Support:  components.WriteSupport,
 			},
 		},
 	}
