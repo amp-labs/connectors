@@ -151,7 +151,7 @@ func TestIncrementalReadZendeskSupportModule(t *testing.T) { //nolint:funlen,goc
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.QueryParam("per_page", "100"),
+					mockcond.QueryParam("per_page", "2000"),
 					mockcond.QueryParam("start_time", "0"),
 					mockcond.PathSuffix("/api/v2/incremental/tickets/cursor"),
 				},
@@ -179,7 +179,7 @@ func TestIncrementalReadZendeskSupportModule(t *testing.T) { //nolint:funlen,goc
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.QueryParam("per_page", "100"),
+					mockcond.QueryParam("per_page", "2000"),
 					mockcond.QueryParam("start_time", "1726674883"),
 					mockcond.PathSuffix("/api/v2/incremental/tickets/cursor"),
 				},
@@ -197,7 +197,7 @@ func TestIncrementalReadZendeskSupportModule(t *testing.T) { //nolint:funlen,goc
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.QueryParam("per_page", "100"),
+					mockcond.QueryParam("per_page", "1000"),
 					mockcond.QueryParam("start_time", "0"),
 					mockcond.PathSuffix("/api/v2/incremental/users/cursor"),
 				},
@@ -224,7 +224,7 @@ func TestIncrementalReadZendeskSupportModule(t *testing.T) { //nolint:funlen,goc
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.QueryParam("per_page", "100"),
+					mockcond.QueryParam("per_page", "1000"),
 					mockcond.QueryParam("start_time", "0"),
 					mockcond.PathSuffix("/api/v2/incremental/users/cursor"),
 				},
@@ -251,7 +251,7 @@ func TestIncrementalReadZendeskSupportModule(t *testing.T) { //nolint:funlen,goc
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.QueryParam("per_page", "100"),
+					mockcond.QueryParam("per_page", "1000"),
 					mockcond.QueryParam("start_time", "0"),
 					mockcond.PathSuffix("/api/v2/incremental/organizations"),
 				},
