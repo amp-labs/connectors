@@ -76,7 +76,7 @@ func constructTestConnector(serverURL string) *mockedConnector {
 	}
 
 	metadata := staticschema.NewMetadata[staticschema.FieldMetadataMapV2]()
-	metadata.Add(staticschema.RootModuleID, "orders", "Orders", "/user/orders", "result",
+	metadata.Add(common.ModuleRoot, "orders", "Orders", "/user/orders", "result",
 		map[string]staticschema.FieldMetadata{
 			"id": {
 				DisplayName:  "Identifier",
@@ -88,7 +88,7 @@ func constructTestConnector(serverURL string) *mockedConnector {
 	return &mockedConnector{
 		Connector: connector,
 		SchemaProvider: NewOpenAPISchemaProvider(
-			staticschema.RootModuleID,
+			common.ModuleRoot,
 			metadata,
 		),
 	}

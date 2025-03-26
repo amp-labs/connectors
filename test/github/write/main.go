@@ -31,15 +31,16 @@ func main() {
 	}
 
 	slog.Info("> TEST Create gists")
+
 	if err := createGist(ctx, conn); err != nil {
 		slog.Error(err.Error())
 	}
 
 	slog.Info("> TEST update user codespaces")
+
 	if err := updateUserCodespaces(ctx, conn); err != nil {
 		slog.Error(err.Error())
 	}
-
 }
 
 func addUserEmails(ctx context.Context, conn *github.Connector) error {
