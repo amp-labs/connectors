@@ -18,7 +18,7 @@ func run() error {
 	ctx := context.Background()
 	connector := drift.GetConnector(ctx)
 
-	m, err := connector.ListObjectMetadata(ctx, []string{"users/list", "conversations/stats", "contacts/attributes"})
+	m, err := connector.ListObjectMetadata(ctx, []string{"users/list", "conversations/stats"})
 	if err != nil {
 		return err
 	}
