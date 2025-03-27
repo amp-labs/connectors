@@ -6,6 +6,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -92,7 +93,7 @@ func TestWriteModuleMeeting(t *testing.T) { //nolint:funlen
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 			tt.Run(t, func() (connectors.WriteConnector, error) {
-				return constructTestConnector(tt.Server.URL, ModuleMeeting)
+				return constructTestConnector(tt.Server.URL, common.ModuleID(providers.ModuleZoomMeeting))
 			})
 		})
 	}
@@ -155,7 +156,7 @@ func TestWriteModuleUser(t *testing.T) { //nolint:funlen
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 			tt.Run(t, func() (connectors.WriteConnector, error) {
-				return constructTestConnector(tt.Server.URL, ModuleUser)
+				return constructTestConnector(tt.Server.URL, common.ModuleID(providers.ModuleZoomUser))
 			})
 		})
 	}
