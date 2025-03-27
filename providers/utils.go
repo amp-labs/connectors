@@ -171,6 +171,13 @@ func (i *ProviderInfo) GetOption(key string) (string, bool) {
 // The handler can be used to refresh the token or to perform other actions. The client is
 // included so you can make additional requests if needed, but be careful not to create an
 // infinite loop (hint, use the request's context to attach a counter to avoid this possibility).
+//
+// The proper semantics of this function can be read as: "I received an unauthorized response,
+// and I want to do something about it, and then I want to return a modified response to the
+// original caller."
+//
+// The most common planned use case is to refresh the token and then retry the request and return
+// the non-401 response to the original caller.
 type UnauthorizedHandler func(client common.AuthenticatedHTTPClient, event *UnauthorizedEvent) (*http.Response, error)
 
 // UnauthorizedEvent is the event that is triggered when an unauthorized response (http 401) is received.
