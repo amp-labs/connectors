@@ -167,10 +167,34 @@ func (i *ProviderInfo) GetOption(key string) (string, bool) {
 	return val, ok
 }
 
+// UnauthorizedHandler is a function that is called when an unauthorized response is received.
+// The handler can be used to refresh the token or to perform other actions. The client is
+// included so you can make additionaadditionall requests if needed, but be careful not to create an
+// infinite loop (hint, use the request's context to attach a counter to avoid this possibility).
+type UnauthorizedHandler func(client common.AuthenticatedHTTPClient, event *UnauthorizedEvent) (*http.Response, error)
+
+// UnauthorizedEvent is the event that is triggered when an unauthorized response (http 401) is received.
+type UnauthorizedEvent struct {
+	Provider    *ProviderInfo
+	Headers     []common.Header     // Only certain providers will set this, depending on the auth type
+	QueryParams []common.QueryParam // Only certain providers will set this, depending on the auth type
+	OAuthToken  *oauth2.Token       // Only certain providers will set this, depending on the auth type
+	Request     *http.Request
+	Response    *http.Response
+}
+
 // BasicParams is the parameters to create a basic auth client.
 type BasicParams struct {
-	User string
-	Pass string
+	User    string
+	Pass    string
+	Options []common.HeaderAuthClientOption
+}
+
+// ApiKeyParams is the parameters to create an api key client.
+type ApiKeyParams struct {
+	Key           string
+	HeaderOptions []common.HeaderAuthClientOption
+	QueryOptions  []common.QueryParamAuthClientOption
 }
 
 // OAuth2AuthCodeParams is the parameters to create an OAuth2 auth code client.
@@ -180,6 +204,7 @@ type OAuth2AuthCodeParams struct {
 	Options []common.OAuthOption
 }
 
+// OAuth2ClientCredentialsParams is the parameters to create an OAuth2 client credentials client.
 type OAuth2ClientCredentialsParams struct {
 	Config  *clientcredentials.Config
 	Options []common.OAuthOption
@@ -194,6 +219,10 @@ type NewClientParams struct {
 	// the value is nil, the default http client will be used.
 	Client *http.Client
 
+	// OnUnauthorized is the handler to call when the client receives an
+	// unauthorized response.
+	OnUnauthorized UnauthorizedHandler
+
 	// BasicCreds is the basic auth credentials to use for the client.
 	// If the provider uses basic auth, this field must be set.
 	BasicCreds *BasicParams
@@ -206,9 +235,9 @@ type NewClientParams struct {
 	// If the provider uses auth code, this field must be set.
 	OAuth2AuthCodeCreds *OAuth2AuthCodeParams
 
-	// ApiKey is the api key to use for the client. If the provider uses api-key
-	// auth, this field must be set.
-	ApiKey string
+	// ApiKeyCreds is the api key to use for the client. If the provider uses
+	// api-key auth, this field must be set.
+	ApiKeyCreds *ApiKeyParams
 }
 
 // NewClient will create a new authenticated client based on the provider's auth type.
@@ -229,11 +258,14 @@ func (i *ProviderInfo) NewClient(ctx context.Context, params *NewClientParams) (
 		case AuthorizationCodePKCE:
 			fallthrough
 		case AuthorizationCode:
-			return createOAuth2AuthCodeHTTPClient(ctx, params.Client, params.Debug, params.OAuth2AuthCodeCreds)
+			return createOAuth2AuthCodeHTTPClient(
+				ctx, params.Client, params.Debug, params.OnUnauthorized, i, params.OAuth2AuthCodeCreds)
 		case ClientCredentials:
-			return createOAuth2ClientCredentialsHTTPClient(ctx, params.Client, params.Debug, params.OAuth2ClientCreds)
+			return createOAuth2ClientCredentialsHTTPClient(
+				ctx, params.Client, params.Debug, params.OnUnauthorized, i, params.OAuth2ClientCreds)
 		case Password:
-			return createOAuth2PasswordHTTPClient(ctx, params.Client, params.Debug, params.OAuth2AuthCodeCreds)
+			return createOAuth2PasswordHTTPClient(
+				ctx, params.Client, params.Debug, params.OnUnauthorized, i, params.OAuth2AuthCodeCreds)
 		default:
 			return nil, fmt.Errorf("%w: unsupported grant type %q", ErrClient, i.Oauth2Opts.GrantType)
 		}
@@ -242,17 +274,23 @@ func (i *ProviderInfo) NewClient(ctx context.Context, params *NewClientParams) (
 			return nil, fmt.Errorf("%w: %s", ErrClient, "basic credentials not found")
 		}
 
-		return createBasicAuthHTTPClient(ctx, params.Client, params.Debug, params.BasicCreds.User, params.BasicCreds.Pass)
+		return createBasicAuthHTTPClient(
+			ctx, params.Client, params.Debug, params.OnUnauthorized, i,
+			params.BasicCreds.User, params.BasicCreds.Pass, params.BasicCreds.Options)
 	case ApiKey:
 		if i.ApiKeyOpts == nil {
 			return nil, fmt.Errorf("%w: api key options not found", ErrClient)
 		}
 
-		if len(params.ApiKey) == 0 {
+		if params.ApiKeyCreds == nil {
+			return nil, fmt.Errorf("%w: api key credentials not found", ErrClient)
+		}
+
+		if len(params.ApiKeyCreds.Key) == 0 {
 			return nil, fmt.Errorf("%w: api key not given", ErrClient)
 		}
 
-		return createApiKeyHTTPClient(ctx, params.Client, params.Debug, i, params.ApiKey)
+		return createApiKeyHTTPClient(ctx, params.Client, params.Debug, params.OnUnauthorized, i, params.ApiKeyCreds)
 	case Jwt:
 		// We shouldn't hit this case, because no providerInfo has auth type set to JWT yet.
 		fallthrough
@@ -289,8 +327,11 @@ func createBasicAuthHTTPClient( //nolint:ireturn
 	ctx context.Context,
 	client *http.Client,
 	dbg bool,
+	unauth UnauthorizedHandler,
+	info *ProviderInfo,
 	user string,
 	pass string,
+	options []common.HeaderAuthClientOption,
 ) (common.AuthenticatedHTTPClient, error) {
 	opts := []common.HeaderAuthClientOption{
 		common.WithHeaderClient(getClient(client)),
@@ -300,18 +341,41 @@ func createBasicAuthHTTPClient( //nolint:ireturn
 		opts = append(opts, common.WithHeaderDebug(common.PrintRequestAndResponse))
 	}
 
-	c, err := common.NewBasicAuthHTTPClient(ctx, user, pass, opts...)
+	var authClient common.AuthenticatedHTTPClient
+
+	if unauth != nil {
+		opts = append(opts,
+			common.WithHeaderUnauthorizedHandler(
+				func(hdrs []common.Header, req *http.Request, rsp *http.Response) (*http.Response, error) {
+					return unauth(authClient, &UnauthorizedEvent{
+						Provider: info,
+						Headers:  hdrs,
+						Request:  req,
+						Response: rsp,
+					})
+				}))
+	}
+
+	if len(options) > 0 {
+		opts = append(opts, options...)
+	}
+
+	var err error
+
+	authClient, err = common.NewBasicAuthHTTPClient(ctx, user, pass, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create basic auth client: %w", ErrClient, err)
 	}
 
-	return c, nil
+	return authClient, nil
 }
 
 func createOAuth2AuthCodeHTTPClient( //nolint:ireturn
 	ctx context.Context,
 	client *http.Client,
 	dbg bool,
+	unauth UnauthorizedHandler,
+	info *ProviderInfo,
 	cfg *OAuth2AuthCodeParams,
 ) (common.AuthenticatedHTTPClient, error) {
 	if cfg == nil {
@@ -328,9 +392,26 @@ func createOAuth2AuthCodeHTTPClient( //nolint:ireturn
 		options = append(options, common.WithOAuthDebug(common.PrintRequestAndResponse))
 	}
 
+	var oauthClient common.AuthenticatedHTTPClient
+
+	if unauth != nil {
+		options = append(options,
+			common.WithOAuthUnauthorizedHandler(
+				func(token *oauth2.Token, req *http.Request, rsp *http.Response) (*http.Response, error) {
+					return unauth(oauthClient, &UnauthorizedEvent{
+						Provider:   info,
+						OAuthToken: token,
+						Request:    req,
+						Response:   rsp,
+					})
+				}))
+	}
+
 	options = append(options, cfg.Options...)
 
-	oauthClient, err := common.NewOAuthHTTPClient(ctx, options...)
+	var err error
+
+	oauthClient, err = common.NewOAuthHTTPClient(ctx, options...)
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create oauth2 client: %w", ErrClient, err)
 	}
@@ -342,6 +423,8 @@ func createOAuth2ClientCredentialsHTTPClient( //nolint:ireturn
 	ctx context.Context,
 	client *http.Client,
 	dbg bool,
+	unauth UnauthorizedHandler,
+	info *ProviderInfo,
 	cfg *OAuth2ClientCredentialsParams,
 ) (common.AuthenticatedHTTPClient, error) {
 	if _, ok := ctx.Value(oauth2.HTTPClient).(*http.Client); !ok {
@@ -359,9 +442,26 @@ func createOAuth2ClientCredentialsHTTPClient( //nolint:ireturn
 		options = append(options, common.WithOAuthDebug(common.PrintRequestAndResponse))
 	}
 
+	var oauthClient common.AuthenticatedHTTPClient
+
+	if unauth != nil {
+		options = append(options,
+			common.WithOAuthUnauthorizedHandler(
+				func(token *oauth2.Token, req *http.Request, rsp *http.Response) (*http.Response, error) {
+					return unauth(oauthClient, &UnauthorizedEvent{
+						Provider:   info,
+						OAuthToken: token,
+						Request:    req,
+						Response:   rsp,
+					})
+				}))
+	}
+
 	options = append(options, cfg.Options...)
 
-	oauthClient, err := common.NewOAuthHTTPClient(ctx, options...)
+	var err error
+
+	oauthClient, err = common.NewOAuthHTTPClient(ctx, options...)
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create oauth2 client: %w", ErrClient, err)
 	}
@@ -373,20 +473,25 @@ func createOAuth2PasswordHTTPClient(
 	ctx context.Context,
 	client *http.Client,
 	dbg bool,
+	unauth UnauthorizedHandler,
+	info *ProviderInfo,
 	cfg *OAuth2AuthCodeParams,
 ) (common.AuthenticatedHTTPClient, error) {
 	// Refresh method works the same as with auth code method.
 	// Relies on access and refresh tokens created by Oauth2 password method.
-	return createOAuth2AuthCodeHTTPClient(ctx, client, dbg, cfg)
+	return createOAuth2AuthCodeHTTPClient(ctx, client, dbg, unauth, info, cfg)
 }
 
-func createApiKeyHTTPClient( //nolint:ireturn
+func createApiKeyHTTPClient( //nolint:ireturn,cyclop,funlen
 	ctx context.Context,
 	client *http.Client,
 	dbg bool,
+	unauth UnauthorizedHandler,
 	info *ProviderInfo,
-	apiKey string,
+	cfg *ApiKeyParams,
 ) (common.AuthenticatedHTTPClient, error) {
+	apiKey := cfg.Key
+
 	if info.ApiKeyOpts.AttachmentType == Header { //nolint:nestif
 		if info.ApiKeyOpts.Header.ValuePrefix != "" {
 			apiKey = info.ApiKeyOpts.Header.ValuePrefix + apiKey
@@ -400,12 +505,33 @@ func createApiKeyHTTPClient( //nolint:ireturn
 			opts = append(opts, common.WithHeaderDebug(common.PrintRequestAndResponse))
 		}
 
-		c, err := common.NewApiKeyHeaderAuthHTTPClient(ctx, info.ApiKeyOpts.Header.Name, apiKey, opts...)
+		var authClient common.AuthenticatedHTTPClient
+
+		if unauth != nil {
+			opts = append(opts,
+				common.WithHeaderUnauthorizedHandler(
+					func(hdrs []common.Header, req *http.Request, rsp *http.Response) (*http.Response, error) {
+						return unauth(authClient, &UnauthorizedEvent{
+							Provider: info,
+							Headers:  hdrs,
+							Request:  req,
+							Response: rsp,
+						})
+					}))
+		}
+
+		if len(cfg.HeaderOptions) > 0 {
+			opts = append(opts, cfg.HeaderOptions...)
+		}
+
+		var err error
+
+		authClient, err = common.NewApiKeyHeaderAuthHTTPClient(ctx, info.ApiKeyOpts.Header.Name, apiKey, opts...)
 		if err != nil {
 			return nil, fmt.Errorf("%w: failed to create api key client: %w", ErrClient, err)
 		}
 
-		return c, nil
+		return authClient, nil
 	} else if info.ApiKeyOpts.AttachmentType == Query {
 		opts := []common.QueryParamAuthClientOption{
 			common.WithQueryParamClient(getClient(client)),
@@ -415,12 +541,33 @@ func createApiKeyHTTPClient( //nolint:ireturn
 			opts = append(opts, common.WithQueryParamDebug(common.PrintRequestAndResponse))
 		}
 
-		c, err := common.NewApiKeyQueryParamAuthHTTPClient(ctx, info.ApiKeyOpts.Query.Name, apiKey, opts...)
+		var authClient common.AuthenticatedHTTPClient
+
+		if unauth != nil {
+			opts = append(opts,
+				common.WithQueryParamUnauthorizedHandler(
+					func(params []common.QueryParam, req *http.Request, rsp *http.Response) (*http.Response, error) {
+						return unauth(authClient, &UnauthorizedEvent{
+							Provider:    info,
+							QueryParams: params,
+							Request:     req,
+							Response:    rsp,
+						})
+					}))
+		}
+
+		if len(cfg.QueryOptions) > 0 {
+			opts = append(opts, cfg.QueryOptions...)
+		}
+
+		var err error
+
+		authClient, err = common.NewApiKeyQueryParamAuthHTTPClient(ctx, info.ApiKeyOpts.Query.Name, apiKey, opts...)
 		if err != nil {
 			return nil, fmt.Errorf("%w: failed to create api key client: %w", ErrClient, err)
 		}
 
-		return c, nil
+		return authClient, nil
 	}
 
 	return nil, fmt.Errorf("%w: unsupported api key type %q", ErrClient, info.ApiKeyOpts.AttachmentType)
