@@ -4,19 +4,7 @@
       "id": "root",
       "path": "/api/v4",
       "objects": {
-        "applications": {
-          "displayName": "Applications",
-          "path": "/applications",
-          "responseKey": "",
-          "fields": {
-            "application_id": "application_id",
-            "application_name": "application_name",
-            "callback_url": "callback_url",
-            "confidential": "confidential",
-            "id": "id"
-          }
-        },
-        "batched_background_migrations": {
+        "admin/batched_background_migrations": {
           "displayName": "Batched Background Migrations",
           "path": "/admin/batched_background_migrations",
           "responseKey": "",
@@ -30,20 +18,7 @@
             "table_name": "table_name"
           }
         },
-        "bulk_imports": {
-          "displayName": "Bulk Imports",
-          "path": "/bulk_imports",
-          "responseKey": "",
-          "fields": {
-            "created_at": "created_at",
-            "has_failures": "has_failures",
-            "id": "id",
-            "source_type": "source_type",
-            "status": "status",
-            "updated_at": "updated_at"
-          }
-        },
-        "clusters": {
+        "admin/clusters": {
           "displayName": "Clusters",
           "path": "/admin/clusters",
           "responseKey": "",
@@ -65,20 +40,54 @@
             "user": "user"
           }
         },
-        "definitions": {
-          "displayName": "Definitions",
-          "path": "/features/definitions",
+        "applications": {
+          "displayName": "Applications",
+          "path": "/applications",
           "responseKey": "",
           "fields": {
-            "default_enabled": "default_enabled",
-            "feature_issue_url": "feature_issue_url",
-            "group": "group",
-            "introduced_by_url": "introduced_by_url",
-            "log_state_changes": "log_state_changes",
-            "milestone": "milestone",
-            "name": "name",
-            "rollout_issue_url": "rollout_issue_url",
-            "type": "type"
+            "application_id": "application_id",
+            "application_name": "application_name",
+            "callback_url": "callback_url",
+            "confidential": "confidential",
+            "id": "id"
+          }
+        },
+        "bulk_imports": {
+          "displayName": "Bulk Imports",
+          "path": "/bulk_imports",
+          "responseKey": "",
+          "fields": {
+            "created_at": "created_at",
+            "has_failures": "has_failures",
+            "id": "id",
+            "source_type": "source_type",
+            "status": "status",
+            "updated_at": "updated_at"
+          }
+        },
+        "bulk_imports/entities": {
+          "displayName": "Entities",
+          "path": "/bulk_imports/entities",
+          "responseKey": "",
+          "fields": {
+            "bulk_import_id": "bulk_import_id",
+            "created_at": "created_at",
+            "destination_full_path": "destination_full_path",
+            "destination_name": "destination_name",
+            "destination_namespace": "destination_namespace",
+            "destination_slug": "destination_slug",
+            "entity_type": "entity_type",
+            "failures": "failures",
+            "has_failures": "has_failures",
+            "id": "id",
+            "migrate_projects": "migrate_projects",
+            "namespace_id": "namespace_id",
+            "parent_id": "parent_id",
+            "project_id": "project_id",
+            "source_full_path": "source_full_path",
+            "stats": "stats",
+            "status": "status",
+            "updated_at": "updated_at"
           }
         },
         "deploy_keys": {
@@ -112,29 +121,25 @@
             "username": "username"
           }
         },
-        "entities": {
-          "displayName": "Entities",
-          "path": "/bulk_imports/entities",
+        "events": {
+          "displayName": "Events",
+          "path": "/events",
           "responseKey": "",
           "fields": {
-            "bulk_import_id": "bulk_import_id",
+            "action_name": "action_name",
+            "author": "author",
+            "author_id": "author_id",
+            "author_username": "author_username",
             "created_at": "created_at",
-            "destination_full_path": "destination_full_path",
-            "destination_name": "destination_name",
-            "destination_namespace": "destination_namespace",
-            "destination_slug": "destination_slug",
-            "entity_type": "entity_type",
-            "failures": "failures",
-            "has_failures": "has_failures",
             "id": "id",
-            "migrate_projects": "migrate_projects",
-            "namespace_id": "namespace_id",
-            "parent_id": "parent_id",
+            "note": "note",
             "project_id": "project_id",
-            "source_full_path": "source_full_path",
-            "stats": "stats",
-            "status": "status",
-            "updated_at": "updated_at"
+            "push_data": "push_data",
+            "target_id": "target_id",
+            "target_iid": "target_iid",
+            "target_title": "target_title",
+            "target_type": "target_type",
+            "wiki_page": "wiki_page"
           }
         },
         "features": {
@@ -146,6 +151,22 @@
             "gates": "gates",
             "name": "name",
             "state": "state"
+          }
+        },
+        "features/definitions": {
+          "displayName": "Definitions",
+          "path": "/features/definitions",
+          "responseKey": "",
+          "fields": {
+            "default_enabled": "default_enabled",
+            "feature_issue_url": "feature_issue_url",
+            "group": "group",
+            "introduced_by_url": "introduced_by_url",
+            "log_state_changes": "log_state_changes",
+            "milestone": "milestone",
+            "name": "name",
+            "rollout_issue_url": "rollout_issue_url",
+            "type": "type"
           }
         },
         "groups": {
@@ -244,6 +265,22 @@
             "web_url": "web_url"
           }
         },
+        "personal_access_tokens": {
+          "displayName": "Personal Access Tokens",
+          "path": "/personal_access_tokens",
+          "responseKey": "",
+          "fields": {
+            "active": "active",
+            "created_at": "created_at",
+            "expires_at": "expires_at",
+            "id": "id",
+            "last_used_at": "last_used_at",
+            "name": "name",
+            "revoked": "revoked",
+            "scopes": "scopes",
+            "user_id": "user_id"
+          }
+        },
         "project_repository_storage_moves": {
           "displayName": "Project Repository Storage Moves",
           "path": "/project_repository_storage_moves",
@@ -288,9 +325,23 @@
             "web_url": "web_url"
           }
         },
-        "public": {
-          "displayName": "Public",
-          "path": "/snippets/public",
+        "snippet_repository_storage_moves": {
+          "displayName": "Snippet Repository Storage Moves",
+          "path": "/snippet_repository_storage_moves",
+          "responseKey": "",
+          "fields": {
+            "created_at": "created_at",
+            "destination_storage_name": "destination_storage_name",
+            "error_message": "error_message",
+            "id": "id",
+            "snippet": "snippet",
+            "source_storage_name": "source_storage_name",
+            "state": "state"
+          }
+        },
+        "snippets": {
+          "displayName": "Snippets",
+          "path": "/snippets",
           "responseKey": "",
           "fields": {
             "author": "author",
@@ -310,23 +361,31 @@
             "web_url": "web_url"
           }
         },
-        "snippet_repository_storage_moves": {
-          "displayName": "Snippet Repository Storage Moves",
-          "path": "/snippet_repository_storage_moves",
+        "snippets/all": {
+          "displayName": "Snippets/All",
+          "path": "/snippets/all",
           "responseKey": "",
           "fields": {
+            "author": "author",
             "created_at": "created_at",
-            "destination_storage_name": "destination_storage_name",
-            "error_message": "error_message",
+            "description": "description",
+            "file_name": "file_name",
+            "files": "files",
+            "http_url_to_repo": "http_url_to_repo",
             "id": "id",
-            "snippet": "snippet",
-            "source_storage_name": "source_storage_name",
-            "state": "state"
+            "project_id": "project_id",
+            "raw_url": "raw_url",
+            "repository_storage": "repository_storage",
+            "ssh_url_to_repo": "ssh_url_to_repo",
+            "title": "title",
+            "updated_at": "updated_at",
+            "visibility": "visibility",
+            "web_url": "web_url"
           }
         },
-        "snippets": {
-          "displayName": "Snippets",
-          "path": "/snippets",
+        "snippets/public": {
+          "displayName": "Public",
+          "path": "/snippets/public",
           "responseKey": "",
           "fields": {
             "author": "author",

@@ -5,12 +5,15 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
+	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/tools/fileconv"
 	"github.com/amp-labs/connectors/tools/scrapper"
 )
+
+const restAPIVersion = "api/v4"
 
 // nolint:gochecknoglobals
 var (
@@ -43,8 +46,23 @@ func NewConnector(params common.Parameters) (*Connector, error) {
 func constructor(base *components.Connector) (*Connector, error) {
 	connector := &Connector{Connector: base}
 
-	// Set the metadata provider for the connector
-	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), schemas)
+	// GitLab's OpenAPI files don't cover all API resources,
+	// so we fall back to querying objects and populating fields.
+
+	fallbackSchema := schema.NewObjectSchemaProvider(
+		base.HTTPClient().Client,
+		schema.FetchModeSerial,
+		operations.SingleObjectMetadataHandlers{
+			BuildRequest:  connector.buildSingleHandlerRequest,
+			ParseResponse: connector.parseSingleHandlerResponse,
+			ErrorHandler:  common.InterpretError,
+		},
+	)
+
+	connector.SchemaProvider = schema.NewCompositeSchemaProvider(
+		schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), schemas),
+		fallbackSchema,
+	)
 
 	return connector, nil
 }

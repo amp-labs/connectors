@@ -4,6 +4,7 @@ import (
 	_ "embed"
 	"log"
 	"log/slog"
+	"strings"
 
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
@@ -16,42 +17,30 @@ import (
 
 // nolint:gochecknoglobals
 var (
-	ignoreEndpoints = []string{
-		"/account/summary",                  // returns single customer
-		"/account/summary/physical_address", // returns single address
-		"/contacts/counts",                  // object describing statistics on contacts
-		// Requires query parameters
-		"/emails/campaign_id_xrefs",
-		"/contacts/contact_id_xrefs",
-		"/contact_lists/list_id_xrefs",
-		// Partner accounts need auth token to be in 2 headers, usual auth and custom x-api-key.
-		"/partner/*",
-	}
+	ignoreEndpoints = []string{}
 	objectEndpoints = map[string]string{
-		"/account/emails": "account_emails",
-		"/emails":         "email_campaigns",
+		"/api/v4/user/keys":                       "user/keys",
+		"/api/v4/keys":                            "keys",
+		"/api/v4/groups/import/authorize":         "groups/import/authorize",
+		"/api/v4/projects/import/authorize":       "projects/import/authorize",
+		"/api/v4/user/runners":                    "user/runners",
+		"/api/v4/runners":                         "runners",
+		"/api/v4/events":                          "events",
+		"/api/v4/integrations/slack/events":       "integrations/slack/events",
+		"/api/v4/container_registry_event/events": "container_registry_event/events",
+		"/api/v4/user/status":                     "user/status",
+		"/api/v4/geo/status":                      "geo/status",
+		"/api/v4/groups/import":                   "groups/import",
+		"/api/v4/projects/import":                 "projects/import",
+		"/api/v4/user/personal_access_tokens":     "user/personal_access_tokens",
+		"/api/v4/personal_access_tokens":          "personal_access_tokens",
+		"/api/v4/snippets/all":                    "snippets/all",
+		"/api/v4/runners/all":                     "runners/all",
 	}
-	displayNameOverride = map[string]string{
-		// "campaign_id_xrefs": "Email Campaign Identifiers",
-		// "contact_id_xrefs":  "Contact Identifiers",
-		// "list_id_xrefs":     "List Identifiers",
-	}
-	objectNameToResponseField = datautils.NewDefaultMap(map[string]string{
-		// "campaign_id_xrefs":        "xrefs",
-		// "contact_id_xrefs":         "xrefs",
-		// "list_id_xrefs":            "xrefs",
-		"accounts":                 "site_owner_list",
-		"email_campaign_summaries": "bulk_email_campaign_summaries",
-		"contact_tags":             "tags",
-		"contact_lists":            "lists",
-		"contact_custom_fields":    "custom_fields",
-		"email_campaigns":          "campaigns",
-		"account_emails":           "", // response is already an array, empty refers to current
-		"privileges":               "",
-		"subscriptions":            "",
-	},
+	displayNameOverride       = map[string]string{}
+	objectNameToResponseField = datautils.NewDefaultMap(map[string]string{},
 		func(objectName string) (fieldName string) {
-			return objectName
+			return ""
 		},
 	)
 
@@ -98,8 +87,10 @@ func main() {
 			)
 		}
 
+		objectName, _ := strings.CutPrefix(object.URLPath, "/api/v4/")
+
 		for _, field := range object.Fields {
-			schemas.Add("", object.ObjectName, object.DisplayName, object.URLPath, object.ResponseKey,
+			schemas.Add("", objectName, object.DisplayName, object.URLPath, object.ResponseKey,
 				staticschema.FieldMetadataMapV1{
 					field.Name: field.Name,
 				}, nil, object.Custom)
