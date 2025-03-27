@@ -8,7 +8,7 @@ import (
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/metadatadef"
 	"github.com/amp-labs/connectors/internal/staticschema"
-	"github.com/amp-labs/connectors/providers/zendesksupport"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/zendesksupport/metadata"
 	"github.com/amp-labs/connectors/scripts/openapi/zendesksupport/metadata/helpcenter"
 	"github.com/amp-labs/connectors/scripts/openapi/zendesksupport/metadata/support"
@@ -20,8 +20,8 @@ func main() {
 	registry := datautils.NamedLists[string]{}
 	lists := datautils.IndexedLists[common.ModuleID, metadatadef.ExtendedSchema[metadata.CustomProperties]]{}
 
-	lists.Add(zendesksupport.ModuleTicketing, support.Objects()...)
-	lists.Add(zendesksupport.ModuleHelpCenter, helpcenter.Objects()...)
+	lists.Add(common.ModuleID(providers.ModuleZendeskTicketing), support.Objects()...)
+	lists.Add(common.ModuleID(providers.ModuleZendeskHelpCenter), helpcenter.Objects()...)
 
 	for module, objects := range lists {
 		for _, object := range objects {
