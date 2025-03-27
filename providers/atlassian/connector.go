@@ -7,7 +7,6 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
-	"github.com/amp-labs/connectors/common/substitutions/catalogreplacer"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers"
 )
@@ -22,8 +21,7 @@ type Connector struct {
 	// workspace is used to find cloud ID.
 	workspace string
 	cloudId   string
-
-	*providers.ProviderInfo
+	BaseURL   string
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
@@ -47,12 +45,18 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	authMetadata := NewAuthMetadataVars(params.Metadata.Map)
 	conn.cloudId = authMetadata.CloudId
 
-	if err := conn.setProviderInfo(); err != nil {
+	providerInfo, err := providers.ReadInfo(conn.Provider(), &params.Workspace)
+	if err != nil {
 		return nil, err
 	}
 
+	moduleInfo := providerInfo.ReadModuleInfo(params.Module.Selection.ID)
+	// TODO use module info to create URL.
+	_ = moduleInfo
+	// TODO make use of BASE URL from MODULE
+
 	// connector and its client must mirror base url and provide its own error parser
-	conn.setBaseURL(conn.BaseURL)
+	conn.setBaseURL(providerInfo.BaseURL)
 	conn.Client.HTTPClient.ErrorHandler = interpreter.ErrorHandler{
 		JSON: interpreter.NewFaultyResponder(errorFormats, nil),
 	}.Handle
@@ -87,6 +91,7 @@ func (c *Connector) getJiraRestApiURL(arg string) (*urlbuilder.URL, error) {
 // URL allows to get list of sites associated with auth token.
 // https://developer.atlassian.com/cloud/confluence/oauth-2-3lo-apps/#3-1-get-the-cloudid-for-your-site
 func (c *Connector) getAccessibleSitesURL() (*urlbuilder.URL, error) {
+	// TODO what URL to choose??? Root module?
 	return urlbuilder.New(c.BaseURL, "oauth/token/accessible-resources")
 }
 
@@ -101,34 +106,4 @@ func (c *Connector) getCloudId() (string, error) {
 	}
 
 	return c.cloudId, nil
-}
-
-func (c *Connector) setProviderInfo() error {
-	// Read provider info
-	providerInfo, err := providers.ReadInfo(c.Provider())
-	if err != nil {
-		return err
-	}
-
-	c.ProviderInfo = providerInfo
-
-	// When the module is Atlassian Connect, the base URL is different, so we need to override it.
-	// TODO: Replace options with substitution map in the future to avoid having to know
-	// which values need to be substituted.
-	if c.Module.ID == common.ModuleID(providers.ModuleAtlassianJiraConnect) {
-		vars := []catalogreplacer.CatalogVariable{
-			&paramsbuilder.Workspace{Name: c.workspace},
-		}
-
-		override := &providers.ProviderInfo{
-			BaseURL: "https://{{.workspace}}.atlassian.net",
-		}
-
-		// Mutates the provider info with the overrides, and substitutes any variables.
-		if err := c.ProviderInfo.Override(override).SubstituteWith(vars); err != nil {
-			return err
-		}
-	}
-
-	return nil
 }
