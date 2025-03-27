@@ -169,7 +169,7 @@ func (i *ProviderInfo) GetOption(key string) (string, bool) {
 
 // UnauthorizedHandler is a function that is called when an unauthorized response is received.
 // The handler can be used to refresh the token or to perform other actions. The client is
-// included so you can make additionaadditionall requests if needed, but be careful not to create an
+// included so you can make additional requests if needed, but be careful not to create an
 // infinite loop (hint, use the request's context to attach a counter to avoid this possibility).
 type UnauthorizedHandler func(client common.AuthenticatedHTTPClient, event *UnauthorizedEvent) (*http.Response, error)
 
