@@ -2,6 +2,11 @@ package providers
 
 const Hubspot Provider = "hubspot"
 
+const (
+	// ModuleHubspotCRM is the module used for accessing standard CRM objects.
+	ModuleHubspotCRM string = "CRM"
+)
+
 func init() {
 	// Hubspot configuration
 	SetInfo(Hubspot, ProviderInfo{
@@ -26,6 +31,17 @@ func init() {
 			Read:      true,
 			Subscribe: false,
 			Write:     true,
+		},
+		Modules: &ModuleInfo{
+			ModuleHubspotCRM: {
+				BaseURL:     "https://api.hubapi.com/crm/v3",
+				DisplayName: "CRM",
+				Support: ModuleSupport{
+					Read:      true,
+					Subscribe: false,
+					Write:     true,
+				},
+			},
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{

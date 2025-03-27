@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/hubspot"
@@ -17,7 +18,7 @@ func GetHubspotConnector(ctx context.Context) *hubspot.Connector {
 
 	conn, err := hubspot.NewConnector(
 		hubspot.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
-		hubspot.WithModule(hubspot.ModuleCRM))
+		hubspot.WithModule(common.ModuleID(providers.ModuleHubspotCRM)))
 	if err != nil {
 		utils.Fail("error creating hubspot connector", "error", err)
 	}
