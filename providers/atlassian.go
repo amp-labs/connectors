@@ -25,7 +25,7 @@ func init() {
 		PostAuthInfoNeeded: true,
 		Modules: &ModuleInfo{
 			ModuleAtlassianJira: {
-				BaseURL:     "https://api.atlassian.com/ex/jira/{{.cloud_id}}/rest/api/3",
+				BaseURL:     "https://api.atlassian.com/ex/jira/{{.cloudId}}/rest/api/3",
 				DisplayName: "Jira",
 				Support: ModuleSupport{
 					Read:      true,
