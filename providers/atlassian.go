@@ -2,6 +2,13 @@ package providers
 
 const Atlassian Provider = "atlassian"
 
+const (
+	// ModuleAtlassianJira is the module used for listing Jira issues.
+	ModuleAtlassianJira string = "jira"
+	// ModuleAtlassianJiraConnect is the module used for Atlassian Connect.
+	ModuleAtlassianJiraConnect string = "atlassian-connect"
+)
+
 func init() {
 	// Atlassian Configuration
 	SetInfo(Atlassian, ProviderInfo{
@@ -16,6 +23,26 @@ func init() {
 			ExplicitWorkspaceRequired: true, // Needed for GetPostAuthInfo call
 		},
 		PostAuthInfoNeeded: true,
+		Modules: &ModuleInfo{
+			ModuleAtlassianJira: {
+				BaseURL:     "https://api.atlassian.com/ex/jira/{{.cloud_id}}/rest/api/3",
+				DisplayName: "Jira",
+				Support: ModuleSupport{
+					Read:      true,
+					Subscribe: false,
+					Write:     true,
+				},
+			},
+			ModuleAtlassianJiraConnect: {
+				BaseURL:     "https://{{.workspace}}.atlassian.net/rest/api/3",
+				DisplayName: "Atlassian Connect",
+				Support: ModuleSupport{
+					Read:      true,
+					Subscribe: false,
+					Write:     true,
+				},
+			},
+		},
 		//nolint:lll
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
