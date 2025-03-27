@@ -1,0 +1,352 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "/api/v4",
+      "objects": {
+        "applications": {
+          "displayName": "Applications",
+          "path": "/applications",
+          "responseKey": "",
+          "fields": {
+            "application_id": "application_id",
+            "application_name": "application_name",
+            "callback_url": "callback_url",
+            "confidential": "confidential",
+            "id": "id"
+          }
+        },
+        "batched_background_migrations": {
+          "displayName": "Batched Background Migrations",
+          "path": "/admin/batched_background_migrations",
+          "responseKey": "",
+          "fields": {
+            "column_name": "column_name",
+            "created_at": "created_at",
+            "id": "id",
+            "job_class_name": "job_class_name",
+            "progress": "progress",
+            "status": "status",
+            "table_name": "table_name"
+          }
+        },
+        "bulk_imports": {
+          "displayName": "Bulk Imports",
+          "path": "/bulk_imports",
+          "responseKey": "",
+          "fields": {
+            "created_at": "created_at",
+            "has_failures": "has_failures",
+            "id": "id",
+            "source_type": "source_type",
+            "status": "status",
+            "updated_at": "updated_at"
+          }
+        },
+        "clusters": {
+          "displayName": "Clusters",
+          "path": "/admin/clusters",
+          "responseKey": "",
+          "fields": {
+            "cluster_type": "cluster_type",
+            "created_at": "created_at",
+            "domain": "domain",
+            "enabled": "enabled",
+            "environment_scope": "environment_scope",
+            "id": "id",
+            "managed": "managed",
+            "management_project": "management_project",
+            "name": "name",
+            "namespace_per_environment": "namespace_per_environment",
+            "platform_kubernetes": "platform_kubernetes",
+            "platform_type": "platform_type",
+            "provider_gcp": "provider_gcp",
+            "provider_type": "provider_type",
+            "user": "user"
+          }
+        },
+        "definitions": {
+          "displayName": "Definitions",
+          "path": "/features/definitions",
+          "responseKey": "",
+          "fields": {
+            "default_enabled": "default_enabled",
+            "feature_issue_url": "feature_issue_url",
+            "group": "group",
+            "introduced_by_url": "introduced_by_url",
+            "log_state_changes": "log_state_changes",
+            "milestone": "milestone",
+            "name": "name",
+            "rollout_issue_url": "rollout_issue_url",
+            "type": "type"
+          }
+        },
+        "deploy_keys": {
+          "displayName": "Deploy Keys",
+          "path": "/deploy_keys",
+          "responseKey": "",
+          "fields": {
+            "created_at": "created_at",
+            "expires_at": "expires_at",
+            "fingerprint": "fingerprint",
+            "fingerprint_sha256": "fingerprint_sha256",
+            "id": "id",
+            "key": "key",
+            "projects_with_readonly_access": "projects_with_readonly_access",
+            "projects_with_write_access": "projects_with_write_access",
+            "title": "title",
+            "usage_type": "usage_type"
+          }
+        },
+        "deploy_tokens": {
+          "displayName": "Deploy Tokens",
+          "path": "/deploy_tokens",
+          "responseKey": "",
+          "fields": {
+            "expired": "expired",
+            "expires_at": "expires_at",
+            "id": "id",
+            "name": "name",
+            "revoked": "revoked",
+            "scopes": "scopes",
+            "username": "username"
+          }
+        },
+        "entities": {
+          "displayName": "Entities",
+          "path": "/bulk_imports/entities",
+          "responseKey": "",
+          "fields": {
+            "bulk_import_id": "bulk_import_id",
+            "created_at": "created_at",
+            "destination_full_path": "destination_full_path",
+            "destination_name": "destination_name",
+            "destination_namespace": "destination_namespace",
+            "destination_slug": "destination_slug",
+            "entity_type": "entity_type",
+            "failures": "failures",
+            "has_failures": "has_failures",
+            "id": "id",
+            "migrate_projects": "migrate_projects",
+            "namespace_id": "namespace_id",
+            "parent_id": "parent_id",
+            "project_id": "project_id",
+            "source_full_path": "source_full_path",
+            "stats": "stats",
+            "status": "status",
+            "updated_at": "updated_at"
+          }
+        },
+        "features": {
+          "displayName": "Features",
+          "path": "/features",
+          "responseKey": "",
+          "fields": {
+            "definition": "definition",
+            "gates": "gates",
+            "name": "name",
+            "state": "state"
+          }
+        },
+        "groups": {
+          "displayName": "Groups",
+          "path": "/groups",
+          "responseKey": "",
+          "fields": {
+            "auto_devops_enabled": "auto_devops_enabled",
+            "avatar_url": "avatar_url",
+            "created_at": "created_at",
+            "custom_attributes": "custom_attributes",
+            "default_branch_protection": "default_branch_protection",
+            "default_branch_protection_defaults": "default_branch_protection_defaults",
+            "description": "description",
+            "duo_features_enabled": "duo_features_enabled",
+            "emails_disabled": "emails_disabled",
+            "emails_enabled": "emails_enabled",
+            "file_template_project_id": "file_template_project_id",
+            "full_name": "full_name",
+            "full_path": "full_path",
+            "id": "id",
+            "ldap_access": "ldap_access",
+            "ldap_cn": "ldap_cn",
+            "ldap_group_links": "ldap_group_links",
+            "lfs_enabled": "lfs_enabled",
+            "lock_duo_features_enabled": "lock_duo_features_enabled",
+            "lock_math_rendering_limits_enabled": "lock_math_rendering_limits_enabled",
+            "marked_for_deletion_on": "marked_for_deletion_on",
+            "math_rendering_limits_enabled": "math_rendering_limits_enabled",
+            "mentions_disabled": "mentions_disabled",
+            "name": "name",
+            "organization_id": "organization_id",
+            "parent_id": "parent_id",
+            "path": "path",
+            "project_creation_level": "project_creation_level",
+            "repository_storage": "repository_storage",
+            "request_access_enabled": "request_access_enabled",
+            "require_two_factor_authentication": "require_two_factor_authentication",
+            "saml_group_links": "saml_group_links",
+            "share_with_group_lock": "share_with_group_lock",
+            "shared_runners_setting": "shared_runners_setting",
+            "statistics": "statistics",
+            "subgroup_creation_level": "subgroup_creation_level",
+            "two_factor_grace_period": "two_factor_grace_period",
+            "visibility": "visibility",
+            "web_url": "web_url",
+            "wiki_access_level": "wiki_access_level"
+          }
+        },
+        "hooks": {
+          "displayName": "Hooks",
+          "path": "/hooks",
+          "responseKey": "",
+          "fields": {
+            "alert_status": "alert_status",
+            "created_at": "created_at",
+            "custom_webhook_template": "custom_webhook_template",
+            "disabled_until": "disabled_until",
+            "enable_ssl_verification": "enable_ssl_verification",
+            "id": "id",
+            "merge_requests_events": "merge_requests_events",
+            "push_events": "push_events",
+            "repository_update_events": "repository_update_events",
+            "tag_push_events": "tag_push_events",
+            "url": "url",
+            "url_variables": "url_variables"
+          }
+        },
+        "namespaces": {
+          "displayName": "Namespaces",
+          "path": "/namespaces",
+          "responseKey": "",
+          "fields": {
+            "additional_purchased_storage_ends_on": "additional_purchased_storage_ends_on",
+            "additional_purchased_storage_size": "additional_purchased_storage_size",
+            "avatar_url": "avatar_url",
+            "billable_members_count": "billable_members_count",
+            "end_date": "end_date",
+            "extra_shared_runners_minutes_limit": "extra_shared_runners_minutes_limit",
+            "full_path": "full_path",
+            "id": "id",
+            "kind": "kind",
+            "max_seats_used": "max_seats_used",
+            "max_seats_used_changed_at": "max_seats_used_changed_at",
+            "members_count_with_descendants": "members_count_with_descendants",
+            "name": "name",
+            "parent_id": "parent_id",
+            "path": "path",
+            "plan": "plan",
+            "projects_count": "projects_count",
+            "root_repository_size": "root_repository_size",
+            "seats_in_use": "seats_in_use",
+            "shared_runners_minutes_limit": "shared_runners_minutes_limit",
+            "trial": "trial",
+            "trial_ends_on": "trial_ends_on",
+            "web_url": "web_url"
+          }
+        },
+        "project_repository_storage_moves": {
+          "displayName": "Project Repository Storage Moves",
+          "path": "/project_repository_storage_moves",
+          "responseKey": "",
+          "fields": {
+            "created_at": "created_at",
+            "destination_storage_name": "destination_storage_name",
+            "error_message": "error_message",
+            "id": "id",
+            "project": "project",
+            "source_storage_name": "source_storage_name",
+            "state": "state"
+          }
+        },
+        "projects": {
+          "displayName": "Projects",
+          "path": "/projects",
+          "responseKey": "",
+          "fields": {
+            "avatar_url": "avatar_url",
+            "created_at": "created_at",
+            "custom_attributes": "custom_attributes",
+            "default_branch": "default_branch",
+            "description": "description",
+            "forks_count": "forks_count",
+            "http_url_to_repo": "http_url_to_repo",
+            "id": "id",
+            "last_activity_at": "last_activity_at",
+            "license": "license",
+            "license_url": "license_url",
+            "name": "name",
+            "name_with_namespace": "name_with_namespace",
+            "namespace": "namespace",
+            "path": "path",
+            "path_with_namespace": "path_with_namespace",
+            "readme_url": "readme_url",
+            "repository_storage": "repository_storage",
+            "ssh_url_to_repo": "ssh_url_to_repo",
+            "star_count": "star_count",
+            "tag_list": "tag_list",
+            "topics": "topics",
+            "web_url": "web_url"
+          }
+        },
+        "public": {
+          "displayName": "Public",
+          "path": "/snippets/public",
+          "responseKey": "",
+          "fields": {
+            "author": "author",
+            "created_at": "created_at",
+            "description": "description",
+            "file_name": "file_name",
+            "files": "files",
+            "http_url_to_repo": "http_url_to_repo",
+            "id": "id",
+            "project_id": "project_id",
+            "raw_url": "raw_url",
+            "repository_storage": "repository_storage",
+            "ssh_url_to_repo": "ssh_url_to_repo",
+            "title": "title",
+            "updated_at": "updated_at",
+            "visibility": "visibility",
+            "web_url": "web_url"
+          }
+        },
+        "snippet_repository_storage_moves": {
+          "displayName": "Snippet Repository Storage Moves",
+          "path": "/snippet_repository_storage_moves",
+          "responseKey": "",
+          "fields": {
+            "created_at": "created_at",
+            "destination_storage_name": "destination_storage_name",
+            "error_message": "error_message",
+            "id": "id",
+            "snippet": "snippet",
+            "source_storage_name": "source_storage_name",
+            "state": "state"
+          }
+        },
+        "snippets": {
+          "displayName": "Snippets",
+          "path": "/snippets",
+          "responseKey": "",
+          "fields": {
+            "author": "author",
+            "created_at": "created_at",
+            "description": "description",
+            "file_name": "file_name",
+            "files": "files",
+            "http_url_to_repo": "http_url_to_repo",
+            "id": "id",
+            "project_id": "project_id",
+            "raw_url": "raw_url",
+            "repository_storage": "repository_storage",
+            "ssh_url_to_repo": "ssh_url_to_repo",
+            "title": "title",
+            "updated_at": "updated_at",
+            "visibility": "visibility",
+            "web_url": "web_url"
+          }
+        }
+      }
+    }
+  }
+}
