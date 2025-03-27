@@ -8,7 +8,7 @@ import (
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/metadatadef"
 	"github.com/amp-labs/connectors/internal/staticschema"
-	"github.com/amp-labs/connectors/providers/keap"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/keap/metadata"
 	keapv1 "github.com/amp-labs/connectors/scripts/openapi/keap/metadata/v1"
 	keapv2 "github.com/amp-labs/connectors/scripts/openapi/keap/metadata/v2"
@@ -20,8 +20,8 @@ func main() {
 	registry := datautils.NamedLists[string]{}
 	lists := datautils.IndexedLists[common.ModuleID, metadatadef.Schema]{}
 
-	lists.Add(keap.ModuleV1, keapv1.Objects()...)
-	lists.Add(keap.ModuleV2, keapv2.Objects()...)
+	lists.Add(common.ModuleID(providers.ModuleKeapV1), keapv1.Objects()...)
+	lists.Add(common.ModuleID(providers.ModuleKeapV2), keapv2.Objects()...)
 
 	for module, objects := range lists {
 		for _, object := range objects {
