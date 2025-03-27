@@ -167,6 +167,27 @@ func (i *ProviderInfo) GetOption(key string) (string, bool) {
 	return val, ok
 }
 
+func (i *ProviderInfo) ReadModuleInfo(moduleID common.ModuleID) ProviderModuleInfo {
+	rootModule := ProviderModuleInfo{
+		BaseURL: i.BaseURL,
+		Support: ModuleSupport{},
+	}
+
+	if i.Modules == nil {
+		// Default to provider information to construct root module.
+		return rootModule
+	}
+
+	modules := *i.Modules
+
+	module, ok := modules[string(moduleID)]
+	if !ok {
+		return rootModule
+	}
+
+	return module
+}
+
 // BasicParams is the parameters to create a basic auth client.
 type BasicParams struct {
 	User string
