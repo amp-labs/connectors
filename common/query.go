@@ -99,27 +99,27 @@ type queryParamAuthClient struct {
 
 func (c *queryParamAuthClient) Do(req *http.Request) (*http.Response, error) {
 	// This allows us to modify query params without mutating the input
-	req = req.Clone(req.Context())
+	req2 := req.Clone(req.Context())
 
-	query := req.URL.Query()
+	query := req2.URL.Query()
 	for _, p := range c.params {
 		query.Add(p.Key, p.Value)
 	}
 
-	req.URL.RawQuery = query.Encode()
+	req2.URL.RawQuery = query.Encode()
 
 	modifier, hasModifier := getRequestModifier(req.Context()) //nolint:contextcheck
 	if hasModifier {
-		modifier(req)
+		modifier(req2)
 	}
 
-	rsp, err := c.client.Do(req)
+	rsp, err := c.client.Do(req2)
 	if err != nil {
 		return rsp, err
 	}
 
 	if c.debug != nil {
-		c.debug(req, cloneResponse(rsp))
+		c.debug(req2, cloneResponse(rsp))
 	}
 
 	// Certain providers return 401 when the credentials has been invalidated.
