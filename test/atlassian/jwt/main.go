@@ -18,6 +18,7 @@ func main() {
 
 	// Use conn
 	res, err := conn.Read(ctx, connectors.ReadParams{
+		ObjectName: "issues",
 		Fields: connectors.Fields("id", "project", "description"),
 		Since:  time.Now().Add(-time.Hour * 24),
 	})

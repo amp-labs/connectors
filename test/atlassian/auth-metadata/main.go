@@ -6,6 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/atlassian"
 	connTest "github.com/amp-labs/connectors/test/atlassian"
 	"github.com/amp-labs/connectors/test/utils"
@@ -19,7 +20,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := connTest.GetAtlassianConnector(ctx)
+	conn := connTest.GetAtlassianConnector(ctx, providers.ModuleAtlassianJira)
 
 	info, err := conn.GetPostAuthInfo(ctx)
 	if err != nil || info.CatalogVars == nil {
