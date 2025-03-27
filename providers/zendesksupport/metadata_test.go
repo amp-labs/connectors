@@ -7,6 +7,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 )
@@ -101,7 +102,7 @@ func TestListObjectMetadataZendeskSupportModule(t *testing.T) { // nolint:funlen
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
-				return constructTestConnector(tt.Server.URL, ModuleTicketing)
+				return constructTestConnector(tt.Server.URL, common.ModuleID(providers.ModuleZendeskTicketing))
 			})
 		})
 	}
@@ -147,7 +148,7 @@ func TestListObjectMetadataHelpCenterModule(t *testing.T) { // nolint:funlen,goc
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
-				return constructTestConnector(tt.Server.URL, ModuleHelpCenter)
+				return constructTestConnector(tt.Server.URL, common.ModuleID(providers.ModuleZendeskHelpCenter))
 			})
 		})
 	}

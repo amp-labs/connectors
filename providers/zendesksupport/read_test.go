@@ -9,6 +9,7 @@ import (
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -127,7 +128,7 @@ func TestReadZendeskSupportModule(t *testing.T) { //nolint:funlen,gocognit,cyclo
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.ReadConnector, error) {
-				return constructTestConnector(tt.Server.URL, ModuleTicketing)
+				return constructTestConnector(tt.Server.URL, common.ModuleID(providers.ModuleZendeskTicketing))
 			})
 		})
 	}
@@ -273,7 +274,7 @@ func TestIncrementalReadZendeskSupportModule(t *testing.T) { //nolint:funlen,goc
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.ReadConnector, error) {
-				return constructTestConnector(tt.Server.URL, ModuleTicketing)
+				return constructTestConnector(tt.Server.URL, common.ModuleID(providers.ModuleZendeskTicketing))
 			})
 		})
 	}
@@ -331,7 +332,7 @@ func TestReadHelpCenterModule(t *testing.T) { //nolint:funlen,gocognit,cyclop,ma
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.ReadConnector, error) {
-				return constructTestConnector(tt.Server.URL, ModuleHelpCenter)
+				return constructTestConnector(tt.Server.URL, common.ModuleID(providers.ModuleZendeskHelpCenter))
 			})
 		})
 	}

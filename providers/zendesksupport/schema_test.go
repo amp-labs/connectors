@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/zendesksupport/metadata"
 )
 
@@ -16,27 +17,27 @@ func TestLookupPaginationType(t *testing.T) {
 		want   string
 	}{
 		{
-			module: ModuleTicketing,
+			module: common.ModuleID(providers.ModuleZendeskTicketing),
 			object: "tickets",
 			want:   "cursor",
 		},
 		{
-			module: ModuleTicketing,
+			module: common.ModuleID(providers.ModuleZendeskTicketing),
 			object: "workspaces",
 			want:   "offset",
 		},
 		{
-			module: ModuleHelpCenter,
+			module: common.ModuleID(providers.ModuleZendeskHelpCenter),
 			object: "articles",
 			want:   "offset",
 		},
 		{
-			module: ModuleTicketing,
+			module: common.ModuleID(providers.ModuleZendeskTicketing),
 			object: "macros",
 			want:   "cursor",
 		},
 		{
-			module: ModuleHelpCenter,
+			module: common.ModuleID(providers.ModuleZendeskHelpCenter),
 			object: "community_posts",
 			want:   "offset",
 		},
