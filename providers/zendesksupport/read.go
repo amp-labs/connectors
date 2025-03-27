@@ -40,8 +40,6 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	)
 }
 
-const DefaultPageSizeStr = "100"
-
 func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error) {
 	if len(config.NextPage) != 0 {
 		// Next page
@@ -54,20 +52,22 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 		return nil, err
 	}
 
+	pageSizeStr := metadata.Schemas.PageSize(c.Module.ID, config.ObjectName)
 	isIncremental := metadata.Schemas.IsIncrementalRead(c.Module.ID, config.ObjectName)
+
 	if isIncremental {
 		// Incremental endpoints requires start query parameter.
 		// Even if no Since parameter is empty the start_time must be set to 0.
 		// This is effectively to say read everything since the beginning of time.
 		// https://developer.zendesk.com/api-reference/ticketing/ticket-management/incremental_exports/#start_time
 		url.WithQueryParam("start_time", formatStartTime(config))
-		url.WithQueryParam("per_page", DefaultPageSizeStr)
+		url.WithQueryParam("per_page", pageSizeStr)
 	} else {
 		// Different objects have different pagination types.
 		// https://developer.zendesk.com/api-reference/introduction/pagination/#using-offset-pagination
 		ptype := metadata.Schemas.LookupPaginationType(c.Module.ID, config.ObjectName)
 		if ptype == "cursor" {
-			url.WithQueryParam("page[size]", DefaultPageSizeStr)
+			url.WithQueryParam("page[size]", pageSizeStr)
 		}
 	}
 
