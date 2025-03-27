@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/substitutions/catalogreplacer"
 	"github.com/amp-labs/connectors/providers"
 )
@@ -20,26 +19,21 @@ type ProviderContext struct {
 func NewProviderContext(
 	provider providers.Provider,
 	module common.ModuleID,
-	workspace string,
-	metadata map[string]string,
+	catalogVars []catalogreplacer.CatalogVariable,
 ) (*ProviderContext, error) {
-	pctx := &ProviderContext{provider: provider}
-
-	if metadata == nil {
-		metadata = make(map[string]string)
+	pctx := &ProviderContext{
+		provider: provider,
+		moduleID: module,
 	}
 
-	metadata[catalogreplacer.VariableWorkspace] = workspace
+	var err error
 
-	providerInfo, err := providers.ReadInfo(provider, paramsbuilder.NewCatalogVariables(metadata)...)
+	pctx.providerInfo, err = providers.ReadInfo(provider, catalogVars...)
 	if err != nil {
 		return nil, err
 	}
 
-	pctx.moduleID = module
-	pctx.providerInfo = providerInfo
-
-	pctx.moduleInfo, err = providerInfo.ReadModuleInfo(module)
+	pctx.moduleInfo, err = pctx.providerInfo.ReadModuleInfo(module)
 	if err != nil {
 		return nil, err
 	}

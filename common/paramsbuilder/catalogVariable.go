@@ -1,8 +1,6 @@
 package paramsbuilder
 
 import (
-	"log/slog"
-
 	"github.com/amp-labs/connectors/common/substitutions"
 	"github.com/amp-labs/connectors/common/substitutions/catalogreplacer"
 )
@@ -16,14 +14,23 @@ func NewCatalogVariables[V substitutions.RegistryValue](
 
 	for key, value := range registry {
 		name := substitutions.RegistryValueToString(value)
-
-		switch key {
-		case catalogreplacer.VariableWorkspace:
-			result = append(result, &Workspace{Name: name})
-		default:
-			slog.Info("unknown substitution SubstitutionPlan for catalog", key, value)
-		}
+		result = append(result, createCatalogVar(key, name))
 	}
 
 	return result
+}
+
+// nolint:ireturn
+func createCatalogVar(key string, value string) catalogreplacer.CatalogVariable {
+	switch key {
+	case catalogreplacer.VariableWorkspace:
+		return &Workspace{Name: value}
+	default:
+		return catalogreplacer.CustomCatalogVariable{
+			Plan: catalogreplacer.SubstitutionPlan{
+				From: key,
+				To:   value,
+			},
+		}
+	}
 }

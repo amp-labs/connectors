@@ -17,19 +17,20 @@ func TestNewCatalogVariables(t *testing.T) {
 		expected []catalogreplacer.CatalogVariable
 	}{
 		{
-			name: "Unknown substitutions are not translated to Variables",
+			name: "Unknown substitution is translated into Catalog Variable",
 			input: substitutions.Registry[string]{
-				"insect":  "butterfly",
-				"fish":    "catfish",
-				"nothing": "",
-				"":        "something",
+				"insect": "butterfly",
 			},
-			expected: []catalogreplacer.CatalogVariable{},
+			expected: []catalogreplacer.CatalogVariable{
+				catalogreplacer.CustomCatalogVariable{Plan: catalogreplacer.SubstitutionPlan{
+					From: "insect",
+					To:   "butterfly",
+				}},
+			},
 		},
 		{
-			name: "Only workspace Variable is captured",
+			name: "Workspace is turned into Catalog Variable",
 			input: substitutions.Registry[string]{
-				"insect":    "butterfly",
 				"workspace": "office",
 			},
 			expected: []catalogreplacer.CatalogVariable{
