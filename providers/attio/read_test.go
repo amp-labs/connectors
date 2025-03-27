@@ -133,7 +133,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:  "Read list of all companies",
-			Input: common.ReadParams{ObjectName: "companies", Fields: connectors.Fields(""), Since: time.Date(2025, 3, 1, 0, 0, 0, 0, time.UTC), NextPage: "test?limit=50"},
+			Input: common.ReadParams{ObjectName: "companies", Fields: connectors.Fields("name"), Since: time.Date(2025, 3, 1, 0, 0, 0, 0, time.UTC), NextPage: "test?limit=50"},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseCompanies),
@@ -141,7 +141,20 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
-					Fields: map[string]any{},
+					Fields: map[string]any{
+						"name": []any{
+							map[string]any{
+								"active_from":  "2025-03-12T07:55:38.981000000Z",
+								"active_until": nil,
+								"created_by_actor": map[string]any{
+									"type": "system",
+									"id":   nil,
+								},
+								"value":          "Attio",
+								"attribute_type": "text",
+							},
+						},
+					},
 					Raw: map[string]any{
 						"id": map[string]any{
 							"workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
@@ -149,18 +162,16 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							"record_id":    "2db97cee-6c6b-4486-ae52-db8e4b6f44e9",
 						},
 						"created_at": "2025-03-12T07:55:38.327000000Z",
-						"values": map[string]any{
-							"name": []any{
-								map[string]any{
-									"active_from":  "2025-03-12T07:55:38.981000000Z",
-									"active_until": nil,
-									"created_by_actor": map[string]any{
-										"type": "system",
-										"id":   nil,
-									},
-									"value":          "Attio",
-									"attribute_type": "text",
+						"name": []any{
+							map[string]any{
+								"active_from":  "2025-03-12T07:55:38.981000000Z",
+								"active_until": nil,
+								"created_by_actor": map[string]any{
+									"type": "system",
+									"id":   nil,
 								},
+								"value":          "Attio",
+								"attribute_type": "text",
 							},
 						},
 					},

@@ -144,8 +144,8 @@ func testReadNotes(ctx context.Context, conn *ap.Connector) error {
 func testReadCompanies(ctx context.Context, conn *ap.Connector) error {
 	params := common.ReadParams{
 		ObjectName: "companies",
-		Fields:     connectors.Fields(""),
-		Since:      time.Date(2025, 3, 1, 0, 0, 0, 0, time.UTC),
+		Fields:     connectors.Fields("name"),
+		Since:      time.Date(2025, 3, 18, 0, 0, 0, 0, time.UTC),
 	}
 
 	res, err := conn.Read(ctx, params)

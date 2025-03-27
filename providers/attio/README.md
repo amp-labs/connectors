@@ -32,6 +32,6 @@ Used endpoint to get fields: https://developers.attio.com/reference/get_v2-targe
 For non-standard objects, directly used the object's endpoint.
 
 ## Read Functions
-For standard/custom objects, a separate read function like "readStandardOrCustomObject" is used, which calls the endpoint to get the response: https://developers.attio.com/reference/post_v2-objects-object-records-query
+For standard/custom objects, a separate read function "readStandardOrCustomObject" is used, which calls the endpoint to get the response: https://developers.attio.com/reference/post_v2-objects-object-records-query
 
-For non-standard object, a separate read function like "readGeneralAPI" is used and directly used the object's endpoint to get the response.
+For non-standard object, a separate read function "readGeneralAPI" is used and directly used the object's endpoint to get the response.
