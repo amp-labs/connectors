@@ -11,6 +11,7 @@ import (
 type ProviderContext struct {
 	provider     providers.Provider
 	providerInfo *providers.ProviderInfo
+	moduleInfo   providers.ProviderModuleInfo
 	module       common.ModuleID
 }
 
@@ -35,6 +36,7 @@ func NewProviderContext(
 	}
 
 	pctx.providerInfo = providerInfo
+	pctx.moduleInfo = providerInfo.ReadModuleInfo(module)
 	pctx.module = module
 
 	return pctx, nil
