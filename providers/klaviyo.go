@@ -2,6 +2,12 @@ package providers
 
 const Klaviyo Provider = "klaviyo"
 
+const (
+	// ModuleKlaviyo2024Oct15 is the latest stable version of API as of the date of writing.
+	// https://developers.klaviyo.com/en/reference/api_overview
+	ModuleKlaviyo2024Oct15 string = "2024-10-15"
+)
+
 func init() {
 	// Klaviyo configuration
 	SetInfo(Klaviyo, ProviderInfo{
@@ -29,6 +35,17 @@ func init() {
 			Read:      true,
 			Subscribe: false,
 			Write:     true,
+		},
+		Modules: &ModuleInfo{
+			ModuleKlaviyo2024Oct15: {
+				BaseURL:     "https://a.klaviyo.com",
+				DisplayName: "Version 2024-10-15",
+				Support: ModuleSupport{
+					Read:      true,
+					Subscribe: false,
+					Write:     true,
+				},
+			},
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
