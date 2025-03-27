@@ -19,9 +19,10 @@ type Connector struct {
 	Module common.Module
 
 	// workspace is used to find cloud ID.
-	workspace string
-	cloudId   string
-	BaseURL   string
+	workspace   string
+	cloudId     string
+	BaseURL     string
+	urlTemplate urlbuilder.Template
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
@@ -51,8 +52,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	}
 
 	moduleInfo := providerInfo.ReadModuleInfo(params.Module.Selection.ID)
-	// TODO use module info to create URL.
-	_ = moduleInfo
+	conn.urlTemplate = moduleInfo.URL(&params.Workspace)
 	// TODO make use of BASE URL from MODULE
 
 	// connector and its client must mirror base url and provide its own error parser

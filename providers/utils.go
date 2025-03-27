@@ -9,6 +9,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/substitutions/catalogreplacer"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/go-playground/validator"
 	"golang.org/x/oauth2"
@@ -186,6 +187,13 @@ func (i *ProviderInfo) ReadModuleInfo(moduleID common.ModuleID) ProviderModuleIn
 	}
 
 	return module
+}
+
+func (i ProviderModuleInfo) URL(vars ...catalogreplacer.CatalogVariable) urlbuilder.Template {
+	// TODO form a URL template.
+	// It is possible that URL string will still contain variadic options.
+	// Read/Write operations would resolve template and get urlbuilder.URL.
+	return urlbuilder.Template{}
 }
 
 // BasicParams is the parameters to create a basic auth client.
