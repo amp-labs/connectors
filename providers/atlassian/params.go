@@ -53,7 +53,7 @@ func WithWorkspace(workspaceRef string) Option {
 // WithModule sets the Atlassian API module to use for the connector. It's required.
 func WithModule(module common.ModuleID) Option {
 	return func(params *parameters) {
-		params.WithModule(module, supportedModules, ModuleEmpty)
+		params.WithModule(module, supportedModules, common.ModuleRoot)
 	}
 }
 
