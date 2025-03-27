@@ -20,7 +20,7 @@ Attio API version : v2
 
 The objects mentioned above, such as People, Companies, Users, Deals, and Workspaces, are Attio standard objects. The remaining objects, like Lists, Workspace members, Tasks, and Notes, are Attio non-standard objects.
 
-To differentiate between the two types in the script, introduce a variable for non-standard objects like 'supportAttioGeneralApi' and for standard/custom objects, use the variable 'isAttioStandardOrCustomObj.' Here, 'standard' isn't a term we commonly use, but rather a concept defined by Attio itself.
+To differentiate between the two types in the script, introduce a variable for non-standard objects like 'supportAttioApi' and for standard/custom objects, use the variable 'isAttioStandardOrCustomObj.' Here, 'standard' isn't a term we commonly use, but rather a concept defined by Attio itself.
 
 Attio API Reference: https://developers.attio.com/reference/
 
