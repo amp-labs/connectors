@@ -2,13 +2,16 @@ package marketo
 
 import (
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers"
 )
 
 const (
-	// ModuleAssets is the module/API used for accessing assets objects.
-	ModuleAssets common.ModuleID = "assets"
-	// ModuleLeads is the module/API used for accessing leads objects.
-	ModuleLeads common.ModuleID = "leads"
+	// ModuleAssets
+	// Deprecated.
+	ModuleAssets = common.ModuleID(providers.ModuleMarketoAssets)
+	// ModuleLeads
+	// Deprecated.
+	ModuleLeads = common.ModuleID(providers.ModuleMarketoLeads)
 )
 
 // supportedModules represents currently working and supported modules within the Marketo connector.
@@ -19,13 +22,13 @@ var supportedModules = common.Modules{ // nolint: gochecknoglobals
 		Label:   "",
 		Version: "",
 	},
-	ModuleAssets: {
-		ID:      ModuleAssets,
+	common.ModuleID(providers.ModuleMarketoAssets): {
+		ID:      common.ModuleID(providers.ModuleMarketoAssets),
 		Label:   "asset",
 		Version: "v1",
 	},
-	ModuleLeads: {
-		ID:      ModuleLeads,
+	common.ModuleID(providers.ModuleMarketoLeads): {
+		ID:      common.ModuleID(providers.ModuleMarketoLeads),
 		Label:   "",
 		Version: "v1",
 	},
