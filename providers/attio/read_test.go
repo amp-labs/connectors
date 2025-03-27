@@ -108,7 +108,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:  "Read list of all tasks",
-			Input: common.ReadParams{ObjectName: "tasks", Fields: connectors.Fields(""), NextPage: "test?limit=50"},
+			Input: common.ReadParams{ObjectName: "tasks", Fields: connectors.Fields(""), NextPage: "test?limit=500"},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseTasks),
@@ -126,14 +126,14 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					},
 				},
 				},
-				NextPage: "test?limit=50&offset=50",
+				NextPage: "test?limit=500&offset=500",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
 		},
 		{
 			Name:  "Read list of all companies",
-			Input: common.ReadParams{ObjectName: "companies", Fields: connectors.Fields("name"), Since: time.Date(2025, 3, 1, 0, 0, 0, 0, time.UTC), NextPage: "test?limit=50"},
+			Input: common.ReadParams{ObjectName: "companies", Fields: connectors.Fields("name"), Since: time.Date(2025, 3, 1, 0, 0, 0, 0, time.UTC), NextPage: "test?limit=500"},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseCompanies),
@@ -177,7 +177,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					},
 				},
 				},
-				NextPage: "50",
+				NextPage: "500",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
