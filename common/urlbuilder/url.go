@@ -33,7 +33,7 @@ func New(base string, path ...string) (*URL, error) {
 	u := &URL{
 		delegate:           delegate,
 		queryParams:        values,
-		encodingExceptions: nil,
+		encodingExceptions: make(map[string]string),
 	}
 	u.AddPath(path...)
 
@@ -77,7 +77,9 @@ func (u *URL) RemoveQueryParam(name string) {
 }
 
 func (u *URL) AddEncodingExceptions(exceptions map[string]string) {
-	u.encodingExceptions = exceptions
+	for key, value := range exceptions {
+		u.encodingExceptions[key] = value
+	}
 }
 
 // ToURL relies on String method.

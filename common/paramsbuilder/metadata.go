@@ -3,6 +3,8 @@ package paramsbuilder
 import (
 	"errors"
 	"fmt"
+
+	"github.com/amp-labs/connectors/common/substitutions/catalogreplacer"
 )
 
 var (
@@ -19,14 +21,14 @@ type Metadata struct {
 	requiredKeys []string
 }
 
-func (p *Metadata) ValidateParams() error {
-	if len(p.requiredKeys) == 0 {
+func (m *Metadata) ValidateParams() error {
+	if len(m.requiredKeys) == 0 {
 		// if metadata is used as a parameter it must have at least one required key.
 		return ErrIncorrectMetadataParamUsage
 	}
 
-	for _, key := range p.requiredKeys {
-		value, ok := p.Map[key]
+	for _, key := range m.requiredKeys {
+		value, ok := m.Map[key]
 		if !ok {
 			return fmt.Errorf("%w, missing key: %v", ErrMissingMetadata, key)
 		}
@@ -39,7 +41,22 @@ func (p *Metadata) ValidateParams() error {
 	return nil
 }
 
-func (p *Metadata) WithMetadata(metadata map[string]string, requiredKeys []string) {
-	p.Map = metadata
-	p.requiredKeys = requiredKeys
+func (m *Metadata) WithMetadata(metadata map[string]string, requiredKeys []string) {
+	m.Map = metadata
+	m.requiredKeys = requiredKeys
+}
+
+func (m *Metadata) GetCatalogVars() []catalogreplacer.CustomCatalogVariable {
+	result := make([]catalogreplacer.CustomCatalogVariable, 0)
+
+	for key, value := range m.Map {
+		result = append(result, catalogreplacer.CustomCatalogVariable{
+			Plan: catalogreplacer.SubstitutionPlan{
+				From: key,
+				To:   value,
+			},
+		})
+	}
+
+	return result
 }
