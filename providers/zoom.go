@@ -2,6 +2,11 @@ package providers
 
 const Zoom Provider = "zoom"
 
+const (
+	ModuleZoomUser    string = "user"
+	ModuleZoomMeeting string = "meeting"
+)
+
 func init() {
 	// Zoom configuration
 	SetInfo(Zoom, ProviderInfo{
@@ -16,6 +21,26 @@ func init() {
 			GrantType:                 AuthorizationCode,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
+			},
+		},
+		Modules: &ModuleInfo{
+			ModuleZoomUser: {
+				BaseURL:     "https://api.zoom.us/v2",
+				DisplayName: "User",
+				Support: ModuleSupport{
+					Read:      true,
+					Subscribe: false,
+					Write:     true,
+				},
+			},
+			ModuleZoomMeeting: {
+				BaseURL:     "https://api.zoom.us/v2",
+				DisplayName: "Meeting",
+				Support: ModuleSupport{
+					Read:      true,
+					Subscribe: false,
+					Write:     true,
+				},
 			},
 		},
 		//nolint:lll
