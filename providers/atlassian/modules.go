@@ -2,13 +2,16 @@ package atlassian
 
 import (
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers"
 )
 
 const (
-	// ModuleJira is the module used for listing Jira issues.
-	ModuleJira common.ModuleID = "jira"
-	// ModuleAtlassianJiraConnect is the module used for Atlassian Connect.
-	ModuleAtlassianJiraConnect common.ModuleID = "atlassian-connect"
+	// ModuleJira
+	// Deprecated.
+	ModuleJira = common.ModuleID(providers.ModuleAtlassianJira)
+	// ModuleAtlassianJiraConnect
+	// Deprecated.
+	ModuleAtlassianJiraConnect = common.ModuleID(providers.ModuleAtlassianJiraConnect)
 )
 
 // supportedModules represents currently working and supported modules within the Atlassian connector.
@@ -19,13 +22,13 @@ var supportedModules = common.Modules{ // nolint: gochecknoglobals
 		Label:   "",
 		Version: "",
 	},
-	ModuleJira: {
-		ID:      ModuleJira,
+	common.ModuleID(providers.ModuleAtlassianJira): {
+		ID:      common.ModuleID(providers.ModuleAtlassianJira),
 		Label:   "rest/api",
 		Version: "3",
 	},
-	ModuleAtlassianJiraConnect: {
-		ID:      ModuleAtlassianJiraConnect,
+	common.ModuleID(providers.ModuleAtlassianJiraConnect): {
+		ID:      common.ModuleID(providers.ModuleAtlassianJiraConnect),
 		Label:   "rest/api",
 		Version: "3",
 	},
