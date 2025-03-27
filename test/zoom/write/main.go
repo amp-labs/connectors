@@ -8,6 +8,7 @@ import (
 	"syscall"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/zoom"
 	"github.com/amp-labs/connectors/test/utils"
 	connTest "github.com/amp-labs/connectors/test/zoom"
@@ -37,7 +38,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := connTest.GetZoomConnector(ctx, zoom.ModuleUser)
+	conn := connTest.GetZoomConnector(ctx, common.ModuleID(providers.ModuleZoomUser))
 
 	slog.Info("> TEST Create User")
 	slog.Info("Creating a user...")
