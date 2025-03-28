@@ -1,6 +1,7 @@
 package attio
 
 import (
+	"encoding/json"
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
@@ -29,10 +30,9 @@ func makeNextRecordsURL(reqLink *urlbuilder.URL, obj string) common.NextPageFunc
 				}
 			}
 
-			var nextStart int
+			nextStart, pageSize := handlePagination(previousStart, obj)
 
-			reqLink, nextStart = setLimit(previousStart, obj, reqLink)
-
+			reqLink.WithQueryParam("limit", strconv.Itoa(pageSize))
 			reqLink.WithQueryParam("offset", strconv.Itoa(nextStart))
 
 			return reqLink.String(), nil
@@ -54,10 +54,24 @@ func makeNextRecordStandardObj(body map[string]any) common.NextPageFunc {
 		previousStart := 0
 
 		if len(value) != 0 {
-			// To determine the offset value.
-			if offset, ok := body["offset"].(int); ok {
-				previousStart = offset
+			jsonData, err := json.Marshal(body)
+			if err != nil {
+				return "", err
 			}
+
+			// Parse the JSON into an *ajson.Node
+			node, err := ajson.Unmarshal(jsonData)
+			if err != nil {
+				return "", err
+			}
+
+			// To determine the offset value.
+			offset, err := jsonquery.New(node).IntegerWithDefault("offset", 0)
+			if err != nil {
+				return "", err
+			}
+
+			previousStart = int(offset)
 
 			nextStart := previousStart + DefaultPageSize
 
@@ -68,18 +82,18 @@ func makeNextRecordStandardObj(body map[string]any) common.NextPageFunc {
 	}
 }
 
-func setLimit(previousStart int, obj string, reqLink *urlbuilder.URL) (*urlbuilder.URL, int) {
-	var nextStart int
+func handlePagination(previousStart int, obj string) (int, int) {
+	var nextStart, pageSize int
 
 	if obj == objectNameNotes {
 		nextStart = previousStart + DefaultPageSizeForNotesObj
-		reqLink.WithQueryParam("limit", strconv.Itoa(DefaultPageSizeForNotesObj))
+		pageSize = DefaultPageSizeForNotesObj
 	} else {
 		nextStart = previousStart + DefaultPageSize
-		reqLink.WithQueryParam("limit", strconv.Itoa(DefaultPageSize))
+		pageSize = DefaultPageSize
 	}
 
-	return reqLink, nextStart
+	return nextStart, pageSize
 }
 
 // standard/custom object has a special field named "values" which holds all the important fields.
@@ -112,17 +126,46 @@ func setLimit(previousStart int, obj string, reqLink *urlbuilder.URL) (*urlbuild
 //	       .... (more response data will be there)
 //
 // The resulting fields for the above will be: id, created_at, record_id.
-func getStandardOrCustomObjRecords(node *ajson.Node) ([]map[string]any, error) {
-	arr, err := jsonquery.New(node).ArrayOptional("data")
-	if err != nil {
-		return nil, err
-	}
 
-	return flattenRecords(arr)
+type MarshaledData func([]map[string]any, []string) ([]common.ReadResultRow, error)
+
+func MyGetMarshaledData(resp *common.JSONHTTPResponse) MarshaledData {
+	return func(records []map[string]any, fields []string) ([]common.ReadResultRow, error) {
+		node, ok := resp.Body()
+		if !ok {
+			return nil, common.ErrEmptyJSONHTTPResponse
+		}
+
+		arr, err := jsonquery.New(node).ArrayOptional("data")
+		if err != nil {
+			return nil, err
+		}
+
+		flattenrecords, err := flattenRecords(arr)
+		if err != nil {
+			return nil, err
+		}
+
+		return Marshaled(flattenrecords, records, fields)
+	}
 }
 
-func flattenRecords(arr []*ajson.Node) ([]map[string]any, error) {
+func Marshaled(flattenRecords map[string]map[string]any, records []map[string]any, fields []string) ([]common.ReadResultRow, error) {
+	data := make([]common.ReadResultRow, len(records))
+
+	for i := 0; i < len(records); i++ {
+		FeildRecord := flattenRecords[records[i]["id"].(map[string]any)["record_id"].(string)]
+		data[i].Raw = records[i]
+		data[i].Fields = common.ExtractLowercaseFieldsFromRaw(fields, FeildRecord)
+	}
+
+	return data, nil
+}
+
+func flattenRecords(arr []*ajson.Node) (map[string]map[string]any, error) {
 	result := make([]map[string]any, len(arr))
+
+	flattenMap := make(map[string]map[string]any, 0)
 
 	for index, element := range arr {
 		const keyValuesObject = "values"
@@ -151,7 +194,9 @@ func flattenRecords(arr []*ajson.Node) ([]map[string]any, error) {
 		}
 
 		result[index] = original
+
+		flattenMap[original["id"].(map[string]any)["record_id"].(string)] = original
 	}
 
-	return result, nil
+	return flattenMap, nil
 }
