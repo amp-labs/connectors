@@ -13,8 +13,8 @@ import (
 )
 
 const (
-	workspaceMemberID = "67af46e4-a450-4fee-a1d1-39729b3af771"
-	recordId          = "ec902ed9-aab7-4347-8e26-dca240ffba08"
+	workspaceMemberID = "073f4c74-b60d-4de9-992a-0f799b5e442e"
+	recordId          = "2db97cee-6c6b-4486-ae52-db8e4b6f44e9"
 )
 
 func main() {
@@ -39,6 +39,11 @@ func MainFn() int {
 		return 1
 	}
 
+	err = testCompanies(ctx)
+	if err != nil {
+		return 1
+	}
+
 	return 0
 }
 
@@ -52,8 +57,8 @@ func testLists(ctx context.Context) error {
 		RecordData: map[string]any{
 			"data": map[string]interface{}{
 				"workspace_access": "full-access",
-				"name":             "Marketing",
-				"api_slug":         "marketing_1",
+				"name":             "Recruiting",
+				"api_slug":         "recruiting",
 				"parent_object":    "companies",
 				"workspace_member_access": []map[string]string{
 					{
@@ -83,7 +88,7 @@ func testLists(ctx context.Context) error {
 		ObjectName: "lists",
 		RecordData: map[string]any{
 			"data": map[string]interface{}{
-				"name": "Sales",
+				"name": "Recruit",
 			},
 		},
 		RecordId: writeRes.Data["id"].(map[string]interface{})["list_id"].(string),
@@ -206,6 +211,64 @@ func testTasks(ctx context.Context) error {
 	return nil
 }
 
+func testCompanies(ctx context.Context) error {
+	conn := attio.GetAttioConnector(ctx)
+
+	slog.Info("Creating the record for Companies")
+
+	writeParams := common.WriteParams{
+		ObjectName: "companies",
+		RecordData: map[string]any{
+			"data": map[string]any{
+				"values": map[string]any{
+					"name":        "FireFox",
+					"domains":     []string{"firefox.com"},
+					"description": "Firefox is a free, open-source web browser developed by the Mozilla Corporation. It's known for its speed, privacy features, and customizable options, competing with browsers like Chrome and Safari.",
+					"categories":  []string{"SAAS", "Web Services & Apps", "Internet"},
+				},
+			},
+		},
+		RecordId: "",
+	}
+
+	writeRes, err := Write(ctx, conn, writeParams)
+	if err != nil {
+		fmt.Println("ERR: ", err)
+
+		return err
+	}
+
+	if err := constructResponse(writeRes); err != nil {
+		return err
+	}
+
+	slog.Info("Updating the record for Companies")
+
+	updateParams := common.WriteParams{
+		ObjectName: "companies",
+		RecordData: map[string]any{
+			"data": map[string]interface{}{
+				"values": map[string]any{
+					"categories": []string{"SAAS"},
+				},
+			},
+		},
+		RecordId: writeRes.Data["id"].(map[string]interface{})["record_id"].(string),
+	}
+
+	writeres, err := Write(ctx, conn, updateParams)
+	if err != nil {
+		fmt.Println("ERR: ", err)
+
+		return err
+	}
+
+	if err := constructResponse(writeres); err != nil {
+		return err
+	}
+
+	return nil
+}
 func Write(ctx context.Context, conn *ap.Connector, payload common.WriteParams) (*common.WriteResult, error) {
 	res, err := conn.Write(ctx, payload)
 	if err != nil {
