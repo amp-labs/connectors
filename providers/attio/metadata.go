@@ -173,7 +173,7 @@ func (c *Connector) parseStandardOrCustomMetadata(
 
 		var defaultValues []common.FieldValue
 
-		if value.Type == "select" {
+		if value.Type == "select" || value.Type == "record-reference" || value.Type == "domain" {
 			defaultValues, err = c.getDefaultValues(ctx, value)
 			if err != nil {
 				return nil, err
