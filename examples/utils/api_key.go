@@ -12,7 +12,12 @@ type ApiKeyOptions struct {
 	ApiKey string
 }
 
-func CreateApiKeyClient(ctx context.Context, info *providers.ProviderInfo, opts ApiKeyOptions) common.AuthenticatedHTTPClient {
+//nolint:ireturn
+func CreateApiKeyClient(
+	ctx context.Context,
+	info *providers.ProviderInfo,
+	opts ApiKeyOptions,
+) common.AuthenticatedHTTPClient {
 	// Create the authenticated HTTP client.
 	httpClient, err := info.NewClient(ctx, &providers.NewClientParams{
 		// If you set this to true, the client will log all requests and responses.
@@ -20,7 +25,11 @@ func CreateApiKeyClient(ctx context.Context, info *providers.ProviderInfo, opts 
 		Debug: *debug,
 		// If you have your own HTTP client, you can use it here.
 		Client: http.DefaultClient,
-		ApiKey: opts.ApiKey,
+
+		// ApiKeyCreds represents the API key authentication credentials.
+		ApiKeyCreds: &providers.ApiKeyParams{
+			Key: opts.ApiKey,
+		},
 	})
 	if err != nil {
 		panic(err)
