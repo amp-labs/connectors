@@ -162,16 +162,18 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							"record_id":    "2db97cee-6c6b-4486-ae52-db8e4b6f44e9",
 						},
 						"created_at": "2025-03-12T07:55:38.327000000Z",
-						"name": []any{
-							map[string]any{
-								"active_from":  "2025-03-12T07:55:38.981000000Z",
-								"active_until": nil,
-								"created_by_actor": map[string]any{
-									"type": "system",
-									"id":   nil,
+						"values": map[string]any{
+							"name": []any{
+								map[string]any{
+									"active_from":  "2025-03-12T07:55:38.981000000Z",
+									"active_until": nil,
+									"created_by_actor": map[string]any{
+										"type": "system",
+										"id":   nil,
+									},
+									"value":          "Attio",
+									"attribute_type": "text",
 								},
-								"value":          "Attio",
-								"attribute_type": "text",
 							},
 						},
 					},

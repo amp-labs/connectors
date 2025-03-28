@@ -26,8 +26,10 @@ func setupAPIKeyHTTPClient(
 	ctx context.Context, prov *providers.ProviderInfo, apiKey string, debug bool,
 ) common.AuthenticatedHTTPClient {
 	client, err := prov.NewClient(ctx, &providers.NewClientParams{
-		Debug:  debug,
-		ApiKey: apiKey,
+		Debug: debug,
+		ApiKeyCreds: &providers.ApiKeyParams{
+			Key: apiKey,
+		},
 	})
 	if err != nil {
 		panic(err)

@@ -59,9 +59,9 @@ func (c *Connector) readStandardOrCustomObject(
 
 	return common.ParseResult(
 		rsp,
-		getStandardOrCustomObjRecords,
+		common.GetRecordsUnderJSONPath("data"),
 		makeNextRecordStandardObj(body),
-		common.GetMarshaledData,
+		DataMarshall(rsp),
 		config.Fields,
 	)
 }
@@ -78,12 +78,15 @@ func (c *Connector) buildURL(config common.ReadParams) (*urlbuilder.URL, error) 
 	}
 
 	if supportLimitAndOffset.Has(config.ObjectName) {
+		var pageSize int
+
 		if config.ObjectName == objectNameNotes {
-			url.WithQueryParam("limit", strconv.Itoa(DefaultPageSizeForNotesObj))
+			pageSize = DefaultPageSizeForNotesObj
 		} else {
-			url.WithQueryParam("limit", strconv.Itoa(DefaultPageSize))
+			pageSize = DefaultPageSize
 		}
 
+		url.WithQueryParam("limit", strconv.Itoa(pageSize))
 		url.WithQueryParam("offset", "0")
 	}
 
@@ -92,8 +95,6 @@ func (c *Connector) buildURL(config common.ReadParams) (*urlbuilder.URL, error) 
 
 // construct body params for filter the data using since field.
 func constructBody(config common.ReadParams) map[string]any {
-	filter := make(map[string]any)
-
 	body := map[string]any{}
 
 	if len(config.NextPage) != 0 {
@@ -106,6 +107,8 @@ func constructBody(config common.ReadParams) map[string]any {
 	}
 
 	if !config.Since.IsZero() {
+		filter := make(map[string]any)
+
 		filter["created_at"] = map[string]string{
 			"$gte": datautils.Time.FormatRFC3339inUTCWithMilliseconds(config.Since),
 		}

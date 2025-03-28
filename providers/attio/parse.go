@@ -1,6 +1,7 @@
 package attio
 
 import (
+	"encoding/json"
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
@@ -29,10 +30,9 @@ func makeNextRecordsURL(reqLink *urlbuilder.URL, obj string) common.NextPageFunc
 				}
 			}
 
-			var nextStart int
+			nextStart, pageSize := handlePagination(previousStart, obj)
 
-			reqLink, nextStart = setLimit(previousStart, obj, reqLink)
-
+			reqLink.WithQueryParam("limit", strconv.Itoa(pageSize))
 			reqLink.WithQueryParam("offset", strconv.Itoa(nextStart))
 
 			return reqLink.String(), nil
@@ -51,13 +51,25 @@ func makeNextRecordStandardObj(body map[string]any) common.NextPageFunc {
 			return "", err
 		}
 
-		previousStart := 0
-
 		if len(value) != 0 {
-			// To determine the offset value.
-			if offset, ok := body["offset"].(int); ok {
-				previousStart = offset
+			jsonData, err := json.Marshal(body)
+			if err != nil {
+				return "", err
 			}
+
+			// Parse the JSON into an *ajson.Node
+			node, err := ajson.Unmarshal(jsonData)
+			if err != nil {
+				return "", err
+			}
+
+			// To determine the offset value.
+			offset, err := jsonquery.New(node).IntegerWithDefault("offset", 0)
+			if err != nil {
+				return "", err
+			}
+
+			previousStart := int(offset)
 
 			nextStart := previousStart + DefaultPageSize
 
@@ -68,18 +80,18 @@ func makeNextRecordStandardObj(body map[string]any) common.NextPageFunc {
 	}
 }
 
-func setLimit(previousStart int, obj string, reqLink *urlbuilder.URL) (*urlbuilder.URL, int) {
-	var nextStart int
+func handlePagination(previousStart int, obj string) (int, int) {
+	var nextStart, pageSize int
 
 	if obj == objectNameNotes {
 		nextStart = previousStart + DefaultPageSizeForNotesObj
-		reqLink.WithQueryParam("limit", strconv.Itoa(DefaultPageSizeForNotesObj))
+		pageSize = DefaultPageSizeForNotesObj
 	} else {
 		nextStart = previousStart + DefaultPageSize
-		reqLink.WithQueryParam("limit", strconv.Itoa(DefaultPageSize))
+		pageSize = DefaultPageSize
 	}
 
-	return reqLink, nextStart
+	return nextStart, pageSize
 }
 
 // standard/custom object has a special field named "values" which holds all the important fields.
@@ -112,17 +124,58 @@ func setLimit(previousStart int, obj string, reqLink *urlbuilder.URL) (*urlbuild
 //	       .... (more response data will be there)
 //
 // The resulting fields for the above will be: id, created_at, record_id.
-func getStandardOrCustomObjRecords(node *ajson.Node) ([]map[string]any, error) {
-	arr, err := jsonquery.New(node).ArrayOptional("data")
-	if err != nil {
-		return nil, err
-	}
 
-	return flattenRecords(arr)
+type MarshalledData func([]map[string]any, []string) ([]common.ReadResultRow, error)
+
+func DataMarshall(resp *common.JSONHTTPResponse) MarshalledData {
+	return func(records []map[string]any, fields []string) ([]common.ReadResultRow, error) {
+		node, ok := resp.Body()
+		if !ok {
+			return nil, common.ErrEmptyJSONHTTPResponse
+		}
+
+		arr, err := jsonquery.New(node).ArrayOptional("data")
+		if err != nil {
+			return nil, err
+		}
+
+		flattenrecords, err := flattenRecords(arr)
+		if err != nil {
+			return nil, err
+		}
+
+		return getRecords(flattenrecords, records, fields)
+	}
 }
 
-func flattenRecords(arr []*ajson.Node) ([]map[string]any, error) {
+func getRecords(
+	flattenRecords map[string]map[string]any, records []map[string]any, fields []string,
+) ([]common.ReadResultRow, error) {
+	data := make([]common.ReadResultRow, len(records))
+
+	for i, record := range records { // nolint:varnamelen
+		id, ok := record["id"].(map[string]any)
+		if !ok {
+			return nil, common.ErrEmptyRecordIdResponse
+		}
+
+		recordID, ok := id["record_id"].(string)
+		if !ok {
+			return nil, common.ErrEmptyRecordIdResponse
+		}
+
+		FeildRecord := flattenRecords[recordID]
+		data[i].Raw = record
+		data[i].Fields = common.ExtractLowercaseFieldsFromRaw(fields, FeildRecord)
+	}
+
+	return data, nil
+}
+
+func flattenRecords(arr []*ajson.Node) (map[string]map[string]any, error) {
 	result := make([]map[string]any, len(arr))
+
+	flattenMap := make(map[string]map[string]any, 0)
 
 	for index, element := range arr {
 		const keyValuesObject = "values"
@@ -151,7 +204,14 @@ func flattenRecords(arr []*ajson.Node) ([]map[string]any, error) {
 		}
 
 		result[index] = original
+
+		recordId, err := jsonquery.New(element, "id").StringRequired("record_id")
+		if err != nil {
+			return nil, err
+		}
+
+		flattenMap[recordId] = original
 	}
 
-	return result, nil
+	return flattenMap, nil
 }
