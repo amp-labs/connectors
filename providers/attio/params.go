@@ -18,7 +18,10 @@ type parameters struct {
 
 const (
 	// DefaultPageSize is number of elements per page.
-	DefaultPageSize = 10
+	// The Page size for standard/custom objects, tasks.
+	DefaultPageSize = 500
+	// The Page size for only notes object.
+	DefaultPageSizeForNotesObj = 50
 )
 
 func (p parameters) ValidateParams() error {
