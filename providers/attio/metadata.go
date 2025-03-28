@@ -15,45 +15,22 @@ type responseObject struct {
 
 // This struct is used for when the response data having single data.
 type objectAttribute struct {
-	Data []struct {
-		ID struct {
-			WorkspaceID string `json:"workspace_id"` //nolint:tagliatelle
-			ObjectID    string `json:"object_id"`    //nolint:tagliatelle
-			AttributeID string `json:"attribute_id"` //nolint:tagliatelle
-		} `json:"id"`
-		Title                 string  `json:"title"`
-		Description           *string `json:"description"`
-		APISlug               string  `json:"api_slug"` //nolint:tagliatelle
-		Type                  string  `json:"type"`
-		IsSystemAttribute     bool    `json:"is_system_attribute"`      //nolint:tagliatelle
-		IsWritable            bool    `json:"is_writable"`              //nolint:tagliatelle
-		IsRequired            bool    `json:"is_required"`              //nolint:tagliatelle
-		IsUnique              bool    `json:"is_unique"`                //nolint:tagliatelle
-		IsMultiselect         bool    `json:"is_multiselect"`           //nolint:tagliatelle
-		IsDefaultValueEnabled bool    `json:"is_default_value_enabled"` //nolint:tagliatelle
-		IsArchived            bool    `json:"is_archived"`              //nolint:tagliatelle
-		DefaultValue          struct {
-			Type     string `json:"type"`
-			Template string `json:"template"`
-		} `json:"default_value"` //nolint:tagliatelle
-		Relationship struct {
-			ID struct {
-				WorkspaceID string `json:"workspace_id"` //nolint:tagliatelle
-				ObjectID    string `json:"object_id"`    //nolint:tagliatelle
-				AttributeID string `json:"attribute_id"` //nolint:tagliatelle
-			} `json:"id"`
-		} `json:"relationship"`
-		CreatedAt time.Time `json:"created_at"` //nolint:tagliatelle
-		Config    struct {
-			Currency struct {
-				DefaultCurrencyCode *string `json:"default_currency_code"` //nolint:tagliatelle
-				DisplayType         *string `json:"display_type"`          //nolint:tagliatelle
-			} `json:"currency"`
-			RecordReference struct {
-				AllowedObjectIDs []string `json:"allowed_object_ids"` //nolint:tagliatelle
-			} `json:"record_reference"` //nolint:tagliatelle
-		} `json:"config"`
-	} `json:"data"`
+	Data []Data `json:"data"`
+}
+
+type Data struct {
+	ID struct {
+		WorkspaceID string `json:"workspace_id"` //nolint:tagliatelle
+		ObjectID    string `json:"object_id"`    //nolint:tagliatelle
+		AttributeID string `json:"attribute_id"` //nolint:tagliatelle
+	} `json:"id"`
+	Title                 string    `json:"title"`
+	APISlug               string    `json:"api_slug"` //nolint:tagliatelle
+	Type                  string    `json:"type"`
+	IsWritable            bool      `json:"is_writable"`              //nolint:tagliatelle
+	IsMultiselect         bool      `json:"is_multiselect"`           //nolint:tagliatelle
+	IsDefaultValueEnabled bool      `json:"is_default_value_enabled"` //nolint:tagliatelle
+	CreatedAt             time.Time `json:"created_at"`               //nolint:tagliatelle
 }
 
 type objectResponse struct {
@@ -116,7 +93,9 @@ func (c *Connector) getObjectAttributes(
 	ctx context.Context, obj string,
 ) (map[string]common.FieldMetadata, bool, error) {
 	// Standard isn't a term we commonly use, but rather a concept defined by Attio itself.
-	isAttioStandardOrCustomObj := !supportAttioGeneralApi.Has(obj)
+	// supportAttioApi represents the APIs listed under the Attio API section in the docs
+	// (this does not cover the entire Attio API). Reference: https://developers.attio.com/reference.
+	isAttioStandardOrCustomObj := !supportAttioApi.Has(obj)
 
 	var (
 		url *urlbuilder.URL
@@ -140,7 +119,7 @@ func (c *Connector) getObjectAttributes(
 		return nil, false, err
 	}
 
-	metadata, err := parseMetadataFromResponse(resp, isAttioStandardOrCustomObj)
+	metadata, err := c.parseMetadataFromResponse(ctx, resp, isAttioStandardOrCustomObj)
 	if err != nil {
 		return nil, false, err
 	}
@@ -163,35 +142,59 @@ func (c *Connector) getObjectDisplayName(ctx context.Context, obj string) (strin
 	return getDisplayName(resp)
 }
 
-func parseMetadataFromResponse(resp *common.JSONHTTPResponse,
+func (c *Connector) parseMetadataFromResponse(ctx context.Context, resp *common.JSONHTTPResponse,
 	isAttioStandardOrCustomObj bool,
+) (map[string]common.FieldMetadata, error) {
+	// Retrieving metadata for standard and custom objects in Attio using the api_slug field.
+	if isAttioStandardOrCustomObj {
+		return c.parseStandardOrCustomMetadata(ctx, resp)
+	}
+
+	return c.parseMetadata(resp)
+}
+
+// Parsing the metadata response for standard or custom objects.
+func (c *Connector) parseStandardOrCustomMetadata(
+	ctx context.Context, resp *common.JSONHTTPResponse,
 ) (map[string]common.FieldMetadata, error) {
 	metadata := make(map[string]common.FieldMetadata)
 
-	// Retrieving metadata for standard and custom objects in Attio using the api_slug field.
-	if isAttioStandardOrCustomObj {
-		response, err := common.UnmarshalJSON[objectAttribute](resp)
-		if err != nil {
-			return nil, err
-		}
+	response, err := common.UnmarshalJSON[objectAttribute](resp)
+	if err != nil {
+		return nil, err
+	}
 
-		if len(response.Data) == 0 {
-			return nil, common.ErrMissingExpectedValues
-		}
+	if len(response.Data) == 0 {
+		return nil, common.ErrMissingExpectedValues
+	}
 
-		for _, value := range response.Data {
-			apiSlug := value.APISlug
-			metadata[apiSlug] = common.FieldMetadata{
-				DisplayName:  apiSlug,
-				ValueType:    getFieldValueType(value.Type),
-				ProviderType: value.Type,
-				ReadOnly:     !value.IsWritable,
-				Values:       nil,
+	for _, value := range response.Data {
+		apiSlug := value.APISlug
+
+		var defaultValues []common.FieldValue
+
+		if value.Type == "select" || value.Type == "record-reference" || value.Type == "domain" {
+			defaultValues, err = c.getDefaultValues(ctx, value)
+			if err != nil {
+				return nil, err
 			}
 		}
 
-		return metadata, nil
+		metadata[apiSlug] = common.FieldMetadata{
+			DisplayName:  apiSlug,
+			ValueType:    getFieldValueType(value.Type, value.IsMultiselect),
+			ProviderType: value.Type,
+			ReadOnly:     !value.IsWritable,
+			Values:       defaultValues,
+		}
 	}
+
+	return metadata, nil
+}
+
+// Parsing the metadata response for non-standard or custom objects.
+func (c *Connector) parseMetadata(resp *common.JSONHTTPResponse) (map[string]common.FieldMetadata, error) {
+	metadata := make(map[string]common.FieldMetadata)
 
 	response, err := common.UnmarshalJSON[responseObject](resp)
 	if err != nil {
@@ -234,20 +237,54 @@ func getDisplayName(resp *common.JSONHTTPResponse) (string, error) {
 	return res, nil
 }
 
-func getFieldValueType(field string) common.ValueType {
+func getFieldValueType(field string, ismultiselect bool) common.ValueType {
 	switch field {
 	case "number":
 		return common.ValueTypeInt
 	case "text":
 		return common.ValueTypeString
-	case "select":
+	case "select", "record-reference", "domain":
+		if ismultiselect {
+			return common.ValueTypeMultiSelect
+		}
+
 		return common.ValueTypeSingleSelect
 	case "date":
 		return common.ValueTypeDate
 	case "timestamp":
 		return common.ValueTypeDateTime
 	default:
-		// location, currency, interaction, actor-reference, record-reference
+		// location, currency, interaction, actor-reference
 		return common.ValueTypeOther
 	}
+}
+
+func (c *Connector) getDefaultValues(ctx context.Context, o Data) (fields []common.FieldValue, err error) {
+	if !o.IsDefaultValueEnabled {
+		return nil, nil
+	}
+
+	url, err := c.getOptionsURL(o.ID.ObjectID, o.ID.AttributeID)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := c.Client.Get(ctx, url.String())
+	if err != nil {
+		return nil, err
+	}
+
+	objectAttribute, err := common.UnmarshalJSON[objectAttribute](resp)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, title := range objectAttribute.Data {
+		fields = append(fields, common.FieldValue{
+			Value:        title.Title,
+			DisplayValue: title.Title,
+		})
+	}
+
+	return
 }
