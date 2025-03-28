@@ -24,11 +24,20 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, err
 	}
 
-	if config.RecordId != "" {
+	var write common.WriteMethod
+	if len(config.RecordId) == 0 {
+		// writing to the entity without id means creating a new record.
+		write = c.Client.Post
+	} else {
+		// updating resource by patch method.
+		write = c.Client.Put
+
+		if supportWriteObjects.Has(config.ObjectName) {
+			write = c.Client.Patch
+		}
+
 		url.AddPath(config.RecordId)
 	}
-
-	write := c.determineWriteMethod(config)
 
 	res, err := write(ctx, url.String(), config.RecordData)
 	if err != nil {
@@ -47,7 +56,9 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 }
 
 func (c *Connector) buildWriteURL(config common.WriteParams) (*urlbuilder.URL, error) {
-	if supportAttioGeneralApiWrite.Has(config.ObjectName) {
+	// supportWriteObjects represents the APIs listed under the Attio API section in the docs
+	// (this does not cover the entire Attio API). Reference: https://developers.attio.com/reference.
+	if supportWriteObjects.Has(config.ObjectName) {
 		return c.getApiURL(config.ObjectName)
 	}
 
@@ -59,23 +70,10 @@ func (c *Connector) buildWriteURL(config common.WriteParams) (*urlbuilder.URL, e
 	return url, nil
 }
 
-// determineWriteMethod selects the appropriate HTTP method based on config.
-func (c *Connector) determineWriteMethod(config common.WriteParams) common.WriteMethod {
-	if config.RecordId == "" {
-		return c.Client.Post
-	}
-
-	if supportAttioGeneralApiWrite.Has(config.ObjectName) {
-		return c.Client.Patch
-	}
-
-	return c.Client.Put
-}
-
 func constructWriteResult(objName string, body *ajson.Node) (*common.WriteResult, error) {
 	var obj naming.SingularString
 
-	if supportAttioGeneralApiWrite.Has(objName) {
+	if supportWriteObjects.Has(objName) {
 		obj = naming.NewSingularString(objName)
 	} else {
 		obj = naming.NewSingularString("record")
