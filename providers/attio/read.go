@@ -6,6 +6,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/datautils"
 )
 
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
@@ -14,13 +15,13 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	}
 
 	if supportAttioGeneralApi.Has(config.ObjectName) {
-		return c.readGeneralAPI(ctx, config)
+		return c.readAPI(ctx, config)
 	}
 
 	return c.readStandardOrCustomObject(ctx, config)
 }
 
-func (c *Connector) readGeneralAPI(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
+func (c *Connector) readAPI(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
 	url, err := c.buildURL(config)
 	if err != nil {
 		return nil, err
@@ -34,7 +35,7 @@ func (c *Connector) readGeneralAPI(ctx context.Context, config common.ReadParams
 	return common.ParseResult(
 		rsp,
 		common.GetRecordsUnderJSONPath("data"),
-		makeNextRecordsURL(url),
+		makeNextRecordsURL(url, config.ObjectName),
 		common.GetMarshaledData,
 		config.Fields,
 	)
@@ -43,7 +44,7 @@ func (c *Connector) readGeneralAPI(ctx context.Context, config common.ReadParams
 func (c *Connector) readStandardOrCustomObject(
 	ctx context.Context, config common.ReadParams,
 ) (*common.ReadResult, error) {
-	// To handle standarad/custom objects
+	// To handle standard/custom objects
 	url, err := c.getObjectReadURL(config.ObjectName)
 	if err != nil {
 		return nil, err
@@ -58,7 +59,7 @@ func (c *Connector) readStandardOrCustomObject(
 
 	return common.ParseResult(
 		rsp,
-		common.GetRecordsUnderJSONPath("data"),
+		getStandardOrCustomObjRecords,
 		makeNextRecordStandardObj(body),
 		common.GetMarshaledData,
 		config.Fields,
@@ -77,7 +78,12 @@ func (c *Connector) buildURL(config common.ReadParams) (*urlbuilder.URL, error) 
 	}
 
 	if supportLimitAndOffset.Has(config.ObjectName) {
-		url.WithQueryParam("limit", strconv.Itoa(DefaultPageSize))
+		if config.ObjectName == objectNameNotes {
+			url.WithQueryParam("limit", strconv.Itoa(DefaultPageSizeForNotesObj))
+		} else {
+			url.WithQueryParam("limit", strconv.Itoa(DefaultPageSize))
+		}
+
 		url.WithQueryParam("offset", "0")
 	}
 
@@ -101,13 +107,13 @@ func constructBody(config common.ReadParams) map[string]any {
 
 	if !config.Since.IsZero() {
 		filter["created_at"] = map[string]string{
-			"$gte": config.Since.Format("2006-01-02T15:04:05.999999999Z"),
+			"$gte": datautils.Time.FormatRFC3339inUTCWithMilliseconds(config.Since),
 		}
+
+		body["filter"] = filter
 	}
 
 	body["limit"] = DefaultPageSize
-
-	body["filter"] = filter
 
 	return body
 }

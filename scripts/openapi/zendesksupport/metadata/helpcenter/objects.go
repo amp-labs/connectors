@@ -13,23 +13,23 @@ var (
 	ignoreEndpoints = []string{ // nolint:gochecknoglobals
 		"/api/v2/guide/search", // -> this is unified search for Article, Post, ExternalRecord
 		"/api/v2/help_center/sessions",
+		// Requires additional query parameters.
+		"/api/v2/help_center/articles/search",
+		"/api/v2/help_center/community_posts/search",
 	}
 	objectEndpoints = map[string]string{ // nolint:gochecknoglobals
-		"/api/v2/help_center/articles/search":        "articles",
-		"/api/v2/help_center/articles/labels":        "article_labels",
-		"/api/v2/help_center/community_posts/search": "community_posts",
+		"/api/v2/help_center/articles/labels": "articles/labels",
+	}
+	displayNameOverride = map[string]string{ // nolint:gochecknoglobals
+		"articles/labels": "Article Labels",
 	}
 	objectNameToResponseField = datautils.NewDefaultMap(map[string]string{ // nolint:gochecknoglobals
-		"articles":        "results",
-		"article_labels":  "labels",
-		"community_posts": "results",
+		"articles/labels": "labels",
 	}, func(objectName string) (fieldName string) {
 		return objectName
 	})
 	objectNameToPagination = map[string]string{ // nolint:gochecknoglobals
-		"article_labels":  "cursor",
-		"articles":        "offset",
-		"community_posts": "offset",
+		"articles/labels": "cursor",
 		"posts":           "cursor",
 		"topics":          "cursor",
 		"user_segments":   "cursor",
@@ -47,7 +47,7 @@ func Objects() []metadatadef.ExtendedSchema[metadata.CustomProperties] {
 
 	objects, err := explorer.ReadObjectsGet(
 		api3.NewDenyPathStrategy(ignoreEndpoints),
-		objectEndpoints, nil,
+		objectEndpoints, displayNameOverride,
 		api3.CustomMappingObjectCheck(objectNameToResponseField),
 	)
 	goutils.MustBeNil(err)
