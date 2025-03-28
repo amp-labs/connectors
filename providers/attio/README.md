@@ -37,7 +37,7 @@ For standard/custom objects, a separate read function "readStandardOrCustomObjec
 For non-standard object, a separate read function "readGeneralAPI" is used and directly used the object's endpoint to get the response.
 
 ## Write Functions
-For non-standard object, introduce a variable like 'supportAttioGeneralApiWrite' and directly used the object's endpoint to get the response.
+For non-standard objects, introduce a variable "supportWriteObjects" and use the object's endpoint directly to get the response
 
 For standard/custom objects,
 Used endpoint to create: https://developers.attio.com/reference/post_v2-objects-object-records
