@@ -51,8 +51,6 @@ func makeNextRecordStandardObj(body map[string]any) common.NextPageFunc {
 			return "", err
 		}
 
-		previousStart := 0
-
 		if len(value) != 0 {
 			jsonData, err := json.Marshal(body)
 			if err != nil {
@@ -71,7 +69,7 @@ func makeNextRecordStandardObj(body map[string]any) common.NextPageFunc {
 				return "", err
 			}
 
-			previousStart = int(offset)
+			previousStart := int(offset)
 
 			nextStart := previousStart + DefaultPageSize
 
@@ -127,9 +125,9 @@ func handlePagination(previousStart int, obj string) (int, int) {
 //
 // The resulting fields for the above will be: id, created_at, record_id.
 
-type MarshaledData func([]map[string]any, []string) ([]common.ReadResultRow, error)
+type MarshalledData func([]map[string]any, []string) ([]common.ReadResultRow, error)
 
-func MyGetMarshaledData(resp *common.JSONHTTPResponse) MarshaledData {
+func DataMarshall(resp *common.JSONHTTPResponse) MarshalledData {
 	return func(records []map[string]any, fields []string) ([]common.ReadResultRow, error) {
 		node, ok := resp.Body()
 		if !ok {
@@ -146,16 +144,28 @@ func MyGetMarshaledData(resp *common.JSONHTTPResponse) MarshaledData {
 			return nil, err
 		}
 
-		return Marshaled(flattenrecords, records, fields)
+		return getRecords(flattenrecords, records, fields)
 	}
 }
 
-func Marshaled(flattenRecords map[string]map[string]any, records []map[string]any, fields []string) ([]common.ReadResultRow, error) {
+func getRecords(
+	flattenRecords map[string]map[string]any, records []map[string]any, fields []string,
+) ([]common.ReadResultRow, error) {
 	data := make([]common.ReadResultRow, len(records))
 
-	for i := 0; i < len(records); i++ {
-		FeildRecord := flattenRecords[records[i]["id"].(map[string]any)["record_id"].(string)]
-		data[i].Raw = records[i]
+	for i, record := range records { // nolint:varnamelen
+		id, ok := record["id"].(map[string]any)
+		if !ok {
+			return nil, common.ErrEmptyRecordIdResponse
+		}
+
+		recordID, ok := id["record_id"].(string)
+		if !ok {
+			return nil, common.ErrEmptyRecordIdResponse
+		}
+
+		FeildRecord := flattenRecords[recordID]
+		data[i].Raw = record
 		data[i].Fields = common.ExtractLowercaseFieldsFromRaw(fields, FeildRecord)
 	}
 
@@ -195,7 +205,12 @@ func flattenRecords(arr []*ajson.Node) (map[string]map[string]any, error) {
 
 		result[index] = original
 
-		flattenMap[original["id"].(map[string]any)["record_id"].(string)] = original
+		recordId, err := jsonquery.New(element, "id").StringRequired("record_id")
+		if err != nil {
+			return nil, err
+		}
+
+		flattenMap[recordId] = original
 	}
 
 	return flattenMap, nil

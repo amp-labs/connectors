@@ -61,7 +61,7 @@ func (c *Connector) readStandardOrCustomObject(
 		rsp,
 		common.GetRecordsUnderJSONPath("data"),
 		makeNextRecordStandardObj(body),
-		MyGetMarshaledData(rsp),
+		DataMarshall(rsp),
 		config.Fields,
 	)
 }
