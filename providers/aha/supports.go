@@ -11,10 +11,19 @@ import (
 )
 
 const (
-	objectNameAudits            = "audits"
-	objectNameHistoricalAudits  = "historical_audits"
-	objectNameIdeasEndorsements = "ideas/endorsements"
-	objectNameIdeas             = "ideas"
+	objectNameAudits             = "audits"
+	objectNameHistoricalAudits   = "historical_audits"
+	objectNameIdeasEndorsements  = "ideas/endorsements"
+	objectNameIdeas              = "ideas"
+	objectNameIdeaOrganization   = "idea_organizations"
+	objectNameIdeaUser           = "idea_users"
+	objectNameIntegrations       = "integrations"
+	objectNameProducts           = "products"
+	objectNameReleasePhases      = "release_phases"
+	objectNmaeSchedulableChanges = "schedulable_changes"
+	objectNameTeamMembers        = "team_members"
+	objectNameTeams              = "teams"
+	objectNameTasks              = "tasks"
 )
 
 var supportSince = datautils.NewSet( //nolint:gochecknoglobals
@@ -22,6 +31,17 @@ var supportSince = datautils.NewSet( //nolint:gochecknoglobals
 	objectNameHistoricalAudits,
 	objectNameIdeasEndorsements,
 	objectNameIdeas,
+)
+
+var supportWrite = datautils.NewSet( //nolint:gochecknoglobals
+	objectNameHistoricalAudits,
+	objectNameIdeaOrganization,
+	objectNameIdeaUser,
+	objectNameIntegrations,
+	objectNameProducts,
+	objectNameReleasePhases,
+	objectNameTeamMembers,
+	objectNameTasks,
 )
 
 func supportedOperations() components.EndpointRegistryInput {
@@ -32,6 +52,10 @@ func supportedOperations() components.EndpointRegistryInput {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(supportWrite.List(), ",")),
+				Support:  components.WriteSupport,
 			},
 		},
 	}
