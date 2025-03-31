@@ -18,6 +18,20 @@ type parameters struct {
 	paramsbuilder.Module
 }
 
+func newParams(opts []Option) (*common.Parameters, error) { // nolint:unused
+	oldParams, err := paramsbuilder.Apply(parameters{}, opts,
+		WithModule(providers.ModuleZoomMeeting),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &common.Parameters{
+		Module:              oldParams.Module.Selection.ID,
+		AuthenticatedClient: oldParams.Client.Caller.Client,
+	}, nil
+}
+
 const (
 	DefaultPageSize = 300
 )
