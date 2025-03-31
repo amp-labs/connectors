@@ -38,7 +38,7 @@ func (c *Connector) Write(
 		}
 	}
 
-	res, err := c.Client.Post(ctx, url.String(), config.RecordData)
+	res, err := c.JSONHTTPClient().Post(ctx, url.String(), config.RecordData)
 	if err != nil {
 		return nil, err
 	}
