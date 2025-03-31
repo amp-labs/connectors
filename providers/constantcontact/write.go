@@ -26,15 +26,15 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 			return nil, common.ErrOperationNotSupportedForObject
 		}
 
-		write = c.Client.Post
+		write = c.JSONHTTPClient().Post
 	} else {
 		if !supportedObjectsByUpdate.Has(config.ObjectName) {
 			return nil, common.ErrOperationNotSupportedForObject
 		}
 
-		write = c.Client.Put
+		write = c.JSONHTTPClient().Put
 		if config.ObjectName == objectNameEmailCampaigns {
-			write = c.Client.Patch
+			write = c.JSONHTTPClient().Patch
 		}
 
 		url.AddPath(config.RecordId)

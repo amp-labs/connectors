@@ -14,5 +14,5 @@ func (c *Connector) ListObjectMetadata(
 		return nil, common.ErrMissingObjects
 	}
 
-	return metadata.Schemas.Select(c.Module.ID, objectNames)
+	return metadata.Schemas.Select(c.Module(), objectNames)
 }
