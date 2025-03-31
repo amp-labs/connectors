@@ -25,7 +25,7 @@ func (c *Connector) readViaSearch(
 		return nil, nil, nil, false
 	}
 
-	url, err := constructURL(c.BaseURL, config.ObjectName, "search")
+	url, err := constructURL(c.ProviderInfo().BaseURL, config.ObjectName, "search")
 	if err != nil {
 		return nil, nil, err, true
 	}
@@ -35,7 +35,7 @@ func (c *Connector) readViaSearch(
 		return nil, nil, err, true
 	}
 
-	rsp, err := c.Client.Post(ctx, url.String(), &conversation, apiVersionHeader)
+	rsp, err := c.JSONHTTPClient().Post(ctx, url.String(), &conversation, apiVersionHeader)
 	if err != nil {
 		return nil, nil, err, true
 	}
