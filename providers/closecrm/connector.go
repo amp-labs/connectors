@@ -2,55 +2,36 @@ package closecrm
 
 import (
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/providers"
 )
 
 // Connector is a Close connector.
 type Connector struct {
-	BaseURL string
-	Client  *common.JSONHTTPClient
+	// Basic connector
+	*components.Connector
 }
 
-// NewConnector returns a new Close connector.
-func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	params, err := paramsbuilder.Apply(parameters{}, opts)
+// NewConnector is an old constructor, use NewConnectorV2.
+// Deprecated.
+func NewConnector(opts ...Option) (*Connector, error) {
+	params, err := newParams(opts)
 	if err != nil {
 		return nil, err
 	}
 
-	conn = &Connector{
-		Client: &common.JSONHTTPClient{
-			HTTPClient: params.Client.Caller,
-		},
-	}
+	return NewConnectorV2(*params)
+}
 
-	// Read provider info & replace catalog variables with given substitutions, if any
-	providerInfo, err := providers.ReadInfo(conn.Provider())
-	if err != nil {
-		return nil, err
-	}
+func NewConnectorV2(params common.Parameters) (*Connector, error) {
+	return components.Initialize(providers.Close, params, constructor)
+}
 
-	conn.setBaseURL(providerInfo.BaseURL)
-
-	return conn, nil
+func constructor(base *components.Connector) (*Connector, error) {
+	return &Connector{Connector: base}, nil
 }
 
 func (c *Connector) getAPIURL(object string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.BaseURL, restAPIVersion, object)
-}
-
-func (c *Connector) Provider() string {
-	return providers.Close
-}
-
-// String implements fmt.Stringer interface.
-func (c *Connector) String() string {
-	return c.Provider() + ".Connector"
-}
-
-func (c *Connector) setBaseURL(newURL string) {
-	c.BaseURL = newURL
-	c.Client.HTTPClient.Base = newURL
+	return urlbuilder.New(c.ProviderInfo().BaseURL, restAPIVersion, object)
 }
