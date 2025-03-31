@@ -12,7 +12,7 @@ func (conn *Connector) buildURL(objectName string, pageSize string) (string, err
 		return "", common.ErrObjectNotSupported
 	}
 
-	url, err := urlbuilder.New(conn.BaseURL, restAPIVersionPrefix, objectName)
+	url, err := urlbuilder.New(conn.ProviderInfo().BaseURL, restAPIVersionPrefix, objectName)
 	if err != nil {
 		return "", err
 	}
@@ -27,7 +27,7 @@ func (conn *Connector) buildWriteURL(object string) (*urlbuilder.URL, error) {
 		return nil, common.ErrObjectNotSupported
 	}
 
-	writeURL, err := urlbuilder.New(conn.BaseURL, restAPIVersionPrefix, object)
+	writeURL, err := urlbuilder.New(conn.ProviderInfo().BaseURL, restAPIVersionPrefix, object)
 	if err != nil {
 		return nil, err
 	}

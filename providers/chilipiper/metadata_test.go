@@ -83,7 +83,7 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 		return nil, err
 	}
 
-	connector.BaseURL = serverURL
+	connector.SetBaseURL(serverURL)
 
 	return connector, nil
 }
