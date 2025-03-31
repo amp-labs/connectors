@@ -101,7 +101,7 @@ func (c *Connector) getObjectMetadataFromPropertyAPI(
 		return nil, err
 	}
 
-	rsp, err := c.Client.Get(ctx, u)
+	rsp, err := c.JSONHTTPClient().Get(ctx, u)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching HubSpot fields: %w", err)
 	}
@@ -137,12 +137,12 @@ func (c *Connector) getObjectMetadataFromCRMSearch(
 	})
 	if err != nil {
 		// Ignore an error and fallback to static schema.
-		return metadata.Schemas.SelectOne(c.Module.ID, objectName)
+		return metadata.Schemas.SelectOne(c.Module(), objectName)
 	}
 
 	if len(readResult.Data) == 0 {
 		// Read returned no rows.
-		return metadata.Schemas.SelectOne(c.Module.ID, objectName)
+		return metadata.Schemas.SelectOne(c.Module(), objectName)
 	}
 
 	fields := make(map[string]common.FieldMetadata)
@@ -187,7 +187,7 @@ type AccountInfo struct {
 func (c *Connector) GetAccountInfo(ctx context.Context) (*AccountInfo, *common.JSONHTTPResponse, error) {
 	ctx = logging.With(ctx, "connector", "hubspot")
 
-	resp, err := c.Client.Get(ctx, "account-info/v3/details")
+	resp, err := c.JSONHTTPClient().Get(ctx, "account-info/v3/details")
 	if err != nil {
 		return nil, resp, fmt.Errorf("error fetching HubSpot token info: %w", err)
 	}
@@ -336,7 +336,7 @@ func (c *Connector) fetchExternalMetadataEnumValues(
 	// For each external field that we support make an API call to fetch enumeration options.
 	// Store this values for each field within each object.
 	for _, discovery := range externalFields {
-		rsp, err := c.Client.Get(ctx, c.getRawURL()+discovery.EndpointPath)
+		rsp, err := c.JSONHTTPClient().Get(ctx, c.getRawURL()+discovery.EndpointPath)
 		if err != nil {
 			return nil, fmt.Errorf("error resolving external metadata values for HubSpot: %w", err)
 		}

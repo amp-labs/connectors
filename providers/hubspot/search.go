@@ -34,7 +34,7 @@ func (c *Connector) Search(ctx context.Context, config SearchParams) (*common.Re
 		return nil, err
 	}
 
-	rsp, err := c.Client.Post(ctx, url, makeFilterBody(config))
+	rsp, err := c.JSONHTTPClient().Post(ctx, url, makeFilterBody(config))
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +75,7 @@ func (c *Connector) searchCRM(
 		return nil, err
 	}
 
-	rsp, err := c.Client.Post(ctx, url, payload)
+	rsp, err := c.JSONHTTPClient().Post(ctx, url, payload)
 	if err != nil {
 		return nil, err
 	}

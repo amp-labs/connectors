@@ -113,7 +113,8 @@ func (c *Connector) getObjectAssociations( //nolint:cyclop
 		return map[string][]common.Association{}, nil
 	}
 
-	hsURL := c.BaseURL + "/" + fmt.Sprintf("crm/v4/associations/%s/%s/batch/read", fromObject, toObject)
+	hsURL := c.ProviderInfo().BaseURL + "/" +
+		fmt.Sprintf("crm/v4/associations/%s/%s/batch/read", fromObject, toObject)
 
 	var inputs assocInputs
 
@@ -123,7 +124,7 @@ func (c *Connector) getObjectAssociations( //nolint:cyclop
 
 	// Do one big batch request to get all associations.
 	// See https://developers.hubspot.com/docs/guides/api/crm/associations/associations-v4#retrieve-associated-records
-	rsp, err := c.Client.Post(ctx, hsURL, &inputs)
+	rsp, err := c.JSONHTTPClient().Post(ctx, hsURL, &inputs)
 	if err != nil {
 		var httpErr *common.HTTPStatusError
 
