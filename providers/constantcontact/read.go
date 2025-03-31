@@ -17,7 +17,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	if !supportedObjectsByRead[c.Module.ID].Has(config.ObjectName) {
+	if !supportedObjectsByRead[c.Module()].Has(config.ObjectName) {
 		return nil, common.ErrOperationNotSupportedForObject
 	}
 
@@ -26,7 +26,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	res, err := c.Client.Get(ctx, url.String())
+	res, err := c.JSONHTTPClient().Get(ctx, url.String())
 	if err != nil {
 		return nil, err
 	}
@@ -37,8 +37,8 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	}
 
 	return common.ParseResult(res,
-		makeGetRecords(c.Module.ID, config.ObjectName),
-		makeNextRecordsURL(c.BaseURL),
+		makeGetRecords(c.Module(), config.ObjectName),
+		makeNextRecordsURL(c.ProviderInfo().BaseURL),
 		common.MakeMarshaledDataFunc(c.attachReadCustomFields(customFields)),
 		config.Fields,
 	)
@@ -99,7 +99,7 @@ func (c *Connector) requestCustomFields(
 		return nil, errors.Join(ErrResolvingCustomFields, err)
 	}
 
-	res, err := c.Client.Get(ctx, url.String())
+	res, err := c.JSONHTTPClient().Get(ctx, url.String())
 	if err != nil {
 		return nil, errors.Join(ErrResolvingCustomFields, err)
 	}
