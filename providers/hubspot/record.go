@@ -67,7 +67,7 @@ func (c *Connector) GetRecordsWithIds(
 		"properties": fields,
 	}
 
-	resp, err := c.Client.Post(ctx, u, body)
+	resp, err := c.JSONHTTPClient().Post(ctx, u, body)
 	if err != nil {
 		return nil, err
 	}
