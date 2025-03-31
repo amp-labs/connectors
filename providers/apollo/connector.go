@@ -4,50 +4,35 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/providers"
 )
 
 type Connector struct {
-	BaseURL string
-	Client  *common.JSONHTTPClient
+	// Basic connector
+	*components.Connector
 }
 
 type operation string
 
-func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	params, err := paramsbuilder.Apply(parameters{}, opts)
+// NewConnector is an old constructor, use NewConnectorV2.
+// Deprecated.
+func NewConnector(opts ...Option) (*Connector, error) {
+	params, err := newParams(opts)
 	if err != nil {
 		return nil, err
 	}
 
-	providerInfo, err := providers.ReadInfo(providers.Apollo)
-	if err != nil {
-		return nil, err
-	}
-
-	conn = &Connector{
-		Client: &common.JSONHTTPClient{
-			HTTPClient: &common.HTTPClient{
-				Client: params.Caller.Client,
-			},
-		},
-	}
-
-	conn.setBaseURL(providerInfo.BaseURL)
-
-	return conn, nil
+	return NewConnectorV2(*params)
 }
 
-func (c *Connector) setBaseURL(newURL string) {
-	c.BaseURL = newURL
-	c.Client.HTTPClient.Base = newURL
+func NewConnectorV2(params common.Parameters) (*Connector, error) {
+	return components.Initialize(providers.Apollo, params, constructor)
 }
 
-// Provider returns the connector provider.
-func (c *Connector) Provider() providers.Provider {
-	return providers.Apollo
+func constructor(base *components.Connector) (*Connector, error) {
+	return &Connector{Connector: base}, nil
 }
 
 // getAPIURL builds the url we can write/read data from
@@ -58,7 +43,7 @@ func (c *Connector) getAPIURL(objectName string, ops operation) (*urlbuilder.URL
 
 	relativePath := strings.Join([]string{restAPIPrefix, objectName}, "/")
 
-	url, err := urlbuilder.New(c.BaseURL, relativePath)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, relativePath)
 	if err != nil {
 		return nil, err
 	}
@@ -72,8 +57,4 @@ func (c *Connector) getAPIURL(objectName string, ops operation) (*urlbuilder.URL
 	}
 
 	return url, nil
-}
-
-func (c *Connector) String() string {
-	return c.Provider() + ".Connector"
 }
