@@ -19,7 +19,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, err
 	}
 
-	json, err := c.Client.Post(ctx, url.String(), config.RecordData)
+	json, err := c.JSONHTTPClient().Post(ctx, url.String(), config.RecordData)
 	if err != nil {
 		return nil, err
 	}
