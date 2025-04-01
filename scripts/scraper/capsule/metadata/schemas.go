@@ -58,7 +58,7 @@ func (s scrappedSchemas) SaveData(model scrapper.ModelDocLink, fieldName, fieldT
 	urlPath := objectNameToURLPath.Get(model.Name)
 
 	s.Metadata.Add(
-		staticschema.RootModuleID, model.Name, modelDisplayName,
+		common.ModuleRoot, model.Name, modelDisplayName,
 		urlPath, responseKey, fields, &model.URL, nil)
 }
 

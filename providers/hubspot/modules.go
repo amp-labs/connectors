@@ -5,8 +5,6 @@ import (
 )
 
 const (
-	// ModuleEmpty is used for proxying requests through.
-	ModuleEmpty common.ModuleID = ""
 	// ModuleCRM is the module used for accessing standard CRM objects.
 	ModuleCRM common.ModuleID = "CRM"
 )
@@ -14,8 +12,8 @@ const (
 // supportedModules represents currently working and supported modules within the Hubspot connector.
 // Any added module should be appended added here.
 var supportedModules = common.Modules{ // nolint: gochecknoglobals
-	ModuleEmpty: {
-		ID:      ModuleEmpty,
+	common.ModuleRoot: {
+		ID:      common.ModuleRoot,
 		Label:   "",
 		Version: "",
 	},

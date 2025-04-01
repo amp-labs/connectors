@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
-	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/spyzhov/ajson"
 )
 
@@ -21,11 +21,11 @@ const (
 // How to read & build these patterns: https://github.com/gobwas/glob
 func supportedOperations() components.EndpointRegistryInput {
 	// We support reading everything under schema.json, so we get all the objects and join it into a pattern.
-	readSupport := schemas.ObjectNames().GetList(staticschema.RootModuleID)
+	readSupport := schemas.ObjectNames().GetList(common.ModuleRoot)
 	writeSupport := []string{objectNameCampaign, objectNameEmailAccount, objectNameClient}
 
 	return components.EndpointRegistryInput{
-		staticschema.RootModuleID: {
+		common.ModuleRoot: {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
 				Support:  components.WriteSupport,

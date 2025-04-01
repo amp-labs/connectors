@@ -29,7 +29,6 @@ func GetAhaConnector(ctx context.Context) *aha.Connector {
 }
 
 func getConfig(reader *credscanning.ProviderCredentials) *oauth2.Config {
-
 	return &oauth2.Config{
 		ClientID:     reader.Get(credscanning.Fields.ClientId),
 		ClientSecret: reader.Get(credscanning.Fields.ClientSecret),
