@@ -14,7 +14,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	if !supportAttioApi.Has(config.ObjectName) {
+	if supportAttioApi.Has(config.ObjectName) {
 		return c.readAPI(ctx, config)
 	}
 
