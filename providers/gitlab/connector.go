@@ -1,14 +1,31 @@
-package aha
+package gitlab
 
 import (
+	_ "embed"
+
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/reader"
 	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/internal/components/writer"
+	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/aha/metadata"
+	"github.com/amp-labs/connectors/tools/fileconv"
+	"github.com/amp-labs/connectors/tools/scrapper"
+)
+
+const restAPIVersion = "api/v4"
+
+// nolint:gochecknoglobals
+var (
+	//go:embed schemas.json
+	schemaContent []byte
+
+	fileManager = scrapper.NewMetadataFileManager[staticschema.FieldMetadataMapV1](
+		schemaContent, fileconv.NewSiblingFileLocator())
+
+	schemas = fileManager.MustLoadSchemas()
 )
 
 type Connector struct {
@@ -18,23 +35,36 @@ type Connector struct {
 	// Require authenticated client
 	common.RequireAuthenticatedClient
 
-	// supported operations
+	// Supported operations
 	components.SchemaProvider
 	components.Reader
 	components.Writer
 }
 
 func NewConnector(params common.Parameters) (*Connector, error) {
-	// Create base connector with provider info
-	return components.Initialize(providers.Aha, params, constructor)
+	return components.Initialize(providers.GitLab, params, constructor)
 }
 
-//nolint:funlen
 func constructor(base *components.Connector) (*Connector, error) {
 	connector := &Connector{Connector: base}
 
-	// Set the metadata provider for the connector
-	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), metadata.Schemas)
+	// GitLab's OpenAPI files don't cover all API resources,
+	// so we fall back to querying objects and populating fields.
+
+	fallbackSchema := schema.NewObjectSchemaProvider(
+		base.HTTPClient().Client,
+		schema.FetchModeSerial,
+		operations.SingleObjectMetadataHandlers{
+			BuildRequest:  connector.buildSingleHandlerRequest,
+			ParseResponse: connector.parseSingleHandlerResponse,
+			ErrorHandler:  common.InterpretError,
+		},
+	)
+
+	connector.SchemaProvider = schema.NewCompositeSchemaProvider(
+		schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), schemas),
+		fallbackSchema,
+	)
 
 	registry, err := components.NewEndpointRegistry(supportedOperations())
 	if err != nil {
@@ -44,7 +74,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 	connector.Reader = reader.NewHTTPReader(
 		connector.HTTPClient().Client,
 		registry,
-		connector.ProviderContext.Module(),
+		staticschema.RootModuleID,
 		operations.ReadHandlers{
 			BuildRequest:  connector.buildReadRequest,
 			ParseResponse: connector.parseReadResponse,
@@ -52,10 +82,11 @@ func constructor(base *components.Connector) (*Connector, error) {
 		},
 	)
 
+	// Set the write provider for the connector
 	connector.Writer = writer.NewHTTPWriter(
 		connector.HTTPClient().Client,
 		registry,
-		connector.ProviderContext.Module(),
+		staticschema.RootModuleID,
 		operations.WriteHandlers{
 			BuildRequest:  connector.buildWriteRequest,
 			ParseResponse: connector.parseWriteResponse,
