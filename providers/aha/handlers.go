@@ -1,11 +1,14 @@
 package aha
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"net/http"
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
@@ -101,8 +104,77 @@ func addQueryParams(url *urlbuilder.URL, params common.ReadParams, page int64) {
 	url.WithQueryParam(pageSizeKey, pageSize)
 	url.WithQueryParam(pageKey, strconv.FormatInt(page, 10))
 
-	if supportSince.Has(params.ObjectName) {
+	if supportSince.Has(params.ObjectName) && !params.Since.IsZero() {
 		// https://www.aha.io/api/resources/ideas/list_ideas
 		url.WithQueryParam(sinceKey, datautils.Time.FormatRFC3339inUTC(params.Since))
 	}
+}
+
+func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+	var (
+		url    *urlbuilder.URL
+		err    error
+		method = http.MethodPost
+	)
+
+	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.RecordId != "" {
+		url.AddPath(params.RecordId)
+
+		method = http.MethodPut
+	}
+
+	jsonData, err := json.Marshal(params.RecordData)
+	if err != nil {
+		return nil, err
+	}
+
+	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
+}
+
+func (c *Connector) parseWriteResponse(
+	ctx context.Context,
+	params common.WriteParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.WriteResult, error) {
+	body, ok := response.Body()
+	if !ok {
+		return &common.WriteResult{ // nolint:nilerr
+			Success: true,
+		}, nil
+	}
+
+	resObj, err := jsonquery.New(body).ObjectRequired(naming.NewSingularString(params.ObjectName).String())
+	if err != nil {
+		return &common.WriteResult{ // nolint:nilerr
+			Success: true,
+		}, nil
+	}
+
+	data, err := jsonquery.Convertor.ObjectToMap(resObj)
+	if err != nil {
+		return &common.WriteResult{ // nolint:nilerr
+			Success: true,
+		}, nil
+	}
+
+	recordID, err := jsonquery.New(resObj).StringRequired("id")
+	if err != nil {
+		return &common.WriteResult{ // nolint:nilerr
+			Success: true,
+			Data:    data,
+		}, nil
+	}
+
+	return &common.WriteResult{
+		Success:  true,
+		RecordId: recordID,
+		Errors:   nil,
+		Data:     data,
+	}, nil
 }
