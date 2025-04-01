@@ -24,7 +24,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 
 	// always include annotations header
 	// response will describe enums, foreign relationship, etc.
-	rsp, err := c.Client.Get(ctx, url.String(), newPaginationHeader(DefaultPageSize), common.Header{
+	rsp, err := c.JSONHTTPClient().Get(ctx, url.String(), newPaginationHeader(DefaultPageSize), common.Header{
 		Key:   "Prefer",
 		Value: `odata.include-annotations="*"`,
 	})
