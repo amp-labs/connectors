@@ -8,6 +8,7 @@ import (
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -28,13 +29,13 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		},
 		{
 			Name:         "At least one field is requested",
-			Input:        common.ReadParams{ObjectName: "leads"},
+			Input:        common.ReadParams{ObjectName: "Lead"},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingFields},
 		},
 		{
 			Name:  "Correct error message is understood from JSON response",
-			Input: common.ReadParams{ObjectName: "leads", Fields: connectors.Fields("Name")},
+			Input: common.ReadParams{ObjectName: "Lead", Fields: connectors.Fields("Name")},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusBadRequest, responseUnknownObject),
@@ -45,7 +46,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		},
 		{
 			Name:  "Incorrect key in payload",
-			Input: common.ReadParams{ObjectName: "leads", Fields: connectors.Fields("Name")},
+			Input: common.ReadParams{ObjectName: "Lead", Fields: connectors.Fields("Name")},
 			Server: mockserver.Fixed{
 				Setup: mockserver.ContentJSON(),
 				Always: mockserver.ResponseString(http.StatusOK, `{
@@ -56,7 +57,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		},
 		{
 			Name:  "Incorrect data type in payload",
-			Input: common.ReadParams{ObjectName: "leads", Fields: connectors.Fields("Name")},
+			Input: common.ReadParams{ObjectName: "Lead", Fields: connectors.Fields("Name")},
 			Server: mockserver.Fixed{
 				Setup: mockserver.ContentJSON(),
 				Always: mockserver.ResponseString(http.StatusOK, `{
@@ -67,7 +68,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		},
 		{
 			Name:  "Next page cursor may be missing in payload",
-			Input: common.ReadParams{ObjectName: "leads", Fields: connectors.Fields("Name")},
+			Input: common.ReadParams{ObjectName: "Lead", Fields: connectors.Fields("Name")},
 			Server: mockserver.Fixed{
 				Setup: mockserver.ContentJSON(),
 				Always: mockserver.ResponseString(http.StatusOK, `
@@ -80,7 +81,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		},
 		{
 			Name:  "Next page URL is resolved, when provided with a string",
-			Input: common.ReadParams{ObjectName: "leads", Fields: connectors.Fields("City")},
+			Input: common.ReadParams{ObjectName: "Lead", Fields: connectors.Fields("City")},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseLeadsFirstPage),
@@ -96,12 +97,19 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name: "Successful read with chosen fields",
 			Input: common.ReadParams{
-				ObjectName: "contacts",
+				ObjectName: "Contact",
 				Fields:     connectors.Fields("Department", "AssistantName"),
 			},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, responseListContacts),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.PathSuffix("/services/data/v59.0/query"),
+					mockcond.Or{
+						mockcond.QueryParam("q", "SELECT Department,AssistantName FROM Contact"),
+						mockcond.QueryParam("q", "SELECT AssistantName,Department FROM Contact"),
+					},
+				},
+				Then: mockserver.Response(http.StatusOK, responseListContacts),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
@@ -147,7 +155,7 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 	}
 
 	// for testing we want to redirect calls to our mock server
-	connector.setBaseURL(serverURL)
+	connector.SetBaseURL(serverURL)
 
 	return connector, nil
 }

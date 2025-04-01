@@ -215,7 +215,7 @@ func (c *Connector) RunEventRelay(ctx context.Context, cfg *EventRelayConfig) er
 	}
 
 	// patch returns no content with 204. If it fails, it will return an error.
-	_, err = c.Client.Patch(ctx, location.String(), config)
+	_, err = c.JSONHTTPClient().Patch(ctx, location.String(), config)
 	if err != nil {
 		return fmt.Errorf("error running event relay: %w", err)
 	}
@@ -228,7 +228,7 @@ func (c *Connector) RunEventRelay(ctx context.Context, cfg *EventRelayConfig) er
 // nolint: lll
 // https://developer.salesforce.com/docs/atlas.en-us.chatterapi.meta/chatterapi/connect_responses_organization.htm?q=organization
 func (c *Connector) getOrganization(ctx context.Context) (map[string]*ajson.Node, error) {
-	resp, err := c.Client.Get(ctx, restAPISuffix+"/connect/organization")
+	resp, err := c.JSONHTTPClient().Get(ctx, restAPISuffix+"/connect/organization")
 	if err != nil {
 		return nil, err
 	}
@@ -281,7 +281,7 @@ func (c *Connector) postToSFAPI(ctx context.Context, body any, path string, enti
 		return nil, err
 	}
 
-	resp, err := c.Client.Post(ctx, location.String(), body)
+	resp, err := c.JSONHTTPClient().Post(ctx, location.String(), body)
 	if err != nil {
 		return nil, err
 	}
@@ -304,7 +304,7 @@ func (c *Connector) deleteToSFAPI(ctx context.Context, path string, entity strin
 		return nil, err
 	}
 
-	resp, err := c.Client.Delete(ctx, location.String())
+	resp, err := c.JSONHTTPClient().Delete(ctx, location.String())
 	if err != nil {
 		return nil, fmt.Errorf("error deleting %s: %w", entity, err)
 	}

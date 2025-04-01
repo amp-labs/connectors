@@ -29,13 +29,13 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:         "Write needs data payload",
-			Input:        common.WriteParams{ObjectName: "account"},
+			Input:        common.WriteParams{ObjectName: "Account"},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingRecordData},
 		},
 		{
 			Name:  "Error response understood for creating with unknown field",
-			Input: common.WriteParams{ObjectName: "account", RecordId: "003ak000004dQCUAA2", RecordData: "dummy"},
+			Input: common.WriteParams{ObjectName: "Account", RecordId: "003ak000004dQCUAA2", RecordData: "dummy"},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusBadRequest, responseUnknownField),
@@ -47,7 +47,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "Error response understood for updating reserved field",
-			Input: common.WriteParams{ObjectName: "account", RecordId: "003ak000004dQCUAA2", RecordData: "dummy"},
+			Input: common.WriteParams{ObjectName: "Account", RecordId: "003ak000004dQCUAA2", RecordData: "dummy"},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusBadRequest, responseInvalidFieldUpsert),
@@ -59,11 +59,12 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "Write must act as an Update",
-			Input: common.WriteParams{ObjectName: "account", RecordId: "003ak000004dQCUAA2", RecordData: "dummy"},
+			Input: common.WriteParams{ObjectName: "Account", RecordId: "003ak000004dQCUAA2", RecordData: "dummy"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
+					mockcond.PathSuffix("/services/data/v59.0/sobjects/Account/003ak000004dQCUAA2"),
 					mockcond.QueryParam("_HttpMethod", "PATCH"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCreateOK),
@@ -78,11 +79,14 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "Valid creation of account",
-			Input: common.WriteParams{ObjectName: "accounts", RecordData: "dummy"},
+			Input: common.WriteParams{ObjectName: "Account", RecordData: "dummy"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.MethodPOST(),
-				Then:  mockserver.Response(http.StatusOK, responseCreateOK),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.PathSuffix("/services/data/v59.0/sobjects/Account"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseCreateOK),
 			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,
@@ -94,7 +98,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "OK Response, but with errors field",
-			Input: common.WriteParams{ObjectName: "accounts", RecordData: "dummy"},
+			Input: common.WriteParams{ObjectName: "Account", RecordData: "dummy"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If:    mockcond.MethodPOST(),
