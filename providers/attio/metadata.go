@@ -114,7 +114,7 @@ func (c *Connector) getObjectAttributes(
 		}
 	}
 
-	resp, err := c.Client.Get(ctx, url.String())
+	resp, err := c.JSONHTTPClient().Get(ctx, url.String())
 	if err != nil {
 		return nil, false, err
 	}
@@ -134,7 +134,7 @@ func (c *Connector) getObjectDisplayName(ctx context.Context, obj string) (strin
 		return "", err
 	}
 
-	resp, err := c.Client.Get(ctx, url.String())
+	resp, err := c.JSONHTTPClient().Get(ctx, url.String())
 	if err != nil {
 		return "", err
 	}
@@ -269,17 +269,17 @@ func (c *Connector) getDefaultValues(ctx context.Context, o Data) (fields []comm
 		return nil, err
 	}
 
-	resp, err := c.Client.Get(ctx, url.String())
+	resp, err := c.JSONHTTPClient().Get(ctx, url.String())
 	if err != nil {
 		return nil, err
 	}
 
-	objectAttribute, err := common.UnmarshalJSON[objectAttribute](resp)
+	attribute, err := common.UnmarshalJSON[objectAttribute](resp)
 	if err != nil {
 		return nil, err
 	}
 
-	for _, title := range objectAttribute.Data {
+	for _, title := range attribute.Data {
 		fields = append(fields, common.FieldValue{
 			Value:        title.Title,
 			DisplayValue: title.Title,
