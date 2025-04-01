@@ -41,14 +41,16 @@ func TestWriteModuleMeeting(t *testing.T) { //nolint:funlen
 				common.ErrOperationNotSupportedForObject,
 			},
 		},
-
 		{
 			Name:  "Create tracking fields as POST",
 			Input: common.WriteParams{ObjectName: "tracking_fields", RecordData: "dummy"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.MethodPOST(),
-				Then:  mockserver.Response(http.StatusOK, responseCreateTrackingField),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.PathSuffix("/v2/tracking_fields"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseCreateTrackingField),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
@@ -70,8 +72,11 @@ func TestWriteModuleMeeting(t *testing.T) { //nolint:funlen
 			Input: common.WriteParams{ObjectName: "tracking_fields", RecordId: "a32CJji-weJ92", RecordData: "dummy"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.MethodPUT(),
-				Then:  mockserver.Response(http.StatusOK, responseUpdateTrackingField),
+				If: mockcond.And{
+					mockcond.MethodPUT(),
+					mockcond.PathSuffix("/v2/tracking_fields/a32CJji-weJ92"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseUpdateTrackingField),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{

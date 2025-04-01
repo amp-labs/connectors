@@ -2,8 +2,8 @@ package zoom
 
 import (
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/zoom/metadata"
 )
@@ -11,58 +11,40 @@ import (
 const apiVersion = "/v2"
 
 type Connector struct {
-	BaseURL string
-	Client  *common.JSONHTTPClient
-	Module  common.Module
+	// Basic connector
+	*components.Connector
 }
 
-func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	params, err := paramsbuilder.Apply(parameters{}, opts, WithModule(providers.ModuleZoomMeeting))
+// NewConnector is an old constructor, use NewConnectorV2.
+// Deprecated.
+func NewConnector(opts ...Option) (*Connector, error) {
+	params, err := newParams(opts)
 	if err != nil {
 		return nil, err
 	}
 
-	conn = &Connector{
-		Client: &common.JSONHTTPClient{
-			HTTPClient: params.Client.Caller,
-		},
-		Module: params.Selection,
-	}
+	return NewConnectorV2(*params)
+}
 
-	providerInfo, err := providers.ReadInfo(conn.Provider())
-	if err != nil {
-		return nil, err
-	}
+func NewConnectorV2(params common.Parameters) (*Connector, error) {
+	return components.Initialize(providers.Zoom, params, constructor)
+}
 
-	conn.setBaseURL(providerInfo.BaseURL)
-
-	return conn, nil
+func constructor(base *components.Connector) (*Connector, error) {
+	return &Connector{Connector: base}, nil
 }
 
 func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
-	path, err := metadata.Schemas.LookupURLPath(c.Module.ID, objectName)
+	path, err := metadata.Schemas.LookupURLPath(c.Module(), objectName)
 	if err != nil {
 		return nil, err
 	}
 
-	return urlbuilder.New(c.BaseURL, apiVersion, path)
+	return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, path)
 }
 
 func (c *Connector) getWriteURL(objectName string) (*urlbuilder.URL, error) {
 	path := objectNameToWritePath.Get(objectName)
 
-	return urlbuilder.New(c.BaseURL, apiVersion, path)
-}
-
-func (c *Connector) Provider() providers.Provider {
-	return providers.Zoom
-}
-
-func (c *Connector) String() string {
-	return c.Provider() + ".Connector"
-}
-
-func (c *Connector) setBaseURL(newURL string) {
-	c.BaseURL = newURL
-	c.Client.HTTPClient.Base = newURL
+	return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, path)
 }
