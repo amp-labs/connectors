@@ -2,8 +2,8 @@ package attio
 
 import (
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -12,47 +12,29 @@ const (
 )
 
 type Connector struct {
-	BaseURL string
-	Client  *common.JSONHTTPClient
+	// Basic connector
+	*components.Connector
 }
 
-func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	params, err := paramsbuilder.Apply(parameters{}, opts)
+// NewConnector is an old constructor, use NewConnectorV2.
+// Deprecated.
+func NewConnector(opts ...Option) (*Connector, error) {
+	params, err := newParams(opts)
 	if err != nil {
 		return nil, err
 	}
 
-	conn = &Connector{
-		Client: &common.JSONHTTPClient{
-			HTTPClient: params.Client.Caller,
-		},
-	}
+	return NewConnectorV2(*params)
+}
 
-	// Read provider info
-	providerInfo, err := providers.ReadInfo(conn.Provider())
-	if err != nil {
-		return nil, err
-	}
+func NewConnectorV2(params common.Parameters) (*Connector, error) {
+	return components.Initialize(providers.Attio, params, constructor)
+}
 
-	conn.setBaseURL(providerInfo.BaseURL)
-
-	return conn, nil
+func constructor(base *components.Connector) (*Connector, error) {
+	return &Connector{Connector: base}, nil
 }
 
 func (c *Connector) getApiURL(arg string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.BaseURL, apiVersion, arg)
-}
-
-func (c *Connector) setBaseURL(newURL string) {
-	c.BaseURL = newURL
-	c.Client.HTTPClient.Base = newURL
-}
-
-// Provider returns the connector provider.
-func (c *Connector) Provider() providers.Provider {
-	return providers.Attio
-}
-
-func (c *Connector) String() string {
-	return c.Provider() + ".Connector"
+	return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, arg)
 }
