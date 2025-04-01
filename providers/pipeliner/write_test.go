@@ -98,8 +98,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			Input: common.WriteParams{ObjectName: "notes", RecordData: "dummy"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.MethodPOST(),
-				Then:  mockserver.Response(http.StatusOK, responseCreateNote),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.PathSuffix("/api/v100/rest/spaces/test-workspace/entities/notes"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseCreateNote),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
@@ -123,8 +126,12 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.MethodPATCH(),
-				Then:  mockserver.Response(http.StatusOK, responseUpdateNote),
+				If: mockcond.And{
+					mockcond.MethodPATCH(),
+					mockcond.PathSuffix("/api/v100/rest/spaces/test-workspace/entities/notes/" +
+						"019097b8-a5f4-ca93-62c5-5a25c58afa63"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseUpdateNote),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
