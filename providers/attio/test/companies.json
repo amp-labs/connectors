@@ -22,6 +22,8 @@
         "type": "domain",
         "is_writable": true,
         "is_multiselect": true,
+        "is_default_value_enabled": false,
+        "default_value":null,
         "created_at": "2025-03-12T07:55:28.407000000Z"
       },
       {

@@ -16,12 +16,15 @@ import (
 func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
-	listresponse := testutils.DataFromFile(t, "lists.json")
-	notesresponse := testutils.DataFromFile(t, "notes.json")
-	workspacemembersresponse := testutils.DataFromFile(t, "workspace_members.json")
-	tasksresponse := testutils.DataFromFile(t, "tasks.json")
-	companiesresponse := testutils.DataFromFile(t, "companies.json")
+	listResponse := testutils.DataFromFile(t, "lists.json")
+	notesResponse := testutils.DataFromFile(t, "notes.json")
+	workspacemembersResponse := testutils.DataFromFile(t, "workspace_members.json")
+	tasksResponse := testutils.DataFromFile(t, "tasks.json")
+	companiesResponse := testutils.DataFromFile(t, "companies.json")
 	companiesObjectResponse := []byte(`{"data": {"plural_noun": "Companies"}}`)
+	usersResponse := testutils.DataFromFile(t, "users.json")
+	optionsResponse := testutils.DataFromFile(t, "options.json")
+	usersObjectResponse := []byte(`{"data": {"plural_noun": "Users"}}`)
 
 	tests := []testroutines.Metadata{
 		{
@@ -31,27 +34,36 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:  "Successfully describe multiple object with metadata",
-			Input: []string{"lists", "workspace_members", "notes", "tasks", "companies"},
+			Input: []string{"lists", "workspace_members", "notes", "tasks", "companies", "users"},
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
 					If:   mockcond.PathSuffix("/v2/lists"),
-					Then: mockserver.Response(http.StatusOK, listresponse),
+					Then: mockserver.Response(http.StatusOK, listResponse),
 				}, {
 					If:   mockcond.PathSuffix("/v2/workspace_members"),
-					Then: mockserver.Response(http.StatusOK, workspacemembersresponse),
+					Then: mockserver.Response(http.StatusOK, workspacemembersResponse),
 				}, {
 					If:   mockcond.PathSuffix("/v2/notes"),
-					Then: mockserver.Response(http.StatusOK, notesresponse),
+					Then: mockserver.Response(http.StatusOK, notesResponse),
 				}, {
 					If:   mockcond.PathSuffix("/v2/tasks"),
-					Then: mockserver.Response(http.StatusOK, tasksresponse),
+					Then: mockserver.Response(http.StatusOK, tasksResponse),
 				}, {
 					If:   mockcond.PathSuffix("/v2/objects/companies/attributes"),
-					Then: mockserver.Response(http.StatusOK, companiesresponse),
+					Then: mockserver.Response(http.StatusOK, companiesResponse),
 				}, {
 					If:   mockcond.PathSuffix("/v2/objects/companies"),
 					Then: mockserver.Response(http.StatusOK, companiesObjectResponse),
+				}, {
+					If:   mockcond.PathSuffix("/v2/objects/users/attributes"),
+					Then: mockserver.Response(http.StatusOK, usersResponse),
+				}, {
+					If:   mockcond.PathSuffix("/v2/objects/users"),
+					Then: mockserver.Response(http.StatusOK, usersObjectResponse),
+				}, {
+					If:   mockcond.PathSuffix("/v2/objects/ffbca575-69c4-4080-bf98-91d79aeea4b1/attributes/89c07285-4d31-4fa7-9cbf-779c5f4debf1/options"),
+					Then: mockserver.Response(http.StatusOK, optionsResponse),
 				},
 				},
 			}.Server(),
@@ -227,6 +239,41 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							"name":       "name",
 							"created_at": "created_at",
 							"created_by": "created_by",
+						},
+					},
+					"users": {
+						DisplayName: "Users",
+						Fields: map[string]common.FieldMetadata{
+							"record_id": {
+								DisplayName:  "record_id",
+								ValueType:    "string",
+								ProviderType: "text",
+								ReadOnly:     true,
+								Values:       nil,
+							},
+							"user_id": {
+								DisplayName:  "user_id",
+								ValueType:    "string",
+								ProviderType: "text",
+								ReadOnly:     false,
+								Values:       nil,
+							},
+							"education": {
+								DisplayName:  "education",
+								ValueType:    "multiSelect",
+								ProviderType: "select",
+								ReadOnly:     false,
+								Values: common.FieldValues{
+									{Value: "UG", DisplayValue: "UG"},
+									{Value: "PG", DisplayValue: "PG"},
+									{Value: "Diploma", DisplayValue: "Diploma"},
+								},
+							},
+						},
+						FieldsMap: map[string]string{
+							"record_id": "record_id",
+							"user_id":   "user_id",
+							"education": "education",
 						},
 					},
 				},

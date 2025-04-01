@@ -1,0 +1,60 @@
+{
+  "data": [
+    {
+      "id": {
+        "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+        "object_id": "ffbca575-69c4-4080-bf98-91d79aeea4b1",
+        "attribute_id": "06826311-cf4c-4c4b-a1fa-f14ce70d0004"
+      },
+      "title": "Record ID",
+      "api_slug": "record_id",
+      "type": "text",
+      "is_writable": false,
+      "is_multiselect": false,
+      "is_default_value_enabled": false
+    },
+    {
+      "id": {
+        "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+        "object_id": "ffbca575-69c4-4080-bf98-91d79aeea4b1",
+        "attribute_id": "529eea7a-2c2b-4d89-b2f7-acd3b3c6a719"
+      },
+      "title": "User ID",
+      "api_slug": "user_id",
+      "type": "text",
+      "is_writable": true,
+      "is_multiselect": false,
+      "is_default_value_enabled": false
+    },
+    {
+      "id": {
+        "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+        "object_id": "ffbca575-69c4-4080-bf98-91d79aeea4b1",
+        "attribute_id": "89c07285-4d31-4fa7-9cbf-779c5f4debf1"
+      },
+      "title": "Education",
+      "api_slug": "education",
+      "type": "select",
+      "is_writable": true,
+      "is_multiselect": true,
+      "is_default_value_enabled": true,
+      "default_value": {
+        "type": "static",
+        "template": [
+          {
+            "option": "4ee3b77e-ef94-46b1-b76f-357482703388",
+            "attribute_type": "select"
+          },
+          {
+            "option": "2e41af64-8786-4ccf-9331-a5f8bfd17025",
+            "attribute_type": "select"
+          },
+          {
+            "option": "049df4b9-adf7-4f38-ae5c-9abf2abfadb8",
+            "attribute_type": "select"
+          }
+        ]
+      }
+    }
+  ]
+}
