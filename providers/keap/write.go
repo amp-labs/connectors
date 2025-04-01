@@ -21,19 +21,19 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 	var write common.WriteMethod
 
 	if len(config.RecordId) == 0 {
-		if supportedObjectsByCreate[c.Module.ID].Has(config.ObjectName) {
-			write = c.Client.Post
+		if supportedObjectsByCreate[c.Module()].Has(config.ObjectName) {
+			write = c.JSONHTTPClient().Post
 		}
 	} else {
 		// Update is done either by PUT or PATCH. There is no object present in both sets.
-		if supportedObjectsByUpdatePUT[c.Module.ID].Has(config.ObjectName) {
-			write = c.Client.Put
+		if supportedObjectsByUpdatePUT[c.Module()].Has(config.ObjectName) {
+			write = c.JSONHTTPClient().Put
 
 			url.AddPath(config.RecordId)
 		}
 
-		if supportedObjectsByUpdatePATCH[c.Module.ID].Has(config.ObjectName) {
-			write = c.Client.Patch
+		if supportedObjectsByUpdatePATCH[c.Module()].Has(config.ObjectName) {
+			write = c.JSONHTTPClient().Patch
 
 			url.AddPath(config.RecordId)
 		}
@@ -57,7 +57,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 	}
 
 	// write response was with payload
-	return constructWriteResult(config, c.Module.ID, body)
+	return constructWriteResult(config, c.Module(), body)
 }
 
 func constructWriteResult(
