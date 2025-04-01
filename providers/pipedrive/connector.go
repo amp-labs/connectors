@@ -2,8 +2,8 @@ package pipedrive
 
 import (
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/pipedrive/metadata"
 )
@@ -15,58 +15,37 @@ const (
 
 // Connector represents the Pipedrive Connector.
 type Connector struct {
-	BaseURL string
-	Client  *common.JSONHTTPClient
-	Module  common.Module
+	// Basic connector
+	*components.Connector
 }
 
-// NewConnector constructs the Pipedrive Connector and returns it, Fails
-// if any of the required fields are not instantiated.
-func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	params, err := paramsbuilder.Apply(parameters{}, opts)
+// NewConnector is an old constructor, use NewConnectorV2.
+// Deprecated.
+func NewConnector(opts ...Option) (*Connector, error) {
+	params, err := newParams(opts)
 	if err != nil {
 		return nil, err
 	}
 
-	conn = &Connector{
-		Client: &common.JSONHTTPClient{
-			HTTPClient: params.Client.Caller,
-		},
-	}
-
-	providerInfo, err := providers.ReadInfo(conn.Provider())
-	if err != nil {
-		return nil, err
-	}
-
-	conn.setBaseURL(providerInfo.BaseURL)
-
-	return conn, nil
+	return NewConnectorV2(*params)
 }
 
-// Provider returns the pipedrive provider instance.
-func (c *Connector) Provider() providers.Provider {
-	return providers.Pipedrive
+func NewConnectorV2(params common.Parameters) (*Connector, error) {
+	return components.Initialize(providers.Pipedrive, params, constructor)
 }
 
-// String implements the fmt.Stringer interface.
-func (c *Connector) String() string {
-	return c.Provider() + ".Connector"
-}
-
-func (c *Connector) setBaseURL(newURL string) {
-	c.BaseURL = newURL
-	c.Client.HTTPClient.Base = newURL
+func constructor(base *components.Connector) (*Connector, error) {
+	return &Connector{Connector: base}, nil
 }
 
 // getAPIURL constructs a specific object's resource URL in the format
 // `{{baseURL}}/{{version}}/{{objectName}}`.
 func (c *Connector) getAPIURL(arg string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.BaseURL, apiVersion, arg)
+	return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, arg)
 }
 
 func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
-	path, err := metadata.Schemas.LookupURLPath(c.Module.ID, objectName)
+	path, err := metadata.Schemas.LookupURLPath(c.Module(), objectName)
 	if err != nil {
 		return nil, err
 	}

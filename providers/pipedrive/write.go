@@ -30,9 +30,9 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 	if len(config.RecordId) != 0 {
 		url.AddPath(config.RecordId)
 
-		write = c.Client.Put
+		write = c.JSONHTTPClient().Put
 	} else {
-		write = c.Client.Post
+		write = c.JSONHTTPClient().Post
 	}
 
 	resp, err := write(ctx, url.String(), config.RecordData)
