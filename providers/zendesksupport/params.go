@@ -21,7 +21,7 @@ type parameters struct {
 	paramsbuilder.Module
 }
 
-func newParams(opts []Option) (*common.Parameters, error) { // nolint:unused
+func newParams(opts []Option) (*common.Parameters, error) {
 	oldParams, err := paramsbuilder.Apply(parameters{}, opts,
 		WithModule(providers.ModuleZendeskTicketing),
 	)
