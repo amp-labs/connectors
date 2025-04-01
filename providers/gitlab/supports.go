@@ -78,11 +78,53 @@ func supportedOperations() components.EndpointRegistryInput {
 		"web_commits/public_key",
 	}
 
+	writeSupport := []string{
+		"admin/ci/variables",
+		"applications",
+		"broadcast_messages",
+		"bulk_imports",
+		"chat/completions",
+		"code_suggestions/completions",
+		"deploy_keys",
+		"geo_nodes",
+		"geo_sites",
+		"group_repository_storage_moves",
+		"groups",
+		"hooks",
+		"import/bitbucket",
+		"import/bitbucket_server",
+		"import/github",
+		"import/github/cancel",
+		"import/github/gists",
+		"member_roles",
+		"organizations",
+		"project_aliases",
+		"project_repository_storage_moves",
+		"projects",
+		"runners",
+		"security/vulnerability_exports",
+		"service_accounts",
+		"snippets",
+		"todos/mark_as_done",
+		"topics",
+		"user/emails",
+		"user/gpg_keys",
+		"user/keys",
+		"user/personal_access_tokens",
+		"user/runners",
+		"user/support_pin",
+		"users",
+	}
+
 	return components.EndpointRegistryInput{
 		staticschema.RootModuleID: {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
+				Support:  components.WriteSupport,
 			},
 		},
 	}
