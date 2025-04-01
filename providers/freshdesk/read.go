@@ -16,7 +16,7 @@ func (conn *Connector) Read(ctx context.Context, config common.ReadParams) (*com
 		return nil, err
 	}
 
-	resp, err := conn.Client.Get(ctx, url.String())
+	resp, err := conn.JSONHTTPClient().Get(ctx, url.String())
 	if err != nil {
 		return nil, err
 	}

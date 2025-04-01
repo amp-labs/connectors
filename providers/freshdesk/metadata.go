@@ -34,7 +34,7 @@ func (conn *Connector) ListObjectMetadata(ctx context.Context,
 
 		url.WithQueryParam(pageKey, metadataPage)
 
-		response, err := conn.Client.Get(ctx, url.String())
+		response, err := conn.JSONHTTPClient().Get(ctx, url.String())
 		if err != nil {
 			return nil, err
 		}
