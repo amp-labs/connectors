@@ -29,10 +29,10 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 	var write common.WriteMethod
 	if len(config.RecordId) == 0 {
 		// writing to the entity without id means creating a new record.
-		write = c.Client.Post
+		write = c.JSONHTTPClient().Post
 	} else {
 		// updating resource by put method.
-		write = c.Client.Put
+		write = c.JSONHTTPClient().Put
 
 		url.AddPath(config.RecordId)
 	}
