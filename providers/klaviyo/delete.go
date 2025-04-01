@@ -11,7 +11,7 @@ func (c *Connector) Delete(ctx context.Context, config common.DeleteParams) (*co
 		return nil, err
 	}
 
-	if !supportedObjectsByDelete[c.Module.ID].Has(config.ObjectName) {
+	if !supportedObjectsByDelete[c.Module()].Has(config.ObjectName) {
 		return nil, common.ErrOperationNotSupportedForObject
 	}
 
@@ -23,7 +23,7 @@ func (c *Connector) Delete(ctx context.Context, config common.DeleteParams) (*co
 	url.AddPath(config.RecordId)
 
 	// 200 OK is expected
-	_, err = c.Client.Delete(ctx, url.String(), c.revisionHeader())
+	_, err = c.JSONHTTPClient().Delete(ctx, url.String(), c.revisionHeader())
 	if err != nil {
 		return nil, err
 	}
