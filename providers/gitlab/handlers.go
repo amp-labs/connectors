@@ -14,7 +14,7 @@ const (
 	perPageQuery     = "per_page"
 	pageQuery        = "page"
 	metadataPageSize = "1"
-	pageSize         = "1"
+	pageSize         = "100"
 )
 
 func (c *Connector) buildSingleHandlerRequest(ctx context.Context, objectName string) (*http.Request, error) {

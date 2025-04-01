@@ -8,22 +8,21 @@ import (
 
 func records(objectName string) common.RecordsFunc {
 	return func(node *ajson.Node) ([]map[string]any, error) {
-		switch objectResponders.Has(objectName) {
-		case true:
+		if objectResponders.Has(objectName) {
 			record, err := jsonquery.Convertor.ObjectToMap(node)
 			if err != nil {
 				return nil, err
 			}
 
 			return []map[string]any{record}, nil
-		default:
-			data, err := jsonquery.New(node).ArrayOptional("")
-			if err != nil {
-				return nil, err
-			}
-
-			return jsonquery.Convertor.ArrayToMap(data)
 		}
+
+		data, err := jsonquery.New(node).ArrayOptional("")
+		if err != nil {
+			return nil, err
+		}
+
+		return jsonquery.Convertor.ArrayToMap(data)
 	}
 }
 
