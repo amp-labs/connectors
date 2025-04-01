@@ -84,8 +84,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.MethodPUT(),
-				Then:  mockserver.Response(http.StatusOK, updateContactsResponse),
+				If: mockcond.And{
+					mockcond.MethodPUT(),
+					mockcond.PathSuffix("/crm/v6/Contacts/7e5209b8-bd4e-41d9-bbcd-2f9bab7d4030"),
+				},
+				Then: mockserver.Response(http.StatusOK, updateContactsResponse),
 			}.Server(),
 			Expected: &common.WriteResult{
 				Success: true,

@@ -21,7 +21,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 
 	headers := constructHeaders(config)
 
-	res, err := c.Client.Get(ctx, url.String(), headers...)
+	res, err := c.JSONHTTPClient().Get(ctx, url.String(), headers...)
 	if err != nil {
 		return nil, err
 	}
