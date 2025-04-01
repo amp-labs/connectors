@@ -27,18 +27,18 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 			return nil, common.ErrOperationNotSupportedForObject
 		}
 
-		write = c.Client.Post
+		write = c.JSONHTTPClient().Post
 		if config.ObjectName == objectNameSnippets {
 			// https://docs.customer.io/api/app/#operation/listSnippets
 			// Snippets are create and updated via PUT.
-			write = c.Client.Put
+			write = c.JSONHTTPClient().Put
 		}
 	} else {
 		if !supportedObjectsByUpdate.Has(config.ObjectName) {
 			return nil, common.ErrOperationNotSupportedForObject
 		}
 
-		write = c.Client.Put
+		write = c.JSONHTTPClient().Put
 
 		url.AddPath(config.RecordId)
 	}
