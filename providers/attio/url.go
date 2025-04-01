@@ -21,3 +21,8 @@ func (c *Connector) getObjectsURL(objName string) (*urlbuilder.URL, error) {
 
 	return urlbuilder.New(c.BaseURL, apiVersion, relativeURL)
 }
+
+// Relative URL for retrieving standard and custom object read URL.
+func (c *Connector) getObjectReadURL(objName string) (*urlbuilder.URL, error) {
+	return urlbuilder.New(c.BaseURL, apiVersion, "objects", objName, "records", "query")
+}
