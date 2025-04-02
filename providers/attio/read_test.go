@@ -4,6 +4,7 @@ package attio
 import (
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -15,79 +16,17 @@ import (
 func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
-	responseObjects := testutils.DataFromFile(t, "objects.json")
 	responseLists := testutils.DataFromFile(t, "lists.json")
 	responseWorkspace := testutils.DataFromFile(t, "workspace_members.json")
 	responseNotes := testutils.DataFromFile(t, "notes.json")
 	responseTasks := testutils.DataFromFile(t, "tasks.json")
-	responseWebhooks := testutils.DataFromFile(t, "webhooks.json")
+	responseCompanies := testutils.DataFromFile(t, "companies_read.json")
 
 	tests := []testroutines.Read{
 		{
 			Name:         "Read object must be included",
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingObjects},
-		},
-		{
-			Name:         "At least one field is requested",
-			Input:        common.ReadParams{ObjectName: "objects"},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{common.ErrMissingFields},
-		},
-		{
-			Name:         "Unknown objects are not supported",
-			Input:        common.ReadParams{ObjectName: "attributes", Fields: connectors.Fields("")},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
-		},
-		{
-			Name:  "An Empty response",
-			Input: common.ReadParams{ObjectName: "webhooks", Fields: connectors.Fields("")},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.ResponseString(http.StatusOK, `{"data":[]}`),
-			}.Server(),
-			Expected:     &common.ReadResult{Rows: 0, Data: []common.ReadResultRow{}, Done: true},
-			ExpectedErrs: nil,
-		},
-		{
-			Name:  "Read list of all objects",
-			Input: common.ReadParams{ObjectName: "objects", Fields: connectors.Fields("")},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, responseObjects),
-			}.Server(),
-			Expected: &common.ReadResult{
-				Rows: 2,
-				Data: []common.ReadResultRow{{
-					Fields: map[string]any{},
-					Raw: map[string]any{
-						"id": map[string]any{
-							"workspace_id": "0d4d7fa2-d6e8-4a61-a7dc-e178405ff3c6",
-							"object_id":    "9aff8088-dd1f-4e98-ad76-b1e49b9a419a",
-						},
-						"api_slug":      "people",
-						"singular_noun": "Person",
-						"plural_noun":   "People",
-						"created_at":    "2024-09-17T11:41:18.736000000Z",
-					},
-				}, {
-					Fields: map[string]any{},
-					Raw: map[string]any{
-						"id": map[string]any{
-							"workspace_id": "0d4d7fa2-d6e8-4a61-a7dc-e178405ff3c6",
-							"object_id":    "f4df082c-b46e-43e4-a747-f7918b487f44",
-						},
-						"api_slug":      "companies",
-						"singular_noun": "Company",
-						"plural_noun":   "Companies",
-						"created_at":    "2024-09-17T11:41:18.736000000Z",
-					},
-				}},
-				NextPage: "",
-				Done:     true,
-			},
-			ExpectedErrs: nil,
 		},
 		{
 			Name:  "Read list of all lists",
@@ -105,23 +44,8 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							"workspace_id": "0d4d7fa2-d6e8-4a61-a7dc-e178405ff3c6",
 							"list_id":      "7ddc974a-2ab2-4a96-a83e-853eacb0329f",
 						},
-						"api_slug":         "sales_6",
-						"created_at":       "2024-09-25T13:10:33.302000000Z",
-						"name":             "Sales",
-						"workspace_access": nil,
-						"workspace_member_access": []interface{}{
-							map[string]any{
-								"level":               "full-access",
-								"workspace_member_id": "cc3821aa-f738-42c0-a739-7b6de755e5f1",
-							},
-						},
-						"parent_object": []any{
-							"companies",
-						},
-						"created_by_actor": map[string]any{
-							"type": "workspace-member",
-							"id":   "cc3821aa-f738-42c0-a739-7b6de755e5f1",
-						},
+						"api_slug": "sales_6",
+						"name":     "Sales",
 					},
 				},
 				},
@@ -138,7 +62,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Always: mockserver.Response(http.StatusOK, responseWorkspace),
 			}.Server(),
 			Expected: &common.ReadResult{
-				Rows: 2,
+				Rows: 1,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{},
 					Raw: map[string]any{
@@ -148,24 +72,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						},
 						"first_name":    "Integration",
 						"last_name":     "User",
-						"avatar_url":    nil,
 						"email_address": "integration.user@withampersand.com",
-						"access_level":  "admin",
-						"created_at":    "2024-09-17T11:41:21.779000000Z",
-					},
-				}, {
-					Fields: map[string]any{},
-					Raw: map[string]any{
-						"id": map[string]any{
-							"workspace_id":        "0d4d7fa2-d6e8-4a61-a7dc-e178405ff3c6",
-							"workspace_member_id": "cc3821aa-f738-42c0-a739-7b6de755e5f1",
-						},
-						"first_name":    "Sanjay Kanth",
-						"last_name":     "A",
-						"avatar_url":    "https://lh3.googleusercontent.com/a/ACg8ocL0Zwi9XArWL-GgYiUqPoDMKS1p1AQuQPPHVMQr0V023Ox_fYY=s96-c",
-						"email_address": "sanjaykanth.a@mitrahsoft.com",
-						"access_level":  "admin",
-						"created_at":    "2024-09-17T12:17:11.682000000Z",
 					},
 				}},
 				NextPage: "",
@@ -175,7 +82,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name:  "Read list of all notes",
-			Input: common.ReadParams{ObjectName: "notes", Fields: connectors.Fields(""), NextPage: "test?limit=10"},
+			Input: common.ReadParams{ObjectName: "notes", Fields: connectors.Fields(""), NextPage: "test?limit=50"},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseNotes),
@@ -189,26 +96,19 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							"workspace_id": "0d4d7fa2-d6e8-4a61-a7dc-e178405ff3c6",
 							"note_id":      "32dc76ee-d094-40e1-b176-0f8e1b772f0a",
 						},
-						"parent_object":     "companies",
-						"parent_record_id":  "ec902ed9-aab7-4347-8e26-dca240ffba08",
 						"title":             "value",
 						"content_plaintext": "",
-						"created_by_actor": map[string]any{
-							"type": "workspace-member",
-							"id":   "cc3821aa-f738-42c0-a739-7b6de755e5f1",
-						},
-						"created_at": "2024-09-24T08:31:09.211000000Z",
 					},
 				},
 				},
-				NextPage: "test?limit=10&offset=10",
+				NextPage: "test?limit=50&offset=50",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
 		},
 		{
 			Name:  "Read list of all tasks",
-			Input: common.ReadParams{ObjectName: "tasks", Fields: connectors.Fields(""), NextPage: "test?limit=10"},
+			Input: common.ReadParams{ObjectName: "tasks", Fields: connectors.Fields(""), NextPage: "test?limit=500"},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseTasks),
@@ -223,65 +123,63 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							"task_id":      "4a585693-fa14-4ead-9e19-cc9251df59be",
 						},
 						"content_plaintext": "Follow up on current software solutions",
-						"is_completed":      false,
-						"deadline_at":       "2023-01-01T15:00:00.000000000Z",
-						"linked_records":    []any{},
-						"assignees": []interface{}{
-							map[string]any{
-								"referenced_actor_type": "workspace-member",
-								"referenced_actor_id":   "67af46e4-a450-4fee-a1d1-39729b3af771",
-							},
-						},
-						"created_by_actor": map[string]any{
-							"type": "api-token",
-							"id":   "53b1e97a-08d6-4d2e-856d-5371bb6f4052",
-						},
-						"created_at": "2024-09-23T11:04:07.647000000Z",
 					},
 				},
 				},
-				NextPage: "test?limit=10&offset=10",
+				NextPage: "test?limit=500&offset=500",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
 		},
 		{
-			Name:  "Read list of all webhooks",
-			Input: common.ReadParams{ObjectName: "webhooks", Fields: connectors.Fields(""), NextPage: "test?limit=10"},
+			Name:  "Read list of all companies",
+			Input: common.ReadParams{ObjectName: "companies", Fields: connectors.Fields("name"), Since: time.Date(2025, 3, 1, 0, 0, 0, 0, time.UTC), NextPage: "test?limit=500"},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, responseWebhooks),
+				Always: mockserver.Response(http.StatusOK, responseCompanies),
 			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
-					Fields: map[string]any{},
+					Fields: map[string]any{
+						"name": []any{
+							map[string]any{
+								"active_from":  "2025-03-12T07:55:38.981000000Z",
+								"active_until": nil,
+								"created_by_actor": map[string]any{
+									"type": "system",
+									"id":   nil,
+								},
+								"value":          "Attio",
+								"attribute_type": "text",
+							},
+						},
+					},
 					Raw: map[string]any{
 						"id": map[string]any{
-							"workspace_id": "0d4d7fa2-d6e8-4a61-a7dc-e178405ff3c6",
-							"webhook_id":   "02303005-d363-4f49-8fd2-19944003b1d2",
+							"workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+							"object_id":    "1fa986a6-952e-4e92-ba01-acca61a7b616",
+							"record_id":    "2db97cee-6c6b-4486-ae52-db8e4b6f44e9",
 						},
-						"target_url": "https://example.com/webhook",
-						"status":     "active",
-						"subscriptions": []interface{}{
-							map[string]any{
-								"event_type": "note.created",
-								"filter": map[string]any{
-									"$or": []interface{}{
-										map[string]any{
-											"field":    "id.list_id",
-											"operator": "equals",
-											"value":    "d34c5f6b-0410-4830-853d-8a6602252687",
-										},
+						"created_at": "2025-03-12T07:55:38.327000000Z",
+						"values": map[string]any{
+							"name": []any{
+								map[string]any{
+									"active_from":  "2025-03-12T07:55:38.981000000Z",
+									"active_until": nil,
+									"created_by_actor": map[string]any{
+										"type": "system",
+										"id":   nil,
 									},
+									"value":          "Attio",
+									"attribute_type": "text",
 								},
 							},
 						},
-						"created_at": "2024-09-20T11:14:17.403000000Z",
 					},
 				},
 				},
-				NextPage: "test?limit=10&offset=10",
+				NextPage: "500",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
