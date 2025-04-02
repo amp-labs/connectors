@@ -9,7 +9,9 @@ const (
 	objectNameNotes            = "notes"
 )
 
-var supportedObjectsByWrite = datautils.NewSet( //nolint:gochecknoglobals
+// supportWriteObjects represents the APIs listed under the Attio API section in the docs
+// (this does not cover the entire Attio API). Reference: https://developers.attio.com/reference.
+var supportWriteObjects = datautils.NewSet( //nolint:gochecknoglobals
 	objectNameLists,
 	objectNameTasks,
 	objectNameNotes,

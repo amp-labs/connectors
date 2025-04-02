@@ -25,3 +25,8 @@ func (c *Connector) getOptionsURL(objName, attributeID string) (*urlbuilder.URL,
 func (c *Connector) getObjectReadURL(objName string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(c.BaseURL, apiVersion, "objects", objName, "records", "query")
 }
+
+// Relative URL for retrieving standarad and custom object write URL.
+func (c *Connector) getObjectWriteURL(objName string) (*urlbuilder.URL, error) {
+	return urlbuilder.New(c.BaseURL, apiVersion, "objects", objName, "records")
+}
