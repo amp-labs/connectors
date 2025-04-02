@@ -349,7 +349,7 @@ func constructTestConnector(serverURL string, moduleID common.ModuleID) (*Connec
 	}
 
 	// for testing we want to redirect calls to our mock server
-	connector.SetBaseURL(serverURL)
+	connector.SetURL(serverURL)
 
 	return connector, nil
 }
