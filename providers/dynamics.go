@@ -1,6 +1,8 @@
 // nolint:lll
 package providers
 
+import "github.com/amp-labs/connectors/common"
+
 const (
 	DynamicsBusinessCentral Provider = "dynamicsBusinessCentral"
 	DynamicsCRM             Provider = "dynamicsCRM"
@@ -61,6 +63,17 @@ func init() { // nolint:funlen
 			ExplicitWorkspaceRequired: true,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
+			},
+		},
+		Modules: &ModuleInfo{
+			string(common.ModuleRoot): {
+				BaseURL:     "https://{{.workspace}}.api.crm.dynamics.com/api/data/v9.2",
+				DisplayName: "Microsoft Dynamics CRM",
+				Support: ModuleSupport{
+					Read:      false,
+					Subscribe: false,
+					Write:     false,
+				},
 			},
 		},
 		Media: &Media{
