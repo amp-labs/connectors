@@ -21,7 +21,7 @@ type parameters struct {
 	paramsbuilder.Metadata
 }
 
-func newParams(opts []Option) (*common.Parameters, error) { // nolint:unused
+func newParams(opts []Option) (*common.Parameters, error) {
 	oldParams, err := paramsbuilder.Apply(parameters{}, opts,
 		WithModule(common.ModuleRoot), // The module is resolved on behalf of the user if the option is missing.
 	)
