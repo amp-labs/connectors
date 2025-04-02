@@ -9,6 +9,7 @@
         "api_slug": "record_id",
         "type": "text",
         "is_writable": false,
+        "is_multiselect": false,
         "created_at": "2025-03-12T07:55:28.407000000Z"
       },
       {
@@ -20,6 +21,9 @@
         "api_slug": "domains",
         "type": "domain",
         "is_writable": true,
+        "is_multiselect": true,
+        "is_default_value_enabled": false,
+        "default_value":null,
         "created_at": "2025-03-12T07:55:28.407000000Z"
       },
       {
@@ -31,6 +35,7 @@
         "api_slug": "name",
         "type": "text",
         "is_writable": true,
+        "is_multiselect": false,
         "created_at": "2025-03-12T07:55:28.407000000Z"
       },
       {
@@ -42,6 +47,7 @@
         "api_slug": "created_at",
         "type": "timestamp",
         "is_writable": false,
+        "is_multiselect": false,
         "created_at": "2025-03-12T07:55:28.407000000Z"
       },
       {
@@ -53,6 +59,7 @@
         "api_slug": "created_by",
         "type": "actor-reference",
         "is_writable": false,
+        "is_multiselect": false,
         "created_at": "2025-03-12T07:55:28.407000000Z"
       }
     ]
