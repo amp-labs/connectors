@@ -8,6 +8,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/atlassian"
 	connTest "github.com/amp-labs/connectors/test/atlassian"
 	"github.com/amp-labs/connectors/test/utils"
@@ -42,7 +43,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := connTest.GetAtlassianConnector(ctx)
+	conn := connTest.GetAtlassianConnector(ctx, common.ModuleID(providers.ModuleAtlassianJira))
 
 	slog.Info("> TEST Create/Update/Delete issue")
 	slog.Info("Creating issue")
@@ -108,7 +109,8 @@ func searchIssue(res *common.ReadResult, key, value string) map[string]any {
 
 func readIssue(ctx context.Context, conn *atlassian.Connector) *common.ReadResult {
 	res, err := conn.Read(ctx, common.ReadParams{
-		Fields: connectors.Fields("id", "fields"),
+		ObjectName: "issue",
+		Fields:     connectors.Fields("id", "fields"),
 	})
 	if err != nil {
 		utils.Fail("error reading from Atlassian", "error", err)

@@ -12,6 +12,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
+	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 	"github.com/go-test/deep"
 )
@@ -84,7 +85,7 @@ func TestGetPostAuthInfo(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintid
 			}
 
 			// for testing we want to redirect calls to our mock server
-			connector.SetURL(tt.server.URL)
+			testroutines.OverrideURLOrigin(connector.Transport, tt.server.URL)
 
 			if err != nil {
 				t.Fatalf("%s: failed to setup auth metadata connector %v", tt.name, err)
