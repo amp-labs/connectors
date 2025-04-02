@@ -1,0 +1,16 @@
+{
+  "data": [
+    {
+      "title": "UG",
+      "is_archived": false
+    },
+    {
+      "title": "PG",
+      "is_archived": false
+    },
+    {
+      "title": "Diploma",
+      "is_archived": false
+    }
+  ]
+}
