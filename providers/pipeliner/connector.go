@@ -3,61 +3,50 @@ package pipeliner
 import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
-	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/providers"
 )
 
 type Connector struct {
-	BaseURL   string
-	Workspace string
-	Module    common.Module
-	Client    *common.JSONHTTPClient
+	// Basic connector
+	*components.Connector
+
+	workspace string
 }
 
-func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	params, err := paramsbuilder.Apply(parameters{}, opts)
+// NewConnector is an old constructor, use NewConnectorV2.
+// Deprecated.
+func NewConnector(opts ...Option) (*Connector, error) {
+	params, err := newParams(opts)
 	if err != nil {
 		return nil, err
 	}
 
-	httpClient := params.Client.Caller
-	conn = &Connector{
-		Client: &common.JSONHTTPClient{
-			HTTPClient: httpClient,
-		},
-		Workspace: params.Workspace.Name,
-	}
+	return NewConnectorV2(*params)
+}
 
-	providerInfo, err := providers.ReadInfo(conn.Provider())
+func NewConnectorV2(params common.Parameters) (*Connector, error) {
+	conn, err := components.Initialize(providers.Pipeliner, params, constructor)
 	if err != nil {
 		return nil, err
 	}
 
-	// connector and its client must mirror base url and provide its own error parser
-	conn.setBaseURL(providerInfo.BaseURL)
-	conn.Client.HTTPClient.ErrorHandler = interpreter.ErrorHandler{
-		JSON: interpreter.NewFaultyResponder(errorFormats, statusCodeMapping),
-	}.Handle
+	conn.workspace = params.Workspace
 
 	return conn, nil
 }
 
-func (c *Connector) Provider() providers.Provider {
-	return providers.Pipeliner
-}
+func constructor(base *components.Connector) (*Connector, error) {
+	base.SetErrorHandler(interpreter.ErrorHandler{
+		JSON: interpreter.NewFaultyResponder(errorFormats, statusCodeMapping),
+	}.Handle)
 
-func (c *Connector) String() string {
-	return c.Provider() + ".Connector"
+	return &Connector{Connector: base}, nil
 }
 
 func (c *Connector) getURL(parts ...string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.BaseURL, append([]string{
-		"api/v100/rest/spaces/", c.Workspace, "/entities",
+	return urlbuilder.New(c.ProviderInfo().BaseURL, append([]string{
+		"api/v100/rest/spaces/", c.workspace, "/entities",
 	}, parts...)...)
-}
-
-func (c *Connector) setBaseURL(newURL string) {
-	c.BaseURL = newURL
-	c.Client.HTTPClient.Base = newURL
 }

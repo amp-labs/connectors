@@ -13,7 +13,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	if !supportedObjectsByRead[c.Module.ID].Has(config.ObjectName) {
+	if !supportedObjectsByRead[c.Module()].Has(config.ObjectName) {
 		return nil, common.ErrOperationNotSupportedForObject
 	}
 
@@ -22,7 +22,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	rsp, err := c.Client.Get(ctx, url.String())
+	rsp, err := c.JSONHTTPClient().Get(ctx, url.String())
 	if err != nil {
 		return nil, err
 	}

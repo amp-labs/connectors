@@ -42,10 +42,10 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 	if len(config.RecordId) > 0 {
 		url.AddPath(config.RecordId)
 
-		write = c.Client.Patch
+		write = c.JSONHTTPClient().Patch
 	} else {
 		// prepares the creating data request.
-		write = c.Client.Post
+		write = c.JSONHTTPClient().Post
 	}
 
 	req, err := constructWriteRequest(config)

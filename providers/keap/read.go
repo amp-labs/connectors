@@ -19,7 +19,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	if !supportedObjectsByRead[c.Module.ID].Has(config.ObjectName) {
+	if !supportedObjectsByRead[c.Module()].Has(config.ObjectName) {
 		return nil, common.ErrOperationNotSupportedForObject
 	}
 
@@ -30,21 +30,21 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 
 	// Pagination doesn't automatically attach query params which were used for the first page.
 	// Therefore, enforce request of "custom_fields" if object is applicable.
-	if objectsWithCustomFields[c.Module.ID].Has(config.ObjectName) {
+	if objectsWithCustomFields[c.Module()].Has(config.ObjectName) {
 		// Request custom fields.
 		url.WithQueryParam("optional_properties", "custom_fields")
 	}
 
-	res, err := c.Client.Get(ctx, url.String())
+	res, err := c.JSONHTTPClient().Get(ctx, url.String())
 	if err != nil {
 		return nil, err
 	}
 
-	responseFieldName := metadata.Schemas.LookupArrayFieldName(c.Module.ID, config.ObjectName)
+	responseFieldName := metadata.Schemas.LookupArrayFieldName(c.Module(), config.ObjectName)
 
 	return common.ParseResult(res,
 		c.parseReadRecords(ctx, config, responseFieldName),
-		makeNextRecordsURL(c.Module.ID),
+		makeNextRecordsURL(c.Module()),
 		common.GetMarshaledData,
 		config.Fields,
 	)
@@ -62,13 +62,13 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 		return nil, err
 	}
 
-	if c.Module.ID == common.ModuleID(providers.ModuleKeapV1) {
+	if c.Module() == common.ModuleID(providers.ModuleKeapV1) {
 		url.WithQueryParam("limit", strconv.Itoa(DefaultPageSize))
 
 		if !config.Since.IsZero() {
 			url.WithQueryParam("since", datautils.Time.FormatRFC3339inUTCWithMilliseconds(config.Since))
 		}
-	} else if c.Module.ID == common.ModuleID(providers.ModuleKeapV2) {
+	} else if c.Module() == common.ModuleID(providers.ModuleKeapV2) {
 		// Since parameter is not applicable to objects in Module V2.
 		if config.ObjectName == "contact_link_types" {
 			url.WithQueryParam("pageSize", strconv.Itoa(DefaultPageSize))
@@ -86,19 +86,19 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 func (c *Connector) requestCustomFields(
 	ctx context.Context, objectName string,
 ) (map[int]modelCustomField, error) {
-	if !objectsWithCustomFields[c.Module.ID].Has(objectName) {
+	if !objectsWithCustomFields[c.Module()].Has(objectName) {
 		// This object doesn't have custom fields, we are done.
 		return map[int]modelCustomField{}, nil
 	}
 
-	modulePath := metadata.Schemas.LookupModuleURLPath(c.Module.ID)
+	modulePath := metadata.Schemas.LookupModuleURLPath(c.Module())
 
 	url, err := c.getURL(modulePath, objectName, "model")
 	if err != nil {
 		return nil, errors.Join(ErrResolvingCustomFields, err)
 	}
 
-	res, err := c.Client.Get(ctx, url.String())
+	res, err := c.JSONHTTPClient().Get(ctx, url.String())
 	if err != nil {
 		return nil, errors.Join(ErrResolvingCustomFields, err)
 	}

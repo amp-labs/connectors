@@ -38,7 +38,6 @@ func main() {
 	utils.SetupLogging()
 
 	conn := msTest.GetConstantContactConnector(ctx)
-	defer utils.Close(conn)
 
 	slog.Info("> TEST Create/Update/Delete Contact")
 	slog.Info("Creating Contact")

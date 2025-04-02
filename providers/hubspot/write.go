@@ -37,10 +37,10 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 	}
 
 	if config.RecordId != "" {
-		write = c.Client.Patch
+		write = c.JSONHTTPClient().Patch
 		url = fmt.Sprintf("%s/%s", url, config.RecordId)
 	} else {
-		write = c.Client.Post
+		write = c.JSONHTTPClient().Post
 	}
 
 	// Hubspot requires everything to be wrapped in a "properties" object.

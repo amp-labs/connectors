@@ -110,7 +110,7 @@ const (
 var supportedObjectsByRead = metadata.Schemas.ObjectNames() //nolint:gochecknoglobals
 
 var supportedObjectsByCreate = map[common.ModuleID]datautils.StringSet{ //nolint:gochecknoglobals
-	"": datautils.NewSet(
+	common.ModuleRoot: datautils.NewSet(
 		objectNameAccountLinks,
 		objectNameAccountSessions,
 		objectNameAccounts,
@@ -193,7 +193,7 @@ var supportedObjectsByCreate = map[common.ModuleID]datautils.StringSet{ //nolint
 }
 
 var supportedObjectsByUpdate = map[common.ModuleID]datautils.StringSet{ //nolint:gochecknoglobals
-	"": datautils.NewSet(
+	common.ModuleRoot: datautils.NewSet(
 		objectNameAccounts,
 		objectNameCreditGrants,
 		objectNameBillingMeters,
@@ -252,7 +252,7 @@ var supportedObjectsByUpdate = map[common.ModuleID]datautils.StringSet{ //nolint
 }
 
 var supportedObjectsByDelete = map[common.ModuleID]datautils.StringSet{ //nolint:gochecknoglobals
-	"": datautils.NewSet(
+	common.ModuleRoot: datautils.NewSet(
 		objectNameAccounts,
 		objectNameApplePayDomain,
 		objectNameCoupons,

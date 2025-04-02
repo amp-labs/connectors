@@ -39,14 +39,14 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 		// no need to query several records.
 		url.WithQueryParam(limitQuery, "1")
 
-		res, err := c.Client.Get(ctx, url.String())
+		res, err := c.JSONHTTPClient().Get(ctx, url.String())
 		if err != nil {
 			objMetadata.Errors[obj] = err
 
 			continue
 		}
 
-		data, err := metadataMapper(res, c.Module.ID, obj)
+		data, err := metadataMapper(res, c.Module(), obj)
 		if err != nil {
 			return nil, err
 		}

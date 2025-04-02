@@ -2,43 +2,30 @@ package chilipiper
 
 import (
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/paramsbuilder"
+	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/providers"
 )
 
 type Connector struct {
-	BaseURL string
-	Client  *common.JSONHTTPClient
+	// Basic connector
+	*components.Connector
 }
 
+// NewConnector is an old constructor, use NewConnectorV2.
+// Deprecated.
 func NewConnector(opts ...Option) (*Connector, error) {
-	params, err := paramsbuilder.Apply(parameters{}, opts)
+	params, err := newParams(opts)
 	if err != nil {
 		return nil, err
 	}
 
-	providerInfo, err := providers.ReadInfo(providers.ChiliPiper)
-	if err != nil {
-		return nil, err
-	}
-
-	jsonClient := common.JSONHTTPClient{
-		HTTPClient: params.Caller,
-	}
-
-	connector := Connector{
-		Client: &jsonClient,
-	}
-
-	connector.BaseURL = providerInfo.BaseURL
-
-	return &connector, nil
+	return NewConnectorV2(*params)
 }
 
-func (conn *Connector) Provider() providers.Provider {
-	return providers.ChiliPiper
+func NewConnectorV2(params common.Parameters) (*Connector, error) {
+	return components.Initialize(providers.ChiliPiper, params, constructor)
 }
 
-func (conn *Connector) String() string {
-	return conn.Provider() + ".Connector"
+func constructor(base *components.Connector) (*Connector, error) {
+	return &Connector{Connector: base}, nil
 }
