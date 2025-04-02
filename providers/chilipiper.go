@@ -1,5 +1,7 @@
 package providers
 
+import "github.com/amp-labs/connectors/common"
+
 const ChiliPiper Provider = "chilipiper"
 
 func init() {
@@ -12,6 +14,17 @@ func init() {
 			Header: &ApiKeyOptsHeader{
 				Name:        "Authorization",
 				ValuePrefix: "Bearer ",
+			},
+		},
+		Modules: &ModuleInfo{
+			string(common.ModuleRoot): {
+				BaseURL:     "https://fire.chilipiper.com/api/fire-edge/v1/org",
+				DisplayName: "Chili Piper",
+				Support: ModuleSupport{
+					Read:      false,
+					Subscribe: false,
+					Write:     false,
+				},
 			},
 		},
 		//nolint:lll

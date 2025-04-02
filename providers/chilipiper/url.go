@@ -5,14 +5,12 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
-const restAPIVersionPrefix = "api/fire-edge/v1/org"
-
 func (conn *Connector) buildURL(objectName string, pageSize string) (string, error) {
 	if !supportedReadObjects.Has(objectName) {
 		return "", common.ErrObjectNotSupported
 	}
 
-	url, err := urlbuilder.New(conn.ProviderInfo().BaseURL, restAPIVersionPrefix, objectName)
+	url, err := conn.ModuleClient.URL(objectName)
 	if err != nil {
 		return "", err
 	}
@@ -22,12 +20,12 @@ func (conn *Connector) buildURL(objectName string, pageSize string) (string, err
 	return url.String(), nil
 }
 
-func (conn *Connector) buildWriteURL(object string) (*urlbuilder.URL, error) {
-	if !supportedWriteObjects.Has(object) {
+func (conn *Connector) buildWriteURL(objectName string) (*urlbuilder.URL, error) {
+	if !supportedWriteObjects.Has(objectName) {
 		return nil, common.ErrObjectNotSupported
 	}
 
-	writeURL, err := urlbuilder.New(conn.ProviderInfo().BaseURL, restAPIVersionPrefix, object)
+	writeURL, err := conn.ModuleClient.URL(objectName)
 	if err != nil {
 		return nil, err
 	}
