@@ -24,12 +24,7 @@ func main() {
 func MainFn() int {
 	ctx := context.Background()
 
-	err := testObjects(ctx)
-	if err != nil {
-		return 1
-	}
-
-	err = testLists(ctx)
+	err := testLists(ctx)
 	if err != nil {
 		return 1
 	}
@@ -44,66 +39,7 @@ func MainFn() int {
 		return 1
 	}
 
-	err = testWebhooks(ctx)
-	if err != nil {
-		return 1
-	}
-
 	return 0
-}
-
-func testObjects(ctx context.Context) error {
-	conn := attio.GetAttioConnector(ctx)
-
-	slog.Info("Creating the object")
-
-	params := common.WriteParams{
-		ObjectName: "objects",
-		RecordData: map[string]interface{}{
-			"data": map[string]string{
-				"api_slug":      "deal",
-				"singular_noun": "Deals",
-				"plural_noun":   "Dealss",
-			},
-		},
-		RecordId: "",
-	}
-
-	writeRes, err := Write(ctx, conn, params)
-	if err != nil {
-		fmt.Println("ERR: ", err)
-
-		return err
-	}
-
-	if err := constructResponse(writeRes); err != nil {
-		return err
-	}
-
-	slog.Info("Updating the object")
-
-	updateparams := common.WriteParams{
-		ObjectName: "objects",
-		RecordData: map[string]interface{}{
-			"data": map[string]string{
-				"singular_noun": "Deal",
-			},
-		},
-		RecordId: writeRes.Data["id"].(map[string]interface{})["object_id"].(string),
-	}
-
-	updateres, err := Write(ctx, conn, updateparams)
-	if err != nil {
-		fmt.Println("ERR: ", err)
-
-		return err
-	}
-
-	if err := constructResponse(updateres); err != nil {
-		return err
-	}
-
-	return nil
 }
 
 func testLists(ctx context.Context) error {
@@ -254,69 +190,6 @@ func testTasks(ctx context.Context) error {
 			},
 		},
 		RecordId: writeRes.Data["id"].(map[string]interface{})["task_id"].(string),
-	}
-
-	writeres, err := Write(ctx, conn, updateParams)
-	if err != nil {
-		fmt.Println("ERR: ", err)
-
-		return err
-	}
-
-	if err := constructResponse(writeres); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func testWebhooks(ctx context.Context) error {
-	conn := attio.GetAttioConnector(ctx)
-
-	slog.Info("Creating the webhooks")
-
-	writeParams := common.WriteParams{
-		ObjectName: "webhooks",
-		RecordData: map[string]any{
-			"data": map[string]any{
-				"target_url": "https://f87a-117-216-131-16.ngrok-free.app",
-				"subscriptions": []map[string]any{
-					{
-						"event_type": "note.deleted",
-						"filter":     nil,
-					},
-				},
-			},
-		},
-		RecordId: "",
-	}
-
-	writeRes, err := Write(ctx, conn, writeParams)
-	if err != nil {
-		fmt.Println("ERR: ", err)
-
-		return err
-	}
-
-	if err := constructResponse(writeRes); err != nil {
-		return err
-	}
-
-	slog.Info("Updating the webhooks")
-
-	updateParams := common.WriteParams{
-		ObjectName: "webhooks",
-		RecordData: map[string]any{
-			"data": map[string]any{
-				"subscriptions": []map[string]any{
-					{
-						"event_type": "note.created",
-						"filter":     nil,
-					},
-				},
-			},
-		},
-		RecordId: writeRes.Data["id"].(map[string]interface{})["webhook_id"].(string),
 	}
 
 	writeres, err := Write(ctx, conn, updateParams)
