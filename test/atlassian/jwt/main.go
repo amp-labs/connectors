@@ -18,8 +18,9 @@ func main() {
 
 	// Use conn
 	res, err := conn.Read(ctx, connectors.ReadParams{
-		Fields: connectors.Fields("id", "project", "description"),
-		Since:  time.Now().Add(-time.Hour * 24),
+		ObjectName: "issues",
+		Fields:     connectors.Fields("id", "project", "description"),
+		Since:      time.Now().Add(-time.Hour * 24),
 	})
 	if err != nil {
 		panic(err)
