@@ -9,8 +9,6 @@ import (
 	"github.com/amp-labs/connectors/providers/constantcontact/metadata"
 )
 
-const ApiVersion = "v3"
-
 type Connector struct {
 	// Basic connector
 	*components.Connector
@@ -40,7 +38,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 }
 
 func (c *Connector) getURL(objectName string) (*urlbuilder.URL, error) {
-	path, err := metadata.Schemas.LookupURLPath(c.Module(), objectName)
+	path, err := metadata.Schemas.LookupRawURLPath(c.Module(), objectName)
 	if err != nil {
 		var ok bool
 		if path, ok = objectNameToWritePath[objectName]; !ok {
@@ -49,5 +47,5 @@ func (c *Connector) getURL(objectName string) (*urlbuilder.URL, error) {
 		}
 	}
 
-	return urlbuilder.New(c.ProviderInfo().BaseURL, ApiVersion, path)
+	return c.ModuleClient.URL(path)
 }
