@@ -275,9 +275,7 @@ func (m *Metadata[F, C]) ObjectNames() datautils.UniqueLists[common.ModuleID, st
 	return moduleObjectNames
 }
 
-// LookupURLPath will give you the URL path for the object located under the module.
-// NOTE: empty module id is treated as root module.
-func (m *Metadata[F, C]) LookupURLPath(moduleID common.ModuleID, objectName string) (string, error) {
+func (m *Metadata[F, C]) LookupRawURLPath(moduleID common.ModuleID, objectName string) (string, error) {
 	moduleID = moduleIdentifier(moduleID)
 
 	path := m.Modules[moduleID].Objects[objectName].URLPath
@@ -285,7 +283,18 @@ func (m *Metadata[F, C]) LookupURLPath(moduleID common.ModuleID, objectName stri
 		return "", common.ErrResolvingURLPathForObject
 	}
 
-	fullPath := m.LookupModuleURLPath(moduleID) + path
+	return path, nil
+}
+
+// LookupURLPath will give you the URL path for the object located under the module.
+// NOTE: empty module id is treated as root module.
+func (m *Metadata[F, C]) LookupURLPath(moduleID common.ModuleID, objectName string) (string, error) {
+	rawURL, err := m.LookupRawURLPath(moduleID, objectName)
+	if err != nil {
+		return "", err
+	}
+
+	fullPath := m.LookupModuleURLPath(moduleID) + rawURL
 
 	return fullPath, nil
 }

@@ -104,9 +104,10 @@ func TestReadZendeskSupportModule(t *testing.T) { //nolint:funlen,gocognit,cyclo
 		{
 			Name:  "Triggers is the last page",
 			Input: common.ReadParams{ObjectName: "triggers", Fields: connectors.Fields("id")},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, responseTriggersLastPage),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.PathSuffix("/api/v2/triggers"),
+				Then:  mockserver.Response(http.StatusOK, responseTriggersLastPage),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
@@ -349,7 +350,7 @@ func constructTestConnector(serverURL string, moduleID common.ModuleID) (*Connec
 	}
 
 	// for testing we want to redirect calls to our mock server
-	connector.SetURL(serverURL)
+	testroutines.OverrideURLOrigin(connector.Transport, serverURL)
 
 	return connector, nil
 }
