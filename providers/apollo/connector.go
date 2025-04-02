@@ -43,7 +43,7 @@ func (c *Connector) getAPIURL(objectName string, ops operation) (*urlbuilder.URL
 
 	relativePath := strings.Join([]string{restAPIPrefix, objectName}, "/")
 
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, relativePath)
+	url, err := c.ModuleClient.URL(relativePath)
 	if err != nil {
 		return nil, err
 	}
