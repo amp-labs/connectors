@@ -1,5 +1,7 @@
 package providers
 
+import "github.com/amp-labs/connectors/common"
+
 const (
 	CustomerDataPipelines Provider = "customerDataPipelines"
 	CustomerJourneysApp   Provider = "customerJourneysApp"
@@ -49,6 +51,17 @@ func init() { //nolint:funlen
 				ValuePrefix: "Bearer ",
 			},
 			DocsURL: "https://customer.io/docs/api/app/#section/Authentication",
+		},
+		Modules: &ModuleInfo{
+			string(common.ModuleRoot): {
+				BaseURL:     "https://api.customer.io/v1",
+				DisplayName: "Customer.io Journeys App",
+				Support: ModuleSupport{
+					Read:      true,
+					Subscribe: false,
+					Write:     true,
+				},
+			},
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
