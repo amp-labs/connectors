@@ -34,5 +34,5 @@ func constructor(base *components.Connector) (*Connector, error) {
 }
 
 func (c *Connector) getAPIURL(object string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, object)
+	return c.ModuleClient.URL(apiVersion, object)
 }

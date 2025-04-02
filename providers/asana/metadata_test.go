@@ -90,7 +90,7 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 		return nil, err
 	}
 	// for testing we want to redirect calls to our mock server.
-	connector.SetURL(serverURL)
+	testroutines.OverrideURLOrigin(connector.Transport, serverURL)
 
 	return connector, nil
 }
