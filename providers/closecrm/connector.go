@@ -32,6 +32,6 @@ func constructor(base *components.Connector) (*Connector, error) {
 	return &Connector{Connector: base}, nil
 }
 
-func (c *Connector) getAPIURL(object string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.ProviderInfo().BaseURL, restAPIVersion, object)
+func (c *Connector) getAPIURL(objectName string) (*urlbuilder.URL, error) {
+	return c.ModuleClient.URL(objectName)
 }

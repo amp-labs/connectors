@@ -1,5 +1,7 @@
 package providers
 
+import "github.com/amp-labs/connectors/common"
+
 const Close Provider = "close"
 
 func init() {
@@ -18,6 +20,17 @@ func init() {
 				ConsumerRefField:  "user_id",
 				WorkspaceRefField: "organization_id",
 				ScopesField:       "scope",
+			},
+		},
+		Modules: &ModuleInfo{
+			string(common.ModuleRoot): {
+				BaseURL:     "https://api.close.com/api/v1",
+				DisplayName: "Close",
+				Support: ModuleSupport{
+					Read:      false,
+					Subscribe: false,
+					Write:     false,
+				},
 			},
 		},
 		//nolint:lll
