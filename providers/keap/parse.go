@@ -5,12 +5,13 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/spyzhov/ajson"
 )
 
 func makeNextRecordsURL(moduleID common.ModuleID) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
-		if moduleID == ModuleV1 {
+		if moduleID == common.ModuleID(providers.ModuleKeapV1) {
 			return jsonquery.New(node).StrWithDefault("next", "")
 		}
 

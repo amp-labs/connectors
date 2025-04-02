@@ -5,6 +5,15 @@ const (
 	ZendeskSupport Provider = "zendeskSupport"
 )
 
+const (
+	// ModuleZendeskTicketing is used for proxying requests through.
+	// https://developer.zendesk.com/api-reference/ticketing/introduction/
+	ModuleZendeskTicketing string = "ticketing"
+	// ModuleZendeskHelpCenter is Zendesk Help Center.
+	// https://developer.zendesk.com/api-reference/help_center/help-center-api/introduction/
+	ModuleZendeskHelpCenter string = "help-center"
+)
+
 func init() { // nolint:funlen
 	// Zendesk Support configuration
 	SetInfo(ZendeskSupport, ProviderInfo{
@@ -17,6 +26,26 @@ func init() { // nolint:funlen
 			TokenURL:                  "https://{{.workspace}}.zendesk.com/oauth/tokens",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: true,
+		},
+		Modules: &ModuleInfo{
+			ModuleZendeskTicketing: {
+				BaseURL:     "https://{{.workspace}}.zendesk.com/api/v2",
+				DisplayName: "Ticketing",
+				Support: ModuleSupport{
+					Read:      true,
+					Subscribe: false,
+					Write:     true,
+				},
+			},
+			ModuleZendeskHelpCenter: {
+				BaseURL:     "https://{{.workspace}}.zendesk.com/api/v2",
+				DisplayName: "Help Center",
+				Support: ModuleSupport{
+					Read:      true,
+					Subscribe: false,
+					Write:     true,
+				},
+			},
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{

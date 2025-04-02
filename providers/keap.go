@@ -2,6 +2,15 @@ package providers
 
 const Keap Provider = "keap"
 
+const (
+	// ModuleKeapV1 is a grouping of V1 API endpoints.
+	// https://developer.keap.com/docs/rest/
+	ModuleKeapV1 string = "version1"
+	// ModuleKeapV2 is a grouping of V2 API endpoints.
+	// https://developer.keap.com/docs/restv2/
+	ModuleKeapV2 string = "version2"
+)
+
 func init() {
 	// Keap configuration
 	SetInfo(Keap, ProviderInfo{
@@ -26,6 +35,26 @@ func init() {
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
+		},
+		Modules: &ModuleInfo{
+			ModuleKeapV1: {
+				BaseURL:     "https://api.infusionsoft.com/v1",
+				DisplayName: "Version 1",
+				Support: ModuleSupport{
+					Read:      false,
+					Subscribe: false,
+					Write:     false,
+				},
+			},
+			ModuleKeapV2: {
+				BaseURL:     "https://api.infusionsoft.com/v2",
+				DisplayName: "Version 2",
+				Support: ModuleSupport{
+					Read:      false,
+					Subscribe: false,
+					Write:     false,
+				},
+			},
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
