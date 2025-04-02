@@ -21,12 +21,28 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 	query := ""
 	switch objectName {
 	case "boards":
-		query = fmt.Sprintf("query { boards { id name state permissions items_count columns { id title type } " +
-			"groups { id title position } owner { id name } owners { id name } subscribers { id name } tags { id name } " +
-			"team_owners { id name } team_subscribers { id name } top_group { id title } type updated_at " +
-			"updates { id body created_at } url views { id name type } workspace { id name } workspace_id } }")
+		query = `query {
+			boards {
+				id name state permissions items_count
+				columns { id title type }
+				groups { id title position }
+				owner { id name }
+				owners { id name }
+				subscribers { id name }
+				tags { id name }
+				team_owners { id name }
+				team_subscribers { id name }
+				top_group { id title }
+				type updated_at
+				updates { id body created_at }
+				url
+				views { id name type }
+				workspace { id name }
+				workspace_id
+			}
+		}`
 	case "users":
-		query = "query { users { id email name enabled } }"
+		query = `query { users { id email name enabled } }`
 	default:
 		return nil, fmt.Errorf("unsupported object name: %s", objectName)
 	}
