@@ -88,7 +88,7 @@ func TestCreateMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			}
 
 			// for testing we want to redirect calls to our mock server
-			connector.SetBaseURL(tt.server.URL)
+			connector.SetURL(tt.server.URL)
 
 			// start of tests
 			output, err := connector.CreateMetadata(context.Background(), tt.input, "access_token_testing")
