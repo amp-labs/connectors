@@ -1,7 +1,6 @@
 package attio
 
 import (
-	"encoding/json"
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
@@ -43,7 +42,7 @@ func makeNextRecordsURL(reqLink *urlbuilder.URL, obj string) common.NextPageFunc
 }
 
 // To determine the next page records for the standard/custom objects.
-func makeNextRecordStandardObj(body map[string]any) common.NextPageFunc {
+func makeNextRecordStandardObj(offset int) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
 		// Extract the data key value from the response.
 		value, err := jsonquery.New(node).ArrayRequired("data")
@@ -51,32 +50,13 @@ func makeNextRecordStandardObj(body map[string]any) common.NextPageFunc {
 			return "", err
 		}
 
-		if len(value) != 0 {
-			jsonData, err := json.Marshal(body)
-			if err != nil {
-				return "", err
-			}
-
-			// Parse the JSON into an *ajson.Node
-			node, err := ajson.Unmarshal(jsonData)
-			if err != nil {
-				return "", err
-			}
-
-			// To determine the offset value.
-			offset, err := jsonquery.New(node).IntegerWithDefault("offset", 0)
-			if err != nil {
-				return "", err
-			}
-
-			previousStart := int(offset)
-
-			nextStart := previousStart + DefaultPageSize
-
-			return strconv.Itoa(nextStart), nil
+		if len(value) == 0 {
+			return "", nil
 		}
 
-		return "", nil
+		nextStart := offset + DefaultPageSize
+
+		return strconv.Itoa(nextStart), nil
 	}
 }
 
@@ -149,12 +129,12 @@ func DataMarshall(resp *common.JSONHTTPResponse) MarshalledData {
 }
 
 func getRecords(
-	flattenRecords map[string]map[string]any, records []map[string]any, fields []string,
+	flattenRecords map[string]any, records []map[string]any, fields []string,
 ) ([]common.ReadResultRow, error) {
 	data := make([]common.ReadResultRow, len(records))
 
 	for i, record := range records { // nolint:varnamelen
-		id, ok := record["id"].(map[string]any)
+		id, ok := record["id"].(map[string]any) // nolint:varnamelen
 		if !ok {
 			return nil, common.ErrEmptyRecordIdResponse
 		}
@@ -164,53 +144,62 @@ func getRecords(
 			return nil, common.ErrEmptyRecordIdResponse
 		}
 
-		FeildRecord := flattenRecords[recordID]
+		fieldRecord, ok := flattenRecords[recordID].(map[string]any)
+		if !ok {
+			return nil, common.ErrEmptyRecordIdResponse
+		}
+
 		data[i].Raw = record
-		data[i].Fields = common.ExtractLowercaseFieldsFromRaw(fields, FeildRecord)
+		data[i].Fields = common.ExtractLowercaseFieldsFromRaw(fields, fieldRecord)
 	}
 
 	return data, nil
 }
 
-func flattenRecords(arr []*ajson.Node) (map[string]map[string]any, error) {
-	result := make([]map[string]any, len(arr))
+func flattenRecord(arr *ajson.Node) (map[string]any, error) {
+	const keyValuesObject = "values"
 
-	flattenMap := make(map[string]map[string]any, 0)
+	values, err := jsonquery.New(arr).ObjectOptional(keyValuesObject)
+	if err != nil {
+		return nil, err
+	}
 
-	for index, element := range arr {
-		const keyValuesObject = "values"
+	original, err := jsonquery.Convertor.ObjectToMap(arr)
+	if err != nil {
+		return nil, err
+	}
 
-		values, err := jsonquery.New(element).ObjectOptional(keyValuesObject)
+	nested, err := jsonquery.Convertor.ObjectToMap(values)
+	if err != nil {
+		return nil, err
+	}
+
+	// values object must be removed.
+	delete(original, keyValuesObject)
+
+	// Fields from values are moved to the top level.
+	for key, value := range nested {
+		original[key] = value
+	}
+
+	return original, nil
+}
+
+func flattenRecords(arr []*ajson.Node) (map[string]any, error) {
+	flattenMap := make(map[string]any, 0)
+
+	for _, element := range arr {
+		flattenedRecord, err := flattenRecord(element)
 		if err != nil {
 			return nil, err
 		}
-
-		original, err := jsonquery.Convertor.ObjectToMap(element)
-		if err != nil {
-			return nil, err
-		}
-
-		nested, err := jsonquery.Convertor.ObjectToMap(values)
-		if err != nil {
-			return nil, err
-		}
-
-		// values object must be removed.
-		delete(original, keyValuesObject)
-
-		// Fields from values are moved to the top level.
-		for key, value := range nested {
-			original[key] = value
-		}
-
-		result[index] = original
 
 		recordId, err := jsonquery.New(element, "id").StringRequired("record_id")
 		if err != nil {
 			return nil, err
 		}
 
-		flattenMap[recordId] = original
+		flattenMap[recordId] = flattenedRecord
 	}
 
 	return flattenMap, nil

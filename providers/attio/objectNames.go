@@ -22,7 +22,9 @@ var supportLimitAndOffset = datautils.NewSet( //nolint:gochecknoglobals
 	objectNameNotes,
 )
 
-var supportAttioGeneralApi = datautils.NewSet( //nolint:gochecknoglobals
+// supportAttioApi represents the APIs listed under the Attio API section in the docs
+// (this does not cover the entire Attio API). Reference: https://developers.attio.com/reference.
+var supportAttioApi = datautils.NewSet( //nolint:gochecknoglobals
 	objectNameLists,
 	objectNameWorkspacemembers,
 	objectNameTasks,

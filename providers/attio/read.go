@@ -14,7 +14,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	if supportAttioGeneralApi.Has(config.ObjectName) {
+	if supportAttioApi.Has(config.ObjectName) {
 		return c.readAPI(ctx, config)
 	}
 
@@ -50,7 +50,13 @@ func (c *Connector) readStandardOrCustomObject(
 		return nil, err
 	}
 
-	body := constructBody(config)
+	body := constructRequestBody(config)
+
+	offset := 0
+
+	if val, ok := body["offset"].(int); ok {
+		offset = val
+	}
 
 	rsp, err := c.Client.Post(ctx, url.String(), body)
 	if err != nil {
@@ -60,7 +66,7 @@ func (c *Connector) readStandardOrCustomObject(
 	return common.ParseResult(
 		rsp,
 		common.GetRecordsUnderJSONPath("data"),
-		makeNextRecordStandardObj(body),
+		makeNextRecordStandardObj(offset),
 		DataMarshall(rsp),
 		config.Fields,
 	)
@@ -94,7 +100,7 @@ func (c *Connector) buildURL(config common.ReadParams) (*urlbuilder.URL, error) 
 }
 
 // construct body params for filter the data using since field.
-func constructBody(config common.ReadParams) map[string]any {
+func constructRequestBody(config common.ReadParams) map[string]any {
 	body := map[string]any{}
 
 	if len(config.NextPage) != 0 {
