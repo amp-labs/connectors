@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -12,13 +13,21 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
+var (
+	// ErrUnsupportedObject is returned when an unsupported object type is requested.
+	ErrUnsupportedObject = errors.New("unsupported object")
+	// ErrInvalidResponseFormat is returned when the API response format is unexpected.
+	ErrInvalidResponseFormat = errors.New("invalid response format")
+)
+
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion)
 	if err != nil {
 		return nil, fmt.Errorf("failed to build URL: %w", err)
 	}
 
-	query := ""
+	var query string
+
 	switch objectName {
 	case "boards":
 		query = `query {
@@ -44,7 +53,7 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 	case "users":
 		query = `query { users { id email name enabled } }`
 	default:
-		return nil, fmt.Errorf("unsupported object name: %s", objectName)
+		return nil, fmt.Errorf("%w: %s", ErrUnsupportedObject, objectName)
 	}
 
 	// Create the request body as a map
@@ -62,7 +71,9 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 	if err != nil {
 		return nil, err
 	}
+
 	req.Header.Set("Content-Type", "application/json")
+
 	return req, nil
 }
 
@@ -82,9 +93,9 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		return nil, common.ErrFailedToUnmarshalBody
 	}
 
-	dataMap, ok := (*data)["data"].(map[string]any)
-	if !ok {
-		return nil, fmt.Errorf("unexpected response format: missing data field")
+	dataMap, isValidData := (*data)["data"].(map[string]any)
+	if !isValidData {
+		return nil, fmt.Errorf("%w: missing data field", ErrInvalidResponseFormat)
 	}
 
 	rawRecords, exists := dataMap[objectName]
@@ -92,13 +103,13 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		return nil, fmt.Errorf("missing expected values for object: %s, error: %w", objectName, common.ErrMissingExpectedValues) //nolint:lll
 	}
 
-	records, ok := rawRecords.([]any)
-	if len(records) == 0 || !ok {
+	records, isValidRecords := rawRecords.([]any)
+	if len(records) == 0 || !isValidRecords {
 		return nil, fmt.Errorf("unexpected type or empty records for object: %s, error: %w", objectName, common.ErrMissingExpectedValues) //nolint:lll
 	}
 
-	firstRecord, ok := records[0].(map[string]any)
-	if !ok {
+	firstRecord, isValidRecord := records[0].(map[string]any)
+	if !isValidRecord {
 		return nil, fmt.Errorf("unexpected record format for object: %s, error: %w", objectName, common.ErrMissingExpectedValues) //nolint:lll
 	}
 

@@ -6,7 +6,6 @@ import (
 
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/staticschema"
-	"github.com/spyzhov/ajson"
 )
 
 const (
@@ -14,13 +13,6 @@ const (
 	objectItem  = "items"
 	objectUser  = "users"
 )
-
-// Map of object names to their ID field paths in the response
-var RecordIDPaths = map[string]string{
-	objectBoard: "ID",
-	objectItem:  "ID",
-	objectUser:  "ID",
-}
 
 // How to read & build these patterns: https://github.com/gobwas/glob
 func supportedOperations() components.EndpointRegistryInput {
@@ -44,9 +36,4 @@ func supportedOperations() components.EndpointRegistryInput {
 			},
 		},
 	}
-}
-
-func getNextRecordsURL(_ *ajson.Node) (string, error) {
-	// Pagination is not supported for this provider.
-	return "", nil
 }
