@@ -40,14 +40,14 @@ func constructor(base *components.Connector) (*Connector, error) {
 }
 
 func (c *Connector) getURL(arg string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.ProviderInfo().BaseURL, ApiVersion, arg)
+	return c.ModuleClient.URL(arg)
 }
 
 func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
-	path, err := metadata.Schemas.LookupURLPath(c.Module(), objectName)
+	path, err := metadata.Schemas.LookupRawURLPath(c.Module(), objectName)
 	if err != nil {
 		return nil, err
 	}
 
-	return urlbuilder.New(c.ProviderInfo().BaseURL, path)
+	return c.getURL(path)
 }

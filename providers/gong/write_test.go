@@ -56,8 +56,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			Input: common.WriteParams{ObjectName: "calls", RecordData: "dummy"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.MethodPOST(),
-				Then:  mockserver.Response(http.StatusOK, responseCreateCall),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.PathSuffix("/v2/calls"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseCreateCall),
 			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,
