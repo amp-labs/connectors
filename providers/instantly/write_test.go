@@ -52,8 +52,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			Input: common.WriteParams{ObjectName: "blocklist-entries", RecordData: "dummy"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.MethodPOST(),
-				Then:  mockserver.Response(http.StatusOK, responseBlocklistEntry),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.PathSuffix("/v1/blocklist/add/entries"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseBlocklistEntry),
 			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,
@@ -68,8 +71,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			Input: common.WriteParams{ObjectName: "unibox-replies", RecordData: "dummy"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.MethodPOST(),
-				Then:  mockserver.Response(http.StatusOK, responseReply),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.PathSuffix("/v1/unibox/emails/reply"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseReply),
 			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,
@@ -79,7 +85,6 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			},
 			ExpectedErrs: nil,
 		},
-
 		{
 			Name:  "Invalid Lead creation",
 			Input: common.WriteParams{ObjectName: "leads", RecordData: "dummy"},
@@ -97,8 +102,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			Input: common.WriteParams{ObjectName: "leads", RecordData: "dummy"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.MethodPOST(),
-				Then:  mockserver.Response(http.StatusOK, responseLead),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.PathSuffix("/v1/lead/add"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseLead),
 			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,
