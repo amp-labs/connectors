@@ -7,8 +7,6 @@ import (
 	"github.com/amp-labs/connectors/providers"
 )
 
-const restAPIPrefix = "api/v2"
-
 type Connector struct {
 	// Basic connector
 	*components.Connector
@@ -36,5 +34,5 @@ func constructor(base *components.Connector) (*Connector, error) {
 func (conn *Connector) getAPIURL(objectName string) (*urlbuilder.URL, error) {
 	path := objectResourcePath.Get(objectName)
 
-	return urlbuilder.New(conn.ProviderInfo().BaseURL, restAPIPrefix, path)
+	return conn.ModuleClient.URL(path)
 }
