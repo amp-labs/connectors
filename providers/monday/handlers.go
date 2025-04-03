@@ -15,6 +15,10 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
+const (
+	defaultPageSize = 2
+)
+
 var (
 	// ErrUnsupportedObject is returned when an unsupported object type is requested.
 	ErrUnsupportedObject = errors.New("unsupported object")
@@ -205,32 +209,42 @@ func getBoardsNestedFields() string {
 		}`
 }
 
-func getBoardsQuery() string {
+func getBoardsQuery(page *int, limit *int) string {
+	paginationParams := ""
+	if page != nil && limit != nil {
+		paginationParams = fmt.Sprintf("(limit: %d, page: %d)", *limit, *page)
+	}
+
 	return fmt.Sprintf(`query {
-		boards {
+		boards%s {
 			%s
 			%s
 		}
-	}`, getBoardsBaseFields(), getBoardsNestedFields())
+	}`, paginationParams, getBoardsBaseFields(), getBoardsNestedFields())
 }
 
-func getUsersQuery() string {
-	return `query {
-		users {
+func getUsersQuery(page *int, limit *int) string {
+	paginationParams := ""
+	if page != nil && limit != nil {
+		paginationParams = fmt.Sprintf("(limit: %d, page: %d)", *limit, *page)
+	}
+
+	return fmt.Sprintf(`query {
+		users%s {
 			id
 			email
 			name
 			enabled
 		}
-	}`
+	}`, paginationParams)
 }
 
-func getQueryForObject(objectName string) (string, error) {
+func getQueryForObject(objectName string, page *int, limit *int) (string, error) {
 	switch objectName {
 	case "boards":
-		return getBoardsQuery(), nil
+		return getBoardsQuery(page, limit), nil
 	case "users":
-		return getUsersQuery(), nil
+		return getUsersQuery(page, limit), nil
 	default:
 		return "", fmt.Errorf("%w: %s", ErrUnsupportedObjectName, objectName)
 	}
@@ -242,7 +256,24 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
-	query, err := getQueryForObject(params.ObjectName)
+	var page *int
+
+	var limit int
+
+	if params.NextPage != "" {
+		// Parse the page number from NextPage
+		var pageNum int
+
+		_, err := fmt.Sscanf(string(params.NextPage), "%d", &pageNum)
+		if err != nil {
+			return nil, fmt.Errorf("invalid next page format: %w", err)
+		}
+
+		page = &pageNum
+		limit = defaultPageSize
+	}
+
+	query, err := getQueryForObject(params.ObjectName, page, &limit)
 	if err != nil {
 		return nil, err
 	}
@@ -272,10 +303,34 @@ func (c *Connector) parseReadResponse(
 	request *http.Request,
 	resp *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
+	data, err := common.UnmarshalJSON[map[string]any](resp)
+	if err != nil {
+		return nil, common.ErrFailedToUnmarshalBody
+	}
+
+	dataMap, isValidData := (*data)["data"].(map[string]any)
+	if !isValidData {
+		return nil, fmt.Errorf("%w: missing data field", ErrInvalidResponseFormat)
+	}
+
+	rawRecords, exists := dataMap[params.ObjectName]
+	if !exists {
+		errMsg := "missing expected values for object: " + params.ObjectName
+
+		return nil, fmt.Errorf("%s, error: %w", errMsg, common.ErrMissingExpectedValues)
+	}
+
+	records, isValidRecords := rawRecords.([]any)
+	if !isValidRecords {
+		errMsg := "unexpected type for records for object: " + params.ObjectName
+
+		return nil, fmt.Errorf("%s, error: %w", errMsg, common.ErrMissingExpectedValues)
+	}
+
 	return common.ParseResult(
 		resp,
 		getRecords(params.ObjectName),
-		makeNextRecordsURL(c.ProviderInfo().BaseURL),
+		makeNextRecordsURL(params, len(records)),
 		common.GetMarshaledData,
 		params.Fields,
 	)
