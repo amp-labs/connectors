@@ -1,11 +1,11 @@
-package salesforceMarketing
+package salesforcemarketing
 
 import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/salesforceMarketing/metadata"
+	"github.com/amp-labs/connectors/providers/salesforcemarketing/metadata"
 )
 
 type Connector struct {
@@ -28,7 +28,6 @@ func NewConnector(params common.Parameters) (*Connector, error) {
 func constructor(base *components.Connector) (*Connector, error) {
 	connector := &Connector{Connector: base}
 
-	// Set the metadata provider for the connector
 	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), metadata.Schemas)
 
 	return connector, nil

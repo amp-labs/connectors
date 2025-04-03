@@ -7,12 +7,12 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/salesforceMarketing"
+	salesforcemarketing "github.com/amp-labs/connectors/providers/salesforcemarketing"
 	"github.com/amp-labs/connectors/test/utils"
 	"golang.org/x/oauth2"
 )
 
-func GetSalesforceMarketingConnector(ctx context.Context) *salesforceMarketing.Connector {
+func GetSalesforceMarketingConnector(ctx context.Context) *salesforcemarketing.Connector {
 	filePath := credscanning.LoadPath(providers.SalesforceMarketing)
 	reader := utils.MustCreateProvCredJSON(filePath, false, false)
 
@@ -32,7 +32,7 @@ func GetSalesforceMarketingConnector(ctx context.Context) *salesforceMarketing.C
 	}
 
 	// Create the connector
-	conn, err := salesforceMarketing.NewConnector(common.Parameters{
+	conn, err := salesforcemarketing.NewConnector(common.Parameters{
 		AuthenticatedClient: client,
 		Workspace:           reader.Get(credscanning.Fields.Workspace),
 	})

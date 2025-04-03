@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/amp-labs/connectors/test/salesforceMarketing"
+	salesforceMarketing "github.com/amp-labs/connectors/test/salesforcemarketing"
 	"github.com/amp-labs/connectors/test/utils"
 )
 
