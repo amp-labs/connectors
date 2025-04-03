@@ -1,5 +1,7 @@
 package providers
 
+import "github.com/amp-labs/connectors/common"
+
 const Gong Provider = "gong"
 
 func init() {
@@ -8,6 +10,17 @@ func init() {
 		DisplayName: "Gong",
 		AuthType:    Oauth2,
 		BaseURL:     "https://api.gong.io",
+		Modules: &ModuleInfo{
+			string(common.ModuleRoot): {
+				BaseURL:     "https://api.gong.io/v2",
+				DisplayName: "Gong",
+				Support: ModuleSupport{
+					Read:      true,
+					Subscribe: false,
+					Write:     true,
+				},
+			},
+		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722327371/media/gong_1722327370.svg",
