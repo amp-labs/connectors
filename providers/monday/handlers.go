@@ -26,35 +26,33 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 		return nil, fmt.Errorf("failed to build URL: %w", err)
 	}
 
-	var query string
+	// Map object names to their GraphQL type names
+	typeNameMap := map[string]string{
+		"boards": "Board",
+		"users":  "User",
+	}
 
-	switch objectName {
-	case "boards":
-		query = `query {
-			boards {
-				id name state permissions items_count
-				columns { id title type }
-				groups { id title position }
-				owner { id name }
-				owners { id name }
-				subscribers { id name }
-				tags { id name }
-				team_owners { id name }
-				team_subscribers { id name }
-				top_group { id title }
-				type updated_at
-				updates { id body created_at }
-				url
-				views { id name type }
-				workspace { id name }
-				workspace_id
-			}
-		}`
-	case "users":
-		query = `query { users { id email name enabled } }`
-	default:
+	typeName, exists := typeNameMap[objectName]
+	if !exists {
 		return nil, fmt.Errorf("%w: %s", ErrUnsupportedObject, objectName)
 	}
+
+	// Use introspection query to get field information
+	query := fmt.Sprintf(`{
+		__type(name: "%s") {
+			name
+			fields {
+				name
+				type {
+					name
+					kind
+					ofType {
+						name
+					}
+				}
+			}
+		}
+	}`, typeName)
 
 	// Create the request body as a map
 	requestBody := map[string]string{
@@ -98,23 +96,37 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		return nil, fmt.Errorf("%w: missing data field", ErrInvalidResponseFormat)
 	}
 
-	rawRecords, exists := dataMap[objectName]
+	typeInfo, exists := dataMap["__type"].(map[string]any)
 	if !exists {
-		return nil, fmt.Errorf("missing expected values for object: %s, error: %w", objectName, common.ErrMissingExpectedValues) //nolint:lll
+		return nil, fmt.Errorf(
+			"missing __type in response for object: %s, error: %w",
+			objectName,
+			common.ErrMissingExpectedValues,
+		)
 	}
 
-	records, isValidRecords := rawRecords.([]any)
-	if len(records) == 0 || !isValidRecords {
-		return nil, fmt.Errorf("unexpected type or empty records for object: %s, error: %w", objectName, common.ErrMissingExpectedValues) //nolint:lll
+	fields, exists := typeInfo["fields"].([]any)
+	if !exists || len(fields) == 0 {
+		return nil, fmt.Errorf(
+			"missing or empty fields for object: %s, error: %w",
+			objectName,
+			common.ErrMissingExpectedValues,
+		)
 	}
 
-	firstRecord, isValidRecord := records[0].(map[string]any)
-	if !isValidRecord {
-		return nil, fmt.Errorf("unexpected record format for object: %s, error: %w", objectName, common.ErrMissingExpectedValues) //nolint:lll
-	}
+	// Process each field from the introspection result
+	for _, field := range fields {
+		fieldMap, ok := field.(map[string]any)
+		if !ok {
+			continue
+		}
 
-	for fld := range firstRecord {
-		objectMetadata.FieldsMap[fld] = fld
+		fieldName, ok := fieldMap["name"].(string)
+		if !ok {
+			continue
+		}
+
+		objectMetadata.FieldsMap[fieldName] = fieldName
 	}
 
 	return &objectMetadata, nil
