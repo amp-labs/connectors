@@ -53,9 +53,9 @@ func main() {
 			api3.CamelCaseToSpaceSeparated,
 			api3.CapitalizeFirstLetterEveryWord,
 		),
-		// api3.WithParameterFilterGetMethod(
-		// 	api3.OnlyOptionalQueryParameters,
-		// ),
+		api3.WithParameterFilterGetMethod(
+			api3.OnlyOptionalQueryParameters,
+		),
 	)
 	goutils.MustBeNil(err)
 
