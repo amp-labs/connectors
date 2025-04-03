@@ -8,8 +8,6 @@ import (
 	"github.com/amp-labs/connectors/providers"
 )
 
-const apiVersion = "v1"
-
 type Connector struct {
 	// Basic connector
 	*components.Connector
@@ -39,7 +37,5 @@ func constructor(base *components.Connector) (*Connector, error) {
 }
 
 func (c *Connector) getURL(parts ...string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.ProviderInfo().BaseURL, append([]string{
-		apiVersion,
-	}, parts...)...)
+	return c.ModuleClient.URL(parts...)
 }
