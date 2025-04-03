@@ -6,17 +6,14 @@ func init() {
 	// Monday Configuration
 	SetInfo(Monday, ProviderInfo{
 		DisplayName: "Monday",
-		AuthType:    Oauth2,
-		BaseURL:     "https://api.monday.com",
-		Oauth2Opts: &Oauth2Opts{
-			GrantType:                 AuthorizationCode,
-			AuthURL:                   "https://auth.monday.com/oauth2/authorize",
-			TokenURL:                  "https://auth.monday.com/oauth2/token",
-			ExplicitScopesRequired:    false,
-			ExplicitWorkspaceRequired: false,
-			TokenMetadataFields: TokenMetadataFields{
-				ScopesField: "scope",
+		AuthType:    ApiKey,
+		BaseURL:     "https://api.monday.com/",
+		ApiKeyOpts: &ApiKeyOpts{
+			AttachmentType: "header",
+			Header: &ApiKeyOptsHeader{
+				Name: "Authorization",
 			},
+			DocsURL: "https://developer.monday.com/api-reference/docs/authentication",
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
