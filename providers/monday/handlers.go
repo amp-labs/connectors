@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
@@ -16,7 +17,9 @@ import (
 )
 
 const (
-	defaultPageSize = 200
+	defaultPageSize   = 200
+	mondayObjectBoard = "boards"
+	mondayObjectUser  = "users"
 )
 
 var (
@@ -26,6 +29,16 @@ var (
 	ErrInvalidResponseFormat = errors.New("invalid response format")
 	// ErrUnsupportedObjectName is returned when an unsupported object name is provided.
 	ErrUnsupportedObjectName = errors.New("unsupported object name")
+	// ErrBoardNameRequired is returned when board name is missing for creation.
+	ErrBoardNameRequired = errors.New("board name is required for creation")
+	// ErrWriteUserNotSupported is returned when attempting to write user data.
+	ErrWriteUserNotSupported = errors.New("write user not supported")
+)
+
+// Record ID paths in GraphQL response.
+const (
+	mondayBoardsIDPath = "data.create_board.id"
+	mondayUsersIDPath  = "data.create_user.id"
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
@@ -241,9 +254,9 @@ func getUsersQuery(page *int, limit *int) string {
 
 func getQueryForObject(objectName string, page *int, limit *int) (string, error) {
 	switch objectName {
-	case "boards":
+	case mondayObjectBoard:
 		return getBoardsQuery(page, limit), nil
-	case "users":
+	case mondayObjectUser:
 		return getUsersQuery(page, limit), nil
 	default:
 		return "", fmt.Errorf("%w: %s", ErrUnsupportedObjectName, objectName)
@@ -352,4 +365,169 @@ func getRecords(objectName string) func(*ajson.Node) ([]map[string]any, error) {
 
 		return jsonquery.Convertor.ArrayToMap(records)
 	}
+}
+
+func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion)
+	if err != nil {
+		return nil, fmt.Errorf("failed to build URL: %w", err)
+	}
+
+	recordData, err := common.RecordDataToMap(params.RecordData)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert record data to map: %w", err)
+	}
+
+	var mutation string
+
+	switch params.ObjectName {
+	case mondayObjectBoard:
+		if params.RecordId == "" {
+			boardName, ok := recordData["name"].(string)
+			if !ok {
+				return nil, ErrBoardNameRequired
+			}
+
+			mutation = fmt.Sprintf(`mutation {
+				create_board(board_name: "%s", board_kind: public) {
+					id
+					name
+				}
+			}`, boardName)
+		} else {
+			mutation = fmt.Sprintf(`mutation {
+				update_board(board_id: %s, board_attribute: name, new_value: "%v") {
+					id
+				}
+			}`, params.RecordId, recordData["name"])
+		}
+	case mondayObjectUser:
+		return nil, ErrWriteUserNotSupported
+	default:
+		return nil, fmt.Errorf("%w: %s", ErrUnsupportedObjectName, params.ObjectName)
+	}
+
+	requestBody := map[string]string{
+		"query": mutation,
+	}
+
+	jsonBody, err := json.Marshal(requestBody)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonBody))
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	return req, nil
+}
+
+func extractResponseErrors(node *ajson.Node) ([]any, error) {
+	errors, err := jsonquery.New(node).ArrayOptional("errors")
+	if err != nil {
+		return nil, err
+	}
+
+	if len(errors) == 0 {
+		return nil, nil
+	}
+
+	errorMsgs := make([]any, 0, len(errors))
+
+	for _, e := range errors {
+		if msg, err := e.GetKey("message"); err == nil {
+			errorMsgs = append(errorMsgs, msg.String())
+		}
+	}
+
+	return errorMsgs, nil
+}
+
+func extractRecordID(node *ajson.Node, objectName string) (string, error) {
+	createRecordIDPaths := map[string]string{
+		mondayObjectBoard: mondayBoardsIDPath,
+		mondayObjectUser:  mondayUsersIDPath,
+	}
+
+	idPath, valid := createRecordIDPaths[objectName]
+	if !valid {
+		return "", fmt.Errorf("%w: %s", common.ErrOperationNotSupportedForObject, objectName)
+	}
+
+	rawID, err := jsonquery.New(node).IntegerOptional(idPath)
+	if err != nil {
+		return "", err
+	}
+
+	if rawID == nil {
+		return "", nil
+	}
+
+	return strconv.FormatInt(*rawID, 10), nil
+}
+
+func (c *Connector) parseWriteResponse(
+	ctx context.Context,
+	params common.WriteParams,
+	request *http.Request,
+	resp *common.JSONHTTPResponse,
+) (*common.WriteResult, error) {
+	node, ok := resp.Body()
+	if !ok {
+		return &common.WriteResult{Success: true}, nil
+	}
+
+	if errors, err := extractResponseErrors(node); err != nil {
+		return nil, err
+	} else if errors != nil {
+		return &common.WriteResult{
+			Success: false,
+			Errors:  errors,
+		}, nil
+	}
+
+	recordId, err := extractRecordID(node, params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	data, err := common.UnmarshalJSON[map[string]any](resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return &common.WriteResult{
+		Success:  true,
+		RecordId: recordId,
+		Data:     *data,
+	}, nil
+}
+
+func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	return http.NewRequestWithContext(ctx, http.MethodDelete, url.String(), nil)
+}
+
+func (c *Connector) parseDeleteResponse(
+	ctx context.Context,
+	params common.DeleteParams,
+	request *http.Request,
+	resp *common.JSONHTTPResponse,
+) (*common.DeleteResult, error) {
+	if resp.Code != http.StatusOK && resp.Code != http.StatusNoContent {
+		return nil, fmt.Errorf("%w: failed to delete record: %d", common.ErrRequestFailed, resp.Code)
+	}
+
+	// A successful delete returns 200 OK
+	return &common.DeleteResult{
+		Success: true,
+	}, nil
 }
