@@ -172,7 +172,8 @@ Ensure you have made a proxy connector PR first and is merged and only then <b>w
 Files to add: 
 
 1. For functionality add, `connectors/<PROVIDER>/metadata.go`.  
-2. For testing add, `connectors/test/<PROVIDER>/metadata/metadata.go` 
+2. Implement the `SchemaProvider` interface in `connectors/<PROVIDER>/connector.go`
+3. For testing add, `connectors/test/<PROVIDER>/metadata/metadata.go` 
 
 Run your tests: 
 
@@ -183,7 +184,8 @@ Run your tests:
 
 Files to add or update: 
 1. For functionality add, `connectors/<PROVIDER>/handlers.go`. Here we need to implement the interface `buildReadRequest` and `parseReadResponse`. 
-2. For testing add, `connectors/<PROVIDER>/read.go`
+2. Implement the `Reader` interface in `connectors/<PROVIDER>/connector.go`
+3. For testing add, `connectors/<PROVIDER>/read.go`
 
 Run your tests: 
 
@@ -193,7 +195,10 @@ Run your tests:
 
 Files to update: 
 1. For functionality add, `connectors/<PROVIDER>/handlers.go`. Here we need to implement the interface `buildWriteRequest` and `parseWriteResponse`. 
-2. For testing add, `connectors/<PROVIDER>/write.go`
+2. Implement the `Writer` interface in `connectors/<PROVIDER>/connector.go`
+3. For testing add, `connectors/<PROVIDER>/write.go`
+
+Run your tests: 
 
 `go run ./test/<PROVIDER>/write`
 
@@ -201,6 +206,9 @@ Files to update:
 
 Files to update: 
 1. For functionality add, `connectors/<PROVIDER>/handlers.go`. Here we need to implement the interface `buildDeleteRequest` and `parseDeleteResponse`. 
-2. For testing add, `connectors/<PROVIDER>/delete.go`
+2. Implement the `Deleter` interface in `connectors/<PROVIDER>/connector.go`
+3. For testing add, `connectors/<PROVIDER>/delete.go`
+
+Run your tests: 
 
 `go run ./test/<PROVIDER>/delete`
