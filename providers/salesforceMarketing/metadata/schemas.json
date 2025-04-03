@@ -1,0 +1,62 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "/messaging/v1/sms/definitions",
+      "objects": {
+        "smsDefinitions": {
+          "displayName": "SMS Definitions",
+          "path": "",
+          "responseKey": "definitions",
+          "fields": {
+            "content": {
+              "displayName": "content",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "createdDate": {
+              "displayName": "createdDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "definitionKey": {
+              "displayName": "definitionKey",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "modifiedDate": {
+              "displayName": "modifiedDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "requestId": {
+              "displayName": "requestId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subscriptions": {
+              "displayName": "subscriptions",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        }
+      }
+    }
+  }
+}
