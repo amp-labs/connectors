@@ -1,0 +1,126 @@
+{
+    "rows": 2,
+    "data": [
+      {
+        "fields": {
+          "id": "1994887541",
+          "name": "Candace Bechtelar"
+        },
+        "raw": {
+          "columns": [
+            {
+              "id": "name",
+              "title": "Name",
+              "type": "name"
+            }
+          ],
+          "groups": [
+            {
+              "id": "topics",
+              "position": "65536",
+              "title": "Group Title"
+            }
+          ],
+          "id": "1994887541",
+          "items_count": 1,
+          "name": "Candace Bechtelar",
+          "owner": {
+            "id": "73285017",
+            "name": "Integration User"
+          },
+          "owners": [
+            {
+              "id": "73285017",
+              "name": "Integration User"
+            }
+          ],
+          "permissions": "everyone",
+          "state": "active",
+          "subscribers": [
+            {
+              "id": "73285017",
+              "name": "Integration User"
+            }
+          ],
+          "tags": [],
+          "team_owners": [],
+          "team_subscribers": [],
+          "top_group": {
+            "id": "topics",
+            "title": "Group Title"
+          },
+          "type": "board",
+          "updated_at": "2025-04-02T13:12:15Z",
+          "updates": [],
+          "url": "https://withampersand-force.monday.com/boards/1994887541",
+          "views": [],
+          "workspace": {
+            "id": "1686191",
+            "name": "Main workspace"
+          },
+          "workspace_id": "1686191"
+        }
+      },
+      {
+        "fields": {
+          "id": "1994150301",
+          "name": "Neil Prosacco"
+        },
+        "raw": {
+          "columns": [
+            {
+              "id": "name",
+              "title": "Name",
+              "type": "name"
+            }
+          ],
+          "groups": [
+            {
+              "id": "topics",
+              "position": "65536",
+              "title": "Group Title"
+            }
+          ],
+          "id": "1994150301",
+          "items_count": 1,
+          "name": "Neil Prosacco",
+          "owner": {
+            "id": "73285017",
+            "name": "Integration User"
+          },
+          "owners": [
+            {
+              "id": "73285017",
+              "name": "Integration User"
+            }
+          ],
+          "permissions": "everyone",
+          "state": "active",
+          "subscribers": [
+            {
+              "id": "73285017",
+              "name": "Integration User"
+            }
+          ],
+          "tags": [],
+          "team_owners": [],
+          "team_subscribers": [],
+          "top_group": {
+            "id": "topics",
+            "title": "Group Title"
+          },
+          "type": "board",
+          "updated_at": "2025-04-01T15:38:33Z",
+          "updates": [],
+          "url": "https://withampersand-force.monday.com/boards/1994150301",
+          "views": [],
+          "workspace": {
+            "id": "1686191",
+            "name": "Main workspace"
+          },
+          "workspace_id": "1686191"
+        }
+      }
+    ],
+    "nextPage": "3"
+  }

@@ -1,0 +1,268 @@
+{
+    "rows": 4,
+    "data": [
+      {
+        "fields": {
+          "id": "1984084064",
+          "name": "my board test"
+        },
+        "raw": {
+          "columns": [
+            {
+              "id": "name",
+              "title": "Name",
+              "type": "name"
+            }
+          ],
+          "groups": [
+            {
+              "id": "topics",
+              "position": "65536",
+              "title": "Group Title"
+            }
+          ],
+          "id": "1984084064",
+          "items_count": 1,
+          "name": "my board test",
+          "owner": {
+            "id": "73285017",
+            "name": "Integration User"
+          },
+          "owners": [
+            {
+              "id": "73285017",
+              "name": "Integration User"
+            }
+          ],
+          "permissions": "everyone",
+          "state": "active",
+          "subscribers": [
+            {
+              "id": "73285017",
+              "name": "Integration User"
+            }
+          ],
+          "tags": [],
+          "team_owners": [],
+          "team_subscribers": [],
+          "top_group": {
+            "id": "topics",
+            "title": "Group Title"
+          },
+          "type": "board",
+          "updated_at": "2025-03-11T12:26:53Z",
+          "updates": [],
+          "url": "https://withampersand-force.monday.com/boards/1984084064",
+          "views": [],
+          "workspace": {
+            "id": "1686191",
+            "name": "Main workspace"
+          },
+          "workspace_id": "1686191"
+        }
+      },
+      {
+        "fields": {
+          "id": "1984082047",
+          "name": "my board"
+        },
+        "raw": {
+          "columns": [
+            {
+              "id": "name",
+              "title": "Name",
+              "type": "name"
+            }
+          ],
+          "groups": [
+            {
+              "id": "topics",
+              "position": "65536",
+              "title": "Group Title"
+            }
+          ],
+          "id": "1984082047",
+          "items_count": 1,
+          "name": "my board",
+          "owner": {
+            "id": "73285017",
+            "name": "Integration User"
+          },
+          "owners": [
+            {
+              "id": "73285017",
+              "name": "Integration User"
+            }
+          ],
+          "permissions": "everyone",
+          "state": "active",
+          "subscribers": [
+            {
+              "id": "73285017",
+              "name": "Integration User"
+            }
+          ],
+          "tags": [],
+          "team_owners": [],
+          "team_subscribers": [],
+          "top_group": {
+            "id": "topics",
+            "title": "Group Title"
+          },
+          "type": "board",
+          "updated_at": "2025-03-11T12:18:11Z",
+          "updates": [],
+          "url": "https://withampersand-force.monday.com/boards/1984082047",
+          "views": [],
+          "workspace": {
+            "id": "1686191",
+            "name": "Main workspace"
+          },
+          "workspace_id": "1686191"
+        }
+      },
+      {
+        "fields": {
+          "id": "1984036205",
+          "name": "[Archived] Welcome to your developer account"
+        },
+        "raw": {
+          "columns": [
+            {
+              "id": "name",
+              "title": "Name",
+              "type": "name"
+            },
+            {
+              "id": "files",
+              "title": "Files",
+              "type": "file"
+            }
+          ],
+          "groups": [
+            {
+              "id": "topics",
+              "position": "65536",
+              "title": "Group Title"
+            }
+          ],
+          "id": "1984036205",
+          "items_count": 1,
+          "name": "[Archived] Welcome to your developer account",
+          "owner": {
+            "id": "73285017",
+            "name": "Integration User"
+          },
+          "owners": [
+            {
+              "id": "73285017",
+              "name": "Integration User"
+            }
+          ],
+          "permissions": "everyone",
+          "state": "active",
+          "subscribers": [
+            {
+              "id": "73285017",
+              "name": "Integration User"
+            }
+          ],
+          "tags": [],
+          "team_owners": [],
+          "team_subscribers": [],
+          "top_group": {
+            "id": "topics",
+            "title": "Group Title"
+          },
+          "type": "document",
+          "updated_at": "2025-03-11T10:28:17Z",
+          "updates": [],
+          "url": "https://withampersand-force.monday.com/boards/1984036205",
+          "views": [
+            {
+              "id": "44612917",
+              "name": "Table",
+              "type": "FeatureBoardView"
+            }
+          ],
+          "workspace": {
+            "id": "1686191",
+            "name": "Main workspace"
+          },
+          "workspace_id": "1686191"
+        }
+      },
+      {
+        "fields": {
+          "id": "1984036204",
+          "name": "Welcome to your developer account"
+        },
+        "raw": {
+          "columns": [
+            {
+              "id": "name",
+              "title": "Name",
+              "type": "name"
+            },
+            {
+              "id": "files",
+              "title": "Files",
+              "type": "file"
+            }
+          ],
+          "groups": [
+            {
+              "id": "topics",
+              "position": "65536",
+              "title": "Group Title"
+            }
+          ],
+          "id": "1984036204",
+          "items_count": 1,
+          "name": "Welcome to your developer account",
+          "owner": {
+            "id": "73285017",
+            "name": "Integration User"
+          },
+          "owners": [
+            {
+              "id": "73285017",
+              "name": "Integration User"
+            }
+          ],
+          "permissions": "everyone",
+          "state": "active",
+          "subscribers": [
+            {
+              "id": "73285017",
+              "name": "Integration User"
+            }
+          ],
+          "tags": [],
+          "team_owners": [],
+          "team_subscribers": [],
+          "top_group": {
+            "id": "topics",
+            "title": "Group Title"
+          },
+          "type": "document",
+          "updated_at": "2025-03-11T10:28:17Z",
+          "updates": [],
+          "url": "https://withampersand-force.monday.com/boards/1984036204",
+          "views": [
+            {
+              "id": "44612916",
+              "name": "Table",
+              "type": "FeatureBoardView"
+            }
+          ],
+          "workspace": {
+            "id": "1686191",
+            "name": "Main workspace"
+          },
+          "workspace_id": "1686191"
+        }
+      }
+    ],
+    "nextPage": "https://api.monday.com/"
+  }

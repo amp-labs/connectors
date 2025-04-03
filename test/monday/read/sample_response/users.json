@@ -1,0 +1,19 @@
+{
+    "rows": 1,
+    "data": [
+      {
+        "fields": {
+          "email": "integration.user@withampersand.com",
+          "id": "73285017",
+          "name": "Integration User"
+        },
+        "raw": {
+          "email": "integration.user@withampersand.com",
+          "enabled": true,
+          "id": "73285017",
+          "name": "Integration User"
+        }
+      }
+    ],
+    "nextPage": "https://api.monday.com/"
+  }
