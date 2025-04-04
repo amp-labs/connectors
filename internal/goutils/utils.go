@@ -1,3 +1,4 @@
+// nolint:ireturn
 package goutils
 
 // Pointer returns a pointer to the given value.
@@ -22,4 +23,10 @@ func PanicRecovery(wrapup func(cause error)) {
 
 		wrapup(err)
 	}
+}
+
+// Identity returns the input value unchanged.
+// It acts as an identity function for any type.
+func Identity[T any](input T) T {
+	return input
 }

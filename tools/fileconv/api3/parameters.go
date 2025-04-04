@@ -95,12 +95,32 @@ func OnlyOptionalQueryParameters(objectName string, operation *openapi3.Operatio
 // list of fields becoming "a", "b", "c", "d", "e".
 type PropertyFlattener func(objectName, fieldName string) bool
 
+// SingleItemDuplicatesResolver processes each endpoint individually.
+func SingleItemDuplicatesResolver(mapping func(string) string) DuplicatesResolver {
+	return func(collidingEndpoints [][]string) map[string]string {
+		result := make(map[string]string)
+
+		for _, endpoints := range collidingEndpoints {
+			for _, endpoint := range endpoints {
+				result[endpoint] = mapping(endpoint)
+			}
+		}
+
+		return result
+	}
+}
+
+// DuplicatesResolver processes groups of endpoints which collide among each other.
+// Returns a registry mapping each endpoint URL path to a unique, non-colliding object name.
+type DuplicatesResolver func(collidingEndpoints [][]string) map[string]string // endpoint to objectName
+
 type parameters struct {
 	displayPostProcessing DisplayNameProcessor
 	operationMethodFilter ReadOperationMethodFilter
 	propertyFlattener     PropertyFlattener
 	mediaType             string
 	autoSelectArrayItem   *bool
+	duplicatesResolver    DuplicatesResolver
 }
 
 type Option = func(params *parameters)
@@ -138,6 +158,11 @@ func createParams(opts []Option) *parameters {
 	if params.autoSelectArrayItem == nil {
 		// By default, auto selection is off.
 		params.autoSelectArrayItem = goutils.Pointer(false)
+	}
+
+	if params.duplicatesResolver == nil {
+		// Object name will be set to URL path.
+		params.duplicatesResolver = SingleItemDuplicatesResolver(goutils.Identity)
 	}
 
 	return &params
@@ -192,5 +217,16 @@ func WithPropertyFlattening(propertyFlattener PropertyFlattener) Option {
 func WithArrayItemAutoSelection() Option {
 	return func(params *parameters) {
 		params.autoSelectArrayItem = goutils.Pointer(true)
+	}
+}
+
+// WithDuplicatesResolver enables custom object name creation based on endpoint paths.
+// If the last part of the URI conflicts with other endpoints, they are treated as duplicates,
+// and the resolver will be invoked to handle the collision.
+// When this option is not specified, the default resolver uses the full URL to identify an object,
+// ensuring no collisions.
+func WithDuplicatesResolver(duplicatesResolver DuplicatesResolver) Option {
+	return func(params *parameters) {
+		params.duplicatesResolver = duplicatesResolver
 	}
 }
