@@ -22,28 +22,31 @@ func makeGetRecords(moduleID common.ModuleID, objectName string) common.RecordsF
 	}
 }
 
-func makeNextRecordsURL(baseURL string) common.NextPageFunc {
-	return func(node *ajson.Node) (string, error) {
-		nextPage, err := jsonquery.New(node).StrWithDefault("nextPageUrl", "")
+func (c *Connector) makeNextRecordsURL(node *ajson.Node) (string, error) {
+	nextPage, err := jsonquery.New(node).StrWithDefault("nextPageUrl", "")
+	if err != nil {
+		return "", err
+	}
+
+	if len(nextPage) == 0 {
+		// Next page URL could be nested under params object.
+		nextPage, err = jsonquery.New(node, "params").StrWithDefault("nextPageUrl", "")
 		if err != nil {
 			return "", err
 		}
-
-		if len(nextPage) == 0 {
-			// Next page URL could be nested under params object.
-			nextPage, err = jsonquery.New(node, "params").StrWithDefault("nextPageUrl", "")
-			if err != nil {
-				return "", err
-			}
-		}
-
-		if len(nextPage) == 0 {
-			// Next page doesn't exist
-			return "", nil
-		}
-
-		fullURL := baseURL + nextPage
-
-		return fullURL, nil
 	}
+
+	if len(nextPage) == 0 {
+		// Next page doesn't exist
+		return "", nil
+	}
+
+	baseURL, err := c.RootClient.URL()
+	if err != nil {
+		return "", err
+	}
+
+	fullURL := baseURL.String() + nextPage
+
+	return fullURL, nil
 }

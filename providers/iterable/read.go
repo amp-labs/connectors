@@ -29,7 +29,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 
 	return common.ParseResult(res,
 		makeGetRecords(c.Module(), config.ObjectName),
-		makeNextRecordsURL(c.ProviderInfo().BaseURL),
+		c.makeNextRecordsURL,
 		common.GetMarshaledData,
 		config.Fields,
 	)
