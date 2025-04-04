@@ -1,5 +1,7 @@
 package providers
 
+import "github.com/amp-labs/connectors/common"
+
 const Kit Provider = "kit"
 
 func init() {
@@ -16,6 +18,17 @@ func init() {
 			ExplicitWorkspaceRequired: false,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
+			},
+		},
+		Modules: &ModuleInfo{
+			string(common.ModuleRoot): {
+				BaseURL:     "https://api.kit.com/v4",
+				DisplayName: "Kit",
+				Support: ModuleSupport{
+					Read:      true,
+					Subscribe: false,
+					Write:     true,
+				},
 			},
 		},
 		Support: Support{
