@@ -90,8 +90,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Input: common.WriteParams{ObjectName: "subscribers", RecordData: "dummy"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.MethodPOST(),
-				Then:  mockserver.Response(http.StatusOK, subscriberResponse),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.PathSuffix("/v4/subscribers"),
+				},
+				Then: mockserver.Response(http.StatusOK, subscriberResponse),
 			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,
@@ -113,8 +116,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Input: common.WriteParams{ObjectName: "subscribers", RecordData: "dummy", RecordId: "261"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.MethodPUT(),
-				Then:  mockserver.Response(http.StatusOK, subscriberResponse),
+				If: mockcond.And{
+					mockcond.MethodPUT(),
+					mockcond.PathSuffix("/v4/subscribers/261"),
+				},
+				Then: mockserver.Response(http.StatusOK, subscriberResponse),
 			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,
