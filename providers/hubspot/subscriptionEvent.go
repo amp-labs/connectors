@@ -31,7 +31,10 @@ This form also prevents null fields to be sent out as zero values.
 */
 type SubscriptionEvent map[string]any
 
-var _ common.SubscriptionEvent = SubscriptionEvent{}
+var (
+	_ common.SubscriptionEvent       = SubscriptionEvent{}
+	_ common.SubscriptionUpdateEvent = SubscriptionEvent{}
+)
 
 // VerifyWebhookMessage verifies the signature of a webhook message from Hubspot.
 func (*Connector) VerifyWebhookMessage(
@@ -164,6 +167,17 @@ func (evt SubscriptionEvent) ObjectTypeId() (string, error) {
 	m := evt.asMap()
 
 	return m.GetString("objectTypeId")
+}
+
+func (evt SubscriptionEvent) UpdatedFields() ([]string, error) {
+	m := evt.asMap()
+
+	property, err := m.GetString("propertyName")
+	if err != nil {
+		return nil, fmt.Errorf("error getting property name: %w", err)
+	}
+
+	return []string{property}, nil
 }
 
 /*

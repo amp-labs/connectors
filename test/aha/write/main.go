@@ -43,7 +43,6 @@ func main() {
 	if err := updateIdeaUsers(ctx, conn, recordId); err != nil {
 		slog.Error(err.Error())
 	}
-
 }
 
 func createProducts(ctx context.Context, conn *aha.Connector) error {
