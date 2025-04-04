@@ -446,14 +446,17 @@ type SubscriptionRegistrationParams struct {
 }
 
 type ObjectEvents struct {
-	Events []SubscriptionEventType
 	// ["create", "update", "delete"] our regular CRUD operation events
 	// we translate to provider-specific names contact.creation
-	WatchFields []string
+	Events []SubscriptionEventType
 	// ["email", "fax"] fields to watch for an update subscription
-	PassThroughEvents []string
+	WatchFields []string
+	// true if all fields should be watched for an update subscription
+	// this is provider specific, and not all providers support this.
+	WatchFieldsAll bool
 	// any non CRUD operations with provider specific event names
 	// eg)  ["contact.merged"] for hubspot or ["jira_issue:restored", "jira_issue:archived"] for jira.
+	PassThroughEvents []string
 }
 
 type ObjectName string
