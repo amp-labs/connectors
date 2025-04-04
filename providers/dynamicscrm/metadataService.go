@@ -87,10 +87,11 @@ func combineAttributesMetadata(
 ) map[string]common.FieldMetadata {
 	// Regardless of the attribute type merge them into single registry.
 	// It is a `list of field values` each named after an `attribute`.
-	attributeOptions := make(datautils.NamedLists[common.FieldValue])
-	attributeOptions.MergeWith(attributePicklists.getOptionsPerAttribute())
-	attributeOptions.MergeWith(attributeStatuses.getOptionsPerAttribute())
-	attributeOptions.MergeWith(attributeStates.getOptionsPerAttribute())
+	attributeOptions := datautils.MergeNamedLists(
+		attributePicklists.getOptionsPerAttribute(),
+		attributeStatuses.getOptionsPerAttribute(),
+		attributeStates.getOptionsPerAttribute(),
+	)
 
 	fieldsMap := make(map[string]common.FieldMetadata)
 
