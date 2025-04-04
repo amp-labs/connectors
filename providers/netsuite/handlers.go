@@ -6,11 +6,10 @@ import (
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
 func (c *Connector) buildObjectMetadataRequest(ctx context.Context, object string) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, "services/rest/record", apiVersion, "metadata-catalog", object)
+	url, err := c.RootClient.URL("services/rest/record", apiVersion, "metadata-catalog", object)
 	if err != nil {
 		return nil, err
 	}

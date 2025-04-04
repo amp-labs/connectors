@@ -1,5 +1,7 @@
 package providers
 
+import "github.com/amp-labs/connectors/common"
+
 const Aha Provider = "aha"
 
 func init() {
@@ -14,6 +16,17 @@ func init() {
 			TokenURL:                  "https://{{.workspace}}.aha.io/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: true,
+		},
+		Modules: &ModuleInfo{
+			string(common.ModuleRoot): {
+				BaseURL:     "https://{{.workspace}}.aha.io/api/v1",
+				DisplayName: "Aha",
+				Support: ModuleSupport{
+					Read:      false,
+					Subscribe: false,
+					Write:     false,
+				},
+			},
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{

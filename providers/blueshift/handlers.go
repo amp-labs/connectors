@@ -27,7 +27,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
-	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, path)
+	url, err = c.RootClient.URL(path)
 	if err != nil {
 		return nil, err
 	}
@@ -53,12 +53,12 @@ func (c *Connector) parseReadResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
-	path, err := metadata.Schemas.LookupURLPath(c.Module(), params.ObjectName)
+	path, err := metadata.Schemas.LookupRawURLPath(c.Module(), params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
 
-	baseURL, err := urlbuilder.New(c.ProviderInfo().BaseURL, path)
+	baseURL, err := c.RootClient.URL("v" + path)
 	if err != nil {
 		return nil, err
 	}
@@ -87,7 +87,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		params.ObjectName = fmt.Sprintf("%s.json", params.ObjectName) //nolint:perfsprint
 	}
 
-	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, writeVersion, params.ObjectName)
+	url, err = c.RootClient.URL(writeVersion, params.ObjectName)
 	if err != nil {
 		return nil, err
 	}

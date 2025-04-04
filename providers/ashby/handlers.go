@@ -21,12 +21,12 @@ const (
 )
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
-	path, err := metadata.Schemas.LookupURLPath(c.Module(), params.ObjectName)
+	path, err := metadata.Schemas.LookupRawURLPath(c.Module(), params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
 
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, path)
+	url, err := c.RootClient.URL(path)
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +80,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		err error
 	)
 
-	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName)
+	url, err = c.RootClient.URL(params.ObjectName)
 	if err != nil {
 		return nil, err
 	}

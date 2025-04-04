@@ -10,7 +10,6 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/common/naming"
-	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
@@ -30,7 +29,7 @@ type dataResponse struct {
 }
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, objectName)
+	url, err := c.RootClient.URL(restAPIPrefix, objectName)
 	if err != nil {
 		return nil, err
 	}
@@ -83,7 +82,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 }
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, params.ObjectName)
+	url, err := c.RootClient.URL(restAPIPrefix, params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -116,7 +115,7 @@ func (c *Connector) parseReadResponse(
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
 	method := http.MethodPost
 
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, params.ObjectName)
+	url, err := c.RootClient.URL(restAPIPrefix, params.ObjectName)
 	if err != nil {
 		return nil, err
 	}

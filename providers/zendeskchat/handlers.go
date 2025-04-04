@@ -21,7 +21,7 @@ const (
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIVersion, objectName)
+	url, err := c.RootClient.URL(restAPIVersion, objectName)
 	if err != nil {
 		return nil, err
 	}
@@ -116,7 +116,7 @@ func (c *Connector) buildReadRequest(
 		err error
 	)
 
-	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, restAPIVersion, params.ObjectName)
+	url, err = c.RootClient.URL(restAPIVersion, params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -152,7 +152,7 @@ func (c *Connector) buildWriteRequest(
 ) (*http.Request, error) {
 	method := http.MethodPost
 
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIVersion, params.ObjectName)
+	url, err := c.RootClient.URL(restAPIVersion, params.ObjectName)
 	if err != nil {
 		return nil, err
 	}

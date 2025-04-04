@@ -22,7 +22,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	}
 
 	// For first page, construct the URL
-	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, params.ObjectName)
+	url, err = c.RootClient.URL(apiVersion, params.ObjectName)
 	if err != nil {
 		return nil, err
 	}

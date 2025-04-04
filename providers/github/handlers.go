@@ -8,7 +8,6 @@ import (
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/httpkit"
 	"github.com/amp-labs/connectors/internal/jsonquery"
@@ -34,7 +33,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, path)
+	url, err := c.RootClient.URL(path)
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +78,7 @@ func makeNextRecordsURL(responseHeaders http.Header) common.NextPageFunc {
 }
 
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) { //nolint:lll
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName)
+	url, err := c.RootClient.URL(params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -144,7 +143,7 @@ func (c *Connector) parseWriteResponse(
 }
 
 func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName, params.RecordId)
+	url, err := c.RootClient.URL(params.ObjectName, params.RecordId)
 	if err != nil {
 		return nil, err
 	}

@@ -9,12 +9,11 @@ import (
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, params.ObjectName)
+	url, err := c.RootClient.URL(apiVersion, params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -38,7 +37,7 @@ func (c *Connector) parseReadResponse(
 }
 
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, params.ObjectName)
+	url, err := c.RootClient.URL(apiVersion, params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -121,7 +120,7 @@ func (c *Connector) parseWriteResponse(
 }
 
 func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, params.ObjectName)
+	url, err := c.RootClient.URL(apiVersion, params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
