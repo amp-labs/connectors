@@ -96,12 +96,12 @@ func (c *Connector) getObjectMetadataFromPropertyAPI(
 ) (*common.ObjectMetadata, error) {
 	relativeURL := strings.Join([]string{"properties", objectName}, "/")
 
-	u, err := c.getURL(relativeURL)
+	url, err := c.getURL(relativeURL)
 	if err != nil {
 		return nil, err
 	}
 
-	rsp, err := c.JSONHTTPClient().Get(ctx, u)
+	rsp, err := c.JSONHTTPClient().Get(ctx, url.String())
 	if err != nil {
 		return nil, fmt.Errorf("error fetching HubSpot fields: %w", err)
 	}
@@ -336,7 +336,12 @@ func (c *Connector) fetchExternalMetadataEnumValues(
 	// For each external field that we support make an API call to fetch enumeration options.
 	// Store this values for each field within each object.
 	for _, discovery := range externalFields {
-		rsp, err := c.JSONHTTPClient().Get(ctx, c.getRawURL()+discovery.EndpointPath)
+		url, err := c.RootClient.URL(discovery.EndpointPath)
+		if err != nil {
+			return nil, err
+		}
+
+		rsp, err := c.JSONHTTPClient().Get(ctx, url.String())
 		if err != nil {
 			return nil, fmt.Errorf("error resolving external metadata values for HubSpot: %w", err)
 		}

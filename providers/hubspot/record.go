@@ -9,6 +9,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
@@ -57,7 +58,7 @@ func (c *Connector) GetRecordsWithIds(
 
 	pluralObjectName := naming.NewPluralString(objectName).String()
 
-	u, err := c.getBatchRecordsURL(pluralObjectName, associations)
+	url, err := c.getBatchRecordsURL(pluralObjectName, associations)
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +68,7 @@ func (c *Connector) GetRecordsWithIds(
 		"properties": fields,
 	}
 
-	resp, err := c.JSONHTTPClient().Post(ctx, u, body)
+	resp, err := c.JSONHTTPClient().Post(ctx, url.String(), body)
 	if err != nil {
 		return nil, err
 	}
@@ -85,12 +86,15 @@ func (c *Connector) GetRecordsWithIds(
 	return c.getDataMarshaller(ctx, objectName, associations)(records, fields)
 }
 
-func (c *Connector) getBatchRecordsURL(objectName string, associations []string) (string, error) {
-	relativePath := strings.Join([]string{"/objects", objectName, "batch", "read"}, "/")
+func (c *Connector) getBatchRecordsURL(objectName string, associations []string) (*urlbuilder.URL, error) {
+	url, err := c.getURL("objects", objectName, "batch", "read")
+	if err != nil {
+		return nil, err
+	}
 
 	if len(associations) > 0 {
-		return c.getURL(relativePath, "associations", strings.Join(associations, ","))
-	} else {
-		return c.getURL(relativePath)
+		url.WithQueryParam("associations", strings.Join(associations, ","))
 	}
+
+	return url, nil
 }
