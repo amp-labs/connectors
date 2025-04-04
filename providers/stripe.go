@@ -1,5 +1,7 @@
 package providers
 
+import "github.com/amp-labs/connectors/common"
+
 const Stripe Provider = "stripe"
 
 func init() {
@@ -15,7 +17,19 @@ func init() {
 				ValuePrefix: "Bearer ",
 			},
 			DocsURL: "https://docs.stripe.com/keys",
-		}, Support: Support{
+		},
+		Modules: &ModuleInfo{
+			string(common.ModuleRoot): {
+				BaseURL:     "https://api.stripe.com/v1",
+				DisplayName: "Stripe",
+				Support: ModuleSupport{
+					Read:      true,
+					Subscribe: false,
+					Write:     true,
+				},
+			},
+		},
+		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
 				Update: false,
