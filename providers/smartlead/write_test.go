@@ -72,8 +72,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			Input: common.WriteParams{ObjectName: "campaigns", RecordData: "dummy"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.MethodPOST(),
-				Then:  mockserver.Response(http.StatusOK, responseCampaign),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.PathSuffix("/v1/campaigns/create"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseCampaign),
 			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,
@@ -88,8 +91,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			Input: common.WriteParams{ObjectName: "client", RecordData: "dummy"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.MethodPOST(),
-				Then:  mockserver.Response(http.StatusOK, responseClient),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.PathSuffix("/v1/client/save"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseClient),
 			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,
@@ -104,8 +110,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			Input: common.WriteParams{ObjectName: "email-accounts", RecordData: "dummy"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.MethodPOST(),
-				Then:  mockserver.Response(http.StatusOK, responseAccount),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.PathSuffix("/v1/email-accounts/save"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseAccount),
 			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,
