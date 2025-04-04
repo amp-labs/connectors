@@ -1,67 +1,32 @@
 package hubspot
 
 import (
-	"errors"
-	"fmt"
-	"net/url"
-	"path"
-	"strings"
-
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
-var errMissingValue = errors.New("missing value for query parameter")
-
 // getURL is a helper to return the full URL considering the base URL & module.
-// TODO: replace queryArgs with urlbuilder.New().WithQueryParam().
-func (c *Connector) getURL(arg string, queryArgs ...string) (string, error) {
-	modulePath := supportedModules[c.Module()].Path()
-
-	urlBase := c.ProviderInfo().BaseURL + "/" + path.Join(modulePath, arg)
-
-	if len(queryArgs) > 0 {
-		vals := url.Values{}
-
-		for i := 0; i < len(queryArgs); i += 2 {
-			key := queryArgs[i]
-
-			if i+1 >= len(queryArgs) {
-				return "", fmt.Errorf("%w %q", errMissingValue, key)
-			}
-
-			val := queryArgs[i+1]
-
-			vals.Add(key, val)
-		}
-
-		urlBase += "?" + vals.Encode()
-	}
-
-	return urlBase, nil
+func (c *Connector) getURL(path ...string) (*urlbuilder.URL, error) {
+	return c.ModuleClient.URL(path...)
 }
 
-func (c *Connector) getRawURL() string {
-	// This URL is module independent.
-	return c.ProviderInfo().BaseURL
-}
-
-func (c *Connector) getCRMObjectsReadURL(config common.ReadParams) (string, error) {
+func (c *Connector) getCRMObjectsReadURL(config common.ReadParams) (*urlbuilder.URL, error) {
 	// NB: The final slash is just to emulate prior behavior in earlier versions
 	// of this code. If it turns out to be unnecessary, remove it.
-	relativeURL := "objects/" + config.ObjectName + "/"
+	url, err := c.getURL("objects", config.ObjectName+"/")
+	if err != nil {
+		return nil, err
+	}
 
-	// TODO c.getURL() doesn't make a module assumption. It is not important until Hubspot will have 2+ modules.
-	return c.getURL(relativeURL, makeCRMObjectsQueryValues(config)...)
+	makeCRMObjectsQueryValues(config, url)
+
+	return url, nil
 }
 
-func (c *Connector) getCRMObjectsSearchURL(config SearchParams) (string, error) {
-	relativeURL := strings.Join([]string{"objects", config.ObjectName, "search"}, "/")
-
-	return c.getURL(relativeURL)
+func (c *Connector) getCRMObjectsSearchURL(config SearchParams) (*urlbuilder.URL, error) {
+	return c.getURL("objects", config.ObjectName, "search")
 }
 
-func (c *Connector) getCRMSearchURL(config searchCRMParams) (string, error) {
-	relativeURL := strings.Join([]string{config.ObjectName, "search"}, "/")
-
-	return c.getURL(relativeURL)
+func (c *Connector) getCRMSearchURL(config searchCRMParams) (*urlbuilder.URL, error) {
+	return c.getURL(config.ObjectName, "search")
 }

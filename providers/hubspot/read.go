@@ -6,6 +6,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
 // Read reads data from Hubspot. If Since is set, it will use the
@@ -90,23 +91,24 @@ func (c *Connector) buildReadURL(config common.ReadParams) (string, error) {
 	// We need to construct the query and then make the request.
 	// NB: The final slash is just to emulate prior behavior in earlier versions
 	// of this code. If it turns out to be unnecessary, remove it.
-	return c.getCRMObjectsReadURL(config)
+	url, err := c.getCRMObjectsReadURL(config)
+	if err != nil {
+		return "", err
+	}
+
+	return url.String(), nil
 }
 
 // makeCRMObjectsQueryValues returns the query for the desired read operation.
-func makeCRMObjectsQueryValues(config common.ReadParams) []string {
-	var out []string
-
+func makeCRMObjectsQueryValues(config common.ReadParams, url *urlbuilder.URL) {
 	fields := config.Fields.List()
 	if len(fields) != 0 {
-		out = append(out, "properties", strings.Join(fields, ","))
+		url.WithQueryParam("properties", strings.Join(fields, ","))
 	}
 
 	if config.Deleted {
-		out = append(out, "archived", "true")
+		url.WithQueryParam("archived", "true")
 	}
 
-	out = append(out, "limit", DefaultPageSize)
-
-	return out
+	url.WithQueryParam("limit", DefaultPageSize)
 }
