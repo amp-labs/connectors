@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"os"
 
@@ -15,7 +14,6 @@ func main() {
 
 	conn := salesforceMarketing.GetSalesforceMarketingConnector(ctx)
 
-	// Test listing metadata for various objects from the OpenAPI spec
 	m, err := conn.ListObjectMetadata(ctx, []string{
 		"filetransferlocations",
 		"campaigns",
@@ -27,7 +25,5 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Print the results
-	fmt.Println("Results:")
 	utils.DumpJSON(m, os.Stdout)
 }

@@ -1,4 +1,4 @@
-package salesforceMarketing
+package salesforcemarketing
 
 import (
 	"context"
@@ -31,7 +31,6 @@ func GetSalesforceMarketingConnector(ctx context.Context) *salesforcemarketing.C
 		utils.Fail(err.Error())
 	}
 
-	// Create the connector
 	conn, err := salesforcemarketing.NewConnector(common.Parameters{
 		AuthenticatedClient: client,
 		Workspace:           reader.Get(credscanning.Fields.Workspace),
