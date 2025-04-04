@@ -46,7 +46,5 @@ func constructor(base *components.Connector) (*Connector, error) {
 }
 
 func (c *Connector) getURL(parts ...string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.ProviderInfo().BaseURL, append([]string{
-		"api/v100/rest/spaces/", c.workspace, "/entities",
-	}, parts...)...)
+	return c.ModuleClient.URL(parts...)
 }
