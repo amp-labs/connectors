@@ -1,5 +1,7 @@
 package providers
 
+import "github.com/amp-labs/connectors/common"
+
 const Pipeliner Provider = "pipeliner"
 
 func init() {
@@ -9,6 +11,17 @@ func init() {
 		DisplayName: "Pipeliner",
 		AuthType:    Basic,
 		BaseURL:     "https://eu-central.api.pipelinersales.com",
+		Modules: &ModuleInfo{
+			string(common.ModuleRoot): {
+				BaseURL:     "https://eu-central.api.pipelinersales.com/api/v100/rest/spaces/{{.workspace}}/entities",
+				DisplayName: "Pipeliner",
+				Support: ModuleSupport{
+					Read:      false,
+					Subscribe: false,
+					Write:     false,
+				},
+			},
+		},
 		//nolint:lll
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
