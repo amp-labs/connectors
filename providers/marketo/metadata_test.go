@@ -30,7 +30,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
-					If:   mockcond.PathSuffix("v1/channels.json"),
+					If:   mockcond.PathSuffix("/rest/v1/channels.json"),
 					Then: mockserver.Response(http.StatusOK, channelsResponse),
 				}},
 			}.Server(),
@@ -76,7 +76,7 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 	}
 
 	// for testing we want to redirect calls to our mock server
-	connector.SetURL(serverURL)
+	testroutines.OverrideURLOrigin(connector.Transport, serverURL)
 
 	return connector, nil
 }
