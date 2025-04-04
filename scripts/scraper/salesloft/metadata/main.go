@@ -11,7 +11,6 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/staticschema"
-	"github.com/amp-labs/connectors/providers/salesloft"
 	"github.com/amp-labs/connectors/providers/salesloft/metadata"
 	"github.com/amp-labs/connectors/tools/scrapper"
 	"github.com/iancoleman/strcase"
@@ -63,7 +62,7 @@ func main() {
 }
 
 func formatObjectURL(fullPath string) string {
-	urlPath, _ := strings.CutPrefix(fullPath, ConnectorBaseURL+"/"+salesloft.ApiVersion)
+	urlPath, _ := strings.CutPrefix(fullPath, ConnectorBaseURL+"/v2")
 
 	return urlPath
 }

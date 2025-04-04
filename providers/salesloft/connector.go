@@ -9,8 +9,6 @@ import (
 	"github.com/amp-labs/connectors/providers/salesloft/metadata"
 )
 
-const ApiVersion = "v2"
-
 type Connector struct {
 	// Basic connector
 	*components.Connector
@@ -40,11 +38,11 @@ func constructor(base *components.Connector) (*Connector, error) {
 }
 
 func (c *Connector) getURL(objectName string) (*urlbuilder.URL, error) {
-	path, _ := metadata.Schemas.LookupURLPath(c.Module(), objectName)
+	path, _ := metadata.Schemas.LookupRawURLPath(c.Module(), objectName)
 	if len(path) == 0 {
 		// Fallback, try objectName as a URL.
 		path = objectName
 	}
 
-	return urlbuilder.New(c.ProviderInfo().BaseURL, ApiVersion, path)
+	return c.ModuleClient.URL(path)
 }
