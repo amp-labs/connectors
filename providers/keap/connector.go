@@ -9,8 +9,6 @@ import (
 	"github.com/amp-labs/connectors/providers/keap/metadata"
 )
 
-const ApiPathPrefix = "crm/rest"
-
 type Connector struct {
 	// Basic connector
 	*components.Connector
@@ -43,23 +41,16 @@ func constructor(base *components.Connector) (*Connector, error) {
 }
 
 func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
-	path, err := metadata.Schemas.LookupURLPath(c.Module(), objectName)
+	path, err := metadata.Schemas.LookupRawURLPath(c.Module(), objectName)
 	if err != nil {
 		return nil, err
 	}
 
-	return c.getURL(path)
+	return c.ModuleClient.URL(path)
 }
 
 func (c *Connector) getWriteURL(objectName string) (*urlbuilder.URL, error) {
-	modulePath := metadata.Schemas.LookupModuleURLPath(c.Module())
 	path := objectNameToWritePath.Get(objectName)
 
-	return c.getURL(modulePath, path)
-}
-
-func (c *Connector) getURL(args ...string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.ProviderInfo().BaseURL, append([]string{
-		ApiPathPrefix,
-	}, args...)...)
+	return c.ModuleClient.URL(path)
 }

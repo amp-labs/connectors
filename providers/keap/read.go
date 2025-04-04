@@ -94,9 +94,7 @@ func (c *Connector) requestCustomFields(
 		return map[int]modelCustomField{}, nil
 	}
 
-	modulePath := metadata.Schemas.LookupModuleURLPath(c.Module())
-
-	url, err := c.getURL(modulePath, objectName, "model")
+	url, err := c.ModuleClient.URL(objectName, "model")
 	if err != nil {
 		return nil, errors.Join(ErrResolvingCustomFields, err)
 	}
