@@ -52,17 +52,6 @@ func (t *Transport) SetErrorHandler(handler common.ErrorHandler) {
 	t.ModuleClient.SetErrorHandler(handler)
 }
 
-func (t *Transport) SetURL(newURL string) {
-	t.RootClient.SetURL(newURL)
-	t.ModuleClient.SetURL(newURL)
-
-	// TODO this is temporary.
-	// The implementation should not use info data directly.
-	// Doing this fixes the tests.
-	t.ProviderContext.providerInfo.BaseURL = newURL
-	t.ProviderContext.moduleInfo.BaseURL = newURL
-}
-
 func (t *Transport) JSONHTTPClient() *common.JSONHTTPClient {
 	return t.RootClient.JSONHTTPClient
 }
