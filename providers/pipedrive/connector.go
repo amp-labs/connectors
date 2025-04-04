@@ -8,10 +8,7 @@ import (
 	"github.com/amp-labs/connectors/providers/pipedrive/metadata"
 )
 
-const (
-	apiVersion string = "v1"    // nolint:gochecknoglobals
-	limitQuery string = "limit" // nolint:gochecknoglobals
-)
+const limitQuery string = "limit" // nolint:gochecknoglobals
 
 // Connector represents the Pipedrive Connector.
 type Connector struct {
@@ -41,7 +38,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 // getAPIURL constructs a specific object's resource URL in the format
 // `{{baseURL}}/{{version}}/{{objectName}}`.
 func (c *Connector) getAPIURL(arg string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, arg)
+	return c.ModuleClient.URL(arg)
 }
 
 func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {

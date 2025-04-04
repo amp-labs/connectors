@@ -1,5 +1,7 @@
 package providers
 
+import "github.com/amp-labs/connectors/common"
+
 const Pipedrive Provider = "pipedrive"
 
 func init() {
@@ -8,6 +10,17 @@ func init() {
 		DisplayName: "Pipedrive",
 		AuthType:    Oauth2,
 		BaseURL:     "https://api.pipedrive.com",
+		Modules: &ModuleInfo{
+			string(common.ModuleRoot): {
+				BaseURL:     "https://api.pipedrive.com/v1",
+				DisplayName: "Pipedrive",
+				Support: ModuleSupport{
+					Read:      true,
+					Subscribe: false,
+					Write:     true,
+				},
+			},
+		},
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://oauth.pipedrive.com/oauth/authorize",
