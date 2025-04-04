@@ -38,7 +38,7 @@ func init() {
 		},
 		Modules: &ModuleInfo{
 			ModuleKeapV1: {
-				BaseURL:     "https://api.infusionsoft.com/v1",
+				BaseURL:     "https://api.infusionsoft.com/crm/rest/v1",
 				DisplayName: "Version 1",
 				Support: ModuleSupport{
 					Read:      false,
@@ -47,7 +47,7 @@ func init() {
 				},
 			},
 			ModuleKeapV2: {
-				BaseURL:     "https://api.infusionsoft.com/v2",
+				BaseURL:     "https://api.infusionsoft.com/crm/rest/v2",
 				DisplayName: "Version 2",
 				Support: ModuleSupport{
 					Read:      false,
