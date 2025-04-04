@@ -17,18 +17,7 @@
         "created": "2024-03-26T17:24:42+00:00",
         "updated": "2024-03-26T17:24:42+00:00",
         "last_event_date": "2024-03-26T17:24:41+00:00",
-        "location": {
-          "city": null,
-          "zip": null,
-          "country": null,
-          "longitude": null,
-          "address2": null,
-          "address1": null,
-          "region": null,
-          "latitude": null,
-          "timezone": null,
-          "ip": null
-        },
+        "location": {},
         "properties": {}
       },
       "relationships": {
