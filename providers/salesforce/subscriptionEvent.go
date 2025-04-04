@@ -4,6 +4,7 @@ package salesforce
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/goutils"
@@ -16,8 +17,10 @@ const (
 )
 
 var (
-	errChangeEventHeaderType = errors.New("key ChangeEventHeader is not of map[string]any type")
-	errRecordIDsType         = errors.New("key recordIds is not of []any type")
+	errChangeEventHeaderType     = errors.New("key ChangeEventHeader is not of map[string]any type")
+	errRecordIDsType             = errors.New("key recordIds is not of []any type")
+	errUnexpectedUpdateFieldType = errors.New("unexpected field type")
+	errUnexpectedFieldNameType   = errors.New("unexpected field name type")
 )
 
 func (*Connector) VerifyWebhookMessage(context.Context, *common.WebhookVerificationParameters) (bool, error) {
@@ -80,7 +83,10 @@ func (e CollapsedSubscriptionEvent) SubscriptionEventList() ([]common.Subscripti
 	return events, nil
 }
 
-var _ common.SubscriptionEvent = SubscriptionEvent{}
+var (
+	_ common.SubscriptionEvent       = SubscriptionEvent{}
+	_ common.SubscriptionUpdateEvent = SubscriptionEvent{}
+)
 
 // SubscriptionEvent holds event data.
 //
@@ -162,6 +168,42 @@ func (s SubscriptionEvent) EventTimeStampNano() (int64, error) {
 	}
 
 	return int64(num), nil
+}
+
+func (s SubscriptionEvent) UpdatedFields() ([]string, error) {
+	registry, err := s.asMap()
+	if err != nil {
+		return nil, fmt.Errorf("getting event objects: %w", err)
+	}
+
+	fieldsAny, ok := registry["changedFields"].([]any)
+	if !ok {
+		return nil, fmt.Errorf(
+			"%w: expected %T, but received %T ",
+			errUnexpectedUpdateFieldType,
+			fieldsAny,
+			registry["changedFields"],
+		)
+	}
+
+	fields := make([]string, len(fieldsAny))
+
+	//nolint:varnamelen
+	for i, field := range fieldsAny {
+		str, ok := field.(string)
+		if !ok {
+			return nil, fmt.Errorf(
+				"%w: expected %T but received %T",
+				errUnexpectedFieldNameType,
+				str,
+				field,
+			)
+		}
+
+		fields[i] = str
+	}
+
+	return fields, nil
 }
 
 func extractChangeEventHeader(registry map[string]any) (common.StringMap, error) {
