@@ -11,8 +11,6 @@ import (
 	"github.com/amp-labs/connectors/providers"
 )
 
-const restAPIPrefix = "rest" //nolint:gochecknoglobals
-
 func (c *Connector) constructReadURL(params common.ReadParams) (*urlbuilder.URL, error) {
 	url, err := c.getAPIURL(params.ObjectName)
 	if err != nil {
@@ -47,7 +45,7 @@ func (c *Connector) constructMetadataURL(objectName string) (*urlbuilder.URL, er
 		return c.getAPIURL(objectName)
 	}
 
-	return urlbuilder.New(c.ProviderInfo().BaseURL, path)
+	return c.RootClient.URL(path)
 }
 
 func addFilteringIDQueries(urlbuilder *urlbuilder.URL, startIdx string) error {

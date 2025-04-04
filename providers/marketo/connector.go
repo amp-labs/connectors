@@ -34,8 +34,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 }
 
 func (c *Connector) getAPIURL(objName string) (*urlbuilder.URL, error) {
-	modulePath := supportedModules[c.Module()].Path()
 	objName = common.AddSuffixIfNotExists(objName, ".json")
 
-	return urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, modulePath, objName)
+	return c.ModuleClient.URL(objName)
 }
