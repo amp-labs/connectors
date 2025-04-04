@@ -25,7 +25,7 @@ func (c *Connector) readViaSearch(
 		return nil, nil, nil, false
 	}
 
-	url, err := constructURL(c.ProviderInfo().BaseURL, config.ObjectName, "search")
+	url, err := constructURL(c.ModuleClient.URL(config.ObjectName, "search"))
 	if err != nil {
 		return nil, nil, err, true
 	}

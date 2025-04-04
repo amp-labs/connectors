@@ -51,7 +51,7 @@ func TestConstructURL(t *testing.T) {
 func createURLWithQuery(key string, values []string) *urlbuilder.URL {
 	value := strings.Join(values, ",")
 
-	url, err := constructURL("https://test")
+	url, err := constructURL(urlbuilder.New("https://test"))
 	if err != nil {
 		panic(fmt.Errorf("test is incorrect %w", err))
 	}
