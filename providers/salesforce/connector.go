@@ -64,15 +64,15 @@ func (c *Connector) getRestApiURL(paths ...string) (*urlbuilder.URL, error) {
 		restAPISuffix, // scope URLs to API version
 	}, paths...)
 
-	return urlbuilder.New(c.ProviderInfo().BaseURL, parts...)
+	return c.RootClient.URL(parts...)
 }
 
 func (c *Connector) getDomainURL(paths ...string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.ProviderInfo().BaseURL, paths...)
+	return c.RootClient.URL(paths...)
 }
 
 func (c *Connector) getSoapURL() (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.ProviderInfo().BaseURL, "services/Soap/m", APIVersionSOAP())
+	return c.RootClient.URL("services/Soap/m", APIVersionSOAP())
 }
 
 // nolint: lll
