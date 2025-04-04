@@ -1,5 +1,7 @@
 package providers
 
+import "github.com/amp-labs/connectors/common"
+
 const Attio Provider = "attio"
 
 func init() {
@@ -14,6 +16,17 @@ func init() {
 			TokenURL:                  "https://app.attio.com/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
+		},
+		Modules: &ModuleInfo{
+			string(common.ModuleRoot): {
+				BaseURL:     "https://api.attio.com/v2",
+				DisplayName: "Attio",
+				Support: ModuleSupport{
+					Read:      true,
+					Subscribe: false,
+					Write:     true,
+				},
+			},
 		},
 		//nolint:lll
 		Media: &Media{

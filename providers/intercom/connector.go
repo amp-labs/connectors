@@ -46,5 +46,5 @@ func constructor(base *components.Connector) (*Connector, error) {
 func (c *Connector) getURL(objectName string) (*urlbuilder.URL, error) {
 	path := objectNameToURLPath.Get(objectName)
 
-	return constructURL(c.ProviderInfo().BaseURL, path)
+	return constructURL(c.ModuleClient.URL(path))
 }

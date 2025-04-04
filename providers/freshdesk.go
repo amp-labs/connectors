@@ -1,5 +1,7 @@
 package providers
 
+import "github.com/amp-labs/connectors/common"
+
 const Freshdesk Provider = "freshdesk"
 
 func init() {
@@ -7,6 +9,17 @@ func init() {
 		DisplayName: "Freshdesk",
 		AuthType:    Basic,
 		BaseURL:     "https://{{.workspace}}.freshdesk.com",
+		Modules: &ModuleInfo{
+			string(common.ModuleRoot): {
+				BaseURL:     "https://{{.workspace}}.freshdesk.com/api/v2",
+				DisplayName: "Freshdesk",
+				Support: ModuleSupport{
+					Read:      false,
+					Subscribe: false,
+					Write:     false,
+				},
+			},
+		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,

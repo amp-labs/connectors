@@ -33,7 +33,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 
 	return common.ParseResult(res,
 		common.GetOptionalRecordsUnderJSONPath(responseFieldName),
-		makeNextRecordsURL(c.ProviderInfo().BaseURL),
+		c.makeNextRecordsURL,
 		common.GetMarshaledData,
 		config.Fields,
 	)

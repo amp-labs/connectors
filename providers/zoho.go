@@ -1,5 +1,7 @@
 package providers
 
+import "github.com/amp-labs/connectors/common"
+
 const Zoho Provider = "zoho"
 
 func init() {
@@ -19,6 +21,17 @@ func init() {
 			TokenMetadataFields: TokenMetadataFields{
 				WorkspaceRefField: "api_domain",
 				ScopesField:       "scope",
+			},
+		},
+		Modules: &ModuleInfo{
+			string(common.ModuleRoot): {
+				BaseURL:     "https://www.zohoapis.com/crm/v6",
+				DisplayName: "Zoho",
+				Support: ModuleSupport{
+					Read:      true,
+					Subscribe: false,
+					Write:     true,
+				},
 			},
 		},
 		Support: Support{

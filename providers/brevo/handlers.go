@@ -32,7 +32,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 	}
 
-	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, params.ObjectName)
+	url, err = c.RootClient.URL(apiVersion, params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +71,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		method = http.MethodPost
 	)
 
-	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, params.ObjectName)
+	url, err = c.RootClient.URL(apiVersion, params.ObjectName)
 	if err != nil {
 		return nil, err
 	}

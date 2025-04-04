@@ -4,6 +4,8 @@ package testroutines
 
 import (
 	"testing"
+
+	"github.com/amp-labs/connectors/internal/components"
 )
 
 // ConnectorBuilder is a callback method to construct and configure connector for testing.
@@ -17,4 +19,20 @@ func (builder ConnectorBuilder[C]) Build(t *testing.T, testCaseName string) C {
 	}
 
 	return conn
+}
+
+func OverrideURLOrigin(transport *components.Transport, originURL string) {
+	url, err := transport.RootClient.URL()
+	if err != nil {
+		return
+	}
+
+	transport.RootClient.SetURL(originURL + url.Path())
+
+	url, err = transport.ModuleClient.URL()
+	if err != nil {
+		return
+	}
+
+	transport.ModuleClient.SetURL(originURL + url.Path())
 }

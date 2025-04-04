@@ -61,7 +61,7 @@ func (c *Connector) performReadQuery(
 func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error) {
 	if len(config.NextPage) != 0 {
 		// Next page
-		return constructURL(config.NextPage.String())
+		return constructURL(urlbuilder.New(config.NextPage.String()))
 	}
 
 	// First page

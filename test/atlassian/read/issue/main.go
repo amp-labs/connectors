@@ -9,6 +9,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers"
 	connTest "github.com/amp-labs/connectors/test/atlassian"
 	"github.com/amp-labs/connectors/test/utils"
 )
@@ -21,10 +22,11 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := connTest.GetAtlassianConnector(ctx)
+	conn := connTest.GetAtlassianConnector(ctx, common.ModuleID(providers.ModuleAtlassianJira))
 
 	res, err := conn.Read(ctx, common.ReadParams{
-		Fields: connectors.Fields("id", "summary", "status"),
+		ObjectName: "issue",
+		Fields:     connectors.Fields("id"),
 		// Below is the example to get issues that were updated in the last 15 min.
 		// Since: time.Now().Add(-15 * time.Minute),
 	})

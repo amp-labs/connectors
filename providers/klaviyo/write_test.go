@@ -91,8 +91,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			Input: common.WriteParams{ObjectName: "campaigns", RecordData: make(map[string]any)},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentMIME("application/vnd.api+json"),
-				If:    mockcond.MethodPOST(),
-				Then:  mockserver.Response(http.StatusOK),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.PathSuffix("/api/campaigns"),
+				},
+				Then: mockserver.Response(http.StatusOK),
 			}.Server(),
 			Expected:     &common.WriteResult{Success: true},
 			ExpectedErrs: nil,
@@ -106,8 +109,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentMIME("application/vnd.api+json"),
-				If:    mockcond.MethodPATCH(),
-				Then:  mockserver.Response(http.StatusOK),
+				If: mockcond.And{
+					mockcond.MethodPATCH(),
+					mockcond.PathSuffix("/api/campaigns/01JCPFHB29QZ1NDPR3GCGQS5G2"),
+				},
+				Then: mockserver.Response(http.StatusOK),
 			}.Server(),
 			Expected:     &common.WriteResult{Success: true},
 			ExpectedErrs: nil,
@@ -117,8 +123,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			Input: common.WriteParams{ObjectName: "tags", RecordData: make(map[string]any)},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentMIME("application/vnd.api+json"),
-				If:    mockcond.MethodPOST(),
-				Then:  mockserver.Response(http.StatusOK, responseCreateTag),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.PathSuffix("/api/tags"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseCreateTag),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{

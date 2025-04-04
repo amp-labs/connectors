@@ -20,9 +20,6 @@ ref: https://developer.close.com/resources/leads/
 }
 */
 
-// restAPIVersion represents the supported close rest api version.
-const restAPIVersion = "api/v1"
-
 type metadataFields struct {
 	Data []map[string]any `json:"data"`
 }

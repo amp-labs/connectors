@@ -18,7 +18,6 @@ const (
 	pageSize    = "200"
 	pageKey     = "page"
 	sinceKey    = "created_since"
-	apiVersion  = "v1"
 )
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
@@ -26,12 +25,12 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return http.NewRequestWithContext(ctx, http.MethodGet, params.NextPage.String(), nil)
 	}
 
-	path, err := metadata.Schemas.LookupURLPath(c.Module(), params.ObjectName)
+	path, err := metadata.Schemas.LookupRawURLPath(c.Module(), params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
 
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, path)
+	url, err := c.RootClient.URL(path)
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +53,7 @@ func (c *Connector) parseReadResponse(
 		return nil, err
 	}
 
-	baseURL, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, path)
+	url, err := c.RootClient.URL(path)
 	if err != nil {
 		return nil, err
 	}
@@ -62,13 +61,13 @@ func (c *Connector) parseReadResponse(
 	return common.ParseResult(
 		response,
 		common.GetRecordsUnderJSONPath(responseKey),
-		makeNextRecordsURL(baseURL, params),
+		makeNextRecordsURL(url, params),
 		common.GetMarshaledData,
 		params.Fields,
 	)
 }
 
-func makeNextRecordsURL(baseURL *urlbuilder.URL, params common.ReadParams) common.NextPageFunc {
+func makeNextRecordsURL(url *urlbuilder.URL, params common.ReadParams) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
 		pagination, err := jsonquery.New(node).ObjectRequired("pagination")
 		if err != nil {
@@ -91,9 +90,9 @@ func makeNextRecordsURL(baseURL *urlbuilder.URL, params common.ReadParams) commo
 
 		nextPage := currentPage + 1
 
-		addQueryParams(baseURL, params, nextPage)
+		addQueryParams(url, params, nextPage)
 
-		return baseURL.String(), nil
+		return url.String(), nil
 	}
 }
 

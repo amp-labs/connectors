@@ -1,5 +1,7 @@
 package providers
 
+import "github.com/amp-labs/connectors/common"
+
 const (
 	Instantly   Provider = "instantly"
 	InstantlyAI Provider = "instantlyAI"
@@ -18,6 +20,17 @@ func init() {
 				Name: "api_key",
 			},
 			DocsURL: "https://developer.instantly.ai/introduction",
+		},
+		Modules: &ModuleInfo{
+			string(common.ModuleRoot): {
+				BaseURL:     "https://api.instantly.ai/api/v1",
+				DisplayName: "Instantly (Legacy V1)",
+				Support: ModuleSupport{
+					Read:      false,
+					Subscribe: false,
+					Write:     false,
+				},
+			},
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
