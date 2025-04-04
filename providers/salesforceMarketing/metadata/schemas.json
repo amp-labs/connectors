@@ -136,7 +136,7 @@
         },
         "domainverification": {
           "displayName": "Domain Verification",
-          "path": "/domainverification",
+          "path": "/messaging/v1/domainverification",
           "responseKey": "items",
           "fields": {
             "enterpriseId": {
@@ -176,7 +176,7 @@
             }
           }
         },
-        "contacts/v1/schema": {
+        "contacts/schema": {
           "displayName": "Contact Schemas",
           "path": "/contacts/v1/schema",
           "responseKey": "items",
@@ -215,7 +215,7 @@
         },
         "campaigns": {
           "displayName": "Campaigns",
-          "path": "/campaigns",
+          "path": "/hub/v1/campaigns/",
           "responseKey": "items",
           "fields": {
             "id": {
@@ -262,7 +262,7 @@
         },
         "approvals": {
           "displayName": "Approvals",
-          "path": "/approvals-v2",
+          "path": "/hub/v1/approvals-v2",
           "responseKey": "items",
           "fields": {
             "approvalItemId": {
@@ -329,7 +329,7 @@
         },
         "audit/auditEvents": {
           "displayName": "Audit Events",
-          "path": "/audit/auditEvents",
+          "path": "/data/v1/audit/auditEvents",
           "responseKey": "items",
           "fields": {
             "id": {
@@ -381,7 +381,7 @@
         },
         "audit/securityEvents": {
           "displayName": "Security Events",
-          "path": "/audit/securityEvents",
+          "path": "/data/v1/audit/securityEvents",
           "responseKey": "items",
           "fields": {
             "id": {
@@ -547,7 +547,7 @@
         },
         "messages": {
           "displayName": "Messages",
-          "path": "/messages",
+          "path": "/push/v1/message",
           "responseKey": "items",
           "fields": {
             "id": {
@@ -709,7 +709,7 @@
         },
         "location": {
           "displayName": "Location",
-          "path": "/location",
+          "path": "/push/v1/location",
           "responseKey": "items",
           "fields": {
             "id": {
@@ -749,10 +749,162 @@
             }
           }
         },
-        "seed-lists":{}
+        "seed-lists": {
+          "displayName": "Seed Lists",
+          "path": "/messaging/v1/email/seed-lists",
+          "responseKey": "items",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "activeSeedCount": {
+              "displayName": "activeSeedCount",
+              "valueType": "number",
+              "providerType": "number"
+            }
+          }
+        },
+        "email/definitions": {
+          "displayName": "Email Definitions",
+          "path": "/messaging/v1/email/definitions",
+          "responseKey": "definitions",
+          "fields": {
+            "definitionKey": {
+              "displayName": "definitionKey",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdDate": {
+              "displayName": "createdDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "modifiedDate": {
+              "displayName": "modifiedDate",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "push/definitions": {
+          "displayName": "Push Definitions",
+          "path": "messaging/v1/push/definitions",
+          "responseKey": "definitions",
+          "fields": {
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "definitionKey": {
+              "displayName": "definitionKey",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdDate": {
+              "displayName": "createdDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "modifiedDate": {
+              "displayName": "modifiedDate",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "ott/definitions": {
+          "displayName": "OTT Definitions",
+          "path": "/messaging/v1/ott/definitions/",
+          "responseKey": "definitions",
+          "fields": {
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "definitionKey": {
+              "displayName": "definitionKey",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdDate": {
+              "displayName": "createdDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "modifiedDate": {
+              "displayName": "modifiedDate",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "sms/definitions": {
+          "displayName": "SMS Definitions",
+          "path": "/messaging/v1/sms/definitions/",
+          "responseKey": "definitions",
+          "fields": {
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "definitionKey": {
+              "displayName": "definitionKey",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdDate": {
+              "displayName": "createdDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "modifiedDate": {
+              "displayName": "modifiedDate",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        }
       }
     }
   }
 }
-
-

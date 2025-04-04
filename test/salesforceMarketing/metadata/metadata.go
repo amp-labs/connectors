@@ -17,10 +17,10 @@ func main() {
 
 	// Test listing metadata for various objects from the OpenAPI spec
 	m, err := conn.ListObjectMetadata(ctx, []string{
-		"assets",
+		"filetransferlocations",
 		"campaigns",
-		"emailDefinitions",
-		"smsDefinitions",
+		"contacts/schema",
+		"approvals",
 	})
 
 	if err != nil {
