@@ -41,22 +41,22 @@ func constructor(base *components.Connector) (*Connector, error) {
 }
 
 func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
-	path, err := metadata.Schemas.LookupURLPath(c.Module(), objectName)
+	p, err := metadata.Schemas.LookupRawURLPath(c.Module(), objectName)
 	if err != nil {
 		return nil, err
 	}
 
-	return urlbuilder.New(c.ProviderInfo().BaseURL, path)
+	return c.ModuleClient.URL(p)
 }
 
 func (c *Connector) getWriteURL(objectName string) (*urlbuilder.URL, error) {
-	path := supportedObjectsByWrite[objectName]
+	p := supportedObjectsByWrite[objectName]
 
-	return urlbuilder.New(c.ProviderInfo().BaseURL, path)
+	return c.ModuleClient.URL(p)
 }
 
 func (c *Connector) getDeleteURL(objectName, recordID string) (*urlbuilder.URL, error) {
-	path := supportedObjectsByDelete[objectName]
+	p := supportedObjectsByDelete[objectName]
 
-	return urlbuilder.New(c.ProviderInfo().BaseURL, path, recordID)
+	return c.ModuleClient.URL(p, recordID)
 }
