@@ -30,7 +30,7 @@ func main() {
 
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: objectName,
-		Fields:     connectors.Fields("description"),
+		Fields:     connectors.Fields("description", "Customer Type", "Topic"),
 		// Since:      time.Now().Add(-1 * time.Hour * 24 * 180),
 		// Pagination returned when since was not specified:
 		// NextPage:   "https://d3v-ampersand.zendesk.com/api/v2/incremental/tickets/cursor.json?cursor=MTcwODAxNDI2MS4wfHw1fA%3D%3D&per_page=1", // nolint:lll
