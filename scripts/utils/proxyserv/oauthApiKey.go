@@ -16,7 +16,7 @@ import (
 func (f Factory) CreateProxyAPIKey(ctx context.Context) *Proxy {
 	apiKey := getAPIKey(f.Registry)
 	providerInfo := getProviderConfig(f.Provider, f.CatalogVariables)
-	httpClient := setupAPIKeyHTTPClient(ctx, providerInfo, apiKey, f.Debug)
+	httpClient := setupAPIKeyHTTPClient(ctx, providerInfo, apiKey, f.Debug, f.Substitutions)
 	baseURL := getBaseURL(providerInfo)
 
 	return newProxy(baseURL, httpClient)
@@ -24,6 +24,7 @@ func (f Factory) CreateProxyAPIKey(ctx context.Context) *Proxy {
 
 func setupAPIKeyHTTPClient(
 	ctx context.Context, prov *providers.ProviderInfo, apiKey string, debug bool,
+	metadata map[string]string,
 ) common.AuthenticatedHTTPClient {
 	client, err := prov.NewClient(ctx, &providers.NewClientParams{
 		Debug: debug,
@@ -35,7 +36,10 @@ func setupAPIKeyHTTPClient(
 		panic(err)
 	}
 
-	cc, err := connector.NewConnector(prov.Name, connector.WithAuthenticatedClient(client))
+	cc, err := connector.NewConnector(prov.Name,
+		connector.WithAuthenticatedClient(client),
+		connector.WithMetadata(metadata),
+	)
 	if err != nil {
 		panic(err)
 	}
