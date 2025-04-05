@@ -34,7 +34,7 @@ func (c *Connector) readAPI(ctx context.Context, config common.ReadParams) (*com
 
 	return common.ParseResult(
 		rsp,
-		common.GetRecordsUnderJSONPath("data"),
+		common.ExtractRecordsFromPath("data"),
 		makeNextRecordsURL(url, config.ObjectName),
 		common.GetMarshaledData,
 		config.Fields,
@@ -65,7 +65,7 @@ func (c *Connector) readStandardOrCustomObject(
 
 	return common.ParseResult(
 		rsp,
-		common.GetRecordsUnderJSONPath("data"),
+		common.ExtractRecordsFromPath("data"),
 		makeNextRecordStandardObj(offset),
 		DataMarshall(rsp),
 		config.Fields,

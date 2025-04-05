@@ -18,7 +18,7 @@ func makeGetRecords(moduleID common.ModuleID, objectName string) common.RecordsF
 			nestedPath = []string{"params"}
 		}
 
-		return common.GetOptionalRecordsUnderJSONPath(responseFieldName, nestedPath...)(node)
+		return common.ExtractOptionalRecordsFromPath(responseFieldName, nestedPath...)(node)
 	}
 }
 

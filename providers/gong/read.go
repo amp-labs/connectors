@@ -48,7 +48,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	responseFieldName := metadata.Schemas.LookupArrayFieldName(c.Module.ID, config.ObjectName)
 
 	return common.ParseResult(res,
-		common.GetRecordsUnderJSONPath(responseFieldName),
+		common.ExtractRecordsFromPath(responseFieldName),
 		getNextRecordsURL,
 		common.GetMarshaledData,
 		config.Fields,

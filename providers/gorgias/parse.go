@@ -17,7 +17,7 @@ func records(objectName string) common.RecordsFunc {
 
 			return []map[string]any{data}, nil
 		default:
-			return common.GetRecordsUnderJSONPath(dataField)(node)
+			return common.ExtractRecordsFromPath(dataField)(node)
 		}
 	}
 }
