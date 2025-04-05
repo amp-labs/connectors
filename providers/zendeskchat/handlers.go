@@ -139,7 +139,7 @@ func (c *Connector) parseReadResponse(
 ) (*common.ReadResult, error) {
 	return common.ParseResult(
 		response,
-		common.GetRecordsUnderJSONPath(responseField(params.ObjectName)),
+		common.ExtractRecordsFromPath(responseField(params.ObjectName)),
 		nextRecordsURL(params.ObjectName),
 		common.GetMarshaledData,
 		params.Fields,

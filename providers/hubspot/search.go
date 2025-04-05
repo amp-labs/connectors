@@ -82,7 +82,7 @@ func (c *Connector) searchCRM(
 
 	return common.ParseResult(
 		rsp,
-		common.GetOptionalRecordsUnderJSONPath(config.ObjectName),
+		common.ExtractOptionalRecordsFromPath(config.ObjectName),
 		getNextRecordsURLCRM,
 		common.GetMarshaledData,
 		config.Fields,

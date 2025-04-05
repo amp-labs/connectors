@@ -30,7 +30,7 @@ func (c *Connector) parseReadResponse(
 ) (*common.ReadResult, error) {
 	return common.ParseResult(
 		resp,
-		common.GetOptionalRecordsUnderJSONPath(""),
+		common.ExtractOptionalRecordsFromPath(""),
 		getNextRecordsURL,
 		common.GetMarshaledData,
 		params.Fields,

@@ -42,7 +42,7 @@ func (c *Connector) parseReadResponse(
 ) (*common.ReadResult, error) {
 	return common.ParseResult(
 		response,
-		common.GetRecordsUnderJSONPath(dataResponseKey),
+		common.ExtractRecordsFromPath(dataResponseKey),
 		nextRecordsURL(),
 		common.GetMarshaledData,
 		params.Fields,

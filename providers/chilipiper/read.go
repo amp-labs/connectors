@@ -28,7 +28,7 @@ func (conn *Connector) Read(ctx context.Context, config common.ReadParams) (*com
 
 	return common.ParseResult(
 		resp,
-		common.GetRecordsUnderJSONPath("results"),
+		common.ExtractRecordsFromPath("results"),
 		nextRecordsURL(url),
 		common.GetMarshaledData,
 		config.Fields,

@@ -46,7 +46,7 @@ func (c *Connector) Search(ctx context.Context, config SearchParams) (*common.Re
 
 	return common.ParseResult(
 		resp,
-		common.GetRecordsUnderJSONPath("data"),
+		common.ExtractRecordsFromPath("data"),
 		getNextRecordCursor,
 		common.GetMarshaledData,
 		datautils.NewStringSet(config.Fields...),

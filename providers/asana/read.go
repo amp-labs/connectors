@@ -30,7 +30,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 
 	return common.ParseResult(
 		rsp,
-		common.GetOptionalRecordsUnderJSONPath("data"),
+		common.ExtractOptionalRecordsFromPath("data"),
 		makeNextRecordsURL(),
 		common.GetMarshaledData,
 		config.Fields,
