@@ -74,9 +74,10 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 		}
 	}
 
-	if objectsWithCustomFields.Has(config.ObjectName) {
-		// Request custom fields.
-		url.WithQueryParam("include", "custom_fields")
+	if config.ObjectName == objectNameContacts {
+		// Force to return even optional fields.
+		// https://developer.constantcontact.com/api_reference/index.html#!/Contacts/getContacts
+		url.WithQueryParam("include", "custom_fields,list_memberships,phone_numbers,street_addresses,taggings,notes")
 	}
 
 	return url, nil
