@@ -33,7 +33,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 
 	return common.ParseResult(
 		rsp,
-		common.GetRecordsUnderJSONPath(responseFieldName),
+		common.ExtractRecordsFromPath(responseFieldName),
 		getNextRecordsURL,
 		common.GetMarshaledData,
 		config.Fields,

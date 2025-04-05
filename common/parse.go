@@ -19,31 +19,44 @@ type (
 	// NodeRecordsFunc extracts a list of records as ajson.Node from the response body.
 	NodeRecordsFunc func(*ajson.Node) ([]*ajson.Node, error)
 
-	// RawReadRecordFunc processes a raw record, applying additional transformations if needed.
-	// There is one common example of flattening nested fields provided by RecordFlattener.
-	RawReadRecordFunc func(node *ajson.Node) (map[string]any, error)
+	// RecordTransformer is a function that processes a JSON node and transforms it
+	// into a map representation, potentially applying structural modifications.
+	//
+	// Common use cases include:
+	// - Flattening nested objects (see FlattenNestedFields)
+	// - Filtering out unwanted fields
+	// - Converting field formats
+	// - Renaming fields
+	// - Adding computed fields
+	//
+	// Example usage:
+	// - FlattenNestedFields("attributes")
+	// - Replacing GUIDs with human-readable fields
+	// - Enhancing fields with custom data from the API response.
+	// - Adding a relationships property to the root level from a nested object.
+	RecordTransformer func(node *ajson.Node) (map[string]any, error)
 	// MarshalFunc converts a list of map[string]any records into ReadResultRow format.
 	MarshalFunc func(records []map[string]any, fields []string) ([]ReadResultRow, error)
-	// NodeMarshalFunc converts a list of ajson.Node records into ReadResultRow format.
-	NodeMarshalFunc func(records []*ajson.Node, fields []string) ([]ReadResultRow, error)
+	// MarshalFromNodeFunc converts a list of ajson.Node records into ReadResultRow format.
+	MarshalFromNodeFunc func(records []*ajson.Node, fields []string) ([]ReadResultRow, error)
 )
 
-// RawReadRecord defines the types of records that ParseResult can process.
+// ProviderReadResponseType defines the types of records that ParseResult can process.
 // It determines which callback function is used for parsing.
-type RawReadRecord interface {
+type ProviderReadResponseType interface {
 	map[string]any | *ajson.Node
 }
 
 // ParseResult parses the response from a provider into a ReadResult. A 2xx return type is assumed.
 // The sizeFunc returns the total number of records in the response.
-// The recordsFunc returns the records in the response.
-// The nextPageFunc returns the URL for the next page of results.
+// The extractRecords returns the records in the response.
+// The extractNextPage returns the URL for the next page of results.
 // The marshalFunc is used to structure the data into an array of ReadResultRows.
 // The fields are used to populate ReadResultRow.Fields.
-func ParseResult[R RawReadRecord](
+func ParseResult[R ProviderReadResponseType](
 	resp *JSONHTTPResponse,
-	recordsFunc func(*ajson.Node) ([]R, error),
-	nextPageFunc func(*ajson.Node) (string, error),
+	extractRecords func(*ajson.Node) ([]R, error),
+	extractNextPage func(*ajson.Node) (string, error),
 	marshalFunc func([]R, []string) ([]ReadResultRow, error),
 	fields datautils.Set[string],
 ) (*ReadResult, error) {
@@ -52,12 +65,12 @@ func ParseResult[R RawReadRecord](
 		return nil, ErrEmptyJSONHTTPResponse
 	}
 
-	records, err := recordsFunc(body)
+	records, err := extractRecords(body)
 	if err != nil {
 		return nil, err
 	}
 
-	nextPage, err := nextPageFunc(body)
+	nextPage, err := extractNextPage(body)
 	if err != nil {
 		return nil, err
 	}
@@ -165,7 +178,7 @@ func GetMarshalledDataWithId(records []map[string]any, fields []string) ([]ReadR
 // MakeMarshaledDataFunc produces ReadResultRow where raw record differs from the fields.
 // This usually includes a set of actions to preprocess, usually to flatten the raw record and then extract
 // fields requested by the user.
-func MakeMarshaledDataFunc(nodeRecordFunc RawReadRecordFunc) NodeMarshalFunc {
+func MakeMarshaledDataFunc(nodeRecordFunc RecordTransformer) MarshalFromNodeFunc {
 	return func(records []*ajson.Node, fields []string) ([]ReadResultRow, error) {
 		data := make([]ReadResultRow, len(records))
 
@@ -190,15 +203,15 @@ func MakeMarshaledDataFunc(nodeRecordFunc RawReadRecordFunc) NodeMarshalFunc {
 	}
 }
 
-func GetRecordsUnderJSONPath(jsonPath string, nestedPath ...string) func(*ajson.Node) ([]map[string]any, error) {
-	return getRecords(false, jsonPath, nestedPath...)
+func ExtractRecordsFromPath(jsonPath string, nestedPath ...string) RecordsFunc {
+	return extractRecords(false, jsonPath, nestedPath...)
 }
 
-func GetOptionalRecordsUnderJSONPath(jsonPath string, nestedPath ...string) RecordsFunc {
-	return getRecords(true, jsonPath, nestedPath...)
+func ExtractOptionalRecordsFromPath(jsonPath string, nestedPath ...string) RecordsFunc {
+	return extractRecords(true, jsonPath, nestedPath...)
 }
 
-func getRecords(optional bool, jsonPath string, nestedPath ...string) RecordsFunc {
+func extractRecords(optional bool, jsonPath string, nestedPath ...string) RecordsFunc {
 	return func(node *ajson.Node) ([]map[string]any, error) {
 		var (
 			arr []*ajson.Node
@@ -219,7 +232,7 @@ func getRecords(optional bool, jsonPath string, nestedPath ...string) RecordsFun
 	}
 }
 
-// RecordFlattener returns a procedure which copies fields of a nested object to the top level.
+// FlattenNestedFields returns a procedure which copies fields of a nested object to the top level.
 //
 // Ex: Every object has special field "attributes" which holds all the object specific fields.
 // Therefore, nested "attributes" will be removed and fields will be moved to the top level of the object.
@@ -240,7 +253,7 @@ func getRecords(optional bool, jsonPath string, nestedPath ...string) RecordsFun
 //	],
 //
 // The resulting fields for the above will be: [ type, id, test_account, contact_information, locale, links ].
-func RecordFlattener(nestedKey string) RawReadRecordFunc {
+func FlattenNestedFields(nestedKey string) RecordTransformer {
 	return func(node *ajson.Node) (map[string]any, error) {
 		attributes, err := jsonquery.New(node).ObjectOptional(nestedKey)
 		if err != nil {

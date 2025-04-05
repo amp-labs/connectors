@@ -28,7 +28,7 @@ func makeNextRecordsURL(moduleID common.ModuleID) common.NextPageFunc {
 // Before parsing the records, if any custom fields are present (without a human-readable name),
 // this will call the correct API to extend & replace the custom field with human-readable information.
 // Object will then be enhanced using model.
-func (c *Connector) attachReadCustomFields(customFields map[int]modelCustomField) common.RawReadRecordFunc {
+func (c *Connector) attachReadCustomFields(customFields map[int]modelCustomField) common.RecordTransformer {
 	return func(node *ajson.Node) (map[string]any, error) {
 		if len(customFields) == 0 {
 			// No custom fields, no-op, return as is.
