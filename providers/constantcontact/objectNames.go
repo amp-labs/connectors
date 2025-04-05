@@ -103,3 +103,11 @@ var objectNameToWriteResponseIdentifier = datautils.NewDefaultMap(map[string]str
 		return naming.NewSingularString(objectName).String() + "_id"
 	},
 )
+
+// Objects with custom fields require special handling during Read/ListObjectMetadata.
+// ConstantContact provides custom fields with non-human-readable names.
+// Custom field IDs will be retrieved and mapped for each object in the objectsWithCustomFields set.
+var objectsWithCustomFields = datautils.NewStringSet( // nolint:gochecknoglobals
+	// https://developer.constantcontact.com/api_guide/custom_fields.html
+	objectNameContacts,
+)

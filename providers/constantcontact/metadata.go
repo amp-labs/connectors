@@ -10,9 +10,25 @@ import (
 func (c *Connector) ListObjectMetadata(
 	ctx context.Context, objectNames []string,
 ) (*common.ListObjectMetadataResult, error) {
-	if len(objectNames) == 0 {
-		return nil, common.ErrMissingObjects
+	metadataResult, err := metadata.Schemas.Select(c.Module.ID, objectNames)
+	if err != nil {
+		return nil, err
 	}
 
-	return metadata.Schemas.Select(c.Module.ID, objectNames)
+	for _, objectName := range objectNames {
+		fields, err := c.requestCustomFields(ctx, objectName)
+		if err != nil {
+			metadataResult.Errors[objectName] = err
+
+			continue
+		}
+
+		// Attach fields to the object metadata.
+		objectMetadata := metadataResult.Result[objectName]
+		for _, field := range fields {
+			objectMetadata.FieldsMap[field.FieldName] = field.Label
+		}
+	}
+
+	return metadataResult, nil
 }
