@@ -19,6 +19,12 @@
       "birthday_day": 24,
       "anniversary": "2006-11-15",
       "create_source": "Account",
+      "custom_fields": [
+        {
+          "custom_field_id": "77317b4e-b35c-11ef-ad2e-fa163e5a0a14",
+          "value": "Skiing"
+        }
+      ],
       "created_at": "2024-10-30T18:56:35Z",
       "updated_at": "2024-10-30T18:56:35Z"
     }

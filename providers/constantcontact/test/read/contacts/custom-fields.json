@@ -1,0 +1,12 @@
+{
+  "custom_fields": [
+    {
+      "custom_field_id": "77317b4e-b35c-11ef-ad2e-fa163e5a0a14",
+      "label": "Hobby",
+      "name": "hobby",
+      "type": "string",
+      "updated_at": "2024-12-05T22:58:38Z",
+      "created_at": "2024-12-05T22:58:38Z"
+    }
+  ]
+}
