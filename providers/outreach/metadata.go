@@ -16,6 +16,7 @@ type DataItem struct {
 	ID            int            `json:"id"`
 	Relationships map[string]any `json:"relationships"`
 	Attributes    map[string]any `json:"attributes"`
+	Links         map[string]any `json:"links"`
 }
 
 func (c *Connector) ListObjectMetadata(ctx context.Context,
