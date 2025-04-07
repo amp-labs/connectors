@@ -1,0 +1,143 @@
+{
+  "rows": 1,
+  "data": [
+    {
+      "fields": {
+        "bodyhtml": "\u003chtml\u003e\u003cbody\u003e\u003cp\u003eHere Goes your HTML email\u003c/p\u003e\u003c/body\u003e\u003e\u003c/html\u003e",
+        "errorreason": null,
+        "id": 33
+      },
+      "raw": {
+        "attributes": {
+          "attributableSequenceId": null,
+          "attributableSequenceName": null,
+          "bodyHtml": "\u003chtml\u003e\u003cbody\u003e\u003cp\u003eHere Goes your HTML email\u003c/p\u003e\u003c/body\u003e\u003e\u003c/html\u003e",
+          "bodyText": "Here Goes your HTML email\u003e",
+          "bouncedAt": null,
+          "clickCount": 0,
+          "clickedAt": null,
+          "createdAt": "2025-01-13T11:36:42.000Z",
+          "deliveredAt": null,
+          "desiredAt": null,
+          "errorBacktrace": null,
+          "errorReason": null,
+          "followUpSequenceId": null,
+          "followUpSequenceName": null,
+          "followUpSequenceStartingDate": null,
+          "followUpTaskScheduledAt": null,
+          "followUpTaskType": null,
+          "mailboxAddress": "willy@withampersand.com",
+          "mailingType": "sequence",
+          "markedAsSpamAt": null,
+          "meetingDescription": null,
+          "meetingDuration": null,
+          "meetingLocation": null,
+          "meetingTitle": null,
+          "messageId": null,
+          "notifyThreadCondition": null,
+          "notifyThreadScheduledAt": null,
+          "notifyThreadStatus": null,
+          "openCount": 0,
+          "openedAt": null,
+          "optimizedScheduledAt": null,
+          "overrideSafetySettings": false,
+          "references": [],
+          "repliedAt": null,
+          "replySentiment": null,
+          "retryAt": null,
+          "retryCount": 0,
+          "retryInterval": null,
+          "scheduleId": null,
+          "scheduledAt": null,
+          "state": "drafted",
+          "stateChangedAt": "2025-01-13T11:36:42.000Z",
+          "subject": "string",
+          "trackLinks": null,
+          "trackOpens": null,
+          "unsubscribedAt": null,
+          "updatedAt": "2025-01-13T11:36:42.000Z"
+        },
+        "id": 33,
+        "links": {
+          "self": "https://api.outreach.io/api/v2/mailings/33"
+        },
+        "relationships": {
+          "attachments": {
+            "data": [],
+            "links": {
+              "related": "https://api.outreach.io/api/v2/attachments?filter%5Bmailing%5D%5Bid%5D=33"
+            },
+            "meta": {
+              "count": 0
+            }
+          },
+          "calendar": {
+            "data": null
+          },
+          "followUpSequence": {
+            "data": null
+          },
+          "mailbox": {
+            "data": {
+              "id": 1,
+              "type": "mailbox"
+            }
+          },
+          "opportunity": {
+            "data": null
+          },
+          "prospect": {
+            "data": {
+              "id": 1,
+              "type": "prospect"
+            }
+          },
+          "recipients": {
+            "data": [],
+            "links": {
+              "related": "https://api.outreach.io/api/v2/recipients?filter%5Bmailing%5D%5Bid%5D=33"
+            },
+            "meta": {
+              "count": 0
+            }
+          },
+          "schedule": {
+            "data": null
+          },
+          "sequence": {
+            "data": null
+          },
+          "sequenceState": {
+            "data": null
+          },
+          "sequenceStep": {
+            "data": null
+          },
+          "task": {
+            "data": null
+          },
+          "tasks": {
+            "data": [],
+            "links": {
+              "related": "https://api.outreach.io/api/v2/tasks?filter%5Bmailing%5D%5Bid%5D=33"
+            },
+            "meta": {
+              "count": 0
+            }
+          },
+          "template": {
+            "data": null
+          },
+          "user": {
+            "data": {
+              "id": 1,
+              "type": "user"
+            }
+          }
+        },
+        "type": "mailing"
+      }
+    }
+  ],
+  "done": true
+}
