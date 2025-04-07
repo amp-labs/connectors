@@ -30,16 +30,16 @@ func nextRecordsURL() common.NextPageFunc {
 		}
 
 		if (hasNext != nil) && *hasNext {
-			Next, err := jsonquery.New(node).StringOptional("next")
+			next, err := jsonquery.New(node).StringOptional("next")
 			if err != nil {
 				return "", err
 			}
 
-			if Next == nil {
+			if next == nil {
 				return "", nil
 			}
 
-			return *Next, nil
+			return *next, nil
 		}
 
 		return "", nil
