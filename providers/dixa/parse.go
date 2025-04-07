@@ -18,7 +18,7 @@ func constructRecords(objectName string) common.RecordsFunc {
 			return jsonquery.Convertor.ArrayToMap(schedules)
 		}
 	default:
-		return common.GetRecordsUnderJSONPath(data)
+		return common.ExtractRecordsFromPath(data)
 	}
 }
 
