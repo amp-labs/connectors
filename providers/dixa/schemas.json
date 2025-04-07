@@ -4,22 +4,8 @@
       "id": "root",
       "path": "/v1",
       "objects": {
-        "activitylog": {
-          "displayName": "Activity Log",
-          "path": "/conversations/activitylog",
-          "responseKey": "data",
-          "fields": {
-            "_type": "_type",
-            "activityTimestamp": "activityTimestamp",
-            "activityType": "activityType",
-            "attributes": "attributes",
-            "author": "author",
-            "conversationId": "conversationId",
-            "id": "id"
-          }
-        },
         "agents": {
-          "displayName": "Agents",
+          "displayName": "List Agents Output",
           "path": "/agents",
           "responseKey": "data",
           "fields": {
@@ -37,20 +23,70 @@
             "roles": "roles"
           }
         },
-        "collections": {
-          "displayName": "Collections",
-          "path": "/knowledge/collections",
+        "agents/presence": {
+          "displayName": "Agents/Presence",
+          "path": "/agents/presence",
+          "responseKey": "",
+          "fields": {
+            "activeChannels": "activeChannels",
+            "connectionStatus": "connectionStatus",
+            "lastSeen": "lastSeen",
+            "presenceStatus": "presenceStatus",
+            "requestTime": "requestTime",
+            "userId": "userId"
+          }
+        },
+        "analytics/metrics": {
+          "displayName": "Get Metrics Output",
+          "path": "/analytics/metrics",
+          "responseKey": "data",
+          "fields": {
+            "aggregations": "aggregations",
+            "description": "description",
+            "filters": "filters",
+            "id": "id",
+            "relatedRecordIds": "relatedRecordIds"
+          }
+        },
+        "analytics/records": {
+          "displayName": "Get Metric Records Output",
+          "path": "/analytics/records",
           "responseKey": "data",
           "fields": {
             "description": "description",
+            "fieldsMetadata": "fieldsMetadata",
+            "filters": "filters",
             "id": "id",
-            "internalKbEnabled": "internalKbEnabled",
-            "restrictions": "restrictions",
-            "title": "title"
+            "relatedMetricIds": "relatedMetricIds"
+          }
+        },
+        "conversations/activitylog": {
+          "displayName": "List Activity Log Output",
+          "path": "/conversations/activitylog",
+          "responseKey": "data",
+          "fields": {
+            "_type": "_type",
+            "activityTimestamp": "activityTimestamp",
+            "activityType": "activityType",
+            "attributes": "attributes",
+            "author": "author",
+            "conversationId": "conversationId",
+            "id": "id"
+          }
+        },
+        "conversations/flows": {
+          "displayName": "List Flows Output",
+          "path": "/conversations/flows",
+          "responseKey": "data",
+          "fields": {
+            "channel": "channel",
+            "contactEndpointId": "contactEndpointId",
+            "id": "id",
+            "name": "name"
           }
         },
         "custom-attributes": {
-          "displayName": "Custom Attributes",
+          "displayName": "List Custom Attributes Definitions Output",
           "path": "/custom-attributes",
           "responseKey": "data",
           "fields": {
@@ -68,7 +104,7 @@
           }
         },
         "endusers": {
-          "displayName": "End Users",
+          "displayName": "List End Users Output",
           "path": "/endusers",
           "responseKey": "data",
           "fields": {
@@ -87,44 +123,20 @@
             "phoneNumber": "phoneNumber"
           }
         },
-        "flows": {
-          "displayName": "Flows",
-          "path": "/conversations/flows",
+        "knowledge/collections": {
+          "displayName": "List Knowledge Collections Output",
+          "path": "/knowledge/collections",
           "responseKey": "data",
           "fields": {
-            "channel": "channel",
-            "contactEndpointId": "contactEndpointId",
-            "id": "id",
-            "name": "name"
-          }
-        },
-        "metrics": {
-          "displayName": "Metrics",
-          "path": "/analytics/metrics",
-          "responseKey": "data",
-          "fields": {
-            "aggregations": "aggregations",
             "description": "description",
-            "filters": "filters",
             "id": "id",
-            "relatedRecordIds": "relatedRecordIds"
-          }
-        },
-        "presence": {
-          "displayName": "Presence",
-          "path": "/agents/presence",
-          "responseKey": "",
-          "fields": {
-            "activeChannels": "activeChannels",
-            "connectionStatus": "connectionStatus",
-            "lastSeen": "lastSeen",
-            "presenceStatus": "presenceStatus",
-            "requestTime": "requestTime",
-            "userId": "userId"
+            "internalKbEnabled": "internalKbEnabled",
+            "restrictions": "restrictions",
+            "title": "title"
           }
         },
         "queues": {
-          "displayName": "Queues",
+          "displayName": "List Queues Output",
           "path": "/queues",
           "responseKey": "data",
           "fields": {
@@ -150,20 +162,8 @@
             "wrapupTimeout": "wrapupTimeout"
           }
         },
-        "records": {
-          "displayName": "Records",
-          "path": "/analytics/records",
-          "responseKey": "data",
-          "fields": {
-            "description": "description",
-            "fieldsMetadata": "fieldsMetadata",
-            "filters": "filters",
-            "id": "id",
-            "relatedMetricIds": "relatedMetricIds"
-          }
-        },
         "tags": {
-          "displayName": "Tags",
+          "displayName": "List Tags Output",
           "path": "/tags",
           "responseKey": "data",
           "fields": {
@@ -174,7 +174,7 @@
           }
         },
         "teams": {
-          "displayName": "Teams",
+          "displayName": "List Teams Output",
           "path": "/teams",
           "responseKey": "data",
           "fields": {
@@ -183,7 +183,7 @@
           }
         },
         "webhooks": {
-          "displayName": "Webhooks",
+          "displayName": "List Webhook Subscriptions Endpoint Output",
           "path": "/webhooks",
           "responseKey": "data",
           "fields": {
@@ -199,40 +199,6 @@
             "updatedAt": "updatedAt",
             "updatedBy": "updatedBy",
             "url": "url"
-          }
-        },
-        "contact-endpoints": {
-          "displayName": "Contact Endpoints",
-          "path": "/contact-endpoints",
-          "responseKey": "data",
-          "fields": {
-            "address": "address",
-            "senderOverride": "senderOverride",
-            "name": "name"
-          }
-        },
-        "templates": {
-          "displayName": "Templates",
-          "path": "/templates",
-          "responseKey": "data",
-          "fields": {
-            "content": "content",
-            "createdAt": "createdAt",
-            "createdBy": "createdBy",
-            "id": "id",
-            "name": "name",
-            "lastEditedAt": "lastEditedAt",
-            "lastEditedBy": "lastEditedBy",
-            "subject": "subject",
-            "translations": "translations"
-          }
-        },
-        "schedules": {
-          "displayName": "Schedules",
-          "path": "/business-hours/schedules",
-          "responseKey": "data",
-          "fields": {
-            "schedules": "schedules"
           }
         }
       }
