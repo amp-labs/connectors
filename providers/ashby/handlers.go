@@ -66,7 +66,7 @@ func (c *Connector) parseReadResponse(
 
 	return common.ParseResult(
 		response,
-		common.GetRecordsUnderJSONPath(responseKey),
+		common.ExtractRecordsFromPath(responseKey),
 		makeNextRecordsURL,
 		common.GetMarshaledData,
 		params.Fields,

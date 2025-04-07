@@ -396,6 +396,12 @@ type SubscriptionEvent interface {
 	EventTimeStampNano() (int64, error)
 }
 
+type SubscriptionUpdateEvent interface {
+	SubscriptionEvent
+	// GetUpdatedFields returns the fields that were updated in the event.
+	UpdatedFields() ([]string, error)
+}
+
 // Some providers send multiple events in a single webhook payload.
 // This interface is used to extract individual events to SubscriptionEvent type
 // from a collapsed event for webhook parsing and processing.

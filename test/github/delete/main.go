@@ -25,10 +25,10 @@ func main() {
 	conn := hs.GetGithubConnector(ctx)
 
 	slog.Info("> TEST Delete gists")
+
 	if err := deleteGist(ctx, conn); err != nil {
 		slog.Error(err.Error())
 	}
-
 }
 
 func deleteGist(ctx context.Context, conn *github.Connector) error {

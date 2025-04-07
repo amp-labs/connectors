@@ -72,13 +72,3 @@ func (l UniqueLists[ID, V]) GetBuckets() []ID {
 
 	return result
 }
-
-func (l IndexedLists[ID, V]) MergeWith(other IndexedLists[ID, V]) {
-	for k, v := range other {
-		l.Add(k, v...)
-	}
-}
-
-func (l NamedLists[V]) MergeWith(other NamedLists[V]) {
-	IndexedLists[string, V](l).MergeWith(IndexedLists[string, V](other))
-}

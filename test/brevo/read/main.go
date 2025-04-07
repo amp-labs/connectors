@@ -35,6 +35,7 @@ func main() {
 	utils.DumpJSON(res, os.Stdout)
 
 	slog.Info("Reading projects..")
+
 	res, err = conn.Read(ctx, common.ReadParams{
 		ObjectName: "attributes/deals",
 		Fields:     connectors.Fields("attributeOptions", "isRequired", "label"),
@@ -44,5 +45,4 @@ func main() {
 	}
 
 	utils.DumpJSON(res, os.Stdout)
-
 }
