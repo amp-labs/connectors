@@ -15,9 +15,8 @@ import (
 )
 
 const (
-	restAPIVersion = "v1"
-	businessHours  = "business-hours/schedules"
-	data           = "data"
+	businessHours = "business-hours/schedules"
+	data          = "data"
 )
 
 // nolint:gochecknoglobals

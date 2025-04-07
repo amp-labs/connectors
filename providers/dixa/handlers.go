@@ -8,6 +8,8 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
+const restAPIVersion = "v1"
+
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIVersion, params.ObjectName)
 	if err != nil {

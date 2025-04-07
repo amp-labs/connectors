@@ -10,7 +10,7 @@ func constructRecords(objectName string) common.RecordsFunc {
 	switch objectName {
 	case businessHours:
 		return func(node *ajson.Node) ([]map[string]any, error) {
-			schedules, err := jsonquery.New(node, "data").ArrayOptional("schedules")
+			schedules, err := jsonquery.New(node, data).ArrayOptional("schedules")
 			if err != nil {
 				return nil, err
 			}
