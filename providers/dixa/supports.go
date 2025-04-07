@@ -17,8 +17,9 @@ func supportedOperations() components.EndpointRegistryInput {
 	}
 
 	writeSupport := []string{
-		"agents", "agents/bulk", "conversations", "conversations/import", "endusers",
-		"endusers/bulk", "queues", "tags", "teams", "webhooks",
+		"agents", "conversations", "conversations/import", "endusers",
+		"queues", "tags", "teams", "webhooks",
+		// "agents/bulk","endusers/bulk" supports bulk write.
 	}
 
 	return components.EndpointRegistryInput{

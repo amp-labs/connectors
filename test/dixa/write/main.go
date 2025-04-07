@@ -21,6 +21,7 @@ func main() {
 
 func run() error {
 	ctx := context.Background()
+
 	conn := dixa.GetConnector(ctx)
 
 	err := testCreatingAgent(ctx, conn)
@@ -33,10 +34,10 @@ func run() error {
 		return err
 	}
 
-	// err = testCreatingWebhooks(ctx, conn)
-	// if err != nil {
-	// 	return err
-	// }
+	err = testCreatingTeams(ctx, conn)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -97,22 +98,11 @@ func patchAgent(ctx context.Context, conn *dx.Connector) error {
 
 }
 
-func testCreatingWebhooks(ctx context.Context, conn *dx.Connector) error {
+func testCreatingTeams(ctx context.Context, conn *dx.Connector) error {
 	params := common.WriteParams{
-		ObjectName: "webhooks",
+		ObjectName: "teams",
 		RecordData: map[string]any{
-			"name":    "Dashboard Integration",
-			"url":     "https://example.webhook/dashboard_integration",
-			"enabled": true,
-			"authorization": map[string]any{
-				"username": "webhook_user",
-				"password": "webhook_password",
-				"_type":    "BasicAuth",
-			},
-			"events": []string{
-				"ConversationCreated",
-				"ConversationClosed",
-			},
+			"name": "Integration Team",
 		},
 	}
 

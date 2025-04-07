@@ -83,7 +83,7 @@ func (c *Connector) parseWriteResponse(
 		}, nil
 	}
 
-	resp, err := jsonquery.New(body).ObjectRequired("") // reading the current node.
+	resp, err := jsonquery.New(body).ObjectRequired("data")
 	if err != nil {
 		return nil, err
 	}
