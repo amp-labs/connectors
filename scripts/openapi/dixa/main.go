@@ -7,7 +7,7 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/staticschema"
-	"github.com/amp-labs/connectors/scripts/openapi/dixa/metadata"
+	"github.com/amp-labs/connectors/tools/fileconv"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
 	"github.com/amp-labs/connectors/tools/scrapper"
 )
@@ -15,6 +15,11 @@ import (
 var (
 	//go:embed swagger.json
 	specs []byte
+
+	schemas []byte
+
+	schemafileManager = scrapper.NewMetadataFileManager[staticschema.FieldMetadataMapV1]( // nolint:gochecknoglobals
+		schemas, fileconv.NewSiblingFileLocator())
 
 	FileManager = api3.NewOpenapiFileManager[any](specs) // nolint:gochecknoglobals
 )
@@ -65,8 +70,8 @@ func main() {
 		}
 	}
 
-	goutils.MustBeNil(metadata.FileManager.SaveSchemas(schemas))
-	goutils.MustBeNil(metadata.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
+	goutils.MustBeNil(schemafileManager.SaveSchemas(schemas))
+	goutils.MustBeNil(schemafileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
 
 	slog.Info("Completed.")
 }
