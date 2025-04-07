@@ -16,7 +16,7 @@ var (
 	//go:embed swagger.json
 	specs []byte
 
-	schemas []byte
+	schemas []byte // nolint:gochecknoglobals
 
 	schemafileManager = scrapper.NewMetadataFileManager[staticschema.FieldMetadataMapV1]( // nolint:gochecknoglobals
 		schemas, fileconv.NewSiblingFileLocator())
