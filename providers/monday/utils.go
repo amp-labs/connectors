@@ -2,10 +2,13 @@ package monday
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/staticschema"
+	"github.com/spyzhov/ajson"
 )
 
 const (
@@ -35,5 +38,25 @@ func supportedOperations() components.EndpointRegistryInput {
 				Support:  components.DeleteSupport,
 			},
 		},
+	}
+}
+
+func makeNextRecordsURL(params common.ReadParams, count int) func(*ajson.Node) (string, error) {
+	return func(node *ajson.Node) (string, error) {
+		if count < defaultPageSize {
+			return "", nil
+		}
+
+		var currentPage int
+		if params.NextPage != "" {
+			_, err := fmt.Sscanf(string(params.NextPage), "%d", &currentPage)
+			if err != nil {
+				return "", fmt.Errorf("invalid next page format: %w", err)
+			}
+		}
+
+		nextPage := currentPage + count
+
+		return strconv.Itoa(nextPage), nil
 	}
 }

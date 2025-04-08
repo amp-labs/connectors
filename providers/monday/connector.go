@@ -4,9 +4,13 @@ import (
 	_ "embed"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/internal/components"
+	"github.com/amp-labs/connectors/internal/components/deleter"
 	"github.com/amp-labs/connectors/internal/components/operations"
+	"github.com/amp-labs/connectors/internal/components/reader"
 	"github.com/amp-labs/connectors/internal/components/schema"
+	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -34,7 +38,7 @@ func NewConnector(params common.Parameters) (*Connector, error) {
 func constructor(base *components.Connector) (*Connector, error) {
 	connector := &Connector{Connector: base}
 
-	_, err := components.NewEndpointRegistry(supportedOperations())
+	registry, err := components.NewEndpointRegistry(supportedOperations())
 	if err != nil {
 		return nil, err
 	}
@@ -46,6 +50,48 @@ func constructor(base *components.Connector) (*Connector, error) {
 		operations.SingleObjectMetadataHandlers{
 			BuildRequest:  connector.buildSingleObjectMetadataRequest,
 			ParseResponse: connector.parseSingleObjectMetadataResponse,
+		},
+	)
+	// Set the reader
+	connector.Reader = reader.NewHTTPReader(
+		connector.HTTPClient().Client,
+		registry,
+		connector.ProviderContext.Module(),
+		operations.ReadHandlers{
+			BuildRequest:  connector.buildReadRequest,
+			ParseResponse: connector.parseReadResponse,
+			ErrorHandler: interpreter.ErrorHandler{
+				JSON: interpreter.NewFaultyResponder(nil, nil),
+				HTML: &interpreter.DirectFaultyResponder{},
+			}.Handle,
+		},
+	)
+	// Set the writer
+	connector.Writer = writer.NewHTTPWriter(
+		connector.HTTPClient().Client,
+		registry,
+		connector.ProviderContext.Module(),
+		operations.WriteHandlers{
+			BuildRequest:  connector.buildWriteRequest,
+			ParseResponse: connector.parseWriteResponse,
+			ErrorHandler: interpreter.ErrorHandler{
+				JSON: interpreter.NewFaultyResponder(nil, nil),
+				HTML: &interpreter.DirectFaultyResponder{},
+			}.Handle,
+		},
+	)
+	// Set the deleter
+	connector.Deleter = deleter.NewHTTPDeleter(
+		connector.HTTPClient().Client,
+		registry,
+		connector.ProviderContext.Module(),
+		operations.DeleteHandlers{
+			BuildRequest:  connector.buildDeleteRequest,
+			ParseResponse: connector.parseDeleteResponse,
+			ErrorHandler: interpreter.ErrorHandler{
+				JSON: interpreter.NewFaultyResponder(nil, nil),
+				HTML: &interpreter.DirectFaultyResponder{},
+			}.Handle,
 		},
 	)
 
