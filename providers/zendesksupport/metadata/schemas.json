@@ -9,11 +9,31 @@
           "path": "/help_center/articles/labels",
           "responseKey": "labels",
           "fields": {
-            "created_at": "created_at",
-            "id": "id",
-            "name": "name",
-            "updated_at": "updated_at",
-            "url": "url"
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "custom": {
             "pagination": "cursor"
@@ -24,26 +44,106 @@
           "path": "/community/posts",
           "responseKey": "posts",
           "fields": {
-            "author_id": "author_id",
-            "closed": "closed",
-            "comment_count": "comment_count",
-            "content_tag_ids": "content_tag_ids",
-            "created_at": "created_at",
-            "details": "details",
-            "featured": "featured",
-            "follower_count": "follower_count",
-            "html_url": "html_url",
-            "id": "id",
-            "non_author_editor_id": "non_author_editor_id",
-            "non_author_updated_at": "non_author_updated_at",
-            "pinned": "pinned",
-            "status": "status",
-            "title": "title",
-            "topic_id": "topic_id",
-            "updated_at": "updated_at",
-            "url": "url",
-            "vote_count": "vote_count",
-            "vote_sum": "vote_sum"
+            "author_id": {
+              "displayName": "author_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "closed": {
+              "displayName": "closed",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "comment_count": {
+              "displayName": "comment_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "content_tag_ids": {
+              "displayName": "content_tag_ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "details": {
+              "displayName": "details",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "featured": {
+              "displayName": "featured",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "follower_count": {
+              "displayName": "follower_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "html_url": {
+              "displayName": "html_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "non_author_editor_id": {
+              "displayName": "non_author_editor_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "non_author_updated_at": {
+              "displayName": "non_author_updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "pinned": {
+              "displayName": "pinned",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "topic_id": {
+              "displayName": "topic_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "vote_count": {
+              "displayName": "vote_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "vote_sum": {
+              "displayName": "vote_sum",
+              "valueType": "int",
+              "providerType": "integer"
+            }
           },
           "custom": {
             "pagination": "cursor"
@@ -54,17 +154,71 @@
           "path": "/community/topics",
           "responseKey": "topics",
           "fields": {
-            "created_at": "created_at",
-            "description": "description",
-            "follower_count": "follower_count",
-            "html_url": "html_url",
-            "id": "id",
-            "manageable_by": "manageable_by",
-            "name": "name",
-            "position": "position",
-            "updated_at": "updated_at",
-            "url": "url",
-            "user_segment_id": "user_segment_id"
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "follower_count": {
+              "displayName": "follower_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "html_url": {
+              "displayName": "html_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "manageable_by": {
+              "displayName": "manageable_by",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "staff",
+                  "displayValue": "staff"
+                },
+                {
+                  "value": "managers",
+                  "displayValue": "managers"
+                }
+              ]
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "position": {
+              "displayName": "position",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user_segment_id": {
+              "displayName": "user_segment_id",
+              "valueType": "int",
+              "providerType": "integer"
+            }
           },
           "custom": {
             "pagination": "cursor"
@@ -75,16 +229,56 @@
           "path": "/help_center/user_segments",
           "responseKey": "user_segments",
           "fields": {
-            "built_in": "built_in",
-            "created_at": "created_at",
-            "group_ids": "group_ids",
-            "id": "id",
-            "name": "name",
-            "or_tags": "or_tags",
-            "organization_ids": "organization_ids",
-            "tags": "tags",
-            "updated_at": "updated_at",
-            "user_type": "user_type"
+            "built_in": {
+              "displayName": "built_in",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "group_ids": {
+              "displayName": "group_ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "or_tags": {
+              "displayName": "or_tags",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "organization_ids": {
+              "displayName": "organization_ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "tags": {
+              "displayName": "tags",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user_type": {
+              "displayName": "user_type",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "custom": {
             "pagination": "cursor"
@@ -101,18 +295,66 @@
           "path": "/activities",
           "responseKey": "activities",
           "fields": {
-            "actor": "actor",
-            "actor_id": "actor_id",
-            "created_at": "created_at",
-            "id": "id",
-            "object": "object",
-            "target": "target",
-            "title": "title",
-            "updated_at": "updated_at",
-            "url": "url",
-            "user": "user",
-            "user_id": "user_id",
-            "verb": "verb"
+            "actor": {
+              "displayName": "actor",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "actor_id": {
+              "displayName": "actor_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "object": {
+              "displayName": "object",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "target": {
+              "displayName": "target",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user": {
+              "displayName": "user",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "user_id": {
+              "displayName": "user_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "verb": {
+              "displayName": "verb",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "custom": {
             "pagination": "cursor"
@@ -123,11 +365,31 @@
           "path": "/incremental/routing/attribute_values",
           "responseKey": "attribute_values",
           "fields": {
-            "attribute_id": "attribute_id",
-            "id": "id",
-            "name": "name",
-            "time": "time",
-            "type": "type"
+            "attribute_id": {
+              "displayName": "attribute_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "time": {
+              "displayName": "time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "custom": {
             "pagination": "time",
@@ -139,10 +401,26 @@
           "path": "/incremental/routing/attributes",
           "responseKey": "attributes",
           "fields": {
-            "id": "id",
-            "name": "name",
-            "time": "time",
-            "type": "type"
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "time": {
+              "displayName": "time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "custom": {
             "pagination": "time",
@@ -154,18 +432,66 @@
           "path": "/audit_logs",
           "responseKey": "audit_logs",
           "fields": {
-            "action": "action",
-            "action_label": "action_label",
-            "actor_id": "actor_id",
-            "actor_name": "actor_name",
-            "change_description": "change_description",
-            "created_at": "created_at",
-            "id": "id",
-            "ip_address": "ip_address",
-            "source_id": "source_id",
-            "source_label": "source_label",
-            "source_type": "source_type",
-            "url": "url"
+            "action": {
+              "displayName": "action",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "action_label": {
+              "displayName": "action_label",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "actor_id": {
+              "displayName": "actor_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "actor_name": {
+              "displayName": "actor_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "change_description": {
+              "displayName": "change_description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "ip_address": {
+              "displayName": "ip_address",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "source_id": {
+              "displayName": "source_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "source_label": {
+              "displayName": "source_label",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "source_type": {
+              "displayName": "source_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "custom": {
             "pagination": "cursor"
@@ -176,16 +502,56 @@
           "path": "/automations",
           "responseKey": "automations",
           "fields": {
-            "actions": "actions",
-            "active": "active",
-            "conditions": "conditions",
-            "created_at": "created_at",
-            "default": "default",
-            "id": "id",
-            "position": "position",
-            "raw_title": "raw_title",
-            "title": "title",
-            "updated_at": "updated_at"
+            "actions": {
+              "displayName": "actions",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "active": {
+              "displayName": "active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "conditions": {
+              "displayName": "conditions",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "default": {
+              "displayName": "default",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "position": {
+              "displayName": "position",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "raw_title": {
+              "displayName": "raw_title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "custom": {
             "pagination": "cursor"
@@ -196,10 +562,26 @@
           "path": "/bookmarks",
           "responseKey": "bookmarks",
           "fields": {
-            "created_at": "created_at",
-            "id": "id",
-            "ticket": "ticket",
-            "url": "url"
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "ticket": {
+              "displayName": "ticket",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "custom": {
             "pagination": "offset"
@@ -210,22 +592,100 @@
           "path": "/brands",
           "responseKey": "brands",
           "fields": {
-            "active": "active",
-            "brand_url": "brand_url",
-            "created_at": "created_at",
-            "default": "default",
-            "has_help_center": "has_help_center",
-            "help_center_state": "help_center_state",
-            "host_mapping": "host_mapping",
-            "id": "id",
-            "is_deleted": "is_deleted",
-            "logo": "logo",
-            "name": "name",
-            "signature_template": "signature_template",
-            "subdomain": "subdomain",
-            "ticket_form_ids": "ticket_form_ids",
-            "updated_at": "updated_at",
-            "url": "url"
+            "active": {
+              "displayName": "active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "brand_url": {
+              "displayName": "brand_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "default": {
+              "displayName": "default",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "has_help_center": {
+              "displayName": "has_help_center",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "help_center_state": {
+              "displayName": "help_center_state",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "enabled",
+                  "displayValue": "enabled"
+                },
+                {
+                  "value": "disabled",
+                  "displayValue": "disabled"
+                },
+                {
+                  "value": "restricted",
+                  "displayValue": "restricted"
+                }
+              ]
+            },
+            "host_mapping": {
+              "displayName": "host_mapping",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "is_deleted": {
+              "displayName": "is_deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "logo": {
+              "displayName": "logo",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "signature_template": {
+              "displayName": "signature_template",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subdomain": {
+              "displayName": "subdomain",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "ticket_form_ids": {
+              "displayName": "ticket_form_ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "custom": {
             "pagination": "cursor"
@@ -236,18 +696,66 @@
           "path": "/custom_objects",
           "responseKey": "custom_objects",
           "fields": {
-            "created_at": "created_at",
-            "created_by_user_id": "created_by_user_id",
-            "description": "description",
-            "key": "key",
-            "raw_description": "raw_description",
-            "raw_title": "raw_title",
-            "raw_title_pluralized": "raw_title_pluralized",
-            "title": "title",
-            "title_pluralized": "title_pluralized",
-            "updated_at": "updated_at",
-            "updated_by_user_id": "updated_by_user_id",
-            "url": "url"
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_by_user_id": {
+              "displayName": "created_by_user_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "raw_description": {
+              "displayName": "raw_description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "raw_title": {
+              "displayName": "raw_title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "raw_title_pluralized": {
+              "displayName": "raw_title_pluralized",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title_pluralized": {
+              "displayName": "title_pluralized",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_by_user_id": {
+              "displayName": "updated_by_user_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "custom": {
             "pagination": "offset"
@@ -258,14 +766,46 @@
           "path": "/custom_roles",
           "responseKey": "custom_roles",
           "fields": {
-            "configuration": "configuration",
-            "created_at": "created_at",
-            "description": "description",
-            "id": "id",
-            "name": "name",
-            "role_type": "role_type",
-            "team_member_count": "team_member_count",
-            "updated_at": "updated_at"
+            "configuration": {
+              "displayName": "configuration",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "role_type": {
+              "displayName": "role_type",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "team_member_count": {
+              "displayName": "team_member_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "custom": {
             "pagination": "offset"
@@ -276,20 +816,98 @@
           "path": "/custom_statuses",
           "responseKey": "custom_statuses",
           "fields": {
-            "active": "active",
-            "agent_label": "agent_label",
-            "created_at": "created_at",
-            "default": "default",
-            "description": "description",
-            "end_user_description": "end_user_description",
-            "end_user_label": "end_user_label",
-            "id": "id",
-            "raw_agent_label": "raw_agent_label",
-            "raw_description": "raw_description",
-            "raw_end_user_description": "raw_end_user_description",
-            "raw_end_user_label": "raw_end_user_label",
-            "status_category": "status_category",
-            "updated_at": "updated_at"
+            "active": {
+              "displayName": "active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "agent_label": {
+              "displayName": "agent_label",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "default": {
+              "displayName": "default",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "end_user_description": {
+              "displayName": "end_user_description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "end_user_label": {
+              "displayName": "end_user_label",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "raw_agent_label": {
+              "displayName": "raw_agent_label",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "raw_description": {
+              "displayName": "raw_description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "raw_end_user_description": {
+              "displayName": "raw_end_user_description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "raw_end_user_label": {
+              "displayName": "raw_end_user_label",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status_category": {
+              "displayName": "status_category",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "new",
+                  "displayValue": "new"
+                },
+                {
+                  "value": "open",
+                  "displayValue": "open"
+                },
+                {
+                  "value": "pending",
+                  "displayValue": "pending"
+                },
+                {
+                  "value": "hold",
+                  "displayValue": "hold"
+                },
+                {
+                  "value": "solved",
+                  "displayValue": "solved"
+                }
+              ]
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "custom": {}
         },
@@ -298,11 +916,31 @@
           "path": "/deleted_tickets",
           "responseKey": "deleted_tickets",
           "fields": {
-            "actor": "actor",
-            "deleted_at": "deleted_at",
-            "id": "id",
-            "previous_state": "previous_state",
-            "subject": "subject"
+            "actor": {
+              "displayName": "actor",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "deleted_at": {
+              "displayName": "deleted_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "previous_state": {
+              "displayName": "previous_state",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subject": {
+              "displayName": "subject",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "custom": {
             "pagination": "cursor"
@@ -313,21 +951,81 @@
           "path": "/deleted_users",
           "responseKey": "deleted_users",
           "fields": {
-            "active": "active",
-            "created_at": "created_at",
-            "email": "email",
-            "id": "id",
-            "locale": "locale",
-            "locale_id": "locale_id",
-            "name": "name",
-            "organization_id": "organization_id",
-            "phone": "phone",
-            "photo": "photo",
-            "role": "role",
-            "shared_phone_number": "shared_phone_number",
-            "time_zone": "time_zone",
-            "updated_at": "updated_at",
-            "url": "url"
+            "active": {
+              "displayName": "active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "locale": {
+              "displayName": "locale",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "locale_id": {
+              "displayName": "locale_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "organization_id": {
+              "displayName": "organization_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "phone": {
+              "displayName": "phone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "photo": {
+              "displayName": "photo",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "role": {
+              "displayName": "role",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "shared_phone_number": {
+              "displayName": "shared_phone_number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "time_zone": {
+              "displayName": "time_zone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "custom": {
             "pagination": "cursor"
@@ -338,15 +1036,51 @@
           "path": "/deletion_schedules",
           "responseKey": "deletion_schedules",
           "fields": {
-            "active": "active",
-            "conditions": "conditions",
-            "created_at": "created_at",
-            "default": "default",
-            "description": "description",
-            "id": "id",
-            "title": "title",
-            "updated_at": "updated_at",
-            "url": "url"
+            "active": {
+              "displayName": "active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "conditions": {
+              "displayName": "conditions",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "default": {
+              "displayName": "default",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "custom": {}
         },
@@ -355,15 +1089,51 @@
           "path": "/email_notifications",
           "responseKey": "email_notifications",
           "fields": {
-            "comment_id": "comment_id",
-            "created_at": "created_at",
-            "email_id": "email_id",
-            "message_id": "message_id",
-            "notification_id": "notification_id",
-            "recipients": "recipients",
-            "ticket_id": "ticket_id",
-            "updated_at": "updated_at",
-            "url": "url"
+            "comment_id": {
+              "displayName": "comment_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email_id": {
+              "displayName": "email_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "message_id": {
+              "displayName": "message_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "notification_id": {
+              "displayName": "notification_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "recipients": {
+              "displayName": "recipients",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "ticket_id": {
+              "displayName": "ticket_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "custom": {
             "pagination": "cursor"
@@ -374,13 +1144,41 @@
           "path": "/group_memberships",
           "responseKey": "group_memberships",
           "fields": {
-            "created_at": "created_at",
-            "default": "default",
-            "group_id": "group_id",
-            "id": "id",
-            "updated_at": "updated_at",
-            "url": "url",
-            "user_id": "user_id"
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "default": {
+              "displayName": "default",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "group_id": {
+              "displayName": "group_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user_id": {
+              "displayName": "user_id",
+              "valueType": "int",
+              "providerType": "integer"
+            }
           },
           "custom": {
             "pagination": "cursor"
@@ -391,15 +1189,51 @@
           "path": "/groups",
           "responseKey": "groups",
           "fields": {
-            "created_at": "created_at",
-            "default": "default",
-            "deleted": "deleted",
-            "description": "description",
-            "id": "id",
-            "is_public": "is_public",
-            "name": "name",
-            "updated_at": "updated_at",
-            "url": "url"
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "default": {
+              "displayName": "default",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "deleted": {
+              "displayName": "deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "is_public": {
+              "displayName": "is_public",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "custom": {
             "pagination": "cursor"
@@ -410,11 +1244,31 @@
           "path": "/incremental/routing/instance_values",
           "responseKey": "instance_values",
           "fields": {
-            "attribute_value_id": "attribute_value_id",
-            "id": "id",
-            "instance_id": "instance_id",
-            "time": "time",
-            "type": "type"
+            "attribute_value_id": {
+              "displayName": "attribute_value_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "instance_id": {
+              "displayName": "instance_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "time": {
+              "displayName": "time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "custom": {
             "pagination": "time",
@@ -426,14 +1280,45 @@
           "path": "/job_statuses",
           "responseKey": "job_statuses",
           "fields": {
-            "id": "id",
-            "job_type": "job_type",
-            "message": "message",
-            "progress": "progress",
-            "results": "results",
-            "status": "status",
-            "total": "total",
-            "url": "url"
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "job_type": {
+              "displayName": "job_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "message": {
+              "displayName": "message",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "progress": {
+              "displayName": "progress",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "results": {
+              "displayName": "results",
+              "valueType": "other"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "total": {
+              "displayName": "total",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "custom": {
             "pagination": "cursor"
@@ -444,12 +1329,36 @@
           "path": "/locales",
           "responseKey": "locales",
           "fields": {
-            "created_at": "created_at",
-            "id": "id",
-            "locale": "locale",
-            "name": "name",
-            "updated_at": "updated_at",
-            "url": "url"
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "locale": {
+              "displayName": "locale",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "custom": {
             "pagination": "offset"
@@ -460,24 +1369,96 @@
           "path": "/macros",
           "responseKey": "macros",
           "fields": {
-            "actions": "actions",
-            "active": "active",
-            "app_installation": "app_installation",
-            "categories": "categories",
-            "created_at": "created_at",
-            "default": "default",
-            "description": "description",
-            "id": "id",
-            "permissions": "permissions",
-            "position": "position",
-            "restriction": "restriction",
-            "title": "title",
-            "updated_at": "updated_at",
-            "url": "url",
-            "usage_1h": "usage_1h",
-            "usage_24h": "usage_24h",
-            "usage_30d": "usage_30d",
-            "usage_7d": "usage_7d"
+            "actions": {
+              "displayName": "actions",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "active": {
+              "displayName": "active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "app_installation": {
+              "displayName": "app_installation",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "categories": {
+              "displayName": "categories",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "default": {
+              "displayName": "default",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "permissions": {
+              "displayName": "permissions",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "position": {
+              "displayName": "position",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "restriction": {
+              "displayName": "restriction",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "usage_1h": {
+              "displayName": "usage_1h",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "usage_24h": {
+              "displayName": "usage_24h",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "usage_30d": {
+              "displayName": "usage_30d",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "usage_7d": {
+              "displayName": "usage_7d",
+              "valueType": "int",
+              "providerType": "integer"
+            }
           },
           "custom": {
             "pagination": "cursor"
@@ -488,16 +1469,56 @@
           "path": "/channels/twitter/monitored_twitter_handles",
           "responseKey": "monitored_twitter_handles",
           "fields": {
-            "allow_reply": "allow_reply",
-            "avatar_url": "avatar_url",
-            "brand_id": "brand_id",
-            "can_reply": "can_reply",
-            "created_at": "created_at",
-            "id": "id",
-            "name": "name",
-            "screen_name": "screen_name",
-            "twitter_user_id": "twitter_user_id",
-            "updated_at": "updated_at"
+            "allow_reply": {
+              "displayName": "allow_reply",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "avatar_url": {
+              "displayName": "avatar_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "brand_id": {
+              "displayName": "brand_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "can_reply": {
+              "displayName": "can_reply",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "screen_name": {
+              "displayName": "screen_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "twitter_user_id": {
+              "displayName": "twitter_user_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "custom": {
             "pagination": "offset"
@@ -508,24 +1529,96 @@
           "path": "/organization_fields",
           "responseKey": "organization_fields",
           "fields": {
-            "active": "active",
-            "created_at": "created_at",
-            "custom_field_options": "custom_field_options",
-            "description": "description",
-            "id": "id",
-            "key": "key",
-            "position": "position",
-            "raw_description": "raw_description",
-            "raw_title": "raw_title",
-            "regexp_for_validation": "regexp_for_validation",
-            "relationship_filter": "relationship_filter",
-            "relationship_target_type": "relationship_target_type",
-            "system": "system",
-            "tag": "tag",
-            "title": "title",
-            "type": "type",
-            "updated_at": "updated_at",
-            "url": "url"
+            "active": {
+              "displayName": "active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "custom_field_options": {
+              "displayName": "custom_field_options",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "position": {
+              "displayName": "position",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "raw_description": {
+              "displayName": "raw_description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "raw_title": {
+              "displayName": "raw_title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "regexp_for_validation": {
+              "displayName": "regexp_for_validation",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "relationship_filter": {
+              "displayName": "relationship_filter",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "relationship_target_type": {
+              "displayName": "relationship_target_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "system": {
+              "displayName": "system",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "tag": {
+              "displayName": "tag",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "custom": {
             "pagination": "cursor"
@@ -536,15 +1629,51 @@
           "path": "/organization_memberships",
           "responseKey": "organization_memberships",
           "fields": {
-            "created_at": "created_at",
-            "default": "default",
-            "id": "id",
-            "organization_id": "organization_id",
-            "organization_name": "organization_name",
-            "updated_at": "updated_at",
-            "url": "url",
-            "user_id": "user_id",
-            "view_tickets": "view_tickets"
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "default": {
+              "displayName": "default",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "organization_id": {
+              "displayName": "organization_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "organization_name": {
+              "displayName": "organization_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user_id": {
+              "displayName": "user_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "view_tickets": {
+              "displayName": "view_tickets",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
           },
           "custom": {
             "pagination": "cursor"
@@ -555,10 +1684,26 @@
           "path": "/organization_subscriptions",
           "responseKey": "organization_subscriptions",
           "fields": {
-            "created_at": "created_at",
-            "id": "id",
-            "organization_id": "organization_id",
-            "user_id": "user_id"
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "organization_id": {
+              "displayName": "organization_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "user_id": {
+              "displayName": "user_id",
+              "valueType": "int",
+              "providerType": "integer"
+            }
           },
           "custom": {
             "pagination": "cursor"
@@ -569,20 +1714,76 @@
           "path": "/incremental/organizations",
           "responseKey": "organizations",
           "fields": {
-            "created_at": "created_at",
-            "details": "details",
-            "domain_names": "domain_names",
-            "external_id": "external_id",
-            "group_id": "group_id",
-            "id": "id",
-            "name": "name",
-            "notes": "notes",
-            "organization_fields": "organization_fields",
-            "shared_comments": "shared_comments",
-            "shared_tickets": "shared_tickets",
-            "tags": "tags",
-            "updated_at": "updated_at",
-            "url": "url"
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "details": {
+              "displayName": "details",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "domain_names": {
+              "displayName": "domain_names",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "external_id": {
+              "displayName": "external_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "group_id": {
+              "displayName": "group_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "notes": {
+              "displayName": "notes",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "organization_fields": {
+              "displayName": "organization_fields",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "shared_comments": {
+              "displayName": "shared_comments",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "shared_tickets": {
+              "displayName": "shared_tickets",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "tags": {
+              "displayName": "tags",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "custom": {
             "pagination": "time",
@@ -594,17 +1795,61 @@
           "path": "/queues",
           "responseKey": "queues",
           "fields": {
-            "created_at": "created_at",
-            "definition": "definition",
-            "description": "description",
-            "id": "id",
-            "name": "name",
-            "order": "order",
-            "primary_groups": "primary_groups",
-            "priority": "priority",
-            "secondary_groups": "secondary_groups",
-            "updated_at": "updated_at",
-            "url": "url"
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "definition": {
+              "displayName": "definition",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "order": {
+              "displayName": "order",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "primary_groups": {
+              "displayName": "primary_groups",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "priority": {
+              "displayName": "priority",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "secondary_groups": {
+              "displayName": "secondary_groups",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "custom": {
             "pagination": "offset"
@@ -615,19 +1860,141 @@
           "path": "/recipient_addresses",
           "responseKey": "recipient_addresses",
           "fields": {
-            "brand_id": "brand_id",
-            "cname_status": "cname_status",
-            "created_at": "created_at",
-            "default": "default",
-            "dns_results": "dns_results",
-            "domain_verification_code": "domain_verification_code",
-            "domain_verification_status": "domain_verification_status",
-            "email": "email",
-            "forwarding_status": "forwarding_status",
-            "id": "id",
-            "name": "name",
-            "spf_status": "spf_status",
-            "updated_at": "updated_at"
+            "brand_id": {
+              "displayName": "brand_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "cname_status": {
+              "displayName": "cname_status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "unknown",
+                  "displayValue": "unknown"
+                },
+                {
+                  "value": "verified",
+                  "displayValue": "verified"
+                },
+                {
+                  "value": "failed",
+                  "displayValue": "failed"
+                }
+              ]
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "default": {
+              "displayName": "default",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "dns_results": {
+              "displayName": "dns_results",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "verified",
+                  "displayValue": "verified"
+                },
+                {
+                  "value": "failed",
+                  "displayValue": "failed"
+                }
+              ]
+            },
+            "domain_verification_code": {
+              "displayName": "domain_verification_code",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "domain_verification_status": {
+              "displayName": "domain_verification_status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "unknown",
+                  "displayValue": "unknown"
+                },
+                {
+                  "value": "verified",
+                  "displayValue": "verified"
+                },
+                {
+                  "value": "failed",
+                  "displayValue": "failed"
+                }
+              ]
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "forwarding_status": {
+              "displayName": "forwarding_status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "unknown",
+                  "displayValue": "unknown"
+                },
+                {
+                  "value": "waiting",
+                  "displayValue": "waiting"
+                },
+                {
+                  "value": "verified",
+                  "displayValue": "verified"
+                },
+                {
+                  "value": "failed",
+                  "displayValue": "failed"
+                }
+              ]
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "spf_status": {
+              "displayName": "spf_status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "unknown",
+                  "displayValue": "unknown"
+                },
+                {
+                  "value": "verified",
+                  "displayValue": "verified"
+                },
+                {
+                  "value": "failed",
+                  "displayValue": "failed"
+                }
+              ]
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "custom": {
             "pagination": "cursor"
@@ -638,31 +2005,131 @@
           "path": "/requests",
           "responseKey": "requests",
           "fields": {
-            "assignee_id": "assignee_id",
-            "can_be_solved_by_me": "can_be_solved_by_me",
-            "collaborator_ids": "collaborator_ids",
-            "created_at": "created_at",
-            "custom_fields": "custom_fields",
-            "custom_status_id": "custom_status_id",
-            "description": "description",
-            "due_at": "due_at",
-            "email_cc_ids": "email_cc_ids",
-            "followup_source_id": "followup_source_id",
-            "group_id": "group_id",
-            "id": "id",
-            "is_public": "is_public",
-            "organization_id": "organization_id",
-            "priority": "priority",
-            "recipient": "recipient",
-            "requester_id": "requester_id",
-            "solved": "solved",
-            "status": "status",
-            "subject": "subject",
-            "ticket_form_id": "ticket_form_id",
-            "type": "type",
-            "updated_at": "updated_at",
-            "url": "url",
-            "via": "via"
+            "assignee_id": {
+              "displayName": "assignee_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "can_be_solved_by_me": {
+              "displayName": "can_be_solved_by_me",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "collaborator_ids": {
+              "displayName": "collaborator_ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "custom_fields": {
+              "displayName": "custom_fields",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "custom_status_id": {
+              "displayName": "custom_status_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "due_at": {
+              "displayName": "due_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email_cc_ids": {
+              "displayName": "email_cc_ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "followup_source_id": {
+              "displayName": "followup_source_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "group_id": {
+              "displayName": "group_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "is_public": {
+              "displayName": "is_public",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "organization_id": {
+              "displayName": "organization_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "priority": {
+              "displayName": "priority",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "recipient": {
+              "displayName": "recipient",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "requester_id": {
+              "displayName": "requester_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "solved": {
+              "displayName": "solved",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subject": {
+              "displayName": "subject",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "ticket_form_id": {
+              "displayName": "ticket_form_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "via": {
+              "displayName": "via",
+              "valueType": "other",
+              "providerType": "object"
+            }
           },
           "custom": {
             "pagination": "cursor"
@@ -673,10 +2140,26 @@
           "path": "/resource_collections",
           "responseKey": "resource_collections",
           "fields": {
-            "created_at": "created_at",
-            "id": "id",
-            "resources": "resources",
-            "updated_at": "updated_at"
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "resources": {
+              "displayName": "resources",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "custom": {
             "pagination": "offset"
@@ -687,19 +2170,71 @@
           "path": "/satisfaction_ratings",
           "responseKey": "satisfaction_ratings",
           "fields": {
-            "assignee_id": "assignee_id",
-            "comment": "comment",
-            "created_at": "created_at",
-            "group_id": "group_id",
-            "id": "id",
-            "reason": "reason",
-            "reason_code": "reason_code",
-            "reason_id": "reason_id",
-            "requester_id": "requester_id",
-            "score": "score",
-            "ticket_id": "ticket_id",
-            "updated_at": "updated_at",
-            "url": "url"
+            "assignee_id": {
+              "displayName": "assignee_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "comment": {
+              "displayName": "comment",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "group_id": {
+              "displayName": "group_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "reason": {
+              "displayName": "reason",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "reason_code": {
+              "displayName": "reason_code",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "reason_id": {
+              "displayName": "reason_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "requester_id": {
+              "displayName": "requester_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "score": {
+              "displayName": "score",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "ticket_id": {
+              "displayName": "ticket_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "custom": {
             "pagination": "cursor"
@@ -710,14 +2245,46 @@
           "path": "/satisfaction_reasons",
           "responseKey": "reasons",
           "fields": {
-            "created_at": "created_at",
-            "deleted_at": "deleted_at",
-            "id": "id",
-            "raw_value": "raw_value",
-            "reason_code": "reason_code",
-            "updated_at": "updated_at",
-            "url": "url",
-            "value": "value"
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deleted_at": {
+              "displayName": "deleted_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "raw_value": {
+              "displayName": "raw_value",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "reason_code": {
+              "displayName": "reason_code",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "value": {
+              "displayName": "value",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "custom": {
             "pagination": "offset"
@@ -728,11 +2295,31 @@
           "path": "/sessions",
           "responseKey": "sessions",
           "fields": {
-            "authenticated_at": "authenticated_at",
-            "id": "id",
-            "last_seen_at": "last_seen_at",
-            "url": "url",
-            "user_id": "user_id"
+            "authenticated_at": {
+              "displayName": "authenticated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "last_seen_at": {
+              "displayName": "last_seen_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user_id": {
+              "displayName": "user_id",
+              "valueType": "int",
+              "providerType": "integer"
+            }
           },
           "custom": {}
         },
@@ -741,15 +2328,51 @@
           "path": "/sharing_agreements",
           "responseKey": "sharing_agreements",
           "fields": {
-            "created_at": "created_at",
-            "id": "id",
-            "name": "name",
-            "partner_name": "partner_name",
-            "remote_subdomain": "remote_subdomain",
-            "status": "status",
-            "type": "type",
-            "updated_at": "updated_at",
-            "url": "url"
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "partner_name": {
+              "displayName": "partner_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "remote_subdomain": {
+              "displayName": "remote_subdomain",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "custom": {
             "pagination": "offset"
@@ -760,22 +2383,86 @@
           "path": "/suspended_tickets",
           "responseKey": "suspended_tickets",
           "fields": {
-            "attachments": "attachments",
-            "author": "author",
-            "brand_id": "brand_id",
-            "cause": "cause",
-            "cause_id": "cause_id",
-            "content": "content",
-            "created_at": "created_at",
-            "error_messages": "error_messages",
-            "id": "id",
-            "message_id": "message_id",
-            "recipient": "recipient",
-            "subject": "subject",
-            "ticket_id": "ticket_id",
-            "updated_at": "updated_at",
-            "url": "url",
-            "via": "via"
+            "attachments": {
+              "displayName": "attachments",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "author": {
+              "displayName": "author",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "brand_id": {
+              "displayName": "brand_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "cause": {
+              "displayName": "cause",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "cause_id": {
+              "displayName": "cause_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "content": {
+              "displayName": "content",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "error_messages": {
+              "displayName": "error_messages",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "message_id": {
+              "displayName": "message_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "recipient": {
+              "displayName": "recipient",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subject": {
+              "displayName": "subject",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "ticket_id": {
+              "displayName": "ticket_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "via": {
+              "displayName": "via",
+              "valueType": "other",
+              "providerType": "object"
+            }
           },
           "custom": {
             "pagination": "cursor"
@@ -786,8 +2473,16 @@
           "path": "/tags",
           "responseKey": "tags",
           "fields": {
-            "count": "count",
-            "name": "name"
+            "count": {
+              "displayName": "count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "custom": {
             "pagination": "cursor"
@@ -798,14 +2493,46 @@
           "path": "/target_failures",
           "responseKey": "target_failures",
           "fields": {
-            "consecutive_failure_count": "consecutive_failure_count",
-            "created_at": "created_at",
-            "id": "id",
-            "raw_request": "raw_request",
-            "raw_response": "raw_response",
-            "status_code": "status_code",
-            "target_name": "target_name",
-            "url": "url"
+            "consecutive_failure_count": {
+              "displayName": "consecutive_failure_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "raw_request": {
+              "displayName": "raw_request",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "raw_response": {
+              "displayName": "raw_response",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status_code": {
+              "displayName": "status_code",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "target_name": {
+              "displayName": "target_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "custom": {
             "pagination": "offset"
@@ -816,41 +2543,181 @@
           "path": "/targets",
           "responseKey": "targets",
           "fields": {
-            "account_name": "account_name",
-            "active": "active",
-            "api_id": "api_id",
-            "api_token": "api_token",
-            "attribute": "attribute",
-            "content_type": "content_type",
-            "created_at": "created_at",
-            "email": "email",
-            "from": "from",
-            "group_id": "group_id",
-            "id": "id",
-            "message_id": "message_id",
-            "method": "method",
-            "owner_by": "owner_by",
-            "password": "password",
-            "preserve_format": "preserve_format",
-            "project_id": "project_id",
-            "requested_by": "requested_by",
-            "resource": "resource",
-            "room": "room",
-            "secret": "secret",
-            "ssl": "ssl",
-            "story_labels": "story_labels",
-            "story_title": "story_title",
-            "story_type": "story_type",
-            "subdomain": "subdomain",
-            "subject": "subject",
-            "target_url": "target_url",
-            "title": "title",
-            "to": "to",
-            "todo_list_id": "todo_list_id",
-            "token": "token",
-            "type": "type",
-            "us_small_business_account": "us_small_business_account",
-            "username": "username"
+            "account_name": {
+              "displayName": "account_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "active": {
+              "displayName": "active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "api_id": {
+              "displayName": "api_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "api_token": {
+              "displayName": "api_token",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "attribute": {
+              "displayName": "attribute",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "content_type": {
+              "displayName": "content_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "from": {
+              "displayName": "from",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "group_id": {
+              "displayName": "group_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "message_id": {
+              "displayName": "message_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "method": {
+              "displayName": "method",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "owner_by": {
+              "displayName": "owner_by",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "password": {
+              "displayName": "password",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "preserve_format": {
+              "displayName": "preserve_format",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "project_id": {
+              "displayName": "project_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "requested_by": {
+              "displayName": "requested_by",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "resource": {
+              "displayName": "resource",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "room": {
+              "displayName": "room",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "secret": {
+              "displayName": "secret",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "ssl": {
+              "displayName": "ssl",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "story_labels": {
+              "displayName": "story_labels",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "story_title": {
+              "displayName": "story_title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "story_type": {
+              "displayName": "story_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subdomain": {
+              "displayName": "subdomain",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subject": {
+              "displayName": "subject",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "target_url": {
+              "displayName": "target_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "to": {
+              "displayName": "to",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "todo_list_id": {
+              "displayName": "todo_list_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "token": {
+              "displayName": "token",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "us_small_business_account": {
+              "displayName": "us_small_business_account",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "username": {
+              "displayName": "username",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "custom": {
             "pagination": "offset"
@@ -861,13 +2728,41 @@
           "path": "/ticket_audits",
           "responseKey": "audits",
           "fields": {
-            "author_id": "author_id",
-            "created_at": "created_at",
-            "events": "events",
-            "id": "id",
-            "metadata": "metadata",
-            "ticket_id": "ticket_id",
-            "via": "via"
+            "author_id": {
+              "displayName": "author_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "events": {
+              "displayName": "events",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "metadata": {
+              "displayName": "metadata",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "ticket_id": {
+              "displayName": "ticket_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "via": {
+              "displayName": "via",
+              "valueType": "other",
+              "providerType": "object"
+            }
           },
           "custom": {
             "pagination": "cursor"
@@ -878,12 +2773,100 @@
           "path": "/incremental/ticket_events",
           "responseKey": "ticket_events",
           "fields": {
-            "id": "id",
-            "instance_id": "instance_id",
-            "metric": "metric",
-            "ticket_id": "ticket_id",
-            "time": "time",
-            "type": "type"
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "instance_id": {
+              "displayName": "instance_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "metric": {
+              "displayName": "metric",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "agent_work_time",
+                  "displayValue": "agent_work_time"
+                },
+                {
+                  "value": "pausable_update_time",
+                  "displayValue": "pausable_update_time"
+                },
+                {
+                  "value": "periodic_update_time",
+                  "displayValue": "periodic_update_time"
+                },
+                {
+                  "value": "reply_time",
+                  "displayValue": "reply_time"
+                },
+                {
+                  "value": "requester_wait_time",
+                  "displayValue": "requester_wait_time"
+                },
+                {
+                  "value": "resolution_time",
+                  "displayValue": "resolution_time"
+                },
+                {
+                  "value": "group_ownership_time",
+                  "displayValue": "group_ownership_time"
+                }
+              ]
+            },
+            "ticket_id": {
+              "displayName": "ticket_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "time": {
+              "displayName": "time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "activate",
+                  "displayValue": "activate"
+                },
+                {
+                  "value": "pause",
+                  "displayValue": "pause"
+                },
+                {
+                  "value": "fulfill",
+                  "displayValue": "fulfill"
+                },
+                {
+                  "value": "apply_sla",
+                  "displayValue": "apply_sla"
+                },
+                {
+                  "value": "apply_group_sla",
+                  "displayValue": "apply_group_sla"
+                },
+                {
+                  "value": "breach",
+                  "displayValue": "breach"
+                },
+                {
+                  "value": "update_status",
+                  "displayValue": "update_status"
+                },
+                {
+                  "value": "measure",
+                  "displayValue": "measure"
+                }
+              ]
+            }
           },
           "custom": {
             "pagination": "time",
@@ -895,36 +2878,156 @@
           "path": "/ticket_fields",
           "responseKey": "ticket_fields",
           "fields": {
-            "active": "active",
-            "agent_description": "agent_description",
-            "collapsed_for_agents": "collapsed_for_agents",
-            "created_at": "created_at",
-            "creator_app_name": "creator_app_name",
-            "creator_user_id": "creator_user_id",
-            "custom_field_options": "custom_field_options",
-            "custom_statuses": "custom_statuses",
-            "description": "description",
-            "editable_in_portal": "editable_in_portal",
-            "id": "id",
-            "position": "position",
-            "raw_description": "raw_description",
-            "raw_title": "raw_title",
-            "raw_title_in_portal": "raw_title_in_portal",
-            "regexp_for_validation": "regexp_for_validation",
-            "relationship_filter": "relationship_filter",
-            "relationship_target_type": "relationship_target_type",
-            "removable": "removable",
-            "required": "required",
-            "required_in_portal": "required_in_portal",
-            "sub_type_id": "sub_type_id",
-            "system_field_options": "system_field_options",
-            "tag": "tag",
-            "title": "title",
-            "title_in_portal": "title_in_portal",
-            "type": "type",
-            "updated_at": "updated_at",
-            "url": "url",
-            "visible_in_portal": "visible_in_portal"
+            "active": {
+              "displayName": "active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "agent_description": {
+              "displayName": "agent_description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "collapsed_for_agents": {
+              "displayName": "collapsed_for_agents",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "creator_app_name": {
+              "displayName": "creator_app_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "creator_user_id": {
+              "displayName": "creator_user_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "custom_field_options": {
+              "displayName": "custom_field_options",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "custom_statuses": {
+              "displayName": "custom_statuses",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "editable_in_portal": {
+              "displayName": "editable_in_portal",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "position": {
+              "displayName": "position",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "raw_description": {
+              "displayName": "raw_description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "raw_title": {
+              "displayName": "raw_title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "raw_title_in_portal": {
+              "displayName": "raw_title_in_portal",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "regexp_for_validation": {
+              "displayName": "regexp_for_validation",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "relationship_filter": {
+              "displayName": "relationship_filter",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "relationship_target_type": {
+              "displayName": "relationship_target_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "removable": {
+              "displayName": "removable",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "required": {
+              "displayName": "required",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "required_in_portal": {
+              "displayName": "required_in_portal",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "sub_type_id": {
+              "displayName": "sub_type_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "system_field_options": {
+              "displayName": "system_field_options",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "tag": {
+              "displayName": "tag",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title_in_portal": {
+              "displayName": "title_in_portal",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "visible_in_portal": {
+              "displayName": "visible_in_portal",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
           },
           "custom": {
             "pagination": "cursor"
@@ -935,23 +3038,91 @@
           "path": "/ticket_forms",
           "responseKey": "ticket_forms",
           "fields": {
-            "active": "active",
-            "agent_conditions": "agent_conditions",
-            "created_at": "created_at",
-            "default": "default",
-            "display_name": "display_name",
-            "end_user_conditions": "end_user_conditions",
-            "end_user_visible": "end_user_visible",
-            "id": "id",
-            "in_all_brands": "in_all_brands",
-            "name": "name",
-            "position": "position",
-            "raw_display_name": "raw_display_name",
-            "raw_name": "raw_name",
-            "restricted_brand_ids": "restricted_brand_ids",
-            "ticket_field_ids": "ticket_field_ids",
-            "updated_at": "updated_at",
-            "url": "url"
+            "active": {
+              "displayName": "active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "agent_conditions": {
+              "displayName": "agent_conditions",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "default": {
+              "displayName": "default",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "display_name": {
+              "displayName": "display_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "end_user_conditions": {
+              "displayName": "end_user_conditions",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "end_user_visible": {
+              "displayName": "end_user_visible",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "in_all_brands": {
+              "displayName": "in_all_brands",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "position": {
+              "displayName": "position",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "raw_display_name": {
+              "displayName": "raw_display_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "raw_name": {
+              "displayName": "raw_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "restricted_brand_ids": {
+              "displayName": "restricted_brand_ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "ticket_field_ids": {
+              "displayName": "ticket_field_ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "custom": {
             "pagination": "offset"
@@ -962,12 +3133,100 @@
           "path": "/incremental/ticket_metric_events",
           "responseKey": "ticket_metric_events",
           "fields": {
-            "id": "id",
-            "instance_id": "instance_id",
-            "metric": "metric",
-            "ticket_id": "ticket_id",
-            "time": "time",
-            "type": "type"
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "instance_id": {
+              "displayName": "instance_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "metric": {
+              "displayName": "metric",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "agent_work_time",
+                  "displayValue": "agent_work_time"
+                },
+                {
+                  "value": "pausable_update_time",
+                  "displayValue": "pausable_update_time"
+                },
+                {
+                  "value": "periodic_update_time",
+                  "displayValue": "periodic_update_time"
+                },
+                {
+                  "value": "reply_time",
+                  "displayValue": "reply_time"
+                },
+                {
+                  "value": "requester_wait_time",
+                  "displayValue": "requester_wait_time"
+                },
+                {
+                  "value": "resolution_time",
+                  "displayValue": "resolution_time"
+                },
+                {
+                  "value": "group_ownership_time",
+                  "displayValue": "group_ownership_time"
+                }
+              ]
+            },
+            "ticket_id": {
+              "displayName": "ticket_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "time": {
+              "displayName": "time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "activate",
+                  "displayValue": "activate"
+                },
+                {
+                  "value": "pause",
+                  "displayValue": "pause"
+                },
+                {
+                  "value": "fulfill",
+                  "displayValue": "fulfill"
+                },
+                {
+                  "value": "apply_sla",
+                  "displayValue": "apply_sla"
+                },
+                {
+                  "value": "apply_group_sla",
+                  "displayValue": "apply_group_sla"
+                },
+                {
+                  "value": "breach",
+                  "displayValue": "breach"
+                },
+                {
+                  "value": "update_status",
+                  "displayValue": "update_status"
+                },
+                {
+                  "value": "measure",
+                  "displayValue": "measure"
+                }
+              ]
+            }
           },
           "custom": {
             "pagination": "time",
@@ -979,30 +3238,126 @@
           "path": "/ticket_metrics",
           "responseKey": "ticket_metrics",
           "fields": {
-            "agent_wait_time_in_minutes": "agent_wait_time_in_minutes",
-            "assigned_at": "assigned_at",
-            "assignee_stations": "assignee_stations",
-            "assignee_updated_at": "assignee_updated_at",
-            "created_at": "created_at",
-            "custom_status_updated_at": "custom_status_updated_at",
-            "first_resolution_time_in_minutes": "first_resolution_time_in_minutes",
-            "full_resolution_time_in_minutes": "full_resolution_time_in_minutes",
-            "group_stations": "group_stations",
-            "id": "id",
-            "initially_assigned_at": "initially_assigned_at",
-            "latest_comment_added_at": "latest_comment_added_at",
-            "on_hold_time_in_minutes": "on_hold_time_in_minutes",
-            "reopens": "reopens",
-            "replies": "replies",
-            "reply_time_in_minutes": "reply_time_in_minutes",
-            "reply_time_in_seconds": "reply_time_in_seconds",
-            "requester_updated_at": "requester_updated_at",
-            "requester_wait_time_in_minutes": "requester_wait_time_in_minutes",
-            "solved_at": "solved_at",
-            "status_updated_at": "status_updated_at",
-            "ticket_id": "ticket_id",
-            "updated_at": "updated_at",
-            "url": "url"
+            "agent_wait_time_in_minutes": {
+              "displayName": "agent_wait_time_in_minutes",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "assigned_at": {
+              "displayName": "assigned_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "assignee_stations": {
+              "displayName": "assignee_stations",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "assignee_updated_at": {
+              "displayName": "assignee_updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "custom_status_updated_at": {
+              "displayName": "custom_status_updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "first_resolution_time_in_minutes": {
+              "displayName": "first_resolution_time_in_minutes",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "full_resolution_time_in_minutes": {
+              "displayName": "full_resolution_time_in_minutes",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "group_stations": {
+              "displayName": "group_stations",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "initially_assigned_at": {
+              "displayName": "initially_assigned_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "latest_comment_added_at": {
+              "displayName": "latest_comment_added_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "on_hold_time_in_minutes": {
+              "displayName": "on_hold_time_in_minutes",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "reopens": {
+              "displayName": "reopens",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "replies": {
+              "displayName": "replies",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "reply_time_in_minutes": {
+              "displayName": "reply_time_in_minutes",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "reply_time_in_seconds": {
+              "displayName": "reply_time_in_seconds",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "requester_updated_at": {
+              "displayName": "requester_updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "requester_wait_time_in_minutes": {
+              "displayName": "requester_wait_time_in_minutes",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "solved_at": {
+              "displayName": "solved_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status_updated_at": {
+              "displayName": "status_updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "ticket_id": {
+              "displayName": "ticket_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "custom": {
             "pagination": "cursor"
@@ -1013,58 +3368,328 @@
           "path": "/incremental/tickets/cursor",
           "responseKey": "tickets",
           "fields": {
-            "allow_attachments": "allow_attachments",
-            "allow_channelback": "allow_channelback",
-            "assignee_email": "assignee_email",
-            "assignee_id": "assignee_id",
-            "attribute_value_ids": "attribute_value_ids",
-            "brand_id": "brand_id",
-            "collaborator_ids": "collaborator_ids",
-            "collaborators": "collaborators",
-            "comment": "comment",
-            "created_at": "created_at",
-            "custom_fields": "custom_fields",
-            "custom_status_id": "custom_status_id",
-            "description": "description",
-            "due_at": "due_at",
-            "email_cc_ids": "email_cc_ids",
-            "email_ccs": "email_ccs",
-            "external_id": "external_id",
-            "follower_ids": "follower_ids",
-            "followers": "followers",
-            "followup_ids": "followup_ids",
-            "forum_topic_id": "forum_topic_id",
-            "from_messaging_channel": "from_messaging_channel",
-            "group_id": "group_id",
-            "has_incidents": "has_incidents",
-            "id": "id",
-            "is_public": "is_public",
-            "macro_id": "macro_id",
-            "macro_ids": "macro_ids",
-            "metadata": "metadata",
-            "organization_id": "organization_id",
-            "priority": "priority",
-            "problem_id": "problem_id",
-            "raw_subject": "raw_subject",
-            "recipient": "recipient",
-            "requester": "requester",
-            "requester_id": "requester_id",
-            "safe_update": "safe_update",
-            "satisfaction_rating": "satisfaction_rating",
-            "sharing_agreement_ids": "sharing_agreement_ids",
-            "status": "status",
-            "subject": "subject",
-            "submitter_id": "submitter_id",
-            "tags": "tags",
-            "ticket_form_id": "ticket_form_id",
-            "type": "type",
-            "updated_at": "updated_at",
-            "updated_stamp": "updated_stamp",
-            "url": "url",
-            "via": "via",
-            "via_followup_source_id": "via_followup_source_id",
-            "via_id": "via_id",
-            "voice_comment": "voice_comment"
+            "allow_attachments": {
+              "displayName": "allow_attachments",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "allow_channelback": {
+              "displayName": "allow_channelback",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "assignee_email": {
+              "displayName": "assignee_email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "assignee_id": {
+              "displayName": "assignee_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "attribute_value_ids": {
+              "displayName": "attribute_value_ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "brand_id": {
+              "displayName": "brand_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "collaborator_ids": {
+              "displayName": "collaborator_ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "collaborators": {
+              "displayName": "collaborators",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "comment": {
+              "displayName": "comment",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "custom_fields": {
+              "displayName": "custom_fields",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "custom_status_id": {
+              "displayName": "custom_status_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "due_at": {
+              "displayName": "due_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email_cc_ids": {
+              "displayName": "email_cc_ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "email_ccs": {
+              "displayName": "email_ccs",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "external_id": {
+              "displayName": "external_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "follower_ids": {
+              "displayName": "follower_ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "followers": {
+              "displayName": "followers",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "followup_ids": {
+              "displayName": "followup_ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "forum_topic_id": {
+              "displayName": "forum_topic_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "from_messaging_channel": {
+              "displayName": "from_messaging_channel",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "group_id": {
+              "displayName": "group_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "has_incidents": {
+              "displayName": "has_incidents",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "is_public": {
+              "displayName": "is_public",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "macro_id": {
+              "displayName": "macro_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "macro_ids": {
+              "displayName": "macro_ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "metadata": {
+              "displayName": "metadata",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "organization_id": {
+              "displayName": "organization_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "priority": {
+              "displayName": "priority",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "urgent",
+                  "displayValue": "urgent"
+                },
+                {
+                  "value": "high",
+                  "displayValue": "high"
+                },
+                {
+                  "value": "normal",
+                  "displayValue": "normal"
+                },
+                {
+                  "value": "low",
+                  "displayValue": "low"
+                }
+              ]
+            },
+            "problem_id": {
+              "displayName": "problem_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "raw_subject": {
+              "displayName": "raw_subject",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "recipient": {
+              "displayName": "recipient",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "requester": {
+              "displayName": "requester",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "requester_id": {
+              "displayName": "requester_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "safe_update": {
+              "displayName": "safe_update",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "satisfaction_rating": {
+              "displayName": "satisfaction_rating",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "sharing_agreement_ids": {
+              "displayName": "sharing_agreement_ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "new",
+                  "displayValue": "new"
+                },
+                {
+                  "value": "open",
+                  "displayValue": "open"
+                },
+                {
+                  "value": "pending",
+                  "displayValue": "pending"
+                },
+                {
+                  "value": "hold",
+                  "displayValue": "hold"
+                },
+                {
+                  "value": "solved",
+                  "displayValue": "solved"
+                },
+                {
+                  "value": "closed",
+                  "displayValue": "closed"
+                }
+              ]
+            },
+            "subject": {
+              "displayName": "subject",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "submitter_id": {
+              "displayName": "submitter_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "tags": {
+              "displayName": "tags",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "ticket_form_id": {
+              "displayName": "ticket_form_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "problem",
+                  "displayValue": "problem"
+                },
+                {
+                  "value": "incident",
+                  "displayValue": "incident"
+                },
+                {
+                  "value": "question",
+                  "displayValue": "question"
+                },
+                {
+                  "value": "task",
+                  "displayValue": "task"
+                }
+              ]
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_stamp": {
+              "displayName": "updated_stamp",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "via": {
+              "displayName": "via",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "via_followup_source_id": {
+              "displayName": "via_followup_source_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "via_id": {
+              "displayName": "via_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "voice_comment": {
+              "displayName": "voice_comment",
+              "valueType": "other",
+              "providerType": "object"
+            }
           },
           "custom": {
             "pagination": "cursor",
@@ -1076,13 +3701,41 @@
           "path": "/trigger_categories",
           "responseKey": "trigger_categories",
           "fields": {
-            "active_count": "active_count",
-            "created_at": "created_at",
-            "id": "id",
-            "inactive_count": "inactive_count",
-            "name": "name",
-            "position": "position",
-            "updated_at": "updated_at"
+            "active_count": {
+              "displayName": "active_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "inactive_count": {
+              "displayName": "inactive_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "position": {
+              "displayName": "position",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "custom": {
             "pagination": "cursor"
@@ -1093,19 +3746,71 @@
           "path": "/triggers",
           "responseKey": "triggers",
           "fields": {
-            "actions": "actions",
-            "active": "active",
-            "category_id": "category_id",
-            "conditions": "conditions",
-            "created_at": "created_at",
-            "default": "default",
-            "description": "description",
-            "id": "id",
-            "position": "position",
-            "raw_title": "raw_title",
-            "title": "title",
-            "updated_at": "updated_at",
-            "url": "url"
+            "actions": {
+              "displayName": "actions",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "active": {
+              "displayName": "active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "category_id": {
+              "displayName": "category_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "conditions": {
+              "displayName": "conditions",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "default": {
+              "displayName": "default",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "position": {
+              "displayName": "position",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "raw_title": {
+              "displayName": "raw_title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "custom": {
             "pagination": "cursor"
@@ -1116,24 +3821,96 @@
           "path": "/user_fields",
           "responseKey": "user_fields",
           "fields": {
-            "active": "active",
-            "created_at": "created_at",
-            "custom_field_options": "custom_field_options",
-            "description": "description",
-            "id": "id",
-            "key": "key",
-            "position": "position",
-            "raw_description": "raw_description",
-            "raw_title": "raw_title",
-            "regexp_for_validation": "regexp_for_validation",
-            "relationship_filter": "relationship_filter",
-            "relationship_target_type": "relationship_target_type",
-            "system": "system",
-            "tag": "tag",
-            "title": "title",
-            "type": "type",
-            "updated_at": "updated_at",
-            "url": "url"
+            "active": {
+              "displayName": "active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "custom_field_options": {
+              "displayName": "custom_field_options",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "position": {
+              "displayName": "position",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "raw_description": {
+              "displayName": "raw_description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "raw_title": {
+              "displayName": "raw_title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "regexp_for_validation": {
+              "displayName": "regexp_for_validation",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "relationship_filter": {
+              "displayName": "relationship_filter",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "relationship_target_type": {
+              "displayName": "relationship_target_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "system": {
+              "displayName": "system",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "tag": {
+              "displayName": "tag",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "custom": {
             "pagination": "cursor"
@@ -1144,45 +3921,201 @@
           "path": "/incremental/users/cursor",
           "responseKey": "users",
           "fields": {
-            "active": "active",
-            "alias": "alias",
-            "chat_only": "chat_only",
-            "created_at": "created_at",
-            "custom_role_id": "custom_role_id",
-            "default_group_id": "default_group_id",
-            "details": "details",
-            "email": "email",
-            "external_id": "external_id",
-            "iana_time_zone": "iana_time_zone",
-            "id": "id",
-            "last_login_at": "last_login_at",
-            "locale": "locale",
-            "locale_id": "locale_id",
-            "moderator": "moderator",
-            "name": "name",
-            "notes": "notes",
-            "only_private_comments": "only_private_comments",
-            "organization_id": "organization_id",
-            "phone": "phone",
-            "photo": "photo",
-            "remote_photo_url": "remote_photo_url",
-            "report_csv": "report_csv",
-            "restricted_agent": "restricted_agent",
-            "role": "role",
-            "role_type": "role_type",
-            "shared": "shared",
-            "shared_agent": "shared_agent",
-            "shared_phone_number": "shared_phone_number",
-            "signature": "signature",
-            "suspended": "suspended",
-            "tags": "tags",
-            "ticket_restriction": "ticket_restriction",
-            "time_zone": "time_zone",
-            "two_factor_auth_enabled": "two_factor_auth_enabled",
-            "updated_at": "updated_at",
-            "url": "url",
-            "user_fields": "user_fields",
-            "verified": "verified"
+            "active": {
+              "displayName": "active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "alias": {
+              "displayName": "alias",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "chat_only": {
+              "displayName": "chat_only",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "custom_role_id": {
+              "displayName": "custom_role_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "default_group_id": {
+              "displayName": "default_group_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "details": {
+              "displayName": "details",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "external_id": {
+              "displayName": "external_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "iana_time_zone": {
+              "displayName": "iana_time_zone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "last_login_at": {
+              "displayName": "last_login_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "locale": {
+              "displayName": "locale",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "locale_id": {
+              "displayName": "locale_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "moderator": {
+              "displayName": "moderator",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "notes": {
+              "displayName": "notes",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "only_private_comments": {
+              "displayName": "only_private_comments",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "organization_id": {
+              "displayName": "organization_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "phone": {
+              "displayName": "phone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "photo": {
+              "displayName": "photo",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "remote_photo_url": {
+              "displayName": "remote_photo_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "report_csv": {
+              "displayName": "report_csv",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "restricted_agent": {
+              "displayName": "restricted_agent",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "role": {
+              "displayName": "role",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "role_type": {
+              "displayName": "role_type",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "shared": {
+              "displayName": "shared",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "shared_agent": {
+              "displayName": "shared_agent",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "shared_phone_number": {
+              "displayName": "shared_phone_number",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "signature": {
+              "displayName": "signature",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "suspended": {
+              "displayName": "suspended",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "tags": {
+              "displayName": "tags",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "ticket_restriction": {
+              "displayName": "ticket_restriction",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "time_zone": {
+              "displayName": "time_zone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "two_factor_auth_enabled": {
+              "displayName": "two_factor_auth_enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user_fields": {
+              "displayName": "user_fields",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "verified": {
+              "displayName": "verified",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
           },
           "custom": {
             "pagination": "cursor",
@@ -1194,17 +4127,61 @@
           "path": "/views",
           "responseKey": "views",
           "fields": {
-            "active": "active",
-            "conditions": "conditions",
-            "created_at": "created_at",
-            "default": "default",
-            "description": "description",
-            "execution": "execution",
-            "id": "id",
-            "position": "position",
-            "restriction": "restriction",
-            "title": "title",
-            "updated_at": "updated_at"
+            "active": {
+              "displayName": "active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "conditions": {
+              "displayName": "conditions",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "default": {
+              "displayName": "default",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "execution": {
+              "displayName": "execution",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "position": {
+              "displayName": "position",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "restriction": {
+              "displayName": "restriction",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "custom": {
             "pagination": "cursor"
@@ -1215,21 +4192,81 @@
           "path": "/workspaces",
           "responseKey": "workspaces",
           "fields": {
-            "activated": "activated",
-            "apps": "apps",
-            "conditions": "conditions",
-            "created_at": "created_at",
-            "description": "description",
-            "id": "id",
-            "macro_ids": "macro_ids",
-            "macros": "macros",
-            "position": "position",
-            "prefer_workspace_app_order": "prefer_workspace_app_order",
-            "selected_macros": "selected_macros",
-            "ticket_form_id": "ticket_form_id",
-            "title": "title",
-            "updated_at": "updated_at",
-            "url": "url"
+            "activated": {
+              "displayName": "activated",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "apps": {
+              "displayName": "apps",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "conditions": {
+              "displayName": "conditions",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "macro_ids": {
+              "displayName": "macro_ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "macros": {
+              "displayName": "macros",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "position": {
+              "displayName": "position",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "prefer_workspace_app_order": {
+              "displayName": "prefer_workspace_app_order",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "selected_macros": {
+              "displayName": "selected_macros",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "ticket_form_id": {
+              "displayName": "ticket_form_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            }
           },
           "custom": {
             "pagination": "offset"

@@ -10,13 +10,14 @@ import (
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers/zendesksupport"
 	"github.com/amp-labs/connectors/providers/zendesksupport/metadata"
+	utilsopenapi "github.com/amp-labs/connectors/scripts/openapi/utils"
 	"github.com/amp-labs/connectors/scripts/openapi/zendesksupport/metadata/helpcenter"
 	"github.com/amp-labs/connectors/scripts/openapi/zendesksupport/metadata/support"
 	"github.com/amp-labs/connectors/tools/scrapper"
 )
 
 func main() {
-	schemas := staticschema.NewExtendedMetadata[staticschema.FieldMetadataMapV1, metadata.CustomProperties]()
+	schemas := staticschema.NewExtendedMetadata[staticschema.FieldMetadataMapV2, metadata.CustomProperties]()
 	registry := datautils.NamedLists[string]{}
 	lists := datautils.IndexedLists[common.ModuleID, metadatadef.ExtendedSchema[metadata.CustomProperties]]{}
 
@@ -34,9 +35,7 @@ func main() {
 
 			for _, field := range object.Fields {
 				schemas.Add(module, object.ObjectName, object.DisplayName, object.URLPath, object.ResponseKey,
-					staticschema.FieldMetadataMapV1{
-						field.Name: field.Name,
-					}, nil, object.Custom)
+					utilsopenapi.ConvertMetadataFieldToFieldMetadataMapV2(field), nil, object.Custom)
 			}
 
 			for _, queryParam := range object.QueryParams {
