@@ -16,7 +16,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 
 	campaignResponse := testutils.DataFromFile(t, "campaign.json")
 	listResponse := testutils.DataFromFile(t, "list.json")
-	liAccoountResponse := testutils.DataFromFile(t, "li_account.json")
+	liAccountResponse := testutils.DataFromFile(t, "li_account.json")
 
 	tests := []testroutines.Read{
 		{
@@ -33,15 +33,16 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 1,
-				Data: []common.ReadResultRow{{
-					Fields: map[string]any{},
-					Raw: map[string]any{
-						"id":           float64(83192),
-						"name":         "Test Campaign",
-						"creationTime": "2024-12-31T09:17:29.106903Z",
-						"status":       "DRAFT",
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{},
+						Raw: map[string]any{
+							"id":           float64(83192),
+							"name":         "Test Campaign",
+							"creationTime": "2024-12-31T09:17:29.106903Z",
+							"status":       "DRAFT",
+						},
 					},
-				},
 				},
 				NextPage: "100",
 				Done:     false,
@@ -53,19 +54,20 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Input: common.ReadParams{ObjectName: "li_account", Fields: connectors.Fields(""), NextPage: "test?limit=100"},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, liAccoountResponse),
+				Always: mockserver.Response(http.StatusOK, liAccountResponse),
 			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 1,
-				Data: []common.ReadResultRow{{
-					Fields: map[string]any{},
-					Raw: map[string]any{
-						"id":           float64(71110),
-						"emailAddress": "sample.gmail.com",
-						"firstName":    nil,
-						"lastName":     nil,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{},
+						Raw: map[string]any{
+							"id":           float64(71110),
+							"emailAddress": "sample.gmail.com",
+							"firstName":    nil,
+							"lastName":     nil,
+						},
 					},
-				},
 				},
 				NextPage: "100",
 				Done:     false,
@@ -81,15 +83,16 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 1,
-				Data: []common.ReadResultRow{{
-					Fields: map[string]any{},
-					Raw: map[string]any{
-						"id":           float64(188213),
-						"name":         "Test 2",
-						"listType":     "USER_LIST",
-						"creationTime": "2025-03-26T10:24:33.266015Z",
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{},
+						Raw: map[string]any{
+							"id":           float64(188213),
+							"name":         "Test 2",
+							"listType":     "USER_LIST",
+							"creationTime": "2025-03-26T10:24:33.266015Z",
+						},
 					},
-				},
 				},
 				NextPage: "100",
 				Done:     false,

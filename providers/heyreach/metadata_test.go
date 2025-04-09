@@ -18,7 +18,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 
 	campaignResponse := testutils.DataFromFile(t, "campaign.json")
 	listResponse := testutils.DataFromFile(t, "list.json")
-	liAccoountResponse := testutils.DataFromFile(t, "li_account.json")
+	liAccountResponse := testutils.DataFromFile(t, "li_account.json")
 
 	tests := []testroutines.Metadata{
 		{
@@ -40,7 +40,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 					Then: mockserver.Response(http.StatusOK, listResponse),
 				}, {
 					If:   mockcond.PathSuffix("public/li_account/GetAll"),
-					Then: mockserver.Response(http.StatusOK, liAccoountResponse),
+					Then: mockserver.Response(http.StatusOK, liAccountResponse),
 				}},
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetMetadata,

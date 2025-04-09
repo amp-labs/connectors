@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/amp-labs/connectors"
@@ -46,7 +45,7 @@ func testReadCampaign(ctx context.Context, conn *ap.Connector) error {
 
 	res, err := conn.Read(ctx, params)
 	if err != nil {
-		log.Fatal(err.Error())
+		return fmt.Errorf("failed to read campaign: %w", err)
 	}
 
 	// Print the results.
@@ -69,7 +68,7 @@ func testReadLIAccount(ctx context.Context, conn *ap.Connector) error {
 
 	res, err := conn.Read(ctx, params)
 	if err != nil {
-		log.Fatal(err.Error())
+		return fmt.Errorf("failed to read li_account: %w", err)
 	}
 
 	// Print the results.
@@ -92,7 +91,7 @@ func testReadList(ctx context.Context, conn *ap.Connector) error {
 
 	res, err := conn.Read(ctx, params)
 	if err != nil {
-		log.Fatal(err.Error())
+		return fmt.Errorf("failed to read li_account: %w", err)
 	}
 
 	// Print the results.
