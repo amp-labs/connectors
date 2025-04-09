@@ -28,124 +28,16 @@ Here's a reference table for implementing different authentication types in your
 
 | Auth Type | Description | Key Configuration Fields | Example Provider |
 |-----------|-------------|-------------------------|------------------|
-| OAuth2 Authorization Code (3-legged) | OAuth flow requiring user authorization | ```AuthType: OAuth2, OauthOpts: { GrantType: AuthorizationCode, AuthURL, TokenURL }``` | LinkedIn |
-| OAuth2 Client Credentials (2-legged) | OAuth flow using client credentials | ```AuthType: OAuth2, OauthOpts: { GrantType: ClientCredentials, TokenURL }``` | Marketo |
-| API Key | Authentication using an API key | ```AuthType: ApiKey, ApiKeyOpts: { Type: InHeader/InQuery, HeaderName, ValuePrefix }``` | SixSense |
-| Basic Auth | Username/password authentication | ```AuthType: Basic, BaseURL``` | Insightly |
+| OAuth2 Authorization Code (3-legged) | OAuth flow requiring user authorization | ```AuthType: OAuth2, OauthOpts: { GrantType: AuthorizationCode, AuthURL, TokenURL }``` | See [LinkedIn Provider](/providers/linkedIn.go) |
+| OAuth2 Client Credentials (2-legged) | OAuth flow using client credentials | ```AuthType: OAuth2, OauthOpts: { GrantType: ClientCredentials, TokenURL }``` | See [Marketo Provider](/providers/marketo.go) |
+| API Key | Authentication using an API key | ```AuthType: ApiKey, ApiKeyOpts: { Type: InHeader/InQuery, HeaderName, ValuePrefix }``` | See example in [Monday](/providers/monday.go) |
+| Basic Auth | Username/password authentication | ```AuthType: Basic, BaseURL``` | See [Insightly Provider](/providers/insightly.go) |
 
 Additional configuration notes:
 - For workspace-specific providers, use `{{.workspace}}` in BaseURL
 - Set `ExplicitScopesRequired: true` if the provider requires explicit scope definition
 - Use `PostAuthInfoNeeded: true` if additional information is needed after authentication
 - Configure `Support` struct to specify provider capabilities (BulkWrite, Proxy, Read, Subscribe, Write)
-
-Examples below for each Auth type: 
-
-```go
-	// OAuth auth code provider (aka 3-legged)
-	LinkedIn: {
-		AuthType: OAuth2,
-		BaseURL:  "https://api.linkedin.com",
-		OauthOpts: &OauthOpts{
-            GrantType: AuthorizationCode,
-			AuthURL:  "https://www.linkedin.com/oauth/v2/authorization",
-			TokenURL: "https://www.linkedin.com/oauth/v2/accessToken",
-            ExplicitScopesRequired:    true,
-			ExplicitWorkspaceRequired: false,
-            TokenMetadataFields: TokenMetadataFields{
-				ScopesField: "scope",
-			},
-		},
-		Support: Support{
-			BulkWrite: BulkWriteSupport{
-             Insert: false,
-             Update: false,
-             Upsert: false,
-             Delete: false,
-            },
-			Proxy:     false,
-			Read:      false,
-			Subscribe: false,
-			Write:     false,
-		},
-	},
-
-    // OAuth client credentials provider (aka 2-legged)
-    Marketo: {
-        AuthType: OAuth2,
-        BaseURL:  "https://{{.workspace}}.mktorest.com/rest",
-		OauthOpts: &OauthOpts{
-            GrantType: ClientCredentials,
-			TokenURL: "https://{{.workspace}}.mktorest.com/identity/oauth/token",
-            ExplicitScopesRequired:    false,
-			ExplicitWorkspaceRequired: true,
-		},
-		Support: Support{
-			BulkWrite: BulkWriteSupport{
-             Insert: false,
-             Update: false,
-             Upsert: false,
-             Delete: false,
-            },
-			Proxy:     false,
-			Read:      false,
-			Subscribe: false,
-			Write:     false,
-		},
-    },
-
-    // API key provider
-    SixSense: {
-        AuthType: ApiKey,
-        BaseURL: "https://api.6sense.com",
-        // For 6sense, the header needs to be 'Authorization: Token {your_api_key}'
-        ApiKeyOpts: &ApiKeyOpts{
-            Type:        InHeader, // Can also be InQuery
-			HeaderName: "Authorization",
-            ValuePrefix: "Token ",
-            DocsURL: "https://api.6sense.com/docs/#get-your-api-token",
-		},
-        // For another provider, ValuePrefix may not be needed
-        // For example, if the expected header is 'X-Api-Key: {your_api_key}'
-        /*
-        ApiKeyOpts: &ApiKeyOpts{
-			HeaderName: "X-Api-Key",
-            DocsURL: "https://api.6sense.com/docs/#get-your-api-token",
-		}, */
-		Support: Support{
-			BulkWrite: BulkWriteSupport{
-             Insert: false,
-             Update: false,
-             Upsert: false,
-             Delete: false,
-            },
-			Proxy:     false,
-			Read:      false,
-			Subscribe: false,
-			Write:     false,
-		},
-    },
-
-    // Basic auth provider
-    Insightly: {
-        AuthType: Basic,
-        BaseURL: "https://api.{{.pod}}.insightly.com",
-		Support: Support {
-			BulkWrite: BulkWriteSupport{
-             Insert: false,
-             Update: false,
-             Upsert: false,
-             Delete: false,
-            },
-			Proxy:     false,
-			Read:      false,
-			Subscribe: false,
-			Write:     false,
-		},
-        PostAuthInfoNeeded: true,
-    },
-```
-
 
 ### Testing your proxy connector
 
@@ -166,7 +58,13 @@ Once the proxy endpoint is tested with different kind of API calls, <b>you can m
 
 Ensure you have made a proxy connector PR first and is merged and only then <b>work on the following changes in order</b>. 
 
+
+
+> Refer the `smartleadV2` connector as a reference. It might be the case that you may have to add other files or functions for a specific connector. 
+
+
 > Please make seperate PRs for each of the steps below. 
+
 ### 1. Add list metadata functionality: 
 
 Files to add: 
@@ -212,3 +110,7 @@ Files to update:
 Run your tests: 
 
 `go run ./test/<PROVIDER>/delete`
+
+<Note>
+Refer the `smartleadV2` connector as a reference. 
+</Note>
