@@ -1,4 +1,18 @@
 @origin=http://localhost:4444
+# For proxy call attach headers to each call:
+#
+# x-amp-project-id: {{my-ampersand-project-id}}
+# x-api-key: {{my-api-key}}
+# x-amp-proxy-version: 1
+# x-amp-integration-name: {{my-salesforce-integration}}
+# x-amp-group-ref: {{company-id-from-my-app}}
+#
+# Variables to set:
+#
+# @my-ampersand-project-id=value
+# @my-api-key=value
+# @my-salesforce-integration=value
+# @company-id-from-my-app=value
 
 ### List ApexClasses (All fields)
 # https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_apexclass.htm
@@ -12,7 +26,7 @@ Content-Type: application/json
 {
   "ApiVersion": 57.0,
   "Status": "Active",
-  "Body": "public class GreetingClass2 {public String userName { get; set; }\n\n    public GreetingClass2() {\n\n        userName = 'Guest'; // Default value\n    }\n\n    public String sayHello() {\n        return 'Hello, ' + userName + '!';\n    }\n\n    public void submitName() {\n        // Custom logic to handle the submitted name\n        System.debug('Submitted name: ' + userName);\n    }\n}"
+  "Body": "public class GreetingClass {public String userName { get; set; }\n\n    public GreetingClass() {\n\n        userName = 'Guest'; // Default value\n    }\n\n    public String sayHello() {\n        return 'Hello, ' + userName + '!';\n    }\n\n    public void submitName() {\n        // Custom logic to handle the submitted name\n        System.debug('Submitted name: ' + userName);\n    }\n}"
 }
 
 ### List ApexPages (All fields)
@@ -26,7 +40,7 @@ Content-Type: application/json
 
 {
   "ApiVersion": 57.0,
-  "Name": "PageUsingScript2222",
+  "Name": "NewPageUsingScript",
   "MasterLabel": "Create",
   "Markup": "<apex:page controller=\"GreetingClass\"><h1>Hello, {!userName}!</h1><apex:form><apex:inputText value=\"{!userName}\" label=\"Enter your name\"/><apex:commandButton value=\"Submit\" action=\"{!submitName}\"/></apex:form></apex:page>"
 }

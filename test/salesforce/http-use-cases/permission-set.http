@@ -1,4 +1,6 @@
 @origin=http://localhost:4444
+@user-id=005ak00000FthwYAAR
+@permission-set-id=0PSak000005zXrgGAE
 
 ### List PermissionSets
 # https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_permissionset.htm
@@ -10,8 +12,8 @@ POST {{origin}}/services/data/v59.0/sobjects/PermissionSetAssignment
 Content-Type: application/json
 
 {
-  "AssigneeId": "005ak00000FthwYAAR",
-  "PermissionSetId": "0PSak000005zXrgGAE"
+  "AssigneeId": "{{user-id}}",
+  "PermissionSetId": "{{permission-set-id}}"
 }
 
 ### List PermissionSetAssignments

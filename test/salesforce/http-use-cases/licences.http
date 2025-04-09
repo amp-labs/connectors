@@ -1,4 +1,6 @@
 @origin=http://localhost:4444
+@user-id=005ak00000FthwYAAR
+@permission-license-id=0PLak000001nECYGA2
 
 ### List PermissionSetLicense (All fields)
 # https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_permissionsetlicense.htm
@@ -10,10 +12,10 @@ POST {{origin}}/services/data/v59.0/sobjects/PermissionSetLicenseAssign
 Content-Type: application/json
 
 {
-  "AssigneeId": "005ak00000FthwYAAR",
-  "PermissionSetLicenseId": "0PLak000001nECYGA2"
+  "AssigneeId": "{{user-id}}",
+  "PermissionSetLicenseId": "{{permission-license-id}}"
 }
 
-### List License Assignments
+### List License Assignments (All fields)
 # https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_permissionsetlicenseassign.htm
 GET {{origin}}/services/data/v59.0/query/?q=SELECT+Fields(All)+FROM+PermissionSetLicenseAssign+Limit+200

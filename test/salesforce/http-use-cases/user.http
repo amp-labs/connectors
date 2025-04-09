@@ -1,4 +1,21 @@
 @origin=http://localhost:4444
+@profile-id=00eak00000CDaoLAAT
+@user-role-id=00Eak000004uhBNEAY
+# For proxy call attach headers to each call:
+#
+# x-amp-project-id: {{my-ampersand-project-id}}
+# x-api-key: {{my-api-key}}
+# x-amp-proxy-version: 1
+# x-amp-integration-name: {{my-salesforce-integration}}
+# x-amp-group-ref: {{company-id-from-my-app}}
+#
+# Variables to set:
+#
+# @my-ampersand-project-id=value
+# @my-api-key=value
+# @my-salesforce-integration=value
+# @company-id-from-my-app=value
+
 
 ### List Profiles (All fields)
 # https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_profile.htm
@@ -17,15 +34,15 @@ POST {{origin}}/services/data/v59.0/sobjects/User
 Content-Type: application/json
 
 {
-  "Username": "teddy.anderson@example.com",
-  "LastName": "Teddy",
-  "Alias": "Ted",
+  "Username": "lexi.fry@example.com",
+  "LastName": "Lexi",
+  "Alias": "Lexus",
   "Email": "newuser@example.com",
   "TimeZoneSidKey": "America/Los_Angeles",
   "LocaleSidKey": "en_US",
   "EmailEncodingKey": "UTF-8",
   "LanguageLocaleKey": "en_US",
-  "ProfileId": "00eak00000CDaoLAAT"
+  "ProfileId": "{{profile-id}}"
 }
 
 ### Update User by assigning UserRoleId (could be part of create)
@@ -36,5 +53,5 @@ POST {{origin}}/services/data/v59.0/sobjects/User/005ak00000FthwYAAR?_HttpMethod
 Content-Type: application/json
 
 {
-  "UserRoleId": "00Eak000004uhBNEAY"
+  "UserRoleId": "{{user-role-id}}"
 }
