@@ -47,17 +47,6 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 		return nil, fmt.Errorf("failed to build URL: %w", err)
 	}
 
-	// Map object names to their GraphQL type names
-	typeNameMap := map[string]string{
-		"boards": "Board",
-		"users":  "User",
-	}
-
-	typeName, exists := typeNameMap[objectName]
-	if !exists {
-		return nil, fmt.Errorf("%w: %s", ErrUnsupportedObject, objectName)
-	}
-
 	// Use introspection query to get field information
 	query := fmt.Sprintf(`{
 		__type(name: "%s") {
@@ -73,7 +62,7 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 				}
 			}
 		}
-	}`, typeName)
+	}`, naming.NewSingularString(naming.CapitalizeFirstLetterEveryWord(objectName)).String())
 
 	// Create the request body as a map
 	requestBody := map[string]string{
