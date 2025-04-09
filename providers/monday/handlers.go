@@ -107,27 +107,12 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		DisplayName: naming.CapitalizeFirstLetterEveryWord(objectName),
 	}
 
-	data, err := common.UnmarshalJSON[map[string]any](response)
+	metadataResp, err := common.UnmarshalJSON[MetadataResponse](response)
 	if err != nil {
 		return nil, common.ErrFailedToUnmarshalBody
 	}
 
-	dataMap, isValidData := (*data)["data"].(map[string]any)
-	if !isValidData {
-		return nil, fmt.Errorf("%w: missing data field", ErrInvalidResponseFormat)
-	}
-
-	typeInfo, exists := dataMap["__type"].(map[string]any)
-	if !exists {
-		return nil, fmt.Errorf(
-			"missing __type in response for object: %s, error: %w",
-			objectName,
-			common.ErrMissingExpectedValues,
-		)
-	}
-
-	fields, exists := typeInfo["fields"].([]any)
-	if !exists || len(fields) == 0 {
+	if len(metadataResp.Data.Type.Fields) == 0 {
 		return nil, fmt.Errorf(
 			"missing or empty fields for object: %s, error: %w",
 			objectName,
@@ -136,18 +121,8 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	}
 
 	// Process each field from the introspection result
-	for _, field := range fields {
-		fieldMap, ok := field.(map[string]any)
-		if !ok {
-			continue
-		}
-
-		fieldName, ok := fieldMap["name"].(string)
-		if !ok {
-			continue
-		}
-
-		objectMetadata.FieldsMap[fieldName] = fieldName
+	for _, field := range metadataResp.Data.Type.Fields {
+		objectMetadata.FieldsMap[field.Name] = field.Name
 	}
 
 	return &objectMetadata, nil
@@ -316,28 +291,38 @@ func (c *Connector) parseReadResponse(
 	request *http.Request,
 	resp *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
-	data, err := common.UnmarshalJSON[map[string]any](resp)
+	data, err := common.UnmarshalJSON[MondayResponse](resp)
 	if err != nil {
 		return nil, common.ErrFailedToUnmarshalBody
 	}
 
-	dataMap, isValidData := (*data)["data"].(map[string]any)
-	if !isValidData {
-		return nil, fmt.Errorf("%w: missing data field", ErrInvalidResponseFormat)
-	}
+	var records []any
 
-	rawRecords, exists := dataMap[params.ObjectName]
-	if !exists {
-		errMsg := "missing expected values for object: " + params.ObjectName
+	switch params.ObjectName {
+	case mondayObjectUser:
+		if len(data.Data.Users) == 0 {
+			errMsg := "missing expected values for object: " + params.ObjectName
 
-		return nil, fmt.Errorf("%s, error: %w", errMsg, common.ErrMissingExpectedValues)
-	}
+			return nil, fmt.Errorf("%s, error: %w", errMsg, common.ErrMissingExpectedValues)
+		}
 
-	records, isValidRecords := rawRecords.([]any)
-	if !isValidRecords {
-		errMsg := "unexpected type for records for object: " + params.ObjectName
+		records = make([]any, len(data.Data.Users))
+		for i, user := range data.Data.Users {
+			records[i] = user
+		}
+	case mondayObjectBoard:
+		if len(data.Data.Boards) == 0 {
+			errMsg := "missing expected values for object: " + params.ObjectName
 
-		return nil, fmt.Errorf("%s, error: %w", errMsg, common.ErrMissingExpectedValues)
+			return nil, fmt.Errorf("%s, error: %w", errMsg, common.ErrMissingExpectedValues)
+		}
+
+		records = make([]any, len(data.Data.Boards))
+		for i, board := range data.Data.Boards {
+			records[i] = board
+		}
+	default:
+		return nil, fmt.Errorf("%w: %s", ErrUnsupportedObjectName, params.ObjectName)
 	}
 
 	return common.ParseResult(
