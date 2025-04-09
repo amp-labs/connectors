@@ -6,45 +6,28 @@ GET {{origin}}/services/data/v59.0/query/?q=SELECT+Fields(All)+FROM+ApexClass+Li
 
 ### Create ApexClass
 POST {{origin}}/services/data/v59.0/sobjects/ApexClass
-Content-Type: application/xml
+# Body is set to the script. It is JSON escaped.
+Content-Type: application/json
 
-<?xml version="1.0" encoding="UTF-8"?>
-<ApexClass xmlns="http://soap.sforce.com/2006/04/metadata">
-    <apiVersion>57.0</apiVersion>
-    <status>Active</status>
-    <body>
-        public class GreetingClass {
-        public String userName { get; set; }
-
-        public GreetingClass() {
-        userName = 'Guest'; // Default value
-        }
-
-        public String sayHello() {
-        return 'Hello, ' + userName + '!';
-        }
-
-        public void submitName() {
-        // Custom logic to handle the submitted name
-        System.debug('Submitted name: ' + userName);
-        }
-        }
-    </body>
-</ApexClass>
+{
+  "ApiVersion": 57.0,
+  "Status": "Active",
+  "Body": "public class GreetingClass2 {public String userName { get; set; }\n\n    public GreetingClass2() {\n\n        userName = 'Guest'; // Default value\n    }\n\n    public String sayHello() {\n        return 'Hello, ' + userName + '!';\n    }\n\n    public void submitName() {\n        // Custom logic to handle the submitted name\n        System.debug('Submitted name: ' + userName);\n    }\n}"
+}
 
 ### List ApexPages (All fields)
 # https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_apexpage.htm
 GET {{origin}}/services/data/v59.0/query/?q=SELECT+Fields(All)+FROM+ApexPage+Limit+200
 
 ### Create ApexPage
-# FIXME doesn't work!
 POST {{origin}}/services/data/v59.0/sobjects/ApexPage
-Content-Type: application/xml
+# Markup is set to the Visualforce representation of a page. It is JSON escaped.
+Content-Type: application/json
 
-<?xml version="1.0" encoding="UTF-8"?>
-<ApexPage xmlns="http://soap.sforce.com/2006/04/metadata">
-    <apiVersion>57.0</apiVersion>
-    <markup>
-        <h1>This is your new Page.</h1>
-    </markup>
-</ApexPage>
+{
+  "ApiVersion": 57.0,
+  "Name": "PageUsingScript2222",
+  "MasterLabel": "Create",
+  "Markup": "<apex:page controller=\"GreetingClass\"><h1>Hello, {!userName}!</h1><apex:form><apex:inputText value=\"{!userName}\" label=\"Enter your name\"/><apex:commandButton value=\"Submit\" action=\"{!submitName}\"/></apex:form></apex:page>"
+}
+

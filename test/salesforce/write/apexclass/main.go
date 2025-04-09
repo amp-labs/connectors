@@ -23,29 +23,11 @@ func main() {
 
 	res, err := conn.Write(ctx, connectors.WriteParams{
 		ObjectName: "ApexClass",
-		RecordData: `<?xml version="1.0" encoding="UTF-8"?>
-<ApexClass xmlns="http://soap.sforce.com/2006/04/metadata">
-    <apiVersion>57.0</apiVersion>
-    <status>Active</status>
-    <body>
-        public class GreetingClass {
-        public String userName { get; set; }
-
-        public GreetingClass() {
-        userName = 'Guest'; // Default value
-        }
-
-        public String sayHello() {
-        return 'Hello, ' + userName + '!';
-        }
-
-        public void submitName() {
-        // Custom logic to handle the submitted name
-        System.debug('Submitted name: ' + userName);
-        }
-        }
-    </body>
-</ApexClass>`,
+		RecordData: map[string]any{
+			"ApiVersion": 57.0,
+			"Status":     "Active",
+			"Body":       "public class GreetingClassX {public String userName { get; set; }\n\n    public GreetingClassX() {\n\n        userName = 'Guest'; // Default value\n    }\n\n    public String sayHello() {\n        return 'Hello, ' + userName + '!';\n    }\n\n    public void submitName() {\n        // Custom logic to handle the submitted name\n        System.debug('Submitted name: ' + userName);\n    }\n}",
+		},
 	})
 	if err != nil {
 		utils.Fail("error reading from Salesforce: %w", err)
