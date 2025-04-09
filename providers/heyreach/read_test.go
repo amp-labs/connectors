@@ -26,7 +26,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 		},
 		{
 			Name:  "Read list of all campaign",
-			Input: common.ReadParams{ObjectName: "campaign", Fields: connectors.Fields(""), NextPage: "test?limit=10"},
+			Input: common.ReadParams{ObjectName: "campaign", Fields: connectors.Fields(""), NextPage: "test?limit=100"},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, campaignResponse),
@@ -43,14 +43,14 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 					},
 				},
 				},
-				NextPage: "10",
+				NextPage: "100",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
 		},
 		{
 			Name:  "Read list of all linked account",
-			Input: common.ReadParams{ObjectName: "li_account", Fields: connectors.Fields(""), NextPage: "test?limit=10"},
+			Input: common.ReadParams{ObjectName: "li_account", Fields: connectors.Fields(""), NextPage: "test?limit=100"},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, liAccoountResponse),
@@ -67,14 +67,14 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 					},
 				},
 				},
-				NextPage: "10",
+				NextPage: "100",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
 		},
 		{
 			Name:  "Read list of all list",
-			Input: common.ReadParams{ObjectName: "list", Fields: connectors.Fields(""), NextPage: "test?limit=10"},
+			Input: common.ReadParams{ObjectName: "list", Fields: connectors.Fields(""), NextPage: "test?limit=100"},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, listResponse),
@@ -91,7 +91,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 					},
 				},
 				},
-				NextPage: "10",
+				NextPage: "100",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
