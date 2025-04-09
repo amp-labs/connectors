@@ -1,0 +1,19 @@
+@origin=http://localhost:4444
+
+### List PermissionSets
+# https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_permissionset.htm
+GET {{origin}}/services/data/v59.0/query?q=SELECT+Id%2CPermissionSetGroupId%2CName%2CProfileId%2CLicenseId+FROM+PermissionSet
+
+### Assign Permission Set to the User.
+# AssigneeId is User ID.
+POST {{origin}}/services/data/v59.0/sobjects/PermissionSetAssignment
+Content-Type: application/json
+
+{
+  "AssigneeId": "005ak00000FthwYAAR",
+  "PermissionSetId": "0PSak000005zXrgGAE"
+}
+
+### List PermissionSetAssignments
+# https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_permissionsetassignment.htm
+GET {{origin}}/services/data/v59.0/query?q=SELECT+PermissionSetId%2CAssigneeId%2CExpirationDate%2CPermissionSetGroupId%2CId+FROM+PermissionSetAssignment

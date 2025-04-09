@@ -1,0 +1,50 @@
+@origin=http://localhost:4444
+
+### List ApexClasses (All fields)
+# https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_apexclass.htm
+GET {{origin}}/services/data/v59.0/query/?q=SELECT+Fields(All)+FROM+ApexClass+Limit+200
+
+### Create ApexClass
+POST {{origin}}/services/data/v59.0/sobjects/ApexClass
+Content-Type: application/xml
+
+<?xml version="1.0" encoding="UTF-8"?>
+<ApexClass xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>57.0</apiVersion>
+    <status>Active</status>
+    <body>
+        public class GreetingClass {
+        public String userName { get; set; }
+
+        public GreetingClass() {
+        userName = 'Guest'; // Default value
+        }
+
+        public String sayHello() {
+        return 'Hello, ' + userName + '!';
+        }
+
+        public void submitName() {
+        // Custom logic to handle the submitted name
+        System.debug('Submitted name: ' + userName);
+        }
+        }
+    </body>
+</ApexClass>
+
+### List ApexPages (All fields)
+# https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_apexpage.htm
+GET {{origin}}/services/data/v59.0/query/?q=SELECT+Fields(All)+FROM+ApexPage+Limit+200
+
+### Create ApexPage
+# FIXME doesn't work!
+POST {{origin}}/services/data/v59.0/sobjects/ApexPage
+Content-Type: application/xml
+
+<?xml version="1.0" encoding="UTF-8"?>
+<ApexPage xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>57.0</apiVersion>
+    <markup>
+        <h1>This is your new Page.</h1>
+    </markup>
+</ApexPage>

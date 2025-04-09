@@ -1,0 +1,40 @@
+@origin=http://localhost:4444
+
+### List Profiles (All fields)
+# https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_profile.htm
+GET {{origin}}/services/data/v59.0/query/?q=SELECT+Fields(All)+FROM+Profile+Limit+200
+
+### List Users (All fields)
+GET {{origin}}/services/data/v59.0/query/?q=SELECT+Fields(All)+FROM+User+Limit+200
+
+### List UserRoles
+# https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_role.htm
+GET {{origin}}/services/data/v59.0/query/?q=SELECT+Id+FROM+Profile
+
+### Create User
+# Requires ProfileId.
+POST {{origin}}/services/data/v59.0/sobjects/User
+Content-Type: application/json
+
+{
+  "Username": "teddy.anderson@example.com",
+  "LastName": "Teddy",
+  "Alias": "Ted",
+  "Email": "newuser@example.com",
+  "TimeZoneSidKey": "America/Los_Angeles",
+  "LocaleSidKey": "en_US",
+  "EmailEncodingKey": "UTF-8",
+  "LanguageLocaleKey": "en_US",
+  "ProfileId": "00eak00000CDaoLAAT"
+}
+
+### Update User by assigning UserRoleId (could be part of create)
+# This could be done during create.
+# Requires UserRoleId.
+# Note: update is a special case of POST with `_HttpMethod=PATCH` query param.
+POST {{origin}}/services/data/v59.0/sobjects/User/005ak00000FthwYAAR?_HttpMethod=PATCH
+Content-Type: application/json
+
+{
+  "UserRoleId": "00Eak000004uhBNEAY"
+}
