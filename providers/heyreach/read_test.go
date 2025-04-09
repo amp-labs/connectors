@@ -11,7 +11,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
-func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
+func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
 	campaignResponse := testutils.DataFromFile(t, "campaign.json")
