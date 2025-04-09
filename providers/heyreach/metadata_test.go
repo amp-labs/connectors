@@ -6,18 +6,13 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
+	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
-	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
 func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
-
-	campaignResponse := testutils.DataFromFile(t, "campaign.json")
-	listResponse := testutils.DataFromFile(t, "list.json")
-	liAccoountResponse := testutils.DataFromFile(t, "li_account.json")
 
 	tests := []testroutines.Metadata{
 		{
@@ -27,21 +22,9 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
-			Name:  "Successfully describe multiple object with metadata",
-			Input: []string{"campaign", "list", "li_account"},
-			Server: mockserver.Switch{
-				Setup: mockserver.ContentJSON(),
-				Cases: []mockserver.Case{{
-					If:   mockcond.PathSuffix("public/campaign/GetAll"),
-					Then: mockserver.Response(http.StatusOK, campaignResponse),
-				}, {
-					If:   mockcond.PathSuffix("public/list/GetAll"),
-					Then: mockserver.Response(http.StatusOK, listResponse),
-				}, {
-					If:   mockcond.PathSuffix("public/li_account/GetAll"),
-					Then: mockserver.Response(http.StatusOK, liAccoountResponse),
-				}},
-			}.Server(),
+			Name:       "Successfully describe multiple object with metadata",
+			Input:      []string{"campaign", "list", "li_account"},
+			Server:     mockserver.Dummy(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
@@ -182,15 +165,16 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 }
 
 func constructTestConnector(serverURL string) (*Connector, error) {
-	connector, err := NewConnector(
-		WithAuthenticatedClient(http.DefaultClient),
-	)
+	connector, err := NewConnector(common.Parameters{
+		Module:              staticschema.RootModuleID,
+		AuthenticatedClient: http.DefaultClient,
+	})
 	if err != nil {
 		return nil, err
 	}
 
 	// for testing we want to redirect calls to our mock server
-	connector.setBaseURL(serverURL)
+	connector.SetBaseURL(serverURL)
 
 	return connector, nil
 }

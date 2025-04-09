@@ -1,65 +1,37 @@
 package heyreach
 
 import (
-	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/paramsbuilder"
-	"github.com/amp-labs/connectors/common/urlbuilder"
-	"github.com/amp-labs/connectors/providers"
-)
+	_ "embed"
 
-const (
-	apiVersion = "public"
+	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/components"
+	"github.com/amp-labs/connectors/internal/components/schema"
+	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/heyreach/metadata"
 )
 
 type Connector struct {
-	BaseURL string
-	Client  *common.JSONHTTPClient
-	Module  common.Module
+	// Basic connector
+	*components.Connector
+
+	// Require authenticated client
+	common.RequireAuthenticatedClient
+
+	// Supported operations
+	components.SchemaProvider
 }
 
-func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	params, err := paramsbuilder.Apply(parameters{}, opts)
-	if err != nil {
-		return nil, err
-	}
-
-	providerInfo, err := providers.ReadInfo(providers.HeyReach)
-	if err != nil {
-		return nil, err
-	}
-
-	conn = &Connector{
-		Client: &common.JSONHTTPClient{
-			HTTPClient: &common.HTTPClient{
-				Client: params.Caller.Client,
-			},
-		},
-	}
-
-	conn.setBaseURL(providerInfo.BaseURL)
-
-	return conn, nil
+func NewConnector(params common.Parameters) (*Connector, error) {
+	// Create base connector with provider info
+	return components.Initialize(providers.HeyReach, params, constructor)
 }
 
-func (c *Connector) setBaseURL(newURL string) {
-	c.BaseURL = newURL
-	c.Client.HTTPClient.Base = newURL
-}
+// nolint:funlen
+func constructor(base *components.Connector) (*Connector, error) {
+	connector := &Connector{Connector: base}
 
-func (c *Connector) getAPIURL(objectName string) (*urlbuilder.URL, error) {
-	url, err := urlbuilder.New(c.BaseURL, apiVersion, objectName)
-	if err != nil {
-		return nil, err
-	}
+	// Set the metadata provider for the connector
+	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), metadata.Schemas)
 
-	return url, nil
-}
-
-// Provider returns the connector provider.
-func (c *Connector) Provider() providers.Provider {
-	return providers.HeyReach
-}
-
-func (c *Connector) String() string {
-	return c.Provider() + ".Connector"
+	return connector, nil
 }

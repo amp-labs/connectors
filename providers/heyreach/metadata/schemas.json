@@ -1,0 +1,234 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "/public",
+      "objects": {
+        "campaign": {
+          "displayName": "campaign",
+          "path": "",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "other",
+              "providerType": "",
+              "readOnly":     false,
+              "values":       null
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "other",
+              "providerType": "",
+              "readOnly":     false,
+              "values":       null
+            },
+            "creationTime": {
+              "displayName": "creationTime",
+              "valueType": "other",
+              "providerType": "",
+              "readOnly":     false,
+              "values":       null
+            },
+            "linkedInUserListName":{
+              "displayName": "linkedInUserListName",
+              "valueType": "other",
+              "providerType": "",
+              "readOnly":     false,
+              "values":       null
+            },
+            "linkedInUserListId": {
+              "displayName": "linkedInUserListId",
+              "valueType": "other",
+              "providerType": "",
+              "readOnly":     false,
+              "values":       null
+            },
+            "campaignAccountIds":{
+              "displayName": "campaignAccountIds",
+              "valueType": "other",
+              "providerType": "",
+              "readOnly":     false,
+              "values":       null
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "other",
+              "providerType": "",
+              "readOnly":     false,
+              "values":       null
+            },
+            "progressStats": {
+              "displayName": "progressStats",
+              "valueType": "other",
+              "providerType": "",
+              "readOnly":     false,
+              "values":       null
+            },
+            "excludeAlreadyMessagedGlobal": {
+              "displayName": "excludeAlreadyMessagedGlobal",
+              "valueType": "other",
+              "providerType": "",
+              "readOnly":     false,
+              "values":       null
+            },
+            "excludeAlreadyMessagedCampaignAccounts": {
+              "displayName": "excludeAlreadyMessagedCampaignAccounts",
+              "valueType": "other",
+              "providerType": "",
+              "readOnly":     false,
+              "values":       null
+            },
+            "excludeFirstConnectionCampaignAccounts": {
+              "displayName": "excludeFirstConnectionCampaignAccounts",
+              "valueType": "other",
+              "providerType": "",
+              "readOnly":     false,
+              "values":       null
+            },
+            "excludeFirstConnectionGlobal": {
+              "displayName": "excludeFirstConnectionGlobal",
+              "valueType": "other",
+              "providerType": "",
+              "readOnly":     false,
+              "values":       null
+            },
+            "excludeNoProfilePicture": {
+              "displayName": "excludeNoProfilePicture",
+              "valueType": "other",
+              "providerType": "",
+              "readOnly":     false,
+              "values":       null
+            },
+            "excludeListId": {
+              "displayName": "excludeListId",
+              "valueType": "other",
+              "providerType": "",
+              "readOnly":     false,
+              "values":       null
+            }
+          }
+        },
+        "li_account": {
+          "displayName": "li_account",
+          "path": "",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "other",
+              "providerType": "",
+              "readOnly":     false,
+              "values":       null
+            },
+            "emailAddress": {
+              "displayName": "emailAddress",
+              "valueType": "other",
+              "providerType": "",
+              "readOnly":     false,
+              "values":       null
+            },
+            "firstName":  {
+              "displayName": "firstName",
+              "valueType": "other",
+              "providerType": "",
+              "readOnly":     false,
+              "values":       null
+            },
+            "lastName":  {
+              "displayName": "lastName",
+              "valueType": "other",
+              "providerType": "",
+              "readOnly":     false,
+              "values":       null
+            },
+            "isActive": {
+              "displayName": "isActive",
+              "valueType": "other",
+              "providerType": "",
+              "readOnly":     false,
+              "values":       null
+            },
+            "activeCampaigns": {
+              "displayName": "activeCampaigns",
+              "valueType": "other",
+              "providerType": "",
+              "readOnly":     false,
+              "values":       null
+            },
+            "authIsValid":  {
+              "displayName": "authIsValid",
+              "valueType": "other",
+              "providerType": "",
+              "readOnly":     false,
+              "values":       null
+            },
+            "isValidNavigator":  {
+              "displayName": "isValidNavigator",
+              "valueType": "other",
+              "providerType": "",
+              "readOnly":     false,
+              "values":       null
+            },
+            "isValidRecruiter":  {
+              "displayName": "isValidRecruiter",
+              "valueType": "other",
+              "providerType": "",
+              "readOnly":     false,
+              "values":       null
+            }
+          }
+        },
+        "list": {
+          "displayName": "list",
+          "path": "",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "other",
+              "providerType": "",
+              "readOnly":     false,
+              "values":       null
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "other",
+              "providerType": "",
+              "readOnly":     false,
+              "values":       null
+            },
+            "totalItemsCount":  {
+              "displayName": "totalItemsCount",
+              "valueType": "other",
+              "providerType": "",
+              "readOnly":     false,
+              "values":       null
+            },
+            "listType":  {
+              "displayName": "listType",
+              "valueType": "other",
+              "providerType": "",
+              "readOnly":     false,
+              "values":       null
+            },
+            "creationTime": {
+              "displayName": "creationTime",
+              "valueType": "other",
+              "providerType": "",
+              "readOnly":     false,
+              "values":       null
+            },
+            "campaignIds":  {
+              "displayName": "campaignIds",
+              "valueType": "other",
+              "providerType": "",
+              "readOnly":     false,
+              "values":       null
+            }
+          }
+        }
+      }
+    }
+  }
+}
