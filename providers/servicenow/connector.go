@@ -43,7 +43,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 	// Set the metadata provider for the connector
 	connector.SchemaProvider = schema.NewObjectSchemaProvider(
 		connector.HTTPClient().Client,
-		schema.FetchModeParallel,
+		schema.FetchModeSerial,
 		operations.SingleObjectMetadataHandlers{
 			BuildRequest:  connector.buildSingleObjectMetadataRequest,
 			ParseResponse: connector.parseSingleObjectMetadataResponse,
