@@ -13,19 +13,13 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-// 0. Support Table API, Internet shows this is the most used API.
-// 1. Support the whole or parts of the `now` namespace.
-// 2. Look into adding more namespace (modules) supports.
-
 type responseData struct {
 	Result []map[string]any `json:"result"`
 	// Other fields
 }
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
-	module := supportedModules[c.Module()]
-
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, module.Path(), objectName)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, objectName)
 	if err != nil {
 		return nil, err
 	}
@@ -65,9 +59,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 }
 
 func (c *Connector) buildReadRquest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
-	module := supportedModules[c.Module()]
-
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, module.Path(), params.ObjectName)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
