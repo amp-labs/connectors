@@ -7,6 +7,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
+	"github.com/amp-labs/connectors/providers"
 	"golang.org/x/oauth2"
 )
 
@@ -51,6 +52,6 @@ func WithWorkspace(workspaceRef string) Option {
 // WithModule sets the zendesk API module to use for the connector. It's required.
 func WithModule(module common.ModuleID) Option {
 	return func(params *parameters) {
-		params.WithModule(module, SupportedModules, ModuleTicketing)
+		params.WithModule(module, SupportedModules, providers.ModuleZendeskTicketing)
 	}
 }

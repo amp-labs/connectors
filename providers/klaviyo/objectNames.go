@@ -4,6 +4,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/klaviyo/metadata"
 )
 
@@ -109,7 +110,7 @@ const (
 )
 
 var supportedObjectsByCreate = map[common.ModuleID]datautils.StringSet{ //nolint:gochecknoglobals
-	Module2024Oct15: datautils.NewSet(
+	providers.ModuleKlaviyo2024Oct15: datautils.NewSet(
 		// https://developers.klaviyo.com/en/reference/create_campaign
 		objectNameCampaigns,
 		// https://developers.klaviyo.com/en/reference/send_campaign
@@ -209,7 +210,7 @@ var supportedObjectsByCreate = map[common.ModuleID]datautils.StringSet{ //nolint
 }
 
 var supportedObjectsByUpdate = map[common.ModuleID]datautils.StringSet{ //nolint:gochecknoglobals
-	Module2024Oct15: datautils.NewSet(
+	providers.ModuleKlaviyo2024Oct15: datautils.NewSet(
 		// https://developers.klaviyo.com/en/reference/update_campaign
 		objectNameCampaigns,
 		// https://developers.klaviyo.com/en/reference/cancel_campaign_send
@@ -250,7 +251,7 @@ var supportedObjectsByUpdate = map[common.ModuleID]datautils.StringSet{ //nolint
 }
 
 var supportedObjectsByDelete = map[common.ModuleID]datautils.StringSet{ //nolint:gochecknoglobals
-	Module2024Oct15: datautils.NewSet(
+	providers.ModuleKlaviyo2024Oct15: datautils.NewSet(
 		// https://developers.klaviyo.com/en/reference/delete_campaign
 		objectNameCampaigns,
 		// https://developers.klaviyo.com/en/reference/delete_catalog_variant

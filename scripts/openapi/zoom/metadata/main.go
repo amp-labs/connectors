@@ -8,7 +8,7 @@ import (
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/metadatadef"
 	"github.com/amp-labs/connectors/internal/staticschema"
-	"github.com/amp-labs/connectors/providers/zoom"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/zoom/metadata"
 	"github.com/amp-labs/connectors/scripts/openapi/zoom/metadata/meeting"
 	"github.com/amp-labs/connectors/scripts/openapi/zoom/metadata/user"
@@ -20,8 +20,8 @@ func main() {
 	registry := datautils.NamedLists[string]{}
 	lists := datautils.IndexedLists[common.ModuleID, metadatadef.Schema]{}
 
-	lists.Add(zoom.ModuleUser, user.Objects()...)
-	lists.Add(zoom.ModuleMeeting, meeting.Objects()...)
+	lists.Add(providers.ModuleZoomUser, user.Objects()...)
+	lists.Add(providers.ModuleZoomMeeting, meeting.Objects()...)
 
 	for module, objects := range lists {
 		for _, object := range objects {

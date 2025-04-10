@@ -8,6 +8,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -113,7 +114,7 @@ func TestListObjectMetadataWithoutMetadata(t *testing.T) {
 	connector, err := NewConnector(
 		WithAuthenticatedClient(http.DefaultClient),
 		WithWorkspace("test-workspace"),
-		WithModule(ModuleJira),
+		WithModule(providers.ModuleAtlassianJira),
 	)
 	if err != nil {
 		t.Fatal("failed to create connector")

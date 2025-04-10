@@ -7,6 +7,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
+	"github.com/amp-labs/connectors/providers"
 	"golang.org/x/oauth2"
 )
 
@@ -44,6 +45,6 @@ func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
 
 func WithModule(module common.ModuleID) Option {
 	return func(params *parameters) {
-		params.WithModule(module, SupportedModules, ModuleV1)
+		params.WithModule(module, SupportedModules, providers.ModuleKeapV1)
 	}
 }
