@@ -70,6 +70,6 @@ Reason for unsupported object:
 Read functionality uses Post method instead of Get method.
 
 # Write Functions
-Supported objects for write are AddLeadsToCampaignV2,AddLeadsToListV2,CreateEmptyList and SendMessage. The remaining objects do have a Post API.
+Supported objects for write are AddLeadsToCampaignV2 ,AddLeadsToListV2 ,CreateEmptyList and SendMessage. The remaining objects do have a Post API.
 
 There is no API for updating the objects.
