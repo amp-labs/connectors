@@ -1,0 +1,11 @@
+{
+    "id": 123,
+    "name": "My List",
+    "count": 0,
+    "listType": "<COMPANY_LIST|USER_LIST>>",
+    "creationTime": "2024-08-29T09:34:56.5417789Z",
+    "isDeleted": false,
+    "campaigns": null,
+    "search": null,
+    "status": "UNKNOWN"
+}

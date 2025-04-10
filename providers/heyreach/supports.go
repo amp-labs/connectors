@@ -10,6 +10,13 @@ import (
 )
 
 func supportedOperations() components.EndpointRegistryInput {
+	supportWrite := []string{
+		"list/CreateEmptyList",
+		"campaign/AddLeadsToCampaignV2",
+		"list/AddLeadsToListV2",
+		"inbox/SendMessage",
+	}
+
 	readSupport := metadata.Schemas.ObjectNames().GetList(staticschema.RootModuleID)
 
 	return components.EndpointRegistryInput{
@@ -17,6 +24,10 @@ func supportedOperations() components.EndpointRegistryInput {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(supportWrite, ",")),
+				Support:  components.WriteSupport,
 			},
 		},
 	}
