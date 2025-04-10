@@ -4,227 +4,140 @@
       "id": "root",
       "path": "/public",
       "objects": {
-        "campaign": {
-          "displayName": "campaign",
+        "campaign/GetAll": {
+          "displayName": "GetAll campaign",
           "path": "",
           "responseKey": "",
           "fields": {
             "id": {
               "displayName": "id",
-              "valueType": "other",
-              "providerType": "",
-              "readOnly":     false,
-              "values":       null
+              "valueType": "other"
             },
             "name": {
               "displayName": "name",
-              "valueType": "other",
-              "providerType": "",
-              "readOnly":     false,
-              "values":       null
+              "valueType": "other"
             },
             "creationTime": {
               "displayName": "creationTime",
-              "valueType": "other",
-              "providerType": "",
-              "readOnly":     false,
-              "values":       null
+              "valueType": "other"
             },
             "linkedInUserListName":{
               "displayName": "linkedInUserListName",
-              "valueType": "other",
-              "providerType": "",
-              "readOnly":     false,
-              "values":       null
+              "valueType": "other"
             },
             "linkedInUserListId": {
               "displayName": "linkedInUserListId",
-              "valueType": "other",
-              "providerType": "",
-              "readOnly":     false,
-              "values":       null
+              "valueType": "other"
             },
             "campaignAccountIds":{
               "displayName": "campaignAccountIds",
-              "valueType": "other",
-              "providerType": "",
-              "readOnly":     false,
-              "values":       null
+              "valueType": "other"
             },
             "status": {
               "displayName": "status",
-              "valueType": "other",
-              "providerType": "",
-              "readOnly":     false,
-              "values":       null
+              "valueType": "other"
             },
             "progressStats": {
               "displayName": "progressStats",
-              "valueType": "other",
-              "providerType": "",
-              "readOnly":     false,
-              "values":       null
+              "valueType": "other"
             },
             "excludeAlreadyMessagedGlobal": {
               "displayName": "excludeAlreadyMessagedGlobal",
-              "valueType": "other",
-              "providerType": "",
-              "readOnly":     false,
-              "values":       null
+              "valueType": "other"
             },
             "excludeAlreadyMessagedCampaignAccounts": {
               "displayName": "excludeAlreadyMessagedCampaignAccounts",
-              "valueType": "other",
-              "providerType": "",
-              "readOnly":     false,
-              "values":       null
+              "valueType": "other"
             },
             "excludeFirstConnectionCampaignAccounts": {
               "displayName": "excludeFirstConnectionCampaignAccounts",
-              "valueType": "other",
-              "providerType": "",
-              "readOnly":     false,
-              "values":       null
+              "valueType": "other"
             },
             "excludeFirstConnectionGlobal": {
               "displayName": "excludeFirstConnectionGlobal",
-              "valueType": "other",
-              "providerType": "",
-              "readOnly":     false,
-              "values":       null
+              "valueType": "other"
             },
             "excludeNoProfilePicture": {
               "displayName": "excludeNoProfilePicture",
-              "valueType": "other",
-              "providerType": "",
-              "readOnly":     false,
-              "values":       null
+              "valueType": "other"
             },
             "excludeListId": {
               "displayName": "excludeListId",
-              "valueType": "other",
-              "providerType": "",
-              "readOnly":     false,
-              "values":       null
+              "valueType": "other"
             }
           }
         },
-        "li_account": {
-          "displayName": "li_account",
-          "path": "",
+        "li_account/GetAll": {
+          "displayName": "GetAll li_account",
+          "path": "li_account/GetAll",
           "responseKey": "",
           "fields": {
             "id": {
               "displayName": "id",
-              "valueType": "other",
-              "providerType": "",
-              "readOnly":     false,
-              "values":       null
+              "valueType": "other"
             },
             "emailAddress": {
               "displayName": "emailAddress",
-              "valueType": "other",
-              "providerType": "",
-              "readOnly":     false,
-              "values":       null
+              "valueType": "other"
             },
             "firstName":  {
               "displayName": "firstName",
-              "valueType": "other",
-              "providerType": "",
-              "readOnly":     false,
-              "values":       null
+              "valueType": "other"
             },
             "lastName":  {
               "displayName": "lastName",
-              "valueType": "other",
-              "providerType": "",
-              "readOnly":     false,
-              "values":       null
+              "valueType": "other"
             },
             "isActive": {
               "displayName": "isActive",
-              "valueType": "other",
-              "providerType": "",
-              "readOnly":     false,
-              "values":       null
+              "valueType": "other"
             },
             "activeCampaigns": {
               "displayName": "activeCampaigns",
-              "valueType": "other",
-              "providerType": "",
-              "readOnly":     false,
-              "values":       null
+              "valueType": "other"
             },
             "authIsValid":  {
               "displayName": "authIsValid",
-              "valueType": "other",
-              "providerType": "",
-              "readOnly":     false,
-              "values":       null
+              "valueType": "other"
             },
             "isValidNavigator":  {
               "displayName": "isValidNavigator",
-              "valueType": "other",
-              "providerType": "",
-              "readOnly":     false,
-              "values":       null
+              "valueType": "other"
             },
             "isValidRecruiter":  {
               "displayName": "isValidRecruiter",
-              "valueType": "other",
-              "providerType": "",
-              "readOnly":     false,
-              "values":       null
+              "valueType": "other"
             }
           }
         },
-        "list": {
-          "displayName": "list",
-          "path": "",
+        "list/GetAll": {
+          "displayName": "GetAll list",
+          "path": "list/GetAll",
           "responseKey": "",
           "fields": {
             "id": {
               "displayName": "id",
-              "valueType": "other",
-              "providerType": "",
-              "readOnly":     false,
-              "values":       null
+              "valueType": "other"
             },
             "name": {
               "displayName": "name",
-              "valueType": "other",
-              "providerType": "",
-              "readOnly":     false,
-              "values":       null
+              "valueType": "other"
             },
             "totalItemsCount":  {
               "displayName": "totalItemsCount",
-              "valueType": "other",
-              "providerType": "",
-              "readOnly":     false,
-              "values":       null
+              "valueType": "other"
             },
             "listType":  {
               "displayName": "listType",
-              "valueType": "other",
-              "providerType": "",
-              "readOnly":     false,
-              "values":       null
+              "valueType": "other"
             },
             "creationTime": {
               "displayName": "creationTime",
-              "valueType": "other",
-              "providerType": "",
-              "readOnly":     false,
-              "values":       null
+              "valueType": "other"
             },
             "campaignIds":  {
               "displayName": "campaignIds",
-              "valueType": "other",
-              "providerType": "",
-              "readOnly":     false,
-              "values":       null
+              "valueType": "other"
             }
           }
         }

@@ -29,7 +29,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 		},
 		{
 			Name:  "Successfully describe multiple object with metadata",
-			Input: []string{"campaign", "list", "li_account"},
+			Input: []string{"campaign/GetAll", "list/GetAll", "li_account/GetAll"},
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
@@ -46,8 +46,8 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
-					"campaign": {
-						DisplayName: "campaign",
+					"campaign/GetAll": {
+						DisplayName: "GetAll campaign",
 						Fields: map[string]common.FieldMetadata{
 							"id": {
 								DisplayName:  "id",
@@ -85,8 +85,8 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 							"status":       "status",
 						},
 					},
-					"list": {
-						DisplayName: "list",
+					"list/GetAll": {
+						DisplayName: "GetAll list",
 						Fields: map[string]common.FieldMetadata{
 							"id": {
 								DisplayName:  "id",
@@ -124,8 +124,8 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 							"listType":     "listType",
 						},
 					},
-					"li_account": {
-						DisplayName: "li_account",
+					"li_account/GetAll": {
+						DisplayName: "GetAll li_account",
 						Fields: map[string]common.FieldMetadata{
 							"id": {
 								DisplayName:  "id",
