@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"strconv"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -74,9 +75,13 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 		}
 	}
 
-	if objectsWithCustomFields.Has(config.ObjectName) {
-		// Request custom fields.
-		url.WithQueryParam("include", "custom_fields")
+	if config.ObjectName == objectNameContacts {
+		// Force to return even optional fields.
+		// https://developer.constantcontact.com/api_reference/index.html#!/Contacts/getContacts
+		requestedFields := contactFields.Intersection(config.Fields)
+		// Always request custom fields.
+		requestedFields = append(requestedFields, "custom_fields")
+		url.WithQueryParam("include", strings.Join(requestedFields, ","))
 	}
 
 	return url, nil

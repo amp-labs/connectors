@@ -69,6 +69,28 @@ func (s Set[V]) Subtract(other Set[V]) []V {
 	return difference
 }
 
+func (s Set[V]) Intersection(other Set[V]) []V {
+	var (
+		smallest     = s // assume `s` is smaller than `other`
+		largest      = other
+		intersection = make([]V, 0)
+	)
+
+	// Create intersection using the smallest set, to speed up the iteration.
+	if len(other) < len(s) {
+		smallest = other
+		largest = s
+	}
+
+	for v := range smallest {
+		if _, ok := largest[v]; ok {
+			intersection = append(intersection, v)
+		}
+	}
+
+	return intersection
+}
+
 // Has returns true if key is found in the set.
 func (s Set[T]) Has(key T) bool {
 	_, ok := s[key]
