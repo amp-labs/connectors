@@ -82,9 +82,9 @@ func testAddLeadToCampaign(ctx context.Context) error {
 			"accountLeadPairs": []any{
 				map[string]any{
 					"lead": map[string]any{
-						"firstName":  "Hari",
-						"lastName":   "Dinesh",
-						"profileUrl": "https://www.linkedin.com/in/ACoAADdu6TsBifdNTeNoyZBIm__NVAE38FGapc4",
+						"firstName":  "Dinesh",
+						"lastName":   "Kumar",
+						"profileUrl": "https://www.linkedid.com",
 					},
 				},
 			},
@@ -115,11 +115,11 @@ func testAddLeadToList(ctx context.Context) error {
 		ObjectName: "list/AddLeadsToListV2",
 		RecordData: map[string]any{
 			"listId": 196432,
-			"leadS": []any{
+			"leads": []any{
 				map[string]any{
-					"firstName":  "Hari",
-					"lastName":   "Dinesh",
-					"profileUrl": "https://www.linkedin.com/in/ACoAADdu6TsBifdNTeNoyZBIm__NVAE38FGapc4",
+					"firstName":  "Dinesh",
+					"lastName":   "Kumar",
+					"profileUrl": "https://www.linkedin.com/",
 				},
 			},
 		},

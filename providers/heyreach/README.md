@@ -12,9 +12,9 @@ Heyreach API environment : public
 |                 | AddLeadsToCampaignV2 | campaign/AddLeadsToCampaignV2| write |
 |-------------------------------------------------------------------------------|
 | LinkedInAccount | Get All              | li_account/GetAll            | read  |
-|                 | AddLeadsToListV2     | li_account/AddLeadsToListV2  | write |
 |-------------------------------------------------------------------------------|
 | List            | Get All              | list/GetAll                  | read  |
+|                 | AddLeadsToListV2     | li_account/AddLeadsToListV2  | write |
 |                 | CreateEmptyList      | list/CreateEmptyList         | write |
 |-------------------------------------------------------------------------------|
 | Inbox           | SendMessage          | inbox/SendMessage            | write |
@@ -60,7 +60,7 @@ Heyreach connector offers API for:
       - GetMyNetworkForSender
 
 # Getting Metadata and Read
-Supported objects for metadata are PublicCampaigns, PublicLinkedAccount, and PublicList. The remaining objects do not have a GetAll endpoint. 
+Supported objects for metadata are PublicCampaigns, PublicLinkedInAccount, and PublicList. The remaining objects do not have a GetAll endpoint. 
 
 Reason for unsupported object:
 1. PublicInbox - This endpoint requires campaignIds and linkedInAccountIds in body.

@@ -63,7 +63,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						Fields: map[string]any{},
 						Raw: map[string]any{
 							"id":           float64(71110),
-							"emailAddress": "sample.gmail.com",
+							"emailAddress": "sample@gmail.com",
 							"firstName":    nil,
 							"lastName":     nil,
 						},

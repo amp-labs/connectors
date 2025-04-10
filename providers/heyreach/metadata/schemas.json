@@ -6,7 +6,7 @@
       "objects": {
         "campaign/GetAll": {
           "displayName": "GetAll campaign",
-          "path": "",
+          "path": "campaign/GetAll",
           "responseKey": "",
           "fields": {
             "id": {
@@ -21,7 +21,7 @@
               "displayName": "creationTime",
               "valueType": "other"
             },
-            "linkedInUserListName":{
+            "linkedInUserListName": {
               "displayName": "linkedInUserListName",
               "valueType": "other"
             },

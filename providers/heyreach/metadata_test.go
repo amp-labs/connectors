@@ -28,7 +28,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
-			Name:  "Successfully describe multiple object with metadata",
+			Name:  "Successfully describe multiple objects with metadata",
 			Input: []string{"campaign/GetAll", "list/GetAll", "li_account/GetAll"},
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
@@ -171,7 +171,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 	}
 
 	for _, tt := range tests {
-		// nolint:varnamelen
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 

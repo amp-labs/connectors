@@ -81,9 +81,8 @@ func constructRequestBody(config common.ReadParams) ([]byte, error) {
 
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
 	var (
-		url    *urlbuilder.URL
-		err    error
-		method = http.MethodPost
+		url *urlbuilder.URL
+		err error
 	)
 
 	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, "public", params.ObjectName)
@@ -96,7 +95,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		return nil, err
 	}
 
-	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
+	return http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonData))
 }
 
 func (c *Connector) parseWriteResponse(

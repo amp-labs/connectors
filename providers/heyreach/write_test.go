@@ -20,7 +20,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 
 	tests := []testroutines.Write{
 		{
-			Name:         "Read object must be included",
+			Name:         "Write object must be included",
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
@@ -40,7 +40,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 					"id":           float64(123),
 					"name":         "My List",
 					"count":        float64(0),
-					"listType":     "<COMPANY_LIST|USER_LIST>>",
+					"listType":     "COMPANY_LIST",
 					"creationTime": "2024-08-29T09:34:56.5417789Z",
 					"isDeleted":    false,
 					"campaigns":    nil,
