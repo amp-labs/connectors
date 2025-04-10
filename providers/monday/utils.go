@@ -7,7 +7,6 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
-	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/spyzhov/ajson"
 )
 
@@ -24,7 +23,7 @@ func supportedOperations() components.EndpointRegistryInput {
 	writeSupport := []string{objectBoard, objectItem, objectUser}
 
 	return components.EndpointRegistryInput{
-		staticschema.RootModuleID: {
+		common.ModuleRoot: {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
 				Support:  components.WriteSupport,

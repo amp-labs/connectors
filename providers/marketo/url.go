@@ -29,7 +29,10 @@ func (c *Connector) constructReadURL(params common.ReadParams) (*urlbuilder.URL,
 			fmtTime := params.Since.Format(time.RFC3339)
 			url.WithQueryParam("earliestUpdatedAt", fmtTime)
 			url.WithQueryParam("latestUpdatedAt", time.Now().Format(time.RFC3339))
-
+		case ModuleLeads:
+			fallthrough
+		case common.ModuleRoot:
+			fallthrough
 		default: // we currently don't support filtering in leads.
 		}
 	}

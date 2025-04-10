@@ -7,7 +7,6 @@ import (
 	"github.com/amp-labs/connectors/internal/components/reader"
 	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/internal/components/writer"
-	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -53,7 +52,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 	connector.Reader = reader.NewHTTPReader(
 		connector.HTTPClient().Client,
 		registry,
-		staticschema.RootModuleID,
+		common.ModuleRoot,
 		operations.ReadHandlers{
 			BuildRequest:  connector.buildReadRequest,
 			ParseResponse: connector.parseReadResponse,
@@ -65,7 +64,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 	connector.Writer = writer.NewHTTPWriter(
 		connector.HTTPClient().Client,
 		registry,
-		staticschema.RootModuleID,
+		common.ModuleRoot,
 		operations.WriteHandlers{
 			BuildRequest:  connector.buildWriteRequest,
 			ParseResponse: connector.parseWriteResponse,

@@ -64,7 +64,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 	connector.Reader = reader.NewHTTPReader(
 		connector.HTTPClient().Client,
 		registry,
-		staticschema.RootModuleID,
+		common.ModuleRoot,
 		operations.ReadHandlers{
 			BuildRequest:  connector.buildReadRequest,
 			ParseResponse: connector.parseReadResponse,
@@ -76,7 +76,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 	connector.Writer = writer.NewHTTPWriter(
 		connector.HTTPClient().Client,
 		registry,
-		staticschema.RootModuleID,
+		common.ModuleRoot,
 		operations.WriteHandlers{
 			BuildRequest:  connector.buildWriteRequest,
 			ParseResponse: connector.parseWriteResponse,
