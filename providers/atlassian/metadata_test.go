@@ -114,7 +114,7 @@ func TestListObjectMetadataWithoutMetadata(t *testing.T) {
 	connector, err := NewConnector(
 		WithAuthenticatedClient(http.DefaultClient),
 		WithWorkspace("test-workspace"),
-		WithModule(common.ModuleID(providers.ModuleAtlassianJira)),
+		WithModule(providers.ModuleAtlassianJira),
 	)
 	if err != nil {
 		t.Fatal("failed to create connector")

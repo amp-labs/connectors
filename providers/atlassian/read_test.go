@@ -267,7 +267,7 @@ func TestReadWithoutMetadata(t *testing.T) {
 	connector, err := NewConnector(
 		WithAuthenticatedClient(http.DefaultClient),
 		WithWorkspace("test-workspace"),
-		WithModule(common.ModuleID(providers.ModuleAtlassianJira)),
+		WithModule(providers.ModuleAtlassianJira),
 	)
 	if err != nil {
 		t.Fatal("failed to create connector")
@@ -286,7 +286,7 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(
 		WithAuthenticatedClient(http.DefaultClient),
 		WithWorkspace("test-workspace"),
-		WithModule(common.ModuleID(providers.ModuleAtlassianJira)),
+		WithModule(providers.ModuleAtlassianJira),
 		WithMetadata(map[string]string{
 			"cloudId": "ebc887b2-7e61-4059-ab35-71f15cc16e12", // any value will work for the test
 		}),

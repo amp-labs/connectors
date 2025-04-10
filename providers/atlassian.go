@@ -1,12 +1,14 @@
 package providers
 
+import "github.com/amp-labs/connectors/common"
+
 const Atlassian Provider = "atlassian"
 
 const (
 	// ModuleAtlassianJira is the module used for listing Jira issues.
-	ModuleAtlassianJira string = "jira"
+	ModuleAtlassianJira common.ModuleID = "jira"
 	// ModuleAtlassianJiraConnect is the module used for Atlassian Connect.
-	ModuleAtlassianJiraConnect string = "atlassian-connect"
+	ModuleAtlassianJiraConnect common.ModuleID = "atlassian-connect"
 )
 
 func init() {
@@ -23,11 +25,11 @@ func init() {
 			ExplicitWorkspaceRequired: true, // Needed for GetPostAuthInfo call
 		},
 		PostAuthInfoNeeded: true,
-		Modules: &ModuleInfo{
+		Modules: &Modules{
 			ModuleAtlassianJira: {
 				BaseURL:     "https://api.atlassian.com/ex/jira/{{.cloudId}}/rest/api/3",
-				DisplayName: "Jira",
-				Support: ModuleSupport{
+				DisplayName: "Atlassian Jira",
+				Support: Support{
 					Read:      true,
 					Subscribe: false,
 					Write:     true,
@@ -36,7 +38,7 @@ func init() {
 			ModuleAtlassianJiraConnect: {
 				BaseURL:     "https://{{.workspace}}.atlassian.net/rest/api/3",
 				DisplayName: "Atlassian Connect",
-				Support: ModuleSupport{
+				Support: Support{
 					Read:      true,
 					Subscribe: false,
 					Write:     true,

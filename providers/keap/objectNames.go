@@ -32,7 +32,7 @@ const (
 var supportedObjectsByRead = metadata.Schemas.ObjectNames() //nolint:gochecknoglobals
 
 var supportedObjectsByCreate = map[common.ModuleID]datautils.StringSet{ //nolint:gochecknoglobals
-	common.ModuleID(providers.ModuleKeapV1): datautils.NewSet(
+	providers.ModuleKeapV1: datautils.NewSet(
 		// https://developer.infusionsoft.com/docs/rest/#tag/Affiliate/operation/createAffiliateUsingPOST
 		objectNameAffiliates,
 		// https://developer.infusionsoft.com/docs/rest/#tag/Appointment/operation/createAppointmentUsingPOST
@@ -66,7 +66,7 @@ var supportedObjectsByCreate = map[common.ModuleID]datautils.StringSet{ //nolint
 		// https://developer.infusionsoft.com/docs/rest/#tag/Users/operation/createUserUsingPOST
 		objectNameUsers,
 	),
-	common.ModuleID(providers.ModuleKeapV2): datautils.NewSet(
+	providers.ModuleKeapV2: datautils.NewSet(
 		// https://developer.keap.com/docs/restv2/#tag/Affiliate/operation/addAffiliateUsingPOST
 		objectNameAffiliates,
 		// https://developer.keap.com/docs/restv2/#tag/AutomationCategory/operation/createCategoryUsingPOST
@@ -88,9 +88,9 @@ var supportedObjectsByCreate = map[common.ModuleID]datautils.StringSet{ //nolint
 	),
 }
 
-// Evert update performed using PATCH is not present in the PUT set.
+// Every update performed using PATCH is not present in the PUT set.
 var supportedObjectsByUpdatePATCH = map[common.ModuleID]datautils.StringSet{ //nolint:gochecknoglobals
-	common.ModuleID(providers.ModuleKeapV1): datautils.NewSet(
+	providers.ModuleKeapV1: datautils.NewSet(
 		// https://developer.infusionsoft.com/docs/rest/#tag/Appointment/operation/updatePropertiesOnAppointmentUsingPATCH
 		objectNameAppointments,
 		// https://developer.infusionsoft.com/docs/rest/#tag/Company/operation/updateCompanyUsingPATCH
@@ -106,7 +106,7 @@ var supportedObjectsByUpdatePATCH = map[common.ModuleID]datautils.StringSet{ //n
 		// https://developer.infusionsoft.com/docs/rest/#tag/Task/operation/updatePropertiesOnTaskUsingPATCH
 		objectNameTasks,
 	),
-	common.ModuleID(providers.ModuleKeapV2): datautils.NewSet(
+	providers.ModuleKeapV2: datautils.NewSet(
 		// https://developer.keap.com/docs/restv2/#tag/Affiliate/operation/updateAffiliateUsingPATCH
 		objectNameAffiliates,
 		// https://developer.keap.com/docs/restv2/#tag/Company/operation/patchCompanyUsingPATCH
@@ -120,22 +120,22 @@ var supportedObjectsByUpdatePATCH = map[common.ModuleID]datautils.StringSet{ //n
 	),
 }
 
-// Evert update performed using PUT is not present in the PATCH set.
+// Every update performed using PUT is not present in the PATCH set.
 var supportedObjectsByUpdatePUT = map[common.ModuleID]datautils.StringSet{ //nolint:gochecknoglobals
-	common.ModuleID(providers.ModuleKeapV1): datautils.NewSet(
+	providers.ModuleKeapV1: datautils.NewSet(
 		// https://developer.infusionsoft.com/docs/rest/#tag/File/operation/updateFileUsingPUT
 		objectNameFiles,
 		// https://developer.infusionsoft.com/docs/rest/#tag/REST-Hooks/operation/update_a_hook_subscription
 		objectNameHooks,
 	),
-	common.ModuleID(providers.ModuleKeapV2): datautils.NewSet(
+	providers.ModuleKeapV2: datautils.NewSet(
 		// https://developer.keap.com/docs/restv2/#tag/AutomationCategory/operation/saveCategoryUsingPUT
 		objectNameAutomationCategories,
 	),
 }
 
 var supportedObjectsByDelete = map[common.ModuleID]datautils.StringSet{ //nolint:gochecknoglobals
-	common.ModuleID(providers.ModuleKeapV1): datautils.NewSet(
+	providers.ModuleKeapV1: datautils.NewSet(
 		// https://developer.infusionsoft.com/docs/rest/#tag/Appointment/operation/deleteAppointmentUsingDELETE
 		objectNameAppointments,
 		// https://developer.keap.com/docs/rest/#tag/Contact/operation/deleteContactUsingDELETE
@@ -155,7 +155,7 @@ var supportedObjectsByDelete = map[common.ModuleID]datautils.StringSet{ //nolint
 		// https://developer.infusionsoft.com/docs/rest/#tag/Task/operation/deleteTaskUsingDELETE
 		objectNameTasks,
 	),
-	common.ModuleID(providers.ModuleKeapV2): datautils.NewSet(
+	providers.ModuleKeapV2: datautils.NewSet(
 		// https://developer.keap.com/docs/restv2/#tag/AutomationCategory/operation/deleteCategoriesUsingDELETE
 		objectNameAutomationCategories,
 		// https://developer.keap.com/docs/restv2/#tag/Company/operation/deleteCompanyUsingDELETE
@@ -187,7 +187,7 @@ var objectNameToWritePath = datautils.NewDefaultMap(map[string]string{ //nolint:
 )
 
 var objectNameToWriteResponseIdentifier = common.ModuleObjectNameToFieldName{ //nolint:gochecknoglobals
-	common.ModuleID(providers.ModuleKeapV1): datautils.NewDefaultMap(map[string]string{
+	providers.ModuleKeapV1: datautils.NewDefaultMap(map[string]string{
 		objectNameFiles: "id",
 
 		objectNameHooks: "key",
@@ -196,7 +196,7 @@ var objectNameToWriteResponseIdentifier = common.ModuleObjectNameToFieldName{ //
 			return "id"
 		},
 	),
-	common.ModuleID(providers.ModuleKeapV2): datautils.NewDefaultMap(map[string]string{
+	providers.ModuleKeapV2: datautils.NewDefaultMap(map[string]string{
 		objectNamePaymentMethodConfigs: "session_key",
 	},
 		func(objectName string) (id string) {
@@ -206,7 +206,7 @@ var objectNameToWriteResponseIdentifier = common.ModuleObjectNameToFieldName{ //
 }
 
 var objectsWithCustomFields = map[common.ModuleID]datautils.StringSet{ // nolint:gochecknoglobals
-	common.ModuleID(providers.ModuleKeapV1): datautils.NewStringSet(
+	providers.ModuleKeapV1: datautils.NewStringSet(
 		objectNameAffiliates,
 		objectNameAppointments,
 		objectNameCompanies,
@@ -217,7 +217,7 @@ var objectsWithCustomFields = map[common.ModuleID]datautils.StringSet{ // nolint
 		objectNameSubscriptions,
 		objectNameTasks,
 	),
-	common.ModuleID(providers.ModuleKeapV2): datautils.NewStringSet(
+	providers.ModuleKeapV2: datautils.NewStringSet(
 		objectNameAffiliates,
 		objectNameContacts,
 		objectNameNotes,

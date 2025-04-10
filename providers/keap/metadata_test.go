@@ -142,7 +142,7 @@ func TestListObjectMetadataV1(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
-				return constructTestConnector(tt.Server.URL, common.ModuleID(providers.ModuleKeapV1))
+				return constructTestConnector(tt.Server.URL, providers.ModuleKeapV1)
 			})
 		})
 	}
@@ -189,7 +189,7 @@ func TestListObjectMetadataV2(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
-				return constructTestConnector(tt.Server.URL, common.ModuleID(providers.ModuleKeapV2))
+				return constructTestConnector(tt.Server.URL, providers.ModuleKeapV2)
 			})
 		})
 	}

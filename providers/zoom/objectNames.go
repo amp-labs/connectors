@@ -20,7 +20,7 @@ var (
 // ObjectNameToResponseField maps ObjectName to the response field name which contains that object.
 var ObjectNameToResponseField = common.ModuleObjectNameToFieldName{ // nolint: gochecknoglobals
 
-	common.ModuleID(providers.ModuleZoomMeeting): datautils.NewDefaultMap(map[string]string{
+	providers.ModuleZoomMeeting: datautils.NewDefaultMap(map[string]string{
 		"device_groups":     "groups",
 		"archive_files":     "meetings",
 		"meeting_summaries": "summaries",
@@ -32,7 +32,7 @@ var ObjectNameToResponseField = common.ModuleObjectNameToFieldName{ // nolint: g
 			return objectName
 		},
 	),
-	common.ModuleID(providers.ModuleZoomUser): datautils.NewDefaultMap(map[string]string{
+	providers.ModuleZoomUser: datautils.NewDefaultMap(map[string]string{
 		"contacts_groups": "groups",
 	},
 		func(objectName string) (fieldName string) {
@@ -42,13 +42,13 @@ var ObjectNameToResponseField = common.ModuleObjectNameToFieldName{ // nolint: g
 }
 
 var supportedObjectsByWrite = map[common.ModuleID]datautils.StringSet{ // nolint: gochecknoglobals
-	common.ModuleID(providers.ModuleZoomUser): datautils.NewSet(
+	providers.ModuleZoomUser: datautils.NewSet(
 		ObjectNameContactGroup,
 		ObjectNameUser,
 		ObjectNameGroup,
 	),
 
-	common.ModuleID(providers.ModuleZoomMeeting): datautils.NewSet(
+	providers.ModuleZoomMeeting: datautils.NewSet(
 		objectNameTrackingField,
 		objectNameDevice,
 		objectNameH322Device,
@@ -71,7 +71,7 @@ var objectNameToWritePath = datautils.NewDefaultMap(map[string]string{ // nolint
 // This map is used to get the record id field for each object.
 var objectNameToWriteResponseIdentifier = common.ModuleObjectNameToFieldName{ // nolint: gochecknoglobals
 
-	common.ModuleID(providers.ModuleZoomMeeting): datautils.NewDefaultMap(map[string]string{
+	providers.ModuleZoomMeeting: datautils.NewDefaultMap(map[string]string{
 		objectNameTrackingField: "id",
 		objectNameDevice:        "",
 		objectNameH322Device:    "id",
@@ -81,7 +81,7 @@ var objectNameToWriteResponseIdentifier = common.ModuleObjectNameToFieldName{ //
 		},
 	),
 
-	common.ModuleID(providers.ModuleZoomUser): datautils.NewDefaultMap(map[string]string{
+	providers.ModuleZoomUser: datautils.NewDefaultMap(map[string]string{
 		ObjectNameContactGroup: "group_id",
 		ObjectNameUser:         "id",
 		ObjectNameGroup:        "",

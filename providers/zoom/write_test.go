@@ -93,7 +93,7 @@ func TestWriteModuleMeeting(t *testing.T) { //nolint:funlen
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 			tt.Run(t, func() (connectors.WriteConnector, error) {
-				return constructTestConnector(tt.Server.URL, common.ModuleID(providers.ModuleZoomMeeting))
+				return constructTestConnector(tt.Server.URL, providers.ModuleZoomMeeting)
 			})
 		})
 	}
@@ -156,7 +156,7 @@ func TestWriteModuleUser(t *testing.T) { //nolint:funlen
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 			tt.Run(t, func() (connectors.WriteConnector, error) {
-				return constructTestConnector(tt.Server.URL, common.ModuleID(providers.ModuleZoomUser))
+				return constructTestConnector(tt.Server.URL, providers.ModuleZoomUser)
 			})
 		})
 	}

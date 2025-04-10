@@ -1,10 +1,12 @@
 package providers
 
+import "github.com/amp-labs/connectors/common"
+
 const Zoom Provider = "zoom"
 
 const (
-	ModuleZoomUser    string = "user"
-	ModuleZoomMeeting string = "meeting"
+	ModuleZoomUser    common.ModuleID = "user"
+	ModuleZoomMeeting common.ModuleID = "meeting"
 )
 
 func init() {
@@ -23,11 +25,11 @@ func init() {
 				ScopesField: "scope",
 			},
 		},
-		Modules: &ModuleInfo{
+		Modules: &Modules{
 			ModuleZoomUser: {
 				BaseURL:     "https://api.zoom.us/v2",
-				DisplayName: "User",
-				Support: ModuleSupport{
+				DisplayName: "Zoom (User)",
+				Support: Support{
 					Read:      true,
 					Subscribe: false,
 					Write:     true,
@@ -35,8 +37,8 @@ func init() {
 			},
 			ModuleZoomMeeting: {
 				BaseURL:     "https://api.zoom.us/v2",
-				DisplayName: "Meeting",
-				Support: ModuleSupport{
+				DisplayName: "Zoom (Meeting)",
+				Support: Support{
 					Read:      true,
 					Subscribe: false,
 					Write:     true,

@@ -99,7 +99,7 @@ func TestReadModuleUser(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 			tt.Run(t, func() (connectors.ReadConnector, error) {
-				return constructTestConnector(tt.Server.URL, common.ModuleID(providers.ModuleZoomUser))
+				return constructTestConnector(tt.Server.URL, providers.ModuleZoomUser)
 			})
 		})
 	}
@@ -177,7 +177,7 @@ func TestReadModuleMeeting(t *testing.T) { //nolint:funlen,gocognit,cyclop,maint
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 			tt.Run(t, func() (connectors.ReadConnector, error) {
-				return constructTestConnector(tt.Server.URL, common.ModuleID(providers.ModuleZoomMeeting))
+				return constructTestConnector(tt.Server.URL, providers.ModuleZoomMeeting)
 			})
 		})
 	}

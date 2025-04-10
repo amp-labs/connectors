@@ -8,7 +8,7 @@ import (
 const (
 	// ModuleCRM
 	// Deprecated.
-	ModuleCRM = common.ModuleID(providers.ModuleHubspotCRM)
+	ModuleCRM = providers.ModuleHubspotCRM
 )
 
 // supportedModules represents currently working and supported modules within the Hubspot connector.
@@ -19,8 +19,8 @@ var supportedModules = common.Modules{ // nolint: gochecknoglobals
 		Label:   "",
 		Version: "",
 	},
-	common.ModuleID(providers.ModuleHubspotCRM): {
-		ID:      common.ModuleID(providers.ModuleHubspotCRM),
+	providers.ModuleHubspotCRM: {
+		ID:      providers.ModuleHubspotCRM,
 		Label:   "crm",
 		Version: "v3",
 	},

@@ -62,7 +62,7 @@ func TestListObjectMetaUserModule(t *testing.T) {
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
-				return constructTestConnector(tt.Server.URL, common.ModuleID(providers.ModuleZoomUser))
+				return constructTestConnector(tt.Server.URL, providers.ModuleZoomUser)
 			})
 		})
 	}
@@ -107,7 +107,7 @@ func TestListObjectMetaMeetingModule(t *testing.T) {
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
-				return constructTestConnector(tt.Server.URL, common.ModuleID(providers.ModuleZoomMeeting))
+				return constructTestConnector(tt.Server.URL, providers.ModuleZoomMeeting)
 			})
 		})
 	}

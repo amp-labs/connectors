@@ -39,9 +39,9 @@ func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
 	}
 }
 
-// WithModule sets the Atlassian API module to use for the connector. It's required.
+// WithModule sets the Klaviyo API module to use for the connector. It's required.
 func WithModule(module common.ModuleID) Option {
 	return func(params *parameters) {
-		params.WithModule(module, SupportedModules, common.ModuleID(providers.ModuleKlaviyo2024Oct15))
+		params.WithModule(module, SupportedModules, providers.ModuleKlaviyo2024Oct15)
 	}
 }

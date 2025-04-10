@@ -17,27 +17,27 @@ func TestLookupPaginationType(t *testing.T) {
 		want   string
 	}{
 		{
-			module: common.ModuleID(providers.ModuleZendeskTicketing),
+			module: providers.ModuleZendeskTicketing,
 			object: "tickets",
 			want:   "cursor",
 		},
 		{
-			module: common.ModuleID(providers.ModuleZendeskTicketing),
+			module: providers.ModuleZendeskTicketing,
 			object: "workspaces",
 			want:   "offset",
 		},
 		{
-			module: common.ModuleID(providers.ModuleZendeskHelpCenter),
+			module: providers.ModuleZendeskHelpCenter,
 			object: "articles",
 			want:   "offset",
 		},
 		{
-			module: common.ModuleID(providers.ModuleZendeskTicketing),
+			module: providers.ModuleZendeskTicketing,
 			object: "macros",
 			want:   "cursor",
 		},
 		{
-			module: common.ModuleID(providers.ModuleZendeskHelpCenter),
+			module: providers.ModuleZendeskHelpCenter,
 			object: "community_posts",
 			want:   "offset",
 		},

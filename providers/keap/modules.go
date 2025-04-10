@@ -1,7 +1,6 @@
 package keap
 
 import (
-	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/keap/metadata"
 )
@@ -9,10 +8,10 @@ import (
 const (
 	// ModuleV1
 	// Deprecated.
-	ModuleV1 = common.ModuleID(providers.ModuleKeapV1)
+	ModuleV1 = providers.ModuleKeapV1
 	// ModuleV2
 	// Deprecated.
-	ModuleV2 = common.ModuleID(providers.ModuleKeapV2)
+	ModuleV2 = providers.ModuleKeapV2
 )
 
 // SupportedModules represents currently working and supported modules within the Keap connector.

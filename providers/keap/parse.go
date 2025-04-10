@@ -18,7 +18,7 @@ func makeGetRecords(moduleID common.ModuleID, objectName string) common.NodeReco
 
 func makeNextRecordsURL(moduleID common.ModuleID) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
-		if moduleID == common.ModuleID(providers.ModuleKeapV1) {
+		if moduleID == providers.ModuleKeapV1 {
 			return jsonquery.New(node).StrWithDefault("next", "")
 		}
 

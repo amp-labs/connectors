@@ -8,10 +8,10 @@ import (
 const (
 	// ModuleAssets
 	// Deprecated.
-	ModuleAssets = common.ModuleID(providers.ModuleMarketoAssets)
+	ModuleAssets = providers.ModuleMarketoAssets
 	// ModuleLeads
 	// Deprecated.
-	ModuleLeads = common.ModuleID(providers.ModuleMarketoLeads)
+	ModuleLeads = providers.ModuleMarketoLeads
 )
 
 // supportedModules represents currently working and supported modules within the Marketo connector.
@@ -22,13 +22,13 @@ var supportedModules = common.Modules{ // nolint: gochecknoglobals
 		Label:   "",
 		Version: "",
 	},
-	common.ModuleID(providers.ModuleMarketoAssets): {
-		ID:      common.ModuleID(providers.ModuleMarketoAssets),
+	providers.ModuleMarketoAssets: {
+		ID:      providers.ModuleMarketoAssets,
 		Label:   "asset",
 		Version: "v1",
 	},
-	common.ModuleID(providers.ModuleMarketoLeads): {
-		ID:      common.ModuleID(providers.ModuleMarketoLeads),
+	providers.ModuleMarketoLeads: {
+		ID:      providers.ModuleMarketoLeads,
 		Label:   "",
 		Version: "v1",
 	},

@@ -102,7 +102,7 @@ func TestListObjectMetadataZendeskSupportModule(t *testing.T) { // nolint:funlen
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
-				return constructTestConnector(tt.Server.URL, common.ModuleID(providers.ModuleZendeskTicketing))
+				return constructTestConnector(tt.Server.URL, providers.ModuleZendeskTicketing)
 			})
 		})
 	}
@@ -148,7 +148,7 @@ func TestListObjectMetadataHelpCenterModule(t *testing.T) { // nolint:funlen,goc
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
-				return constructTestConnector(tt.Server.URL, common.ModuleID(providers.ModuleZendeskHelpCenter))
+				return constructTestConnector(tt.Server.URL, providers.ModuleZendeskHelpCenter)
 			})
 		})
 	}

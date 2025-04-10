@@ -45,6 +45,6 @@ func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
 
 func WithModule(module common.ModuleID) Option {
 	return func(params *parameters) {
-		params.WithModule(module, SupportedModules, common.ModuleID(providers.ModuleKeapV1))
+		params.WithModule(module, SupportedModules, providers.ModuleKeapV1)
 	}
 }

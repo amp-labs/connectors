@@ -22,7 +22,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := connTest.GetZoomConnector(ctx, common.ModuleID(providers.ModuleZoomUser))
+	conn := connTest.GetZoomConnector(ctx, providers.ModuleZoomUser)
 
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: objectName,

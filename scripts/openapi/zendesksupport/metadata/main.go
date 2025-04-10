@@ -21,8 +21,8 @@ func main() {
 	registry := datautils.NamedLists[string]{}
 	lists := datautils.IndexedLists[common.ModuleID, metadatadef.ExtendedSchema[metadata.CustomProperties]]{}
 
-	lists.Add(common.ModuleID(providers.ModuleZendeskTicketing), support.Objects()...)
-	lists.Add(common.ModuleID(providers.ModuleZendeskHelpCenter), helpcenter.Objects()...)
+	lists.Add(providers.ModuleZendeskTicketing, support.Objects()...)
+	lists.Add(providers.ModuleZendeskHelpCenter, helpcenter.Objects()...)
 
 	for module, objects := range lists {
 		for _, object := range objects {

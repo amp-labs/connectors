@@ -65,7 +65,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.DeleteConnector, error) {
-				return constructTestConnector(tt.Server.URL, common.ModuleID(providers.ModuleZendeskTicketing))
+				return constructTestConnector(tt.Server.URL, providers.ModuleZendeskTicketing)
 			})
 		})
 	}

@@ -1,7 +1,6 @@
 package zendesksupport
 
 import (
-	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/zendesksupport/metadata"
 )
@@ -9,10 +8,10 @@ import (
 const (
 	// ModuleTicketing
 	// Deprecated.
-	ModuleTicketing = common.ModuleID(providers.ModuleZendeskTicketing)
+	ModuleTicketing = providers.ModuleZendeskTicketing
 	// ModuleHelpCenter
 	// Deprecated.
-	ModuleHelpCenter = common.ModuleID(providers.ModuleZendeskHelpCenter)
+	ModuleHelpCenter = providers.ModuleZendeskHelpCenter
 )
 
 // SupportedModules represents currently working and supported modules within the Zendesk connector.

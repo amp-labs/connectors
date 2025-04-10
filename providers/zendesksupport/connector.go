@@ -18,7 +18,7 @@ type Connector struct {
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	params, err := paramsbuilder.Apply(parameters{}, opts,
 		// The module is resolved on behalf of the user if the option is missing.
-		WithModule(common.ModuleID(providers.ModuleZendeskTicketing)),
+		WithModule(providers.ModuleZendeskTicketing),
 	)
 	if err != nil {
 		return nil, err

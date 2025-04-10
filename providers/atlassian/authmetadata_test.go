@@ -77,7 +77,7 @@ func TestGetPostAuthInfo(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintid
 			connector, err := NewConnector(
 				WithAuthenticatedClient(http.DefaultClient),
 				WithWorkspace("second-proj"),
-				WithModule(common.ModuleID(providers.ModuleAtlassianJira)),
+				WithModule(providers.ModuleAtlassianJira),
 			)
 			if err != nil {
 				t.Fatalf("%s: error in test while constructing connector %v", tt.name, err)

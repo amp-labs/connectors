@@ -40,7 +40,7 @@ func WithClient(ctx context.Context, client *http.Client,
 // WithModule sets the marketo API module to use for the connector. It's required.
 func WithModule(module common.ModuleID) Option {
 	return func(params *parameters) {
-		params.WithModule(module, supportedModules, common.ModuleID(providers.ModuleMarketoLeads))
+		params.WithModule(module, supportedModules, providers.ModuleMarketoLeads)
 	}
 }
 

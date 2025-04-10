@@ -1,5 +1,7 @@
 package providers
 
+import "github.com/amp-labs/connectors/common"
+
 const (
 	ZendeskChat    Provider = "zendeskChat"
 	ZendeskSupport Provider = "zendeskSupport"
@@ -8,10 +10,10 @@ const (
 const (
 	// ModuleZendeskTicketing is used for proxying requests through.
 	// https://developer.zendesk.com/api-reference/ticketing/introduction/
-	ModuleZendeskTicketing string = "ticketing"
+	ModuleZendeskTicketing common.ModuleID = "ticketing"
 	// ModuleZendeskHelpCenter is Zendesk Help Center.
 	// https://developer.zendesk.com/api-reference/help_center/help-center-api/introduction/
-	ModuleZendeskHelpCenter string = "help-center"
+	ModuleZendeskHelpCenter common.ModuleID = "help-center"
 )
 
 func init() { // nolint:funlen
@@ -27,11 +29,11 @@ func init() { // nolint:funlen
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: true,
 		},
-		Modules: &ModuleInfo{
+		Modules: &Modules{
 			ModuleZendeskTicketing: {
 				BaseURL:     "https://{{.workspace}}.zendesk.com/api/v2",
-				DisplayName: "Ticketing",
-				Support: ModuleSupport{
+				DisplayName: "Zendesk Ticketing",
+				Support: Support{
 					Read:      true,
 					Subscribe: false,
 					Write:     true,
@@ -39,8 +41,8 @@ func init() { // nolint:funlen
 			},
 			ModuleZendeskHelpCenter: {
 				BaseURL:     "https://{{.workspace}}.zendesk.com/api/v2",
-				DisplayName: "Help Center",
-				Support: ModuleSupport{
+				DisplayName: "Zendesk Help Center",
+				Support: Support{
 					Read:      true,
 					Subscribe: false,
 					Write:     true,

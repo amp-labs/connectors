@@ -21,7 +21,7 @@ func GetAtlassianConnector(ctx context.Context) *atlassian.Connector {
 	conn, err := atlassian.NewConnector(
 		atlassian.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
 		atlassian.WithWorkspace(reader.Get(credscanning.Fields.Workspace)),
-		atlassian.WithModule(common.ModuleID(providers.ModuleAtlassianJira)),
+		atlassian.WithModule(providers.ModuleAtlassianJira),
 		atlassian.WithMetadata(map[string]string{
 			// This value can be obtained by following this API reference.
 			// https://developer.atlassian.com/cloud/confluence/oauth-2-3lo-apps/#3-1-get-the-cloudid-for-your-site
@@ -53,7 +53,7 @@ func GetAtlassianConnectConnector(ctx context.Context, claims map[string]any) *a
 	conn, err := atlassian.NewConnector(
 		atlassian.WithAuthenticatedClient(client),
 		atlassian.WithWorkspace(reader.Get(credscanning.Fields.Workspace)),
-		atlassian.WithModule(common.ModuleID(providers.ModuleAtlassianJiraConnect)),
+		atlassian.WithModule(providers.ModuleAtlassianJiraConnect),
 	)
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)

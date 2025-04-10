@@ -72,7 +72,7 @@ func (c *Connector) String() string {
 // https://developer.atlassian.com/cloud/jira/platform/rest/v2/intro/#other-integrations
 func (c *Connector) getJiraRestApiURL(arg string) (*urlbuilder.URL, error) {
 	// In the case of JIRA / Atlassian Cloud, we use this path. In other cases, we fall back to the base path.
-	if c.Module.ID == common.ModuleID(providers.ModuleAtlassianJira) {
+	if c.Module.ID == providers.ModuleAtlassianJira {
 		cloudId, err := c.getCloudId()
 		if err != nil {
 			return nil, err
@@ -115,7 +115,7 @@ func (c *Connector) setProviderInfo() error {
 	// When the module is Atlassian Connect, the base URL is different, so we need to override it.
 	// TODO: Replace options with substitution map in the future to avoid having to know
 	// which values need to be substituted.
-	if c.Module.ID == common.ModuleID(providers.ModuleAtlassianJiraConnect) {
+	if c.Module.ID == providers.ModuleAtlassianJiraConnect {
 		vars := []catalogreplacer.CatalogVariable{
 			&paramsbuilder.Workspace{Name: c.workspace},
 		}

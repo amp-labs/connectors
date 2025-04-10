@@ -8,10 +8,10 @@ import (
 const (
 	// ModuleJira
 	// Deprecated.
-	ModuleJira = common.ModuleID(providers.ModuleAtlassianJira)
+	ModuleJira = providers.ModuleAtlassianJira
 	// ModuleAtlassianJiraConnect
 	// Deprecated.
-	ModuleAtlassianJiraConnect = common.ModuleID(providers.ModuleAtlassianJiraConnect)
+	ModuleAtlassianJiraConnect = providers.ModuleAtlassianJiraConnect
 )
 
 // supportedModules represents currently working and supported modules within the Atlassian connector.
@@ -22,13 +22,13 @@ var supportedModules = common.Modules{ // nolint: gochecknoglobals
 		Label:   "",
 		Version: "",
 	},
-	common.ModuleID(providers.ModuleAtlassianJira): {
-		ID:      common.ModuleID(providers.ModuleAtlassianJira),
+	providers.ModuleAtlassianJira: {
+		ID:      providers.ModuleAtlassianJira,
 		Label:   "rest/api",
 		Version: "3",
 	},
-	common.ModuleID(providers.ModuleAtlassianJiraConnect): {
-		ID:      common.ModuleID(providers.ModuleAtlassianJiraConnect),
+	providers.ModuleAtlassianJiraConnect: {
+		ID:      providers.ModuleAtlassianJiraConnect,
 		Label:   "rest/api",
 		Version: "3",
 	},

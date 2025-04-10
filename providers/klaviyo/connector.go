@@ -16,7 +16,7 @@ type Connector struct {
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	params, err := paramsbuilder.Apply(parameters{}, opts, WithModule(common.ModuleID(providers.ModuleKlaviyo2024Oct15)))
+	params, err := paramsbuilder.Apply(parameters{}, opts, WithModule(providers.ModuleKlaviyo2024Oct15))
 	if err != nil {
 		return nil, err
 	}

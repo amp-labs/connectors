@@ -1,7 +1,6 @@
 package klaviyo
 
 import (
-	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/klaviyo/metadata"
 )
@@ -9,7 +8,7 @@ import (
 const (
 	// Module2024Oct15
 	// Deprecated.
-	Module2024Oct15 = common.ModuleID(providers.ModuleKlaviyo2024Oct15)
+	Module2024Oct15 = providers.ModuleKlaviyo2024Oct15
 )
 
 // SupportedModules represents currently working and supported modules within the Klaviyo connector.

@@ -20,8 +20,8 @@ func main() {
 	registry := datautils.NamedLists[string]{}
 	lists := datautils.IndexedLists[common.ModuleID, metadatadef.Schema]{}
 
-	lists.Add(common.ModuleID(providers.ModuleZoomUser), user.Objects()...)
-	lists.Add(common.ModuleID(providers.ModuleZoomMeeting), meeting.Objects()...)
+	lists.Add(providers.ModuleZoomUser, user.Objects()...)
+	lists.Add(providers.ModuleZoomMeeting, meeting.Objects()...)
 
 	for module, objects := range lists {
 		for _, object := range objects {

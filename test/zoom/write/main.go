@@ -38,7 +38,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := connTest.GetZoomConnector(ctx, common.ModuleID(providers.ModuleZoomUser))
+	conn := connTest.GetZoomConnector(ctx, providers.ModuleZoomUser)
 
 	slog.Info("> TEST Create User")
 	slog.Info("Creating a user...")

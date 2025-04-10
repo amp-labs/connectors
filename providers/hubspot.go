@@ -1,10 +1,12 @@
 package providers
 
+import "github.com/amp-labs/connectors/common"
+
 const Hubspot Provider = "hubspot"
 
 const (
 	// ModuleHubspotCRM is the module used for accessing standard CRM objects.
-	ModuleHubspotCRM string = "CRM"
+	ModuleHubspotCRM common.ModuleID = "CRM"
 )
 
 func init() {
@@ -32,11 +34,11 @@ func init() {
 			Subscribe: false,
 			Write:     true,
 		},
-		Modules: &ModuleInfo{
+		Modules: &Modules{
 			ModuleHubspotCRM: {
 				BaseURL:     "https://api.hubapi.com/crm/v3",
-				DisplayName: "CRM",
-				Support: ModuleSupport{
+				DisplayName: "HubSpot CRM",
+				Support: Support{
 					Read:      true,
 					Subscribe: false,
 					Write:     true,

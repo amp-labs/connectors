@@ -1,12 +1,14 @@
 package providers
 
+import "github.com/amp-labs/connectors/common"
+
 const Marketo Provider = "marketo"
 
 const (
 	// ModuleMarketoAssets is the module/API used for accessing assets objects.
-	ModuleMarketoAssets string = "assets"
+	ModuleMarketoAssets common.ModuleID = "assets"
 	// ModuleMarketoLeads is the module/API used for accessing leads objects.
-	ModuleMarketoLeads string = "leads"
+	ModuleMarketoLeads common.ModuleID = "leads"
 )
 
 func init() {
@@ -35,11 +37,11 @@ func init() {
 				ScopesField: "scope",
 			},
 		},
-		Modules: &ModuleInfo{
+		Modules: &Modules{
 			ModuleMarketoAssets: {
 				BaseURL:     "https://{{.workspace}}.mktorest.com/asset/v1",
-				DisplayName: "Assets",
-				Support: ModuleSupport{
+				DisplayName: "Marketo (Assets)",
+				Support: Support{
 					Read:      true,
 					Subscribe: false,
 					Write:     true,
@@ -47,8 +49,8 @@ func init() {
 			},
 			ModuleMarketoLeads: {
 				BaseURL:     "https://{{.workspace}}.mktorest.com/v1",
-				DisplayName: "Leads",
-				Support: ModuleSupport{
+				DisplayName: "Marketo (Leads)",
+				Support: Support{
 					Read:      true,
 					Subscribe: false,
 					Write:     true,

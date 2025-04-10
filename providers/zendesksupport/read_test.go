@@ -128,7 +128,7 @@ func TestReadZendeskSupportModule(t *testing.T) { //nolint:funlen,gocognit,cyclo
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.ReadConnector, error) {
-				return constructTestConnector(tt.Server.URL, common.ModuleID(providers.ModuleZendeskTicketing))
+				return constructTestConnector(tt.Server.URL, providers.ModuleZendeskTicketing)
 			})
 		})
 	}
@@ -274,7 +274,7 @@ func TestIncrementalReadZendeskSupportModule(t *testing.T) { //nolint:funlen,goc
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.ReadConnector, error) {
-				return constructTestConnector(tt.Server.URL, common.ModuleID(providers.ModuleZendeskTicketing))
+				return constructTestConnector(tt.Server.URL, providers.ModuleZendeskTicketing)
 			})
 		})
 	}
@@ -332,7 +332,7 @@ func TestReadHelpCenterModule(t *testing.T) { //nolint:funlen,gocognit,cyclop,ma
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.ReadConnector, error) {
-				return constructTestConnector(tt.Server.URL, common.ModuleID(providers.ModuleZendeskHelpCenter))
+				return constructTestConnector(tt.Server.URL, providers.ModuleZendeskHelpCenter)
 			})
 		})
 	}
