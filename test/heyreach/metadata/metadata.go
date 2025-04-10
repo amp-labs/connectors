@@ -13,7 +13,7 @@ func main() {
 
 	conn := heyreach.GetHeyreachConnector(ctx)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"campaign", "li_account", "list"})
+	m, err := conn.ListObjectMetadata(ctx, []string{"campaign/GetAll", "li_account/GetAll", "list/GetAll"})
 
 	if err != nil {
 		log.Fatal(err)
