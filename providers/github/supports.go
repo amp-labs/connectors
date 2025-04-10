@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/datautils"
-	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers/github/metadata"
 )
 
@@ -73,7 +73,7 @@ var (
 )
 
 func supportedOperations() components.EndpointRegistryInput {
-	readSupport := metadata.Schemas.ObjectNames().GetList(staticschema.RootModuleID)
+	readSupport := metadata.Schemas.ObjectNames().GetList(common.ModuleRoot)
 
 	// nolint:lll
 	writeSupport := []string{
@@ -88,7 +88,7 @@ func supportedOperations() components.EndpointRegistryInput {
 	}
 
 	return components.EndpointRegistryInput{
-		staticschema.RootModuleID: {
+		common.ModuleRoot: {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,

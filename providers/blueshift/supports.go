@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/datautils"
-	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers/blueshift/metadata"
 )
 
@@ -44,11 +44,11 @@ var writeObjectWithSuffix = datautils.NewSet( //nolint:gochecknoglobals
 )
 
 func supportedOperations() components.EndpointRegistryInput {
-	readSupport := metadata.Schemas.ObjectNames().GetList(staticschema.RootModuleID)
+	readSupport := metadata.Schemas.ObjectNames().GetList(common.ModuleRoot)
 	writeSupport := []string{objectNameCustomers, objectNameCustomUserLists, objectNameEvent, objectNameEmailTemplates, objectNamePushTemplates, objectNameSmsTemplates, objectNameExternalFetches} //nolint:lll
 
 	return components.EndpointRegistryInput{
-		staticschema.RootModuleID: {
+		common.ModuleRoot: {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,

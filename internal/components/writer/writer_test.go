@@ -8,7 +8,6 @@ import (
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/mocked"
 	"github.com/amp-labs/connectors/internal/components/operations"
-	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 )
@@ -72,7 +71,7 @@ func constructTestConnector(serverURL string) (*mockedConnector, error) {
 		HTTPWriter: NewHTTPWriter(
 			connector.HTTPClient().Client,
 			registry,
-			staticschema.RootModuleID,
+			common.ModuleRoot,
 			operations.WriteHandlers{},
 		),
 	}, nil

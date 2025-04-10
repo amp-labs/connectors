@@ -38,7 +38,7 @@ func (s ZendeskSchemas) LookupPaginationType(
 	moduleID common.ModuleID, objectName string,
 ) string {
 	if len(moduleID) == 0 {
-		moduleID = staticschema.RootModuleID
+		moduleID = common.ModuleRoot
 	}
 
 	ptype := s.Modules[moduleID].Objects[objectName].Custom.Pagination
@@ -54,7 +54,7 @@ func (s ZendeskSchemas) IsIncrementalRead(
 	moduleID common.ModuleID, objectName string,
 ) bool {
 	if len(moduleID) == 0 {
-		moduleID = staticschema.RootModuleID
+		moduleID = common.ModuleRoot
 	}
 
 	return s.Modules[moduleID].Objects[objectName].Custom.Incremental
@@ -116,7 +116,7 @@ func (s ZendeskSchemas) PageSize(
 	moduleID common.ModuleID, objectName string,
 ) string {
 	if len(moduleID) == 0 {
-		moduleID = staticschema.RootModuleID
+		moduleID = common.ModuleRoot
 	}
 
 	// TODO the map should be part of schema.json.
