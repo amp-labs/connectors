@@ -12,24 +12,17 @@ import (
 )
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
-	urlPath, err := matchReadObjectNameToEndpointPath(params.ObjectName)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, "public", params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
 
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, "public", urlPath)
+	body, err := constructRequestBody(params)
 	if err != nil {
 		return nil, err
 	}
 
-	body := constructRequestBody(params)
-
-	jsonData, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-
-	return http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonData))
+	return http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(body))
 }
 
 func (c *Connector) parseReadResponse(
@@ -38,7 +31,17 @@ func (c *Connector) parseReadResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
-	offset, _ := strconv.Atoi(params.NextPage.String())
+	var (
+		offset int
+		err    error
+	)
+
+	if params.NextPage.String() != "" {
+		offset, err = strconv.Atoi(params.NextPage.String())
+		if err != nil {
+			return nil, err
+		}
+	}
 
 	return common.ParseResult(
 		response,
@@ -49,14 +52,17 @@ func (c *Connector) parseReadResponse(
 	)
 }
 
-// construct body params for giving pagination value.
-func constructRequestBody(config common.ReadParams) map[string]any {
+// constructRequestBody builds the request payload for reading data using a POST method.
+// Unlike traditional GET requests where pagination is usually passed as query parameters,
+// this approach uses a POST request, so pagination values (like "offset", "limit") are included
+// directly in the JSON body.
+func constructRequestBody(config common.ReadParams) ([]byte, error) {
 	body := map[string]any{}
 
 	if len(config.NextPage) != 0 {
 		offset, err := strconv.Atoi(config.NextPage.String())
 		if err != nil {
-			return nil
+			return nil, err
 		}
 
 		body["offset"] = offset
@@ -64,5 +70,10 @@ func constructRequestBody(config common.ReadParams) map[string]any {
 
 	body["limit"] = DefaultPageSize
 
-	return body
+	jsonData, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	return jsonData, nil
 }

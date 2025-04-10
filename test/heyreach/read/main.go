@@ -39,7 +39,7 @@ func MainFn() int {
 
 func testReadCampaign(ctx context.Context, conn *ap.Connector) error {
 	params := common.ReadParams{
-		ObjectName: "campaign",
+		ObjectName: "campaign/GetAll",
 		Fields:     connectors.Fields(""),
 	}
 
@@ -62,7 +62,7 @@ func testReadCampaign(ctx context.Context, conn *ap.Connector) error {
 
 func testReadLIAccount(ctx context.Context, conn *ap.Connector) error {
 	params := common.ReadParams{
-		ObjectName: "li_account",
+		ObjectName: "li_account/GetAll",
 		Fields:     connectors.Fields(""),
 	}
 
@@ -85,7 +85,7 @@ func testReadLIAccount(ctx context.Context, conn *ap.Connector) error {
 
 func testReadList(ctx context.Context, conn *ap.Connector) error {
 	params := common.ReadParams{
-		ObjectName: "list",
+		ObjectName: "list/GetAll",
 		Fields:     connectors.Fields(""),
 	}
 
