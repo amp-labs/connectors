@@ -18,7 +18,6 @@ func responseField(objectName string) string {
 }
 
 func supportedOperations() components.EndpointRegistryInput {
-	// The objecst salesforce/* are not supported as they have not been tested.
 	readSupport := []string{
 		"appointmentlinks/me", "userpreferences/me", "users/me",
 		"codesnippets", "filerequests", "insightsreports", "integrations/commands",
@@ -28,11 +27,22 @@ func supportedOperations() components.EndpointRegistryInput {
 		"sequencefolders", "snippets", "snippettags", "teams", "unsubscribes", "yesno",
 	}
 
+	writeSupport := []string{
+		"codesnippets", "insightsreports", "integrations/commands", "integrations/enhancements",
+		"integrations/linkresolvers", "integrations/sidebars", "livefeedsearches", "meetingtypes",
+		"meetinginvites", // Updates only,using PUT method
+		"messages", "messages/test", "reports/data/table", "rules", "send", "sequences/cancel", "sequencefolders",
+		"snippettags", "teams", "unsubscribes", "userpreferences/me",
+	}
+
 	return components.EndpointRegistryInput{
 		staticschema.RootModuleID: {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,
+			}, {
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
+				Support:  components.WriteSupport,
 			},
 		},
 	}
