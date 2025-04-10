@@ -9,12 +9,6 @@ import (
 	"github.com/amp-labs/connectors/providers/heyreach/metadata"
 )
 
-const (
-	objectNameCampaign  = "campaign"
-	objectNameLiAccount = "li_account"
-	objectNameList      = "list"
-)
-
 func supportedOperations() components.EndpointRegistryInput {
 	readSupport := metadata.Schemas.ObjectNames().GetList(staticschema.RootModuleID)
 
