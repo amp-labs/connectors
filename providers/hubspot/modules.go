@@ -2,11 +2,13 @@ package hubspot
 
 import (
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers"
 )
 
 const (
-	// ModuleCRM is the module used for accessing standard CRM objects.
-	ModuleCRM common.ModuleID = "CRM"
+	// ModuleCRM
+	// Deprecated.
+	ModuleCRM = providers.ModuleHubspotCRM
 )
 
 // supportedModules represents currently working and supported modules within the Hubspot connector.
@@ -17,8 +19,8 @@ var supportedModules = common.Modules{ // nolint: gochecknoglobals
 		Label:   "",
 		Version: "",
 	},
-	ModuleCRM: {
-		ID:      ModuleCRM,
+	providers.ModuleHubspotCRM: {
+		ID:      providers.ModuleHubspotCRM,
 		Label:   "crm",
 		Version: "v3",
 	},

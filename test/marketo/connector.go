@@ -18,7 +18,7 @@ func GetMarketoConnector(ctx context.Context) *marketo.Connector {
 	conn, err := marketo.NewConnector(
 		marketo.WithClient(ctx, http.DefaultClient, getConfig(reader)),
 		marketo.WithWorkspace(reader.Get(credscanning.Fields.Workspace)),
-		marketo.WithModule(marketo.ModuleAssets),
+		marketo.WithModule(providers.ModuleMarketoAssets),
 	)
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)
@@ -33,7 +33,7 @@ func GetMarketoConnectorLeads(ctx context.Context) *marketo.Connector {
 	conn, err := marketo.NewConnector(
 		marketo.WithClient(ctx, http.DefaultClient, getConfig(reader)),
 		marketo.WithWorkspace(reader.Get(credscanning.Fields.Workspace)),
-		marketo.WithModule(marketo.ModuleLeads),
+		marketo.WithModule(providers.ModuleMarketoLeads),
 	)
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)

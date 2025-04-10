@@ -3,6 +3,7 @@ package meeting
 import (
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/metadatadef"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/zoom"
 	"github.com/amp-labs/connectors/providers/zoom/metadata/openapi"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
@@ -43,7 +44,7 @@ func Objects() []metadatadef.Schema {
 	objects, err := explorer.ReadObjectsGet(
 		api3.NewAllowPathStrategy(allowedEndpoints),
 		objectEndpoints, nil,
-		api3.CustomMappingObjectCheck(zoom.ObjectNameToResponseField[zoom.ModuleMeeting]),
+		api3.CustomMappingObjectCheck(zoom.ObjectNameToResponseField[providers.ModuleZoomMeeting]),
 	)
 
 	goutils.MustBeNil(err)

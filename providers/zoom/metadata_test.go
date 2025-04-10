@@ -6,6 +6,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 )
@@ -61,7 +62,7 @@ func TestListObjectMetaUserModule(t *testing.T) {
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
-				return constructTestConnector(tt.Server.URL, ModuleUser)
+				return constructTestConnector(tt.Server.URL, providers.ModuleZoomUser)
 			})
 		})
 	}
@@ -106,7 +107,7 @@ func TestListObjectMetaMeetingModule(t *testing.T) {
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
-				return constructTestConnector(tt.Server.URL, ModuleMeeting)
+				return constructTestConnector(tt.Server.URL, providers.ModuleZoomMeeting)
 			})
 		})
 	}
