@@ -31,6 +31,10 @@ func run() error {
 		return err
 	}
 
+	if err := readContacts(ctx, conn); err != nil {
+		return err
+	}
+
 	return nil
 }
 
