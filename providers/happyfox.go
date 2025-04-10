@@ -1,11 +1,11 @@
 package providers
 
-const HappyFoxChat Provider = "happyFoxChat"
+const HappyFox Provider = "happyfox"
 
 func init() {
-	// happyFox Chat Connector Configuration
-	SetInfo(HappyFoxChat, ProviderInfo{
-		DisplayName: "HappyFox Chat",
+	// happyfox Connector Configuration
+	SetInfo(HappyFox, ProviderInfo{
+		DisplayName: "HappyFox",
 		AuthType:    ApiKey,
 		BaseURL:     "https://api.happyfoxchat.com",
 		ApiKeyOpts: &ApiKeyOpts{
