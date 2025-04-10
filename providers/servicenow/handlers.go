@@ -56,9 +56,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 }
 
 func (c *Connector) buildReadRquest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
-	module := supportedModules[c.Module()]
-
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, module.Path(), params.ObjectName)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, params.ObjectName)
 	if err != nil {
 		return nil, err
 	}

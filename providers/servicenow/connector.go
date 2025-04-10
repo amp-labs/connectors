@@ -6,6 +6,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/reader"
 	"github.com/amp-labs/connectors/internal/components/schema"
+	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -54,7 +55,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 	connector.Reader = reader.NewHTTPReader(
 		connector.HTTPClient().Client,
 		registry,
-		ModuleTable,
+		staticschema.RootModuleID,
 		operations.ReadHandlers{
 			BuildRequest:  connector.buildReadRquest,
 			ParseResponse: connector.parseReadResponse,
