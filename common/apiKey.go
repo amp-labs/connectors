@@ -16,7 +16,6 @@ func NewApiKeyHeaderAuthHTTPClient( //nolint:ireturn
 	return NewHeaderAuthHTTPClient(ctx, append(opts, WithHeaders(Header{
 		Key:   headerName,
 		Value: headerValue,
-		Mode:  HeaderModeOverwrite,
 	}))...)
 }
 

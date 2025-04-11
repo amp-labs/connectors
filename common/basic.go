@@ -16,7 +16,6 @@ func NewBasicAuthHTTPClient( //nolint:ireturn
 	return NewHeaderAuthHTTPClient(ctx, append(opts, WithHeaders(Header{
 		Key:   "Authorization",
 		Value: "Basic " + basicAuth(user, pass),
-		Mode:  HeaderModeOverwrite,
 	}))...)
 }
 

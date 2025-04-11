@@ -57,7 +57,6 @@ func JwtTokenGenerator(payload map[string]any, secret string) common.DynamicHead
 			{
 				Key:   "Authorization",
 				Value: "JWT " + tokenString,
-				Mode:  common.HeaderModeOverwrite,
 			},
 		}, nil
 	}

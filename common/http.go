@@ -8,6 +8,7 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
+	"net/textproto"
 	"net/url"
 	"strconv"
 	"strings"
@@ -15,12 +16,20 @@ import (
 	"github.com/amp-labs/connectors/common/logging"
 )
 
+// HeaderMode determines how the header should be applied to the request.
 type HeaderMode int
 
 const (
+	// headerModeUnset is the default mode. It appends the header to the request.
 	headerModeUnset = iota
+
+	// HeaderModeAppend appends the header to the request.
 	HeaderModeAppend
+
+	// HeaderModeOverwrite unconditionally overwrites the header in the request.
 	HeaderModeOverwrite
+
+	// HeaderModeSetIfMissing sets the header in the request if it is not already set.
 	HeaderModeSetIfMissing
 )
 
@@ -39,7 +48,7 @@ func (h Header) ApplyToRequest(req *http.Request) {
 		req.Header.Set(h.Key, h.Value)
 	case HeaderModeSetIfMissing:
 		if len(req.Header.Values(h.Key)) == 0 {
-			req.Header.Set(h.Key, h.Value)
+			req.Header.Add(h.Key, h.Value)
 		}
 	default:
 		req.Header.Add(h.Key, h.Value)
@@ -47,7 +56,9 @@ func (h Header) ApplyToRequest(req *http.Request) {
 }
 
 func (h Header) equals(other Header) bool {
-	return h.Key == other.Key && h.Value == other.Value && h.Mode == other.Mode
+	return textproto.CanonicalMIMEHeaderKey(h.Key) == textproto.CanonicalMIMEHeaderKey(other.Key) &&
+		h.Value == other.Value &&
+		h.Mode == other.Mode
 }
 
 func (h Header) String() string {
@@ -57,7 +68,6 @@ func (h Header) String() string {
 var HeaderFormURLEncoded = Header{ // nolint:gochecknoglobals
 	Key:   "Content-Type",
 	Value: "application/x-www-form-urlencoded",
-	Mode:  HeaderModeSetIfMissing,
 }
 
 type Headers []Header
