@@ -17,11 +17,11 @@ func init() {
 			},
 			DocsURL: "https://app.iterable.com/settings/apiKeys",
 		},
-		Modules: &ModuleInfo{
-			string(common.ModuleRoot): {
+		Modules: &Modules{
+			common.ModuleRoot: {
 				BaseURL:     "https://api.iterable.com/api",
 				DisplayName: "Iterable",
-				Support: ModuleSupport{
+				Support: Support{
 					Read:      true,
 					Subscribe: false,
 					Write:     true,

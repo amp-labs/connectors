@@ -21,11 +21,11 @@ func init() {
 			},
 			DocsURL: "https://developer.instantly.ai/introduction",
 		},
-		Modules: &ModuleInfo{
-			string(common.ModuleRoot): {
+		Modules: &Modules{
+			common.ModuleRoot: {
 				BaseURL:     "https://api.instantly.ai/api/v1",
 				DisplayName: "Instantly (Legacy V1)",
-				Support: ModuleSupport{
+				Support: Support{
 					Read:      false,
 					Subscribe: false,
 					Write:     false,

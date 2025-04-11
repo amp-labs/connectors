@@ -65,11 +65,11 @@ func init() { // nolint:funlen
 				ScopesField: "scope",
 			},
 		},
-		Modules: &ModuleInfo{
-			string(common.ModuleRoot): {
+		Modules: &Modules{
+			common.ModuleRoot: {
 				BaseURL:     "https://{{.workspace}}.api.crm.dynamics.com/api/data/v9.2",
 				DisplayName: "Microsoft Dynamics CRM",
-				Support: ModuleSupport{
+				Support: Support{
 					Read:      false,
 					Subscribe: false,
 					Write:     false,

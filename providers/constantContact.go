@@ -27,11 +27,11 @@ func init() {
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 		},
-		Modules: &ModuleInfo{
-			string(common.ModuleRoot): {
+		Modules: &Modules{
+			common.ModuleRoot: {
 				BaseURL:     "https://api.cc.email/v3",
 				DisplayName: "Constant Contact",
-				Support: ModuleSupport{
+				Support: Support{
 					Read:      true,
 					Subscribe: false,
 					Write:     true,

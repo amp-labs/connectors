@@ -20,11 +20,11 @@ func init() {
 				ScopesField: "scope",
 			},
 		},
-		Modules: &ModuleInfo{
-			string(common.ModuleRoot): {
+		Modules: &Modules{
+			common.ModuleRoot: {
 				BaseURL:     "https://api.kit.com/v4",
 				DisplayName: "Kit",
-				Support: ModuleSupport{
+				Support: Support{
 					Read:      true,
 					Subscribe: false,
 					Write:     true,

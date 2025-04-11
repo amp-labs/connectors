@@ -9,11 +9,11 @@ func init() {
 		DisplayName: "Freshdesk",
 		AuthType:    Basic,
 		BaseURL:     "https://{{.workspace}}.freshdesk.com",
-		Modules: &ModuleInfo{
-			string(common.ModuleRoot): {
+		Modules: &Modules{
+			common.ModuleRoot: {
 				BaseURL:     "https://{{.workspace}}.freshdesk.com/api/v2",
 				DisplayName: "Freshdesk",
-				Support: ModuleSupport{
+				Support: Support{
 					Read:      false,
 					Subscribe: false,
 					Write:     false,

@@ -17,11 +17,11 @@ func init() {
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: true,
 		},
-		Modules: &ModuleInfo{
-			string(common.ModuleRoot): {
+		Modules: &Modules{
+			common.ModuleRoot: {
 				BaseURL:     "https://{{.workspace}}.aha.io/api/v1",
 				DisplayName: "Aha",
-				Support: ModuleSupport{
+				Support: Support{
 					Read:      false,
 					Subscribe: false,
 					Write:     false,

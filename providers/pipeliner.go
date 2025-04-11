@@ -11,11 +11,11 @@ func init() {
 		DisplayName: "Pipeliner",
 		AuthType:    Basic,
 		BaseURL:     "https://eu-central.api.pipelinersales.com",
-		Modules: &ModuleInfo{
-			string(common.ModuleRoot): {
+		Modules: &Modules{
+			common.ModuleRoot: {
 				BaseURL:     "https://eu-central.api.pipelinersales.com/api/v100/rest/spaces/{{.workspace}}/entities",
 				DisplayName: "Pipeliner",
-				Support: ModuleSupport{
+				Support: Support{
 					Read:      false,
 					Subscribe: false,
 					Write:     false,

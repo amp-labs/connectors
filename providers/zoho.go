@@ -23,11 +23,11 @@ func init() {
 				ScopesField:       "scope",
 			},
 		},
-		Modules: &ModuleInfo{
-			string(common.ModuleRoot): {
+		Modules: &Modules{
+			common.ModuleRoot: {
 				BaseURL:     "https://www.zohoapis.com/crm/v6",
 				DisplayName: "Zoho",
-				Support: ModuleSupport{
+				Support: Support{
 					Read:      true,
 					Subscribe: false,
 					Write:     true,

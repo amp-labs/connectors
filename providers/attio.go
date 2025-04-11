@@ -17,11 +17,11 @@ func init() {
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
 		},
-		Modules: &ModuleInfo{
-			string(common.ModuleRoot): {
+		Modules: &Modules{
+			common.ModuleRoot: {
 				BaseURL:     "https://api.attio.com/v2",
 				DisplayName: "Attio",
-				Support: ModuleSupport{
+				Support: Support{
 					Read:      true,
 					Subscribe: false,
 					Write:     true,

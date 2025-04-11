@@ -16,11 +16,11 @@ func init() {
 				ValuePrefix: "Bearer ",
 			},
 		},
-		Modules: &ModuleInfo{
-			string(common.ModuleRoot): {
+		Modules: &Modules{
+			common.ModuleRoot: {
 				BaseURL:     "https://fire.chilipiper.com/api/fire-edge/v1/org",
 				DisplayName: "Chili Piper",
-				Support: ModuleSupport{
+				Support: Support{
 					Read:      false,
 					Subscribe: false,
 					Write:     false,

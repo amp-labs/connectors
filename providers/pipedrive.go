@@ -10,11 +10,11 @@ func init() {
 		DisplayName: "Pipedrive",
 		AuthType:    Oauth2,
 		BaseURL:     "https://api.pipedrive.com",
-		Modules: &ModuleInfo{
-			string(common.ModuleRoot): {
+		Modules: &Modules{
+			common.ModuleRoot: {
 				BaseURL:     "https://api.pipedrive.com/v1",
 				DisplayName: "Pipedrive",
-				Support: ModuleSupport{
+				Support: Support{
 					Read:      true,
 					Subscribe: false,
 					Write:     true,

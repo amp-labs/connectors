@@ -22,11 +22,11 @@ func init() {
 				ScopesField:       "scope",
 			},
 		},
-		Modules: &ModuleInfo{
-			string(common.ModuleRoot): {
+		Modules: &Modules{
+			common.ModuleRoot: {
 				BaseURL:     "https://api.close.com/api/v1",
 				DisplayName: "Close",
-				Support: ModuleSupport{
+				Support: Support{
 					Read:      false,
 					Subscribe: false,
 					Write:     false,

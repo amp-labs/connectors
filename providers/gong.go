@@ -10,11 +10,11 @@ func init() {
 		DisplayName: "Gong",
 		AuthType:    Oauth2,
 		BaseURL:     "https://api.gong.io",
-		Modules: &ModuleInfo{
-			string(common.ModuleRoot): {
+		Modules: &Modules{
+			common.ModuleRoot: {
 				BaseURL:     "https://api.gong.io/v2",
 				DisplayName: "Gong",
-				Support: ModuleSupport{
+				Support: Support{
 					Read:      true,
 					Subscribe: false,
 					Write:     true,

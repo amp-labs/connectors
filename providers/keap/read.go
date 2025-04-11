@@ -9,7 +9,6 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/keap/metadata"
 )
 
 var ErrResolvingCustomFields = errors.New("cannot resolve custom fields")

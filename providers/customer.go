@@ -52,11 +52,11 @@ func init() { //nolint:funlen
 			},
 			DocsURL: "https://customer.io/docs/api/app/#section/Authentication",
 		},
-		Modules: &ModuleInfo{
-			string(common.ModuleRoot): {
+		Modules: &Modules{
+			common.ModuleRoot: {
 				BaseURL:     "https://api.customer.io/v1",
 				DisplayName: "Customer.io Journeys App",
-				Support: ModuleSupport{
+				Support: Support{
 					Read:      true,
 					Subscribe: false,
 					Write:     true,

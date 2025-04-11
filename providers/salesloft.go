@@ -10,11 +10,11 @@ func init() {
 		DisplayName: "Salesloft",
 		AuthType:    Oauth2,
 		BaseURL:     "https://api.salesloft.com",
-		Modules: &ModuleInfo{
-			string(common.ModuleRoot): {
+		Modules: &Modules{
+			common.ModuleRoot: {
 				BaseURL:     "https://api.salesloft.com/v2",
 				DisplayName: "Salesloft",
-				Support: ModuleSupport{
+				Support: Support{
 					Read:      true,
 					Subscribe: false,
 					Write:     true,

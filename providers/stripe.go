@@ -18,11 +18,11 @@ func init() {
 			},
 			DocsURL: "https://docs.stripe.com/keys",
 		},
-		Modules: &ModuleInfo{
-			string(common.ModuleRoot): {
+		Modules: &Modules{
+			common.ModuleRoot: {
 				BaseURL:     "https://api.stripe.com/v1",
 				DisplayName: "Stripe",
-				Support: ModuleSupport{
+				Support: Support{
 					Read:      true,
 					Subscribe: false,
 					Write:     true,

@@ -16,11 +16,11 @@ func init() {
 			},
 			DocsURL: "https://api.smartlead.ai/reference/authentication",
 		},
-		Modules: &ModuleInfo{
-			string(common.ModuleRoot): {
+		Modules: &Modules{
+			common.ModuleRoot: {
 				BaseURL:     "https://server.smartlead.ai/api/v1",
 				DisplayName: "Smartlead",
-				Support: ModuleSupport{
+				Support: Support{
 					Read:      true,
 					Subscribe: false,
 					Write:     true,

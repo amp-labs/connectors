@@ -116,7 +116,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		method = http.MethodPost
 	)
 
-	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, params.ObjectName)
+	url, err = c.ModuleClient.URL(params.ObjectName)
 	if err != nil {
 		return nil, err
 	}

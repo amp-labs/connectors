@@ -10,11 +10,11 @@ func init() {
 		DisplayName: "Outreach",
 		AuthType:    Oauth2,
 		BaseURL:     "https://api.outreach.io",
-		Modules: &ModuleInfo{
-			string(common.ModuleRoot): {
+		Modules: &Modules{
+			common.ModuleRoot: {
 				BaseURL:     "https://api.outreach.io/api/v2",
 				DisplayName: "Outreach",
-				Support: ModuleSupport{
+				Support: Support{
 					Read:      true,
 					Subscribe: false,
 					Write:     true,
