@@ -1,5 +1,7 @@
 package providers
 
+import "github.com/amp-labs/connectors/common"
+
 const Dixa Provider = "dixa"
 
 func init() {
@@ -13,6 +15,17 @@ func init() {
 				Name: "Authorization",
 			},
 			DocsURL: "https://docs.dixa.io/docs/api-standards-rules/#authentication",
+		},
+		Modules: &Modules{
+			common.ModuleRoot: {
+				BaseURL:     "https://dev.dixa.io/v1",
+				DisplayName: "Dixa",
+				Support: Support{
+					Read:      false,
+					Subscribe: false,
+					Write:     false,
+				},
+			},
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{

@@ -7,14 +7,11 @@ import (
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
-const restAPIVersion = "v1"
-
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIVersion, params.ObjectName)
+	url, err := c.ModuleClient.URL(params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -22,7 +19,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	objectURL := url.String()
 
 	if params.NextPage != "" {
-		url, err = urlbuilder.New(c.ProviderInfo().BaseURL)
+		url, err = c.RootClient.URL()
 		if err != nil {
 			return nil, err
 		}
@@ -51,7 +48,7 @@ func (c *Connector) parseReadResponse(
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
 	method := http.MethodPost
 
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIVersion, params.ObjectName)
+	url, err := c.ModuleClient.URL(params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
