@@ -42,14 +42,16 @@ type Header struct {
 
 func (h Header) ApplyToRequest(req *http.Request) {
 	switch h.Mode {
-	case HeaderModeAppend:
-		req.Header.Add(h.Key, h.Value)
 	case HeaderModeOverwrite:
 		req.Header.Set(h.Key, h.Value)
 	case HeaderModeSetIfMissing:
 		if len(req.Header.Values(h.Key)) == 0 {
 			req.Header.Add(h.Key, h.Value)
 		}
+	case HeaderModeAppend:
+		fallthrough
+	case headerModeUnset:
+		fallthrough
 	default:
 		req.Header.Add(h.Key, h.Value)
 	}
