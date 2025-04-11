@@ -124,6 +124,11 @@ func (c *headerAuthClient) Do(req *http.Request) (*http.Response, error) {
 		}
 	}
 
+	modifier, ok := getRequestModifier(req.Context())
+	if ok {
+		modifier(req)
+	}
+
 	rsp, err := c.client.Do(req)
 	if err != nil {
 		return rsp, err

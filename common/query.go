@@ -108,6 +108,11 @@ func (c *queryParamAuthClient) Do(req *http.Request) (*http.Response, error) {
 
 	req.URL.RawQuery = query.Encode()
 
+	modifier, ok := getRequestModifier(req.Context())
+	if ok {
+		modifier(req)
+	}
+
 	rsp, err := c.client.Do(req)
 	if err != nil {
 		return rsp, err
