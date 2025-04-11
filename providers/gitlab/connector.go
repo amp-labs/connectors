@@ -15,8 +15,6 @@ import (
 	"github.com/amp-labs/connectors/tools/scrapper"
 )
 
-const restAPIVersion = "api/v4"
-
 // nolint:gochecknoglobals
 var (
 	//go:embed schemas.json

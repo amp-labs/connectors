@@ -1,5 +1,7 @@
 package providers
 
+import "github.com/amp-labs/connectors/common"
+
 const GitLab Provider = "gitLab"
 
 func init() {
@@ -13,6 +15,17 @@ func init() {
 			TokenURL:                  "https://gitlab.com/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
+		},
+		Modules: &Modules{
+			common.ModuleRoot: {
+				BaseURL:     "https://gitlab.com/api/v4",
+				DisplayName: "GitLab",
+				Support: Support{
+					Read:      false,
+					Subscribe: false,
+					Write:     false,
+				},
+			},
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
