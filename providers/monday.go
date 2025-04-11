@@ -1,5 +1,7 @@
 package providers
 
+import "github.com/amp-labs/connectors/common"
+
 const Monday Provider = "monday"
 
 func init() {
@@ -14,6 +16,17 @@ func init() {
 				Name: "Authorization",
 			},
 			DocsURL: "https://developer.monday.com/api-reference/docs/authentication",
+		},
+		Modules: &Modules{
+			common.ModuleRoot: {
+				BaseURL:     "https://api.monday.com/v2",
+				DisplayName: "Monday",
+				Support: Support{
+					Read:      false,
+					Subscribe: false,
+					Write:     false,
+				},
+			},
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{

@@ -11,7 +11,6 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
-	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
@@ -42,11 +41,6 @@ const (
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion)
-	if err != nil {
-		return nil, fmt.Errorf("failed to build URL: %w", err)
-	}
-
 	// Use introspection query to get field information
 	query := fmt.Sprintf(`{
 		__type(name: "%s") {
@@ -73,6 +67,11 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 	jsonBody, err := json.Marshal(requestBody)
 	if err != nil {
 		return nil, err
+	}
+
+	url, err := c.ModuleClient.URL()
+	if err != nil {
+		return nil, fmt.Errorf("failed to build URL: %w", err)
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonBody))
@@ -228,13 +227,7 @@ func getQueryForObject(objectName string, page *int, limit *int) (string, error)
 }
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion)
-	if err != nil {
-		return nil, err
-	}
-
 	var page *int
-
 	var limit int
 
 	if params.NextPage != "" {
@@ -260,6 +253,11 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	}
 
 	jsonBody, err := json.Marshal(requestBody)
+	if err != nil {
+		return nil, err
+	}
+
+	url, err := c.ModuleClient.URL()
 	if err != nil {
 		return nil, err
 	}
@@ -342,11 +340,6 @@ func getRecords(objectName string) func(*ajson.Node) ([]map[string]any, error) {
 }
 
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion)
-	if err != nil {
-		return nil, fmt.Errorf("failed to build URL: %w", err)
-	}
-
 	recordData, err := common.RecordDataToMap(params.RecordData)
 	if err != nil {
 		return nil, fmt.Errorf("failed to convert record data to map: %w", err)
@@ -388,6 +381,11 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	jsonBody, err := json.Marshal(requestBody)
 	if err != nil {
 		return nil, err
+	}
+
+	url, err := c.ModuleClient.URL()
+	if err != nil {
+		return nil, fmt.Errorf("failed to build URL: %w", err)
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonBody))
@@ -482,7 +480,7 @@ func (c *Connector) parseWriteResponse(
 }
 
 func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, params.ObjectName)
+	url, err := c.ModuleClient.URL(params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
