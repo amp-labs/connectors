@@ -2,13 +2,64 @@ package common
 
 import (
 	"context"
+	"io"
 	"net/http"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
-func TestModifier(t *testing.T) {
+type dummyTransport struct{}
+
+func (d *dummyTransport) RoundTrip(request *http.Request) (*http.Response, error) {
+	rsp := &http.Response{
+		StatusCode: http.StatusOK,
+		Status:     http.StatusText(http.StatusOK),
+		Header:     make(http.Header),
+		Body:       io.NopCloser(strings.NewReader("hello")),
+	}
+
+	for k, v1 := range request.Header {
+		for _, v2 := range v1 {
+			rsp.Header.Add(k, v2)
+		}
+	}
+
+	return rsp, nil
+}
+
+func TestModifierInClient(t *testing.T) {
+	t.Parallel()
+
+	modifier, ok := getRequestModifier(context.Background())
+	require.False(t, ok)
+	require.Nil(t, modifier)
+
+	client := &http.Client{
+		Transport: &dummyTransport{},
+	}
+
+	ac, err := NewHeaderAuthHTTPClient(context.Background(), WithHeaderClient(client))
+	require.NoError(t, err)
+
+	ctx := WithRequestModifier(context.Background(), func(req *http.Request) {
+		req.Header.Set("Header", "value")
+	})
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "https://example.com", nil)
+	require.NoError(t, err)
+
+	rsp, err := ac.Do(req)
+	require.NoError(t, err)
+
+	vals := rsp.Header.Values("Header")
+	require.Len(t, vals, 1)
+
+	require.Equal(t, "value", vals[0])
+}
+
+func TestModifierStandalone(t *testing.T) {
 	t.Parallel()
 
 	modifier, ok := getRequestModifier(context.Background())
@@ -22,7 +73,7 @@ func TestModifier(t *testing.T) {
 	modifier, ok = getRequestModifier(ctx)
 	require.True(t, ok)
 
-	req, err := http.NewRequest("GET", "https://example.com", nil)
+	req, err := http.NewRequest(http.MethodGet, "https://example.com", nil)
 	require.NoError(t, err)
 
 	modifier(req)
@@ -33,7 +84,7 @@ func TestModifier(t *testing.T) {
 func TestApplySetIfMissingEmptyHeadersRequest(t *testing.T) {
 	t.Parallel()
 
-	req, err := http.NewRequest("GET", "https://example.com", nil)
+	req, err := http.NewRequest(http.MethodGet, "https://example.com", nil)
 	require.NoError(t, err)
 
 	headers := Headers{
@@ -55,7 +106,7 @@ func TestApplySetIfMissingEmptyHeadersRequest(t *testing.T) {
 func TestApplySetIfMissingNonEmptyHeadersRequest(t *testing.T) {
 	t.Parallel()
 
-	req, err := http.NewRequest("GET", "https://example.com", nil)
+	req, err := http.NewRequest(http.MethodGet, "https://example.com", nil)
 	require.NoError(t, err)
 
 	req.Header.Add("Header", "value1")
@@ -79,7 +130,7 @@ func TestApplySetIfMissingNonEmptyHeadersRequest(t *testing.T) {
 func TestApplySetHeadersEmptyRequest(t *testing.T) {
 	t.Parallel()
 
-	req, err := http.NewRequest("GET", "https://example.com", nil)
+	req, err := http.NewRequest(http.MethodGet, "https://example.com", nil)
 	require.NoError(t, err)
 
 	headers := Headers{
@@ -101,7 +152,7 @@ func TestApplySetHeadersEmptyRequest(t *testing.T) {
 func TestApplySetHeadersNonEmptyRequest(t *testing.T) {
 	t.Parallel()
 
-	req, err := http.NewRequest("GET", "https://example.com", nil)
+	req, err := http.NewRequest(http.MethodGet, "https://example.com", nil)
 	require.NoError(t, err)
 
 	req.Header.Add("Header", "value1")
@@ -125,7 +176,7 @@ func TestApplySetHeadersNonEmptyRequest(t *testing.T) {
 func TestApplyAppendHeadersToRequest(t *testing.T) {
 	t.Parallel()
 
-	req, err := http.NewRequest("GET", "https://example.com", nil)
+	req, err := http.NewRequest(http.MethodGet, "https://example.com", nil)
 	require.NoError(t, err)
 
 	req.Header.Add("Header", "value1")
