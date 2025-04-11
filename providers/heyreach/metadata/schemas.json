@@ -1,0 +1,147 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "/public",
+      "objects": {
+        "campaign/GetAll": {
+          "displayName": "GetAll campaign",
+          "path": "",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "other"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "other"
+            },
+            "creationTime": {
+              "displayName": "creationTime",
+              "valueType": "other"
+            },
+            "linkedInUserListName":{
+              "displayName": "linkedInUserListName",
+              "valueType": "other"
+            },
+            "linkedInUserListId": {
+              "displayName": "linkedInUserListId",
+              "valueType": "other"
+            },
+            "campaignAccountIds":{
+              "displayName": "campaignAccountIds",
+              "valueType": "other"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "other"
+            },
+            "progressStats": {
+              "displayName": "progressStats",
+              "valueType": "other"
+            },
+            "excludeAlreadyMessagedGlobal": {
+              "displayName": "excludeAlreadyMessagedGlobal",
+              "valueType": "other"
+            },
+            "excludeAlreadyMessagedCampaignAccounts": {
+              "displayName": "excludeAlreadyMessagedCampaignAccounts",
+              "valueType": "other"
+            },
+            "excludeFirstConnectionCampaignAccounts": {
+              "displayName": "excludeFirstConnectionCampaignAccounts",
+              "valueType": "other"
+            },
+            "excludeFirstConnectionGlobal": {
+              "displayName": "excludeFirstConnectionGlobal",
+              "valueType": "other"
+            },
+            "excludeNoProfilePicture": {
+              "displayName": "excludeNoProfilePicture",
+              "valueType": "other"
+            },
+            "excludeListId": {
+              "displayName": "excludeListId",
+              "valueType": "other"
+            }
+          }
+        },
+        "li_account/GetAll": {
+          "displayName": "GetAll li_account",
+          "path": "li_account/GetAll",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "other"
+            },
+            "emailAddress": {
+              "displayName": "emailAddress",
+              "valueType": "other"
+            },
+            "firstName":  {
+              "displayName": "firstName",
+              "valueType": "other"
+            },
+            "lastName":  {
+              "displayName": "lastName",
+              "valueType": "other"
+            },
+            "isActive": {
+              "displayName": "isActive",
+              "valueType": "other"
+            },
+            "activeCampaigns": {
+              "displayName": "activeCampaigns",
+              "valueType": "other"
+            },
+            "authIsValid":  {
+              "displayName": "authIsValid",
+              "valueType": "other"
+            },
+            "isValidNavigator":  {
+              "displayName": "isValidNavigator",
+              "valueType": "other"
+            },
+            "isValidRecruiter":  {
+              "displayName": "isValidRecruiter",
+              "valueType": "other"
+            }
+          }
+        },
+        "list/GetAll": {
+          "displayName": "GetAll list",
+          "path": "list/GetAll",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "other"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "other"
+            },
+            "totalItemsCount":  {
+              "displayName": "totalItemsCount",
+              "valueType": "other"
+            },
+            "listType":  {
+              "displayName": "listType",
+              "valueType": "other"
+            },
+            "creationTime": {
+              "displayName": "creationTime",
+              "valueType": "other"
+            },
+            "campaignIds":  {
+              "displayName": "campaignIds",
+              "valueType": "other"
+            }
+          }
+        }
+      }
+    }
+  }
+}
