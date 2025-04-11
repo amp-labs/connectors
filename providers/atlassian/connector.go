@@ -5,8 +5,6 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
-	"github.com/amp-labs/connectors/common/paramsbuilder"
-	"github.com/amp-labs/connectors/common/substitutions/catalogreplacer"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/providers"
@@ -47,11 +45,6 @@ func NewConnectorV2(params common.Parameters) (*Connector, error) {
 	authMetadata := NewAuthMetadataVars(params.Metadata)
 	conn.cloudId = authMetadata.CloudId
 
-	// TODO this is a temporary fix. Module based URL support will  resolve this.
-	if err := conn.overwriteProviderInfo(); err != nil {
-		return nil, err
-	}
-
 	return conn, nil
 }
 
@@ -65,27 +58,21 @@ func constructor(base *components.Connector) (*Connector, error) {
 
 // URL format follows structure applicable to Oauth2 Atlassian apps.
 // https://developer.atlassian.com/cloud/jira/platform/rest/v2/intro/#other-integrations
-func (c *Connector) getJiraRestApiURL(arg string) (*urlbuilder.URL, error) {
-	modulePath := supportedModules[c.Module()].Path()
-
-	// In the case of JIRA / Atlassian Cloud, we use this path. In other cases, we fall back to the base path.
-	if c.Module() == providers.ModuleAtlassianJira {
-		cloudId, err := c.getCloudId()
-		if err != nil {
-			return nil, err
-		}
-
-		return urlbuilder.New(c.ProviderInfo().BaseURL, "ex/jira", cloudId, modulePath, arg)
+func (c *Connector) getJiraRestApiURL(objectName string) (*urlbuilder.URL, error) {
+	cloudId, err := c.getCloudId()
+	if err != nil {
+		return nil, err
 	}
 
-	return urlbuilder.New(c.ProviderInfo().BaseURL, modulePath, arg)
+	return c.ModuleClient.TemplateURL(map[string]string{
+		cloudIdKey: cloudId,
+	}, objectName)
 }
 
 // URL allows to get list of sites associated with auth token.
 // https://developer.atlassian.com/cloud/confluence/oauth-2-3lo-apps/#3-1-get-the-cloudid-for-your-site
 func (c *Connector) getAccessibleSitesURL() (*urlbuilder.URL, error) {
-	// TODO what URL to choose??? Root module?
-	return urlbuilder.New(c.ProviderInfo().BaseURL, "oauth/token/accessible-resources")
+	return c.RootClient.URL("oauth/token/accessible-resources")
 }
 
 func (c *Connector) getCloudId() (string, error) {
@@ -94,26 +81,4 @@ func (c *Connector) getCloudId() (string, error) {
 	}
 
 	return c.cloudId, nil
-}
-
-func (c *Connector) overwriteProviderInfo() error {
-	// When the module is Atlassian Connect, the base URL is different, so we need to override it.
-	// TODO: Replace options with substitution map in the future to avoid having to know
-	// which values need to be substituted.
-	if c.Module() == providers.ModuleAtlassianJiraConnect {
-		vars := []catalogreplacer.CatalogVariable{
-			&paramsbuilder.Workspace{Name: c.workspace},
-		}
-
-		override := &providers.ProviderInfo{
-			BaseURL: "https://{{.workspace}}.atlassian.net",
-		}
-
-		// Mutates the provider info with the overrides, and substitutes any variables.
-		if err := c.ProviderInfo().Override(override).SubstituteWith(vars); err != nil {
-			return err
-		}
-	}
-
-	return nil
 }

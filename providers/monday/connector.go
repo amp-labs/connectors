@@ -14,8 +14,6 @@ import (
 	"github.com/amp-labs/connectors/providers"
 )
 
-const apiVersion = "v2"
-
 type Connector struct {
 	// Basic connector
 	*components.Connector

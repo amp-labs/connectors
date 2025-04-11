@@ -7,8 +7,6 @@ import (
 	"github.com/amp-labs/connectors/providers"
 )
 
-const apiVersion = "crm/v6"
-
 type Connector struct {
 	// Basic connector
 	*components.Connector
@@ -36,5 +34,5 @@ func constructor(base *components.Connector) (*Connector, error) {
 }
 
 func (c *Connector) getAPIURL(prefix string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, prefix)
+	return c.ModuleClient.URL(prefix)
 }

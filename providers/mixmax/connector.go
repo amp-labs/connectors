@@ -11,7 +11,6 @@ import (
 )
 
 const (
-	restAPIVersion = "v1"
 	nextQuery      = "next"
 	meetinginvites = "meetinginvites"
 )

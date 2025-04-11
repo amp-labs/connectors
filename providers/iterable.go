@@ -1,5 +1,7 @@
 package providers
 
+import "github.com/amp-labs/connectors/common"
+
 const Iterable Provider = "iterable"
 
 func init() {
@@ -14,6 +16,17 @@ func init() {
 				Name: "Api-Key",
 			},
 			DocsURL: "https://app.iterable.com/settings/apiKeys",
+		},
+		Modules: &Modules{
+			common.ModuleRoot: {
+				BaseURL:     "https://api.iterable.com/api",
+				DisplayName: "Iterable",
+				Support: Support{
+					Read:      true,
+					Subscribe: false,
+					Write:     true,
+				},
+			},
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{

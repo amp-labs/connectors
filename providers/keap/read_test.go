@@ -236,7 +236,7 @@ func constructTestConnector(serverURL string, moduleID common.ModuleID) (*Connec
 	}
 
 	// for testing we want to redirect calls to our mock server
-	connector.SetURL(serverURL)
+	testroutines.OverrideURLOrigin(connector.Transport, serverURL)
 
 	return connector, nil
 }

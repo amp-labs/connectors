@@ -216,9 +216,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				ObjectName: "issues",
 				Fields:     connectors.Fields("id", "summary"),
 			},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, responseIssuesFirstPage),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				// CLOUD ID => ebc887b2-7e61-4059-ab35-71f15cc16e12
+				If:   mockcond.PathSuffix("/ex/jira/ebc887b2-7e61-4059-ab35-71f15cc16e12/rest/api/3/search"),
+				Then: mockserver.Response(http.StatusOK, responseIssuesFirstPage),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
@@ -296,7 +298,7 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 	}
 
 	// for testing we want to redirect calls to our mock server
-	connector.SetURL(serverURL)
+	testroutines.OverrideURLOrigin(connector.Transport, serverURL)
 
 	return connector, nil
 }

@@ -1,5 +1,7 @@
 package providers
 
+import "github.com/amp-labs/connectors/common"
+
 const Smartlead Provider = "smartlead"
 
 func init() {
@@ -13,6 +15,17 @@ func init() {
 				Name: "api_key",
 			},
 			DocsURL: "https://api.smartlead.ai/reference/authentication",
+		},
+		Modules: &Modules{
+			common.ModuleRoot: {
+				BaseURL:     "https://server.smartlead.ai/api/v1",
+				DisplayName: "Smartlead",
+				Support: Support{
+					Read:      true,
+					Subscribe: false,
+					Write:     true,
+				},
+			},
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{

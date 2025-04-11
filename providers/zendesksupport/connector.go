@@ -38,12 +38,12 @@ func constructor(base *components.Connector) (*Connector, error) {
 }
 
 func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
-	path, err := metadata.Schemas.LookupURLPath(c.Module(), objectName)
+	path, err := metadata.Schemas.LookupRawURLPath(c.Module(), objectName)
 	if err != nil {
 		return nil, err
 	}
 
-	return urlbuilder.New(c.ProviderInfo().BaseURL, path)
+	return c.ModuleClient.URL(path)
 }
 
 func (c *Connector) getWriteURL(objectName string) (*urlbuilder.URL, error) {
@@ -53,7 +53,7 @@ func (c *Connector) getWriteURL(objectName string) (*urlbuilder.URL, error) {
 
 	if path, ok := writeURLExceptions[c.Module()][objectName]; ok {
 		// URL for write differs from read.
-		return urlbuilder.New(c.ProviderInfo().BaseURL, path)
+		return c.ModuleClient.URL(path)
 	}
 
 	return c.getReadURL(objectName)

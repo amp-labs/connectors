@@ -1,5 +1,7 @@
 package providers
 
+import "github.com/amp-labs/connectors/common"
+
 const Mixmax Provider = "mixmax"
 
 func init() {
@@ -13,6 +15,17 @@ func init() {
 				Name: "X-API-Token",
 			},
 			DocsURL: "https://developer.mixmax.com/reference/getting-started-with-the-api",
+		},
+		Modules: &Modules{
+			common.ModuleRoot: {
+				BaseURL:     "https://api.mixmax.com/v1",
+				DisplayName: "Mixmax",
+				Support: Support{
+					Read:      false,
+					Subscribe: false,
+					Write:     false,
+				},
+			},
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{

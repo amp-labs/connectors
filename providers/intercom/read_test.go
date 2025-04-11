@@ -173,9 +173,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				ObjectName: "contacts",
 				Fields:     connectors.Fields("email", "name"),
 			},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, responseContactsSecondPage),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.PathSuffix("/contacts"),
+				Then:  mockserver.Response(http.StatusOK, responseContactsSecondPage),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
@@ -208,9 +209,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				ObjectName: "conversations",
 				Fields:     connectors.Fields("state"),
 			},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, responseReadConversations),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.PathSuffix("/conversations"),
+				Then:  mockserver.Response(http.StatusOK, responseReadConversations),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
@@ -245,8 +247,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			// notes is not supported for now, but its payload is good for testing
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.BodyBytes(requestSearchConversations),
-				Then:  mockserver.Response(http.StatusOK, responseSearchConversations),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.BodyBytes(requestSearchConversations),
+				},
+				Then: mockserver.Response(http.StatusOK, responseSearchConversations),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
@@ -291,7 +296,7 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 	}
 
 	// for testing we want to redirect calls to our mock server
-	connector.SetURL(serverURL)
+	testroutines.OverrideURLOrigin(connector.Transport, serverURL)
 
 	return connector, nil
 }

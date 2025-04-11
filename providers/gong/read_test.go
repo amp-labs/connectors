@@ -152,9 +152,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Successful read with 2 entries and cursor for next page",
 			Input: common.ReadParams{ObjectName: "calls", Fields: connectors.Fields("id")},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, fakeServerResp2),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.PathSuffix("/v2/calls"),
+				Then:  mockserver.Response(http.StatusOK, fakeServerResp2),
 			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 2,
@@ -201,9 +202,13 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Successful read transcripts using POST",
 			Input: common.ReadParams{ObjectName: "transcripts", Fields: connectors.Fields("callid")},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, responseTranscripts),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.PathSuffix("/v2/calls/transcript"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseTranscripts),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
@@ -244,7 +249,7 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 	}
 
 	// for testing we want to redirect calls to our mock server
-	connector.SetURL(serverURL)
+	testroutines.OverrideURLOrigin(connector.Transport, serverURL)
 
 	return connector, nil
 }
