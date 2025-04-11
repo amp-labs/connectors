@@ -66,27 +66,10 @@ func constructor(base *components.Connector) (*Connector, error) {
 		},
 	)
 
-	registry, err := components.NewEndpointRegistry(supportedOperations())
-	if err != nil {
-		return nil, err
-	}
-
-	// Set the read provider for the connector
-	connector.Reader = reader.NewHTTPReader(
-		connector.HTTPClient().Client,
-		registry,
-		staticschema.RootModuleID,
-		operations.ReadHandlers{
-			BuildRequest:  connector.buildReadRequest,
-			ParseResponse: connector.parseReadResponse,
-			ErrorHandler:  common.InterpretError,
-		},
-	)
-
 	connector.Writer = writer.NewHTTPWriter(
 		connector.HTTPClient().Client,
 		registry,
-		staticschema.RootModuleID,
+		common.ModuleRoot,
 		operations.WriteHandlers{
 			BuildRequest:  connector.buildWriteRequest,
 			ParseResponse: connector.parseWriteResponse,
