@@ -45,7 +45,7 @@ func GetAtlassianConnectConnector(ctx context.Context, claims map[string]any) *a
 		common.WithDynamicHeaders(atlassian.JwtTokenGenerator(claims, reader.Get(credscanning.Fields.Secret))),
 	}
 
-	client, err := common.NewJwtAuthHTTPClient(ctx, opts...)
+	client, err := common.NewHeaderAuthHTTPClient(ctx, opts...)
 	if err != nil {
 		panic(err)
 	}

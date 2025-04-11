@@ -69,6 +69,7 @@ func (c *Connector) revisionHeader() common.Header {
 	return common.Header{
 		Key:   "revision",
 		Value: string(c.Module.ID),
+		Mode:  common.HeaderModeOverwrite,
 	}
 }
 

@@ -15,19 +15,49 @@ import (
 	"github.com/amp-labs/connectors/common/logging"
 )
 
+type HeaderMode int
+
+const (
+	headerModeUnset = iota
+	HeaderModeAppend
+	HeaderModeOverwrite
+	HeaderModeSetIfMissing
+)
+
 // Header is a key/value pair that can be added to a request.
 type Header struct {
-	Key   string `json:"key"`
-	Value string `json:"value"`
+	Key   string     `json:"key"`
+	Value string     `json:"value"`
+	Mode  HeaderMode `json:"mode"`
+}
+
+func (h Header) ApplyToRequest(req *http.Request) {
+	switch h.Mode {
+	case HeaderModeAppend:
+		req.Header.Add(h.Key, h.Value)
+	case HeaderModeOverwrite:
+		req.Header.Set(h.Key, h.Value)
+	case HeaderModeSetIfMissing:
+		if len(req.Header.Values(h.Key)) == 0 {
+			req.Header.Set(h.Key, h.Value)
+		}
+	default:
+		req.Header.Add(h.Key, h.Value)
+	}
 }
 
 func (h Header) equals(other Header) bool {
-	return h.Key == other.Key && h.Value == other.Value
+	return h.Key == other.Key && h.Value == other.Value && h.Mode == other.Mode
+}
+
+func (h Header) String() string {
+	return fmt.Sprintf("%s: %s", h.Key, h.Value)
 }
 
 var HeaderFormURLEncoded = Header{ // nolint:gochecknoglobals
 	Key:   "Content-Type",
 	Value: "application/x-www-form-urlencoded",
+	Mode:  HeaderModeSetIfMissing,
 }
 
 type Headers []Header
@@ -40,6 +70,12 @@ func (h Headers) Has(target Header) bool {
 	}
 
 	return false
+}
+
+func (h Headers) ApplyToRequest(req *http.Request) {
+	for _, header := range h {
+		header.ApplyToRequest(req)
+	}
 }
 
 // ErrorHandler allows the caller to inject their own HTTP error handling logic.

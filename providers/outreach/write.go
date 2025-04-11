@@ -24,6 +24,7 @@ const (
 var JSONAPIContentTypeHeader = common.Header{ //nolint:gochecknoglobals
 	Key:   "Content-Type",
 	Value: "application/vnd.api+json",
+	Mode:  common.HeaderModeOverwrite,
 }
 
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {

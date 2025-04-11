@@ -27,6 +27,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	rsp, err := c.Client.Get(ctx, url.String(), newPaginationHeader(DefaultPageSize), common.Header{
 		Key:   "Prefer",
 		Value: `odata.include-annotations="*"`,
+		Mode:  common.HeaderModeOverwrite,
 	})
 	if err != nil {
 		return nil, err
@@ -65,5 +66,6 @@ func newPaginationHeader(pageSize int) common.Header {
 	return common.Header{
 		Key:   "Prefer",
 		Value: fmt.Sprintf("odata.maxpagesize=%v", pageSize),
+		Mode:  common.HeaderModeOverwrite,
 	}
 }

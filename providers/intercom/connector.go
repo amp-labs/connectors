@@ -13,6 +13,7 @@ const apiVersion = "2.11"
 var apiVersionHeader = common.Header{ // nolint:gochecknoglobals
 	Key:   "Intercom-Version",
 	Value: apiVersion,
+	Mode:  common.HeaderModeOverwrite,
 }
 
 type Connector struct {
