@@ -165,7 +165,7 @@ func BenchmarkListObjectMetadata(b *testing.B) {
 
 	dummyServer := mockserver.Dummy()
 
-	connector.SetBaseURL(dummyServer.URL)
+	connector.SetURL(dummyServer.URL)
 
 	// start of benchmark
 	for i := 0; i < b.N; i++ {

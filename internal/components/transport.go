@@ -2,15 +2,20 @@ package components
 
 import (
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/paramsbuilder"
+	"github.com/amp-labs/connectors/common/substitutions/catalogreplacer"
 	"github.com/amp-labs/connectors/providers"
 )
 
+// Transport
 // TODO: Add support for XML, CSV, etc.
 type Transport struct {
 	ProviderContext
-	json *common.JSONHTTPClient
+	RootClient   APIClient
+	ModuleClient APIClient
 }
 
+// NewTransport
 // TODO: The JSON client by itself is not providing any functionality right now - this is to only provide
 // continuity for the existing codebase. We should refactor the existing JSON/XML/CSV/HTTP clients to
 // satisfy a common interface, and then hook them up in here.
@@ -18,36 +23,61 @@ func NewTransport(
 	provider providers.Provider,
 	params common.Parameters,
 ) (*Transport, error) {
-	providerContext, err := NewProviderContext(provider, params.Module, params.Workspace, params.Metadata)
+	variables := createCatalogVariables(params)
+
+	providerContext, err := NewProviderContext(provider, params.Module, variables)
 	if err != nil {
 		return nil, err
 	}
 
 	return &Transport{
 		ProviderContext: *providerContext,
-		json: &common.JSONHTTPClient{
-			HTTPClient: &common.HTTPClient{
-				Base:   providerContext.ProviderInfo().BaseURL,
-				Client: params.AuthenticatedClient,
-
-				// ErrorHandler is set to a default, but can be overridden using options.
-				ErrorHandler: common.InterpretError,
-
-				// No ResponseHandler is set, but can be overridden using options.
-			},
-			ErrorPostProcessor: common.ErrorPostProcessor{},
-		},
+		RootClient: *NewAPIClient(
+			common.ModuleRoot,
+			providerContext.providerInfo.BaseURL,
+			params.AuthenticatedClient,
+			variables,
+		),
+		ModuleClient: *NewAPIClient(
+			providerContext.moduleID,
+			providerContext.moduleInfo.BaseURL,
+			params.AuthenticatedClient,
+			variables,
+		),
 	}, nil
 }
 
-func (t *Transport) SetBaseURL(newURL string) {
-	t.ProviderContext.providerInfo.BaseURL = newURL
-	t.json.HTTPClient.Base = newURL
-}
-
 func (t *Transport) SetErrorHandler(handler common.ErrorHandler) {
-	t.HTTPClient().ErrorHandler = handler
+	t.RootClient.SetErrorHandler(handler)
+	t.ModuleClient.SetErrorHandler(handler)
 }
 
-func (t *Transport) JSONHTTPClient() *common.JSONHTTPClient { return t.json }
-func (t *Transport) HTTPClient() *common.HTTPClient         { return t.json.HTTPClient }
+func (t *Transport) SetURL(newURL string) {
+	t.RootClient.SetURL(newURL)
+	t.ModuleClient.SetURL(newURL)
+
+	// TODO this is temporary.
+	// The implementation should not use info data directly.
+	// Doing this fixes the tests.
+	t.ProviderContext.providerInfo.BaseURL = newURL
+	t.ProviderContext.moduleInfo.BaseURL = newURL
+}
+
+func (t *Transport) JSONHTTPClient() *common.JSONHTTPClient {
+	return t.RootClient.JSONHTTPClient
+}
+
+func (t *Transport) HTTPClient() *common.HTTPClient {
+	return t.RootClient.JSONHTTPClient.HTTPClient
+}
+
+func createCatalogVariables(params common.Parameters) []catalogreplacer.CatalogVariable {
+	metadata := params.Metadata
+	if metadata == nil {
+		metadata = make(map[string]string)
+	}
+
+	metadata[catalogreplacer.VariableWorkspace] = params.Workspace
+
+	return paramsbuilder.NewCatalogVariables(metadata)
+}
