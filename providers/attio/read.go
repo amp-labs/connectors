@@ -58,7 +58,7 @@ func (c *Connector) readStandardOrCustomObject(
 		offset = val
 	}
 
-	rsp, err := c.Client.Post(ctx, url.String(), body)
+	rsp, err := c.JSONHTTPClient().Post(ctx, url.String(), body)
 	if err != nil {
 		return nil, err
 	}
