@@ -33,7 +33,7 @@ func run() error {
 		return err
 	}
 
-	err = testcreatingNewConversation(ctx, conn)
+	err = testCreatingNewConversation(ctx, conn)
 	if err != nil {
 		return err
 	}
@@ -96,13 +96,13 @@ func testUpdateContacts(ctx context.Context, conn *dr.Connector) error {
 	return nil
 }
 
-func testcreatingNewConversation(ctx context.Context, conn *dr.Connector) error {
+func testCreatingNewConversation(ctx context.Context, conn *dr.Connector) error {
 	params := common.WriteParams{
 		ObjectName: "conversations/new",
 		RecordData: map[string]any{
 			"email": "josephkarage@email.com",
 			"message": map[string]any{
-				"body": "A conversation was started <a href='www.withampersannd.com'>here</a>, let's resume from drift!",
+				"body": "A conversation was started <a href='www.withampersand.com'>here</a>, let's resume from drift!",
 				"attributes": map[string]any{
 					"integrationSource": "Message from facebook",
 				},
