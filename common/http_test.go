@@ -16,7 +16,7 @@ func TestModifier(t *testing.T) {
 	require.Nil(t, modifier)
 
 	ctx := WithRequestModifier(context.Background(), func(req *http.Request) {
-		req.Header.Set("header", "value")
+		req.Header.Set("Header", "value")
 	})
 
 	modifier, ok = getRequestModifier(ctx)
@@ -27,7 +27,7 @@ func TestModifier(t *testing.T) {
 
 	modifier(req)
 
-	require.Equal(t, "value", req.Header.Get("header"))
+	require.Equal(t, "value", req.Header.Get("Header"))
 }
 
 func TestApplySetIfMissingEmptyHeadersRequest(t *testing.T) {
@@ -38,7 +38,7 @@ func TestApplySetIfMissingEmptyHeadersRequest(t *testing.T) {
 
 	headers := Headers{
 		{
-			Key:   "header",
+			Key:   "Header",
 			Value: "value2",
 			Mode:  HeaderModeSetIfMissing,
 		},
@@ -46,7 +46,7 @@ func TestApplySetIfMissingEmptyHeadersRequest(t *testing.T) {
 
 	headers.ApplyToRequest(req)
 
-	vals := req.Header.Values("header")
+	vals := req.Header.Values("Header")
 	require.Len(t, vals, 1)
 
 	require.Equal(t, "value2", vals[0])
@@ -58,11 +58,11 @@ func TestApplySetIfMissingNonEmptyHeadersRequest(t *testing.T) {
 	req, err := http.NewRequest("GET", "https://example.com", nil)
 	require.NoError(t, err)
 
-	req.Header.Add("header", "value1")
+	req.Header.Add("Header", "value1")
 
 	headers := Headers{
 		{
-			Key:   "header",
+			Key:   "Header",
 			Value: "value2",
 			Mode:  HeaderModeSetIfMissing,
 		},
@@ -70,7 +70,7 @@ func TestApplySetIfMissingNonEmptyHeadersRequest(t *testing.T) {
 
 	headers.ApplyToRequest(req)
 
-	vals := req.Header.Values("header")
+	vals := req.Header.Values("Header")
 	require.Len(t, vals, 1)
 
 	require.Equal(t, "value1", vals[0])
@@ -84,7 +84,7 @@ func TestApplySetHeadersEmptyRequest(t *testing.T) {
 
 	headers := Headers{
 		{
-			Key:   "header",
+			Key:   "Header",
 			Value: "value2",
 			Mode:  HeaderModeOverwrite,
 		},
@@ -92,7 +92,7 @@ func TestApplySetHeadersEmptyRequest(t *testing.T) {
 
 	headers.ApplyToRequest(req)
 
-	vals := req.Header.Values("header")
+	vals := req.Header.Values("Header")
 	require.Len(t, vals, 1)
 
 	require.Equal(t, "value2", vals[0])
@@ -104,11 +104,11 @@ func TestApplySetHeadersNonEmptyRequest(t *testing.T) {
 	req, err := http.NewRequest("GET", "https://example.com", nil)
 	require.NoError(t, err)
 
-	req.Header.Add("header", "value1")
+	req.Header.Add("Header", "value1")
 
 	headers := Headers{
 		{
-			Key:   "header",
+			Key:   "Header",
 			Value: "value2",
 			Mode:  HeaderModeOverwrite,
 		},
@@ -116,7 +116,7 @@ func TestApplySetHeadersNonEmptyRequest(t *testing.T) {
 
 	headers.ApplyToRequest(req)
 
-	vals := req.Header.Values("header")
+	vals := req.Header.Values("Header")
 	require.Len(t, vals, 1)
 
 	require.Equal(t, "value2", vals[0])
@@ -128,23 +128,23 @@ func TestApplyAppendHeadersToRequest(t *testing.T) {
 	req, err := http.NewRequest("GET", "https://example.com", nil)
 	require.NoError(t, err)
 
-	req.Header.Add("header", "value1")
+	req.Header.Add("Header", "value1")
 
 	headers := Headers{
 		{
-			Key:   "header",
+			Key:   "Header",
 			Value: "value2",
 			Mode:  HeaderModeAppend,
 		},
 		{
-			Key:   "header",
+			Key:   "Header",
 			Value: "value3",
 		},
 	}
 
 	headers.ApplyToRequest(req)
 
-	vals := req.Header.Values("header")
+	vals := req.Header.Values("Header")
 	require.Len(t, vals, 3)
 
 	require.Equal(t, "value1", vals[0])
