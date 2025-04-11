@@ -45,14 +45,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 	connector := &Connector{Connector: base}
 
 	// Set the metadata provider for the connector
-	connector.SchemaProvider = schema.NewObjectSchemaProvider(
-		connector.HTTPClient().Client,
-		schema.FetchModeParallel,
-		operations.SingleObjectMetadataHandlers{
-			BuildRequest:  connector.buildSingleObjectMetadataRequest,
-			ParseResponse: connector.parseSingleObjectMetadataResponse,
-		},
-	)
+	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), schemas)
 
 	registry, err := components.NewEndpointRegistry(supportedOperations())
 	if err != nil {
@@ -63,7 +56,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 	connector.Reader = reader.NewHTTPReader(
 		connector.HTTPClient().Client,
 		registry,
-		staticschema.RootModuleID,
+		common.ModuleRoot,
 		operations.ReadHandlers{
 			BuildRequest:  connector.buildReadRequest,
 			ParseResponse: connector.parseReadResponse,
