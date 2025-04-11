@@ -110,7 +110,7 @@ func (c *headerAuthClient) Do(req *http.Request) (*http.Response, error) {
 	req = req.Clone(req.Context())
 
 	for _, header := range c.headers {
-		req.Header.Add(header.Key, header.Value)
+		header.ApplyToRequest(req)
 	}
 
 	if c.dynamicHeaders != nil {
@@ -120,8 +120,13 @@ func (c *headerAuthClient) Do(req *http.Request) (*http.Response, error) {
 		}
 
 		for _, header := range hdrs {
-			req.Header.Add(header.Key, header.Value)
+			header.ApplyToRequest(req)
 		}
+	}
+
+	modifier, hasModifier := getRequestModifier(req.Context()) //nolint:contextcheck
+	if hasModifier {
+		modifier(req)
 	}
 
 	rsp, err := c.client.Do(req)

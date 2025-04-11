@@ -198,6 +198,11 @@ func (t *oauth2Transport) RoundTrip(req *http.Request) (*http.Response, error) {
 	// req.Body is assumed to be closed by the base RoundTripper.
 	reqBodyClosed = true
 
+	modifier, hasModifier := getRequestModifier(req2.Context()) //nolint:contextcheck
+	if hasModifier {
+		modifier(req)
+	}
+
 	rsp, err := t.base().RoundTrip(req2)
 	if err != nil {
 		return rsp, err
