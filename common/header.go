@@ -124,8 +124,8 @@ func (c *headerAuthClient) Do(req *http.Request) (*http.Response, error) {
 		}
 	}
 
-	modifier, ok := getRequestModifier(req.Context())
-	if ok {
+	modifier, hasModifier := getRequestModifier(req.Context()) //nolint:contextcheck
+	if hasModifier {
 		modifier(req)
 	}
 

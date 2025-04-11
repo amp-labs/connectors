@@ -108,8 +108,8 @@ func (c *queryParamAuthClient) Do(req *http.Request) (*http.Response, error) {
 
 	req.URL.RawQuery = query.Encode()
 
-	modifier, ok := getRequestModifier(req.Context())
-	if ok {
+	modifier, hasModifier := getRequestModifier(req.Context()) //nolint:contextcheck
+	if hasModifier {
 		modifier(req)
 	}
 
