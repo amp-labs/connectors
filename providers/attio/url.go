@@ -8,25 +8,25 @@ import (
 //
 // Relative URL for retrieving metadata for standard and custom objects in Attio.
 func (c *Connector) getObjectAttributesURL(objName string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.BaseURL, apiVersion, "objects", objName, "attributes")
+	return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, "objects", objName, "attributes")
 }
 
 // Relative URL for retrieving display Name for standard and custom objects in Attio.
 func (c *Connector) getObjectsURL(objName string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.BaseURL, apiVersion, "objects", objName)
+	return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, "objects", objName)
 }
 
 // Relative URL for retrieving the options in the attributes.
 func (c *Connector) getOptionsURL(objName, attributeID string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.BaseURL, apiVersion, "objects", objName, "attributes", attributeID, "options")
+	return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, "objects", objName, "attributes", attributeID, "options")
 }
 
 // Relative URL for retrieving standard and custom object read URL.
 func (c *Connector) getObjectReadURL(objName string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.BaseURL, apiVersion, "objects", objName, "records", "query")
+	return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, "objects", objName, "records", "query")
 }
 
 // Relative URL for retrieving standarad and custom object write URL.
 func (c *Connector) getObjectWriteURL(objName string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.BaseURL, apiVersion, "objects", objName, "records")
+	return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, "objects", objName, "records")
 }

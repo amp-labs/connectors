@@ -7,6 +7,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -46,9 +47,10 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Zero records response",
 			Input: common.ReadParams{ObjectName: "calls", Fields: connectors.Fields("assistant")},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, callsResponse),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.PathSuffix("/crm/v6/Calls"),
+				Then:  mockserver.Response(http.StatusOK, callsResponse),
 			}.Server(),
 			Expected:     &common.ReadResult{Rows: 0, Data: []common.ReadResultRow{}, Done: true},
 			ExpectedErrs: nil,
@@ -59,9 +61,10 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				ObjectName: "contacts",
 				Fields:     connectors.Fields("Assistant", "Created_By", "Full_Name", "id", "Created_Time"),
 			},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, contactsResponse),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.PathSuffix("/crm/v6/Contacts"),
+				Then:  mockserver.Response(http.StatusOK, contactsResponse),
 			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 1,

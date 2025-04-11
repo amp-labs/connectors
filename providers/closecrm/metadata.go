@@ -83,7 +83,7 @@ func (c *Connector) getMetadata(ctx context.Context, objectName string) (*common
 	url.WithQueryParam("_limit", "1")
 	url.WithQueryParam("_skip", "0")
 
-	resp, err := c.Client.Get(ctx, url.String())
+	resp, err := c.JSONHTTPClient().Get(ctx, url.String())
 	if err != nil {
 		return nil, err
 	}

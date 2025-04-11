@@ -59,7 +59,7 @@ func (c *Connector) retrieveCloudId(ctx context.Context) (string, error) {
 		return "", err
 	}
 
-	res, err := c.Client.Get(ctx, url.String())
+	res, err := c.JSONHTTPClient().Get(ctx, url.String())
 	if err != nil {
 		return "", err
 	}

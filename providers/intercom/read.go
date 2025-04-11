@@ -14,7 +14,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	if !supportedObjectsByRead[c.Module.ID].Has(config.ObjectName) {
+	if !supportedObjectsByRead[c.Module()].Has(config.ObjectName) {
 		return nil, common.ErrOperationNotSupportedForObject
 	}
 
@@ -50,7 +50,7 @@ func (c *Connector) performReadQuery(
 
 	url = enhanceReadWithQueryParams(url, config.ObjectName, config.Since)
 
-	rsp, err := c.Client.Get(ctx, url.String(), apiVersionHeader)
+	rsp, err := c.JSONHTTPClient().Get(ctx, url.String(), apiVersionHeader)
 	if err != nil {
 		return nil, nil, err
 	}

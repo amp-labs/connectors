@@ -38,7 +38,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 			return nil, err
 		}
 
-		res, err := c.Client.Get(ctx, url.String())
+		res, err := c.JSONHTTPClient().Get(ctx, url.String())
 		if err != nil {
 			objMetadata.Errors[obj] = err
 

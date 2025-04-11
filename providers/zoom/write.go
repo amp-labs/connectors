@@ -14,7 +14,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, err
 	}
 
-	if !supportedObjectsByWrite[c.Module.ID].Has(config.ObjectName) {
+	if !supportedObjectsByWrite[c.Module()].Has(config.ObjectName) {
 		return nil, common.ErrOperationNotSupportedForObject
 	}
 
@@ -27,9 +27,9 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 
 	if len(config.RecordId) == 0 {
 		// writing to the entity without id means creating a new record.
-		write = c.Client.Post
+		write = c.JSONHTTPClient().Post
 	} else {
-		write = c.Client.Put
+		write = c.JSONHTTPClient().Put
 
 		url.AddPath(config.RecordId)
 	}
@@ -46,7 +46,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		}, nil
 	}
 
-	recordIdPath := objectNameToWriteResponseIdentifier[c.Module.ID].Get(config.ObjectName)
+	recordIdPath := objectNameToWriteResponseIdentifier[c.Module()].Get(config.ObjectName)
 
 	// write response with payload
 	return constructWriteResult(body, recordIdPath)

@@ -13,7 +13,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	if !supportedObjectsByRead[c.Module.ID].Has(config.ObjectName) {
+	if !supportedObjectsByRead[c.Module()].Has(config.ObjectName) {
 		return nil, common.ErrOperationNotSupportedForObject
 	}
 
@@ -26,10 +26,10 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 
 	if postReadObjects.Has(config.ObjectName) {
 		body := buildReadBody(config)
-		res, err = c.Client.Post(ctx, url.String(), body)
+		res, err = c.JSONHTTPClient().Post(ctx, url.String(), body)
 	} else {
 		buildReadParams(url, config)
-		res, err = c.Client.Get(ctx, url.String())
+		res, err = c.JSONHTTPClient().Get(ctx, url.String())
 	}
 
 	if err != nil {
@@ -45,7 +45,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	responseFieldName := metadata.Schemas.LookupArrayFieldName(c.Module.ID, config.ObjectName)
+	responseFieldName := metadata.Schemas.LookupArrayFieldName(c.Module(), config.ObjectName)
 
 	return common.ParseResult(res,
 		common.ExtractRecordsFromPath(responseFieldName),

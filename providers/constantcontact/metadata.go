@@ -10,7 +10,7 @@ import (
 func (c *Connector) ListObjectMetadata(
 	ctx context.Context, objectNames []string,
 ) (*common.ListObjectMetadataResult, error) {
-	metadataResult, err := metadata.Schemas.Select(c.Module.ID, objectNames)
+	metadataResult, err := metadata.Schemas.Select(c.Module(), objectNames)
 	if err != nil {
 		return nil, err
 	}

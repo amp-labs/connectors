@@ -45,7 +45,7 @@ func (conn *Connector) Write(ctx context.Context, config common.WriteParams) (*c
 		writeURL.AddPath(config.RecordId)
 	}
 
-	resp, err := conn.Client.Post(ctx, writeURL.String(), config.RecordData)
+	resp, err := conn.JSONHTTPClient().Post(ctx, writeURL.String(), config.RecordData)
 	if err != nil {
 		return nil, err
 	}

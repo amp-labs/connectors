@@ -10,7 +10,7 @@ import (
 
 func (conn *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
 	ctx = logging.With(ctx, "connector", "freshdesk")
-	write := conn.Client.Post
+	write := conn.JSONHTTPClient().Post
 
 	if err := config.ValidateParams(); err != nil {
 		return nil, err
@@ -28,7 +28,7 @@ func (conn *Connector) Write(ctx context.Context, config common.WriteParams) (*c
 	if len(config.RecordId) > 0 {
 		url.AddPath(config.RecordId)
 
-		write = conn.Client.Put
+		write = conn.JSONHTTPClient().Put
 	}
 
 	resp, err := write(ctx, url.String(), config.RecordData)

@@ -2,63 +2,40 @@ package marketo
 
 import (
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/providers"
 )
 
 type Connector struct {
-	BaseURL string
-	Client  *common.JSONHTTPClient
-	Module  common.Module
+	// Basic connector
+	*components.Connector
 }
 
-func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	params, err := paramsbuilder.Apply(parameters{}, opts,
-		// The module is resolved on behalf of the user if the option is missing.
-		WithModule(providers.ModuleMarketoLeads),
-	)
+// NewConnector is an old constructor, use NewConnectorV2.
+// Deprecated.
+func NewConnector(opts ...Option) (*Connector, error) {
+	params, err := newParams(opts)
 	if err != nil {
 		return nil, err
 	}
 
-	// Read marketo provider's details.
-	providerInfo, err := providers.ReadInfo(providers.Marketo, &params.Workspace)
-	if err != nil {
-		return nil, err
-	}
-
-	conn = &Connector{
-		Client: &common.JSONHTTPClient{
-			HTTPClient: &common.HTTPClient{
-				Client:          params.Caller.Client,
-				ResponseHandler: responseHandler,
-			},
-		},
-		Module: params.Module.Selection,
-	}
-
-	conn.setBaseURL(providerInfo.BaseURL)
-
-	return conn, nil
+	return NewConnectorV2(*params)
 }
 
-func (c *Connector) setBaseURL(newURL string) {
-	c.BaseURL = newURL
-	c.Client.HTTPClient.Base = newURL
+func NewConnectorV2(params common.Parameters) (*Connector, error) {
+	return components.Initialize(providers.Marketo, params, constructor)
 }
 
-// Provider returns the connector provider.
-func (c *Connector) Provider() providers.Provider {
-	return providers.Marketo
+func constructor(base *components.Connector) (*Connector, error) {
+	base.HTTPClient().ResponseHandler = responseHandler
+
+	return &Connector{Connector: base}, nil
 }
 
 func (c *Connector) getAPIURL(objName string) (*urlbuilder.URL, error) {
+	modulePath := supportedModules[c.Module()].Path()
 	objName = common.AddSuffixIfNotExists(objName, ".json")
 
-	return urlbuilder.New(c.BaseURL, restAPIPrefix, c.Module.Path(), objName)
-}
-
-func (c *Connector) String() string {
-	return c.Provider() + ".Connector"
+	return urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, modulePath, objName)
 }

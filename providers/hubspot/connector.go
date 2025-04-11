@@ -2,46 +2,34 @@ package hubspot
 
 import (
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/paramsbuilder"
+	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/providers"
 )
 
 // Connector is a Hubspot connector.
 type Connector struct {
-	BaseURL string
-	Client  *common.JSONHTTPClient
-	Module  common.Module
+	// Basic connector
+	*components.Connector
 }
 
-// NewConnector returns a new Hubspot connector.
-func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	params, err := paramsbuilder.Apply(parameters{}, opts,
-		WithModule(common.ModuleRoot), // The module is resolved on behalf of the user if the option is missing.
-	)
+// NewConnector is an old constructor, use NewConnectorV2.
+// Deprecated.
+func NewConnector(opts ...Option) (*Connector, error) {
+	params, err := newParams(opts)
 	if err != nil {
 		return nil, err
 	}
 
-	// Read provider info & replace catalog variables with given substitutions, if any
-	providerInfo, err := providers.ReadInfo(providers.Hubspot)
-	if err != nil {
-		return nil, err
-	}
+	return NewConnectorV2(*params)
+}
 
-	conn = &Connector{
-		Client: &common.JSONHTTPClient{
-			HTTPClient: params.Client.Caller,
-		},
-		Module: params.Module.Selection,
-	}
+func NewConnectorV2(params common.Parameters) (*Connector, error) {
+	return components.Initialize(providers.Hubspot, params, constructor)
+}
 
-	conn.setBaseURL(providerInfo.BaseURL)
-	conn.Client.HTTPClient.ErrorHandler = conn.interpretError
+func constructor(base *components.Connector) (*Connector, error) {
+	conn := &Connector{Connector: base}
+	conn.SetErrorHandler(conn.interpretError)
 
 	return conn, nil
-}
-
-func (c *Connector) setBaseURL(newURL string) {
-	c.BaseURL = newURL
-	c.Client.HTTPClient.Base = newURL
 }

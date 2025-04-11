@@ -25,7 +25,7 @@ func (c *Connector) constructReadURL(params common.ReadParams) (*urlbuilder.URL,
 
 	// The only objects in Assets API supporting this are: Emails, Programs, SmartCampaigns,SmartLists
 	if !params.Since.IsZero() {
-		switch c.Module.ID {
+		switch c.Module() {
 		case providers.ModuleMarketoAssets:
 			fmtTime := params.Since.Format(time.RFC3339)
 			url.WithQueryParam("earliestUpdatedAt", fmtTime)
@@ -47,7 +47,7 @@ func (c *Connector) constructMetadataURL(objectName string) (*urlbuilder.URL, er
 		return c.getAPIURL(objectName)
 	}
 
-	return urlbuilder.New(c.BaseURL, path)
+	return urlbuilder.New(c.ProviderInfo().BaseURL, path)
 }
 
 func addFilteringIDQueries(urlbuilder *urlbuilder.URL, startIdx string) error {

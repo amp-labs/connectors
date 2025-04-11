@@ -65,8 +65,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				}},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.MethodPOST(),
-				Then:  mockserver.Response(http.StatusOK, sequencesResponse),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.PathSuffix("/api/v2/sequences"),
+				},
+				Then: mockserver.Response(http.StatusOK, sequencesResponse),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
@@ -143,8 +146,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.MethodPATCH(),
-				Then:  mockserver.Response(http.StatusOK, updateDealsResponse),
+				If: mockcond.And{
+					mockcond.MethodPATCH(),
+					mockcond.PathSuffix("/api/v2/emailAddresses/5"),
+				},
+				Then: mockserver.Response(http.StatusOK, updateDealsResponse),
 			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,

@@ -23,7 +23,7 @@ type parameters struct {
 	paramsbuilder.Workspace
 }
 
-func newParams(opts []Option) (*common.Parameters, error) { // nolint:unused
+func newParams(opts []Option) (*common.Parameters, error) {
 	oldParams, err := paramsbuilder.Apply(parameters{}, opts)
 	if err != nil {
 		return nil, err
