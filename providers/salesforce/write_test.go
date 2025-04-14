@@ -66,12 +66,12 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 					mockcond.MethodPOST(),
 					mockcond.QueryParam("_HttpMethod", "PATCH"),
 				},
-				Then: mockserver.Response(http.StatusOK, responseCreateOK),
+				Then: mockserver.Response(http.StatusOK, nil), // real salesforce returns an empty body
 			}.Server(),
 			Expected: &common.WriteResult{
 				Success:  true,
-				RecordId: "001ak00000OQTieAAH",
-				Errors:   []any{},
+				RecordId: "003ak000004dQCUAA2",
+				Errors:   nil,
 				Data:     nil,
 			},
 			ExpectedErrs: nil,
