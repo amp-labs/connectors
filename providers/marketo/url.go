@@ -1,7 +1,9 @@
 package marketo
 
 import (
+	"context"
 	"errors"
+	"log/slog"
 	"strconv"
 	"strings"
 	"time"
@@ -11,9 +13,17 @@ import (
 	"github.com/amp-labs/connectors/providers"
 )
 
-const restAPIPrefix = "rest" //nolint:gochecknoglobals
+const ( //nolint:gochecknoglobals
+	restAPIPrefix   = "rest"
+	pagingURLSuffix = "activities/pagingtoken"
+)
 
-func (c *Connector) constructReadURL(params common.ReadParams) (*urlbuilder.URL, error) {
+type pagingTokenResponse struct {
+	NextPageToken string `json:"nextPageToken"`
+	Success       bool   `json:"success"`
+}
+
+func (c *Connector) constructReadURL(ctx context.Context, params common.ReadParams) (*urlbuilder.URL, error) {
 	url, err := c.getAPIURL(params.ObjectName)
 	if err != nil {
 		return nil, err
@@ -21,6 +31,37 @@ func (c *Connector) constructReadURL(params common.ReadParams) (*urlbuilder.URL,
 
 	if err := constructURLQueries(url, params); err != nil {
 		return nil, err
+	}
+
+	// check if this is activities API, and if it's the first call
+	// if yes make a paging token call with the Since value provided
+	// And then add to url nextPageToken the token response from the
+	// paging token resource.
+	if params.ObjectName == "activities" && params.NextPage == "" && !params.Since.IsZero() {
+		// make the call to pagingToken
+		pagingTokenURL, err := c.getAPIURL(pagingURLSuffix)
+		if err != nil {
+			return nil, err
+		}
+
+		pagingTokenURL.WithQueryParam("sinceDatetime", params.Since.Format(time.RFC3339))
+
+		resp, err := c.Client.Get(ctx, pagingTokenURL.String())
+		if err != nil {
+			return nil, err
+		}
+
+		pagingResponse, err := common.UnmarshalJSON[pagingTokenResponse](resp)
+		if err != nil {
+			return nil, err
+		}
+
+		slog.Info("made a pagingToken request", "response", *pagingResponse)
+
+		url.WithQueryParam("nextPageToken", pagingResponse.NextPageToken)
+
+		// Add list of required activityTypeIds.
+		url.WithQueryParam("activityTypeIds", "1,2,3,6,7,8,9,10,11,12")
 	}
 
 	// The only objects in Assets API supporting this are: Emails, Programs, SmartCampaigns,SmartLists
