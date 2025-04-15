@@ -55,7 +55,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	return &objectMetadata, nil
 }
 
-func (c *Connector) buildReadRquest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, params.ObjectName)
 	if err != nil {
 		return nil, err
@@ -83,7 +83,7 @@ func getNextRecordsURL(linkHeader string) common.NextPageFunc {
 	}
 }
 
-// ParseLinkHeader extracts the next page URL from the Link Header response.
+// ParseNexPageLinkHeader extracts the next page URL from the Link Header response.
 func ParseNexPageLinkHeader(linkHeader string) (string, error) {
 	if linkHeader == "" {
 		return "", nil // this indicates we're done.

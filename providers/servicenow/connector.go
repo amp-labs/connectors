@@ -57,7 +57,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 		registry,
 		staticschema.RootModuleID,
 		operations.ReadHandlers{
-			BuildRequest:  connector.buildReadRquest,
+			BuildRequest:  connector.buildReadRequest,
 			ParseResponse: connector.parseReadResponse,
 			ErrorHandler:  common.InterpretError,
 		},
