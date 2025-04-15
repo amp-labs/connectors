@@ -49,6 +49,12 @@ var (
 		"/gists/starred":                     "gists/starred",
 		"/user/starred":                      "user/starred",
 		"/gists/public":                      "gists/public",
+		"/user/keys":                         "user/keys",
+		"/user/gpg_keys":                     "user/gpg_keys",
+		"/user/emails":                       "user/emails",
+		"/user/ssh_signing_keys":             "user/ssh_signing_keys",
+		"/user/social_accounts":              "user/social_accounts",
+		"/user/codespaces":                   "user/codespaces",
 	}
 
 	overrideDisplayName = map[string]string{ //nolint:gochecknoglobals

@@ -338,261 +338,6 @@
             }
           }
         },
-        "codespaces": {
-          "displayName": "Codespaces",
-          "path": "/user/codespaces",
-          "responseKey": "codespaces",
-          "fields": {
-            "billable_owner": {
-              "displayName": "billable_owner",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "created_at": {
-              "displayName": "created_at",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "devcontainer_path": {
-              "displayName": "devcontainer_path",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "display_name": {
-              "displayName": "display_name",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "environment_id": {
-              "displayName": "environment_id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "git_status": {
-              "displayName": "git_status",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "idle_timeout_minutes": {
-              "displayName": "idle_timeout_minutes",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "idle_timeout_notice": {
-              "displayName": "idle_timeout_notice",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "last_known_stop_notice": {
-              "displayName": "last_known_stop_notice",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "last_used_at": {
-              "displayName": "last_used_at",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "location": {
-              "displayName": "location",
-              "valueType": "singleSelect",
-              "providerType": "string",
-              "values": [
-                {
-                  "value": "EastUs",
-                  "displayValue": "EastUs"
-                },
-                {
-                  "value": "SouthEastAsia",
-                  "displayValue": "SouthEastAsia"
-                },
-                {
-                  "value": "WestEurope",
-                  "displayValue": "WestEurope"
-                },
-                {
-                  "value": "WestUs2",
-                  "displayValue": "WestUs2"
-                }
-              ]
-            },
-            "machine": {
-              "displayName": "machine",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "machines_url": {
-              "displayName": "machines_url",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "name": {
-              "displayName": "name",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "owner": {
-              "displayName": "owner",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "pending_operation": {
-              "displayName": "pending_operation",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "pending_operation_disabled_reason": {
-              "displayName": "pending_operation_disabled_reason",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "prebuild": {
-              "displayName": "prebuild",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "publish_url": {
-              "displayName": "publish_url",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "pulls_url": {
-              "displayName": "pulls_url",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "recent_folders": {
-              "displayName": "recent_folders",
-              "valueType": "other",
-              "providerType": "array"
-            },
-            "repository": {
-              "displayName": "repository",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "retention_expires_at": {
-              "displayName": "retention_expires_at",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "retention_period_minutes": {
-              "displayName": "retention_period_minutes",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "runtime_constraints": {
-              "displayName": "runtime_constraints",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "start_url": {
-              "displayName": "start_url",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "state": {
-              "displayName": "state",
-              "valueType": "singleSelect",
-              "providerType": "string",
-              "values": [
-                {
-                  "value": "Unknown",
-                  "displayValue": "Unknown"
-                },
-                {
-                  "value": "Created",
-                  "displayValue": "Created"
-                },
-                {
-                  "value": "Queued",
-                  "displayValue": "Queued"
-                },
-                {
-                  "value": "Provisioning",
-                  "displayValue": "Provisioning"
-                },
-                {
-                  "value": "Available",
-                  "displayValue": "Available"
-                },
-                {
-                  "value": "Awaiting",
-                  "displayValue": "Awaiting"
-                },
-                {
-                  "value": "Unavailable",
-                  "displayValue": "Unavailable"
-                },
-                {
-                  "value": "Deleted",
-                  "displayValue": "Deleted"
-                },
-                {
-                  "value": "Moved",
-                  "displayValue": "Moved"
-                },
-                {
-                  "value": "Shutdown",
-                  "displayValue": "Shutdown"
-                },
-                {
-                  "value": "Archived",
-                  "displayValue": "Archived"
-                },
-                {
-                  "value": "Starting",
-                  "displayValue": "Starting"
-                },
-                {
-                  "value": "ShuttingDown",
-                  "displayValue": "ShuttingDown"
-                },
-                {
-                  "value": "Failed",
-                  "displayValue": "Failed"
-                },
-                {
-                  "value": "Exporting",
-                  "displayValue": "Exporting"
-                },
-                {
-                  "value": "Updating",
-                  "displayValue": "Updating"
-                },
-                {
-                  "value": "Rebuilding",
-                  "displayValue": "Rebuilding"
-                }
-              ]
-            },
-            "stop_url": {
-              "displayName": "stop_url",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "updated_at": {
-              "displayName": "updated_at",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "url": {
-              "displayName": "url",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "web_url": {
-              "displayName": "web_url",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
         "conflicts": {
           "displayName": "Conflicts",
           "path": "/user/docker/conflicts",
@@ -753,33 +498,6 @@
             },
             "throttled_at": {
               "displayName": "throttled_at",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "emails": {
-          "displayName": "Emails",
-          "path": "/user/emails",
-          "responseKey": "",
-          "fields": {
-            "email": {
-              "displayName": "email",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "primary": {
-              "displayName": "primary",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "verified": {
-              "displayName": "verified",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "visibility": {
-              "displayName": "visibility",
               "valueType": "string",
               "providerType": "string"
             }
@@ -1399,88 +1117,6 @@
               "displayName": "user",
               "valueType": "other",
               "providerType": "object"
-            }
-          }
-        },
-        "gpg_keys": {
-          "displayName": "Gpg Keys",
-          "path": "/user/gpg_keys",
-          "responseKey": "",
-          "fields": {
-            "can_certify": {
-              "displayName": "can_certify",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "can_encrypt_comms": {
-              "displayName": "can_encrypt_comms",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "can_encrypt_storage": {
-              "displayName": "can_encrypt_storage",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "can_sign": {
-              "displayName": "can_sign",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "created_at": {
-              "displayName": "created_at",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "emails": {
-              "displayName": "emails",
-              "valueType": "other",
-              "providerType": "array"
-            },
-            "expires_at": {
-              "displayName": "expires_at",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "key_id": {
-              "displayName": "key_id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "name": {
-              "displayName": "name",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "primary_key_id": {
-              "displayName": "primary_key_id",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "public_key": {
-              "displayName": "public_key",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "raw_key": {
-              "displayName": "raw_key",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "revoked": {
-              "displayName": "revoked",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "subkeys": {
-              "displayName": "subkeys",
-              "valueType": "other",
-              "providerType": "array"
             }
           }
         },
@@ -2272,48 +1908,6 @@
               "displayName": "user",
               "valueType": "other",
               "providerType": "object"
-            }
-          }
-        },
-        "keys": {
-          "displayName": "Keys",
-          "path": "/user/keys",
-          "responseKey": "",
-          "fields": {
-            "created_at": {
-              "displayName": "created_at",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "read_only": {
-              "displayName": "read_only",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "title": {
-              "displayName": "title",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "url": {
-              "displayName": "url",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "verified": {
-              "displayName": "verified",
-              "valueType": "boolean",
-              "providerType": "boolean"
             }
           }
         },
@@ -4026,50 +3620,6 @@
             }
           }
         },
-        "social_accounts": {
-          "displayName": "Social Accounts",
-          "path": "/user/social_accounts",
-          "responseKey": "",
-          "fields": {
-            "provider": {
-              "displayName": "provider",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "url": {
-              "displayName": "url",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
-        "ssh_signing_keys": {
-          "displayName": "Ssh Signing Keys",
-          "path": "/user/ssh_signing_keys",
-          "responseKey": "",
-          "fields": {
-            "created_at": {
-              "displayName": "created_at",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "title": {
-              "displayName": "title",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
         "stubbed": {
           "displayName": "Stubbed",
           "path": "/user/marketplace_purchases/stubbed",
@@ -4681,6 +4231,115 @@
             }
           }
         },
+        "user/emails": {
+          "displayName": "User/Emails",
+          "path": "/user/emails",
+          "responseKey": "",
+          "fields": {
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "primary": {
+              "displayName": "primary",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "verified": {
+              "displayName": "verified",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "visibility": {
+              "displayName": "visibility",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "user/gpg_keys": {
+          "displayName": "User/Gpg Keys",
+          "path": "/user/gpg_keys",
+          "responseKey": "",
+          "fields": {
+            "can_certify": {
+              "displayName": "can_certify",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "can_encrypt_comms": {
+              "displayName": "can_encrypt_comms",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "can_encrypt_storage": {
+              "displayName": "can_encrypt_storage",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "can_sign": {
+              "displayName": "can_sign",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "emails": {
+              "displayName": "emails",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "expires_at": {
+              "displayName": "expires_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "key_id": {
+              "displayName": "key_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "primary_key_id": {
+              "displayName": "primary_key_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "public_key": {
+              "displayName": "public_key",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "raw_key": {
+              "displayName": "raw_key",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "revoked": {
+              "displayName": "revoked",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "subkeys": {
+              "displayName": "subkeys",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
         "user/installations": {
           "displayName": "User Installations",
           "path": "/user/installations",
@@ -5027,6 +4686,48 @@
             }
           }
         },
+        "user/keys": {
+          "displayName": "User/Keys",
+          "path": "/user/keys",
+          "responseKey": "",
+          "fields": {
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "read_only": {
+              "displayName": "read_only",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "verified": {
+              "displayName": "verified",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
         "user/memberships/orgs": {
           "displayName": "User Memberships Orgs",
           "path": "/user/memberships/orgs",
@@ -5090,6 +4791,50 @@
               "displayName": "user",
               "valueType": "other",
               "providerType": "object"
+            }
+          }
+        },
+        "user/social_accounts": {
+          "displayName": "User/Social Accounts",
+          "path": "/user/social_accounts",
+          "responseKey": "",
+          "fields": {
+            "provider": {
+              "displayName": "provider",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "user/ssh_signing_keys": {
+          "displayName": "User/Ssh Signing Keys",
+          "path": "/user/ssh_signing_keys",
+          "responseKey": "",
+          "fields": {
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
             }
           }
         },
