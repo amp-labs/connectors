@@ -337,7 +337,7 @@ type ObjectMetadata struct {
 }
 
 // AddFieldMetadata updates Fields and FieldsMap fields ensuring data consistency.
-func (m ObjectMetadata) AddFieldMetadata(fieldName string, fieldMetadata FieldMetadata) {
+func (m *ObjectMetadata) AddFieldMetadata(fieldName string, fieldMetadata FieldMetadata) {
 	m.Fields[fieldName] = fieldMetadata
 	m.FieldsMap[fieldName] = fieldMetadata.DisplayName
 }

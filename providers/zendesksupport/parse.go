@@ -52,7 +52,7 @@ func getNextRecordsURL(node *ajson.Node) (string, error) {
 	return jsonquery.New(node).StrWithDefault("after_url", "")
 }
 
-func makeGetRecords(moduleID common.ModuleID, objectName string) common.NodeRecordsFunc {
+func getRecords(moduleID common.ModuleID, objectName string) common.NodeRecordsFunc {
 	return func(node *ajson.Node) ([]*ajson.Node, error) {
 		responseFieldName := metadata.Schemas.LookupArrayFieldName(moduleID, objectName)
 
