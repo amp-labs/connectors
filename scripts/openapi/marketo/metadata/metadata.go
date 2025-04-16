@@ -9,6 +9,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/staticschema"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/marketo/metadata"
 	"github.com/getkin/kin-openapi/openapi2"
 )
@@ -43,7 +44,7 @@ func main() {
 
 	goutils.MustBeNil(metadata.FileManager.SaveSchemas(&staticschema.Metadata[staticschema.FieldMetadataMapV1, any]{
 		Modules: map[common.ModuleID]staticschema.Module[staticschema.FieldMetadataMapV1, any]{
-			common.ModuleRoot: {
+			providers.ModuleMarketoLeads: {
 				Objects: objectMetadata,
 			},
 		},
