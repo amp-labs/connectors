@@ -9,19 +9,13 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
-// 0. Support Table API, Internet shows this is the most used API.
-// 1. Support the whole or parts of the `now` namespace.
-// 2. Look into adding more namespace (modules) supports.
-
 type responseData struct {
 	Result []map[string]any `json:"result"`
 	// Other fields
 }
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
-	module := supportedModules[c.Module()]
-
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, module.Path(), objectName)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, objectName)
 	if err != nil {
 		return nil, err
 	}

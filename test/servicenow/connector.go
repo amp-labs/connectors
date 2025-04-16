@@ -28,7 +28,6 @@ func GetServiceNowConnector(ctx context.Context) *servicenow.Connector {
 
 	conn, err := servicenow.NewConnector((common.Parameters{
 		AuthenticatedClient: client,
-		Module:              servicenow.ModuleTable,
 		Workspace:           reader.Get(credscanning.Fields.Workspace),
 	}))
 	if err != nil {

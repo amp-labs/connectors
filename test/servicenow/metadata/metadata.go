@@ -12,17 +12,16 @@ import (
 func main() {
 	if err := run(); err != nil {
 		slog.Error(err.Error())
-		os.Exit(-1)
+		os.Exit(1)
 	}
 }
 
 func run() error {
 	ctx := context.Background()
 
-	// construct connector instance conn
 	conn := servicenow.GetServiceNowConnector(ctx)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"incident", "cmdb_ci_email_server"})
+	m, err := conn.ListObjectMetadata(ctx, []string{"now/table/incident", "now/contact", "now/consumer"})
 	if err != nil {
 		return err
 	}
