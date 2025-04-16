@@ -6,7 +6,6 @@ import (
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/reader"
 	"github.com/amp-labs/connectors/internal/components/schema"
-	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -25,6 +24,7 @@ type Connector struct {
 
 	// Supported operations
 	components.SchemaProvider
+	components.Reader
 }
 
 func NewConnector(params common.Parameters) (*Connector, error) {
@@ -55,7 +55,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 	connector.Reader = reader.NewHTTPReader(
 		connector.HTTPClient().Client,
 		registry,
-		staticschema.RootModuleID,
+		common.ModuleRoot,
 		operations.ReadHandlers{
 			BuildRequest:  connector.buildReadRequest,
 			ParseResponse: connector.parseReadResponse,

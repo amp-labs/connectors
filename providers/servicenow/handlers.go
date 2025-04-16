@@ -67,10 +67,11 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 func (c *Connector) parseReadResponse(
 	ctx context.Context,
 	params common.ReadParams,
+	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
 	return common.ParseResult(response,
-		common.GetRecordsUnderJSONPath("result"),
+		common.ExtractRecordsFromPath("result"),
 		getNextRecordsURL(response.Headers.Get("Link")),
 		common.GetMarshaledData,
 		params.Fields,
