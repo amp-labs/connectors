@@ -2167,103 +2167,6 @@
             }
           }
         },
-        "migrations": {
-          "displayName": "Migrations",
-          "path": "/user/migrations",
-          "responseKey": "",
-          "fields": {
-            "archive_url": {
-              "displayName": "archive_url",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "created_at": {
-              "displayName": "created_at",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "exclude": {
-              "displayName": "exclude",
-              "valueType": "other",
-              "providerType": "array"
-            },
-            "exclude_attachments": {
-              "displayName": "exclude_attachments",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "exclude_git_data": {
-              "displayName": "exclude_git_data",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "exclude_metadata": {
-              "displayName": "exclude_metadata",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "exclude_owner_projects": {
-              "displayName": "exclude_owner_projects",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "exclude_releases": {
-              "displayName": "exclude_releases",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "guid": {
-              "displayName": "guid",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "lock_repositories": {
-              "displayName": "lock_repositories",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "node_id": {
-              "displayName": "node_id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "org_metadata_only": {
-              "displayName": "org_metadata_only",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "owner": {
-              "displayName": "owner",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "repositories": {
-              "displayName": "repositories",
-              "valueType": "other",
-              "providerType": "array"
-            },
-            "state": {
-              "displayName": "state",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "updated_at": {
-              "displayName": "updated_at",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "url": {
-              "displayName": "url",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
         "organizations": {
           "displayName": "Organizations",
           "path": "/organizations",
@@ -4231,6 +4134,261 @@
             }
           }
         },
+        "user/codespaces": {
+          "displayName": "User Codespaces",
+          "path": "/user/codespaces",
+          "responseKey": "codespaces",
+          "fields": {
+            "billable_owner": {
+              "displayName": "billable_owner",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "devcontainer_path": {
+              "displayName": "devcontainer_path",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "display_name": {
+              "displayName": "display_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "environment_id": {
+              "displayName": "environment_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "git_status": {
+              "displayName": "git_status",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "idle_timeout_minutes": {
+              "displayName": "idle_timeout_minutes",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "idle_timeout_notice": {
+              "displayName": "idle_timeout_notice",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_known_stop_notice": {
+              "displayName": "last_known_stop_notice",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_used_at": {
+              "displayName": "last_used_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "location": {
+              "displayName": "location",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "EastUs",
+                  "displayValue": "EastUs"
+                },
+                {
+                  "value": "SouthEastAsia",
+                  "displayValue": "SouthEastAsia"
+                },
+                {
+                  "value": "WestEurope",
+                  "displayValue": "WestEurope"
+                },
+                {
+                  "value": "WestUs2",
+                  "displayValue": "WestUs2"
+                }
+              ]
+            },
+            "machine": {
+              "displayName": "machine",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "machines_url": {
+              "displayName": "machines_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "owner": {
+              "displayName": "owner",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "pending_operation": {
+              "displayName": "pending_operation",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "pending_operation_disabled_reason": {
+              "displayName": "pending_operation_disabled_reason",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "prebuild": {
+              "displayName": "prebuild",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "publish_url": {
+              "displayName": "publish_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "pulls_url": {
+              "displayName": "pulls_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "recent_folders": {
+              "displayName": "recent_folders",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "repository": {
+              "displayName": "repository",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "retention_expires_at": {
+              "displayName": "retention_expires_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "retention_period_minutes": {
+              "displayName": "retention_period_minutes",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "runtime_constraints": {
+              "displayName": "runtime_constraints",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "start_url": {
+              "displayName": "start_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "state": {
+              "displayName": "state",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Unknown",
+                  "displayValue": "Unknown"
+                },
+                {
+                  "value": "Created",
+                  "displayValue": "Created"
+                },
+                {
+                  "value": "Queued",
+                  "displayValue": "Queued"
+                },
+                {
+                  "value": "Provisioning",
+                  "displayValue": "Provisioning"
+                },
+                {
+                  "value": "Available",
+                  "displayValue": "Available"
+                },
+                {
+                  "value": "Awaiting",
+                  "displayValue": "Awaiting"
+                },
+                {
+                  "value": "Unavailable",
+                  "displayValue": "Unavailable"
+                },
+                {
+                  "value": "Deleted",
+                  "displayValue": "Deleted"
+                },
+                {
+                  "value": "Moved",
+                  "displayValue": "Moved"
+                },
+                {
+                  "value": "Shutdown",
+                  "displayValue": "Shutdown"
+                },
+                {
+                  "value": "Archived",
+                  "displayValue": "Archived"
+                },
+                {
+                  "value": "Starting",
+                  "displayValue": "Starting"
+                },
+                {
+                  "value": "ShuttingDown",
+                  "displayValue": "ShuttingDown"
+                },
+                {
+                  "value": "Failed",
+                  "displayValue": "Failed"
+                },
+                {
+                  "value": "Exporting",
+                  "displayValue": "Exporting"
+                },
+                {
+                  "value": "Updating",
+                  "displayValue": "Updating"
+                },
+                {
+                  "value": "Rebuilding",
+                  "displayValue": "Rebuilding"
+                }
+              ]
+            },
+            "stop_url": {
+              "displayName": "stop_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "web_url": {
+              "displayName": "web_url",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
         "user/emails": {
           "displayName": "User/Emails",
           "path": "/user/emails",
@@ -4791,6 +4949,103 @@
               "displayName": "user",
               "valueType": "other",
               "providerType": "object"
+            }
+          }
+        },
+        "user/migrations": {
+          "displayName": "User Migrations",
+          "path": "/user/migrations",
+          "responseKey": "",
+          "fields": {
+            "archive_url": {
+              "displayName": "archive_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "exclude": {
+              "displayName": "exclude",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "exclude_attachments": {
+              "displayName": "exclude_attachments",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "exclude_git_data": {
+              "displayName": "exclude_git_data",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "exclude_metadata": {
+              "displayName": "exclude_metadata",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "exclude_owner_projects": {
+              "displayName": "exclude_owner_projects",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "exclude_releases": {
+              "displayName": "exclude_releases",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "guid": {
+              "displayName": "guid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "lock_repositories": {
+              "displayName": "lock_repositories",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "node_id": {
+              "displayName": "node_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "org_metadata_only": {
+              "displayName": "org_metadata_only",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "owner": {
+              "displayName": "owner",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "repositories": {
+              "displayName": "repositories",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "state": {
+              "displayName": "state",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
             }
           }
         },

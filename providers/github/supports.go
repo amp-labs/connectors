@@ -51,7 +51,7 @@ var (
 
 var (
 	supportPagination = datautils.NewSet( //nolint: gochecknoglobals
-		"advisories", "blocks", "classrooms", "codespaces",
+		"advisories", "blocks", "classrooms", "user/codespaces",
 		"deliveries", "emails", "events", "followers", "following", "gists",
 		"gists/starred", "gpg_keys", "installation-requests", "installation/repositories",
 		"issues", "keys", "licenses", "marketplace_listing/plans",
