@@ -83,9 +83,8 @@ func (c *Connector) parseReadResponse(
 
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
 	method := http.MethodPost
-	module := supportedModules[c.Module()]
 
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, module.Path(), params.ObjectName)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -107,6 +106,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 func (c *Connector) parseWriteResponse(
 	ctx context.Context,
 	params common.WriteParams,
+	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.WriteResult, error) {
 	body, ok := response.Body()

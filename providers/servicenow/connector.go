@@ -26,6 +26,7 @@ type Connector struct {
 	// Supported operations
 	components.SchemaProvider
 	components.Reader
+	components.Writer
 }
 
 func NewConnector(params common.Parameters) (*Connector, error) {
@@ -68,7 +69,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 	connector.Writer = writer.NewHTTPWriter(
 		connector.HTTPClient().Client,
 		registry,
-		ModuleTable,
+		common.ModuleRoot,
 		operations.WriteHandlers{
 			BuildRequest:  connector.buildWriteRequest,
 			ParseResponse: connector.parseWriteResponse,
