@@ -23,7 +23,14 @@ func NewProviderContext(
 	workspace string,
 	metadata map[string]string,
 ) (*ProviderContext, error) {
-	pctx := &ProviderContext{provider: provider}
+	if len(module) == 0 {
+		module = common.ModuleRoot
+	}
+
+	pctx := &ProviderContext{
+		provider: provider,
+		moduleID: module,
+	}
 
 	if metadata == nil {
 		metadata = make(map[string]string)
@@ -31,18 +38,17 @@ func NewProviderContext(
 
 	metadata[catalogreplacer.VariableWorkspace] = workspace
 
-	providerInfo, err := providers.ReadInfo(provider, paramsbuilder.NewCatalogVariables(metadata)...)
+	var err error
+
+	pctx.providerInfo, err = providers.ReadInfo(provider, paramsbuilder.NewCatalogVariables(metadata)...)
 	if err != nil {
 		return nil, err
 	}
 
-	pctx.providerInfo = providerInfo
-
-	if len(module) == 0 {
-		module = common.ModuleRoot
+	pctx.moduleInfo, err = pctx.providerInfo.ReadModuleInfo(module)
+	if err != nil {
+		return nil, err
 	}
-
-	pctx.moduleID = module
 
 	return pctx, nil
 }
