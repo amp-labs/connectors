@@ -11,7 +11,7 @@ func (c *Connector) Delete(ctx context.Context, config common.DeleteParams) (*co
 		return nil, err
 	}
 
-	if !supportedObjectsByDelete[c.Module.ID].Has(config.ObjectName) {
+	if !supportedObjectsByDelete[c.moduleID].Has(config.ObjectName) {
 		return nil, common.ErrOperationNotSupportedForObject
 	}
 
