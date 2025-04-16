@@ -36,13 +36,13 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 
 		resp, err := c.Client.Get(ctx, url.String())
 		if err != nil {
-			runFallback(c.Module.ID, obj, &metadataResult)
+			runFallback(c.moduleID, obj, &metadataResult)
 
 			continue
 		}
 
 		if _, ok := resp.Body(); !ok {
-			runFallback(c.Module.ID, obj, &metadataResult)
+			runFallback(c.moduleID, obj, &metadataResult)
 
 			continue
 		}
@@ -50,7 +50,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 		data, err := parseMetadataFromResponse(resp, obj)
 		if err != nil {
 			if errors.Is(err, common.ErrMissingExpectedValues) {
-				runFallback(c.Module.ID, obj, &metadataResult)
+				runFallback(c.moduleID, obj, &metadataResult)
 
 				continue
 			} else {

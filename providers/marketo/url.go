@@ -25,7 +25,7 @@ func (c *Connector) constructReadURL(params common.ReadParams) (*urlbuilder.URL,
 
 	// The only objects in Assets API supporting this are: Emails, Programs, SmartCampaigns,SmartLists
 	if !params.Since.IsZero() {
-		switch c.Module.ID {
+		switch c.moduleID {
 		case providers.ModuleMarketoAssets:
 			fmtTime := params.Since.Format(time.RFC3339)
 			url.WithQueryParam("earliestUpdatedAt", fmtTime)

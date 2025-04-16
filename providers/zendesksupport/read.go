@@ -15,7 +15,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	if !supportedObjectsByRead[c.Module.ID].Has(config.ObjectName) {
+	if !supportedObjectsByRead[c.moduleID].Has(config.ObjectName) {
 		return nil, common.ErrOperationNotSupportedForObject
 	}
 
@@ -29,7 +29,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	responseFieldName := metadata.Schemas.LookupArrayFieldName(c.Module.ID, config.ObjectName)
+	responseFieldName := metadata.Schemas.LookupArrayFieldName(c.moduleID, config.ObjectName)
 
 	return common.ParseResult(
 		rsp,
@@ -52,8 +52,8 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 		return nil, err
 	}
 
-	pageSizeStr := metadata.Schemas.PageSize(c.Module.ID, config.ObjectName)
-	isIncremental := metadata.Schemas.IsIncrementalRead(c.Module.ID, config.ObjectName)
+	pageSizeStr := metadata.Schemas.PageSize(c.moduleID, config.ObjectName)
+	isIncremental := metadata.Schemas.IsIncrementalRead(c.moduleID, config.ObjectName)
 
 	if isIncremental {
 		// Incremental endpoints requires start query parameter.
@@ -65,7 +65,7 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 	} else {
 		// Different objects have different pagination types.
 		// https://developer.zendesk.com/api-reference/introduction/pagination/#using-offset-pagination
-		ptype := metadata.Schemas.LookupPaginationType(c.Module.ID, config.ObjectName)
+		ptype := metadata.Schemas.LookupPaginationType(c.moduleID, config.ObjectName)
 		if ptype == "cursor" {
 			url.WithQueryParam("page[size]", pageSizeStr)
 		}
