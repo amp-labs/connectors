@@ -10,12 +10,12 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-// requestCustomFields makes and API call to get model describing custom fields.
+// requestCustomTicketFields makes and API call to get model describing custom fields.
 // For not applicable objects the empty mapping is returned.
 // The mapping is between "custom field id" and struct containing "human-readable field name".
 //
 // Custom fields are always associated with "ticket_fields" regardless of the object type.
-func (c *Connector) requestCustomFields(
+func (c *Connector) requestCustomTicketFields(
 	ctx context.Context, objectName string,
 ) (map[int64]ticketField, error) {
 	if !objectsWithCustomFields[c.Module.ID].Has(objectName) {
@@ -23,6 +23,10 @@ func (c *Connector) requestCustomFields(
 		return map[int64]ticketField{}, nil
 	}
 
+	return c.fetchCustomTicketFields(ctx)
+}
+
+func (c *Connector) fetchCustomTicketFields(ctx context.Context) (map[int64]ticketField, error) {
 	url, err := c.getReadURL("ticket_fields")
 	if err != nil {
 		return nil, errors.Join(common.ErrResolvingCustomFields, err)

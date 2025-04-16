@@ -29,7 +29,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	customFields, err := c.requestCustomFields(ctx, config.ObjectName)
+	customFields, err := c.requestCustomTicketFields(ctx, config.ObjectName)
 	if err != nil {
 		return nil, err
 	}
