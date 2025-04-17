@@ -13,6 +13,10 @@ const pageSize = 250
 
 func nextRecordsURL(reqLink *url.URL) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
+		if reqLink == nil {
+			return "", nil
+		}
+
 		pagination, err := jsonquery.New(node).StringOptional("bookmark")
 		if err != nil {
 			return "", err
