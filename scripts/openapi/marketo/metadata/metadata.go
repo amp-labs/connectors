@@ -9,6 +9,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/staticschema"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/marketo/metadata"
 	"github.com/getkin/kin-openapi/openapi2"
 )
@@ -32,19 +33,25 @@ func main() {
 	ldef, docL, err := constructDefinitions(leads, 4) //nolint:gomnd,mnd
 	goutils.MustBeNil(err)
 
-	// Initializes an empty ObjectMetadata variable
-	objectMetadata := make(map[string]staticschema.Object[staticschema.FieldMetadataMapV1, any])
+	// Initializes an empty map of leads ObjectMetadata
+	leadsMetadata := make(map[string]staticschema.Object[staticschema.FieldMetadataMapV1, any])
 
-	// Add Lead metadata details
-	objectMetadata = generateMetadata(ldef, docL, objectMetadata)
+	// Initializes an empty map of assets ObjectMetadata
+	assetsMetadata := make(map[string]staticschema.Object[staticschema.FieldMetadataMapV1, any])
 
-	// Adds Assets Metadata details to the same variable declared above.
-	objectMetadata = generateMetadata(def, docA, objectMetadata)
+	// Adds Leads metadata details
+	leadsMetadata = generateMetadata(ldef, docL, leadsMetadata)
+
+	// Adds Assets Metadata details
+	assetsMetadata = generateMetadata(def, docA, assetsMetadata)
 
 	goutils.MustBeNil(metadata.FileManager.SaveSchemas(&staticschema.Metadata[staticschema.FieldMetadataMapV1, any]{
 		Modules: map[common.ModuleID]staticschema.Module[staticschema.FieldMetadataMapV1, any]{
-			common.ModuleRoot: {
-				Objects: objectMetadata,
+			providers.ModuleMarketoLeads: {
+				Objects: leadsMetadata,
+			},
+			providers.ModuleMarketoAssets: {
+				Objects: assetsMetadata,
 			},
 		},
 	}))
