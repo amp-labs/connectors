@@ -12,7 +12,7 @@ Heyreach API environment : public
 | LinkedInAccount | li_account | read |
 | List            | list       | read |
 
-Heyreach connector offers API are:
+Heyreach connector offers API for:
   - PublicAuthentication
       - CheckApiKey
   - PublicCampaigns
@@ -51,10 +51,12 @@ Heyreach connector offers API are:
   - PublicMyNetwork
       - GetMyNetworkForSender
 
-# Getting Metadata
+# Getting Metadata and Read
 Supported objects for metadata are PublicCampaigns, PublicLinkedAccount, and PublicList. The remaining objects do not have a GetAll endpoint. 
 
 Reason for unsupported object:
-1. PublicInbox - This endpoint requires campaingIds and linkedInAccountIds
-2. PublicStats - This endpoint requires accountIds, campaignIds, startDate and endDate.
-3. PublicMyNetwork - This endpoint requires senderID
+1. PublicInbox - This endpoint requires campaignIds and linkedInAccountIds in body.
+2. PublicStats - This endpoint requires accountIds, campaignIds, startDate and endDate in body.
+3. PublicMyNetwork - This endpoint requires senderID in body.
+
+Read functionality uses Post method instead of Get method.
