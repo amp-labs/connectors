@@ -21,5 +21,5 @@ type ResponseError struct {
 }
 
 func (r ResponseError) CombineErr(base error) error {
-	return fmt.Errorf("%w: %v", base, r.Message)
+	return fmt.Errorf("%w: [%v] %v", base, r.Code, r.Message)
 }

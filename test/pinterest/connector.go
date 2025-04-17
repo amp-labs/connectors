@@ -22,7 +22,7 @@ func GetConnector(ctx context.Context) *pinterest.Connector {
 		common.WithOAuthToken(reader.GetOauthToken()),
 	)
 	if err != nil {
-		utils.Fail(err.Error())
+		utils.Fail("error creating connector", "error", err)
 	}
 
 	conn, err := pinterest.NewConnector(common.Parameters{
@@ -43,6 +43,22 @@ func getConfig(reader *credscanning.ProviderCredentials) *oauth2.Config {
 			AuthURL:   "https://www.pinterest.com/oauth",
 			TokenURL:  "https://api.pinterest.com/v5/oauth/token",
 			AuthStyle: oauth2.AuthStyleAutoDetect,
+		},
+		Scopes: []string{
+			"ads:read",
+			"ads:write",
+			"boards:read",
+			"boards:read_secret",
+			"boards:write",
+			"boards:write_secret",
+			"pins:read",
+			"pins:read_secret",
+			"pins:write",
+			"pins:write_secret",
+			"user_accounts:read",
+			"catalogs:read",
+			"catalogs:write",
+			"biz_access:read",
 		},
 	}
 
