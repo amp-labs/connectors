@@ -7,8 +7,6 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
-const RootModuleID common.ModuleID = "root"
-
 // NewMetadata constructs empty Metadata. To populate it with data use Metadata.Add method.
 func NewMetadata[F FieldMetadataMap]() *Metadata[F, any] {
 	return NewExtendedMetadata[F, any]()
@@ -268,7 +266,7 @@ func (m *Metadata[F, C]) ObjectNames() datautils.UniqueLists[common.ModuleID, st
 
 		moduleObjectNames[key] = names
 
-		if key == RootModuleID {
+		if key == common.ModuleRoot {
 			// Empty ModuleID could be passed referring to the same root module.
 			moduleObjectNames[""] = names
 		}
@@ -340,7 +338,7 @@ func (m *Module[F, C]) withPath(path string) {
 // In case an empty ModuleID is provided we fall back to the default root module id.
 func moduleIdentifier(id common.ModuleID) common.ModuleID {
 	if len(id) == 0 {
-		return RootModuleID
+		return common.ModuleRoot
 	}
 
 	return id

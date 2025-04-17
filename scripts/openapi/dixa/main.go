@@ -4,6 +4,7 @@ import (
 	_ "embed"
 	"log/slog"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/staticschema"
@@ -59,7 +60,7 @@ func main() {
 		}
 
 		for _, field := range object.Fields {
-			schemas.Add(staticschema.RootModuleID, object.ObjectName, object.DisplayName, object.URLPath, object.ResponseKey,
+			schemas.Add(common.ModuleRoot, object.ObjectName, object.DisplayName, object.URLPath, object.ResponseKey,
 				staticschema.FieldMetadataMapV1{
 					field.Name: field.Name,
 				}, nil, object.Custom)

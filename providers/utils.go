@@ -167,6 +167,27 @@ func (i *ProviderInfo) GetOption(key string) (string, bool) {
 	return val, ok
 }
 
+func (i *ProviderInfo) ReadModuleInfo(moduleID common.ModuleID) (ModuleInfo, error) {
+	rootModule := ModuleInfo{
+		BaseURL: i.BaseURL,
+		Support: Support{},
+	}
+
+	if i.Modules == nil {
+		// Default to provider information to construct root module.
+		return rootModule, nil
+	}
+
+	modules := *i.Modules
+
+	module, ok := modules[moduleID]
+	if !ok {
+		return ModuleInfo{}, common.ErrMissingModule
+	}
+
+	return module, nil
+}
+
 // UnauthorizedHandler is a function that is called when an unauthorized response is received.
 // The handler can be used to refresh the token or to perform other actions. The client is
 // included so you can make additional requests if needed, but be careful not to create an

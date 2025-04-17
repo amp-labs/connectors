@@ -15,7 +15,8 @@ type Connector struct {
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	params, err := paramsbuilder.Apply(parameters{}, opts,
-		WithModule(ModuleLeads), // The module is resolved on behalf of the user if the option is missing.
+		// The module is resolved on behalf of the user if the option is missing.
+		WithModule(providers.ModuleMarketoLeads),
 	)
 	if err != nil {
 		return nil, err

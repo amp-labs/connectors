@@ -8,6 +8,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/keap/metadata"
 )
 
@@ -64,13 +65,13 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 		return nil, err
 	}
 
-	if c.Module.ID == ModuleV1 {
+	if c.Module.ID == providers.ModuleKeapV1 {
 		url.WithQueryParam("limit", strconv.Itoa(DefaultPageSize))
 
 		if !config.Since.IsZero() {
 			url.WithQueryParam("since", datautils.Time.FormatRFC3339inUTCWithMilliseconds(config.Since))
 		}
-	} else if c.Module.ID == ModuleV2 {
+	} else if c.Module.ID == providers.ModuleKeapV2 {
 		// Since parameter is not applicable to objects in Module V2.
 		if config.ObjectName == "contact_link_types" {
 			url.WithQueryParam("pageSize", strconv.Itoa(DefaultPageSize))

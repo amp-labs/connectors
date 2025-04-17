@@ -6,7 +6,7 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/staticschema"
-	"github.com/amp-labs/connectors/providers/klaviyo"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/klaviyo/metadata"
 	"github.com/amp-labs/connectors/providers/klaviyo/openapi"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
@@ -59,7 +59,8 @@ func main() {
 		}
 
 		for _, field := range object.Fields {
-			schemas.Add(klaviyo.Module2024Oct15, object.ObjectName, object.DisplayName, object.URLPath, object.ResponseKey,
+			schemas.Add(providers.ModuleKlaviyo2024Oct15,
+				object.ObjectName, object.DisplayName, object.URLPath, object.ResponseKey,
 				staticschema.FieldMetadataMapV1{
 					field.Name: field.Name,
 				}, nil, object.Custom)

@@ -7,6 +7,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -110,7 +111,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.WriteConnector, error) {
-				return constructTestConnector(tt.Server.URL, ModuleV1)
+				return constructTestConnector(tt.Server.URL, providers.ModuleKeapV1)
 			})
 		})
 	}
