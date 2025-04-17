@@ -1,0 +1,162 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "",
+      "objects": {
+        "users/list": {
+          "displayName": "Users",
+          "path": "/users/list",
+          "docs": "https://devdocs.drift.com/docs/listing-users",
+          "fields": {
+            "id": "id",
+            "orgId": "orgId",
+            "name": "name",
+            "alias": "alias",
+            "email": "email",
+            "phone": "phone",
+            "locale": "locale",
+            "availability": "availability",
+            "role": "role",
+            "timeZone": "timeZone",
+            "avatarUrl": "avatarUrl",
+            "verified": "verified",
+            "bot": "bot",
+            "createdAt": "createdAt",
+            "updatedAt": "updatedAt"
+          }
+        },
+        "conversations/list": {
+          "displayName": "Conversations List",
+          "path": "/conversations/list",
+          "docs": "https://devdocs.drift.com/docs/list-conversations",
+          "fields": {
+            "id": "id",
+            "participants": "participants",
+            "status": "status",
+            "contactId": "contactId",
+            "inboxId": "inboxId",
+            "createdAt": "createdAt",
+            "updatedAt": "updatedAt",
+            "relatedPlaybookId": "relatedPlaybookId",
+            "conversationTags": "conversationTags"
+          }
+        },
+        "teams/org": {
+          "displayName": "Teams in Org",
+          "path": "/teams/org",
+          "docs": "https://devdocs.drift.com/docs/listing-teams-org",
+          "fields": {
+            "id": "id",
+            "orgId": "orgId",
+            "workspaceId": "workspaceId",
+            "name": "name",
+            "updatedAt": "updatedAt",
+            "members": "members",
+            "owner": "owner",
+            "status": "status",
+            "main": "main",
+            "autoOffline": "autoOffline",
+            "teamAvailabilityMode": "teamAvailabilityMode",
+            "responseTimerEnabled": "responseTimerEnabled"
+          }
+        },
+        "users/meetings/org": {
+          "displayName": "User Meetings",
+          "path": "/users/meetings/org",
+          "docs": "https://devdocs.drift.com/docs/get-booked-meetings",
+          "fields": {
+            "conversationId": "conversationId",
+            "agentId": "agentId",
+            "orgId": "orgId",
+            "status": "status",
+            "meetingSource": "meetingSource",
+            "schedulerId": "schedulerId",
+            "eventId": "eventId",
+            "slug": "slug",
+            "slotStart": "slotStart",
+            "slotEnd": "slotEnd",
+            "updatedAt": "updatedAt",
+            "scheduledAt": "scheduledAt",
+            "meetingType": "meetingType",
+            "meetingSlug": "meetingSlug",
+            "isOrgSlug": "isOrgSlug",
+            "endUserTimeZone": "endUserTimeZone",
+            "conferenceType": "conferenceType",
+            "conferenceDetails": "conferenceDetails",
+            "isRecurring": "isRecurring",
+            "isPrivate": "isPrivate"
+          }
+        },
+        "playbooks/list": {
+          "displayName": "Playbooks Lists",
+          "path": "/playbooks/list",
+          "docs": "https://devdocs.drift.com/docs/get-playbooks",
+          "fields": {
+            "id": "id",
+            "name": "name",
+            "orgId": "orgId",
+            "meta": "meta",
+            "createdAt": "createdAt",
+            "updatedAt": "updatedAt",
+            "createdAuthorId": "createdAuthorId",
+            "updatedAuthorId": "updatedAuthorId",
+            "interactionId": "interactionId",
+            "reportType": "reportType",
+            "goals": "goals"
+          }
+        },
+        "playbooks/clp": {
+          "displayName": "Playbooks Clp",
+          "path": "/playbooks/clp",
+          "docs": "https://devdocs.drift.com/docs/retrieve-conversational-landing-pages",
+          "fields": {
+            "playbookId": "playbookId",
+            "playbookName": "playbookName",
+            "landingPageUrl": "landingPageUrl"
+          }
+        },
+        "conversations/stats": {
+          "displayName": "Conversations Stats",
+          "path": "/conversations/stats",
+          "docs": "https://devdocs.drift.com/docs/retrieve-conversational-landing-pages",
+          "fields": {
+            "conversationCount": "conversationCount"
+          }
+        },
+        "scim/Users": {
+          "displayName": "Scim Users",
+          "path": "/scim/Users",
+          "docs": "https://devdocs.drift.com/docs/searching",
+          "fields": {
+            "schemas": "schemas",
+            "id": "id",
+            "externalId": "externalId",
+            "meta": "meta",
+            "userName": "userName",
+            "name": "name",
+            "displayName": "displayName",
+            "nickName": "nickName",
+            "profileUrl": "profileUrl",
+            "title": "title",
+            "userType": "userType",
+            "preferredLanguage": "preferredLanguage",
+            "locale": "locale",
+            "timezone": "timezone",
+            "active": "active",
+            "password": "password",
+            "emails": "emails",
+            "phoneNumbers": "phoneNumbers",
+            "ims": "ims",
+            "photos": "photos",
+            "addresses": "addresses",
+            "groups": "groups",
+            "entitlements": "entitlements",
+            "roles": "roles",
+            "x509Certificates": "x509Certificates"
+          }
+        }
+      }
+    }
+  }
+}

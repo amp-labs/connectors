@@ -5,7 +5,6 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
-	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers/chilipiper/metadata"
 )
 
@@ -103,7 +102,7 @@ func metadataFallback(moduleID common.ModuleID, objectName string) (*common.Obje
 func openAPIFallback(obj string, res *common.ListObjectMetadataResult,
 ) *common.ListObjectMetadataResult { //nolint:unparam
 	// Try fallback function
-	data, err := metadataFallback(staticschema.RootModuleID, obj)
+	data, err := metadataFallback(common.ModuleRoot, obj)
 	if err != nil {
 		res.Errors[obj] = err
 

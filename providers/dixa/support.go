@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
-	"github.com/amp-labs/connectors/internal/staticschema"
 )
 
 func supportedOperations() components.EndpointRegistryInput {
@@ -23,7 +23,7 @@ func supportedOperations() components.EndpointRegistryInput {
 	}
 
 	return components.EndpointRegistryInput{
-		staticschema.RootModuleID: {
+		common.ModuleRoot: {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,

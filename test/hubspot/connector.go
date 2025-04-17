@@ -17,7 +17,7 @@ func GetHubspotConnector(ctx context.Context) *hubspot.Connector {
 
 	conn, err := hubspot.NewConnector(
 		hubspot.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
-		hubspot.WithModule(hubspot.ModuleCRM))
+		hubspot.WithModule(providers.ModuleHubspotCRM))
 	if err != nil {
 		utils.Fail("error creating hubspot connector", "error", err)
 	}

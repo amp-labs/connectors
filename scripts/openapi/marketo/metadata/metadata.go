@@ -43,7 +43,7 @@ func main() {
 
 	goutils.MustBeNil(metadata.FileManager.SaveSchemas(&staticschema.Metadata[staticschema.FieldMetadataMapV1, any]{
 		Modules: map[common.ModuleID]staticschema.Module[staticschema.FieldMetadataMapV1, any]{
-			staticschema.RootModuleID: {
+			common.ModuleRoot: {
 				Objects: objectMetadata,
 			},
 		},

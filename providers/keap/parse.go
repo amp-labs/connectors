@@ -3,6 +3,7 @@ package keap
 import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/keap/metadata"
 	"github.com/spyzhov/ajson"
 )
@@ -17,7 +18,7 @@ func makeGetRecords(moduleID common.ModuleID, objectName string) common.NodeReco
 
 func makeNextRecordsURL(moduleID common.ModuleID) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
-		if moduleID == ModuleV1 {
+		if moduleID == providers.ModuleKeapV1 {
 			return jsonquery.New(node).StrWithDefault("next", "")
 		}
 

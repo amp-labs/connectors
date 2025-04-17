@@ -30,7 +30,16 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, err
 	}
 
-	return parseWriteResult(rsp)
+	rslt, err := parseWriteResult(rsp)
+	if err != nil {
+		return nil, err
+	}
+
+	if config.RecordId != "" && rslt.Success && rslt.RecordId == "" {
+		rslt.RecordId = config.RecordId
+	}
+
+	return rslt, nil
 }
 
 // parseWriteResult parses the response from writing to Salesforce API. A 2xx return type is assumed.

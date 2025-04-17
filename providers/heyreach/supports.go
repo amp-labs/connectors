@@ -4,12 +4,14 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
-	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers/heyreach/metadata"
 )
 
 func supportedOperations() components.EndpointRegistryInput {
+	readSupport := metadata.Schemas.ObjectNames().GetList(common.ModuleRoot)
+
 	supportWrite := []string{
 		"list/CreateEmptyList",
 		"campaign/AddLeadsToCampaignV2",
@@ -17,10 +19,8 @@ func supportedOperations() components.EndpointRegistryInput {
 		"inbox/SendMessage",
 	}
 
-	readSupport := metadata.Schemas.ObjectNames().GetList(staticschema.RootModuleID)
-
 	return components.EndpointRegistryInput{
-		staticschema.RootModuleID: {
+		common.ModuleRoot: {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,

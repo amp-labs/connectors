@@ -8,6 +8,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -168,7 +169,7 @@ func TestReadV1(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.ReadConnector, error) {
-				return constructTestConnector(tt.Server.URL, ModuleV1)
+				return constructTestConnector(tt.Server.URL, providers.ModuleKeapV1)
 			})
 		})
 	}
@@ -219,7 +220,7 @@ func TestReadV2(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.ReadConnector, error) {
-				return constructTestConnector(tt.Server.URL, ModuleV2)
+				return constructTestConnector(tt.Server.URL, providers.ModuleKeapV2)
 			})
 		})
 	}

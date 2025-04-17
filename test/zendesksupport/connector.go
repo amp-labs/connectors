@@ -19,7 +19,7 @@ func GetZendeskSupportConnector(ctx context.Context) *zendesksupport.Connector {
 	conn, err := zendesksupport.NewConnector(
 		zendesksupport.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
 		zendesksupport.WithWorkspace(reader.Get(credscanning.Fields.Workspace)),
-		zendesksupport.WithModule(zendesksupport.ModuleTicketing),
+		zendesksupport.WithModule(providers.ModuleZendeskTicketing),
 	)
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)
