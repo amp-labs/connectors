@@ -6,7 +6,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -18,7 +17,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 
 	campaignResponse := testutils.DataFromFile(t, "campaign.json")
 	listResponse := testutils.DataFromFile(t, "list.json")
-	liAccoountResponse := testutils.DataFromFile(t, "li_account.json")
+	liAccountResponse := testutils.DataFromFile(t, "li_account.json")
 
 	tests := []testroutines.Metadata{
 		{
@@ -40,7 +39,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 					Then: mockserver.Response(http.StatusOK, listResponse),
 				}, {
 					If:   mockcond.PathSuffix("public/li_account/GetAll"),
-					Then: mockserver.Response(http.StatusOK, liAccoountResponse),
+					Then: mockserver.Response(http.StatusOK, liAccountResponse),
 				}},
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
@@ -184,7 +183,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 
 func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(common.Parameters{
-		Module:              staticschema.RootModuleID,
+		Module:              common.ModuleRoot,
 		AuthenticatedClient: http.DefaultClient,
 	})
 	if err != nil {
