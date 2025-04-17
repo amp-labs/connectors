@@ -1,10 +1,10 @@
 package providers
 
-const GoToWebinar Provider = "goToWebinar"
+const GoTo Provider = "goTo"
 
 func init() {
-	SetInfo(GoToWebinar, ProviderInfo{
-		DisplayName: "GoToWebinar",
+	SetInfo(GoTo, ProviderInfo{
+		DisplayName: "GoTo",
 		AuthType:    Oauth2,
 		BaseURL:     "https://api.getgo.com",
 		Oauth2Opts: &Oauth2Opts{
