@@ -8,6 +8,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/reader"
 	"github.com/amp-labs/connectors/internal/components/schema"
+	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/heyreach/metadata"
 )
@@ -22,6 +23,7 @@ type Connector struct {
 	// Supported operations
 	components.SchemaProvider
 	components.Reader
+	components.Writer
 }
 
 func NewConnector(params common.Parameters) (*Connector, error) {
@@ -29,7 +31,6 @@ func NewConnector(params common.Parameters) (*Connector, error) {
 	return components.Initialize(providers.HeyReach, params, constructor)
 }
 
-// nolint:funlen
 func constructor(base *components.Connector) (*Connector, error) {
 	connector := &Connector{Connector: base}
 
@@ -48,6 +49,17 @@ func constructor(base *components.Connector) (*Connector, error) {
 		operations.ReadHandlers{
 			BuildRequest:  connector.buildReadRequest,
 			ParseResponse: connector.parseReadResponse,
+			ErrorHandler:  common.InterpretError,
+		},
+	)
+
+	connector.Writer = writer.NewHTTPWriter(
+		connector.HTTPClient().Client,
+		registry,
+		connector.ProviderContext.Module(),
+		operations.WriteHandlers{
+			BuildRequest:  connector.buildWriteRequest,
+			ParseResponse: connector.parseWriteResponse,
 			ErrorHandler:  common.InterpretError,
 		},
 	)

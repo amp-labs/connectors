@@ -12,7 +12,7 @@ const (
 	DefaultPageSize = 100
 )
 
-// To determine the next page records for the objects.
+// makeNextRecord creates a function that determines the next page token based on the current offset.
 func makeNextRecord(offset int) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
 		// Extract the data key value from the response.

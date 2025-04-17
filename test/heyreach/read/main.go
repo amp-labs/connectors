@@ -91,7 +91,7 @@ func testReadList(ctx context.Context, conn *ap.Connector) error {
 
 	res, err := conn.Read(ctx, params)
 	if err != nil {
-		return fmt.Errorf("failed to read li_account: %w", err)
+		return fmt.Errorf("failed to read list: %w", err)
 	}
 
 	// Print the results.
