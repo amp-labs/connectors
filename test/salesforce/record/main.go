@@ -21,7 +21,7 @@ func main() {
 
 	conn := connTest.GetSalesforceConnector(ctx)
 
-	res, err := conn.GetRecordsWithIds(ctx,
+	res, err := conn.GetRecordsByIds(ctx,
 		"Account",
 		[]string{
 			"001ak00000OQ4RxAAL",
