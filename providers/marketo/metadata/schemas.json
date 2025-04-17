@@ -1,42 +1,9 @@
 {
   "modules": {
-    "leads": {
+    "assets": {
       "id": "",
       "path": "",
       "objects": {
-        "activities": {
-          "displayName": "activities",
-          "path": "/activities",
-          "responseKey": "",
-          "fields": {
-            "activityDate": "activityDate",
-            "activityTypeId": "activityTypeId",
-            "attributes": "attributes",
-            "campaignId": "campaignId",
-            "id": "id",
-            "leadId": "leadId",
-            "marketoGUID": "marketoGUID",
-            "primaryAttributeValue": "primaryAttributeValue",
-            "primaryAttributeValueId": "primaryAttributeValueId"
-          }
-        },
-        "campaigns": {
-          "displayName": "campaigns",
-          "path": "/campaigns",
-          "responseKey": "",
-          "fields": {
-            "active": "active",
-            "createdAt": "createdAt",
-            "description": "description",
-            "id": "id",
-            "name": "name",
-            "programId": "programId",
-            "programName": "programName",
-            "type": "type",
-            "updatedAt": "updatedAt",
-            "workspaceName": "workspaceName"
-          }
-        },
         "channels": {
           "displayName": "channels",
           "path": "/channels",
@@ -48,37 +15,6 @@
             "name": "name",
             "progressionStatuses": "progressionStatuses",
             "updatedAt": "updatedAt"
-          }
-        },
-        "companies": {
-          "displayName": "companies",
-          "path": "/companies",
-          "responseKey": "",
-          "fields": {
-            "id": "id",
-            "reasons": "reasons",
-            "seq": "seq",
-            "status": "status"
-          }
-        },
-        "customobjects": {
-          "displayName": "customobjects",
-          "path": "/customobjects",
-          "responseKey": "",
-          "fields": {
-            "apiName": "apiName",
-            "createdAt": "createdAt",
-            "dedupeFields": "dedupeFields",
-            "description": "description",
-            "displayName": "displayName",
-            "fields": "fields",
-            "idField": "idField",
-            "pluralName": "pluralName",
-            "relationships": "relationships",
-            "searchableFields": "searchableFields",
-            "state": "state",
-            "updatedAt": "updatedAt",
-            "version": "version"
           }
         },
         "emailTemplates": {
@@ -243,68 +179,6 @@
             "workspace": "workspace"
           }
         },
-        "leads": {
-          "displayName": "leads",
-          "path": "/leads",
-          "responseKey": "",
-          "fields": {
-            "id": "id",
-            "membership": "membership",
-            "reason": "reason",
-            "status": "status"
-          }
-        },
-        "lists": {
-          "displayName": "lists",
-          "path": "/lists",
-          "responseKey": "",
-          "fields": {
-            "createdAt": "createdAt",
-            "description": "description",
-            "id": "id",
-            "name": "name",
-            "programName": "programName",
-            "updatedAt": "updatedAt",
-            "workspaceName": "workspaceName"
-          }
-        },
-        "namedAccountLists": {
-          "displayName": "namedAccountLists",
-          "path": "/namedAccountLists",
-          "responseKey": "",
-          "fields": {
-            "createdAt": "createdAt",
-            "marketoGUID": "marketoGUID",
-            "name": "name",
-            "reasons": "reasons",
-            "seq": "seq",
-            "status": "status",
-            "type": "type",
-            "updateable": "updateable",
-            "updatedAt": "updatedAt"
-          }
-        },
-        "namedaccounts": {
-          "displayName": "namedaccounts",
-          "path": "/namedaccounts",
-          "responseKey": "",
-          "fields": {
-            "marketoGUID": "marketoGUID",
-            "reasons": "reasons",
-            "seq": "seq",
-            "status": "status"
-          }
-        },
-        "opportunities": {
-          "displayName": "opportunities",
-          "path": "/opportunities",
-          "responseKey": "",
-          "fields": {
-            "marketoGUID": "marketoGUID",
-            "reasons": "reasons",
-            "seq": "seq"
-          }
-        },
         "programs": {
           "displayName": "programs",
           "path": "/programs",
@@ -338,17 +212,6 @@
             "redirectTo": "redirectTo",
             "redirectToUrl": "redirectToUrl",
             "updatedAt": "updatedAt"
-          }
-        },
-        "salespersons": {
-          "displayName": "salespersons",
-          "path": "/salespersons",
-          "responseKey": "",
-          "fields": {
-            "id": "id",
-            "reasons": "reasons",
-            "seq": "seq",
-            "status": "status"
           }
         },
         "segmentation": {
@@ -451,6 +314,149 @@
             "applicableProgramTypes": "applicableProgramTypes",
             "required": "required",
             "tagType": "tagType"
+          }
+        }
+      }
+    },
+    "leads": {
+      "id": "",
+      "path": "",
+      "objects": {
+        "activities": {
+          "displayName": "activities",
+          "path": "/activities",
+          "responseKey": "",
+          "fields": {
+            "activityDate": "activityDate",
+            "activityTypeId": "activityTypeId",
+            "attributes": "attributes",
+            "campaignId": "campaignId",
+            "id": "id",
+            "leadId": "leadId",
+            "marketoGUID": "marketoGUID",
+            "primaryAttributeValue": "primaryAttributeValue",
+            "primaryAttributeValueId": "primaryAttributeValueId"
+          }
+        },
+        "campaigns": {
+          "displayName": "campaigns",
+          "path": "/campaigns",
+          "responseKey": "",
+          "fields": {
+            "active": "active",
+            "createdAt": "createdAt",
+            "description": "description",
+            "id": "id",
+            "name": "name",
+            "programId": "programId",
+            "programName": "programName",
+            "type": "type",
+            "updatedAt": "updatedAt",
+            "workspaceName": "workspaceName"
+          }
+        },
+        "companies": {
+          "displayName": "companies",
+          "path": "/companies",
+          "responseKey": "",
+          "fields": {
+            "id": "id",
+            "reasons": "reasons",
+            "seq": "seq",
+            "status": "status"
+          }
+        },
+        "customobjects": {
+          "displayName": "customobjects",
+          "path": "/customobjects",
+          "responseKey": "",
+          "fields": {
+            "apiName": "apiName",
+            "createdAt": "createdAt",
+            "dedupeFields": "dedupeFields",
+            "description": "description",
+            "displayName": "displayName",
+            "fields": "fields",
+            "idField": "idField",
+            "pluralName": "pluralName",
+            "relationships": "relationships",
+            "searchableFields": "searchableFields",
+            "state": "state",
+            "updatedAt": "updatedAt",
+            "version": "version"
+          }
+        },
+        "leads": {
+          "displayName": "leads",
+          "path": "/leads",
+          "responseKey": "",
+          "fields": {
+            "id": "id",
+            "membership": "membership",
+            "reason": "reason",
+            "status": "status"
+          }
+        },
+        "lists": {
+          "displayName": "lists",
+          "path": "/lists",
+          "responseKey": "",
+          "fields": {
+            "createdAt": "createdAt",
+            "description": "description",
+            "id": "id",
+            "name": "name",
+            "programName": "programName",
+            "updatedAt": "updatedAt",
+            "workspaceName": "workspaceName"
+          }
+        },
+        "namedAccountLists": {
+          "displayName": "namedAccountLists",
+          "path": "/namedAccountLists",
+          "responseKey": "",
+          "fields": {
+            "createdAt": "createdAt",
+            "marketoGUID": "marketoGUID",
+            "name": "name",
+            "reasons": "reasons",
+            "seq": "seq",
+            "status": "status",
+            "type": "type",
+            "updateable": "updateable",
+            "updatedAt": "updatedAt"
+          }
+        },
+        "namedaccounts": {
+          "displayName": "namedaccounts",
+          "path": "/namedaccounts",
+          "responseKey": "",
+          "fields": {
+            "marketoGUID": "marketoGUID",
+            "reasons": "reasons",
+            "seq": "seq",
+            "status": "status"
+          }
+        },
+        "opportunities": {
+          "displayName": "opportunities",
+          "path": "/opportunities",
+          "responseKey": "",
+          "fields": {
+            "marketoGUID": "marketoGUID",
+            "reasons": "reasons",
+            "seq": "seq"
+          }
+        },
+        "salespersons": {
+          "displayName": "salespersons",
+          "path": "/salespersons",
+          "responseKey": "",
+          "fields": {
+            "id": "id",
+            "reasons": "reasons",
+            "seq": "seq",
+            "status": "status"
           }
         }
       }
