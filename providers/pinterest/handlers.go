@@ -3,6 +3,7 @@ package pinterest
 import (
 	"context"
 	"net/http"
+	"strconv"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
@@ -61,4 +62,46 @@ func matchObjectNameToEndpointPath(objectName string) (urlPath string) {
 	default:
 		return objectName
 	}
+}
+
+func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+	var (
+		url *urlbuilder.URL
+		err error
+	)
+
+	if params.NextPage != "" {
+		url, err = urlbuilder.New(params.NextPage.String())
+		if err != nil {
+			return nil, err
+		}
+
+		return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+	}
+
+	urlPath := matchObjectNameToEndpointPath(params.ObjectName)
+
+	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, urlPath)
+	if err != nil {
+		return nil, err
+	}
+
+	url.WithQueryParam("page_size", strconv.Itoa(pageSize))
+
+	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+}
+
+func (c *Connector) parseReadResponse(
+	ctx context.Context,
+	params common.ReadParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.ReadResult, error) {
+	return common.ParseResult(
+		response,
+		common.ExtractRecordsFromPath("items"),
+		nextRecordsURL(request.URL),
+		common.GetMarshaledData,
+		params.Fields,
+	)
 }
