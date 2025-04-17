@@ -1,0 +1,64 @@
+{
+    "items": [
+          {
+                "id": "813744226420795884",
+                "created_at": "2020-01-01T20:10:40-00:00",
+                "link": "https://www.pinterest.com/",
+                "title": "string",
+                "description": "string",
+                "dominant_color": "#6E7874",
+                "alt_text": "string",
+                "creative_type": "REGULAR",
+                "board_id": "string",
+                "board_section_id": "string",
+                "board_owner": {
+                      "username": "string"
+                },
+                "is_owner": false,
+                "media": {
+                      "media_type": "string",
+                      "images": {
+                            "150x150": {
+                                  "width": 150,
+                                  "height": 150,
+                                  "url": "https://i.pinimg.com/150x150/0d/f6/f1/0df6f1f0bfe7aaca849c1bbc3607a34b.jpg"
+                            },
+                            "400x300": {
+                                  "width": 400,
+                                  "height": 300,
+                                  "url": "https://i.pinimg.com/400x300/0d/f6/f1/0df6f1f0bfe7aaca849c1bbc3607a34b.jpg"
+                            },
+                            "600x": {
+                                  "width": 600,
+                                  "height": 600,
+                                  "url": "https://i.pinimg.com/600x/0d/f6/f1/0df6f1f0bfe7aaca849c1bbc3607a34b.jpg"
+                            },
+                            "1200x": {
+                                  "width": 1200,
+                                  "height": 1200,
+                                  "url": "https://i.pinimg.com/1200x/0d/f6/f1/0df6f1f0bfe7aaca849c1bbc3607a34b.jpg"
+                            }
+                      }
+                },
+                "parent_pin_id": "string",
+                "is_standard": false,
+                "has_been_promoted": false,
+                "note": "string",
+                "pin_metrics": {
+                      "90d": {
+                            "pin_click": 7,
+                            "impression": 2,
+                            "clickthrough": 3
+                      },
+                      "lifetime_metrics": {
+                            "pin_click": 7,
+                            "impression": 2,
+                            "clickthrough": 3,
+                            "reaction": 10,
+                            "comment": 2
+                      }
+                }
+          }
+    ],
+    "bookmark": "P2MxMDU0MzM0OTYyNzU0OTg0NjUzLjE3MTUzMzgzMDksLTF8NHwxMjE0NzA2NjAzMTA1Mz"
+}
