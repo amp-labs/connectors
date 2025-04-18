@@ -8,8 +8,8 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
-// GetRecordsWithIds returns records matching identifiers.
-func (c *Connector) GetRecordsWithIds( // nolint:revive
+// GetRecordsByIds returns records matching identifiers.
+func (c *Connector) GetRecordsByIds( // nolint:revive
 	ctx context.Context,
 	objectName string,
 	ids []string,

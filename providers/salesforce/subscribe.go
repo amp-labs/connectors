@@ -13,7 +13,7 @@ type SubscribeResult struct {
 	EventChannelMembers map[common.ObjectName]*EventChannelMember
 }
 
-func (c *Connector) EmptySubscritpionParams() *common.SubscribeParams {
+func (c *Connector) EmptySubscriptionParams() *common.SubscribeParams {
 	return &common.SubscribeParams{}
 }
 
