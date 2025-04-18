@@ -38,7 +38,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 
 		httpResp, body, err := c.Client.HTTPClient.Get(ctx, url.String())
 		if err != nil {
-			logging.Logger(ctx).Info("failed to get metadata", "object", obj, "body", body, "err", err.Error())
+			logging.Logger(ctx).Error("failed to get metadata", "object", obj, "body", body, "err", err.Error())
 			runFallback(c.Module.ID, obj, &metadataResult)
 
 			continue
@@ -48,7 +48,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 
 		resp, err := common.ParseJSONResponse(httpResp, body)
 		if err != nil {
-			logging.Logger(ctx).Info("failed to parse metadata response", "object", obj, "body", body, "err", err.Error())
+			logging.Logger(ctx).Error("failed to parse metadata response", "object", obj, "body", body, "err", err.Error())
 			runFallback(c.Module.ID, obj, &metadataResult)
 
 			continue
