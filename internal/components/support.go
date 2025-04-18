@@ -14,6 +14,7 @@ import (
 // https://github.com/gobwas/glob
 type EndpointRegistry struct {
 	patterns EndpointRegistryInput
+	allowAll bool
 }
 
 // TODO: Is this a good abstraction for defining mappings between object names to request/response URLs & keys?
@@ -35,6 +36,13 @@ func NewEndpointRegistry(es EndpointRegistryInput) (*EndpointRegistry, error) {
 	}
 
 	return &EndpointRegistry{patterns: es}, nil
+}
+
+func NewEmptyEndpointRegistry() *EndpointRegistry {
+	return &EndpointRegistry{
+		patterns: nil,
+		allowAll: true,
+	}
 }
 
 // Quick access to common support levels.
@@ -64,6 +72,20 @@ var (
 // GetSupport determines support for an endpoint by matching against registered patterns.
 // Multiple patterns can match, in which case their support levels are combined.
 func (p *EndpointRegistry) GetSupport(module common.ModuleID, path string) (*providers.Support, error) {
+	if p.allowAll {
+		return &providers.Support{
+			BulkWrite: providers.BulkWriteSupport{
+				Delete: true,
+				Insert: true,
+				Update: true,
+				Upsert: true,
+			},
+			Proxy: true,
+			Read:  true,
+			Write: true,
+		}, nil
+	}
+
 	endpoints, exists := p.patterns[module]
 	if !exists {
 		return &NoSupport, nil
