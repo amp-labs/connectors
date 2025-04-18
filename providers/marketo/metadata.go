@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/providers/marketo/metadata"
 )
 
@@ -18,6 +19,8 @@ type responseObject struct {
 func (c *Connector) ListObjectMetadata(ctx context.Context,
 	objectNames []string,
 ) (*common.ListObjectMetadataResult, error) {
+	ctx = logging.With(ctx, "connector", "marketo")
+
 	if len(objectNames) == 0 {
 		return nil, common.ErrMissingObjects
 	}
@@ -28,14 +31,24 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 	}
 
 	for _, obj := range objectNames {
-		// Constructing the request url.
 		url, err := c.constructMetadataURL(obj)
 		if err != nil {
 			return nil, err
 		}
 
-		resp, err := c.Client.Get(ctx, url.String())
+		httpResp, body, err := c.Client.HTTPClient.Get(ctx, url.String())
 		if err != nil {
+			logging.Logger(ctx).Error("failed to get metadata", "object", obj, "body", body, "err", err.Error())
+			runFallback(c.Module.ID, obj, &metadataResult)
+
+			continue
+		}
+
+		defer httpResp.Body.Close()
+
+		resp, err := common.ParseJSONResponse(httpResp, body)
+		if err != nil {
+			logging.Logger(ctx).Error("failed to parse metadata response", "object", obj, "body", body, "err", err.Error())
 			runFallback(c.Module.ID, obj, &metadataResult)
 
 			continue
