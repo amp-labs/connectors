@@ -11,8 +11,6 @@ import (
 	connTest "github.com/amp-labs/connectors/test/zendesksupport"
 )
 
-var objectName = "tickets" // nolint: gochecknoglobals
-
 // We want to compare fields returned by read and schema properties provided by metadata methods.
 // Properties from read must all be present in schema definition.
 func main() {
@@ -26,7 +24,7 @@ func main() {
 	conn := connTest.GetZendeskSupportConnector(ctx)
 
 	metadata, err := conn.ListObjectMetadata(ctx, []string{
-		objectName,
+		"tickets", "requests",
 	})
 	if err != nil {
 		utils.Fail("error listing metadata for ZendeskSupport", "error", err)
