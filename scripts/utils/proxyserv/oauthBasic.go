@@ -16,7 +16,7 @@ import (
 func (f Factory) CreateProxyBasic(ctx context.Context) *Proxy {
 	params := createBasicParams(f.Registry)
 	providerInfo := getProviderConfig(f.Provider, f.CatalogVariables)
-	httpClient := setupBasicAuthHTTPClient(ctx, providerInfo, params.User, params.Pass, f.Debug)
+	httpClient := setupBasicAuthHTTPClient(ctx, providerInfo, params.User, params.Pass, f.Debug, f.Substitutions)
 	baseURL := getBaseURL(providerInfo)
 
 	return newProxy(baseURL, httpClient)
@@ -46,6 +46,7 @@ func createBasicParams(registry scanning.Registry) *providers.BasicParams {
 
 func setupBasicAuthHTTPClient(
 	ctx context.Context, prov *providers.ProviderInfo, user, pass string, debug bool,
+	metadata map[string]string,
 ) common.AuthenticatedHTTPClient {
 	client, err := prov.NewClient(ctx, &providers.NewClientParams{
 		Debug: debug,
@@ -58,7 +59,10 @@ func setupBasicAuthHTTPClient(
 		panic(err)
 	}
 
-	cc, err := connector.NewConnector(prov.Name, connector.WithAuthenticatedClient(client))
+	cc, err := connector.NewConnector(prov.Name,
+		connector.WithAuthenticatedClient(client),
+		connector.WithMetadata(metadata),
+	)
 	if err != nil {
 		panic(err)
 	}
