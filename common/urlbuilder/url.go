@@ -4,6 +4,8 @@ import (
 	"errors"
 	"net/url"
 	"strings"
+
+	"github.com/amp-labs/connectors/internal/datautils"
 )
 
 var ErrInvalidURL = errors.New("URL format is incorrect")
@@ -151,4 +153,30 @@ func cleanTrailingSlashes(link string) string {
 
 func (u *URL) HasQueryParam(name string) bool {
 	return u.queryParams.Has(name)
+}
+
+// Equals compares URL equality ignoring order, encoding.
+func (u *URL) Equals(other *URL) bool { // nolint:cyclop
+	if strings.ToLower(u.delegate.Host) != strings.ToLower(other.delegate.Host) || // nolint:staticcheck
+		u.delegate.Path != other.delegate.Path ||
+		u.delegate.RawPath != other.delegate.RawPath ||
+		u.delegate.Scheme != other.delegate.Scheme ||
+		u.delegate.Fragment != other.delegate.Fragment ||
+		u.delegate.RawFragment != other.delegate.RawFragment {
+		return false
+	}
+
+	// Compare query parameters. The order doesn't matter
+	if len(u.queryParams) != len(other.queryParams) {
+		return false
+	}
+
+	for name, params := range u.queryParams {
+		otherParams, exists := other.queryParams[name]
+		if !exists || !datautils.EqualUnordered(params, otherParams) {
+			return false
+		}
+	}
+
+	return true
 }
