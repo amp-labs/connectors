@@ -29,8 +29,8 @@ var (
 		"/v1/linked_accounts",
 	}
 	displayNameOverride = map[string]string{ // nolint:gochecknoglobals
-		"accounts_financial_connections": "Financial Connection Accounts",
-		"configurations_terminal":        "Terminal Configurations",
+		"financial_connections/accounts": "Financial Connection Accounts",
+		"terminal/configurations":        "Terminal Configurations",
 		"history":                        "Balance History Transactions",
 		"invoices":                       "Invoices",
 		"locations":                      "Terminal Locations",
@@ -39,7 +39,7 @@ var (
 		"refunds":                        "API Method Refunds",
 		"report_runs":                    "Financial Report Runs",
 		"report_types":                   "Financial Report Types",
-		"sessions_checkout":              "Payment Checkout Sessions",
+		"checkout/sessions":              "Payment Checkout Sessions",
 		"setup_intents":                  "Payment Setup Intents",
 		"subscriptions":                  "Subscriptions",
 		"suppliers":                      "Climate Suppliers",
@@ -49,43 +49,6 @@ var (
 		"verification_reports":           "Verification Reports",
 		"verification_sessions":          "Verification Sessions",
 		"webhook_endpoints":              "Webhook Endpoints",
-	}
-	objectEndpoints = map[string]string{ // nolint:gochecknoglobals
-		// Accounts
-		"/v1/accounts":                       "accounts",
-		"/v1/financial_connections/accounts": "accounts_financial_connections",
-		// Authorizations
-		"/v1/issuing/authorizations":              "authorizations",
-		"/v1/test_helpers/issuing/authorizations": "authorizations_test",
-		// Configurations
-		"/v1/billing_portal/configurations": "configurations",
-		"/v1/terminal/configurations":       "configurations_terminal",
-		// Disputes
-		"/v1/disputes":         "disputes",
-		"/v1/issuing/disputes": "disputes_issuing",
-		// Lines
-		"/v1/credit_notes/preview/lines": "lines_preview_credit_notes",
-		"/v1/invoices/upcoming/lines":    "lines_upcoming_invoices",
-		// Products
-		"/v1/climate/products": "products_climate",
-		"/v1/products":         "products",
-		// Received debits
-		"/v1/test_helpers/treasury/received_debits": "received_debits_test",
-		"/v1/treasury/received_debits":              "received_debits",
-		// Received credits
-		"/v1/test_helpers/treasury/received_credits": "received_credits_test",
-		"/v1/treasury/received_credits":              "received_credits",
-		// Sessions
-		"/v1/billing_portal/sessions":        "sessions_billing_portal",
-		"/v1/checkout/sessions":              "sessions_checkout",
-		"/v1/financial_connections/sessions": "sessions_financial_connections",
-		// Tokens
-		"/v1/issuing/tokens": "tokens_issuing",
-		"/v1/tokens":         "tokens",
-		// Transactions
-		"/v1/financial_connections/transactions": "transactions_financial_connections",
-		"/v1/issuing/transactions":               "transactions_issuing",
-		"/v1/treasury/transactions":              "transactions_treasury",
 	}
 )
 
@@ -102,12 +65,17 @@ func main() {
 			api3.OnlyOptionalQueryParameters,
 		),
 		api3.WithArrayItemAutoSelection(),
+		api3.WithDuplicatesResolver(api3.SingleItemDuplicatesResolver(func(endpoint string) string {
+			objectName, _ := strings.CutPrefix(endpoint, "/v1/")
+
+			return objectName
+		})),
 	)
 	goutils.MustBeNil(err)
 
 	objects, err := explorer.ReadObjectsGet(
 		api3.NewDenyPathStrategy(ignoreEndpoints),
-		objectEndpoints, displayNameOverride,
+		nil, displayNameOverride,
 		arrayLocator,
 	)
 	goutils.MustBeNil(err)
