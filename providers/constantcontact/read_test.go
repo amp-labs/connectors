@@ -59,12 +59,19 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Name: "Read contacts first page",
 			Input: common.ReadParams{
 				ObjectName: "contacts",
-				Fields:     connectors.Fields("first_name", "last_name", "hobby"),
+				Fields:     connectors.Fields("first_name", "last_name", "hobby", "notes", "phone_numbers"),
 			},
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
-					If:   mockcond.PathSuffix("/v3/contacts"),
+					If: mockcond.And{
+						mockcond.PathSuffix("/v3/contacts"),
+						mockcond.Or{
+							// Order of fields in the query param, doesn't matter. Custom fields always at the end.
+							mockcond.QueryParam("include", "notes,phone_numbers,custom_fields"),
+							mockcond.QueryParam("include", "phone_numbers,notes,custom_fields"),
+						},
+					},
 					Then: mockserver.Response(http.StatusOK, responseContactsFirstPage),
 				}, {
 					If:   mockcond.PathSuffix("/v3/contact_custom_fields"),
@@ -76,9 +83,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Rows: 1,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
-						"first_name": "Debora",
-						"last_name":  "Lang",
-						"hobby":      "Skiing",
+						"first_name":    "Debora",
+						"last_name":     "Lang",
+						"hobby":         "Skiing",
+						"notes":         []any{},
+						"phone_numbers": []any{},
 					},
 					Raw: map[string]any{
 						"company_name": "Acme Corp.",
