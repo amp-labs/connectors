@@ -21,6 +21,21 @@ type parameters struct {
 	paramsbuilder.Module
 }
 
+func newParams(opts []Option) (*common.Parameters, error) { // nolint:unused
+	oldParams, err := paramsbuilder.Apply(parameters{}, opts,
+		WithModule(providers.ModuleZendeskTicketing),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &common.Parameters{
+		Module:              oldParams.Module.Selection.ID,
+		AuthenticatedClient: oldParams.Client.Caller.Client,
+		Workspace:           oldParams.Workspace.Name,
+	}, nil
+}
+
 func (p parameters) ValidateParams() error {
 	return errors.Join(
 		p.Client.ValidateParams(),
