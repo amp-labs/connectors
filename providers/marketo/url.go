@@ -1,6 +1,7 @@
 package marketo
 
 import (
+	"context"
 	"errors"
 	"strconv"
 	"strings"
@@ -11,9 +12,17 @@ import (
 	"github.com/amp-labs/connectors/providers"
 )
 
-const restAPIPrefix = "rest" //nolint:gochecknoglobals
+const ( //nolint:gochecknoglobals
+	restAPIPrefix   = "rest"
+	pagingURLSuffix = "activities/pagingtoken"
+)
 
-func (c *Connector) constructReadURL(params common.ReadParams) (*urlbuilder.URL, error) {
+type pagingTokenResponse struct {
+	NextPageToken string `json:"nextPageToken"`
+	Success       bool   `json:"success"`
+}
+
+func (c *Connector) constructReadURL(ctx context.Context, params common.ReadParams) (*urlbuilder.URL, error) {
 	url, err := c.getAPIURL(params.ObjectName)
 	if err != nil {
 		return nil, err
@@ -23,22 +32,52 @@ func (c *Connector) constructReadURL(params common.ReadParams) (*urlbuilder.URL,
 		return nil, err
 	}
 
+	// Check if this is an initial request to the Marketo Activities API.
+	// For the first call (no NextPage token) with a Since timestamp,
+	// fetch a paging token to ensure pagination starts from the correct time.
+	// Then, append the token to the URL for subsequent pagination.
+	if params.ObjectName == "activities" && params.NextPage == "" && !params.Since.IsZero() {
+		if err := c.addActivityParams(ctx, url, params.Since); err != nil {
+			return nil, err
+		}
+	}
+
 	// The only objects in Assets API supporting this are: Emails, Programs, SmartCampaigns,SmartLists
 	if !params.Since.IsZero() {
-		switch c.Module.ID {
-		case providers.ModuleMarketoAssets:
+		if c.Module.ID == providers.ModuleMarketoAssets {
 			fmtTime := params.Since.Format(time.RFC3339)
 			url.WithQueryParam("earliestUpdatedAt", fmtTime)
 			url.WithQueryParam("latestUpdatedAt", time.Now().Format(time.RFC3339))
-		case providers.ModuleMarketoLeads:
-			fallthrough
-		case common.ModuleRoot:
-			fallthrough
-		default: // we currently don't support filtering in leads.
 		}
 	}
 
 	return url, nil
+}
+
+func (c *Connector) addActivityParams(ctx context.Context, url *urlbuilder.URL, since time.Time) error {
+	pagingTokenURL, err := c.getAPIURL(pagingURLSuffix)
+	if err != nil {
+		return err
+	}
+
+	pagingTokenURL.WithQueryParam("sinceDatetime", since.Format(time.RFC3339))
+
+	resp, err := c.Client.Get(ctx, pagingTokenURL.String())
+	if err != nil {
+		return err
+	}
+
+	pagingResponse, err := common.UnmarshalJSON[pagingTokenResponse](resp)
+	if err != nil {
+		return err
+	}
+
+	url.WithQueryParam("nextPageToken", pagingResponse.NextPageToken)
+
+	// Add list of required activityTypeIds.
+	url.WithQueryParam("activityTypeIds", "1,2,3,6,7,8,9,10,11,12")
+
+	return nil
 }
 
 func (c *Connector) constructMetadataURL(objectName string) (*urlbuilder.URL, error) {
