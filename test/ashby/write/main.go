@@ -29,48 +29,15 @@ func main() {
 	if err := createApplication(ctx, conn); err != nil {
 		slog.Error(err.Error())
 	}
-
-	slog.Info("> TEST Create Candidate Note")
-
-	if err := createCandidateNote(ctx, conn); err != nil {
-		slog.Error(err.Error())
-	}
-
 	slog.Info("Done")
 }
 
 func createApplication(ctx context.Context, conn *ashby.Connector) error {
 	config := common.WriteParams{
-		ObjectName: "application.create",
+		ObjectName: "application",
 		RecordData: map[string]any{
 			"candidateId": "bd7229a1-be3e-4e30-a538-0b95a41602d7",
 			"jobId":       "783338ea-e6ac-406a-853b-964fa75a5d62",
-		},
-	}
-
-	result, err := conn.Write(ctx, config)
-	if err != nil {
-		return err
-	}
-
-	// Print the results
-	jsonStr, err := json.MarshalIndent(result, "", "  ")
-	if err != nil {
-		return err
-	}
-
-	fmt.Println(string(jsonStr))
-
-	return nil
-}
-
-func createCandidateNote(ctx context.Context, conn *ashby.Connector) error {
-	config := common.WriteParams{
-		ObjectName: "candidate.createNote",
-		RecordData: map[string]any{
-			"candidateId":       "bd7229a1-be3e-4e30-a538-0b95a41602d7",
-			"sendNotifications": false,
-			"note":              "this is a not what else ",
 		},
 	}
 

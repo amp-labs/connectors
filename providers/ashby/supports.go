@@ -12,13 +12,13 @@ import (
 
 var (
 	// nolint:gochecknoglobals,lll
-	supportPagination = datautils.NewSet("application.list", "applicationFeedback.list", "candidate.list",
-		"candidateTag.list", "customField.list", "feedbackFormDefinition.list", "interview.list", "interviewSchedule.list",
-		"feedbackFormDefinition.list", "interviewerPool.list", "job.list", "jobTemplate.list", "offer.list", "opening.list",
-		"project.list", "surveyFormDefinition.list", "user.list")
+	supportPagination = datautils.NewSet("application", "applicationFeedback", "candidate",
+		"candidateTag", "customField", "feedbackFormDefinition", "interview", "interviewSchedule",
+		"feedbackFormDefinition", "interviewerPool", "job", "jobTemplate", "offer", "opening",
+		"project", "surveyFormDefinition", "user")
 
 	//nolint:gochecknoglobals
-	supportSince = datautils.NewSet("application.list", "applicationFeedback.list", "interviewSchedule.list")
+	supportSince = datautils.NewSet("application", "applicationFeedback", "interviewSchedule")
 )
 
 func supportedOperations() components.EndpointRegistryInput {
@@ -26,20 +26,21 @@ func supportedOperations() components.EndpointRegistryInput {
 
 	//nolint:lll
 	writeSupport := []string{
-		"application.create", "candidate.create", "candidate.createNote", "candidate.addTag",
-		"candidate.addProject", "candidateTag.create", "customField.create", "department.create",
-		"hiringTeam.addMember", "interviewSchedule.create", "interviewerPool.create", "interviewerPool.addUser",
-		"job.create", "location.create", "offer.create", "offerProcess.start", "opening.create", "referral.create",
-		"surveyRequest.create", "surveySubmission.create", "webhook.create",
-
-		"application.change_source", "application.change_stage", "application.transfer", "application.update",
-		"application.updateHistory", "application.addHiringTeamMember", "application.removeHiringTeamMember",
-		"applicationFeedback.submit", "applicationForm.submit", "approvalDefinition.update", "assessment.addCompletedToCandidate",
-		"assessment.start", "assessment.update", "assessment.cancel", "candidate.anonymize", "candidate.update", "customField.setValue",
-		"hiringTeam.addMember", "interviewSchedule.cancel", "interviewSchedule.update", "interviewerPool.update", "interviewerPool.archive",
-		"interviewerPool.restore", "interviewerPool.addUser", "interviewerPool.removeUser", "job.setStatus", "job.update", "jobPosting.update",
-		"offer.start", "opening.addJob", "opening.removeJob", "opening.addLocation", "opening.removeLocation", "opening.setOpeningState", "opening.setArchived",
-		"opening.update", "webhook.update",
+		"application",
+		"candidate",
+		"candidateTag",
+		"customField",
+		"department",
+		"interviewSchedule",
+		"interviewerPool",
+		"job",
+		"location",
+		"offer",
+		"opening",
+		"referral",
+		"surveyRequest",
+		"surveySubmission",
+		"webhook",
 	}
 
 	return components.EndpointRegistryInput{

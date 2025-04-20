@@ -14,7 +14,7 @@ func main() {
 
 	conn := ashby.GetAshbyConnector(ctx)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"assessment.list", "candidate.list", "interview.list"})
+	m, err := conn.ListObjectMetadata(ctx, []string{"assessment", "candidate", "interview"})
 
 	if err != nil {
 		log.Fatal(err)
