@@ -72,7 +72,7 @@
                 
                 "assessment": {
                     "displayName": "Assessment List",
-                    "path": "assessment.list.list",
+                    "path": "assessment.list",
                     "responseKey": "results",
                     "fields": {
                         "assessment_type_id": "assessment_type_id",
@@ -108,7 +108,7 @@
                 },
                 "candidateTag": {
                     "displayName": "Candidate Tag List",
-                    "path": "candidateTag",
+                    "path": "candidateTag.list",
                     "responseKey": "results",
                     "fields": {
                         "id": "id",

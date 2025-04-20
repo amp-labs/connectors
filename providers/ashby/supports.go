@@ -13,8 +13,7 @@ import (
 var (
 	// nolint:gochecknoglobals,lll
 	supportPagination = datautils.NewSet("application", "applicationFeedback", "candidate",
-		"candidateTag", "customField", "feedbackFormDefinition", "interview", "interviewSchedule",
-		"feedbackFormDefinition", "interviewerPool", "job", "jobTemplate", "offer", "opening",
+		"candidateTag", "customField", "interview", "interviewSchedule", "interviewerPool", "job", "jobTemplate", "offer", "opening",
 		"project", "surveyFormDefinition", "user")
 
 	//nolint:gochecknoglobals
