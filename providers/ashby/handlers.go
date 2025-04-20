@@ -80,15 +80,17 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		err error
 	)
 
+	objectName := params.ObjectName
+
 	if len(params.RecordId) > 0 {
 		// Add .update as a suffix if it’s an update operation.
-		params.ObjectName += ".update"
+		objectName += ".update"
 	} else {
 		// Add .create as a suffix if it’s a create operation.
-		params.ObjectName += ".create"
+		objectName += ".create"
 	}
 
-	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName)
+	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, objectName)
 	if err != nil {
 		return nil, err
 	}
