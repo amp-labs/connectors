@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
@@ -83,10 +82,10 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 
 	if len(params.RecordId) > 0 {
 		// Add .update as a suffix if it’s an update operation.
-		params.ObjectName = fmt.Sprintf("%s.update", params.ObjectName)
+		params.ObjectName += ".update"
 	} else {
 		// Add .create as a suffix if it’s a create operation.
-		params.ObjectName = fmt.Sprintf("%s.create", params.ObjectName)
+		params.ObjectName += ".create"
 	}
 
 	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName)
