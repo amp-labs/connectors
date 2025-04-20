@@ -38,7 +38,7 @@ func main() {
 	slog.Info("Reading application list..")
 	utils.DumpJSON(res, os.Stdout)
 
-	_, err = conn.Read(ctx, common.ReadParams{
+	res, err = conn.Read(ctx, common.ReadParams{
 		ObjectName: "user",
 		Fields:     connectors.Fields("id", "firstName", "lastName", "email"),
 		Since:      sinceTime,
@@ -49,5 +49,5 @@ func main() {
 	}
 
 	slog.Info("Reading user list")
-	// utils.DumpJSON(res, os.Stdout)
+	utils.DumpJSON(res, os.Stdout)
 }
