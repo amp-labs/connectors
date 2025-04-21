@@ -46,6 +46,7 @@ func recordsWrapperFunc(obj string) common.RecordsFunc {
 			if err != nil {
 				return nil, err
 			}
+
 			return jsonquery.Convertor.ArrayToMap(children)
 		}
 
