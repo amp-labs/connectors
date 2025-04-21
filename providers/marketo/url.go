@@ -41,7 +41,13 @@ func (c *Connector) constructReadURL(ctx context.Context, params common.ReadPara
 	// fetch a paging token to ensure pagination starts from the correct time.
 	// Then, append the token to the URL for subsequent pagination.
 	if params.ObjectName == activities && !params.Since.IsZero() {
-		if err := c.addActivityParams(ctx, url, params); err != nil {
+		if params.Filter == "" {
+			return nil, ErrFilterInvalid
+		}
+
+		url.WithQueryParam(activityTypeIDs, params.Filter)
+
+		if err := c.addActivityNextParam(ctx, url, params); err != nil {
 			return nil, err
 		}
 	}
@@ -58,34 +64,43 @@ func (c *Connector) constructReadURL(ctx context.Context, params common.ReadPara
 	return url, nil
 }
 
-func (c *Connector) addActivityParams(ctx context.Context, url *urlbuilder.URL, params common.ReadParams) error {
+func (c *Connector) addActivityNextParam(ctx context.Context, url *urlbuilder.URL, params common.ReadParams) error {
 	if params.NextPage != "" {
 		url.WithQueryParam(nextPageQuery, params.NextPage.String())
-	} else {
-		pagingTokenURL, err := c.getAPIURL(pagingURLSuffix)
-		if err != nil {
-			return err
-		}
 
-		pagingTokenURL.WithQueryParam(sinceQuery, params.Since.Format(time.RFC3339))
-
-		resp, err := c.Client.Get(ctx, pagingTokenURL.String())
-		if err != nil {
-			return err
-		}
-
-		pagingResponse, err := common.UnmarshalJSON[pagingTokenResponse](resp)
-		if err != nil {
-			return err
-		}
-
-		url.WithQueryParam(nextPageQuery, pagingResponse.NextPageToken)
+		return nil
 	}
 
-	// Add list of required activityTypeIds.
-	url.WithQueryParam(activityTypeIDs, params.Filter)
+	// Get initial paging token for first request
+	token, err := c.getPagingToken(ctx, params.Since)
+	if err != nil {
+		return err
+	}
+
+	url.WithQueryParam(nextPageQuery, token)
 
 	return nil
+}
+
+func (c *Connector) getPagingToken(ctx context.Context, since time.Time) (string, error) {
+	pagingTokenURL, err := c.getAPIURL(pagingURLSuffix)
+	if err != nil {
+		return "", err
+	}
+
+	pagingTokenURL.WithQueryParam(sinceQuery, since.Format(time.RFC3339))
+
+	resp, err := c.Client.Get(ctx, pagingTokenURL.String())
+	if err != nil {
+		return "", err
+	}
+
+	pagingResponse, err := common.UnmarshalJSON[pagingTokenResponse](resp)
+	if err != nil {
+		return "", err
+	}
+
+	return pagingResponse.NextPageToken, nil
 }
 
 func (c *Connector) constructMetadataURL(objectName string) (*urlbuilder.URL, error) {
