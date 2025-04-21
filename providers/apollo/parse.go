@@ -37,8 +37,20 @@ func getNextRecords(node *ajson.Node) (string, error) {
 }
 
 // recordsWrapperFunc returns the records using the objectName dynamically.
+// It handles both root-level arrays and nested arrays under an object name.
 func recordsWrapperFunc(obj string) common.RecordsFunc {
 	return func(node *ajson.Node) ([]map[string]any, error) {
+		// If obj is empty or node is an array, process the node directly
+		if obj == "" || node.IsArray() {
+			children, err := node.GetArray()
+			if err != nil {
+				return nil, err
+			}
+
+			return jsonquery.Convertor.ArrayToMap(children)
+		}
+
+		// If not a root array, try to get array from the specified object field
 		result, err := jsonquery.New(node).ArrayOptional(obj)
 		if err != nil {
 			return nil, err
