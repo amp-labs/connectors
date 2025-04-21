@@ -15,6 +15,10 @@ import (
 const ( //nolint:gochecknoglobals
 	restAPIPrefix   = "rest"
 	pagingURLSuffix = "activities/pagingtoken"
+	activities      = "activities"
+	sinceQuery      = "sinceDatetime"
+	nextPageQuery   = "nextPageToken"
+	activityTypeIDs = "activityTypeIds"
 )
 
 type pagingTokenResponse struct {
@@ -36,8 +40,8 @@ func (c *Connector) constructReadURL(ctx context.Context, params common.ReadPara
 	// For the first call (no NextPage token) with a Since timestamp,
 	// fetch a paging token to ensure pagination starts from the correct time.
 	// Then, append the token to the URL for subsequent pagination.
-	if params.ObjectName == "activities" && params.NextPage == "" && !params.Since.IsZero() {
-		if err := c.addActivityParams(ctx, url, params.Since); err != nil {
+	if params.ObjectName == activities && !params.Since.IsZero() {
+		if err := c.addActivityParams(ctx, url, params); err != nil {
 			return nil, err
 		}
 	}
@@ -54,28 +58,32 @@ func (c *Connector) constructReadURL(ctx context.Context, params common.ReadPara
 	return url, nil
 }
 
-func (c *Connector) addActivityParams(ctx context.Context, url *urlbuilder.URL, since time.Time) error {
-	pagingTokenURL, err := c.getAPIURL(pagingURLSuffix)
-	if err != nil {
-		return err
+func (c *Connector) addActivityParams(ctx context.Context, url *urlbuilder.URL, params common.ReadParams) error {
+	if params.NextPage != "" {
+		url.WithQueryParam(nextPageQuery, params.NextPage.String())
+	} else {
+		pagingTokenURL, err := c.getAPIURL(pagingURLSuffix)
+		if err != nil {
+			return err
+		}
+
+		pagingTokenURL.WithQueryParam(sinceQuery, params.Since.Format(time.RFC3339))
+
+		resp, err := c.Client.Get(ctx, pagingTokenURL.String())
+		if err != nil {
+			return err
+		}
+
+		pagingResponse, err := common.UnmarshalJSON[pagingTokenResponse](resp)
+		if err != nil {
+			return err
+		}
+
+		url.WithQueryParam(nextPageQuery, pagingResponse.NextPageToken)
 	}
-
-	pagingTokenURL.WithQueryParam("sinceDatetime", since.Format(time.RFC3339))
-
-	resp, err := c.Client.Get(ctx, pagingTokenURL.String())
-	if err != nil {
-		return err
-	}
-
-	pagingResponse, err := common.UnmarshalJSON[pagingTokenResponse](resp)
-	if err != nil {
-		return err
-	}
-
-	url.WithQueryParam("nextPageToken", pagingResponse.NextPageToken)
 
 	// Add list of required activityTypeIds.
-	url.WithQueryParam("activityTypeIds", "1,2,3,6,7,8,9,10,11,12")
+	url.WithQueryParam(activityTypeIDs, params.Filter)
 
 	return nil
 }
@@ -110,6 +118,8 @@ func addFilteringIDQueries(urlbuilder *urlbuilder.URL, startIdx string) error {
 
 func constructURLQueries(url *urlbuilder.URL, params common.ReadParams) error {
 	if paginatesByIDs(params.ObjectName) && len(params.NextPage) == 0 {
+		// For the initial API request, we start filtering from ID 1-300 to fetch the earliest records.
+		// Subsequent requests will use the last received ID for pagination.
 		if err := addFilteringIDQueries(url, "1"); err != nil {
 			return err
 		}
@@ -121,7 +131,7 @@ func constructURLQueries(url *urlbuilder.URL, params common.ReadParams) error {
 			return addFilteringIDQueries(url, params.NextPage.String())
 		}
 
-		url.WithQueryParam("nextPageToken", params.NextPage.String())
+		url.WithQueryParam(nextPageQuery, params.NextPage.String())
 	}
 
 	return nil

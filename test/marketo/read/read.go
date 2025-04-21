@@ -152,7 +152,8 @@ func testReadActivities(ctx context.Context) error {
 		ObjectName: "activities",
 		Since:      time.Now().Add(-20 * 100000 * time.Hour),
 		Fields:     connectors.Fields("id", "primaryAttributeValue", "activityDate"),
-		// NextPage:   "301",
+		Filter:     "1,2,3,6,7,8,9,10,11,12",
+		// NextPage:   "HISNKPPSW4RKYBSKA5L2Y5JY4TYMNRQPN7667RKFBIWRIYF37UPA====",
 	}
 
 	res, err := conn.Read(ctx, params)
