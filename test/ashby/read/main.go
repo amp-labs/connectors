@@ -27,7 +27,7 @@ func main() {
 	sinceTime := time.Date(2024, 12, 2, 6, 14, 0, 0, time.UTC)
 
 	res, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: "application.list",
+		ObjectName: "application",
 		Fields:     connectors.Fields("id", "createdAt", "archivedAt", "source", "status"),
 		Since:      sinceTime,
 	})
@@ -39,7 +39,7 @@ func main() {
 	utils.DumpJSON(res, os.Stdout)
 
 	res, err = conn.Read(ctx, common.ReadParams{
-		ObjectName: "user.list",
+		ObjectName: "user",
 		Fields:     connectors.Fields("id", "firstName", "lastName", "email"),
 		Since:      sinceTime,
 		NextPage:   res.NextPage,
