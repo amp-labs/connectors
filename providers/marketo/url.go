@@ -1,6 +1,7 @@
 package marketo
 
 import (
+	"context"
 	"errors"
 	"strconv"
 	"strings"
@@ -11,9 +12,21 @@ import (
 	"github.com/amp-labs/connectors/providers"
 )
 
-const restAPIPrefix = "rest" //nolint:gochecknoglobals
+const ( //nolint:gochecknoglobals
+	restAPIPrefix   = "rest"
+	pagingURLSuffix = "activities/pagingtoken"
+	activities      = "activities"
+	sinceQuery      = "sinceDatetime"
+	nextPageQuery   = "nextPageToken"
+	activityTypeIDs = "activityTypeIds"
+)
 
-func (c *Connector) constructReadURL(params common.ReadParams) (*urlbuilder.URL, error) {
+type pagingTokenResponse struct {
+	NextPageToken string `json:"nextPageToken"`
+	Success       bool   `json:"success"`
+}
+
+func (c *Connector) constructReadURL(ctx context.Context, params common.ReadParams) (*urlbuilder.URL, error) {
 	url, err := c.getAPIURL(params.ObjectName)
 	if err != nil {
 		return nil, err
@@ -23,22 +36,71 @@ func (c *Connector) constructReadURL(params common.ReadParams) (*urlbuilder.URL,
 		return nil, err
 	}
 
+	// Check if this is an initial request to the Marketo Activities API.
+	// For the first call (no NextPage token) with a Since timestamp,
+	// fetch a paging token to ensure pagination starts from the correct time.
+	// Then, append the token to the URL for subsequent pagination.
+	if params.ObjectName == activities && !params.Since.IsZero() {
+		if params.Filter == "" {
+			return nil, ErrFilterInvalid
+		}
+
+		url.WithQueryParam(activityTypeIDs, params.Filter)
+
+		if err := c.addActivityNextParam(ctx, url, params); err != nil {
+			return nil, err
+		}
+	}
+
 	// The only objects in Assets API supporting this are: Emails, Programs, SmartCampaigns,SmartLists
 	if !params.Since.IsZero() {
-		switch c.Module.ID {
-		case providers.ModuleMarketoAssets:
+		if c.Module.ID == providers.ModuleMarketoAssets {
 			fmtTime := params.Since.Format(time.RFC3339)
 			url.WithQueryParam("earliestUpdatedAt", fmtTime)
 			url.WithQueryParam("latestUpdatedAt", time.Now().Format(time.RFC3339))
-		case providers.ModuleMarketoLeads:
-			fallthrough
-		case common.ModuleRoot:
-			fallthrough
-		default: // we currently don't support filtering in leads.
 		}
 	}
 
 	return url, nil
+}
+
+func (c *Connector) addActivityNextParam(ctx context.Context, url *urlbuilder.URL, params common.ReadParams) error {
+	if params.NextPage != "" {
+		url.WithQueryParam(nextPageQuery, params.NextPage.String())
+
+		return nil
+	}
+
+	// Get initial paging token for first request
+	token, err := c.getPagingToken(ctx, params.Since)
+	if err != nil {
+		return err
+	}
+
+	url.WithQueryParam(nextPageQuery, token)
+
+	return nil
+}
+
+func (c *Connector) getPagingToken(ctx context.Context, since time.Time) (string, error) {
+	pagingTokenURL, err := c.getAPIURL(pagingURLSuffix)
+	if err != nil {
+		return "", err
+	}
+
+	pagingTokenURL.WithQueryParam(sinceQuery, since.Format(time.RFC3339))
+
+	resp, err := c.Client.Get(ctx, pagingTokenURL.String())
+	if err != nil {
+		return "", err
+	}
+
+	pagingResponse, err := common.UnmarshalJSON[pagingTokenResponse](resp)
+	if err != nil {
+		return "", err
+	}
+
+	return pagingResponse.NextPageToken, nil
 }
 
 func (c *Connector) constructMetadataURL(objectName string) (*urlbuilder.URL, error) {
@@ -71,6 +133,8 @@ func addFilteringIDQueries(urlbuilder *urlbuilder.URL, startIdx string) error {
 
 func constructURLQueries(url *urlbuilder.URL, params common.ReadParams) error {
 	if paginatesByIDs(params.ObjectName) && len(params.NextPage) == 0 {
+		// For the initial API request, we start filtering from ID 1-300 to fetch the earliest records.
+		// Subsequent requests will use the last received ID for pagination.
 		if err := addFilteringIDQueries(url, "1"); err != nil {
 			return err
 		}
@@ -82,7 +146,7 @@ func constructURLQueries(url *urlbuilder.URL, params common.ReadParams) error {
 			return addFilteringIDQueries(url, params.NextPage.String())
 		}
 
-		url.WithQueryParam("nextPageToken", params.NextPage.String())
+		url.WithQueryParam(nextPageQuery, params.NextPage.String())
 	}
 
 	return nil

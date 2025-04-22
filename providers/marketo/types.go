@@ -35,6 +35,9 @@ var (
 	}
 
 	ErrFailedConvertFields = errors.New("failed to convert the response message to metadata fields")
+
+	// ErrFilterInvalid indicates missing activityTypeIds when reading Marketo lead activities.
+	ErrFilterInvalid = errors.New("reading lead activities require Filter parameter with comma-separated activityTypeIds")
 )
 
 func constructErrMessage(a any) (string, error) {

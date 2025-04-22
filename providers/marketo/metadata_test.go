@@ -25,6 +25,31 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
+			Name:   "Metadata from static file",
+			Input:  []string{"activities"},
+			Server: mockserver.Dummy(),
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"activities": {
+						DisplayName: "activities",
+						FieldsMap: map[string]string{
+							"activityDate":            "activityDate",
+							"activityTypeId":          "activityTypeId",
+							"attributes":              "attributes",
+							"campaignId":              "campaignId",
+							"id":                      "id",
+							"leadId":                  "leadId",
+							"marketoGUID":             "marketoGUID",
+							"primaryAttributeValue":   "primaryAttributeValue",
+							"primaryAttributeValueId": "primaryAttributeValueId",
+						},
+					},
+				},
+				Errors: make(map[string]error),
+			},
+			ExpectedErrs: nil,
+		},
+		{
 			Name:  "Successfully describe supported object",
 			Input: []string{"channels"},
 			Server: mockserver.Switch{

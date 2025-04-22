@@ -113,6 +113,9 @@ var (
 	// ErrPayloadNotURLForm is returned when payload is not string key-value pair
 	// which could be encoded for POST with content type of application/x-www-form-urlencoded.
 	ErrPayloadNotURLForm = errors.New("payload cannot be url-form encoded")
+
+	// ErrResolvingCustomFields is returned when custom fields cannot be retrieved for Read or ListObjectMetadata.
+	ErrResolvingCustomFields = errors.New("cannot resolve custom fields")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.
@@ -139,6 +142,10 @@ type ReadParams struct {
 	//	* Klaviyo: Comma separated methods following JSON:API filtering syntax.
 	//		Note: timing is already handled by Since argument.
 	//		Reference: https://developers.klaviyo.com/en/docs/filtering_
+	//	* Marketo: Comma-separated activityTypeIds for filtering lead activities.
+	//		Note: Only supported when reading Lead Activities (not other endpoints).
+	//		Example: "1,6,12" (for visitWebpage, fillOutForm, emailClicked)
+	//		Reference: https://developer.adobe.com/marketo-apis/api/mapi/#tag/Activities
 	Filter string // optional
 
 	// AssociatedObjects specifies a list of related objects to fetch along with the main object.
@@ -331,6 +338,12 @@ type ObjectMetadata struct {
 	// Deprecated: this map includes only display names.
 	// Refer to Fields for extended description of field properties.
 	FieldsMap map[string]string
+}
+
+// AddFieldMetadata updates Fields and FieldsMap fields ensuring data consistency.
+func (m *ObjectMetadata) AddFieldMetadata(fieldName string, fieldMetadata FieldMetadata) {
+	m.Fields[fieldName] = fieldMetadata
+	m.FieldsMap[fieldName] = fieldMetadata.DisplayName
 }
 
 // NewObjectMetadata constructs ObjectMetadata.
