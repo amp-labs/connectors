@@ -36,6 +36,11 @@ func main() {
 		slog.Error(err.Error())
 	}
 
+	err = testIncrementalReadLeads(ctx)
+	if err != nil {
+		slog.Error(err.Error())
+	}
+
 	err = testReadActivities(ctx)
 	if err != nil {
 		slog.Error(err.Error())
@@ -125,7 +130,32 @@ func testReadLeads(ctx context.Context) error {
 	params := common.ReadParams{
 		ObjectName: "leads",
 		Fields:     connectors.Fields("id", "email"),
-		// NextPage:   "301",
+	}
+
+	res, err := conn.Read(ctx, params)
+	if err != nil {
+		return err
+	}
+
+	// Print the results
+	jsonStr, err := json.MarshalIndent(res, "", "  ")
+	if err != nil {
+		return fmt.Errorf("error marshalling JSON: %w", err)
+	}
+
+	_, _ = os.Stdout.Write(jsonStr)
+	_, _ = os.Stdout.WriteString("\n")
+
+	return nil
+}
+
+func testIncrementalReadLeads(ctx context.Context) error {
+	conn := mk.GetMarketoConnectorLeads(ctx)
+
+	params := common.ReadParams{
+		ObjectName: "leads",
+		Fields:     connectors.Fields("id", "email"),
+		Since:      time.Now().Add(-24 * time.Hour),
 	}
 
 	res, err := conn.Read(ctx, params)
