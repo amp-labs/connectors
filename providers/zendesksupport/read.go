@@ -29,13 +29,16 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	responseFieldName := metadata.Schemas.LookupArrayFieldName(c.Module.ID, config.ObjectName)
+	customFields, err := c.requestCustomTicketFields(ctx, config.ObjectName)
+	if err != nil {
+		return nil, err
+	}
 
 	return common.ParseResult(
 		rsp,
-		common.ExtractRecordsFromPath(responseFieldName),
+		getRecords(c.Module.ID, config.ObjectName),
 		getNextRecordsURL,
-		common.GetMarshaledData,
+		common.MakeMarshaledDataFunc(c.attachReadCustomFields(customFields)),
 		config.Fields,
 	)
 }

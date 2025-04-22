@@ -34,7 +34,7 @@ var (
 var errMissingId = errors.New("missing id field in raw record")
 
 //nolint:revive,funlen
-func (c *Connector) GetRecordsWithIds(
+func (c *Connector) GetRecordsByIds(
 	ctx context.Context,
 	objectName string,
 	ids []string,

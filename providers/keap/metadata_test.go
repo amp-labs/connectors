@@ -197,8 +197,8 @@ func TestListObjectMetadataV2(t *testing.T) { // nolint:funlen,gocognit,cyclop
 
 func metadataExpectAbsentFields(serverURL string, actual, expected *common.ListObjectMetadataResult) bool {
 	const contacts = "contacts"
-	if !errors.Is(actual.Errors[contacts], ErrResolvingCustomFields) {
-		slog.Info("missing metadata error", "errors", ErrResolvingCustomFields)
+	if !errors.Is(actual.Errors[contacts], common.ErrResolvingCustomFields) {
+		slog.Info("missing metadata error", "errors", common.ErrResolvingCustomFields)
 
 		return false
 	}
