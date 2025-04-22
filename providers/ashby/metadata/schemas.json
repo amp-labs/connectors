@@ -5,7 +5,7 @@
             "path": "",
             "objects": {
                 "application": {
-                    "displayName": "Application List",
+                    "displayName": "Application",
                     "path": "application.list",
                     "responseKey": "results",
                     "fields": {
@@ -28,7 +28,7 @@
                     }
                 },
                 "applicationFeedback": {
-                    "displayName": "ApplicationFeedback List",
+                    "displayName": "ApplicationFeedback",
                     "path": "applicationFeedback.list",
                     "responseKey": "results",
                     "fields": {
@@ -50,7 +50,7 @@
                     }
                 },
                 "applicationHiringTeamRole": {
-                    "displayName": "Application Hiring Team Role List",
+                    "displayName": "Application Hiring Team Role",
                     "path": "applicationHiringTeamRole.list",
                     "responseKey": "results",
                     "fields": {
@@ -59,7 +59,7 @@
                     }
                 },
                 "archiveReason": {
-                    "displayName": "Archive Reason List",
+                    "displayName": "Archive Reason",
                     "path": "archiveReason.list",
                     "responseKey": "results",
                     "fields": {
@@ -71,7 +71,7 @@
                 },
                 
                 "assessment": {
-                    "displayName": "Assessment List",
+                    "displayName": "Assessment",
                     "path": "assessment.list",
                     "responseKey": "results",
                     "fields": {
@@ -82,7 +82,7 @@
                 },
 
                 "candidate": {
-                    "displayName": "Candidate List",
+                    "displayName": "Candidate",
                     "path": "candidate.list",
                     "responseKey": "results",
                     "fields": {
@@ -107,7 +107,7 @@
                     }
                 },
                 "candidateTag": {
-                    "displayName": "Candidate Tag List",
+                    "displayName": "Candidate Tag",
                     "path": "candidateTag.list",
                     "responseKey": "results",
                     "fields": {
@@ -117,7 +117,7 @@
                     }
                 },
                 "communicationTemplate": {
-                    "displayName": "Communication Template List",
+                    "displayName": "Communication Template",
                     "path": "communicationTemplate.list",
                     "responseKey": "results",
                     "fields": {
@@ -129,7 +129,7 @@
                     }
                 },
                 "customField": {
-                    "displayName": "Custom Field List",
+                    "displayName": "Custom Field",
                     "path": "customField.list",
                     "responseKey": "results",
                     "fields": {
@@ -143,7 +143,7 @@
                     }
                 },
                 "department": {
-                    "displayName": "Department List",
+                    "displayName": "Department",
                     "path": "department.list",
                     "responseKey": "results",
                     "fields": {
@@ -154,7 +154,7 @@
                     }
                 },
                 "feedbackFormDefinition": {
-                    "displayName": "Feedback Form Definition List",
+                    "displayName": "Feedback Form Definition",
                     "path": "feedbackFormDefinition.list",
                     "responseKey": "results",
                     "fields": {
@@ -168,7 +168,7 @@
                     }
                 },
                 "interview": {
-                    "displayName": "Interview List",
+                    "displayName": "Interview",
                     "path": "interview.list",
                     "responseKey": "results",
                     "fields": {
@@ -182,7 +182,7 @@
                     }
                 },
                 "interviewPlan": {
-                    "displayName": "Interview Plan List",
+                    "displayName": "Interview Plan",
                     "path": "interviewPlan.list",
                     "responseKey": "results",
                     "fields": {
@@ -192,7 +192,7 @@
                     }
                 },
                 "interviewSchedule": {
-                    "displayName": "Interview Schedule List",
+                    "displayName": "Interview Schedule",
                     "path": "interviewSchedule.list",
                     "responseKey": "results",
                     "fields": {
@@ -204,7 +204,7 @@
                     }
                 },
                 "interviewStageGroup": {
-                    "displayName": "Interview Stage Group List",
+                    "displayName": "Interview Stage Group",
                     "path": "interviewStageGroup.list",
                     "responseKey": "results",
                     "fields": {
@@ -215,7 +215,7 @@
                     }
                 },
                 "interviewerPool": {
-                    "displayName": "Interviewer Pool List",
+                    "displayName": "Interviewer Pool",
                     "path": "interviewerPool.list",
                     "responseKey": "results",
                     "fields": {
@@ -225,7 +225,7 @@
                     }
                 },
                 "job": {
-                    "displayName": "Job List",
+                    "displayName": "Job",
                     "path": "job.list",
                     "responseKey": "results",
                     "fields": {
@@ -251,7 +251,7 @@
                     }
                 },
                 "jobBoard": {
-                    "displayName": "Job Board List",
+                    "displayName": "Job Board",
                     "path": "jobBoard.list",
                     "responseKey": "results",
                     "fields": {
@@ -261,7 +261,7 @@
                     }
                 },
                 "jobPosting": {
-                    "displayName": "Job Posting List",
+                    "displayName": "Job Posting",
                     "path": "jobPosting.list",
                     "responseKey": "results",
                     "fields": {
@@ -285,7 +285,7 @@
                     }
                 },
                 "jobTemplate": {
-                    "displayName": "Job Template List",
+                    "displayName": "Job Template",
                     "path": "jobTemplate.list",
                     "responseKey": "results",
                     "fields": {
@@ -302,7 +302,7 @@
                     }
                 },
                 "location": {
-                    "displayName": "Location List",
+                    "displayName": "Location",
                     "path": "location.list",
                     "responseKey": "results",
                     "fields": {
@@ -317,7 +317,7 @@
                     }
                 },
                 "offer": {
-                    "displayName": "Offer List",
+                    "displayName": "Offer",
                     "path": "offer.list",
                     "responseKey": "results",
                     "fields": {
@@ -331,7 +331,7 @@
                     }
                 },
                 "opening": {
-                    "displayName": "Opening List",
+                    "displayName": "Opening",
                     "path": "opening.list",
                     "responseKey": "results",
                     "fields": {
@@ -346,7 +346,7 @@
                 },
                 
                 "project": {
-                    "displayName": "Project List",
+                    "displayName": "Project",
                     "path": "project.list",
                     "responseKey": "results",
                     "fields": {
@@ -362,7 +362,7 @@
                 },
 
                 "source": {
-                    "displayName": "Source List",
+                    "displayName": "Source",
                     "path": "source.list",
                     "responseKey": "results",
                     "fields": {
@@ -374,7 +374,7 @@
                 }, 
 
                 "sourceTrackingLink": {
-                    "displayName": "Source Tracking List",
+                    "displayName": "Source Tracking",
                     "path": "sourceTrackingLink.list",
                     "responseKey": "results",
                     "fields": {
@@ -386,7 +386,7 @@
                 }, 
 
                 "surveyFormDefinition": {
-                    "displayName": "Survey Form Definition List",
+                    "displayName": "Survey Form Definition",
                     "path": "surveyFormDefinition.list",
                     "responseKey": "results",
                     "fields": {
@@ -399,7 +399,7 @@
                 },
 
                 "user": {
-                    "displayName": "User List",
+                    "displayName": "User",
                     "path": "user.list",
                     "responseKey": "results",
                     "fields": {
