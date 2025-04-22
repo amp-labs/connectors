@@ -38,6 +38,9 @@ var (
 
 	// ErrFilterInvalid indicates missing activityTypeIds when reading Marketo lead activities.
 	ErrFilterInvalid = errors.New("reading lead activities require Filter parameter with comma-separated activityTypeIds")
+
+	// ErrZeroRecords indicates missing records for the provided timestamp range, using the Since Field.
+	ErrZeroRecords = errors.New("returned zero records for the provided timestamp range")
 )
 
 func constructErrMessage(a any) (string, error) {
