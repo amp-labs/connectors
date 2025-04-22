@@ -2,7 +2,7 @@ package providers
 
 const RedditAds Provider = "redditAds"
 
-func Init() {
+func init() {
 	// RedditAds Configuration
 	SetInfo(RedditAds, ProviderInfo{
 		AuthType: Oauth2,
