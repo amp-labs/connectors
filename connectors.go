@@ -88,7 +88,7 @@ type AuthMetadataConnector interface {
 
 type BatchRecordReaderConnector interface {
 	Connector
-	GetRecordsWithIds(
+	GetRecordsByIds(
 		ctx context.Context,
 		objectName string,
 		//nolint:revive
@@ -149,9 +149,9 @@ type SubscribeConnector interface {
 		ctx context.Context,
 		previousResult common.SubscriptionResult,
 	) error
-	// EmptySubscritpionParams returns a empty instance of SubscribeParams.
+	// EmptySubscriptionParams returns a empty instance of SubscribeParams.
 	// if there is any provider specific initialization required, it should be done here.
-	EmptySubscritpionParams() *common.SubscribeParams
+	EmptySubscriptionParams() *common.SubscribeParams
 	// EmptySubscriptionResult returns a empty instance of SubscriptionResult.
 	// if there is any provider specific initialization required, it should be done here.
 	EmptySubscriptionResult() *common.SubscriptionResult
