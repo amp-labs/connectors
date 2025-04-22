@@ -25,3 +25,14 @@ func getCatalog() *CatalogWrapper {
 		Timestamp: generated.Timestamp,
 	}
 }
+
+// AllNames returns a list of all provider names in the catalog.
+func AllNames() []Provider {
+	providers := make([]Provider, 0, len(catalog))
+
+	for provider := range catalog {
+		providers = append(providers, provider)
+	}
+
+	return providers
+}
