@@ -14,7 +14,7 @@ func supportedOperations() components.EndpointRegistryInput {
 	}
 
 	writeSupport := []string{
-		"pins", "boards", "media", "token", "catalogs",
+		"pins", "boards", "media", "token", "catalogs", "websites", "ad_accounts",
 	}
 
 	return components.EndpointRegistryInput{
