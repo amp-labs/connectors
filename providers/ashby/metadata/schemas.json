@@ -4,8 +4,8 @@
             "id": "",
             "path": "",
             "objects": {
-                "application.list": {
-                    "displayName": "Application List",
+                "application": {
+                    "displayName": "Application",
                     "path": "application.list",
                     "responseKey": "results",
                     "fields": {
@@ -27,8 +27,8 @@
                         "openings": "openings"
                     }
                 },
-                "applicationFeedback.list": {
-                    "displayName": "ApplicationFeedback List",
+                "applicationFeedback": {
+                    "displayName": "ApplicationFeedback",
                     "path": "applicationFeedback.list",
                     "responseKey": "results",
                     "fields": {
@@ -49,8 +49,8 @@
                         "submitterUserAgent": "submitterUserAgent"
                     }
                 },
-                "applicationHiringTeamRole.list": {
-                    "displayName": "Application Hiring Team Role List",
+                "applicationHiringTeamRole": {
+                    "displayName": "Application Hiring Team Role",
                     "path": "applicationHiringTeamRole.list",
                     "responseKey": "results",
                     "fields": {
@@ -58,8 +58,8 @@
                         "title": "title"
                     }
                 },
-                "archiveReason.list": {
-                    "displayName": "Archive Reason List",
+                "archiveReason": {
+                    "displayName": "Archive Reason",
                     "path": "archiveReason.list",
                     "responseKey": "results",
                     "fields": {
@@ -70,9 +70,9 @@
                     }
                 },
                 
-                "assessment.list": {
-                    "displayName": "Assessment List",
-                    "path": "assessment.list.list",
+                "assessment": {
+                    "displayName": "Assessment",
+                    "path": "assessment.list",
                     "responseKey": "results",
                     "fields": {
                         "assessment_type_id": "assessment_type_id",
@@ -81,8 +81,8 @@
                     }
                 },
 
-                "candidate.list": {
-                    "displayName": "Candidate List",
+                "candidate": {
+                    "displayName": "Candidate",
                     "path": "candidate.list",
                     "responseKey": "results",
                     "fields": {
@@ -106,9 +106,9 @@
                         "location": "location"
                     }
                 },
-                "candidateTag.list": {
-                    "displayName": "Candidate Tag List",
-                    "path": "candidateTag",
+                "candidateTag": {
+                    "displayName": "Candidate Tag",
+                    "path": "candidateTag.list",
                     "responseKey": "results",
                     "fields": {
                         "id": "id",
@@ -116,8 +116,8 @@
                         "isArchived": "isArchived"
                     }
                 },
-                "communicationTemplate.list": {
-                    "displayName": "Communication Template List",
+                "communicationTemplate": {
+                    "displayName": "Communication Template",
                     "path": "communicationTemplate.list",
                     "responseKey": "results",
                     "fields": {
@@ -128,8 +128,8 @@
                         "updatedAt": "updatedAt"
                     }
                 },
-                "customField.list": {
-                    "displayName": "Custom Field List",
+                "customField": {
+                    "displayName": "Custom Field",
                     "path": "customField.list",
                     "responseKey": "results",
                     "fields": {
@@ -142,8 +142,8 @@
                         "selectableValues": "selectableValues"
                     }
                 },
-                "department.list": {
-                    "displayName": "Department List",
+                "department": {
+                    "displayName": "Department",
                     "path": "department.list",
                     "responseKey": "results",
                     "fields": {
@@ -153,8 +153,8 @@
                         "parentId": "parentId"
                     }
                 },
-                "feedbackFormDefinition.list": {
-                    "displayName": "Feedback Form Definition List",
+                "feedbackFormDefinition": {
+                    "displayName": "Feedback Form Definition",
                     "path": "feedbackFormDefinition.list",
                     "responseKey": "results",
                     "fields": {
@@ -167,8 +167,8 @@
                         "interviewId": "interviewId"
                     }
                 },
-                "interview.list": {
-                    "displayName": "Interview List",
+                "interview": {
+                    "displayName": "Interview",
                     "path": "interview.list",
                     "responseKey": "results",
                     "fields": {
@@ -181,8 +181,8 @@
                         "feedbackFormDefinitionId": "feedbackFormDefinitionId"
                     }
                 },
-                "interviewPlan.list": {
-                    "displayName": "Interview Plan List",
+                "interviewPlan": {
+                    "displayName": "Interview Plan",
                     "path": "interviewPlan.list",
                     "responseKey": "results",
                     "fields": {
@@ -191,8 +191,8 @@
                         "isArchived": "isArchived"
                     }
                 },
-                "interviewSchedule.list": {
-                    "displayName": "Interview Schedule List",
+                "interviewSchedule": {
+                    "displayName": "Interview Schedule",
                     "path": "interviewSchedule.list",
                     "responseKey": "results",
                     "fields": {
@@ -203,8 +203,8 @@
                         "interviewEvents": "interviewEvents"
                     }
                 },
-                "interviewStageGroup.list": {
-                    "displayName": "Interview Stage Group List",
+                "interviewStageGroup": {
+                    "displayName": "Interview Stage Group",
                     "path": "interviewStageGroup.list",
                     "responseKey": "results",
                     "fields": {
@@ -214,8 +214,8 @@
                         "order": "order"
                     }
                 },
-                "interviewerPool.list": {
-                    "displayName": "Interviewer Pool List",
+                "interviewerPool": {
+                    "displayName": "Interviewer Pool",
                     "path": "interviewerPool.list",
                     "responseKey": "results",
                     "fields": {
@@ -224,8 +224,8 @@
                         "isArchived": "isArchived"
                     }
                 },
-                "job.list": {
-                    "displayName": "Job List",
+                "job": {
+                    "displayName": "Job",
                     "path": "job.list",
                     "responseKey": "results",
                     "fields": {
@@ -250,8 +250,8 @@
                         "closedAt": "closedAt"
                     }
                 },
-                "jobBoard.list": {
-                    "displayName": "Job Board List",
+                "jobBoard": {
+                    "displayName": "Job Board",
                     "path": "jobBoard.list",
                     "responseKey": "results",
                     "fields": {
@@ -260,8 +260,8 @@
                         "isInternal": "isInternal"
                     }
                 },
-                "jobPosting.list": {
-                    "displayName": "Job Posting List",
+                "jobPosting": {
+                    "displayName": "Job Posting",
                     "path": "jobPosting.list",
                     "responseKey": "results",
                     "fields": {
@@ -284,8 +284,8 @@
                         "updatedAt": "updatedAt"
                     }
                 },
-                "jobTemplate.list": {
-                    "displayName": "Job Template List",
+                "jobTemplate": {
+                    "displayName": "Job Template",
                     "path": "jobTemplate.list",
                     "responseKey": "results",
                     "fields": {
@@ -301,8 +301,8 @@
                         "location": "location"
                     }
                 },
-                "location.list": {
-                    "displayName": "Location List",
+                "location": {
+                    "displayName": "Location",
                     "path": "location.list",
                     "responseKey": "results",
                     "fields": {
@@ -316,8 +316,8 @@
                         "type": "type"
                     }
                 },
-                "offer.list": {
-                    "displayName": "Offer List",
+                "offer": {
+                    "displayName": "Offer",
                     "path": "offer.list",
                     "responseKey": "results",
                     "fields": {
@@ -330,8 +330,8 @@
                         "versions":"versions"
                     }
                 },
-                "opening.list": {
-                    "displayName": "Opening List",
+                "opening": {
+                    "displayName": "Opening",
                     "path": "opening.list",
                     "responseKey": "results",
                     "fields": {
@@ -345,8 +345,8 @@
                     }
                 },
                 
-                "project.list": {
-                    "displayName": "Project List",
+                "project": {
+                    "displayName": "Project",
                     "path": "project.list",
                     "responseKey": "results",
                     "fields": {
@@ -361,8 +361,8 @@
                     }
                 },
 
-                "source.list": {
-                    "displayName": "Source List",
+                "source": {
+                    "displayName": "Source",
                     "path": "source.list",
                     "responseKey": "results",
                     "fields": {
@@ -373,8 +373,8 @@
                     }
                 }, 
 
-                "sourceTrackingLink.list": {
-                    "displayName": "Source Tracking List",
+                "sourceTrackingLink": {
+                    "displayName": "Source Tracking",
                     "path": "sourceTrackingLink.list",
                     "responseKey": "results",
                     "fields": {
@@ -385,8 +385,8 @@
                     }
                 }, 
 
-                "surveyFormDefinition.list": {
-                    "displayName": "Survey Form Definition List",
+                "surveyFormDefinition": {
+                    "displayName": "Survey Form Definition",
                     "path": "surveyFormDefinition.list",
                     "responseKey": "results",
                     "fields": {
@@ -398,8 +398,8 @@
                     }
                 },
 
-                "user.list": {
-                    "displayName": "User List",
+                "user": {
+                    "displayName": "User",
                     "path": "user.list",
                     "responseKey": "results",
                     "fields": {

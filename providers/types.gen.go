@@ -158,6 +158,24 @@ type MediaTypeRegular struct {
 	LogoURL string `json:"logoURL,omitempty"`
 }
 
+// MetadataItemInput defines model for MetadataItemInput.
+type MetadataItemInput struct {
+	// DisplayName The human-readable name for the field
+	DisplayName string `json:"displayName,omitempty"`
+
+	// DocsURL URL with more information about how to locate this value
+	DocsURL string `json:"docsURL,omitempty"`
+
+	// Name The internal identifier for the metadata field
+	Name string `json:"name"`
+}
+
+// MetadataItemPostAuthentication defines model for MetadataItemPostAuthentication.
+type MetadataItemPostAuthentication struct {
+	// Name The internal identifier for the metadata field
+	Name string `json:"name"`
+}
+
 // ModuleInfo defines model for ModuleInfo.
 type ModuleInfo struct {
 	BaseURL     string `json:"baseURL"`
@@ -221,6 +239,9 @@ type ProviderInfo struct {
 	Labels      *Labels `json:"labels,omitempty"`
 	Media       *Media  `json:"media,omitempty"`
 
+	// Metadata Provider metadata that needs to be given by the user or fetched by the connector post authentication for the connector to work.
+	Metadata *ProviderMetadata `json:"metadata,omitempty"`
+
 	// Modules The registry of provider modules.
 	Modules *Modules `json:"modules,omitempty"`
 	Name    string   `json:"name"`
@@ -237,6 +258,15 @@ type ProviderInfo struct {
 
 	// Support The supported features for the provider.
 	Support Support `json:"support" validate:"required"`
+}
+
+// ProviderMetadata Provider metadata that needs to be given by the user or fetched by the connector post authentication for the connector to work.
+type ProviderMetadata struct {
+	// Input Metadata provided as manual input
+	Input []MetadataItemInput `json:"input,omitempty"`
+
+	// PostAuthentication Metadata fetched by the connector post authentication
+	PostAuthentication []MetadataItemPostAuthentication `json:"postAuthentication,omitempty"`
 }
 
 // ProviderOpts Additional provider-specific metadata.
@@ -280,7 +310,22 @@ type Support struct {
 
 // TokenMetadataFields Fields to be used to extract token metadata from the token response.
 type TokenMetadataFields struct {
-	ConsumerRefField  string `json:"consumerRefField,omitempty"`
-	ScopesField       string `json:"scopesField,omitempty"`
-	WorkspaceRefField string `json:"workspaceRefField,omitempty"`
+	ConsumerRefField string `json:"consumerRefField,omitempty"`
+
+	// OtherFields Additional fields to extract and transform from the token response
+	OtherFields       *TokenMetadataFieldsOtherFields `json:"otherFields,omitempty"`
+	ScopesField       string                          `json:"scopesField,omitempty"`
+	WorkspaceRefField string                          `json:"workspaceRefField,omitempty"`
+}
+
+// TokenMetadataFieldsOtherFields Additional fields to extract and transform from the token response
+type TokenMetadataFieldsOtherFields = []struct {
+	// DisplayName The human-readable name of the field
+	DisplayName string `json:"displayName"`
+
+	// JqValueSelector jq expression that extracts and transforms the value from the token response
+	JqValueSelector string `json:"jqValueSelector"`
+
+	// Name The internal name of the field
+	Name string `json:"name"`
 }
