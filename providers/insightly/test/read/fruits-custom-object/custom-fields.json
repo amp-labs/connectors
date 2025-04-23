@@ -1,0 +1,30 @@
+[
+  {
+    "FIELD_NAME": "Weight__c",
+    "FIELD_ORDER": 1,
+    "FIELD_FOR": "FRUIT__C",
+    "FIELD_LABEL": "Weight",
+    "FIELD_TYPE": "NUMERIC",
+    "FIELD_HELP_TEXT": null,
+    "DEFAULT_VALUE": "0",
+    "EDITABLE": true,
+    "VISIBLE": true,
+    "CUSTOM_FIELD_OPTIONS": [],
+    "DEPENDENCY": null,
+    "JOIN_OBJECT": null
+  },
+  {
+    "FIELD_NAME": "Color__c",
+    "FIELD_ORDER": 2,
+    "FIELD_FOR": "FRUIT__C",
+    "FIELD_LABEL": "Color",
+    "FIELD_TYPE": "TEXT",
+    "FIELD_HELP_TEXT": null,
+    "DEFAULT_VALUE": null,
+    "EDITABLE": true,
+    "VISIBLE": true,
+    "CUSTOM_FIELD_OPTIONS": [],
+    "DEPENDENCY": null,
+    "JOIN_OBJECT": null
+  }
+]
