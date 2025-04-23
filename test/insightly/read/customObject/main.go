@@ -13,7 +13,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils"
 )
 
-const objectName = "Contacts"
+const objectName = "Fruit__c"
 
 func main() {
 	// Handle Ctrl-C gracefully.
@@ -27,7 +27,7 @@ func main() {
 
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: objectName,
-		Fields:     connectors.Fields("EMAIL_ADDRESS", "CONTACT_ID", "Hobby__c", "Interests__c"),
+		Fields:     connectors.Fields("RECORD_ID", "RECORD_NAME", "Color__c"),
 	})
 	if err != nil {
 		utils.Fail("error reading from provider", "error", err)

@@ -57,6 +57,8 @@ type Case struct {
 	Then http.HandlerFunc
 }
 
+type Cases []Case
+
 func (p *Case) isOpen(w http.ResponseWriter, r *http.Request) bool {
 	if p.If == nil {
 		return false
