@@ -1,3 +1,4 @@
+// nolint:dupl
 package pinterest
 
 import (
@@ -12,7 +13,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
-func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
+func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
 	pinsResponse := testutils.DataFromFile(t, "pins_write.json")
@@ -272,8 +273,6 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	}
 
 	for _, tt := range tests {
-		// nolint:varnamelen
-		tt := tt
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
