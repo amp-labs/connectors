@@ -1,0 +1,194 @@
+[
+  {
+    "FIELD_NAME": "Hobby__c",
+    "FIELD_ORDER": 1,
+    "FIELD_FOR": "CONTACT",
+    "FIELD_LABEL": "Hobby",
+    "FIELD_TYPE": "TEXT",
+    "FIELD_HELP_TEXT": null,
+    "DEFAULT_VALUE": null,
+    "EDITABLE": true,
+    "VISIBLE": true,
+    "CUSTOM_FIELD_OPTIONS": [],
+    "DEPENDENCY": null,
+    "JOIN_OBJECT": null
+  },
+  {
+    "FIELD_NAME": "Interests__c",
+    "FIELD_ORDER": 2,
+    "FIELD_FOR": "CONTACT",
+    "FIELD_LABEL": "Interests",
+    "FIELD_TYPE": "MULTISELECT",
+    "FIELD_HELP_TEXT": null,
+    "DEFAULT_VALUE": null,
+    "EDITABLE": true,
+    "VISIBLE": true,
+    "CUSTOM_FIELD_OPTIONS": [
+      {
+        "OPTION_ID": 3,
+        "OPTION_VALUE": "Art",
+        "OPTION_DEFAULT": false
+      },
+      {
+        "OPTION_ID": 6,
+        "OPTION_VALUE": "Food",
+        "OPTION_DEFAULT": false
+      },
+      {
+        "OPTION_ID": 5,
+        "OPTION_VALUE": "Music",
+        "OPTION_DEFAULT": false
+      },
+      {
+        "OPTION_ID": 2,
+        "OPTION_VALUE": "Sports",
+        "OPTION_DEFAULT": false
+      },
+      {
+        "OPTION_ID": 1,
+        "OPTION_VALUE": "Technology",
+        "OPTION_DEFAULT": false
+      },
+      {
+        "OPTION_ID": 4,
+        "OPTION_VALUE": "Travel",
+        "OPTION_DEFAULT": false
+      }
+    ],
+    "DEPENDENCY": null,
+    "JOIN_OBJECT": null
+  },
+  {
+    "FIELD_NAME": "Newsletter_Subscription__c",
+    "FIELD_ORDER": 3,
+    "FIELD_FOR": "CONTACT",
+    "FIELD_LABEL": "Newsletter Subscription",
+    "FIELD_TYPE": "BIT",
+    "FIELD_HELP_TEXT": null,
+    "DEFAULT_VALUE": "False",
+    "EDITABLE": true,
+    "VISIBLE": true,
+    "CUSTOM_FIELD_OPTIONS": [],
+    "DEPENDENCY": null,
+    "JOIN_OBJECT": null
+  },
+  {
+    "FIELD_NAME": "Preferred_Contact_Method__c",
+    "FIELD_ORDER": 4,
+    "FIELD_FOR": "CONTACT",
+    "FIELD_LABEL": "Preferred Contact Method",
+    "FIELD_TYPE": "DROPDOWN",
+    "FIELD_HELP_TEXT": null,
+    "DEFAULT_VALUE": null,
+    "EDITABLE": true,
+    "VISIBLE": true,
+    "CUSTOM_FIELD_OPTIONS": [
+      {
+        "OPTION_ID": 1,
+        "OPTION_VALUE": "Email",
+        "OPTION_DEFAULT": false
+      },
+      {
+        "OPTION_ID": 2,
+        "OPTION_VALUE": "Phone",
+        "OPTION_DEFAULT": false
+      },
+      {
+        "OPTION_ID": 3,
+        "OPTION_VALUE": "SMS",
+        "OPTION_DEFAULT": false
+      },
+      {
+        "OPTION_ID": 4,
+        "OPTION_VALUE": "WhatsApp",
+        "OPTION_DEFAULT": false
+      }
+    ],
+    "DEPENDENCY": null,
+    "JOIN_OBJECT": null
+  },
+  {
+    "FIELD_NAME": "Date1__c",
+    "FIELD_ORDER": 5,
+    "FIELD_FOR": "CONTACT",
+    "FIELD_LABEL": "Date1",
+    "FIELD_TYPE": "DATE",
+    "FIELD_HELP_TEXT": null,
+    "DEFAULT_VALUE": null,
+    "EDITABLE": true,
+    "VISIBLE": true,
+    "CUSTOM_FIELD_OPTIONS": [],
+    "DEPENDENCY": null,
+    "JOIN_OBJECT": null
+  },
+  {
+    "FIELD_NAME": "Date2__c",
+    "FIELD_ORDER": 6,
+    "FIELD_FOR": "CONTACT",
+    "FIELD_LABEL": "Date2",
+    "FIELD_TYPE": "DATETIME",
+    "FIELD_HELP_TEXT": null,
+    "DEFAULT_VALUE": null,
+    "EDITABLE": true,
+    "VISIBLE": true,
+    "CUSTOM_FIELD_OPTIONS": [],
+    "DEPENDENCY": null,
+    "JOIN_OBJECT": null
+  },
+  {
+    "FIELD_NAME": "MultiText1__c",
+    "FIELD_ORDER": 7,
+    "FIELD_FOR": "CONTACT",
+    "FIELD_LABEL": "MultiText1",
+    "FIELD_TYPE": "MULTILINETEXT",
+    "FIELD_HELP_TEXT": null,
+    "DEFAULT_VALUE": null,
+    "EDITABLE": true,
+    "VISIBLE": true,
+    "CUSTOM_FIELD_OPTIONS": [],
+    "DEPENDENCY": null,
+    "JOIN_OBJECT": null
+  },
+  {
+    "FIELD_NAME": "Number1__c",
+    "FIELD_ORDER": 8,
+    "FIELD_FOR": "CONTACT",
+    "FIELD_LABEL": "Number1",
+    "FIELD_TYPE": "NUMERIC",
+    "FIELD_HELP_TEXT": null,
+    "DEFAULT_VALUE": null,
+    "EDITABLE": true,
+    "VISIBLE": true,
+    "CUSTOM_FIELD_OPTIONS": [],
+    "DEPENDENCY": null,
+    "JOIN_OBJECT": null
+  },
+  {
+    "FIELD_NAME": "Percent1__c",
+    "FIELD_ORDER": 9,
+    "FIELD_FOR": "CONTACT",
+    "FIELD_LABEL": "Percent1",
+    "FIELD_TYPE": "PERCENT",
+    "FIELD_HELP_TEXT": null,
+    "DEFAULT_VALUE": null,
+    "EDITABLE": true,
+    "VISIBLE": true,
+    "CUSTOM_FIELD_OPTIONS": [],
+    "DEPENDENCY": null,
+    "JOIN_OBJECT": null
+  },
+  {
+    "FIELD_NAME": "AutoNumber1__c",
+    "FIELD_ORDER": 10,
+    "FIELD_FOR": "CONTACT",
+    "FIELD_LABEL": "AutoNumber1",
+    "FIELD_TYPE": "AUTONUMBER",
+    "FIELD_HELP_TEXT": null,
+    "DEFAULT_VALUE": null,
+    "EDITABLE": false,
+    "VISIBLE": true,
+    "CUSTOM_FIELD_OPTIONS": [],
+    "DEPENDENCY": null,
+    "JOIN_OBJECT": null
+  }
+]
