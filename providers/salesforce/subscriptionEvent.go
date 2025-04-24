@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/goutils"
@@ -170,6 +171,156 @@ func (s SubscriptionEvent) EventTimeStampNano() (int64, error) {
 	return int64(num), nil
 }
 
+// compoundField represents a compound field in Salesforce.
+type compoundField struct {
+	Object string // The object name
+	Field  string // The field name
+}
+
+// Note that this list was obtained by running this SOQL query:
+// SELECT EntityDefinition.QualifiedApiName,QualifiedApiName
+// FROM FieldDefinition
+// WHERE IsCompound = true AND EntityDefinition.QualifiedApiName LIKE '%'
+//
+// I then massaged the results in to actual Go code.
+var compoundFields = []compoundField{ //nolint:gochecknoglobals
+	{Object: "Account", Field: "BillingAddress"},
+	{Object: "Account", Field: "Name"},
+	{Object: "Account", Field: "ShippingAddress"},
+	{Object: "AccountChangeEvent", Field: "BillingAddress"},
+	{Object: "AccountChangeEvent", Field: "Name"},
+	{Object: "AccountChangeEvent", Field: "ShippingAddress"},
+	{Object: "AccountCleanInfo", Field: "Address"},
+	{Object: "AccountCleanInfoChangeEvent", Field: "Address"},
+	{Object: "Address", Field: "Address"},
+	{Object: "AlternativePaymentMethod", Field: "PaymentMethodAddress"},
+	{Object: "Asset", Field: "Address"},
+	{Object: "AssetChangeEvent", Field: "Address"},
+	{Object: "CardPaymentMethod", Field: "PaymentMethodAddress"},
+	{Object: "CartDeliveryGroup", Field: "DeliverToAddress"},
+	{Object: "CartDeliveryGroupChangeEvent", Field: "DeliverToAddress"},
+	{Object: "Contact", Field: "MailingAddress"},
+	{Object: "Contact", Field: "Name"},
+	{Object: "Contact", Field: "OtherAddress"},
+	{Object: "ContactChangeEvent", Field: "MailingAddress"},
+	{Object: "ContactChangeEvent", Field: "Name"},
+	{Object: "ContactChangeEvent", Field: "OtherAddress"},
+	{Object: "ContactCleanInfo", Field: "Address"},
+	{Object: "ContactCleanInfoChangeEvent", Field: "Address"},
+	{Object: "ContactPointAddress", Field: "Address"},
+	{Object: "ContactPointAddressChangeEvent", Field: "Address"},
+	{Object: "Contract", Field: "BillingAddress"},
+	{Object: "ContractChangeEvent", Field: "BillingAddress"},
+	{Object: "DandBCompany", Field: "Address"},
+	{Object: "DandBCompany", Field: "MailingAddress"},
+	{Object: "DigitalWallet", Field: "PaymentMethodAddress"},
+	{Object: "FulfillmentOrder", Field: "FulfilledToAddress"},
+	{Object: "FulfillmentOrderChangeEvent", Field: "FulfilledToAddress"},
+	{Object: "Individual", Field: "Name"},
+	{Object: "IndividualChangeEvent", Field: "Name"},
+	{Object: "Lead", Field: "Address"},
+	{Object: "Lead", Field: "Name"},
+	{Object: "LeadChangeEvent", Field: "Address"},
+	{Object: "LeadChangeEvent", Field: "Name"},
+	{Object: "LeadCleanInfo", Field: "Address"},
+	{Object: "LegalEntity", Field: "LegalEntityAddress"},
+	{Object: "Location", Field: "Location"},
+	{Object: "LocationChangeEvent", Field: "Location"},
+	{Object: "Name", Field: "Name"},
+	{Object: "Opportunity", Field: "Fiscal"},
+	{Object: "Order", Field: "BillingAddress"},
+	{Object: "Order", Field: "ShippingAddress"},
+	{Object: "OrderChangeEvent", Field: "BillingAddress"},
+	{Object: "OrderChangeEvent", Field: "ShippingAddress"},
+	{Object: "Organization", Field: "Address"},
+	{Object: "PaymentMethod", Field: "PaymentMethodAddress"},
+	{Object: "RecentlyViewed", Field: "Name"},
+	{Object: "ResourceAbsence", Field: "Address"},
+	{Object: "ResourceAbsenceChangeEvent", Field: "Address"},
+	{Object: "ReturnOrder", Field: "ShipFromAddress"},
+	{Object: "ReturnOrderChangeEvent", Field: "ShipFromAddress"},
+	{Object: "ServiceAppointment", Field: "Address"},
+	{Object: "ServiceAppointmentChangeEvent", Field: "Address"},
+	{Object: "ServiceContract", Field: "BillingAddress"},
+	{Object: "ServiceContract", Field: "ShippingAddress"},
+	{Object: "ServiceContractChangeEvent", Field: "BillingAddress"},
+	{Object: "ServiceContractChangeEvent", Field: "ShippingAddress"},
+	{Object: "ServiceTerritory", Field: "Address"},
+	{Object: "ServiceTerritoryChangeEvent", Field: "Address"},
+	{Object: "ServiceTerritoryMember", Field: "Address"},
+	{Object: "ServiceTerritoryMemberChangeEvent", Field: "Address"},
+	{Object: "User", Field: "Address"},
+	{Object: "User", Field: "Name"},
+	{Object: "UserChangeEvent", Field: "Address"},
+	{Object: "UserChangeEvent", Field: "Name"},
+	{Object: "WebCart", Field: "BillingAddress"},
+	{Object: "WebCartChangeEvent", Field: "BillingAddress"},
+	{Object: "WorkOrder", Field: "Address"},
+	{Object: "WorkOrderChangeEvent", Field: "Address"},
+	{Object: "WorkOrderLineItem", Field: "Address"},
+	{Object: "WorkOrderLineItemChangeEvent", Field: "Address"},
+}
+
+// Maps object name -> field name -> empty struct.
+// NB: All names are lowercase to allow case-insensitive matching.
+var compositePrefixMap map[string]map[string]struct{} //nolint:gochecknoglobals
+
+func init() {
+	compositePrefixMap = make(map[string]map[string]struct{}, len(compoundFields))
+
+	for _, field := range compoundFields {
+		obj := strings.ToLower(field.Object)
+		fld := strings.ToLower(field.Field)
+
+		if _, ok := compositePrefixMap[field.Object]; !ok {
+			compositePrefixMap[obj] = make(map[string]struct{})
+		}
+
+		compositePrefixMap[obj][fld] = struct{}{}
+	}
+}
+
+// isStandardCompoundField checks if the given object and field
+// are part of the standard compound fields defined in Salesforce.
+//
+// See https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/compound_fields.htm
+func isStandardCompoundField(obj, field string) bool {
+	fields, ok := compositePrefixMap[strings.ToLower(obj)]
+	if !ok {
+		return false
+	}
+
+	_, ok = fields[strings.ToLower(field)]
+
+	return ok
+}
+
+func (s SubscriptionEvent) normalizeUpdatedFieldName(name string) (string, error) {
+	if !strings.Contains(name, ".") {
+		return name, nil
+	}
+
+	// Compound fields look like "Field.Subfield"
+	// We're interested in the rightmost part, but to validate
+	// that indeed it's a compound field, we have to consider the
+	// leftmost part first.
+	parts := strings.SplitN(name, ".", 2) //nolint:mnd,gomnd
+	if len(parts) < 2 {                   //nolint:mnd,gomnd
+		return parts[0], nil
+	}
+
+	obj, err := s.ObjectName()
+	if err != nil {
+		return "", fmt.Errorf("failed to get object name: %w", err)
+	}
+
+	if !isStandardCompoundField(obj, parts[0]) {
+		return name, nil
+	}
+
+	return parts[1], nil
+}
+
 func (s SubscriptionEvent) UpdatedFields() ([]string, error) {
 	registry, err := s.asMap()
 	if err != nil {
@@ -200,7 +351,12 @@ func (s SubscriptionEvent) UpdatedFields() ([]string, error) {
 			)
 		}
 
-		fields[i] = str
+		fieldName, err := s.normalizeUpdatedFieldName(str)
+		if err != nil {
+			return nil, fmt.Errorf("failed to normalize field named %q: %w", str, err)
+		}
+
+		fields[i] = fieldName
 	}
 
 	return fields, nil
