@@ -81,7 +81,7 @@ func WithGetPostAuthInfo(
 }
 
 // WithGetRecordsByIds sets the getRecordsByIds function for the connector.
-func WithGetRecordsByIds(
+func WithGetRecordsByIds( //nolint:revive
 	getRecordsByIds func(ctx context.Context, objectName string, recordIds []string, fields []string, associations []string) ([]common.ReadResultRow, error),
 ) Option {
 	return func(params *parameters) {
@@ -201,7 +201,7 @@ type parameters struct {
 	emptySubscriptionResult func() *common.SubscriptionResult
 }
 
-func (p parameters) ValidateParams() error {
+func (p parameters) ValidateParams() error { //nolint:funlen
 	if p.client == nil {
 		return fmt.Errorf("%w: %s", ErrMissingParam, "client")
 	}

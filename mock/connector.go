@@ -16,7 +16,7 @@ type Connector struct {
 	params *parameters
 }
 
-// We want mock connector to implement all connector interfaces
+// We want the mock connector to implement all connector interfaces.
 type implementsAllConnector interface {
 	connectors.Connector
 	connectors.URLConnector
@@ -30,11 +30,9 @@ type implementsAllConnector interface {
 	connectors.SubscribeConnector
 }
 
-var (
-	_ implementsAllConnector = (*Connector)(nil)
-)
+var _ implementsAllConnector = (*Connector)(nil)
 
-func NewConnector(opts ...Option) (conn *Connector, outErr error) {
+func NewConnector(opts ...Option) (conn *Connector, outErr error) { //nolint:funlen
 	params, err := paramsbuilder.Apply(parameters{}, opts,
 		WithClient(http.DefaultClient),
 		WithRead(func(context.Context, common.ReadParams) (*common.ReadResult, error) {
@@ -55,13 +53,22 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		WithGetPostAuthInfo(func(ctx context.Context) (*common.PostAuthInfo, error) {
 			return nil, fmt.Errorf("%w: %s", ErrNotImplemented, "getPostAuthInfo")
 		}),
-		WithGetRecordsByIds(func(ctx context.Context, objectName string, recordIds []string, fields []string, associations []string) ([]common.ReadResultRow, error) {
+		WithGetRecordsByIds(func(
+			ctx context.Context,
+			objectName string,
+			recordIds []string,
+			fields []string,
+			associations []string,
+		) ([]common.ReadResultRow, error) {
 			return nil, fmt.Errorf("%w: %s", ErrNotImplemented, "getRecordsByIds")
 		}),
 		WithVerifyWebhookMessage(func(ctx context.Context, params *common.WebhookVerificationParameters) (bool, error) {
 			return false, fmt.Errorf("%w: %s", ErrNotImplemented, "verifyWebhookMessage")
 		}),
-		WithRegister(func(ctx context.Context, params common.SubscriptionRegistrationParams) (*common.RegistrationResult, error) {
+		WithRegister(func(
+			ctx context.Context,
+			params common.SubscriptionRegistrationParams,
+		) (*common.RegistrationResult, error) {
 			return nil, fmt.Errorf("%w: %s", ErrNotImplemented, "register")
 		}),
 		WithDeleteRegistration(func(ctx context.Context, previousResult common.RegistrationResult) error {
@@ -80,7 +87,11 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		WithSubscribe(func(ctx context.Context, params common.SubscribeParams) (*common.SubscriptionResult, error) {
 			return nil, fmt.Errorf("%w: %s", ErrNotImplemented, "subscribe")
 		}),
-		WithUpdateSubscription(func(ctx context.Context, params common.SubscribeParams, previousResult *common.SubscriptionResult) (*common.SubscriptionResult, error) {
+		WithUpdateSubscription(func(
+			ctx context.Context,
+			params common.SubscribeParams,
+			previousResult *common.SubscriptionResult,
+		) (*common.SubscriptionResult, error) {
 			return nil, fmt.Errorf("%w: %s", ErrNotImplemented, "updateSubscription")
 		}),
 		WithDeleteSubscription(func(ctx context.Context, previousResult common.SubscriptionResult) error {
@@ -166,15 +177,27 @@ func (c *Connector) GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, 
 	return c.params.getPostAuthInfo(ctx)
 }
 
-func (c *Connector) GetRecordsByIds(ctx context.Context, objectName string, recordIds []string, fields []string, associations []string) ([]common.ReadResultRow, error) {
+func (c *Connector) GetRecordsByIds(
+	ctx context.Context,
+	objectName string,
+	recordIds []string,
+	fields []string,
+	associations []string,
+) ([]common.ReadResultRow, error) {
 	return c.params.getRecordsByIds(ctx, objectName, recordIds, fields, associations)
 }
 
-func (c *Connector) VerifyWebhookMessage(ctx context.Context, params *common.WebhookVerificationParameters) (bool, error) {
+func (c *Connector) VerifyWebhookMessage(
+	ctx context.Context,
+	params *common.WebhookVerificationParameters,
+) (bool, error) {
 	return c.params.verifyWebhookMessage(ctx, params)
 }
 
-func (c *Connector) Register(ctx context.Context, params common.SubscriptionRegistrationParams) (*common.RegistrationResult, error) {
+func (c *Connector) Register(
+	ctx context.Context,
+	params common.SubscriptionRegistrationParams,
+) (*common.RegistrationResult, error) {
 	return c.params.register(ctx, params)
 }
 
