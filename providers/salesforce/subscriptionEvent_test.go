@@ -28,11 +28,14 @@ func TestSubscriptionEventUpdate(t *testing.T) {
 	assert.NilError(t, err, "error should be nil")
 
 	assert.Equal(t, rawEventType, "UPDATE", "RawEventName should be UPDATE")
+
 	objectName, err := event.ObjectName()
 	assert.NilError(t, err, "error should be nil")
 
 	assert.Equal(t, objectName, "User", "ObjectName should be User")
+
 	workspace, err := event.Workspace()
+
 	assert.NilError(t, err, "error should be nil")
 	assert.Equal(t, workspace, "", "Workspace should be empty")
 
