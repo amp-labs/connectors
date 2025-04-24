@@ -189,27 +189,46 @@ func WithEmptySubscriptionResult(
 
 // parameters is the internal configuration for the mock connector.
 type parameters struct {
-	client                  *common.JSONHTTPClient // required
-	read                    func(ctx context.Context, params common.ReadParams) (*common.ReadResult, error)
-	write                   func(ctx context.Context, params common.WriteParams) (*common.WriteResult, error)
-	listObjectMetadata      func(ctx context.Context, objectNames []string) (*common.ListObjectMetadataResult, error)
-	getURL                  func(resource string, args map[string]any) (string, error)
-	delete                  func(ctx context.Context, params connectors.DeleteParams) (*connectors.DeleteResult, error)
-	getPostAuthInfo         func(ctx context.Context) (*common.PostAuthInfo, error)
-	getRecordsByIds         func(ctx context.Context, objectName string, recordIds []string, fields []string, associations []string) ([]common.ReadResultRow, error)
-	verifyWebhookMessage    func(ctx context.Context, params *common.WebhookVerificationParameters) (bool, error)
-	register                func(ctx context.Context, params common.SubscriptionRegistrationParams) (*common.RegistrationResult, error)
+	client             *common.JSONHTTPClient // required
+	read               func(ctx context.Context, params common.ReadParams) (*common.ReadResult, error)
+	write              func(ctx context.Context, params common.WriteParams) (*common.WriteResult, error)
+	listObjectMetadata func(ctx context.Context, objectNames []string) (*common.ListObjectMetadataResult, error)
+	getURL             func(resource string, args map[string]any) (string, error)
+	delete             func(ctx context.Context, params connectors.DeleteParams) (*connectors.DeleteResult, error)
+	getPostAuthInfo    func(ctx context.Context) (*common.PostAuthInfo, error)
+
+	getRecordsByIds func(
+		ctx context.Context,
+		objectName string,
+		recordIds []string,
+		fields []string,
+		associations []string,
+	) ([]common.ReadResultRow, error)
+
+	verifyWebhookMessage func(ctx context.Context, params *common.WebhookVerificationParameters) (bool, error)
+
+	register func(
+		ctx context.Context,
+		params common.SubscriptionRegistrationParams,
+	) (*common.RegistrationResult, error)
+
 	deleteRegistration      func(ctx context.Context, previousResult common.RegistrationResult) error
 	emptyRegistrationParams func() *common.SubscriptionRegistrationParams
 	emptyRegistrationResult func() *common.RegistrationResult
 	subscribe               func(ctx context.Context, params common.SubscribeParams) (*common.SubscriptionResult, error)
-	updateSubscription      func(ctx context.Context, params common.SubscribeParams, previousResult *common.SubscriptionResult) (*common.SubscriptionResult, error)
+
+	updateSubscription func(
+		ctx context.Context,
+		params common.SubscribeParams,
+		previousResult *common.SubscriptionResult,
+	) (*common.SubscriptionResult, error)
+
 	deleteSubscription      func(ctx context.Context, previousResult common.SubscriptionResult) error
 	emptySubscriptionParams func() *common.SubscribeParams
 	emptySubscriptionResult func() *common.SubscriptionResult
 }
 
-func (p parameters) ValidateParams() error { //nolint:funlen
+func (p parameters) ValidateParams() error { //nolint:funlen,cyclop
 	if p.client == nil {
 		return fmt.Errorf("%w: %s", ErrMissingParam, "client")
 	}
