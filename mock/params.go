@@ -81,8 +81,13 @@ func WithGetPostAuthInfo(
 }
 
 // WithGetRecordsByIds sets the getRecordsByIds function for the connector.
-func WithGetRecordsByIds( //nolint:revive
-	getRecordsByIds func(ctx context.Context, objectName string, recordIds []string, fields []string, associations []string) ([]common.ReadResultRow, error),
+func WithGetRecordsByIds(getRecordsByIds func( //nolint:revive
+	ctx context.Context,
+	objectName string,
+	recordIds []string,
+	fields []string,
+	associations []string,
+) ([]common.ReadResultRow, error),
 ) Option {
 	return func(params *parameters) {
 		params.getRecordsByIds = getRecordsByIds
@@ -144,8 +149,11 @@ func WithSubscribe(
 }
 
 // WithUpdateSubscription sets the updateSubscription function for the connector.
-func WithUpdateSubscription(
-	updateSubscription func(ctx context.Context, params common.SubscribeParams, previousResult *common.SubscriptionResult) (*common.SubscriptionResult, error),
+func WithUpdateSubscription(updateSubscription func(
+	ctx context.Context,
+	params common.SubscribeParams,
+	previousResult *common.SubscriptionResult,
+) (*common.SubscriptionResult, error),
 ) Option {
 	return func(params *parameters) {
 		params.updateSubscription = updateSubscription

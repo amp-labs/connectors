@@ -3,6 +3,8 @@ package mock
 import "testing"
 
 func TestDefaultNewConnector(t *testing.T) {
+	t.Parallel()
+
 	// It should be possible to construct a new mock connector without any args.
 	conn, err := NewConnector()
 	if err != nil {

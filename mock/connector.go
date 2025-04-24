@@ -177,10 +177,10 @@ func (c *Connector) GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, 
 	return c.params.getPostAuthInfo(ctx)
 }
 
-func (c *Connector) GetRecordsByIds(
+func (c *Connector) GetRecordsByIds( //nolint:revive
 	ctx context.Context,
 	objectName string,
-	recordIds []string,
+	recordIds []string, //nolint:revive
 	fields []string,
 	associations []string,
 ) ([]common.ReadResultRow, error) {
@@ -217,7 +217,11 @@ func (c *Connector) Subscribe(ctx context.Context, params common.SubscribeParams
 	return c.params.subscribe(ctx, params)
 }
 
-func (c *Connector) UpdateSubscription(ctx context.Context, params common.SubscribeParams, previousResult *common.SubscriptionResult) (*common.SubscriptionResult, error) {
+func (c *Connector) UpdateSubscription(
+	ctx context.Context,
+	params common.SubscribeParams,
+	previousResult *common.SubscriptionResult,
+) (*common.SubscriptionResult, error) {
 	return c.params.updateSubscription(ctx, params, previousResult)
 }
 
