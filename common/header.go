@@ -107,35 +107,35 @@ type headerAuthClient struct {
 
 func (c *headerAuthClient) Do(req *http.Request) (*http.Response, error) {
 	// This allows us to attach headers without modifying the input
-	req = req.Clone(req.Context())
+	req2 := req.Clone(req.Context())
 
 	for _, header := range c.headers {
-		header.ApplyToRequest(req)
+		header.ApplyToRequest(req2)
 	}
 
 	if c.dynamicHeaders != nil {
-		hdrs, err := c.dynamicHeaders(*req)
+		hdrs, err := c.dynamicHeaders(*req2)
 		if err != nil {
 			return nil, err
 		}
 
 		for _, header := range hdrs {
-			header.ApplyToRequest(req)
+			header.ApplyToRequest(req2)
 		}
 	}
 
-	modifier, hasModifier := getRequestModifier(req.Context()) //nolint:contextcheck
+	modifier, hasModifier := getRequestModifier(req2.Context()) //nolint:contextcheck
 	if hasModifier {
-		modifier(req)
+		modifier(req2)
 	}
 
-	rsp, err := c.client.Do(req)
+	rsp, err := c.client.Do(req2)
 	if err != nil {
 		return rsp, err
 	}
 
 	if c.debug != nil {
-		c.debug(req, cloneResponse(rsp))
+		c.debug(req2, cloneResponse(rsp))
 	}
 
 	// Certain providers return 401 when the credentials has been invalidated.
