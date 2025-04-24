@@ -300,20 +300,22 @@ func (s SubscriptionEvent) normalizeUpdatedFieldName(name string) (string, error
 		return name, nil
 	}
 
+	// Compound fields look like "Field.Subfield"
+	// We're interested in the rightmost part, but to validate
+	// that indeed it's a compound field, we have to consider the
+	// leftmost part first.
+	parts := strings.SplitN(name, ".", 2) //nolint:mnd,gomnd
+	if len(parts) < 2 {                   //nolint:mnd,gomnd
+		return parts[0], nil
+	}
+
 	obj, err := s.ObjectName()
 	if err != nil {
 		return "", fmt.Errorf("failed to get object name: %w", err)
 	}
 
-	if !isStandardCompoundField(obj, name) {
+	if !isStandardCompoundField(obj, parts[0]) {
 		return name, nil
-	}
-
-	// Compound fields look like "Field.Subfield"
-	// We're interested in the rightmost part.
-	parts := strings.SplitN(name, ".", 2) //nolint:mnd,gomnd
-	if len(parts) < 2 {                   //nolint:mnd,gomnd
-		return parts[0], nil
 	}
 
 	return parts[1], nil
