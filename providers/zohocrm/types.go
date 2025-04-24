@@ -1,5 +1,7 @@
 package zohocrm
 
+import "errors"
+
 // uniqueFields maps the fields to the uniquely required fields.
 var uniqueFields = map[string]string{ // nolint:gochecknoglobals
 	"sic_code":                 "SIC_Code",
@@ -14,3 +16,9 @@ var uniqueFields = map[string]string{ // nolint:gochecknoglobals
 	"caller_id":                "Caller_ID",
 	"scheduled_in_crm":         "Scheduled_In_CRM",
 }
+
+var (
+	errInvalidRequestType = errors.New("invalid request type")
+	errMissingParams      = errors.New("missing required parameters")
+	errInvalidField       = errors.New("invalid field format")
+)
