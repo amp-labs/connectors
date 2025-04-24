@@ -57,6 +57,27 @@ func (q QueryParam) String() string {
 	return fmt.Sprintf("%s: %s", q.Key, q.Value)
 }
 
+type QueryParams []QueryParam
+
+func (q QueryParams) Has(target QueryParam) bool {
+	for _, qp := range q {
+		if qp.equals(target) {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (q QueryParams) ApplyToRequest(req *http.Request) {
+	query := req.URL.Query()
+	for _, p := range q {
+		p.ApplyToRequest(&query)
+	}
+
+	req.URL.RawQuery = query.Encode()
+}
+
 type QueryParamAuthClientOption func(params *queryParamClientParams)
 
 // NewQueryParamAuthHTTPClient returns a new http client, which will
@@ -139,7 +160,7 @@ func newQueryParamAuthClient( //nolint:ireturn
 
 type queryParamAuthClient struct {
 	client       *http.Client
-	params       []QueryParam
+	params       QueryParams
 	debug        func(req *http.Request, rsp *http.Response)
 	unauthorized func(params []QueryParam, req *http.Request, rsp *http.Response) (*http.Response, error)
 }
@@ -148,12 +169,8 @@ func (c *queryParamAuthClient) Do(req *http.Request) (*http.Response, error) {
 	// This allows us to modify query params without mutating the input
 	req2 := req.Clone(req.Context())
 
-	query := req2.URL.Query()
-	for _, p := range c.params {
-		p.ApplyToRequest(&query)
-	}
-
-	req2.URL.RawQuery = query.Encode()
+	// Add on the query parameters
+	c.params.ApplyToRequest(req2)
 
 	modifier, hasModifier := getRequestModifier(req.Context()) //nolint:contextcheck
 	if hasModifier {
