@@ -272,7 +272,7 @@ func init() {
 		obj := strings.ToLower(field.Object)
 		fld := strings.ToLower(field.Field)
 
-		if _, ok := compositePrefixMap[field.Object]; !ok {
+		if _, ok := compositePrefixMap[obj]; !ok {
 			compositePrefixMap[obj] = make(map[string]struct{})
 		}
 

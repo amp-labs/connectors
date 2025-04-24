@@ -9,7 +9,7 @@ import (
 	"gotest.tools/v3/assert"
 )
 
-func TestSubscriptionEventUpdate(t *testing.T) {
+func TestSubscriptionEventUpdateUser(t *testing.T) {
 	t.Parallel()
 
 	data := testutils.DataFromFile(t, "subscription/update_user.json")
@@ -46,6 +46,44 @@ func TestSubscriptionEventUpdate(t *testing.T) {
 	assert.Equal(t, fields[0], "LastModifiedDate", "first field name should be LastModifiedDate")
 	assert.Equal(t, fields[1], "LastModifiedById", "second field name should be LastModifiedById")
 	assert.Equal(t, fields[2], "FirstName", "third field name should be FirstName")
+}
+
+func TestSubscriptionEventUpdateContact(t *testing.T) {
+	t.Parallel()
+
+	data := testutils.DataFromFile(t, "subscription/update_contact.json")
+
+	event := SubscriptionEvent{}
+	if err := json.Unmarshal(data, &event); err != nil {
+		t.Fatalf("failed to start a test, cannot parse data; error (%v)", err)
+	}
+
+	eventType, err := event.EventType()
+	assert.NilError(t, err, "error should be nil")
+
+	assert.Equal(t, eventType, common.SubscriptionEventTypeUpdate, "EventType should be Update")
+
+	rawEventType, err := event.RawEventName()
+	assert.NilError(t, err, "error should be nil")
+
+	assert.Equal(t, rawEventType, "UPDATE", "RawEventName should be UPDATE")
+
+	objectName, err := event.ObjectName()
+	assert.NilError(t, err, "error should be nil")
+
+	assert.Equal(t, objectName, "Contact", "ObjectName should be Contact")
+
+	workspace, err := event.Workspace()
+
+	assert.NilError(t, err, "error should be nil")
+	assert.Equal(t, workspace, "", "Workspace should be empty")
+
+	fields, err := event.UpdatedFields()
+	assert.NilError(t, err, "error should be nil")
+
+	assert.Equal(t, len(fields), 2, "should have one updated field")
+	assert.Equal(t, fields[0], "LastModifiedDate", "first field name should be LastModifiedDate")
+	assert.Equal(t, fields[1], "LastName", "second field name should be LastName")
 }
 
 func TestSubscriptionEventProperties(t *testing.T) {
