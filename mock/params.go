@@ -197,7 +197,7 @@ type parameters struct {
 	delete             func(ctx context.Context, params connectors.DeleteParams) (*connectors.DeleteResult, error)
 	getPostAuthInfo    func(ctx context.Context) (*common.PostAuthInfo, error)
 
-	getRecordsByIds func(
+	getRecordsByIds func( //nolint:revive
 		ctx context.Context,
 		objectName string,
 		recordIds []string,
