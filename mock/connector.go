@@ -13,25 +13,7 @@ import (
 
 type Connector struct {
 	client *common.JSONHTTPClient
-
-	read               func(ctx context.Context, params common.ReadParams) (*common.ReadResult, error)
-	write              func(ctx context.Context, params common.WriteParams) (*common.WriteResult, error)
-	listObjectMetadata func(ctx context.Context, objectNames []string) (*common.ListObjectMetadataResult, error)
-	getURL             func(resource string, args map[string]any) (string, error)
-	delete             func(ctx context.Context, params connectors.DeleteParams) (*connectors.DeleteResult, error)
-	getPostAuthInfo    func(ctx context.Context) (*common.PostAuthInfo, error)
-	getRecordsByIds    func(ctx context.Context, objectName string, recordIds []string, fields []string, associations []string) ([]common.ReadResultRow, error)
-
-	verifyWebhookMessage    func(ctx context.Context, params *common.WebhookVerificationParameters) (bool, error)
-	register                func(ctx context.Context, params common.SubscriptionRegistrationParams) (*common.RegistrationResult, error)
-	deleteRegistration      func(ctx context.Context, previousResult common.RegistrationResult) error
-	emptyRegistrationParams func() *common.SubscriptionRegistrationParams
-	emptyRegistrationResult func() *common.RegistrationResult
-	subscribe               func(ctx context.Context, params common.SubscribeParams) (*common.SubscriptionResult, error)
-	updateSubscription      func(ctx context.Context, params common.SubscribeParams, previousResult *common.SubscriptionResult) (*common.SubscriptionResult, error)
-	deleteSubscription      func(ctx context.Context, previousResult common.SubscriptionResult) error
-	emptySubscriptionParams func() *common.SubscribeParams
-	emptySubscriptionResult func() *common.SubscriptionResult
+	params *parameters
 }
 
 // We want mock connector to implement all connector interfaces
@@ -120,10 +102,8 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	}
 
 	return &Connector{
-		client:             params.client,
-		read:               params.read,
-		write:              params.write,
-		listObjectMetadata: params.listObjectMetadata,
+		client: params.client,
+		params: params,
 	}, nil
 }
 
@@ -148,7 +128,7 @@ func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common
 		return nil, err
 	}
 
-	return c.read(ctx, params)
+	return c.params.read(ctx, params)
 }
 
 func (c *Connector) Write(ctx context.Context, params common.WriteParams) (*common.WriteResult, error) {
@@ -156,7 +136,7 @@ func (c *Connector) Write(ctx context.Context, params common.WriteParams) (*comm
 		return nil, err
 	}
 
-	return c.write(ctx, params)
+	return c.params.write(ctx, params)
 }
 
 func (c *Connector) ListObjectMetadata(
@@ -167,11 +147,11 @@ func (c *Connector) ListObjectMetadata(
 		return nil, common.ErrMissingObjects
 	}
 
-	return c.listObjectMetadata(ctx, objectNames)
+	return c.params.listObjectMetadata(ctx, objectNames)
 }
 
 func (c *Connector) GetURL(resource string, args map[string]any) (string, error) {
-	return c.getURL(resource, args)
+	return c.params.getURL(resource, args)
 }
 
 func (c *Connector) Delete(ctx context.Context, params connectors.DeleteParams) (*connectors.DeleteResult, error) {
@@ -179,53 +159,53 @@ func (c *Connector) Delete(ctx context.Context, params connectors.DeleteParams) 
 		return nil, err
 	}
 
-	return c.delete(ctx, params)
+	return c.params.delete(ctx, params)
 }
 
 func (c *Connector) GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, error) {
-	return c.getPostAuthInfo(ctx)
+	return c.params.getPostAuthInfo(ctx)
 }
 
 func (c *Connector) GetRecordsByIds(ctx context.Context, objectName string, recordIds []string, fields []string, associations []string) ([]common.ReadResultRow, error) {
-	return c.getRecordsByIds(ctx, objectName, recordIds, fields, associations)
+	return c.params.getRecordsByIds(ctx, objectName, recordIds, fields, associations)
 }
 
 func (c *Connector) VerifyWebhookMessage(ctx context.Context, params *common.WebhookVerificationParameters) (bool, error) {
-	return c.verifyWebhookMessage(ctx, params)
+	return c.params.verifyWebhookMessage(ctx, params)
 }
 
 func (c *Connector) Register(ctx context.Context, params common.SubscriptionRegistrationParams) (*common.RegistrationResult, error) {
-	return c.register(ctx, params)
+	return c.params.register(ctx, params)
 }
 
 func (c *Connector) DeleteRegistration(ctx context.Context, previousResult common.RegistrationResult) error {
-	return c.deleteRegistration(ctx, previousResult)
+	return c.params.deleteRegistration(ctx, previousResult)
 }
 
 func (c *Connector) EmptyRegistrationParams() *common.SubscriptionRegistrationParams {
-	return c.emptyRegistrationParams()
+	return c.params.emptyRegistrationParams()
 }
 
 func (c *Connector) EmptyRegistrationResult() *common.RegistrationResult {
-	return c.emptyRegistrationResult()
+	return c.params.emptyRegistrationResult()
 }
 
 func (c *Connector) Subscribe(ctx context.Context, params common.SubscribeParams) (*common.SubscriptionResult, error) {
-	return c.subscribe(ctx, params)
+	return c.params.subscribe(ctx, params)
 }
 
 func (c *Connector) UpdateSubscription(ctx context.Context, params common.SubscribeParams, previousResult *common.SubscriptionResult) (*common.SubscriptionResult, error) {
-	return c.updateSubscription(ctx, params, previousResult)
+	return c.params.updateSubscription(ctx, params, previousResult)
 }
 
 func (c *Connector) DeleteSubscription(ctx context.Context, previousResult common.SubscriptionResult) error {
-	return c.deleteSubscription(ctx, previousResult)
+	return c.params.deleteSubscription(ctx, previousResult)
 }
 
 func (c *Connector) EmptySubscriptionParams() *common.SubscribeParams {
-	return c.emptySubscriptionParams()
+	return c.params.emptySubscriptionParams()
 }
 
 func (c *Connector) EmptySubscriptionResult() *common.SubscriptionResult {
-	return c.emptySubscriptionResult()
+	return c.params.emptySubscriptionResult()
 }
