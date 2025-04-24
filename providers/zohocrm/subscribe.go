@@ -51,7 +51,7 @@ func (c *Connector) Subscribe(
 	// The expiry date can be a maximum of one week from the time of subscribe.
 	//  If it is not specified or set for more than a week, the default expiry time is for one hour.
 	// Setting this 6 days just to be on safe side
-	channelExpiryTime := datautils.Time.FormatRFC3339inUTC(time.Now().Add(time.Hour * 2 * 6)) //nolint:mnd
+	channelExpiryTime := datautils.Time.FormatRFC3339inUTC(time.Now().Add(time.Hour * 24 * 6)) //nolint:mnd
 
 	notifyURL := "https://webhook.site/your-webhook-id"
 	token := "test_token"
