@@ -2,12 +2,59 @@ package common
 
 import (
 	"context"
+	"fmt"
 	"net/http"
+	"net/url"
+)
+
+// QueryParamMode determines how the query param should be applied to the request.
+type QueryParamMode int
+
+const (
+	// QueryParamModeUnset is the default mode. It appends the QueryParam to the request.
+	queryParamModeUnset = iota
+
+	// QueryParamModeAppend appends the QueryParam to the request.
+	QueryParamModeAppend
+
+	// QueryParamModeOverwrite unconditionally overwrites the QueryParam in the request.
+	QueryParamModeOverwrite
+
+	// QueryParamModeSetIfMissing sets the QueryParam in the request if it is not already set.
+	QueryParamModeSetIfMissing
 )
 
 type QueryParam struct {
-	Key   string
-	Value string
+	Key   string         `json:"key"`
+	Value string         `json:"value"`
+	Mode  QueryParamMode `json:"mode"`
+}
+
+func (q QueryParam) ApplyToRequest(vals *url.Values) {
+	switch q.Mode {
+	case QueryParamModeOverwrite:
+		vals.Set(q.Key, q.Value)
+	case QueryParamModeSetIfMissing:
+		if !vals.Has(q.Key) {
+			vals.Add(q.Key, q.Value)
+		}
+	case QueryParamModeAppend:
+		fallthrough
+	case queryParamModeUnset:
+		fallthrough
+	default:
+		vals.Add(q.Key, q.Value)
+	}
+}
+
+func (q QueryParam) equals(other QueryParam) bool {
+	return q.Key == other.Key &&
+		q.Value == other.Value &&
+		q.Mode == other.Mode
+}
+
+func (q QueryParam) String() string {
+	return fmt.Sprintf("%s: %s", q.Key, q.Value)
 }
 
 type QueryParamAuthClientOption func(params *queryParamClientParams)
@@ -103,7 +150,7 @@ func (c *queryParamAuthClient) Do(req *http.Request) (*http.Response, error) {
 
 	query := req2.URL.Query()
 	for _, p := range c.params {
-		query.Add(p.Key, p.Value)
+		p.ApplyToRequest(&query)
 	}
 
 	req2.URL.RawQuery = query.Encode()
