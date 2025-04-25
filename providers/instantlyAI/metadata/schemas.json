@@ -1,0 +1,875 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "/v2",
+      "objects": {
+        "accounts": {
+          "displayName": "Accounts",
+          "path": "v2/accounts",
+          "responseKey": "",
+          "fields": {
+            "email": {
+              "displayName": "email",
+              "valueType": "other"
+            },
+            "timestamp_created": {
+              "displayName": "timestamp_created",
+              "valueType": "other"
+            },
+            "timtestamp_updated": {
+              "displayName": "timtestamp_updated",
+              "valueType": "other"
+            },
+            "first_name": {
+              "displayName": "first_name",
+              "valueType": "other"
+            },
+            "last_name": {
+              "displayName": "last_name",
+              "valueType": "other"
+            },
+            "warmup":{
+              "displayName": "warmup",
+              "valueType": "other"
+            },
+            "added_by": {
+              "displayName": "added_by",
+              "valueType": "other"
+            },
+            "daily_limit": {
+              "displayName": "daily_limit",
+              "valueType": "other"
+            },
+            "modified_by": {
+              "displayName": "modified_by",
+              "valueType": "other"
+            },
+            "tracking_domain_name": {
+              "displayName": "tracking_domain_name",
+              "valueType": "other"
+            },
+            "tracking_domain_status": {
+              "displayName": "tracking_domain_status",
+              "valueType": "other"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "other"
+            },
+            "enable_slow_ramp": {
+              "displayName": "enable_slow_ramp",
+              "valueType": "other"
+            },
+            "inbox_placement_test_limit": {
+              "displayName": "inbox_placement_test_limit",
+              "valueType": "other"
+            },
+            "organization": {
+              "displayName": "organization",
+              "valueType": "other"
+            },
+            "timestamp_last_used": {
+              "displayName": "timestamp_last_used",
+              "valueType": "other"
+            },
+            "warmup_status": {
+              "displayName": "inbox_placement_test_limit",
+              "valueType": "other"
+            },
+            "status_message": {
+              "displayName": "status_message",
+              "valueType": "other"
+            },
+            "timestamp_warmup_start": {
+              "displayName": "timestamp_warmup_start",
+              "valueType": "other"
+            },
+            "provider_code": {
+              "displayName": "provider_code",
+              "valueType": "other"
+            },
+            "setup_pending": {
+              "displayName": "setup_pending",
+              "valueType": "other"
+            },
+            "warmup_pool_id": {
+              "displayName": "warmup_pool_id",
+              "valueType": "other"
+            },
+            "is_managed_account": {
+              "displayName": "is_managed_account",
+              "valueType": "other"
+            },
+            "dfy_password_changed": {
+              "displayName": "dfy_password_changed",
+              "valueType": "other"
+            },
+            "stat_warmup_score": {
+              "displayName": "stat_warmup_score",
+              "valueType": "other"
+            },
+            "sending_gap": {
+              "displayName": "sending_gap",
+              "valueType": "other"
+            }
+          }
+        },
+        "campaigns": {
+          "displayName": "Campaigns",
+          "path": "v2/campaigns",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "other"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "other"
+            },
+            "pl_value":  {
+              "displayName": "pl_value",
+              "valueType": "other"
+            },
+            "status":  {
+              "displayName": "status",
+              "valueType": "other"
+            },
+            "is_evergreen": {
+              "displayName": "is_evergreen",
+              "valueType": "other"
+            },
+            "campaign_schedule": {
+              "displayName": "campaign_schedule",
+              "valueType": "other"
+            },
+            "sequences":  {
+              "displayName": "sequences",
+              "valueType": "other"
+            },
+            "timestamp_created":  {
+              "displayName": "timestamp_created",
+              "valueType": "other"
+            },
+            "timestamp_updated":  {
+              "displayName": "timestamp_updated",
+              "valueType": "other"
+            },
+            "email_gap":  {
+              "displayName": "email_gap",
+              "valueType": "other"
+            },
+            "random_wait_max":  {
+              "displayName": "random_wait_max",
+              "valueType": "other"
+            },
+            "text_only":  {
+              "displayName": "text_only",
+              "valueType": "other"
+            },
+            "email_list":  {
+              "displayName": "email_list",
+              "valueType": "other"
+            },
+            "daily_limit":  {
+              "displayName": "daily_limit",
+              "valueType": "other"
+            },
+            "stop_on_reply":  {
+              "displayName": "stop_on_reply",
+              "valueType": "other"
+            },
+            "email_tag_list":  {
+              "displayName": "email_tag_list",
+              "valueType": "other"
+            },
+            "link_tracking":  {
+              "displayName": "link_tracking",
+              "valueType": "other"
+            },
+            "open_tracking":  {
+              "displayName": "open_tracking",
+              "valueType": "other"
+            },
+            "stop_on_auto_reply":  {
+              "displayName": "stop_on_auto_reply",
+              "valueType": "other"
+            },
+            "daily_max_leads":  {
+              "displayName": "daily_max_leads",
+              "valueType": "other"
+            },
+            "prioritize_new_leads":  {
+              "displayName": "prioritize_new_leads",
+              "valueType": "other"
+            },
+            "auto_variant_select":  {
+              "displayName": "auto_variant_select",
+              "valueType": "other"
+            },
+            "match_lead_esp":  {
+              "displayName": "match_lead_esp",
+              "valueType": "other"
+            },
+            "stop_for_company":  {
+              "displayName": "stop_for_company",
+              "valueType": "other"
+            },
+            "allow_risky_contacts":  {
+              "displayName": "allow_risky_contacts",
+              "valueType": "other"
+            },
+            "disable_bounce_protect":  {
+              "displayName": "disable_bounce_protect",
+              "valueType": "other"
+            },
+            "cc_list":  {
+              "displayName": "cc_list",
+              "valueType": "other"
+            },
+            "bcc_list":  {
+              "displayName": "bcc_list",
+              "valueType": "other"
+            },
+            "organization":  {
+              "displayName": "organization",
+              "valueType": "other"
+            }
+          }
+        },
+        "emails": {
+          "displayName": "Emails",
+          "path": "v2/emails",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "other"
+            },
+            "timestamp_created":  {
+              "displayName": "timestamp_created",
+              "valueType": "other"
+            },
+            "timestamp_updated":  {
+              "displayName": "timestamp_updated",
+              "valueType": "other"
+            },
+            "message_id": {
+              "displayName": "message_id",
+              "valueType": "other"
+            },
+            "subject":  {
+              "displayName": "subject",
+              "valueType": "other"
+            },
+            "from_address_email":  {
+              "displayName": "from_address_email",
+              "valueType": "other"
+            },
+            "to_address_email_list": {
+              "displayName": "to_address_email_list",
+              "valueType": "other"
+            },
+            "cc_address_email_list":  {
+              "displayName": "cc_address_email_list",
+              "valueType": "other"
+            },
+            "bcc_address_email_list":  {
+              "displayName": "bcc_address_email_list",
+              "valueType": "other"
+            },
+            "reply_to":  {
+              "displayName": "reply_to",
+              "valueType": "other"
+            },
+            "body":  {
+              "displayName": "body",
+              "valueType": "other"
+            },
+            "organization_id":  {
+              "displayName": "organization_id",
+              "valueType": "other"
+            },
+            "campaign_id":  {
+              "displayName": "campaign_id",
+              "valueType": "other"
+            },
+            "subsequence_id":  {
+              "displayName": "subsequence_id",
+              "valueType": "other"
+            },
+            "list_id":  {
+              "displayName": "list_id",
+              "valueType": "other"
+            },
+            "lead":  {
+              "displayName": "lead",
+              "valueType": "other"
+            },
+            "lead_id":  {
+              "displayName": "lead_id",
+              "valueType": "other"
+            },
+            "eaccount":  {
+              "displayName": "eaccount",
+              "valueType": "other"
+            },
+            "ue_type":  {
+              "displayName": "ue_type",
+              "valueType": "other"
+            },
+            "step":  {
+              "displayName": "step",
+              "valueType": "other"
+            },
+            "is_unread":  {
+              "displayName": "is_unread",
+              "valueType": "other"
+            },
+            "is_auto_reply":  {
+              "displayName": "is_auto_reply",
+              "valueType": "other"
+            },
+            "reminder_ts":  {
+              "displayName": "reminder_ts",
+              "valueType": "other"
+            },
+            "ai_interest_value":  {
+              "displayName": "ai_interest_value",
+              "valueType": "other"
+            },
+            "ai_assisted":  {
+              "displayName": "ai_assisted",
+              "valueType": "other"
+            },
+            "is_focused":  {
+              "displayName": "is_focused",
+              "valueType": "other"
+            },
+            "i_status":  {
+              "displayName": "i_status",
+              "valueType": "other"
+            },
+            "thread_id":  {
+              "displayName": "thread_id",
+              "valueType": "other"
+            },
+            "content_preview":  {
+              "displayName": "content_preview",
+              "valueType": "other"
+            },
+            "from_address_json":  {
+              "displayName": "from_address_json",
+              "valueType": "other"
+            },
+            "to_address_json":  {
+              "displayName": "to_address_json",
+              "valueType": "other"
+            },
+            "cc_address_json":  {
+              "displayName": "cc_address_json",
+              "valueType": "other"
+            }
+          }
+        },
+        "lead-lists": {
+          "displayName": "Lead-lists",
+          "path": "v2/lead-lists",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "other"
+            },
+            "organization_id":  {
+              "displayName": "organization_id",
+              "valueType": "other"
+            },
+            "has_enrichment_task":  {
+              "displayName": "has_enrichment_task",
+              "valueType": "other"
+            },
+            "owned_by": {
+              "displayName": "owned_by",
+              "valueType": "other"
+            },
+            "name":  {
+              "displayName": "name",
+              "valueType": "other"
+            },
+            "timestamp_created":  {
+              "displayName": "timestamp_created",
+              "valueType": "other"
+            }
+          }
+        },
+        "inbox-placement-tests": {
+          "displayName": "Inbox-placement-tests",
+          "path": "v2/inbox-placement-tests",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "other"
+            },
+            "organization_id":  {
+              "displayName": "organization_id",
+              "valueType": "other"
+            },
+            "name":  {
+              "displayName": "name",
+              "valueType": "other"
+            },
+            "delivery_mode": {
+              "displayName": "delivery_mode",
+              "valueType": "other"
+            },
+            "description":  {
+              "displayName": "description",
+              "valueType": "other"
+            },
+            "schedule":  {
+              "displayName": "schedule",
+              "valueType": "other"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "other"
+            },
+            "sending_method":  {
+              "displayName": "sending_method",
+              "valueType": "other"
+            },
+            "campaign_id":  {
+              "displayName": "campaign_id",
+              "valueType": "other"
+            },
+            "dkim_pass":  {
+              "displayName": "email_subject",
+              "valueType": "other"
+            },
+            "email_body":  {
+              "displayName": "email_body",
+              "valueType": "other"
+            },
+            "emails":  {
+              "displayName": "emails",
+              "valueType": "other"
+            },
+            "test_code":  {
+              "displayName": "test_code",
+              "valueType": "other"
+            },
+            "tags":  {
+              "displayName": "tags",
+              "valueType": "other"
+            },
+            "text_only":  {
+              "displayName": "text_only",
+              "valueType": "other"
+            },
+            "recipients":  {
+              "displayName": "recipients",
+              "valueType": "other"
+            },
+            "timestamp_created":  {
+              "displayName": "timestamp_created",
+              "valueType": "other"
+            },
+            "timestamp_next_run":  {
+              "displayName": "timestamp_next_run",
+              "valueType": "other"
+            },
+            "automations":  {
+              "displayName": "automations",
+              "valueType": "other"
+            },
+            "status":  {
+              "displayName": "status",
+              "valueType": "other"
+            },
+            "not_sending_status":  {
+              "displayName": "not_sending_status",
+              "valueType": "other"
+            }
+          }
+        },
+        "inbox-placement-analytics": {
+          "displayName": "Inbox-placement-analytics",
+          "path": "v2/inbox-placement-analytics",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "other"
+            },
+            "timestamp_created":  {
+              "displayName": "timestamp_created",
+              "valueType": "other"
+            },
+            "timestamp_created_date":  {
+              "displayName": "timestamp_created_date",
+              "valueType": "other"
+            },
+            "organization_id": {
+              "displayName": "organization_id",
+              "valueType": "other"
+            },
+            "test_id":  {
+              "displayName": "test_id",
+              "valueType": "other"
+            },
+            "recipient_esp":  {
+              "displayName": "recipient_esp",
+              "valueType": "other"
+            },
+            "recipient_geo": {
+              "displayName": "recipient_geo",
+              "valueType": "other"
+            },
+            "recipient_type":  {
+              "displayName": "recipient_type",
+              "valueType": "other"
+            },
+            "spf_pass":  {
+              "displayName": "spf_pass",
+              "valueType": "other"
+            },
+            "dkim_pass":  {
+              "displayName": "dkim_pass",
+              "valueType": "other"
+            },
+            "dmarc_pass":  {
+              "displayName": "dmarc_pass",
+              "valueType": "other"
+            },
+            "smtp_ip_blacklist_report":  {
+              "displayName": "smtp_ip_blacklist_report",
+              "valueType": "other"
+            },
+            "authentication_failure_results":  {
+              "displayName": "authentication_failure_results",
+              "valueType": "other"
+            }
+          }
+        },
+        "inbox-placement-reports": {
+          "displayName": "Inbox-placement-reports",
+          "path": "v2/inbox-placement-reports",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "other"
+            },
+            "timestamp_created":  {
+              "displayName": "timestamp_created",
+              "valueType": "other"
+            },
+            "timestamp_created_date":  {
+              "displayName": "timestamp_created_date",
+              "valueType": "other"
+            },
+            "organization_id": {
+              "displayName": "organization_id",
+              "valueType": "other"
+            },
+            "test_id":  {
+              "displayName": "test_id",
+              "valueType": "other"
+            },
+            "domain_blacklist_count":  {
+              "displayName": "domain_blacklist_count",
+              "valueType": "other"
+            },
+            "domain": {
+              "displayName": "domain",
+              "valueType": "other"
+            },
+            "domain_ip":  {
+              "displayName": "domain_ip",
+              "valueType": "other"
+            },
+            "domain_ip_blacklist_count":  {
+              "displayName": "domain_ip_blacklist_count",
+              "valueType": "other"
+            },
+            "spam_assassin_score":  {
+              "displayName": "spam_assassin_score",
+              "valueType": "other"
+            },
+            "spam_assassin_report":  {
+              "displayName": "spam_assassin_report",
+              "valueType": "other"
+            },
+            "blacklist_report":  {
+              "displayName": "blacklist_report",
+              "valueType": "other"
+            }
+          }
+        },
+        "api-keys": {
+          "displayName": "Api-keys",
+          "path": "v2/api-keys",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "other"
+            },
+            "name":  {
+              "displayName": "name",
+              "valueType": "other"
+            },
+            "scopes":  {
+              "displayName": "scopes",
+              "valueType": "other"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "other"
+            },
+            "organization_id":  {
+              "displayName": "organization_id",
+              "valueType": "other"
+            },
+            "timestamp_created":  {
+              "displayName": "timestamp_created",
+              "valueType": "other"
+            },
+            "timestamp_updated": {
+              "displayName": "timestamp_updated",
+              "valueType": "other"
+            }
+          }
+        },
+        "background-jobs": {
+          "displayName": "Background-jobs",
+          "path": "v2/background-jobs",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "other"
+            },
+            "workspace_id":  {
+              "displayName": "workspace_id",
+              "valueType": "other"
+            },
+            "type":  {
+              "displayName": "type",
+              "valueType": "other"
+            },
+            "entity_id": {
+              "displayName": "entity_id",
+              "valueType": "other"
+            },
+            "entity_type":  {
+              "displayName": "entity_type",
+              "valueType": "other"
+            },
+            "data":  {
+              "displayName": "data",
+              "valueType": "other"
+            },
+            "progress": {
+              "displayName": "progress",
+              "valueType": "other"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "other"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "other"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "other"
+            }
+          }
+        },
+        "custom-tags": {
+          "displayName": "Custom-tags",
+          "path": "v2/custom-tags",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "other"
+            },
+            "timestamp_created":  {
+              "displayName": "timestamp_created",
+              "valueType": "other"
+            },
+            "timestamp_updated":  {
+              "displayName": "timestamp_updated",
+              "valueType": "other"
+            },
+            "organization_id":  {
+              "displayName": "organization_id",
+              "valueType": "other"
+            },
+            "label": {
+              "displayName": "label",
+              "valueType": "other"
+            },
+            "description":  {
+              "displayName": "description",
+              "valueType": "other"
+            }
+          }
+        },
+        "block-lists-entries": {
+          "displayName": "Block-lists-entries",
+          "path": "v2/block-lists-entries",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "other"
+            },
+            "timestamp_created":  {
+              "displayName": "timestamp_created",
+              "valueType": "other"
+            },
+            "bl_value":  {
+              "displayName": "bl_value",
+              "valueType": "other"
+            },
+            "is_domain": {
+              "displayName": "is_domain",
+              "valueType": "other"
+            }
+          }
+        },
+        "lead-labels": {
+          "displayName": "Lead-labels",
+          "path": "v2/lead-labels",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "other"
+            },
+            "timestamp_created":  {
+              "displayName": "timestamp_created",
+              "valueType": "other"
+            },
+            "label":  {
+              "displayName": "label",
+              "valueType": "other"
+            },
+            "interest_status_label": {
+              "displayName": "interest_status_label",
+              "valueType": "other"
+            },
+            "interest_status":  {
+              "displayName": "interest_status",
+              "valueType": "other"
+            },
+            "description":  {
+              "displayName": "description",
+              "valueType": "other"
+            },
+            "use_with_ai": {
+              "displayName": "use_with_ai",
+              "valueType": "other"
+            }
+          }
+        },
+        "workspace-group-members": {
+          "displayName": "Workspace-group-members",
+          "path": "v2/workspace-group-members",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "other"
+            },
+            "admin_workspace_id":  {
+              "displayName": "admin_workspace_id",
+              "valueType": "other"
+            },
+            "timestamp_updated":  {
+              "displayName": "timestamp_updated",
+              "valueType": "other"
+            },
+            "sub_workspace_name": {
+              "displayName": "sub_workspace_name",
+              "valueType": "other"
+            },
+            "admin_workspace_name":  {
+              "displayName": "admin_workspace_name",
+              "valueType": "other"
+            }
+          }
+        },
+        "workspace-members": {
+          "displayName": "Workspace-members",
+          "path": "v2/workspace-members",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "other"
+            },
+            "email":  {
+              "displayName": "email",
+              "valueType": "other"
+            },
+            "user_id":  {
+              "displayName": "user_id",
+              "valueType": "other"
+            },
+            "accepted": {
+              "displayName": "accepted",
+              "valueType": "other"
+            },
+            "issuer_id":  {
+              "displayName": "issuer_id",
+              "valueType": "other"
+            }
+          }
+        },
+        "subsequences": {
+          "displayName": "Subsequences",
+          "path": "v2/subsequences",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "other"
+            },
+            "timestamp_created":  {
+              "displayName": "timestamp_created",
+              "valueType": "other"
+            },
+            "parent_campaign":  {
+              "displayName": "parent_campaign",
+              "valueType": "other"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "other"
+            },
+            "conditions":  {
+              "displayName": "conditions",
+              "valueType": "other"
+            },
+            "subsequence_schedule":  {
+              "displayName": "subsequence_schedule",
+              "valueType": "other"
+            },
+            "sequences":  {
+              "displayName": "sequences",
+              "valueType": "other"
+            }
+          }
+        }
+      }
+    }
+  }
+}
