@@ -192,7 +192,7 @@ func (c *Connector) UpdateSubscription(ctx context.Context, params common.Subscr
 
 	deleteParams := *previousResult
 	deleteParams.Objects = objectsToDelete
-	deleteParams.Result = prevState.Notifications
+	deleteParams.Result = prevState
 
 	err := c.DeleteSubscription(ctx, deleteParams)
 	if err != nil {

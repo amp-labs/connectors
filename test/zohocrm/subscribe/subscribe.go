@@ -33,6 +33,20 @@ func main() {
 	}
 
 	fmt.Println("Subscribe results:", prettyPrint(subscribeResult))
+
+	updateParams := common.SubscribeParams{
+		SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
+			"Contacts": {},
+		},
+	}
+
+	updateResult, err := conn.UpdateSubscription(ctx, updateParams, subscribeResult)
+	if err != nil {
+		logging.Logger(ctx).Error("Error updating subscription", "error", err, "subscribeResult", prettyPrint(subscribeResult))
+	}
+
+	fmt.Println("Update subscription results:", prettyPrint(updateResult))
+
 }
 
 func prettyPrint(v any) string {
