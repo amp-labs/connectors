@@ -212,3 +212,41 @@ func (evt SubscriptionEvent) UpdatedFieldWithValues() (map[string]string, error)
 func (evt SubscriptionEvent) asMap() common.StringMap {
 	return common.StringMap(evt)
 }
+
+// Example : Webhook response
+/*
+{
+  "server_time": 1745564776307,
+  "affected_values": [
+    {
+      "record_id": "6172731000000939010",
+      "values": {
+        "Modified_By": {
+          "name": "Integration User",
+          "id": "6172731000000457001",
+          "email": "integration.user@withampersand.com"
+        },
+        "Record_Status__s": 0
+      }
+    }
+  ],
+  "query_params": {},
+  "module": "Leads",
+  "resource_uri": "https://www.zohoapis.com/crm/v2/Leads",
+  "ids": [
+    "6172731000000939010"
+  ],
+  "affected_fields": [
+    {
+      "6172731000000939010": [
+        "Modified_By",
+        "Record_Status__s"
+      ]
+    }
+  ],
+  "operation": "delete",
+  "channel_id": "1745564708612968000",
+  "token": null
+}
+
+*/

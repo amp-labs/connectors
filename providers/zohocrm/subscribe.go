@@ -39,6 +39,10 @@ func (c *Connector) Subscribe(
 	ctx context.Context,
 	params common.SubscribeParams,
 ) (*common.SubscriptionResult, error) {
+	zohoRes := &SubscribeResult{
+		Notifications: make(map[common.ObjectName]*Notification),
+	}
+
 	// Generate a unique channel ID
 	channelID := strconv.FormatInt(time.Now().UnixNano(), 10)
 
@@ -49,10 +53,6 @@ func (c *Connector) Subscribe(
 
 	notifyURL := "https://play.svix.com/in/e_Z4PpxWo75NamyQ2qBOJkrN7SsM6/"
 	token := "test_token"
-
-	zohoRes := &SubscribeResult{
-		Notifications: make(map[common.ObjectName]*Notification),
-	}
 
 	var failError error
 
