@@ -81,7 +81,6 @@ func (c *Connector) fetchFieldMetadata(ctx context.Context, capObj string) (*com
 
 func (c *Connector) getMetadata(ctx context.Context, objectName string) (*common.ObjectMetadata, error) {
 	capObj := naming.CapitalizeFirstLetterEveryWord(objectName)
-
 	resp, err := c.fetchFieldMetadata(ctx, capObj)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching metadata: %w", err)
