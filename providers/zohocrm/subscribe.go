@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -37,14 +38,14 @@ func (c *Connector) Subscribe(
 	params common.SubscribeParams,
 ) (*common.SubscriptionResult, error) {
 	// Generate a unique channel ID
-	channelID := fmt.Sprintf("amp_%d", time.Now().UnixNano())
+	channelID := strconv.FormatInt(time.Now().UnixNano(), 10)
 
 	// The expiry date can be a maximum of one week from the time of subscribe.
 	//  If it is not specified or set for more than a week, the default expiry time is for one hour.
 	// Setting this 6 days just to be on safe side.
 	channelExpiryTime := datautils.Time.FormatRFC3339inUTC(time.Now().Add(time.Hour * 24 * 6)) //nolint:mnd
 
-	notifyURL := "https://webhook.site/your-webhook-id"
+	notifyURL := "https://play.svix.com/in/e_Z4PpxWo75NamyQ2qBOJkrN7SsM6/"
 	token := "test_token"
 
 	zohoRes := &SubscribeResult{
@@ -73,6 +74,10 @@ func (c *Connector) Subscribe(
 			default:
 				events = append(events, zohoObjName+".all")
 			}
+		}
+
+		if len(events) == 0 {
+			events = append(events, zohoObjName+".all")
 		}
 
 		notification := &Notification{
@@ -255,7 +260,7 @@ func (c *Connector) DeleteSubscription(ctx context.Context, params common.Subscr
 // CreateNotification subscribe to the webhook
 // https://www.zoho.com/crm/developer/docs/api/v7/notifications/enable.html
 func (c *Connector) CreateNotification(ctx context.Context, notification *Notification) (*Notification, error) {
-	url, err := c.getAPIURL("action/watch")
+	url, err := c.getAPIURL("actions/watch")
 	if err != nil {
 		return nil, err
 	}
