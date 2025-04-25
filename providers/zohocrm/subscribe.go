@@ -27,6 +27,8 @@ type Notification struct {
 	ChannelExpiry string
 }
 
+const NotificationExpiryDate = 6
+
 // nolin:funlen
 // Subscribe subscribes to events for the given objects
 // This is where the actual API calls to Zoho CRM happen to create notification subscriptions
@@ -43,7 +45,7 @@ func (c *Connector) Subscribe(
 	// The expiry date can be a maximum of one week from the time of subscribe.
 	//  If it is not specified or set for more than a week, the default expiry time is for one hour.
 	// Setting this 6 days just to be on safe side.
-	channelExpiryTime := datautils.Time.FormatRFC3339inUTC(time.Now().Add(time.Hour * 24 * 6)) //nolint:mnd
+	channelExpiryTime := datautils.Time.FormatRFC3339inUTC(time.Now().Add(time.Hour * 24 * NotificationExpiryDate)) //nolint:mnd,lll
 
 	notifyURL := "https://play.svix.com/in/e_Z4PpxWo75NamyQ2qBOJkrN7SsM6/"
 	token := "test_token"
@@ -322,6 +324,41 @@ func (c *Connector) DeleteNotifications(ctx context.Context, channelIDs string) 
 	}
 
 	return nil
+}
+
+// ExtendNotificationExpiryTime checks if a notification is about to expire and creates a new one if needed.
+// Zoho CRM notifications have a maximum expiry time of 7 days. This function:
+// 1. Checks if the current notification will expire within 24 hours
+// 2. If so, creates a new notification with the same configuration but with a new 6-day expiry time
+// 3. If the notification has more than 24 hours remaining, returns the original notification
+
+func (c *Connector) ExtendNotificationExpiryTime(ctx context.Context, notification *Notification) (*Notification, error) { //nolint:lll
+	currentExpiry, err := time.Parse(time.RFC3339, notification.ChannelExpiry)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse expiry time: %w", err)
+	}
+
+	timeUntilExpiry := time.Until(currentExpiry)
+
+	// If more than 1 day remaining, no need to extend
+	if timeUntilExpiry > 24*time.Hour {
+		return notification, nil
+	}
+
+	newExpiryTime := datautils.Time.FormatRFC3339inUTC(time.Now().Add(time.Hour * 24 * NotificationExpiryDate))
+
+	newNotification := *notification
+
+	newNotification.ChannelExpiry = newExpiryTime
+
+	notificationRes, err := c.CreateNotification(ctx, &newNotification)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create notification for object: %w", err)
+	}
+
+	notification.ChannelExpiry = newExpiryTime
+
+	return notificationRes, nil
 }
 
 func getZohoObjectName(objName string) string {
