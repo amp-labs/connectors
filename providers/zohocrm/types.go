@@ -24,3 +24,32 @@ var (
 	errValuesIdMismatch   = errors.New("record id and affected values record id does not match")
 	errInvalidResponse    = errors.New("invalid response format")
 )
+
+// WatchResponse represents the top-level response from the Zoho CRM watch API.
+type WatchResponse struct {
+	Watch []WatchResult `json:"watch"`
+}
+
+// WatchResult represents a single watch subscription result.
+type WatchResult struct {
+	Code    string       `json:"code"`
+	Details WatchDetails `json:"details"`
+	Message string       `json:"message"`
+	Status  string       `json:"status"`
+}
+
+// WatchDetails contains the details of the watch subscription.
+type WatchDetails struct {
+	Events []WatchEvent `json:"events"`
+}
+
+// WatchEvent represents a single event in the watch subscription.
+//
+//nolint:tagliatelle
+type WatchEvent struct {
+	ChannelExpiry string `json:"channel_expiry"`
+	ResourceURI   string `json:"resource_uri"`
+	ResourceID    string `json:"resource_id"`
+	ResourceName  string `json:"resource_name"`
+	ChannelID     string `json:"channel_id"`
+}

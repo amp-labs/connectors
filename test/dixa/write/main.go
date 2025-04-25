@@ -95,7 +95,6 @@ func patchAgent(ctx context.Context, conn *dx.Connector) error {
 	_, _ = os.Stdout.WriteString("\n")
 
 	return nil
-
 }
 
 func testCreatingTeams(ctx context.Context, conn *dx.Connector) error {
