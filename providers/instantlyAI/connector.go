@@ -1,4 +1,4 @@
-package instantlyAI
+package instantlyai
 
 import (
 	_ "embed"
@@ -7,7 +7,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/instantlyAI/metadata"
+	"github.com/amp-labs/connectors/providers/instantlyai/metadata"
 )
 
 type Connector struct {

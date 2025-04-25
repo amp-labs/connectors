@@ -1,4 +1,4 @@
-package instantlyAI
+package instantlyai
 
 import (
 	"context"
@@ -6,11 +6,11 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/providers"
-	instantlyAI "github.com/amp-labs/connectors/providers/instantlyAI"
+	instantlyai "github.com/amp-labs/connectors/providers/instantlyai"
 	"github.com/amp-labs/connectors/test/utils"
 )
 
-func GetInstantlyAIConnector(ctx context.Context) *instantlyAI.Connector {
+func GetInstantlyAIConnector(ctx context.Context) *instantlyai.Connector {
 	filePath := credscanning.LoadPath(providers.InstantlyAI)
 	reader := utils.MustCreateProvCredJSON(filePath, false, false)
 
@@ -30,7 +30,7 @@ func GetInstantlyAIConnector(ctx context.Context) *instantlyAI.Connector {
 		utils.Fail(err.Error())
 	}
 
-	conn, err := instantlyAI.NewConnector(common.Parameters{
+	conn, err := instantlyai.NewConnector(common.Parameters{
 		AuthenticatedClient: client,
 	})
 	if err != nil {
