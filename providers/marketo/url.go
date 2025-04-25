@@ -45,15 +45,11 @@ func (c *Connector) constructReadURL(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
-	if err := constructURLQueries(url, params); err != nil {
+	if err := c.constructURLQueries(ctx, url, params); err != nil {
 		return nil, err
 	}
 
 	if err := c.handleActivitiesAPI(ctx, url, params); err != nil {
-		return nil, err
-	}
-
-	if err := c.handleLeadsAPI(ctx, url, params); err != nil {
 		return nil, err
 	}
 
@@ -65,6 +61,33 @@ func (c *Connector) constructReadURL(ctx context.Context, params common.ReadPara
 	}
 
 	return url, nil
+}
+
+func (c *Connector) constructURLQueries(ctx context.Context, url *urlbuilder.URL, params common.ReadParams) error {
+	// We don't handle this scenario here, this is handled in the handleLeadsAPI
+	// function, this indicates first call for the Incremental Lead Read.
+	if params.ObjectName == leads && !params.Since.IsZero() && params.NextPage == "" {
+		return c.handleLeadsAPI(ctx, url, params)
+	}
+
+	if paginatesByIDs(params.ObjectName) {
+		switch len(params.NextPage) {
+		case 0:
+			// For the initial API request, we start filtering from ID 1-300 to fetch the earliest records.
+			// Subsequent requests will use the last received ID for pagination.
+			if err := addFilteringIDQueries(url, startingIDIdx); err != nil {
+				return err
+			}
+		default:
+			// For reading next-page requests, we add 300 filtering ids.
+			// by ading +1 to the last record id.
+			return addFilteringIDQueries(url, params.NextPage.String())
+		}
+
+		url.WithQueryParam(nextPageQuery, params.NextPage.String())
+	}
+
+	return nil
 }
 
 func (c *Connector) handleActivitiesAPI(ctx context.Context, url *urlbuilder.URL, params common.ReadParams) error {
@@ -88,42 +111,13 @@ func (c *Connector) handleActivitiesAPI(ctx context.Context, url *urlbuilder.URL
 }
 
 func (c *Connector) handleLeadsAPI(ctx context.Context, url *urlbuilder.URL, params common.ReadParams) error {
-	if params.ObjectName == leads && !params.Since.IsZero() {
-		start, err := c.generateLeadStartID(ctx, params)
-		if err != nil {
-			return err
-		}
-
-		if err := addFilteringIDQueries(url, start); err != nil {
-			return err
-		}
+	start, err := c.generateLeadStartID(ctx, params)
+	if err != nil {
+		return err
 	}
 
-	return nil
-}
-
-func constructURLQueries(url *urlbuilder.URL, params common.ReadParams) error {
-	// For Leads API, If we are reading using the incremental read support no need to
-	// add all lead ids explicitly.
-	if params.ObjectName == leads && !params.Since.IsZero() {
-		return nil
-	}
-
-	if paginatesByIDs(params.ObjectName) && len(params.NextPage) == 0 {
-		// For the initial API request, we start filtering from ID 1-300 to fetch the earliest records.
-		// Subsequent requests will use the last received ID for pagination.
-		if err := addFilteringIDQueries(url, startingIDIdx); err != nil {
-			return err
-		}
-	}
-
-	// If NextPage is set, then we're reading the next page of results.
-	if len(params.NextPage) > 0 {
-		if paginatesByIDs(params.ObjectName) {
-			return addFilteringIDQueries(url, params.NextPage.String())
-		}
-
-		url.WithQueryParam(nextPageQuery, params.NextPage.String())
+	if err := addFilteringIDQueries(url, start); err != nil {
+		return err
 	}
 
 	return nil
