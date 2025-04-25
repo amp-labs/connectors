@@ -49,8 +49,8 @@ func (c *Connector) Provider() providers.Provider {
 	return providers.Zoho
 }
 
-func (c *Connector) getAPIURL(prefix string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.BaseURL, apiVersion, prefix)
+func (c *Connector) getAPIURL(suffix string) (*urlbuilder.URL, error) {
+	return urlbuilder.New(c.BaseURL, apiVersion, suffix)
 }
 
 func (c *Connector) String() string {
