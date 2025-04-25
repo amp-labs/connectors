@@ -322,7 +322,12 @@ func setup() *OAuthApp {
 		slog.Warn("no scopes attached, ensure that the provider doesn't require scopes")
 	}
 
-	oauthScopes := strings.Split(scopes, ",")
+	var oauthScopes []string
+
+	if len(scopes) != 0 {
+		oauthScopes = strings.Split(scopes, ",")
+	}
+
 	var codeVerifier *string
 
 	switch providerInfo.Oauth2Opts.GrantType {
