@@ -47,9 +47,20 @@ func main() {
 
 	fmt.Println("Update subscription results:", prettyPrint(updateResult))
 
+	if updateResult != nil && updateResult.Status == common.SubscriptionStatusSuccess {
+		err := conn.DeleteSubscription(ctx, *updateResult)
+		if err != nil {
+			logging.Logger(ctx).Error("Error unsubscribing", "error", err)
+
+			return
+		}
+	}
+	fmt.Println("Delete subscription successful")
+
 }
 
 func prettyPrint(v any) string {
+
 	jsonBytes, err := json.MarshalIndent(v, "", "  ")
 	if err != nil {
 		panic(err)
