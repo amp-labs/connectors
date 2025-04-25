@@ -26,7 +26,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 
 	url, err := c.constructReadURL(ctx, config)
 	if err != nil {
-		// If this is the case, we return an zero records response.
+		// If this is the case, we return a zero records response.
 		if errors.Is(err, ErrZeroRecords) {
 			return &common.ReadResult{
 				Data: []common.ReadResultRow{},
