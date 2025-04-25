@@ -1,62 +1,66 @@
 package awsic
 
-// TODO
-// sso
-// ssoadmin
-// ssooidc
-
 import (
-	"context"
-	"fmt"
-	"log"
+	"errors"
 
-	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/credentials"
-	"github.com/aws/aws-sdk-go-v2/service/ssoadmin"
+	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/components"
+	"github.com/amp-labs/connectors/internal/components/operations"
+	"github.com/amp-labs/connectors/internal/components/reader"
+	"github.com/amp-labs/connectors/providers"
 )
 
+var ErrMissingMetadataIDs = errors.New("missing metadata identifiers")
+
 type Connector struct {
+	// Basic connector
+	*components.Connector
+
+	// Require authenticated client
+	common.RequireAuthenticatedClient
+
+	// supported operations
+	components.Reader
+
+	identityStoreID string
+	instanceArn string
 }
 
-func (c Connector) Print() {
-	ctx := context.TODO()
-	awsRegion := "us-east-2" // "us-west-2"
-
-	// Using the SDK's default configuration, load additional config
-	// and credentials values from the environment variables, shared
-	// credentials, and shared configuration files
-	accessKeyID := "TODO"
-	accessKeySecret := "TODO"
-	sessionToken := "" // permanent credentials
-	//identityStoreID := "d-9a670e6550"
-
-	cfg, err := config.LoadDefaultConfig(ctx,
-		config.WithRegion(awsRegion),
-		config.WithCredentialsProvider(
-			credentials.NewStaticCredentialsProvider(accessKeyID, accessKeySecret, sessionToken),
-		),
-	)
+func NewConnector(params common.Parameters) (*Connector, error) {
+	// Create base connector with provider info
+	conn, err := components.Initialize(providers.AWSIdentityCenter, params, constructor)
 	if err != nil {
-		log.Fatalf("unable to load SDK config, %v", err)
+		return nil, err
 	}
 
-	//identityStoreClient := identitystore.NewFromConfig(cfg)
+	conn.identityStoreID = params.Metadata["IdentityStoreID"]
+	conn.instanceArn = params.Metadata["InstanceArn"]
 
-	//users, err := identityStoreClient.ListUsers(ctx, &identitystore.ListUsersInput{
-	//	IdentityStoreId: goutils.Pointer(identityStoreID),
-	//	Filters:         nil,
-	//	MaxResults:      nil,
-	//	NextToken:       nil,
-	//})
-	//
-	//fmt.Print(users)
+	if len(conn.identityStoreID) == 0 || len(conn.instanceArn) == 0 {
+		return nil, ErrMissingMetadataIDs
+	}
 
-	ssoAdminClient := ssoadmin.NewFromConfig(cfg)
+	return conn, nil
+}
 
-	instances, err := ssoAdminClient.ListInstances(ctx, &ssoadmin.ListInstancesInput{
-		MaxResults: nil,
-		NextToken:  nil,
-	})
+func constructor(base *components.Connector) (*Connector, error) {
+	connector := &Connector{Connector: base}
 
-	fmt.Print(instances)
+	registry, err := components.NewEndpointRegistry(supportedOperations())
+	if err != nil {
+		return nil, err
+	}
+
+	connector.Reader = reader.NewHTTPReader(
+		connector.HTTPClient().Client,
+		registry,
+		connector.ProviderContext.Module(),
+		operations.ReadHandlers{
+			BuildRequest:  connector.buildReadRequest,
+			ParseResponse: connector.parseReadResponse,
+			ErrorHandler:  common.InterpretError,
+		},
+	)
+
+	return connector, nil
 }
