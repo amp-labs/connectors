@@ -2,6 +2,7 @@ package zohocrm
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -15,7 +16,7 @@ type SubscribeResult struct {
 	Notifications map[common.ObjectName]*Notification
 }
 
-// Notification represents a Zoho CRM notification subscription
+// Notification represents a Zoho CRM notification subscription.
 type Notification struct {
 	ChannelID     string
 	NotifyURL     string
@@ -25,22 +26,12 @@ type Notification struct {
 	ChannelExpiry string
 }
 
-// EmptySubscriptionParams returns an empty instance of SubscribeParams
-func (c *Connector) EmptySubscriptionParams() *common.SubscribeParams {
-	return &common.SubscribeParams{}
-}
-
-// EmptySubscriptionResult returns an empty instance of SubscriptionResult
-func (c *Connector) EmptySubscriptionResult() *common.SubscriptionResult {
-	return &common.SubscriptionResult{
-		Result: &SubscribeResult{},
-	}
-}
-
 // nolin:funlen
 // Subscribe subscribes to events for the given objects
 // This is where the actual API calls to Zoho CRM happen to create notification subscriptions
-// Zoho CRM doesn't require registration - we directly subscribe to events
+// Zoho CRM doesn't require registration - we directly subscribe to events.
+//
+//nolint:funlen, cyclop
 func (c *Connector) Subscribe(
 	ctx context.Context,
 	params common.SubscribeParams,
@@ -50,7 +41,7 @@ func (c *Connector) Subscribe(
 
 	// The expiry date can be a maximum of one week from the time of subscribe.
 	//  If it is not specified or set for more than a week, the default expiry time is for one hour.
-	// Setting this 6 days just to be on safe side
+	// Setting this 6 days just to be on safe side.
 	channelExpiryTime := datautils.Time.FormatRFC3339inUTC(time.Now().Add(time.Hour * 24 * 6)) //nolint:mnd
 
 	notifyURL := "https://webhook.site/your-webhook-id"
@@ -140,6 +131,8 @@ func (c *Connector) Subscribe(
 // 1. Removing objects from the previous subscription that are not in the new subscription
 // 2. Adding new objects to the subscription that in the new subscription but not in the previous subscription
 // 3. Returing the updated subscription result.
+//
+// nolint:funlen,lll,cyclop
 func (c *Connector) UpdateSubscription(ctx context.Context, params common.SubscribeParams, previousResult *common.SubscriptionResult) (*common.SubscriptionResult, error) {
 	if previousResult.Result == nil {
 		return nil, fmt.Errorf("%w, missing previousResult.Result", errMissingParams)
@@ -230,17 +223,17 @@ func (c *Connector) UpdateSubscription(ctx context.Context, params common.Subscr
 	return res, nil
 }
 
-// DeleteSubscription deletes a subscription by deleting all the notifications
-// If any of the notification is failed to delete, it will return an error
+// DeleteSubscription deletes a subscription by deleting all the notifications.
+// If any of the notification is failed to delete, it will return an error.
 func (c *Connector) DeleteSubscription(ctx context.Context, params common.SubscriptionResult) error {
 	if params.Result == nil {
-		return fmt.Errorf("missing SubscriptionResult")
+		return errors.New("missing SubscriptionResult") //nolint:err113
 	}
 
 	zohoRes, ok := params.Result.(*SubscribeResult)
 
 	if !ok {
-		return fmt.Errorf("%w: expected SubscriptionResult to be type '%T', but got '%T'", errInvalidRequestType, zohoRes, params.Result)
+		return fmt.Errorf("%w: expected SubscriptionResult to be type '%T', but got '%T'", errInvalidRequestType, zohoRes, params.Result) //nolint:err113,lll
 	}
 
 	channelIDs := []string{}
@@ -285,7 +278,6 @@ func (c *Connector) CreateNotification(ctx context.Context, notification *Notifi
 	}
 
 	responsePtr, err := common.UnmarshalJSON[map[string]any](resp)
-
 	if err != nil {
 		return nil, err
 	}
@@ -293,19 +285,17 @@ func (c *Connector) CreateNotification(ctx context.Context, notification *Notifi
 	response := *responsePtr
 
 	watchResponse, ok := response["watch"].([]any)
-
 	if !ok || len(watchResponse) == 0 {
-		return nil, fmt.Errorf("invalid response format")
+		return nil, errInvalidResponse
 	}
 
 	watchResult, ok := watchResponse[0].(map[string]any)
-
 	if !ok {
-		return nil, fmt.Errorf("invalid response format")
+		return nil, errInvalidResponse
 	}
 
 	if watchResult["code"] != "SUCCESS" {
-		return nil, fmt.Errorf("failed to create notification: %v", watchResult["message"])
+		return nil, fmt.Errorf("failed to create notification: %v", watchResult["message"]) //nolint:err113
 	}
 
 	return notification, nil
@@ -315,7 +305,6 @@ func (c *Connector) CreateNotification(ctx context.Context, notification *Notifi
 // https://www.zoho.com/crm/developer/docs/api/v7/notifications/update-details.html
 func (c *Connector) DeleteNotifications(ctx context.Context, channelIDs string) error {
 	url, err := c.getAPIURL("actions/watch")
-
 	if err != nil {
 		return err
 	}
@@ -323,7 +312,6 @@ func (c *Connector) DeleteNotifications(ctx context.Context, channelIDs string) 
 	url.WithQueryParam("channel_ids", channelIDs)
 
 	_, err = c.Client.Delete(ctx, url.String())
-
 	if err != nil {
 		return err
 	}

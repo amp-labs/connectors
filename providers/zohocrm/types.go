@@ -21,4 +21,6 @@ var (
 	errInvalidRequestType = errors.New("invalid request type")
 	errMissingParams      = errors.New("missing required parameters")
 	errInvalidField       = errors.New("invalid field format")
+	errValuesIdMismatch   = errors.New("record id and affected values record id does not match")
+	errInvalidResponse    = errors.New("invalid response format")
 )
