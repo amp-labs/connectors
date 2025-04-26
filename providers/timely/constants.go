@@ -12,8 +12,8 @@ const (
 
 // OAuth2 endpoints
 const (
-	oauthAuthorizePath = "1.1/oauth/authorize"
-	oauthTokenPath     = "1.1/oauth/token"
+	oauthAuthorizePath = "oauth/authorize"
+	oauthTokenPath     = "oauth/token"
 )
 
 // Object to endpoint mapping for CRUD-style resources
