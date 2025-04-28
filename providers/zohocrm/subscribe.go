@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -15,6 +16,18 @@ import (
 	"github.com/go-playground/validator"
 	"github.com/mitchellh/hashstructure"
 )
+
+var _ connectors.SubscribeConnector = &Connector{}
+
+func (c *Connector) EmptySubscriptionParams() *common.SubscribeParams {
+	return &common.SubscribeParams{}
+}
+
+func (c *Connector) EmptySubscriptionResult() *common.SubscriptionResult {
+	return &common.SubscriptionResult{
+		Result: &WatchResult{},
+	}
+}
 
 func (c *Connector) Subscribe(
 	ctx context.Context,
