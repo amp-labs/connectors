@@ -6,7 +6,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/providers"
-	instantlyai "github.com/amp-labs/connectors/providers/instantlyai"
+	"github.com/amp-labs/connectors/providers/instantlyai"
 	"github.com/amp-labs/connectors/test/utils"
 )
 
