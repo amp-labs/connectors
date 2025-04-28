@@ -392,6 +392,9 @@ func (c *Connector) getfieldsMetadata(ctx context.Context, moduleName string) (*
 	return response, nil
 }
 
+// getNotificationConditions builds the notification conditions for the given event.
+// it fetches the field metadata for the given module and event to build the notification condition.
+//
 //nolint:cyclop,funlen
 func (c *Connector) getNotificationConditions(
 	ctx context.Context,
