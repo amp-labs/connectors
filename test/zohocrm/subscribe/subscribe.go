@@ -49,6 +49,17 @@ func main() {
 					"phone",
 				},
 			},
+			"Contacts": common.ObjectEvents{
+				Events: []common.SubscriptionEventType{
+					common.SubscriptionEventTypeCreate,
+					common.SubscriptionEventTypeUpdate,
+					common.SubscriptionEventTypeDelete,
+				},
+				WatchFields: []string{
+					"phone",
+					"email", // TODO:  Test with 1 field after hearing from customer support ENG-2231
+				},
+			},
 		},
 		Request: &zohocrm.SubscriptionRequest{
 			UniqueRef:       uniqueRef,
@@ -105,7 +116,8 @@ func main() {
 		return
 	}
 
-	// fmt.Println("Update subscription results:", prettyPrint(updateResult))
+		return
+	}
 
 	err = conn.DeleteSubscription(ctx, *updateResult)
 	if err != nil {

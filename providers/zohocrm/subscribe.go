@@ -453,7 +453,6 @@ func (c *Connector) getNotificationConditions(
 	}
 
 	fieldGroups := make([]FieldGroup, 0)
-
 	//nolint:forcetypeassert
 	for fieldName, fieldMetadata := range watchFieldsMetadata {
 		fieldGroups = append(fieldGroups, FieldGroup{
