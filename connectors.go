@@ -173,3 +173,12 @@ type (
 )
 
 var Fields = datautils.NewStringSet // nolint:gochecknoglobals
+
+type ScheduledMaintainerConnector interface {
+	Connector
+	RunScheduledMaintenance(
+		ctx context.Context,
+		params common.SubscribeParams,
+		previousResult *common.SubscriptionResult,
+	) (*common.SubscriptionResult, error)
+}

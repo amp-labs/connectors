@@ -23,7 +23,9 @@ func main() {
 	utils.SetupLogging()
 
 	conn := connTest.GetZohoConnector(ctx)
-	dur := time.Minute * 1
+	dur := time.Minute * 2
+
+	uniqueRef := uuid.New().String()
 
 	subscribeParams := common.SubscribeParams{
 		SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
@@ -38,42 +40,81 @@ func main() {
 					"company", // TODO:  Test with 1 field after hearing from customer support ENG-2231
 				},
 			},
+			"Contacts": common.ObjectEvents{
+				Events: []common.SubscriptionEventType{
+					common.SubscriptionEventTypeCreate,
+					common.SubscriptionEventTypeUpdate,
+					common.SubscriptionEventTypeDelete,
+				},
+				WatchFields: []string{
+					"phone",
+					"email", // TODO:  Test with 1 field after hearing from customer support ENG-2231
+				},
+			},
 		},
 		Request: &zohocrm.SubscriptionRequest{
-			UniqueRef:       uuid.New().String(),
+			UniqueRef:       uniqueRef,
 			WebhookEndPoint: "https://play.svix.com/in/e_BVbta2ttNmjqeA1md230npV13f5/",
-			Duration:        &dur,
+			// Duration:        &dur,
 		},
 	}
 
 	subscribeResult, err := conn.Subscribe(ctx, subscribeParams)
 	if err != nil {
 		logging.Logger(ctx).Error("Error subscribing", "error", err, "subscribeResult", prettyPrint(subscribeResult))
+
+		return
 	}
 
 	fmt.Println("Subscribe results:", prettyPrint(subscribeResult))
 
-	// updateParams := common.SubscribeParams{
-	// 	SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
-	// 		"Contacts": {},
-	// 	},
-	// }
+	updateParams := common.SubscribeParams{
+		SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
+			"Leads": {
+				Events: []common.SubscriptionEventType{
+					common.SubscriptionEventTypeCreate,
+					common.SubscriptionEventTypeUpdate,
+					common.SubscriptionEventTypeDelete,
+				},
+				WatchFields: []string{
+					"phone",
+					"company", // TODO:  Test with 1 field after hearing from customer support ENG-2231
+				},
+			},
+			"Accounts": {
+				Events: []common.SubscriptionEventType{
+					common.SubscriptionEventTypeCreate,
+					common.SubscriptionEventTypeUpdate,
+					common.SubscriptionEventTypeDelete,
+				},
+				WatchFields: []string{
+					"industry",
+					"phone", // TODO:  Test with 1 field after hearing from customer support ENG-2231
+				},
+			},
+		},
+		Request: &zohocrm.SubscriptionRequest{
+			UniqueRef:       uniqueRef,
+			WebhookEndPoint: "https://play.svix.com/in/e_BVbta2ttNmjqeA1md230npV13f5/",
+			Duration:        &dur,
+		},
+	}
 
-	// updateResult, err := conn.UpdateSubscription(ctx, updateParams, subscribeResult)
-	// if err != nil {
-	// 	logging.Logger(ctx).Error("Error updating subscription", "error", err, "subscribeResult", prettyPrint(subscribeResult))
-	// }
+	updateResult, err := conn.UpdateSubscription(ctx, updateParams, subscribeResult)
+	if err != nil {
+		logging.Logger(ctx).Error("Error updating subscription", "error", err, "subscribeResult", prettyPrint(subscribeResult))
 
-	// fmt.Println("Update subscription results:", prettyPrint(updateResult))
+		return
+	}
 
-	// if updateResult != nil && updateResult.Status == common.SubscriptionStatusSuccess {
-	// 	err := conn.DeleteSubscription(ctx, *updateResult)
-	// 	if err != nil {
-	// 		logging.Logger(ctx).Error("Error unsubscribing", "error", err)
+	fmt.Println("Update subscription results:", prettyPrint(updateResult))
 
-	// 		return
-	// 	}
-	// }
+	err = conn.DeleteSubscription(ctx, *updateResult)
+	if err != nil {
+		logging.Logger(ctx).Error("Error deleting subscription", "error", err)
+
+		return
+	}
 
 	fmt.Println("Delete subscription successful")
 }

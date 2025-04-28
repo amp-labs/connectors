@@ -1,29 +1,109 @@
 package zohocrm
 
-import "errors"
+import (
+	"fmt"
+	"strings"
+	"time"
+)
 
-// uniqueFields maps the fields to the uniquely required fields.
-var uniqueFields = map[string]string{ // nolint:gochecknoglobals
-	"sic_code":                 "SIC_Code",
-	"skype_id":                 "Skype_ID",
-	"num_sent":                 "Num_sent",
-	"what_id":                  "What_Id",
-	"who_id":                   "Who_Id",
-	"all_day":                  "All_day",
-	"zip_code":                 "ZIP_Code",
-	"cti_entry":                "CTI_Entry",
-	"call_duration_in_seconds": "Call_Duration_in_seconds",
-	"caller_id":                "Caller_ID",
-	"scheduled_in_crm":         "Scheduled_In_CRM",
+//nolint:tagliatelle
+type SubscriptionRequest struct {
+	UniqueRef       string         `json:"unique_ref"         validate:"required"`
+	WebhookEndPoint string         `json:"webhook_end_point"  validate:"required"`
+	Duration        *time.Duration `json:"duration,omitempty"`
 }
 
-var (
-	errInvalidRequestType = errors.New("invalid request type")
-	errMissingParams      = errors.New("missing required parameters")
-	errInvalidField       = errors.New("invalid field format")
-	errValuesIdMismatch   = errors.New("record id and affected values record id does not match")
-	errInvalidResponse    = errors.New("invalid response format")
+type Result struct {
+	Watch []WatchResult `json:"watch"`
+}
+
+// ModuleEvent represents a module and operation combination.
+type ModuleEvent string
+
+// String returns the formatted string representation of the module event.
+func (me ModuleEvent) ModuleAPI() (string, error) {
+	parts, err := me.parts()
+	if err != nil {
+		return "", err
+	}
+
+	return parts[0], nil
+}
+
+func (me ModuleEvent) Operation() (string, error) {
+	parts, err := me.parts()
+	if err != nil {
+		return "", err
+	}
+
+	return parts[1], nil
+}
+
+func (me ModuleEvent) parts() ([]string, error) {
+	parts := strings.Split(string(me), ".")
+	//nolint:mnd
+	if len(parts) != 2 {
+		return nil, fmt.Errorf("%w: %s", errInvalidModuleEvent, me)
+	}
+
+	return parts, nil
+}
+
+type SubscriptionPayload struct {
+	Watch []Watch `json:"watch"`
+}
+
+//nolint:tagliatelle
+type NotificationCondition struct {
+	Type           string         `json:"type"`
+	Module         Module         `json:"module"`
+	FieldSelection FieldSelection `json:"field_selection"`
+}
+
+//nolint:tagliatelle
+type Module struct {
+	APIName string `json:"api_name"`
+	Id      string `json:"id"`
+}
+
+type GroupOperator string
+
+const (
+	GroupOperatorOr  = "or"
+	GroupOperatorAnd = "and"
 )
+
+//nolint:tagliatelle
+type FieldSelection struct {
+	GroupOperator GroupOperator `json:"group_operator"`
+	Group         []FieldGroup  `json:"group"`
+}
+
+//nolint:tagliatelle
+type FieldGroup struct {
+	Field         *Field       `json:"field,omitempty"`
+	GroupOperator string       `json:"group_operator,omitempty"`
+	Group         []FieldGroup `json:"group,omitempty"`
+}
+
+//nolint:tagliatelle
+type Field struct {
+	APIName string `json:"api_name"`
+	ID      string `json:"id"`
+}
+
+//nolint:tagliatelle
+type Watch struct {
+	// ChannelID String representation of int64. Accepts negative values as well.
+	ChannelID                 string                  `json:"channel_id"`
+	Events                    []ModuleEvent           `json:"events"`
+	NotificationCondition     []NotificationCondition `json:"notification_condition,omitempty"`
+	ChannelExpiry             string                  `json:"channel_expiry,omitempty"`
+	Token                     string                  `json:"token,omitempty"`
+	ReturnAffectedFieldValues bool                    `json:"return_affected_field_values,omitempty"`
+	NotifyURL                 string                  `json:"notify_url"`
+	NotifyOnRelatedAction     bool                    `json:"notify_on_related_action,omitempty"`
+}
 
 // WatchResponse represents the top-level response from the Zoho CRM watch API.
 type WatchResponse struct {
