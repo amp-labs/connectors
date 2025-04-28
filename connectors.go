@@ -104,17 +104,13 @@ type WebhookVerifierConnector interface {
 	VerifyWebhookMessage(ctx context.Context, params *common.WebhookVerificationParameters) (bool, error)
 }
 
-//nolint:interfacebloat
-type SubscribeConnector interface {
-	WebhookVerifierConnector
-	// SubscribeConnector has 2 main responsibilities:
+type RegisterSubscribeConnector interface {
+	// SubscribeConnector has below responsibilities:
 	// 1. Register a subscription with the provider.
 	// Registering a subscription is a one-time operation that is required
 	// by providers that hold some master registration of all subscriptions.
 	// Not all providers require this, but some do.
-	// 2. Subscribe to events from the provider.
-	// This is the actual subscription to events from the provider.
-	// It will subscribe for events and objects as specified in SubscribeParams.
+	SubscribeConnector
 	Register(
 		ctx context.Context,
 		params common.SubscriptionRegistrationParams,
@@ -135,7 +131,15 @@ type SubscribeConnector interface {
 	// EmptyRegistrationResult returns a empty instance of RegistrationResult.
 	// if there is any provider specific initialization required, it should be done here.
 	EmptyRegistrationResult() *common.RegistrationResult
+}
 
+//nolint:interfacebloat
+type SubscribeConnector interface {
+	WebhookVerifierConnector
+	// SubscribeConnector has below responsibilities:
+	// Subscribe to events from the provider.
+	// This is the actual subscription to events from the provider.
+	// It will subscribe for events and objects as specified in SubscribeParams.
 	Subscribe(
 		ctx context.Context,
 		params common.SubscribeParams,
