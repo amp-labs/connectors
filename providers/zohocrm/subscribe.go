@@ -32,6 +32,8 @@ func (c *Connector) EmptySubscriptionResult() *common.SubscriptionResult {
 	}
 }
 
+// Subscribe subscribes to the events for the given params.
+// It returns a subscription result with the channel id.
 func (c *Connector) Subscribe(
 	ctx context.Context,
 	params common.SubscribeParams,
@@ -71,8 +73,8 @@ func (c *Connector) UpdateSubscription(
 	return c.putOrPostSubscribe(ctx, params, req, c.Client.Put, hashedChannelId)
 }
 
-// DeleteSubscription deletes a subscription by deleting all the notifications.
-// If any of the notification is failed to delete, it will return an error.
+// DeleteSubscription deletes a subscription with channel id which is extracted from the previous result.
+// previousResult is validated to make sure that there is only 1 channel id in the result.
 func (c *Connector) DeleteSubscription(ctx context.Context, result common.SubscriptionResult) error {
 	if result.Result == nil {
 		return fmt.Errorf("%w: Result cannot be null", errMissingParams) //nolint:err113,lll
@@ -159,6 +161,7 @@ func (c *Connector) putOrPostSubscribe(
 		Watch: make([]Watch, 0),
 	}
 
+	// in order to build the payload, we need to get the module metadata to get the object name and object type id
 	moduleMetadataMap, err := c.getModuleMetadata(ctx, params)
 	if err != nil {
 		return nil, fmt.Errorf("error getting module metadata map: %w", err)
@@ -192,7 +195,7 @@ func (c *Connector) putOrPostSubscribe(
 
 	var mutex sync.Mutex
 
-	// iterate over all objects and events
+	// iterate over all objects and events to build the payload
 	for obj, evt := range params.SubscriptionEvents {
 		wg.Add(1)
 
@@ -375,10 +378,7 @@ func (c *Connector) getModuleMetadata(
 	return objectNameMatchedModule, nil
 }
 
-func (c *Connector) getfieldsMetadata(ctx context.Context, moduleMetadata map[string]any) (*metadataFields, error) {
-	//nolint:forcetypeassert
-	moduleName := moduleMetadata["module_name"].(string)
-
+func (c *Connector) getfieldsMetadata(ctx context.Context, moduleName string) (*metadataFields, error) {
 	resp, err := c.fetchFieldMetadata(ctx, moduleName)
 	if err != nil {
 		return nil, fmt.Errorf("error getting metadata for module '%s': %w", moduleName, err)
@@ -414,8 +414,11 @@ func (c *Connector) getNotificationConditions(
 
 	var err error
 
+	//nolint:forcetypeassert
+	moduleName := moduleMetadata["module_name"].(string) // module name is the official object name
+
 	if len(event.WatchFields) > 0 {
-		fieldMetadata, err = c.getfieldsMetadata(ctx, moduleMetadata)
+		fieldMetadata, err = c.getfieldsMetadata(ctx, moduleName)
 		if err != nil {
 			return nil, fmt.Errorf("error getting fields metadata: %w", err)
 		}
@@ -428,6 +431,7 @@ func (c *Connector) getNotificationConditions(
 
 		for _, fieldMetadata := range fieldMetadata.Fields {
 			//nolint:forcetypeassert
+			// api_name is the official notation for `field`
 			if naming.PluralityAndCaseIgnoreEqual(fieldMetadata["api_name"].(string), field) {
 				watchFieldsMetadata[field] = fieldMetadata
 				found = true
