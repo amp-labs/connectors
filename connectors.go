@@ -178,7 +178,7 @@ type (
 
 var Fields = datautils.NewStringSet // nolint:gochecknoglobals
 
-type ScheduledMaintainerConnector interface {
+type SubscriptionMaintainerConnector interface {
 	Connector
 	RunScheduledMaintenance(
 		ctx context.Context,

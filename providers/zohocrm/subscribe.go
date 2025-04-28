@@ -18,8 +18,8 @@ import (
 )
 
 var (
-	_ connectors.SubscribeConnector           = &Connector{}
-	_ connectors.ScheduledMaintainerConnector = &Connector{}
+	_ connectors.SubscribeConnector              = &Connector{}
+	_ connectors.SubscriptionMaintainerConnector = &Connector{}
 )
 
 func (c *Connector) EmptySubscriptionParams() *common.SubscribeParams {
