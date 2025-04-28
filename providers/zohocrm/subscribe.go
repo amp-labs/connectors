@@ -17,7 +17,10 @@ import (
 	"github.com/mitchellh/hashstructure"
 )
 
-var _ connectors.SubscribeConnector = &Connector{}
+var (
+	_ connectors.SubscribeConnector           = &Connector{}
+	_ connectors.ScheduledMaintainerConnector = &Connector{}
+)
 
 func (c *Connector) EmptySubscriptionParams() *common.SubscribeParams {
 	return &common.SubscribeParams{}
