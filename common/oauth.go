@@ -178,6 +178,30 @@ type oauth2Transport struct {
 	IsUnauthorized func(rsp *http.Response) bool
 }
 
+// getTokenFromSource retrieves a token from the TokenSource.
+func (t *oauth2Transport) getTokenFromSource(ctx context.Context) (*oauth2.Token, error) {
+	srcCtx, ok := t.Source.(TokenSourceWithContext)
+	if ok {
+		return srcCtx.TokenWithContext(ctx)
+	}
+
+	return t.Source.Token()
+}
+
+// handleUnauthorizedResponse handles 401 responses or custom unauthorized conditions.
+func (t *oauth2Transport) handleUnauthorizedResponse(token *oauth2.Token,
+	req *http.Request,
+	rsp *http.Response,
+) (*http.Response, error) {
+	if rsp.StatusCode == http.StatusUnauthorized || (t.IsUnauthorized != nil && t.IsUnauthorized(rsp)) {
+		if t.Unauthorized != nil {
+			return t.Unauthorized(token, req, rsp)
+		}
+	}
+
+	return rsp, nil
+}
+
 func (t *oauth2Transport) RoundTrip(req *http.Request) (*http.Response, error) {
 	reqBodyClosed := false
 
@@ -189,18 +213,7 @@ func (t *oauth2Transport) RoundTrip(req *http.Request) (*http.Response, error) {
 		}()
 	}
 
-	var (
-		token *oauth2.Token
-		err   error
-	)
-
-	srcCtx, ok := t.Source.(TokenSourceWithContext)
-	if ok {
-		token, err = srcCtx.TokenWithContext(req.Context())
-	} else {
-		token, err = t.Source.Token()
-	}
-
+	token, err := t.getTokenFromSource(req.Context())
 	if err != nil {
 		return nil, err
 	}
@@ -225,16 +238,7 @@ func (t *oauth2Transport) RoundTrip(req *http.Request) (*http.Response, error) {
 		t.Debug(req2, cloneResponse(rsp))
 	}
 
-	// Certain providers return 401 when the token has been invalidated.
-	// This may indicate that the token needs to be forcefully refreshed.
-	// Since this is per-provider, the caller can provide a custom handler.
-	if rsp.StatusCode == http.StatusUnauthorized || (t.IsUnauthorized != nil && t.IsUnauthorized(rsp)) {
-		if t.Unauthorized != nil {
-			return t.Unauthorized(token, req2, rsp)
-		}
-	}
-
-	return rsp, nil
+	return t.handleUnauthorizedResponse(token, req2, rsp)
 }
 
 func (t *oauth2Transport) base() http.RoundTripper {
