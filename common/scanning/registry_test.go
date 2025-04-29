@@ -2,6 +2,7 @@
 package scanning
 
 import (
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -47,7 +48,8 @@ var testPreset = []Reader{
 func TestCredentialOptions(t *testing.T) {
 	t.Parallel()
 
-	t.Setenv("TEST_ENV_CLIENT_ID", "clientId")
+	//nolint
+	os.Setenv("TEST_ENV_CLIENT_ID", "clientId")
 
 	opts := NewRegistry()
 
