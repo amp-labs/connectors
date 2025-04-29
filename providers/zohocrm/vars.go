@@ -33,6 +33,7 @@ var (
 	//nolint:revive
 	errInconsistentChannelIdsMismatch = errors.New("all events must have the same channel id")
 	errChannelIdMismatch              = errors.New("channel id does not match provided unique ref")
+	errInvalidDuration                = errors.New("duration cannot be greater than 1 week")
 )
 
 // uniqueFields maps the fields to the uniquely required fields.
