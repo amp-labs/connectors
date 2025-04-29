@@ -1,0 +1,81 @@
+{
+  "modules": {
+    "aws-identity-center": {
+      "objects": {
+        "Instances": {
+          "displayName": "Instances",
+          "responseKey": "Instances",
+          "fields": {
+            "CreatedDate": "Created Date",
+            "IdentityStoreId": "Identity Store Id",
+            "InstanceArn": "Instance Arn",
+            "Name": "Name",
+            "OwnerAccountId": "Owner Account Id",
+            "Status": "Status"
+          }
+        },
+        "Applications": {
+          "displayName": "Applications",
+          "responseKey": "Applications",
+          "fields": {
+            "ApplicationAccount": "Application Account",
+            "ApplicationArn": "Application Arn",
+            "ApplicationProviderArn": "Application Provider Arn",
+            "CreatedDate": "Created Date",
+            "Description": "Description",
+            "InstanceArn": "Instance Arn",
+            "Name": "Name",
+            "PortalOptions": "Portal Options",
+            "Status": "Status"
+          }
+        },
+        "ApplicationProviders": {
+          "displayName": "Application Providers",
+          "responseKey": "ApplicationProviders",
+          "fields": {
+            "ApplicationProviderArn": "Application Provider Arn",
+            "DisplayData": "Display Data",
+            "FederationProtocol": "Federation Protocol",
+            "ResourceServerConfig": "Resource Server Config"
+          }
+        },
+        "AccountAssignmentsCreationStatus": {
+          "displayName": "Account Assignments Creation Status",
+          "responseKey": "AccountAssignmentsCreationStatus",
+          "fields": {
+            "CreatedDate": "Created Date",
+            "RequestId": "Request Id",
+            "Status": "Status"
+          }
+        },
+        "AccountAssignmentsDeletionStatus": {
+          "displayName": "Account Assignments Deletion Status",
+          "responseKey": "AccountAssignmentsDeletionStatus",
+          "fields": {
+            "CreatedDate": "Created Date",
+            "RequestId": "Request Id",
+            "Status": "Status"
+          }
+        },
+        "PermissionSetsProvisioningStatus": {
+          "displayName": "Permission Sets Provisioning Status",
+          "responseKey": "PermissionSetsProvisioningStatus",
+          "fields": {
+            "CreatedDate": "Created Date",
+            "RequestId": "Request Id",
+            "Status": "Status"
+          }
+        },
+        "TrustedTokenIssuers": {
+          "displayName": "Trusted Token Issuers",
+          "responseKey": "TrustedTokenIssuers",
+          "fields": {
+            "Name": "Name",
+            "TrustedTokenIssuerArn": "Trusted Token Issuer Arn",
+            "TrustedTokenIssuerType": "Trusted Token Issuer Type"
+          }
+        }
+      }
+    }
+  }
+}
