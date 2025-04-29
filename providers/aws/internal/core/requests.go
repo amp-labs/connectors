@@ -15,13 +15,11 @@ import (
 const (
 	// Mime https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-making-api-requests-json.html#sqs-api-constructing-endpoints-json
 	Mime = "application/x-amz-json-1.1"
-	// MaxPageSize https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-pagination.html
-	MaxPageSize = 1000
 )
 
 // nolint:tagliatelle
 type ReadPayload struct {
-	MaxResults int     `json:"MaxResults"`
+	MaxResults *int    `json:"MaxResults,omitempty"`
 	NextToken  *string `json:"NextToken,omitempty"`
 }
 
@@ -32,8 +30,7 @@ func NewReadPayload(params common.ReadParams) *ReadPayload {
 	}
 
 	return &ReadPayload{
-		MaxResults: MaxPageSize,
-		NextToken:  nextToken,
+		NextToken: nextToken,
 	}
 }
 
