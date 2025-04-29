@@ -238,7 +238,7 @@ func BenchmarkListObjectMetadata(b *testing.B) {
 	connector.setBaseURL(dummyServer.URL)
 
 	// start of benchmark
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		_, _ = connector.ListObjectMetadata(context.Background(), []string{"brands"})
 	}
 }
