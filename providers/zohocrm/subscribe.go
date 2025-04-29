@@ -157,6 +157,10 @@ func (c *Connector) putOrPostSubscribe(
 	putOrPost common.WriteMethod,
 	channelId string,
 ) (*common.SubscriptionResult, error) {
+	if req.Duration != nil && *req.Duration > defaultDuration {
+		return nil, errInvalidDuration
+	}
+
 	payload := &SubscriptionPayload{
 		Watch: make([]Watch, 0),
 	}
