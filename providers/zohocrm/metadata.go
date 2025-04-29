@@ -2,6 +2,7 @@ package zohocrm
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"sync"
 
@@ -65,21 +66,25 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 	return &objectMetadata, nil
 }
 
-func (c *Connector) getMetadata(ctx context.Context, objectName string) (*common.ObjectMetadata, error) {
+func (c *Connector) fetchFieldMetadata(ctx context.Context, capObj string) (*common.JSONHTTPResponse, error) {
 	url, err := c.getAPIURL(restMetadataEndpoint)
 	if err != nil {
 		return nil, err
 	}
 
-	capObj := naming.CapitalizeFirstLetterEveryWord(objectName)
-
 	// setting this, returns both used and unused fields
 	url.WithQueryParam("type", "all")
 	url.WithQueryParam("module", capObj)
 
-	resp, err := c.Client.Get(ctx, url.String())
+	return c.Client.Get(ctx, url.String())
+}
+
+func (c *Connector) getMetadata(ctx context.Context, objectName string) (*common.ObjectMetadata, error) {
+	capObj := naming.CapitalizeFirstLetterEveryWord(objectName)
+
+	resp, err := c.fetchFieldMetadata(ctx, capObj)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error fetching metadata: %w", err)
 	}
 
 	metadata, err := parseMetadataResponse(resp)

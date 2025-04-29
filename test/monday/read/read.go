@@ -32,7 +32,6 @@ func main() {
 	if err != nil {
 		slog.Error(err.Error())
 	}
-
 }
 
 func testReadBoards(ctx context.Context) error {

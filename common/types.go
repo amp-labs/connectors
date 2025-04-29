@@ -491,7 +491,13 @@ type SubscribeParams struct {
 }
 
 type SubscriptionResult struct { // this corresponds to each API call.
-	Result  any
+	Result       any
+	ObjectEvents map[ObjectName]ObjectEvents
+	Status       SubscriptionStatus
+
+	// Below fields are deprecated, and will be removed in a future release.
+	// Use ObjectEvents instead.
+
 	Objects []ObjectName
 	Events  []SubscriptionEventType
 	// ["create", "update", "delete"]
@@ -500,7 +506,6 @@ type SubscriptionResult struct { // this corresponds to each API call.
 	// ["email", "fax"]
 	PassThroughEvents []string
 	// provider specific events ["contact.merged"] for hubspot or ["jira_issue:restored", "jira_issue:archived"] for jira.
-	Status SubscriptionStatus
 }
 
 type SubscriptionStatus string

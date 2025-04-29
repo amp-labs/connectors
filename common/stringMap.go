@@ -3,9 +3,9 @@ package common
 import (
 	"errors"
 	"fmt"
+	"maps"
 	"reflect"
-
-	"golang.org/x/exp/maps"
+	"slices"
 )
 
 var (
@@ -16,8 +16,8 @@ var (
 
 type StringMap map[string]any
 
-func (m StringMap) Keys(key string) []string {
-	return maps.Keys(m)
+func (m StringMap) Keys() []string {
+	return slices.AppendSeq(make([]string, 0, len(m)), maps.Keys(m))
 }
 
 func (m StringMap) Has(key string) bool {
@@ -27,7 +27,7 @@ func (m StringMap) Has(key string) bool {
 }
 
 func (m StringMap) Values() []any {
-	return maps.Values(m)
+	return slices.AppendSeq(make([]any, 0, len(m)), maps.Values(m))
 }
 
 func (m StringMap) Len() int {
