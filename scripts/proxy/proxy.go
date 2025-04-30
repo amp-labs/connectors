@@ -12,8 +12,10 @@ import (
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/scanning"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
+	"github.com/amp-labs/connectors/common/substitutions"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/scripts/utils/proxyserv"
+	"github.com/spyzhov/ajson"
 )
 
 // ================================
@@ -81,12 +83,12 @@ func main() {
 
 	provider := registry.MustString(credscanning.Fields.Provider.Name)
 
-	substitutions, err := registry.GetMap(SubstitutionsFieldName)
+	subs, err := registry.GetMap(SubstitutionsFieldName)
 	if err != nil {
 		slog.Warn("no substitutions, ensure that the provider info doesn't have any {{variables}}")
 	}
 
-	catalogVariables := paramsbuilder.NewCatalogVariables(substitutions)
+	catalogVariables := paramsbuilder.NewCatalogVariables(subs)
 
 	info, err := providers.ReadInfo(provider, catalogVariables...)
 	if err != nil {
@@ -101,12 +103,15 @@ func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
 
+	substitutionsMap := substitutions.Registry[*ajson.Node](subs)
+
 	proxy := createProviderProxy(ctx, info, proxyserv.Factory{
 		Provider:         provider,
 		CatalogVariables: catalogVariables,
 		Debug:            *debug,
 		Registry:         registry,
 		CredsFilePath:    DefaultCredsFile,
+		Substitutions:    substitutionsMap.ConvertStrMap(),
 	})
 
 	proxy.Start(ctx, DefaultPort)

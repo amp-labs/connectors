@@ -15,7 +15,7 @@ func (f Factory) CreateProxyOAuth2ClientCreds(ctx context.Context) *Proxy {
 	params := createClientAuthParams(f.Provider, f.Registry)
 	providerInfo := getProviderConfig(f.Provider, f.CatalogVariables)
 	cfg := configureOAuthClientCredentials(params.ID, params.Secret, params.Scopes, providerInfo)
-	httpClient := setupOAuth2ClientCredentialsHTTPClient(ctx, providerInfo, cfg, f.Debug)
+	httpClient := setupOAuth2ClientCredentialsHTTPClient(ctx, providerInfo, cfg, f.Debug, f.Substitutions)
 	baseURL := getBaseURL(providerInfo)
 
 	return newProxy(baseURL, httpClient)
@@ -44,6 +44,7 @@ func configureOAuthClientCredentials(
 
 func setupOAuth2ClientCredentialsHTTPClient(
 	ctx context.Context, prov *providers.ProviderInfo, cfg *clientcredentials.Config, debug bool,
+	metadata map[string]string,
 ) common.AuthenticatedHTTPClient {
 	client, err := prov.NewClient(ctx, &providers.NewClientParams{
 		Debug: debug,
@@ -55,7 +56,10 @@ func setupOAuth2ClientCredentialsHTTPClient(
 		panic(err)
 	}
 
-	cc, err := connector.NewConnector(prov.Name, connector.WithAuthenticatedClient(client))
+	cc, err := connector.NewConnector(prov.Name,
+		connector.WithAuthenticatedClient(client),
+		connector.WithMetadata(metadata),
+	)
 	if err != nil {
 		panic(err)
 	}
