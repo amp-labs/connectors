@@ -82,3 +82,289 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 
 	return &objectMetadata, nil
 }
+
+func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL)
+	if err != nil {
+		return nil, err
+	}
+
+	var (
+		skip  = 0
+		limit int
+		query string
+	)
+
+	if params.NextPage != "" {
+		// Parse the page number from NextPage
+		var pageNum int
+
+		_, err := fmt.Sscanf(string(params.NextPage), "%d", &pageNum)
+		if err != nil {
+			return nil, fmt.Errorf("invalid next page format: %w", err)
+		}
+
+		skip = pageNum
+	}
+
+	limit = defaultPageSize
+
+	switch params.ObjectName {
+	case transcriptsObjectName, bitesObjectName:
+		query = getQueryForPaginationedObject(params.ObjectName, skip, limit)
+	case usersObjectName:
+		query = getUserQuery()
+	default:
+		return nil, common.ErrObjectNotSupported
+	}
+
+	requestBody := map[string]string{
+		"query": query,
+	}
+
+	jsonBody, err := json.Marshal(requestBody)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonBody))
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+func getQueryForPaginationedObject(objName string, skip, limit int) string {
+	switch objName {
+	case transcriptsObjectName:
+		return getTrascriptQuery(limit, skip)
+	case bitesObjectName:
+		return getBiteQery(limit, skip)
+	default:
+		return ""
+	}
+}
+
+// nolint
+func getUserQuery() string {
+	return `query {
+		users {
+			user_id
+			email
+			name
+			num_transcripts
+			recent_meeting
+			minutes_consumed
+			is_admin
+			integrations
+		}
+	}`
+}
+
+// nolint:funlen
+func getTrascriptQuery(limit, skip int) string {
+	paginationParams := fmt.Sprintf("(limit: %d, skip: %d)", limit, skip)
+
+	return fmt.Sprintf(`query {
+			transcripts%s {
+				id
+				sentences {
+					index
+					speaker_name
+					speaker_id
+					text
+					raw_text
+					start_time
+					end_time
+					ai_filters {
+						task
+						pricing
+						metric
+						question
+						date_and_time
+						text_cleanup
+						sentiment
+					}
+				}
+				title
+				speakers {
+					id
+					name
+				}
+				organizer_email
+				meeting_info {
+					fred_joined
+					silent_meeting
+					summary_status
+				}
+				calendar_id
+				user {
+					user_id
+					email
+					name
+					num_transcripts
+					recent_meeting
+					minutes_consumed
+					is_admin
+					integrations
+				}
+				fireflies_users
+				participants
+				date
+				transcript_url
+				audio_url
+				video_url
+				duration
+				meeting_attendees {
+					displayName
+					email
+					phoneNumber
+					name
+					location
+				}
+				summary {
+					keywords
+					action_items
+					outline
+					shorthand_bullet
+					overview
+					bullet_gist
+					gist
+					short_summary
+					short_overview
+					meeting_type
+					topics_discussed
+					transcript_chapters
+				}
+				cal_id
+				calendar_type
+				apps_preview {
+					outputs {
+						transcript_id
+						user_id
+						app_id
+						created_at
+						title
+						prompt
+						response
+					}
+				}
+				meeting_link
+			}
+	}`, paginationParams)
+}
+
+func getBiteQery(limit, skip int) string {
+	var arguments string
+	if skip == 0 {
+		arguments = fmt.Sprintf("(mine: false, my_team: true, limit: %d)", limit)
+	} else {
+		arguments = fmt.Sprintf("(mine: false, my_team: true, limit: %d, skip: %d)", limit, skip)
+	}
+
+	return fmt.Sprintf(`query {
+		bites%s {
+			transcript_id
+			name
+			id
+			thumbnail
+			preview
+			status
+			summary
+			user_id
+			start_time
+			end_time
+			summary_status
+			media_type
+			created_at
+			created_from {
+				duration
+				id
+				name
+				type
+			}
+			captions {
+				end_time
+				index
+				speaker_id
+				speaker_name
+				start_time
+				text
+			}
+			sources {
+				src
+				type
+			}
+			privacies
+			user {
+				first_name
+				last_name
+				picture
+				name
+				id
+			}
+		}
+	}`, arguments)
+}
+
+// nolint:cyclop
+func (c *Connector) parseReadResponse(
+	ctx context.Context,
+	params common.ReadParams,
+	request *http.Request,
+	resp *common.JSONHTTPResponse,
+) (*common.ReadResult, error) {
+	data, err := common.UnmarshalJSON[Response](resp)
+	if err != nil {
+		return nil, common.ErrFailedToUnmarshalBody
+	}
+
+	var records []any
+
+	switch params.ObjectName {
+	case usersObjectName:
+		if len(data.Data.Users) == 0 {
+			errMsg := "missing expected values for object: " + params.ObjectName
+
+			return nil, fmt.Errorf("%s, error: %w", errMsg, common.ErrMissingExpectedValues)
+		}
+
+		records = make([]any, len(data.Data.Users))
+		for i, user := range data.Data.Users {
+			records[i] = user
+		}
+	case transcriptsObjectName:
+		if len(data.Data.Transcripts) == 0 {
+			errMsg := "missing expected values for object: " + params.ObjectName
+
+			return nil, fmt.Errorf("%s, error: %w", errMsg, common.ErrMissingExpectedValues)
+		}
+
+		records = make([]any, len(data.Data.Transcripts))
+		for i, transcript := range data.Data.Transcripts {
+			records[i] = transcript
+		}
+	case bitesObjectName:
+		if len(data.Data.Bites) == 0 {
+			errMsg := "missing expected values for object: " + params.ObjectName
+
+			return nil, fmt.Errorf("%s, error: %w", errMsg, common.ErrMissingExpectedValues)
+		}
+
+		records = make([]any, len(data.Data.Bites))
+		for i, bite := range data.Data.Bites {
+			records[i] = bite
+		}
+	default:
+		return nil, fmt.Errorf("%w: %s", common.ErrObjectNotSupported, params.ObjectName)
+	}
+
+	return common.ParseResult(
+		resp,
+		getRecords(params.ObjectName),
+		makeNextRecordsURL(params, len(records)),
+		common.GetMarshaledData,
+		params.Fields,
+	)
+}
