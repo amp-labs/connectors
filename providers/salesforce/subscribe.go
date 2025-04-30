@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/naming"
 	"github.com/go-playground/validator"
 )
 
@@ -63,13 +64,19 @@ func (c *Connector) Subscribe(
 
 	var failError error
 
-	for objName := range params.SubscriptionEvents {
+	for objName, objectEvents := range params.SubscriptionEvents {
 		eventName := GetChangeDataCaptureEventName(string(objName))
 		rawChannelName := GetRawChannelNameFromChannel(registrationParams.EventChannel.FullName)
+
+		enrichedFields := []string{}
+		for _, associatedObject := range objectEvents.Associations.BelongsTo {
+			enrichedFields = append(enrichedFields, naming.CapitalizeFirstLetterEveryWord(associatedObject)+"Id")
+		}
 
 		channelMetadata := &EventChannelMemberMetadata{
 			EventChannel:   GetChannelName(rawChannelName),
 			SelectedEntity: eventName,
+			EnrichedFields: enrichedFields,
 		}
 		channelMember := &EventChannelMember{
 			FullName: GetChangeDataCaptureChannelMembershipName(rawChannelName, eventName),

@@ -464,6 +464,11 @@ type SubscriptionRegistrationParams struct {
 	Request any `json:"request" validate:"required"`
 }
 
+type Associations struct {
+	BelongsTo []string
+	Has       []string
+}
+
 type ObjectEvents struct {
 	// ["create", "update", "delete"] our regular CRUD operation events
 	// we translate to provider-specific names contact.creation
@@ -476,6 +481,8 @@ type ObjectEvents struct {
 	// any non CRUD operations with provider specific event names
 	// eg)  ["contact.merged"] for hubspot or ["jira_issue:restored", "jira_issue:archived"] for jira.
 	PassThroughEvents []string
+	// associations between the object and other objects
+	Associations Associations
 }
 
 type ObjectName string
