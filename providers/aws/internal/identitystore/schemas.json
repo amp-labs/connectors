@@ -1,0 +1,51 @@
+{
+  "modules": {
+    "aws-identity-center": {
+      "objects": {
+        "Groups": {
+          "displayName": "Groups",
+          "responseKey": "Groups",
+          "fields": {
+            "GroupId": "Group Id",
+            "IdentityStoreId": "Identity Store Id",
+            "Description": "Description",
+            "DisplayName": "Display Name",
+            "ExternalIds": "External Ids"
+          }
+        },
+        "Users": {
+          "displayName": "Users",
+          "responseKey": "Users",
+          "fields": {
+            "IdentityStoreId": "Identity Store Id",
+            "UserId": "User Id",
+            "Addresses": "Addresses",
+            "DisplayName": "Display Name",
+            "Emails": "Emails",
+            "ExternalIds": "External Ids",
+            "Locale": "Locale",
+            "Name": "Name",
+            "NickName": "NickName",
+            "PhoneNumbers": "Phone Numbers",
+            "PreferredLanguage": "Preferred Language",
+            "ProfileUrl": "Profile URL",
+            "Timezone": "Timezone",
+            "Title": "Title",
+            "UserName": "User Name",
+            "UserType": "User Type"
+          }
+        },
+        "GroupMemberships": {
+          "displayName": "Group Memberships",
+          "responseKey": "GroupMemberships",
+          "fields": {
+            "IdentityStoreId": "Identity Store Id",
+            "GroupId": "Group Id",
+            "MemberId": "Member Id",
+            "MembershipId": "Membership Id"
+          }
+        }
+      }
+    }
+  }
+}

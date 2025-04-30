@@ -1,4 +1,4 @@
-package awscore
+package core
 
 import (
 	"bytes"
