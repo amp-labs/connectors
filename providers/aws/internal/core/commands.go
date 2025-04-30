@@ -1,4 +1,4 @@
-package awscore
+package core
 
 import "github.com/amp-labs/connectors/internal/datautils"
 
