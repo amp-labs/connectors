@@ -45,5 +45,18 @@ func init() {
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1746046777/media/aws_1746046777.svg",
 			},
 		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					Name: "region",
+				},
+				{
+					Name: "identityStoreId",
+				},
+				{
+					Name: "instanceArn",
+				},
+			},
+		},
 	})
 }

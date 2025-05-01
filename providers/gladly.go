@@ -33,6 +33,13 @@ func init() {
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1723974024/media/gladly_1723974023.jpg",
 			},
 		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					Name: "workspace",
+				},
+			},
+		},
 	})
 	// Gladly qa environment
 	SetInfo(GladlyQA, ProviderInfo{
@@ -59,6 +66,13 @@ func init() {
 			Regular: &MediaTypeRegular{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1723973960/media/gladly_1723973958.png",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1723974024/media/gladly_1723974023.jpg",
+			},
+		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					Name: "workspace",
+				},
 			},
 		},
 	})

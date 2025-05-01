@@ -14,7 +14,6 @@ func init() {
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
 		},
-		PostAuthInfoNeeded: false,
 		//nolint:lll
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{

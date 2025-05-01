@@ -22,7 +22,6 @@ func init() {
 			Subscribe: false,
 			Write:     false,
 		},
-		PostAuthInfoNeeded: false,
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722071456/media/mailgun_1722071455.svg",

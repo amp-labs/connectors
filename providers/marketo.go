@@ -69,5 +69,12 @@ func init() {
 			Subscribe: false,
 			Write:     true,
 		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					Name: "workspace",
+				},
+			},
+		},
 	})
 }

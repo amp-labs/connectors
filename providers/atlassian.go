@@ -68,5 +68,18 @@ func init() {
 			Subscribe: false,
 			Write:     true,
 		},
+		Metadata: &ProviderMetadata{
+			PostAuthentication: []MetadataItemPostAuthentication{
+				{
+					Name: "cloudId",
+				},
+			},
+			Input: []MetadataItemInput{
+				{
+					Name:        "workspace",
+					DisplayName: "Site URL (Your domain)",
+				},
+			},
+		},
 	})
 }
