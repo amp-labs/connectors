@@ -79,7 +79,6 @@ func readEmailServer(ctx context.Context, conn *serviceNow.Connector) error {
 	_, _ = os.Stdout.WriteString("\n")
 
 	return nil
-
 }
 
 func readContacts(ctx context.Context, conn *serviceNow.Connector) error {
@@ -101,5 +100,4 @@ func readContacts(ctx context.Context, conn *serviceNow.Connector) error {
 	_, _ = os.Stdout.WriteString("\n")
 
 	return nil
-
 }
