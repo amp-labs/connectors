@@ -56,6 +56,8 @@ func init() {
 				{
 					Name: "instanceArn",
 				},
+				// IMPORTANT: The 'serviceDomain' variable is figured out in the connector,
+				// at runtime. It is not part of the metadata.
 			},
 		},
 	})
