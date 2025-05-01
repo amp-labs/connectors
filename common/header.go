@@ -17,10 +17,12 @@ func NewHeaderAuthHTTPClient( //nolint:ireturn
 	opts ...HeaderAuthClientOption,
 ) (AuthenticatedHTTPClient, error) {
 	params := &headerClientParams{}
+
 	for _, opt := range opts {
 		if opt == nil {
 			continue
 		}
+
 		opt(params)
 	}
 
