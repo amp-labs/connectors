@@ -39,7 +39,7 @@
             "ResourceServerConfig": "Resource Server Config"
           }
         },
-        "AccountAssignmentsCreationStatus": {
+        "AccountAssignmentCreationStatus": {
           "displayName": "Account Assignments Creation Status",
           "responseKey": "AccountAssignmentsCreationStatus",
           "fields": {
@@ -48,7 +48,7 @@
             "Status": "Status"
           }
         },
-        "AccountAssignmentsDeletionStatus": {
+        "AccountAssignmentDeletionStatus": {
           "displayName": "Account Assignments Deletion Status",
           "responseKey": "AccountAssignmentsDeletionStatus",
           "fields": {
@@ -57,7 +57,7 @@
             "Status": "Status"
           }
         },
-        "PermissionSetsProvisioningStatus": {
+        "PermissionSetProvisioningStatus": {
           "displayName": "Permission Sets Provisioning Status",
           "responseKey": "PermissionSetsProvisioningStatus",
           "fields": {
