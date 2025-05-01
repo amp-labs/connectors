@@ -4,8 +4,12 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/internal/components"
+	"github.com/amp-labs/connectors/internal/components/operations"
+	"github.com/amp-labs/connectors/internal/components/reader"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/aws/internal/core"
 )
 
 type Connector struct {
@@ -40,7 +44,6 @@ func NewConnector(params common.Parameters) (*Connector, error) {
 		return nil, err
 	}
 
-	// TODO this should be resolved by the ProviderInfo initialization.
 	conn.region = params.Metadata["region"]
 	conn.identityStoreId = params.Metadata["identityStoreId"]
 	conn.instanceARN = params.Metadata["instanceARN"]
@@ -60,6 +63,28 @@ func constructor(base *components.Connector, expectedMetadataKeys []string) (*Co
 			ExpectedMetadataKeys: expectedMetadataKeys,
 		},
 	}
+
+	registry, err := components.NewEndpointRegistry(supportedOperations())
+	if err != nil {
+		return nil, err
+	}
+
+	errorHandler := interpreter.ErrorHandler{
+		Custom: map[interpreter.Mime]interpreter.FaultyResponseHandler{
+			core.Mime: interpreter.NewFaultyResponder(errorFormats, nil),
+		},
+	}.Handle
+
+	connector.Reader = reader.NewHTTPReader(
+		connector.HTTPClient().Client,
+		registry,
+		connector.ProviderContext.Module(),
+		operations.ReadHandlers{
+			BuildRequest:  connector.buildReadRequest,
+			ParseResponse: connector.parseReadResponse,
+			ErrorHandler:  errorHandler,
+		},
+	)
 
 	return connector, nil
 }

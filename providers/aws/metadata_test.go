@@ -101,15 +101,21 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 		AuthenticatedClient: http.DefaultClient,
 		Metadata: map[string]string{
 			"region":          "test-region",
-			"identityStoreID": "test-identity-store-id",
-			"instanceArn":     "test-instance-arn",
+			"identityStoreId": "test-identity-store-id",
+			"instanceARN":     "test-instance-arn",
 		},
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	connector.SetBaseURL(serverURL)
+	moduleInfo := (*connector.ProviderInfo().Modules)[providers.ModuleAWSIdentityCenter]
+
+	moduleInfo.BaseURL = serverURL
+
+	connector.ProviderInfo().Modules = &providers.Modules{
+		providers.ModuleAWSIdentityCenter: moduleInfo,
+	}
 
 	return connector, nil
 }

@@ -20,9 +20,12 @@ type Comparator[Output any] func(serverURL string, actual, expected Output) bool
 // This is convenient for cases where the returned data is large,
 // allowing for a more concise test that still validates the desired behavior.
 func ComparatorSubsetRead(serverURL string, actual, expected *common.ReadResult) bool {
-	return mockutils.ReadResultComparator.SubsetFields(actual, expected) &&
-		mockutils.ReadResultComparator.SubsetRaw(actual, expected) &&
-		ComparatorPagination(serverURL, actual, expected)
+	a := mockutils.ReadResultComparator.SubsetFields(actual, expected)
+	b := mockutils.ReadResultComparator.SubsetRaw(actual, expected)
+	c := ComparatorPagination(serverURL, actual, expected)
+	return a &&
+		b &&
+		c
 }
 
 // ComparatorPagination will check pagination related fields.

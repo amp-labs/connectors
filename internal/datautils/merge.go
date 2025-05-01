@@ -38,3 +38,15 @@ func MergeUniqueLists[ID, V comparable](lists ...UniqueLists[ID, V]) UniqueLists
 
 	return result
 }
+
+func MergeSets[T comparable](sets ...Set[T]) Set[T] {
+	result := NewSet[T]()
+
+	for _, set := range sets {
+		for value := range set {
+			result.AddOne(value)
+		}
+	}
+
+	return result
+}
