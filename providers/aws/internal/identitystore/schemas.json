@@ -34,16 +34,6 @@
             "UserName": "User Name",
             "UserType": "User Type"
           }
-        },
-        "GroupMemberships": {
-          "displayName": "Group Memberships",
-          "responseKey": "GroupMemberships",
-          "fields": {
-            "IdentityStoreId": "Identity Store Id",
-            "GroupId": "Group Id",
-            "MemberId": "Member Id",
-            "MembershipId": "Membership Id"
-          }
         }
       }
     }
