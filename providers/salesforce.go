@@ -42,5 +42,12 @@ func init() {
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722470590/media/salesforce_1722470589.svg",
 			},
 		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					Name: "workspace",
+				},
+			},
+		},
 	})
 }

@@ -37,5 +37,12 @@ func init() {
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722321995/media/freshdesk_1722321994.svg",
 			},
 		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					Name: "workspace",
+				},
+			},
+		},
 	})
 }

@@ -23,6 +23,7 @@ func ComparatorSubsetRead(serverURL string, actual, expected *common.ReadResult)
 	a := mockutils.ReadResultComparator.SubsetFields(actual, expected)
 	b := mockutils.ReadResultComparator.SubsetRaw(actual, expected)
 	c := ComparatorPagination(serverURL, actual, expected)
+
 	return a &&
 		b &&
 		c
