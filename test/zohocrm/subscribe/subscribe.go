@@ -55,12 +55,11 @@ func main() {
 			return
 		}
 	}
-	fmt.Println("Delete subscription successful")
 
+	fmt.Println("Delete subscription successful")
 }
 
 func prettyPrint(v any) string {
-
 	jsonBytes, err := json.MarshalIndent(v, "", "  ")
 	if err != nil {
 		panic(err)

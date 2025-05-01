@@ -11,6 +11,7 @@ const (
 	ModuleAtlassianJiraConnect common.ModuleID = "atlassian-connect"
 )
 
+// nolint:funlen
 func init() {
 	// Atlassian Configuration
 	SetInfo(Atlassian, ProviderInfo{

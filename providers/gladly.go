@@ -5,6 +5,7 @@ const (
 	GladlyQA Provider = "gladlyQA"
 )
 
+// nolint:funlen
 func init() {
 	// Gladly production environment
 	SetInfo(Gladly, ProviderInfo{

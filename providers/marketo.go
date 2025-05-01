@@ -11,6 +11,7 @@ const (
 	ModuleMarketoLeads common.ModuleID = "leads"
 )
 
+// nolint:funlen
 func init() {
 	// Marketo configuration file
 	// workspace maps to marketo instance
