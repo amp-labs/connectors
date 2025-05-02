@@ -48,13 +48,16 @@ func init() {
 		Metadata: &ProviderMetadata{
 			Input: []MetadataItemInput{
 				{
-					Name: "region",
+					Name:        "region",
+					DisplayName: "Region",
 				},
 				{
-					Name: "identityStoreId",
+					Name:        "identityStoreId",
+					DisplayName: "Identity Store ID",
 				},
 				{
-					Name: "instanceArn",
+					Name:        "instanceArn",
+					DisplayName: "Instance ARN",
 				},
 				// IMPORTANT: The 'serviceDomain' variable is figured out in the connector,
 				// at runtime. It is not part of the metadata.
