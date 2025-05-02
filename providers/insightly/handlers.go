@@ -54,8 +54,6 @@ func (c *Connector) parseReadResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
-	fieldName := metadata.Schemas.LookupArrayFieldName(c.Module(), params.ObjectName)
-
 	url, err := urlbuilder.FromRawURL(request.URL)
 	if err != nil {
 		return nil, err
@@ -63,11 +61,19 @@ func (c *Connector) parseReadResponse(
 
 	return common.ParseResult(
 		response,
-		common.ExtractRecordsFromPath(fieldName),
+		makeGetRecords(c.Module(), params.ObjectName),
 		nextRecordsURL(url),
-		common.GetMarshaledData,
+		common.MakeMarshaledDataFunc(flattenCustomFields),
 		params.Fields,
 	)
+}
+
+func makeGetRecords(moduleID common.ModuleID, objectName string) common.NodeRecordsFunc {
+	return func(node *ajson.Node) ([]*ajson.Node, error) {
+		responseFieldName := metadata.Schemas.LookupArrayFieldName(moduleID, objectName)
+
+		return jsonquery.New(node).ArrayOptional(responseFieldName)
+	}
 }
 
 func nextRecordsURL(url *urlbuilder.URL) func(*ajson.Node) (string, error) {

@@ -1,0 +1,46 @@
+[
+  {
+    "RECORD_ID": 54840676,
+    "RECORD_NAME": "Apple",
+    "OWNER_USER_ID": 2240727,
+    "DATE_CREATED_UTC": "2025-04-22 19:29:43",
+    "DATE_UPDATED_UTC": "2025-04-22 19:34:12",
+    "CREATED_USER_ID": 2240727,
+    "VISIBLE_TO": "EVERYONE",
+    "VISIBLE_TEAM_ID": null,
+    "CUSTOMFIELDS": [
+      {
+        "FIELD_NAME": "Color__c",
+        "FIELD_VALUE": "Green",
+        "CUSTOM_FIELD_ID": "Color__c"
+      },
+      {
+        "FIELD_NAME": "Weight__c",
+        "FIELD_VALUE": 12,
+        "CUSTOM_FIELD_ID": "Weight__c"
+      }
+    ]
+  },
+  {
+    "RECORD_ID": 54840682,
+    "RECORD_NAME": "Banana",
+    "OWNER_USER_ID": 2240727,
+    "DATE_CREATED_UTC": "2025-04-22 19:29:52",
+    "DATE_UPDATED_UTC": "2025-04-22 19:29:52",
+    "CREATED_USER_ID": 2240727,
+    "VISIBLE_TO": "EVERYONE",
+    "VISIBLE_TEAM_ID": null,
+    "CUSTOMFIELDS": [
+      {
+        "FIELD_NAME": "Color__c",
+        "FIELD_VALUE": null,
+        "CUSTOM_FIELD_ID": "Color__c"
+      },
+      {
+        "FIELD_NAME": "Weight__c",
+        "FIELD_VALUE": 3.2,
+        "CUSTOM_FIELD_ID": "Weight__c"
+      }
+    ]
+  }
+]

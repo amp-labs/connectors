@@ -12,7 +12,9 @@ const apiVersion = "v3.1"
 func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
 	path, err := metadata.Schemas.LookupURLPath(common.ModuleRoot, objectName)
 	if err != nil {
-		return nil, err
+		// It is possible that an object is custom.
+		// Custom objects support Search which allows incremental reading.
+		path = objectName + "/Search"
 	}
 
 	return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, path)
