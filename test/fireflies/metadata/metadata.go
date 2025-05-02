@@ -13,7 +13,7 @@ func main() {
 
 	conn := fireflies.GetFirefliesConnector(ctx)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"user", "transcript", "bite"})
+	m, err := conn.ListObjectMetadata(ctx, []string{"users", "transcripts", "bites"})
 
 	if err != nil {
 		log.Fatal(err)
