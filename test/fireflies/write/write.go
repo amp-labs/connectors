@@ -39,10 +39,10 @@ func MainFn() int {
 		return 1
 	}
 
-	// err := testUpdateMeetingTitle(ctx)
-	// if err != nil {
-	// 	return 1
-	// }
+	err = testUpdateMeetingTitle(ctx)
+	if err != nil {
+		return 1
+	}
 
 	return 0
 }
@@ -140,15 +140,15 @@ func testUploadAudio(ctx context.Context) error {
 		ObjectName: "uploadAudio",
 		RecordData: map[string]any{
 			"input": map[string]any{
-				"url": "https://www.nch.com.au/scribe/practice/audio-sample-4.mp3",
-				// "title": "Medical Report",
-				// "attendees": []any{
-				// 	map[string]string{
-				// 		"displayName": "Fireflies Notetaker",
-				// 		"email":       "notetaker@fireflies.ai",
-				// 		"phoneNumber": "5522668874",
-				// 	},
-				// },
+				"url":   "https://www.nch.com.au/scribe/practice/audio-sample-4.mp3",
+				"title": "Medical Report",
+				"attendees": []any{
+					map[string]string{
+						"displayName": "Fireflies Notetaker",
+						"email":       "notetaker@fireflies.ai",
+						"phoneNumber": "5522668874",
+					},
+				},
 			},
 		},
 		RecordId: "",

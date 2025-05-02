@@ -22,6 +22,7 @@ const (
 	objectNameSetUserRole        = "setUserRole"
 	objectNameUploadAudio        = "uploadAudio"
 	objectNameUpdateMeetingTitle = "updateMeetingTitle"
+	objectNamedeleteTranscript   = "deleteTranscript"
 )
 
 var supportLimitAndSkip = datautils.NewSet( //nolint:gochecknoglobals
@@ -75,6 +76,7 @@ func supportedOperations() components.EndpointRegistryInput {
 	// We support reading everything under schema.json, so we get all the objects and join it into a pattern.
 	readSupport := []string{usersObjectName, transcriptsObjectName, bitesObjectName}
 	writeSupport := []string{objectNameLiveMeeting, objectNameCreateBite, objectNameSetUserRole, objectNameUploadAudio, objectNameUpdateMeetingTitle} // nolint
+	deleteSupport := []string{objectNamedeleteTranscript}
 
 	return components.EndpointRegistryInput{
 		common.ModuleRoot: {
@@ -85,6 +87,10 @@ func supportedOperations() components.EndpointRegistryInput {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
 				Support:  components.WriteSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(deleteSupport, ",")),
+				Support:  components.DeleteSupport,
 			},
 		},
 	}

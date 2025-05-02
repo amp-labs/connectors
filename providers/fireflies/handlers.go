@@ -601,3 +601,62 @@ func ExtractAudioFields(RecordData any) ([]string, error) {
 
 	return inputParts, nil
 }
+
+func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL)
+	if err != nil {
+		return nil, err
+	}
+
+	var mutation string
+
+	switch params.ObjectName {
+	case objectNamedeleteTranscript:
+		if params.RecordId != "" {
+			mutation = fmt.Sprintf(`mutation {
+				deleteTranscript(id:"%s") {
+					title
+					date
+					duration
+					organizer_email
+				}
+			}`, params.RecordId)
+		} else {
+			return nil, ErrUpdateMeetingLinkNotSupported
+		}
+	default:
+		return nil, common.ErrObjectNotSupported
+	}
+
+	requestBody := map[string]string{
+		"query": mutation,
+	}
+
+	jsonBody, err := json.Marshal(requestBody)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonBody))
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+func (c *Connector) parseDeleteResponse(
+	ctx context.Context,
+	params common.DeleteParams,
+	request *http.Request,
+	resp *common.JSONHTTPResponse,
+) (*common.DeleteResult, error) {
+	if resp.Code != http.StatusOK {
+		return nil, fmt.Errorf("%w: failed to delete record: %d", common.ErrRequestFailed, resp.Code)
+	}
+
+	// A successful delete returns 200 OK
+	return &common.DeleteResult{
+		Success: true,
+	}, nil
+}
