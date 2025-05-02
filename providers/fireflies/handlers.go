@@ -4,12 +4,15 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
@@ -255,17 +258,9 @@ func getTrascriptQuery(limit, skip int) string {
 	}`, paginationParams)
 }
 
-func getBiteQery(limit, skip int) string {
-	var arguments string
-	if skip == 0 {
-		arguments = fmt.Sprintf("(mine: false, my_team: true, limit: %d)", limit)
-	} else {
-		arguments = fmt.Sprintf("(mine: false, my_team: true, limit: %d, skip: %d)", limit, skip)
-	}
-
-	return fmt.Sprintf(`query {
-		bites%s {
-			transcript_id
+// nolint
+func getBiteFields() string {
+	return `transcript_id
 			name
 			id
 			thumbnail
@@ -303,9 +298,22 @@ func getBiteQery(limit, skip int) string {
 				picture
 				name
 				id
-			}
-		}
-	}`, arguments)
+			}`
+}
+
+func getBiteQery(limit, skip int) string {
+	var arguments string
+	if skip == 0 {
+		arguments = fmt.Sprintf("(mine: false, my_team: true, limit: %d)", limit)
+	} else {
+		arguments = fmt.Sprintf("(mine: false, my_team: true, limit: %d, skip: %d)", limit, skip)
+	}
+
+	return fmt.Sprintf(`query {
+		bites%s {
+		%s
+        }			
+	}`, arguments, getBiteFields())
 }
 
 // nolint:cyclop
@@ -367,4 +375,229 @@ func (c *Connector) parseReadResponse(
 		common.GetMarshaledData,
 		params.Fields,
 	)
+}
+
+// nolint:gocognit,cyclop,funlen
+func (c *Connector) buildWriteRequest(
+	ctx context.Context, params common.WriteParams,
+) (*http.Request, error) {
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL)
+	if err != nil {
+		return nil, fmt.Errorf("failed to build URL: %w", err)
+	}
+
+	recordData, err := common.RecordDataToMap(params.RecordData)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert record data to map: %w", err)
+	}
+
+	var mutation string
+
+	switch params.ObjectName {
+	case objectNameLiveMeeting:
+		if params.RecordId == "" {
+			meetingLink, ok := recordData["meeting_link"].(string)
+			if !ok {
+				return nil, ErrMeetingLinkRequired
+			}
+
+			mutation = fmt.Sprintf(`mutation {
+				addToLiveMeeting(meeting_link: "%s") {
+					success
+				}
+			}`, meetingLink)
+		} else {
+			return nil, ErrUpdateMeetingLinkNotSupported
+		}
+	case objectNameCreateBite:
+		if params.RecordId == "" {
+			transcriptId, ok := recordData["transcriptId"].(string) //nolint:varnamelen
+			if !ok {
+				return nil, ErrMeetingLinkRequired
+			}
+
+			startTime, ok := recordData["startTime"].(float64)
+			if !ok {
+				return nil, ErrStartTimeRequired
+			}
+
+			endTime, ok := recordData["endTime"].(float64)
+			if !ok {
+				return nil, ErrEndTimeRequired
+			}
+
+			mutation = fmt.Sprintf(`mutation {
+				createBite(transcript_Id: "%s", start_time: %v, end_time: %v) {
+					%s
+				}
+			}`, transcriptId, startTime, endTime, getBiteFields())
+		} else {
+			return nil, ErrUpdateBiteNotSupported
+		}
+	case objectNameSetUserRole:
+		if params.RecordId == "" {
+			userId, ok := recordData["user_id"].(string)
+			if !ok {
+				return nil, ErrRoleRequired
+			}
+
+			role, ok := recordData["role"].(string)
+			if !ok {
+				return nil, ErrRoleRequired
+			}
+
+			mutation = fmt.Sprintf(`mutation {
+			    setUserRole(user_id: "%s", role: %s) { 
+                    user_id
+		 			email
+					name
+					num_transcripts
+					recent_meeting
+					minutes_consumed
+					is_admin
+					integrations
+				}
+            }`, userId, role)
+		} else {
+			return nil, ErrUpdateRoleNotSupported
+		}
+	case objectNameUploadAudio:
+		if params.RecordId == "" {
+			mutationInput, err := ExtractAudioFields(params.RecordData)
+			if err != nil {
+				return nil, err
+			}
+
+			mutation = fmt.Sprintf(`mutation {
+				uploadAudio(input: {%s}) {
+					success
+					title
+					message
+				}
+			}`, strings.Join(mutationInput, ", "))
+		} else {
+			return nil, ErrUpdateAudioSupported
+		}
+	case objectNameUpdateMeetingTitle:
+		if params.RecordId != "" {
+			input, ok := params.RecordData.(map[string]any)["input"].(map[string]any)
+			if !ok {
+				return nil, ErrInvalidResponseFormat
+			}
+
+			title, ok := input["title"].(string)
+			if !ok {
+				return nil, ErrTitleRequired
+			}
+
+			mutation = fmt.Sprintf(`mutation {
+				updateMeetingTitle(input: {id: "%s", title: "%s"}) {
+					title
+				}
+			}`, params.RecordId, title)
+		} else {
+			return nil, ErrCreateMeetingSupported
+		}
+	default:
+		return nil, common.ErrObjectNotSupported
+	}
+
+	requestBody := map[string]string{
+		"query": mutation,
+	}
+
+	jsonBody, err := json.Marshal(requestBody)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonBody))
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	return req, nil
+}
+
+func (c *Connector) parseWriteResponse(
+	ctx context.Context,
+	params common.WriteParams,
+	request *http.Request,
+	resp *common.JSONHTTPResponse,
+) (*common.WriteResult, error) {
+	var (
+		recordID string
+		err      error
+	)
+
+	node, ok := resp.Body()
+	if !ok {
+		return &common.WriteResult{Success: true}, nil
+	}
+
+	objectResponse, err := jsonquery.New(node).ObjectRequired("data")
+	if err != nil {
+		return nil, err
+	}
+
+	if params.ObjectName == "createBite" {
+		recordID, err = jsonquery.New(objectResponse, params.ObjectName).StrWithDefault("id", "")
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	response, err := jsonquery.Convertor.ObjectToMap(objectResponse)
+	if err != nil {
+		return nil, err
+	}
+
+	return &common.WriteResult{
+		Success:  true,
+		RecordId: recordID,
+		Data:     response,
+	}, nil
+}
+
+// nolint
+func ExtractAudioFields(RecordData any) ([]string, error) {
+	input, ok := RecordData.(map[string]any)["input"].(map[string]any)
+	if !ok {
+		return nil, ErrInvalidResponseFormat
+	}
+
+	url, ok := input["url"].(string)
+	if !ok {
+		return nil, ErrURLIsRequired
+	}
+
+	// below fields are not required , so handle the error
+	title, _ := input["title"].(string)
+	attendees, _ := input["attendees"].([]any)
+
+	var attendeeStrings []string
+	if attendees != nil {
+		for _, attendee := range attendees {
+			attMap, ok := attendee.(map[string]string)
+			if !ok {
+				return nil, errors.New("invalid attendee format")
+			}
+			displayName, email, phoneNumber := attMap["displayName"], attMap["email"], attMap["phoneNumber"]
+			attendeeStr := fmt.Sprintf(`{displayName: %q, email: %q, phoneNumber: %q}`, displayName, email, phoneNumber)
+			attendeeStrings = append(attendeeStrings, attendeeStr)
+		}
+	}
+
+	// Build mutation input parts
+	inputParts := []string{fmt.Sprintf(`url: "%s"`, url)}
+	if title != "" {
+		inputParts = append(inputParts, fmt.Sprintf(`title: "%s"`, title))
+	}
+	if len(attendeeStrings) > 0 {
+		inputParts = append(inputParts, fmt.Sprintf(`attendees: [%s]`, strings.Join(attendeeStrings, ", ")))
+	}
+
+	return inputParts, nil
 }
