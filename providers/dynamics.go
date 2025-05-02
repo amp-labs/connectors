@@ -44,6 +44,14 @@ func init() { // nolint:funlen
 			Subscribe: false,
 			Write:     false,
 		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					Name:        "workspace",
+					DisplayName: "Tenant ID",
+				},
+			},
+		},
 	})
 
 	// Dynamics CRM Configuration
@@ -84,6 +92,14 @@ func init() { // nolint:funlen
 			Read:      true,
 			Subscribe: false,
 			Write:     true,
+		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					Name:        "workspace",
+					DisplayName: "Organization ID",
+				},
+			},
 		},
 	})
 }

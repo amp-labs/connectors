@@ -315,11 +315,27 @@ func (m *Metadata[F, C]) ModuleRegistry() common.Modules {
 // LookupArrayFieldName will give you the field name which holds the array of objects in provider response.
 // Ex: CustomerSubscriptions is located under field name subscriptions => { "subscriptions": [{},{},{}] }.
 func (m *Metadata[F, C]) LookupArrayFieldName(moduleID common.ModuleID, objectName string) string {
-	moduleID = moduleIdentifier(moduleID)
-
-	fieldName := m.Modules[moduleID].Objects[objectName].ResponseKey
+	fieldName, _ := m.FindArrayFieldName(moduleID, objectName)
 
 	return fieldName
+}
+
+func (m *Metadata[F, C]) FindArrayFieldName(moduleID common.ModuleID, objectName string) (string, bool) {
+	moduleID = moduleIdentifier(moduleID)
+
+	module, ok := m.Modules[moduleID]
+	if !ok {
+		return "", false
+	}
+
+	object, ok := module.Objects[objectName]
+	if !ok {
+		return "", false
+	}
+
+	fieldName := object.ResponseKey
+
+	return fieldName, true
 }
 
 func (m *Module[F, C]) withPath(path string) {

@@ -130,8 +130,9 @@ func ParseJSONResponse(res *http.Response, body []byte) (*JSONHTTPResponse, erro
 		}, nil
 	}
 
-	// Ensure the response is JSON
-	if err := EnsureContentType(`^application/.*json$`, res, false); err != nil {
+	// Ensure the response is JSON.
+	// Starts with application ends with JSON which may be followed by the version.
+	if err := EnsureContentType(`^application/.*json([-0-9.])*$`, res, false); err != nil {
 		return nil, err
 	}
 

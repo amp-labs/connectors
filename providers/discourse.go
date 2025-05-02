@@ -37,5 +37,13 @@ func init() {
 				LogoURL: " https://res.cloudinary.com/dycvts6vp/image/upload/v1734557138/media/discourse.org_1734557138.svg",
 			},
 		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					Name:        "workspace",
+					DisplayName: "Your domain",
+				},
+			},
+		},
 	})
 }

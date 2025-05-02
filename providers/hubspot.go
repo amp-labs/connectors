@@ -56,5 +56,18 @@ func init() {
 			},
 		},
 		PostAuthInfoNeeded: true,
+
+		// IMPORTANT: The fetching of this metadata is added as a special case in the server,
+		// because it requires the access token in the path, which is not really possible to
+		// do with the current set up. If we can find a way to do this with the current interface,
+		// we should remove the special case in the server, and define the GetPostAuthInfo method
+		// as a method on the Connector struct.
+		Metadata: &ProviderMetadata{
+			PostAuthentication: []MetadataItemPostAuthentication{
+				{
+					Name: "ownerId",
+				},
+			},
+		},
 	})
 }
