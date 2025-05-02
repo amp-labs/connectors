@@ -18,6 +18,14 @@ func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, path)
 }
 
+func (c *Connector) getWriteURL(objectName string) (*urlbuilder.URL, error) {
+	return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, objectName)
+}
+
+func (c *Connector) getDeleteURL(objectName, recordID string) (*urlbuilder.URL, error) {
+	return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, objectName, recordID)
+}
+
 func (c *Connector) constructReadURL(params common.ReadParams) (*urlbuilder.URL, error) {
 	if len(params.NextPage) != 0 {
 		return urlbuilder.New(params.NextPage.String())
