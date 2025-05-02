@@ -71,6 +71,13 @@ func init() { // nolint:funlen
 			Subscribe: false,
 			Write:     true,
 		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					Name: "workspace",
+				},
+			},
+		},
 	})
 
 	// BLOCKED: refresh token seems to be one-time use.
@@ -110,6 +117,13 @@ func init() { // nolint:funlen
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
+		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					Name: "workspace",
+				},
+			},
 		},
 	})
 }

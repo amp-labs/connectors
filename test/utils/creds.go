@@ -12,8 +12,11 @@ import (
 
 func MustCreateProvCredJSON(filePath string,
 	withRequiredAccessToken, withRequiredWorkspace bool,
+	customFields ...credscanning.Field,
 ) *credscanning.ProviderCredentials {
-	reader, err := credscanning.NewJSONProviderCredentials(filePath, withRequiredAccessToken, withRequiredWorkspace)
+	reader, err := credscanning.NewJSONProviderCredentials(
+		filePath, withRequiredAccessToken, withRequiredWorkspace, customFields...,
+	)
 	if err != nil {
 		Fail("json creds file error", "error", err)
 	}

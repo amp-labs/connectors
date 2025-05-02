@@ -20,7 +20,6 @@ func init() {
 			Subscribe: false,
 			Write:     false,
 		},
-		PostAuthInfoNeeded: false,
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722460381/media/braintree_1722460380.png",

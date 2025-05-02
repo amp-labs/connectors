@@ -19,7 +19,6 @@ func init() {
 			Subscribe: false,
 			Write:     false,
 		},
-		PostAuthInfoNeeded: false,
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722460983/media/chargeover_1722460983.jpg",
@@ -28,6 +27,13 @@ func init() {
 			Regular: &MediaTypeRegular{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722460983/media/chargeover_1722460983.jpg",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722461005/media/chargeover_1722461004.svg",
+			},
+		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					Name: "workspace",
+				},
 			},
 		},
 	})

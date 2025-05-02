@@ -22,6 +22,7 @@ type Factory struct {
 	Debug            bool
 	Registry         scanning.Registry
 	CredsFilePath    string
+	Substitutions    map[string]string
 }
 
 type ClientAuthParams struct {
