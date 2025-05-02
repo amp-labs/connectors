@@ -94,6 +94,18 @@ type ApiKeyOptsQuery struct {
 	Name string `json:"name"`
 }
 
+// AuthHealthCheck A URL to check the health of a provider's credentials. It's used to see if the credentials are valid and if the provider is reachable.
+type AuthHealthCheck struct {
+	// Method The HTTP method to use for the health check. If not set, defaults to GET.
+	Method string `json:"method,omitempty"`
+
+	// SuccessStatusCodes The HTTP status codes that indicate a successful health check. If not set, defaults to 200 and 204.
+	SuccessStatusCodes []int `json:"successStatusCodes,omitempty"`
+
+	// Url a no-op URL to check the health of the credentials. The URL MUST not mutate any state. If the provider doesn't have such an endpoint, then don't provide credentialsHealthCheck.
+	Url string `json:"url"`
+}
+
 // AuthType The type of authentication required by the provider.
 type AuthType string
 
@@ -224,6 +236,9 @@ type Provider = string
 type ProviderInfo struct {
 	// ApiKeyOpts Configuration for API key. Must be provided if authType is apiKey.
 	ApiKeyOpts *ApiKeyOpts `json:"apiKeyOpts,omitempty"`
+
+	// AuthHealthCheck A URL to check the health of a provider's credentials. It's used to see if the credentials are valid and if the provider is reachable.
+	AuthHealthCheck *AuthHealthCheck `json:"authHealthCheck,omitempty"`
 
 	// AuthType The type of authentication required by the provider.
 	AuthType AuthType `json:"authType" validate:"required"`
