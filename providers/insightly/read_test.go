@@ -20,6 +20,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseLeadsFirstPage := testutils.DataFromFile(t, "read/leads/1-first-page.json")
 	responseLeadsSecondPage := testutils.DataFromFile(t, "read/leads/2-second-page.json")
 	responseLeadsLastPage := testutils.DataFromFile(t, "read/leads/3-last-page.json")
+	responseContacts := testutils.DataFromFile(t, "read/contacts/list.json")
+	responseFruits := testutils.DataFromFile(t, "read/fruits-custom-object/list.json")
 
 	tests := []testroutines.Read{
 		{
@@ -176,6 +178,122 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Rows: 2,
 				NextPage: testroutines.URLTestServer +
 					"/v3.1/Leads/Search?skip=500&top=500&updated_after_utc=2024-03-04T08:22:56Z",
+				Done: false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Contacts with custom fields",
+			Input: common.ReadParams{
+				ObjectName: "Contacts",
+				Fields:     connectors.Fields("CONTACT_ID", "EMAIL_ADDRESS", "Hobby__c", "Interests__c"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.PathSuffix("/v3.1/Contacts/Search"),
+				Then:  mockserver.Response(http.StatusOK, responseContacts),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"email_address": "pamela@mail.com",
+						"contact_id":    float64(366638973),
+						"hobby__c":      "Skiing",
+						"interests__c":  "Music;Sports;Travel",
+					},
+					Raw: map[string]any{
+						"FIRST_NAME": "Pamela",
+						"CUSTOMFIELDS": []any{
+							map[string]any{
+								"FIELD_NAME":      "Hobby__c",
+								"FIELD_VALUE":     "Skiing",
+								"CUSTOM_FIELD_ID": "Hobby__c",
+							},
+							map[string]any{
+								"FIELD_NAME":      "Interests__c",
+								"FIELD_VALUE":     "Music;Sports;Travel",
+								"CUSTOM_FIELD_ID": "Interests__c",
+							},
+							map[string]any{
+								"FIELD_NAME":      "Newsletter_Subscription__c",
+								"FIELD_VALUE":     true,
+								"CUSTOM_FIELD_ID": "Newsletter_Subscription__c",
+							},
+							map[string]any{
+								"FIELD_NAME":      "Preferred_Contact_Method__c",
+								"FIELD_VALUE":     "SMS",
+								"CUSTOM_FIELD_ID": "Preferred_Contact_Method__c",
+							},
+						},
+					},
+				}},
+				NextPage: testroutines.URLTestServer +
+					"/v3.1/Contacts/Search?skip=500&top=500",
+				Done: false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Custom object fruits with custom fields",
+			Input: common.ReadParams{
+				ObjectName: "Fruit__c",
+				Fields:     connectors.Fields("RECORD_NAME", "RECORD_ID", "Color__c", "Weight__c"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.PathSuffix("/v3.1/Fruit__c/Search"),
+				Then:  mockserver.Response(http.StatusOK, responseFruits),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"record_id":   float64(54840676),
+						"record_name": "Apple",
+						"color__c":    "Green",
+						"weight__c":   float64(12),
+					},
+					Raw: map[string]any{
+						"CUSTOMFIELDS": []any{
+							map[string]any{
+								"FIELD_NAME":      "Color__c",
+								"FIELD_VALUE":     "Green",
+								"CUSTOM_FIELD_ID": "Color__c",
+							},
+							map[string]any{
+								"FIELD_NAME":      "Weight__c",
+								"FIELD_VALUE":     float64(12),
+								"CUSTOM_FIELD_ID": "Weight__c",
+							},
+						},
+					},
+				}, {
+					Fields: map[string]any{
+						"record_id":   float64(54840682),
+						"record_name": "Banana",
+						"color__c":    nil,
+						"weight__c":   3.2,
+					},
+					Raw: map[string]any{
+						"CUSTOMFIELDS": []any{
+							map[string]any{
+								"FIELD_NAME":      "Color__c",
+								"FIELD_VALUE":     nil,
+								"CUSTOM_FIELD_ID": "Color__c",
+							},
+							map[string]any{
+								"FIELD_NAME":      "Weight__c",
+								"FIELD_VALUE":     3.2,
+								"CUSTOM_FIELD_ID": "Weight__c",
+							},
+						},
+					},
+				}},
+				NextPage: testroutines.URLTestServer +
+					"/v3.1/Fruit__c/Search?skip=500&top=500",
 				Done: false,
 			},
 			ExpectedErrs: nil,
