@@ -74,8 +74,7 @@ func makeNextRecordsURL(params common.ReadParams, count int) func(*ajson.Node) (
 func supportedOperations() components.EndpointRegistryInput {
 	// We support reading everything under schema.json, so we get all the objects and join it into a pattern.
 	readSupport := []string{usersObjectName, transcriptsObjectName, bitesObjectName}
-	writeSupport := []string{objectNameLiveMeeting, objectNameCreateBite,
-		objectNameSetUserRole, objectNameUploadAudio, objectNameUpdateMeetingTitle}
+	writeSupport := []string{objectNameLiveMeeting, objectNameCreateBite, objectNameSetUserRole, objectNameUploadAudio, objectNameUpdateMeetingTitle} // nolint
 
 	return components.EndpointRegistryInput{
 		common.ModuleRoot: {
