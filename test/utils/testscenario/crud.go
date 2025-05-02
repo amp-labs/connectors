@@ -73,6 +73,8 @@ func ValidateCreateUpdateDelete[CP, UP any](ctx context.Context, conn ConnectorC
 	object := searchObject(res, search.Key, search.Value)
 	objectID := getRecordIdentifierValue(object, suite.RecordIdentifierKey)
 
+	fmt.Println("Object record identifier is", objectID)
+
 	fmt.Println("Updating some object properties")
 	updateObject(ctx, conn, objectName, objectID, &updatePayload)
 	fmt.Println("Validate object has changed accordingly")
