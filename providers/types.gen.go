@@ -335,12 +335,15 @@ type TokenMetadataFields struct {
 
 // TokenMetadataFieldsOtherFields Additional fields to extract and transform from the token response
 type TokenMetadataFieldsOtherFields = []struct {
+	// Capture A regex expression to capture the value that we need from the path
+	Capture string `json:"capture,omitempty"`
+
 	// DisplayName The human-readable name of the field
 	DisplayName string `json:"displayName"`
 
-	// JqValueSelector jq expression that extracts and transforms the value from the token response
-	JqValueSelector string `json:"jqValueSelector"`
-
 	// Name The internal name of the field
 	Name string `json:"name"`
+
+	// Path The path to the field in the token response (accepts dot notation for nested fields)
+	Path string `json:"path"`
 }
