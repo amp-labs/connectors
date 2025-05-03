@@ -335,7 +335,7 @@ type TokenMetadataFields struct {
 
 // TokenMetadataFieldsOtherFields Additional fields to extract and transform from the token response
 type TokenMetadataFieldsOtherFields = []struct {
-	// Capture A regex expression to capture the value that we need from the path
+	// Capture A regex expression to capture the value that we need from the path. There must be only one capture group named 'result' in the expression. If not provided, will cause an error.
 	Capture string `json:"capture,omitempty"`
 
 	// DisplayName The human-readable name of the field
