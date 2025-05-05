@@ -95,7 +95,7 @@ func (c *Connector) handleActivitiesAPI(ctx context.Context, url *urlbuilder.URL
 	// For the first call (no NextPage token) with a Since timestamp,
 	// fetch a paging token to ensure pagination starts from the correct time.
 	// Then, append the token to the URL for subsequent pagination.
-	if params.ObjectName == activities && !params.Since.IsZero() {
+	if params.ObjectName == activities {
 		if params.Filter == "" {
 			return ErrFilterInvalid
 		}
@@ -128,6 +128,12 @@ func (c *Connector) addActivityNextParam(ctx context.Context, url *urlbuilder.UR
 		url.WithQueryParam(nextPageQuery, params.NextPage.String())
 
 		return nil
+	}
+
+	// Manually setting the since timestamp to `1970-01-01` for retrieving
+	// all lead activities in the instance.
+	if params.Since.IsZero() {
+		params.Since = time.Unix(0, 0).UTC()
 	}
 
 	// Get initial paging token for first request
