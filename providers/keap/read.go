@@ -17,7 +17,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	if !supportedObjectsByRead[c.Module.ID].Has(config.ObjectName) {
+	if !supportedObjectsByRead[c.moduleID].Has(config.ObjectName) {
 		return nil, common.ErrOperationNotSupportedForObject
 	}
 
@@ -28,7 +28,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 
 	// Pagination doesn't automatically attach query params which were used for the first page.
 	// Therefore, enforce request of "custom_fields" if object is applicable.
-	if objectsWithCustomFields[c.Module.ID].Has(config.ObjectName) {
+	if objectsWithCustomFields[c.moduleID].Has(config.ObjectName) {
 		// Request custom fields.
 		url.WithQueryParam("optional_properties", "custom_fields")
 	}
@@ -44,8 +44,8 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	}
 
 	return common.ParseResult(res,
-		makeGetRecords(c.Module.ID, config.ObjectName),
-		makeNextRecordsURL(c.Module.ID),
+		makeGetRecords(c.moduleID, config.ObjectName),
+		makeNextRecordsURL(c.moduleID),
 		common.MakeMarshaledDataFunc(c.attachReadCustomFields(customFields)),
 		config.Fields,
 	)
@@ -63,13 +63,13 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 		return nil, err
 	}
 
-	if c.Module.ID == providers.ModuleKeapV1 {
+	if c.moduleID == providers.ModuleKeapV1 {
 		url.WithQueryParam("limit", strconv.Itoa(DefaultPageSize))
 
 		if !config.Since.IsZero() {
 			url.WithQueryParam("since", datautils.Time.FormatRFC3339inUTCWithMilliseconds(config.Since))
 		}
-	} else if c.Module.ID == providers.ModuleKeapV2 {
+	} else if c.moduleID == providers.ModuleKeapV2 {
 		// Since parameter is not applicable to objects in Module V2.
 		if config.ObjectName == "contact_link_types" {
 			url.WithQueryParam("pageSize", strconv.Itoa(DefaultPageSize))
@@ -87,12 +87,12 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 func (c *Connector) requestCustomFields(
 	ctx context.Context, objectName string,
 ) (map[int]modelCustomField, error) {
-	if !objectsWithCustomFields[c.Module.ID].Has(objectName) {
+	if !objectsWithCustomFields[c.moduleID].Has(objectName) {
 		// This object doesn't have custom fields, we are done.
 		return map[int]modelCustomField{}, nil
 	}
 
-	modulePath := metadata.Schemas.LookupModuleURLPath(c.Module.ID)
+	modulePath := metadata.Schemas.LookupModuleURLPath(c.moduleID)
 
 	url, err := c.getURL(modulePath, objectName, "model")
 	if err != nil {
