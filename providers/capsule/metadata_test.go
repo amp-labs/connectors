@@ -88,7 +88,7 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 		return nil, err
 	}
 
-	connector.SetBaseURL(serverURL)
+	testroutines.OverrideURLOrigin(&connector.URLManager, connector.ProviderInfo(), serverURL)
 
 	return connector, nil
 }

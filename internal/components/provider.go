@@ -60,3 +60,8 @@ func (p *ProviderContext) ProviderInfo() *providers.ProviderInfo {
 func (p *ProviderContext) Module() common.ModuleID {
 	return p.moduleID
 }
+
+func (p *ProviderContext) OverrideURL(newURL string) {
+	p.providerInfo.BaseURL = newURL
+	p.moduleInfo.BaseURL = newURL
+}

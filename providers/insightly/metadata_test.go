@@ -87,8 +87,7 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 		return nil, err
 	}
 
-	// for testing we want to redirect calls to our mock server
-	connector.SetBaseURL(serverURL)
+	testroutines.OverrideURLOrigin(&connector.URLManager, connector.ProviderInfo(), serverURL)
 
 	return connector, nil
 }
