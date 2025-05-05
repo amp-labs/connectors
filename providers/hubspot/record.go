@@ -17,8 +17,6 @@ var (
 	getRecordSupportedObjectsSet = datautils.NewStringSet(
 		"company", "contact", "deal", "ticket", "line_item", "product",
 	)
-
-	errGerRecordNotSupportedForObject = errors.New("getRecord is not supproted for the object")
 )
 
 /*
@@ -45,7 +43,7 @@ func (c *Connector) GetRecordsByIds(
 
 	singularObjName := naming.NewSingularString(objectName).String()
 	if !getRecordSupportedObjectsSet.Has(singularObjName) {
-		return nil, fmt.Errorf("%w %s", errGerRecordNotSupportedForObject, objectName)
+		return nil, fmt.Errorf("%w %s", common.ErrGetRecordNotSupportedForObject, objectName)
 	}
 
 	inputs := make([]map[string]any, len(ids))
