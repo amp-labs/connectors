@@ -21,6 +21,22 @@ type parameters struct {
 	paramsbuilder.Metadata
 }
 
+func newParams(opts []Option) (*common.Parameters, error) { // nolint:unused
+	oldParams, err := paramsbuilder.Apply(parameters{}, opts,
+		WithModule(common.ModuleRoot), // The module is resolved on behalf of the user if the option is missing.
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &common.Parameters{
+		Module:              oldParams.Module.Selection.ID,
+		AuthenticatedClient: oldParams.Client.Caller.Client,
+		Workspace:           oldParams.Workspace.Name,
+		Metadata:            oldParams.Metadata.Map,
+	}, nil
+}
+
 func (p parameters) ValidateParams() error {
 	return errors.Join(
 		p.Client.ValidateParams(),
