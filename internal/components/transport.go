@@ -4,7 +4,6 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/substitutions/catalogreplacer"
-	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -12,10 +11,9 @@ import (
 // TODO: Add support for XML, CSV, etc.
 type Transport struct {
 	ProviderContext
-	json *common.JSONHTTPClient
+	URLManager
 
-	ProviderURLBuilder urlbuilder.Template
-	ModuleURLBuilder   urlbuilder.Template
+	json *common.JSONHTTPClient
 }
 
 // NewTransport
@@ -33,14 +31,12 @@ func NewTransport(
 		return nil, err
 	}
 
-	providerBaseURL := providerContext.providerInfo.BaseURL
-	moduleBaseURL := providerContext.moduleInfo.BaseURL
-
 	return &Transport{
 		ProviderContext: *providerContext,
+		URLManager:      *NewURLManager(providerContext.providerInfo, providerContext.moduleInfo),
 		json: &common.JSONHTTPClient{
 			HTTPClient: &common.HTTPClient{
-				Base:   providerBaseURL,
+				Base:   providerContext.providerInfo.BaseURL,
 				Client: params.AuthenticatedClient,
 
 				// ErrorHandler is set to a default, but can be overridden using options.
@@ -50,20 +46,11 @@ func NewTransport(
 			},
 			ErrorPostProcessor: common.ErrorPostProcessor{},
 		},
-		ProviderURLBuilder: *urlbuilder.NewTemplate(providerBaseURL),
-		ModuleURLBuilder:   *urlbuilder.NewTemplate(moduleBaseURL),
 	}, nil
 }
 
 func (t *Transport) SetErrorHandler(handler common.ErrorHandler) {
 	t.json.HTTPClient.ErrorHandler = handler
-}
-
-func (t *Transport) OverrideURL(newURL string) {
-	t.ProviderContext.providerInfo.BaseURL = newURL
-	t.ProviderContext.moduleInfo.BaseURL = newURL
-	t.ProviderURLBuilder.OverrideURL(newURL)
-	t.ModuleURLBuilder.OverrideURL(newURL)
 }
 
 func (t *Transport) JSONHTTPClient() *common.JSONHTTPClient {
