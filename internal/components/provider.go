@@ -13,7 +13,8 @@ import (
 type ProviderContext struct {
 	provider     providers.Provider
 	providerInfo *providers.ProviderInfo
-	module       common.ModuleID
+	moduleInfo   providers.ModuleInfo
+	moduleID     common.ModuleID
 }
 
 func NewProviderContext(
@@ -22,7 +23,14 @@ func NewProviderContext(
 	workspace string,
 	metadata map[string]string,
 ) (*ProviderContext, error) {
-	pctx := &ProviderContext{provider: provider}
+	if len(module) == 0 {
+		module = common.ModuleRoot
+	}
+
+	pctx := &ProviderContext{
+		provider: provider,
+		moduleID: module,
+	}
 
 	if metadata == nil {
 		metadata = make(map[string]string)
@@ -30,25 +38,23 @@ func NewProviderContext(
 
 	metadata[catalogreplacer.VariableWorkspace] = workspace
 
-	// TODO: Use module to get provider info
-	providerInfo, err := providers.ReadInfo(provider, paramsbuilder.NewCatalogVariables(metadata)...)
+	var err error
+
+	pctx.providerInfo, err = providers.ReadInfo(provider, paramsbuilder.NewCatalogVariables(metadata)...)
 	if err != nil {
 		return nil, err
 	}
 
-	pctx.providerInfo = providerInfo
-
-	if len(module) == 0 {
-		module = common.ModuleRoot
+	pctx.moduleInfo, err = pctx.providerInfo.ReadModuleInfo(module)
+	if err != nil {
+		return nil, err
 	}
-
-	pctx.module = module
 
 	return pctx, nil
 }
 
 func (p *ProviderContext) String() string {
-	return fmt.Sprintf("%v.Connector[%v]", p.provider, p.module)
+	return fmt.Sprintf("%v.Connector[%v]", p.provider, p.moduleID)
 }
 
 func (p *ProviderContext) Provider() providers.Provider {
@@ -60,5 +66,5 @@ func (p *ProviderContext) ProviderInfo() *providers.ProviderInfo {
 }
 
 func (p *ProviderContext) Module() common.ModuleID {
-	return p.module
+	return p.moduleID
 }
