@@ -45,5 +45,9 @@ func (t *Transport) SetBaseURL(newURL string) {
 	t.json.HTTPClient.Base = newURL
 }
 
+func (t *Transport) SetErrorHandler(handler common.ErrorHandler) {
+	t.HTTPClient().ErrorHandler = handler
+}
+
 func (t *Transport) JSONHTTPClient() *common.JSONHTTPClient { return t.json }
 func (t *Transport) HTTPClient() *common.HTTPClient         { return t.json.HTTPClient }
