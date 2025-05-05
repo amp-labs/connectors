@@ -1,6 +1,10 @@
 package providers
 
-import "github.com/amp-labs/connectors/common"
+import (
+	"net/http"
+
+	"github.com/amp-labs/connectors/common"
+)
 
 const Hubspot Provider = "hubspot"
 
@@ -15,6 +19,11 @@ func init() {
 		DisplayName: "HubSpot",
 		AuthType:    Oauth2,
 		BaseURL:     "https://api.hubapi.com",
+		AuthHealthCheck: &AuthHealthCheck{
+			Method:             http.MethodGet,
+			SuccessStatusCodes: []int{http.StatusOK},
+			Url:                "https://api.hubapi.com/integrations/v1/me",
+		},
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://app.hubspot.com/oauth/authorize",

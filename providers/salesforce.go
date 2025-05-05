@@ -1,5 +1,7 @@
 package providers
 
+import "net/http"
+
 const Salesforce Provider = "salesforce"
 
 func init() {
@@ -8,6 +10,11 @@ func init() {
 		DisplayName: "Salesforce",
 		AuthType:    Oauth2,
 		BaseURL:     "https://{{.workspace}}.my.salesforce.com",
+		AuthHealthCheck: &AuthHealthCheck{
+			Method:             http.MethodGet,
+			SuccessStatusCodes: []int{http.StatusOK},
+			Url:                "https://{{.workspace}}.my.salesforce.com/services/oauth2/userinfo",
+		},
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://{{.workspace}}.my.salesforce.com/services/oauth2/authorize",
