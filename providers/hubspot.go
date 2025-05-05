@@ -13,7 +13,7 @@ const (
 	ModuleHubspotCRM common.ModuleID = "CRM"
 )
 
-func init() {
+func init() { //nolint:funlen
 	// Hubspot configuration
 	SetInfo(Hubspot, ProviderInfo{
 		DisplayName: "HubSpot",
