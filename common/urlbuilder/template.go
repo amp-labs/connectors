@@ -8,14 +8,14 @@ import (
 // Template is a URL factory that builds URLs by resolving named parts.
 // It supports both constant and dynamic variables based on API requirements.
 type Template struct {
-	urlTemplate       string
+	Format            string
 	constantVariables []catalogreplacer.CatalogVariable
 }
 
 // NewTemplate creates new Template, which is a URL factory.
-func NewTemplate(urlTemplate string, catalogVars ...catalogreplacer.CatalogVariable) *Template {
+func NewTemplate(urlFormat string, catalogVars ...catalogreplacer.CatalogVariable) *Template {
 	return &Template{
-		urlTemplate:       urlTemplate,
+		Format:            urlFormat,
 		constantVariables: catalogVars,
 	}
 }
@@ -37,7 +37,7 @@ func (t *Template) DynamicURL(dynamicVariables map[string]string, path ...string
 	// Apply substitutions to the URL template.
 	// The operation requires a struct, so the string is wrapped accordingly.
 	template := &struct{ Data string }{
-		Data: t.urlTemplate,
+		Data: t.Format,
 	}
 
 	if err := registry.Apply(template); err != nil {
@@ -47,7 +47,19 @@ func (t *Template) DynamicURL(dynamicVariables map[string]string, path ...string
 	return New(template.Data, path...)
 }
 
-// OverrideURL intended for enabling testing.
-func (t *Template) OverrideURL(urlTemplate string) {
-	t.urlTemplate = urlTemplate
+// RawURL is like URL but joins additional path segments as-is, without url encoding of path.
+func (t *Template) RawURL(path ...string) (string, error) {
+	return t.RawDynamicURL(nil, path...)
+}
+
+// RawDynamicURL behaves like DynamicURL but preserves the raw path segments.
+// The path is treated as a list of opaque strings.
+// No URL encoding or transformation is performed. Only proper slash separation is ensured.
+func (t *Template) RawDynamicURL(dynamicVariables map[string]string, path ...string) (string, error) {
+	url, err := t.DynamicURL(dynamicVariables)
+	if err != nil {
+		return "", err
+	}
+
+	return joinURL(url.String(), path...), nil
 }

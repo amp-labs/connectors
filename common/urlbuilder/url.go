@@ -84,6 +84,10 @@ func (u *URL) AddEncodingExceptions(exceptions map[string]string) {
 	}
 }
 
+func (u *URL) Path() string {
+	return u.delegate.Path
+}
+
 // ToURL relies on String method.
 func (u *URL) ToURL() (*url.URL, error) {
 	// Current URL wrapper will be realised as equivalent to url.URL type.
