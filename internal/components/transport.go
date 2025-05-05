@@ -2,6 +2,8 @@ package components
 
 import (
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/paramsbuilder"
+	"github.com/amp-labs/connectors/common/substitutions/catalogreplacer"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -18,7 +20,9 @@ func NewTransport(
 	provider providers.Provider,
 	params common.Parameters,
 ) (*Transport, error) {
-	providerContext, err := NewProviderContext(provider, params.Module, params.Workspace, params.Metadata)
+	variables := createCatalogVariables(params)
+
+	providerContext, err := NewProviderContext(provider, params.Module, variables)
 	if err != nil {
 		return nil, err
 	}
@@ -51,3 +55,14 @@ func (t *Transport) SetErrorHandler(handler common.ErrorHandler) {
 
 func (t *Transport) JSONHTTPClient() *common.JSONHTTPClient { return t.json }
 func (t *Transport) HTTPClient() *common.HTTPClient         { return t.json.HTTPClient }
+
+func createCatalogVariables(params common.Parameters) []catalogreplacer.CatalogVariable {
+	metadata := params.Metadata
+	if metadata == nil {
+		metadata = make(map[string]string)
+	}
+
+	metadata[catalogreplacer.VariableWorkspace] = params.Workspace
+
+	return paramsbuilder.NewCatalogVariables(metadata)
+}
