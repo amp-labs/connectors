@@ -15,7 +15,7 @@ import (
 //nolint:gochecknoglobals
 var (
 	getRecordSupportedObjectsSet = datautils.NewStringSet(
-		"company", "contact", "deal", "ticket", "line_item", "product",
+		"company", "contact", "deal", "ticket", "line_item", "product", "user",
 	)
 )
 
