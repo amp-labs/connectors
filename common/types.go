@@ -116,6 +116,8 @@ var (
 
 	// ErrResolvingCustomFields is returned when custom fields cannot be retrieved for Read or ListObjectMetadata.
 	ErrResolvingCustomFields = errors.New("cannot resolve custom fields")
+
+	ErrGetRecordNotSupportedForObject = errors.New("getRecord is not supported for the object")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.
