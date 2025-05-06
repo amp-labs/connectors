@@ -8,6 +8,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -21,6 +22,10 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 	errorTagBadRequest := testutils.DataFromFile(t, "write-tag-bad-request.json")
 	errorTagDuplicate := testutils.DataFromFile(t, "write-tag-conflict.json")
 	responseCreateTag := testutils.DataFromFile(t, "write-tag.json")
+
+	header := http.Header{
+		"revision": []string{string(providers.ModuleKlaviyo2024Oct15)},
+	}
 
 	tests := []testroutines.Write{
 		{
@@ -91,8 +96,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			Input: common.WriteParams{ObjectName: "campaigns", RecordData: make(map[string]any)},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentMIME("application/vnd.api+json"),
-				If:    mockcond.MethodPOST(),
-				Then:  mockserver.Response(http.StatusOK),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Header(header),
+				},
+				Then: mockserver.Response(http.StatusOK),
 			}.Server(),
 			Expected:     &common.WriteResult{Success: true},
 			ExpectedErrs: nil,
@@ -106,8 +114,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentMIME("application/vnd.api+json"),
-				If:    mockcond.MethodPATCH(),
-				Then:  mockserver.Response(http.StatusOK),
+				If: mockcond.And{
+					mockcond.MethodPATCH(),
+					mockcond.Header(header),
+				},
+				Then: mockserver.Response(http.StatusOK),
 			}.Server(),
 			Expected:     &common.WriteResult{Success: true},
 			ExpectedErrs: nil,
@@ -117,8 +128,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			Input: common.WriteParams{ObjectName: "tags", RecordData: make(map[string]any)},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentMIME("application/vnd.api+json"),
-				If:    mockcond.MethodPOST(),
-				Then:  mockserver.Response(http.StatusOK, responseCreateTag),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Header(header),
+				},
+				Then: mockserver.Response(http.StatusOK, responseCreateTag),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
