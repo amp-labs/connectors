@@ -18,7 +18,7 @@ import (
 func (c *Connector) requestCustomTicketFields(
 	ctx context.Context, objectName string,
 ) (map[int64]ticketField, error) {
-	if !objectsWithCustomFields[c.moduleID].Has(objectName) {
+	if !objectsWithCustomFields[c.Module.ID].Has(objectName) {
 		// This object doesn't have custom fields, we are done.
 		return map[int64]ticketField{}, nil
 	}

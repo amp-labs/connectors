@@ -11,10 +11,9 @@ import (
 const apiVersion = "/v2"
 
 type Connector struct {
-	BaseURL    string
-	Client     *common.JSONHTTPClient
-	moduleInfo providers.ModuleInfo
-	moduleID   common.ModuleID
+	BaseURL string
+	Client  *common.JSONHTTPClient
+	Module  common.Module
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
@@ -27,15 +26,10 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		Client: &common.JSONHTTPClient{
 			HTTPClient: params.Client.Caller,
 		},
-		moduleID: params.Module.Selection.ID,
+		Module: params.Selection,
 	}
 
 	providerInfo, err := providers.ReadInfo(conn.Provider())
-	if err != nil {
-		return nil, err
-	}
-
-	conn.moduleInfo, err = providerInfo.ReadModuleInfo(conn.moduleID)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +40,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 }
 
 func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
-	path, err := metadata.Schemas.LookupURLPath(c.moduleID, objectName)
+	path, err := metadata.Schemas.LookupURLPath(c.Module.ID, objectName)
 	if err != nil {
 		return nil, err
 	}

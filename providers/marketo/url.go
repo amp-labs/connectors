@@ -54,7 +54,7 @@ func (c *Connector) constructReadURL(ctx context.Context, params common.ReadPara
 	}
 
 	// The only objects in Assets API supporting this are: Emails, Programs, SmartCampaigns,SmartLists
-	if !params.Since.IsZero() && c.moduleID == providers.ModuleMarketoAssets {
+	if !params.Since.IsZero() && c.Module.ID == providers.ModuleMarketoAssets {
 		fmtTime := params.Since.Format(time.RFC3339)
 		url.WithQueryParam(earliestUpdatedQuery, fmtTime)
 		url.WithQueryParam(latestUpdatedAtQuery, time.Now().Format(time.RFC3339))
