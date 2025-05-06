@@ -55,9 +55,14 @@ func (c *Connector) GetRecordsByIds(
 
 	pluralObjectName := naming.NewPluralString(objectName).String()
 
-	u, err := c.getBatchRecordsURL(pluralObjectName, associations)
+	// Batch records URL.
+	url, err := c.ModuleAPI.URL("objects", pluralObjectName, "batch", "read")
 	if err != nil {
 		return nil, err
+	}
+
+	if len(associations) != 0 {
+		url.WithQueryParam("associations", strings.Join(associations, ","))
 	}
 
 	body := map[string]any{
@@ -65,7 +70,7 @@ func (c *Connector) GetRecordsByIds(
 		"properties": fields,
 	}
 
-	resp, err := c.Client.Post(ctx, u, body)
+	resp, err := c.Client.Post(ctx, url.String(), body)
 	if err != nil {
 		return nil, err
 	}
@@ -81,14 +86,4 @@ func (c *Connector) GetRecordsByIds(
 	}
 
 	return c.getDataMarshaller(ctx, objectName, associations)(records, fields)
-}
-
-func (c *Connector) getBatchRecordsURL(objectName string, associations []string) (string, error) {
-	relativePath := strings.Join([]string{"/objects", objectName, "batch", "read"}, "/")
-
-	if len(associations) > 0 {
-		return c.getURL(relativePath, "associations", strings.Join(associations, ","))
-	} else {
-		return c.getURL(relativePath)
-	}
 }
