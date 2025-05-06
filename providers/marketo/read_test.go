@@ -8,6 +8,7 @@ import (
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -48,9 +49,10 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Zero records response",
 			Input: common.ReadParams{ObjectName: "smartcampaigns", Fields: connectors.Fields("description", "id", "name")},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, zeroRecords),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.PathSuffix("/rest/v1/smartcampaigns.json"),
+				Then:  mockserver.Response(http.StatusOK, zeroRecords),
 			}.Server(),
 			Expected:     &common.ReadResult{Rows: 0, Data: []common.ReadResultRow{}, Done: true},
 			ExpectedErrs: nil,
@@ -61,9 +63,10 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				ObjectName: "campaign",
 				Fields:     connectors.Fields("createdAt", "id", "name"),
 			},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, campaignsResponse),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.PathSuffix("/rest/v1/campaign.json"),
+				Then:  mockserver.Response(http.StatusOK, campaignsResponse),
 			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 1,
@@ -93,9 +96,10 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				ObjectName: "leads",
 				Fields:     connectors.Fields("email", "id"),
 			},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, leadsResponse),
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.PathSuffix("/rest/v1/leads.json"),
+				Then:  mockserver.Response(http.StatusOK, leadsResponse),
 			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 1,

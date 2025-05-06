@@ -14,8 +14,6 @@ import (
 )
 
 const ( //nolint:gochecknoglobals
-	// API path components.
-	restAPIPrefix   = "rest"
 	activities      = "activities"
 	leads           = "leads"
 	pagingURLSuffix = "activities/pagingtoken"
@@ -216,7 +214,7 @@ func (c *Connector) constructMetadataURL(objectName string) (*urlbuilder.URL, er
 		return c.getAPIURL(objectName)
 	}
 
-	return urlbuilder.New(c.BaseURL, path)
+	return c.RootAPI.URL(c.BaseURL, path)
 }
 
 func addFilteringIDQueries(urlbuilder *urlbuilder.URL, startIdx string) error {

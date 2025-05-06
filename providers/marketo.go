@@ -41,7 +41,7 @@ func init() {
 		DefaultModule: ModuleMarketoLeads,
 		Modules: &Modules{
 			ModuleMarketoAssets: {
-				BaseURL:     "https://{{.workspace}}.mktorest.com/asset/v1",
+				BaseURL:     "https://{{.workspace}}.mktorest.com/rest/asset/v1",
 				DisplayName: "Marketo (Assets)",
 				Support: Support{
 					Read:      true,
@@ -50,7 +50,7 @@ func init() {
 				},
 			},
 			ModuleMarketoLeads: {
-				BaseURL:     "https://{{.workspace}}.mktorest.com/v1",
+				BaseURL:     "https://{{.workspace}}.mktorest.com/rest/v1",
 				DisplayName: "Marketo (Leads)",
 				Support: Support{
 					Read:      true,
