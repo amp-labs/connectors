@@ -5,17 +5,18 @@ import (
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/keap/metadata"
 )
 
-const ApiPathPrefix = "crm/rest"
-
 type Connector struct {
-	BaseURL    string
 	Client     *common.JSONHTTPClient
 	moduleInfo providers.ModuleInfo
 	moduleID   common.ModuleID
+
+	*providers.ProviderInfo
+	*components.URLManager
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
@@ -31,53 +32,43 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		},
 		moduleID: params.Module.Selection.ID,
 	}
-
-	// Read provider info
-	providerInfo, err := providers.ReadInfo(conn.Provider())
-	if err != nil {
-		return nil, err
-	}
-
-	conn.moduleInfo, err = providerInfo.ReadModuleInfo(conn.moduleID)
-	if err != nil {
-		return nil, err
-	}
-
-	// connector and its client must mirror base url and provide its own error parser
-	conn.setBaseURL(providerInfo.BaseURL)
-	conn.Client.HTTPClient.ErrorHandler = interpreter.ErrorHandler{
+	httpClient.ErrorHandler = interpreter.ErrorHandler{
 		JSON: interpreter.NewFaultyResponder(errorFormats, nil),
 		HTML: &interpreter.DirectFaultyResponder{Callback: conn.interpretHTMLError},
 	}.Handle
+
+	conn.ProviderInfo, err = providers.ReadInfo(conn.Provider())
+	if err != nil {
+		return nil, err
+	}
+
+	conn.moduleInfo, err = conn.ProviderInfo.ReadModuleInfo(conn.moduleID)
+	if err != nil {
+		return nil, err
+	}
+
+	conn.URLManager = components.NewURLManager(conn.ProviderInfo, conn.moduleInfo)
 
 	return conn, nil
 }
 
 func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
-	path, err := metadata.Schemas.LookupURLPath(c.moduleID, objectName)
+	path, err := metadata.Schemas.FindURLPath(c.moduleID, objectName)
 	if err != nil {
 		return nil, err
 	}
 
-	return c.getURL(path)
+	return c.ModuleAPI.URL(path)
 }
 
 func (c *Connector) getWriteURL(objectName string) (*urlbuilder.URL, error) {
-	modulePath := metadata.Schemas.LookupModuleURLPath(c.moduleID)
 	path := objectNameToWritePath.Get(objectName)
 
-	return c.getURL(modulePath, path)
+	return c.ModuleAPI.URL(path)
 }
 
-func (c *Connector) getURL(args ...string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.BaseURL, append([]string{
-		ApiPathPrefix,
-	}, args...)...)
-}
-
-func (c *Connector) setBaseURL(newURL string) {
-	c.BaseURL = newURL
-	c.Client.HTTPClient.Base = newURL
+func (c *Connector) getCustomFieldsURL(objectName string) (*urlbuilder.URL, error) {
+	return c.ModuleAPI.URL(objectName, "model")
 }
 
 func (c *Connector) Provider() providers.Provider {

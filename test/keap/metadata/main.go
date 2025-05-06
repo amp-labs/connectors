@@ -22,7 +22,6 @@ func main() {
 	utils.SetupLogging()
 
 	conn := connTest.GetKeapConnector(ctx)
-	defer utils.Close(conn)
 
 	metadata, err := conn.ListObjectMetadata(ctx, []string{
 		objectName,

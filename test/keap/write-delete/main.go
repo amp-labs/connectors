@@ -37,7 +37,6 @@ func main() {
 	utils.SetupLogging()
 
 	conn := connTest.GetKeapConnector(ctx)
-	defer utils.Close(conn)
 
 	slog.Info("> TEST Create/Update/Delete contacts")
 	slog.Info("Creating contact")
