@@ -52,12 +52,10 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name:  "Successfully describe supported object",
 			Input: []string{"channels"},
-			Server: mockserver.Switch{
+			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				Cases: []mockserver.Case{{
-					If:   mockcond.PathSuffix("v1/channels.json"),
-					Then: mockserver.Response(http.StatusOK, channelsResponse),
-				}},
+				If:    mockcond.PathSuffix("v1/channels.json"),
+				Then:  mockserver.Response(http.StatusOK, channelsResponse),
 			}.Server(),
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
@@ -100,8 +98,7 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 		return nil, err
 	}
 
-	// for testing we want to redirect calls to our mock server
-	connector.setBaseURL(serverURL)
+	testroutines.OverrideURLOrigin(connector.URLManager, connector.ProviderInfo, serverURL)
 
 	return connector, nil
 }
