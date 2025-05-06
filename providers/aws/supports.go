@@ -17,10 +17,24 @@ func supportedOperations() components.EndpointRegistryInput {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(
 					datautils.MergeSets(
-						identitystore.ReadObjectCommands.KeySet(),
-						ssoadmin.ReadObjectCommands.KeySet(),
+						identitystore.Registry.GetReadObjects(),
+						ssoadmin.Registry.GetReadObjects(),
 					).List(), ",")),
 				Support: components.ReadSupport,
+			}, {
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(
+					datautils.MergeSets(
+						identitystore.Registry.GetWriteObjects(),
+						ssoadmin.Registry.GetWriteObjects(),
+					).List(), ",")),
+				Support: components.WriteSupport,
+			}, {
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(
+					datautils.MergeSets(
+						identitystore.Registry.GetDeleteObjects(),
+						ssoadmin.Registry.GetDeleteObjects(),
+					).List(), ",")),
+				Support: components.DeleteSupport,
 			},
 		},
 	}
