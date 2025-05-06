@@ -2,7 +2,6 @@ package hubspot
 
 import (
 	"context"
-	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
@@ -91,22 +90,4 @@ func (c *Connector) buildReadURL(config common.ReadParams) (string, error) {
 	// NB: The final slash is just to emulate prior behavior in earlier versions
 	// of this code. If it turns out to be unnecessary, remove it.
 	return c.getCRMObjectsReadURL(config)
-}
-
-// makeCRMObjectsQueryValues returns the query for the desired read operation.
-func makeCRMObjectsQueryValues(config common.ReadParams) []string {
-	var out []string
-
-	fields := config.Fields.List()
-	if len(fields) != 0 {
-		out = append(out, "properties", strings.Join(fields, ","))
-	}
-
-	if config.Deleted {
-		out = append(out, "archived", "true")
-	}
-
-	out = append(out, "limit", DefaultPageSize)
-
-	return out
 }
