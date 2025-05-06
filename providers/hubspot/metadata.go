@@ -137,12 +137,12 @@ func (c *Connector) getObjectMetadataFromCRMSearch(
 	})
 	if err != nil {
 		// Ignore an error and fallback to static schema.
-		return metadata.Schemas.SelectOne(c.moduleID, objectName)
+		return metadata.Schemas.SelectOne(c.Module.ID, objectName)
 	}
 
 	if len(readResult.Data) == 0 {
 		// Read returned no rows.
-		return metadata.Schemas.SelectOne(c.moduleID, objectName)
+		return metadata.Schemas.SelectOne(c.Module.ID, objectName)
 	}
 
 	fields := make(map[string]common.FieldMetadata)

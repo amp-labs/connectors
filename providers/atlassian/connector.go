@@ -16,9 +16,8 @@ import (
 var ErrMissingCloudId = errors.New("connector missing cloud id")
 
 type Connector struct {
-	Client     *common.JSONHTTPClient
-	moduleInfo providers.ModuleInfo
-	moduleID   common.ModuleID
+	Client *common.JSONHTTPClient
+	Module common.Module
 
 	// workspace is used to find cloud ID.
 	workspace string
@@ -41,7 +40,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 			HTTPClient: httpClient,
 		},
 		workspace: params.Workspace.Name,
-		moduleID:  params.Module.Selection.ID,
+		Module:    params.Module.Selection,
 	}
 
 	// Convert metadata map to model.
@@ -49,11 +48,6 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	conn.cloudId = authMetadata.CloudId
 
 	if err := conn.setProviderInfo(); err != nil {
-		return nil, err
-	}
-
-	conn.moduleInfo, err = conn.ProviderInfo.ReadModuleInfo(conn.moduleID)
-	if err != nil {
 		return nil, err
 	}
 
@@ -71,25 +65,23 @@ func (c *Connector) Provider() providers.Provider {
 }
 
 func (c *Connector) String() string {
-	return fmt.Sprintf("%s.Connector[%s]", c.Provider(), c.moduleID)
+	return fmt.Sprintf("%s.Connector[%s]", c.Provider(), c.Module)
 }
 
 // URL format follows structure applicable to Oauth2 Atlassian apps.
 // https://developer.atlassian.com/cloud/jira/platform/rest/v2/intro/#other-integrations
 func (c *Connector) getJiraRestApiURL(arg string) (*urlbuilder.URL, error) {
 	// In the case of JIRA / Atlassian Cloud, we use this path. In other cases, we fall back to the base path.
-	modulePath := supportedModules[c.moduleID].Path()
-
-	if c.moduleID == providers.ModuleAtlassianJira {
+	if c.Module.ID == providers.ModuleAtlassianJira {
 		cloudId, err := c.getCloudId()
 		if err != nil {
 			return nil, err
 		}
 
-		return urlbuilder.New(c.BaseURL, "ex/jira", cloudId, modulePath, arg)
+		return urlbuilder.New(c.BaseURL, "ex/jira", cloudId, c.Module.Path(), arg)
 	}
 
-	return urlbuilder.New(c.BaseURL, modulePath, arg)
+	return urlbuilder.New(c.BaseURL, c.Module.Path(), arg)
 }
 
 // URL allows to get list of sites associated with auth token.
@@ -123,7 +115,7 @@ func (c *Connector) setProviderInfo() error {
 	// When the module is Atlassian Connect, the base URL is different, so we need to override it.
 	// TODO: Replace options with substitution map in the future to avoid having to know
 	// which values need to be substituted.
-	if c.moduleID == providers.ModuleAtlassianJiraConnect {
+	if c.Module.ID == providers.ModuleAtlassianJiraConnect {
 		vars := []catalogreplacer.CatalogVariable{
 			&paramsbuilder.Workspace{Name: c.workspace},
 		}
