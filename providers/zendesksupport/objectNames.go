@@ -27,10 +27,10 @@ var objectsUnsupportedWrite = map[common.ModuleID]datautils.Set[string]{ //nolin
 
 var writeURLExceptions = map[common.ModuleID]datautils.Map[string, string]{ //nolint:gochecknoglobals
 	providers.ModuleZendeskTicketing: {
-		"attributes":    "/api/v2/routing/attributes",
-		"organizations": "/api/v2/organizations",
-		"tickets":       "/api/v2/tickets",
-		"users":         "/api/v2/users",
+		"attributes":    "/routing/attributes",
+		"organizations": "/organizations",
+		"tickets":       "/tickets",
+		"users":         "/users",
 	},
 	providers.ModuleZendeskHelpCenter: {},
 }
