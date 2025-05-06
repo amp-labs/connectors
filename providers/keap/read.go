@@ -9,7 +9,6 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/keap/metadata"
 )
 
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
@@ -92,9 +91,7 @@ func (c *Connector) requestCustomFields(
 		return map[int]modelCustomField{}, nil
 	}
 
-	modulePath := metadata.Schemas.LookupModuleURLPath(c.moduleID)
-
-	url, err := c.getURL(modulePath, objectName, "model")
+	url, err := c.getCustomFieldsURL(objectName)
 	if err != nil {
 		return nil, errors.Join(common.ErrResolvingCustomFields, err)
 	}

@@ -294,15 +294,10 @@ func (m *Metadata[F, C]) LookupURLPath(moduleID common.ModuleID, objectName stri
 		return "", err
 	}
 
-	fullPath := m.LookupModuleURLPath(moduleID) + path
+	moduleID = moduleIdentifier(moduleID)
+	fullPath := m.Modules[moduleID].Path + path
 
 	return fullPath, nil
-}
-
-func (m *Metadata[F, C]) LookupModuleURLPath(moduleID common.ModuleID) string {
-	moduleID = moduleIdentifier(moduleID)
-
-	return m.Modules[moduleID].Path
 }
 
 // ModuleRegistry returns the list of API modules from static schema.
