@@ -41,7 +41,7 @@ func init() {
 		DefaultModule: ModuleKeapV1,
 		Modules: &Modules{
 			ModuleKeapV1: {
-				BaseURL:     "https://api.infusionsoft.com/v1",
+				BaseURL:     "https://api.infusionsoft.com/crm/rest/v1",
 				DisplayName: "Keap Version 1",
 				Support: Support{
 					Read:      false,
@@ -50,7 +50,7 @@ func init() {
 				},
 			},
 			ModuleKeapV2: {
-				BaseURL:     "https://api.infusionsoft.com/v2",
+				BaseURL:     "https://api.infusionsoft.com/crm/rest/v2",
 				DisplayName: "Keap Version 2",
 				Support: Support{
 					Read:      false,
