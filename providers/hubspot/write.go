@@ -2,7 +2,6 @@ package hubspot
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
@@ -31,14 +30,15 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 
 	relativeURL := strings.Join([]string{"objects", config.ObjectName}, "/")
 
-	url, err := c.getURL(relativeURL)
+	url, err := c.ModuleAPI.URL(relativeURL)
 	if err != nil {
 		return nil, err
 	}
 
 	if config.RecordId != "" {
 		write = c.Client.Patch
-		url = fmt.Sprintf("%s/%s", url, config.RecordId)
+
+		url.AddPath(config.RecordId)
 	} else {
 		write = c.Client.Post
 	}
@@ -50,7 +50,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 	data["properties"] = config.RecordData
 	data["associations"] = config.Associations
 
-	json, err := write(ctx, url, data)
+	json, err := write(ctx, url.String(), data)
 	if err != nil {
 		return nil, err
 	}

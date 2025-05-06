@@ -3,15 +3,18 @@ package hubspot
 import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
+	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/providers"
 )
 
 // Connector is a Hubspot connector.
 type Connector struct {
-	BaseURL    string
 	Client     *common.JSONHTTPClient
 	moduleInfo providers.ModuleInfo
 	moduleID   common.ModuleID
+
+	*providers.ProviderInfo
+	*components.URLManager
 }
 
 // NewConnector returns a new Hubspot connector.
@@ -23,31 +26,27 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		return nil, err
 	}
 
-	// Read provider info & replace catalog variables with given substitutions, if any
-	providerInfo, err := providers.ReadInfo(providers.Hubspot)
-	if err != nil {
-		return nil, err
-	}
-
+	httpClient := params.Client.Caller
 	conn = &Connector{
 		Client: &common.JSONHTTPClient{
-			HTTPClient: params.Client.Caller,
+			HTTPClient: httpClient,
 		},
 		moduleID: params.Module.Selection.ID,
 	}
+	httpClient.ErrorHandler = conn.interpretError
 
-	conn.setBaseURL(providerInfo.BaseURL)
-	conn.Client.HTTPClient.ErrorHandler = conn.interpretError
-
-	conn.moduleInfo, err = providerInfo.ReadModuleInfo(conn.moduleID)
+	// Read provider info & replace catalog variables with given substitutions, if any
+	conn.ProviderInfo, err = providers.ReadInfo(providers.Hubspot)
 	if err != nil {
 		return nil, err
 	}
 
-	return conn, nil
-}
+	conn.moduleInfo, err = conn.ProviderInfo.ReadModuleInfo(conn.moduleID)
+	if err != nil {
+		return nil, err
+	}
 
-func (c *Connector) setBaseURL(newURL string) {
-	c.BaseURL = newURL
-	c.Client.HTTPClient.Base = newURL
+	conn.URLManager = components.NewURLManager(conn.ProviderInfo, conn.moduleInfo)
+
+	return conn, nil
 }
