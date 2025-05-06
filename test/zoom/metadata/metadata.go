@@ -20,7 +20,6 @@ func main() {
 	utils.SetupLogging()
 
 	conn := connTest.GetZoomConnector(ctx, providers.ModuleZoomUser)
-	defer utils.Close(conn)
 
 	metadata, err := conn.ListObjectMetadata(ctx, []string{"users", "groups"})
 
