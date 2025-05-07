@@ -254,3 +254,113 @@ func TestFromRawURL(t *testing.T) { // nolint:funlen
 		})
 	}
 }
+
+func TestEquality(t *testing.T) { // nolint:funlen
+	t.Parallel()
+
+	tests := []struct {
+		name  string
+		a     string
+		b     string
+		equal bool
+	}{
+		{
+			name:  "Query params in different order",
+			a:     "https://example.com/path?a=1&b=2",
+			b:     "https://example.com/path?b=2&a=1",
+			equal: true,
+		},
+		{
+			name:  "Repeated query params, same values different order",
+			a:     "https://example.com/path?a=1&a=2",
+			b:     "https://example.com/path?a=2&a=1",
+			equal: true,
+		},
+		{
+			name:  "Encoded vs unencoded space in query",
+			a:     "https://example.com/path?q=hello+world",
+			b:     "https://example.com/path?q=hello%20world",
+			equal: true,
+		},
+		{
+			name:  "Empty query vs missing query",
+			a:     "https://example.com/path?",
+			b:     "https://example.com/path",
+			equal: true,
+		},
+		{
+			name:  "Mixed order and encoding",
+			a:     "https://example.com/path?x=1&y=a%2Fb",
+			b:     "https://example.com/path?y=a%2Fb&x=1",
+			equal: true,
+		},
+		{
+			name:  "Case-insensitive host",
+			a:     "https://EXAMPLE.com/path?a=1",
+			b:     "https://example.com/path?a=1",
+			equal: true,
+		},
+		{
+			name:  "No query vs query with just question mark",
+			a:     "https://example.com/path",
+			b:     "https://example.com/path?",
+			equal: true,
+		},
+		{
+			name:  "Same key repeated multiple times in different order",
+			a:     "https://example.com/path?x=1&x=2",
+			b:     "https://example.com/path?x=2&x=1",
+			equal: true,
+		},
+		{
+			name:  "Same URL, different query param order, same fragment",
+			a:     "https://example.com/path?a=1&b=2#section1",
+			b:     "https://example.com/path?b=2&a=1#section1",
+			equal: true,
+		},
+		{
+			name:  "Symbol encoding",
+			a:     "https://example.com/reset?email=user@example.com",
+			b:     "https://example.com/reset?email=user%40example.com",
+			equal: true,
+		},
+		{
+			name:  "Different origin",
+			a:     "https://example.com",
+			b:     "https://canada.gov",
+			equal: false,
+		},
+		{
+			name:  "Different paths",
+			a:     "https://example.com/customers",
+			b:     "https://example.com/orders",
+			equal: false,
+		},
+		{
+			name:  "Different query param values",
+			a:     "https://example.com/orders?customer=Bob",
+			b:     "https://example.com/orders?customer=Alice",
+			equal: false,
+		},
+	}
+
+	for _, tt := range tests { // nolint:varnamelen
+		// nolint:varnamelen
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			firstURL, err := New(tt.a)
+			if err != nil {
+				t.Fatalf("%s: is an invalid test, check urls", tt.name)
+			}
+
+			secondURL, err := New(tt.b)
+			if err != nil {
+				t.Fatalf("%s: is an invalid test, check urls", tt.name)
+			}
+
+			output := firstURL.Equals(secondURL)
+			testutils.CheckOutput(t, tt.name, tt.equal, output)
+		})
+	}
+}

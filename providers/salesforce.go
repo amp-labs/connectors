@@ -1,5 +1,7 @@
 package providers
 
+import "net/http"
+
 const Salesforce Provider = "salesforce"
 
 func init() {
@@ -8,6 +10,11 @@ func init() {
 		DisplayName: "Salesforce",
 		AuthType:    Oauth2,
 		BaseURL:     "https://{{.workspace}}.my.salesforce.com",
+		AuthHealthCheck: &AuthHealthCheck{
+			Method:             http.MethodGet,
+			SuccessStatusCodes: []int{http.StatusOK},
+			Url:                "https://{{.workspace}}.my.salesforce.com/services/oauth2/userinfo",
+		},
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://{{.workspace}}.my.salesforce.com/services/oauth2/authorize",
@@ -40,6 +47,13 @@ func init() {
 			Regular: &MediaTypeRegular{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722470590/media/salesforce_1722470589.svg",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722470590/media/salesforce_1722470589.svg",
+			},
+		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					Name: "workspace",
+				},
 			},
 		},
 	})
