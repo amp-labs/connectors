@@ -25,12 +25,13 @@ func init() {
 				ConsumerRefField:  "id",
 				WorkspaceRefField: "instance_url",
 				ScopesField:       "scope",
-				OtherFields: []TokenMetadataFieldsOtherFields{
+				OtherFields: &TokenMetadataFieldsOtherFields{
 					{
 						Capture: `https://(?<result>[^.]+)\.my\.salesforce\.com`,
-						Name: "test",
-						Path: "instance_url",
+						Name:    "test",
+						Path:    "instance_url",
 					},
+				},
 			},
 		},
 		Support: Support{
