@@ -1,6 +1,7 @@
 package insightly
 
 import (
+	"net/http"
 	"testing"
 
 	"github.com/amp-labs/connectors"
@@ -42,7 +43,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 			Input: []string{"Teams"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.PathSuffix("/v3.1/CustomFields/Teams"),
+				If:    mockcond.Path("/v3.1/CustomFields/Teams"),
 				Then:  mockserver.ResponseString(http.StatusOK, `[]`),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
@@ -77,7 +78,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 			Input: []string{"Contacts"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.PathSuffix("/v3.1/CustomFields/Contacts"),
+				If:    mockcond.Path("/v3.1/CustomFields/Contacts"),
 				Then:  mockserver.Response(http.StatusOK, responseContacts),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
@@ -188,10 +189,10 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: mockserver.Cases{{
-					If:   mockcond.PathSuffix("/v3.1/CustomObjects/Fruit__c"),
+					If:   mockcond.Path("/v3.1/CustomObjects/Fruit__c"),
 					Then: mockserver.Response(http.StatusOK, responseFruitObject),
 				}, {
-					If:   mockcond.PathSuffix("/v3.1/CustomFields/Fruit__c"),
+					If:   mockcond.Path("/v3.1/CustomFields/Fruit__c"),
 					Then: mockserver.Response(http.StatusOK, responseFruitFields),
 				}},
 			}.Server(),
