@@ -26,7 +26,8 @@ func supportedOperations() components.EndpointRegistryInput {
 		"workspace-group-members",
 		"workspace-members",
 		"subsequences",
-		"email-verification"}
+		"email-verification",
+	}
 
 	return components.EndpointRegistryInput{
 		common.ModuleRoot: {
