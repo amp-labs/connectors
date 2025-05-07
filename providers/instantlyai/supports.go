@@ -12,7 +12,6 @@ import (
 func supportedOperations() components.EndpointRegistryInput {
 	readSupport := metadata.Schemas.ObjectNames().GetList(common.ModuleRoot)
 
-	//nolint:111
 	writeSupport := []string{
 		"accounts",
 		"campaigns",
