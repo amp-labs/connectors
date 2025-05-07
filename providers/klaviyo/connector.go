@@ -10,9 +10,10 @@ import (
 )
 
 type Connector struct {
-	BaseURL string
-	Client  *common.JSONHTTPClient
-	Module  common.Module
+	BaseURL    string
+	Client     *common.JSONHTTPClient
+	moduleInfo providers.ModuleInfo
+	moduleID   common.ModuleID
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
@@ -26,11 +27,16 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		Client: &common.JSONHTTPClient{
 			HTTPClient: httpClient,
 		},
-		Module: params.Module.Selection,
+		moduleID: params.Module.Selection.ID,
 	}
 
 	// Read provider info
 	providerInfo, err := providers.ReadInfo(conn.Provider())
+	if err != nil {
+		return nil, err
+	}
+
+	conn.moduleInfo, err = providerInfo.ReadModuleInfo(conn.moduleID)
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +53,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 }
 
 func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
-	path, err := metadata.Schemas.LookupURLPath(c.Module.ID, objectName)
+	path, err := metadata.Schemas.LookupURLPath(c.moduleID, objectName)
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +74,7 @@ func (c *Connector) getDeleteURL(objectName string) (*urlbuilder.URL, error) {
 func (c *Connector) revisionHeader() common.Header {
 	return common.Header{
 		Key:   "revision",
-		Value: string(c.Module.ID),
+		Value: string(c.moduleID),
 	}
 }
 
