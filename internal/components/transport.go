@@ -7,12 +7,16 @@ import (
 	"github.com/amp-labs/connectors/providers"
 )
 
+// Transport
 // TODO: Add support for XML, CSV, etc.
 type Transport struct {
 	ProviderContext
+	URLManager
+
 	json *common.JSONHTTPClient
 }
 
+// NewTransport
 // TODO: The JSON client by itself is not providing any functionality right now - this is to only provide
 // continuity for the existing codebase. We should refactor the existing JSON/XML/CSV/HTTP clients to
 // satisfy a common interface, and then hook them up in here.
@@ -29,9 +33,10 @@ func NewTransport(
 
 	return &Transport{
 		ProviderContext: *providerContext,
+		URLManager:      *NewURLManager(providerContext.providerInfo, providerContext.moduleInfo),
 		json: &common.JSONHTTPClient{
 			HTTPClient: &common.HTTPClient{
-				Base:   providerContext.ProviderInfo().BaseURL,
+				Base:   providerContext.providerInfo.BaseURL,
 				Client: params.AuthenticatedClient,
 
 				// ErrorHandler is set to a default, but can be overridden using options.
@@ -44,17 +49,17 @@ func NewTransport(
 	}, nil
 }
 
-func (t *Transport) SetBaseURL(newURL string) {
-	t.ProviderContext.providerInfo.BaseURL = newURL
-	t.json.HTTPClient.Base = newURL
-}
-
 func (t *Transport) SetErrorHandler(handler common.ErrorHandler) {
-	t.HTTPClient().ErrorHandler = handler
+	t.json.HTTPClient.ErrorHandler = handler
 }
 
-func (t *Transport) JSONHTTPClient() *common.JSONHTTPClient { return t.json }
-func (t *Transport) HTTPClient() *common.HTTPClient         { return t.json.HTTPClient }
+func (t *Transport) JSONHTTPClient() *common.JSONHTTPClient {
+	return t.json
+}
+
+func (t *Transport) HTTPClient() *common.HTTPClient {
+	return t.json.HTTPClient
+}
 
 func createCatalogVariables(params common.Parameters) []catalogreplacer.CatalogVariable {
 	metadata := params.Metadata
