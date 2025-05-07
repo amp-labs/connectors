@@ -49,8 +49,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 		},
 		{
 			Name: "Update custom tags as PATCH",
-			Input: common.WriteParams{ObjectName: "custom-tags",
-				RecordId: "0196837f-d659-7496-854c-84187bb6f708", RecordData: "dummy"},
+			Input: common.WriteParams{
+				ObjectName: "custom-tags",
+				RecordId:   "0196837f-d659-7496-854c-84187bb6f708",
+				RecordData: "dummy",
+			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If:    mockcond.MethodPATCH(),
