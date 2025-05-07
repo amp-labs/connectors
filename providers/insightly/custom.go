@@ -1,3 +1,4 @@
+// nolint:tagliatelle
 package insightly
 
 import (
@@ -12,7 +13,6 @@ import (
 
 // Any object returned from READ operation may have a CUSTOMFIELDS array property.
 // This struct is it's schema representation.
-// nolint:tagliatelle
 type readCustomField struct {
 	Name  string `json:"FIELD_NAME"`
 	Value any    `json:"FIELD_VALUE"`
@@ -79,44 +79,46 @@ func flattenCustomFields(node *ajson.Node) (map[string]any, error) {
 	return root, nil
 }
 
-const customMarker = "__c"
+const customSuffix = "__c"
 
 type customFieldsRegistry map[string]customFieldResponse
 
+// Response from https://api.insightly.com/v3.1/Help#!/CustomFields/GetCustomFields.
 type customFieldsResponse []customFieldResponse
 
-// nolint:tagliatelle
 type customFieldResponse struct {
+	// FieldFor indicates the name of the object this custom field is associated with.
+	// Use this to filter custom fields applicable to a specific object type.
+	FieldFor    string `json:"FIELD_FOR"`
 	Name        string `json:"FIELD_NAME"`
 	DisplayName string `json:"FIELD_LABEL"`
 	Type        string `json:"FIELD_TYPE"`
 	Editable    bool   `json:"EDITABLE"`
-	FieldFor    string `json:"FIELD_FOR"`
-	Options     []struct {
-		ID    int    `json:"OPTION_ID"`
-		Value string `json:"OPTION_VALUE"`
-	} `json:"CUSTOM_FIELD_OPTIONS"`
+	// Options holds the available choices for select-type field.
+	Options []customFieldOption `json:"CUSTOM_FIELD_OPTIONS"`
+}
+
+// customFieldOption represents one of the enum option a custom field could take on.
+// This applies for select-type fields.
+type customFieldOption struct {
+	// ID is an incremental number assigned in the order of creation in the dashboard.
+	ID int `json:"OPTION_ID"`
+	// Value is the label for one of the available choices in a select-type custom field.
+	// For example, a field "Interests" may have values like "food", "sports", or "technology".
+	Value string `json:"OPTION_VALUE"`
 }
 
 func (c customFieldResponse) BelongsToObject(objectName string) bool {
-	if c.FieldFor == objectName {
-		return true
-	}
+	first, _ := strings.CutSuffix(strings.ToLower(c.FieldFor), customSuffix)
+	second, _ := strings.CutSuffix(strings.ToLower(objectName), customSuffix)
 
-	if strings.ToLower(c.FieldFor) == strings.ToLower(objectName) { // nolint:staticcheck
-		return true
-	}
-
-	first, _ := strings.CutSuffix(c.FieldFor, customMarker)
-	second, _ := strings.CutSuffix(objectName, customMarker)
-
-	return strings.ToLower(naming.NewSingularString(first).String()) == // nolint:staticcheck
-		strings.ToLower(naming.NewSingularString(second).String())
+	return naming.NewSingularString(first).String() == // nolint:staticcheck
+		naming.NewSingularString(second).String()
 }
 
 // requestCustomFields fetches custom fields for a given object from the Insightly API.
 //
-// Behavior:
+// Provider API Behavior:
 // - If objectName supports custom fields and has them, the response is scoped to that object.
 // - If objectName supports custom fields but doesn't have any, the API returns an empty list.
 // - If objectName doesn't support custom fields or is unknown, API returns all system-wide custom fields.
@@ -126,6 +128,10 @@ func (c customFieldResponse) BelongsToObject(objectName string) bool {
 func (c *Connector) requestCustomFields(
 	ctx context.Context, objectName string,
 ) (customFieldsRegistry, error) {
+	if len(objectName) == 0 {
+		return customFieldsRegistry{}, common.ErrEmptyObject
+	}
+
 	url, err := c.getCustomFieldsURL(objectName)
 	if err != nil {
 		return nil, err
@@ -154,33 +160,34 @@ func (c *Connector) requestCustomFields(
 	return registry, nil
 }
 
-// nolint:tagliatelle
+// Response from https://api.insightly.com/v3.1/Help#!/CustomObjects/GetCustomObjects.
 type customObjectResponse struct {
 	ObjectName  string `json:"OBJECT_NAME"`
 	DisplayName string `json:"PLURAL_LABEL"`
 }
 
-func (c *Connector) fetchCustomObjectDisplayName(
+func (c *Connector) fetchCustomObject(
 	ctx context.Context, objectName string,
-) (string, error) {
+) (*customObjectResponse, error) {
 	url, err := c.getCustomObjectURL(objectName)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	res, err := c.JSONHTTPClient().Get(ctx, url.String())
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	customObject, err := common.UnmarshalJSON[customObjectResponse](res)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return customObject.DisplayName, nil
+	return customObject, nil
 }
 
+// Response format from https://api.insightly.com/v3.1/Help#!/CustomObjectsRecords/GetEntities.
 // This is a schema for custom objects. Every field that carries the data of interest
 // will be part of `CUSTOMFIELDS` array. The fields for a custom object are defined in the dashboard.
 var customObjectSchema = map[string]common.FieldMetadata{ // nolint:gochecknoglobals

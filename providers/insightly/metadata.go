@@ -2,7 +2,6 @@ package insightly
 
 import (
 	"context"
-	"errors"
 	"strconv"
 	"strings"
 
@@ -39,7 +38,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 				ValueType:    getFieldValueType(field),
 				ProviderType: field.Type,
 				ReadOnly:     !field.Editable,
-				Values:       getDefaultValues(field),
+				Values:       field.getValues(),
 			})
 		}
 
@@ -50,27 +49,26 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 }
 
 func (c *Connector) getObjectMetadata(ctx context.Context, objectName string) (*common.ObjectMetadata, error) {
-	objectData, err := metadata.Schemas.SelectOne(c.Module(), objectName)
+	if strings.HasSuffix(objectName, customSuffix) {
+		return c.getCustomObjectMetadata(ctx, objectName)
+	}
+
+	// Fallback to static file for metadata.
+	return metadata.Schemas.SelectOne(c.Module(), objectName)
+}
+
+func (c *Connector) getCustomObjectMetadata(ctx context.Context, objectName string) (*common.ObjectMetadata, error) {
+	customObject, err := c.fetchCustomObject(ctx, objectName)
 	if err != nil {
-		// Check if the object is custom, then we still can create metadata.
-		if errors.Is(err, common.ErrObjectNotSupported) && strings.HasSuffix(objectName, customMarker) {
-			displayName, err := c.fetchCustomObjectDisplayName(ctx, objectName)
-			if err != nil {
-				return nil, err
-			}
-
-			// Custom object schema has the same format across every object type.
-			fields := datautils.Map[string, common.FieldMetadata](
-				customObjectSchema,
-			).ShallowCopy()
-
-			return common.NewObjectMetadata(displayName, fields), nil
-		}
-
 		return nil, err
 	}
 
-	return objectData, nil
+	// Custom object schema has the same format across every object type.
+	fields := datautils.Map[string, common.FieldMetadata](
+		customObjectSchema,
+	).ShallowCopy()
+
+	return common.NewObjectMetadata(customObject.DisplayName, common.FieldsMetadata(fields)), nil
 }
 
 func getFieldValueType(field customFieldResponse) common.ValueType {
@@ -93,14 +91,14 @@ func getFieldValueType(field customFieldResponse) common.ValueType {
 	}
 }
 
-func getDefaultValues(field customFieldResponse) common.FieldValues {
-	if len(field.Options) == 0 {
+func (c customFieldResponse) getValues() common.FieldValues {
+	if len(c.Options) == 0 {
 		return nil
 	}
 
-	fields := make(common.FieldValues, len(field.Options))
+	fields := make(common.FieldValues, len(c.Options))
 
-	for index, option := range field.Options {
+	for index, option := range c.Options {
 		fields[index] = common.FieldValue{
 			Value:        strconv.Itoa(option.ID),
 			DisplayValue: option.Value,
