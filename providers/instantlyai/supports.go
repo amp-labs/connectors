@@ -29,6 +29,22 @@ func supportedOperations() components.EndpointRegistryInput {
 		"email-verification",
 	}
 
+	deleteSupport := []string{
+		"accounts",
+		"campaigns",
+		"emails",
+		"lead-lists",
+		"inbox-placement-tests",
+		"api-keys",
+		"leads",
+		"custom-tags",
+		"block-lists-entries",
+		"lead-labels",
+		"workspace-group-members",
+		"workspace-members",
+		"subsequences",
+	}
+
 	return components.EndpointRegistryInput{
 		common.ModuleRoot: {
 			{
@@ -38,6 +54,10 @@ func supportedOperations() components.EndpointRegistryInput {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
 				Support:  components.WriteSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(deleteSupport, ",")),
+				Support:  components.DeleteSupport,
 			},
 		},
 	}
