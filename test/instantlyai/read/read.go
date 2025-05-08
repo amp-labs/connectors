@@ -19,17 +19,17 @@ func main() {
 func MainFn() int {
 	conn := instantlyai.GetInstantlyAIConnector(context.Background())
 
-	err := testRead(context.Background(), conn, "api-keys")
+	err := testRead(context.Background(), conn, "api-keys", []string{""})
 	if err != nil {
 		return 1
 	}
 
-	err = testRead(context.Background(), conn, "custom-tags")
+	err = testRead(context.Background(), conn, "custom-tags", []string{""})
 	if err != nil {
 		return 1
 	}
 
-	err = testRead(context.Background(), conn, "lead-lists")
+	err = testRead(context.Background(), conn, "lead-lists", []string{""})
 	if err != nil {
 		return 1
 	}
@@ -37,10 +37,10 @@ func MainFn() int {
 	return 0
 }
 
-func testRead(ctx context.Context, conn *ap.Connector, objName string) error {
+func testRead(ctx context.Context, conn *ap.Connector, objName string, fields []string) error {
 	params := common.ReadParams{
 		ObjectName: objName,
-		Fields:     connectors.Fields(""),
+		Fields:     connectors.Fields(fields...),
 	}
 
 	res, err := conn.Read(ctx, params)
