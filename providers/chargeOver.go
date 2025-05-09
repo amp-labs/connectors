@@ -33,7 +33,8 @@ func init() {
 			Input: []MetadataItemInput{
 				{
 					Name:        "workspace",
-					DisplayName: "Workspace",
+					DisplayName: "Domain name",
+					DocsURL:     "https://developer.chargeover.com/docs/api-information/getting-started/",
 				},
 			},
 		},

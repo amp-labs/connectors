@@ -36,7 +36,7 @@ func init() {
 			Input: []MetadataItemInput{
 				{
 					Name:        "workspace",
-					DisplayName: "Workspace",
+					DisplayName: "Site name",
 				},
 			},
 		},
