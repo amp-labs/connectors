@@ -1,0 +1,96 @@
+{
+  "parties": [
+    {
+      "id": 254633973,
+      "owner": null,
+      "team": null,
+      "type": "organisation",
+      "about": null,
+      "name": "Capsule",
+      "createdAt": "2024-03-19T18:25:25Z",
+      "updatedAt": "2024-04-06T13:54:33Z",
+      "lastContactedAt": null,
+      "pictureURL": "https://capsule-pictures-prod.s3.amazonaws.com/6a991dea-8623-4cef-9f3f-b5ff25509d81?size=100&v=0",
+      "enrichment": null,
+      "phoneNumbers": [],
+      "addresses": [],
+      "emailAddresses": [
+        {
+          "id": 568718013,
+          "type": null,
+          "address": "support@capsulecrm.com"
+        }
+      ],
+      "websites": [
+        {
+          "id": 568718014,
+          "type": null,
+          "address": "capsulecrm",
+          "service": "TWITTER",
+          "url": "https://twitter.com/capsulecrm"
+        },
+        {
+          "id": 568718015,
+          "type": null,
+          "address": "capsulecrm.com",
+          "service": "URL",
+          "url": "http://capsulecrm.com"
+        },
+        {
+          "id": 568718016,
+          "type": null,
+          "address": "https://www.facebook.com/capsulecrm/",
+          "service": "FACEBOOK",
+          "url": "https://www.facebook.com/capsulecrm/"
+        },
+        {
+          "id": 568718017,
+          "type": null,
+          "address": "https://www.youtube.com/user/CapsuleCRM",
+          "service": "YOUTUBE",
+          "url": "https://www.youtube.com/user/CapsuleCRM"
+        },
+        {
+          "id": 568718018,
+          "type": null,
+          "address": "https://www.linkedin.com/company/capsulecrm/",
+          "service": "LINKED_IN",
+          "url": "https://www.linkedin.com/company/capsulecrm/"
+        }
+      ]
+    },
+    {
+      "id": 254633972,
+      "owner": {
+        "id": 645048,
+        "deleted": false,
+        "username": "integration.user",
+        "pictureURL": "https://facehub.appspot.com/default/person?text=IU&size=100&colour=806388639",
+        "name": "Integration User"
+      },
+      "team": null,
+      "type": "person",
+      "about": null,
+      "firstName": "Integration",
+      "lastName": "User",
+      "jobTitle": null,
+      "createdAt": "2024-03-19T18:25:24Z",
+      "updatedAt": "2024-03-26T09:28:06Z",
+      "organisation": null,
+      "lastContactedAt": null,
+      "pictureURL": "https://facehub.appspot.com/default/person?text=IU&size=100&colour=806388639",
+      "title": null,
+      "enrichment": null,
+      "phoneNumbers": [],
+      "addresses": [],
+      "emailAddresses": [
+        {
+          "id": 568718012,
+          "type": null,
+          "address": "integration.user@withampersand.com"
+        }
+      ],
+      "websites": []
+    }
+  ]
+}
