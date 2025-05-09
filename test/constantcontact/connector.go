@@ -13,7 +13,7 @@ import (
 
 func GetConstantContactConnector(ctx context.Context) *constantcontact.Connector {
 	filePath := credscanning.LoadPath(providers.ConstantContact)
-	reader := utils.MustCreateProvCredJSON(filePath, true, false)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	conn, err := constantcontact.NewConnector(
 		constantcontact.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),

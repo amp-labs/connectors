@@ -12,7 +12,7 @@ import (
 
 func GetLemlistConnector(ctx context.Context) *lemlist.Connector {
 	filePath := credscanning.LoadPath(providers.Lemlist)
-	reader := utils.MustCreateProvCredJSON(filePath, false, false)
+	reader := utils.MustCreateProvCredJSON(filePath, false)
 
 	client, err := common.NewApiKeyQueryParamAuthHTTPClient(ctx, "access_token", reader.Get(credscanning.Fields.ApiKey))
 	if err != nil {

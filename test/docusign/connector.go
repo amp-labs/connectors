@@ -13,7 +13,7 @@ import (
 
 func GetDocusignConnector(ctx context.Context) *docusign.Connector {
 	filePath := credscanning.LoadPath(providers.Docusign)
-	reader := utils.MustCreateProvCredJSON(filePath, true, false)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	conn, err := docusign.NewConnector(
 		docusign.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),

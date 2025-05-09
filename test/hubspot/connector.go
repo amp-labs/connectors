@@ -27,7 +27,7 @@ func GetHubspotConnector(ctx context.Context) *hubspot.Connector {
 
 func CredsReader() *credscanning.ProviderCredentials {
 	filePath := credscanning.LoadPath(providers.Hubspot)
-	return utils.MustCreateProvCredJSON(filePath, true, false)
+	return utils.MustCreateProvCredJSON(filePath, true)
 }
 
 func getConfig(reader *credscanning.ProviderCredentials) *oauth2.Config {
