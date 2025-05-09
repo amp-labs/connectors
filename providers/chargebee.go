@@ -35,7 +35,8 @@ func init() {
 		Metadata: &ProviderMetadata{
 			Input: []MetadataItemInput{
 				{
-					Name: "workspace",
+					Name:        "workspace",
+					DisplayName: "Workspace",
 				},
 			},
 		},
