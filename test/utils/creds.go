@@ -11,11 +11,11 @@ import (
 )
 
 func MustCreateProvCredJSON(filePath string,
-	withRequiredAccessToken, withRequiredWorkspace bool,
+	withRequiredAccessToken bool,
 	customFields ...credscanning.Field,
 ) *credscanning.ProviderCredentials {
 	reader, err := credscanning.NewJSONProviderCredentials(
-		filePath, withRequiredAccessToken, withRequiredWorkspace, customFields...,
+		filePath, withRequiredAccessToken, customFields...,
 	)
 	if err != nil {
 		Fail("json creds file error", "error", err)
@@ -26,9 +26,9 @@ func MustCreateProvCredJSON(filePath string,
 
 // MustCreateProvCredENV can be used by tests supplying variables via environment.
 func MustCreateProvCredENV(providerName string,
-	withRequiredAccessToken, withRequiredWorkspace bool,
+	withRequiredAccessToken bool,
 ) *credscanning.ProviderCredentials {
-	reader, err := credscanning.NewENVProviderCredentials(providerName, withRequiredAccessToken, withRequiredWorkspace)
+	reader, err := credscanning.NewENVProviderCredentials(providerName, withRequiredAccessToken)
 	if err != nil {
 		Fail("environment error", "error", err)
 	}
