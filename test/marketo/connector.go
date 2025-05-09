@@ -61,7 +61,7 @@ func GetMarketoAccessToken() string {
 
 func getMarketoJSONReader() *credscanning.ProviderCredentials {
 	filePath := credscanning.LoadPath(providers.Marketo)
-	reader := utils.MustCreateProvCredJSON(filePath, true, true)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	return reader
 }

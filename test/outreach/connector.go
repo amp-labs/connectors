@@ -13,7 +13,7 @@ import (
 
 func GetOutreachConnector(ctx context.Context) *outreach.Connector {
 	filePath := credscanning.LoadPath(providers.Outreach)
-	reader := utils.MustCreateProvCredJSON(filePath, true, false)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	conn, err := outreach.NewConnector(
 		outreach.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),

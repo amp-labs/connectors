@@ -15,7 +15,7 @@ import (
 
 func GetConnector(ctx context.Context) *zendeskchat.Connector {
 	filePath := credscanning.LoadPath(providers.ZendeskChat)
-	reader := utils.MustCreateProvCredJSON(filePath, true, true)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	client, err := common.NewOAuthHTTPClient(ctx,
 		common.WithOAuthClient(http.DefaultClient),

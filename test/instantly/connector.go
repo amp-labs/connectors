@@ -12,7 +12,7 @@ import (
 
 func GetInstantlyConnector(ctx context.Context) *instantly.Connector {
 	filePath := credscanning.LoadPath(providers.Instantly)
-	reader := utils.MustCreateProvCredJSON(filePath, false, false)
+	reader := utils.MustCreateProvCredJSON(filePath, false)
 
 	conn, err := instantly.NewConnector(
 		instantly.WithClient(ctx, http.DefaultClient,

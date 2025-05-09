@@ -14,7 +14,7 @@ import (
 
 func GetNetsuiteConnector(ctx context.Context) *netsuite.Connector {
 	filePath := credscanning.LoadPath(providers.Netsuite)
-	reader := utils.MustCreateProvCredJSON(filePath, true, false)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	options := []common.OAuthOption{
 		common.WithOAuthClient(http.DefaultClient),

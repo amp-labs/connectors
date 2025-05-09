@@ -12,7 +12,7 @@ import (
 
 func GetAshbyConnector(ctx context.Context) *ashby.Connector {
 	filePath := credscanning.LoadPath(providers.Ashby)
-	reader := testUtils.MustCreateProvCredJSON(filePath, false, false)
+	reader := testUtils.MustCreateProvCredJSON(filePath, false)
 
 	client, err := common.NewBasicAuthHTTPClient(ctx, reader.Get(credscanning.Fields.Username), reader.Get(credscanning.Fields.Password))
 

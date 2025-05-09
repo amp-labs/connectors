@@ -13,7 +13,7 @@ import (
 
 func GetCloseConnector(ctx context.Context) *closecrm.Connector {
 	filePath := credscanning.LoadPath(providers.Close)
-	reader := utils.MustCreateProvCredJSON(filePath, true, false)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	conn, err := closecrm.NewConnector(
 		closecrm.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),

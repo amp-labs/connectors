@@ -12,7 +12,7 @@ import (
 
 func GetChiliPiperConnector(ctx context.Context) *chilipiper.Connector {
 	filePath := credscanning.LoadPath(providers.ChiliPiper)
-	reader := testUtils.MustCreateProvCredJSON(filePath, false, false)
+	reader := testUtils.MustCreateProvCredJSON(filePath, false)
 
 	conn, err := chilipiper.NewConnector(
 		chilipiper.WithClient(ctx, http.DefaultClient,

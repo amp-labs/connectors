@@ -12,7 +12,7 @@ import (
 
 func GetSmartleadV2Connector(ctx context.Context) *smartleadv2.Connector {
 	filePath := credscanning.LoadPath(providers.Smartlead)
-	reader := utils.MustCreateProvCredJSON(filePath, false, false)
+	reader := utils.MustCreateProvCredJSON(filePath, false)
 
 	client, err := common.NewApiKeyQueryParamAuthHTTPClient(ctx, "api_key", reader.Get(credscanning.Fields.ApiKey))
 	if err != nil {
