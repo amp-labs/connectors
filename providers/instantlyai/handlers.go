@@ -24,7 +24,9 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
-	url.WithQueryParam("limit", strconv.Itoa(DefaultPageSize))
+	if !directResponseEndpoints.Has(params.ObjectName) {
+		url.WithQueryParam("limit", strconv.Itoa(DefaultPageSize))
+	}
 
 	if len(params.NextPage) != 0 {
 		// Next page.
@@ -32,6 +34,10 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		if err != nil {
 			return nil, err
 		}
+	}
+
+	if postEndpointsOfRead.Has(params.ObjectName) {
+		return http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader([]byte("{}")))
 	}
 
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
@@ -43,10 +49,20 @@ func (c *Connector) parseReadResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
+	if directResponseEndpoints.Has(params.ObjectName) {
+		return common.ParseResult(
+			response,
+			common.ExtractRecordsFromPath(""),
+			makeNextRecordsURL(request.URL, params.ObjectName),
+			common.GetMarshaledData,
+			params.Fields,
+		)
+	}
+
 	return common.ParseResult(
 		response,
 		common.ExtractRecordsFromPath("items"),
-		makeNextRecordsURL(request.URL),
+		makeNextRecordsURL(request.URL, params.ObjectName),
 		common.GetMarshaledData,
 		params.Fields,
 	)

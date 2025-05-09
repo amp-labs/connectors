@@ -45,7 +45,7 @@ func testRead(ctx context.Context, conn *ap.Connector, objName string, fields []
 
 	res, err := conn.Read(ctx, params)
 	if err != nil {
-		return fmt.Errorf("failed to read campaign: %w", err)
+		return fmt.Errorf("failed to read %s: %w", objName, err)
 	}
 
 	// Print the results.
