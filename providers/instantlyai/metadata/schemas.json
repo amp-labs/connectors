@@ -868,6 +868,381 @@
               "valueType": "other"
             }
           }
+        },
+        "lead/lists": {
+          "displayName": "Lead lists",
+          "path": "v2/lead/lists",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "other"
+            },
+            "timestamp_created": {
+              "displayName": "timestamp_created",
+              "valueType": "other"
+            },
+            "timestamp_updated": {
+              "displayName": "timestamp_updated",
+              "valueType": "other"
+            },
+            "organization": {
+              "displayName": "organization",
+              "valueType": "other"
+            },
+            "campaign": {
+              "displayName": "campaign",
+              "valueType": "other"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "other"
+            },  
+            "email": {
+              "displayName": "email",
+              "valueType": "other"
+            },
+            "personalization": {
+              "displayName": "personalization",
+              "valueType": "other"
+            },
+            "website": {
+              "displayName": "website",
+              "valueType": "other"
+            },
+            "last_name": {
+              "displayName": "last_name",
+              "valueType": "other"
+            },
+            "first_name": {
+              "displayName": "first_name",
+              "valueType": "other"
+            },
+            "company_name": {
+              "displayName": "company_name",
+              "valueType": "other"
+            },
+            "phone": {
+              "displayName": "phone",
+              "valueType": "other"
+            },
+            "email_open_count": {
+              "displayName": "email_open_count",
+              "valueType": "other"
+            },
+            "email_reply_count": {
+              "displayName": "email_reply_count",
+              "valueType": "other"
+            },
+            "email_click_count": {
+              "displayName": "email_click_count",
+              "valueType": "other"
+            },
+            "company_domain": {
+              "displayName": "company_domain",
+              "valueType": "other"
+            },
+            "status_summary": {
+              "displayName": "status_summary",
+              "valueType": "other"
+            },
+            "payload": {
+              "displayName": "payload",
+              "valueType": "other"
+            },
+            "status_summary_subseq": {
+              "displayName": "status_summary_subseq",
+              "valueType": "other"
+            },
+            "last_step_from": {
+              "displayName": "last_step_from",
+              "valueType": "other"
+            },
+            "last_step_id": {
+              "displayName": "last_step_id",
+              "valueType": "other"
+            },
+            "last_step_timestamp_executed": {
+              "displayName": "last_step_timestamp_executed",
+              "valueType": "other"
+            },
+            "email_opened_step": {
+              "displayName": "email_opened_step",
+              "valueType": "other"
+            },
+            "email_opened_variant": {
+              "displayName": "email_opened_variant",
+              "valueType": "other"
+            },
+            "email_replied_step": {
+              "displayName": "email_replied_step",
+              "valueType": "other"
+            },
+            "email_replied_variant": {
+              "displayName": "email_replied_variant",
+              "valueType": "other"
+            },
+            "email_clicked_step": {
+              "displayName": "email_clicked_step",
+              "valueType": "other"
+            },
+            "email_clicked_variant": {
+              "displayName": "email_clicked_variant",
+              "valueType": "other"
+            },
+            "lt_interest_status": {
+              "displayName": "lt_interest_status",
+              "valueType": "other"
+            },
+            "subsequence_id": {
+              "displayName": "subsequence_id",
+              "valueType": "other"
+            },
+            "verification_status": {
+              "displayName": "verification_status",
+              "valueType": "other"
+            },
+            "pl_value_lead": {
+              "displayName": "pl_value_lead",
+              "valueType": "other"
+            },
+            "timestamp_added_subsequence": {
+              "displayName": "timestamp_added_subsequence",
+              "valueType": "other"
+            },
+            "timestamp_last_contact": {
+              "displayName": "timestamp_last_contact",
+              "valueType": "other"
+            },
+            "timestamp_last_open": {
+              "displayName": "timestamp_last_open",
+              "valueType": "other"
+            },
+            "timestamp_last_reply": {
+              "displayName": "timestamp_last_reply",
+              "valueType": "other"
+            },
+            "timestamp_last_interest_change": {
+              "displayName": "timestamp_last_interest_change",
+              "valueType": "other"  
+            },
+            "timestamp_last_click": {
+              "displayName": "timestamp_last_click",
+              "valueType": "other"
+            },
+            "enrichment_status": {
+              "displayName": "enrichment_status",
+              "valueType": "other"
+            },
+            "list_id": {
+              "displayName": "list_id",
+              "valueType": "other"
+            },
+            "last_contacted_from": {
+              "displayName": "last_contacted_from",
+              "valueType": "other"
+            },
+            "uploaded_by_user": {
+              "displayName": "uploaded_by_user",
+              "valueType": "other"
+            },
+            "upload_method": {
+              "displayName": "upload_method",
+              "valueType": "other"
+            },
+            "assigned_to": {
+              "displayName": "assigned_to",
+              "valueType": "other"
+            },
+            "is_website_visitor": {
+              "displayName": "is_website_visitor",
+              "valueType": "other"
+            },
+            "timestamp_last_touch": {
+              "displayName": "timestamp_last_touch",
+              "valueType": "other"
+            },
+            "esp_code": {
+              "displayName": "esp_code",
+              "valueType": "other"
+            }
+          }
+        },
+        "campaigns/analytics": {
+          "displayName": "Campaigns analytics",
+          "path": "v2/campaigns/analytics",
+          "responseKey": "",
+          "fields": {
+            "campaign_name":{
+              "displayName":"campaign_name",
+              "valueType": "other"
+            },
+            "campaign_id":{
+              "displayName":"campaign_id",
+              "valueType": "other"
+            },
+            "campaign_status":{
+              "displayName":"campaign_status",
+              "valueType": "other"
+            },
+            "campaign_is_evergreen":{
+              "displayName":"campaign_is_evergreen",
+              "valueType": "other"
+            },
+            "leads_count":{
+              "displayName":"leads_count",
+              "valueType": "other"
+            },
+            "contacted_count":{
+              "displayName":"contacted_count",
+              "valueType": "other"
+            },
+            "open_count":{
+              "displayName":"open_count",
+              "valueType": "other"
+            },
+            "reply_count":{
+              "displayName":"reply_count",
+              "valueType": "other"
+            },
+            "link_click_count":{
+              "displayName":"link_click_count",
+              "valueType": "other"
+            },
+            "bounced_count":{
+              "displayName":"bounced_count",
+              "valueType": "other"
+            },
+            "unsubscribed_count":{
+              "displayName":"unsubscribed_count",
+              "valueType": "other"
+            },
+            "completed_count":{
+              "displayName":"completed_count",
+              "valueType": "other"
+            },
+            "emails_sent_count":{
+              "displayName":"emails_sent_count",
+              "valueType": "other"
+            },
+            "new_leads_contacted_count":{
+              "displayName":"new_leads_contacted_count",
+              "valueType": "other"
+            },
+            "total_opportunities":{
+              "displayName":"total_opportunities",
+              "valueType": "other"
+            },
+            "total_opportunity_value":{
+              "displayName":"total_opportunity_value",
+              "valueType": "other"
+            }
+          }
+        },
+        "campaigns/analytics/daily": {
+          "displayName": "Campaigns analytics daily",
+          "path": "v2/campaigns/analytics/daily",
+          "responseKey": "",
+          "fields": {
+            "date":{
+              "displayName":"date",
+              "valueType": "other"
+            },    
+            "sent":{
+              "displayName":"sent",
+              "valueType": "other"
+            },
+            "opened":{
+              "displayName":"opened",
+              "valueType": "other"
+            },
+            "unique_opened":{
+              "displayName":"unique_opened",
+              "valueType": "other"
+            },
+            "replies":{
+              "displayName":"replies",
+              "valueType": "other"
+            },
+            "unique_replies":{
+              "displayName":"unique_replies",
+              "valueType": "other"
+            },
+            "clicks":{
+              "displayName":"clicks",
+              "valueType": "other"
+            },
+            "unique_clicks":{
+              "displayName":"unique_clicks",
+              "valueType": "other"
+            }
+          }
+        },
+        "campaigns/analytics/steps": {
+          "displayName": "Campaigns analytics steps",
+          "path": "v2/campaigns/analytics/steps",
+          "responseKey": "",
+          "fields": {
+            "step":{
+              "displayName":"step",
+              "valueType": "other"
+            },
+            "variant":{
+              "displayName":"variant",
+              "valueType": "other"
+            },
+            "sent":{
+              "displayName":"sent",
+              "valueType": "other"
+            },
+            "opened":{
+              "displayName":"opened",
+              "valueType": "other"
+            },
+            "unique_opened":{
+              "displayName":"unique_opened",
+              "valueType": "other"
+            },
+            "replies":{
+              "displayName":"replies",
+              "valueType": "other"
+            },
+            "unique_replies":{
+              "displayName":"unique_replies",
+              "valueType": "other"
+            },
+            "clicks":{
+              "displayName":"clicks",
+              "valueType": "other"
+            },
+            "unique_clicks":{
+              "displayName":"unique_clicks",
+              "valueType": "other"
+            }
+          }
+        },
+        "inbox-placement-tests/email-service-provider-options": {
+          "displayName": "Email service provider options",
+          "path": "v2/inbox-placement-tests/email-service-provider-options",
+          "responseKey": "",
+          "fields": {
+            "region":{
+              "displayName":"region",
+              "valueType": "other"
+            },
+            "sub_region":{
+              "displayName":"sub_region",
+              "valueType": "other"
+            },
+            "type":{
+              "displayName":"type",
+              "valueType": "other"
+            },
+            "esp":{
+              "displayName":"esp",
+              "valueType": "other"
+            }
+          }
         }
       }
     }
