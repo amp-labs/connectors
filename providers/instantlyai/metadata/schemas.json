@@ -869,9 +869,9 @@
             }
           }
         },
-        "lead/lists": {
-          "displayName": "Lead lists",
-          "path": "v2/lead/lists",
+        "leads/list": {
+          "displayName": "Leads list",
+          "path": "v2/leads/list",
           "responseKey": "",
           "fields": {
             "id": {
