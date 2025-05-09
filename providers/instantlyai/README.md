@@ -22,7 +22,7 @@ InstantlyAI API version: v2
 | Workspace-group-members   | workspace-group-members    | read   |
 | Workspace-members         | workspace-members          | read   |
 | Subsequences              | subsequences               | read   |
-| Lead                      | lead/lists                 | read   |
+| Lead                      | leads/list                 | read   |
 | Campaigns analytics       | campaigns/analytics        | read   |
 | Campaigns analytics daily | campaigns/analytics/daily  | read   |
 | Campaigns analytics steps | campaigns/analytics/steps  | read   |
