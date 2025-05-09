@@ -1,0 +1,32 @@
+{
+  "kase": {
+    "id": 5271516,
+    "owner": {
+      "id": 674197,
+      "deleted": false,
+      "username": "integration.test",
+      "pictureURL": "https://facehub.appspot.com/default/person?text=I&size=100&colour=2099955006",
+      "name": "integration.tes1907"
+    },
+    "team": null,
+    "party": {
+      "id": 254633973,
+      "type": "organisation",
+      "name": "Capsule",
+      "pictureURL": "https://capsule-pictures-prod.s3.amazonaws.com/6a991dea-8623-4cef-9f3f-b5ff25509d81?size=100&v=0"
+    },
+    "status": "OPEN",
+    "opportunity": null,
+    "stage": {
+      "name": "Project Brief",
+      "id": 104607
+    },
+    "createdAt": "2025-03-07T23:32:00Z",
+    "updatedAt": "2025-03-07T23:32:00Z",
+    "description": "Project focused on business research",
+    "name": "Research",
+    "closedOn": null,
+    "lastContactedAt": null,
+    "expectedCloseOn": "2015-12-09"
+  }
+}
