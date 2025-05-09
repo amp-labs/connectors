@@ -94,6 +94,18 @@ type ApiKeyOptsQuery struct {
 	Name string `json:"name"`
 }
 
+// AuthHealthCheck A URL to check the health of a provider's credentials. It's used to see if the credentials are valid and if the provider is reachable.
+type AuthHealthCheck struct {
+	// Method The HTTP method to use for the health check. If not set, defaults to GET.
+	Method string `json:"method,omitempty"`
+
+	// SuccessStatusCodes The HTTP status codes that indicate a successful health check. If not set, defaults to 200 and 204.
+	SuccessStatusCodes []int `json:"successStatusCodes,omitempty"`
+
+	// Url a no-op URL to check the health of the credentials. The URL MUST not mutate any state. If the provider doesn't have such an endpoint, then don't provide credentialsHealthCheck.
+	Url string `json:"url"`
+}
+
 // AuthType The type of authentication required by the provider.
 type AuthType string
 
@@ -225,6 +237,9 @@ type ProviderInfo struct {
 	// ApiKeyOpts Configuration for API key. Must be provided if authType is apiKey.
 	ApiKeyOpts *ApiKeyOpts `json:"apiKeyOpts,omitempty"`
 
+	// AuthHealthCheck A URL to check the health of a provider's credentials. It's used to see if the credentials are valid and if the provider is reachable.
+	AuthHealthCheck *AuthHealthCheck `json:"authHealthCheck,omitempty"`
+
 	// AuthType The type of authentication required by the provider.
 	AuthType AuthType `json:"authType" validate:"required"`
 
@@ -320,12 +335,15 @@ type TokenMetadataFields struct {
 
 // TokenMetadataFieldsOtherFields Additional fields to extract and transform from the token response
 type TokenMetadataFieldsOtherFields = []struct {
+	// Capture A regex expression to capture the value that we need from the path. There must be only one capture group named 'result' in the expression. If not provided, will cause an error.
+	Capture string `json:"capture,omitempty"`
+
 	// DisplayName The human-readable name of the field
 	DisplayName string `json:"displayName"`
 
-	// JqValueSelector jq expression that extracts and transforms the value from the token response
-	JqValueSelector string `json:"jqValueSelector"`
-
 	// Name The internal name of the field
 	Name string `json:"name"`
+
+	// Path The path to the field in the token response (accepts dot notation for nested fields)
+	Path string `json:"path"`
 }
