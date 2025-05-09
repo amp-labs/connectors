@@ -13,7 +13,7 @@ import (
 
 func GetPipedriveConnector(ctx context.Context) *pipedrive.Connector {
 	filePath := credscanning.LoadPath(providers.Pipedrive)
-	reader := utils.MustCreateProvCredJSON(filePath, true, false)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	conn, err := pipedrive.NewConnector(
 		pipedrive.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),

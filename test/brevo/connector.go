@@ -13,7 +13,7 @@ import (
 func GetBrevoConnector(ctx context.Context) *brevo.Connector {
 	filePath := credscanning.LoadPath(providers.Brevo)
 
-	reader := utils.MustCreateProvCredJSON(filePath, false, false)
+	reader := utils.MustCreateProvCredJSON(filePath, false)
 
 	client, err := common.NewApiKeyHeaderAuthHTTPClient(ctx, "api-key", reader.Get(credscanning.Fields.ApiKey))
 

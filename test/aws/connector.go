@@ -46,7 +46,7 @@ var (
 
 func GetAWSConnector(ctx context.Context, module common.ModuleID) *aws.Connector {
 	filePath := credscanning.LoadPath(providers.AWS)
-	reader := testUtils.MustCreateProvCredJSON(filePath, false, false,
+	reader := testUtils.MustCreateProvCredJSON(filePath, false,
 		fieldRegion, fieldIdentityStoreID, fieldInstanceArn,
 	)
 

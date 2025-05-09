@@ -12,7 +12,7 @@ import (
 
 func GetFirefliesConnector(ctx context.Context) *fireflies.Connector {
 	filePath := credscanning.LoadPath(providers.Fireflies)
-	reader := utils.MustCreateProvCredJSON(filePath, false, false)
+	reader := utils.MustCreateProvCredJSON(filePath, false)
 
 	client := utils.NewAPIKeyClient(ctx, reader, providers.Fireflies)
 
