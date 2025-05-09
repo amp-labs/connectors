@@ -11,7 +11,7 @@ import (
 
 const DefaultPageSize = 100
 
-// directResponseEndpoints variable contains endpoint having direct response which means response not included any objects like "items"
+// directResponseEndpoints variable contains endpoint having direct response which means response not included any objects like "items".
 var directResponseEndpoints = datautils.NewSet( //nolint:gochecknoglobals
 	"campaigns/analytics",
 	"campaigns/analytics/overview",
