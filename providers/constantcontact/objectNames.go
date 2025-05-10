@@ -111,3 +111,10 @@ var objectsWithCustomFields = datautils.NewStringSet( // nolint:gochecknoglobals
 	// https://developer.constantcontact.com/api_guide/custom_fields.html
 	objectNameContacts,
 )
+
+// These are used as query params to request hidden contact fields.
+// Otherwise, those field will not be present in response body.
+// https://developer.constantcontact.com/api_reference/index.html#!/Contacts/getContacts
+var contactFields = datautils.NewSet( // nolint:gochecknoglobals
+	"list_memberships", "phone_numbers", "street_addresses", "taggings", "notes",
+)

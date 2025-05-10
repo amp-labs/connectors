@@ -26,7 +26,7 @@ func main() {
 
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "contacts",
-		Fields:     connectors.Fields("contact_id", "first_name", "hobby"),
+		Fields:     connectors.Fields("contact_id", "first_name", "hobby", "notes", "phone_numbers"),
 		// Since:      time.Now().Add(-300 * (24 * time.Hour)),
 		// NextPage:  `https://api.cc.email/v3/contacts?cursor=bGltaXQ9MSZuZXh0PTI=`,
 		// NextPage:  `https://api.cc.email/v3/contacts?cursor=bGltaXQ9MSZuZXh0PTImdXBkYXRlZF9hZnRlcj0yMDIyLTAzLTExVDIyJTNBMDklM0EwMiUyQjAwJTNBMDA=`,
