@@ -78,7 +78,8 @@ func init() {
 			Input: []MetadataItemInput{
 				{
 					Name:        "workspace",
-					DisplayName: "Site URL (Your domain)",
+					DisplayName: "App name",
+					DocsURL:     "https://support.atlassian.com/organization-administration/docs/update-your-product-and-site-url/",
 				},
 			},
 		},

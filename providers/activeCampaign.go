@@ -39,7 +39,9 @@ func init() {
 		Metadata: &ProviderMetadata{
 			Input: []MetadataItemInput{
 				{
-					Name: "workspace",
+					Name:        "workspace",
+					DisplayName: "Account name",
+					DocsURL:     "https://help.activecampaign.com/hc/en-us/articles/207341950-What-is-my-account-name",
 				},
 			},
 		},
