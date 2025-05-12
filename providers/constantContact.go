@@ -1,5 +1,7 @@
 package providers
 
+import "net/http"
+
 const ConstantContact Provider = "constantContact"
 
 func init() {
@@ -8,6 +10,11 @@ func init() {
 		DisplayName: "Constant Contact",
 		AuthType:    Oauth2,
 		BaseURL:     "https://api.cc.email",
+		AuthHealthCheck: &AuthHealthCheck{
+			Method:             http.MethodGet,
+			SuccessStatusCodes: []int{http.StatusOK},
+			Url:                "https://api.cc.email/v3/account/user/privileges",
+		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722326707/media/constantContact_1722326706.svg",
