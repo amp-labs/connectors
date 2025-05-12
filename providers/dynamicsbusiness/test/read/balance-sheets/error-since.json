@@ -1,0 +1,6 @@
+{
+  "error": {
+    "code": "BadRequest",
+    "message": "Could not find a property named 'lastModifiedDateTime' on type 'Microsoft.NAV.balanceSheet'.  CorrelationId:  233b73c2-6ffd-4d0e-8c65-0ae5f29de9a0."
+  }
+}

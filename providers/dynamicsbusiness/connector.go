@@ -2,9 +2,12 @@ package dynamicsbusiness
 
 import (
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/operations"
+	"github.com/amp-labs/connectors/internal/components/reader"
 	"github.com/amp-labs/connectors/internal/components/schema"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -18,9 +21,12 @@ type Connector struct {
 	common.RequireMetadata
 
 	components.SchemaProvider
+	components.Reader
 
 	tenantID  string
 	companyID string
+
+	incrementalRegistry *datautils.Cache[string, bool]
 }
 
 const metadataKeyCompanyID = "companyId"
@@ -43,6 +49,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 		RequireMetadata: common.RequireMetadata{
 			ExpectedMetadataKeys: []string{metadataKeyCompanyID},
 		},
+		incrementalRegistry: datautils.NewCache[string, bool](),
 	}
 
 	connector.SchemaProvider = schema.NewObjectSchemaProvider(
@@ -51,6 +58,21 @@ func constructor(base *components.Connector) (*Connector, error) {
 		operations.SingleObjectMetadataHandlers{
 			BuildRequest:  connector.buildSingleObjectMetadataRequest,
 			ParseResponse: connector.parseSingleObjectMetadataResponse,
+		},
+	)
+
+	errorHandler := interpreter.ErrorHandler{
+		JSON: interpreter.NewFaultyResponder(errorFormats, nil),
+	}.Handle
+
+	connector.Reader = reader.NewHTTPReader(
+		connector.HTTPClient().Client,
+		components.NewEmptyEndpointRegistry(),
+		connector.ProviderContext.Module(),
+		operations.ReadHandlers{
+			BuildRequest:  connector.buildReadRequest,
+			ParseResponse: connector.parseReadResponse,
+			ErrorHandler:  errorHandler,
 		},
 	)
 
