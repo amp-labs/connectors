@@ -8,6 +8,8 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/spyzhov/ajson"
 )
 
 // LCID decimal: https://wiki.freepascal.org/Language_Codes
@@ -88,4 +90,19 @@ type metadataProperty struct {
 		LanguageCode int    `json:"languageCode"`
 		Caption      string `json:"caption"`
 	} `json:"captions"`
+}
+
+func (c *Connector) parseReadResponse(
+	ctx context.Context, params common.ReadParams,
+	request *http.Request, response *common.JSONHTTPResponse,
+) (*common.ReadResult, error) {
+	return common.ParseResult(
+		response,
+		common.ExtractOptionalRecordsFromPath("value"),
+		func(node *ajson.Node) (string, error) {
+			return jsonquery.New(node).StrWithDefault("@odata.nextLink", "")
+		},
+		common.GetMarshaledData,
+		params.Fields,
+	)
 }
