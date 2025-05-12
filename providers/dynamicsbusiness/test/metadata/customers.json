@@ -1,0 +1,580 @@
+{
+  "@odata.context": "https://api.businesscentral.dynamics.com/v2.0/5c6241d0-74cc-48a2-b667-3eb0d738af72/Production/api/v2.0/$metadata#entityDefinitions",
+  "value": [
+    {
+      "entityName": "customer",
+      "entitySetName": "customers",
+      "entityCaptions": [
+        "_object_values_removed_for_brevity_"
+      ],
+      "entitySetCaptions": [
+        "_object_values_removed_for_brevity_"
+      ],
+      "properties": [
+        {
+          "name": "id",
+          "captions": [
+            {
+              "languageCode": 1036,
+              "caption": "ID"
+            },
+            {
+              "languageCode": 1033,
+              "caption": "Id"
+            },
+            {
+              "languageCode": 2058,
+              "caption": "Id."
+            }
+          ]
+        },
+        {
+          "name": "number",
+          "captions": [
+            {
+              "languageCode": 1036,
+              "caption": "N°"
+            },
+            {
+              "languageCode": 1033,
+              "caption": "No."
+            },
+            {
+              "languageCode": 2058,
+              "caption": "N.º"
+            }
+          ]
+        },
+        {
+          "name": "displayName",
+          "captions": [
+            {
+              "languageCode": 1036,
+              "caption": "Nom d’affichage"
+            },
+            {
+              "languageCode": 1033,
+              "caption": "Display Name"
+            },
+            {
+              "languageCode": 2058,
+              "caption": "Nombre para mostrar"
+            }
+          ]
+        },
+        {
+          "name": "type",
+          "captions": [
+            {
+              "languageCode": 1036,
+              "caption": "Type"
+            },
+            {
+              "languageCode": 1033,
+              "caption": "Type"
+            },
+            {
+              "languageCode": 2058,
+              "caption": "Tipo"
+            }
+          ]
+        },
+        {
+          "name": "addressLine1",
+          "captions": [
+            {
+              "languageCode": 1036,
+              "caption": "Ligne adresse 1"
+            },
+            {
+              "languageCode": 1033,
+              "caption": "Address Line 1"
+            },
+            {
+              "languageCode": 2058,
+              "caption": "Línea de dirección 1"
+            }
+          ]
+        },
+        {
+          "name": "addressLine2",
+          "captions": [
+            {
+              "languageCode": 1036,
+              "caption": "Ligne adresse 2"
+            },
+            {
+              "languageCode": 1033,
+              "caption": "Address Line 2"
+            },
+            {
+              "languageCode": 2058,
+              "caption": "Línea de dirección 2"
+            }
+          ]
+        },
+        {
+          "name": "city",
+          "captions": [
+            {
+              "languageCode": 1036,
+              "caption": "Ville"
+            },
+            {
+              "languageCode": 1033,
+              "caption": "City"
+            },
+            {
+              "languageCode": 2058,
+              "caption": "Municipio/Ciudad"
+            }
+          ]
+        },
+        {
+          "name": "state",
+          "captions": [
+            {
+              "languageCode": 1036,
+              "caption": "Région/État"
+            },
+            {
+              "languageCode": 1033,
+              "caption": "State"
+            },
+            {
+              "languageCode": 2058,
+              "caption": "Provincia"
+            }
+          ]
+        },
+        {
+          "name": "country",
+          "captions": [
+            {
+              "languageCode": 1036,
+              "caption": "Code pays/région"
+            },
+            {
+              "languageCode": 1033,
+              "caption": "Country/Region Code"
+            },
+            {
+              "languageCode": 2058,
+              "caption": "Código de país o región"
+            }
+          ]
+        },
+        {
+          "name": "postalCode",
+          "captions": [
+            {
+              "languageCode": 1036,
+              "caption": "Code postal"
+            },
+            {
+              "languageCode": 1033,
+              "caption": "ZIP Code"
+            },
+            {
+              "languageCode": 2058,
+              "caption": "Código postal"
+            }
+          ]
+        },
+        {
+          "name": "phoneNumber",
+          "captions": [
+            {
+              "languageCode": 1036,
+              "caption": "N° téléphone"
+            },
+            {
+              "languageCode": 1033,
+              "caption": "Phone No."
+            },
+            {
+              "languageCode": 2058,
+              "caption": "N.º teléfono"
+            }
+          ]
+        },
+        {
+          "name": "email",
+          "captions": [
+            {
+              "languageCode": 1036,
+              "caption": "Adresse e-mail"
+            },
+            {
+              "languageCode": 1033,
+              "caption": "Email"
+            },
+            {
+              "languageCode": 2058,
+              "caption": "Correo electrónico"
+            }
+          ]
+        },
+        {
+          "name": "website",
+          "captions": [
+            {
+              "languageCode": 1036,
+              "caption": "Site web"
+            },
+            {
+              "languageCode": 1033,
+              "caption": "Website"
+            },
+            {
+              "languageCode": 2058,
+              "caption": "Sitio web"
+            }
+          ]
+        },
+        {
+          "name": "salespersonCode",
+          "captions": [
+            {
+              "languageCode": 1036,
+              "caption": "Code vendeur"
+            },
+            {
+              "languageCode": 1033,
+              "caption": "Salesperson Code"
+            },
+            {
+              "languageCode": 2058,
+              "caption": "Cód. vendedor"
+            }
+          ]
+        },
+        {
+          "name": "balanceDue",
+          "captions": [
+            {
+              "languageCode": 1036,
+              "caption": "Solde dû"
+            },
+            {
+              "languageCode": 1033,
+              "caption": "Balance Due"
+            },
+            {
+              "languageCode": 2058,
+              "caption": "Saldo vencido"
+            }
+          ]
+        },
+        {
+          "name": "creditLimit",
+          "captions": [
+            {
+              "languageCode": 1036,
+              "caption": "Crédit autorisé"
+            },
+            {
+              "languageCode": 1033,
+              "caption": "Credit Limit"
+            },
+            {
+              "languageCode": 2058,
+              "caption": "Límite de crédito"
+            }
+          ]
+        },
+        {
+          "name": "taxLiable",
+          "captions": [
+            {
+              "languageCode": 1036,
+              "caption": "Soumis à recouvrement"
+            },
+            {
+              "languageCode": 1033,
+              "caption": "Tax Liable"
+            },
+            {
+              "languageCode": 2058,
+              "caption": "Sujeto a impuestos"
+            }
+          ]
+        },
+        {
+          "name": "taxAreaId",
+          "captions": [
+            {
+              "languageCode": 1036,
+              "caption": "ID zone de recouvrement"
+            },
+            {
+              "languageCode": 1033,
+              "caption": "Tax Area Id"
+            },
+            {
+              "languageCode": 2058,
+              "caption": "Id. área impuesto"
+            }
+          ]
+        },
+        {
+          "name": "taxAreaDisplayName",
+          "captions": [
+            {
+              "languageCode": 1036,
+              "caption": "Nom d’affichage de zone de recouvrement"
+            },
+            {
+              "languageCode": 1033,
+              "caption": "Tax Area Display Name"
+            },
+            {
+              "languageCode": 2058,
+              "caption": "Nombre para mostrar de área de impuesto"
+            }
+          ]
+        },
+        {
+          "name": "taxRegistrationNumber",
+          "captions": [
+            {
+              "languageCode": 1036,
+              "caption": "N ° identif. fiscale"
+            },
+            {
+              "languageCode": 1033,
+              "caption": "Tax Registration No."
+            },
+            {
+              "languageCode": 2058,
+              "caption": "CIF/NIF"
+            }
+          ]
+        },
+        {
+          "name": "currencyId",
+          "captions": [
+            {
+              "languageCode": 1036,
+              "caption": "ID devise"
+            },
+            {
+              "languageCode": 1033,
+              "caption": "Currency Id"
+            },
+            {
+              "languageCode": 2058,
+              "caption": "Id. de divisa"
+            }
+          ]
+        },
+        {
+          "name": "currencyCode",
+          "captions": [
+            {
+              "languageCode": 1036,
+              "caption": "Code devise"
+            },
+            {
+              "languageCode": 1033,
+              "caption": "Currency Code"
+            },
+            {
+              "languageCode": 2058,
+              "caption": "Código de divisa"
+            }
+          ]
+        },
+        {
+          "name": "paymentTermsId",
+          "captions": [
+            {
+              "languageCode": 1036,
+              "caption": "ID conditions de paiement"
+            },
+            {
+              "languageCode": 1033,
+              "caption": "Payment Terms Id"
+            },
+            {
+              "languageCode": 2058,
+              "caption": "Id. de condiciones de pago"
+            }
+          ]
+        },
+        {
+          "name": "shipmentMethodId",
+          "captions": [
+            {
+              "languageCode": 1036,
+              "caption": "ID conditions de livraison"
+            },
+            {
+              "languageCode": 1033,
+              "caption": "Shipment Method Id"
+            },
+            {
+              "languageCode": 2058,
+              "caption": "Id. de método de envío"
+            }
+          ]
+        },
+        {
+          "name": "paymentMethodId",
+          "captions": [
+            {
+              "languageCode": 1036,
+              "caption": "ID mode de règlement"
+            },
+            {
+              "languageCode": 1033,
+              "caption": "Payment Method Id"
+            },
+            {
+              "languageCode": 2058,
+              "caption": "Id. de forma pago"
+            }
+          ]
+        },
+        {
+          "name": "blocked",
+          "captions": [
+            {
+              "languageCode": 1036,
+              "caption": "Bloqué"
+            },
+            {
+              "languageCode": 1033,
+              "caption": "Blocked"
+            },
+            {
+              "languageCode": 2058,
+              "caption": "Bloqueado"
+            }
+          ]
+        },
+        {
+          "name": "lastModifiedDateTime",
+          "captions": [
+            {
+              "languageCode": 1036,
+              "caption": "Date dernière modification"
+            },
+            {
+              "languageCode": 1033,
+              "caption": "Last Modified Date"
+            },
+            {
+              "languageCode": 2058,
+              "caption": "Fecha última modificación"
+            }
+          ]
+        },
+        {
+          "name": "customerFinancialDetail",
+          "captions": [
+            {
+              "languageCode": 1036,
+              "caption": "Détails financiers du client"
+            },
+            {
+              "languageCode": 1033,
+              "caption": "Customer Financial Details"
+            },
+            {
+              "languageCode": 2058,
+              "caption": "Detalles financieros del cliente"
+            }
+          ]
+        },
+        {
+          "name": "picture",
+          "captions": [
+            {
+              "languageCode": 1036,
+              "caption": "Image"
+            },
+            {
+              "languageCode": 1033,
+              "caption": "Picture"
+            },
+            {
+              "languageCode": 2058,
+              "caption": "Fotografía"
+            }
+          ]
+        },
+        {
+          "name": "defaultDimensions",
+          "captions": [
+            {
+              "languageCode": 1036,
+              "caption": "Axes analytiques par défaut"
+            },
+            {
+              "languageCode": 1033,
+              "caption": "Default Dimensions"
+            },
+            {
+              "languageCode": 2058,
+              "caption": "Dimensiones predeterminadas"
+            }
+          ]
+        },
+        {
+          "name": "agedAccountsReceivable",
+          "captions": [
+            {
+              "languageCode": 1036,
+              "caption": "Comptabilité client chronologique"
+            },
+            {
+              "languageCode": 1033,
+              "caption": "Aged Accounts Receivable"
+            },
+            {
+              "languageCode": 2058,
+              "caption": "Antigüedad cobros"
+            }
+          ]
+        },
+        {
+          "name": "contactsInformation",
+          "captions": [
+            {
+              "languageCode": 1036,
+              "caption": "Informations sur les contacts"
+            },
+            {
+              "languageCode": 1033,
+              "caption": "Contacts Information"
+            },
+            {
+              "languageCode": 2058,
+              "caption": "Información de contactos"
+            }
+          ]
+        },
+        {
+          "name": "documentAttachments",
+          "captions": [
+            {
+              "languageCode": 1036,
+              "caption": "Documents joints"
+            },
+            {
+              "languageCode": 1033,
+              "caption": "Document Attachments"
+            },
+            {
+              "languageCode": 2058,
+              "caption": "Archivos adjuntos de documento"
+            }
+          ]
+        }
+      ],
+      "actions": [],
+      "enumMembers": []
+    }
+  ]
+}
