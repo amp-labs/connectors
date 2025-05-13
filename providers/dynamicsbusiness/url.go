@@ -1,6 +1,10 @@
 package dynamicsbusiness
 
-import "github.com/amp-labs/connectors/common/urlbuilder"
+import (
+	"fmt"
+
+	"github.com/amp-labs/connectors/common/urlbuilder"
+)
 
 // Microsoft uses special symbology when making queries.
 var queryEncodingExceptions = map[string]string{ //nolint:gochecknoglobals
@@ -24,4 +28,11 @@ func (c *Connector) getMetadataURL() (*urlbuilder.URL, error) {
 	return constructURL(c.ProviderInfo().BaseURL,
 		"v2.0", c.tenantID,
 		"/Production/api/v2.0/entityDefinitions")
+}
+
+func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
+	return constructURL(c.ProviderInfo().BaseURL,
+		"v2.0", c.tenantID,
+		fmt.Sprintf("/Production/api/v2.0/companies(%v)", c.companyID),
+		objectName)
 }
