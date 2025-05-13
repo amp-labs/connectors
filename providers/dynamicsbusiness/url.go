@@ -30,7 +30,7 @@ func (c *Connector) getMetadataURL() (*urlbuilder.URL, error) {
 		"/Production/api/v2.0/entityDefinitions")
 }
 
-func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
+func (c *Connector) getURL(objectName string) (*urlbuilder.URL, error) {
 	return constructURL(c.ProviderInfo().BaseURL,
 		"v2.0", c.tenantID,
 		fmt.Sprintf("/Production/api/v2.0/companies(%v)", c.companyID),

@@ -1,7 +1,9 @@
 package dynamicsbusiness
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
@@ -57,7 +59,7 @@ func (c *Connector) buildReadURL(ctx context.Context, params common.ReadParams) 
 	}
 
 	// First page
-	url, err := c.getReadURL(params.ObjectName)
+	url, err := c.getURL(params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -112,7 +114,7 @@ func (c *Connector) isIncrementObject(ctx context.Context, params common.ReadPar
 // This is determined by requesting one item and checking if the response is successful.
 // Errors in the 5xx range indicate temporary failures; 4xx indicates lack of support.
 func (c *Connector) fetchIsIncrementObject(ctx context.Context, params common.ReadParams) (bool, error) {
-	url, err := c.getReadURL(params.ObjectName)
+	url, err := c.getURL(params.ObjectName)
 	if err != nil {
 		return false, err
 	}
@@ -147,4 +149,48 @@ func (c *Connector) fetchIsIncrementObject(ctx context.Context, params common.Re
 
 	// 2xx indicates that query param can be accepted by the API.
 	return httpkit.Status2xx(response.StatusCode), nil
+}
+
+func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+	method := http.MethodPost
+	resource := params.ObjectName
+
+	if params.RecordId != "" {
+		method = http.MethodPatch
+		resource = fmt.Sprintf("%s(%s)", params.ObjectName, params.RecordId)
+	}
+
+	url, err := c.getURL(resource)
+	if err != nil {
+		return nil, err
+	}
+
+	jsonData, err := json.Marshal(params.RecordData)
+	if err != nil {
+		return nil, err
+	}
+
+	request, err := http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
+	if err != nil {
+		return nil, err
+	}
+
+	// Update requires `If-Match` header.
+	// https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-odata/c3569037-0557-4769-8f75-a91ffcd7b05b
+	if params.RecordId != "" {
+		request.Header.Set("If-Match", "*")
+	}
+
+	return request, nil
+}
+
+func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
+	resource := fmt.Sprintf("%s(%s)", params.ObjectName, params.RecordId)
+
+	url, err := c.getURL(resource)
+	if err != nil {
+		return nil, err
+	}
+
+	return http.NewRequestWithContext(ctx, http.MethodDelete, url.String(), nil)
 }
