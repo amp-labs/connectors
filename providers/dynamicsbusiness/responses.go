@@ -3,6 +3,7 @@ package dynamicsbusiness
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -105,4 +106,44 @@ func (c *Connector) parseReadResponse(
 		common.GetMarshaledData,
 		params.Fields,
 	)
+}
+
+func (c *Connector) parseWriteResponse(
+	ctx context.Context, params common.WriteParams, request *http.Request, response *common.JSONHTTPResponse,
+) (*common.WriteResult, error) {
+	body, ok := response.Body()
+	if !ok {
+		return &common.WriteResult{
+			Success: true,
+		}, nil
+	}
+
+	recordID, err := jsonquery.New(body).TextWithDefault("id", "")
+	if err != nil {
+		return nil, err
+	}
+
+	data, err := jsonquery.Convertor.ObjectToMap(body)
+	if err != nil {
+		return nil, err
+	}
+
+	return &common.WriteResult{
+		Success:  true,
+		RecordId: recordID,
+		Data:     data,
+	}, nil
+}
+
+func (c *Connector) parseDeleteResponse(
+	ctx context.Context, params common.DeleteParams, request *http.Request, response *common.JSONHTTPResponse,
+) (*common.DeleteResult, error) {
+	if response.Code != http.StatusOK && response.Code != http.StatusNoContent {
+		return nil, fmt.Errorf("%w: failed to delete record: %d", common.ErrRequestFailed, response.Code)
+	}
+
+	// A successful delete returns 200 OK
+	return &common.DeleteResult{
+		Success: true,
+	}, nil
 }
