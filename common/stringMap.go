@@ -16,7 +16,7 @@ var (
 
 type StringMap map[string]any
 
-func (m StringMap) Keys(key string) []string {
+func (m StringMap) Keys() []string {
 	return slices.AppendSeq(make([]string, 0, len(m)), maps.Keys(m))
 }
 
