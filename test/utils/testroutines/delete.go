@@ -17,6 +17,10 @@ type (
 // Run provides a procedure to test connectors.DeleteConnector
 func (d Delete) Run(t *testing.T, builder ConnectorBuilder[connectors.DeleteConnector]) {
 	t.Helper()
+	t.Cleanup(func() {
+		DeleteType(d).Close()
+	})
+
 	conn := builder.Build(t, d.Name)
 	output, err := conn.Delete(context.Background(), d.Input)
 	DeleteType(d).Validate(t, err, output)
