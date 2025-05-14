@@ -3,7 +3,9 @@ package schema
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log/slog"
+	"slices"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
@@ -23,7 +25,7 @@ func NewCompositeSchemaProvider(schemaProviders ...components.SchemaProvider) *C
 }
 
 // ListObjectMetadata tries each schema provider in order, and returns the best result with the least errors.
-func (c *CompositeSchemaProvider) ListObjectMetadata(
+func (c *CompositeSchemaProvider) xListObjectMetadata(
 	ctx context.Context,
 	objects []string,
 ) (*common.ListObjectMetadataResult, error) {
@@ -67,6 +69,44 @@ func (c *CompositeSchemaProvider) ListObjectMetadata(
 	// TODO: Do a better implementation of best effort
 
 	return bestResult, nil
+}
+
+// ListObjectMetadata tries each schema provider in order, and returns the best result with the least errors.
+func (c *CompositeSchemaProvider) ListObjectMetadata(
+	ctx context.Context,
+	objects []string,
+) (*common.ListObjectMetadataResult, error) {
+	result := &common.ListObjectMetadataResult{
+		Result: make(map[string]common.ObjectMetadata),
+		Errors: make(map[string]error),
+	}
+
+	// Keep track of failed objects. Initially  we assume all object have failed.
+	failures := objects
+
+	for _, schemaProvider := range c.schemaProviders {
+		fmt.Println("Schema Provider: ", schemaProvider)
+		metadata, err := safeGetMetadata(schemaProvider, ctx, failures)
+		if err != nil {
+			slog.Error("Schema provider failed with error", "schemaProvider", schemaProvider, "error", err)
+
+			continue
+		}
+
+		// Append successfull object metadatas to the result metadata.
+		for obj, mtdata := range metadata.Result {
+			result.Result[obj] = mtdata
+		}
+
+		// Assumes the object response was a success, we remove the object from failures.
+		// adds all errored objects to failures list.
+		failures = slices.Delete(failures, 0, len(failures))
+		for obj := range metadata.Errors {
+			failures = append(failures, obj)
+		}
+	}
+
+	return result, nil
 }
 
 // safeGetMetadata is a helper function that safely executes the provider's ListObjectMetadata method
