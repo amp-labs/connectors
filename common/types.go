@@ -156,6 +156,8 @@ type ReadParams struct {
 	//	* Stripe: Only nested objects can be expanded. Specify a dot-separated path
 	//		to the property to fetch and expand those objects.
 	//		Reference: https://docs.stripe.com/expand#how-it-works
+	//	* Capsule: Embeds objects in response.
+	//		Reference: https://developer.capsulecrm.com/v2/overview/reading-from-the-api
 	AssociatedObjects []string // optional
 }
 
