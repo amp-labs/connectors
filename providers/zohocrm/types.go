@@ -75,8 +75,9 @@ const (
 
 //nolint:tagliatelle
 type FieldSelection struct {
-	GroupOperator GroupOperator `json:"group_operator"`
-	Group         []FieldGroup  `json:"group"`
+	GroupOperator GroupOperator `json:"group_operator,omitempty"`
+	Group         []FieldGroup  `json:"group,omitempty"`
+	Field         *Field        `json:"field,omitempty"`
 }
 
 //nolint:tagliatelle

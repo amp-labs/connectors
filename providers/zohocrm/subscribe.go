@@ -453,6 +453,7 @@ func (c *Connector) getNotificationConditions(
 	}
 
 	fieldGroups := make([]FieldGroup, 0)
+
 	//nolint:forcetypeassert
 	for fieldName, fieldMetadata := range watchFieldsMetadata {
 		fieldGroups = append(fieldGroups, FieldGroup{
@@ -464,12 +465,18 @@ func (c *Connector) getNotificationConditions(
 		})
 	}
 
-	fieldSelection := FieldSelection{
-		GroupOperator: GroupOperatorOr,
-		Group:         fieldGroups,
-	}
+	var fieldSelection FieldSelection
 
-	// fmt.Println("watchFieldsMetadata", debug.PrettyFormatStringJSON(watchFieldsMetadata))
+	if len(fieldGroups) == 1 {
+		fieldSelection = FieldSelection{
+			Field: fieldGroups[0].Field,
+		}
+	} else {
+		fieldSelection = FieldSelection{
+			Group:         fieldGroups,
+			GroupOperator: GroupOperatorOr,
+		}
+	}
 
 	//nolint:forcetypeassert
 	return []NotificationCondition{
