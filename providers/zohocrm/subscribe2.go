@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -11,6 +12,8 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/mitchellh/hashstructure"
 )
 
 const (
@@ -22,6 +25,7 @@ const (
 	maxWatchFields = 10
 
 	ResultStatusSuccess = "SUCCESS"
+	defaultDuration     = 7 * 24 * time.Hour // 1 week and this is max duration for subscription
 )
 
 var errInvalidModuleEvent = errors.New("invalid module event")
@@ -106,7 +110,7 @@ type Watch struct {
 	ChannelID                 string                  `json:"channel_id"`
 	Events                    []ModuleEvent           `json:"events"`
 	NotificationCondition     []NotificationCondition `json:"notification_condition,omitempty"`
-	ChannelExpiry             *time.Time              `json:"channel_expiry,omitempty"`
+	ChannelExpiry             string                  `json:"channel_expiry,omitempty"`
 	Token                     string                  `json:"token,omitempty"`
 	ReturnAffectedFieldValues bool                    `json:"return_affected_field_values,omitempty"`
 	NotifyURL                 string                  `json:"notify_url"`
@@ -161,7 +165,7 @@ type Result struct {
 	Watch []WatchResult `json:"watch"`
 }
 
-//nolint:funlen
+//nolint:funlen,cyclop
 func (c *Connector) Subscribe(
 	ctx context.Context,
 	params common.SubscribeParams,
@@ -189,7 +193,14 @@ func (c *Connector) Subscribe(
 
 	var subscriptionErr error
 
-	exp := time.Now().Add(*req.Duration)
+	var dur time.Duration
+	if req.Duration != nil {
+		dur = *req.Duration
+	} else {
+		dur = defaultDuration
+	}
+
+	exp := time.Now().Add(dur)
 
 	// iterate over all objects and events
 	for obj, evt := range params.SubscriptionEvents {
@@ -209,15 +220,30 @@ func (c *Connector) Subscribe(
 			}
 
 			formattedObjName := naming.CapitalizeFirstLetterEveryWord(string(objName))
+
+			channelID := req.UniqueRef + "_" + formattedObjName
+
+			hashedChannelID, err := hashstructure.Hash(channelID, &hashstructure.HashOptions{})
+			if err != nil {
+				subscriptionErr = errors.Join(
+					subscriptionErr,
+					fmt.Errorf("error hashing unique ref: %w", err),
+				)
+
+				return
+			}
+
+			expiryStr := datautils.Time.FormatRFC3339inUTC(exp)
+
 			moduleMetadata := moduleMetadataMap[string(objName)]
 			watchObject := Watch{
-				ChannelID:                 req.UniqueRef + "_" + formattedObjName,
+				ChannelID:                 strconv.FormatUint(hashedChannelID, 10),
 				Events:                    mappedEvents, // this will list of events for the object
 				NotifyURL:                 req.WebhookEndPoint + "/objects/" + string(objName),
 				Token:                     req.UniqueRef,
 				ReturnAffectedFieldValues: true,
 				NotifyOnRelatedAction:     false, // TODO: [ENG-2229] Enable this when association update is enabled
-				ChannelExpiry:             &exp,
+				ChannelExpiry:             expiryStr,
 			}
 
 			// get notification conditions per object
@@ -447,12 +473,19 @@ func (c *Connector) getNotificationConditions(
 	for fieldName, fieldMetadata := range watchFieldsMetadata {
 		fieldGroups = append(fieldGroups, FieldGroup{
 			Field: &Field{
-				APIName: fieldName,
+				APIName: naming.CapitalizeFirstLetterEveryWord(fieldName),
 
 				ID: fieldMetadata["id"].(string),
 			},
 		})
 	}
+
+	fieldSelection := FieldSelection{
+		GroupOperator: GroupOperatorOr,
+		Group:         fieldGroups,
+	}
+
+	// fmt.Println("watchFieldsMetadata", debug.PrettyFormatStringJSON(watchFieldsMetadata))
 
 	//nolint:forcetypeassert
 	return []NotificationCondition{
@@ -462,10 +495,7 @@ func (c *Connector) getNotificationConditions(
 				APIName: moduleMetadata["api_name"].(string), // this is object name
 				Id:      moduleMetadata["id"].(string),       // this is object type id
 			},
-			FieldSelection: FieldSelection{
-				GroupOperator: GroupOperatorOr,
-				Group:         fieldGroups,
-			},
+			FieldSelection: fieldSelection,
 		},
 	}, nil
 }
