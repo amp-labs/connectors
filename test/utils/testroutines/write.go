@@ -17,6 +17,10 @@ type (
 // Run provides a procedure to test connectors.WriteConnector
 func (w Write) Run(t *testing.T, builder ConnectorBuilder[connectors.WriteConnector]) {
 	t.Helper()
+	t.Cleanup(func() {
+		WriteType(w).Close()
+	})
+
 	conn := builder.Build(t, w.Name)
 	output, err := conn.Write(context.Background(), w.Input)
 	WriteType(w).Validate(t, err, output)
