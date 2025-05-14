@@ -105,7 +105,7 @@ func main() {
 		return
 	}
 
-	fmt.Println("Update subscription results:", prettyPrint(updateResult))
+	// fmt.Println("Update subscription results:", prettyPrint(updateResult))
 
 	err = conn.DeleteSubscription(ctx, *updateResult)
 	if err != nil {
