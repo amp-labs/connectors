@@ -35,7 +35,7 @@ const NotificationExpiryDate = 6
 // Zoho CRM doesn't require registration - we directly subscribe to events.
 //
 //nolint:funlen, cyclop
-func (c *Connector) Subscribe(
+func (c *Connector) Subscribe2(
 	ctx context.Context,
 	params common.SubscribeParams,
 ) (*common.SubscriptionResult, error) {
@@ -301,7 +301,7 @@ func (c *Connector) CreateNotification(ctx context.Context, notification *Notifi
 		return nil, errInvalidResponse
 	}
 
-	if watchResult["code"] != "SUCCESS" {
+	if watchResult["code"] != ResultStatusSuccess {
 		return nil, fmt.Errorf("failed to create notification: %v", watchResult["message"]) //nolint:err113
 	}
 
