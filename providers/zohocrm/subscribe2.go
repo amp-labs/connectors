@@ -2,6 +2,7 @@ package zohocrm
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 	"sync"
@@ -17,13 +18,19 @@ const (
 	OperationEdit   = "edit"
 	OperationDelete = "delete"
 	OperationAll    = "all"
+
+	maxWatchFields = 10
+
+	ResultStatusSuccess = "SUCCESS"
 )
 
-// ModuleEvent represents a module and operation combination
+var errInvalidModuleEvent = errors.New("invalid module event")
+
+// ModuleEvent represents a module and operation combination.
 type ModuleEvent string
 
-// String returns the formatted string representation of the module event
-func (me ModuleEvent) moduleAPI() (string, error) {
+// String returns the formatted string representation of the module event.
+func (me ModuleEvent) ModuleAPI() (string, error) {
 	parts, err := me.parts()
 	if err != nil {
 		return "", err
@@ -32,7 +39,7 @@ func (me ModuleEvent) moduleAPI() (string, error) {
 	return parts[0], nil
 }
 
-func (me ModuleEvent) operation() (string, error) {
+func (me ModuleEvent) Operation() (string, error) {
 	parts, err := me.parts()
 	if err != nil {
 		return "", err
@@ -43,8 +50,9 @@ func (me ModuleEvent) operation() (string, error) {
 
 func (me ModuleEvent) parts() ([]string, error) {
 	parts := strings.Split(string(me), ".")
+	//nolint:mnd
 	if len(parts) != 2 {
-		return nil, fmt.Errorf("invalid module event: %s", me)
+		return nil, fmt.Errorf("%w: %s", errInvalidModuleEvent, me)
 	}
 
 	return parts, nil
@@ -54,12 +62,14 @@ type SubscriptionPayload struct {
 	Watch []Watch `json:"watch"`
 }
 
+//nolint:tagliatelle
 type NotificationCondition struct {
 	Type           string         `json:"type"`
 	Module         Module         `json:"module"`
 	FieldSelection FieldSelection `json:"field_selection"`
 }
 
+//nolint:tagliatelle
 type Module struct {
 	APIName string `json:"api_name"`
 	Id      string `json:"id"`
@@ -67,34 +77,40 @@ type Module struct {
 
 type GroupOperator string
 
-const GroupOperationOr = "or"
-const GroupOperatorAnd = "and"
+const (
+	GroupOperatorOr  = "or"
+	GroupOperatorAnd = "and"
+)
 
+//nolint:tagliatelle
 type FieldSelection struct {
 	GroupOperator GroupOperator `json:"group_operator"`
 	Group         []FieldGroup  `json:"group"`
 }
 
+//nolint:tagliatelle
 type FieldGroup struct {
 	Field         *Field       `json:"field,omitempty"`
 	GroupOperator string       `json:"group_operator,omitempty"`
 	Group         []FieldGroup `json:"group,omitempty"`
 }
 
+//nolint:tagliatelle
 type Field struct {
 	APIName string `json:"api_name"`
 	ID      string `json:"id"`
 }
 
+//nolint:tagliatelle
 type Watch struct {
-	ChannelID                    string                  `json:"channel_id"`
-	Events                       []ModuleEvent           `json:"events"`
-	NotificationCondition        []NotificationCondition `json:"notification_condition,omitempty"`
-	ChannelExpiry                *time.Time              `json:"channel_expiry,omitempty"`
-	Token                        string                  `json:"token,omitempty"`
-	ReturnAffectedFieldValues    bool                    `json:"return_affected_field_values,omitempty"`
-	NotifyURL                    string                  `json:"notify_url"`
-	NotifyOnRelatedRelatedAction bool                    `json:"notify_on_related_related_action,omitempty"`
+	ChannelID                 string                  `json:"channel_id"`
+	Events                    []ModuleEvent           `json:"events"`
+	NotificationCondition     []NotificationCondition `json:"notification_condition,omitempty"`
+	ChannelExpiry             *time.Time              `json:"channel_expiry,omitempty"`
+	Token                     string                  `json:"token,omitempty"`
+	ReturnAffectedFieldValues bool                    `json:"return_affected_field_values,omitempty"`
+	NotifyURL                 string                  `json:"notify_url"`
+	NotifyOnRelatedAction     bool                    `json:"notify_on_related_action,omitempty"`
 }
 
 func (c *Connector) getSubscribeURL() (string, error) {
@@ -124,24 +140,32 @@ func (c *Connector) getModulesMetadataURL() (string, error) {
 	return url.String(), nil
 }
 
+//nolint:tagliatelle
 type SubscriptionRequest struct {
-	UniqueRef string `json:"unique_ref"`
+	UniqueRef       string         `json:"unique_ref"`
+	WebhookEndPoint string         `json:"webhook_end_point"`
+	Duration        *time.Duration `json:"duration,omitempty"`
 }
 
 var (
-	errMissingParams      = fmt.Errorf("missing parameters")
-	errInvalidRequestType = fmt.Errorf("invalid request type")
+	errWatchFieldsAll        = errors.New("watch fields all is not supported")
+	errTooManyWatchFields    = errors.New("too many watch fields")
+	errSubscriptionFailed    = errors.New("subscription failed")
+	errNoSubscriptionCreated = errors.New("no subscription created")
+	errUnsupportedEventType  = errors.New("unsupported event type")
+	errFieldNotFound         = errors.New("field not found")
+	errObjectNameNotFound    = errors.New("object name not found")
 )
 
+type Result struct {
+	Watch []WatchResult `json:"watch"`
+}
+
+//nolint:funlen
 func (c *Connector) Subscribe(
 	ctx context.Context,
 	params common.SubscribeParams,
 ) (*common.SubscriptionResult, error) {
-	subscribeURL, err := c.getSubscribeURL()
-	if err != nil {
-		return nil, err
-	}
-
 	if params.Request == nil {
 		return nil, fmt.Errorf("%w: request is nil", errMissingParams)
 	}
@@ -160,64 +184,111 @@ func (c *Connector) Subscribe(
 		return nil, fmt.Errorf("error getting module metadata map: %w", err)
 	}
 
+	//nolint:varnamelen
 	var wg sync.WaitGroup
-	var err error
 
+	var subscriptionErr error
+
+	exp := time.Now().Add(*req.Duration)
+
+	// iterate over all objects and events
 	for obj, evt := range params.SubscriptionEvents {
 		wg.Add(1)
+
 		go func(objName common.ObjectName, event common.ObjectEvents) {
-			var goroutineErr error
-			ctx, cancel := context.WithCancel(ctx)
 			defer wg.Done()
+
+			mappedEvents, err := mapEvents(string(objName), event.Events)
+			if err != nil {
+				subscriptionErr = errors.Join(
+					subscriptionErr,
+					fmt.Errorf("error mapping events: %w", err),
+				)
+
+				return
+			}
 
 			formattedObjName := naming.CapitalizeFirstLetterEveryWord(string(objName))
 			moduleMetadata := moduleMetadataMap[string(objName)]
 			watchObject := Watch{
-				ChannelID: req.UniqueRef + "_" + formattedObjName,
-				Events:    mapEvents(string(objName), event.Events),
+				ChannelID:                 req.UniqueRef + "_" + formattedObjName,
+				Events:                    mappedEvents, // this will list of events for the object
+				NotifyURL:                 req.WebhookEndPoint + "/objects/" + string(objName),
+				Token:                     req.UniqueRef,
+				ReturnAffectedFieldValues: true,
+				NotifyOnRelatedAction:     false, // TODO: [ENG-2229] Enable this when association update is enabled
+				ChannelExpiry:             &exp,
 			}
 
-			var fieldMetadata *metadataFields
-			if len(event.WatchFields) > 0 {
-				fieldMetadata, goroutineErr = c.getfieldsMetadata(ctx, moduleMetadata)
-				if goroutineErr != nil {
-					err = fmt.Errorf("error getting fields metadata: %w", goroutineErr)
-					cancel()
-					return
-				}
+			// get notification conditions per object
+			notificationConditions, goroutineErr := c.getNotificationConditions(ctx, moduleMetadata, event)
+			if goroutineErr != nil {
+				subscriptionErr = errors.Join(
+					subscriptionErr,
+					fmt.Errorf("error getting notification conditions: %w", goroutineErr),
+				)
+
+				return
 			}
 
-			fieldGroups := make([]FieldGroup, 0)
+			watchObject.NotificationCondition = notificationConditions
 
-			for _, field := range event.WatchFields {
-				for _, fieldMetadata := range fieldMetadata.Fields {
-			}
-
-			watchObject.NotificationCondition = []NotificationCondition{
-				{
-					Type: "field_selection",
-					Module: Module{
-						APIName: moduleMetadata["api_name"].(string),
-						Id:      moduleMetadata["id"].(string),
-					},
-					FieldSelection: FieldSelection{
-						GroupOperator: GroupOperator,
-						Group:         []FieldGroup{
-
-						},
-					},
-				},
-			}
+			payload.Watch = append(payload.Watch, watchObject)
 		}(obj, evt)
 	}
 
-	return nil, nil
+	wg.Wait()
+
+	if subscriptionErr != nil {
+		return nil, fmt.Errorf("error subscribing to events: %w", subscriptionErr)
+	}
+
+	res, err := c.enableSubscription(ctx, payload)
+	if err != nil {
+		return nil, fmt.Errorf("error enabling subscription: %w", err)
+	}
+
+	subscriptionResult := &common.SubscriptionResult{
+		Result:       res,
+		ObjectEvents: params.SubscriptionEvents,
+		Status:       common.SubscriptionStatusSuccess,
+	}
+
+	return subscriptionResult, nil
 }
 
-func mapEvents(apiName string, events []common.SubscriptionEventType) []ModuleEvent {
+func (c *Connector) enableSubscription(ctx context.Context, payload *SubscriptionPayload) (*Result, error) {
+	url, err := c.getSubscribeURL()
+	if err != nil {
+		return nil, fmt.Errorf("error getting subscribe URL: %w", err)
+	}
+
+	resp, err := c.Client.Post(ctx, url, payload)
+	if err != nil {
+		return nil, fmt.Errorf("error creating subscription: %w", err)
+	}
+
+	body, err := common.UnmarshalJSON[Result](resp)
+	if err != nil {
+		return nil, fmt.Errorf("error unmarshalling subscription response: %w", err)
+	}
+
+	if body.Watch[0].Code != ResultStatusSuccess {
+		return nil, fmt.Errorf("%w: %s", errSubscriptionFailed, body.Watch[0].Message)
+	}
+
+	if len(body.Watch) == 0 {
+		return nil, errNoSubscriptionCreated
+	}
+
+	return body, nil
+}
+
+func mapEvents(apiName string, events []common.SubscriptionEventType) ([]ModuleEvent, error) {
 	moduleEvents := make([]ModuleEvent, 0)
 
 	for _, event := range events {
+		//nolint:exhaustive
 		switch event {
 		case common.SubscriptionEventTypeCreate:
 			moduleEvents = append(moduleEvents, ModuleEvent(apiName+"."+OperationCreate))
@@ -225,10 +296,12 @@ func mapEvents(apiName string, events []common.SubscriptionEventType) []ModuleEv
 			moduleEvents = append(moduleEvents, ModuleEvent(apiName+"."+OperationEdit))
 		case common.SubscriptionEventTypeDelete:
 			moduleEvents = append(moduleEvents, ModuleEvent(apiName+"."+OperationDelete))
+		default:
+			return nil, fmt.Errorf("%w: %s", errUnsupportedEventType, event)
 		}
 	}
 
-	return moduleEvents
+	return moduleEvents, nil
 }
 
 type ModuleMetadata struct {
@@ -249,30 +322,24 @@ func (c *Connector) fetchModuleMetadata(ctx context.Context, metadataURL string)
 	return response, nil
 }
 
-func modulesMetadataToMap(metadata *ModuleMetadata) map[string]any {
-	modules := make(map[string]any)
-
-	for _, module := range metadata.Modules {
-		modules["module_name"] = module
-	}
-
-	return modules
-}
-
-func (c *Connector) getModuleMetadata(ctx context.Context, params common.SubscribeParams) (map[string]map[string]any, error) {
+func (c *Connector) getModuleMetadata(
+	ctx context.Context,
+	params common.SubscribeParams,
+) (map[string]map[string]any, error) {
 	objectNames := make([]string, 0)
-	for obj, _ := range params.SubscriptionEvents {
+	for obj := range params.SubscriptionEvents {
 		objectNames = append(objectNames, string(obj))
 	}
 
 	var metadataURL string
+
 	var err error
 
+	//nolint:gocritic
 	if len(objectNames) == 0 {
 		return nil, fmt.Errorf("%w: no subscription events provided", errMissingParams)
 	} else if len(objectNames) > 1 {
 		metadataURL, err = c.getModulesMetadataURL()
-
 	} else {
 		metadataURL, err = c.getModuleMetadataURL(objectNames[0])
 	}
@@ -290,15 +357,19 @@ func (c *Connector) getModuleMetadata(ctx context.Context, params common.Subscri
 
 	for _, objName := range objectNames {
 		found := false
+
 		for _, module := range modulesMetadata.Modules {
+			//nolint:forcetypeassert
 			if naming.PluralityAndCaseIgnoreEqual(objName, module["module_name"].(string)) {
 				objectNameMatchedModule[objName] = module
 				found = true
+
 				break
 			}
 		}
+
 		if !found {
-			return nil, fmt.Errorf("object name '%s' not found in module metadata", objName)
+			return nil, fmt.Errorf("%w: %s", errObjectNameNotFound, objName)
 		}
 	}
 
@@ -306,6 +377,7 @@ func (c *Connector) getModuleMetadata(ctx context.Context, params common.Subscri
 }
 
 func (c *Connector) getfieldsMetadata(ctx context.Context, moduleMetadata map[string]any) (*metadataFields, error) {
+	//nolint:forcetypeassert
 	moduleName := moduleMetadata["module_name"].(string)
 
 	resp, err := c.fetchFieldMetadata(ctx, moduleName)
@@ -319,4 +391,81 @@ func (c *Connector) getfieldsMetadata(ctx context.Context, moduleMetadata map[st
 	}
 
 	return response, nil
+}
+
+//nolint:cyclop,funlen
+func (c *Connector) getNotificationConditions(
+	ctx context.Context,
+	moduleMetadata map[string]any,
+	event common.ObjectEvents,
+) ([]NotificationCondition, error) {
+	if event.WatchFieldsAll {
+		return nil, errWatchFieldsAll
+	}
+
+	if len(event.WatchFields) > maxWatchFields {
+		return nil, fmt.Errorf("%w: maximum 10 fields can be watched", errTooManyWatchFields)
+	}
+
+	if len(event.WatchFields) == 0 {
+		return nil, nil
+	}
+
+	var fieldMetadata *metadataFields
+
+	var err error
+
+	if len(event.WatchFields) > 0 {
+		fieldMetadata, err = c.getfieldsMetadata(ctx, moduleMetadata)
+		if err != nil {
+			return nil, fmt.Errorf("error getting fields metadata: %w", err)
+		}
+	}
+
+	watchFieldsMetadata := make(map[string]map[string]any, 0)
+
+	for _, field := range event.WatchFields {
+		found := false
+
+		for _, fieldMetadata := range fieldMetadata.Fields {
+			//nolint:forcetypeassert
+			if naming.PluralityAndCaseIgnoreEqual(fieldMetadata["api_name"].(string), field) {
+				watchFieldsMetadata[field] = fieldMetadata
+				found = true
+
+				break
+			}
+		}
+
+		if !found {
+			return nil, fmt.Errorf("%w: %s", errFieldNotFound, field)
+		}
+	}
+
+	fieldGroups := make([]FieldGroup, 0)
+	//nolint:forcetypeassert
+	for fieldName, fieldMetadata := range watchFieldsMetadata {
+		fieldGroups = append(fieldGroups, FieldGroup{
+			Field: &Field{
+				APIName: fieldName,
+
+				ID: fieldMetadata["id"].(string),
+			},
+		})
+	}
+
+	//nolint:forcetypeassert
+	return []NotificationCondition{
+		{
+			Type: "field_selection",
+			Module: Module{
+				APIName: moduleMetadata["api_name"].(string), // this is object name
+				Id:      moduleMetadata["id"].(string),       // this is object type id
+			},
+			FieldSelection: FieldSelection{
+				GroupOperator: GroupOperatorOr,
+				Group:         fieldGroups,
+			},
+		},
+	}, nil
 }
