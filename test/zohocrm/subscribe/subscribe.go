@@ -37,7 +37,6 @@ func main() {
 				},
 				WatchFields: []string{
 					"phone",
-					// "company", // TODO:  Test with 1 field after hearing from customer support ENG-2231
 				},
 			},
 			"Contacts": common.ObjectEvents{
@@ -48,7 +47,6 @@ func main() {
 				},
 				WatchFields: []string{
 					"phone",
-					// "email", // TODO:  Test with 1 field after hearing from customer support ENG-2231
 				},
 			},
 		},
@@ -78,7 +76,7 @@ func main() {
 				},
 				WatchFields: []string{
 					"phone",
-					"company", // TODO:  Test with 1 field after hearing from customer support ENG-2231
+					"company",
 				},
 			},
 			"Accounts": {
@@ -89,7 +87,7 @@ func main() {
 				},
 				WatchFields: []string{
 					"industry",
-					"phone", // TODO:  Test with 1 field after hearing from customer support ENG-2231
+					"phone",
 				},
 			},
 		},
