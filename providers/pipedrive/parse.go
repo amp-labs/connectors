@@ -40,7 +40,7 @@ func nextRecordsURL(url *urlbuilder.URL) common.NextPageFunc {
 			return "", err
 		}
 
-		if *more {
+		if more != nil && *more && startValue != nil {
 			url.WithQueryParam("start", strconv.FormatInt(*startValue, 10))
 
 			return url.String(), nil
