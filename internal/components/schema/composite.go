@@ -84,14 +84,17 @@ func (c *CompositeSchemaProvider) ListObjectMetadata(
 	// Keep track of failed objects. Initially  we assume all object have failed.
 	failures := objects
 
-	for _, schemaProvider := range c.schemaProviders {
+	for i, schemaProvider := range c.schemaProviders {
 		fmt.Println("Schema Provider: ", schemaProvider)
+		fmt.Println("Round  failures: ", i, failures)
 		metadata, err := safeGetMetadata(schemaProvider, ctx, failures)
 		if err != nil {
 			slog.Error("Schema provider failed with error", "schemaProvider", schemaProvider, "error", err)
 
 			continue
 		}
+
+		fmt.Println("Metadata Results: ", metadata.Result)
 
 		// Append successfull object metadatas to the result metadata.
 		for obj, mtdata := range metadata.Result {
