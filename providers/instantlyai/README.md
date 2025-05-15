@@ -12,22 +12,19 @@ InstantlyAI API version: v2
 | Emails                     | emails                      | read and write  |
 | Lead-lists                 | lead-lists                  | read and write  |
 | Inbox-placement-tests      | inbox-placement-tests       | read and write  |
-| Inbox-placement-analytics  | inbox-placement-analytics   | read            |
-| Inbox-placement-reports    | inbox-placement-reports     | read            |
-| Api-keys                   | api-keys                    | read and write  |
 | Background-jobs            | background-jobs             | read            |
 | Custom-tags                | custom-tags                 | read and write  |
 | Block-lists-entries        | block-lists-entries         | read and write  |
 | Lead-labels                | lead-labels                 | read and write  |
 | Workspace-group-members    | workspace-group-members     | read and write  |
 | Workspace-members          | workspace-members           | read and write  |
-| Subsequences               | subsequences                | read and write  |
 | Lead                       | leads/list                  | read            |
 | Campaigns analytics        | campaigns/analytics         | read            |
 | Campaigns analytics daily  | campaigns/analytics/daily   | read            | 
 | Campaigns analytics steps  | campaigns/analytics/steps   | read            |
 | Email service provider     | inbox-placement-tests/email | read            |
                               -service-provider-options  
+| Audit logs                 | audit-logs                  | read            |                   
 | Email verification         | email-verification          | write           |
 | Leads merge                | leads/merge                 | write           |
 | Update interest status     | leads/update-interest-status| write           | 
@@ -39,4 +36,7 @@ InstantlyAI API version: v2
 | Workspaces current         | workspaces/current          | write           |
 ------------------------------------------------------------------------------
 
-The "Lead" object supports the POST API method instead of GET, while the Campaigns Analytics, Daily, Steps, and Email Service Provider objects return a direct response, meaning the response data is not nested within an object like "items" or "data." The remaining objects' responses are nested within an "items" object.
+Note:
+ - The "Lead" object uses the POST API method to retrieve metadata, unlike the GET method typically used for such read actions.
+ - Among the supported objects, Campaigns Analytics, Daily, Steps, and Email Service Provider return their response data directly at the root level of the JSON, without nesting.
+ - In contrast, the other objects return their response data nested within an "items" field.

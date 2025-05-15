@@ -15,7 +15,7 @@ import (
 func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
-	apiKeysResponse := testutils.DataFromFile(t, "api-keys.json")
+	backgroundJobsResponse := testutils.DataFromFile(t, "background-jobs.json")
 	customTagsResponse := testutils.DataFromFile(t, "custom-tags.json")
 	leadListsResponse := testutils.DataFromFile(t, "lead-lists.json")
 
@@ -28,12 +28,12 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 		},
 		{
 			Name:  "Successfully describe multiple objects with metadata",
-			Input: []string{"api-keys", "custom-tags", "lead-lists"},
+			Input: []string{"background-jobs", "custom-tags", "lead-lists"},
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
-					If:   mockcond.PathSuffix("v2/api-keys"),
-					Then: mockserver.Response(http.StatusOK, apiKeysResponse),
+					If:   mockcond.PathSuffix("v2/background-jobs"),
+					Then: mockserver.Response(http.StatusOK, backgroundJobsResponse),
 				}, {
 					If:   mockcond.PathSuffix("v2/custom-tags"),
 					Then: mockserver.Response(http.StatusOK, customTagsResponse),
@@ -45,8 +45,8 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
-					"api-keys": {
-						DisplayName: "Api-keys",
+					"background-jobs": {
+						DisplayName: "Background-jobs",
 						Fields: map[string]common.FieldMetadata{
 							"id": {
 								DisplayName:  "id",
@@ -55,43 +55,64 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								ReadOnly:     false,
 								Values:       nil,
 							},
-							"name": {
-								DisplayName:  "name",
+							"workspace_id": {
+								DisplayName:  "workspace_id",
 								ValueType:    "other",
 								ProviderType: "",
 								ReadOnly:     false,
 								Values:       nil,
 							},
-							"scopes": {
-								DisplayName:  "scopes",
+							"type": {
+								DisplayName:  "type",
 								ValueType:    "other",
 								ProviderType: "",
 								ReadOnly:     false,
 								Values:       nil,
 							},
-							"key": {
-								DisplayName:  "key",
+							"entity_id": {
+								DisplayName:  "entity_id",
 								ValueType:    "other",
 								ProviderType: "",
 								ReadOnly:     false,
 								Values:       nil,
 							},
-							"organization_id": {
-								DisplayName:  "organization_id",
+							"entity_type": {
+								DisplayName:  "entity_type",
 								ValueType:    "other",
 								ProviderType: "",
 								ReadOnly:     false,
 								Values:       nil,
 							},
-							"timestamp_created": {
-								DisplayName:  "timestamp_created",
+							"data": {
+								DisplayName:  "data",
 								ValueType:    "other",
 								ProviderType: "",
 								ReadOnly:     false,
 								Values:       nil,
 							},
-							"timestamp_updated": {
-								DisplayName:  "timestamp_updated",
+							"progress": {
+								DisplayName:  "progress",
+								ValueType:    "other",
+								ProviderType: "",
+								ReadOnly:     false,
+								Values:       nil,
+							},
+							"status": {
+								DisplayName:  "status",
+								ValueType:    "other",
+								ProviderType: "",
+								ReadOnly:     false,
+								Values:       nil,
+							},
+							"created_at": {
+								DisplayName:  "created_at",
+								ValueType:    "other",
+								ProviderType: "",
+								ReadOnly:     false,
+								Values:       nil,
+							},
+							"updated_at": {
+								DisplayName:  "updated_at",
 								ValueType:    "other",
 								ProviderType: "",
 								ReadOnly:     false,
@@ -99,13 +120,16 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 							},
 						},
 						FieldsMap: map[string]string{
-							"id":                "id",
-							"name":              "name",
-							"scopes":            "scopes",
-							"key":               "key",
-							"organization_id":   "organization_id",
-							"timestamp_created": "timestamp_created",
-							"timestamp_updated": "timestamp_updated",
+							"id":           "id",
+							"workspace_id": "workspace_id",
+							"type":         "type",
+							"entity_id":    "entity_id",
+							"entity_type":  "entity_type",
+							"data":         "data",
+							"progress":     "progress",
+							"status":       "status",
+							"created_at":   "created_at",
+							"updated_at":   "updated_at",
 						},
 					},
 					"custom-tags": {

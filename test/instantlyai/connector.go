@@ -14,21 +14,7 @@ func GetInstantlyAIConnector(ctx context.Context) *instantlyai.Connector {
 	filePath := credscanning.LoadPath(providers.InstantlyAI)
 	reader := utils.MustCreateProvCredJSON(filePath, false, false)
 
-	info, err := providers.ReadInfo(providers.InstantlyAI)
-	if err != nil {
-		utils.Fail(err.Error())
-	}
-
-	headerName, headerValue, err := info.GetApiKeyHeader(reader.Get(credscanning.Fields.ApiKey))
-	if err != nil {
-		utils.Fail(err.Error())
-	}
-
-	client, err := common.NewApiKeyHeaderAuthHTTPClient(
-		ctx, headerName, headerValue)
-	if err != nil {
-		utils.Fail(err.Error())
-	}
+	client := utils.NewAPIKeyClient(ctx, reader, providers.InstantlyAI)
 
 	conn, err := instantlyai.NewConnector(common.Parameters{
 		AuthenticatedClient: client,

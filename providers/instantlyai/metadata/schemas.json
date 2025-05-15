@@ -495,155 +495,6 @@
             }
           }
         },
-        "inbox-placement-analytics": {
-          "displayName": "Inbox-placement-analytics",
-          "path": "v2/inbox-placement-analytics",
-          "responseKey": "",
-          "fields": {
-            "id": {
-              "displayName": "id",
-              "valueType": "other"
-            },
-            "timestamp_created":  {
-              "displayName": "timestamp_created",
-              "valueType": "other"
-            },
-            "timestamp_created_date":  {
-              "displayName": "timestamp_created_date",
-              "valueType": "other"
-            },
-            "organization_id": {
-              "displayName": "organization_id",
-              "valueType": "other"
-            },
-            "test_id":  {
-              "displayName": "test_id",
-              "valueType": "other"
-            },
-            "recipient_esp":  {
-              "displayName": "recipient_esp",
-              "valueType": "other"
-            },
-            "recipient_geo": {
-              "displayName": "recipient_geo",
-              "valueType": "other"
-            },
-            "recipient_type":  {
-              "displayName": "recipient_type",
-              "valueType": "other"
-            },
-            "spf_pass":  {
-              "displayName": "spf_pass",
-              "valueType": "other"
-            },
-            "dkim_pass":  {
-              "displayName": "dkim_pass",
-              "valueType": "other"
-            },
-            "dmarc_pass":  {
-              "displayName": "dmarc_pass",
-              "valueType": "other"
-            },
-            "smtp_ip_blacklist_report":  {
-              "displayName": "smtp_ip_blacklist_report",
-              "valueType": "other"
-            },
-            "authentication_failure_results":  {
-              "displayName": "authentication_failure_results",
-              "valueType": "other"
-            }
-          }
-        },
-        "inbox-placement-reports": {
-          "displayName": "Inbox-placement-reports",
-          "path": "v2/inbox-placement-reports",
-          "responseKey": "",
-          "fields": {
-            "id": {
-              "displayName": "id",
-              "valueType": "other"
-            },
-            "timestamp_created":  {
-              "displayName": "timestamp_created",
-              "valueType": "other"
-            },
-            "timestamp_created_date":  {
-              "displayName": "timestamp_created_date",
-              "valueType": "other"
-            },
-            "organization_id": {
-              "displayName": "organization_id",
-              "valueType": "other"
-            },
-            "test_id":  {
-              "displayName": "test_id",
-              "valueType": "other"
-            },
-            "domain_blacklist_count":  {
-              "displayName": "domain_blacklist_count",
-              "valueType": "other"
-            },
-            "domain": {
-              "displayName": "domain",
-              "valueType": "other"
-            },
-            "domain_ip":  {
-              "displayName": "domain_ip",
-              "valueType": "other"
-            },
-            "domain_ip_blacklist_count":  {
-              "displayName": "domain_ip_blacklist_count",
-              "valueType": "other"
-            },
-            "spam_assassin_score":  {
-              "displayName": "spam_assassin_score",
-              "valueType": "other"
-            },
-            "spam_assassin_report":  {
-              "displayName": "spam_assassin_report",
-              "valueType": "other"
-            },
-            "blacklist_report":  {
-              "displayName": "blacklist_report",
-              "valueType": "other"
-            }
-          }
-        },
-        "api-keys": {
-          "displayName": "Api-keys",
-          "path": "v2/api-keys",
-          "responseKey": "",
-          "fields": {
-            "id": {
-              "displayName": "id",
-              "valueType": "other"
-            },
-            "name":  {
-              "displayName": "name",
-              "valueType": "other"
-            },
-            "scopes":  {
-              "displayName": "scopes",
-              "valueType": "other"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "other"
-            },
-            "organization_id":  {
-              "displayName": "organization_id",
-              "valueType": "other"
-            },
-            "timestamp_created":  {
-              "displayName": "timestamp_created",
-              "valueType": "other"
-            },
-            "timestamp_updated": {
-              "displayName": "timestamp_updated",
-              "valueType": "other"
-            }
-          }
-        },
         "background-jobs": {
           "displayName": "Background-jobs",
           "path": "v2/background-jobs",
@@ -830,41 +681,6 @@
             },
             "issuer_id":  {
               "displayName": "issuer_id",
-              "valueType": "other"
-            }
-          }
-        },
-        "subsequences": {
-          "displayName": "Subsequences",
-          "path": "v2/subsequences",
-          "responseKey": "",
-          "fields": {
-            "id": {
-              "displayName": "id",
-              "valueType": "other"
-            },
-            "timestamp_created":  {
-              "displayName": "timestamp_created",
-              "valueType": "other"
-            },
-            "parent_campaign":  {
-              "displayName": "parent_campaign",
-              "valueType": "other"
-            },
-            "name": {
-              "displayName": "name",
-              "valueType": "other"
-            },
-            "conditions":  {
-              "displayName": "conditions",
-              "valueType": "other"
-            },
-            "subsequence_schedule":  {
-              "displayName": "subsequence_schedule",
-              "valueType": "other"
-            },
-            "sequences":  {
-              "displayName": "sequences",
               "valueType": "other"
             }
           }
@@ -1240,6 +1056,69 @@
             },
             "esp":{
               "displayName":"esp",
+              "valueType": "other"
+            }
+          }
+        },
+        "audit-logs": {
+          "displayName": "Audit-logs",
+          "path": "v2/audit-logs",
+          "responseKey": "",
+          "fields": {
+            "id":{
+              "displayName":"id",
+              "valueType":"other"
+            },
+            "timestamp":{
+              "displayName":"timestamp",
+              "valueType": "other"
+            },
+            "organization_id":{
+              "displayName":"organization_id",
+              "valueType": "other"
+            },
+            "activity_type":{
+              "displayName":"activity_type",
+               "valueType": "other"
+            },
+            "user_agent":{
+              "displayName":"user_agent",
+              "valueType": "other"
+            },
+            "user_id":{
+              "displayName":"user_id",
+              "valueType": "other"
+            },
+            "ip_address":{
+              "displayName":"ip_address",
+              "valueType": "other"
+            },
+            "from_api":{
+              "displayName":"from_api",
+              "valueType": "other"
+            },
+            "affected_count":{
+              "displayName":"affected_count",
+              "valueType": "other"
+            },
+            "campaign_id":{
+              "displayName":"campaign_id",
+              "valueType": "other"
+            },
+            "subsequence_id":{
+              "displayName":"subsequence_id",
+              "valueType": "other"
+            },
+            "list_id":{
+              "displayName":"list_id",
+              "valueType": "other"
+            },
+            "audit_metadata":{
+              "displayName":"audit_metadata",
+              "valueType": "other"
+            },
+            "user_name":{
+              "displayName":"user_name",
               "valueType": "other"
             }
           }
