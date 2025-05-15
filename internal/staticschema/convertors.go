@@ -34,7 +34,7 @@ func (m *Metadata[F, C]) Select(
 			// move metadata from scrapper object to common object
 			list.Result[objectName] = *v.getObjectMetadata()
 		} else {
-			return nil, fmt.Errorf("%w: unknown object [%v]", common.ErrObjectNotSupported, objectName)
+			list.Errors[objectName] = common.ErrObjectNotSupported
 		}
 	}
 
