@@ -609,41 +609,6 @@
             }
           }
         },
-        "api-keys": {
-          "displayName": "Api-keys",
-          "path": "v2/api-keys",
-          "responseKey": "",
-          "fields": {
-            "id": {
-              "displayName": "id",
-              "valueType": "other"
-            },
-            "name":  {
-              "displayName": "name",
-              "valueType": "other"
-            },
-            "scopes":  {
-              "displayName": "scopes",
-              "valueType": "other"
-            },
-            "key": {
-              "displayName": "key",
-              "valueType": "other"
-            },
-            "organization_id":  {
-              "displayName": "organization_id",
-              "valueType": "other"
-            },
-            "timestamp_created":  {
-              "displayName": "timestamp_created",
-              "valueType": "other"
-            },
-            "timestamp_updated": {
-              "displayName": "timestamp_updated",
-              "valueType": "other"
-            }
-          }
-        },
         "background-jobs": {
           "displayName": "Background-jobs",
           "path": "v2/background-jobs",
