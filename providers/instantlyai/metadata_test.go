@@ -15,7 +15,7 @@ import (
 func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
-	apiKeysResponse := testutils.DataFromFile(t, "api-keys.json")
+	backgroundJobsResponse := testutils.DataFromFile(t, "background-jobs.json")
 	customTagsResponse := testutils.DataFromFile(t, "custom-tags.json")
 	leadListsResponse := testutils.DataFromFile(t, "lead-lists.json")
 
@@ -33,7 +33,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
 					If:   mockcond.PathSuffix("v2/background-jobs"),
-					Then: mockserver.Response(http.StatusOK, apiKeysResponse),
+					Then: mockserver.Response(http.StatusOK, backgroundJobsResponse),
 				}, {
 					If:   mockcond.PathSuffix("v2/custom-tags"),
 					Then: mockserver.Response(http.StatusOK, customTagsResponse),
