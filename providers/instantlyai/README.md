@@ -14,7 +14,6 @@ InstantlyAI API version: v2
 | Inbox-placement-tests     | inbox-placement-tests      | read   |
 | Inbox-placement-analytics | inbox-placement-analytics  | read   |
 | Inbox-placement-reports   | inbox-placement-reports    | read   |
-| Api-keys                  | api-keys                   | read   |
 | Background-jobs           | background-jobs            | read   |
 | Custom-tags               | custom-tags                | read   |
 | Block-lists-entries       | block-lists-entries        | read   |
@@ -30,4 +29,7 @@ InstantlyAI API version: v2
                               -service-provider-options  
 ------------------------------------------------------------------
 
-The "Lead" object supports the POST API method instead of GET, while the Campaigns Analytics, Daily, Steps, and Email Service Provider objects return a direct response, meaning the response data is not nested within an object like "items" or "data." The remaining objects' responses are nested within an "items" object.
+Note:
+ - The "Lead" object uses the POST API method to retrieve metadata, unlike the GET method typically used for such read actions.
+ - Among the supported objects, Campaigns Analytics, Daily, Steps, and Email Service Provider return their response data directly at the root level of the JSON, without nesting.
+ - In contrast, the other objects return their response data nested within an "items" field.
