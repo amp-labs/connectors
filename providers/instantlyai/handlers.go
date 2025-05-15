@@ -65,16 +65,12 @@ func (c *Connector) parseReadResponse(
 }
 
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
-	var (
-		method = http.MethodPost
-		url    *urlbuilder.URL
-		err    error
-	)
-
-	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, params.ObjectName)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
+
+	method := http.MethodPost
 
 	if len(params.RecordId) > 0 {
 		url.AddPath(params.RecordId)
@@ -127,8 +123,12 @@ func (c *Connector) buildDeleteRequest(ctx context.Context, params common.Delete
 		return nil, err
 	}
 
+	// For the delete functionality, the lead-labels endpoint requires an empty object ({}) in the body parameters,
+	// while other endpoints require a null value in the body parameters.
+	// Refer sample delete objects body params https://developer.instantly.ai/api/v2/account/deleteaccount.
 	body := []byte(`null`)
 
+	// Refer link for lead-labels object https://developer.instantly.ai/api/v2/leadlabel/deleteleadlabel.
 	if params.ObjectName == "lead-labels" {
 		body = []byte("{}")
 	}

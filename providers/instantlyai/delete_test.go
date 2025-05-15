@@ -46,6 +46,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 				If: mockcond.And{
 					mockcond.PathSuffix("/v2/custom-tags/8cba2d22-cdd0-453f-ac69-4c43f71942e5"),
 					mockcond.MethodDELETE(),
+					mockcond.Body("null"),
 				},
 				Then: mockserver.Response(http.StatusOK),
 			}.Server(),
