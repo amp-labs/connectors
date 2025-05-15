@@ -12,21 +12,19 @@ InstantlyAI API version: v2
 | Emails                    | emails                     | read   |
 | Lead-lists                | lead-lists                 | read   |
 | Inbox-placement-tests     | inbox-placement-tests      | read   |
-| Inbox-placement-analytics | inbox-placement-analytics  | read   |
-| Inbox-placement-reports   | inbox-placement-reports    | read   |
 | Background-jobs           | background-jobs            | read   |
 | Custom-tags               | custom-tags                | read   |
 | Block-lists-entries       | block-lists-entries        | read   |
 | Lead-labels               | lead-labels                | read   |
 | Workspace-group-members   | workspace-group-members    | read   |
 | Workspace-members         | workspace-members          | read   |
-| Subsequences              | subsequences               | read   |
 | Lead                      | leads/list                 | read   |
 | Campaigns analytics       | campaigns/analytics        | read   |
 | Campaigns analytics daily | campaigns/analytics/daily  | read   |
 | Campaigns analytics steps | campaigns/analytics/steps  | read   |
 | Email service provider    | inbox-placement-tests/email| read   |
                               -service-provider-options  
+| Audit logs                | audit-logs                 | read   |                              
 ------------------------------------------------------------------
 
 Note:
