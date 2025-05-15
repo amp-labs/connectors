@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -19,17 +20,22 @@ func main() {
 func MainFn() int {
 	conn := instantlyai.GetInstantlyAIConnector(context.Background())
 
-	err := testRead(context.Background(), conn, "api-keys", []string{""})
+	err := testRead(context.Background(), conn, "campaigns", []string{""}, time.Time{})
 	if err != nil {
 		return 1
 	}
 
-	err = testRead(context.Background(), conn, "custom-tags", []string{""})
+	err = testRead(context.Background(), conn, "custom-tags", []string{""}, time.Time{})
 	if err != nil {
 		return 1
 	}
 
-	err = testRead(context.Background(), conn, "lead-lists", []string{""})
+	err = testRead(context.Background(), conn, "lead-lists", []string{""}, time.Time{})
+	if err != nil {
+		return 1
+	}
+
+	err = testRead(context.Background(), conn, "campaigns/analytics/daily", []string{""}, time.Date(2025, time.May, 1, 0, 0, 0, 0, time.Local))
 	if err != nil {
 		return 1
 	}
@@ -37,7 +43,7 @@ func MainFn() int {
 	return 0
 }
 
-func testRead(ctx context.Context, conn *ap.Connector, objName string, fields []string) error {
+func testRead(ctx context.Context, conn *ap.Connector, objName string, fields []string, since time.Time) error {
 	params := common.ReadParams{
 		ObjectName: objName,
 		Fields:     connectors.Fields(fields...),
