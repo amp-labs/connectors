@@ -6,6 +6,7 @@ import (
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/salesforce/internal/pardot"
 )
 
 const (
@@ -19,9 +20,10 @@ const (
 
 // Connector is a Salesforce connector.
 type Connector struct {
-	BaseURL   string
-	Client    *common.JSONHTTPClient
-	XMLClient *common.XMLHTTPClient
+	BaseURL       string
+	Client        *common.JSONHTTPClient
+	XMLClient     *common.XMLHTTPClient
+	pardotAdapter *pardot.Adapter
 }
 
 func APIVersionSOAP() string {
@@ -30,7 +32,9 @@ func APIVersionSOAP() string {
 
 // NewConnector returns a new Salesforce connector.
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	params, err := paramsbuilder.Apply(parameters{}, opts)
+	params, err := paramsbuilder.Apply(parameters{}, opts,
+		WithModule(providers.ModuleSalesforceStandard),
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -55,6 +59,17 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		JSON: &interpreter.DirectFaultyResponder{Callback: conn.interpretJSONError},
 		XML:  &interpreter.DirectFaultyResponder{Callback: conn.interpretXMLError},
 	}.Handle
+
+	// Empty module name, root module, standard salesforce module fallback to default Salesforce behaviour.
+	// Account Engagement module will initialize the pardot adapter.
+	// Read/Write/ListObjectMetadata will delegate to this adapter.
+	moduleID := params.Module.Selection.ID
+	if moduleID == providers.ModuleSalesforceAccountEngagement {
+		conn.pardotAdapter, err = pardot.NewAdapter(conn.Client, providerInfo, params.Metadata.Map)
+		if err != nil {
+			return nil, err
+		}
+	}
 
 	return conn, nil
 }
@@ -98,4 +113,17 @@ func (c *Connector) getURIPartSobjectsDescribe(objectName string) (*urlbuilder.U
 func (c *Connector) setBaseURL(newURL string) {
 	c.BaseURL = newURL
 	c.Client.HTTPClient.Base = newURL
+}
+
+func (c *Connector) isPardotModule() bool {
+	return c.pardotAdapter != nil
+}
+
+var supportedModules = common.Modules{ // nolint:gochecknoglobals
+	providers.ModuleSalesforceStandard: common.Module{
+		ID: providers.ModuleSalesforceStandard,
+	},
+	providers.ModuleSalesforceAccountEngagement: common.Module{
+		ID: providers.ModuleSalesforceAccountEngagement,
+	},
 }

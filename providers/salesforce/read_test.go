@@ -8,6 +8,7 @@ import (
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -139,9 +140,18 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 }
 
 func constructTestConnector(serverURL string) (*Connector, error) {
+	return constructTestConnectorGeneral(serverURL, providers.ModuleSalesforceStandard)
+}
+
+func constructTestConnectorAccountEngagement(serverURL string) (*Connector, error) {
+	return constructTestConnectorGeneral(serverURL, providers.ModuleSalesforceAccountEngagement)
+}
+
+func constructTestConnectorGeneral(serverURL string, module common.ModuleID) (*Connector, error) {
 	connector, err := NewConnector(
 		WithAuthenticatedClient(mockutils.NewClient()),
 		WithWorkspace("test-workspace"),
+		WithModule(module),
 	)
 	if err != nil {
 		return nil, err

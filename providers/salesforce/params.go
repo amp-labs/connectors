@@ -7,6 +7,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
+	"github.com/amp-labs/connectors/providers"
 	"golang.org/x/oauth2"
 )
 
@@ -17,15 +18,20 @@ type Option = func(params *parameters)
 type parameters struct {
 	paramsbuilder.Client
 	paramsbuilder.Workspace
+	paramsbuilder.Metadata
+	paramsbuilder.Module
 }
 
 func newParams(opts []Option) (*common.ConnectorParams, error) { // nolint:unused
-	oldParams, err := paramsbuilder.Apply(parameters{}, opts)
+	oldParams, err := paramsbuilder.Apply(parameters{}, opts,
+		WithModule(providers.ModuleSalesforceStandard),
+	)
 	if err != nil {
 		return nil, err
 	}
 
 	return &common.ConnectorParams{
+		Module:              oldParams.Module.Selection.ID,
 		AuthenticatedClient: oldParams.Client.Caller.Client,
 		Workspace:           oldParams.Workspace.Name,
 	}, nil
@@ -55,5 +61,17 @@ func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
 func WithWorkspace(workspaceRef string) Option {
 	return func(params *parameters) {
 		params.WithWorkspace(workspaceRef)
+	}
+}
+
+func WithModule(module common.ModuleID) Option {
+	return func(params *parameters) {
+		params.WithModule(module, supportedModules, providers.ModuleSalesforceStandard)
+	}
+}
+
+func WithMetadata(metadata map[string]string) Option {
+	return func(params *parameters) {
+		params.WithMetadata(metadata, nil)
 	}
 }

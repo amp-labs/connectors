@@ -14,6 +14,10 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, err
 	}
 
+	if c.isPardotModule() {
+		return c.pardotAdapter.Write(ctx, config)
+	}
+
 	url, err := c.getRestApiURL("sobjects", config.ObjectName)
 	if err != nil {
 		return nil, err
