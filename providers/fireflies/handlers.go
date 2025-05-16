@@ -99,6 +99,23 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	return &objectMetadata, nil
 }
 
+func getFieldValueType(field string) common.ValueType {
+	if field == "" {
+		return ""
+	}
+
+	switch field {
+	case "Float":
+		return common.ValueTypeFloat
+	case "String", "ID":
+		return common.ValueTypeString
+	case "Boolean":
+		return common.ValueTypeBoolean
+	default:
+		return common.ValueTypeOther
+	}
+}
+
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL)
 	if err != nil {
