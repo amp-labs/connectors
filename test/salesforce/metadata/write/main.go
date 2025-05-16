@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/amp-labs/connectors/providers"
 	connTest "github.com/amp-labs/connectors/test/salesforce"
 )
 
@@ -23,7 +24,7 @@ func main() {
 	logger := slog.New(handler)
 	slog.SetDefault(logger)
 
-	conn := connTest.GetSalesforceConnector(ctx)
+	conn := connTest.GetSalesforceConnector(ctx, providers.ModuleSalesforceStandard)
 
 	input := []byte(`
 <createMetadata>

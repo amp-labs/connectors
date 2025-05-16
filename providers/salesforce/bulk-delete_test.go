@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -60,7 +61,7 @@ func TestBulkDelete(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			t.Parallel()
 
 			tt.Run(t, func() (*Connector, error) {
-				return constructTestConnector(tt.Server.URL)
+				return constructTestConnector(tt.Server.URL, providers.ModuleSalesforceStandard)
 			})
 		})
 	}
