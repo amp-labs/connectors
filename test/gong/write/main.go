@@ -2,9 +2,8 @@ package main
 
 import (
 	"context"
-	"crypto/rand"
-	"encoding/binary"
 	"log/slog"
+	"math/rand" // nosemgrep: go.lang.security.audit.crypto.math_random.math-random-used
 	"os/signal"
 	"strconv"
 	"syscall"
@@ -47,14 +46,8 @@ func main() {
 	slog.Info("TEST Create Call")
 	slog.Info("Creating Call")
 
-	id, err := uniqueId(1, 10000)
-	if err != nil {
-		slog.Error(err.Error())
-		return
-	}
-
 	createCalls(ctx, conn, &CallsPayload{
-		ClientUniqueId: strconv.Itoa(id),
+		ClientUniqueId: createUniqueID(),
 		ActualStart:    "2021-02-17T02:30:00-08:00",
 		Title:          "Created from Script",
 		Direction:      "Inbound",
@@ -89,23 +82,10 @@ func createCalls(ctx context.Context, conn *gong.Connector, payload *CallsPayloa
 	return res
 }
 
-func uniqueId(x, y int) (int, error) {
-	if x+1 >= y {
-		return x + 1, nil
-	}
+func createUniqueID() string {
+	minV := 1
+	maxV := 10000
+	uniqueID := strconv.Itoa(rand.Intn(maxV-minV+1) + minV)
 
-	rangeSize := y - x
-
-	// Read random bytes (8 bytes for 64-bit value)
-	var buf [8]byte
-	_, err := rand.Read(buf[:])
-	if err != nil {
-		return 0, err
-	}
-
-	randUint := binary.BigEndian.Uint64(buf[:])
-
-	result := x + 1 + int(randUint%uint64(rangeSize))
-
-	return result, nil
+	return uniqueID
 }
