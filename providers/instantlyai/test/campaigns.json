@@ -1,0 +1,12 @@
+{
+  "items": [
+    {
+      "id": "0196d267-8d93-73c3-b563-1a6443e78eb8",
+      "name": "My First Campaign",
+      "timestamp_created": "2025-05-15T05:25:23.987Z",
+      "timestamp_updated": "2025-05-15T05:25:23.987Z",
+      "organization": "0196d267-8d93-73c3-b563-1a6685313ea8"
+    }
+  ],
+  "next_starting_after": "0196d267-98dd-7720-b740-f132c2c547d9"
+}

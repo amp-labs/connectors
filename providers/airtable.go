@@ -1,5 +1,7 @@
 package providers
 
+import "net/http"
+
 const Airtable Provider = "airtable"
 
 func init() {
@@ -8,6 +10,11 @@ func init() {
 		DisplayName: "Airtable",
 		AuthType:    Oauth2,
 		BaseURL:     "https://api.airtable.com",
+		AuthHealthCheck: &AuthHealthCheck{
+			Method:             http.MethodGet,
+			SuccessStatusCodes: []int{http.StatusOK},
+			Url:                "https://api.airtable.com/v0/meta/whoami",
+		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722163601/media/Airtable_1722163601.svg",

@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
@@ -30,6 +31,10 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 				type {
 					name
 					kind
+					ofType {
+					  name
+					  kind
+					}
 				}
 			}
 		}
@@ -61,7 +66,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	response *common.JSONHTTPResponse,
 ) (*common.ObjectMetadata, error) {
 	objectMetadata := common.ObjectMetadata{
-		FieldsMap:   make(map[string]string),
+		Fields:      make(map[string]common.FieldMetadata),
 		DisplayName: naming.CapitalizeFirstLetterEveryWord(objectName),
 	}
 
@@ -80,10 +85,39 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 
 	// Process each field from the introspection result
 	for _, field := range metadataResp.Data.Type.Fields {
-		objectMetadata.FieldsMap[field.Name] = field.Name
+		valueType := field.Type.Name
+
+		if valueType == "" {
+			valueType = field.Type.OfType.Name
+		}
+
+		objectMetadata.Fields[field.Name] = common.FieldMetadata{
+			DisplayName:  field.Name,
+			ValueType:    getFieldValueType(valueType),
+			ProviderType: valueType,
+			ReadOnly:     false,
+			Values:       nil,
+		}
 	}
 
 	return &objectMetadata, nil
+}
+
+func getFieldValueType(field string) common.ValueType {
+	if field == "" {
+		return ""
+	}
+
+	switch field {
+	case "Float":
+		return common.ValueTypeFloat
+	case "String", "ID":
+		return common.ValueTypeString
+	case "Boolean":
+		return common.ValueTypeBoolean
+	default:
+		return common.ValueTypeOther
+	}
 }
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
@@ -100,21 +134,19 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 
 	if params.NextPage != "" {
 		// Parse the page number from NextPage
-		var pageNum int
-
-		_, err := fmt.Sscanf(string(params.NextPage), "%d", &pageNum)
+		skip, err = strconv.Atoi(params.NextPage.String())
 		if err != nil {
-			return nil, fmt.Errorf("invalid next page format: %w", err)
+			return nil, err
 		}
-
-		skip = pageNum
 	}
 
 	limit = defaultPageSize
 
 	switch params.ObjectName {
-	case transcriptsObjectName, bitesObjectName:
-		query = getQueryForPaginationedObject(params.ObjectName, skip, limit)
+	case transcriptsObjectName:
+		query = getTrascriptQuery(limit, skip)
+	case bitesObjectName:
+		query = getBiteQery(limit, skip)
 	case usersObjectName:
 		query = getUserQuery()
 	default:
@@ -136,17 +168,6 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	}
 
 	return req, nil
-}
-
-func getQueryForPaginationedObject(objName string, skip, limit int) string {
-	switch objName {
-	case transcriptsObjectName:
-		return getTrascriptQuery(limit, skip)
-	case bitesObjectName:
-		return getBiteQery(limit, skip)
-	default:
-		return ""
-	}
 }
 
 // nolint
@@ -328,44 +349,31 @@ func (c *Connector) parseReadResponse(
 		return nil, common.ErrFailedToUnmarshalBody
 	}
 
-	var records []any
+	var (
+		records      []any
+		responseData []map[string]any
+	)
 
 	switch params.ObjectName {
 	case usersObjectName:
-		if len(data.Data.Users) == 0 {
-			errMsg := "missing expected values for object: " + params.ObjectName
-
-			return nil, fmt.Errorf("%s, error: %w", errMsg, common.ErrMissingExpectedValues)
-		}
-
-		records = make([]any, len(data.Data.Users))
-		for i, user := range data.Data.Users {
-			records[i] = user
-		}
+		responseData = data.Data.Users
 	case transcriptsObjectName:
-		if len(data.Data.Transcripts) == 0 {
-			errMsg := "missing expected values for object: " + params.ObjectName
-
-			return nil, fmt.Errorf("%s, error: %w", errMsg, common.ErrMissingExpectedValues)
-		}
-
-		records = make([]any, len(data.Data.Transcripts))
-		for i, transcript := range data.Data.Transcripts {
-			records[i] = transcript
-		}
+		responseData = data.Data.Transcripts
 	case bitesObjectName:
-		if len(data.Data.Bites) == 0 {
-			errMsg := "missing expected values for object: " + params.ObjectName
-
-			return nil, fmt.Errorf("%s, error: %w", errMsg, common.ErrMissingExpectedValues)
-		}
-
-		records = make([]any, len(data.Data.Bites))
-		for i, bite := range data.Data.Bites {
-			records[i] = bite
-		}
+		responseData = data.Data.Bites
 	default:
 		return nil, fmt.Errorf("%w: %s", common.ErrObjectNotSupported, params.ObjectName)
+	}
+
+	if len(responseData) == 0 {
+		errMsg := "missing expected values for object: " + params.ObjectName
+
+		return nil, fmt.Errorf("%s, error: %w", errMsg, common.ErrMissingExpectedValues)
+	}
+
+	records = make([]any, len(responseData))
+	for i, value := range responseData {
+		records[i] = value
 	}
 
 	return common.ParseResult(

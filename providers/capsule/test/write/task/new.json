@@ -1,0 +1,33 @@
+{
+  "task": {
+    "id": 147248893,
+    "category": null,
+    "description": "Brand new task from postman",
+    "detail": null,
+    "dueTime": null,
+    "status": "OPEN",
+    "party": null,
+    "opportunity": null,
+    "owner": {
+      "id": 674197,
+      "deleted": false,
+      "username": "integration.test",
+      "pictureURL": "https://facehub.appspot.com/default/person?text=I&size=100&colour=2099955006",
+      "name": "integration.tes1907"
+    },
+    "daysAfter": null,
+    "taskDelayRule": null,
+    "nextTask": null,
+    "active": true,
+    "createdAt": "2025-04-24T21:00:49Z",
+    "updatedAt": "2025-04-24T21:00:49Z",
+    "dueOn": "2025-05-20",
+    "completedBy": null,
+    "completedAt": null,
+    "kase": null,
+    "taskDayDelayRule": "TRACK_DAYS",
+    "overrideToCurrentUser": null,
+    "repeat": null,
+    "hasTrack": false
+  }
+}

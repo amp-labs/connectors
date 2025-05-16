@@ -1,0 +1,18 @@
+{
+  "items": [
+    {
+      "id": "675266e304a8e55b17f0228b",
+      "workspace_id": "0196d267-8d9e-7f83-9c1a-d388bf4e8346",
+      "user_id": "0196d267-8d9f-7040-8d8f-6a8a9617f992",
+      "type": "move-leads",
+      "entity_id": "0196d267-8d9f-7040-8d8f-6a8b44fecaf6",
+      "entity_type": "list",
+      "data": {},
+      "progress": 0,
+      "status": "pending",
+      "created_at": "2025-05-15T05:25:23.999Z",
+      "updated_at": "2025-05-15T05:25:23.999Z"
+    }
+  ],
+  "next_starting_after": "0196d267-98d3-7d7c-b419-80fa1ec0aafb"
+}

@@ -17,7 +17,9 @@ type readPayload struct {
 func ReadRequest(
 	ctx context.Context, params common.ReadParams, baseURL, instanceArn string,
 ) (*http.Request, error) {
-	command := core.FormatCommand(ServiceName, ReadObjectCommands, params.ObjectName)
+	objectProps := Registry[params.ObjectName]
+
+	command := core.FormatCommand(ServiceName, objectProps.Commands.Read)
 
 	return core.BuildRequest(ctx, baseURL, ServiceDomain, ServiceSigningName, command, readPayload{
 		ReadPayload: core.NewReadPayload(params),

@@ -17,6 +17,10 @@ type (
 // Run provides a procedure to test connectors.ReadConnector
 func (r Read) Run(t *testing.T, builder ConnectorBuilder[connectors.ReadConnector]) {
 	t.Helper()
+	t.Cleanup(func() {
+		ReadType(r).Close()
+	})
+
 	conn := builder.Build(t, r.Name)
 	readParams := prepareReadParams(r.Server.URL, r.Input)
 	output, err := conn.Read(context.Background(), readParams)

@@ -1,0 +1,13 @@
+{
+  "items": [
+    {
+      "id": "01966b52-73c2-7a5d-9df3-ea5a95a7fb09",
+      "timestamp_created": "2025-04-25T05:01:27.874Z",
+      "timestamp_updated": "2025-04-25T05:01:27.875Z",
+      "organization_id": "01966b52-73c3-7cc6-8081-efbe11b617f2",
+      "label": "Important",
+      "description": "Used for marking important items"
+    }
+  ],
+  "next_starting_after": "01966b52-881d-76de-acb0-8b12432533f6"
+}
