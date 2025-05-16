@@ -8,8 +8,8 @@ import (
 	"os"
 
 	"github.com/amp-labs/connectors/common"
-	ap "github.com/amp-labs/connectors/providers/linkedIn"
-	"github.com/amp-labs/connectors/test/linkedIn"
+	ap "github.com/amp-labs/connectors/providers/linkedin"
+	"github.com/amp-labs/connectors/test/linkedin"
 )
 
 func main() {
@@ -38,7 +38,7 @@ func MainFn() int {
 }
 
 func testAdAccounts(ctx context.Context) error {
-	conn := linkedIn.GetConnector(ctx)
+	conn := linkedin.GetConnector(ctx)
 
 	slog.Info("Creating the Ad Account")
 
@@ -98,7 +98,7 @@ func testAdAccounts(ctx context.Context) error {
 }
 
 func TestAdTargetTemplates(ctx context.Context) error {
-	conn := linkedIn.GetConnector(ctx)
+	conn := linkedin.GetConnector(ctx)
 
 	slog.Info("Creating the Ad target templates")
 
@@ -173,7 +173,7 @@ func TestAdTargetTemplates(ctx context.Context) error {
 }
 
 func testConversationAds(ctx context.Context) error {
-	conn := linkedIn.GetConnector(ctx)
+	conn := linkedin.GetConnector(ctx)
 
 	slog.Info("Creating conversation Ads")
 

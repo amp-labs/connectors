@@ -1,4 +1,4 @@
-package linkedIn
+package linkedin
 
 import (
 	"bytes"
@@ -43,7 +43,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		req.Header.Add("X-Restli-Method", "PARTIAL_UPDATE")
 	}
 
-	req.Header.Add("LinkedIn-Version", LinkedInVersion)
+	req.Header.Add("LinkedIn-Version", LinkedInVersion) // nolint:canonicalheader
 	req.Header.Add("X-Restli-Protocol-Version", "2.0.0")
 
 	return req, nil

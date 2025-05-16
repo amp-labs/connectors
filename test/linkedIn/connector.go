@@ -1,4 +1,4 @@
-package linkedIn
+package linkedin
 
 import (
 	"context"
@@ -7,12 +7,12 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/linkedIn"
+	"github.com/amp-labs/connectors/providers/linkedin"
 	"github.com/amp-labs/connectors/test/utils"
 	"golang.org/x/oauth2"
 )
 
-func GetConnector(ctx context.Context) *linkedIn.Connector {
+func GetConnector(ctx context.Context) *linkedin.Connector {
 	filePath := credscanning.LoadPath(providers.LinkedIn)
 	reader := utils.MustCreateProvCredJSON(filePath, true, false)
 
@@ -25,7 +25,7 @@ func GetConnector(ctx context.Context) *linkedIn.Connector {
 		utils.Fail(err.Error())
 	}
 
-	conn, err := linkedIn.NewConnector(common.Parameters{
+	conn, err := linkedin.NewConnector(common.Parameters{
 		AuthenticatedClient: client,
 	})
 	if err != nil {

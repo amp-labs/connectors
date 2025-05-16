@@ -1,4 +1,4 @@
-package linkedIn
+package linkedin
 
 import (
 	"net/http"
