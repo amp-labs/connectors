@@ -27,10 +27,15 @@ func TestListObjectMetadataZendeskSupportModule(t *testing.T) { // nolint:funlen
 			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
-			Name:         "Object coming from different module is unknown",
-			Input:        []string{"articles"},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{common.ErrObjectNotSupported},
+			Name:       "Object coming from different module is unknown",
+			Input:      []string{"articles"},
+			Server:     mockserver.Dummy(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Errors: map[string]error{
+					"articles": common.ErrObjectNotSupported,
+				},
+			},
 		},
 		{
 			Name:       "Successfully describe one object with metadata",
@@ -183,10 +188,15 @@ func TestListObjectMetadataHelpCenterModule(t *testing.T) { // nolint:funlen,goc
 
 	tests := []testroutines.Metadata{
 		{
-			Name:         "Object coming from different module is unknown",
-			Input:        []string{"brands"},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{common.ErrObjectNotSupported},
+			Name:       "Object coming from different module is unknown",
+			Input:      []string{"brands"},
+			Server:     mockserver.Dummy(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Errors: map[string]error{
+					"brands": common.ErrObjectNotSupported,
+				},
+			},
 		},
 		{
 			Name:       "Successfully describe one object with metadata",
