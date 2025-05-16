@@ -31,13 +31,13 @@ var sinceSupportedEndpoints = datautils.NewSet( //nolint:gochecknoglobals
 
 func makeNextRecordsURL(reqLink *url.URL, objName string) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
+		if directResponseEndpoints.Has(objName) {
+			return "", nil
+		}
+
 		url, err := urlbuilder.FromRawURL(reqLink)
 		if err != nil {
 			return "", err
-		}
-
-		if directResponseEndpoints.Has(objName) {
-			return "", nil
 		}
 
 		pagination, err := jsonquery.New(node).StringRequired("next_starting_after")
