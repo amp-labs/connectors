@@ -5,253 +5,109 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
-	"strings"
+	"sync"
 	"time"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/go-playground/validator"
+	"github.com/mitchellh/hashstructure"
 )
 
-type SubscribeResult struct {
-	Notifications map[common.ObjectName]*Notification
+var (
+	_ connectors.SubscribeConnector              = &Connector{}
+	_ connectors.SubscriptionMaintainerConnector = &Connector{}
+)
+
+func (c *Connector) EmptySubscriptionParams() *common.SubscribeParams {
+	return &common.SubscribeParams{}
 }
 
-// Notification represents a Zoho CRM notification subscription.
-type Notification struct {
-	ChannelID     string
-	NotifyURL     string
-	Events        []string
-	WatchFields   []string
-	Token         string `json:"token,omitempty"`
-	ChannelExpiry string
+func (c *Connector) EmptySubscriptionResult() *common.SubscriptionResult {
+	return &common.SubscriptionResult{
+		Result: &WatchResult{},
+	}
 }
 
-const NotificationExpiryDate = 6
-
-// nolin:funlen
-// Subscribe subscribes to events for the given objects
-// This is where the actual API calls to Zoho CRM happen to create notification subscriptions
-// Zoho CRM doesn't require registration - we directly subscribe to events.
-//
-//nolint:funlen, cyclop
+// Subscribe subscribes to the events for the given params.
+// It returns a subscription result with the channel id.
 func (c *Connector) Subscribe(
 	ctx context.Context,
 	params common.SubscribeParams,
 ) (*common.SubscriptionResult, error) {
-	zohoRes := &SubscribeResult{
-		Notifications: make(map[common.ObjectName]*Notification),
+	req, err := validateRequest(params)
+	if err != nil {
+		return nil, err
 	}
 
-	// Generate a unique channel ID
-	channelID := strconv.FormatInt(time.Now().UnixNano(), 10)
-
-	// The expiry date can be a maximum of one week from the time of subscribe.
-	//  If it is not specified or set for more than a week, the default expiry time is for one hour.
-	// Setting this 6 days just to be on safe side.
-	channelExpiryTime := datautils.Time.FormatRFC3339inUTC(time.Now().Add(time.Hour * 24 * NotificationExpiryDate)) //nolint:mnd,lll
-
-	notifyURL := "https://play.svix.com/in/e_Z4PpxWo75NamyQ2qBOJkrN7SsM6/"
-	token := "test_token"
-
-	var failError error
-
-	objectsSubscribed := []common.ObjectName{}
-
-	for objName, objEvents := range params.SubscriptionEvents {
-		// Convert object name to proper case for Zoho CRM API
-		zohoObjName := getZohoObjectName(string(objName))
-
-		events := []string{}
-
-		for _, eventType := range objEvents.Events {
-			//nolint:exhaustive
-			switch eventType {
-			case common.SubscriptionEventTypeCreate:
-				events = append(events, zohoObjName+".create")
-			case common.SubscriptionEventTypeUpdate:
-				events = append(events, zohoObjName+".edit")
-			case common.SubscriptionEventTypeDelete:
-				events = append(events, zohoObjName+".delete")
-			default:
-				events = append(events, zohoObjName+".all")
-			}
-		}
-
-		if len(events) == 0 {
-			events = append(events, zohoObjName+".all")
-		}
-
-		notification := &Notification{
-			ChannelID:     channelID,
-			NotifyURL:     notifyURL,
-			Events:        events,
-			WatchFields:   objEvents.WatchFields,
-			Token:         token,
-			ChannelExpiry: channelExpiryTime,
-		}
-
-		// Create notification in Zoho CRM
-		newNotification, err := c.CreateNotification(ctx, notification)
-		if err != nil {
-			failError = fmt.Errorf("failed to create notification for object %s: %w", objName, err)
-
-			break
-		}
-
-		zohoRes.Notifications[objName] = newNotification
-
-		objectsSubscribed = append(objectsSubscribed, objName)
+	hashedChannelId, err := hashString(req.UniqueRef)
+	if err != nil {
+		return nil, err
 	}
 
-	if failError != nil {
-		channelIDs := []string{}
-
-		for _, notification := range zohoRes.Notifications {
-			channelIDs = append(channelIDs, notification.ChannelID)
-		}
-
-		chnanelIDStr := strings.Join(channelIDs, ",")
-
-		err := c.DeleteNotifications(ctx, chnanelIDStr)
-		if err != nil {
-			return &common.SubscriptionResult{
-				Status:  common.SubscriptionStatusFailedToRollback,
-				Result:  zohoRes,
-				Objects: objectsSubscribed,
-				Events:  getRequstedEventTypes(params.SubscriptionEvents),
-			}, fmt.Errorf("failed to rollback: %w, original erro :%w", err, failError)
-		}
-
-		return nil, failError
-	}
-
-	return &common.SubscriptionResult{
-		Status:  common.SubscriptionStatusSuccess,
-		Result:  zohoRes,
-		Events:  getRequstedEventTypes(params.SubscriptionEvents),
-		Objects: objectsSubscribed,
-	}, nil
+	return c.putOrPostSubscribe(ctx, params, req, c.Client.Post, hashedChannelId)
 }
 
-// UpdateSubscription will update subscription by :
-// 1. Removing objects from the previous subscription that are not in the new subscription
-// 2. Adding new objects to the subscription that in the new subscription but not in the previous subscription
-// 3. Returing the updated subscription result.
-//
-// nolint:funlen,lll,cyclop
-func (c *Connector) UpdateSubscription(ctx context.Context, params common.SubscribeParams, previousResult *common.SubscriptionResult) (*common.SubscriptionResult, error) {
-	if previousResult.Result == nil {
-		return nil, fmt.Errorf("%w, missing previousResult.Result", errMissingParams)
-	}
-
-	prevState, ok := previousResult.Result.(*SubscribeResult)
-
-	if !ok {
-		return nil, fmt.Errorf("%w: expected previousResult.Result to be type '%T', but got '%T'",
-			errInvalidRequestType,
-			prevState,
-			previousResult.Result)
-	}
-
-	objectsToDelete := []common.ObjectName{}
-	objectsToAdd := []common.ObjectName{}
-
-	// collect objects to exclude from subscription
-	for objName := range prevState.Notifications {
-		_, ok := params.SubscriptionEvents[objName]
-		if !ok {
-			objectsToDelete = append(objectsToDelete, objName)
-		}
-	}
-
-	// collect new objects to add to the subscription
-	for objName := range params.SubscriptionEvents {
-		_, ok := prevState.Notifications[objName]
-		if !ok {
-			objectsToAdd = append(objectsToAdd, objName)
-		}
-	}
-
-	// remove objects that is to be exluded from subscription and delete
-	for _, objName := range objectsToAdd {
-		_, ok := params.SubscriptionEvents[objName]
-		if !ok {
-			delete(params.SubscriptionEvents, objName)
-		}
-	}
-
-	NotificatiosToKeep := make(map[common.ObjectName]*Notification)
-
-	// Remove objects to exclue from delete
-	for _, objName := range objectsToDelete {
-		_, ok := prevState.Notifications[objName]
-		if !ok {
-			NotificatiosToKeep[objName] = prevState.Notifications[objName]
-			delete(prevState.Notifications, objName)
-		}
-	}
-
-	deleteParams := *previousResult
-	deleteParams.Objects = objectsToDelete
-	deleteParams.Result = prevState
-
-	err := c.DeleteSubscription(ctx, deleteParams)
+func (c *Connector) UpdateSubscription(
+	ctx context.Context,
+	params common.SubscribeParams,
+	previousResult *common.SubscriptionResult,
+) (*common.SubscriptionResult, error) {
+	req, err := validateRequest(params)
 	if err != nil {
-		return nil, fmt.Errorf("failed to delete previous subscription: %w", err)
+		return nil, err
 	}
 
-	zohRes, err := c.Subscribe(ctx, params)
+	hashedChannelId, err := hashString(req.UniqueRef)
 	if err != nil {
-		return nil, fmt.Errorf("failed to subscribe to new objets: %w", err)
+		return nil, err
 	}
 
-	newState := prevState
-
-	newState.Notifications = NotificatiosToKeep
-
-	for objName, notification := range zohRes.Result.(*SubscribeResult).Notifications { //nolint:forcetypeassert
-		newState.Notifications[objName] = notification
+	if err := validateChannelId(previousResult, hashedChannelId); err != nil {
+		return nil, err
 	}
 
-	objectsSubscribed := []common.ObjectName{}
-
-	for objName := range newState.Notifications {
-		objectsSubscribed = append(objectsSubscribed, objName)
-	}
-
-	res := &common.SubscriptionResult{
-		Status:  common.SubscriptionStatusSuccess,
-		Result:  newState,
-		Objects: objectsSubscribed,
-		Events:  getRequstedEventTypes(params.SubscriptionEvents),
-	}
-
-	return res, nil
+	return c.putOrPostSubscribe(ctx, params, req, c.Client.Put, hashedChannelId)
 }
 
-// DeleteSubscription deletes a subscription by deleting all the notifications.
-// If any of the notification is failed to delete, it will return an error.
-func (c *Connector) DeleteSubscription(ctx context.Context, params common.SubscriptionResult) error {
-	if params.Result == nil {
-		return errors.New("missing SubscriptionResult") //nolint:err113
+// DeleteSubscription deletes a subscription with channel id which is extracted from the previous result.
+// previousResult is validated to make sure that there is only 1 channel id in the result.
+func (c *Connector) DeleteSubscription(ctx context.Context, result common.SubscriptionResult) error {
+	if result.Result == nil {
+		return fmt.Errorf("%w: Result cannot be null", errMissingParams) //nolint:err113,lll
 	}
 
-	zohoRes, ok := params.Result.(*SubscribeResult)
-
+	watchRes, ok := result.Result.(*WatchResult)
 	if !ok {
-		return fmt.Errorf("%w: expected SubscriptionResult to be type '%T', but got '%T'", errInvalidRequestType, zohoRes, params.Result) //nolint:err113,lll
+		return fmt.Errorf("%w: expected SubscriptionResult to be type '%T', but got '%T'", errInvalidRequestType, watchRes, result.Result) //nolint:err113,lll
 	}
 
-	channelIDs := []string{}
-
-	for _, notification := range zohoRes.Notifications {
-		channelIDs = append(channelIDs, notification.ChannelID)
+	if len(watchRes.Details.Events) == 0 {
+		return fmt.Errorf("%w: events cannot be empty", errMissingParams) //nolint:err113,lll
 	}
 
-	channelIDStr := strings.Join(channelIDs, ",")
+	//nolint:revive
+	channelIds := datautils.NewSet[string]()
 
-	err := c.DeleteNotifications(ctx, channelIDStr)
+	var channelId string
+
+	for _, event := range watchRes.Details.Events {
+		channelIds.AddOne(event.ChannelID)
+		channelId = event.ChannelID
+	}
+
+	if len(channelIds) == 0 {
+		return fmt.Errorf("%w: no channel ids found", errMissingParams)
+	}
+
+	if len(channelIds) != 1 {
+		return fmt.Errorf("%w: %s", errInconsistentChannelIdsMismatch, channelIds.List())
+	}
+
+	err := c.deleteNotifications(ctx, channelId)
 	if err != nil {
 		return fmt.Errorf("failed to delete notification channel: %w", err)
 	}
@@ -259,59 +115,26 @@ func (c *Connector) DeleteSubscription(ctx context.Context, params common.Subscr
 	return nil
 }
 
-// CreateNotification subscribe to the webhook
-// https://www.zoho.com/crm/developer/docs/api/v7/notifications/enable.html
-func (c *Connector) CreateNotification(ctx context.Context, notification *Notification) (*Notification, error) {
-	url, err := c.getAPIURL("actions/watch")
-	if err != nil {
-		return nil, err
-	}
-
-	requestBody := map[string]any{
-		"watch": []map[string]any{
-			{
-				"channel_id":                   notification.ChannelID,
-				"events":                       notification.Events,
-				"channel_expiry":               notification.ChannelExpiry,
-				"return_affected_field_values": true,
-				"notify_url":                   notification.NotifyURL,
-			},
-		},
-	}
-
-	resp, err := c.Client.Post(ctx, url.String(), requestBody)
-	if err != nil {
-		return nil, err
-	}
-
-	responsePtr, err := common.UnmarshalJSON[map[string]any](resp)
-	if err != nil {
-		return nil, err
-	}
-
-	response := *responsePtr
-
-	watchResponse, ok := response["watch"].([]any)
-	if !ok || len(watchResponse) == 0 {
-		return nil, errInvalidResponse
-	}
-
-	watchResult, ok := watchResponse[0].(map[string]any)
-	if !ok {
-		return nil, errInvalidResponse
-	}
-
-	if watchResult["code"] != "SUCCESS" {
-		return nil, fmt.Errorf("failed to create notification: %v", watchResult["message"]) //nolint:err113
-	}
-
-	return notification, nil
+// RunScheduledMaintenance runs the schedule for the connector to maintain the subscription.
+func (c *Connector) RunScheduledMaintenance(
+	ctx context.Context,
+	params common.SubscribeParams,
+	previousResult *common.SubscriptionResult,
+) (*common.SubscriptionResult, error) {
+	// In order to maintain the subscription, we need to
+	// update the expiration time of the subscription
+	// Available API is PUT or PATCH endpoint.
+	// Using PATCH will require parsing exisiting subscription and
+	// reformulating the request body which is complicated and error prone.
+	// Our UpdateSubscription uses PUT endpoint and it will automatically extend the expiry time.
+	// So we just use UpdateSubscription to maintain the subscription.
+	return c.UpdateSubscription(ctx, params, previousResult)
 }
 
 // DeleteNotifcations disable all notification for list of channelIDs
 // https://www.zoho.com/crm/developer/docs/api/v7/notifications/update-details.html
-func (c *Connector) DeleteNotifications(ctx context.Context, channelIDs string) error {
-	url, err := c.getAPIURL("actions/watch")
+func (c *Connector) deleteNotifications(ctx context.Context, channelIDs string) error {
+	url, err := c.getSubscribeURL()
 	if err != nil {
 		return err
 	}
@@ -326,67 +149,439 @@ func (c *Connector) DeleteNotifications(ctx context.Context, channelIDs string) 
 	return nil
 }
 
-// ExtendNotificationExpiryTime checks if a notification is about to expire and creates a new one if needed.
-// Zoho CRM notifications have a maximum expiry time of 7 days. This function:
-// 1. Checks if the current notification will expire within 24 hours
-// 2. If so, creates a new notification with the same configuration but with a new 6-day expiry time
-// 3. If the notification has more than 24 hours remaining, returns the original notification
+//nolint:funlen,cyclop
+func (c *Connector) putOrPostSubscribe(
+	ctx context.Context,
+	params common.SubscribeParams,
+	req *SubscriptionRequest,
+	putOrPost common.WriteMethod,
+	channelId string,
+) (*common.SubscriptionResult, error) {
+	if req.Duration != nil && *req.Duration > defaultDuration {
+		return nil, errInvalidDuration
+	}
 
-func (c *Connector) ExtendNotificationExpiryTime(ctx context.Context, notification *Notification) (*Notification, error) { //nolint:lll
-	currentExpiry, err := time.Parse(time.RFC3339, notification.ChannelExpiry)
+	payload := &SubscriptionPayload{
+		Watch: make([]Watch, 0),
+	}
+
+	// in order to build the payload, we need to get the module metadata to get the object name and object type id
+	moduleMetadataMap, err := c.getModuleMetadata(ctx, params)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse expiry time: %w", err)
+		return nil, fmt.Errorf("error getting module metadata map: %w", err)
 	}
 
-	timeUntilExpiry := time.Until(currentExpiry)
+	//nolint:varnamelen
+	var wg sync.WaitGroup
 
-	// If more than 1 day remaining, no need to extend
-	if timeUntilExpiry > 24*time.Hour {
-		return notification, nil
+	var subscriptionErr error
+
+	var dur time.Duration
+	if req.Duration != nil {
+		dur = *req.Duration
+	} else {
+		// default 1 week
+		dur = defaultDuration
 	}
 
-	newExpiryTime := datautils.Time.FormatRFC3339inUTC(time.Now().Add(time.Hour * 24 * NotificationExpiryDate))
+	exp := time.Now().Add(dur)
 
-	newNotification := *notification
+	expiryStr := datautils.Time.FormatRFC3339inUTC(exp)
 
-	newNotification.ChannelExpiry = newExpiryTime
+	watchObject := Watch{
+		ChannelID:                 channelId,
+		NotifyURL:                 req.WebhookEndPoint,
+		Token:                     req.UniqueRef,
+		ReturnAffectedFieldValues: true,
+		NotifyOnRelatedAction:     false, // TODO: [ENG-2229] Enable this when association update is enabled
+		ChannelExpiry:             expiryStr,
+	}
 
-	notificationRes, err := c.CreateNotification(ctx, &newNotification)
+	var mutex sync.Mutex
+
+	// iterate over all objects and events to build the payload
+	for obj, evt := range params.SubscriptionEvents {
+		wg.Add(1)
+
+		go func(objName common.ObjectName, event common.ObjectEvents) {
+			defer wg.Done()
+
+			mappedEvents, err := mapEvents(string(objName), event.Events)
+			if err != nil {
+				subscriptionErr = errors.Join(
+					subscriptionErr,
+					fmt.Errorf("error mapping events: %w", err),
+				)
+
+				return
+			}
+
+			moduleMetadata := moduleMetadataMap[string(objName)]
+
+			// get notification conditions per object
+			notificationConditions, goroutineErr := c.getNotificationConditions(ctx, moduleMetadata, event)
+			if goroutineErr != nil {
+				subscriptionErr = errors.Join(
+					subscriptionErr,
+					fmt.Errorf("error getting notification conditions for object %s: %w", objName, goroutineErr),
+				)
+
+				return
+			}
+
+			mutex.Lock()
+			watchObject.Events = append(watchObject.Events, mappedEvents...)
+			watchObject.NotificationCondition = append(watchObject.NotificationCondition, notificationConditions...)
+
+			mutex.Unlock()
+		}(obj, evt)
+	}
+
+	wg.Wait()
+
+	payload.Watch = append(payload.Watch, watchObject)
+
+	if subscriptionErr != nil {
+		return nil, fmt.Errorf("error preparing to subscribe: %w", subscriptionErr)
+	}
+
+	res, err := c.putOrPostSubscription(ctx, payload, putOrPost)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create notification for object: %w", err)
+		return nil, fmt.Errorf("error enabling subscription: %w", err)
 	}
 
-	notification.ChannelExpiry = newExpiryTime
+	subscriptionResult := &common.SubscriptionResult{
+		Result:       res,
+		ObjectEvents: params.SubscriptionEvents,
+		Status:       common.SubscriptionStatusSuccess,
+	}
 
-	return notificationRes, nil
+	return subscriptionResult, nil
 }
 
-func getZohoObjectName(objName string) string {
-	return naming.CapitalizeFirstLetterEveryWord(objName)
+func (c *Connector) putOrPostSubscription(
+	ctx context.Context,
+	payload *SubscriptionPayload,
+	updater common.WriteMethod,
+) (*WatchResult, error) {
+	url, err := c.getSubscribeURL()
+	if err != nil {
+		return nil, fmt.Errorf("error getting subscribe URL: %w", err)
+	}
+
+	resp, err := updater(ctx, url.String(), payload)
+	if err != nil {
+		return nil, fmt.Errorf("error creating subscription: %w", err)
+	}
+
+	body, err := common.UnmarshalJSON[Result](resp)
+	if err != nil {
+		return nil, fmt.Errorf("error unmarshalling subscription response: %w", err)
+	}
+
+	if len(body.Watch) == 0 {
+		return nil, errNoSubscriptionCreated
+	}
+
+	if body.Watch[0].Code != ResultStatusSuccess {
+		return nil, fmt.Errorf("%w: %s", errSubscriptionFailed, body.Watch[0].Message)
+	}
+
+	return &body.Watch[0], nil
 }
 
-func getRequstedEventTypes(events map[common.ObjectName]common.ObjectEvents) []common.SubscriptionEventType {
-	uniqueEvents := make(map[common.SubscriptionEventType]bool)
+func mapEvents(apiName string, events []common.SubscriptionEventType) ([]ModuleEvent, error) {
+	moduleEvents := make([]ModuleEvent, 0)
 
-	for _, objEvents := range events {
-		for _, eventType := range objEvents.Events {
-			uniqueEvents[eventType] = true
+	for _, event := range events {
+		//nolint:exhaustive
+		switch event {
+		case common.SubscriptionEventTypeCreate:
+			moduleEvents = append(moduleEvents, ModuleEvent(apiName+"."+OperationCreate))
+		case common.SubscriptionEventTypeUpdate:
+			moduleEvents = append(moduleEvents, ModuleEvent(apiName+"."+OperationEdit))
+		case common.SubscriptionEventTypeDelete:
+			moduleEvents = append(moduleEvents, ModuleEvent(apiName+"."+OperationDelete))
+		default:
+			return nil, fmt.Errorf("%w: %s", errUnsupportedEventType, event)
 		}
 	}
 
-	if len(uniqueEvents) == 0 {
-		return []common.SubscriptionEventType{
-			common.SubscriptionEventTypeCreate,
-			common.SubscriptionEventTypeDelete,
-			common.SubscriptionEventTypeUpdate,
+	return moduleEvents, nil
+}
+
+type ModuleMetadata struct {
+	Modules []map[string]any `json:"modules"`
+}
+
+func (c *Connector) fetchModuleMetadata(ctx context.Context, metadataURL string) (*ModuleMetadata, error) {
+	resp, err := c.Client.Get(ctx, metadataURL)
+	if err != nil {
+		return nil, fmt.Errorf("error requesting module metadata: %w", err)
+	}
+
+	response, err := common.UnmarshalJSON[ModuleMetadata](resp)
+	if err != nil {
+		return nil, fmt.Errorf("error unmarshalling module metadata: %w", err)
+	}
+
+	return response, nil
+}
+
+func (c *Connector) getModuleMetadata(
+	ctx context.Context,
+	params common.SubscribeParams,
+) (map[string]map[string]any, error) {
+	objectNames := make([]string, 0)
+	for obj := range params.SubscriptionEvents {
+		objectNames = append(objectNames, string(obj))
+	}
+
+	var metadataURL string
+
+	var err error
+
+	//nolint:gocritic
+	if len(objectNames) == 0 {
+		return nil, fmt.Errorf("%w: no subscription events provided", errMissingParams)
+	} else if len(objectNames) > 1 {
+		metadataURL, err = c.getModulesMetadataURL()
+	} else {
+		metadataURL, err = c.getModuleMetadataURL(objectNames[0])
+	}
+
+	if err != nil {
+		return nil, fmt.Errorf("error getting metadata URL for object(s) '%v': %w", objectNames, err)
+	}
+
+	modulesMetadata, err := c.fetchModuleMetadata(ctx, metadataURL)
+	if err != nil {
+		return nil, fmt.Errorf("error getting module metadata: %w", err)
+	}
+
+	objectNameMatchedModule := make(map[string]map[string]any)
+
+	for _, objName := range objectNames {
+		found := false
+
+		for _, module := range modulesMetadata.Modules {
+			//nolint:forcetypeassert
+			if naming.PluralityAndCaseIgnoreEqual(objName, module["module_name"].(string)) {
+				objectNameMatchedModule[objName] = module
+				found = true
+
+				break
+			}
+		}
+
+		if !found {
+			return nil, fmt.Errorf("%w: %s", errObjectNameNotFound, objName)
 		}
 	}
 
-	result := make([]common.SubscriptionEventType, 0, len(uniqueEvents))
+	return objectNameMatchedModule, nil
+}
 
-	for eventType := range uniqueEvents {
-		result = append(result, eventType)
+func (c *Connector) getfieldsMetadata(ctx context.Context, moduleName string) (*metadataFields, error) {
+	resp, err := c.fetchFieldMetadata(ctx, moduleName)
+	if err != nil {
+		return nil, fmt.Errorf("error getting metadata for module '%s': %w", moduleName, err)
 	}
 
-	return result
+	response, err := common.UnmarshalJSON[metadataFields](resp)
+	if err != nil {
+		return nil, fmt.Errorf("error unmarshalling metadata for module '%s': %w", moduleName, err)
+	}
+
+	return response, nil
+}
+
+// getNotificationConditions builds the notification conditions for the given event.
+// it fetches the field metadata for the given module and event to build the notification condition.
+//
+//nolint:cyclop,funlen
+func (c *Connector) getNotificationConditions(
+	ctx context.Context,
+	moduleMetadata map[string]any,
+	event common.ObjectEvents,
+) ([]NotificationCondition, error) {
+	if event.WatchFieldsAll {
+		return nil, errWatchFieldsAll
+	}
+
+	if len(event.WatchFields) > maxWatchFields {
+		return nil, fmt.Errorf("%w: maximum 10 fields can be watched", errTooManyWatchFields)
+	}
+
+	if len(event.WatchFields) == 0 {
+		return nil, nil
+	}
+
+	var fieldMetadata *metadataFields
+
+	var err error
+
+	//nolint:forcetypeassert
+	moduleName := moduleMetadata["module_name"].(string) // module name is the official object name
+
+	if len(event.WatchFields) > 0 {
+		fieldMetadata, err = c.getfieldsMetadata(ctx, moduleName)
+		if err != nil {
+			return nil, fmt.Errorf("error getting fields metadata: %w", err)
+		}
+	}
+
+	watchFieldsMetadata := make(map[string]map[string]any, 0)
+
+	for _, field := range event.WatchFields {
+		found := false
+
+		for _, fieldMetadata := range fieldMetadata.Fields {
+			//nolint:forcetypeassert
+			// api_name is the official notation for `field`
+			if naming.PluralityAndCaseIgnoreEqual(fieldMetadata["api_name"].(string), field) {
+				watchFieldsMetadata[field] = fieldMetadata
+				found = true
+
+				break
+			}
+		}
+
+		if !found {
+			return nil, fmt.Errorf("%w: %s", errFieldNotFound, field)
+		}
+	}
+
+	fieldGroups := make([]FieldGroup, 0)
+
+	//nolint:forcetypeassert
+	for fieldName, fieldMetadata := range watchFieldsMetadata {
+		fieldGroups = append(fieldGroups, FieldGroup{
+			Field: &Field{
+				APIName: naming.CapitalizeFirstLetterEveryWord(fieldName),
+
+				ID: fieldMetadata["id"].(string),
+			},
+		})
+	}
+
+	var fieldSelection FieldSelection
+
+	if len(fieldGroups) == 1 {
+		fieldSelection = FieldSelection{
+			Field: fieldGroups[0].Field,
+		}
+	} else {
+		fieldSelection = FieldSelection{
+			Group:         fieldGroups,
+			GroupOperator: GroupOperatorOr,
+		}
+	}
+
+	//nolint:forcetypeassert
+	return []NotificationCondition{
+		{
+			Type: "field_selection",
+			Module: Module{
+				APIName: moduleMetadata["api_name"].(string), // this is object name
+				Id:      moduleMetadata["id"].(string),       // this is object type id
+			},
+			FieldSelection: fieldSelection,
+		},
+	}, nil
+}
+
+func (c *Connector) getSubscribeURL() (*urlbuilder.URL, error) {
+	url, err := urlbuilder.New(c.BaseURL, "crm/v7/actions/watch")
+	if err != nil {
+		return nil, err
+	}
+
+	return url, nil
+}
+
+func (c *Connector) getModuleMetadataURL(objectName string) (string, error) {
+	url, err := urlbuilder.New(c.BaseURL, "crm/v7/settings/modules", objectName)
+	if err != nil {
+		return "", err
+	}
+
+	return url.String(), nil
+}
+
+func (c *Connector) getModulesMetadataURL() (string, error) {
+	url, err := urlbuilder.New(c.BaseURL, "crm/v7/settings/modules")
+	if err != nil {
+		return "", err
+	}
+
+	return url.String(), nil
+}
+
+func validateChannelId(previousResult *common.SubscriptionResult, hashedChannelId string) error {
+	if previousResult == nil {
+		return fmt.Errorf("%w: previous result is nil", errMissingParams)
+	}
+
+	watchResult, ok := previousResult.Result.(*WatchResult)
+	if !ok {
+		return fmt.Errorf("%w: expected SubscriptionResult to be type '%T', but got '%T'", errInvalidRequestType, watchResult, previousResult.Result) //nolint:err113,lll
+	}
+
+	if watchResult.Details.Events == nil {
+		return fmt.Errorf("%w: no events to update", errMissingParams)
+	}
+
+	//nolint:revive
+	channelIds := datautils.NewSet[string]()
+
+	var channelId string
+
+	for _, event := range watchResult.Details.Events {
+		channelIds.AddOne(event.ChannelID)
+		channelId = event.ChannelID
+	}
+
+	if len(channelIds) == 0 {
+		return fmt.Errorf("%w: no channel ids found", errMissingParams)
+	}
+
+	if len(channelIds) != 1 {
+		return fmt.Errorf("%w: %s", errInconsistentChannelIdsMismatch, channelIds.List())
+	}
+
+	if channelId == hashedChannelId {
+		return nil
+	}
+
+	return fmt.Errorf("%w: channel id mismatch", errChannelIdMismatch)
+}
+
+func validateRequest(params common.SubscribeParams) (*SubscriptionRequest, error) {
+	if params.Request == nil {
+		return nil, fmt.Errorf("%w: request is nil", errMissingParams)
+	}
+
+	req, ok := params.Request.(*SubscriptionRequest)
+	if !ok {
+		return nil, fmt.Errorf("%w: expected '%T', got '%T'", errInvalidRequestType, req, params.Request)
+	}
+
+	validate := validator.New()
+
+	if validate.Struct(req) != nil {
+		return nil, fmt.Errorf("%w: request is invalid", errInvalidRequestType)
+	}
+
+	return req, nil
+}
+
+func hashString(uniqueRef string) (string, error) {
+	hashedChannelID, err := hashstructure.Hash(uniqueRef, &hashstructure.HashOptions{})
+	if err != nil {
+		return "", fmt.Errorf("error hashing unique ref to compare with channel id: %w", err)
+	}
+
+	//nolint:gosec
+	return strconv.FormatInt(int64(hashedChannelID), 10), nil
 }

@@ -644,3 +644,17 @@ func (i *ProviderInfo) Override(override *ProviderInfo) *ProviderInfo {
 
 	return i
 }
+
+func (i *ProviderInfo) RequiresWorkspace() bool {
+	if i.Metadata.Input == nil {
+		return false
+	}
+
+	for _, input := range i.Metadata.Input {
+		if input.Name == "workspace" {
+			return true
+		}
+	}
+
+	return false
+}

@@ -1,6 +1,8 @@
 package components
 
 import (
+	"fmt"
+
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/substitutions/catalogreplacer"
@@ -35,13 +37,18 @@ func NewProviderContext(
 	}
 
 	pctx.providerInfo = providerInfo
+
+	if len(module) == 0 {
+		module = common.ModuleRoot
+	}
+
 	pctx.module = module
 
 	return pctx, nil
 }
 
 func (p *ProviderContext) String() string {
-	return p.provider + ".Connector"
+	return fmt.Sprintf("%v.Connector[%v]", p.provider, p.module)
 }
 
 func (p *ProviderContext) Provider() providers.Provider {

@@ -27,6 +27,10 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 				type {
 					name
 					kind
+					ofType {
+					  name
+					  kind
+					}
 				}
 			}
 		}
@@ -58,7 +62,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	response *common.JSONHTTPResponse,
 ) (*common.ObjectMetadata, error) {
 	objectMetadata := common.ObjectMetadata{
-		FieldsMap:   make(map[string]string),
+		Fields:      make(map[string]common.FieldMetadata),
 		DisplayName: naming.CapitalizeFirstLetterEveryWord(objectName),
 	}
 
@@ -77,7 +81,19 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 
 	// Process each field from the introspection result
 	for _, field := range metadataResp.Data.Type.Fields {
-		objectMetadata.FieldsMap[field.Name] = field.Name
+		valueType := field.Type.Name
+
+		if valueType == "" {
+			valueType = field.Type.OfType.Name
+		}
+
+		objectMetadata.Fields[field.Name] = common.FieldMetadata{
+			DisplayName:  field.Name,
+			ValueType:    getFieldValueType(valueType),
+			ProviderType: valueType,
+			ReadOnly:     false,
+			Values:       nil,
+		}
 	}
 
 	return &objectMetadata, nil

@@ -1,0 +1,37 @@
+{
+  "parties": [
+    {
+      "id": 267944762,
+      "owner": {
+        "id": 674197,
+        "deleted": false,
+        "username": "integration.test",
+        "pictureURL": "https://facehub.appspot.com/default/person?text=I&size=100&colour=2099955006",
+        "name": "integration.tes1907"
+      },
+      "team": null,
+      "type": "person",
+      "about": null,
+      "firstName": "integration.tes1907",
+      "lastName": null,
+      "jobTitle": null,
+      "createdAt": "2025-02-25T14:16:26Z",
+      "updatedAt": "2025-02-25T14:16:26Z",
+      "organisation": null,
+      "lastContactedAt": null,
+      "pictureURL": "https://facehub.appspot.com/default/person?text=I&size=100&colour=2099955006",
+      "title": null,
+      "phoneNumbers": [],
+      "addresses": [],
+      "emailAddresses": [
+        {
+          "id": 597195415,
+          "type": "Home",
+          "address": "test@test.com"
+        }
+      ],
+      "websites": [],
+      "enrichment": null
+    }
+  ]
+}

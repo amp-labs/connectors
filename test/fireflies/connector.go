@@ -14,21 +14,7 @@ func GetFirefliesConnector(ctx context.Context) *fireflies.Connector {
 	filePath := credscanning.LoadPath(providers.Fireflies)
 	reader := utils.MustCreateProvCredJSON(filePath, false, false)
 
-	info, err := providers.ReadInfo(providers.Fireflies)
-	if err != nil {
-		utils.Fail(err.Error())
-	}
-
-	headerName, headerValue, err := info.GetApiKeyHeader(reader.Get(credscanning.Fields.ApiKey))
-	if err != nil {
-		utils.Fail(err.Error())
-	}
-
-	client, err := common.NewApiKeyHeaderAuthHTTPClient(
-		ctx, headerName, headerValue)
-	if err != nil {
-		utils.Fail(err.Error())
-	}
+	client := utils.NewAPIKeyClient(ctx, reader, providers.Fireflies)
 
 	conn, err := fireflies.NewConnector(common.Parameters{
 		AuthenticatedClient: client,

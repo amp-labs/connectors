@@ -6,14 +6,19 @@ type TypeKind string
 const (
 	KindScalar  TypeKind = "SCALAR"
 	KindObject  TypeKind = "OBJECT"
-	KindEnum    TypeKind = "ENUM"
 	KindNonNull TypeKind = "NON_NULL"
 	KindList    TypeKind = "LIST"
 )
 
 // TypeInfo represents the type information in the GraphQL schema.
 type TypeInfo struct {
-	Name *string  `json:"name"`
+	Name   string     `json:"name"`
+	Kind   TypeKind   `json:"kind"`
+	OfType OfTypeInfo `json:"ofType"`
+}
+
+type OfTypeInfo struct {
+	Name string   `json:"name"`
 	Kind TypeKind `json:"kind"`
 }
 

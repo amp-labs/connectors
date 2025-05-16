@@ -116,6 +116,8 @@ var (
 
 	// ErrResolvingCustomFields is returned when custom fields cannot be retrieved for Read or ListObjectMetadata.
 	ErrResolvingCustomFields = errors.New("cannot resolve custom fields")
+
+	ErrGetRecordNotSupportedForObject = errors.New("getRecord is not supported for the object")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.
@@ -154,6 +156,8 @@ type ReadParams struct {
 	//	* Stripe: Only nested objects can be expanded. Specify a dot-separated path
 	//		to the property to fetch and expand those objects.
 	//		Reference: https://docs.stripe.com/expand#how-it-works
+	//	* Capsule: Embeds objects in response.
+	//		Reference: https://developer.capsulecrm.com/v2/overview/reading-from-the-api
 	AssociatedObjects []string // optional
 }
 
@@ -491,7 +495,13 @@ type SubscribeParams struct {
 }
 
 type SubscriptionResult struct { // this corresponds to each API call.
-	Result  any
+	Result       any
+	ObjectEvents map[ObjectName]ObjectEvents
+	Status       SubscriptionStatus
+
+	// Below fields are deprecated, and will be removed in a future release.
+	// Use ObjectEvents instead.
+
 	Objects []ObjectName
 	Events  []SubscriptionEventType
 	// ["create", "update", "delete"]
@@ -500,7 +510,6 @@ type SubscriptionResult struct { // this corresponds to each API call.
 	// ["email", "fax"]
 	PassThroughEvents []string
 	// provider specific events ["contact.merged"] for hubspot or ["jira_issue:restored", "jira_issue:archived"] for jira.
-	Status SubscriptionStatus
 }
 
 type SubscriptionStatus string
