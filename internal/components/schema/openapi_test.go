@@ -75,6 +75,10 @@ type mockedConnector struct {
 	components.SchemaProvider
 }
 
+func (m mockedConnector) String() string {
+	return "mocked connector"
+}
+
 func constructTestConnector(serverURL string) *mockedConnector {
 	connector := mocked.Connector{
 		BaseURL: serverURL,
