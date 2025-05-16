@@ -15,6 +15,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
+// nolint: lll
 func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
@@ -96,7 +97,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				}
 
 				data := fmt.Sprintf("[%v]", strings.Join(manyCampaigns, ","))
-				_, _ = writer.Write([]byte(data))
+				_, _ = writer.Write([]byte(data)) // nosemgrep: go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter
 			}),
 			Comparator: testroutines.ComparatorPagination,
 			Expected: &common.ReadResult{

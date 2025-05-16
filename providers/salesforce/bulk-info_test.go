@@ -298,11 +298,12 @@ func (c bulkJobResultTestCase) Run(t *testing.T, builder testroutines.ConnectorB
 	testCaseTypeJobResults(c).Validate(t, err, output)
 }
 
+// nolint: lll
 func (c bulkGetSuccessfulJobResultsTestCase) Run(t *testing.T, builder testroutines.ConnectorBuilder[*Connector]) {
 	t.Helper()
 	conn := builder.Build(t, c.Name)
 
-	output, err := conn.GetSuccessfulJobResults(context.Background(), c.Input)
+	output, err := conn.GetSuccessfulJobResults(context.Background(), c.Input) // nosemgrep: trailofbits.go.invalid-usage-of-modified-variable.invalid-usage-of-modified-variable, nolint: lll
 	if err != nil {
 		_ = output.Body.Close()
 	}
@@ -310,11 +311,12 @@ func (c bulkGetSuccessfulJobResultsTestCase) Run(t *testing.T, builder testrouti
 	testCaseTypeHTTPResponse(c).Validate(t, err, output)
 }
 
+// nolint: lll
 func (c bulkGetBulkQueryResultsTestCase) Run(t *testing.T, builder testroutines.ConnectorBuilder[*Connector]) {
 	t.Helper()
 	conn := builder.Build(t, c.Name)
 
-	output, err := conn.GetBulkQueryResults(context.Background(), c.Input)
+	output, err := conn.GetBulkQueryResults(context.Background(), c.Input) // nosemgrep: trailofbits.go.invalid-usage-of-modified-variable.invalid-usage-of-modified-variable
 	if err != nil {
 		_ = output.Body.Close()
 	}
