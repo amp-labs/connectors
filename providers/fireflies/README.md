@@ -9,4 +9,5 @@ Below is an exhaustive list of objects & methods supported on the objects
 | -----------| ----------| -------|
 | Users      | user      | read   |
 | Transcripts| transcript| read   |
+| Bites      | bite      | read   |
 -----------------------------------
