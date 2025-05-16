@@ -2,6 +2,7 @@ package naming
 
 import (
 	"encoding/json"
+	"strings"
 
 	"github.com/gertd/go-pluralize"
 )
@@ -72,4 +73,13 @@ func (s SingularString) MarshalText() ([]byte, error) {
 
 func (s *SingularString) UnmarshalText(text []byte) error {
 	return s.UnmarshalJSON(text)
+}
+
+func PluralityAndCaseIgnoreEqual(a, b string) bool {
+	singularA := pluralizer.Singular(a)
+	singularB := pluralizer.Singular(b)
+	pluralA := pluralizer.Plural(a)
+	pluralB := pluralizer.Plural(b)
+
+	return strings.EqualFold(singularA, singularB) && strings.EqualFold(pluralA, pluralB)
 }
