@@ -22,10 +22,15 @@ func TestListObjectMetaUserModule(t *testing.T) {
 			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
-			Name:         "Unknown object requested",
-			Input:        []string{"godzilla"},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{common.ErrObjectNotSupported},
+			Name:       "Unknown object requested",
+			Input:      []string{"godzilla"},
+			Server:     mockserver.Dummy(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Errors: map[string]error{
+					"godzilla": common.ErrObjectNotSupported,
+				},
+			},
 		},
 		{
 			Name:       "Successfully describe multiple objects with metadata",
