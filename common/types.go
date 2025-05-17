@@ -118,6 +118,11 @@ var (
 	ErrResolvingCustomFields = errors.New("cannot resolve custom fields")
 
 	ErrGetRecordNotSupportedForObject = errors.New("getRecord is not supported for the object")
+
+	// ErrImplementation is returned when execution takes impossible route.
+	// This is to be used instead of running into nil pointer exception.
+	// If prior assumptions would be broken then this error might surface indicating inconsistent implementation.
+	ErrImplementation = errors.New("code took invalid execution path")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.

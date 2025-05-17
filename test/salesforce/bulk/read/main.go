@@ -9,6 +9,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers"
 	connTest "github.com/amp-labs/connectors/test/salesforce"
 	"github.com/amp-labs/connectors/test/salesforce/bulk"
 	"github.com/amp-labs/connectors/test/utils"
@@ -22,7 +23,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := connTest.GetSalesforceConnector(ctx)
+	conn := connTest.GetSalesforceConnector(ctx, providers.ModuleSalesforceStandard)
 
 	res, err := conn.BulkRead(ctx, common.ReadParams{
 		ObjectName: "Account",

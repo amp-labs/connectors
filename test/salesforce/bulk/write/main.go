@@ -6,6 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/salesforce"
 	connTest "github.com/amp-labs/connectors/test/salesforce"
 	"github.com/amp-labs/connectors/test/utils"
@@ -58,7 +59,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := connTest.GetSalesforceConnector(ctx)
+	conn := connTest.GetSalesforceConnector(ctx, providers.ModuleSalesforceStandard)
 
 	logs := tests.Run(ctx, conn)
 

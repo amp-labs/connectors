@@ -12,7 +12,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils"
 )
 
-var objectName = "Account" // nolint: gochecknoglobals
+var objectName = "Emails" // nolint: gochecknoglobals
 
 func main() {
 	// Handle Ctrl-C gracefully.
@@ -22,15 +22,15 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := connTest.GetSalesforceConnector(ctx, providers.ModuleSalesforceStandard)
+	conn := connTest.GetSalesforceConnector(ctx, providers.ModuleSalesforceAccountEngagement)
 
 	metadata, err := conn.ListObjectMetadata(ctx, []string{
 		objectName,
 	})
 	if err != nil {
-		utils.Fail("error listing metadata for Salesforce", "error", err)
+		utils.Fail("error listing metadata", "error", err)
 	}
 
-	slog.Info("Metadata for accounts..")
+	slog.Info("Metadata...")
 	utils.DumpJSON(metadata, os.Stdout)
 }

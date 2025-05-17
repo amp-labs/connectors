@@ -9,7 +9,7 @@ import (
 
 var (
 	// ErrInvalidModuleDeclaration occurs when the identifier used for map indexing in Modules
-	// does not match the module's ID.
+	// does not match the module's ID. Or provider info, module info is not properly defined.
 	ErrInvalidModuleDeclaration = errors.New("supported modules are not correctly defined")
 
 	// ErrMissingModule can be returned when connector cannot resolve ModuleID.

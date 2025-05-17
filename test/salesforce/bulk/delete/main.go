@@ -9,6 +9,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/salesforce"
 	connTest "github.com/amp-labs/connectors/test/salesforce"
 	"github.com/amp-labs/connectors/test/salesforce/bulk"
@@ -24,7 +25,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := connTest.GetSalesforceConnector(ctx)
+	conn := connTest.GetSalesforceConnector(ctx, providers.ModuleSalesforceStandard)
 
 	// We first create objects in Salesforce,
 	// and then we generate an in-memory CSV of the Salesforce IDs of the newly created objects,
