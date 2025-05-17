@@ -1,0 +1,7 @@
+Schema Provider:  &{root 0xc0000686e0}
+Round  failures:  0 [projects templates/gitignores events]
+Schema Provider:  &{0xc0000a3f20 serial}
+Round  failures:  1 [projects templates/gitignores events]
+Metadata Results:  map[templates/gitignores:{Templates/Gitignores map[] map[key:key name:name]}]
+Results:  map[templates/gitignores:{Templates/Gitignores map[] map[key:key name:name]}]
+Errors:  map[]
