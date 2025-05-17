@@ -1,0 +1,28 @@
+{
+    "items": [
+          {
+                "id": "549755885175",
+                "created_at": "2020-01-01T20:10:40Z",
+                "board_pins_modified_at": "2020-01-01T20:10:40Z",
+                "name": "Summer Recipes",
+                "description": "My favorite summer recipes",
+                "collaborator_count": 17,
+                "pin_count": 5,
+                "follower_count": 13,
+                "media": {
+                      "image_cover_url": "https://i.pinimg.com/400x300/fd/cd/d5/fdcdd5a6d8a80824add0d054125cd957.jpg",
+                      "pin_thumbnail_urls": [
+                            "https://i.pinimg.com/150x150/b4/57/10/b45710f1ede96af55230f4b43935c4af.jpg",
+                            "https://i.pinimg.com/150x150/dd/ff/46/ddff4616e39c1935cd05738794fa860e.jpg",
+                            "https://i.pinimg.com/150x150/84/ac/59/84ac59b670ccb5b903dace480a98930c.jpg",
+                            "https://i.pinimg.com/150x150/4c/54/6f/4c546f521be85e30838fb742bfff6936.jpg"
+                      ]
+                },
+                "owner": {
+                      "username": "string"
+                },
+                "privacy": "PUBLIC"
+          }
+    ],
+    "bookmark": "P2MxMDU0MzM0OTYyNzU0OTg0NjUzLjE3MTUzMzgzMDksLTF8NHwxMjE0NzA2NjAzMTA1Mz"
+}
