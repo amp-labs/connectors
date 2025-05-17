@@ -143,6 +143,10 @@ func constructTestConnector(serverURL string, module common.ModuleID) (*Connecto
 		WithAuthenticatedClient(http.DefaultClient),
 		WithWorkspace("test-workspace"),
 		WithModule(module),
+		WithMetadata(map[string]string{
+			"isDemo":         "true",
+			"businessUnitId": "test-business-unit-id",
+		}),
 	)
 	if err != nil {
 		return nil, err

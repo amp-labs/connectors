@@ -69,6 +69,9 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		if err != nil {
 			return nil, err
 		}
+
+		// Override error handler. Pardot has different format from Standard Salesforce.
+		conn.Client.HTTPClient.ErrorHandler = pardot.ErrorHandlerFunc
 	}
 
 	return conn, nil
