@@ -1,8 +1,11 @@
 package interpreter
 
 import (
+	"errors"
 	"net/http"
 )
+
+var ErrCannotParseErrorResponse = errors.New("implementation cannot process error response")
 
 // FaultyResponder is an implementation of FaultyResponseHandler.
 // It uses common techniques to handle error response returned by provider.
@@ -24,6 +27,10 @@ func NewFaultyResponder(errorSwitch *FormatSwitch, statusCodeMap map[int]error) 
 }
 
 func (r FaultyResponder) HandleErrorResponse(res *http.Response, body []byte) error {
+	if r.errorSwitch == nil {
+		return ErrCannotParseErrorResponse
+	}
+
 	// Locate best schema to describe response.
 	schema := r.errorSwitch.ParseJSON(body)
 
@@ -53,5 +60,9 @@ type DirectFaultyResponder struct {
 }
 
 func (r DirectFaultyResponder) HandleErrorResponse(res *http.Response, body []byte) error {
+	if r.Callback == nil {
+		return ErrCannotParseErrorResponse
+	}
+
 	return r.Callback(res, body)
 }

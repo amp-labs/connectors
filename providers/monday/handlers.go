@@ -20,13 +20,11 @@ const (
 	defaultPageSize   = 200
 	mondayObjectBoard = "boards"
 	mondayObjectUser  = "users"
+	mondayObjectItems = "items"
+	mondayObjectDocs  = "docs"
 )
 
 var (
-	// ErrUnsupportedObject is returned when an unsupported object type is requested.
-	ErrUnsupportedObject = errors.New("unsupported object")
-	// ErrInvalidResponseFormat is returned when the API response format is unexpected.
-	ErrInvalidResponseFormat = errors.New("invalid response format")
 	// ErrUnsupportedObjectName is returned when an unsupported object name is provided.
 	ErrUnsupportedObjectName = errors.New("unsupported object name")
 	// ErrBoardNameRequired is returned when board name is missing for creation.
@@ -280,7 +278,7 @@ func (c *Connector) parseReadResponse(
 	request *http.Request,
 	resp *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
-	data, err := common.UnmarshalJSON[MondayResponse](resp)
+	data, err := common.UnmarshalJSON[Response](resp)
 	if err != nil {
 		return nil, common.ErrFailedToUnmarshalBody
 	}

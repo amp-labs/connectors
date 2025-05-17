@@ -1,0 +1,16 @@
+{
+  "errors": [
+    {
+      "message": "Cannot query field \"random_field\" on type \"Board\".",
+      "locations": [
+        {
+          "line": 7,
+          "column": 2
+        }
+      ],
+      "extensions": {
+        "code": "GRAPHQL_VALIDATION_FAILED"
+      }
+    }
+  ]
+}

@@ -39,8 +39,8 @@ type MetadataResponse struct {
 	} `json:"data"`
 }
 
-// MondayResponse represents the top-level response structure from Monday.com API.
-type MondayResponse struct {
+// Response represents the top-level response structure from Monday.com API.
+type Response struct {
 	Data ResponseData `json:"data"`
 }
 
@@ -69,12 +69,4 @@ type Board struct {
 	UpdatedAt   string `json:"updatedAt"`
 	URL         string `json:"url"`
 	WorkspaceID string `json:"workspaceId"`
-}
-
-// MondayRecord represents a record in the Monday.com API response
-// The fields are kept as map[string]any since they vary by object type.
-type MondayRecord struct {
-	ID   string         `json:"id,omitempty"`
-	Name string         `json:"name,omitempty"`
-	Data map[string]any `json:"-"` // Catch-all for other fields
 }
