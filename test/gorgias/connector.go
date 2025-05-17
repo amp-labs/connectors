@@ -15,7 +15,7 @@ import (
 
 func GetConnector(ctx context.Context) *gorgias.Connector {
 	filePath := credscanning.LoadPath(providers.Gorgias)
-	reader := utils.MustCreateProvCredJSON(filePath, true, true)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	client, err := common.NewOAuthHTTPClient(ctx,
 		common.WithOAuthClient(http.DefaultClient),

@@ -12,7 +12,7 @@ import (
 
 func GetCustomerJourneysAppConnector(ctx context.Context) *customerapp.Connector {
 	filePath := credscanning.LoadPath(providers.CustomerJourneysApp)
-	reader := utils.MustCreateProvCredJSON(filePath, false, false)
+	reader := utils.MustCreateProvCredJSON(filePath, false)
 
 	conn, err := customerapp.NewConnector(
 		customerapp.WithClient(ctx, http.DefaultClient,

@@ -12,7 +12,7 @@ import (
 
 func GetIterableConnector(ctx context.Context) *iterable.Connector {
 	filePath := credscanning.LoadPath(providers.Iterable)
-	reader := utils.MustCreateProvCredJSON(filePath, false, false)
+	reader := utils.MustCreateProvCredJSON(filePath, false)
 
 	conn, err := iterable.NewConnector(
 		iterable.WithClient(ctx, http.DefaultClient,

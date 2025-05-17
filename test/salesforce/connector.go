@@ -49,7 +49,7 @@ func GetSalesforceAccessToken() string {
 
 func getSalesforceJSONReader() *credscanning.ProviderCredentials {
 	filePath := credscanning.LoadPath(providers.Salesforce)
-	reader := utils.MustCreateProvCredJSON(filePath, true, true)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	return reader
 }

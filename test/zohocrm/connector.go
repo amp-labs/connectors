@@ -13,7 +13,7 @@ import (
 
 func GetZohoConnector(ctx context.Context) *zohocrm.Connector {
 	filePath := credscanning.LoadPath(providers.Zoho)
-	reader := utils.MustCreateProvCredJSON(filePath, true, false)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	conn, err := zohocrm.NewConnector(
 		zohocrm.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),

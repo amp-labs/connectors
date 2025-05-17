@@ -14,7 +14,7 @@ import (
 
 func GetHelpScoutConnector(ctx context.Context) *helpscout.Connector {
 	filePath := credscanning.LoadPath(providers.HelpScoutMailbox)
-	reader := utils.MustCreateProvCredJSON(filePath, true, false)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	client, err := common.NewOAuthHTTPClient(ctx,
 		common.WithOAuthClient(http.DefaultClient),
