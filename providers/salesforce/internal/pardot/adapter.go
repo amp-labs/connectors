@@ -1,16 +1,21 @@
 package pardot
 
 import (
+	"errors"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers"
 )
 
 type Adapter struct {
-	Client  *common.JSONHTTPClient
-	BaseURL string
+	Client         *common.JSONHTTPClient
+	BaseURL        string
+	BusinessUnitID string
 }
+
+var ErrMissingBusinessUnitID = errors.New("missing metadata variable: business unit id")
 
 func NewAdapter(
 	client *common.JSONHTTPClient, info *providers.ProviderInfo, metadata map[string]string,
@@ -30,10 +35,20 @@ func NewAdapter(
 	// TODO replace with proper ModuleInfo resolver.
 	baseURL = strings.Replace(baseURL, "{{.subdomain}}", subdomain, 1)
 
+	businessUnitID, ok := metadata["businessUnitId"]
+	if !ok || businessUnitID == "" {
+		return nil, ErrMissingBusinessUnitID
+	}
+
 	return &Adapter{
-		Client:  client,
-		BaseURL: baseURL,
+		Client:         client,
+		BaseURL:        baseURL,
+		BusinessUnitID: businessUnitID,
 	}, nil
+}
+
+func (a *Adapter) getURL(objectName string) (*urlbuilder.URL, error) {
+	return urlbuilder.New(a.BaseURL, "api/v5/objects", objectName)
 }
 
 func getSubdomain(metadata map[string]string) string {
