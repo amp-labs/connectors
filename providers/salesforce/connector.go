@@ -69,6 +69,9 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		if err != nil {
 			return nil, err
 		}
+
+		// Override error handler. Pardot has different format from Standard Salesforce.
+		conn.Client.HTTPClient.ErrorHandler = pardot.ErrorHandlerFunc
 	}
 
 	return conn, nil
@@ -113,6 +116,10 @@ func (c *Connector) getURIPartSobjectsDescribe(objectName string) (*urlbuilder.U
 func (c *Connector) setBaseURL(newURL string) {
 	c.BaseURL = newURL
 	c.Client.HTTPClient.Base = newURL
+
+	if c.pardotAdapter != nil {
+		c.pardotAdapter.BaseURL = newURL
+	}
 }
 
 func (c *Connector) isPardotModule() bool {
