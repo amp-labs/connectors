@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
@@ -167,7 +168,16 @@ func (i *ProviderInfo) GetOption(key string) (string, bool) {
 	return val, ok
 }
 
-func (i *ProviderInfo) ReadModuleInfo(moduleID common.ModuleID) (*ModuleInfo, error) {
+// ReadModuleInfo is a version of ReadModuleInfoWithErr without an error.
+// Deprecated.
+// TODO this is a temporary impl which relies on default values for erroneous cases.
+func (i *ProviderInfo) ReadModuleInfo(moduleID common.ModuleID) *ModuleInfo {
+	result, _ := i.ReadModuleInfoWithErr(moduleID)
+
+	return result
+}
+
+func (i *ProviderInfo) ReadModuleInfoWithErr(moduleID common.ModuleID) (*ModuleInfo, error) {
 	rootModule := ModuleInfo{
 		BaseURL:     i.BaseURL,
 		DisplayName: i.DisplayName,
@@ -181,14 +191,20 @@ func (i *ProviderInfo) ReadModuleInfo(moduleID common.ModuleID) (*ModuleInfo, er
 
 	if i.Modules == nil {
 		// Module ID was requested when no modules are defined on provider.
-		return nil, common.ErrMissingModule
+		slog.Warn("modules info is not defined for provider while requested a module",
+			"provider", i.DisplayName, "modules", moduleID)
+
+		return &rootModule, common.ErrMissingModule
 	}
 
 	modules := *i.Modules
 
 	module, ok := modules[moduleID]
 	if !ok {
-		return nil, common.ErrMissingModule
+		slog.Warn("module info is missing for a module",
+			"provider", i.DisplayName, "modules", moduleID)
+
+		return &rootModule, common.ErrMissingModule
 	}
 
 	return &module, nil

@@ -200,7 +200,7 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 		expected    *ModuleInfo
 		expectedErr error
 	}{
-		// Root for providers that have one module.
+		// Root for providers that no modules.
 		{
 			name: "Dynamics root module",
 			input: inType{
@@ -371,13 +371,22 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 			},
 			expectedErr: nil,
 		},
-		// Unknown module for providers with one module.
+		// Unknown module for providers with no modulse.
 		{
 			name: "Dynamics unknown module",
 			input: inType{
 				provider: DynamicsCRM,
 				vars:     createCatalogVars("workspace", "london"),
 				moduleID: "random-module-name",
+			},
+			expected: &ModuleInfo{ // TODO temporary, favor an error
+				BaseURL:     "https://london.api.crm.dynamics.com/api/data",
+				DisplayName: "Microsoft Dynamics CRM",
+				Support: Support{
+					Proxy: true,
+					Read:  true,
+					Write: true,
+				},
 			},
 			expectedErr: common.ErrMissingModule,
 		},
@@ -386,6 +395,15 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 			input: inType{
 				provider: Capsule,
 				moduleID: "random-module-name",
+			},
+			expected: &ModuleInfo{ // TODO temporary, favor an error
+				BaseURL:     "https://api.capsulecrm.com/api",
+				DisplayName: "Capsule",
+				Support: Support{
+					Proxy: true,
+					Read:  false,
+					Write: false,
+				},
 			},
 			expectedErr: common.ErrMissingModule,
 		},
@@ -396,13 +414,14 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				provider: Atlassian,
 				moduleID: "random-module-name",
 			},
-			expectedErr: common.ErrMissingModule,
-		},
-		{
-			name: "Atlassian unknown module",
-			input: inType{
-				provider: Atlassian,
-				moduleID: "random-module-name",
+			expected: &ModuleInfo{ // TODO temporary, favor an error
+				BaseURL:     "https://api.atlassian.com",
+				DisplayName: "Atlassian",
+				Support: Support{
+					Proxy: true,
+					Read:  true,
+					Write: true,
+				},
 			},
 			expectedErr: common.ErrMissingModule,
 		},
@@ -412,6 +431,15 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				provider: Hubspot,
 				moduleID: "random-module-name",
 			},
+			expected: &ModuleInfo{ // TODO temporary, favor an error
+				BaseURL:     "https://api.hubapi.com",
+				DisplayName: "HubSpot",
+				Support: Support{
+					Proxy: true,
+					Read:  true,
+					Write: true,
+				},
+			},
 			expectedErr: common.ErrMissingModule,
 		},
 		{
@@ -419,6 +447,15 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 			input: inType{
 				provider: Keap,
 				moduleID: "random-module-name",
+			},
+			expected: &ModuleInfo{ // TODO temporary, favor an error
+				BaseURL:     "https://api.infusionsoft.com",
+				DisplayName: "Keap",
+				Support: Support{
+					Proxy: true,
+					Read:  false,
+					Write: false,
+				},
 			},
 			expectedErr: common.ErrMissingModule,
 		},
@@ -428,13 +465,32 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				provider: Klaviyo,
 				moduleID: "random-module-name",
 			},
+			expected: &ModuleInfo{ // TODO temporary, favor an error
+				BaseURL:     "https://a.klaviyo.com",
+				DisplayName: "Klaviyo",
+				Support: Support{
+					Proxy: true,
+					Read:  true,
+					Write: true,
+				},
+			},
 			expectedErr: common.ErrMissingModule,
 		},
 		{
 			name: "Marketo unknown module",
 			input: inType{
 				provider: Marketo,
+				vars:     createCatalogVars("workspace", "london"),
 				moduleID: "random-module-name",
+			},
+			expected: &ModuleInfo{ // TODO temporary, favor an error
+				BaseURL:     "https://london.mktorest.com",
+				DisplayName: "Marketo",
+				Support: Support{
+					Proxy: true,
+					Read:  true,
+					Write: true,
+				},
 			},
 			expectedErr: common.ErrMissingModule,
 		},
@@ -442,7 +498,17 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 			name: "Zendesk unknown module",
 			input: inType{
 				provider: ZendeskSupport,
+				vars:     createCatalogVars("workspace", "london"),
 				moduleID: "random-module-name",
+			},
+			expected: &ModuleInfo{ // TODO temporary, favor an error
+				BaseURL:     "https://london.zendesk.com",
+				DisplayName: "Zendesk Support",
+				Support: Support{
+					Proxy: true,
+					Read:  true,
+					Write: true,
+				},
 			},
 			expectedErr: common.ErrMissingModule,
 		},
@@ -451,6 +517,15 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 			input: inType{
 				provider: Zoom,
 				moduleID: "random-module-name",
+			},
+			expected: &ModuleInfo{ // TODO temporary, favor an error
+				BaseURL:     "https://api.zoom.us",
+				DisplayName: "Zoom",
+				Support: Support{
+					Proxy: true,
+					Read:  true,
+					Write: true,
+				},
 			},
 			expectedErr: common.ErrMissingModule,
 		},
@@ -641,6 +716,76 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 			},
 			expectedErr: nil,
 		},
+		// Empty module for providers that have no modules.
+		{
+			name: "Dynamics empty module",
+			input: inType{
+				provider: DynamicsCRM,
+				vars:     createCatalogVars("workspace", "london"),
+				moduleID: "",
+			},
+			expected: &ModuleInfo{
+				BaseURL:     "https://london.api.crm.dynamics.com/api/data",
+				DisplayName: "Microsoft Dynamics CRM",
+				Support: Support{
+					Proxy: true,
+					Read:  true,
+					Write: true,
+				},
+			},
+			expectedErr: nil,
+		},
+		{
+			name: "Capsule empty module",
+			input: inType{
+				provider: Capsule,
+				moduleID: "",
+			},
+			expected: &ModuleInfo{
+				BaseURL:     "https://api.capsulecrm.com/api",
+				DisplayName: "Capsule",
+				Support: Support{
+					Proxy: true,
+				},
+			},
+			expectedErr: nil,
+		},
+		// Choosing empty module for providers supporting several modules.
+		{
+			name: "Klaviyo 2024-10-15 module",
+			input: inType{
+				provider: Klaviyo,
+				moduleID: "",
+			},
+			expected: &ModuleInfo{
+				BaseURL:     "https://a.klaviyo.com",
+				DisplayName: "Klaviyo",
+				Support: Support{
+					Proxy: true,
+					Read:  true,
+					Write: true,
+				},
+			},
+			expectedErr: nil,
+		},
+		{
+			name: "Marketo Assets module",
+			input: inType{
+				provider: Marketo,
+				vars:     createCatalogVars("workspace", "london"),
+				moduleID: "",
+			},
+			expected: &ModuleInfo{
+				BaseURL:     "https://london.mktorest.com",
+				DisplayName: "Marketo",
+				Support: Support{
+					Proxy: true,
+					Read:  true,
+					Write: true,
+				},
+			},
+			expectedErr: nil,
+		},
 	}
 
 	for _, tt := range tests { // nolint:varnamelen
@@ -653,7 +798,7 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				t.Fatalf("%s: bad test, failed to read info: (%v)", tt.name, err)
 			}
 
-			output, err := info.ReadModuleInfo(tt.input.moduleID)
+			output, err := info.ReadModuleInfoWithErr(tt.input.moduleID)
 			testutils.CheckOutputWithError(t, tt.name, tt.expected, tt.expectedErr, output, err)
 		})
 	}
