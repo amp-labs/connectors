@@ -17,6 +17,10 @@ func supportedOperations() components.EndpointRegistryInput {
 		"pins", "boards", "media", "token", "catalogs", "websites", "ad_accounts",
 	}
 
+	deleteSupport := []string{
+		"pins", "boards", "integrations/commerce", "feeds", "product_groups",
+	}
+
 	return components.EndpointRegistryInput{
 		common.ModuleRoot: {
 			{
@@ -26,6 +30,10 @@ func supportedOperations() components.EndpointRegistryInput {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
 				Support:  components.WriteSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(deleteSupport, ",")),
+				Support:  components.DeleteSupport,
 			},
 		},
 	}
