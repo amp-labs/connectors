@@ -4,14 +4,17 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/providers"
 )
 
 type Connector struct {
-	BaseURL    string
 	Client     *common.JSONHTTPClient
 	moduleInfo providers.ModuleInfo
 	moduleID   common.ModuleID
+
+	*providers.ProviderInfo
+	*components.URLManager
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
@@ -19,12 +22,6 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		// The module is resolved on behalf of the user if the option is missing.
 		WithModule(providers.ModuleMarketoLeads),
 	)
-	if err != nil {
-		return nil, err
-	}
-
-	// Read marketo provider's details.
-	providerInfo, err := providers.ReadInfo(providers.Marketo, &params.Workspace)
 	if err != nil {
 		return nil, err
 	}
@@ -39,31 +36,29 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		moduleID: params.Module.Selection.ID,
 	}
 
-	conn.setBaseURL(providerInfo.BaseURL)
-
-	conn.moduleInfo, err = providerInfo.ReadModuleInfo(conn.moduleID)
+	conn.ProviderInfo, err = providers.ReadInfo(conn.Provider(), &params.Workspace)
 	if err != nil {
 		return nil, err
 	}
 
+	conn.moduleInfo, err = conn.ProviderInfo.ReadModuleInfo(conn.moduleID)
+	if err != nil {
+		return nil, err
+	}
+
+	conn.URLManager = components.NewURLManager(conn.ProviderInfo, conn.moduleInfo)
+
 	return conn, nil
 }
 
-func (c *Connector) setBaseURL(newURL string) {
-	c.BaseURL = newURL
-	c.Client.HTTPClient.Base = newURL
-}
-
-// Provider returns the connector provider.
 func (c *Connector) Provider() providers.Provider {
 	return providers.Marketo
 }
 
-func (c *Connector) getAPIURL(objName string) (*urlbuilder.URL, error) {
-	modulePath := supportedModules[c.moduleID].Path()
-	objName = common.AddSuffixIfNotExists(objName, ".json")
+func (c *Connector) getAPIURL(objectName string) (*urlbuilder.URL, error) {
+	objectName = common.AddSuffixIfNotExists(objectName, ".json")
 
-	return urlbuilder.New(c.BaseURL, restAPIPrefix, modulePath, objName)
+	return c.ModuleAPI.URL(objectName)
 }
 
 func (c *Connector) String() string {
