@@ -245,7 +245,7 @@ func BenchmarkListObjectMetadata(b *testing.B) {
 
 	dummyServer := mockserver.Dummy()
 
-	connector.setBaseURL(dummyServer.URL)
+	testroutines.OverrideURLOrigin(connector.URLManager, connector.ProviderInfo, dummyServer.URL)
 
 	// start of benchmark
 	for range b.N {
