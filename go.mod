@@ -5,31 +5,45 @@ go 1.23.0
 require (
 	github.com/PuerkitoBio/goquery v1.10.3
 	github.com/antchfx/xmlquery v1.4.3
+	github.com/aws/aws-sdk-go-v2 v1.36.3
+	github.com/aws/aws-sdk-go-v2/config v1.29.14
+	github.com/aws/aws-sdk-go-v2/credentials v1.17.67
 	github.com/brianvoe/gofakeit/v6 v6.28.0
-	github.com/chromedp/chromedp v0.13.3
+	github.com/chromedp/chromedp v0.13.6
 	github.com/deiu/linkparser v0.0.0-20170608193052-9b6849e15168
 	github.com/gertd/go-pluralize v0.2.1
-	github.com/getkin/kin-openapi v0.131.0
+	github.com/getkin/kin-openapi v0.132.0
 	github.com/go-playground/validator v9.31.0+incompatible
 	github.com/go-test/deep v1.1.1
 	github.com/gobwas/glob v0.2.3
 	github.com/golang-jwt/jwt/v5 v5.2.2
+	github.com/google/uuid v1.6.0
 	github.com/iancoleman/strcase v0.3.0
 	github.com/invopop/yaml v0.3.1
+	github.com/mitchellh/hashstructure v1.1.0
 	github.com/spf13/cobra v1.9.1
 	github.com/spf13/viper v1.20.1
 	github.com/spyzhov/ajson v0.9.6
 	github.com/stretchr/testify v1.10.0
 	gitlab.com/c0b/go-ordered-json v0.0.0-20201030195603-febf46534d5a
-	golang.org/x/exp v0.0.0-20250103183323-7d7fa50e5329
-	golang.org/x/oauth2 v0.29.0
+	golang.org/x/oauth2 v0.30.0
 	golang.org/x/text v0.24.0
 )
 
 require (
 	github.com/andybalholm/cascadia v1.3.3 // indirect
 	github.com/antchfx/xpath v1.3.3 // indirect
-	github.com/chromedp/cdproto v0.0.0-20250319231242-a755498943c8 // indirect
+	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.16.30 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/configsources v1.3.34 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.6.34 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/ini v1.8.3 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.12.3 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.12.15 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sso v1.25.3 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.30.1 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sts v1.33.19 // indirect
+	github.com/aws/smithy-go v1.22.2 // indirect
+	github.com/chromedp/cdproto v0.0.0-20250403032234-65de8f5d025b // indirect
 	github.com/chromedp/sysutil v1.1.0 // indirect
 	github.com/fsnotify/fsnotify v1.8.0 // indirect
 	github.com/go-json-experiment/json v0.0.0-20250211171154-1ae217ad3535 // indirect

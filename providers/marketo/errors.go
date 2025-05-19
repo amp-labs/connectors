@@ -3,6 +3,7 @@ package marketo
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"strconv"
@@ -19,6 +20,8 @@ type Response struct {
 	RequestID string           `json:"requestId"`
 	Success   bool             `json:"success"`
 }
+
+var ErrInvalidData = errors.New("invalid request data provided")
 
 // checkResponseLeverErr reports wheather the response level error is available or not.
 // If available, returns the error code as well.

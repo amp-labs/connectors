@@ -1,5 +1,7 @@
 package providers
 
+import "net/http"
+
 const HelpScoutMailbox Provider = "helpScoutMailbox"
 
 func init() {
@@ -8,6 +10,11 @@ func init() {
 		DisplayName: "Help Scout Mailbox",
 		AuthType:    Oauth2,
 		BaseURL:     "https://api.helpscout.net",
+		AuthHealthCheck: &AuthHealthCheck{
+			Method:             http.MethodGet,
+			SuccessStatusCodes: []int{http.StatusOK},
+			Url:                "https://api.helpscout.net/v2/users/me",
+		},
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 ClientCredentials,
 			TokenURL:                  "https://api.helpscout.net/v2/oauth2/token",

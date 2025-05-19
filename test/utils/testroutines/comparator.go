@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 )
 
@@ -19,9 +20,13 @@ type Comparator[Output any] func(serverURL string, actual, expected Output) bool
 // This is convenient for cases where the returned data is large,
 // allowing for a more concise test that still validates the desired behavior.
 func ComparatorSubsetRead(serverURL string, actual, expected *common.ReadResult) bool {
-	return mockutils.ReadResultComparator.SubsetFields(actual, expected) &&
-		mockutils.ReadResultComparator.SubsetRaw(actual, expected) &&
-		ComparatorPagination(serverURL, actual, expected)
+	a := mockutils.ReadResultComparator.SubsetFields(actual, expected)
+	b := mockutils.ReadResultComparator.SubsetRaw(actual, expected)
+	c := ComparatorPagination(serverURL, actual, expected)
+
+	return a &&
+		b &&
+		c
 }
 
 // ComparatorPagination will check pagination related fields.
@@ -33,12 +38,40 @@ func ComparatorSubsetRead(serverURL string, actual, expected *common.ReadResult)
 //	 }
 //
 // At runtime this may look as follows: http://127.0.0.1:38653/v3/contacts?cursor=bGltaXQ9MSZuZXh0PTI=.
+// The query parameters in URL can be in different order, encoding could differ as soon as the URL content matches
+// the check will conclude that pagination matches.
 func ComparatorPagination(serverURL string, actual *common.ReadResult, expected *common.ReadResult) bool {
 	expectedNextPage := resolveTestServerURL(expected.NextPage.String(), serverURL)
 
-	return actual.NextPage.String() == expectedNextPage &&
+	return compareNextPageToken(actual.NextPage.String(), expectedNextPage) &&
 		actual.Rows == expected.Rows &&
 		actual.Done == expected.Done
+}
+
+func compareNextPageToken(actual, expected string) bool {
+	if len(actual) == 0 && len(expected) == 0 {
+		return true
+	}
+
+	if !strings.HasPrefix(actual, "http") {
+		// Next page token is not a URL, compare raw text.
+		return actual == expected
+	}
+
+	// We are dealing with URLs.
+	// Compare URLs ignoring the query parameter order or encoding.
+	// However, the "data content" must match.
+	actualURL, err := urlbuilder.New(actual)
+	if err != nil {
+		return false
+	}
+
+	expectedURL, err := urlbuilder.New(expected)
+	if err != nil {
+		return false
+	}
+
+	return actualURL.Equals(expectedURL)
 }
 
 // ComparatorSubsetWrite ensures that only the specified metadata objects are present,

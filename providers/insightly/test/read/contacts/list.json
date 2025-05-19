@@ -1,0 +1,68 @@
+[
+  {
+    "CONTACT_ID": 366638973,
+    "SALUTATION": "Ms",
+    "FIRST_NAME": "Pamela",
+    "LAST_NAME": "Huber",
+    "IMAGE_URL": null,
+    "BACKGROUND": null,
+    "VISIBLE_TO": "EVERYONE",
+    "OWNER_USER_ID": 2240727,
+    "VISIBLE_TEAM_ID": null,
+    "DATE_CREATED_UTC": "2025-04-19 00:49:32",
+    "DATE_UPDATED_UTC": "2025-04-22 20:03:25",
+    "SOCIAL_LINKEDIN": null,
+    "SOCIAL_FACEBOOK": null,
+    "SOCIAL_TWITTER": null,
+    "DATE_OF_BIRTH": null,
+    "PHONE": null,
+    "PHONE_HOME": null,
+    "PHONE_MOBILE": null,
+    "PHONE_OTHER": null,
+    "PHONE_ASSISTANT": null,
+    "PHONE_FAX": null,
+    "EMAIL_ADDRESS": "pamela@mail.com",
+    "ASSISTANT_NAME": null,
+    "ADDRESS_MAIL_STREET": null,
+    "ADDRESS_MAIL_CITY": null,
+    "ADDRESS_MAIL_STATE": null,
+    "ADDRESS_MAIL_POSTCODE": null,
+    "ADDRESS_MAIL_COUNTRY": null,
+    "ADDRESS_OTHER_STREET": null,
+    "ADDRESS_OTHER_CITY": null,
+    "ADDRESS_OTHER_STATE": null,
+    "ADDRESS_OTHER_POSTCODE": null,
+    "ADDRESS_OTHER_COUNTRY": null,
+    "LAST_ACTIVITY_DATE_UTC": null,
+    "NEXT_ACTIVITY_DATE_UTC": null,
+    "CREATED_USER_ID": 2240727,
+    "ORGANISATION_ID": null,
+    "TITLE": null,
+    "EMAIL_OPTED_OUT": false,
+    "CUSTOMFIELDS": [
+      {
+        "FIELD_NAME": "Hobby__c",
+        "FIELD_VALUE": "Skiing",
+        "CUSTOM_FIELD_ID": "Hobby__c"
+      },
+      {
+        "FIELD_NAME": "Interests__c",
+        "FIELD_VALUE": "Music;Sports;Travel",
+        "CUSTOM_FIELD_ID": "Interests__c"
+      },
+      {
+        "FIELD_NAME": "Newsletter_Subscription__c",
+        "FIELD_VALUE": true,
+        "CUSTOM_FIELD_ID": "Newsletter_Subscription__c"
+      },
+      {
+        "FIELD_NAME": "Preferred_Contact_Method__c",
+        "FIELD_VALUE": "SMS",
+        "CUSTOM_FIELD_ID": "Preferred_Contact_Method__c"
+      }
+    ],
+    "TAGS": [],
+    "DATES": [],
+    "LINKS": []
+  }
+]

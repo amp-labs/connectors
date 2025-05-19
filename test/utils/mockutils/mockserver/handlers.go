@@ -37,6 +37,12 @@ func ContentMIME(mediaType string) http.HandlerFunc {
 	}
 }
 
+func Header(headerName, headerValue string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set(headerName, headerValue)
+	}
+}
+
 // Response is used to configure server response with HTTP status and body data.
 // Data is optional.
 func Response(status int, data ...[]byte) http.HandlerFunc {
@@ -44,7 +50,7 @@ func Response(status int, data ...[]byte) http.HandlerFunc {
 		w.WriteHeader(status)
 
 		if len(data) == 1 {
-			_, _ = w.Write(data[0])
+			_, _ = w.Write(data[0]) // nosemgrep: go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter
 		}
 
 		if len(data) > 1 {
@@ -56,4 +62,14 @@ func Response(status int, data ...[]byte) http.HandlerFunc {
 
 func ResponseString(status int, data string) http.HandlerFunc {
 	return Response(status, []byte(data))
+}
+
+// ResponseChainedFuncs combines functions into order pipeline. Together acts as unified response handler.
+// This is useful if Response method or ResponseString method should have custom preprocessing.
+func ResponseChainedFuncs(funcs ...http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		for _, function := range funcs {
+			function(w, r)
+		}
+	}
 }

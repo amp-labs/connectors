@@ -36,8 +36,8 @@ func main() {
 	if err := createApplication(ctx, conn, recordId); err != nil {
 		slog.Error(err.Error())
 	}
-	slog.Info("Done")
 
+	slog.Info("Done")
 }
 
 func createApplication(ctx context.Context, conn *ashby.Connector, candidateId string) error {
@@ -72,6 +72,7 @@ func createCandidate(ctx context.Context, conn *ashby.Connector) (string, error)
 			"name": "Deepu",
 		},
 	}
+
 	result, err := conn.Write(ctx, config)
 	if err != nil {
 		return "", err

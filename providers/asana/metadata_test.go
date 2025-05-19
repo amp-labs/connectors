@@ -21,10 +21,15 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		},
 
 		{
-			Name:         "Unknown object requested",
-			Input:        []string{"groot"},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{common.ErrObjectNotSupported},
+			Name:       "Unknown object requested",
+			Input:      []string{"groot"},
+			Server:     mockserver.Dummy(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Errors: map[string]error{
+					"groot": common.ErrObjectNotSupported,
+				},
+			},
 		},
 
 		{

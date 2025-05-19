@@ -33,7 +33,6 @@ func init() {
 			Subscribe: false,
 			Write:     true,
 		},
-		PostAuthInfoNeeded: false,
 	})
 
 	// BlueshiftEU connfiguration
@@ -63,6 +62,5 @@ func init() {
 			Subscribe: false,
 			Write:     false,
 		},
-		PostAuthInfoNeeded: false,
 	})
 }

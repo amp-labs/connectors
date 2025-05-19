@@ -11,6 +11,7 @@ const (
 	ModuleAtlassianJiraConnect common.ModuleID = "atlassian-connect"
 )
 
+// nolint:funlen
 func init() {
 	// Atlassian Configuration
 	SetInfo(Atlassian, ProviderInfo{
@@ -67,6 +68,19 @@ func init() {
 			Read:      true,
 			Subscribe: false,
 			Write:     true,
+		},
+		Metadata: &ProviderMetadata{
+			PostAuthentication: []MetadataItemPostAuthentication{
+				{
+					Name: "cloudId",
+				},
+			},
+			Input: []MetadataItemInput{
+				{
+					Name:        "workspace",
+					DisplayName: "Site URL (Your domain)",
+				},
+			},
 		},
 	})
 }
