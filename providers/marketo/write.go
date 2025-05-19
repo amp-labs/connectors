@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strconv"
 
 	"github.com/amp-labs/connectors/common"
 )
@@ -19,7 +20,12 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, err
 	}
 
-	json, err := c.Client.Post(ctx, url.String(), config.RecordData)
+	payload, err := c.constructPayload(config)
+	if err != nil {
+		return nil, err
+	}
+
+	json, err := c.Client.Post(ctx, url.String(), payload)
 	if err != nil {
 		return nil, err
 	}
@@ -94,4 +100,39 @@ func checkErr(resp *writeResponse, recordId any, success bool) (err error) {
 	}
 
 	return nil
+}
+
+type payload struct {
+	Action      string           `json:"action"`
+	LookupField string           `json:"lookupField,omitempty"`
+	Input       []map[string]any `json:"input"`
+}
+
+func (c *Connector) constructPayload(config common.WriteParams) (payload, error) {
+	data, ok := config.RecordData.(map[string]any)
+	if !ok {
+		return payload{}, ErrInvalidData
+	}
+
+	// If we're updating leads in marketo.
+	if config.ObjectName == leads && len(config.RecordId) > 0 {
+		id, err := strconv.Atoi(config.RecordId)
+		if err != nil {
+			return payload{}, err
+		}
+
+		data["id"] = id
+
+		return payload{
+			Action:      "updateOnly",
+			LookupField: "id",
+			Input:       []map[string]any{data},
+		}, nil
+	}
+
+	// The rest of supported objects will use this generic schema.
+	return payload{
+		Action: "createOrUpdate",
+		Input:  []map[string]any{data},
+	}, nil
 }
