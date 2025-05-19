@@ -15,6 +15,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
+// nolint:lll
 func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
@@ -181,7 +182,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 						"workspaceId":    "1007648505208900737",
 					},
 				}},
-				NextPage: "eyJhbGciOiJIUzI1NiJ9.eyJjYWxsSWQiOjQ5NTM3MDc2MDE3NzYyMzgzNjAsInRvdGFsIjoxNzksInBhZ2VOdW1iZXIiOjAsInBhZ2VTaXplIjoxMDAsInRpbWUiOiIyMDIyLTA5LTEzVDA5OjMwOjAwWiIsImV4cCI6MTcxNjYyNjE0Nn0.o6SIJZFyjlxDC8m3HJM_TBn39M6WakXpbMXFXX3Iy9I", // nolint:lll
+				// This is a non-sensitive JWT for pagination (does not grant access).
+				NextPage: "eyJhbGciOiJIUzI1NiJ9.eyJjYWxsSWQiOjQ5NTM3MDc2MDE3NzYyMzgzNjAsInRvdGFsIjoxNzksInBhZ2VOdW1iZXIiOjAsInBhZ2VTaXplIjoxMDAsInRpbWUiOiIyMDIyLTA5LTEzVDA5OjMwOjAwWiIsImV4cCI6MTcxNjYyNjE0Nn0.o6SIJZFyjlxDC8m3HJM_TBn39M6WakXpbMXFXX3Iy9I", // nosemgrep: generic.secrets.security.detected-jwt-token.detected-jwt-token
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -216,7 +218,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 						"callid": "7782342274025937895",
 					},
 				}},
-				NextPage: "eyJhbGciOiJIUzI1NiJ9.eyJjYWxsSWQiM1M30.6qKwpOcvnuweTZmFRzYdtjs_YwJphJU4QIwWFM", // nolint:lll
+				// This is a non-sensitive JWT for pagination (does not grant access).
+				NextPage: "eyJhbGciOiJIUzI1NiJ9.eyJjYWxsSWQiM1M30.6qKwpOcvnuweTZmFRzYdtjs_YwJphJU4QIwWFM", // nosemgrep: generic.secrets.security.detected-jwt-token.detected-jwt-token
 				Done:     false,
 			},
 			ExpectedErrs: nil,

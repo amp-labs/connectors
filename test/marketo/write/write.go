@@ -31,8 +31,7 @@ func MainFn() int {
 		return 1
 	}
 
-	// Uses marketoGUIDs
-	err = testWriteOpportunitiesFail(ctx)
+	err = testUpdateLeads(ctx)
 	if err != nil {
 		return 1
 	}
@@ -46,14 +45,8 @@ func testWriteLeads(ctx context.Context) error {
 	params := common.WriteParams{
 		ObjectName: "leads",
 		RecordData: map[string]any{
-			"input": []map[string]any{
-				{
-					"email":     gofakeit.Email(),
-					"firstName": "Example Lead",
-				},
-			},
-			"action":      "createOnly",
-			"lookupField": "email",
+			"email":     gofakeit.Email(),
+			"firstName": "Example Lead",
 		},
 	}
 
@@ -81,12 +74,7 @@ func testWriteOpportunities(ctx context.Context) error {
 	params := common.WriteParams{
 		ObjectName: "opportunities",
 		RecordData: map[string]any{
-			"input": []map[string]any{
-				{
-					"externalopportunityid": gofakeit.RandomString([]string{"opportunity 01", "opportunity 02", "opportunity 03", "opportunity 04"}),
-				},
-			},
-			"action": "createOnly",
+			"externalopportunityid": gofakeit.RandomString([]string{"opportunity 01", "opportunity 02", "opportunity 03", "opportunity 04"}),
 		},
 	}
 
@@ -107,18 +95,14 @@ func testWriteOpportunities(ctx context.Context) error {
 	return nil
 }
 
-func testWriteOpportunitiesFail(ctx context.Context) error {
+func testUpdateLeads(ctx context.Context) error {
 	conn := marketo.GetMarketoConnectorLeads(ctx)
 
 	params := common.WriteParams{
-		ObjectName: "opportunities",
+		ObjectName: "leads",
+		RecordId:   "576",
 		RecordData: map[string]any{
-			"input": []map[string]any{
-				{
-					"seq": 0,
-				},
-			},
-			"action": "createOnly",
+			"email": "babaknows@example.com",
 		},
 	}
 
