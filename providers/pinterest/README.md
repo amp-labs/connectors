@@ -4,7 +4,7 @@
 ## Supported Objects 
 Below is an exhaustive list of objects & methods supported on the objects
 
-Pinterest API version : v5
+Pinterest API version: v5
 
 | Object     | Resource   | Method |
 | ---------- | ---------- | ------ |
