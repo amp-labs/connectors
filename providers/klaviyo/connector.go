@@ -5,15 +5,18 @@ import (
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/klaviyo/metadata"
 )
 
 type Connector struct {
-	BaseURL    string
 	Client     *common.JSONHTTPClient
 	moduleInfo providers.ModuleInfo
 	moduleID   common.ModuleID
+
+	*providers.ProviderInfo
+	*components.URLManager
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
@@ -29,46 +32,44 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		},
 		moduleID: params.Module.Selection.ID,
 	}
-
-	// Read provider info
-	providerInfo, err := providers.ReadInfo(conn.Provider())
-	if err != nil {
-		return nil, err
-	}
-
-	conn.moduleInfo, err = providerInfo.ReadModuleInfo(conn.moduleID)
-	if err != nil {
-		return nil, err
-	}
-
-	// connector and its client must mirror base url and provide its own error parser
-	conn.setBaseURL(providerInfo.BaseURL)
-	conn.Client.HTTPClient.ErrorHandler = interpreter.ErrorHandler{
+	httpClient.ErrorHandler = interpreter.ErrorHandler{
 		Custom: map[string]interpreter.FaultyResponseHandler{
 			"application/vnd.api+json": interpreter.NewFaultyResponder(errorFormats, statusCodeMapping),
 		},
 	}.Handle
 
-	return conn, nil
-}
-
-func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
-	path, err := metadata.Schemas.LookupURLPath(c.moduleID, objectName)
+	conn.ProviderInfo, err = providers.ReadInfo(conn.Provider())
 	if err != nil {
 		return nil, err
 	}
 
-	return urlbuilder.New(c.BaseURL, path)
+	conn.moduleInfo, err = conn.ProviderInfo.ReadModuleInfo(conn.moduleID)
+	if err != nil {
+		return nil, err
+	}
+
+	conn.URLManager = components.NewURLManager(conn.ProviderInfo, conn.moduleInfo)
+
+	return conn, nil
+}
+
+func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
+	path, err := metadata.Schemas.FindURLPath(c.moduleID, objectName)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.RootAPI.URL("api", path)
 }
 
 func (c *Connector) getWriteURL(objectName string) (*urlbuilder.URL, error) {
 	path := objectNameToWritePath.Get(objectName)
 
-	return urlbuilder.New(c.BaseURL, path)
+	return c.RootAPI.URL(path)
 }
 
 func (c *Connector) getDeleteURL(objectName string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.BaseURL, "api", objectName)
+	return c.RootAPI.URL("api", objectName)
 }
 
 func (c *Connector) revisionHeader() common.Header {
@@ -76,11 +77,6 @@ func (c *Connector) revisionHeader() common.Header {
 		Key:   "revision",
 		Value: string(c.moduleID),
 	}
-}
-
-func (c *Connector) setBaseURL(newURL string) {
-	c.BaseURL = newURL
-	c.Client.HTTPClient.Base = newURL
 }
 
 func (c *Connector) Provider() providers.Provider {
