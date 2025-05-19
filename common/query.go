@@ -2,12 +2,80 @@ package common
 
 import (
 	"context"
+	"fmt"
 	"net/http"
+	"net/url"
+)
+
+// QueryParamMode determines how the query param should be applied to the request.
+type QueryParamMode int
+
+const (
+	// QueryParamModeUnset is the default mode. It appends the QueryParam to the request.
+	queryParamModeUnset = iota
+
+	// QueryParamModeAppend appends the QueryParam to the request.
+	QueryParamModeAppend
+
+	// QueryParamModeOverwrite unconditionally overwrites the QueryParam in the request.
+	QueryParamModeOverwrite
+
+	// QueryParamModeSetIfMissing sets the QueryParam in the request if it is not already set.
+	QueryParamModeSetIfMissing
 )
 
 type QueryParam struct {
-	Key   string
-	Value string
+	Key   string         `json:"key"`
+	Value string         `json:"value"`
+	Mode  QueryParamMode `json:"mode"`
+}
+
+func (q QueryParam) ApplyToRequest(vals *url.Values) {
+	switch q.Mode {
+	case QueryParamModeOverwrite:
+		vals.Set(q.Key, q.Value)
+	case QueryParamModeSetIfMissing:
+		if !vals.Has(q.Key) {
+			vals.Add(q.Key, q.Value)
+		}
+	case QueryParamModeAppend:
+		fallthrough
+	case queryParamModeUnset:
+		fallthrough
+	default:
+		vals.Add(q.Key, q.Value)
+	}
+}
+
+func (q QueryParam) equals(other QueryParam) bool {
+	return q.Key == other.Key &&
+		q.Value == other.Value &&
+		q.Mode == other.Mode
+}
+
+func (q QueryParam) String() string {
+	return fmt.Sprintf("%s: %s", q.Key, q.Value)
+}
+
+type QueryParams []QueryParam
+
+func (q QueryParams) Has(target QueryParam) bool {
+	for _, qp := range q {
+		if qp.equals(target) {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (q QueryParams) ApplyToRequest(req *http.Request) {
+	query := req.URL.Query()
+	for _, p := range q {
+		p.ApplyToRequest(&query)
+	}
+
+	req.URL.RawQuery = query.Encode()
 }
 
 type QueryParamAuthClientOption func(params *queryParamClientParams)
@@ -92,34 +160,30 @@ func newQueryParamAuthClient( //nolint:ireturn
 
 type queryParamAuthClient struct {
 	client       *http.Client
-	params       []QueryParam
+	params       QueryParams
 	debug        func(req *http.Request, rsp *http.Response)
 	unauthorized func(params []QueryParam, req *http.Request, rsp *http.Response) (*http.Response, error)
 }
 
 func (c *queryParamAuthClient) Do(req *http.Request) (*http.Response, error) {
 	// This allows us to modify query params without mutating the input
-	req = req.Clone(req.Context())
+	req2 := req.Clone(req.Context())
 
-	query := req.URL.Query()
-	for _, p := range c.params {
-		query.Add(p.Key, p.Value)
-	}
-
-	req.URL.RawQuery = query.Encode()
+	// Add on the query parameters
+	c.params.ApplyToRequest(req2)
 
 	modifier, hasModifier := getRequestModifier(req.Context()) //nolint:contextcheck
 	if hasModifier {
-		modifier(req)
+		modifier(req2)
 	}
 
-	rsp, err := c.client.Do(req)
+	rsp, err := c.client.Do(req2)
 	if err != nil {
 		return rsp, err
 	}
 
 	if c.debug != nil {
-		c.debug(req, cloneResponse(rsp))
+		c.debug(req2, cloneResponse(rsp))
 	}
 
 	// Certain providers return 401 when the credentials has been invalidated.

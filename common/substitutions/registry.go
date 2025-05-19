@@ -14,7 +14,7 @@ type RegistryValue interface {
 
 type Registry[V RegistryValue] map[string]V
 
-func (r Registry[V]) convertStrMap() map[string]string {
+func (r Registry[V]) ConvertStrMap() map[string]string {
 	result := make(map[string]string)
 	for k, v := range r {
 		result[k] = RegistryValueToString(v)
@@ -25,7 +25,7 @@ func (r Registry[V]) convertStrMap() map[string]string {
 
 // Apply substitutions to the struct. Creates side effects.
 func (r Registry[V]) Apply(input any) error {
-	err := substituteStruct(input, r.convertStrMap())
+	err := substituteStruct(input, r.ConvertStrMap())
 	if err != nil {
 		return errors.Join(err, ErrSubstitutionFailure)
 	}

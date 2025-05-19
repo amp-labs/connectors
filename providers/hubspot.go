@@ -1,6 +1,10 @@
 package providers
 
-import "github.com/amp-labs/connectors/common"
+import (
+	"net/http"
+
+	"github.com/amp-labs/connectors/common"
+)
 
 const Hubspot Provider = "hubspot"
 
@@ -9,12 +13,17 @@ const (
 	ModuleHubspotCRM common.ModuleID = "CRM"
 )
 
-func init() {
+func init() { //nolint:funlen
 	// Hubspot configuration
 	SetInfo(Hubspot, ProviderInfo{
 		DisplayName: "HubSpot",
 		AuthType:    Oauth2,
 		BaseURL:     "https://api.hubapi.com",
+		AuthHealthCheck: &AuthHealthCheck{
+			Method:             http.MethodGet,
+			SuccessStatusCodes: []int{http.StatusOK},
+			Url:                "https://api.hubapi.com/integrations/v1/me",
+		},
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://app.hubspot.com/oauth/authorize",
@@ -56,5 +65,18 @@ func init() {
 			},
 		},
 		PostAuthInfoNeeded: true,
+
+		// IMPORTANT: The fetching of this metadata is added as a special case in the server,
+		// because it requires the access token in the path, which is not really possible to
+		// do with the current set up. If we can find a way to do this with the current interface,
+		// we should remove the special case in the server, and define the GetPostAuthInfo method
+		// as a method on the Connector struct.
+		Metadata: &ProviderMetadata{
+			PostAuthentication: []MetadataItemPostAuthentication{
+				{
+					Name: "ownerId",
+				},
+			},
+		},
 	})
 }

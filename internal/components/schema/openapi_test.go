@@ -23,10 +23,15 @@ func TestOpenAPI(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
-			Name:         "Unknown object requested",
-			Input:        []string{"someUnknownObject"},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{common.ErrObjectNotSupported},
+			Name:       "Unknown object requested",
+			Input:      []string{"someUnknownObject"},
+			Server:     mockserver.Dummy(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Errors: map[string]error{
+					"someUnknownObject": common.ErrObjectNotSupported,
+				},
+			},
 		},
 		{
 			Name:       "Successfully describe one object with metadata",

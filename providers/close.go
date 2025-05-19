@@ -1,5 +1,7 @@
 package providers
 
+import "net/http"
+
 const Close Provider = "close"
 
 func init() {
@@ -8,6 +10,11 @@ func init() {
 		DisplayName: "Close",
 		AuthType:    Oauth2,
 		BaseURL:     "https://api.close.com",
+		AuthHealthCheck: &AuthHealthCheck{
+			Method:             http.MethodGet,
+			SuccessStatusCodes: []int{http.StatusOK},
+			Url:                "https://api.close.com/api/v1/me",
+		},
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://app.close.com/oauth2/authorize",

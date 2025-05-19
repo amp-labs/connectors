@@ -33,8 +33,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		},
 
 		{
-			Name:  "Unsupported object",
-			Input: common.WriteParams{ObjectName: "lalala", RecordData: "dummy"},
+			Name: "Unsupported object",
+			Input: common.WriteParams{ObjectName: "lalala", RecordData: map[string]any{
+				"email":     "joseph@gmail.com",
+				"firstName": "Example Lead",
+			}},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If:    mockcond.MethodPOST(),
@@ -48,14 +51,8 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name: "Successfully creation of a lead",
 			Input: common.WriteParams{ObjectName: "leads", RecordData: map[string]any{
-				"input": []map[string]any{
-					{
-						"email":     "joseph@gmail.com",
-						"firstName": "Example Lead",
-					},
-				},
-				"action":      "createOnly",
-				"lookupField": "email",
+				"email":     "joseph@gmail.com",
+				"firstName": "Example Lead",
 			}},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),

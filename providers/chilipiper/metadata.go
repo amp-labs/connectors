@@ -94,7 +94,10 @@ func metadataFallback(moduleID common.ModuleID, objectName string) (*common.Obje
 		return nil, err
 	}
 
-	data := metadatResult.Result[objectName]
+	data, exists := metadatResult.Result[objectName]
+	if !exists {
+		return nil, metadatResult.Errors[objectName]
+	}
 
 	return &data, nil
 }

@@ -17,7 +17,12 @@ func NewHeaderAuthHTTPClient( //nolint:ireturn
 	opts ...HeaderAuthClientOption,
 ) (AuthenticatedHTTPClient, error) {
 	params := &headerClientParams{}
+
 	for _, opt := range opts {
+		if opt == nil {
+			continue
+		}
+
 		opt(params)
 	}
 
@@ -57,6 +62,18 @@ func WithHeaderUnauthorizedHandler(
 	}
 }
 
+// WithHeaderIsUnauthorizedHandler sets the function to call
+// whenever the response is unauthorized (not necessarily 401).
+// This is useful for handling the case where the server has invalidated the token, and the client
+// needs to forcefully refresh. It's optional.
+func WithHeaderIsUnauthorizedHandler(
+	f func(rsp *http.Response) bool,
+) HeaderAuthClientOption {
+	return func(params *headerClientParams) {
+		params.isUnauthorized = f
+	}
+}
+
 // WithDynamicHeaders sets a function that will be called on every request to
 // get additional headers to use. Use this for things like time-based tokens
 // or loading headers from some external authority. The function can access a
@@ -76,6 +93,7 @@ type headerClientParams struct {
 	dynamicHeaders DynamicHeadersGenerator
 	debug          func(req *http.Request, rsp *http.Response)
 	unauthorized   func(hdrs []Header, req *http.Request, rsp *http.Response) (*http.Response, error)
+	isUnauthorized func(rsp *http.Response) bool
 }
 
 func (p *headerClientParams) prepare() *headerClientParams {
@@ -94,6 +112,7 @@ func newHeaderAuthClient(_ context.Context, params *headerClientParams) Authenti
 		dynamicHeaders: params.dynamicHeaders,
 		debug:          params.debug,
 		unauthorized:   params.unauthorized,
+		isUnauthorized: params.isUnauthorized,
 	}
 }
 
@@ -103,53 +122,59 @@ type headerAuthClient struct {
 	dynamicHeaders DynamicHeadersGenerator
 	debug          func(req *http.Request, rsp *http.Response)
 	unauthorized   func(hdrs []Header, req *http.Request, rsp *http.Response) (*http.Response, error)
+	isUnauthorized func(rsp *http.Response) bool
 }
 
 func (c *headerAuthClient) Do(req *http.Request) (*http.Response, error) {
 	// This allows us to attach headers without modifying the input
-	req = req.Clone(req.Context())
+	req2 := req.Clone(req.Context())
 
 	for _, header := range c.headers {
-		header.ApplyToRequest(req)
+		header.ApplyToRequest(req2)
 	}
 
 	if c.dynamicHeaders != nil {
-		hdrs, err := c.dynamicHeaders(*req)
+		hdrs, err := c.dynamicHeaders(*req2)
 		if err != nil {
 			return nil, err
 		}
 
 		for _, header := range hdrs {
-			header.ApplyToRequest(req)
+			header.ApplyToRequest(req2)
 		}
 	}
 
-	modifier, hasModifier := getRequestModifier(req.Context()) //nolint:contextcheck
+	modifier, hasModifier := getRequestModifier(req2.Context()) //nolint:contextcheck
 	if hasModifier {
-		modifier(req)
+		modifier(req2)
 	}
 
-	rsp, err := c.client.Do(req)
+	rsp, err := c.client.Do(req2)
 	if err != nil {
 		return rsp, err
 	}
 
 	if c.debug != nil {
-		c.debug(req, cloneResponse(rsp))
+		c.debug(req2, cloneResponse(rsp))
 	}
 
-	// Certain providers return 401 when the credentials has been invalidated.
-	// This may indicate that the credentials needs to be forcefully refreshed.
-	// Since this is per-provider, the caller can provide a custom handler.
-	if rsp.StatusCode == http.StatusUnauthorized {
+	return c.handleUnauthorizedResponse(req2, rsp)
+}
+
+func (c *headerAuthClient) CloseIdleConnections() {
+	c.client.CloseIdleConnections()
+}
+
+// handleUnauthorizedResponse handles 401 responses or custom unauthorized conditions.
+func (c *headerAuthClient) handleUnauthorizedResponse(
+	req *http.Request,
+	rsp *http.Response,
+) (*http.Response, error) {
+	if rsp.StatusCode == http.StatusUnauthorized || (c.isUnauthorized != nil && c.isUnauthorized(rsp)) {
 		if c.unauthorized != nil {
 			return c.unauthorized(c.headers, req, rsp)
 		}
 	}
 
 	return rsp, nil
-}
-
-func (c *headerAuthClient) CloseIdleConnections() {
-	c.client.CloseIdleConnections()
 }

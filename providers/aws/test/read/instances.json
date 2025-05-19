@@ -1,0 +1,15 @@
+{
+  "Instances": [
+    {
+      "CreatedDate": 1.706125503668E9,
+      "IdentityStoreId": "d-9a670e6550",
+      "InstanceArn": "arn:aws:sso:::instance/ssoins-668432c2a02ced8f",
+      "OwnerAccountId": "471112904037",
+      "State": {
+        "Name": "ACTIVE"
+      },
+      "Status": "ACTIVE"
+    }
+  ],
+  "NextToken": "AAMA-EFRSURBSGg1SWlhM3N2aTFLVjl0K1k4eDhHaGxDWTlZdnNmRldtUFl5b2hXeDVZVnV3RmVBL0wwS2pGRm1BQkVxYnhGQm9VaEFBQUFmakI4QmdrcWhraUc5dzBCQndhZ2J6QnRBZ0VBTUdnR0NTcUdTSWIzRFFFSEFUQWVCZ2xnaGtnQlpRTUVBUzR3RVFRTXArK0JMVERpOVBXcDQwWFVBZ0VRZ0R0dEtDRjBnS0xXaHhBQUkxdGlnOE9sT3c5K1ZDMHFVcS9TTkZPMWJpc1V6MlJFSkFuREhqTjA1aHQ2dGF2YXNvb0JDZi8rOEhSSzZhcEozQT091otgI5gnLV-Huqrp8MTjDuPmttTgsLqqh9S6A29al92lcQ9Wz2Z6PaKJM7VbkFZm78S1HC_gEIbp2Ot8OUCcgEkX_Z6cgMHo0XFfOr84"
+}

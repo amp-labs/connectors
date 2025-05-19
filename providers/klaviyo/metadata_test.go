@@ -20,10 +20,15 @@ func TestListObjectMetadataV1(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
-			Name:         "Unknown object requested",
-			Input:        []string{"butterflies"},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{common.ErrObjectNotSupported},
+			Name:       "Unknown object requested",
+			Input:      []string{"butterflies"},
+			Server:     mockserver.Dummy(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Errors: map[string]error{
+					"butterflies": common.ErrObjectNotSupported,
+				},
+			},
 		},
 		{
 			Name:       "Successfully describe multiple objects with metadata",
