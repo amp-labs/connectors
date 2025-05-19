@@ -118,6 +118,9 @@ var (
 	ErrResolvingCustomFields = errors.New("cannot resolve custom fields")
 
 	ErrGetRecordNotSupportedForObject = errors.New("getRecord is not supported for the object")
+
+	// ErrProxyNotApplicable indicates that a proxy cannot be used in the given context.
+	ErrProxyNotApplicable = errors.New("proxy is not applicable in this context")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.
