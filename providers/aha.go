@@ -40,7 +40,9 @@ func init() {
 		Metadata: &ProviderMetadata{
 			Input: []MetadataItemInput{
 				{
-					Name: "workspace",
+					Name:        "workspace",
+					DisplayName: "Company name",
+					DocsURL:     "https://www.aha.io/api#urls",
 				},
 			},
 		},
