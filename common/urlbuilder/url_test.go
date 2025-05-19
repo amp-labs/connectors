@@ -233,8 +233,8 @@ func TestFromRawURL(t *testing.T) { // nolint:funlen
 		},
 		{
 			name:     "WebSocket protocol",
-			input:    "ws://example.com/socket",
-			expected: "ws://example.com/socket",
+			input:    "wss://example.com/socket",
+			expected: "wss://example.com/socket",
 		},
 	}
 

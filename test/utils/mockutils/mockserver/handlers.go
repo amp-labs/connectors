@@ -39,7 +39,7 @@ func ContentMIME(mediaType string) http.HandlerFunc {
 
 func Header(headerName, headerValue string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set(headerName,headerValue)
+		w.Header().Set(headerName, headerValue)
 	}
 }
 
@@ -50,7 +50,7 @@ func Response(status int, data ...[]byte) http.HandlerFunc {
 		w.WriteHeader(status)
 
 		if len(data) == 1 {
-			_, _ = w.Write(data[0])
+			_, _ = w.Write(data[0]) // nosemgrep: go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter
 		}
 
 		if len(data) > 1 {
