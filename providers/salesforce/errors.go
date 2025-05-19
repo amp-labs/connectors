@@ -17,9 +17,9 @@ type jsonError struct {
 	ErrorCode string `json:"errorCode"`
 }
 
-func createError(baseErr error, sfErr jsonError) error {
+func createError(baseErr error, sfErr jsonError, res *http.Response) error {
 	if len(sfErr.Message) > 0 {
-		return fmt.Errorf("%w: %s", baseErr, sfErr.Message)
+		return fmt.Errorf("%w: %s (HTTP status %d)", baseErr, sfErr.Message, res.StatusCode)
 	}
 
 	return baseErr
@@ -34,17 +34,17 @@ func (c *Connector) interpretJSONError(res *http.Response, body []byte) error { 
 	for _, sfErr := range errs {
 		switch sfErr.ErrorCode {
 		case "INVALID_SESSION_ID":
-			return createError(common.ErrInvalidSessionId, sfErr)
+			return createError(common.ErrInvalidSessionId, sfErr, res)
 		case "INSUFFICIENT_ACCESS_OR_READONLY":
-			return createError(common.ErrForbidden, sfErr)
+			return createError(common.ErrForbidden, sfErr, res)
 		case "API_DISABLED_FOR_ORG":
-			return createError(common.ErrApiDisabled, sfErr)
+			return createError(common.ErrApiDisabled, sfErr, res)
 		case "UNABLE_TO_LOCK_ROW":
-			return createError(common.ErrUnableToLockRow, sfErr)
+			return createError(common.ErrUnableToLockRow, sfErr, res)
 		case "INVALID_GRANT":
-			return createError(common.ErrInvalidGrant, sfErr)
+			return createError(common.ErrInvalidGrant, sfErr, res)
 		case "REQUEST_LIMIT_EXCEEDED":
-			return createError(common.ErrLimitExceeded, sfErr)
+			return createError(common.ErrLimitExceeded, sfErr, res)
 		case "INVALID_TYPE":
 			fallthrough
 		case "INVALID_FIELD_FOR_INSERT_UPDATE":
@@ -54,7 +54,7 @@ func (c *Connector) interpretJSONError(res *http.Response, body []byte) error { 
 		case "FIELD_INTEGRITY_EXCEPTION":
 			fallthrough
 		case "INVALID_FIELD":
-			return createError(common.ErrBadRequest, sfErr)
+			return createError(common.ErrBadRequest, sfErr, res)
 		default:
 			continue
 		}
@@ -91,5 +91,5 @@ func (c *Connector) interpretXMLError(res *http.Response, body []byte) error {
 	return createError(matchingErr, jsonError{
 		Message:   message,
 		ErrorCode: code,
-	})
+	}, res)
 }
