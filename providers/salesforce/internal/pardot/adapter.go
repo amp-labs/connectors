@@ -4,8 +4,10 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/components"
+	"github.com/amp-labs/connectors/internal/components/deleter"
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/reader"
+	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -21,6 +23,8 @@ type Adapter struct {
 
 	// Supported operations
 	components.Reader
+	components.Writer
+	components.Deleter
 
 	// Variables.
 	businessUnitID string
@@ -59,7 +63,37 @@ func constructor(base *components.Connector) (*Adapter, error) {
 		},
 	)
 
+	connector := funcName(adapter)
+
+	connector.Writer = writer.NewHTTPWriter(
+		connector.HTTPClient().Client,
+		components.NewEmptyEndpointRegistry(),
+		connector.ProviderContext.Module(),
+		operations.WriteHandlers{
+			BuildRequest:  connector.buildWriteRequest,
+			ParseResponse: connector.parseWriteResponse,
+			ErrorHandler:  errorHandler,
+		},
+	)
+
+	connector.Deleter = deleter.NewHTTPDeleter(
+		connector.HTTPClient().Client,
+		components.NewEmptyEndpointRegistry(),
+		connector.ProviderContext.Module(),
+		operations.DeleteHandlers{
+			BuildRequest:  connector.buildDeleteRequest,
+			ParseResponse: connector.parseDeleteResponse,
+			ErrorHandler:  errorHandler,
+		},
+	)
+
 	return adapter, nil
+}
+
+func funcName(adapter *Adapter) *Adapter {
+	connector := adapter
+
+	return connector
 }
 
 func (a *Adapter) getModuleURL() string {

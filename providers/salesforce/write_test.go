@@ -125,3 +125,88 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		})
 	}
 }
+
+func TestWritePardot(t *testing.T) { // nolint:funlen,cyclop
+	t.Parallel()
+
+	responseCreateOK := testutils.DataFromFile(t, "pardot/write/prospect/new.json")
+
+	pardotHeader := http.Header{
+		"Pardot-Business-Unit-Id": []string{"test-business-unit-id"},
+	}
+
+	tests := []testroutines.Write{
+		{
+			Name:         "Write object must be included",
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingObjects},
+		},
+		{
+			Name:         "Write needs data payload",
+			Input:        common.WriteParams{ObjectName: "prospects"},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingRecordData},
+		},
+		{
+			Name:  "Create a prospect",
+			Input: common.WriteParams{ObjectName: "proSPEcTs", RecordData: "dummy"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/api/v5/objects/prospects"),
+					mockcond.Header(pardotHeader),
+				},
+				Then: mockserver.Response(http.StatusOK, responseCreateOK),
+			}.Server(),
+			Expected: &common.WriteResult{
+				Success:  true,
+				RecordId: "55434583",
+				Errors:   nil,
+				Data: map[string]any{
+					"id":        float64(55434583),
+					"email":     "a.alexander@sample.com",
+					"firstName": "Athenasius",
+					"lastName":  "Alexander",
+				},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Update a prospect",
+			Input: common.WriteParams{ObjectName: "prospects", RecordId: "55434583", RecordData: "dummy"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPATCH(),
+					mockcond.Path("/api/v5/objects/prospects/55434583"),
+					mockcond.Header(pardotHeader),
+				},
+				Then: mockserver.Response(http.StatusOK, responseCreateOK),
+			}.Server(),
+			Expected: &common.WriteResult{
+				Success:  true,
+				RecordId: "55434583",
+				Errors:   nil,
+				Data: map[string]any{
+					"id":        float64(55434583),
+					"email":     "a.alexander@sample.com",
+					"firstName": "Athenasius",
+					"lastName":  "Alexander",
+				},
+			},
+			ExpectedErrs: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		// nolint:varnamelen
+		t.Run(tt.Name, func(t *testing.T) {
+			t.Parallel()
+
+			tt.Run(t, func() (connectors.WriteConnector, error) {
+				return constructTestConnectorAccountEngagement(tt.Server.URL)
+			})
+		})
+	}
+}
