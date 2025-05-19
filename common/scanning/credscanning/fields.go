@@ -129,11 +129,15 @@ func (f Field) GetENVReader(providerName string) *scanning.EnvReader {
 
 // nolint:cyclop
 func getFields(info providers.ProviderInfo,
-	withRequiredAccessToken, withRequiredWorkspace bool,
+	withRequiredAccessToken, withRequiredWorkspace bool, customFields []Field,
 ) (datautils.NamedLists[Field], error) {
 	lists := datautils.NamedLists[Field]{}
 	requiredType := "required"
 	optionalType := "optional"
+
+	for _, customField := range customFields {
+		lists.Add(optionalType, customField)
+	}
 
 	lists.Add(requiredType, Fields.Provider)
 

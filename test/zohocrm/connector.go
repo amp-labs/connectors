@@ -38,6 +38,7 @@ func getConfig(reader *credscanning.ProviderCredentials) *oauth2.Config {
 		Scopes: []string{
 			"ZohoCRM.modules.ALL",
 			"ZohoCRM.settings.ALL",
+			"ZohoCRM.notifications.ALL",
 		},
 	}
 

@@ -277,7 +277,22 @@ func (m *Metadata[F, C]) ObjectNames() datautils.UniqueLists[common.ModuleID, st
 
 // LookupURLPath will give you the URL path for the object located under the module.
 // NOTE: empty module id is treated as root module.
+//
+// Deprecated.
+// Use FindURLPath. The module path will be removed from static files.
 func (m *Metadata[F, C]) LookupURLPath(moduleID common.ModuleID, objectName string) (string, error) {
+	path, err := m.FindURLPath(moduleID, objectName)
+	if err != nil {
+		return "", err
+	}
+
+	moduleID = moduleIdentifier(moduleID)
+	fullPath := m.LookupModuleURLPath(moduleID) + path
+
+	return fullPath, nil
+}
+
+func (m *Metadata[F, C]) FindURLPath(moduleID common.ModuleID, objectName string) (string, error) {
 	moduleID = moduleIdentifier(moduleID)
 
 	path := m.Modules[moduleID].Objects[objectName].URLPath
@@ -285,9 +300,7 @@ func (m *Metadata[F, C]) LookupURLPath(moduleID common.ModuleID, objectName stri
 		return "", common.ErrResolvingURLPathForObject
 	}
 
-	fullPath := m.LookupModuleURLPath(moduleID) + path
-
-	return fullPath, nil
+	return path, nil
 }
 
 func (m *Metadata[F, C]) LookupModuleURLPath(moduleID common.ModuleID) string {
@@ -315,11 +328,27 @@ func (m *Metadata[F, C]) ModuleRegistry() common.Modules {
 // LookupArrayFieldName will give you the field name which holds the array of objects in provider response.
 // Ex: CustomerSubscriptions is located under field name subscriptions => { "subscriptions": [{},{},{}] }.
 func (m *Metadata[F, C]) LookupArrayFieldName(moduleID common.ModuleID, objectName string) string {
-	moduleID = moduleIdentifier(moduleID)
-
-	fieldName := m.Modules[moduleID].Objects[objectName].ResponseKey
+	fieldName, _ := m.FindArrayFieldName(moduleID, objectName)
 
 	return fieldName
+}
+
+func (m *Metadata[F, C]) FindArrayFieldName(moduleID common.ModuleID, objectName string) (string, bool) {
+	moduleID = moduleIdentifier(moduleID)
+
+	module, ok := m.Modules[moduleID]
+	if !ok {
+		return "", false
+	}
+
+	object, ok := module.Objects[objectName]
+	if !ok {
+		return "", false
+	}
+
+	fieldName := object.ResponseKey
+
+	return fieldName, true
 }
 
 func (m *Module[F, C]) withPath(path string) {

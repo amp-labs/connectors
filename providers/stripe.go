@@ -27,7 +27,6 @@ func init() {
 			Subscribe: false,
 			Write:     true,
 		},
-		PostAuthInfoNeeded: false,
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722456153/media/stripe_1722456152.jpg",

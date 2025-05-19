@@ -18,6 +18,17 @@ type parameters struct {
 	paramsbuilder.Client
 }
 
+func newParams(opts []Option) (*common.Parameters, error) { // nolint:unused
+	oldParams, err := paramsbuilder.Apply(parameters{}, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	return &common.Parameters{
+		AuthenticatedClient: oldParams.Client.Caller.Client,
+	}, nil
+}
+
 func (p parameters) ValidateParams() error {
 	return errors.Join(p.Client.ValidateParams())
 }

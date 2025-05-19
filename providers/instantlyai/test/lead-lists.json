@@ -1,0 +1,13 @@
+{
+  "items": [
+    {
+      "id": "01966b52-73bf-79c0-bf01-933de40a96af",
+      "organization_id": "01966b52-73bf-79c0-bf01-933e7e9d7123",
+      "has_enrichment_task": false,
+      "owned_by": "01966b52-73bf-79c0-bf01-933fa9d5415a",
+      "name": "My Lead List",
+      "timestamp_created": "2025-04-25T05:01:27.871Z"
+    }
+  ],
+  "next_starting_after": "01966b52-883f-760d-b7dc-cdd0fc3f7841"
+}

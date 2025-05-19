@@ -27,32 +27,34 @@ type TestCase[Input any, Output any] struct {
 	ExpectedErrs []error
 }
 
+func (c TestCase[Input, Output]) Close() {
+	c.Server.Close()
+}
+
 // Validate checks if supplied input conforms to the test intention.
-func (o TestCase[Input, Output]) Validate(t *testing.T, err error, output Output) {
-	defer o.Server.Close()
-
+func (c TestCase[Input, Output]) Validate(t *testing.T, err error, output Output) {
 	// performs validation of error output using described test suite outline.
-	o.checkError(t, err)
+	c.checkError(t, err)
 	// performs validation of data output using described test suite outline.
-	o.checkValue(t, output)
+	c.checkValue(t, output)
 }
 
-func (o TestCase[Input, Output]) checkError(t *testing.T, err error) {
-	testutils.CheckErrors(t, o.Name, o.ExpectedErrs, err)
+func (c TestCase[Input, Output]) checkError(t *testing.T, err error) {
+	testutils.CheckErrors(t, c.Name, c.ExpectedErrs, err)
 }
 
-func (o TestCase[Input, Output]) checkValue(t *testing.T, output Output) {
+func (c TestCase[Input, Output]) checkValue(t *testing.T, output Output) {
 	// compare desired output
 	var ok bool
-	if o.Comparator == nil {
+	if c.Comparator == nil {
 		// default comparison is concerned about all fields
-		ok = reflect.DeepEqual(output, o.Expected)
+		ok = reflect.DeepEqual(output, c.Expected)
 	} else {
-		ok = o.Comparator(o.Server.URL, output, o.Expected)
+		ok = c.Comparator(c.Server.URL, output, c.Expected)
 	}
 
 	if !ok {
-		diff := deep.Equal(output, o.Expected)
-		t.Fatalf("%s:, \nexpected: (%v), \ngot: (%v), \ndiff: (%v)", o.Name, o.Expected, output, diff)
+		diff := deep.Equal(output, c.Expected)
+		t.Fatalf("%s:, \nexpected: (%v), \ngot: (%v), \ndiff: (%v)", c.Name, c.Expected, output, diff)
 	}
 }
