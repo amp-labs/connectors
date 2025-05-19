@@ -38,6 +38,7 @@ func init() {
 				ScopesField: "scope",
 			},
 		},
+		DefaultModule: ModuleMarketoLeads,
 		Modules: &Modules{
 			ModuleMarketoAssets: {
 				BaseURL:     "https://{{.workspace}}.mktorest.com/asset/v1",

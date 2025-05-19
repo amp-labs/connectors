@@ -38,6 +38,7 @@ func init() {
 			Subscribe: false,
 			Write:     false,
 		},
+		DefaultModule: ModuleKeapV1,
 		Modules: &Modules{
 			ModuleKeapV1: {
 				BaseURL:     "https://api.infusionsoft.com/v1",

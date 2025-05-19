@@ -168,6 +168,17 @@ func (i *ProviderInfo) GetOption(key string) (string, bool) {
 	return val, ok
 }
 
+func (i *ProviderInfo) ReadDefaultModuleInfo() *ModuleInfo {
+	defaultModule := common.ModuleRoot
+	if len(i.DefaultModule) != 0 {
+		defaultModule = i.DefaultModule
+	}
+
+	result, _ := i.ReadModuleInfoWithErr(defaultModule)
+
+	return result
+}
+
 // ReadModuleInfo is a version of ReadModuleInfoWithErr without an error.
 // Deprecated.
 // TODO this is a temporary impl which relies on default values for erroneous cases.

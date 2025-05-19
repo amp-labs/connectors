@@ -29,6 +29,7 @@ func init() { // nolint:funlen
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: true,
 		},
+		DefaultModule: ModuleZendeskTicketing,
 		Modules: &Modules{
 			ModuleZendeskTicketing: {
 				BaseURL:     "https://{{.workspace}}.zendesk.com/api/v2",
