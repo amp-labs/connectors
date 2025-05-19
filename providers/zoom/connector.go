@@ -4,17 +4,19 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/zoom/metadata"
 )
-
-const apiVersion = "/v2"
 
 type Connector struct {
 	BaseURL    string
 	Client     *common.JSONHTTPClient
 	moduleInfo providers.ModuleInfo
 	moduleID   common.ModuleID
+
+	*providers.ProviderInfo
+	*components.URLManager
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
@@ -30,34 +32,34 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		moduleID: params.Module.Selection.ID,
 	}
 
-	providerInfo, err := providers.ReadInfo(conn.Provider())
+	conn.ProviderInfo, err = providers.ReadInfo(conn.Provider())
 	if err != nil {
 		return nil, err
 	}
 
-	conn.moduleInfo, err = providerInfo.ReadModuleInfo(conn.moduleID)
+	conn.moduleInfo, err = conn.ProviderInfo.ReadModuleInfo(conn.moduleID)
 	if err != nil {
 		return nil, err
 	}
 
-	conn.setBaseURL(providerInfo.BaseURL)
+	conn.URLManager = components.NewURLManager(conn.ProviderInfo, conn.moduleInfo)
 
 	return conn, nil
 }
 
 func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
-	path, err := metadata.Schemas.LookupURLPath(c.moduleID, objectName)
+	path, err := metadata.Schemas.FindURLPath(c.moduleID, objectName)
 	if err != nil {
 		return nil, err
 	}
 
-	return urlbuilder.New(c.BaseURL, apiVersion, path)
+	return c.ModuleAPI.URL(path)
 }
 
 func (c *Connector) getWriteURL(objectName string) (*urlbuilder.URL, error) {
 	path := objectNameToWritePath.Get(objectName)
 
-	return urlbuilder.New(c.BaseURL, apiVersion, path)
+	return c.ModuleAPI.URL(path)
 }
 
 func (c *Connector) Provider() providers.Provider {
@@ -66,9 +68,4 @@ func (c *Connector) Provider() providers.Provider {
 
 func (c *Connector) String() string {
 	return c.Provider() + ".Connector"
-}
-
-func (c *Connector) setBaseURL(newURL string) {
-	c.BaseURL = newURL
-	c.Client.HTTPClient.Base = newURL
 }
