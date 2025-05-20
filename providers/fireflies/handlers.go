@@ -316,9 +316,47 @@ func (c *Connector) buildWriteRequest(
 
 			mutation = fmt.Sprintf(`mutation {
 				createBite(transcript_Id: "%s", start_time: %v, end_time: %v) {
-					%s
+					transcript_id
+					name
+        			id
+        			thumbnail
+        			preview
+        			status
+        			summary
+        			user_id
+        			start_time
+        			end_time
+        			summary_status
+        			media_type
+        			created_at
+        			created_from {
+            			duration
+            			id
+            			name
+            			type
+        			}
+        			captions {
+            			end_time
+            			index
+            			speaker_id
+            			speaker_name
+            			start_time
+            			text
+        			}
+        			sources {
+            			src
+            			type
+        			}
+        			privacies
+        			user {
+            			first_name
+            			last_name
+            			picture
+            			name
+            			id
+        			}
 				}
-			}`, transcriptId, startTime, endTime, getBiteFields())
+			}`, transcriptId, startTime, endTime)
 		} else {
 			return nil, ErrUpdateBiteNotSupported
 		}
