@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
@@ -167,25 +168,46 @@ func (i *ProviderInfo) GetOption(key string) (string, bool) {
 	return val, ok
 }
 
-func (i *ProviderInfo) ReadModuleInfo(moduleID common.ModuleID) (ModuleInfo, error) {
+// ReadModuleInfo is a version of ReadModuleInfoWithErr without an error.
+// Deprecated.
+// TODO this is a temporary impl which relies on default values for erroneous cases.
+func (i *ProviderInfo) ReadModuleInfo(moduleID common.ModuleID) *ModuleInfo {
+	result, _ := i.ReadModuleInfoWithErr(moduleID)
+
+	return result
+}
+
+func (i *ProviderInfo) ReadModuleInfoWithErr(moduleID common.ModuleID) (*ModuleInfo, error) {
 	rootModule := ModuleInfo{
-		BaseURL: i.BaseURL,
-		Support: Support{},
+		BaseURL:     i.BaseURL,
+		DisplayName: i.DisplayName,
+		Support:     i.Support,
+	}
+
+	// Root or empty module name should default to provider information.
+	if moduleID == common.ModuleRoot || len(moduleID) == 0 {
+		return &rootModule, nil
 	}
 
 	if i.Modules == nil {
-		// Default to provider information to construct root module.
-		return rootModule, nil
+		// Module ID was requested when no modules are defined on provider.
+		slog.Warn("modules info is not defined for provider while requested a module",
+			"provider", i.DisplayName, "modules", moduleID)
+
+		return &rootModule, common.ErrMissingModule
 	}
 
 	modules := *i.Modules
 
 	module, ok := modules[moduleID]
 	if !ok {
-		return ModuleInfo{}, common.ErrMissingModule
+		slog.Warn("module info is missing for a module",
+			"provider", i.DisplayName, "modules", moduleID)
+
+		return &rootModule, common.ErrMissingModule
 	}
 
-	return module, nil
+	return &module, nil
 }
 
 // UnauthorizedHandler is a function that is called when an unauthorized response is received.
