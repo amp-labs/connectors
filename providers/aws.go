@@ -27,7 +27,7 @@ func init() {
 		Modules: &Modules{
 			ModuleAWSIdentityCenter: {
 				// TODO serviceDomain changes based on the request. This is not global to the connector.
-				BaseURL:     "https://{{.serviceDomain}}.{{.region}}.amazonaws.com",
+				BaseURL:     "https://[[.serviceDomain]].{{.region}}.amazonaws.com",
 				DisplayName: "AWS Identity Center",
 				Support: Support{
 					Read:      false,

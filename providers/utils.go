@@ -158,6 +158,10 @@ func (i *ProviderInfo) SubstituteWith(vars []catalogreplacer.CatalogVariable) er
 	return catalogreplacer.NewCatalogSubstitutionRegistry(vars).Apply(i)
 }
 
+func (i *ModuleInfo) SubstituteWith(vars []catalogreplacer.CatalogVariable) error {
+	return catalogreplacer.NewCatalogSubstitutionRegistry(vars).Apply(i)
+}
+
 func (i *ProviderInfo) GetOption(key string) (string, bool) {
 	if i.ProviderOpts == nil {
 		return "", false
@@ -166,6 +170,36 @@ func (i *ProviderInfo) GetOption(key string) (string, bool) {
 	val, ok := i.ProviderOpts[key]
 
 	return val, ok
+}
+
+func (i *ProviderInfo) ReadModuleInfoV2(
+	moduleID common.ModuleID, vars ...catalogreplacer.CatalogVariable,
+) (*ModuleInfo, error) {
+	mInfo := i.ReadModuleInfo(moduleID)
+
+	// No substitution needed
+	if len(vars) == 0 {
+		return mInfo, nil
+	}
+
+	// Clone before modifying
+	moduleInfo, err := goutils.Clone[ModuleInfo](*mInfo)
+	if err != nil {
+		return nil, err
+	}
+
+	// Validate the provider configuration
+	v := validator.New()
+	if err = v.Struct(moduleInfo); err != nil {
+		return nil, err
+	}
+
+	// Apply substitutions to the provider configuration values which contain variables in the form of {{var}}.
+	if err = moduleInfo.SubstituteWith(vars); err != nil {
+		return nil, err
+	}
+
+	return &moduleInfo, nil
 }
 
 // ReadModuleInfo finds information about the module.

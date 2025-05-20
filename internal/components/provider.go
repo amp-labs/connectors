@@ -33,7 +33,10 @@ func NewProviderContext(
 		return nil, err
 	}
 
-	pctx.moduleInfo = pctx.providerInfo.ReadModuleInfo(module)
+	pctx.moduleInfo, err = pctx.providerInfo.ReadModuleInfoV2(module, catalogVars...)
+	if err != nil {
+		return nil, err
+	}
 
 	return pctx, nil
 }
