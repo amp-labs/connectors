@@ -3,8 +3,10 @@ package fireflies
 import (
 	"bytes"
 	"context"
+	"embed"
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"net/http"
 	"strconv"
 	"strings"
@@ -13,6 +15,9 @@ import (
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
+
+//go:embed *.graphql
+var queryFS embed.FS
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL)
@@ -142,9 +147,9 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 
 	switch params.ObjectName {
 	case transcriptsObjectName:
-		query = getTrascriptQuery(limit, skip)
+		query = getQuery(limit, skip, "transcripts.graphql", "transcriptsQuery")
 	case bitesObjectName:
-		query = getBiteQery(limit, skip)
+		query = getQuery(limit, skip, "bites.graphql", "bitesQuery")
 	case usersObjectName:
 		query = getUserQuery()
 	default:
@@ -184,153 +189,33 @@ func getUserQuery() string {
 	}`
 }
 
-// nolint:funlen
-func getTrascriptQuery(limit, skip int) string {
-	paginationParams := fmt.Sprintf("(limit: %d, skip: %d)", limit, skip)
-
-	return fmt.Sprintf(`query {
-			transcripts%s {
-				id
-				sentences {
-					index
-					speaker_name
-					speaker_id
-					text
-					raw_text
-					start_time
-					end_time
-					ai_filters {
-						task
-						pricing
-						metric
-						question
-						date_and_time
-						text_cleanup
-						sentiment
-					}
-				}
-				title
-				speakers {
-					id
-					name
-				}
-				organizer_email
-				meeting_info {
-					fred_joined
-					silent_meeting
-					summary_status
-				}
-				calendar_id
-				user {
-					user_id
-					email
-					name
-					num_transcripts
-					recent_meeting
-					minutes_consumed
-					is_admin
-					integrations
-				}
-				fireflies_users
-				participants
-				date
-				transcript_url
-				audio_url
-				video_url
-				duration
-				meeting_attendees {
-					displayName
-					email
-					phoneNumber
-					name
-					location
-				}
-				summary {
-					keywords
-					action_items
-					outline
-					shorthand_bullet
-					overview
-					bullet_gist
-					gist
-					short_summary
-					short_overview
-					meeting_type
-					topics_discussed
-					transcript_chapters
-				}
-				cal_id
-				calendar_type
-				apps_preview {
-					outputs {
-						transcript_id
-						user_id
-						app_id
-						created_at
-						title
-						prompt
-						response
-					}
-				}
-				meeting_link
-			}
-	}`, paginationParams)
-}
-
-func getBiteQery(limit, skip int) string {
-	var arguments string
-	if skip == 0 {
-		arguments = fmt.Sprintf("(mine: false, my_team: true, limit: %d)", limit)
-	} else {
-		arguments = fmt.Sprintf("(mine: false, my_team: true, limit: %d, skip: %d)", limit, skip)
+func getQuery(limit, skip int, filePath, queryName string) string {
+	queryBytes, err := queryFS.ReadFile(filePath)
+	if err != nil {
+		return ""
 	}
 
-	return fmt.Sprintf(`query {
-		bites%s {
-			transcript_id
-			name
-			id
-			thumbnail
-			preview
-			status
-			summary
-			user_id
-			start_time
-			end_time
-			summary_status
-			media_type
-			created_at
-			created_from {
-				duration
-				id
-				name
-				type
-			}
-			captions {
-				end_time
-				index
-				speaker_id
-				speaker_name
-				start_time
-				text
-			}
-			sources {
-				src
-				type
-			}
-			privacies
-			user {
-				first_name
-				last_name
-				picture
-				name
-				id
-			}
-		}
-	}`, arguments)
+	tmpl, err := template.New(queryName).Parse(string(queryBytes))
+	if err != nil {
+		return ""
+	}
+
+	var (
+		pageInfo PageInfo
+		queryBuf bytes.Buffer
+	)
+
+	pageInfo.Limit = limit
+	pageInfo.Skip = skip
+
+	err = tmpl.Execute(&queryBuf, pageInfo)
+	if err != nil {
+		return ""
+	}
+
+	return queryBuf.String()
 }
 
-// nolint:cyclop
 func (c *Connector) parseReadResponse(
 	ctx context.Context,
 	params common.ReadParams,
@@ -371,7 +256,7 @@ func (c *Connector) parseReadResponse(
 
 	return common.ParseResult(
 		resp,
-		getRecords(params.ObjectName),
+		common.ExtractOptionalRecordsFromPath(params.ObjectName, "data"),
 		makeNextRecordsURL(params, len(records)),
 		common.GetMarshaledData,
 		params.Fields,

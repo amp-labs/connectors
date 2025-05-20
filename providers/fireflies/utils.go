@@ -8,7 +8,6 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/datautils"
-	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 
@@ -23,19 +22,6 @@ var supportLimitAndSkip = datautils.NewSet( //nolint:gochecknoglobals
 	transcriptsObjectName,
 	bitesObjectName,
 )
-
-func getRecords(objectName string) func(*ajson.Node) ([]map[string]any, error) {
-	return func(node *ajson.Node) ([]map[string]any, error) {
-		// First get the data object
-		// Then get the array under the object name (e.g., "boards" or "users")
-		records, err := jsonquery.New(node, "data").ArrayOptional(objectName)
-		if err != nil {
-			return nil, err
-		}
-
-		return jsonquery.Convertor.ArrayToMap(records)
-	}
-}
 
 func makeNextRecordsURL(params common.ReadParams, count int) func(*ajson.Node) (string, error) {
 	return func(node *ajson.Node) (string, error) {
