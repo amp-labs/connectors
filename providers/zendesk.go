@@ -74,7 +74,8 @@ func init() { // nolint:funlen
 		Metadata: &ProviderMetadata{
 			Input: []MetadataItemInput{
 				{
-					Name: "workspace",
+					Name:        "workspace",
+					DisplayName: "Subdomain",
 				},
 			},
 		},
@@ -121,7 +122,8 @@ func init() { // nolint:funlen
 		Metadata: &ProviderMetadata{
 			Input: []MetadataItemInput{
 				{
-					Name: "workspace",
+					Name:        "workspace",
+					DisplayName: "Subdomain",
 				},
 			},
 		},

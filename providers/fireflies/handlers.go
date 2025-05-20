@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
@@ -105,12 +106,12 @@ func getFieldValueType(field string) common.ValueType {
 		return ""
 	}
 
-	switch field {
-	case "Float":
+	switch strings.ToLower(field) {
+	case "float":
 		return common.ValueTypeFloat
-	case "String", "ID":
+	case "string", "id":
 		return common.ValueTypeString
-	case "Boolean":
+	case "boolean":
 		return common.ValueTypeBoolean
 	default:
 		return common.ValueTypeOther

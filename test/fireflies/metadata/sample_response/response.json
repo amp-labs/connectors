@@ -1,0 +1,394 @@
+{
+  "Result": {
+    "bites": {
+      "DisplayName": "Bites",
+      "Fields": {
+        "captions": {
+          "DisplayName": "captions",
+          "ValueType": "",
+          "ProviderType": "",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "created_at": {
+          "DisplayName": "created_at",
+          "ValueType": "string",
+          "ProviderType": "String",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "created_from": {
+          "DisplayName": "created_from",
+          "ValueType": "other",
+          "ProviderType": "BiteOrigin",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "end_time": {
+          "DisplayName": "end_time",
+          "ValueType": "float",
+          "ProviderType": "Float",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "id": {
+          "DisplayName": "id",
+          "ValueType": "string",
+          "ProviderType": "ID",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "media_type": {
+          "DisplayName": "media_type",
+          "ValueType": "string",
+          "ProviderType": "String",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "name": {
+          "DisplayName": "name",
+          "ValueType": "string",
+          "ProviderType": "String",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "preview": {
+          "DisplayName": "preview",
+          "ValueType": "string",
+          "ProviderType": "String",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "privacies": {
+          "DisplayName": "privacies",
+          "ValueType": "",
+          "ProviderType": "",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "sources": {
+          "DisplayName": "sources",
+          "ValueType": "",
+          "ProviderType": "",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "start_time": {
+          "DisplayName": "start_time",
+          "ValueType": "float",
+          "ProviderType": "Float",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "status": {
+          "DisplayName": "status",
+          "ValueType": "string",
+          "ProviderType": "String",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "summary": {
+          "DisplayName": "summary",
+          "ValueType": "string",
+          "ProviderType": "String",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "summary_status": {
+          "DisplayName": "summary_status",
+          "ValueType": "string",
+          "ProviderType": "String",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "thumbnail": {
+          "DisplayName": "thumbnail",
+          "ValueType": "string",
+          "ProviderType": "String",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "transcript_id": {
+          "DisplayName": "transcript_id",
+          "ValueType": "string",
+          "ProviderType": "String",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "user": {
+          "DisplayName": "user",
+          "ValueType": "other",
+          "ProviderType": "BiteUser",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "user_id": {
+          "DisplayName": "user_id",
+          "ValueType": "string",
+          "ProviderType": "String",
+          "ReadOnly": false,
+          "Values": null
+        }
+      },
+      "FieldsMap": null
+    },
+    "transcripts": {
+      "DisplayName": "Transcripts",
+      "Fields": {
+        "analytics": {
+          "DisplayName": "analytics",
+          "ValueType": "other",
+          "ProviderType": "MeetingAnalytics",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "apps_preview": {
+          "DisplayName": "apps_preview",
+          "ValueType": "other",
+          "ProviderType": "Apps",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "audio_url": {
+          "DisplayName": "audio_url",
+          "ValueType": "string",
+          "ProviderType": "String",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "cal_id": {
+          "DisplayName": "cal_id",
+          "ValueType": "string",
+          "ProviderType": "String",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "calendar_id": {
+          "DisplayName": "calendar_id",
+          "ValueType": "string",
+          "ProviderType": "String",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "calendar_type": {
+          "DisplayName": "calendar_type",
+          "ValueType": "string",
+          "ProviderType": "String",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "date": {
+          "DisplayName": "date",
+          "ValueType": "float",
+          "ProviderType": "Float",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "dateString": {
+          "DisplayName": "dateString",
+          "ValueType": "string",
+          "ProviderType": "String",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "duration": {
+          "DisplayName": "duration",
+          "ValueType": "float",
+          "ProviderType": "Float",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "fireflies_users": {
+          "DisplayName": "fireflies_users",
+          "ValueType": "",
+          "ProviderType": "",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "host_email": {
+          "DisplayName": "host_email",
+          "ValueType": "string",
+          "ProviderType": "String",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "id": {
+          "DisplayName": "id",
+          "ValueType": "string",
+          "ProviderType": "String",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "meeting_attendees": {
+          "DisplayName": "meeting_attendees",
+          "ValueType": "",
+          "ProviderType": "",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "meeting_info": {
+          "DisplayName": "meeting_info",
+          "ValueType": "other",
+          "ProviderType": "MeetingInfo",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "meeting_link": {
+          "DisplayName": "meeting_link",
+          "ValueType": "string",
+          "ProviderType": "String",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "organizer_email": {
+          "DisplayName": "organizer_email",
+          "ValueType": "string",
+          "ProviderType": "String",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "participants": {
+          "DisplayName": "participants",
+          "ValueType": "",
+          "ProviderType": "",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "privacy": {
+          "DisplayName": "privacy",
+          "ValueType": "string",
+          "ProviderType": "String",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "sentences": {
+          "DisplayName": "sentences",
+          "ValueType": "",
+          "ProviderType": "",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "speakers": {
+          "DisplayName": "speakers",
+          "ValueType": "",
+          "ProviderType": "",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "summary": {
+          "DisplayName": "summary",
+          "ValueType": "other",
+          "ProviderType": "Summary",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "title": {
+          "DisplayName": "title",
+          "ValueType": "string",
+          "ProviderType": "String",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "transcript_url": {
+          "DisplayName": "transcript_url",
+          "ValueType": "string",
+          "ProviderType": "String",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "user": {
+          "DisplayName": "user",
+          "ValueType": "other",
+          "ProviderType": "User",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "video_url": {
+          "DisplayName": "video_url",
+          "ValueType": "string",
+          "ProviderType": "String",
+          "ReadOnly": false,
+          "Values": null
+        }
+      },
+      "FieldsMap": null
+    },
+    "users": {
+      "DisplayName": "Users",
+      "Fields": {
+        "email": {
+          "DisplayName": "email",
+          "ValueType": "string",
+          "ProviderType": "String",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "integrations": {
+          "DisplayName": "integrations",
+          "ValueType": "",
+          "ProviderType": "",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "is_admin": {
+          "DisplayName": "is_admin",
+          "ValueType": "boolean",
+          "ProviderType": "Boolean",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "minutes_consumed": {
+          "DisplayName": "minutes_consumed",
+          "ValueType": "float",
+          "ProviderType": "Float",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "name": {
+          "DisplayName": "name",
+          "ValueType": "string",
+          "ProviderType": "String",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "num_transcripts": {
+          "DisplayName": "num_transcripts",
+          "ValueType": "float",
+          "ProviderType": "Float",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "recent_meeting": {
+          "DisplayName": "recent_meeting",
+          "ValueType": "string",
+          "ProviderType": "String",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "recent_transcript": {
+          "DisplayName": "recent_transcript",
+          "ValueType": "string",
+          "ProviderType": "String",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "user_groups": {
+          "DisplayName": "user_groups",
+          "ValueType": "",
+          "ProviderType": "",
+          "ReadOnly": false,
+          "Values": null
+        },
+        "user_id": {
+          "DisplayName": "user_id",
+          "ValueType": "string",
+          "ProviderType": "String",
+          "ReadOnly": false,
+          "Values": null
+        }
+      },
+      "FieldsMap": null
+    }
+  },
+  "Errors": {}
+}
