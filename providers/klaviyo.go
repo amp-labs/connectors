@@ -38,6 +38,7 @@ func init() {
 			Subscribe: false,
 			Write:     true,
 		},
+		DefaultModule: ModuleKlaviyo2024Oct15,
 		Modules: &Modules{
 			ModuleKlaviyo2024Oct15: {
 				BaseURL:     "https://a.klaviyo.com",

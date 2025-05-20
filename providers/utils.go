@@ -168,46 +168,83 @@ func (i *ProviderInfo) GetOption(key string) (string, bool) {
 	return val, ok
 }
 
-// ReadModuleInfo is a version of ReadModuleInfoWithErr without an error.
-// Deprecated.
-// TODO this is a temporary impl which relies on default values for erroneous cases.
+// ReadModuleInfo finds information about the module.
+// If module is not found fallbacks to the default.
 func (i *ProviderInfo) ReadModuleInfo(moduleID common.ModuleID) *ModuleInfo {
-	result, _ := i.ReadModuleInfoWithErr(moduleID)
+	// Empty value fallback to the default value defined in ProviderInfo.
+	if moduleID == "" {
+		moduleID = i.defaultModuleOrRoot()
+	}
 
-	return result
-}
-
-func (i *ProviderInfo) ReadModuleInfoWithErr(moduleID common.ModuleID) (*ModuleInfo, error) {
+	// RootModule is inferred using the core values of ProviderInfo.
+	// On the surface those connectors are module agnostic.
 	rootModule := ModuleInfo{
 		BaseURL:     i.BaseURL,
 		DisplayName: i.DisplayName,
 		Support:     i.Support,
 	}
 
-	// Root or empty module name should default to provider information.
-	if moduleID == common.ModuleRoot || len(moduleID) == 0 {
-		return &rootModule, nil
+	// No modules exist. Fallback to the one and only RootModule.
+	if !i.hasModules() {
+		if moduleID != common.ModuleRoot {
+			// TODO the catalog should be checked almost at the "compile time".
+			// TODO There should be tests to ensure integrity. When anything is changed it should do consistency check.
+			slog.Warn("provider doesn't have modules while a module was requested",
+				"provider", i.DisplayName, "module", moduleID)
+		}
+
+		// Requesting root when no modules exist is allowed.
+		return &rootModule
 	}
 
-	if i.Modules == nil {
-		// Module ID was requested when no modules are defined on provider.
-		slog.Warn("modules info is not defined for provider while requested a module",
-			"provider", i.DisplayName, "modules", moduleID)
-
-		return &rootModule, common.ErrMissingModule
+	// Root module is providerInfo derived module.
+	if moduleID == common.ModuleRoot {
+		return &rootModule
 	}
 
-	modules := *i.Modules
+	// Find module.
+	module, ok := (*i.Modules)[moduleID] // nolint:varnamelen
+	if ok {
+		return &module
+	}
 
-	module, ok := modules[moduleID]
+	// Invalid module requested.
+	slog.Warn("module info is missing for a module",
+		"provider", i.DisplayName, "module", moduleID)
+
+	// Use fallback module to handle invalid module.
+	fallbackModule := i.defaultModuleOrRoot()
+
+	if fallbackModule == common.ModuleRoot {
+		return &rootModule
+	}
+
+	module, ok = (*i.Modules)[fallbackModule]
 	if !ok {
-		slog.Warn("module info is missing for a module",
-			"provider", i.DisplayName, "modules", moduleID)
+		slog.Warn("finding fallback module failed",
+			"provider", i.DisplayName, "module", fallbackModule)
 
-		return &rootModule, common.ErrMissingModule
+		return &rootModule
 	}
 
-	return &module, nil
+	return &module
+}
+
+func (i *ProviderInfo) hasModules() bool {
+	return i.Modules != nil && len(*i.Modules) != 0
+}
+
+func (i *ProviderInfo) defaultModuleOrRoot() common.ModuleID {
+	if i.DefaultModule == "" {
+		if i.hasModules() {
+			slog.Warn("defaulting to root while provider supports multiple modulus",
+				"provider", i.DisplayName)
+		}
+
+		return common.ModuleRoot
+	}
+
+	return i.DefaultModule
 }
 
 // UnauthorizedHandler is a function that is called when an unauthorized response is received.

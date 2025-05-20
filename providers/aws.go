@@ -23,6 +23,7 @@ func init() {
 			Subscribe: false,
 			Write:     false,
 		},
+		DefaultModule: ModuleAWSIdentityCenter,
 		Modules: &Modules{
 			ModuleAWSIdentityCenter: {
 				// TODO serviceDomain changes based on the request. This is not global to the connector.
