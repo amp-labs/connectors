@@ -10,17 +10,11 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-const (
-	objectBoard = "boards"
-	objectItem  = "items"
-	objectUser  = "users"
-)
-
 // How to read & build these patterns: https://github.com/gobwas/glob
 func supportedOperations() components.EndpointRegistryInput {
 	// We support reading everything under schema.json, so we get all the objects and join it into a pattern.
-	readSupport := []string{objectBoard, objectItem, objectUser}
-	writeSupport := []string{objectBoard, objectItem, objectUser}
+	readSupport := []string{mondayObjectBoard, mondayObjectItems, mondayObjectUser, mondayObjectDocs}
+	writeSupport := []string{mondayObjectBoard, mondayObjectItems, mondayObjectUser}
 
 	return components.EndpointRegistryInput{
 		common.ModuleRoot: {
@@ -33,7 +27,7 @@ func supportedOperations() components.EndpointRegistryInput {
 				Support:  components.ReadSupport,
 			},
 			{
-				Endpoint: objectItem,
+				Endpoint: mondayObjectItems,
 				Support:  components.DeleteSupport,
 			},
 		},
