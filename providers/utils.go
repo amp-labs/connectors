@@ -185,14 +185,12 @@ func (i *ProviderInfo) ReadModuleInfo(moduleID common.ModuleID) *ModuleInfo {
 	}
 
 	// No modules exist. Fallback to the one and only RootModule.
-	if i.Modules == nil || len(*i.Modules) == 0 {
+	if !i.hasModules() {
 		if moduleID != common.ModuleRoot {
 			// TODO the catalog should be checked almost at the "compile time".
 			// TODO There should be tests to ensure integrity. When anything is changed it should do consistency check.
 			slog.Warn("provider doesn't have modules while a module was requested",
-				"provider", i.DisplayName, "modules", moduleID)
-
-			return &rootModule // common.ErrMissingModule
+				"provider", i.DisplayName, "module", moduleID)
 		}
 
 		// Requesting root when no modules exist is allowed.
@@ -205,19 +203,44 @@ func (i *ProviderInfo) ReadModuleInfo(moduleID common.ModuleID) *ModuleInfo {
 	}
 
 	// Find module.
-	module, ok := (*i.Modules)[moduleID]
+	module, ok := (*i.Modules)[moduleID] // nolint:varnamelen
 	if ok {
 		return &module
 	}
 
+	// Invalid module requested.
 	slog.Warn("module info is missing for a module",
-		"provider", i.DisplayName, "modules", moduleID)
+		"provider", i.DisplayName, "module", moduleID)
 
-	return &rootModule // common.ErrMissingModule
+	// Use fallback module to handle invalid module.
+	fallbackModule := i.defaultModuleOrRoot()
+
+	if fallbackModule == common.ModuleRoot {
+		return &rootModule
+	}
+
+	module, ok = (*i.Modules)[fallbackModule]
+	if !ok {
+		slog.Warn("finding fallback module failed",
+			"provider", i.DisplayName, "module", fallbackModule)
+
+		return &rootModule
+	}
+
+	return &module
+}
+
+func (i *ProviderInfo) hasModules() bool {
+	return i.Modules != nil && len(*i.Modules) != 0
 }
 
 func (i *ProviderInfo) defaultModuleOrRoot() common.ModuleID {
 	if i.DefaultModule == "" {
+		if i.hasModules() {
+			slog.Warn("defaulting to root while provider supports multiple modulus",
+				"provider", i.DisplayName)
+		}
+
 		return common.ModuleRoot
 	}
 

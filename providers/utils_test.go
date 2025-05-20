@@ -250,22 +250,6 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 			},
 		},
 		{
-			name: "Atlassian root module",
-			input: inType{
-				provider: Atlassian,
-				moduleID: common.ModuleRoot,
-			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://api.atlassian.com",
-				DisplayName: "Atlassian",
-				Support: Support{
-					Proxy: true,
-					Read:  true,
-					Write: true,
-				},
-			},
-		},
-		{
 			name: "Hubspot root module",
 			input: inType{
 				provider: Hubspot,
@@ -397,7 +381,7 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 			},
 			// expectedErr: common.ErrMissingModule,
 		},
-		// Unknown module for providers with multiple modules.
+		// Unknown module for providers with multiple modules fallbacks to default.
 		{
 			name: "Atlassian unknown module",
 			input: inType{
@@ -405,10 +389,9 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				moduleID: "random-module-name",
 			},
 			expected: &ModuleInfo{
-				BaseURL:     "https://api.atlassian.com",
-				DisplayName: "Atlassian",
+				BaseURL:     "https://api.atlassian.com/ex/jira/{{.cloudId}}/rest/api/3",
+				DisplayName: "Atlassian Jira",
 				Support: Support{
-					Proxy: true,
 					Read:  true,
 					Write: true,
 				},
@@ -422,10 +405,9 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				moduleID: "random-module-name",
 			},
 			expected: &ModuleInfo{
-				BaseURL:     "https://api.hubapi.com",
-				DisplayName: "HubSpot",
+				BaseURL:     "https://api.hubapi.com/crm/v3",
+				DisplayName: "HubSpot CRM",
 				Support: Support{
-					Proxy: true,
 					Read:  true,
 					Write: true,
 				},
@@ -439,13 +421,9 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				moduleID: "random-module-name",
 			},
 			expected: &ModuleInfo{
-				BaseURL:     "https://api.infusionsoft.com",
-				DisplayName: "Keap",
-				Support: Support{
-					Proxy: true,
-					Read:  false,
-					Write: false,
-				},
+				BaseURL:     "https://api.infusionsoft.com/v1",
+				DisplayName: "Keap Version 1",
+				Support:     Support{},
 			},
 			// expectedErr: common.ErrMissingModule,
 		},
@@ -457,9 +435,8 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 			},
 			expected: &ModuleInfo{
 				BaseURL:     "https://a.klaviyo.com",
-				DisplayName: "Klaviyo",
+				DisplayName: "Klaviyo (Version 2024-10-15)",
 				Support: Support{
-					Proxy: true,
 					Read:  true,
 					Write: true,
 				},
@@ -474,10 +451,9 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				moduleID: "random-module-name",
 			},
 			expected: &ModuleInfo{
-				BaseURL:     "https://london.mktorest.com",
-				DisplayName: "Marketo",
+				BaseURL:     "https://{{.workspace}}.mktorest.com/v1",
+				DisplayName: "Marketo (Leads)",
 				Support: Support{
-					Proxy: true,
 					Read:  true,
 					Write: true,
 				},
@@ -492,10 +468,9 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				moduleID: "random-module-name",
 			},
 			expected: &ModuleInfo{
-				BaseURL:     "https://london.zendesk.com",
-				DisplayName: "Zendesk Support",
+				BaseURL:     "https://{{.workspace}}.zendesk.com/api/v2",
+				DisplayName: "Zendesk Ticketing",
 				Support: Support{
-					Proxy: true,
 					Read:  true,
 					Write: true,
 				},
@@ -509,10 +484,9 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				moduleID: "random-module-name",
 			},
 			expected: &ModuleInfo{
-				BaseURL:     "https://api.zoom.us",
-				DisplayName: "Zoom",
+				BaseURL:     "https://api.zoom.us/v2",
+				DisplayName: "Zoom (Meeting)",
 				Support: Support{
-					Proxy: true,
 					Read:  true,
 					Write: true,
 				},
