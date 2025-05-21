@@ -1,7 +1,6 @@
 package atlassian
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"testing"
@@ -13,6 +12,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
+	"github.com/stretchr/testify/require"
 )
 
 func TestWrite(t *testing.T) { // nolint:funlen,cyclop
@@ -114,17 +114,10 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 func TestWriteWithoutMetadata(t *testing.T) {
 	t.Parallel()
 
-	connector, err := NewConnector(
+	_, err := NewConnector(
 		WithAuthenticatedClient(http.DefaultClient),
 		WithWorkspace("test-workspace"),
 		WithModule(providers.ModuleAtlassianJira),
 	)
-	if err != nil {
-		t.Fatal("failed to create connector")
-	}
-
-	_, err = connector.Write(context.Background(), common.WriteParams{ObjectName: "issues", RecordData: "dummy"})
-	if !errors.Is(err, ErrMissingCloudId) {
-		t.Fatalf("expected Write method to complain about missing cloud id")
-	}
+	require.ErrorContains(t, err, "map has no entry for key \"cloudId\"")
 }

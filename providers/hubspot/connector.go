@@ -39,7 +39,11 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	conn.setBaseURL(providerInfo.BaseURL)
 	conn.Client.HTTPClient.ErrorHandler = conn.interpretError
 
-	conn.moduleInfo = providerInfo.ReadModuleInfo(conn.moduleID)
+	conn.moduleInfo, err = providerInfo.ReadModuleInfo(conn.moduleID)
+	if err != nil {
+		// ModuleHubspotCRM https://api.hubapi.com/crm/v3
+		return nil, err
+	}
 
 	return conn, nil
 }

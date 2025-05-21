@@ -24,7 +24,7 @@ func TestBuildRequest(t *testing.T) {
 	info, err := providers.ReadInfo(providers.AWS, regionVariable)
 	require.NoError(t, err)
 
-	module, err := info.ReadModuleInfoV2(providers.ModuleAWSIdentityCenter, regionVariable)
+	module, err := info.ReadModuleInfo(providers.ModuleAWSIdentityCenter, regionVariable)
 	require.NoError(t, err)
 
 	baseURL := module.BaseURL

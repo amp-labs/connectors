@@ -751,7 +751,7 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				t.Fatalf("%s: bad test, failed to read info: (%v)", tt.name, err)
 			}
 
-			output, err := info.ReadModuleInfoV2(tt.input.moduleID, tt.input.vars...)
+			output, err := info.ReadModuleInfo(tt.input.moduleID, tt.input.vars...)
 			if err != nil {
 				t.Fatalf("%s: bad test, failed module variable substitution: (%v)", tt.name, err)
 			}

@@ -41,7 +41,12 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 
 	conn.setBaseURL(providerInfo.BaseURL)
 
-	conn.moduleInfo = providerInfo.ReadModuleInfo(conn.moduleID)
+	conn.moduleInfo, err = providerInfo.ReadModuleInfo(conn.moduleID, &params.Workspace)
+	if err != nil {
+		// ModuleMarketoAssets	https://{{.workspace}}.mktorest.com/asset/v1
+		// ModuleMarketoLeads	https://{{.workspace}}.mktorest.com/v1
+		return nil, err
+	}
 
 	return conn, nil
 }

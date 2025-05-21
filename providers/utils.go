@@ -172,10 +172,10 @@ func (i *ProviderInfo) GetOption(key string) (string, bool) {
 	return val, ok
 }
 
-func (i *ProviderInfo) ReadModuleInfoV2(
+func (i *ProviderInfo) ReadModuleInfo(
 	moduleID common.ModuleID, vars ...catalogreplacer.CatalogVariable,
 ) (*ModuleInfo, error) {
-	mInfo := i.ReadModuleInfo(moduleID)
+	mInfo := i.findModuleInfo(moduleID)
 
 	// No substitution needed
 	if len(vars) == 0 {
@@ -202,9 +202,9 @@ func (i *ProviderInfo) ReadModuleInfoV2(
 	return &moduleInfo, nil
 }
 
-// ReadModuleInfo finds information about the module.
+// findModuleInfo finds information about the module.
 // If module is not found fallbacks to the default.
-func (i *ProviderInfo) ReadModuleInfo(moduleID common.ModuleID) *ModuleInfo {
+func (i *ProviderInfo) findModuleInfo(moduleID common.ModuleID) *ModuleInfo {
 	// Empty value fallback to the default value defined in ProviderInfo.
 	if moduleID == "" {
 		moduleID = i.defaultModuleOrRoot()
