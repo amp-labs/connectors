@@ -31,6 +31,7 @@ func substituteStruct(input interface{}, substitutions map[string]string) error 
 			return err
 		}
 	}
+
 	return nil
 }
 
