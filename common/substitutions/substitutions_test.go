@@ -1,3 +1,4 @@
+// nolint
 package substitutions
 
 import (
@@ -8,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// TestSubstitute tests the basic string substitution functionality
+// TestSubstitute tests the basic string substitution functionality.
 func TestSubstitute(t *testing.T) {
 	tests := []struct {
 		name          string
@@ -67,7 +68,7 @@ func TestSubstitute(t *testing.T) {
 	}
 }
 
-// TestSubstituteStruct tests the struct substitution functionality
+// TestSubstituteStruct tests the struct substitution functionality.
 func TestSubstituteStruct(t *testing.T) {
 	type NestedStruct struct {
 		URL string
@@ -162,7 +163,7 @@ func TestSubstituteStruct(t *testing.T) {
 	}
 }
 
-// TestProviderInfoSubstitution tests substitution with a real ProviderInfo-like structure
+// TestProviderInfoSubstitution tests substitution with a real ProviderInfo-like structure.
 func TestProviderInfoSubstitution(t *testing.T) {
 	tests := []struct {
 		name          string
@@ -515,7 +516,7 @@ const (
 	SubscribeOptsSubscriptionScopeIntegration  SubscribeOptsSubscriptionScope = "integration"
 )
 
-// ApiKeyAsBasicOpts when this object is present, it means that this provider uses Basic Auth to actually collect an API key
+// ApiKeyAsBasicOpts when this object is present, it means that this provider uses Basic Auth to actually collect an API key.
 type ApiKeyAsBasicOpts struct {
 	// FieldUsed whether the API key should be used as the username or password.
 	FieldUsed ApiKeyAsBasicOptsFieldUsed `json:"fieldUsed,omitempty"`
@@ -782,7 +783,7 @@ type SubscribeSupport struct {
 
 // Support The supported features for the provider.
 type Support struct {
-	BulkWrite        BulkWriteSupport  `json:"bulkWrite" validate:"required"`
+	BulkWrite        BulkWriteSupport  `json:"bulkWrite"                  validate:"required"`
 	Proxy            bool              `json:"proxy"`
 	Read             bool              `json:"read"`
 	Subscribe        bool              `json:"subscribe"`
@@ -800,7 +801,7 @@ type TokenMetadataFields struct {
 	WorkspaceRefField string                          `json:"workspaceRefField,omitempty"`
 }
 
-// TokenMetadataFieldsOtherFields Additional fields to extract and transform from the token response
+// TokenMetadataFieldsOtherFields Additional fields to extract and transform from the token response.
 type TokenMetadataFieldsOtherFields = []struct {
 	// Capture A regex expression to capture the value that we need from the path. There must be only one capture group named 'result' in the expression. If not provided, will cause an error.
 	Capture string `json:"capture,omitempty"`
