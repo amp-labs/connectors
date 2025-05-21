@@ -6,52 +6,86 @@ import (
 	"text/template" // nosemgrep: go.lang.security.audit.xss.import-text-template.import-text-template
 )
 
-// substituteStruct performs string substitution on the fields of the input struct
-// using the substitutions map.
-func substituteStruct(input interface{}, substitutions map[string]string) (err error) { //nolint:gocognit,cyclop,lll
-	configStruct := reflect.ValueOf(input).Elem()
+// substituteStruct applies substitutions to all string fields in the struct pointed to by input.
+// It handles nested structs, pointers, maps (including pointers-to-maps), and structs inside maps.
+func substituteStruct(input interface{}, substitutions map[string]string) error {
+	v := reflect.ValueOf(input)
 
-	for i := range configStruct.NumField() {
-		field := configStruct.Field(i)
+	if v.Kind() != reflect.Ptr || v.IsNil() {
+		return nil
+	}
 
-		// If the field is a string, perform substitution on it.
-		if field.Kind() == reflect.String {
-			substitutedVal, err := substitute(field.String(), substitutions)
-			if err != nil {
-				return err
-			}
+	v = v.Elem()
+	if v.Kind() != reflect.Struct {
+		return nil
+	}
 
-			field.SetString(substitutedVal)
+	for i := 0; i < v.NumField(); i++ {
+		field := v.Field(i)
+		// skip unexported or unsettable fields
+		if !field.CanSet() {
+			continue
 		}
 
-		if field.Kind() == reflect.Pointer {
-			if field.Elem().Kind() == reflect.Struct {
-				err := substituteStruct(field.Elem().Addr().Interface(), substitutions)
+		if err := walkValue(field, substitutions); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// walkValue recursively walks v, handling substitutions for strings,
+// recursing into structs, pointers, and maps (including map values that are structs or pointers).
+func walkValue(v reflect.Value, substitutions map[string]string) error {
+	switch v.Kind() {
+	case reflect.String:
+		s, err := substitute(v.String(), substitutions)
+		if err != nil {
+			return err
+		}
+
+		v.SetString(s)
+	case reflect.Pointer:
+		if v.IsNil() {
+			return nil
+		}
+
+		// unwrap pointers uniformly
+		return walkValue(v.Elem(), substitutions)
+	case reflect.Struct:
+		// recurse into nested struct
+		return substituteStruct(v.Addr().Interface(), substitutions)
+	case reflect.Map:
+		for _, key := range v.MapKeys() {
+			val := v.MapIndex(key)
+
+			switch val.Kind() {
+			case reflect.String:
+				// simple string substitution
+				s, err := substitute(val.String(), substitutions)
 				if err != nil {
 					return err
 				}
-			}
-		}
 
-		// If the field is a struct, perform substitution on its fields.
-		if field.Kind() == reflect.Struct {
-			err := substituteStruct(field.Addr().Interface(), substitutions)
-			if err != nil {
-				return err
-			}
-		}
+				v.SetMapIndex(key, reflect.ValueOf(s))
+			case reflect.Struct, reflect.Pointer:
+				// handle nested struct or pointer-to-struct
+				var ptr reflect.Value
+				if val.Kind() == reflect.Pointer {
+					ptr = val
+				} else {
+					ptr = reflect.New(val.Type())
+					ptr.Elem().Set(val)
+				}
 
-		// If the field is a map, perform substitution on its values.
-		if field.Kind() == reflect.Map {
-			for _, key := range field.MapKeys() {
-				val := field.MapIndex(key)
-				if val.Kind() == reflect.String {
-					substitutedVal, err := substitute(val.String(), substitutions)
-					if err != nil {
-						return err
-					}
+				// recurse on the addressable pointer
+				if err := walkValue(ptr, substitutions); err != nil {
+					return err
+				}
 
-					field.SetMapIndex(key, reflect.ValueOf(substitutedVal))
+				// write back if it was a struct
+				if val.Kind() == reflect.Struct {
+					v.SetMapIndex(key, ptr.Elem())
 				}
 			}
 		}
@@ -60,21 +94,17 @@ func substituteStruct(input interface{}, substitutions map[string]string) (err e
 	return nil
 }
 
-// substitute performs string substitution on the input string
-// using the substitutions map.
+// substitute applies text/template substitution to the input string.
 func substitute(input string, substitutions map[string]string) (string, error) {
-	// missing variables are not allowed, Execute will throw an error.
 	tmpl, err := template.New("-").Option("missingkey=error").Parse(input)
 	if err != nil {
 		return "", err
 	}
 
-	var result strings.Builder
-
-	err = tmpl.Execute(&result, &substitutions)
-	if err != nil {
+	var sb strings.Builder
+	if err := tmpl.Execute(&sb, substitutions); err != nil {
 		return "", err
 	}
 
-	return result.String(), nil
+	return sb.String(), nil
 }
