@@ -7,6 +7,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
+	"github.com/amp-labs/connectors/common/substitutions/catalogreplacer"
 	"golang.org/x/oauth2"
 )
 
@@ -78,4 +79,14 @@ func WithMetadata(metadata map[string]string) Option {
 	return func(params *parameters) {
 		params.WithMetadata(metadata, nil)
 	}
+}
+
+func (p parameters) catalogVars() []catalogreplacer.CatalogVariable {
+	catalogVariables := []catalogreplacer.CatalogVariable{&p.Workspace}
+
+	for _, val := range p.Metadata.GetCatalogVars() {
+		catalogVariables = append(catalogVariables, val)
+	}
+
+	return catalogVariables
 }

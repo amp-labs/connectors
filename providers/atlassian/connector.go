@@ -52,7 +52,12 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		return nil, err
 	}
 
-	conn.moduleInfo = conn.ProviderInfo.ReadModuleInfo(conn.moduleID)
+	conn.moduleInfo, err = conn.ProviderInfo.ReadModuleInfo(conn.moduleID, params.catalogVars()...)
+	if err != nil {
+		// ModuleAtlassianJira			https://api.atlassian.com/ex/jira/{{.cloudId}}/rest/api/3
+		// ModuleAtlassianJiraConnect	https://{{.workspace}}.atlassian.net/rest/api/3
+		return nil, err
+	}
 
 	// connector and its client must mirror base url and provide its own error parser
 	conn.setBaseURL(conn.BaseURL)

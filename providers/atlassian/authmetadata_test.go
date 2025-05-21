@@ -10,7 +10,6 @@ import (
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 	"github.com/go-test/deep"
@@ -77,7 +76,7 @@ func TestGetPostAuthInfo(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintid
 			connector, err := NewConnector(
 				WithAuthenticatedClient(http.DefaultClient),
 				WithWorkspace("second-proj"),
-				WithModule(providers.ModuleAtlassianJira),
+				WithModule(common.ModuleRoot),
 			)
 			if err != nil {
 				t.Fatalf("%s: error in test while constructing connector %v", tt.name, err)

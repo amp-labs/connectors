@@ -38,7 +38,12 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		return nil, err
 	}
 
-	conn.moduleInfo = providerInfo.ReadModuleInfo(conn.moduleID)
+	conn.moduleInfo, err = providerInfo.ReadModuleInfo(conn.moduleID, &params.Workspace)
+	if err != nil {
+		// ModuleZendeskTicketing	https://{{.workspace}}.zendesk.com/api/v2
+		// ModuleZendeskHelpCenter	https://{{.workspace}}.zendesk.com/api/v2
+		return nil, err
+	}
 
 	// connector and its client must mirror base url and provide its own error parser
 	conn.setBaseURL(providerInfo.BaseURL)

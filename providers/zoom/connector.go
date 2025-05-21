@@ -35,7 +35,12 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		return nil, err
 	}
 
-	conn.moduleInfo = providerInfo.ReadModuleInfo(conn.moduleID)
+	conn.moduleInfo, err = providerInfo.ReadModuleInfo(conn.moduleID)
+	if err != nil {
+		// ModuleZoomUser:		https://api.zoom.us/v2
+		// ModuleZoomMeeting:	https://api.zoom.us/v2
+		return nil, err
+	}
 
 	conn.setBaseURL(providerInfo.BaseURL)
 

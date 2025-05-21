@@ -36,7 +36,11 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		return nil, err
 	}
 
-	conn.moduleInfo = providerInfo.ReadModuleInfo(conn.moduleID)
+	conn.moduleInfo, err = providerInfo.ReadModuleInfo(conn.moduleID)
+	if err != nil {
+		// ModuleKlaviyo2024Oct15	https://a.klaviyo.com
+		return nil, err
+	}
 
 	// connector and its client must mirror base url and provide its own error parser
 	conn.setBaseURL(providerInfo.BaseURL)

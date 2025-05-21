@@ -43,7 +43,7 @@ func BuildRequest(
 	}
 
 	ctx = context.WithValue(ctx, common.AWSServiceContextKey, serviceSigningName)
-	baseURL = strings.Replace(baseURL, "{{.serviceDomain}}", serviceDomain, 1)
+	baseURL = strings.Replace(baseURL, "[[.serviceDomain]]", serviceDomain, 1)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, baseURL, reader)
 	if err != nil {

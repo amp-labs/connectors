@@ -38,7 +38,12 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		return nil, err
 	}
 
-	conn.moduleInfo = providerInfo.ReadModuleInfo(conn.moduleID)
+	conn.moduleInfo, err = providerInfo.ReadModuleInfo(conn.moduleID)
+	if err != nil {
+		// ModuleKeapV1	https://api.infusionsoft.com/v1
+		// ModuleKeapV2	https://api.infusionsoft.com/v2
+		return nil, err
+	}
 
 	// connector and its client must mirror base url and provide its own error parser
 	conn.setBaseURL(providerInfo.BaseURL)

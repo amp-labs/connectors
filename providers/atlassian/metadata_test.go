@@ -1,8 +1,6 @@
 package atlassian
 
 import (
-	"context"
-	"errors"
 	"net/http"
 	"testing"
 
@@ -12,6 +10,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
+	"github.com/stretchr/testify/require"
 )
 
 func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
@@ -111,17 +110,10 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 func TestListObjectMetadataWithoutMetadata(t *testing.T) {
 	t.Parallel()
 
-	connector, err := NewConnector(
+	_, err := NewConnector(
 		WithAuthenticatedClient(http.DefaultClient),
 		WithWorkspace("test-workspace"),
 		WithModule(providers.ModuleAtlassianJira),
 	)
-	if err != nil {
-		t.Fatal("failed to create connector")
-	}
-
-	_, err = connector.ListObjectMetadata(context.Background(), nil)
-	if !errors.Is(err, ErrMissingCloudId) {
-		t.Fatalf("expected ListObjectMetadata method to complain about missing cloud id")
-	}
+	require.ErrorContains(t, err, "map has no entry for key \"cloudId\"")
 }
