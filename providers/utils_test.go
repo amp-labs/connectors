@@ -451,7 +451,7 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				moduleID: "random-module-name",
 			},
 			expected: &ModuleInfo{
-				BaseURL:     "https://{{.workspace}}.mktorest.com/v1",
+				BaseURL:     "https://london.mktorest.com/v1",
 				DisplayName: "Marketo (Leads)",
 				Support: Support{
 					Read:  true,
@@ -468,7 +468,7 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				moduleID: "random-module-name",
 			},
 			expected: &ModuleInfo{
-				BaseURL:     "https://{{.workspace}}.zendesk.com/api/v2",
+				BaseURL:     "https://london.zendesk.com/api/v2",
 				DisplayName: "Zendesk Ticketing",
 				Support: Support{
 					Read:  true,
@@ -724,7 +724,7 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				moduleID: "",
 			},
 			expected: &ModuleInfo{
-				BaseURL:     "https://{{.workspace}}.mktorest.com/v1",
+				BaseURL:     "https://london.mktorest.com/v1",
 				DisplayName: "Marketo (Leads)",
 				Support: Support{
 					Read:  true,
