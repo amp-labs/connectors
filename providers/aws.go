@@ -8,7 +8,7 @@ const ModuleAWSIdentityCenter common.ModuleID = "aws-identity-center"
 
 const ServiceDomainPlaceholder = "<<SERVICE_DOMAIN>>"
 
-func init() {
+func init() { //nolint:funlen
 	SetInfo(AWS, ProviderInfo{
 		DisplayName: "Amazon Web Services",
 		AuthType:    Basic,
