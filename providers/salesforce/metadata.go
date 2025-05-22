@@ -163,6 +163,8 @@ func (r describeSObjectResult) transformToFields() map[string]common.FieldMetada
 //
 // Salesforce doesn't have a native concept of "read-only" fields, so we use some other
 // fields to determine if a field is read-only.
+//
+//nolint:lll
 func (o fieldResult) isReadOnly() bool {
 	return (o.Autonumber != nil && *o.Autonumber) ||
 		(o.Calculated != nil && *o.Calculated) ||
