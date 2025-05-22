@@ -38,6 +38,14 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 
 const defaultPageSize = 100
 
+// nolint:lll
+// Supports:
+// * Pagination
+// * Incremental reading for some objects
+// * Selects a subset of fields to return (can include nested fields).
+//
+// Reference:
+// https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/api-reference/v2.0/endpoints-apis-for-dynamics#section
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
 	url, err := c.buildReadURL(ctx, params)
 	if err != nil {
