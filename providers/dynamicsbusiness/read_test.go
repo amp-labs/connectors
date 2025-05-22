@@ -17,7 +17,8 @@ import (
 func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
-	responseErrorFormat := testutils.DataFromFile(t, "read/balance-sheets/error-since.json")
+	responseErrorFormatJSON := testutils.DataFromFile(t, "read/balance-sheets/error-since.json")
+	responseErrorFormatXML := testutils.DataFromFile(t, "err-missing-environment.xml")
 	responseBalanceSheets := testutils.DataFromFile(t, "read/balance-sheets/1-last-page.json")
 	responseCustomersFirstPage := testutils.DataFromFile(t, "read/customers/1-first-page.json")
 	responseCustomersLastPage := testutils.DataFromFile(t, "read/customers/2-last-page.json")
@@ -43,11 +44,24 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Input: common.ReadParams{ObjectName: "BalanceSheets", Fields: connectors.Fields("id")},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusBadRequest, responseErrorFormat),
+				Always: mockserver.Response(http.StatusBadRequest, responseErrorFormatJSON),
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
 				errors.New("Could not find a property named 'lastModifiedDateTime'"), // nolint:goerr113
+			},
+		},
+		{
+			Name:  "Correct error message is understood from XML response",
+			Input: common.ReadParams{ObjectName: "BalanceSheets", Fields: connectors.Fields("id")},
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentXML(),
+				Always: mockserver.Response(http.StatusNotFound, responseErrorFormatXML),
+			}.Server(),
+			ExpectedErrs: []error{
+				common.ErrBadRequest,
+				common.ErrNotFound,
+				errors.New("Environment does not exist."), // nolint:goerr113
 			},
 		},
 		{
@@ -147,7 +161,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						mockcond.QueryParam("$filter", "lastModifiedDateTime ge 2024-09-19T12:30:45.621Z"),
 						mockcond.Header(http.Header{"Prefer": []string{"odata.maxpagesize=1"}}),
 					},
-					Then: mockserver.Response(http.StatusBadRequest, responseErrorFormat),
+					Then: mockserver.Response(http.StatusBadRequest, responseErrorFormatJSON),
 				}, {
 					If: mockcond.And{
 						mockcond.Path(
