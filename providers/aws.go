@@ -6,6 +6,8 @@ const AWS Provider = "aws"
 
 const ModuleAWSIdentityCenter common.ModuleID = "aws-identity-center"
 
+const ServiceDomainPlaceholder = "<<SERVICE_DOMAIN>>"
+
 func init() {
 	SetInfo(AWS, ProviderInfo{
 		DisplayName: "Amazon Web Services",
@@ -30,7 +32,7 @@ func init() {
 				// This is also not a metadata field. It's decided based on the request by the connector's logic.
 				// We are special casing this for now, but we'll revisit this in the future to decide how to model this case.
 				// Using the <<>> syntax to indicate that this is a special case.
-				BaseURL:     "https://<<SERVICE_DOMAIN>>.{{.region}}.amazonaws.com",
+				BaseURL:     "https://" + ServiceDomainPlaceholder + ".{{.region}}.amazonaws.com",
 				DisplayName: "AWS Identity Center",
 				Support: Support{
 					Read:      false,
