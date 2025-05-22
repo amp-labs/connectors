@@ -8,7 +8,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/substitutions/catalogreplacer"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
 var (
@@ -140,14 +142,7 @@ func TestReadInfo(t *testing.T) { // nolint:funlen
 			input: inType{
 				options:  customTestCatalogOption,
 				provider: "test",
-				vars: []catalogreplacer.CatalogVariable{
-					catalogreplacer.CustomCatalogVariable{
-						Plan: catalogreplacer.SubstitutionPlan{
-							From: "workspace",
-							To:   "europe",
-						},
-					},
-				},
+				vars:     createCatalogVars("workspace", "europe"),
 			},
 			expected: &ProviderInfo{
 				AuthType:    Oauth2,
@@ -188,4 +183,590 @@ func TestReadInfo(t *testing.T) { // nolint:funlen
 			}
 		})
 	}
+}
+
+func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
+	t.Parallel()
+
+	type inType struct {
+		provider Provider
+		vars     []catalogreplacer.CatalogVariable
+		moduleID common.ModuleID
+	}
+
+	tests := []struct {
+		name     string
+		input    inType
+		expected *ModuleInfo
+		// TODO this method should check: `expectedErr error`
+	}{
+		// Root for providers that have no modules.
+		{
+			name: "Dynamics root module",
+			input: inType{
+				provider: DynamicsCRM,
+				vars:     createCatalogVars("workspace", "london"),
+				moduleID: common.ModuleRoot,
+			},
+			expected: &ModuleInfo{
+				BaseURL:     "https://london.api.crm.dynamics.com/api/data",
+				DisplayName: "Microsoft Dynamics CRM",
+				Support: Support{
+					Proxy: true,
+					Read:  true,
+					Write: true,
+				},
+			},
+		},
+		{
+			name: "Capsule root module",
+			input: inType{
+				provider: Capsule,
+				moduleID: common.ModuleRoot,
+			},
+			expected: &ModuleInfo{
+				BaseURL:     "https://api.capsulecrm.com/api",
+				DisplayName: "Capsule",
+				Support: Support{
+					Proxy: true,
+				},
+			},
+		},
+		// Root for providers that have multiple modules.
+		{
+			name: "Atlassian root module",
+			input: inType{
+				provider: Atlassian,
+				moduleID: common.ModuleRoot,
+			},
+			expected: &ModuleInfo{
+				BaseURL:     "https://api.atlassian.com",
+				DisplayName: "Atlassian",
+				Support: Support{
+					Proxy: true,
+					Read:  true,
+					Write: true,
+				},
+			},
+		},
+		{
+			name: "Hubspot root module",
+			input: inType{
+				provider: Hubspot,
+				moduleID: common.ModuleRoot,
+			},
+			expected: &ModuleInfo{
+				BaseURL:     "https://api.hubapi.com",
+				DisplayName: "HubSpot",
+				Support: Support{
+					Proxy: true,
+					Read:  true,
+					Write: true,
+				},
+			},
+		},
+		{
+			name: "Keap root module",
+			input: inType{
+				provider: Keap,
+				moduleID: common.ModuleRoot,
+			},
+			expected: &ModuleInfo{
+				BaseURL:     "https://api.infusionsoft.com",
+				DisplayName: "Keap",
+				Support: Support{
+					Proxy: true,
+				},
+			},
+		},
+		{
+			name: "Klaviyo root module",
+			input: inType{
+				provider: Klaviyo,
+				moduleID: common.ModuleRoot,
+			},
+			expected: &ModuleInfo{
+				BaseURL:     "https://a.klaviyo.com",
+				DisplayName: "Klaviyo",
+				Support: Support{
+					Proxy: true,
+					Read:  true,
+					Write: true,
+				},
+			},
+		},
+		{
+			name: "Marketo root module",
+			input: inType{
+				provider: Marketo,
+				vars:     createCatalogVars("workspace", "london"),
+				moduleID: common.ModuleRoot,
+			},
+			expected: &ModuleInfo{
+				BaseURL:     "https://london.mktorest.com",
+				DisplayName: "Marketo",
+				Support: Support{
+					Proxy: true,
+					Read:  true,
+					Write: true,
+				},
+			},
+		},
+		{
+			name: "Zendesk root module",
+			input: inType{
+				provider: ZendeskSupport,
+				vars:     createCatalogVars("workspace", "london"),
+				moduleID: common.ModuleRoot,
+			},
+			expected: &ModuleInfo{
+				BaseURL:     "https://london.zendesk.com",
+				DisplayName: "Zendesk Support",
+				Support: Support{
+					Proxy: true,
+					Read:  true,
+					Write: true,
+				},
+			},
+		},
+		{
+			name: "Zoom root module",
+			input: inType{
+				provider: Zoom,
+				moduleID: common.ModuleRoot,
+			},
+			expected: &ModuleInfo{
+				BaseURL:     "https://api.zoom.us",
+				DisplayName: "Zoom",
+				Support: Support{
+					Proxy: true,
+					Read:  true,
+					Write: true,
+				},
+			},
+		},
+		// Unknown module for providers with no modules.
+		{
+			name: "Dynamics unknown module",
+			input: inType{
+				provider: DynamicsCRM,
+				vars:     createCatalogVars("workspace", "london"),
+				moduleID: "random-module-name",
+			},
+			expected: &ModuleInfo{
+				BaseURL:     "https://london.api.crm.dynamics.com/api/data",
+				DisplayName: "Microsoft Dynamics CRM",
+				Support: Support{
+					Proxy: true,
+					Read:  true,
+					Write: true,
+				},
+			},
+			// expectedErr: common.ErrMissingModule,
+		},
+		{
+			name: "Capsule unknown module",
+			input: inType{
+				provider: Capsule,
+				moduleID: "random-module-name",
+			},
+			expected: &ModuleInfo{
+				BaseURL:     "https://api.capsulecrm.com/api",
+				DisplayName: "Capsule",
+				Support: Support{
+					Proxy: true,
+					Read:  false,
+					Write: false,
+				},
+			},
+			// expectedErr: common.ErrMissingModule,
+		},
+		// Unknown module for providers with multiple modules fallbacks to default.
+		{
+			name: "Atlassian unknown module",
+			input: inType{
+				provider: Atlassian,
+				moduleID: "random-module-name",
+			},
+			expected: &ModuleInfo{
+				BaseURL:     "https://api.atlassian.com/ex/jira/{{.cloudId}}/rest/api/3",
+				DisplayName: "Atlassian Jira",
+				Support: Support{
+					Read:  true,
+					Write: true,
+				},
+			},
+			// expectedErr: common.ErrMissingModule,
+		},
+		{
+			name: "Hubspot unknown module",
+			input: inType{
+				provider: Hubspot,
+				moduleID: "random-module-name",
+			},
+			expected: &ModuleInfo{
+				BaseURL:     "https://api.hubapi.com/crm/v3",
+				DisplayName: "HubSpot CRM",
+				Support: Support{
+					Read:  true,
+					Write: true,
+				},
+			},
+			// expectedErr: common.ErrMissingModule,
+		},
+		{
+			name: "Keap unknown module",
+			input: inType{
+				provider: Keap,
+				moduleID: "random-module-name",
+			},
+			expected: &ModuleInfo{
+				BaseURL:     "https://api.infusionsoft.com/v1",
+				DisplayName: "Keap Version 1",
+				Support:     Support{},
+			},
+			// expectedErr: common.ErrMissingModule,
+		},
+		{
+			name: "Klaviyo unknown module",
+			input: inType{
+				provider: Klaviyo,
+				moduleID: "random-module-name",
+			},
+			expected: &ModuleInfo{
+				BaseURL:     "https://a.klaviyo.com",
+				DisplayName: "Klaviyo (Version 2024-10-15)",
+				Support: Support{
+					Read:  true,
+					Write: true,
+				},
+			},
+			// expectedErr: common.ErrMissingModule,
+		},
+		{
+			name: "Marketo unknown module",
+			input: inType{
+				provider: Marketo,
+				vars:     createCatalogVars("workspace", "london"),
+				moduleID: "random-module-name",
+			},
+			expected: &ModuleInfo{
+				BaseURL:     "https://london.mktorest.com/v1",
+				DisplayName: "Marketo (Leads)",
+				Support: Support{
+					Read:  true,
+					Write: true,
+				},
+			},
+			// expectedErr: common.ErrMissingModule,
+		},
+		{
+			name: "Zendesk unknown module",
+			input: inType{
+				provider: ZendeskSupport,
+				vars:     createCatalogVars("workspace", "london"),
+				moduleID: "random-module-name",
+			},
+			expected: &ModuleInfo{
+				BaseURL:     "https://london.zendesk.com/api/v2",
+				DisplayName: "Zendesk Ticketing",
+				Support: Support{
+					Read:  true,
+					Write: true,
+				},
+			},
+			// expectedErr: common.ErrMissingModule,
+		},
+		{
+			name: "Zoom unknown module",
+			input: inType{
+				provider: Zoom,
+				moduleID: "random-module-name",
+			},
+			expected: &ModuleInfo{
+				BaseURL:     "https://api.zoom.us/v2",
+				DisplayName: "Zoom (Meeting)",
+				Support: Support{
+					Read:  true,
+					Write: true,
+				},
+			},
+			// expectedErr: common.ErrMissingModule,
+		},
+		// Choosing non-root module for providers supporting several modules.
+		{
+			name: "Atlassian Jira module",
+			input: inType{
+				provider: Atlassian,
+				moduleID: ModuleAtlassianJira,
+			},
+			expected: &ModuleInfo{
+				BaseURL:     "https://api.atlassian.com/ex/jira/{{.cloudId}}/rest/api/3",
+				DisplayName: "Atlassian Jira",
+				Support: Support{
+					Read:  true,
+					Write: true,
+				},
+			},
+		},
+		{
+			name: "Atlassian Connect module",
+			input: inType{
+				provider: Atlassian,
+				moduleID: ModuleAtlassianJiraConnect,
+			},
+			expected: &ModuleInfo{
+				BaseURL:     "https://{{.workspace}}.atlassian.net/rest/api/3",
+				DisplayName: "Atlassian Connect",
+				Support: Support{
+					Read:  true,
+					Write: true,
+				},
+			},
+		},
+		{
+			name: "Hubspot CRM module",
+			input: inType{
+				provider: Hubspot,
+				moduleID: ModuleHubspotCRM,
+			},
+			expected: &ModuleInfo{
+				BaseURL:     "https://api.hubapi.com/crm/v3",
+				DisplayName: "HubSpot CRM",
+				Support: Support{
+					Read:  true,
+					Write: true,
+				},
+			},
+		},
+		{
+			name: "Keap V1 module",
+			input: inType{
+				provider: Keap,
+				moduleID: ModuleKeapV1,
+			},
+			expected: &ModuleInfo{
+				BaseURL:     "https://api.infusionsoft.com/v1",
+				DisplayName: "Keap Version 1",
+				Support:     Support{},
+			},
+		},
+		{
+			name: "Keap V2 module",
+			input: inType{
+				provider: Keap,
+				moduleID: ModuleKeapV2,
+			},
+			expected: &ModuleInfo{
+				BaseURL:     "https://api.infusionsoft.com/v2",
+				DisplayName: "Keap Version 2",
+				Support:     Support{},
+			},
+		},
+		{
+			name: "Klaviyo 2024-10-15 module",
+			input: inType{
+				provider: Klaviyo,
+				moduleID: ModuleKlaviyo2024Oct15,
+			},
+			expected: &ModuleInfo{
+				BaseURL:     "https://a.klaviyo.com",
+				DisplayName: "Klaviyo (Version 2024-10-15)",
+				Support: Support{
+					Read:  true,
+					Write: true,
+				},
+			},
+		},
+		{
+			name: "Marketo Assets module",
+			input: inType{
+				provider: Marketo,
+				moduleID: ModuleMarketoAssets,
+			},
+			expected: &ModuleInfo{
+				BaseURL:     "https://{{.workspace}}.mktorest.com/asset/v1",
+				DisplayName: "Marketo (Assets)",
+				Support: Support{
+					Read:  true,
+					Write: true,
+				},
+			},
+		},
+		{
+			name: "Marketo Leads module",
+			input: inType{
+				provider: Marketo,
+				moduleID: ModuleMarketoLeads,
+			},
+			expected: &ModuleInfo{
+				BaseURL:     "https://{{.workspace}}.mktorest.com/v1",
+				DisplayName: "Marketo (Leads)",
+				Support: Support{
+					Read:  true,
+					Write: true,
+				},
+			},
+		},
+		{
+			name: "Zendesk Ticketing module",
+			input: inType{
+				provider: ZendeskSupport,
+				moduleID: ModuleZendeskTicketing,
+			},
+			expected: &ModuleInfo{
+				BaseURL:     "https://{{.workspace}}.zendesk.com/api/v2",
+				DisplayName: "Zendesk Ticketing",
+				Support: Support{
+					Read:  true,
+					Write: true,
+				},
+			},
+		},
+		{
+			name: "Zendesk Help Center module",
+			input: inType{
+				provider: ZendeskSupport,
+				moduleID: ModuleZendeskHelpCenter,
+			},
+			expected: &ModuleInfo{
+				BaseURL:     "https://{{.workspace}}.zendesk.com/api/v2",
+				DisplayName: "Zendesk Help Center",
+				Support: Support{
+					Read:  true,
+					Write: true,
+				},
+			},
+		},
+		{
+			name: "Zoom User module",
+			input: inType{
+				provider: Zoom,
+				moduleID: ModuleZoomUser,
+			},
+			expected: &ModuleInfo{
+				BaseURL:     "https://api.zoom.us/v2",
+				DisplayName: "Zoom (User)",
+				Support: Support{
+					Read:  true,
+					Write: true,
+				},
+			},
+		},
+		{
+			name: "Zoom Meeting module",
+			input: inType{
+				provider: Zoom,
+				moduleID: ModuleZoomMeeting,
+			},
+			expected: &ModuleInfo{
+				BaseURL:     "https://api.zoom.us/v2",
+				DisplayName: "Zoom (Meeting)",
+				Support: Support{
+					Read:  true,
+					Write: true,
+				},
+			},
+		},
+		// Empty module for providers that have no modules defaults to root.
+		{
+			name: "Dynamics empty module",
+			input: inType{
+				provider: DynamicsCRM,
+				vars:     createCatalogVars("workspace", "london"),
+				moduleID: "",
+			},
+			expected: &ModuleInfo{
+				BaseURL:     "https://london.api.crm.dynamics.com/api/data",
+				DisplayName: "Microsoft Dynamics CRM",
+				Support: Support{
+					Proxy: true,
+					Read:  true,
+					Write: true,
+				},
+			},
+		},
+		{
+			name: "Capsule empty module",
+			input: inType{
+				provider: Capsule,
+				moduleID: "",
+			},
+			expected: &ModuleInfo{
+				BaseURL:     "https://api.capsulecrm.com/api",
+				DisplayName: "Capsule",
+				Support: Support{
+					Proxy: true,
+				},
+			},
+		},
+		// Choosing empty module for providers supporting several modules uses default from the Catalog.
+		{
+			name: "Klaviyo 2024-10-15 fallback to default module",
+			input: inType{
+				provider: Klaviyo,
+				moduleID: "",
+			},
+			expected: &ModuleInfo{
+				BaseURL:     "https://a.klaviyo.com",
+				DisplayName: "Klaviyo (Version 2024-10-15)",
+				Support: Support{
+					Read:  true,
+					Write: true,
+				},
+			},
+		},
+		{
+			name: "Marketo fallback to default module",
+			input: inType{
+				provider: Marketo,
+				vars:     createCatalogVars("workspace", "london"),
+				moduleID: "",
+			},
+			expected: &ModuleInfo{
+				BaseURL:     "https://london.mktorest.com/v1",
+				DisplayName: "Marketo (Leads)",
+				Support: Support{
+					Read:  true,
+					Write: true,
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests { // nolint:varnamelen
+		// nolint:varnamelen
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			info, err := NewCustomCatalog().ReadInfo(tt.input.provider, tt.input.vars...)
+			if err != nil {
+				t.Fatalf("%s: bad test, failed to read info: (%v)", tt.name, err)
+			}
+
+			output := info.ReadModuleInfo(tt.input.moduleID)
+			testutils.CheckOutput(t, tt.name, tt.expected, output)
+		})
+	}
+}
+
+func createCatalogVars(pairs ...string) []catalogreplacer.CatalogVariable {
+	if len(pairs)%2 != 0 {
+		return nil
+	}
+
+	result := make([]catalogreplacer.CatalogVariable, 0, len(pairs)/2)
+
+	for i := 0; i < len(pairs); i += 2 {
+		j := i + 1
+
+		result = append(result, catalogreplacer.CustomCatalogVariable{
+			Plan: catalogreplacer.SubstitutionPlan{
+				From: pairs[i],
+				To:   pairs[j],
+			},
+		})
+	}
+
+	return result
 }
