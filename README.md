@@ -19,7 +19,7 @@
 
 * Read data from your customer’s SaaS
 * Write data to your customer’s SaaS
-* Coming soon: subscribe to events (creates, deletes, and field changes) in your customer’s SaaS
+* Subscribe to events (creates, deletes, and field changes) in your customer’s SaaS
 
 # Ampersand Connectors
 
