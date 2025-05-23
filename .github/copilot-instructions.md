@@ -25,7 +25,7 @@ Ampersand is a platform for building  **connectors**  to third-party SaaS APIs (
 
 ### Naming Conventions
 
--   **Connector Names**: Name connector packages and files after the provider service, using camelcase (e.g.,  `salesforce`,  `google`, `adobeExperience`). Proxy connectors for a provider reuse the `connector` folder, while deep connectors have their own top-level folder under  `connectors/`. Use the provider’s official name (or a reasonable abbreviation if necessary) for naming. Make sure that abbreviations are capitalized (eg. `ironcladEU`, not `ironcladEu`)
+-   **Connector Names**: Name connector packages and files after the provider service, using camelcase (e.g.,  `salesforce`,  `google`, `adobeExperience`). Proxy connectors for a provider reuse the `connector` folder, while deep connectors have their own top-level folder under  `connectors/`. Use the provider’s official name (or a reasonable abbreviation if necessary) for naming. Make sure that abbreviations are capitalized (eg. `ironcladEU`, not `ironcladEu`) Do not suggest redundant names. For example, if we are implementing a proxy connector for `Avoma`, the provider constant name must be `Avoma`, and not `AvomaProvider`.
 
 -   **Object Names**: Use consistent object names across all operations (read/write/metadata). If a provider has a resource, always try to preserve the same name because that is what our users of connectors will define, and we want to avoid maintaining a mapping of object names. For example, Salesforce contact object can be read from `https://{subdomain}.my.salesforce.com/services/data/v63.0/sobjects/contact/{contactId}`, so the object name is `contact`. If the object name contains slashes, maintain that as well. For example, if stripe has `billing/alerts`, maintain that and don't remap it. In rare cases, if the provider’s API uses different endpoints or names for the same resource (e.g.,  `jobs.list`  vs  `jobs.create`  for reading vs writing jobs), choose a single canonical name (e.g., `jobs`) for that object in our connector. This ensures the same object key is used for reading, writing, etc., in our system. Do not invent new names for objects that the provider already defines — stick to the provider’s terminology as closely as possible (unless consolidation is needed as above). This is to ensure that users of our connectors can simply put in a resource name, and expect to proxy, read, write or inspect the object schema automatically.
 
@@ -93,6 +93,11 @@ Ampersand is a platform for building  **connectors**  to third-party SaaS APIs (
 -   Indicate clearly in code which objects support incremental sync and which do not. Also note if incremental sync has limitations (e.g., “endpoint only returns changes from last 30 days” or “requires a special permission”). If incremental sync isn’t possible, comment that too.
 
 - This only applies to read connectors.
+
+## Read connectors
+- ReadConnector is not limited to GET operations and may also use POST (e.g., searches with payloads). Use the `buildReadRequest` in `internal/components` to set the appropiate HTTP method.
+
+- Complex bulk operations must not be handled by usual Read/Write/Delete interfaces. See Salesforce connector for bulk functionality. Bulk endpoints are generally added as per customer requests, and need not be implemented in the first version.
 
 ### Testing Expectations
 
