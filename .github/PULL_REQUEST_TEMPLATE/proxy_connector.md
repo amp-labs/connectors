@@ -1,4 +1,11 @@
 # Testing
+
+# Conventions
+ - All required metadata variables are templated (`{{.var}}`) and defined in `ProviderInfo.Metadata`
+ - If OAuth2 connector, if `workspace` is required, `Oauth2Opts.ExplicitWorkspaceRequired` is ALSO set to true
+ - Basic smoke tests added (valid request succeeds, invalid request fails)
+ - Docs and logos attached or linked
+
 ## GET
 URL: <localhost:4444/v2/some-api-call>
 Postman screenshot (must show the request URL, the response status code & body clearly)
