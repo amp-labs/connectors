@@ -3,6 +3,7 @@ package dynamicsbusiness
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -105,4 +106,52 @@ func (c *Connector) parseReadResponse(
 		common.GetMarshaledData,
 		params.Fields,
 	)
+}
+
+// nolint:lll
+// Create and Update responses for all objects follow similar format.
+// Reference (Contacts object):
+// https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/api-reference/v2.0/api/dynamics_contact_create#example
+func (c *Connector) parseWriteResponse(
+	ctx context.Context, params common.WriteParams, request *http.Request, response *common.JSONHTTPResponse,
+) (*common.WriteResult, error) {
+	body, ok := response.Body()
+	if !ok {
+		return &common.WriteResult{
+			Success: true,
+		}, nil
+	}
+
+	recordID, err := jsonquery.New(body).TextWithDefault("id", "")
+	if err != nil {
+		return nil, err
+	}
+
+	data, err := jsonquery.Convertor.ObjectToMap(body)
+	if err != nil {
+		return nil, err
+	}
+
+	return &common.WriteResult{
+		Success:  true,
+		RecordId: recordID,
+		Data:     data,
+	}, nil
+}
+
+// nolint:lll
+// Response format for all objects is 204 No content. Implementation accepts 200 OK as well.
+// Reference:
+// https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/api-reference/v2.0/api/dynamics_contact_delete#response
+func (c *Connector) parseDeleteResponse(
+	ctx context.Context, params common.DeleteParams, request *http.Request, response *common.JSONHTTPResponse,
+) (*common.DeleteResult, error) {
+	if response.Code != http.StatusOK && response.Code != http.StatusNoContent {
+		return nil, fmt.Errorf("%w: failed to delete record: %d", common.ErrRequestFailed, response.Code)
+	}
+
+	// A successful delete returns 200 OK
+	return &common.DeleteResult{
+		Success: true,
+	}, nil
 }
