@@ -1,10 +1,15 @@
 # Configuration
 <Any special connector notes>
 
-## Catalog variables
-<Does the provider's info include any template variables such as `{{.workspace}}`>
-
-Workspace: <value>
+# Conventions
+- [ ] Provider name is camelcase (`goTo` and not `goto`)
+- [ ] Should cover all modules within the connector (ex, `goTo` has modules `webinar` and `meeting` or `google` has modules `drive` and `calendar`)
+- [ ] Base URLs do NOT have version information
+- [ ] DocsURLs actually link to user-friendly documentation (do not link to very technical documentation)
+- [ ] All required metadata variables are templated (`{{.var}}`) and defined in `ProviderInfo.Metadata`
+- [ ] If OAuth2 connector, if `workspace` is required, `Oauth2Opts.ExplicitWorkspaceRequired` is ALSO set to true
+- [ ] Basic smoke tests added (valid request succeeds, invalid request fails)
+- [ ] Docs and logos attached or linked
 
 ## Testing
 ### GET
