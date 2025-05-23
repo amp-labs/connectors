@@ -1,10 +1,11 @@
 # Configuration
 <Any special connector notes>
 
-## Catalog variables
-<Does the provider's info include any template variables such as `{{.workspace}}`>
-
-Workspace: <value>
+# Conventions
+ - All required metadata variables are templated (`{{.var}}`) and defined in `ProviderInfo.Metadata`
+ - If OAuth2 connector, if `workspace` is required, `Oauth2Opts.ExplicitWorkspaceRequired` is ALSO set to true
+ - Basic smoke tests added (valid request succeeds, invalid request fails)
+ - Docs and logos attached or linked
 
 ## Testing
 ### GET
