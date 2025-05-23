@@ -13,8 +13,8 @@ import (
 const APIVersion = "v3.3"
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
-	if JsonExtensionEndpoint.Has(objectName) {
-		objectName = objectName + ".json"
+	if JSONExtensionEndpoint.Has(objectName) {
+		objectName += ".json"
 	}
 
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, "api", APIVersion, objectName)
