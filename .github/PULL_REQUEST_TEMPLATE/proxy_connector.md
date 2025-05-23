@@ -1,10 +1,14 @@
 # Testing
 
 # Conventions
- - All required metadata variables are templated (`{{.var}}`) and defined in `ProviderInfo.Metadata`
- - If OAuth2 connector, if `workspace` is required, `Oauth2Opts.ExplicitWorkspaceRequired` is ALSO set to true
- - Basic smoke tests added (valid request succeeds, invalid request fails)
- - Docs and logos attached or linked
+- [ ] Provider name is camelcase (`goTo` and not `goto`)
+- [ ] Should cover all modules within the connector (ex, `goTo` has modules `webinar` and `meeting` or `google` has modules `drive` and `calendar`)
+- [ ] Base URLs do NOT have version information
+- [ ] DocsURLs actually link to user-friendly documentation (do not link to very technical documentation)
+- [ ] All required metadata variables are templated (`{{.var}}`) and defined in `ProviderInfo.Metadata`
+- [ ] If OAuth2 connector, if `workspace` is required, `Oauth2Opts.ExplicitWorkspaceRequired` is ALSO set to true
+- [ ] Basic smoke tests added (valid request succeeds, invalid request fails)
+- [ ] Docs and logos attached or linked
 
 ## GET
 URL: <localhost:4444/v2/some-api-call>
@@ -21,7 +25,7 @@ Wrong verb applied, invalid path.
 
 
 ## Pagination
-Please add screenshots that show successful pagination using the connector. 
+Please add screenshots that show successful pagination using the connector.
 
 ## Successful console operation (operation & events)
 
