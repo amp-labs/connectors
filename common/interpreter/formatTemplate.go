@@ -13,8 +13,12 @@ type FormatTemplate struct {
 	// MustKeys is a list of important keys that if all present will signify the match for Template.
 	MustKeys []string
 	// Template is a factory that returns a struct, which will be used to flush the data into.
-	Template func() ErrorDescriptor
+	Template Template
 }
+
+type Template func() ErrorDescriptor
+
+type Templates []Template
 
 // when all required keys are present in the payload it returns true.
 func (t FormatTemplate) matches(payload map[string]any) bool {
