@@ -31,7 +31,7 @@ Ampersand is a platform for building  **connectors**  to third-party SaaS APIs (
 
 -   **Field Names**: Preserve the provider’s field names exactly in our outputs and schema whenever possible. Avoid renaming fields to something custom. For example, if the provider’s API returns a field  `created_at`, our connector should use  `created_at`  (not  `createdDate`  or  `timestamp`) in the data it exposes. This consistency helps users recognize fields and eases maintenance.
 
--   **Commit & PR Conventions**: When adding or updating connectors, follow our commit message format for clarity. For example, a new connector commit/PR title might be  **`feat: Add XYZ [functionality] Connector`**  (using the provider name in Title Case), where `[functionality]` is read, write, metadata, delete, etc. In case a fix is being made or a minor feature is being added to the connector, clearly mention the connector and the feature/fix, e.g.,  _“[ConnectorName] Add support for incremental sync for <object>”_ where `<object>` is a resource in the API.
+-   **Commit & PR Conventions**: When adding or updating connectors, follow our commit message format for clarity. For example, a new connector commit/PR title might be  **`feat: Add XYZ [functionality] Connector`**  (using the provider name in Title Case), where `[functionality]` is read, write, metadata, delete, etc. In case a fix is being made or a minor feature is being added to the connector, clearly mention the connector and the feature/fix, e.g.,  “[ConnectorName] Add support for incremental sync for <object>” where `<object>` is a resource in the API.
 
 
 ### Schema & Metadata (ListObjectMetadata)
