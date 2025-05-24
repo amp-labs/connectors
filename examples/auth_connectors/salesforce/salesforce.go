@@ -8,8 +8,8 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
-	"github.com/amp-labs/connectors/connector"
 	"github.com/amp-labs/connectors/examples/utils"
+	"github.com/amp-labs/connectors/generic"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -71,10 +71,10 @@ func salesforceAuthExample(ctx context.Context) error {
 }
 
 // Create an auth connector with the Salesforce provider.
-func createAuthConnector(ctx context.Context) *connector.Connector {
-	conn, err := connector.NewConnector(providers.Salesforce,
-		connector.WithAuthenticatedClient(createAuthenticatedHttpClient(ctx)),
-		connector.WithWorkspace(Workspace))
+func createAuthConnector(ctx context.Context) *generic.Connector {
+	conn, err := generic.NewConnector(providers.Salesforce,
+		generic.WithAuthenticatedClient(createAuthenticatedHttpClient(ctx)),
+		generic.WithWorkspace(Workspace))
 	if err != nil {
 		panic(err)
 	}

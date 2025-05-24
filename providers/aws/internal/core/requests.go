@@ -9,7 +9,6 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/goutils"
-	"github.com/amp-labs/connectors/providers"
 )
 
 // nolint:lll
@@ -44,7 +43,7 @@ func BuildRequest(
 	}
 
 	ctx = context.WithValue(ctx, common.AWSServiceContextKey, serviceSigningName)
-	baseURL = strings.Replace(baseURL, providers.ServiceDomainPlaceholder, serviceDomain, 1)
+	baseURL = strings.Replace(baseURL, "<<SERVICE_DOMAIN>>", serviceDomain, 1)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, baseURL, reader)
 	if err != nil {

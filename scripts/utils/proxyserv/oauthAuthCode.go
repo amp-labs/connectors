@@ -5,7 +5,7 @@ import (
 	"context"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/connector"
+	"github.com/amp-labs/connectors/generic"
 	"github.com/amp-labs/connectors/providers"
 	"golang.org/x/oauth2"
 )
@@ -52,9 +52,9 @@ func setupOAuth2AuthCodeHTTPClient(
 		panic(err)
 	}
 
-	cc, err := connector.NewConnector(prov.Name,
-		connector.WithAuthenticatedClient(client),
-		connector.WithMetadata(metadata),
+	cc, err := generic.NewConnector(prov.Name,
+		generic.WithAuthenticatedClient(client),
+		generic.WithMetadata(metadata),
 	)
 	if err != nil {
 		panic(err)
