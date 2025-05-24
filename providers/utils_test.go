@@ -20,6 +20,43 @@ var (
 			Name:        "test",
 			BaseURL:     "https://{{.workspace}}.test.com",
 			DisplayName: "Super Test",
+			Modules: &Modules{
+				"module": {
+					BaseURL:     "https://{{.workspace}}.test.com",
+					DisplayName: "test 1",
+				},
+			},
+		},
+		"diverseModulesProvider": {
+			AuthType:    Oauth2,
+			Name:        "diverseModulesProvider",
+			BaseURL:     "https://{{.workspace}}.test.com",
+			DisplayName: "Super Test",
+			Modules: &Modules{
+				"module_1": {
+					BaseURL:     "https://{{.workspace}}.test1.com",
+					DisplayName: "test 1",
+				},
+				"module_2": {
+					BaseURL:     "https://test2.com/company/{{.companyId}}",
+					DisplayName: "test 2",
+				},
+			},
+			Metadata: &ProviderMetadata{
+				PostAuthentication: []MetadataItemPostAuthentication{{
+					ModuleDependencies: &ModuleDependencies{
+						"module_2": {},
+					},
+					Name: "companyId",
+				}},
+				Input: []MetadataItemInput{{
+					ModuleDependencies: &ModuleDependencies{
+						"module_1":        {},
+						common.ModuleRoot: {},
+					},
+					Name: "workspace",
+				}},
+			},
 		},
 	}
 	customTestCatalogOption = []CatalogOption{ // nolint:gochecknoglobals
@@ -134,6 +171,12 @@ func TestReadInfo(t *testing.T) { // nolint:funlen
 				Name:        "test",
 				BaseURL:     "https://{{.workspace}}.test.com",
 				DisplayName: "Super Test",
+				Modules: &Modules{
+					"module": {
+						BaseURL:     "https://{{.workspace}}.test.com",
+						DisplayName: "test 1",
+					},
+				},
 			},
 			expectedErrs: nil,
 		},
@@ -149,6 +192,52 @@ func TestReadInfo(t *testing.T) { // nolint:funlen
 				Name:        "test",
 				BaseURL:     "https://europe.test.com",
 				DisplayName: "Super Test",
+				Modules: &Modules{
+					"module": {
+						BaseURL:     "https://europe.test.com", // workspace replaced
+						DisplayName: "test 1",
+					},
+				},
+			},
+			expectedErrs: nil,
+		},
+		{
+			name: "Partial info resolution based on module",
+			input: inType{
+				options:  customTestCatalogOption,
+				provider: "diverseModulesProvider",
+				vars:     createCatalogVars("workspace", "europe"),
+			},
+			expected: &ProviderInfo{
+				AuthType:    Oauth2,
+				Name:        "diverseModulesProvider",
+				BaseURL:     "https://europe.test.com", // workspace replaced
+				DisplayName: "Super Test",
+				Modules: &Modules{
+					"module_1": {
+						BaseURL:     "https://europe.test1.com", // workspace replaced
+						DisplayName: "test 1",
+					},
+					"module_2": {
+						BaseURL:     "https://test2.com/company/{{.companyId}}", // company id ignored
+						DisplayName: "test 2",
+					},
+				},
+				Metadata: &ProviderMetadata{
+					PostAuthentication: []MetadataItemPostAuthentication{{
+						ModuleDependencies: &ModuleDependencies{
+							"module_2": {},
+						},
+						Name: "companyId",
+					}},
+					Input: []MetadataItemInput{{
+						ModuleDependencies: &ModuleDependencies{
+							"module_1":        {},
+							common.ModuleRoot: {},
+						},
+						Name: "workspace",
+					}},
+				},
 			},
 			expectedErrs: nil,
 		},
@@ -386,10 +475,11 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 			name: "Atlassian unknown module",
 			input: inType{
 				provider: Atlassian,
+				vars:     createCatalogVars("cloudId", "cotton-candy"),
 				moduleID: "random-module-name",
 			},
 			expected: &ModuleInfo{
-				BaseURL:     "https://api.atlassian.com/ex/jira/{{.cloudId}}/rest/api/3",
+				BaseURL:     "https://api.atlassian.com/ex/jira/cotton-candy/rest/api/3",
 				DisplayName: "Atlassian Jira",
 				Support: Support{
 					Read:  true,
@@ -498,10 +588,11 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 			name: "Atlassian Jira module",
 			input: inType{
 				provider: Atlassian,
+				vars:     createCatalogVars("cloudId", "cotton-candy"),
 				moduleID: ModuleAtlassianJira,
 			},
 			expected: &ModuleInfo{
-				BaseURL:     "https://api.atlassian.com/ex/jira/{{.cloudId}}/rest/api/3",
+				BaseURL:     "https://api.atlassian.com/ex/jira/cotton-candy/rest/api/3",
 				DisplayName: "Atlassian Jira",
 				Support: Support{
 					Read:  true,
@@ -513,10 +604,11 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 			name: "Atlassian Connect module",
 			input: inType{
 				provider: Atlassian,
+				vars:     createCatalogVars("workspace", "london"),
 				moduleID: ModuleAtlassianJiraConnect,
 			},
 			expected: &ModuleInfo{
-				BaseURL:     "https://{{.workspace}}.atlassian.net/rest/api/3",
+				BaseURL:     "https://london.atlassian.net/rest/api/3",
 				DisplayName: "Atlassian Connect",
 				Support: Support{
 					Read:  true,
@@ -582,10 +674,11 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 			name: "Marketo Assets module",
 			input: inType{
 				provider: Marketo,
+				vars:     createCatalogVars("workspace", "london"),
 				moduleID: ModuleMarketoAssets,
 			},
 			expected: &ModuleInfo{
-				BaseURL:     "https://{{.workspace}}.mktorest.com/asset/v1",
+				BaseURL:     "https://london.mktorest.com/asset/v1",
 				DisplayName: "Marketo (Assets)",
 				Support: Support{
 					Read:  true,
@@ -597,10 +690,11 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 			name: "Marketo Leads module",
 			input: inType{
 				provider: Marketo,
+				vars:     createCatalogVars("workspace", "london"),
 				moduleID: ModuleMarketoLeads,
 			},
 			expected: &ModuleInfo{
-				BaseURL:     "https://{{.workspace}}.mktorest.com/v1",
+				BaseURL:     "https://london.mktorest.com/v1",
 				DisplayName: "Marketo (Leads)",
 				Support: Support{
 					Read:  true,
@@ -612,10 +706,11 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 			name: "Zendesk Ticketing module",
 			input: inType{
 				provider: ZendeskSupport,
+				vars:     createCatalogVars("workspace", "london"),
 				moduleID: ModuleZendeskTicketing,
 			},
 			expected: &ModuleInfo{
-				BaseURL:     "https://{{.workspace}}.zendesk.com/api/v2",
+				BaseURL:     "https://london.zendesk.com/api/v2",
 				DisplayName: "Zendesk Ticketing",
 				Support: Support{
 					Read:  true,
@@ -627,10 +722,11 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 			name: "Zendesk Help Center module",
 			input: inType{
 				provider: ZendeskSupport,
+				vars:     createCatalogVars("workspace", "london"),
 				moduleID: ModuleZendeskHelpCenter,
 			},
 			expected: &ModuleInfo{
-				BaseURL:     "https://{{.workspace}}.zendesk.com/api/v2",
+				BaseURL:     "https://london.zendesk.com/api/v2",
 				DisplayName: "Zendesk Help Center",
 				Support: Support{
 					Read:  true,
@@ -745,6 +841,7 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 			}
 
 			output := info.ReadModuleInfo(tt.input.moduleID)
+
 			testutils.CheckOutput(t, tt.name, tt.expected, output)
 		})
 	}
