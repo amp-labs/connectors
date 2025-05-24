@@ -11,7 +11,10 @@ import (
 	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
-const restAPIVersion = "v1"
+const (
+	restAPIVersion = "v1"
+	queues         = "queues"
+)
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIVersion, params.ObjectName)
@@ -48,8 +51,19 @@ func (c *Connector) parseReadResponse(
 	)
 }
 
+type request struct {
+	Request any `json:"request"`
+}
+
+func constructQueuePayload(recordData any) request {
+	return request{Request: recordData}
+}
+
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
-	method := http.MethodPost
+	var (
+		paylod = params.RecordData
+		method = http.MethodPost
+	)
 
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIVersion, params.ObjectName)
 	if err != nil {
@@ -62,7 +76,11 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		method = http.MethodPatch
 	}
 
-	jsonData, err := json.Marshal(params.RecordData)
+	if params.ObjectName == queues {
+		paylod = constructQueuePayload(params.RecordData)
+	}
+
+	jsonData, err := json.Marshal(paylod)
 	if err != nil {
 		return nil, err
 	}
