@@ -9,6 +9,10 @@
 - [ ] If OAuth2 connector, if `workspace` is required, `Oauth2Opts.ExplicitWorkspaceRequired` is ALSO set to true
 - [ ] Basic smoke tests added (valid request succeeds, invalid request fails)
 - [ ] Docs and logos attached or linked
+- [ ] Modules are only being added because:
+  - [ ] The same base URL cannot be used to make a proxy call to objects in all modules
+  - [ ] Different base URLs (drive.google.com vs google.com)
+  - [ ] Object name collisions (same object name exists in two or more modules)
 
 ## GET
 URL: <localhost:4444/v2/some-api-call>
