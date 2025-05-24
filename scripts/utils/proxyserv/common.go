@@ -59,7 +59,7 @@ func validateRequiredOAuth2Flags(provider, clientId, clientSecret string) {
 }
 
 func getTokensFromRegistry(credsFile string) *oauth2.Token {
-	reader, err := credscanning.NewJSONProviderCredentials(credsFile, true, false)
+	reader, err := credscanning.NewJSONProviderCredentials(credsFile, true)
 	if err != nil {
 		panic(err)
 	}

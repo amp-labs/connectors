@@ -14,7 +14,7 @@ import (
 func GetAsanaConnector(ctx context.Context) *asana.Connector {
 	filePath := credscanning.LoadPath(providers.Asana)
 
-	reader := utils.MustCreateProvCredJSON(filePath, true, false)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	conn, err := asana.NewConnector(
 		asana.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),

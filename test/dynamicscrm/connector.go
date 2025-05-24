@@ -14,7 +14,7 @@ import (
 
 func GetMSDynamics365CRMConnector(ctx context.Context) *dynamicscrm.Connector {
 	filePath := credscanning.LoadPath(providers.DynamicsCRM)
-	reader := utils.MustCreateProvCredJSON(filePath, true, true)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	conn, err := dynamicscrm.NewConnector(
 		dynamicscrm.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),

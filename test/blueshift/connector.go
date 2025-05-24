@@ -13,7 +13,7 @@ import (
 func GetBlueshiftConnector(ctx context.Context) *blueshift.Connector {
 	filePath := credscanning.LoadPath(providers.Blueshift)
 
-	reader := utils.MustCreateProvCredJSON(filePath, false, false)
+	reader := utils.MustCreateProvCredJSON(filePath, false)
 
 	client, err := common.NewBasicAuthHTTPClient(ctx, reader.Get(credscanning.Fields.Username), reader.Get(credscanning.Fields.Password))
 

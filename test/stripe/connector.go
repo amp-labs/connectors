@@ -12,7 +12,7 @@ import (
 
 func GetStripeConnector(ctx context.Context) *stripe.Connector {
 	filePath := credscanning.LoadPath(providers.Stripe)
-	reader := utils.MustCreateProvCredJSON(filePath, false, false)
+	reader := utils.MustCreateProvCredJSON(filePath, false)
 
 	conn, err := stripe.NewConnector(
 		stripe.WithClient(ctx, http.DefaultClient,
