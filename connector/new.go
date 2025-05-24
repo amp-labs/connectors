@@ -57,7 +57,7 @@ var ErrInvalidProvider = errors.New("invalid provider")
 func New( // nolint:gocyclo,cyclop,funlen
 	provider providers.Provider,
 	params common.Parameters,
-) (*connectors.Connector, error) {
+) (connectors.Connector, error) {
 	var (
 		connector    connectors.Connector
 		connectorErr error
@@ -156,7 +156,7 @@ func New( // nolint:gocyclo,cyclop,funlen
 		return nil, ErrInvalidProvider
 	}
 
-	return &connector, connectorErr
+	return connector, connectorErr
 }
 
 func newSalesforceConnector(params common.Parameters) (*salesforce.Connector, error) {
