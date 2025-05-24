@@ -15,6 +15,7 @@ import (
 	"github.com/amp-labs/connectors/providers/aws"
 	"github.com/amp-labs/connectors/providers/blueshift"
 	"github.com/amp-labs/connectors/providers/brevo"
+	"github.com/amp-labs/connectors/providers/capsule"
 	"github.com/amp-labs/connectors/providers/chilipiper"
 	"github.com/amp-labs/connectors/providers/clickup"
 	"github.com/amp-labs/connectors/providers/closecrm"
@@ -28,25 +29,30 @@ import (
 	"github.com/amp-labs/connectors/providers/front"
 	"github.com/amp-labs/connectors/providers/github"
 	"github.com/amp-labs/connectors/providers/gong"
+	"github.com/amp-labs/connectors/providers/gorgias"
 	"github.com/amp-labs/connectors/providers/heyreach"
 	"github.com/amp-labs/connectors/providers/hubspot"
+	"github.com/amp-labs/connectors/providers/hunter"
 	"github.com/amp-labs/connectors/providers/instantly"
 	"github.com/amp-labs/connectors/providers/intercom"
 	"github.com/amp-labs/connectors/providers/iterable"
 	"github.com/amp-labs/connectors/providers/keap"
 	"github.com/amp-labs/connectors/providers/kit"
 	"github.com/amp-labs/connectors/providers/klaviyo"
+	"github.com/amp-labs/connectors/providers/lemlist"
 	"github.com/amp-labs/connectors/providers/marketo"
 	"github.com/amp-labs/connectors/providers/mixmax"
 	"github.com/amp-labs/connectors/providers/monday"
 	"github.com/amp-labs/connectors/providers/outreach"
 	"github.com/amp-labs/connectors/providers/pipedrive"
 	"github.com/amp-labs/connectors/providers/pipeliner"
+	"github.com/amp-labs/connectors/providers/podium"
 	"github.com/amp-labs/connectors/providers/salesforce"
 	"github.com/amp-labs/connectors/providers/salesloft"
 	"github.com/amp-labs/connectors/providers/servicenow"
 	"github.com/amp-labs/connectors/providers/smartlead"
 	"github.com/amp-labs/connectors/providers/stripe"
+	"github.com/amp-labs/connectors/providers/zendeskchat"
 	"github.com/amp-labs/connectors/providers/zendesksupport"
 	"github.com/amp-labs/connectors/providers/zohocrm"
 	"github.com/amp-labs/connectors/providers/zoom"
@@ -152,6 +158,18 @@ func New( // nolint:gocyclo,cyclop,funlen
 		connector, connectorErr = newServiceNowConnector(params)
 	case providers.ChiliPiper:
 		connector, connectorErr = newChiliPiperConnector(params)
+	case providers.Hunter:
+		connector, connectorErr = newHunterConnector(params)
+	case providers.Podium:
+		connector, connectorErr = newPodiumConnector(params)
+	case providers.Lemlist:
+		connector, connectorErr = newLemlistConnector(params)
+	case providers.Gorgias:
+		connector, connectorErr = newGorgiasConnector(params)
+	case providers.ZendeskChat:
+		connector, connectorErr = newZendeskChatConnector(params)
+	case providers.Capsule:
+		connector, connectorErr = newCapsuleConnector(params)
 	default:
 		return nil, ErrInvalidProvider
 	}
@@ -489,4 +507,40 @@ func newChiliPiperConnector(
 	return chilipiper.NewConnector(
 		chilipiper.WithAuthenticatedClient(params.AuthenticatedClient),
 	)
+}
+
+func newHunterConnector(
+	params common.Parameters,
+) (*hunter.Connector, error) {
+	return hunter.NewConnector(params)
+}
+
+func newPodiumConnector(
+	params common.Parameters,
+) (*podium.Connector, error) {
+	return podium.NewConnector(params)
+}
+
+func newLemlistConnector(
+	params common.Parameters,
+) (*lemlist.Connector, error) {
+	return lemlist.NewConnector(params)
+}
+
+func newGorgiasConnector(
+	params common.Parameters,
+) (*gorgias.Connector, error) {
+	return gorgias.NewConnector(params)
+}
+
+func newZendeskChatConnector(
+	params common.Parameters,
+) (*zendeskchat.Connector, error) {
+	return zendeskchat.NewConnector(params)
+}
+
+func newCapsuleConnector(
+	params common.Parameters,
+) (*capsule.Connector, error) {
+	return capsule.NewConnector(params)
 }
