@@ -1,0 +1,194 @@
+{
+  "rows": 1,
+  "data": [
+    {
+      "fields": {},
+      "raw": {
+        "apps_preview": {
+          "outputs": []
+        },
+        "audio_url": null,
+        "cal_id": null,
+        "calendar_id": null,
+        "calendar_type": null,
+        "date": 1745912100000,
+        "duration": 10.529999732971191,
+        "fireflies_users": [
+          "sample@gmail.com"
+        ],
+        "id": "01JT07GYXM9VYY5NQFGXPVD3FT",
+        "meeting_attendees": null,
+        "meeting_info": {
+          "fred_joined": true,
+          "silent_meeting": false,
+          "summary_status": "skipped"
+        },
+        "meeting_link": "https://meet.google.com/wki-tqmq-ehq",
+        "organizer_email": "sample@gmail.com",
+        "participants": [],
+        "sentences": [
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "Oh, okay."
+            },
+            "end_time": 33.378,
+            "index": 0,
+            "raw_text": "Oh, okay.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 28.21,
+            "text": "Oh, okay."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": "Can you tell me about the coroutines and channels in quali.",
+              "text_cleanup": "Can you tell me about the coroutines and channels in quali."
+            },
+            "end_time": 37.75,
+            "index": 1,
+            "raw_text": "Can you tell me about the coroutines and channels in quali.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 33.554,
+            "text": "Can you tell me about the coroutines and channels in quali."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "We are implementing this in our project fireplace CIA."
+            },
+            "end_time": 49.11,
+            "index": 2,
+            "raw_text": "We are implementing this in our project fireplace CIA.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 43.85,
+            "text": "We are implementing this in our project fireplace CIA."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "So we are testing out the output."
+            },
+            "end_time": 53.43,
+            "index": 3,
+            "raw_text": "So we are testing out the output.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 50.49,
+            "text": "So we are testing out the output."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "Hello."
+            },
+            "end_time": 57.934,
+            "index": 4,
+            "raw_text": "Hello.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 57.51,
+            "text": "Hello."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "My Testing."
+            },
+            "end_time": 58.526,
+            "index": 5,
+            "raw_text": "My Testing.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 57.982,
+            "text": "My Testing."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": null,
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": null,
+              "text_cleanup": "Hello."
+            },
+            "end_time": 58.814,
+            "index": 6,
+            "raw_text": "Hello.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 58.558,
+            "text": "Hello."
+          },
+          {
+            "ai_filters": {
+              "date_and_time": null,
+              "metric": "One, two, three.",
+              "pricing": null,
+              "question": null,
+              "sentiment": "neutral",
+              "task": "One, two, three.",
+              "text_cleanup": "One, two, three."
+            },
+            "end_time": 59.93,
+            "index": 7,
+            "raw_text": "One, two, three.",
+            "speaker_id": 0,
+            "speaker_name": null,
+            "start_time": 58.862,
+            "text": "One, two, three."
+          }
+        ],
+        "speakers": null,
+        "summary": null,
+        "title": "Enchement",
+        "transcript_url": "https://app.fireflies.ai/view/01JT07GYXM9VYY5NQFGXPVD3FT",
+        "user": {
+          "email": "sample@gmail.com",
+          "integrations": null,
+          "is_admin": true,
+          "minutes_consumed": 15.379999160766602,
+          "name": "Sample",
+          "num_transcripts": 2,
+          "recent_meeting": "01JT07GYXM9VYY5NQFGXPVD3FT",
+          "user_id": "01JSH43RZP1W6GAWQ2B87EAK7X"
+        },
+        "video_url": null
+      }
+    }
+  ],
+  "nextPage": "1"
+}
