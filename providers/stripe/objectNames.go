@@ -24,10 +24,10 @@ const (
 	objectNameMeterEventAdjustments       = "meter_event_adjustments"
 	objectNameMeterEvents                 = "meter_events"
 	objectNameBillingMeters               = "meters"
-	objectNameConfigurations              = "configurations"
-	objectNameBillingPortalSessions       = "billing_sessions"
+	objectNameConfigurations              = "billing_portal/configurations"
+	objectNameBillingPortalSessions       = "billing_portal/sessions"
 	objectNameCharges                     = "charges"
-	objectNameCheckoutSessions            = "sessions_checkout"
+	objectNameCheckoutSessions            = "checkout/sessions"
 	objectNameOrders                      = "orders"
 	objectNameCoupons                     = "coupons"
 	objectNameCreditNotes                 = "credit_notes"
@@ -38,20 +38,20 @@ const (
 	objectNameEphemeralKeys               = "ephemeral_keys"
 	objectNameFileLinks                   = "file_links"
 	objectNameFiles                       = "files"
-	objectNameFinancialSessions           = "financial_sessions"
+	objectNameFinancialSessions           = "financial_connections/sessions"
 	objectNameRequests                    = "requests"
 	objectNameVerificationSessions        = "verification_sessions"
 	objectNameInvoiceItems                = "invoiceitems"
 	objectNameInvoices                    = "invoices"
-	objectNameInvoicesPreview             = "invoices_preview"
-	objectNameAuthorizations              = "authorizations"
+	objectNameInvoicesPreview             = "invoices/create_preview"
+	objectNameAuthorizations              = "issuing/authorizations"
 	objectNameCardholders                 = "cardholders"
 	objectNameCards                       = "cards"
-	objectNameIssuingDisputes             = "disputes_issuing"
+	objectNameIssuingDisputes             = "issuing/disputes"
 	objectNamePersonalizationDesigns      = "personalization_designs"
 	objectNameSettlements                 = "settlements"
-	objectNameIssuingTokens               = "issuing_tokens"
-	objectNameTransactions                = "transactions_issuing"
+	objectNameIssuingTokens               = "issuing/tokens"
+	objectNameTransactions                = "issuing/transactions"
 	objectNamePaymentIntents              = "payment_intents"
 	objectNamePaymentLinks                = "payment_links"
 	objectNamePaymentMethodConfigurations = "payment_method_configurations"
@@ -78,18 +78,18 @@ const (
 	objectNameTaxSettings                 = "settings"
 	objectNameTaxIDs                      = "tax_ids"
 	objectNameTaxRates                    = "tax_rates"
-	objectNameTerminalConfigurations      = "configurations_terminal"
+	objectNameTerminalConfigurations      = "terminal/configurations"
 	objectNameConnectionTokens            = "connection_tokens"
 	objectNameLocations                   = "locations"
 	objectNameReaders                     = "readers"
-	objectNameTestConfirmationTokens      = "test_confirmation_tokens"
-	objectNameTestAuthorizations          = "test_authorizations"
-	objectNameTestSettlements             = "test_settlements"
+	objectNameTestConfirmationTokens      = "test_helpers/confirmation_tokens"
+	objectNameTestAuthorizations          = "test_helpers/issuing/authorizations"
+	objectNameTestSettlements             = "test_helpers/issuing/settlements"
 	objectNameTestClocks                  = "test_clocks"
-	objectNameTestOutboundPayments        = "test_outbound_payments"
-	objectNameTestOutboundTransfers       = "test_outbound_transfers"
-	objectNameTestReceivedCredits         = "test_received_credits"
-	objectNameTestReceivedDebits          = "test_received_debits"
+	objectNameTestOutboundPayments        = "test_helpers/treasury/outbound_payments"
+	objectNameTestOutboundTransfers       = "test_helpers/treasury/outbound_transfers"
+	objectNameTestReceivedCredits         = "test_helpers/treasury/received_credits"
+	objectNameTestReceivedDebits          = "test_helpers/treasury/received_debits"
 	objectNameTokens                      = "tokens"
 	objectNameTopups                      = "topups"
 	objectNameTransfers                   = "transfers"
@@ -276,54 +276,39 @@ var supportedObjectsByDelete = map[common.ModuleID]datautils.StringSet{ //nolint
 }
 
 var objectNameToWritePath = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
+	// Read and Write objects.
 	objectNameApplePayDomain:         "/v1/apple_pay/domains",
-	objectNameAppSecrets:             "/v1/apps/secrets",
 	objectNameBillingAlerts:          "/v1/billing/alerts",
-	objectNameCreditGrants:           "/v1/billing/credit_grants",
-	objectNameMeterEventAdjustments:  "/v1/billing/meter_event_adjustments",
-	objectNameMeterEvents:            "/v1/billing/meter_events",
 	objectNameBillingMeters:          "/v1/billing/meters",
-	objectNameConfigurations:         "/v1/billing_portal/configurations",
-	objectNameBillingPortalSessions:  "/v1/billing_portal/sessions",
-	objectNameCheckoutSessions:       "/v1/checkout/sessions",
-	objectNameOrders:                 "/v1/climate/orders",
-	objectNameFeatures:               "/v1/entitlements/features",
-	objectNameFinancialSessions:      "/v1/financial_connections/sessions",
-	objectNameRequests:               "/v1/forwarding/requests",
-	objectNameVerificationSessions:   "/v1/identity/verification_sessions",
-	objectNameInvoicesPreview:        "/v1/invoices/create_preview",
-	objectNameAuthorizations:         "/v1/issuing/authorizations",
 	objectNameCardholders:            "/v1/issuing/cardholders",
 	objectNameCards:                  "/v1/issuing/cards",
-	objectNameIssuingDisputes:        "/v1/issuing/disputes",
-	objectNamePersonalizationDesigns: "/v1/issuing/personalization_designs",
-	objectNameSettlements:            "/v1/issuing/settlements",
-	objectNameIssuingTokens:          "/v1/issuing/tokens",
-	objectNameTransactions:           "/v1/issuing/transactions",
-	objectNameValueListItems:         "/v1/radar/value_list_items",
-	objectNameValueLists:             "/v1/radar/value_lists",
-	objectNameReportRuns:             "/v1/reporting/report_runs",
-	objectNameTaxCalculations:        "/v1/tax/calculations",
-	objectNameRaxRegistrations:       "/v1/tax/registrations",
-	objectNameTaxSettings:            "/v1/tax/settings",
-	objectNameTerminalConfigurations: "/v1/terminal/configurations",
-	objectNameConnectionTokens:       "/v1/terminal/connection_tokens",
-	objectNameLocations:              "/v1/terminal/locations",
-	objectNameReaders:                "/v1/terminal/readers",
-	objectNameTestConfirmationTokens: "/v1/test_helpers/confirmation_tokens",
-	objectNameTestAuthorizations:     "/v1/test_helpers/issuing/authorizations",
-	objectNameTestSettlements:        "/v1/test_helpers/issuing/settlements",
-	objectNameTestClocks:             "/v1/test_helpers/test_clocks",
-	objectNameTestOutboundPayments:   "/v1/test_helpers/treasury/outbound_payments",
-	objectNameTestOutboundTransfers:  "/v1/test_helpers/treasury/outbound_transfers",
-	objectNameTestReceivedCredits:    "/v1/test_helpers/treasury/received_credits",
-	objectNameTestReceivedDebits:     "/v1/test_helpers/treasury/received_debits",
-	objectNameCreditReversals:        "/v1/treasury/credit_reversals",
-	objectNameDebitReversals:         "/v1/treasury/debit_reversals",
+	objectNameCreditGrants:           "/v1/billing/credit_grants",
+	objectNameFeatures:               "/v1/entitlements/features",
 	objectNameFinancialAccounts:      "/v1/treasury/financial_accounts",
-	objectNameInboundTransfers:       "/v1/treasury/inbound_transfers",
-	objectNameOutboundPayments:       "/v1/treasury/outbound_payments",
-	objectNameOutboundTransfers:      "/v1/treasury/outbound_transfers",
+	objectNameLocations:              "/v1/terminal/locations",
+	objectNameOrders:                 "/v1/climate/orders",
+	objectNamePersonalizationDesigns: "/v1/issuing/personalization_designs",
+	objectNameRaxRegistrations:       "/v1/tax/registrations",
+	objectNameReaders:                "/v1/terminal/readers",
+	objectNameReportRuns:             "/v1/reporting/report_runs",
+	objectNameRequests:               "/v1/forwarding/requests",
+	objectNameTestClocks:             "/v1/test_helpers/test_clocks",
+	objectNameValueLists:             "/v1/radar/value_lists",
+	objectNameVerificationSessions:   "/v1/identity/verification_sessions",
+	// Write only
+	objectNameAppSecrets:            "/v1/apps/secrets",
+	objectNameConnectionTokens:      "/v1/terminal/connection_tokens",
+	objectNameCreditReversals:       "/v1/treasury/credit_reversals",
+	objectNameDebitReversals:        "/v1/treasury/debit_reversals",
+	objectNameInboundTransfers:      "/v1/treasury/inbound_transfers",
+	objectNameMeterEventAdjustments: "/v1/billing/meter_event_adjustments",
+	objectNameMeterEvents:           "/v1/billing/meter_events",
+	objectNameOutboundPayments:      "/v1/treasury/outbound_payments",
+	objectNameOutboundTransfers:     "/v1/treasury/outbound_transfers",
+	objectNameSettlements:           "/v1/issuing/settlements",
+	objectNameTaxCalculations:       "/v1/tax/calculations",
+	objectNameTaxSettings:           "/v1/tax/settings",
+	objectNameValueListItems:        "/v1/radar/value_list_items",
 },
 	func(objectName string) (jsonPath string) {
 		return "/v1/" + objectName
