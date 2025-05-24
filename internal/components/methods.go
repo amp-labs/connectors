@@ -2,6 +2,7 @@ package components
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/amp-labs/connectors/common"
 )
@@ -24,5 +25,6 @@ type Deleter interface {
 
 // SchemaProvider represents the ability to retrieve metadata about objects.
 type SchemaProvider interface {
+	fmt.Stringer
 	ListObjectMetadata(ctx context.Context, objects []string) (*common.ListObjectMetadataResult, error)
 }
