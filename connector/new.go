@@ -54,7 +54,7 @@ import (
 
 var ErrInvalidProvider = errors.New("invalid provider")
 
-func NewDeepConnectorFromConnection( // nolint:gocyclo,cyclop,funlen
+func New( // nolint:gocyclo,cyclop,funlen
 	provider providers.Provider,
 	params common.Parameters,
 ) (*connectors.Connector, error) {
