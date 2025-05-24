@@ -5,11 +5,15 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"strconv"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 )
+
+const contacts = "contacts"
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
 	var (
@@ -22,6 +26,10 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
+	if !params.Since.IsZero() && params.ObjectName == contacts {
+		addTimestampFiltering(url, params.Since)
+	}
+
 	url.WithQueryParam(pageSizeKey, pageSize)
 
 	if params.NextPage != "" {
@@ -32,6 +40,13 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	}
 
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+}
+
+func addTimestampFiltering(url *urlbuilder.URL, since time.Time) {
+	// Add a query parameter q[updated_after] for object `contacts`
+	after := since.Unix()
+
+	url.WithQueryParam("q[updated_after]", strconv.FormatInt(after, 10))
 }
 
 func (c *Connector) parseReadResponse(
