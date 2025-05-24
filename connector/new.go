@@ -60,7 +60,7 @@ import (
 
 var ErrInvalidProvider = errors.New("invalid provider")
 
-func New( // nolint:gocyclo,cyclop,funlen
+func New( // nolint:gocyclo,cyclop,funlen,ireturn
 	provider providers.Provider,
 	params common.Parameters,
 ) (connectors.Connector, error) {
