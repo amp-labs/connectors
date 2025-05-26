@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -30,11 +31,11 @@ func main() {
 		slog.Error(err.Error())
 	}
 
-	if err := testRead(ctx, conn, "webhooks", []string{"updatedAt", "url"}); err != nil {
+	if err := testRead(ctx, conn, "locations", []string{"updatedAt", "url"}); err != nil {
 		slog.Error(err.Error())
 	}
 
-	if err := testRead(ctx, conn, "campaigns", []string{"name", "message", "uid"}); err != nil {
+	if err := testRead(ctx, conn, "reviews", []string{"name", "message", "uid"}); err != nil {
 		slog.Error(err.Error())
 	}
 }
@@ -43,6 +44,7 @@ func testRead(ctx context.Context, conn *pd.Connector, objectName string, fields
 	params := common.ReadParams{
 		ObjectName: objectName,
 		Fields:     connectors.Fields(fields...),
+		Since:      time.Now().Add(-10000 * time.Hour),
 	}
 
 	res, err := conn.Read(ctx, params)
