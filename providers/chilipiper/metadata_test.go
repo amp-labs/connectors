@@ -6,6 +6,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -81,6 +82,7 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 	}
 
 	connector.BaseURL = serverURL
+	connector.BaseURL = mockutils.ReplaceURLOrigin(connector.HTTPClient().Base, serverURL)
 
 	return connector, nil
 }

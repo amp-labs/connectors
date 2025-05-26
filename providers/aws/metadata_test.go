@@ -7,6 +7,7 @@ import (
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 )
@@ -111,7 +112,7 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 
 	moduleInfo := (*connector.ProviderInfo().Modules)[providers.ModuleAWSIdentityCenter]
 
-	moduleInfo.BaseURL = serverURL
+	moduleInfo.BaseURL = mockutils.ReplaceURLOrigin(moduleInfo.BaseURL, serverURL)
 
 	connector.ProviderInfo().Modules = &providers.Modules{
 		providers.ModuleAWSIdentityCenter: moduleInfo,

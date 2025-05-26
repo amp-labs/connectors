@@ -96,7 +96,7 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 		return nil, err
 	}
 
-	connector.BaseURL = serverURL
+	connector.setBaseURL(mockutils.ReplaceURLOrigin(connector.HTTPClient().Base, serverURL))
 
 	return connector, nil
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 )
@@ -127,7 +128,7 @@ func constructTestConnector(serverURL string, moduleID common.ModuleID) (*Connec
 		return nil, err
 	}
 	// for testing we want to redirect calls to our mock server.
-	connector.setBaseURL(serverURL)
+	connector.setBaseURL(mockutils.ReplaceURLOrigin(connector.HTTPClient().Base, serverURL))
 
 	return connector, nil
 }
