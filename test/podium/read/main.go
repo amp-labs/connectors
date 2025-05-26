@@ -31,11 +31,11 @@ func main() {
 		slog.Error(err.Error())
 	}
 
-	if err := testRead(ctx, conn, "locations", []string{"updatedAt", "url"}); err != nil {
+	if err := testRead(ctx, conn, "webhooks", []string{"updatedAt", "url"}); err != nil {
 		slog.Error(err.Error())
 	}
 
-	if err := testRead(ctx, conn, "reviews", []string{"name", "message", "uid"}); err != nil {
+	if err := testRead(ctx, conn, "campaigns", []string{"name", "message", "uid"}); err != nil {
 		slog.Error(err.Error())
 	}
 }
