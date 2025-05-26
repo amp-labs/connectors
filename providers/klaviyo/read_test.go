@@ -22,6 +22,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseCampaigns := testutils.DataFromFile(t, "read-campaigns.json")
 	responseProfilesFirstPage := testutils.DataFromFile(t, "read-profiles-1-first-page.json")
 
+	header := http.Header{"revision": []string{"2024-10-15"}}
+
 	tests := []testroutines.Read{
 		{
 			Name:         "Read object must be included",
@@ -65,8 +67,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentMIME("application/vnd.api+json"),
-				If:    mockcond.Path("/api/profiles"),
-				Then:  mockserver.Response(http.StatusOK, responseProfilesFirstPage),
+				If: mockcond.And{
+					mockcond.Path("/api/profiles"),
+					mockcond.Header(header),
+				},
+				Then: mockserver.Response(http.StatusOK, responseProfilesFirstPage),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
@@ -116,6 +121,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					mockcond.Path("/api/campaigns"),
 					mockcond.QueryParam("filter",
 						"greater-than(updated_at,2024-03-04T08:22:56Z),equals(messages.channel,'email')"),
+					mockcond.Header(header),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCampaigns),
 			}.Server(),
