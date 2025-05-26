@@ -1,5 +1,6 @@
 package providers
 
+// Avoma is the identifier for the Avoma provider.
 const Avoma Provider = "avoma"
 
 //nolint:lll
