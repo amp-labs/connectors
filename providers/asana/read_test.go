@@ -45,7 +45,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			Input: common.ReadParams{ObjectName: "projects", Fields: connectors.Fields("")},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/projects"),
+				If:    mockcond.Path("/api/1.0/projects"),
 				Then:  mockserver.Response(http.StatusOK, responseProjects),
 			}.Server(),
 			Expected: &common.ReadResult{
@@ -69,7 +69,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			Input: common.ReadParams{ObjectName: "users", Fields: connectors.Fields("")},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/users"),
+				If:    mockcond.Path("/api/1.0/users"),
 				Then:  mockserver.Response(http.StatusOK, responseUsers),
 			}.Server(),
 			Expected: &common.ReadResult{
@@ -93,7 +93,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			Input: common.ReadParams{ObjectName: "tags", Fields: connectors.Fields("")},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/tags"),
+				If:    mockcond.Path("/api/1.0/tags"),
 				Then:  mockserver.Response(http.StatusOK, responseTags),
 			}.Server(),
 			Expected: &common.ReadResult{

@@ -32,10 +32,10 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
-					If:   mockcond.Path("/workspace"),
+					If:   mockcond.Path("/api/fire-edge/v1/org/workspace"),
 					Then: mockserver.Response(http.StatusOK, workspace),
 				}, {
-					If:   mockcond.Path("/meme"),
+					If:   mockcond.Path("/api/fire-edge/v1/org/meme"),
 					Then: mockserver.Response(http.StatusNotFound, unsupportedResponse),
 				}},
 			}.Server(),

@@ -121,7 +121,7 @@ func TestWriteZendeskSupportModule(t *testing.T) { // nolint:funlen,cyclop
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.Path("/v2/brands"),
+					mockcond.Path("/api/v2/brands"),
 					mockcond.MethodPOST(),
 				},
 				Then: mockserver.Response(http.StatusOK, createBrand),
@@ -185,7 +185,7 @@ func TestWriteHelpCenterModule(t *testing.T) { //nolint:funlen,gocognit,cyclop,m
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.Path("/v2/community/posts"),
+					mockcond.Path("/api/v2/community/posts"),
 					mockcond.MethodPOST(),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCreatePost),

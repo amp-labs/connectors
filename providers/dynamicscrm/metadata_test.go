@@ -50,10 +50,10 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
-					If:   mockcond.Path("EntityDefinitions(LogicalName='contact')"),
+					If:   mockcond.Path("/api/data/v9.2/EntityDefinitions(LogicalName='contact')"),
 					Then: mockserver.Response(http.StatusOK, responseContactsEntityDefinition),
 				}, {
-					If:   mockcond.Path("EntityDefinitions(LogicalName='contact')/Attributes"),
+					If:   mockcond.Path("/api/data/v9.2/EntityDefinitions(LogicalName='contact')/Attributes"),
 					Then: mockserver.ResponseString(http.StatusOK, `{"value":[]}`), // no object attributes
 				}},
 				Default: mockserver.Response(http.StatusOK, []byte{}),
@@ -73,10 +73,10 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
-					If:   mockcond.Path("EntityDefinitions(LogicalName='contact')"),
+					If:   mockcond.Path("/api/data/v9.2/EntityDefinitions(LogicalName='contact')"),
 					Then: mockserver.Response(http.StatusOK, responseContactsEntityDefinition),
 				}, {
-					If:   mockcond.Path("EntityDefinitions(LogicalName='contact')/Attributes"),
+					If:   mockcond.Path("/api/data/v9.2/EntityDefinitions(LogicalName='contact')/Attributes"),
 					Then: mockserver.Response(http.StatusOK, responseContactsAttributes),
 				}},
 				Default: mockserver.Response(http.StatusOK, []byte{}),
@@ -99,19 +99,19 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
-					If:   mockcond.Path("EntityDefinitions(LogicalName='contact')"),
+					If:   mockcond.Path("/api/data/v9.2/EntityDefinitions(LogicalName='contact')"),
 					Then: mockserver.Response(http.StatusOK, responseContactsEntityDefinition),
 				}, {
-					If:   mockcond.Path("EntityDefinitions(LogicalName='contact')/Attributes"),
+					If:   mockcond.Path("/api/data/v9.2/EntityDefinitions(LogicalName='contact')/Attributes"),
 					Then: mockserver.Response(http.StatusOK, responseContactsAttributes),
 				}, {
-					If:   mockcond.Path("EntityDefinitions(LogicalName='contact')/Attributes/Microsoft.Dynamics.CRM.PicklistAttributeMetadata"), // nolint:lll
+					If:   mockcond.Path("/api/data/v9.2/EntityDefinitions(LogicalName='contact')/Attributes/Microsoft.Dynamics.CRM.PicklistAttributeMetadata"), // nolint:lll
 					Then: mockserver.Response(http.StatusOK, responseContactsOptionsPicklists),
 				}, {
-					If:   mockcond.Path("EntityDefinitions(LogicalName='contact')/Attributes/Microsoft.Dynamics.CRM.StatusAttributeMetadata"), // nolint:lll
+					If:   mockcond.Path("/api/data/v9.2/EntityDefinitions(LogicalName='contact')/Attributes/Microsoft.Dynamics.CRM.StatusAttributeMetadata"), // nolint:lll
 					Then: mockserver.Response(http.StatusOK, responseContactsOptionsStatuses),
 				}, {
-					If:   mockcond.Path("EntityDefinitions(LogicalName='contact')/Attributes/Microsoft.Dynamics.CRM.StateAttributeMetadata"), // nolint:lll
+					If:   mockcond.Path("/api/data/v9.2/EntityDefinitions(LogicalName='contact')/Attributes/Microsoft.Dynamics.CRM.StateAttributeMetadata"), // nolint:lll
 					Then: mockserver.Response(http.StatusOK, responseContactsOptionsStates),
 				}},
 				Default: mockserver.Response(http.StatusOK, []byte{}),

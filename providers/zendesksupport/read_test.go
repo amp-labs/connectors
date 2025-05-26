@@ -328,7 +328,7 @@ func TestReadHelpCenterModule(t *testing.T) { //nolint:funlen,gocognit,cyclop,ma
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/v2/community/posts"),
+				If:    mockcond.Path("/api/v2/community/posts"),
 				Then:  mockserver.Response(http.StatusOK, responseReadPosts),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,

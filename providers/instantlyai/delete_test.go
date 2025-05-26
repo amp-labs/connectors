@@ -44,7 +44,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.Path("/v2/custom-tags/8cba2d22-cdd0-453f-ac69-4c43f71942e5"),
+					mockcond.Path("/api/v2/custom-tags/8cba2d22-cdd0-453f-ac69-4c43f71942e5"),
 					mockcond.MethodDELETE(),
 					mockcond.Body("null"),
 				},
