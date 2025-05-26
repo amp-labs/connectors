@@ -108,7 +108,7 @@ func TestListObjectMetadataZendeskSupportModule(t *testing.T) { // nolint:funlen
 			Input: []string{"tickets"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.PathSuffix("/api/v2/ticket_fields"),
+				If:    mockcond.Path("/api/v2/ticket_fields"),
 				Then:  mockserver.Response(http.StatusOK, responseTicketsCustomFields),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetMetadata,

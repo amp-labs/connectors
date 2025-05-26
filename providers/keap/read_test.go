@@ -9,6 +9,7 @@ import (
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -85,10 +86,10 @@ func TestReadV1(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
-					If:   mockcond.PathSuffix("/crm/rest/v1/contacts"),
+					If:   mockcond.Path("/crm/rest/v1/contacts"),
 					Then: mockserver.Response(http.StatusOK, responseContactsFirstPage),
 				}, {
-					If:   mockcond.PathSuffix("/crm/rest/v1/contacts/model"),
+					If:   mockcond.Path("/crm/rest/v1/contacts/model"),
 					Then: mockserver.Response(http.StatusOK, responseContactsModel),
 				}},
 			}.Server(),
@@ -149,12 +150,12 @@ func TestReadV1(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
 					If: mockcond.And{
-						mockcond.PathSuffix("/crm/rest/v1/contacts"),
+						mockcond.Path("/crm/rest/v1/contacts"),
 						mockcond.QueryParam("since", "2024-03-04T08:22:56.077Z"),
 					},
 					Then: mockserver.Response(http.StatusOK, responseContactsEmptyPage),
 				}, {
-					If:   mockcond.PathSuffix("/crm/rest/v1/contacts/model"),
+					If:   mockcond.Path("/crm/rest/v1/contacts/model"),
 					Then: mockserver.Response(http.StatusOK, []byte{}), // no custom fields
 				}},
 			}.Server(),
@@ -189,7 +190,7 @@ func TestReadV2(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.PathSuffix("/crm/rest/v2/tags"),
+				If:    mockcond.Path("/crm/rest/v2/tags"),
 				Then:  mockserver.Response(http.StatusOK, responseTags),
 			}.Server(),
 			Expected: &common.ReadResult{
@@ -236,7 +237,7 @@ func constructTestConnector(serverURL string, moduleID common.ModuleID) (*Connec
 	}
 
 	// for testing we want to redirect calls to our mock server
-	connector.setBaseURL(serverURL)
+	connector.setBaseURL(mockutils.ReplaceURLOrigin(connector.HTTPClient().Base, serverURL))
 
 	return connector, nil
 }

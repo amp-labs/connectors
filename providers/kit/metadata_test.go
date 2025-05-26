@@ -7,6 +7,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -39,34 +40,34 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
-					If:   mockcond.PathSuffix("/v4/broadcasts"),
+					If:   mockcond.Path("/v4/broadcasts"),
 					Then: mockserver.Response(http.StatusOK, broadcastsresponse),
 				}, {
-					If:   mockcond.PathSuffix("/v4/custom_fields"),
+					If:   mockcond.Path("/v4/custom_fields"),
 					Then: mockserver.Response(http.StatusOK, customfieldsresponse),
 				}, {
-					If:   mockcond.PathSuffix("/v4/email_templates"),
+					If:   mockcond.Path("/v4/email_templates"),
 					Then: mockserver.Response(http.StatusOK, emailtemplatesresponse),
 				}, {
-					If:   mockcond.PathSuffix("/v4/forms"),
+					If:   mockcond.Path("/v4/forms"),
 					Then: mockserver.Response(http.StatusOK, formsresponse),
 				}, {
-					If:   mockcond.PathSuffix("/v4/purchases"),
+					If:   mockcond.Path("/v4/purchases"),
 					Then: mockserver.Response(http.StatusOK, purchasesresponse),
 				}, {
-					If:   mockcond.PathSuffix("/v4/sequences"),
+					If:   mockcond.Path("/v4/sequences"),
 					Then: mockserver.Response(http.StatusOK, sequencesresponse),
 				}, {
-					If:   mockcond.PathSuffix("/v4/subscribers"),
+					If:   mockcond.Path("/v4/subscribers"),
 					Then: mockserver.Response(http.StatusOK, subscribersresponse),
 				}, {
-					If:   mockcond.PathSuffix("/v4/segments"),
+					If:   mockcond.Path("/v4/segments"),
 					Then: mockserver.Response(http.StatusOK, segmentsresponse),
 				}, {
-					If:   mockcond.PathSuffix("/v4/tags"),
+					If:   mockcond.Path("/v4/tags"),
 					Then: mockserver.Response(http.StatusOK, tagsresponse),
 				}, {
-					If:   mockcond.PathSuffix("/v4/webhooks"),
+					If:   mockcond.Path("/v4/webhooks"),
 					Then: mockserver.Response(http.StatusOK, webhooksresponse),
 				}},
 			}.Server(),
@@ -215,7 +216,7 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 		return nil, err
 	}
 	// for testing we want to redirect calls to our mock server.
-	connector.setBaseURL(serverURL)
+	connector.setBaseURL(mockutils.ReplaceURLOrigin(connector.HTTPClient().Base, serverURL))
 
 	return connector, nil
 }
