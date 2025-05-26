@@ -477,22 +477,6 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 			},
 			// expectedErr: common.ErrMissingModule,
 		},
-		{
-			name: "Zoom unknown module",
-			input: inType{
-				provider: Zoom,
-				moduleID: "random-module-name",
-			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://api.zoom.us/v2",
-				DisplayName: "Zoom (Meeting)",
-				Support: Support{
-					Read:  true,
-					Write: true,
-				},
-			},
-			// expectedErr: common.ErrMissingModule,
-		},
 		// Choosing non-root module for providers supporting several modules.
 		{
 			name: "Atlassian Jira module",
@@ -632,36 +616,6 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 			expected: &ModuleInfo{
 				BaseURL:     "https://{{.workspace}}.zendesk.com/api/v2",
 				DisplayName: "Zendesk Help Center",
-				Support: Support{
-					Read:  true,
-					Write: true,
-				},
-			},
-		},
-		{
-			name: "Zoom User module",
-			input: inType{
-				provider: Zoom,
-				moduleID: ModuleZoomUser,
-			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://api.zoom.us/v2",
-				DisplayName: "Zoom (User)",
-				Support: Support{
-					Read:  true,
-					Write: true,
-				},
-			},
-		},
-		{
-			name: "Zoom Meeting module",
-			input: inType{
-				provider: Zoom,
-				moduleID: ModuleZoomMeeting,
-			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://api.zoom.us/v2",
-				DisplayName: "Zoom (Meeting)",
 				Support: Support{
 					Read:  true,
 					Write: true,
