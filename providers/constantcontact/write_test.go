@@ -42,7 +42,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.PathSuffix("/contacts"),
+					mockcond.Path("/contacts"),
 					mockcond.MethodPOST(),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCreateContact),
@@ -70,7 +70,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.PathSuffix("/contacts/af73e650-96f0-11ef-b2a0-fa163eafb85e"),
+					mockcond.Path("/contacts/af73e650-96f0-11ef-b2a0-fa163eafb85e"),
 					mockcond.MethodPUT(),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCreateContact),
@@ -97,7 +97,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.PathSuffix("/emails"),
+					mockcond.Path("/emails"),
 					mockcond.MethodPOST(),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCreateEmailCampaign),
@@ -124,7 +124,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.PathSuffix("/emails/987cb9ab-ad0c-4087-bd46-2e2ad241221f"),
+					mockcond.Path("/emails/987cb9ab-ad0c-4087-bd46-2e2ad241221f"),
 					mockcond.MethodPATCH(),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCreateEmailCampaign),

@@ -35,7 +35,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			Input: common.DeleteParams{ObjectName: "signals", RecordId: "22165"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.PathSuffix("/v2/signals/22165"),
+				If:    mockcond.Path("/v2/signals/22165"),
 				Then:  mockserver.Response(http.StatusUnprocessableEntity, listSchema),
 			}.Server(),
 			ExpectedErrs: []error{
@@ -49,7 +49,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.PathSuffix("/v2/signals/22165"),
+					mockcond.Path("/v2/signals/22165"),
 					mockcond.MethodDELETE(),
 				},
 				Then: mockserver.Response(http.StatusNoContent),

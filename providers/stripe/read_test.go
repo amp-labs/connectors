@@ -65,7 +65,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.PathSuffix("/v1/accounts"),
+				If:    mockcond.Path("/v1/accounts"),
 				Then:  mockserver.Response(http.StatusOK, responseEmptyAccounts),
 			}.Server(),
 			Expected: &common.ReadResult{
@@ -84,7 +84,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.PathSuffix("/v1/customers"),
+				If:    mockcond.Path("/v1/customers"),
 				Then:  mockserver.Response(http.StatusOK, responseCustomersFirstPage),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
@@ -122,7 +122,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Comparator: testroutines.ComparatorSubsetRead,
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.PathSuffix("/v1/customers?limit=100&starting_after=cus_Rd3NjdGWtynChD"),
+				If:    mockcond.Path("/v1/customers?limit=100&starting_after=cus_Rd3NjdGWtynChD"),
 				Then:  mockserver.Response(http.StatusOK, responseCustomersLastPage),
 			}.Server(),
 			Expected: &common.ReadResult{
@@ -151,7 +151,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.PathSuffix("/v1/payment_intents"),
+					mockcond.Path("/v1/payment_intents"),
 					mockcond.QueryParam("expand[]", "data.customer"),
 					mockcond.QueryParam("expand[]", "data.application"),
 				},

@@ -55,7 +55,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
-					If:   mockcond.PathSuffix("v1/channels.json"),
+					If:   mockcond.Path("v1/channels.json"),
 					Then: mockserver.Response(http.StatusOK, channelsResponse),
 				}},
 			}.Server(),

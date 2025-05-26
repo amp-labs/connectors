@@ -64,7 +64,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.PathSuffix("/api/catalogs"),
+				If:    mockcond.Path("/api/catalogs"),
 				Then:  mockserver.Response(http.StatusOK, responseCatalogsFirst),
 			}.Server(),
 			Comparator: testroutines.ComparatorPagination,
@@ -84,7 +84,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.PathSuffix("/api/catalogs"),
+				If:    mockcond.Path("/api/catalogs"),
 				Then:  mockserver.Response(http.StatusOK, responseCatalogsLast),
 			}.Server(),
 			Comparator: testroutines.ComparatorPagination,

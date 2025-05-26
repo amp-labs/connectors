@@ -35,12 +35,12 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
-					If:   mockcond.PathSuffix("/crm/v3/properties/contacts"),
+					If:   mockcond.Path("/crm/v3/properties/contacts"),
 					Then: mockserver.Response(http.StatusOK, metadataContactsProperties),
 				}, {
 					// Connector will make this API call, output is valid empty data.
 					// This is done to shrink the scope of a test. See tests below that focus on pipelines.
-					If:   mockcond.PathSuffix("/crm/v3/pipelines/contacts"),
+					If:   mockcond.Path("/crm/v3/pipelines/contacts"),
 					Then: mockserver.ResponseString(http.StatusOK, "{}"),
 				}},
 			}.Server(),
@@ -188,10 +188,10 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
-					If:   mockcond.PathSuffix("/crm/v3/properties/contacts"),
+					If:   mockcond.Path("/crm/v3/properties/contacts"),
 					Then: mockserver.Response(http.StatusOK, metadataContactsProperties),
 				}, {
-					If:   mockcond.PathSuffix("/crm/v3/pipelines/contacts"),
+					If:   mockcond.Path("/crm/v3/pipelines/contacts"),
 					Then: mockserver.Response(http.StatusOK, metadataContactsPipelines),
 				}},
 			}.Server(),
@@ -225,10 +225,10 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
-					If:   mockcond.PathSuffix("/crm/v3/properties/deals"),
+					If:   mockcond.Path("/crm/v3/properties/deals"),
 					Then: mockserver.Response(http.StatusOK, metadataDealsProperties),
 				}, {
-					If:   mockcond.PathSuffix("/crm/v3/pipelines/deals"),
+					If:   mockcond.Path("/crm/v3/pipelines/deals"),
 					Then: mockserver.Response(http.StatusOK, metadataDealsPipelines),
 				}},
 			}.Server(),
@@ -289,7 +289,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 			Input: []string{"lists"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.PathSuffix("/crm/v3/lists/search"),
+				If:    mockcond.Path("/crm/v3/lists/search"),
 				Then:  mockserver.Response(http.StatusOK, responseLists),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetMetadata,

@@ -64,10 +64,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
-					If:   mockcond.PathSuffix("/v3/contacts"),
+					If:   mockcond.Path("/v3/contacts"),
 					Then: mockserver.Response(http.StatusOK, responseContactsFirstPage),
 				}, {
-					If:   mockcond.PathSuffix("/v3/contact_custom_fields"),
+					If:   mockcond.Path("/v3/contact_custom_fields"),
 					Then: mockserver.Response(http.StatusOK, responseContactsCustomFields),
 				}},
 			}.Server(),

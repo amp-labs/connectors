@@ -64,7 +64,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentMIME("application/vnd.api+json"),
-				If:    mockcond.PathSuffix("/api/profiles"),
+				If:    mockcond.Path("/api/profiles"),
 				Then:  mockserver.Response(http.StatusOK, responseProfilesFirstPage),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
@@ -112,7 +112,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentMIME("application/vnd.api+json"),
 				If: mockcond.And{
-					mockcond.PathSuffix("/api/campaigns"),
+					mockcond.Path("/api/campaigns"),
 					mockcond.QueryParam("filter",
 						"greater-than(updated_at,2024-03-04T08:22:56Z),equals(messages.channel,'email')"),
 				},

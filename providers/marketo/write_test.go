@@ -58,7 +58,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.PathSuffix("/v1/leads.json"),
+					mockcond.Path("/v1/leads.json"),
 				},
 				Then: mockserver.Response(http.StatusOK, leadCreationResponse),
 			}.Server(),

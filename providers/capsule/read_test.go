@@ -45,7 +45,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.PathSuffix("/v2/parties"),
+					mockcond.Path("/v2/parties"),
 					// Pacific time to UTC is achieved by adding 8 hours
 					mockcond.QueryParam("since", "2024-09-19T12:30:45Z"),
 				},
@@ -88,7 +88,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.PathSuffix("/v2/parties"),
+				If:    mockcond.Path("/v2/parties"),
 				Then:  mockserver.Response(http.StatusOK, responsePartiesLastPage),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
