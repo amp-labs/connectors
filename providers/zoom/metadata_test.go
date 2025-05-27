@@ -6,16 +6,15 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 )
 
-func TestListObjectMetaUserModule(t *testing.T) {
+func TestListObjectMetadata(t *testing.T) { // nolint:funlen
 	t.Parallel()
 
-	tests := []testroutines.Metadata{ // nolint:gochecknoglobals
+	tests := []testroutines.Metadata{
 		{
 			Name:         "At least one object name must be queried",
 			Input:        nil,
@@ -61,23 +60,6 @@ func TestListObjectMetaUserModule(t *testing.T) {
 			},
 			ExpectedErrs: nil,
 		},
-	}
-
-	for _, tt := range tests {
-		// nolint:varnamelen
-		t.Run(tt.Name, func(t *testing.T) {
-			t.Parallel()
-			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
-				return constructTestConnector(tt.Server.URL, providers.ModuleZoomUser)
-			})
-		})
-	}
-}
-
-func TestListObjectMetaMeetingModule(t *testing.T) {
-	t.Parallel()
-
-	tests := []testroutines.Metadata{ // nolint:gochecknoglobals
 		{
 			Name:       "Successfully describe multiple objects with metadata",
 			Input:      []string{"activities_report", "device_groups"},
@@ -113,16 +95,15 @@ func TestListObjectMetaMeetingModule(t *testing.T) {
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
-				return constructTestConnector(tt.Server.URL, providers.ModuleZoomMeeting)
+				return constructTestConnector(tt.Server.URL)
 			})
 		})
 	}
 }
 
-func constructTestConnector(serverURL string, moduleID common.ModuleID) (*Connector, error) {
+func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(
 		WithAuthenticatedClient(http.DefaultClient),
-		WithModule(moduleID),
 	)
 	if err != nil {
 		return nil, err

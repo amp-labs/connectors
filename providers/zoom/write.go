@@ -14,7 +14,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, err
 	}
 
-	if !supportedObjectsByWrite[c.moduleID].Has(config.ObjectName) {
+	if !supportedObjectsByWrite[common.ModuleRoot].Has(config.ObjectName) {
 		return nil, common.ErrOperationNotSupportedForObject
 	}
 
@@ -46,7 +46,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		}, nil
 	}
 
-	recordIdPath := objectNameToWriteResponseIdentifier[c.moduleID].Get(config.ObjectName)
+	recordIdPath := objectNameToWriteResponseIdentifier[common.ModuleRoot].Get(config.ObjectName)
 
 	// write response with payload
 	return constructWriteResult(body, recordIdPath)
