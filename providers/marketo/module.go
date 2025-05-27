@@ -9,9 +9,6 @@ const (
 	// ModuleAssets
 	// Deprecated.
 	ModuleAssets = providers.ModuleMarketoAssets
-	// ModuleLeads
-	// Deprecated.
-	ModuleLeads = providers.ModuleMarketoLeads
 )
 
 // supportedModules represents currently working and supported modules within the Marketo connector.
@@ -20,16 +17,11 @@ var supportedModules = common.Modules{ // nolint: gochecknoglobals
 	common.ModuleRoot: {
 		ID:      common.ModuleRoot,
 		Label:   "",
-		Version: "",
+		Version: "v1",
 	},
 	providers.ModuleMarketoAssets: {
 		ID:      providers.ModuleMarketoAssets,
 		Label:   "asset",
-		Version: "v1",
-	},
-	providers.ModuleMarketoLeads: {
-		ID:      providers.ModuleMarketoLeads,
-		Label:   "",
 		Version: "v1",
 	},
 }

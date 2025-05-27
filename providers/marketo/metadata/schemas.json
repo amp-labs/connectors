@@ -318,7 +318,7 @@
         }
       }
     },
-    "leads": {
+    "root": {
       "id": "",
       "path": "",
       "objects": {

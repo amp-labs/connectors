@@ -7,7 +7,6 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
-	"github.com/amp-labs/connectors/providers"
 	"golang.org/x/oauth2/clientcredentials"
 )
 
@@ -21,7 +20,7 @@ type parameters struct {
 
 func newParams(opts []Option) (*common.ConnectorParams, error) { // nolint:unused
 	oldParams, err := paramsbuilder.Apply(parameters{}, opts,
-		WithModule(providers.ModuleMarketoLeads),
+		WithModule(common.ModuleRoot),
 	)
 	if err != nil {
 		return nil, err
@@ -55,7 +54,7 @@ func WithClient(ctx context.Context, client *http.Client,
 // WithModule sets the marketo API module to use for the connector. It's required.
 func WithModule(module common.ModuleID) Option {
 	return func(params *parameters) {
-		params.WithModule(module, supportedModules, providers.ModuleMarketoLeads)
+		params.WithModule(module, supportedModules, common.ModuleRoot)
 	}
 }
 

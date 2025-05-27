@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/marketo"
@@ -33,7 +34,7 @@ func GetMarketoConnectorLeads(ctx context.Context) *marketo.Connector {
 	conn, err := marketo.NewConnector(
 		marketo.WithClient(ctx, http.DefaultClient, getConfig(reader)),
 		marketo.WithWorkspace(reader.Get(credscanning.Fields.Workspace)),
-		marketo.WithModule(providers.ModuleMarketoLeads),
+		marketo.WithModule(common.ModuleRoot),
 	)
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)

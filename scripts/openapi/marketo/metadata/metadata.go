@@ -47,7 +47,7 @@ func main() {
 
 	goutils.MustBeNil(metadata.FileManager.SaveSchemas(&staticschema.Metadata[staticschema.FieldMetadataMapV1, any]{
 		Modules: map[common.ModuleID]staticschema.Module[staticschema.FieldMetadataMapV1, any]{
-			providers.ModuleMarketoLeads: {
+			common.ModuleRoot: {
 				Objects: leadsMetadata,
 			},
 			providers.ModuleMarketoAssets: {
