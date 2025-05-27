@@ -1,7 +1,7 @@
 {
   "modules": {
-    "2024-10-15": {
-      "id": "2024-10-15",
+    "root": {
+      "id": "root",
       "path": "/api",
       "objects": {
         "accounts": {

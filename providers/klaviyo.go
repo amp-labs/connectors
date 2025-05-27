@@ -1,14 +1,6 @@
 package providers
 
-import "github.com/amp-labs/connectors/common"
-
 const Klaviyo Provider = "klaviyo"
-
-const (
-	// ModuleKlaviyo2024Oct15 is the latest stable version of API as of the date of writing.
-	// https://developers.klaviyo.com/en/reference/api_overview
-	ModuleKlaviyo2024Oct15 common.ModuleID = "2024-10-15"
-)
 
 func init() {
 	// Klaviyo configuration
@@ -37,18 +29,6 @@ func init() {
 			Read:      true,
 			Subscribe: false,
 			Write:     true,
-		},
-		DefaultModule: ModuleKlaviyo2024Oct15,
-		Modules: &Modules{
-			ModuleKlaviyo2024Oct15: {
-				BaseURL:     "https://a.klaviyo.com",
-				DisplayName: "Klaviyo (Version 2024-10-15)",
-				Support: Support{
-					Read:      true,
-					Subscribe: false,
-					Write:     true,
-				},
-			},
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{

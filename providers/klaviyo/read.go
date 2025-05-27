@@ -14,7 +14,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	if !supportedObjectsByRead[c.moduleID].Has(config.ObjectName) {
+	if !supportedObjectsByRead[common.ModuleRoot].Has(config.ObjectName) {
 		return nil, common.ErrOperationNotSupportedForObject
 	}
 
@@ -53,7 +53,7 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 	}
 
 	if !config.Since.IsZero() {
-		if sinceField, found := objectsNameToSinceFieldName[c.moduleID][config.ObjectName]; found {
+		if sinceField, found := objectsNameToSinceFieldName[common.ModuleRoot][config.ObjectName]; found {
 			// Documentation about filtering: https://developers.klaviyo.com/en/docs/filtering_
 			// Ex: ?filter=greater-than(datetime,2023-03-01T01:00:00Z)
 			sinceValue := datautils.Time.FormatRFC3339inUTC(config.Since)

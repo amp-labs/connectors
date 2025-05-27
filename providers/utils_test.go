@@ -280,22 +280,6 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 			},
 		},
 		{
-			name: "Klaviyo root module",
-			input: inType{
-				provider: Klaviyo,
-				moduleID: common.ModuleRoot,
-			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://a.klaviyo.com",
-				DisplayName: "Klaviyo",
-				Support: Support{
-					Proxy: true,
-					Read:  true,
-					Write: true,
-				},
-			},
-		},
-		{
 			name: "Marketo root module",
 			input: inType{
 				provider: Marketo,
@@ -428,22 +412,6 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 			// expectedErr: common.ErrMissingModule,
 		},
 		{
-			name: "Klaviyo unknown module",
-			input: inType{
-				provider: Klaviyo,
-				moduleID: "random-module-name",
-			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://a.klaviyo.com",
-				DisplayName: "Klaviyo (Version 2024-10-15)",
-				Support: Support{
-					Read:  true,
-					Write: true,
-				},
-			},
-			// expectedErr: common.ErrMissingModule,
-		},
-		{
 			name: "Marketo unknown module",
 			input: inType{
 				provider: Marketo,
@@ -561,21 +529,6 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				BaseURL:     "https://api.infusionsoft.com/v2",
 				DisplayName: "Keap Version 2",
 				Support:     Support{},
-			},
-		},
-		{
-			name: "Klaviyo 2024-10-15 module",
-			input: inType{
-				provider: Klaviyo,
-				moduleID: ModuleKlaviyo2024Oct15,
-			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://a.klaviyo.com",
-				DisplayName: "Klaviyo (Version 2024-10-15)",
-				Support: Support{
-					Read:  true,
-					Write: true,
-				},
 			},
 		},
 		{
@@ -701,21 +654,6 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 			},
 		},
 		// Choosing empty module for providers supporting several modules uses default from the Catalog.
-		{
-			name: "Klaviyo 2024-10-15 fallback to default module",
-			input: inType{
-				provider: Klaviyo,
-				moduleID: "",
-			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://a.klaviyo.com",
-				DisplayName: "Klaviyo (Version 2024-10-15)",
-				Support: Support{
-					Read:  true,
-					Write: true,
-				},
-			},
-		},
 		{
 			name: "Marketo fallback to default module",
 			input: inType{
