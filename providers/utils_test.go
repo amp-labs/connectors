@@ -313,23 +313,6 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 			},
 		},
 		{
-			name: "Zendesk root module",
-			input: inType{
-				provider: ZendeskSupport,
-				vars:     createCatalogVars("workspace", "london"),
-				moduleID: common.ModuleRoot,
-			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://london.zendesk.com",
-				DisplayName: "Zendesk Support",
-				Support: Support{
-					Proxy: true,
-					Read:  true,
-					Write: true,
-				},
-			},
-		},
-		{
 			name: "Zoom root module",
 			input: inType{
 				provider: Zoom,
@@ -453,23 +436,6 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 			expected: &ModuleInfo{
 				BaseURL:     "https://london.mktorest.com/v1",
 				DisplayName: "Marketo (Leads)",
-				Support: Support{
-					Read:  true,
-					Write: true,
-				},
-			},
-			// expectedErr: common.ErrMissingModule,
-		},
-		{
-			name: "Zendesk unknown module",
-			input: inType{
-				provider: ZendeskSupport,
-				vars:     createCatalogVars("workspace", "london"),
-				moduleID: "random-module-name",
-			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://london.zendesk.com/api/v2",
-				DisplayName: "Zendesk Ticketing",
 				Support: Support{
 					Read:  true,
 					Write: true,
@@ -602,36 +568,6 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 			expected: &ModuleInfo{
 				BaseURL:     "https://{{.workspace}}.mktorest.com/v1",
 				DisplayName: "Marketo (Leads)",
-				Support: Support{
-					Read:  true,
-					Write: true,
-				},
-			},
-		},
-		{
-			name: "Zendesk Ticketing module",
-			input: inType{
-				provider: ZendeskSupport,
-				moduleID: ModuleZendeskTicketing,
-			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://{{.workspace}}.zendesk.com/api/v2",
-				DisplayName: "Zendesk Ticketing",
-				Support: Support{
-					Read:  true,
-					Write: true,
-				},
-			},
-		},
-		{
-			name: "Zendesk Help Center module",
-			input: inType{
-				provider: ZendeskSupport,
-				moduleID: ModuleZendeskHelpCenter,
-			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://{{.workspace}}.zendesk.com/api/v2",
-				DisplayName: "Zendesk Help Center",
 				Support: Support{
 					Read:  true,
 					Write: true,
