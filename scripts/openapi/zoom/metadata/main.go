@@ -9,13 +9,14 @@ import (
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers/zoom/metadata"
+	utilsopenapi "github.com/amp-labs/connectors/scripts/openapi/utils"
 	"github.com/amp-labs/connectors/scripts/openapi/zoom/metadata/meeting"
 	"github.com/amp-labs/connectors/scripts/openapi/zoom/metadata/user"
 	"github.com/amp-labs/connectors/tools/scrapper"
 )
 
 func main() {
-	schemas := staticschema.NewMetadata[staticschema.FieldMetadataMapV1]()
+	schemas := staticschema.NewMetadata[staticschema.FieldMetadataMapV2]()
 	registry := datautils.NamedLists[string]{}
 
 	objects := append(
@@ -35,9 +36,7 @@ func main() {
 
 		for _, field := range object.Fields {
 			schemas.Add(common.ModuleRoot, objectName, object.DisplayName, object.URLPath, object.ResponseKey,
-				staticschema.FieldMetadataMapV1{
-					field.Name: field.Name,
-				}, nil, object.Custom)
+				utilsopenapi.ConvertMetadataFieldToFieldMetadataMapV2(field), nil, object.Custom)
 		}
 
 		for _, queryParam := range object.QueryParams {
