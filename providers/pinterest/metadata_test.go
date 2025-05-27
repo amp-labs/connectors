@@ -26,13 +26,13 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
-					If:   mockcond.PathSuffix("v5/pins"),
+					If:   mockcond.Path("v5/pins"),
 					Then: mockserver.Response(http.StatusOK, pinsResponse),
 				}, {
-					If:   mockcond.PathSuffix("v5/boards"),
+					If:   mockcond.Path("v5/boards"),
 					Then: mockserver.Response(http.StatusOK, boardsResponse),
 				}, {
-					If:   mockcond.PathSuffix("v5/media"),
+					If:   mockcond.Path("v5/media"),
 					Then: mockserver.Response(http.StatusOK, mediaResponse),
 				}},
 			}.Server(),
@@ -108,7 +108,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 }
 
 func constructTestConnector(serverURL string) (*Connector, error) {
-	connector, err := NewConnector(common.Parameters{
+	connector, err := NewConnector(common.ConnectorParams{
 		AuthenticatedClient: http.DefaultClient,
 	})
 	if err != nil {
