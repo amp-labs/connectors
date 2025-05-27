@@ -23,7 +23,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseForbiddenError := testutils.DataFromFile(t, "forbidden.json")
 	responseTriggersFirstPage := testutils.DataFromFile(t, "read/triggers-1-first-page.json")
 	responseTriggersLastPage := testutils.DataFromFile(t, "read/triggers-2-last-page.json")
-	responseReadPosts := testutils.DataFromFile(t, "read-posts.json")
+	responseReadPosts := testutils.DataFromFile(t, "read/help-center-posts.json")
 
 	tests := []testroutines.Read{
 		{
@@ -116,15 +116,18 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Successful read with chosen fields",
+			Name: "Successful read of help desk's posts with chosen fields",
 			Input: common.ReadParams{
 				ObjectName: "posts",
 				Fields:     connectors.Fields("title", "topic_id", "status"),
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/api/v2/community/posts"),
-				Then:  mockserver.Response(http.StatusOK, responseReadPosts),
+				If: mockcond.And{
+					mockcond.Path("/api/v2/community/posts"),
+					mockcond.QueryParam("page[size]", "100"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseReadPosts),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
