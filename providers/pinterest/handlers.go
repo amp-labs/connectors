@@ -50,12 +50,16 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 
 func matchObjectNameToEndpointPath(objectName string) (urlPath string) {
 	switch objectName {
+	// https://developers.pinterest.com/docs/api/v5/get-business_employers.
 	case "employers":
 		return "businesses/employers"
-	case "feed":
-		return "catalogs/feed"
+	// https://developers.pinterest.com/docs/api/v5/feeds-list.
+	case "feeds":
+		return "catalogs/feeds"
+	// https://developers.pinterest.com/docs/api/v5/catalogs_product_groups-list.
 	case "product_groups":
 		return "catalogs/product_groups"
+	// https://developers.pinterest.com/docs/api/v5/reports-stats
 	case "stats":
 		return "catalogs/reports/stats"
 	default:
