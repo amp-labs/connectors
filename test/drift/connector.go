@@ -25,7 +25,7 @@ func GetConnector(ctx context.Context) *drift.Connector {
 		utils.Fail(err.Error())
 	}
 
-	conn, err := drift.NewConnector(common.Parameters{
+	conn, err := drift.NewConnector(common.ConnectorParams{
 		AuthenticatedClient: client,
 	})
 	if err != nil {

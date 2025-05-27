@@ -16,7 +16,7 @@ func GetAhaConnector(ctx context.Context) *aha.Connector {
 	reader := utils.MustCreateProvCredJSON(filePath, true, true)
 
 	conn, err := aha.NewConnector(
-		common.Parameters{
+		common.ConnectorParams{
 			AuthenticatedClient: utils.NewOauth2Client(ctx, reader, getConfig),
 			Workspace:           reader.Get(credscanning.Fields.Workspace),
 		},

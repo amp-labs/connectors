@@ -25,7 +25,7 @@ func GetConnector(ctx context.Context) *gitlab.Connector {
 		utils.Fail(err.Error())
 	}
 
-	conn, err := gitlab.NewConnector(common.Parameters{
+	conn, err := gitlab.NewConnector(common.ConnectorParams{
 		AuthenticatedClient: client,
 	})
 	if err != nil {

@@ -26,7 +26,7 @@ func GetConnector(ctx context.Context) *zendeskchat.Connector {
 		utils.Fail(err.Error())
 	}
 
-	conn, err := zendeskchat.NewConnector(common.Parameters{
+	conn, err := zendeskchat.NewConnector(common.ConnectorParams{
 		AuthenticatedClient: client,
 		Workspace:           "d3v-ampersand",
 	})

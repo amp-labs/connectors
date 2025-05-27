@@ -47,7 +47,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 
 func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(
-		common.Parameters{
+		common.ConnectorParams{
 			AuthenticatedClient: http.DefaultClient,
 		},
 	)

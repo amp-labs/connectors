@@ -21,7 +21,7 @@ type parameters struct {
 	paramsbuilder.Metadata
 }
 
-func newParams(opts []Option) (*common.Parameters, error) { // nolint:unused
+func newParams(opts []Option) (*common.ConnectorParams, error) { // nolint:unused
 	oldParams, err := paramsbuilder.Apply(parameters{}, opts,
 		WithModule(common.ModuleRoot), // The module is resolved on behalf of the user if the option is missing.
 	)
@@ -29,7 +29,7 @@ func newParams(opts []Option) (*common.Parameters, error) { // nolint:unused
 		return nil, err
 	}
 
-	return &common.Parameters{
+	return &common.ConnectorParams{
 		Module:              oldParams.Module.Selection.ID,
 		AuthenticatedClient: oldParams.Client.Caller.Client,
 		Workspace:           oldParams.Workspace.Name,

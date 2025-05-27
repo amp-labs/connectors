@@ -25,7 +25,7 @@ func GetHelpScoutConnector(ctx context.Context) *helpscout.Connector {
 		utils.Fail(err.Error())
 	}
 
-	conn, err := helpscout.NewConnector(common.Parameters{
+	conn, err := helpscout.NewConnector(common.ConnectorParams{
 		AuthenticatedClient: client,
 	})
 	if err != nil {

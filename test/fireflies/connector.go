@@ -16,7 +16,7 @@ func GetFirefliesConnector(ctx context.Context) *fireflies.Connector {
 
 	client := utils.NewAPIKeyClient(ctx, reader, providers.Fireflies)
 
-	conn, err := fireflies.NewConnector(common.Parameters{
+	conn, err := fireflies.NewConnector(common.ConnectorParams{
 		AuthenticatedClient: client,
 	})
 	if err != nil {
