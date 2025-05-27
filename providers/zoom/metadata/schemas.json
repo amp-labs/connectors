@@ -4,19 +4,6 @@
       "id": "root",
       "path": "",
       "objects": {
-        "activities_report": {
-          "displayName": "Activities Report",
-          "path": "/report/activities",
-          "responseKey": "activity_logs",
-          "fields": {
-            "client_type": "client_type",
-            "email": "email",
-            "ip_address": "ip_address",
-            "time": "time",
-            "type": "type",
-            "version": "version"
-          }
-        },
         "archive_files": {
           "displayName": "Archive Files",
           "path": "/archive_files",
@@ -43,21 +30,8 @@
             "uuid": "uuid"
           }
         },
-        "billing_report": {
-          "displayName": "Billing Report",
-          "path": "/report/billing",
-          "responseKey": "billing_reports",
-          "fields": {
-            "end_date": "end_date",
-            "id": "id",
-            "start_date": "start_date",
-            "tax_amount": "tax_amount",
-            "total_amount": "total_amount",
-            "type": "type"
-          }
-        },
-        "contacts_groups": {
-          "displayName": "Contacts Groups",
+        "contacts/groups": {
+          "displayName": "Contact Groups",
           "path": "/contacts/groups",
           "responseKey": "groups",
           "fields": {
@@ -65,16 +39,6 @@
             "group_id": "group_id",
             "group_name": "group_name",
             "group_privacy": "group_privacy"
-          }
-        },
-        "device_groups": {
-          "displayName": "Device Groups",
-          "path": "/devices/groups",
-          "responseKey": "groups",
-          "fields": {
-            "description": "description",
-            "name": "name",
-            "zdm_group_id": "zdm_group_id"
           }
         },
         "devices": {
@@ -102,6 +66,16 @@
             "vendor": "vendor"
           }
         },
+        "devices/groups": {
+          "displayName": "Device Groups",
+          "path": "/devices/groups",
+          "responseKey": "groups",
+          "fields": {
+            "description": "description",
+            "name": "name",
+            "zdm_group_id": "zdm_group_id"
+          }
+        },
         "groups": {
           "displayName": "Groups",
           "path": "/groups",
@@ -112,8 +86,8 @@
             "total_members": "total_members"
           }
         },
-        "h323_devices": {
-          "displayName": "H 323/Sip Device List",
+        "h323/devices": {
+          "displayName": "H.323/SIP Devices",
           "path": "/h323/devices",
           "responseKey": "devices",
           "fields": {
@@ -124,7 +98,7 @@
             "protocol": "protocol"
           }
         },
-        "meeting_summaries": {
+        "meetings/meeting_summaries": {
           "displayName": "Meeting Summaries",
           "path": "/meetings/meeting_summaries",
           "responseKey": "summaries",
@@ -142,7 +116,33 @@
             "summary_start_time": "summary_start_time"
           }
         },
-        "phones": {
+        "report/activities": {
+          "displayName": "Activities",
+          "path": "/report/activities",
+          "responseKey": "activity_logs",
+          "fields": {
+            "client_type": "client_type",
+            "email": "email",
+            "ip_address": "ip_address",
+            "time": "time",
+            "type": "type",
+            "version": "version"
+          }
+        },
+        "report/billing": {
+          "displayName": "Billing",
+          "path": "/report/billing",
+          "responseKey": "billing_reports",
+          "fields": {
+            "end_date": "end_date",
+            "id": "id",
+            "start_date": "start_date",
+            "tax_amount": "tax_amount",
+            "total_amount": "total_amount",
+            "type": "type"
+          }
+        },
+        "sip_phones/phones": {
           "displayName": "Phones",
           "path": "/sip_phones/phones",
           "responseKey": "phones",

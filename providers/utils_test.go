@@ -276,6 +276,8 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				DisplayName: "Keap",
 				Support: Support{
 					Proxy: true,
+					Read:  true,
+					Write: true,
 				},
 			},
 		},

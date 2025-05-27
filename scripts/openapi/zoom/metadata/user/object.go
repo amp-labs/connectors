@@ -16,8 +16,8 @@ var (
 		"/contacts/groups",
 	}
 
-	objectEndpoints = map[string]string{ // nolint:gochecknoglobals
-		"/contacts/groups": "contacts_groups",
+	displayNameOverride = map[string]string{ // nolint:gochecknoglobals
+		"contacts/groups": "Contact Groups",
 	}
 )
 
@@ -27,12 +27,13 @@ func Objects() []metadatadef.Schema {
 			api3.CamelCaseToSpaceSeparated,
 			api3.CapitalizeFirstLetterEveryWord,
 		),
+		api3.WithArrayItemAutoSelection(),
 	)
 	goutils.MustBeNil(err)
 
 	objects, err := explorer.ReadObjectsGet(
 		api3.NewAllowPathStrategy(allowedEndpoints),
-		objectEndpoints, nil, api3.CustomMappingObjectCheck(
+		nil, displayNameOverride, api3.CustomMappingObjectCheck(
 			zoom.ObjectNameToResponseField[common.ModuleRoot],
 		),
 	)
