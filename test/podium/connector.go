@@ -25,7 +25,7 @@ func GetConnector(ctx context.Context) *podium.Connector {
 		utils.Fail(err.Error())
 	}
 
-	conn, err := podium.NewConnector(common.Parameters{
+	conn, err := podium.NewConnector(common.ConnectorParams{
 		AuthenticatedClient: client,
 	})
 	if err != nil {

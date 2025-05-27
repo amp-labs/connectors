@@ -22,7 +22,7 @@ func GetBrevoConnector(ctx context.Context) *brevo.Connector {
 	}
 
 	conn, err := brevo.NewConnector(
-		common.Parameters{
+		common.ConnectorParams{
 			AuthenticatedClient: client,
 		},
 	)

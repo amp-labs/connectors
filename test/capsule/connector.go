@@ -23,7 +23,7 @@ func GetCapsuleConnector(ctx context.Context) *capsule.Connector {
 	)
 
 	conn, err := capsule.NewConnector(
-		common.Parameters{
+		common.ConnectorParams{
 			AuthenticatedClient: clientBuilder.AuthClient.Caller.Client,
 		},
 	)

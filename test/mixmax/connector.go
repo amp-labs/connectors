@@ -19,7 +19,7 @@ func GetConnector(ctx context.Context) *mixmax.Connector {
 		utils.Fail("error creating client", "error", err)
 	}
 
-	conn, err := mixmax.NewConnector(common.Parameters{
+	conn, err := mixmax.NewConnector(common.ConnectorParams{
 		AuthenticatedClient: client,
 	})
 	if err != nil {
