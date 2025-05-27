@@ -9,18 +9,18 @@ import (
 	"github.com/amp-labs/connectors/providers/zendesksupport/metadata"
 )
 
+const apiVersion = "/api/v2"
+
+// Connector covers ticketing as well as help center.
+// https://developer.zendesk.com/api-reference/ticketing/introduction/
+// https://developer.zendesk.com/api-reference/help_center/help-center-api/introduction/
 type Connector struct {
-	BaseURL    string
-	Client     *common.JSONHTTPClient
-	moduleInfo *providers.ModuleInfo
-	moduleID   common.ModuleID
+	BaseURL string
+	Client  *common.JSONHTTPClient
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	params, err := paramsbuilder.Apply(parameters{}, opts,
-		// The module is resolved on behalf of the user if the option is missing.
-		WithModule(providers.ModuleZendeskTicketing),
-	)
+	params, err := paramsbuilder.Apply(parameters{}, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -30,15 +30,12 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		Client: &common.JSONHTTPClient{
 			HTTPClient: httpClient,
 		},
-		moduleID: params.Module.Selection.ID,
 	}
 
 	providerInfo, err := providers.ReadInfo(conn.Provider(), &params.Workspace)
 	if err != nil {
 		return nil, err
 	}
-
-	conn.moduleInfo = providerInfo.ReadModuleInfo(conn.moduleID)
 
 	// connector and its client must mirror base url and provide its own error parser
 	conn.setBaseURL(providerInfo.BaseURL)
@@ -58,22 +55,22 @@ func (c *Connector) String() string {
 }
 
 func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
-	path, err := metadata.Schemas.LookupURLPath(c.moduleID, objectName)
+	path, err := metadata.Schemas.FindURLPath(common.ModuleRoot, objectName)
 	if err != nil {
 		return nil, err
 	}
 
-	return urlbuilder.New(c.BaseURL, path)
+	return urlbuilder.New(c.BaseURL, apiVersion, path)
 }
 
 func (c *Connector) getWriteURL(objectName string) (*urlbuilder.URL, error) {
-	if objectsUnsupportedWrite[c.moduleID].Has(objectName) {
+	if objectsUnsupportedWrite[common.ModuleRoot].Has(objectName) {
 		return nil, common.ErrOperationNotSupportedForObject
 	}
 
-	if path, ok := writeURLExceptions[c.moduleID][objectName]; ok {
+	if path, ok := writeURLExceptions[common.ModuleRoot][objectName]; ok {
 		// URL for write differs from read.
-		return urlbuilder.New(c.BaseURL, path)
+		return urlbuilder.New(c.BaseURL, apiVersion, path)
 	}
 
 	return c.getReadURL(objectName)
