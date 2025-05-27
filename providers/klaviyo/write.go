@@ -22,11 +22,11 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 	var write common.WriteMethod
 
 	if len(config.RecordId) == 0 {
-		if supportedObjectsByCreate[c.moduleID].Has(config.ObjectName) {
+		if supportedObjectsByCreate[common.ModuleRoot].Has(config.ObjectName) {
 			write = c.Client.Post
 		}
 	} else {
-		if supportedObjectsByUpdate[c.moduleID].Has(config.ObjectName) {
+		if supportedObjectsByUpdate[common.ModuleRoot].Has(config.ObjectName) {
 			write = c.Client.Patch
 
 			url.AddPath(config.RecordId)

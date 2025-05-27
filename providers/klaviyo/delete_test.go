@@ -18,6 +18,8 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 
 	errorNotFound := testutils.DataFromFile(t, "delete-tag-not-found.json")
 
+	header := http.Header{"revision": []string{"2024-10-15"}}
+
 	tests := []testroutines.Delete{
 		{
 			Name:         "Delete object must be included",
@@ -46,6 +48,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 				If: mockcond.And{
 					mockcond.Path("/api/tags/7da3b722-7e43-55ec-8450-4247843970ab"),
 					mockcond.MethodDELETE(),
+					mockcond.Header(header),
 				},
 				Then: mockserver.Response(http.StatusNoContent),
 			}.Server(),
