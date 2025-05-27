@@ -1,7 +1,7 @@
 {
   "modules": {
-    "meeting": {
-      "id": "meeting",
+    "root": {
+      "id": "root",
       "path": "",
       "objects": {
         "activities_report": {
@@ -56,6 +56,17 @@
             "type": "type"
           }
         },
+        "contacts_groups": {
+          "displayName": "Contacts Groups",
+          "path": "/contacts/groups",
+          "responseKey": "groups",
+          "fields": {
+            "description": "description",
+            "group_id": "group_id",
+            "group_name": "group_name",
+            "group_privacy": "group_privacy"
+          }
+        },
         "device_groups": {
           "displayName": "Device Groups",
           "path": "/devices/groups",
@@ -89,6 +100,16 @@
             "tag": "tag",
             "user_email": "user_email",
             "vendor": "vendor"
+          }
+        },
+        "groups": {
+          "displayName": "Groups",
+          "path": "/groups",
+          "responseKey": "groups",
+          "fields": {
+            "id": "id",
+            "name": "name",
+            "total_members": "total_members"
           }
         },
         "h323_devices": {
@@ -149,33 +170,6 @@
             "recommended_values": "recommended_values",
             "required": "required",
             "visible": "visible"
-          }
-        }
-      }
-    },
-    "user": {
-      "id": "user",
-      "path": "",
-      "objects": {
-        "contacts_groups": {
-          "displayName": "Contacts Groups",
-          "path": "/contacts/groups",
-          "responseKey": "groups",
-          "fields": {
-            "description": "description",
-            "group_id": "group_id",
-            "group_name": "group_name",
-            "group_privacy": "group_privacy"
-          }
-        },
-        "groups": {
-          "displayName": "Groups",
-          "path": "/groups",
-          "responseKey": "groups",
-          "fields": {
-            "id": "id",
-            "name": "name",
-            "total_members": "total_members"
           }
         },
         "users": {

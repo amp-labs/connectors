@@ -6,18 +6,19 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
-func TestWriteModuleMeeting(t *testing.T) { //nolint:funlen
+func TestWrite(t *testing.T) { //nolint:funlen
 	t.Parallel()
 
 	responseCreateTrackingField := testutils.DataFromFile(t, "./write/create-tracking-fields.json")
 	responseUpdateTrackingField := testutils.DataFromFile(t, "./write/create-tracking-fields.json")
+	responseCreateUser := testutils.DataFromFile(t, "./write/create-users.json")
+	responseCreateContactsGroup := testutils.DataFromFile(t, "./write/create-contacts-groups.json")
 
 	tests := []testroutines.Write{
 		{
@@ -87,25 +88,6 @@ func TestWriteModuleMeeting(t *testing.T) { //nolint:funlen
 			},
 			ExpectedErrs: nil,
 		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.Name, func(t *testing.T) {
-			t.Parallel()
-			tt.Run(t, func() (connectors.WriteConnector, error) {
-				return constructTestConnector(tt.Server.URL, providers.ModuleZoomMeeting)
-			})
-		})
-	}
-}
-
-func TestWriteModuleUser(t *testing.T) { //nolint:funlen
-	t.Parallel()
-
-	responseCreateUser := testutils.DataFromFile(t, "./write/create-users.json")
-	responseCreateContactsGroup := testutils.DataFromFile(t, "./write/create-contacts-groups.json")
-
-	tests := []testroutines.Write{
 		{
 			Name:  "Create user as POST",
 			Input: common.WriteParams{ObjectName: "users", RecordData: "dummy"},
@@ -156,7 +138,7 @@ func TestWriteModuleUser(t *testing.T) { //nolint:funlen
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 			tt.Run(t, func() (connectors.WriteConnector, error) {
-				return constructTestConnector(tt.Server.URL, providers.ModuleZoomUser)
+				return constructTestConnector(tt.Server.URL)
 			})
 		})
 	}
