@@ -142,7 +142,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 }
 
 func constructTestConnector(serverURL string) (*Connector, error) {
-	connector, err := NewConnector(WithAuthenticatedClient(http.DefaultClient))
+	connector, err := NewConnector(WithAuthenticatedClient(mockutils.NewClient()))
 	if err != nil {
 		return nil, err
 	}
