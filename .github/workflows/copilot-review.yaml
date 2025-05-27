@@ -1,0 +1,37 @@
+name: Request GitHub Copilot Review
+
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review]
+
+jobs:
+  request-copilot:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v3
+
+      - name: Request Copilot as a reviewer
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const reviewers = pr.requested_reviewers.map(r => r.login);
+
+            const copilotLogin = 'github-copilot[bot]';
+
+            if (!reviewers.includes(copilotLogin)) {
+              await github.rest.pulls.requestReviewers({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr.number,
+                reviewers: [copilotLogin]
+              });
+              console.log(`Requested ${copilotLogin} for review.`);
+            } else {
+              console.log(`${copilotLogin} is already a reviewer.`);
+            }
