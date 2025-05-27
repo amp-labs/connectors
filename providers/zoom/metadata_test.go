@@ -69,6 +69,20 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen
 				Result: map[string]common.ObjectMetadata{
 					"report/activities": {
 						DisplayName: "Activities",
+						Fields: map[string]common.FieldMetadata{
+							"type": {
+								DisplayName:  "type",
+								ValueType:    "singleSelect",
+								ProviderType: "string",
+								Values: common.FieldValues{{
+									Value:        "Sign in",
+									DisplayValue: "Sign in",
+								}, {
+									Value:        "Sign out",
+									DisplayValue: "Sign out",
+								}},
+							},
+						},
 						FieldsMap: map[string]string{
 							"client_type": "client_type",
 							"type":        "type",
@@ -78,6 +92,13 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen
 					},
 					"devices/groups": {
 						DisplayName: "Device Groups",
+						Fields: map[string]common.FieldMetadata{
+							"zdm_group_id": {
+								DisplayName:  "zdm_group_id",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
 						FieldsMap: map[string]string{
 							"name":        "name",
 							"description": "description",
