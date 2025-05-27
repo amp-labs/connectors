@@ -105,14 +105,12 @@ func parseMetadataFromResponse(resp *common.JSONHTTPResponse, objectName string)
 }
 
 func metadataFallback(moduleID common.ModuleID, objectName string) (*common.ObjectMetadata, error) {
-	metadatResult, err := metadata.Schemas.Select(moduleID, []string{objectName})
+	metadata, err := metadata.Schemas.SelectOne(moduleID, objectName)
 	if err != nil {
 		return nil, err
 	}
 
-	data := metadatResult.Result[objectName]
-
-	return &data, nil
+	return metadata, nil
 }
 
 func runFallback(
