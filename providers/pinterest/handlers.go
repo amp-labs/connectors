@@ -59,7 +59,7 @@ func matchObjectNameToEndpointPath(objectName string) (urlPath string) {
 	// https://developers.pinterest.com/docs/api/v5/catalogs_product_groups-list.
 	case "product_groups":
 		return "catalogs/product_groups"
-	// https://developers.pinterest.com/docs/api/v5/reports-stats
+	// https://developers.pinterest.com/docs/api/v5/reports-stats.
 	case "stats":
 		return "catalogs/reports/stats"
 	default:

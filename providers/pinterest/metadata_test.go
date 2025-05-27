@@ -6,6 +6,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -26,13 +27,13 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
-					If:   mockcond.Path("v5/pins"),
+					If:   mockcond.Path("/v5/pins"),
 					Then: mockserver.Response(http.StatusOK, pinsResponse),
 				}, {
-					If:   mockcond.Path("v5/boards"),
+					If:   mockcond.Path("/v5/boards"),
 					Then: mockserver.Response(http.StatusOK, boardsResponse),
 				}, {
-					If:   mockcond.Path("v5/media"),
+					If:   mockcond.Path("/v5/media"),
 					Then: mockserver.Response(http.StatusOK, mediaResponse),
 				}},
 			}.Server(),
@@ -116,7 +117,7 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 	}
 
 	// for testing we want to redirect calls to our mock server
-	connector.SetBaseURL(serverURL)
+	connector.SetBaseURL(mockutils.ReplaceURLOrigin(connector.HTTPClient().Base, serverURL))
 
 	return connector, nil
 }
