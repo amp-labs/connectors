@@ -21,7 +21,7 @@ func GetMondayConnector(ctx context.Context) *monday.Connector {
 	}
 
 	conn, err := monday.NewConnector(
-		common.Parameters{AuthenticatedClient: client},
+		common.ConnectorParams{AuthenticatedClient: client},
 	)
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)

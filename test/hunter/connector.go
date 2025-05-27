@@ -20,7 +20,7 @@ func GetHunterConnector(ctx context.Context) *hunter.Connector {
 	}
 
 	conn, err := hunter.NewConnector(
-		common.Parameters{AuthenticatedClient: client},
+		common.ConnectorParams{AuthenticatedClient: client},
 	)
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)

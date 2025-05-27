@@ -30,7 +30,7 @@ func GetNetsuiteConnector(ctx context.Context) *netsuite.Connector {
 		panic(err)
 	}
 
-	conn, err := netsuite.NewConnector(common.Parameters{
+	conn, err := netsuite.NewConnector(common.ConnectorParams{
 		AuthenticatedClient: client,
 		Workspace:           reader.Get(credscanning.Fields.Workspace),
 	})

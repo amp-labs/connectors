@@ -25,7 +25,7 @@ func GetConnector(ctx context.Context) *groove.Connector {
 		utils.Fail(err.Error())
 	}
 
-	conn, err := groove.NewConnector(common.Parameters{
+	conn, err := groove.NewConnector(common.ConnectorParams{
 		AuthenticatedClient: client,
 	})
 	if err != nil {

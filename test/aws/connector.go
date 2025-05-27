@@ -64,7 +64,7 @@ func GetAWSConnector(ctx context.Context, module common.ModuleID) *aws.Connector
 	}
 
 	conn, err := aws.NewConnector(
-		common.Parameters{
+		common.ConnectorParams{
 			Module:              module,
 			AuthenticatedClient: client,
 			Metadata: map[string]string{

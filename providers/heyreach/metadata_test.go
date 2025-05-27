@@ -181,7 +181,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 }
 
 func constructTestConnector(serverURL string) (*Connector, error) {
-	connector, err := NewConnector(common.Parameters{
+	connector, err := NewConnector(common.ConnectorParams{
 		Module:              common.ModuleRoot,
 		AuthenticatedClient: http.DefaultClient,
 	})
