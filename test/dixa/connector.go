@@ -20,7 +20,7 @@ func GetConnector(ctx context.Context) *dixa.Connector {
 	}
 
 	conn, err := dixa.NewConnector(
-		common.Parameters{AuthenticatedClient: client},
+		common.ConnectorParams{AuthenticatedClient: client},
 	)
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)

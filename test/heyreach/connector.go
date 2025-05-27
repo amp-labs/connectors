@@ -30,7 +30,7 @@ func GetHeyreachConnector(ctx context.Context) *heyreach.Connector {
 		utils.Fail(err.Error())
 	}
 
-	conn, err := heyreach.NewConnector(common.Parameters{
+	conn, err := heyreach.NewConnector(common.ConnectorParams{
 		AuthenticatedClient: client,
 	})
 	if err != nil {

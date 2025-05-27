@@ -21,7 +21,7 @@ func GetAshbyConnector(ctx context.Context) *ashby.Connector {
 	}
 
 	conn, err := ashby.NewConnector(
-		common.Parameters{
+		common.ConnectorParams{
 			AuthenticatedClient: client,
 		},
 	)

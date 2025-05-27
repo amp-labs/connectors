@@ -29,6 +29,7 @@ func init() { // nolint:funlen
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: true,
 		},
+		DefaultModule: ModuleZendeskTicketing,
 		Modules: &Modules{
 			ModuleZendeskTicketing: {
 				BaseURL:     "https://{{.workspace}}.zendesk.com/api/v2",
@@ -74,7 +75,8 @@ func init() { // nolint:funlen
 		Metadata: &ProviderMetadata{
 			Input: []MetadataItemInput{
 				{
-					Name: "workspace",
+					Name:        "workspace",
+					DisplayName: "Subdomain",
 				},
 			},
 		},
@@ -121,7 +123,8 @@ func init() { // nolint:funlen
 		Metadata: &ProviderMetadata{
 			Input: []MetadataItemInput{
 				{
-					Name: "workspace",
+					Name:        "workspace",
+					DisplayName: "Subdomain",
 				},
 			},
 		},

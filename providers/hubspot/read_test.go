@@ -40,7 +40,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.PathSuffix("/crm/v3/objects/contacts"),
+				If:    mockcond.Path("/crm/v3/objects/contacts"),
 				Then:  mockserver.Response(http.StatusOK, responseContacts),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
@@ -110,7 +110,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.PathSuffix("/crm/v3/lists/search"),
+				If:    mockcond.Path("/crm/v3/lists/search"),
 				Then:  mockserver.Response(http.StatusOK, responseListsFirst),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
@@ -148,7 +148,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.PathSuffix("/crm/v3/lists/search"),
+					mockcond.Path("/crm/v3/lists/search"),
 					mockcond.Body(`{
 						"offset": 2,
 						"count": 100

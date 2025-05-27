@@ -18,7 +18,7 @@ type parameters struct {
 	paramsbuilder.Module
 }
 
-func newParams(opts []Option) (*common.Parameters, error) { // nolint:unused
+func newParams(opts []Option) (*common.ConnectorParams, error) { // nolint:unused
 	oldParams, err := paramsbuilder.Apply(parameters{}, opts,
 		WithModule(providers.ModuleZoomMeeting),
 	)
@@ -26,7 +26,7 @@ func newParams(opts []Option) (*common.Parameters, error) { // nolint:unused
 		return nil, err
 	}
 
-	return &common.Parameters{
+	return &common.ConnectorParams{
 		Module:              oldParams.Module.Selection.ID,
 		AuthenticatedClient: oldParams.Client.Caller.Client,
 	}, nil

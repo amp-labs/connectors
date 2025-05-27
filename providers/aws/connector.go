@@ -33,7 +33,7 @@ type Connector struct {
 	instanceARN     string
 }
 
-func NewConnector(params common.Parameters) (*Connector, error) {
+func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	conn, err := components.Initialize(providers.AWS, params,
 		func(connector *components.Connector) (*Connector, error) {
 			var expectedMetadataKeys []string

@@ -16,7 +16,7 @@ type Transport struct {
 // satisfy a common interface, and then hook them up in here.
 func NewTransport(
 	provider providers.Provider,
-	params common.Parameters,
+	params common.ConnectorParams,
 ) (*Transport, error) {
 	providerContext, err := NewProviderContext(provider, params.Module, params.Workspace, params.Metadata)
 	if err != nil {
@@ -43,6 +43,10 @@ func NewTransport(
 func (t *Transport) SetBaseURL(newURL string) {
 	t.ProviderContext.providerInfo.BaseURL = newURL
 	t.json.HTTPClient.Base = newURL
+}
+
+func (t *Transport) SetErrorHandler(handler common.ErrorHandler) {
+	t.HTTPClient().ErrorHandler = handler
 }
 
 func (t *Transport) JSONHTTPClient() *common.JSONHTTPClient { return t.json }

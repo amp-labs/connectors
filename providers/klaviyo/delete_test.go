@@ -44,7 +44,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentMIME("application/vnd.api+json"),
 				If: mockcond.And{
-					mockcond.PathSuffix("/api/tags/7da3b722-7e43-55ec-8450-4247843970ab"),
+					mockcond.Path("/api/tags/7da3b722-7e43-55ec-8450-4247843970ab"),
 					mockcond.MethodDELETE(),
 				},
 				Then: mockserver.Response(http.StatusNoContent),

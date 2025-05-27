@@ -16,7 +16,7 @@ func GetInstantlyAIConnector(ctx context.Context) *instantlyai.Connector {
 
 	client := utils.NewAPIKeyClient(ctx, reader, providers.InstantlyAI)
 
-	conn, err := instantlyai.NewConnector(common.Parameters{
+	conn, err := instantlyai.NewConnector(common.ConnectorParams{
 		AuthenticatedClient: client,
 	})
 	if err != nil {

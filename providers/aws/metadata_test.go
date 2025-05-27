@@ -7,6 +7,7 @@ import (
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 )
@@ -96,7 +97,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 }
 
 func constructTestConnector(serverURL string) (*Connector, error) {
-	connector, err := NewConnector(common.Parameters{
+	connector, err := NewConnector(common.ConnectorParams{
 		Module:              providers.ModuleAWSIdentityCenter,
 		AuthenticatedClient: http.DefaultClient,
 		Metadata: map[string]string{
@@ -111,7 +112,7 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 
 	moduleInfo := (*connector.ProviderInfo().Modules)[providers.ModuleAWSIdentityCenter]
 
-	moduleInfo.BaseURL = serverURL
+	moduleInfo.BaseURL = mockutils.ReplaceURLOrigin(moduleInfo.BaseURL, serverURL)
 
 	connector.ProviderInfo().Modules = &providers.Modules{
 		providers.ModuleAWSIdentityCenter: moduleInfo,

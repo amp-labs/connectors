@@ -25,6 +25,7 @@ func init() {
 				ScopesField: "scope",
 			},
 		},
+		DefaultModule: ModuleZoomMeeting,
 		Modules: &Modules{
 			ModuleZoomUser: {
 				BaseURL:     "https://api.zoom.us/v2",
