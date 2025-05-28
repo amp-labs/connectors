@@ -10,7 +10,34 @@ import (
 
 func supportedOperations() components.EndpointRegistryInput {
 	readSupport := []string{
-		"pins", "boards", "media", "ad_accounts", "catalogs",
+		"pins",
+		"boards",
+		"media",
+		"ad_accounts",
+		"catalogs",
+		"employers",
+		"feeds",
+		"product_groups",
+		"integrations",
+		"stats",
+	}
+
+	writeSupport := []string{
+		"pins",
+		"boards",
+		"media",
+		"catalogs",
+		"feeds",
+		"websites",
+		"ad_accounts",
+		"product_groups",
+		"commerce",
+		"logs",
+		"reports",
+	}
+
+	deleteSupport := []string{
+		"pins", "boards", "commerce", "feeds", "product_groups",
 	}
 
 	return components.EndpointRegistryInput{
@@ -18,6 +45,14 @@ func supportedOperations() components.EndpointRegistryInput {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
 				Support:  components.ReadSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(writeSupport, ",")),
+				Support:  components.WriteSupport,
+			},
+			{
+				Endpoint: fmt.Sprintf("{%s}", strings.Join(deleteSupport, ",")),
+				Support:  components.DeleteSupport,
 			},
 		},
 	}
