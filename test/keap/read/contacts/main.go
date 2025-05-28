@@ -25,9 +25,9 @@ func main() {
 	defer utils.Close(conn)
 
 	res, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: "contacts",
+		ObjectName: "v2/contacts",
 		Fields:     connectors.Fields("id", "experience"),
-		// Since:      time.Now().Add(-30 * time.Minute),
+		// Since:      time.Now(),
 		// NextPage: "https://api.infusionsoft.com/crm/rest/v1/contacts/?limit=1&offset=50&since=2024-12-17T21:39:36.099Z&order=id",
 	})
 	if err != nil {

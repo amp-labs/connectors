@@ -7,7 +7,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -41,11 +40,11 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "Successful delete",
-			Input: common.DeleteParams{ObjectName: "contacts", RecordId: "18"},
+			Input: common.DeleteParams{ObjectName: "v2/contacts", RecordId: "18"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.Path("/crm/rest/v1/contacts/18"),
+					mockcond.Path("/crm/rest/v2/contacts/18"),
 					mockcond.MethodDELETE(),
 				},
 				Then: mockserver.Response(http.StatusNoContent),
@@ -55,7 +54,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "Error on deleting missing record",
-			Input: common.DeleteParams{ObjectName: "contacts", RecordId: "18"},
+			Input: common.DeleteParams{ObjectName: "v2/contacts", RecordId: "18"},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusNotFound, errorNotFound),
@@ -74,7 +73,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.DeleteConnector, error) {
-				return constructTestConnector(tt.Server.URL, providers.ModuleKeapV1)
+				return constructTestConnector(tt.Server.URL)
 			})
 		})
 	}

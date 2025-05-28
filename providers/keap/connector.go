@@ -11,15 +11,16 @@ import (
 
 const ApiPathPrefix = "crm/rest"
 
+// Connector implements API for V1 and V2:
+// https://developer.keap.com/docs/rest/
+// https://developer.keap.com/docs/restv2/
 type Connector struct {
-	BaseURL    string
-	Client     *common.JSONHTTPClient
-	moduleInfo *providers.ModuleInfo
-	moduleID   common.ModuleID
+	BaseURL string
+	Client  *common.JSONHTTPClient
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	params, err := paramsbuilder.Apply(parameters{}, opts, WithModule(providers.ModuleKeapV1))
+	params, err := paramsbuilder.Apply(parameters{}, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -29,7 +30,6 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		Client: &common.JSONHTTPClient{
 			HTTPClient: httpClient,
 		},
-		moduleID: params.Module.Selection.ID,
 	}
 
 	// Read provider info
@@ -37,8 +37,6 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	if err != nil {
 		return nil, err
 	}
-
-	conn.moduleInfo = providerInfo.ReadModuleInfo(conn.moduleID)
 
 	// connector and its client must mirror base url and provide its own error parser
 	conn.setBaseURL(providerInfo.BaseURL)
@@ -51,7 +49,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 }
 
 func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
-	path, err := metadata.Schemas.LookupURLPath(c.moduleID, objectName)
+	path, err := metadata.Schemas.FindURLPath(common.ModuleRoot, objectName)
 	if err != nil {
 		return nil, err
 	}
@@ -60,10 +58,7 @@ func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
 }
 
 func (c *Connector) getWriteURL(objectName string) (*urlbuilder.URL, error) {
-	modulePath := metadata.Schemas.LookupModuleURLPath(c.moduleID)
-	path := objectNameToWritePath.Get(objectName)
-
-	return c.getURL(modulePath, path)
+	return c.getURL(objectName)
 }
 
 func (c *Connector) getURL(args ...string) (*urlbuilder.URL, error) {
