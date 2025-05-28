@@ -553,6 +553,11 @@ func getResponseHeaders(response *http.Response) Headers {
 		totalValues += len(values)
 	}
 
+	// Corner case: if there are no headers, return nil
+	if totalValues == 0 {
+		return nil
+	}
+
 	// Initialize the headers slice with accurate capacity
 	headers := make(Headers, 0, totalValues)
 
