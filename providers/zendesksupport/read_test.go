@@ -368,7 +368,7 @@ func TestReadHelpCenterModule(t *testing.T) { //nolint:funlen,gocognit,cyclop,ma
 
 func constructTestConnector(serverURL string, moduleID common.ModuleID) (*Connector, error) {
 	connector, err := NewConnector(
-		WithAuthenticatedClient(http.DefaultClient),
+		WithAuthenticatedClient(mockutils.NewClient()),
 		WithWorkspace("test-workspace"),
 		WithModule(moduleID),
 	)

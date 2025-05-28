@@ -343,7 +343,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 
 func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(
-		WithAuthenticatedClient(http.DefaultClient),
+		WithAuthenticatedClient(mockutils.NewClient()),
 		WithModule(providers.ModuleHubspotCRM),
 	)
 	if err != nil {
