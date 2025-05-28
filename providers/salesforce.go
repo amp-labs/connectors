@@ -43,7 +43,7 @@ func init() { // nolint:funlen
 		DefaultModule: ModuleSalesforceStandard,
 		Modules: &Modules{
 			ModuleSalesforceStandard: {
-				BaseURL:     "",
+				BaseURL:     "https://{{.workspace}}.my.salesforce.com",
 				DisplayName: "Standard Salesforce Platform",
 				Support: Support{
 					BulkWrite: BulkWriteSupport{

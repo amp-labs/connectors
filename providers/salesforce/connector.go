@@ -20,9 +20,13 @@ const (
 
 // Connector is a Salesforce connector.
 type Connector struct {
-	BaseURL       string
-	Client        *common.JSONHTTPClient
-	XMLClient     *common.XMLHTTPClient
+	BaseURL   string
+	Client    *common.JSONHTTPClient
+	XMLClient *common.XMLHTTPClient
+
+	providerInfo  *providers.ProviderInfo
+	moduleInfo    *providers.ModuleInfo
+	moduleID      common.ModuleID
 	pardotAdapter *pardot.Adapter
 }
 
@@ -47,14 +51,17 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		XMLClient: &common.XMLHTTPClient{
 			HTTPClient: httpClient,
 		},
+		moduleID: params.Module.Selection.ID,
 	}
 
-	providerInfo, err := providers.ReadInfo(conn.Provider(), &params.Workspace)
+	conn.providerInfo, err = providers.ReadInfo(conn.Provider(), &params.Workspace)
 	if err != nil {
 		return nil, err
 	}
 
-	conn.setBaseURL(providerInfo.BaseURL)
+	conn.moduleInfo = conn.providerInfo.ReadModuleInfo(conn.moduleID)
+
+	conn.setBaseURL(conn.providerInfo.BaseURL)
 	conn.Client.HTTPClient.ErrorHandler = interpreter.ErrorHandler{
 		JSON: &interpreter.DirectFaultyResponder{Callback: conn.interpretJSONError},
 		XML:  &interpreter.DirectFaultyResponder{Callback: conn.interpretXMLError},
@@ -65,7 +72,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	// Read/Write/ListObjectMetadata will delegate to this adapter.
 	moduleID := params.Module.Selection.ID
 	if moduleID == providers.ModuleSalesforceAccountEngagement {
-		conn.pardotAdapter, err = pardot.NewAdapter(conn.Client, providerInfo, params.Metadata.Map)
+		conn.pardotAdapter, err = pardot.NewAdapter(conn.Client, conn.moduleInfo, params.Metadata.Map)
 		if err != nil {
 			return nil, err
 		}

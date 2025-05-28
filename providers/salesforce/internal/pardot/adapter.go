@@ -13,22 +13,11 @@ type Adapter struct {
 }
 
 func NewAdapter(
-	client *common.JSONHTTPClient, info *providers.ProviderInfo, metadata map[string]string,
+	client *common.JSONHTTPClient, info *providers.ModuleInfo, metadata map[string]string,
 ) (*Adapter, error) {
-	modules := info.Modules
-	if modules == nil {
-		return nil, common.ErrImplementation
-	}
-
-	baseURL := (*modules)[providers.ModuleSalesforceAccountEngagement].BaseURL
-	if baseURL == "" {
-		return nil, common.ErrInvalidModuleDeclaration
-	}
-
 	subdomain := getSubdomain(metadata)
 
-	// TODO replace with proper ModuleInfo resolver.
-	baseURL = strings.Replace(baseURL, "<<SERVICE_DOMAIN>>", subdomain, 1)
+	baseURL := strings.Replace(info.BaseURL, "<<SERVICE_DOMAIN>>", subdomain, 1)
 
 	return &Adapter{
 		Client:  client,
