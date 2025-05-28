@@ -31,7 +31,7 @@ func GetClickupConnector(ctx context.Context) *clickup.Connector {
 	}
 
 	conn, err := clickup.NewConnector(
-		common.Parameters{
+		common.ConnectorParams{
 			AuthenticatedClient: client,
 		},
 	)

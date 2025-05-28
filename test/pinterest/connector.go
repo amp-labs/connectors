@@ -25,7 +25,7 @@ func GetConnector(ctx context.Context) *pinterest.Connector {
 		utils.Fail("error creating connector", "error", err)
 	}
 
-	conn, err := pinterest.NewConnector(common.Parameters{
+	conn, err := pinterest.NewConnector(common.ConnectorParams{
 		AuthenticatedClient: client,
 	})
 	if err != nil {

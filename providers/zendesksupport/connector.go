@@ -10,9 +10,10 @@ import (
 )
 
 type Connector struct {
-	BaseURL string
-	Client  *common.JSONHTTPClient
-	Module  common.Module
+	BaseURL    string
+	Client     *common.JSONHTTPClient
+	moduleInfo *providers.ModuleInfo
+	moduleID   common.ModuleID
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
@@ -29,13 +30,15 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		Client: &common.JSONHTTPClient{
 			HTTPClient: httpClient,
 		},
-		Module: params.Module.Selection,
+		moduleID: params.Module.Selection.ID,
 	}
 
 	providerInfo, err := providers.ReadInfo(conn.Provider(), &params.Workspace)
 	if err != nil {
 		return nil, err
 	}
+
+	conn.moduleInfo = providerInfo.ReadModuleInfo(conn.moduleID)
 
 	// connector and its client must mirror base url and provide its own error parser
 	conn.setBaseURL(providerInfo.BaseURL)
@@ -55,7 +58,7 @@ func (c *Connector) String() string {
 }
 
 func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
-	path, err := metadata.Schemas.LookupURLPath(c.Module.ID, objectName)
+	path, err := metadata.Schemas.LookupURLPath(c.moduleID, objectName)
 	if err != nil {
 		return nil, err
 	}
@@ -64,11 +67,11 @@ func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
 }
 
 func (c *Connector) getWriteURL(objectName string) (*urlbuilder.URL, error) {
-	if objectsUnsupportedWrite[c.Module.ID].Has(objectName) {
+	if objectsUnsupportedWrite[c.moduleID].Has(objectName) {
 		return nil, common.ErrOperationNotSupportedForObject
 	}
 
-	if path, ok := writeURLExceptions[c.Module.ID][objectName]; ok {
+	if path, ok := writeURLExceptions[c.moduleID][objectName]; ok {
 		// URL for write differs from read.
 		return urlbuilder.New(c.BaseURL, path)
 	}

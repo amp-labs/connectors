@@ -22,7 +22,7 @@ func GetBlueshiftConnector(ctx context.Context) *blueshift.Connector {
 	}
 
 	conn, err := blueshift.NewConnector(
-		common.Parameters{
+		common.ConnectorParams{
 			AuthenticatedClient: client,
 		},
 	)

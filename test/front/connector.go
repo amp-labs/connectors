@@ -15,7 +15,7 @@ func GetFrontConnector(ctx context.Context) *front.Connector {
 	filePath := credscanning.LoadPath(providers.Front)
 	reader := testUtils.MustCreateProvCredJSON(filePath, false, false)
 
-	conn, err := front.NewConnector(common.Parameters{
+	conn, err := front.NewConnector(common.ConnectorParams{
 		AuthenticatedClient: utils.NewAPIKeyClient(ctx, reader, providers.Front),
 	})
 	if err != nil {

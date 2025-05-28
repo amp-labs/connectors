@@ -74,7 +74,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Input: []string{"contacts"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.PathSuffix("/v3/contact_custom_fields"),
+				If:    mockcond.Path("/v3/contact_custom_fields"),
 				Then:  mockserver.Response(http.StatusOK, responseContactsCustomFields),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetMetadata,

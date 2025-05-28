@@ -26,7 +26,7 @@ func GetConnector(ctx context.Context) *gorgias.Connector {
 		utils.Fail(err.Error())
 	}
 
-	conn, err := gorgias.NewConnector(common.Parameters{
+	conn, err := gorgias.NewConnector(common.ConnectorParams{
 		AuthenticatedClient: client,
 		Workspace:           "ampersand",
 	})

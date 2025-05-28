@@ -15,7 +15,7 @@ func GetInsightlyConnector(ctx context.Context) *insightly.Connector {
 	reader := utils.MustCreateProvCredJSON(filePath, false, false)
 
 	conn, err := insightly.NewConnector(
-		common.Parameters{
+		common.ConnectorParams{
 			AuthenticatedClient: utils.NewBasicAuthClient(ctx, reader),
 		},
 	)
