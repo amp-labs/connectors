@@ -15,7 +15,7 @@ Pinterest API version : v5
 | Ad_accounts             | ad_accounts            | read, write  |
 | Catalogs                | catalogs               | read, write  |
 | Employers               | business/employers     | read         |
-| feeds                   | catalogs/feeds         | read, wirte  |
+| feeds                   | catalogs/feeds         | read, write  |
 | Product_groups          | catalogs/product_groups| read, write  |
 | Integrations            | integrations           | read         |
 | Stats                   | catalogs/reports/stats | read         |
@@ -23,6 +23,4 @@ Pinterest API version : v5
 | commerce                | integrations/commerce  | write        |
 | Logs                    | integrations/logs      | write        |
 | Reports                 | catalogs/reports       | write        |
-| Submit                  | advanced_auction/items/| write        |
-                               submit
 -------------------------------------------------------------------

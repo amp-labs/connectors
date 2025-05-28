@@ -10,15 +10,15 @@ import (
 
 func supportedOperations() components.EndpointRegistryInput {
 	readSupport := []string{
-		"pins", "boards", "media", "ad_accounts", "catalogs",
+		"pins", "boards", "media", "ad_accounts", "catalogs", "employers", "feeds", "product_groups", "integrations", "stats",
 	}
 
 	writeSupport := []string{
-		"pins", "boards", "media", "token", "catalogs", "websites", "ad_accounts",
+		"pins", "boards", "media", "catalogs", "feeds", "websites", "ad_accounts", "product_groups", "commerce", "logs", "reports",
 	}
 
 	deleteSupport := []string{
-		"pins", "boards", "integrations/commerce", "feeds", "product_groups",
+		"pins", "boards", "commerce", "feeds", "product_groups",
 	}
 
 	return components.EndpointRegistryInput{
