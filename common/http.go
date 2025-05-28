@@ -541,3 +541,19 @@ func GetResponseBodyOnce(response *http.Response) []byte {
 
 	return body
 }
+
+func getResponseHeaders(response *http.Response) Headers {
+	if response == nil {
+		return nil
+	}
+
+	headers := make(Headers, 0, len(response.Header))
+
+	for key, values := range response.Header {
+		for _, value := range values {
+			headers = append(headers, Header{Key: key, Value: value})
+		}
+	}
+
+	return headers
+}

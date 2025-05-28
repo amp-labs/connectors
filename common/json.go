@@ -139,7 +139,9 @@ func ParseJSONResponse(res *http.Response, body []byte) (*JSONHTTPResponse, erro
 	// Unmarshall the response body into JSON
 	jsonBody, err := ajson.Unmarshal(body)
 	if err != nil {
-		return nil, NewHTTPStatusError(res.StatusCode, fmt.Errorf("failed to unmarshall response body into JSON: %w", err))
+		headers := getResponseHeaders(res)
+
+		return nil, NewHTTPError(res.StatusCode, body, headers, fmt.Errorf("failed to unmarshall response body into JSON: %w", err))
 	}
 
 	return &JSONHTTPResponse{

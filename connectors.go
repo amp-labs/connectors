@@ -91,7 +91,7 @@ type BatchRecordReaderConnector interface {
 	GetRecordsByIds(
 		ctx context.Context,
 		objectName string,
-		//nolint:revive
+	//nolint:revive
 		recordIds []string,
 		fields []string,
 		associations []string) ([]common.ReadResultRow, error)
@@ -173,7 +173,7 @@ type (
 	DeleteResult             = common.DeleteResult
 	ListObjectMetadataResult = common.ListObjectMetadataResult
 
-	ErrorWithStatus = common.HTTPStatusError //nolint:errname
+	ErrorWithStatus = common.HTTPError //nolint:errname
 )
 
 var Fields = datautils.NewStringSet // nolint:gochecknoglobals

@@ -95,8 +95,8 @@ func ComparatorSubsetWrite(_ string, actual, expected *common.WriteResult) bool 
 //			common.ErrCaller,
 //			errors.New(string(unsupportedResponse)),
 //		},
-//		"arsenal": common.NewHTTPStatusError(http.StatusBadRequest,		// Is doing exact match.
-//			fmt.Errorf("%w: %s", common.ErrCaller, string(unsupportedResponse))),
+//		"arsenal": common.NewHTTPError(http.StatusBadRequest,		// Is doing exact match.
+//			headers, body, fmt.Errorf("%w: %s", common.ErrCaller, string(unsupportedResponse))),
 //	},
 func ComparatorSubsetMetadata(_ string, actual, expected *common.ListObjectMetadataResult) bool {
 	if len(expected.Result)+len(expected.Errors) == 0 {
