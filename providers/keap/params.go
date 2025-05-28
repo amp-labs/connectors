@@ -7,7 +7,6 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
-	"github.com/amp-labs/connectors/providers"
 	"golang.org/x/oauth2"
 )
 
@@ -19,19 +18,15 @@ type Option = func(params *parameters)
 
 type parameters struct {
 	paramsbuilder.Client
-	paramsbuilder.Module
 }
 
 func newParams(opts []Option) (*common.ConnectorParams, error) { // nolint:unused
-	oldParams, err := paramsbuilder.Apply(parameters{}, opts,
-		WithModule(providers.ModuleKeapV1),
-	)
+	oldParams, err := paramsbuilder.Apply(parameters{}, opts)
 	if err != nil {
 		return nil, err
 	}
 
 	return &common.ConnectorParams{
-		Module:              oldParams.Module.Selection.ID,
 		AuthenticatedClient: oldParams.Client.Caller.Client,
 	}, nil
 }
@@ -39,7 +34,6 @@ func newParams(opts []Option) (*common.ConnectorParams, error) { // nolint:unuse
 func (p parameters) ValidateParams() error {
 	return errors.Join(
 		p.Client.ValidateParams(),
-		p.Module.ValidateParams(),
 	)
 }
 
@@ -54,11 +48,5 @@ func WithClient(ctx context.Context, client *http.Client,
 func WithAuthenticatedClient(client common.AuthenticatedHTTPClient) Option {
 	return func(params *parameters) {
 		params.WithAuthenticatedClient(client)
-	}
-}
-
-func WithModule(module common.ModuleID) Option {
-	return func(params *parameters) {
-		params.WithModule(module, SupportedModules, providers.ModuleKeapV1)
 	}
 }

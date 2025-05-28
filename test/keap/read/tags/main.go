@@ -7,6 +7,8 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/amp-labs/connectors"
+	"github.com/amp-labs/connectors/common"
 	connTest "github.com/amp-labs/connectors/test/keap"
 	"github.com/amp-labs/connectors/test/utils"
 )
@@ -22,13 +24,15 @@ func main() {
 	conn := connTest.GetKeapConnector(ctx)
 	defer utils.Close(conn)
 
-	metadata, err := conn.ListObjectMetadata(ctx, []string{
-		"v2/contacts",
+	res, err := conn.Read(ctx, common.ReadParams{
+		ObjectName: "v2/tags",
+		Fields:     connectors.Fields("name"),
+		// Since:      time.Now(),
 	})
 	if err != nil {
-		utils.Fail("error listing metadata for Keap", "error", err)
+		utils.Fail("error reading from Keap", "error", err)
 	}
 
-	fmt.Println("Metadata...")
-	utils.DumpJSON(metadata, os.Stdout)
+	fmt.Println("Reading contacts..")
+	utils.DumpJSON(res, os.Stdout)
 }

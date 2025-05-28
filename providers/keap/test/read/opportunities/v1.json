@@ -1,0 +1,52 @@
+{
+  "opportunities": [
+    {
+      "id": 2,
+      "opportunity_title": "First Opportunity",
+      "next_action_date": null,
+      "next_action_notes": "",
+      "opportunity_notes": "",
+      "estimated_close_date": null,
+      "include_in_forecast": 0,
+      "projected_revenue_low": 0.0,
+      "projected_revenue_high": 0.0,
+      "contact": {
+        "id": 74,
+        "email": "bob.lewis@gmail.com",
+        "first_name": "Erica",
+        "last_name": "Lewis",
+        "company_name": "",
+        "job_title": null,
+        "phone_number": ""
+      },
+      "stage": {
+        "id": 18,
+        "name": "New Opportunity",
+        "details": {
+          "probability": 0,
+          "stage_order": 10,
+          "target_num_days": 1,
+          "check_list_items": []
+        },
+        "reasons": []
+      },
+      "user": {
+        "id": 1,
+        "first_name": "Integration",
+        "last_name": "User"
+      },
+      "date_created": "2025-05-28T18:30:05.000+0000",
+      "last_updated": "2025-05-28T18:30:05.000+0000",
+      "affiliate_id": 0,
+      "custom_fields": [
+        {
+          "id": 18,
+          "content": "purple"
+        }
+      ]
+    }
+  ],
+  "count": 1,
+  "next": "https://api.infusionsoft.com/crm/rest/v1/opportunities/?limit=1&offset=1000",
+  "previous": "https://api.infusionsoft.com/crm/rest/v1/opportunities/?limit=1000&offset=0"
+}

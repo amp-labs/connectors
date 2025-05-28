@@ -1,12 +1,12 @@
 {
   "modules": {
-    "version1": {
-      "id": "version1",
-      "path": "/v1",
+    "root": {
+      "id": "root",
+      "path": "",
       "objects": {
-        "affiliates": {
+        "v1/affiliates": {
           "displayName": "Affiliates",
-          "path": "/affiliates",
+          "path": "/v1/affiliates",
           "responseKey": "affiliates",
           "fields": {
             "code": "code",
@@ -20,9 +20,52 @@
             "track_leads_for": "track_leads_for"
           }
         },
-        "appointments": {
+        "v1/affiliates/commissions": {
+          "displayName": "Commissions",
+          "path": "/v1/affiliates/commissions",
+          "responseKey": "commissions",
+          "fields": {
+            "amount_earned": "amount_earned",
+            "contact_first_name": "contact_first_name",
+            "contact_id": "contact_id",
+            "contact_last_name": "contact_last_name",
+            "date_earned": "date_earned",
+            "description": "description",
+            "invoice_id": "invoice_id",
+            "product_name": "product_name",
+            "sales_affiliate_id": "sales_affiliate_id",
+            "sold_by_first_name": "sold_by_first_name",
+            "sold_by_last_name": "sold_by_last_name"
+          }
+        },
+        "v1/affiliates/programs": {
+          "displayName": "Programs",
+          "path": "/v1/affiliates/programs",
+          "responseKey": "programs",
+          "fields": {
+            "affiliate_id": "affiliate_id",
+            "id": "id",
+            "name": "name",
+            "notes": "notes",
+            "priority": "priority"
+          }
+        },
+        "v1/affiliates/redirectlinks": {
+          "displayName": "Redirects",
+          "path": "/v1/affiliates/redirectlinks",
+          "responseKey": "redirects",
+          "fields": {
+            "affiliate_id": "affiliate_id",
+            "id": "id",
+            "local_url_code": "local_url_code",
+            "name": "name",
+            "program_ids": "program_ids",
+            "redirect_url": "redirect_url"
+          }
+        },
+        "v1/appointments": {
           "displayName": "Appointments",
-          "path": "/appointments",
+          "path": "/v1/appointments",
           "responseKey": "appointments",
           "fields": {
             "contact_id": "contact_id",
@@ -35,9 +78,9 @@
             "user": "user"
           }
         },
-        "campaigns": {
+        "v1/campaigns": {
           "displayName": "Campaigns",
-          "path": "/campaigns",
+          "path": "/v1/campaigns",
           "responseKey": "campaigns",
           "fields": {
             "created_by_global_id": "created_by_global_id",
@@ -54,27 +97,9 @@
             "time_zone": "time_zone"
           }
         },
-        "commissions": {
-          "displayName": "Commissions",
-          "path": "/affiliates/commissions",
-          "responseKey": "commissions",
-          "fields": {
-            "amount_earned": "amount_earned",
-            "contact_first_name": "contact_first_name",
-            "contact_id": "contact_id",
-            "contact_last_name": "contact_last_name",
-            "date_earned": "date_earned",
-            "description": "description",
-            "invoice_id": "invoice_id",
-            "product_name": "product_name",
-            "sales_affiliate_id": "sales_affiliate_id",
-            "sold_by_first_name": "sold_by_first_name",
-            "sold_by_last_name": "sold_by_last_name"
-          }
-        },
-        "companies": {
+        "v1/companies": {
           "displayName": "Companies",
-          "path": "/companies",
+          "path": "/v1/companies",
           "responseKey": "companies",
           "fields": {
             "address": "address",
@@ -90,9 +115,9 @@
             "website": "website"
           }
         },
-        "contacts": {
+        "v1/contacts": {
           "displayName": "Contacts",
-          "path": "/contacts",
+          "path": "/v1/contacts",
           "responseKey": "contacts",
           "fields": {
             "ScoreValue": "ScoreValue",
@@ -128,9 +153,9 @@
             "website": "website"
           }
         },
-        "emails": {
+        "v1/emails": {
           "displayName": "Emails",
-          "path": "/emails",
+          "path": "/v1/emails",
           "responseKey": "emails",
           "fields": {
             "clicked_date": "clicked_date",
@@ -150,9 +175,9 @@
             "subject": "subject"
           }
         },
-        "files": {
+        "v1/files": {
           "displayName": "Files",
-          "path": "/files",
+          "path": "/v1/files",
           "responseKey": "files",
           "fields": {
             "category": "category",
@@ -169,9 +194,9 @@
             "remote_file_key": "remote_file_key"
           }
         },
-        "hooks": {
+        "v1/hooks": {
           "displayName": "Hooks",
-          "path": "/hooks",
+          "path": "/v1/hooks",
           "responseKey": "",
           "fields": {
             "eventKey": "eventKey",
@@ -180,9 +205,9 @@
             "status": "status"
           }
         },
-        "merchants": {
+        "v1/merchants": {
           "displayName": "Merchants",
-          "path": "/merchants",
+          "path": "/v1/merchants",
           "responseKey": "merchant_accounts",
           "fields": {
             "account_name": "account_name",
@@ -191,9 +216,9 @@
             "type": "type"
           }
         },
-        "notes": {
+        "v1/notes": {
           "displayName": "Notes",
-          "path": "/notes",
+          "path": "/v1/notes",
           "responseKey": "notes",
           "fields": {
             "body": "body",
@@ -207,9 +232,9 @@
             "user_id": "user_id"
           }
         },
-        "opportunities": {
+        "v1/opportunities": {
           "displayName": "Opportunities",
-          "path": "/opportunities",
+          "path": "/v1/opportunities",
           "responseKey": "opportunities",
           "fields": {
             "affiliate_id": "affiliate_id",
@@ -230,9 +255,22 @@
             "user": "user"
           }
         },
-        "orders": {
+        "v1/opportunity/stage_pipeline": {
+          "displayName": "Stage Pipelines",
+          "path": "/v1/opportunity/stage_pipeline",
+          "responseKey": "",
+          "fields": {
+            "end_stage": "end_stage",
+            "is_default": "is_default",
+            "stage_count": "stage_count",
+            "stage_id": "stage_id",
+            "stage_name": "stage_name",
+            "stage_order": "stage_order"
+          }
+        },
+        "v1/orders": {
           "displayName": "Orders",
-          "path": "/orders",
+          "path": "/v1/orders",
           "responseKey": "orders",
           "fields": {
             "allow_payment": "allow_payment",
@@ -263,9 +301,9 @@
             "total_paid": "total_paid"
           }
         },
-        "products": {
+        "v1/products": {
           "displayName": "Products",
-          "path": "/products",
+          "path": "/v1/products",
           "responseKey": "products",
           "fields": {
             "id": "id",
@@ -281,47 +319,9 @@
             "url": "url"
           }
         },
-        "programs": {
-          "displayName": "Programs",
-          "path": "/affiliates/programs",
-          "responseKey": "programs",
-          "fields": {
-            "affiliate_id": "affiliate_id",
-            "id": "id",
-            "name": "name",
-            "notes": "notes",
-            "priority": "priority"
-          }
-        },
-        "redirectlinks": {
-          "displayName": "Redirects",
-          "path": "/affiliates/redirectlinks",
-          "responseKey": "redirects",
-          "fields": {
-            "affiliate_id": "affiliate_id",
-            "id": "id",
-            "local_url_code": "local_url_code",
-            "name": "name",
-            "program_ids": "program_ids",
-            "redirect_url": "redirect_url"
-          }
-        },
-        "stage_pipeline": {
-          "displayName": "Stage Pipelines",
-          "path": "/opportunity/stage_pipeline",
-          "responseKey": "",
-          "fields": {
-            "end_stage": "end_stage",
-            "is_default": "is_default",
-            "stage_count": "stage_count",
-            "stage_id": "stage_id",
-            "stage_name": "stage_name",
-            "stage_order": "stage_order"
-          }
-        },
-        "subscriptions": {
+        "v1/subscriptions": {
           "displayName": "Subscriptions",
-          "path": "/subscriptions",
+          "path": "/v1/subscriptions",
           "responseKey": "subscriptions",
           "fields": {
             "active": "active",
@@ -344,9 +344,9 @@
             "use_default_payment_gateway": "use_default_payment_gateway"
           }
         },
-        "tags": {
+        "v1/tags": {
           "displayName": "Tags",
-          "path": "/tags",
+          "path": "/v1/tags",
           "responseKey": "tags",
           "fields": {
             "category": "category",
@@ -355,9 +355,9 @@
             "name": "name"
           }
         },
-        "tasks": {
+        "v1/tasks": {
           "displayName": "Tasks",
-          "path": "/tasks",
+          "path": "/v1/tasks",
           "responseKey": "tasks",
           "fields": {
             "completed": "completed",
@@ -377,9 +377,9 @@
             "user_id": "user_id"
           }
         },
-        "transactions": {
+        "v1/transactions": {
           "displayName": "Transactions",
-          "path": "/transactions",
+          "path": "/v1/transactions",
           "responseKey": "transactions",
           "fields": {
             "amount": "amount",
@@ -399,9 +399,9 @@
             "type": "type"
           }
         },
-        "users": {
+        "v1/users": {
           "displayName": "Users",
-          "path": "/users",
+          "path": "/v1/users",
           "responseKey": "users",
           "fields": {
             "address": "address",
@@ -426,16 +426,10 @@
             "time_zone": "time_zone",
             "website": "website"
           }
-        }
-      }
-    },
-    "version2": {
-      "id": "version2",
-      "path": "/v2",
-      "objects": {
-        "automation_categories": {
+        },
+        "v2/automationCategory": {
           "displayName": "Automation Categories",
-          "path": "/automationCategory",
+          "path": "/v2/automationCategory",
           "responseKey": "automation_categories",
           "fields": {
             "automation_count": "automation_count",
@@ -443,9 +437,9 @@
             "name": "name"
           }
         },
-        "automations": {
+        "v2/automations": {
           "displayName": "Automations",
-          "path": "/automations",
+          "path": "/v2/automations",
           "responseKey": "automations",
           "fields": {
             "active_contacts": "active_contacts",
@@ -460,9 +454,9 @@
             "title": "title"
           }
         },
-        "campaigns": {
+        "v2/campaigns": {
           "displayName": "Campaigns",
-          "path": "/campaigns",
+          "path": "/v2/campaigns",
           "responseKey": "campaigns",
           "fields": {
             "active_contact_count": "active_contact_count",
@@ -481,9 +475,9 @@
             "time_zone": "time_zone"
           }
         },
-        "companies": {
+        "v2/companies": {
           "displayName": "Companies",
-          "path": "/companies",
+          "path": "/v2/companies",
           "responseKey": "companies",
           "fields": {
             "address": "address",
@@ -499,19 +493,9 @@
             "website": "website"
           }
         },
-        "contact_link_types": {
-          "displayName": "Contact Link Types",
-          "path": "/contacts/links/types",
-          "responseKey": "contact_link_types",
-          "fields": {
-            "id": "id",
-            "max_links": "max_links",
-            "name": "name"
-          }
-        },
-        "contacts": {
+        "v2/contacts": {
           "displayName": "Contacts",
-          "path": "/contacts",
+          "path": "/v2/contacts",
           "responseKey": "contacts",
           "fields": {
             "addresses": "addresses",
@@ -549,10 +533,20 @@
             "website": "website"
           }
         },
-        "tag_categories": {
-          "displayName": "Tag Categories",
-          "path": "/tags/categories",
-          "responseKey": "tag_categories",
+        "v2/contacts/links/types": {
+          "displayName": "Contact Link Types",
+          "path": "/v2/contacts/links/types",
+          "responseKey": "contact_link_types",
+          "fields": {
+            "id": "id",
+            "max_links": "max_links",
+            "name": "name"
+          }
+        },
+        "v2/tags": {
+          "displayName": "Tags",
+          "path": "/v2/tags",
+          "responseKey": "tags",
           "fields": {
             "category": "category",
             "description": "description",
@@ -560,10 +554,10 @@
             "name": "name"
           }
         },
-        "tags": {
-          "displayName": "Tags",
-          "path": "/tags",
-          "responseKey": "tags",
+        "v2/tags/categories": {
+          "displayName": "Tag Categories",
+          "path": "/v2/tags/categories",
+          "responseKey": "tag_categories",
           "fields": {
             "category": "category",
             "description": "description",

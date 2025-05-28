@@ -1,0 +1,77 @@
+{
+  "custom_fields": [
+    {
+      "id": "6",
+      "label": "jobtitle",
+      "options": null,
+      "record_type": null,
+      "field_type": "TEXT",
+      "default_value": null,
+      "group_id": null,
+      "field_name": null
+    },
+    {
+      "id": "8",
+      "label": "jobdescription",
+      "options": null,
+      "record_type": null,
+      "field_type": "TEXT",
+      "default_value": null,
+      "group_id": null,
+      "field_name": null
+    },
+    {
+      "id": "12",
+      "label": "experience",
+      "options": null,
+      "record_type": null,
+      "field_type": "TEXT",
+      "default_value": null,
+      "group_id": null,
+      "field_name": null
+    },
+    {
+      "id": "14",
+      "label": "age",
+      "options": null,
+      "record_type": null,
+      "field_type": "WHOLE_NUMBER",
+      "default_value": null,
+      "group_id": null,
+      "field_name": null
+    }
+  ],
+  "optional_properties": [
+    "update_time",
+    "create_time",
+    "score_value",
+    "tag_ids",
+    "links",
+    "addresses",
+    "anniversary_date",
+    "birth_date",
+    "company",
+    "contact_type",
+    "custom_fields",
+    "email_addresses",
+    "fax_numbers",
+    "job_title",
+    "leadsource_id",
+    "middle_name",
+    "notes",
+    "origin",
+    "owner_id",
+    "phone_numbers",
+    "preferred_locale",
+    "preferred_name",
+    "prefix",
+    "referral_code",
+    "social_accounts",
+    "source_type",
+    "spouse_name",
+    "suffix",
+    "time_zone",
+    "website",
+    "utm_parameters"
+  ]
+}
