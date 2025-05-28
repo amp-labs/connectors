@@ -91,7 +91,7 @@ type BatchRecordReaderConnector interface {
 	GetRecordsByIds(
 		ctx context.Context,
 		objectName string,
-	//nolint:revive
+		//nolint:revive
 		recordIds []string,
 		fields []string,
 		associations []string) ([]common.ReadResultRow, error)
