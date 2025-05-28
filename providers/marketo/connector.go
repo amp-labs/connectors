@@ -8,17 +8,12 @@ import (
 )
 
 type Connector struct {
-	BaseURL    string
-	Client     *common.JSONHTTPClient
-	moduleInfo *providers.ModuleInfo
-	moduleID   common.ModuleID
+	BaseURL string
+	Client  *common.JSONHTTPClient
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	params, err := paramsbuilder.Apply(parameters{}, opts,
-		// The module is resolved on behalf of the user if the option is missing.
-		WithModule(common.ModuleRoot),
-	)
+	params, err := paramsbuilder.Apply(parameters{}, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -36,12 +31,9 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 				ResponseHandler: responseHandler,
 			},
 		},
-		moduleID: params.Module.Selection.ID,
 	}
 
 	conn.setBaseURL(providerInfo.BaseURL)
-
-	conn.moduleInfo = providerInfo.ReadModuleInfo(conn.moduleID)
 
 	return conn, nil
 }
@@ -57,10 +49,11 @@ func (c *Connector) Provider() providers.Provider {
 }
 
 func (c *Connector) getAPIURL(objName string) (*urlbuilder.URL, error) {
-	modulePath := supportedModules[c.moduleID].Path()
+	restAPIPrefix := constructAPIPrefix(objName)
+
 	objName = common.AddSuffixIfNotExists(objName, ".json")
 
-	return urlbuilder.New(c.BaseURL, restAPIPrefix, modulePath, objName)
+	return urlbuilder.New(c.BaseURL, restAPIPrefix, objName)
 }
 
 func (c *Connector) String() string {

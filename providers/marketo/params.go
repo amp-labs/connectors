@@ -15,19 +15,15 @@ type Option = func(params *parameters)
 type parameters struct {
 	paramsbuilder.Client
 	paramsbuilder.Workspace
-	paramsbuilder.Module
 }
 
 func newParams(opts []Option) (*common.ConnectorParams, error) { // nolint:unused
-	oldParams, err := paramsbuilder.Apply(parameters{}, opts,
-		WithModule(common.ModuleRoot),
-	)
+	oldParams, err := paramsbuilder.Apply(parameters{}, opts)
 	if err != nil {
 		return nil, err
 	}
 
 	return &common.ConnectorParams{
-		Module:              oldParams.Module.Selection.ID,
 		AuthenticatedClient: oldParams.Client.Caller.Client,
 		Workspace:           oldParams.Workspace.Name,
 	}, nil
@@ -37,7 +33,6 @@ func (p parameters) ValidateParams() error {
 	return errors.Join(
 		p.Client.ValidateParams(),
 		p.Workspace.ValidateParams(),
-		p.Module.ValidateParams(),
 	)
 }
 
@@ -48,13 +43,6 @@ func WithClient(ctx context.Context, client *http.Client,
 
 	return func(params *parameters) {
 		params.WithAuthenticatedClient(authClient)
-	}
-}
-
-// WithModule sets the marketo API module to use for the connector. It's required.
-func WithModule(module common.ModuleID) Option {
-	return func(params *parameters) {
-		params.WithModule(module, supportedModules, common.ModuleRoot)
 	}
 }
 

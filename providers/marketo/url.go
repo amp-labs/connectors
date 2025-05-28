@@ -10,15 +10,16 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
-	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/internal/datautils"
 )
 
 const ( //nolint:gochecknoglobals
 	// API path components.
-	restAPIPrefix   = "rest"
 	activities      = "activities"
 	leads           = "leads"
 	pagingURLSuffix = "activities/pagingtoken"
+	assetsPrefix    = "rest/asset/v1"
+	leadsPrefix     = "rest/v1"
 
 	// URL parameter keys.
 	idFilter             = "id"
@@ -39,6 +40,59 @@ type pagingTokenResponse struct {
 	Success       bool   `json:"success"`
 }
 
+var assetsObjects = datautils.NewSet( //nolint:gochecknoglobals
+	"channels",
+	"emailTemplates",
+	"emails",
+	"files",
+	"folders",
+	"form/fields",
+	"forms",
+	"landingPages",
+	"redirectRules",
+	"landingPageDomains",
+	"landingPageTemplates",
+	"programs",
+	"segmentation",
+	"smartLists",
+	"smartCampaigns",
+	"snippets",
+	"staticLists",
+	"tagTypes",
+)
+
+var leadsObjects = datautils.NewSet( //nolint: gochecknoglobals
+	"activities",
+	"activities/pagingtoken",
+	"ctivities/deletedleads",
+	"activities/external/types",
+	"activities/leadchanges",
+	"activities/types",
+	"campaigns",
+	"companies",
+	"customobjects",
+	"leads",
+	"namedAccountLists",
+	"namedaccounts",
+	"opportunities",
+	"salespersons",
+	"lists",
+	"stats/errors",
+	"stats/usage",
+	"stats/usage/last7days",
+)
+
+func constructAPIPrefix(objectName string) string {
+	switch {
+	case assetsObjects.Has(objectName):
+		return assetsPrefix
+	case leadsObjects.Has(objectName):
+		return leadsPrefix
+	default:
+		return leadsPrefix
+	}
+}
+
 func (c *Connector) constructReadURL(ctx context.Context, params common.ReadParams) (*urlbuilder.URL, error) {
 	url, err := c.getAPIURL(params.ObjectName)
 	if err != nil {
@@ -54,7 +108,7 @@ func (c *Connector) constructReadURL(ctx context.Context, params common.ReadPara
 	}
 
 	// The only objects in Assets API supporting this are: Emails, Programs, SmartCampaigns,SmartLists
-	if !params.Since.IsZero() && c.moduleID == providers.ModuleMarketoAssets {
+	if !params.Since.IsZero() && assetsObjects.Has(params.ObjectName) {
 		fmtTime := params.Since.Format(time.RFC3339)
 		url.WithQueryParam(earliestUpdatedQuery, fmtTime)
 		url.WithQueryParam(latestUpdatedAtQuery, time.Now().Format(time.RFC3339))

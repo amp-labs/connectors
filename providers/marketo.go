@@ -4,11 +4,6 @@ import "github.com/amp-labs/connectors/common"
 
 const Marketo Provider = "marketo"
 
-const (
-	// ModuleMarketoAssets is the module/API used for accessing assets objects.
-	ModuleMarketoAssets common.ModuleID = "assets"
-)
-
 // nolint:funlen
 func init() {
 	// Marketo configuration file
@@ -37,17 +32,6 @@ func init() {
 			},
 		},
 		DefaultModule: common.ModuleRoot,
-		Modules: &Modules{
-			ModuleMarketoAssets: {
-				BaseURL:     "https://{{.workspace}}.mktorest.com/asset/v1",
-				DisplayName: "Marketo (Assets)",
-				Support: Support{
-					Read:      true,
-					Subscribe: false,
-					Write:     true,
-				},
-			},
-		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
