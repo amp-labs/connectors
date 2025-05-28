@@ -266,7 +266,7 @@ func TestReadWithoutMetadata(t *testing.T) {
 	t.Parallel()
 
 	connector, err := NewConnector(
-		WithAuthenticatedClient(http.DefaultClient),
+		WithAuthenticatedClient(mockutils.NewClient()),
 		WithWorkspace("test-workspace"),
 		WithModule(providers.ModuleAtlassianJira),
 	)
@@ -285,7 +285,7 @@ func TestReadWithoutMetadata(t *testing.T) {
 
 func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(
-		WithAuthenticatedClient(http.DefaultClient),
+		WithAuthenticatedClient(mockutils.NewClient()),
 		WithWorkspace("test-workspace"),
 		WithModule(providers.ModuleAtlassianJira),
 		WithMetadata(map[string]string{
