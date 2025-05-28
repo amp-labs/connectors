@@ -547,8 +547,16 @@ func getResponseHeaders(response *http.Response) Headers {
 		return nil
 	}
 
-	headers := make(Headers, 0, len(response.Header))
+	// Pre-calculate the total number of header values
+	totalValues := 0
+	for _, values := range response.Header {
+		totalValues += len(values)
+	}
 
+	// Initialize the headers slice with accurate capacity
+	headers := make(Headers, 0, totalValues)
+
+	// Populate the headers slice
 	for key, values := range response.Header {
 		for _, value := range values {
 			headers = append(headers, Header{Key: key, Value: value})
