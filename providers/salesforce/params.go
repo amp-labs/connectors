@@ -38,6 +38,10 @@ func newParams(opts []Option) (*common.ConnectorParams, error) { // nolint:unuse
 }
 
 func (p parameters) ValidateParams() error {
+	if p.Module.Selection.ID == providers.ModuleSalesforceAccountEngagement {
+		return p.Client.ValidateParams()
+	}
+
 	return errors.Join(
 		p.Client.ValidateParams(),
 		p.Workspace.ValidateParams(),
