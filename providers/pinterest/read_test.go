@@ -30,7 +30,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Input: common.ReadParams{ObjectName: "pins", Fields: connectors.Fields("")},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.PathSuffix("/v5/pins"),
+				If:    mockcond.Path("/v5/pins"),
 				Then:  mockserver.Response(http.StatusOK, pinsResponse),
 			}.Server(),
 			Comparator: testroutines.ComparatorPagination,
@@ -110,7 +110,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Input: common.ReadParams{ObjectName: "boards", Fields: connectors.Fields("")},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.PathSuffix("/v5/boards"),
+				If:    mockcond.Path("/v5/boards"),
 				Then:  mockserver.Response(http.StatusOK, boardsResponse),
 			}.Server(),
 			Comparator: testroutines.ComparatorPagination,
@@ -154,7 +154,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Input: common.ReadParams{ObjectName: "media", Fields: connectors.Fields("")},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.PathSuffix("/v5/media"),
+				If:    mockcond.Path("/v5/media"),
 				Then:  mockserver.Response(http.StatusOK, mediaResponse),
 			}.Server(),
 			Comparator: testroutines.ComparatorPagination,

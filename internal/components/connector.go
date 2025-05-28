@@ -24,7 +24,7 @@ type Connector struct {
 // and returns the connector as the specified T type.
 func Initialize[T any](
 	provider providers.Provider,
-	params common.Parameters,
+	params common.ConnectorParams,
 	constructor ConnectorConstructor[T],
 ) (conn *T, err error) {
 	defer goutils.PanicRecovery(func(cause error) {

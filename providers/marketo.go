@@ -38,6 +38,7 @@ func init() {
 				ScopesField: "scope",
 			},
 		},
+		DefaultModule: ModuleMarketoLeads,
 		Modules: &Modules{
 			ModuleMarketoAssets: {
 				BaseURL:     "https://{{.workspace}}.mktorest.com/asset/v1",
@@ -73,7 +74,9 @@ func init() {
 		Metadata: &ProviderMetadata{
 			Input: []MetadataItemInput{
 				{
-					Name: "workspace",
+					Name:        "workspace",
+					DisplayName: "Munchkin Account ID",
+					DocsURL:     "https://nation.marketo.com/t5/knowledgebase/how-to-find-your-munchkin-id-for-a-marketo-instance/ta-p/248432", // nolint:lll
 				},
 			},
 		},

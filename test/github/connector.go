@@ -32,7 +32,7 @@ func GetGithubConnector(ctx context.Context) *github.Connector {
 	}
 
 	conn, err := github.NewConnector(
-		common.Parameters{
+		common.ConnectorParams{
 			AuthenticatedClient: client,
 		},
 	)

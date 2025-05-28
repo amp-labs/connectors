@@ -20,7 +20,7 @@ func GetLemlistConnector(ctx context.Context) *lemlist.Connector {
 	}
 
 	conn, err := lemlist.NewConnector(
-		common.Parameters{AuthenticatedClient: client},
+		common.ConnectorParams{AuthenticatedClient: client},
 	)
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)

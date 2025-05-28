@@ -50,7 +50,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.PathSuffix("/v2/signals"),
+					mockcond.Path("/v2/signals"),
 					mockcond.MethodPOST(),
 				},
 				Then: mockserver.Response(http.StatusOK),
@@ -64,7 +64,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.PathSuffix("/v2/signals/22165"),
+					mockcond.Path("/v2/signals/22165"),
 					mockcond.MethodPUT(),
 				},
 				Then: mockserver.Response(http.StatusOK),
@@ -78,7 +78,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.PathSuffix("/v2/accounts"),
+					mockcond.Path("/v2/accounts"),
 					mockcond.MethodPOST(),
 				},
 				Then: mockserver.Response(http.StatusOK, createAccountRes),
@@ -104,7 +104,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.PathSuffix("/v2/tasks"),
+					mockcond.Path("/v2/tasks"),
 					mockcond.MethodPOST(),
 				},
 				Then: mockserver.Response(http.StatusOK, createTaskRes),

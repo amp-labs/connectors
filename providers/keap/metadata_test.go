@@ -43,7 +43,7 @@ func TestListObjectMetadataV1(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Input: []string{"campaigns", "products", "contacts"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.PathSuffix("/crm/rest/v1/contacts/model"),
+				If:    mockcond.Path("/crm/rest/v1/contacts/model"),
 				Then:  mockserver.Response(http.StatusOK, responseContactsModel),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
@@ -118,7 +118,7 @@ func TestListObjectMetadataV1(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Input: []string{"contacts"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.PathSuffix("/crm/rest/v1/contacts/model"),
+				If:    mockcond.Path("/crm/rest/v1/contacts/model"),
 				Then:  mockserver.Response(http.StatusInternalServerError),
 			}.Server(),
 			Comparator: metadataExpectAbsentFields,

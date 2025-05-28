@@ -30,7 +30,7 @@ type Connector struct {
 	components.Deleter
 }
 
-func NewConnector(params common.Parameters) (*Connector, error) {
+func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	// Create base connector with provider info
 	return components.Initialize(providers.Monday, params, constructor)
 }
@@ -61,8 +61,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 			BuildRequest:  connector.buildReadRequest,
 			ParseResponse: connector.parseReadResponse,
 			ErrorHandler: interpreter.ErrorHandler{
-				JSON: interpreter.NewFaultyResponder(nil, nil),
-				HTML: &interpreter.DirectFaultyResponder{},
+				JSON: interpreter.NewFaultyResponder(errorFormats, nil),
 			}.Handle,
 		},
 	)
@@ -75,8 +74,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 			BuildRequest:  connector.buildWriteRequest,
 			ParseResponse: connector.parseWriteResponse,
 			ErrorHandler: interpreter.ErrorHandler{
-				JSON: interpreter.NewFaultyResponder(nil, nil),
-				HTML: &interpreter.DirectFaultyResponder{},
+				JSON: interpreter.NewFaultyResponder(errorFormats, nil),
 			}.Handle,
 		},
 	)
@@ -89,8 +87,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 			BuildRequest:  connector.buildDeleteRequest,
 			ParseResponse: connector.parseDeleteResponse,
 			ErrorHandler: interpreter.ErrorHandler{
-				JSON: interpreter.NewFaultyResponder(nil, nil),
-				HTML: &interpreter.DirectFaultyResponder{},
+				JSON: interpreter.NewFaultyResponder(errorFormats, nil),
 			}.Handle,
 		},
 	)

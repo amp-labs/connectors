@@ -27,7 +27,7 @@ type Connector struct {
 	components.Writer
 }
 
-func NewConnector(params common.Parameters) (*Connector, error) {
+func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	// Create base connector with provider info
 	return components.Initialize(providers.Gorgias, params, constructor)
 }

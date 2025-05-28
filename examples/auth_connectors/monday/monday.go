@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/connector"
 	"github.com/amp-labs/connectors/examples/utils"
+	"github.com/amp-labs/connectors/generic"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -61,9 +61,9 @@ func mondayAuthExample(ctx context.Context) error {
 }
 
 // Create an auth connector with the Monday provider.
-func createAuthConnector(ctx context.Context) *connector.Connector {
-	conn, err := connector.NewConnector(providers.Monday,
-		connector.WithAuthenticatedClient(createAuthenticatedHttpClient(ctx)))
+func createAuthConnector(ctx context.Context) *generic.Connector {
+	conn, err := generic.NewConnector(providers.Monday,
+		generic.WithAuthenticatedClient(createAuthenticatedHttpClient(ctx)))
 	if err != nil {
 		panic(err)
 	}

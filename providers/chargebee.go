@@ -3,7 +3,7 @@ package providers
 const Chargebee Provider = "chargebee"
 
 func init() {
-	// Chargebee connfiguration
+	// Chargebee configuration
 	// workspace maps to site
 	SetInfo(Chargebee, ProviderInfo{
 		DisplayName: "Chargebee",
@@ -27,7 +27,7 @@ func init() {
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
@@ -35,7 +35,8 @@ func init() {
 		Metadata: &ProviderMetadata{
 			Input: []MetadataItemInput{
 				{
-					Name: "workspace",
+					Name:        "workspace",
+					DisplayName: "Site name",
 				},
 			},
 		},

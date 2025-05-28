@@ -26,6 +26,7 @@ func init() {
 			ExplicitWorkspaceRequired: true, // Needed for GetPostAuthInfo call
 		},
 		PostAuthInfoNeeded: true,
+		DefaultModule:      ModuleAtlassianJira,
 		Modules: &Modules{
 			ModuleAtlassianJira: {
 				BaseURL:     "https://api.atlassian.com/ex/jira/{{.cloudId}}/rest/api/3",
@@ -78,7 +79,8 @@ func init() {
 			Input: []MetadataItemInput{
 				{
 					Name:        "workspace",
-					DisplayName: "Site URL (Your domain)",
+					DisplayName: "App name",
+					DocsURL:     "https://support.atlassian.com/organization-administration/docs/update-your-product-and-site-url/",
 				},
 			},
 		},
