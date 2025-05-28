@@ -7,7 +7,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -34,7 +33,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "Error on invalid create payload",
-			Input: common.WriteParams{ObjectName: "contacts", RecordData: "dummy"},
+			Input: common.WriteParams{ObjectName: "v2/contacts", RecordData: "dummy"},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusBadRequest, errorContactBadRequest),
@@ -49,7 +48,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name: "Companies are updated using PATCH",
 			Input: common.WriteParams{
-				ObjectName: "companies",
+				ObjectName: "v2/companies",
 				RecordId:   "123",
 				RecordData: "dummy",
 			},
@@ -64,7 +63,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name: "Files are updated using PUT",
 			Input: common.WriteParams{
-				ObjectName: "files",
+				ObjectName: "v1/files",
 				RecordId:   "123",
 				RecordData: "dummy",
 			},
@@ -78,11 +77,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:  "Valid creation of a contacts", // update is the same
-			Input: common.WriteParams{ObjectName: "contacts", RecordData: "dummy"},
+			Input: common.WriteParams{ObjectName: "v2/contacts", RecordData: "dummy"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.Path("/crm/rest/v1/contacts"),
+					mockcond.Path("/crm/rest/v2/contacts"),
 					mockcond.MethodPOST(),
 				},
 				Then: mockserver.Response(http.StatusOK, responseContacts),
@@ -111,7 +110,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.WriteConnector, error) {
-				return constructTestConnector(tt.Server.URL, providers.ModuleKeapV1)
+				return constructTestConnector(tt.Server.URL)
 			})
 		})
 	}

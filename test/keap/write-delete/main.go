@@ -17,7 +17,7 @@ import (
 	"github.com/brianvoe/gofakeit/v6"
 )
 
-var objectName = "contacts"
+var objectName = "v1/contacts"
 
 type ContactPayload struct {
 	EmailAddresses []EmailAddress `json:"email_addresses"`
