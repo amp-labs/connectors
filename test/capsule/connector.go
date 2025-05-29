@@ -14,7 +14,7 @@ import (
 
 func GetCapsuleConnector(ctx context.Context) *capsule.Connector {
 	filePath := credscanning.LoadPath(providers.Capsule)
-	reader := utils.MustCreateProvCredJSON(filePath, false, false)
+	reader := utils.MustCreateProvCredJSON(filePath, false)
 
 	clientBuilder := &paramsbuilder.Client{}
 	clientBuilder.WithApiKeyHeaderClient(ctx,

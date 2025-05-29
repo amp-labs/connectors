@@ -14,7 +14,7 @@ import (
 func GetZoomConnector(ctx context.Context) *zoom.Connector {
 	filePath := credscanning.LoadPath(providers.Zoom)
 
-	reader := utils.MustCreateProvCredJSON(filePath, true, false)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	conn, err := zoom.NewConnector(zoom.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()))
 	if err != nil {

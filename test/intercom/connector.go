@@ -13,7 +13,7 @@ import (
 
 func GetIntercomConnector(ctx context.Context) *intercom.Connector {
 	filePath := credscanning.LoadPath(providers.Intercom)
-	reader := utils.MustCreateProvCredJSON(filePath, true, false)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	conn, err := intercom.NewConnector(
 		intercom.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
