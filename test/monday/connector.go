@@ -12,7 +12,7 @@ import (
 
 func GetMondayConnector(ctx context.Context) *monday.Connector {
 	filePath := credscanning.LoadPath(providers.Monday)
-	reader := utils.MustCreateProvCredJSON(filePath, false, false)
+	reader := utils.MustCreateProvCredJSON(filePath, false)
 
 	client, err := common.NewApiKeyHeaderAuthHTTPClient(ctx, "Authorization", reader.Get(credscanning.Fields.ApiKey))
 

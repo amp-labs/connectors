@@ -14,7 +14,7 @@ import (
 
 func GetConnector(ctx context.Context) *podium.Connector {
 	filePath := credscanning.LoadPath(providers.Podium)
-	reader := utils.MustCreateProvCredJSON(filePath, true, false)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	client, err := common.NewOAuthHTTPClient(ctx,
 		common.WithOAuthClient(http.DefaultClient),

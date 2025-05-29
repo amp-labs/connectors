@@ -14,7 +14,7 @@ import (
 
 func GetConnector(ctx context.Context) *pinterest.Connector {
 	filePath := credscanning.LoadPath(providers.Pinterest)
-	reader := utils.MustCreateProvCredJSON(filePath, true, false)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	client, err := common.NewOAuthHTTPClient(ctx,
 		common.WithOAuthClient(http.DefaultClient),

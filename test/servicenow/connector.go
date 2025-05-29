@@ -15,7 +15,7 @@ import (
 
 func GetServiceNowConnector(ctx context.Context) *servicenow.Connector {
 	filePath := credscanning.LoadPath(providers.ServiceNow)
-	reader := utils.MustCreateProvCredJSON(filePath, true, true)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	client, err := common.NewOAuthHTTPClient(ctx,
 		common.WithOAuthClient(http.DefaultClient),

@@ -12,7 +12,7 @@ import (
 
 func GetInsightlyConnector(ctx context.Context) *insightly.Connector {
 	filePath := credscanning.LoadPath(providers.Insightly)
-	reader := utils.MustCreateProvCredJSON(filePath, false, false)
+	reader := utils.MustCreateProvCredJSON(filePath, false)
 
 	conn, err := insightly.NewConnector(
 		common.ConnectorParams{
