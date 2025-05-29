@@ -8,6 +8,8 @@ import (
 	"github.com/amp-labs/connectors/providers"
 )
 
+const MetadataKeyBusinessUnitID = "businessUnitId"
+
 type Adapter struct {
 	Client         *common.JSONHTTPClient
 	BaseURL        string
@@ -19,8 +21,7 @@ var ErrMissingBusinessUnitID = errors.New("missing metadata variable: business u
 func NewAdapter(
 	client *common.JSONHTTPClient, info *providers.ModuleInfo, metadata map[string]string,
 ) (*Adapter, error) {
-
-	businessUnitID, ok := metadata["businessUnitId"]
+	businessUnitID, ok := metadata[MetadataKeyBusinessUnitID]
 	if !ok || businessUnitID == "" {
 		return nil, ErrMissingBusinessUnitID
 	}
