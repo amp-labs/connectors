@@ -61,7 +61,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 
 	conn.moduleInfo = conn.providerInfo.ReadModuleInfo(conn.moduleID)
 
-	conn.setBaseURL(conn.providerInfo.BaseURL)
+	conn.setCRMBaseURL(conn.providerInfo.BaseURL)
 	conn.Client.HTTPClient.ErrorHandler = interpreter.ErrorHandler{
 		JSON: &interpreter.DirectFaultyResponder{Callback: conn.interpretJSONError},
 		XML:  &interpreter.DirectFaultyResponder{Callback: conn.interpretXMLError},
@@ -120,6 +120,13 @@ func (c *Connector) getURIPartSobjectsDescribe(objectName string) (*urlbuilder.U
 	return urlbuilder.New(uriSobjects, objectName, "describe")
 }
 
+func (c *Connector) setCRMBaseURL(newURL string) {
+	c.BaseURL = newURL
+	c.Client.HTTPClient.Base = newURL
+}
+
+// Warning: this method is to be used by mock tests.
+// The code is in the intermediate state and improved URL storage and handling is anticipated.
 func (c *Connector) setBaseURL(newURL string) {
 	c.BaseURL = newURL
 	c.Client.HTTPClient.Base = newURL
