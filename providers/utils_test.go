@@ -421,11 +421,19 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				moduleID: "random-module-name",
 			},
 			expected: &ModuleInfo{
-				BaseURL:     "https://london.mktorest.com/v1",
-				DisplayName: "Marketo (Leads)",
+				BaseURL:     "https://london.mktorest.com",
+				DisplayName: "Marketo",
 				Support: Support{
-					Read:  true,
-					Write: true,
+					BulkWrite: BulkWriteSupport{
+						Insert: false,
+						Update: false,
+						Upsert: false,
+						Delete: false,
+					},
+					Proxy:     true,
+					Read:      true,
+					Subscribe: false,
+					Write:     true,
 				},
 			},
 			// expectedErr: common.ErrMissingModule,
@@ -518,36 +526,6 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 			},
 		},
 		{
-			name: "Marketo Assets module",
-			input: inType{
-				provider: Marketo,
-				moduleID: ModuleMarketoAssets,
-			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://{{.workspace}}.mktorest.com/asset/v1",
-				DisplayName: "Marketo (Assets)",
-				Support: Support{
-					Read:  true,
-					Write: true,
-				},
-			},
-		},
-		{
-			name: "Marketo Leads module",
-			input: inType{
-				provider: Marketo,
-				moduleID: ModuleMarketoLeads,
-			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://{{.workspace}}.mktorest.com/v1",
-				DisplayName: "Marketo (Leads)",
-				Support: Support{
-					Read:  true,
-					Write: true,
-				},
-			},
-		},
-		{
 			name: "Zendesk Ticketing module",
 			input: inType{
 				provider: ZendeskSupport,
@@ -618,11 +596,19 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				moduleID: "",
 			},
 			expected: &ModuleInfo{
-				BaseURL:     "https://london.mktorest.com/v1",
-				DisplayName: "Marketo (Leads)",
+				BaseURL:     "https://london.mktorest.com",
+				DisplayName: "Marketo",
 				Support: Support{
-					Read:  true,
-					Write: true,
+					BulkWrite: BulkWriteSupport{
+						Insert: false,
+						Update: false,
+						Upsert: false,
+						Delete: false,
+					},
+					Proxy:     true,
+					Read:      true,
+					Subscribe: false,
+					Write:     true,
 				},
 			},
 		},

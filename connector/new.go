@@ -276,7 +276,6 @@ func newMarketoConnector(
 	return marketo.NewConnector(
 		marketo.WithWorkspace(params.Workspace),
 		marketo.WithAuthenticatedClient(params.AuthenticatedClient),
-		marketo.WithModule(params.Module),
 	)
 }
 
