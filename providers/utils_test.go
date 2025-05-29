@@ -526,21 +526,6 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 			},
 		},
 		{
-			name: "Klaviyo 2024-10-15 module",
-			input: inType{
-				provider: Klaviyo,
-				moduleID: ModuleKlaviyo2024Oct15,
-			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://a.klaviyo.com",
-				DisplayName: "Klaviyo (Version 2024-10-15)",
-				Support: Support{
-					Read:  true,
-					Write: true,
-				},
-			},
-		},
-		{
 			name: "Zendesk Ticketing module",
 			input: inType{
 				provider: ZendeskSupport,
