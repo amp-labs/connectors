@@ -34,6 +34,7 @@ import (
 	"github.com/amp-labs/connectors/providers/hubspot"
 	"github.com/amp-labs/connectors/providers/hunter"
 	"github.com/amp-labs/connectors/providers/instantly"
+	"github.com/amp-labs/connectors/providers/instantlyai"
 	"github.com/amp-labs/connectors/providers/intercom"
 	"github.com/amp-labs/connectors/providers/iterable"
 	"github.com/amp-labs/connectors/providers/keap"
@@ -170,6 +171,8 @@ func New( // nolint:gocyclo,cyclop,funlen,ireturn
 		connector, connectorErr = newZendeskChatConnector(params)
 	case providers.Capsule:
 		connector, connectorErr = newCapsuleConnector(params)
+	case providers.InstantlyAI:
+		connector, connectorErr = newInstantlyAIConnector(params)
 	default:
 		return nil, ErrInvalidProvider
 	}
@@ -542,4 +545,10 @@ func newCapsuleConnector(
 	params common.ConnectorParams,
 ) (*capsule.Connector, error) {
 	return capsule.NewConnector(params)
+}
+
+func newInstantlyAIConnector(
+	params common.ConnectorParams,
+) (*instantlyai.Connector, error) {
+	return instantlyai.NewConnector(params)
 }
