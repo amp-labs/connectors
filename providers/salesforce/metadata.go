@@ -18,6 +18,10 @@ func (c *Connector) ListObjectMetadata(
 		return nil, common.ErrMissingObjects
 	}
 
+	if c.isPardotModule() {
+		return c.pardotAdapter.ListObjectMetadata(ctx, objectNames)
+	}
+
 	requests := make([]compositeRequestItem, len(objectNames))
 
 	// Construct describe requests for each object name
