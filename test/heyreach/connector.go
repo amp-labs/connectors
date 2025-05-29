@@ -5,6 +5,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
+	"github.com/amp-labs/connectors/internal/parameters"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/heyreach"
 	"github.com/amp-labs/connectors/test/utils"
@@ -30,7 +31,7 @@ func GetHeyreachConnector(ctx context.Context) *heyreach.Connector {
 		utils.Fail(err.Error())
 	}
 
-	conn, err := heyreach.NewConnector(common.ConnectorParams{
+	conn, err := heyreach.NewConnector(parameters.Connector{
 		AuthenticatedClient: client,
 	})
 	if err != nil {

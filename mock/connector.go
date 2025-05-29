@@ -13,7 +13,7 @@ import (
 
 type Connector struct {
 	client *common.JSONHTTPClient
-	params *parameters
+	params *parametersInternal
 }
 
 // We want the mock connector to implement all connector interfaces.
@@ -33,7 +33,7 @@ type implementsAllConnector interface {
 var _ implementsAllConnector = (*Connector)(nil)
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) { //nolint:funlen
-	params, err := paramsbuilder.Apply(parameters{}, opts,
+	params, err := paramsbuilder.Apply(parametersInternal{}, opts,
 		WithClient(http.DefaultClient),
 		WithRead(func(context.Context, common.ReadParams) (*common.ReadResult, error) {
 			return nil, fmt.Errorf("%w: %s", ErrNotImplemented, "read")

@@ -6,6 +6,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
+	"github.com/amp-labs/connectors/internal/parameters"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/aws"
 	testUtils "github.com/amp-labs/connectors/test/utils"
@@ -64,7 +65,7 @@ func GetAWSConnector(ctx context.Context, module common.ModuleID) *aws.Connector
 	}
 
 	conn, err := aws.NewConnector(
-		common.ConnectorParams{
+		parameters.Connector{
 			Module:              module,
 			AuthenticatedClient: client,
 			Metadata: map[string]string{
