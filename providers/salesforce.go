@@ -1,10 +1,26 @@
 package providers
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/amp-labs/connectors/common"
+)
 
 const Salesforce Provider = "salesforce"
 
-func init() {
+const (
+	// ModuleSalesforceCRM
+	// https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_what_is_rest_api.htm
+	ModuleSalesforceCRM common.ModuleID = "crm"
+	// ModuleSalesforceAccountEngagement
+	// https://developer.salesforce.com/docs/marketing/pardot/guide/use-cases.html
+	ModuleSalesforceAccountEngagement common.ModuleID = "account-engagement"
+	// ModuleSalesforceAccountEngagementDemo
+	// It is similar to ModuleSalesforceAccountEngagement but targets non-production URL.
+	ModuleSalesforceAccountEngagementDemo common.ModuleID = "account-engagement-demo"
+)
+
+func init() { // nolint:funlen
 	// Salesforce configuration
 	SetInfo(Salesforce, ProviderInfo{
 		DisplayName: "Salesforce",
@@ -25,6 +41,57 @@ func init() {
 				ConsumerRefField:  "id",
 				WorkspaceRefField: "instance_url",
 				ScopesField:       "scope",
+			},
+		},
+		DefaultModule: ModuleSalesforceCRM,
+		Modules: &Modules{
+			ModuleSalesforceCRM: {
+				BaseURL:     "https://{{.workspace}}.my.salesforce.com",
+				DisplayName: "Salesforce",
+				Support: Support{
+					BulkWrite: BulkWriteSupport{
+						Insert: false,
+						Update: false,
+						Upsert: true,
+						Delete: true,
+					},
+					Proxy:     true,
+					Read:      true,
+					Subscribe: false,
+					Write:     true,
+				},
+			},
+			ModuleSalesforceAccountEngagement: {
+				BaseURL:     "https://pi.pardot.com",
+				DisplayName: "Salesforce Marketing Cloud Account Engagement (Pardot)",
+				Support: Support{
+					BulkWrite: BulkWriteSupport{
+						Insert: false,
+						Update: false,
+						Upsert: false,
+						Delete: false,
+					},
+					Proxy:     false,
+					Read:      false,
+					Subscribe: false,
+					Write:     false,
+				},
+			},
+			ModuleSalesforceAccountEngagementDemo: {
+				BaseURL:     "https://pi.demo.pardot.com",
+				DisplayName: "Salesforce Demo Marketing Cloud Account Engagement (Pardot)",
+				Support: Support{
+					BulkWrite: BulkWriteSupport{
+						Insert: false,
+						Update: false,
+						Upsert: false,
+						Delete: false,
+					},
+					Proxy:     false,
+					Read:      false,
+					Subscribe: false,
+					Write:     false,
+				},
 			},
 		},
 		Support: Support{

@@ -6,6 +6,7 @@ import (
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/salesforce/internal/pardot"
 )
 
 const (
@@ -22,6 +23,11 @@ type Connector struct {
 	BaseURL   string
 	Client    *common.JSONHTTPClient
 	XMLClient *common.XMLHTTPClient
+
+	providerInfo  *providers.ProviderInfo
+	moduleInfo    *providers.ModuleInfo
+	moduleID      common.ModuleID
+	pardotAdapter *pardot.Adapter
 }
 
 func APIVersionSOAP() string {
@@ -30,7 +36,9 @@ func APIVersionSOAP() string {
 
 // NewConnector returns a new Salesforce connector.
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	params, err := paramsbuilder.Apply(parameters{}, opts)
+	params, err := paramsbuilder.Apply(parameters{}, opts,
+		WithModule(providers.ModuleSalesforceCRM),
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -43,18 +51,32 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		XMLClient: &common.XMLHTTPClient{
 			HTTPClient: httpClient,
 		},
+		moduleID: params.Module.Selection.ID,
 	}
 
-	providerInfo, err := providers.ReadInfo(conn.Provider(), &params.Workspace)
+	conn.providerInfo, err = providers.ReadInfo(conn.Provider(), &params.Workspace)
 	if err != nil {
 		return nil, err
 	}
 
-	conn.setBaseURL(providerInfo.BaseURL)
+	conn.moduleInfo = conn.providerInfo.ReadModuleInfo(conn.moduleID)
+
+	conn.setBaseURL(conn.providerInfo.BaseURL)
 	conn.Client.HTTPClient.ErrorHandler = interpreter.ErrorHandler{
 		JSON: &interpreter.DirectFaultyResponder{Callback: conn.interpretJSONError},
 		XML:  &interpreter.DirectFaultyResponder{Callback: conn.interpretXMLError},
 	}.Handle
+
+	// Empty module name, root module, standard salesforce module fallback to default Salesforce behaviour.
+	// Account Engagement module will initialize the pardot adapter.
+	// Read/Write/ListObjectMetadata will delegate to this adapter.
+	moduleID := params.Module.Selection.ID
+	if isPardotModule(moduleID) {
+		conn.pardotAdapter, err = pardot.NewAdapter(conn.Client, conn.moduleInfo, params.Metadata.Map)
+		if err != nil {
+			return nil, err
+		}
+	}
 
 	return conn, nil
 }
@@ -98,4 +120,26 @@ func (c *Connector) getURIPartSobjectsDescribe(objectName string) (*urlbuilder.U
 func (c *Connector) setBaseURL(newURL string) {
 	c.BaseURL = newURL
 	c.Client.HTTPClient.Base = newURL
+}
+
+func (c *Connector) isPardotModule() bool {
+	return c.pardotAdapter != nil
+}
+
+func isPardotModule(moduleID common.ModuleID) bool {
+	return moduleID == providers.ModuleSalesforceAccountEngagement ||
+		moduleID == providers.ModuleSalesforceAccountEngagementDemo
+}
+
+// TODO when new approach to modules is fully done this will be obsolete.
+var supportedModules = common.Modules{ // nolint:gochecknoglobals
+	providers.ModuleSalesforceCRM: common.Module{
+		ID: providers.ModuleSalesforceCRM,
+	},
+	providers.ModuleSalesforceAccountEngagement: common.Module{
+		ID: providers.ModuleSalesforceAccountEngagement,
+	},
+	providers.ModuleSalesforceAccountEngagementDemo: common.Module{
+		ID: providers.ModuleSalesforceAccountEngagementDemo,
+	},
 }
