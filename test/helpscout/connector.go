@@ -6,6 +6,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
+	"github.com/amp-labs/connectors/internal/parameters"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/helpscout"
 	"github.com/amp-labs/connectors/test/utils"
@@ -25,7 +26,7 @@ func GetHelpScoutConnector(ctx context.Context) *helpscout.Connector {
 		utils.Fail(err.Error())
 	}
 
-	conn, err := helpscout.NewConnector(common.ConnectorParams{
+	conn, err := helpscout.NewConnector(parameters.Connector{
 		AuthenticatedClient: client,
 	})
 	if err != nil {

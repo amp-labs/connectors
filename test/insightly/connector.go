@@ -3,8 +3,8 @@ package insightly
 import (
 	"context"
 
-	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
+	"github.com/amp-labs/connectors/internal/parameters"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/insightly"
 	"github.com/amp-labs/connectors/test/utils"
@@ -15,7 +15,7 @@ func GetInsightlyConnector(ctx context.Context) *insightly.Connector {
 	reader := utils.MustCreateProvCredJSON(filePath, false)
 
 	conn, err := insightly.NewConnector(
-		common.ConnectorParams{
+		parameters.Connector{
 			AuthenticatedClient: utils.NewBasicAuthClient(ctx, reader),
 		},
 	)

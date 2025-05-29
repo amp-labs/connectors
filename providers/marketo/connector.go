@@ -13,7 +13,7 @@ type Connector struct {
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	params, err := paramsbuilder.Apply(parameters{}, opts)
+	params, err := paramsbuilder.Apply(parametersInternal{}, opts)
 	if err != nil {
 		return nil, err
 	}

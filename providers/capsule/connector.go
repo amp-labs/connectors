@@ -3,7 +3,6 @@ package capsule
 import (
 	_ "embed"
 
-	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/deleter"
@@ -11,6 +10,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components/reader"
 	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/internal/components/writer"
+	"github.com/amp-labs/connectors/internal/parameters"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/capsule/metadata"
 )
@@ -20,7 +20,7 @@ type Connector struct {
 	*components.Connector
 
 	// Require authenticated client
-	common.RequireAuthenticatedClient
+	parameters.RequireAuthenticatedClient
 
 	// Supported operations
 	components.SchemaProvider
@@ -29,7 +29,7 @@ type Connector struct {
 	components.Deleter
 }
 
-func NewConnector(params common.ConnectorParams) (*Connector, error) {
+func NewConnector(params parameters.Connector) (*Connector, error) {
 	return components.Initialize(providers.Capsule, params, constructor)
 }
 

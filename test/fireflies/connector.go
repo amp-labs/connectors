@@ -3,8 +3,8 @@ package fireflies
 import (
 	"context"
 
-	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
+	"github.com/amp-labs/connectors/internal/parameters"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/fireflies"
 	"github.com/amp-labs/connectors/test/utils"
@@ -16,7 +16,7 @@ func GetFirefliesConnector(ctx context.Context) *fireflies.Connector {
 
 	client := utils.NewAPIKeyClient(ctx, reader, providers.Fireflies)
 
-	conn, err := fireflies.NewConnector(common.ConnectorParams{
+	conn, err := fireflies.NewConnector(parameters.Connector{
 		AuthenticatedClient: client,
 	})
 	if err != nil {

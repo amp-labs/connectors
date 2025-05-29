@@ -10,6 +10,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/reader"
 	"github.com/amp-labs/connectors/internal/components/writer"
+	"github.com/amp-labs/connectors/internal/parameters"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/aws/internal/core"
 )
@@ -19,9 +20,9 @@ type Connector struct {
 	*components.Connector
 
 	// Require authenticated client
-	common.RequireAuthenticatedClient
-	common.RequireModule
-	common.RequireMetadata
+	parameters.RequireAuthenticatedClient
+	parameters.RequireModule
+	parameters.RequireMetadata
 
 	// supported operations
 	components.Reader
@@ -33,7 +34,7 @@ type Connector struct {
 	instanceARN     string
 }
 
-func NewConnector(params common.ConnectorParams) (*Connector, error) {
+func NewConnector(params parameters.Connector) (*Connector, error) {
 	conn, err := components.Initialize(providers.AWS, params,
 		func(connector *components.Connector) (*Connector, error) {
 			var expectedMetadataKeys []string
@@ -58,12 +59,12 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 func constructor(base *components.Connector, expectedMetadataKeys []string) (*Connector, error) {
 	connector := &Connector{
 		Connector: base,
-		RequireModule: common.RequireModule{
+		RequireModule: parameters.RequireModule{
 			ExpectedModules: []common.ModuleID{
 				providers.ModuleAWSIdentityCenter,
 			},
 		},
-		RequireMetadata: common.RequireMetadata{
+		RequireMetadata: parameters.RequireMetadata{
 			ExpectedMetadataKeys: expectedMetadataKeys,
 		},
 	}

@@ -3,7 +3,6 @@ package instantlyai
 import (
 	_ "embed"
 
-	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/deleter"
@@ -11,6 +10,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components/reader"
 	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/internal/components/writer"
+	"github.com/amp-labs/connectors/internal/parameters"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/instantlyai/metadata"
 )
@@ -20,7 +20,7 @@ type Connector struct {
 	*components.Connector
 
 	// Require authenticated client
-	common.RequireAuthenticatedClient
+	parameters.RequireAuthenticatedClient
 
 	// Supported operations
 	components.SchemaProvider
@@ -31,7 +31,7 @@ type Connector struct {
 
 const apiVersion = "v2"
 
-func NewConnector(params common.ConnectorParams) (*Connector, error) {
+func NewConnector(params parameters.Connector) (*Connector, error) {
 	// Create base connector with provider info
 	return components.Initialize(providers.InstantlyAI, params, constructor)
 }

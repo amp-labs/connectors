@@ -3,8 +3,8 @@ package instantlyai
 import (
 	"context"
 
-	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
+	"github.com/amp-labs/connectors/internal/parameters"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/instantlyai"
 	"github.com/amp-labs/connectors/test/utils"
@@ -16,7 +16,7 @@ func GetInstantlyAIConnector(ctx context.Context) *instantlyai.Connector {
 
 	client := utils.NewAPIKeyClient(ctx, reader, providers.InstantlyAI)
 
-	conn, err := instantlyai.NewConnector(common.ConnectorParams{
+	conn, err := instantlyai.NewConnector(parameters.Connector{
 		AuthenticatedClient: client,
 	})
 	if err != nil {

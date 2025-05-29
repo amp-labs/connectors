@@ -4,7 +4,6 @@ import (
 	"errors"
 
 	"github.com/amp-labs/connectors"
-	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/aha"
 	"github.com/amp-labs/connectors/providers/apollo"
@@ -61,9 +60,15 @@ import (
 
 var ErrInvalidProvider = errors.New("invalid provider")
 
+// New returns a Connector instance for the given provider, initialized with the provided Parameters.
+//
+// This acts as a factory function that chooses appropriate connector constructor based on the provider argument.
+// The returned connector will be configured according to the parameters supplied.
+//
+// If the provider is unrecognized, New returns ErrInvalidProvider.
 func New( // nolint:gocyclo,cyclop,funlen,ireturn
 	provider providers.Provider,
-	params common.ConnectorParams,
+	params Parameters,
 ) (connectors.Connector, error) {
 	var (
 		connector    connectors.Connector
@@ -180,14 +185,14 @@ func New( // nolint:gocyclo,cyclop,funlen,ireturn
 	return connector, connectorErr
 }
 
-func newSalesforceConnector(params common.ConnectorParams) (*salesforce.Connector, error) {
+func newSalesforceConnector(params Parameters) (*salesforce.Connector, error) {
 	return salesforce.NewConnector(
 		salesforce.WithAuthenticatedClient(params.AuthenticatedClient),
 		salesforce.WithWorkspace(params.Workspace),
 	)
 }
 
-func newHubspotConnector(params common.ConnectorParams) (*hubspot.Connector, error) {
+func newHubspotConnector(params Parameters) (*hubspot.Connector, error) {
 	return hubspot.NewConnector(
 		hubspot.WithAuthenticatedClient(params.AuthenticatedClient),
 		hubspot.WithModule(params.Module),
@@ -195,7 +200,7 @@ func newHubspotConnector(params common.ConnectorParams) (*hubspot.Connector, err
 }
 
 func newDocusignConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*docusign.Connector, error) {
 	return docusign.NewConnector(
 		docusign.WithAuthenticatedClient(params.AuthenticatedClient),
@@ -204,7 +209,7 @@ func newDocusignConnector(
 }
 
 func newIntercomConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*intercom.Connector, error) {
 	return intercom.NewConnector(
 		intercom.WithAuthenticatedClient(params.AuthenticatedClient),
@@ -212,7 +217,7 @@ func newIntercomConnector(
 }
 
 func newSalesloftConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*salesloft.Connector, error) {
 	return salesloft.NewConnector(
 		salesloft.WithAuthenticatedClient(params.AuthenticatedClient),
@@ -220,7 +225,7 @@ func newSalesloftConnector(
 }
 
 func newDynamicsCRMConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*dynamicscrm.Connector, error) {
 	return dynamicscrm.NewConnector(
 		dynamicscrm.WithWorkspace(params.Workspace),
@@ -229,7 +234,7 @@ func newDynamicsCRMConnector(
 }
 
 func newOutreachConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*outreach.Connector, error) {
 	return outreach.NewConnector(
 		outreach.WithAuthenticatedClient(params.AuthenticatedClient),
@@ -237,7 +242,7 @@ func newOutreachConnector(
 }
 
 func newZendeskSupportConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*zendesksupport.Connector, error) {
 	return zendesksupport.NewConnector(
 		zendesksupport.WithWorkspace(params.Workspace),
@@ -246,7 +251,7 @@ func newZendeskSupportConnector(
 }
 
 func newAtlassianConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*atlassian.Connector, error) {
 	return atlassian.NewConnector(
 		atlassian.WithAuthenticatedClient(params.AuthenticatedClient),
@@ -257,7 +262,7 @@ func newAtlassianConnector(
 }
 
 func newPipelinerConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*pipeliner.Connector, error) {
 	return pipeliner.NewConnector(
 		pipeliner.WithWorkspace(params.Workspace),
@@ -266,7 +271,7 @@ func newPipelinerConnector(
 }
 
 func newSmartleadConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*smartlead.Connector, error) {
 	return smartlead.NewConnector(
 		smartlead.WithAuthenticatedClient(params.AuthenticatedClient),
@@ -274,7 +279,7 @@ func newSmartleadConnector(
 }
 
 func newMarketoConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*marketo.Connector, error) {
 	return marketo.NewConnector(
 		marketo.WithWorkspace(params.Workspace),
@@ -283,7 +288,7 @@ func newMarketoConnector(
 }
 
 func newInstantlyConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*instantly.Connector, error) {
 	return instantly.NewConnector(
 		instantly.WithAuthenticatedClient(params.AuthenticatedClient),
@@ -291,7 +296,7 @@ func newInstantlyConnector(
 }
 
 func newApolloConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*apollo.Connector, error) {
 	return apollo.NewConnector(
 		apollo.WithAuthenticatedClient(params.AuthenticatedClient),
@@ -299,7 +304,7 @@ func newApolloConnector(
 }
 
 func newGongConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*gong.Connector, error) {
 	return gong.NewConnector(
 		gong.WithAuthenticatedClient(params.AuthenticatedClient),
@@ -307,7 +312,7 @@ func newGongConnector(
 }
 
 func newAttioConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*attio.Connector, error) {
 	return attio.NewConnector(
 		attio.WithAuthenticatedClient(params.AuthenticatedClient),
@@ -315,7 +320,7 @@ func newAttioConnector(
 }
 
 func newPipedriveConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*pipedrive.Connector, error) {
 	return pipedrive.NewConnector(
 		pipedrive.WithAuthenticatedClient(params.AuthenticatedClient),
@@ -323,7 +328,7 @@ func newPipedriveConnector(
 }
 
 func newZohoConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*zohocrm.Connector, error) {
 	return zohocrm.NewConnector(
 		zohocrm.WithAuthenticatedClient(params.AuthenticatedClient),
@@ -331,7 +336,7 @@ func newZohoConnector(
 }
 
 func newCloseConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*closecrm.Connector, error) {
 	return closecrm.NewConnector(
 		closecrm.WithAuthenticatedClient(params.AuthenticatedClient),
@@ -339,7 +344,7 @@ func newCloseConnector(
 }
 
 func newKlaviyoConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*klaviyo.Connector, error) {
 	return klaviyo.NewConnector(
 		klaviyo.WithAuthenticatedClient(params.AuthenticatedClient),
@@ -347,7 +352,7 @@ func newKlaviyoConnector(
 }
 
 func newCustomerJourneysAppConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*customerapp.Connector, error) {
 	return customerapp.NewConnector(
 		customerapp.WithAuthenticatedClient(params.AuthenticatedClient),
@@ -355,7 +360,7 @@ func newCustomerJourneysAppConnector(
 }
 
 func newConstantContactConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*constantcontact.Connector, error) {
 	return constantcontact.NewConnector(
 		constantcontact.WithAuthenticatedClient(params.AuthenticatedClient),
@@ -363,7 +368,7 @@ func newConstantContactConnector(
 }
 
 func newKeapConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*keap.Connector, error) {
 	return keap.NewConnector(
 		keap.WithAuthenticatedClient(params.AuthenticatedClient),
@@ -371,7 +376,7 @@ func newKeapConnector(
 }
 
 func newKitConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*kit.Connector, error) {
 	return kit.NewConnector(
 		kit.WithAuthenticatedClient(params.AuthenticatedClient),
@@ -379,7 +384,7 @@ func newKitConnector(
 }
 
 func newIterableConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*iterable.Connector, error) {
 	return iterable.NewConnector(
 		iterable.WithAuthenticatedClient(params.AuthenticatedClient),
@@ -387,7 +392,7 @@ func newIterableConnector(
 }
 
 func newAsanaConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*asana.Connector, error) {
 	return asana.NewConnector(
 		asana.WithAuthenticatedClient(params.AuthenticatedClient),
@@ -395,7 +400,7 @@ func newAsanaConnector(
 }
 
 func newStripeConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*stripe.Connector, error) {
 	return stripe.NewConnector(
 		stripe.WithAuthenticatedClient(params.AuthenticatedClient),
@@ -403,7 +408,7 @@ func newStripeConnector(
 }
 
 func newZoomConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*zoom.Connector, error) {
 	return zoom.NewConnector(
 		zoom.WithAuthenticatedClient(params.AuthenticatedClient),
@@ -411,85 +416,85 @@ func newZoomConnector(
 }
 
 func newBrevoConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*brevo.Connector, error) {
 	return brevo.NewConnector(params)
 }
 
 func newBlueshiftConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*blueshift.Connector, error) {
 	return blueshift.NewConnector(params)
 }
 
 func newAshbyConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*ashby.Connector, error) {
 	return ashby.NewConnector(params)
 }
 
 func newGithubConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*github.Connector, error) {
 	return github.NewConnector(params)
 }
 
 func newAhaConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*aha.Connector, error) {
 	return aha.NewConnector(params)
 }
 
 func newClickUpConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*clickup.Connector, error) {
 	return clickup.NewConnector(params)
 }
 
 func newMondayConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*monday.Connector, error) {
 	return monday.NewConnector(params)
 }
 
 func newHeyReachConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*heyreach.Connector, error) {
 	return heyreach.NewConnector(params)
 }
 
 func newAWSConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*aws.Connector, error) {
 	return aws.NewConnector(params)
 }
 
 func newDriftConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*drift.Connector, error) {
 	return drift.NewConnector(params)
 }
 
 func newMixmaxConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*mixmax.Connector, error) {
 	return mixmax.NewConnector(params)
 }
 
 func newDixaConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*dixa.Connector, error) {
 	return dixa.NewConnector(params)
 }
 
 func newFrontConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*front.Connector, error) {
 	return front.NewConnector(params)
 }
 
 func newFreshdeskConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*freshdesk.Connector, error) {
 	return freshdesk.NewConnector(
 		freshdesk.WithAuthenticatedClient(params.AuthenticatedClient),
@@ -498,13 +503,13 @@ func newFreshdeskConnector(
 }
 
 func newServiceNowConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*servicenow.Connector, error) {
 	return servicenow.NewConnector(params)
 }
 
 func newChiliPiperConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*chilipiper.Connector, error) {
 	return chilipiper.NewConnector(
 		chilipiper.WithAuthenticatedClient(params.AuthenticatedClient),
@@ -512,43 +517,43 @@ func newChiliPiperConnector(
 }
 
 func newHunterConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*hunter.Connector, error) {
 	return hunter.NewConnector(params)
 }
 
 func newPodiumConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*podium.Connector, error) {
 	return podium.NewConnector(params)
 }
 
 func newLemlistConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*lemlist.Connector, error) {
 	return lemlist.NewConnector(params)
 }
 
 func newGorgiasConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*gorgias.Connector, error) {
 	return gorgias.NewConnector(params)
 }
 
 func newZendeskChatConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*zendeskchat.Connector, error) {
 	return zendeskchat.NewConnector(params)
 }
 
 func newCapsuleConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*capsule.Connector, error) {
 	return capsule.NewConnector(params)
 }
 
 func newInstantlyAIConnector(
-	params common.ConnectorParams,
+	params Parameters,
 ) (*instantlyai.Connector, error) {
 	return instantlyai.NewConnector(params)
 }

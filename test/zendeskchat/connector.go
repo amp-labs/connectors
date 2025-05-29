@@ -7,6 +7,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
+	"github.com/amp-labs/connectors/internal/parameters"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/zendeskchat"
 	"github.com/amp-labs/connectors/test/utils"
@@ -26,7 +27,7 @@ func GetConnector(ctx context.Context) *zendeskchat.Connector {
 		utils.Fail(err.Error())
 	}
 
-	conn, err := zendeskchat.NewConnector(common.ConnectorParams{
+	conn, err := zendeskchat.NewConnector(parameters.Connector{
 		AuthenticatedClient: client,
 		Workspace:           "d3v-ampersand",
 	})

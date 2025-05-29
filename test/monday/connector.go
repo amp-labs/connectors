@@ -5,6 +5,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
+	"github.com/amp-labs/connectors/internal/parameters"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/monday"
 	"github.com/amp-labs/connectors/test/utils"
@@ -21,7 +22,7 @@ func GetMondayConnector(ctx context.Context) *monday.Connector {
 	}
 
 	conn, err := monday.NewConnector(
-		common.ConnectorParams{AuthenticatedClient: client},
+		parameters.Connector{AuthenticatedClient: client},
 	)
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)

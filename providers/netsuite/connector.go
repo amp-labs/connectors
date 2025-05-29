@@ -7,6 +7,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/schema"
+	"github.com/amp-labs/connectors/internal/parameters"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -17,8 +18,8 @@ type Connector struct {
 	*components.Connector
 
 	// Require authenticated client & account
-	common.RequireAuthenticatedClient
-	common.RequireWorkspace
+	parameters.RequireAuthenticatedClient
+	parameters.RequireWorkspace
 
 	// Supported operations
 	components.SchemaProvider
@@ -26,7 +27,7 @@ type Connector struct {
 
 // API Reference: https://td2972271.app.netsuite.com/app/help/helpcenter.nl?fid=section_158151234003.html
 // NewConnector.
-func NewConnector(params common.ConnectorParams) (*Connector, error) {
+func NewConnector(params parameters.Connector) (*Connector, error) {
 	// Create base connector with provider info
 	return components.Initialize(providers.Netsuite, params, constructor)
 }

@@ -6,6 +6,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
+	"github.com/amp-labs/connectors/internal/parameters"
 	"github.com/amp-labs/connectors/providers"
 	github "github.com/amp-labs/connectors/providers/github"
 	"github.com/amp-labs/connectors/test/utils"
@@ -32,7 +33,7 @@ func GetGithubConnector(ctx context.Context) *github.Connector {
 	}
 
 	conn, err := github.NewConnector(
-		common.ConnectorParams{
+		parameters.Connector{
 			AuthenticatedClient: client,
 		},
 	)
