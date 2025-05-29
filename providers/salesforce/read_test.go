@@ -140,17 +140,17 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 }
 
 func constructTestConnector(serverURL string) (*Connector, error) {
-	return constructTestConnectorGeneral(serverURL, providers.ModuleSalesforceStandard, "test-workspace")
+	return constructTestConnectorGeneral(serverURL, providers.ModuleSalesforceCRM)
 }
 
 func constructTestConnectorAccountEngagement(serverURL string) (*Connector, error) {
-	return constructTestConnectorGeneral(serverURL, providers.ModuleSalesforceAccountEngagement, "")
+	return constructTestConnectorGeneral(serverURL, providers.ModuleSalesforceAccountEngagement)
 }
 
-func constructTestConnectorGeneral(serverURL string, module common.ModuleID, workspaceRef string) (*Connector, error) {
+func constructTestConnectorGeneral(serverURL string, module common.ModuleID) (*Connector, error) {
 	connector, err := NewConnector(
 		WithAuthenticatedClient(mockutils.NewClient()),
-		WithWorkspace(workspaceRef),
+		WithWorkspace("test-workspace"),
 		WithModule(module),
 	)
 	if err != nil {

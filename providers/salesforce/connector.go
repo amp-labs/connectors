@@ -37,7 +37,7 @@ func APIVersionSOAP() string {
 // NewConnector returns a new Salesforce connector.
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	params, err := paramsbuilder.Apply(parameters{}, opts,
-		WithModule(providers.ModuleSalesforceStandard),
+		WithModule(providers.ModuleSalesforceCRM),
 	)
 	if err != nil {
 		return nil, err
@@ -71,7 +71,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	// Account Engagement module will initialize the pardot adapter.
 	// Read/Write/ListObjectMetadata will delegate to this adapter.
 	moduleID := params.Module.Selection.ID
-	if moduleID == providers.ModuleSalesforceAccountEngagement {
+	if isPardotModule(moduleID) {
 		conn.pardotAdapter, err = pardot.NewAdapter(conn.Client, conn.moduleInfo, params.Metadata.Map)
 		if err != nil {
 			return nil, err
@@ -126,11 +126,20 @@ func (c *Connector) isPardotModule() bool {
 	return c.pardotAdapter != nil
 }
 
+func isPardotModule(moduleID common.ModuleID) bool {
+	return moduleID == providers.ModuleSalesforceAccountEngagement ||
+		moduleID == providers.ModuleSalesforceAccountEngagementDemo
+}
+
+// TODO when new approach to modules is fully done this will be obsolete.
 var supportedModules = common.Modules{ // nolint:gochecknoglobals
-	providers.ModuleSalesforceStandard: common.Module{
-		ID: providers.ModuleSalesforceStandard,
+	providers.ModuleSalesforceCRM: common.Module{
+		ID: providers.ModuleSalesforceCRM,
 	},
 	providers.ModuleSalesforceAccountEngagement: common.Module{
 		ID: providers.ModuleSalesforceAccountEngagement,
+	},
+	providers.ModuleSalesforceAccountEngagementDemo: common.Module{
+		ID: providers.ModuleSalesforceAccountEngagementDemo,
 	},
 }

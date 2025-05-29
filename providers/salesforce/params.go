@@ -24,7 +24,7 @@ type parameters struct {
 
 func newParams(opts []Option) (*common.ConnectorParams, error) { // nolint:unused
 	oldParams, err := paramsbuilder.Apply(parameters{}, opts,
-		WithModule(providers.ModuleSalesforceStandard),
+		WithModule(providers.ModuleSalesforceCRM),
 	)
 	if err != nil {
 		return nil, err
@@ -38,7 +38,7 @@ func newParams(opts []Option) (*common.ConnectorParams, error) { // nolint:unuse
 }
 
 func (p parameters) ValidateParams() error {
-	if p.Module.Selection.ID == providers.ModuleSalesforceAccountEngagement {
+	if isPardotModule(p.Module.Selection.ID) {
 		return p.Client.ValidateParams()
 	}
 
@@ -70,7 +70,7 @@ func WithWorkspace(workspaceRef string) Option {
 
 func WithModule(module common.ModuleID) Option {
 	return func(params *parameters) {
-		params.WithModule(module, supportedModules, providers.ModuleSalesforceStandard)
+		params.WithModule(module, supportedModules, providers.ModuleSalesforceCRM)
 	}
 }
 

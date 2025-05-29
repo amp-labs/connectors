@@ -15,11 +15,11 @@ import (
 )
 
 func GetSalesforceConnector(ctx context.Context) *salesforce.Connector {
-	return getSalesforceConnector(ctx, providers.ModuleSalesforceStandard)
+	return getSalesforceConnector(ctx, providers.ModuleSalesforceCRM)
 }
 
 func GetSalesforceAccountEngagementConnector(ctx context.Context) *salesforce.Connector {
-	return getSalesforceConnector(ctx, providers.ModuleSalesforceAccountEngagement)
+	return getSalesforceConnector(ctx, providers.ModuleSalesforceAccountEngagementDemo)
 }
 
 func getSalesforceConnector(ctx context.Context, module common.ModuleID) *salesforce.Connector {

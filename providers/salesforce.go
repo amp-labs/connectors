@@ -9,12 +9,15 @@ import (
 const Salesforce Provider = "salesforce"
 
 const (
-	// ModuleSalesforceStandard
+	// ModuleSalesforceCRM
 	// https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_what_is_rest_api.htm
-	ModuleSalesforceStandard common.ModuleID = "standard"
+	ModuleSalesforceCRM common.ModuleID = "crm"
 	// ModuleSalesforceAccountEngagement
 	// https://developer.salesforce.com/docs/marketing/pardot/guide/use-cases.html
 	ModuleSalesforceAccountEngagement common.ModuleID = "account-engagement"
+	// ModuleSalesforceAccountEngagementDemo
+	// It is similar to ModuleSalesforceAccountEngagement but targets non-production URL.
+	ModuleSalesforceAccountEngagementDemo common.ModuleID = "account-engagement-demo"
 )
 
 func init() { // nolint:funlen
@@ -40,11 +43,11 @@ func init() { // nolint:funlen
 				ScopesField:       "scope",
 			},
 		},
-		DefaultModule: ModuleSalesforceStandard,
+		DefaultModule: ModuleSalesforceCRM,
 		Modules: &Modules{
-			ModuleSalesforceStandard: {
+			ModuleSalesforceCRM: {
 				BaseURL:     "https://{{.workspace}}.my.salesforce.com",
-				DisplayName: "Standard Salesforce Platform",
+				DisplayName: "Salesforce",
 				Support: Support{
 					BulkWrite: BulkWriteSupport{
 						Insert: false,
@@ -59,9 +62,24 @@ func init() { // nolint:funlen
 				},
 			},
 			ModuleSalesforceAccountEngagement: {
-				// Workspace can either be empty or ".demo".
-				BaseURL:     "https://pi{{.workspace}}.pardot.com",
-				DisplayName: "Account Engagement (Pardot)",
+				BaseURL:     "https://pi.pardot.com",
+				DisplayName: "Salesforce Marketing Cloud Account Engagement (Pardot)",
+				Support: Support{
+					BulkWrite: BulkWriteSupport{
+						Insert: false,
+						Update: false,
+						Upsert: false,
+						Delete: false,
+					},
+					Proxy:     false,
+					Read:      false,
+					Subscribe: false,
+					Write:     false,
+				},
+			},
+			ModuleSalesforceAccountEngagementDemo: {
+				BaseURL:     "https://pi.demo.pardot.com",
+				DisplayName: "Salesforce Demo Marketing Cloud Account Engagement (Pardot)",
 				Support: Support{
 					BulkWrite: BulkWriteSupport{
 						Insert: false,
