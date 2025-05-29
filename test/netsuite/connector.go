@@ -6,6 +6,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
+	"github.com/amp-labs/connectors/internal/parameters"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/netsuite"
 	"github.com/amp-labs/connectors/test/utils"
@@ -30,7 +31,7 @@ func GetNetsuiteConnector(ctx context.Context) *netsuite.Connector {
 		panic(err)
 	}
 
-	conn, err := netsuite.NewConnector(common.ConnectorParams{
+	conn, err := netsuite.NewConnector(parameters.Connector{
 		AuthenticatedClient: client,
 		Workspace:           reader.Get(credscanning.Fields.Workspace),
 	})

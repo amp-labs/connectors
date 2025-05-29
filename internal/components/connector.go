@@ -5,6 +5,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/goutils"
+	"github.com/amp-labs/connectors/internal/parameters"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -24,7 +25,7 @@ type Connector struct {
 // and returns the connector as the specified T type.
 func Initialize[T any](
 	provider providers.Provider,
-	params common.ConnectorParams,
+	params parameters.Connector,
 	constructor ConnectorConstructor[T],
 ) (conn *T, err error) {
 	defer goutils.PanicRecovery(func(cause error) {
@@ -48,7 +49,7 @@ func Initialize[T any](
 	}
 
 	// Validate the parameters for the connector
-	if err := common.ValidateParameters(conn, params); err != nil {
+	if err = params.Validate(conn); err != nil {
 		return nil, err
 	}
 

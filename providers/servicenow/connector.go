@@ -7,6 +7,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components/reader"
 	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/internal/components/writer"
+	"github.com/amp-labs/connectors/internal/parameters"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -19,9 +20,9 @@ type Connector struct {
 	*components.Connector
 
 	// Require authenticated client
-	common.RequireAuthenticatedClient
+	parameters.RequireAuthenticatedClient
 	// Require workspace
-	common.RequireWorkspace
+	parameters.RequireWorkspace
 
 	// Supported operations
 	components.SchemaProvider
@@ -29,7 +30,7 @@ type Connector struct {
 	components.Writer
 }
 
-func NewConnector(params common.ConnectorParams) (*Connector, error) {
+func NewConnector(params parameters.Connector) (*Connector, error) {
 	return components.Initialize(providers.ServiceNow, params, constructor)
 }
 
