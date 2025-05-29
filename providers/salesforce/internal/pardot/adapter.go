@@ -36,3 +36,10 @@ func NewAdapter(
 func (a *Adapter) getURL(objectName string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(a.BaseURL, "api/v5/objects", objectName)
 }
+
+func (a *Adapter) businessUnitHeader() common.Header {
+	return common.Header{
+		Key:   "Pardot-Business-Unit-Id",
+		Value: a.BusinessUnitID,
+	}
+}
