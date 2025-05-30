@@ -1,0 +1,12 @@
+query {
+    users {
+		user_id
+		email
+		name
+		num_transcripts
+		recent_meeting
+		minutes_consumed
+		is_admin
+		integrations
+	}
+}
