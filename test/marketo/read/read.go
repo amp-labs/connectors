@@ -134,7 +134,7 @@ func testReadLeads(ctx context.Context) error {
 
 	params := common.ReadParams{
 		ObjectName: "leads",
-		Fields:     connectors.Fields("id", "email"),
+		Fields:     connectors.Fields("id", "email", "createdAt", "firstName"),
 	}
 
 	res, err := conn.Read(ctx, params)

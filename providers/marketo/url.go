@@ -29,6 +29,7 @@ const ( //nolint:gochecknoglobals
 	filterTypeQuery      = "filterType"
 	earliestUpdatedQuery = "earliestUpdatedAt"
 	latestUpdatedAtQuery = "latestUpdatedAt"
+	fields               = "fields"
 
 	newLeadActivityType = "12"
 	startingIDIdx       = "1"
@@ -253,6 +254,7 @@ func (c *Connector) handleLeadsAPI(ctx context.Context, url *urlbuilder.URL, par
 
 	url.WithQueryParam(filterValuesQuery, strings.Join(ids, ","))
 	url.WithQueryParam(filterTypeQuery, idFilter)
+	url.WithQueryParam(fields, strings.Join(params.Fields.List(), ","))
 
 	return nextPage, nil
 }
