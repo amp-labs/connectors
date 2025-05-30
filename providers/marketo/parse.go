@@ -13,12 +13,18 @@ func getNextRecordsURL(node *ajson.Node) (string, error) {
 	return jsonquery.New(node).StrWithDefault("nextPageToken", "")
 }
 
-func constructNextRecordsURL(object string) common.NextPageFunc {
+func constructNextRecordsURL(object, nextToken string) common.NextPageFunc {
 	if paginatesByIDs(object) {
 		// Incase of Reading Records from the Objects requiring Filtering.
 		// we construct Next-Page URLs using the filtered ids.
 		// constructNextPageFilteredURL creates the next-page url by appendig the next page ids in the query parameters
 		return constructNextPageFilteredURL
+	}
+
+	if object == leads { // setting the activity NextPageToken for Leads
+		return func(n *ajson.Node) (string, error) {
+			return nextToken, nil
+		}
 	}
 
 	return getNextRecordsURL
