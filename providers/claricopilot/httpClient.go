@@ -13,7 +13,6 @@ func NewClariCopilotAuthHTTPClient( //nolint:ireturn
 	header1Name, header1Value, header2Name, header2Value string,
 	opts ...common.HeaderAuthClientOption,
 ) (common.AuthenticatedHTTPClient, error) {
-
 	headers := []common.Header{
 		{
 			Key:   header1Name,
@@ -24,7 +23,6 @@ func NewClariCopilotAuthHTTPClient( //nolint:ireturn
 			Value: header2Value,
 		},
 	}
-
 	// Use the existing header auth client with multiple headers
 	return common.NewHeaderAuthHTTPClient(ctx, append(opts, common.WithHeaders(headers...))...)
 }
