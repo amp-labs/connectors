@@ -161,7 +161,7 @@ func testIncrementalReadLeads(ctx context.Context) error {
 		ObjectName: "leads",
 		Fields:     connectors.Fields("id", "email"),
 		Since:      time.Now().Add(-6 * time.Hour),
-		NextPage:   "576",
+		NextPage:   "5HGU7ZC75UN24BUTN4FPNOQBNYYAR3VPGIS4BZLWEHGJWWKTP4UQ====",
 	}
 
 	res, err := conn.Read(ctx, params)
@@ -189,7 +189,7 @@ func testReadActivities(ctx context.Context) error {
 		Since:      time.Now().Add(-1800 * time.Hour),
 		Fields:     connectors.Fields("id", "primaryAttributeValue", "activityDate"),
 		Filter:     "1,2,3,6,7,8,9,10,11,12",
-		NextPage:   "7A4CXBXWDZ7ZTQBOQVIV2VTWDUYUJE7CEG3XLI2FKH6PQYS2LJOQ====",
+		NextPage:   "7A4CXBXWDZ7ZTQBOQVIV2VTWDXUS7GKFQN3UZYGPNV4IA4C7GDCA====",
 	}
 
 	res, err := conn.Read(ctx, params)
