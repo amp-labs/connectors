@@ -33,10 +33,10 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{
 					{
-						If:   mockcond.PathSuffix("/tickets"),
+						If:   mockcond.Path("/api/v2/tickets"),
 						Then: mockserver.Response(http.StatusOK, tickets),
 					}, {
-						If:   mockcond.PathSuffix("/email/mailboxes"),
+						If:   mockcond.Path("/api/v2/email/mailboxes"),
 						Then: mockserver.Response(http.StatusOK, zeroRecords),
 					},
 				},
@@ -89,14 +89,14 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 
 func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(
-		WithAuthenticatedClient(http.DefaultClient),
+		WithAuthenticatedClient(mockutils.NewClient()),
 		WithWorkspace("slot"),
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	connector.BaseURL = serverURL
+	connector.setBaseURL(mockutils.ReplaceURLOrigin(connector.HTTPClient().Base, serverURL))
 
 	return connector, nil
 }

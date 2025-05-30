@@ -24,13 +24,13 @@ type parameters struct {
 	paramsbuilder.Workspace
 }
 
-func newParams(opts []Option) (*common.Parameters, error) { // nolint:unused
+func newParams(opts []Option) (*common.ConnectorParams, error) { // nolint:unused
 	oldParams, err := paramsbuilder.Apply(parameters{}, opts)
 	if err != nil {
 		return nil, err
 	}
 
-	return &common.Parameters{
+	return &common.ConnectorParams{
 		AuthenticatedClient: oldParams.Client.Caller.Client,
 		Workspace:           oldParams.Workspace.Name,
 	}, nil

@@ -63,7 +63,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.PathSuffix("/v2/tasks"),
+					mockcond.Path("/api/v2/tasks"),
 					mockcond.Body(`{"task": {"dueOn" : "2025-05-20"}}`),
 				},
 				Then: mockserver.Response(http.StatusOK, responseTask),
@@ -94,7 +94,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPUT(),
-					mockcond.PathSuffix("/v2/tasks/147248893"),
+					mockcond.Path("/api/v2/tasks/147248893"),
 					mockcond.Body(`{"task": {"dueOn" : "2025-05-20"}}`),
 				},
 				Then: mockserver.Response(http.StatusOK, responseTask),
@@ -122,7 +122,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.PathSuffix("/v2/kases"),
+					mockcond.Path("/api/v2/kases"),
 					mockcond.Body(`{"kase": {"name" : "Research"}}`),
 				},
 				Then: mockserver.Response(http.StatusOK, responseProject),
@@ -152,7 +152,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPUT(),
-					mockcond.PathSuffix("/v2/kases/5271516"),
+					mockcond.Path("/api/v2/kases/5271516"),
 					mockcond.Body(`{"kase": {"name" : "Research"}}`),
 				},
 				Then: mockserver.Response(http.StatusOK, responseProject),

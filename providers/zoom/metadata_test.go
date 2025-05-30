@@ -1,20 +1,19 @@
 package zoom
 
 import (
-	"net/http"
 	"testing"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 )
 
-func TestListObjectMetaUserModule(t *testing.T) {
+func TestListObjectMetadata(t *testing.T) { // nolint:funlen
 	t.Parallel()
 
-	tests := []testroutines.Metadata{ // nolint:gochecknoglobals
+	tests := []testroutines.Metadata{
 		{
 			Name:         "At least one object name must be queried",
 			Input:        nil,
@@ -60,32 +59,29 @@ func TestListObjectMetaUserModule(t *testing.T) {
 			},
 			ExpectedErrs: nil,
 		},
-	}
-
-	for _, tt := range tests {
-		// nolint:varnamelen
-		t.Run(tt.Name, func(t *testing.T) {
-			t.Parallel()
-			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
-				return constructTestConnector(tt.Server.URL, providers.ModuleZoomUser)
-			})
-		})
-	}
-}
-
-func TestListObjectMetaMeetingModule(t *testing.T) {
-	t.Parallel()
-
-	tests := []testroutines.Metadata{ // nolint:gochecknoglobals
 		{
 			Name:       "Successfully describe multiple objects with metadata",
-			Input:      []string{"activities_report", "device_groups"},
+			Input:      []string{"report/activities", "devices/groups"},
 			Server:     mockserver.Dummy(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
-					"activities_report": {
-						DisplayName: "Activities Report",
+					"report/activities": {
+						DisplayName: "Activities",
+						Fields: map[string]common.FieldMetadata{
+							"type": {
+								DisplayName:  "type",
+								ValueType:    "singleSelect",
+								ProviderType: "string",
+								Values: common.FieldValues{{
+									Value:        "Sign in",
+									DisplayValue: "Sign in",
+								}, {
+									Value:        "Sign out",
+									DisplayValue: "Sign out",
+								}},
+							},
+						},
 						FieldsMap: map[string]string{
 							"client_type": "client_type",
 							"type":        "type",
@@ -93,8 +89,15 @@ func TestListObjectMetaMeetingModule(t *testing.T) {
 							"version":     "version",
 						},
 					},
-					"device_groups": {
+					"devices/groups": {
 						DisplayName: "Device Groups",
+						Fields: map[string]common.FieldMetadata{
+							"zdm_group_id": {
+								DisplayName:  "zdm_group_id",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
 						FieldsMap: map[string]string{
 							"name":        "name",
 							"description": "description",
@@ -112,22 +115,21 @@ func TestListObjectMetaMeetingModule(t *testing.T) {
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
-				return constructTestConnector(tt.Server.URL, providers.ModuleZoomMeeting)
+				return constructTestConnector(tt.Server.URL)
 			})
 		})
 	}
 }
 
-func constructTestConnector(serverURL string, moduleID common.ModuleID) (*Connector, error) {
+func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(
-		WithAuthenticatedClient(http.DefaultClient),
-		WithModule(moduleID),
+		WithAuthenticatedClient(mockutils.NewClient()),
 	)
 	if err != nil {
 		return nil, err
 	}
 	// for testing we want to redirect calls to our mock server.
-	connector.setBaseURL(serverURL)
+	connector.setBaseURL(mockutils.ReplaceURLOrigin(connector.HTTPClient().Base, serverURL))
 
 	return connector, nil
 }

@@ -54,21 +54,21 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "Name",
 								ValueType:    "string",
 								ProviderType: "string",
-								ReadOnly:     true,
+								ReadOnly:     false,
 								Values:       nil,
 							},
 							"preferencesconsentmanagementenabled": {
 								DisplayName:  "ConsentManagementEnabled",
 								ValueType:    "boolean",
 								ProviderType: "boolean",
-								ReadOnly:     true,
+								ReadOnly:     false,
 								Values:       nil,
 							},
 							"latitude": {
 								DisplayName:  "Latitude",
 								ValueType:    "float",
 								ProviderType: "double",
-								ReadOnly:     true,
+								ReadOnly:     false,
 								Values:       nil,
 							},
 							"monthlypageviewsused": {
@@ -111,7 +111,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "Phone",
 								ValueType:    "other",
 								ProviderType: "phone",
-								ReadOnly:     true,
+								ReadOnly:     false,
 								Values:       nil,
 							},
 						},
@@ -139,6 +139,83 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 
 			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
 				return constructTestConnector(tt.Server.URL)
+			})
+		})
+	}
+}
+
+func TestListObjectMetadataPardot(t *testing.T) { // nolint:funlen,gocognit,cyclop
+	t.Parallel()
+
+	tests := []testroutines.Metadata{
+		{
+			Name:         "At least one object name must be queried",
+			Input:        nil,
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingObjects},
+		},
+		{
+			Name:       "Successfully describe one object with metadata",
+			Input:      []string{"EmAiLs"},
+			Server:     mockserver.Dummy(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"emails": {
+						DisplayName: "Emails",
+						Fields: map[string]common.FieldMetadata{
+							"htmlMessage": {
+								DisplayName:  "HTML Message",
+								ValueType:    "string",
+								ProviderType: "string",
+								ReadOnly:     false,
+								Values:       nil,
+							},
+							"sentAt": {
+								DisplayName:  "Sent At",
+								ValueType:    "datetime",
+								ProviderType: "datetime",
+								ReadOnly:     true,
+								Values:       nil,
+							},
+							"type": {
+								DisplayName:  "Type",
+								ValueType:    "singleSelect",
+								ProviderType: "enum",
+								ReadOnly:     true,
+								Values: []common.FieldValue{{
+									Value:        "html",
+									DisplayValue: "HTML",
+								}, {
+									Value:        "text",
+									DisplayValue: "Text",
+								}, {
+									Value:        "htmlAndText",
+									DisplayValue: "HTML and Text",
+								}},
+							},
+						},
+						FieldsMap: map[string]string{
+							"sentAt":          "Sent At",
+							"subject":         "Subject",
+							"textMessage":     "Text Message",
+							"trackerDomainId": "Tracker Domain ID",
+						},
+					},
+				},
+				Errors: map[string]error{},
+			},
+			ExpectedErrs: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		// nolint:varnamelen
+		t.Run(tt.Name, func(t *testing.T) {
+			t.Parallel()
+
+			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
+				return constructTestConnectorAccountEngagement(tt.Server.URL)
 			})
 		})
 	}

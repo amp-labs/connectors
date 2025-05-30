@@ -28,7 +28,7 @@ type Connector struct {
 	components.Deleter
 }
 
-func NewConnector(params common.Parameters) (*Connector, error) {
+func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	// Create base connector with provider info
 	return components.Initialize(providers.Fireflies, params, constructor)
 }
@@ -69,7 +69,6 @@ func constructor(base *components.Connector) (*Connector, error) {
 		registry,
 		connector.ProviderContext.Module(),
 		operations.WriteHandlers{
-			BuildRequest:  connector.buildWriteRequest,
 			ParseResponse: connector.parseWriteResponse,
 			ErrorHandler: interpreter.ErrorHandler{
 				JSON: interpreter.NewFaultyResponder(errorFormats, nil),

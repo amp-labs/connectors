@@ -2,46 +2,45 @@ package main
 
 import (
 	"log/slog"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
-	"github.com/amp-labs/connectors/internal/metadatadef"
 	"github.com/amp-labs/connectors/internal/staticschema"
-	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/zoom/metadata"
+	utilsopenapi "github.com/amp-labs/connectors/scripts/openapi/utils"
 	"github.com/amp-labs/connectors/scripts/openapi/zoom/metadata/meeting"
 	"github.com/amp-labs/connectors/scripts/openapi/zoom/metadata/user"
 	"github.com/amp-labs/connectors/tools/scrapper"
 )
 
 func main() {
-	schemas := staticschema.NewMetadata[staticschema.FieldMetadataMapV1]()
+	schemas := staticschema.NewMetadata[staticschema.FieldMetadataMapV2]()
 	registry := datautils.NamedLists[string]{}
-	lists := datautils.IndexedLists[common.ModuleID, metadatadef.Schema]{}
 
-	lists.Add(providers.ModuleZoomUser, user.Objects()...)
-	lists.Add(providers.ModuleZoomMeeting, meeting.Objects()...)
+	objects := append(
+		user.Objects(),
+		meeting.Objects()...,
+	)
 
-	for module, objects := range lists {
-		for _, object := range objects {
-			if object.Problem != nil {
-				slog.Error("schema not extracted",
-					"objectName", object.ObjectName,
-					"error", object.Problem,
-				)
-			}
+	for _, object := range objects {
+		objectName, _ := strings.CutPrefix(object.URLPath, "/")
 
-			for _, field := range object.Fields {
-				schemas.Add(module, object.ObjectName, object.DisplayName, object.URLPath, object.ResponseKey,
-					staticschema.FieldMetadataMapV1{
-						field.Name: field.Name,
-					}, nil, object.Custom)
-			}
+		if object.Problem != nil {
+			slog.Error("schema not extracted",
+				"objectName", objectName,
+				"error", object.Problem,
+			)
+		}
 
-			for _, queryParam := range object.QueryParams {
-				registry.Add(queryParam, object.ObjectName)
-			}
+		for _, field := range object.Fields {
+			schemas.Add(common.ModuleRoot, objectName, object.DisplayName, object.URLPath, object.ResponseKey,
+				utilsopenapi.ConvertMetadataFieldToFieldMetadataMapV2(field), nil, object.Custom)
+		}
+
+		for _, queryParam := range object.QueryParams {
+			registry.Add(queryParam, objectName)
 		}
 	}
 

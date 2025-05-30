@@ -14,7 +14,7 @@ import (
 
 func GetGithubConnector(ctx context.Context) *github.Connector {
 	filePath := credscanning.LoadPath(providers.Github)
-	reader := utils.MustCreateProvCredJSON(filePath, true, false)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	options := []common.OAuthOption{
 		common.WithOAuthClient(http.DefaultClient),
@@ -32,7 +32,7 @@ func GetGithubConnector(ctx context.Context) *github.Connector {
 	}
 
 	conn, err := github.NewConnector(
-		common.Parameters{
+		common.ConnectorParams{
 			AuthenticatedClient: client,
 		},
 	)

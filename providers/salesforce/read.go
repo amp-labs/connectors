@@ -15,6 +15,10 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
+	if c.isPardotModule() {
+		return c.pardotAdapter.Read(ctx, config)
+	}
+
 	url, err := c.buildReadURL(config)
 	if err != nil {
 		return nil, err

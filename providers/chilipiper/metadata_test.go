@@ -6,6 +6,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -31,10 +32,10 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
-					If:   mockcond.PathSuffix("/workspace"),
+					If:   mockcond.Path("/api/fire-edge/v1/org/workspace"),
 					Then: mockserver.Response(http.StatusOK, workspace),
 				}, {
-					If:   mockcond.PathSuffix("/meme"),
+					If:   mockcond.Path("/api/fire-edge/v1/org/meme"),
 					Then: mockserver.Response(http.StatusNotFound, unsupportedResponse),
 				}},
 			}.Server(),
@@ -74,13 +75,14 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 
 func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(
-		WithAuthenticatedClient(http.DefaultClient),
+		WithAuthenticatedClient(mockutils.NewClient()),
 	)
 	if err != nil {
 		return nil, err
 	}
 
 	connector.BaseURL = serverURL
+	connector.BaseURL = mockutils.ReplaceURLOrigin(connector.HTTPClient().Base, serverURL)
 
 	return connector, nil
 }

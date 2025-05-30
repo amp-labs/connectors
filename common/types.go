@@ -118,6 +118,11 @@ var (
 	ErrResolvingCustomFields = errors.New("cannot resolve custom fields")
 
 	ErrGetRecordNotSupportedForObject = errors.New("getRecord is not supported for the object")
+
+	// ErrImplementation is returned when the code takes an unexpected or logically invalid execution path.
+	// It should be used to explicitly catch cases that would otherwise lead to panics (e.g., nil pointer dereference).
+	// This typically indicates a broken assumption or inconsistency in the implementation logic.
+	ErrImplementation = errors.New("code took invalid execution path")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.
@@ -277,36 +282,57 @@ type DeleteResult struct {
 // Ex: Post/Put/Patch.
 type WriteMethod func(context.Context, string, any, ...Header) (*JSONHTTPResponse, error)
 
-// NewHTTPStatusError creates a new error with the given HTTP status.
-func NewHTTPStatusError(status int, err error) error {
+// NewHTTPError creates a new error with the given HTTP status.
+func NewHTTPError(status int, body []byte, headers Headers, err error) error {
 	if status < 1 || status > 599 {
 		return err
 	}
 
-	return &HTTPStatusError{
-		HTTPStatus: status,
-		err:        err,
+	// Just in case the caller mutates the body after passing it in,
+	// we make a copy of the body to ensure that the error contains
+	// the original body.
+	var bodyCopy []byte
+
+	if body != nil {
+		bodyCopy = make([]byte, len(body))
+		copy(bodyCopy, body)
+	}
+
+	return &HTTPError{
+		Status:  status,
+		Headers: headers,
+		Body:    bodyCopy,
+		err:     err,
 	}
 }
 
-// HTTPStatusError is an error that contains an HTTP status code.
-type HTTPStatusError struct {
-	// HTTPStatus is the original HTTP status.
-	HTTPStatus int
+// HTTPError is an error that contains both an error and details
+// about the HTTP response that caused the error. It includes
+// the HTTP status code, headers, and body of the response.
+// Body and Headers are optional and may be nil if not available.
+type HTTPError struct {
+	// Status is the original HTTP status.
+	Status int
+
+	// Headers are the HTTP headers of the response, if available.
+	Headers Headers // optional
+
+	// Body is the raw response body, if available.
+	Body []byte // optional
 
 	// The underlying error
 	err error
 }
 
-func (r HTTPStatusError) Error() string {
-	if r.HTTPStatus > 0 {
-		return fmt.Sprintf("HTTP status %d: %v", r.HTTPStatus, r.err)
+func (r HTTPError) Error() string {
+	if r.Status > 0 {
+		return fmt.Sprintf("HTTP status %d: %v", r.Status, r.err)
 	}
 
 	return r.err.Error()
 }
 
-func (r HTTPStatusError) Unwrap() error {
+func (r HTTPError) Unwrap() error {
 	return r.err
 }
 

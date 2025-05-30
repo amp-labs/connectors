@@ -29,7 +29,7 @@ type Connector struct {
 	components.Deleter
 }
 
-func NewConnector(params common.Parameters) (*Connector, error) {
+func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	return components.Initialize(providers.Capsule, params, constructor)
 }
 

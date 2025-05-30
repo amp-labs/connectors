@@ -56,7 +56,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.PathSuffix("/v1/customers"),
+					mockcond.Path("/v1/customers"),
 				},
 				Then: mockserver.Response(http.StatusOK),
 			}.Server(),
@@ -74,7 +74,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.PathSuffix("/v1/customers/cus_ReFi6S3vuH5Lea"),
+					mockcond.Path("/v1/customers/cus_ReFi6S3vuH5Lea"),
 				},
 				Then: mockserver.Response(http.StatusOK),
 			}.Server(),
@@ -88,7 +88,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.PathSuffix("/v1/customers"),
+					mockcond.Path("/v1/customers"),
 					mockcond.HeaderContentURLFormEncoded(),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCreateCustomer),

@@ -10,14 +10,10 @@ import (
 type Connector struct {
 	BaseURL string
 	Client  *common.JSONHTTPClient
-	Module  common.Module
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	params, err := paramsbuilder.Apply(parameters{}, opts,
-		// The module is resolved on behalf of the user if the option is missing.
-		WithModule(providers.ModuleMarketoLeads),
-	)
+	params, err := paramsbuilder.Apply(parameters{}, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -35,7 +31,6 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 				ResponseHandler: responseHandler,
 			},
 		},
-		Module: params.Module.Selection,
 	}
 
 	conn.setBaseURL(providerInfo.BaseURL)
@@ -54,9 +49,11 @@ func (c *Connector) Provider() providers.Provider {
 }
 
 func (c *Connector) getAPIURL(objName string) (*urlbuilder.URL, error) {
+	restAPIPrefix := constructAPIPrefix(objName)
+
 	objName = common.AddSuffixIfNotExists(objName, ".json")
 
-	return urlbuilder.New(c.BaseURL, restAPIPrefix, c.Module.Path(), objName)
+	return urlbuilder.New(c.BaseURL, restAPIPrefix, objName)
 }
 
 func (c *Connector) String() string {

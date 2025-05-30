@@ -52,7 +52,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 				Setup: mockserver.ContentHTML(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.PathSuffix("/api/templates/push/upsert"),
+					mockcond.Path("/api/templates/push/upsert"),
 				},
 				Then: mockserver.Response(http.StatusBadRequest, responseTemplateBadRequestHTML),
 			}.Server(),
@@ -68,7 +68,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.PathSuffix("/api/templates/push/upsert"),
+					mockcond.Path("/api/templates/push/upsert"),
 				},
 				Then: mockserver.Response(http.StatusBadRequest, responseTemplateInvalidRequestJSON),
 			}.Server(),
@@ -95,7 +95,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.PathSuffix("/api/catalogs/electronics"),
+					mockcond.Path("/api/catalogs/electronics"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCatalog),
 			}.Server(),
@@ -114,7 +114,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.PathSuffix("/api/lists"),
+					mockcond.Path("/api/lists"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseList),
 			}.Server(),
@@ -133,7 +133,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.PathSuffix("/api/users/update"),
+					mockcond.Path("/api/users/update"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseUsers),
 			}.Server(),
@@ -152,7 +152,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.PathSuffix("/api/templates/push/upsert"),
+					mockcond.Path("/api/templates/push/upsert"),
 				},
 				Then: mockserver.Response(http.StatusOK, responsePushTemplate),
 			}.Server(),
@@ -171,7 +171,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 				Setup: mockserver.ContentText(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.PathSuffix("/api/webhooks"),
+					mockcond.Path("/api/webhooks"),
 				},
 				Then: mockserver.Response(http.StatusBadRequest, responseWebhookTEXT),
 			}.Server(),

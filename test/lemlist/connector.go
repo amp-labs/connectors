@@ -12,7 +12,7 @@ import (
 
 func GetLemlistConnector(ctx context.Context) *lemlist.Connector {
 	filePath := credscanning.LoadPath(providers.Lemlist)
-	reader := utils.MustCreateProvCredJSON(filePath, false, false)
+	reader := utils.MustCreateProvCredJSON(filePath, false)
 
 	client, err := common.NewApiKeyQueryParamAuthHTTPClient(ctx, "access_token", reader.Get(credscanning.Fields.ApiKey))
 	if err != nil {
@@ -20,7 +20,7 @@ func GetLemlistConnector(ctx context.Context) *lemlist.Connector {
 	}
 
 	conn, err := lemlist.NewConnector(
-		common.Parameters{AuthenticatedClient: client},
+		common.ConnectorParams{AuthenticatedClient: client},
 	)
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)

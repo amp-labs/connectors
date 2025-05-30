@@ -8,6 +8,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -20,6 +21,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	errorUnsupportedPagination := testutils.DataFromFile(t, "read-unsupported-pagination.json")
 	responseCampaigns := testutils.DataFromFile(t, "read-campaigns.json")
 	responseProfilesFirstPage := testutils.DataFromFile(t, "read-profiles-1-first-page.json")
+
+	header := http.Header{"revision": []string{"2024-10-15"}}
 
 	tests := []testroutines.Read{
 		{
@@ -64,8 +67,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentMIME("application/vnd.api+json"),
-				If:    mockcond.PathSuffix("/api/profiles"),
-				Then:  mockserver.Response(http.StatusOK, responseProfilesFirstPage),
+				If: mockcond.And{
+					mockcond.Path("/api/profiles"),
+					mockcond.Header(header),
+				},
+				Then: mockserver.Response(http.StatusOK, responseProfilesFirstPage),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
@@ -112,9 +118,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentMIME("application/vnd.api+json"),
 				If: mockcond.And{
-					mockcond.PathSuffix("/api/campaigns"),
+					mockcond.Path("/api/campaigns"),
 					mockcond.QueryParam("filter",
 						"greater-than(updated_at,2024-03-04T08:22:56Z),equals(messages.channel,'email')"),
+					mockcond.Header(header),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCampaigns),
 			}.Server(),
@@ -161,14 +168,14 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 
 func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(
-		WithAuthenticatedClient(http.DefaultClient),
+		WithAuthenticatedClient(mockutils.NewClient()),
 	)
 	if err != nil {
 		return nil, err
 	}
 
 	// for testing we want to redirect calls to our mock server
-	connector.setBaseURL(serverURL)
+	connector.setBaseURL(mockutils.ReplaceURLOrigin(connector.HTTPClient().Base, serverURL))
 
 	return connector, nil
 }
