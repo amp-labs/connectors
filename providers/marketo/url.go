@@ -30,6 +30,7 @@ const ( //nolint:gochecknoglobals
 	filterTypeQuery      = "filterType"
 	earliestUpdatedQuery = "earliestUpdatedAt"
 	latestUpdatedAtQuery = "latestUpdatedAt"
+	fieldsQuery          = "fields"
 
 	newLeadActivityType = "12"
 	startingIDIdx       = "1"

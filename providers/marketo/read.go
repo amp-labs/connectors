@@ -62,6 +62,7 @@ func (c *Connector) ReadLeadsByID(ctx context.Context, leadIds []string, fields 
 
 	url.WithQueryParam(filterTypeQuery, idFilter)
 	url.WithQueryParam(filterValuesQuery, strings.Join(leadIds, ","))
+	url.WithQueryParam(fieldsQuery, strings.Join(fields.List(), ","))
 
 	res, err := c.Client.Get(ctx, url.String())
 	if err != nil {
