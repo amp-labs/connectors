@@ -3,6 +3,7 @@ package connectors
 import (
 	"context"
 	"fmt"
+	"net/url"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
@@ -24,6 +25,22 @@ type Connector interface {
 
 	// Provider returns the connector provider.
 	Provider() providers.Provider
+}
+
+// ProxyConnector defines an interface for connectors that proxy requests to a provider.
+type ProxyConnector interface {
+	// ProxyURL returns the base URL used to proxy requests to the provider.
+	// This is typically the shortest URL with no path component.
+	//
+	// Returns common.ErrProxyNotApplicable if proxying is not supported.
+	ProxyURL() (*url.URL, error)
+
+	// ProxyModuleURL returns a module-scoped proxy URL.
+	// In some cases, it may be identical to ProxyURL, indicating no module-specific path or origin.
+	// Different modules may resolve to different paths or origins.
+	//
+	// Returns common.ErrProxyNotApplicable if proxying is not supported.
+	ProxyModuleURL() (*url.URL, error)
 }
 
 // URLConnector is an interface that extends the Connector interface with the ability to
