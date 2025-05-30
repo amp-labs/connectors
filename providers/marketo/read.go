@@ -24,7 +24,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	url, err := c.constructReadURL(ctx, config)
+	url, nextPageToken, err := c.constructReadURL(ctx, config)
 	if err != nil {
 		// If this is the case, we return a zero records response.
 		if errors.Is(err, ErrZeroRecords) {
@@ -44,7 +44,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 
 	return common.ParseResult(res,
 		getRecords,
-		constructNextRecordsURL(config.ObjectName),
+		constructNextRecordsURL(config.ObjectName, nextPageToken),
 		common.GetMarshaledData,
 		config.Fields,
 	)
