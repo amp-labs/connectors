@@ -268,106 +268,19 @@ func (c *Connector) buildWriteRequest(
 	switch params.ObjectName {
 	case objectNameLiveMeeting:
 		if params.RecordId == "" {
-			meetingLink, ok := recordData["meeting_link"].(string)
-			if !ok {
-				return nil, ErrMeetingLinkRequired
-			}
-
-			mutation = fmt.Sprintf(`mutation {
-				addToLiveMeeting(meeting_link: "%s") {
-					success
-				}
-			}`, meetingLink)
+			mutation = getMutation("graphql/mutation_meeting.graphql", "addToLiveMeeting", recordData)
 		} else {
 			return nil, ErrUpdateMeetingLinkNotSupported
 		}
 	case objectNameCreateBite:
 		if params.RecordId == "" {
-			transcriptId, ok := recordData["transcriptId"].(string) //nolint:varnamelen
-			if !ok {
-				return nil, ErrMeetingLinkRequired
-			}
-
-			startTime, ok := recordData["startTime"].(float64)
-			if !ok {
-				return nil, ErrStartTimeRequired
-			}
-
-			endTime, ok := recordData["endTime"].(float64)
-			if !ok {
-				return nil, ErrEndTimeRequired
-			}
-
-			mutation = fmt.Sprintf(`mutation {
-				createBite(transcript_Id: "%s", start_time: %v, end_time: %v) {
-					transcript_id
-					name
-        			id
-        			thumbnail
-        			preview
-        			status
-        			summary
-        			user_id
-        			start_time
-        			end_time
-        			summary_status
-        			media_type
-        			created_at
-        			created_from {
-            			duration
-            			id
-            			name
-            			type
-        			}
-        			captions {
-            			end_time
-            			index
-            			speaker_id
-            			speaker_name
-            			start_time
-            			text
-        			}
-        			sources {
-            			src
-            			type
-        			}
-        			privacies
-        			user {
-            			first_name
-            			last_name
-            			picture
-            			name
-            			id
-        			}
-				}
-			}`, transcriptId, startTime, endTime)
+			mutation = getMutation("graphql/mutation_bite.graphql", "createBite", recordData)
 		} else {
 			return nil, ErrUpdateBiteNotSupported
 		}
 	case objectNameSetUserRole:
 		if params.RecordId == "" {
-			userId, ok := recordData["user_id"].(string)
-			if !ok {
-				return nil, ErrRoleRequired
-			}
-
-			role, ok := recordData["role"].(string)
-			if !ok {
-				return nil, ErrRoleRequired
-			}
-
-			mutation = fmt.Sprintf(`mutation {
-			    setUserRole(user_id: "%s", role: %s) { 
-                    user_id
-		 			email
-					name
-					num_transcripts
-					recent_meeting
-					minutes_consumed
-					is_admin
-					integrations
-				}
-            }`, userId, role)
+			mutation = getMutation("graphql/mutation_user_role.graphql", "setUserRole", recordData)
 		} else {
 			return nil, ErrUpdateRoleNotSupported
 		}
@@ -378,13 +291,7 @@ func (c *Connector) buildWriteRequest(
 				return nil, err
 			}
 
-			mutation = fmt.Sprintf(`mutation {
-				uploadAudio(input: {%s}) {
-					success
-					title
-					message
-				}
-			}`, strings.Join(mutationInput, ", "))
+			mutation = getMutation("graphql/mutation_audio.graphql", "uploadAudio", mutationInput)
 		} else {
 			return nil, ErrUpdateAudioSupported
 		}
@@ -400,11 +307,10 @@ func (c *Connector) buildWriteRequest(
 				return nil, ErrTitleRequired
 			}
 
-			mutation = fmt.Sprintf(`mutation {
-				updateMeetingTitle(input: {id: "%s", title: "%s"}) {
-					title
-				}
-			}`, params.RecordId, title)
+			mutation = getMutation("graphql/mutation_meeting_type.graphql", "updateMeetingTitle", map[string]string{
+				"id":    params.RecordId,
+				"title": title,
+			})
 		} else {
 			return nil, ErrCreateMeetingSupported
 		}
@@ -429,6 +335,29 @@ func (c *Connector) buildWriteRequest(
 	req.Header.Set("Content-Type", "application/json")
 
 	return req, nil
+}
+
+func getMutation(filePath, queryName string, data any) string {
+	queryBytes, err := queryFS.ReadFile(filePath)
+	if err != nil {
+		return ""
+	}
+
+	tmpl, err := template.New(queryName).Parse(string(queryBytes))
+	if err != nil {
+		return ""
+	}
+
+	var (
+		queryBuf bytes.Buffer
+	)
+
+	err = tmpl.Execute(&queryBuf, data)
+	if err != nil {
+		return ""
+	}
+
+	return queryBuf.String()
 }
 
 func (c *Connector) parseWriteResponse(
@@ -472,7 +401,7 @@ func (c *Connector) parseWriteResponse(
 }
 
 // nolint
-func ExtractAudioFields(RecordData any) ([]string, error) {
+func ExtractAudioFields(RecordData any) (map[string]any, error) {
 	input, ok := RecordData.(map[string]any)["input"].(map[string]any)
 	if !ok {
 		return nil, ErrInvalidResponseFormat
@@ -500,13 +429,10 @@ func ExtractAudioFields(RecordData any) ([]string, error) {
 		}
 	}
 
-	// Build mutation input parts
-	inputParts := []string{fmt.Sprintf(`url: "%s"`, url)}
-	if title != "" {
-		inputParts = append(inputParts, fmt.Sprintf(`title: "%s"`, title))
-	}
-	if len(attendeeStrings) > 0 {
-		inputParts = append(inputParts, fmt.Sprintf(`attendees: [%s]`, strings.Join(attendeeStrings, ", ")))
+	inputParts := map[string]any{
+		"URL":       url,
+		"title":     title,
+		"attendees": fmt.Sprintf(`[%s]`, strings.Join(attendeeStrings, ", ")),
 	}
 
 	return inputParts, nil

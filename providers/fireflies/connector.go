@@ -69,6 +69,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 		registry,
 		connector.ProviderContext.Module(),
 		operations.WriteHandlers{
+			BuildRequest:  connector.buildWriteRequest,
 			ParseResponse: connector.parseWriteResponse,
 			ErrorHandler: interpreter.ErrorHandler{
 				JSON: interpreter.NewFaultyResponder(errorFormats, nil),
