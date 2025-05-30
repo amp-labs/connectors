@@ -33,7 +33,7 @@ func TestJobInfo(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Input: "750ak000009Bq9OAAS",
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.PathSuffix("/services/data/v59.0/jobs/ingest/750ak000009Bq9OAAS"),
+				If:    mockcond.Path("/services/data/v59.0/jobs/ingest/750ak000009Bq9OAAS"),
 				Then:  mockserver.Response(http.StatusOK, responseJobInProgress),
 			}.Server(),
 			Comparator: testConciseJobInfoComparator,
@@ -70,7 +70,7 @@ func TestGetBulkQueryInfo(t *testing.T) { // nolint:dupl
 			Input: "750ak000009AVi5AAG",
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.PathSuffix("/services/data/v59.0/jobs/query/750ak000009AVi5AAG"),
+				If:    mockcond.Path("/services/data/v59.0/jobs/query/750ak000009AVi5AAG"),
 				Then:  mockserver.Response(http.StatusOK, responseAccount),
 			}.Server(),
 			Comparator: testConciseJobInfoComparator,
@@ -111,10 +111,10 @@ func TestJobResults(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
-					If:   mockcond.PathSuffix("/services/data/v59.0/jobs/ingest/750ak000009Dl5bAAC"),
+					If:   mockcond.Path("/services/data/v59.0/jobs/ingest/750ak000009Dl5bAAC"),
 					Then: mockserver.Response(http.StatusOK, responseJobPartialFailure),
 				}, {
-					If:   mockcond.PathSuffix("/services/data/v59.0/jobs/ingest/750ak000009Dl5bAAC/failedResults"),
+					If:   mockcond.Path("/services/data/v59.0/jobs/ingest/750ak000009Dl5bAAC/failedResults"),
 					Then: mockserver.Response(http.StatusOK, responseJobPartialFailureDescribed),
 				}},
 			}.Server(),
@@ -197,7 +197,7 @@ func TestGetSuccessfulJobResults(t *testing.T) { // nolint:dupl
 			Input: "750ak000009Dl5bAAC",
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.PathSuffix("/services/data/v59.0/jobs/ingest/750ak000009Dl5bAAC/successfulResults"),
+				If:    mockcond.Path("/services/data/v59.0/jobs/ingest/750ak000009Dl5bAAC/successfulResults"),
 				Then:  mockserver.Response(http.StatusOK, []byte{}),
 			}.Server(),
 			Comparator:   statusCodeComparator,
@@ -228,7 +228,7 @@ func TestGetBulkQueryResults(t *testing.T) { // nolint:dupl
 			Input: "750ak000009Dl5bAAC",
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.PathSuffix("/services/data/v59.0/jobs/query/750ak000009Dl5bAAC/results"),
+				If:    mockcond.Path("/services/data/v59.0/jobs/query/750ak000009Dl5bAAC/results"),
 				Then:  mockserver.Response(http.StatusOK, []byte{}),
 			}.Server(),
 			Comparator:   statusCodeComparator,

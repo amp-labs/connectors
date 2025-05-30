@@ -10,6 +10,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -156,11 +157,11 @@ func TestIncrementalReadZendeskSupportModule(t *testing.T) { //nolint:funlen,goc
 					If: mockcond.And{
 						mockcond.QueryParam("per_page", "2000"),
 						mockcond.QueryParam("start_time", "0"),
-						mockcond.PathSuffix("/api/v2/incremental/tickets/cursor"),
+						mockcond.Path("/api/v2/incremental/tickets/cursor"),
 					},
 					Then: mockserver.Response(http.StatusOK, responseTickets),
 				}, {
-					If:   mockcond.PathSuffix("/api/v2/ticket_fields"),
+					If:   mockcond.Path("/api/v2/ticket_fields"),
 					Then: mockserver.Response(http.StatusOK, responseTicketsCustomFields),
 				}},
 			}.Server(),
@@ -205,11 +206,11 @@ func TestIncrementalReadZendeskSupportModule(t *testing.T) { //nolint:funlen,goc
 					If: mockcond.And{
 						mockcond.QueryParam("per_page", "2000"),
 						mockcond.QueryParam("start_time", "1726674883"),
-						mockcond.PathSuffix("/api/v2/incremental/tickets/cursor"),
+						mockcond.Path("/api/v2/incremental/tickets/cursor"),
 					},
 					Then: mockserver.Response(http.StatusOK, responseTickets),
 				}, {
-					If:   mockcond.PathSuffix("/api/v2/ticket_fields"),
+					If:   mockcond.Path("/api/v2/ticket_fields"),
 					Then: mockserver.Response(http.StatusOK, responseTicketsCustomFields),
 				}},
 			}.Server(),
@@ -227,7 +228,7 @@ func TestIncrementalReadZendeskSupportModule(t *testing.T) { //nolint:funlen,goc
 				If: mockcond.And{
 					mockcond.QueryParam("per_page", "1000"),
 					mockcond.QueryParam("start_time", "0"),
-					mockcond.PathSuffix("/api/v2/incremental/users/cursor"),
+					mockcond.Path("/api/v2/incremental/users/cursor"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseUsersFirstPage),
 			}.Server(),
@@ -254,7 +255,7 @@ func TestIncrementalReadZendeskSupportModule(t *testing.T) { //nolint:funlen,goc
 				If: mockcond.And{
 					mockcond.QueryParam("per_page", "1000"),
 					mockcond.QueryParam("start_time", "0"),
-					mockcond.PathSuffix("/api/v2/incremental/users/cursor"),
+					mockcond.Path("/api/v2/incremental/users/cursor"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseUsersLastPage),
 			}.Server(),
@@ -281,7 +282,7 @@ func TestIncrementalReadZendeskSupportModule(t *testing.T) { //nolint:funlen,goc
 				If: mockcond.And{
 					mockcond.QueryParam("per_page", "1000"),
 					mockcond.QueryParam("start_time", "0"),
-					mockcond.PathSuffix("/api/v2/incremental/organizations"),
+					mockcond.Path("/api/v2/incremental/organizations"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseOrganizations),
 			}.Server(),
@@ -327,7 +328,7 @@ func TestReadHelpCenterModule(t *testing.T) { //nolint:funlen,gocognit,cyclop,ma
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.PathSuffix("/v2/community/posts"),
+				If:    mockcond.Path("/api/v2/community/posts"),
 				Then:  mockserver.Response(http.StatusOK, responseReadPosts),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
@@ -367,7 +368,7 @@ func TestReadHelpCenterModule(t *testing.T) { //nolint:funlen,gocognit,cyclop,ma
 
 func constructTestConnector(serverURL string, moduleID common.ModuleID) (*Connector, error) {
 	connector, err := NewConnector(
-		WithAuthenticatedClient(http.DefaultClient),
+		WithAuthenticatedClient(mockutils.NewClient()),
 		WithWorkspace("test-workspace"),
 		WithModule(moduleID),
 	)
@@ -376,7 +377,7 @@ func constructTestConnector(serverURL string, moduleID common.ModuleID) (*Connec
 	}
 
 	// for testing we want to redirect calls to our mock server
-	connector.setBaseURL(serverURL)
+	connector.setBaseURL(mockutils.ReplaceURLOrigin(connector.HTTPClient().Base, serverURL))
 
 	return connector, nil
 }

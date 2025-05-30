@@ -13,7 +13,7 @@ import (
 
 func GetKeapConnector(ctx context.Context) *keap.Connector {
 	filePath := credscanning.LoadPath(providers.Keap)
-	reader := utils.MustCreateProvCredJSON(filePath, true, false)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	conn, err := keap.NewConnector(
 		keap.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),

@@ -22,6 +22,8 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 	errorTagDuplicate := testutils.DataFromFile(t, "write-tag-conflict.json")
 	responseCreateTag := testutils.DataFromFile(t, "write-tag.json")
 
+	header := http.Header{"revision": []string{"2024-10-15"}}
+
 	tests := []testroutines.Write{
 		{
 			Name:         "Write object must be included",
@@ -91,8 +93,12 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			Input: common.WriteParams{ObjectName: "campaigns", RecordData: make(map[string]any)},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentMIME("application/vnd.api+json"),
-				If:    mockcond.MethodPOST(),
-				Then:  mockserver.Response(http.StatusOK),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/api/campaigns"),
+					mockcond.Header(header),
+				},
+				Then: mockserver.Response(http.StatusOK),
 			}.Server(),
 			Expected:     &common.WriteResult{Success: true},
 			ExpectedErrs: nil,
@@ -106,8 +112,12 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentMIME("application/vnd.api+json"),
-				If:    mockcond.MethodPATCH(),
-				Then:  mockserver.Response(http.StatusOK),
+				If: mockcond.And{
+					mockcond.MethodPATCH(),
+					mockcond.Path("/api/campaigns/01JCPFHB29QZ1NDPR3GCGQS5G2"),
+					mockcond.Header(header),
+				},
+				Then: mockserver.Response(http.StatusOK),
 			}.Server(),
 			Expected:     &common.WriteResult{Success: true},
 			ExpectedErrs: nil,
@@ -117,8 +127,12 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			Input: common.WriteParams{ObjectName: "tags", RecordData: make(map[string]any)},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentMIME("application/vnd.api+json"),
-				If:    mockcond.MethodPOST(),
-				Then:  mockserver.Response(http.StatusOK, responseCreateTag),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/api/tags"),
+					mockcond.Header(header),
+				},
+				Then: mockserver.Response(http.StatusOK, responseCreateTag),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{

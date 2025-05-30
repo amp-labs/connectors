@@ -8,6 +8,7 @@ import (
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -108,7 +109,7 @@ func TestListObjectMetadataZendeskSupportModule(t *testing.T) { // nolint:funlen
 			Input: []string{"tickets"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.PathSuffix("/api/v2/ticket_fields"),
+				If:    mockcond.Path("/api/v2/ticket_fields"),
 				Then:  mockserver.Response(http.StatusOK, responseTicketsCustomFields),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
@@ -236,7 +237,7 @@ func TestListObjectMetadataHelpCenterModule(t *testing.T) { // nolint:funlen,goc
 
 func BenchmarkListObjectMetadata(b *testing.B) {
 	connector, err := NewConnector(
-		WithAuthenticatedClient(http.DefaultClient),
+		WithAuthenticatedClient(mockutils.NewClient()),
 		WithWorkspace("test-workspace"),
 	)
 	if err != nil {

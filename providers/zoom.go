@@ -1,13 +1,6 @@
 package providers
 
-import "github.com/amp-labs/connectors/common"
-
 const Zoom Provider = "zoom"
-
-const (
-	ModuleZoomUser    common.ModuleID = "user"
-	ModuleZoomMeeting common.ModuleID = "meeting"
-)
 
 func init() {
 	// Zoom configuration
@@ -23,27 +16,6 @@ func init() {
 			GrantType:                 AuthorizationCode,
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
-			},
-		},
-		DefaultModule: ModuleZoomMeeting,
-		Modules: &Modules{
-			ModuleZoomUser: {
-				BaseURL:     "https://api.zoom.us/v2",
-				DisplayName: "Zoom (User)",
-				Support: Support{
-					Read:      true,
-					Subscribe: false,
-					Write:     true,
-				},
-			},
-			ModuleZoomMeeting: {
-				BaseURL:     "https://api.zoom.us/v2",
-				DisplayName: "Zoom (Meeting)",
-				Support: Support{
-					Read:      true,
-					Subscribe: false,
-					Write:     true,
-				},
 			},
 		},
 		//nolint:lll

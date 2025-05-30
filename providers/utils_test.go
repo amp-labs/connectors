@@ -276,20 +276,6 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				DisplayName: "Keap",
 				Support: Support{
 					Proxy: true,
-				},
-			},
-		},
-		{
-			name: "Klaviyo root module",
-			input: inType{
-				provider: Klaviyo,
-				moduleID: common.ModuleRoot,
-			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://a.klaviyo.com",
-				DisplayName: "Klaviyo",
-				Support: Support{
-					Proxy: true,
 					Read:  true,
 					Write: true,
 				},
@@ -428,22 +414,6 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 			// expectedErr: common.ErrMissingModule,
 		},
 		{
-			name: "Klaviyo unknown module",
-			input: inType{
-				provider: Klaviyo,
-				moduleID: "random-module-name",
-			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://a.klaviyo.com",
-				DisplayName: "Klaviyo (Version 2024-10-15)",
-				Support: Support{
-					Read:  true,
-					Write: true,
-				},
-			},
-			// expectedErr: common.ErrMissingModule,
-		},
-		{
 			name: "Marketo unknown module",
 			input: inType{
 				provider: Marketo,
@@ -451,11 +421,19 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				moduleID: "random-module-name",
 			},
 			expected: &ModuleInfo{
-				BaseURL:     "https://london.mktorest.com/v1",
-				DisplayName: "Marketo (Leads)",
+				BaseURL:     "https://london.mktorest.com",
+				DisplayName: "Marketo",
 				Support: Support{
-					Read:  true,
-					Write: true,
+					BulkWrite: BulkWriteSupport{
+						Insert: false,
+						Update: false,
+						Upsert: false,
+						Delete: false,
+					},
+					Proxy:     true,
+					Read:      true,
+					Subscribe: false,
+					Write:     true,
 				},
 			},
 			// expectedErr: common.ErrMissingModule,
@@ -470,22 +448,6 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 			expected: &ModuleInfo{
 				BaseURL:     "https://london.zendesk.com/api/v2",
 				DisplayName: "Zendesk Ticketing",
-				Support: Support{
-					Read:  true,
-					Write: true,
-				},
-			},
-			// expectedErr: common.ErrMissingModule,
-		},
-		{
-			name: "Zoom unknown module",
-			input: inType{
-				provider: Zoom,
-				moduleID: "random-module-name",
-			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://api.zoom.us/v2",
-				DisplayName: "Zoom (Meeting)",
 				Support: Support{
 					Read:  true,
 					Write: true,
@@ -564,51 +526,6 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 			},
 		},
 		{
-			name: "Klaviyo 2024-10-15 module",
-			input: inType{
-				provider: Klaviyo,
-				moduleID: ModuleKlaviyo2024Oct15,
-			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://a.klaviyo.com",
-				DisplayName: "Klaviyo (Version 2024-10-15)",
-				Support: Support{
-					Read:  true,
-					Write: true,
-				},
-			},
-		},
-		{
-			name: "Marketo Assets module",
-			input: inType{
-				provider: Marketo,
-				moduleID: ModuleMarketoAssets,
-			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://{{.workspace}}.mktorest.com/asset/v1",
-				DisplayName: "Marketo (Assets)",
-				Support: Support{
-					Read:  true,
-					Write: true,
-				},
-			},
-		},
-		{
-			name: "Marketo Leads module",
-			input: inType{
-				provider: Marketo,
-				moduleID: ModuleMarketoLeads,
-			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://{{.workspace}}.mktorest.com/v1",
-				DisplayName: "Marketo (Leads)",
-				Support: Support{
-					Read:  true,
-					Write: true,
-				},
-			},
-		},
-		{
 			name: "Zendesk Ticketing module",
 			input: inType{
 				provider: ZendeskSupport,
@@ -632,36 +549,6 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 			expected: &ModuleInfo{
 				BaseURL:     "https://{{.workspace}}.zendesk.com/api/v2",
 				DisplayName: "Zendesk Help Center",
-				Support: Support{
-					Read:  true,
-					Write: true,
-				},
-			},
-		},
-		{
-			name: "Zoom User module",
-			input: inType{
-				provider: Zoom,
-				moduleID: ModuleZoomUser,
-			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://api.zoom.us/v2",
-				DisplayName: "Zoom (User)",
-				Support: Support{
-					Read:  true,
-					Write: true,
-				},
-			},
-		},
-		{
-			name: "Zoom Meeting module",
-			input: inType{
-				provider: Zoom,
-				moduleID: ModuleZoomMeeting,
-			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://api.zoom.us/v2",
-				DisplayName: "Zoom (Meeting)",
 				Support: Support{
 					Read:  true,
 					Write: true,
@@ -702,21 +589,6 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 		},
 		// Choosing empty module for providers supporting several modules uses default from the Catalog.
 		{
-			name: "Klaviyo 2024-10-15 fallback to default module",
-			input: inType{
-				provider: Klaviyo,
-				moduleID: "",
-			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://a.klaviyo.com",
-				DisplayName: "Klaviyo (Version 2024-10-15)",
-				Support: Support{
-					Read:  true,
-					Write: true,
-				},
-			},
-		},
-		{
 			name: "Marketo fallback to default module",
 			input: inType{
 				provider: Marketo,
@@ -724,11 +596,19 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				moduleID: "",
 			},
 			expected: &ModuleInfo{
-				BaseURL:     "https://london.mktorest.com/v1",
-				DisplayName: "Marketo (Leads)",
+				BaseURL:     "https://london.mktorest.com",
+				DisplayName: "Marketo",
 				Support: Support{
-					Read:  true,
-					Write: true,
+					BulkWrite: BulkWriteSupport{
+						Insert: false,
+						Update: false,
+						Upsert: false,
+						Delete: false,
+					},
+					Proxy:     true,
+					Read:      true,
+					Subscribe: false,
+					Write:     true,
 				},
 			},
 		},

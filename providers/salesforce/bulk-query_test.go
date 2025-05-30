@@ -74,7 +74,7 @@ func TestBulkQuery(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.PathSuffix("/services/data/v59.0/jobs/query"),
+					mockcond.Path("/services/data/v59.0/jobs/query"),
 					mockcond.Body(`{
 						"operation":"queryAll",
 						"query":"SELECT Id,Name,BillingCity FROM Account"}`),

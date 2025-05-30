@@ -1,9 +1,9 @@
 package user
 
 import (
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/metadatadef"
-	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/zoom"
 	"github.com/amp-labs/connectors/providers/zoom/metadata/openapi"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
@@ -16,8 +16,8 @@ var (
 		"/contacts/groups",
 	}
 
-	objectEndpoints = map[string]string{ // nolint:gochecknoglobals
-		"/contacts/groups": "contacts_groups",
+	displayNameOverride = map[string]string{ // nolint:gochecknoglobals
+		"contacts/groups": "Contact Groups",
 	}
 )
 
@@ -27,13 +27,14 @@ func Objects() []metadatadef.Schema {
 			api3.CamelCaseToSpaceSeparated,
 			api3.CapitalizeFirstLetterEveryWord,
 		),
+		api3.WithArrayItemAutoSelection(),
 	)
 	goutils.MustBeNil(err)
 
 	objects, err := explorer.ReadObjectsGet(
 		api3.NewAllowPathStrategy(allowedEndpoints),
-		objectEndpoints, nil, api3.CustomMappingObjectCheck(
-			zoom.ObjectNameToResponseField[providers.ModuleZoomUser],
+		nil, displayNameOverride, api3.CustomMappingObjectCheck(
+			zoom.ObjectNameToResponseField[common.ModuleRoot],
 		),
 	)
 

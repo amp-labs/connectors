@@ -12,7 +12,7 @@ import (
 
 func GetHeyreachConnector(ctx context.Context) *heyreach.Connector {
 	filePath := credscanning.LoadPath(providers.HeyReach)
-	reader := utils.MustCreateProvCredJSON(filePath, false, false)
+	reader := utils.MustCreateProvCredJSON(filePath, false)
 
 	info, err := providers.ReadInfo(providers.HeyReach)
 	if err != nil {
@@ -30,7 +30,7 @@ func GetHeyreachConnector(ctx context.Context) *heyreach.Connector {
 		utils.Fail(err.Error())
 	}
 
-	conn, err := heyreach.NewConnector(common.Parameters{
+	conn, err := heyreach.NewConnector(common.ConnectorParams{
 		AuthenticatedClient: client,
 	})
 	if err != nil {

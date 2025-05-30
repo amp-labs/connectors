@@ -12,7 +12,7 @@ import (
 
 func GetApolloConnector(ctx context.Context) *apollo.Connector {
 	filePath := credscanning.LoadPath(providers.Apollo)
-	reader := testUtils.MustCreateProvCredJSON(filePath, false, false)
+	reader := testUtils.MustCreateProvCredJSON(filePath, false)
 
 	conn, err := apollo.NewConnector(
 		apollo.WithClient(ctx, http.DefaultClient,

@@ -12,7 +12,7 @@ import (
 
 func GetConnector(ctx context.Context) *dixa.Connector {
 	filePath := credscanning.LoadPath(providers.Dixa)
-	reader := utils.MustCreateProvCredJSON(filePath, false, false)
+	reader := utils.MustCreateProvCredJSON(filePath, false)
 
 	client, err := common.NewApiKeyHeaderAuthHTTPClient(ctx, "Authorization", reader.Get(credscanning.Fields.ApiKey))
 	if err != nil {
@@ -20,7 +20,7 @@ func GetConnector(ctx context.Context) *dixa.Connector {
 	}
 
 	conn, err := dixa.NewConnector(
-		common.Parameters{AuthenticatedClient: client},
+		common.ConnectorParams{AuthenticatedClient: client},
 	)
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)

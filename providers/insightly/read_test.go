@@ -58,7 +58,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.PathSuffix("/v3.1/Leads/Search"),
+					mockcond.Path("/v3.1/Leads/Search"),
 					mockcond.QueryParam("top", "500"),
 					mockcond.QueryParamsMissing("skip"),
 				},
@@ -105,7 +105,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.PathSuffix("/v3.1/Leads/Search"),
+					mockcond.Path("/v3.1/Leads/Search"),
 					mockcond.QueryParam("top", "500"),
 					mockcond.QueryParam("skip", "500"),
 				},
@@ -141,7 +141,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.PathSuffix("/v3.1/Leads/Search"),
+					mockcond.Path("/v3.1/Leads/Search"),
 					mockcond.QueryParam("top", "500"),
 					mockcond.QueryParam("skip", "1000"),
 				},
@@ -166,7 +166,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.PathSuffix("/v3.1/Leads/Search"),
+					mockcond.Path("/v3.1/Leads/Search"),
 					mockcond.QueryParam("top", "500"),
 					mockcond.QueryParamsMissing("skip"),
 					mockcond.QueryParam("updated_after_utc", "2024-03-04T08:22:56Z"),
@@ -190,7 +190,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.PathSuffix("/v3.1/Contacts/Search"),
+				If:    mockcond.Path("/v3.1/Contacts/Search"),
 				Then:  mockserver.Response(http.StatusOK, responseContacts),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
@@ -243,7 +243,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.PathSuffix("/v3.1/Fruit__c/Search"),
+				If:    mockcond.Path("/v3.1/Fruit__c/Search"),
 				Then:  mockserver.Response(http.StatusOK, responseFruits),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
