@@ -31,5 +31,5 @@ func (p *OpenAPISchemaProvider[F, C]) ListObjectMetadata(
 }
 
 func (p *OpenAPISchemaProvider[F, C]) String() string {
-	return "OpenAPI schema provider"
+	return "OpenAPISchemaProvider"
 }

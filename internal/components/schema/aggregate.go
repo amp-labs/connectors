@@ -40,5 +40,5 @@ func (p *AggregateSchemaProvider) ListObjectMetadata(
 }
 
 func (p *AggregateSchemaProvider) String() string {
-	return "Aggregate schema provider"
+	return "AggregateSchemaProvider"
 }

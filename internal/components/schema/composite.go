@@ -93,5 +93,5 @@ func safeGetMetadata(
 }
 
 func (c *CompositeSchemaProvider) String() string {
-	return "composite schema provider"
+	return "CompositeSchemaProvider"
 }

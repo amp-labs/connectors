@@ -149,5 +149,5 @@ func (p *ObjectSchemaProvider) fetchSerial(
 }
 
 func (p *ObjectSchemaProvider) String() string {
-	return "Object schema provider." + p.fetchType
+	return "ObjectSchemaProvider." + p.fetchType
 }

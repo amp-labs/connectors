@@ -76,7 +76,7 @@ type mockedConnector struct {
 }
 
 func (m mockedConnector) String() string {
-	return "mocked connector"
+	return "mockedConnector"
 }
 
 func constructTestConnector(serverURL string) *mockedConnector {
