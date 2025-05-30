@@ -1,8 +1,6 @@
 package pardot
 
 import (
-	"errors"
-
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers"
@@ -16,16 +14,9 @@ type Adapter struct {
 	BusinessUnitID string
 }
 
-var ErrMissingBusinessUnitID = errors.New("missing metadata variable: business unit id")
-
 func NewAdapter(
-	client *common.JSONHTTPClient, info *providers.ModuleInfo, metadata map[string]string,
+	client *common.JSONHTTPClient, info *providers.ModuleInfo, businessUnitID string,
 ) (*Adapter, error) {
-	businessUnitID, ok := metadata[MetadataKeyBusinessUnitID]
-	if !ok || businessUnitID == "" {
-		return nil, ErrMissingBusinessUnitID
-	}
-
 	return &Adapter{
 		Client:         client,
 		BaseURL:        info.BaseURL,
