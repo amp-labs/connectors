@@ -3,6 +3,7 @@ package hubspot
 import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
+	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -12,6 +13,8 @@ type Connector struct {
 	Client     *common.JSONHTTPClient
 	moduleInfo *providers.ModuleInfo
 	moduleID   common.ModuleID
+
+	components.DefaultProxy
 }
 
 // NewConnector returns a new Hubspot connector.
@@ -35,6 +38,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		},
 		moduleID: params.Module.Selection.ID,
 	}
+	conn.DefaultProxy = *components.NewDefaultProxy(conn)
 
 	conn.setBaseURL(providerInfo.BaseURL)
 	conn.Client.HTTPClient.ErrorHandler = conn.interpretError
