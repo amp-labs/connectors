@@ -10,17 +10,17 @@ import (
 // dual header authentication.
 func NewClariCopilotAuthHTTPClient( //nolint:ireturn
 	ctx context.Context,
-	header1Name, header1Value, header2Name, header2Value string,
+	headerAPIKeyName, headerAPIKeyValue, headerPasswordName, headerPasswordValue string,
 	opts ...common.HeaderAuthClientOption,
 ) (common.AuthenticatedHTTPClient, error) {
 	headers := []common.Header{
 		{
-			Key:   header1Name,
-			Value: header1Value,
+			Key:   headerAPIKeyName,
+			Value: headerAPIKeyValue,
 		},
 		{
-			Key:   header2Name,
-			Value: header2Value,
+			Key:   headerPasswordName,
+			Value: headerPasswordValue,
 		},
 	}
 	// Use the existing header auth client with multiple headers
