@@ -6,7 +6,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 )
 
-// NewTwoHeaderAuthHTTPClient returns a new http client with
+// NewClariCopilotAuthHTTPClient returns a new http client with
 // dual header authentication.
 func NewClariCopilotAuthHTTPClient( //nolint:ireturn
 	ctx context.Context,
