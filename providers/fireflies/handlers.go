@@ -16,7 +16,7 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
-//go:embed *.graphql
+//go:embed graphql/*.graphql
 var queryFS embed.FS
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
@@ -147,11 +147,11 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 
 	switch params.ObjectName {
 	case transcriptsObjectName:
-		query = getQuery(limit, skip, "transcripts.graphql", "transcriptsQuery")
+		query = getQuery(limit, skip, "graphql/transcripts.graphql", "transcriptsQuery")
 	case bitesObjectName:
-		query = getQuery(limit, skip, "bites.graphql", "bitesQuery")
+		query = getQuery(limit, skip, "graphql/bites.graphql", "bitesQuery")
 	case usersObjectName:
-		query = getUserQuery()
+		query = getQuery(0, 0, "graphql/users.graphql", "usersQuery")
 	default:
 		return nil, common.ErrObjectNotSupported
 	}
@@ -171,22 +171,6 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	}
 
 	return req, nil
-}
-
-// nolint
-func getUserQuery() string {
-	return `query {
-		users {
-			user_id
-			email
-			name
-			num_transcripts
-			recent_meeting
-			minutes_consumed
-			is_admin
-			integrations
-		}
-	}`
 }
 
 func getQuery(limit, skip int, filePath, queryName string) string {
