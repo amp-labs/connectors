@@ -72,7 +72,9 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	// Read/Write/ListObjectMetadata will delegate to this adapter.
 	moduleID := params.Module.Selection.ID
 	if isPardotModule(moduleID) {
-		conn.pardotAdapter, err = pardot.NewAdapter(conn.Client, conn.moduleInfo, params.Metadata.Map)
+		conn.pardotAdapter, err = pardot.NewAdapter(conn.Client, conn.moduleInfo,
+			params.Value(pardot.MetadataKeyBusinessUnitID),
+		)
 		if err != nil {
 			return nil, err
 		}
