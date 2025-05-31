@@ -8,7 +8,7 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-func (q *Query) zoomIn() (*ajson.Node, error) {
+func (q *NodeQuery) zoomIn() (*ajson.Node, error) {
 	var err error
 
 	node := q.node
@@ -30,7 +30,7 @@ func (q *Query) zoomIn() (*ajson.Node, error) {
 	return node, nil
 }
 
-func (q *Query) getInnerKey(targetKey string, optional bool) (*ajson.Node, error) {
+func (q *NodeQuery) getInnerKey(targetKey string, optional bool) (*ajson.Node, error) {
 	zoomed, err := q.zoomIn()
 	if err != nil {
 		if errors.Is(err, ErrKeyNotFound) && optional {
