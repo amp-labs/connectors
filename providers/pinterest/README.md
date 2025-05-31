@@ -19,4 +19,3 @@ Pinterest API version : v5
 | Product_groups          | catalogs/product_groups| read   |
 | Integrations            | integrations           | read   |
 -------------------------------------------------------------
- 
