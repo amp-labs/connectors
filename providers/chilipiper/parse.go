@@ -63,3 +63,11 @@ func hasMorePages(pageSize, page, total int) bool {
 
 	return !(total <= ((page + 1) * pageSize))
 }
+
+func extractRecords(objectName string) common.RecordsFunc {
+	if objectName == meetings {
+		return common.ExtractRecordsFromPath("data", "list")
+	}
+
+	return common.ExtractRecordsFromPath("results")
+}
