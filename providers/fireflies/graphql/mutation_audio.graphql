@@ -1,0 +1,7 @@
+mutation {
+    uploadAudio(input: {url: "{{.URL}}", title: "{{.Title}}", attendees: [{{range $i, $a := .Attendees}}{{if $i}}, {{end}}{displayName: "{{$a.DisplayName}}", email: "{{$a.Email}}", phoneNumber: "{{$a.PhoneNumber}}"}{{end}}]}) {
+        id
+        title
+        status
+    }
+}

@@ -5,6 +5,7 @@ import (
 	"context"
 	"embed"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -14,6 +15,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
 //go:embed graphql/*.graphql
@@ -245,4 +247,252 @@ func (c *Connector) parseReadResponse(
 		common.GetMarshaledData,
 		params.Fields,
 	)
+}
+
+// nolint:gocognit,cyclop,funlen
+func (c *Connector) buildWriteRequest(
+	ctx context.Context, params common.WriteParams,
+) (*http.Request, error) {
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL)
+	if err != nil {
+		return nil, fmt.Errorf("failed to build URL: %w", err)
+	}
+
+	recordData, err := common.RecordDataToMap(params.RecordData)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert record data to map: %w", err)
+	}
+
+	var mutation string
+
+	switch params.ObjectName {
+	case objectNameLiveMeeting:
+		if params.RecordId == "" {
+			mutation = getMutation("graphql/mutation_meeting.graphql", "addToLiveMeeting", recordData)
+		} else {
+			return nil, ErrUpdateMeetingLinkNotSupported
+		}
+	case objectNameCreateBite:
+		if params.RecordId == "" {
+			mutation = getMutation("graphql/mutation_bite.graphql", "createBite", recordData)
+		} else {
+			return nil, ErrUpdateBiteNotSupported
+		}
+	case objectNameSetUserRole:
+		if params.RecordId == "" {
+			mutation = getMutation("graphql/mutation_user_role.graphql", "setUserRole", recordData)
+		} else {
+			return nil, ErrUpdateRoleNotSupported
+		}
+	case objectNameUploadAudio:
+		if params.RecordId == "" {
+			mutationInput, err := ExtractAudioFields(params.RecordData)
+			if err != nil {
+				return nil, err
+			}
+
+			mutation = getMutation("graphql/mutation_audio.graphql", "uploadAudio", mutationInput)
+		} else {
+			return nil, ErrUpdateAudioSupported
+		}
+	case objectNameUpdateMeetingTitle:
+		if params.RecordId != "" {
+			input, ok := params.RecordData.(map[string]any)["input"].(map[string]any)
+			if !ok {
+				return nil, ErrInvalidResponseFormat
+			}
+
+			title, ok := input["title"].(string)
+			if !ok {
+				return nil, ErrTitleRequired
+			}
+
+			mutation = getMutation("graphql/mutation_meeting_type.graphql", "updateMeetingTitle", map[string]string{
+				"id":    params.RecordId,
+				"title": title,
+			})
+		} else {
+			return nil, ErrCreateMeetingSupported
+		}
+	default:
+		return nil, common.ErrObjectNotSupported
+	}
+
+	requestBody := map[string]string{
+		"query": mutation,
+	}
+
+	jsonBody, err := json.Marshal(requestBody)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonBody))
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	return req, nil
+}
+
+func getMutation(filePath, queryName string, data any) string {
+	queryBytes, err := queryFS.ReadFile(filePath)
+	if err != nil {
+		return ""
+	}
+
+	tmpl, err := template.New(queryName).Parse(string(queryBytes))
+	if err != nil {
+		return ""
+	}
+
+	var (
+		queryBuf bytes.Buffer
+	)
+
+	err = tmpl.Execute(&queryBuf, data)
+	if err != nil {
+		return ""
+	}
+
+	return queryBuf.String()
+}
+
+func (c *Connector) parseWriteResponse(
+	ctx context.Context,
+	params common.WriteParams,
+	request *http.Request,
+	resp *common.JSONHTTPResponse,
+) (*common.WriteResult, error) {
+	var (
+		recordID string
+		err      error
+	)
+
+	node, ok := resp.Body()
+	if !ok {
+		return &common.WriteResult{Success: true}, nil
+	}
+
+	objectResponse, err := jsonquery.New(node).ObjectRequired("data")
+	if err != nil {
+		return nil, err
+	}
+
+	if params.ObjectName == "createBite" {
+		recordID, err = jsonquery.New(objectResponse, params.ObjectName).StrWithDefault("id", "")
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	response, err := jsonquery.Convertor.ObjectToMap(objectResponse)
+	if err != nil {
+		return nil, err
+	}
+
+	return &common.WriteResult{
+		Success:  true,
+		RecordId: recordID,
+		Data:     response,
+	}, nil
+}
+
+// nolint
+func ExtractAudioFields(RecordData any) (map[string]any, error) {
+	input, ok := RecordData.(map[string]any)["input"].(map[string]any)
+	if !ok {
+		return nil, ErrInvalidResponseFormat
+	}
+
+	url, ok := input["url"].(string)
+	if !ok {
+		return nil, ErrURLIsRequired
+	}
+
+	// below fields are not required , so handle the error
+	title, _ := input["title"].(string)
+	attendees, _ := input["attendees"].([]any)
+
+	var attendeeStrings []string
+	if attendees != nil {
+		for _, attendee := range attendees {
+			attMap, ok := attendee.(map[string]string)
+			if !ok {
+				return nil, errors.New("invalid attendee format")
+			}
+			displayName, email, phoneNumber := attMap["displayName"], attMap["email"], attMap["phoneNumber"]
+			attendeeStr := fmt.Sprintf(`{displayName: %q, email: %q, phoneNumber: %q}`, displayName, email, phoneNumber)
+			attendeeStrings = append(attendeeStrings, attendeeStr)
+		}
+	}
+
+	inputParts := map[string]any{
+		"URL":       url,
+		"title":     title,
+		"attendees": fmt.Sprintf(`[%s]`, strings.Join(attendeeStrings, ", ")),
+	}
+
+	return inputParts, nil
+}
+
+func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL)
+	if err != nil {
+		return nil, err
+	}
+
+	var mutation string
+
+	switch params.ObjectName {
+	case objectNamedeleteTranscript:
+		if params.RecordId != "" {
+			mutation = fmt.Sprintf(`mutation {
+				deleteTranscript(id:"%s") {
+					title
+					date
+					duration
+					organizer_email
+				}
+			}`, params.RecordId)
+		} else {
+			return nil, ErrUpdateMeetingLinkNotSupported
+		}
+	default:
+		return nil, common.ErrObjectNotSupported
+	}
+
+	requestBody := map[string]string{
+		"query": mutation,
+	}
+
+	jsonBody, err := json.Marshal(requestBody)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonBody))
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+func (c *Connector) parseDeleteResponse(
+	ctx context.Context,
+	params common.DeleteParams,
+	request *http.Request,
+	resp *common.JSONHTTPResponse,
+) (*common.DeleteResult, error) {
+	if resp.Code != http.StatusOK {
+		return nil, fmt.Errorf("%w: failed to delete record: %d", common.ErrRequestFailed, resp.Code)
+	}
+
+	// A successful delete returns 200 OK
+	return &common.DeleteResult{
+		Success: true,
+	}, nil
 }

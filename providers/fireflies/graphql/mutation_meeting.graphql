@@ -1,0 +1,5 @@
+mutation {
+    addToLiveMeeting(meeting_link: "{{.meeting_link}}") {
+        success
+    }
+}

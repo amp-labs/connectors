@@ -1,0 +1,12 @@
+mutation {
+    setUserRole(user_id: "{{.user_id}}", role: {{.role}}) { 
+        user_id
+		email
+		name
+	    num_transcripts
+		recent_meeting
+		minutes_consumed
+		is_admin
+		integrations
+	}
+}
