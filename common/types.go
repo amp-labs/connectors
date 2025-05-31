@@ -362,7 +362,7 @@ type ObjectMetadata struct {
 	DisplayName string
 
 	// Fields is a map of field names to FieldMetadata.
-	Fields map[string]FieldMetadata
+	Fields FieldsMetadata
 
 	// FieldsMap is a map of field names to field display names.
 	// Deprecated: this map includes only display names.
@@ -378,7 +378,7 @@ func (m *ObjectMetadata) AddFieldMetadata(fieldName string, fieldMetadata FieldM
 
 // NewObjectMetadata constructs ObjectMetadata.
 // This will automatically infer fields map from field metadata map. This construct exists for such convenience.
-func NewObjectMetadata(displayName string, fields map[string]FieldMetadata) *ObjectMetadata {
+func NewObjectMetadata(displayName string, fields FieldsMetadata) *ObjectMetadata {
 	return &ObjectMetadata{
 		DisplayName: displayName,
 		Fields:      fields,
@@ -403,6 +403,18 @@ type FieldMetadata struct {
 	// Values is a list of possible values for this field.
 	// It is applicable only if the type is either singleSelect or multiSelect, otherwise slice is nil.
 	Values []FieldValue
+}
+
+type FieldsMetadata map[string]FieldMetadata
+
+func (f FieldsMetadata) AddFieldWithDisplayOnly(fieldName string, displayName string) {
+	f[fieldName] = FieldMetadata{
+		DisplayName:  displayName,
+		ValueType:    "",
+		ProviderType: "",
+		ReadOnly:     false,
+		Values:       nil,
+	}
 }
 
 type FieldValue struct {
@@ -461,7 +473,7 @@ type WebhookVerificationParameters struct {
 	Method       string
 }
 
-func inferDeprecatedFieldsMap(fields map[string]FieldMetadata) map[string]string {
+func inferDeprecatedFieldsMap(fields FieldsMetadata) map[string]string {
 	fieldsMap := make(map[string]string)
 
 	for name, field := range fields {
