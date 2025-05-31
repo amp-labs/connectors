@@ -1,0 +1,51 @@
+{
+  "kind": "calendar#calendarList",
+  "etag": "\"p32g95jc3lmf8m0o\"",
+  "nextSyncToken": "CKCSzYOtnosDEiJpbnRlZ3JhdGlvbi50ZXN0QHdpdGhhbXBlcnNhbmQuY29t",
+  "items": [
+    {
+      "kind": "calendar#calendarListEntry",
+      "etag": "\"1738271077677000\"",
+      "id": "integration@test.com",
+      "summary": "integration@test.com",
+      "timeZone": "America/Los_Angeles",
+      "colorId": "14",
+      "backgroundColor": "#9fe1e7",
+      "foregroundColor": "#000000",
+      "selected": true,
+      "accessRole": "owner",
+      "defaultReminders": [
+        {
+          "method": "popup",
+          "minutes": 10
+        }
+      ],
+      "notificationSettings": {
+        "notifications": [
+          {
+            "type": "eventCreation",
+            "method": "email"
+          },
+          {
+            "type": "eventChange",
+            "method": "email"
+          },
+          {
+            "type": "eventCancellation",
+            "method": "email"
+          },
+          {
+            "type": "eventResponse",
+            "method": "email"
+          }
+        ]
+      },
+      "primary": true,
+      "conferenceProperties": {
+        "allowedConferenceSolutionTypes": [
+          "hangoutsMeet"
+        ]
+      }
+    }
+  ]
+}
