@@ -1,4 +1,4 @@
-package keap
+package getresponse
 
 import (
 	"context"
@@ -6,20 +6,20 @@ import (
 
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/keap"
+	"github.com/amp-labs/connectors/providers/getresponse"
 	"github.com/amp-labs/connectors/test/utils"
 	"golang.org/x/oauth2"
 )
 
-func GetKeapConnector(ctx context.Context) *keap.Connector {
-	filePath := credscanning.LoadPath(providers.Keap)
-	reader := utils.MustCreateProvCredJSON(filePath, true)
+func GetTheGetResponseConnector(ctx context.Context) *getresponse.Connector {
+	filePath := credscanning.LoadPath(providers.GetResponse)
+	reader := utils.MustCreateProvCredJSON(filePath, true, false)
 
-	conn, err := keap.NewConnector(
-		keap.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
+	conn, err := getresponse.NewConnector(
+		getresponse.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
 	)
 	if err != nil {
-		utils.Fail("error creating microsoft CRM connector", "error", err)
+		utils.Fail("error creating GetResponse", "error", err)
 	}
 
 	return conn
@@ -31,8 +31,8 @@ func getConfig(reader *credscanning.ProviderCredentials) *oauth2.Config {
 		ClientSecret: reader.Get(credscanning.Fields.ClientSecret),
 		RedirectURL:  "http://localhost:8080/callbacks/v1/oauth",
 		Endpoint: oauth2.Endpoint{
-			AuthURL:   "https://accounts.infusionsoft.com/app/oauth/authorize",
-			TokenURL:  "https://api.infusionsoft.com/token",
+			AuthURL:   "https://app.getresponse.com/oauth2_authorize.html",
+			TokenURL:  "https://api.getresponse.com/v3/token",
 			AuthStyle: oauth2.AuthStyleInParams,
 		},
 	}
