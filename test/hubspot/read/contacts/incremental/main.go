@@ -26,7 +26,7 @@ func main() {
 
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "contacts",
-		Fields:     connectors.Fields("email", "phone", "company", "website", "lastname", "firstname"),
+		Fields:     connectors.Fields("email", "company", "website", "lastname", "firstname", "lastmodifieddate"),
 		Since:      time.Now().Add(-4 * time.Hour * 24),
 	})
 	if err != nil {
