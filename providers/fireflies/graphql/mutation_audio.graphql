@@ -1,7 +1,7 @@
 mutation {
-    uploadAudio(input: {url: "{{.URL}}", title: "{{.Title}}", attendees: [{{range $i, $a := .Attendees}}{{if $i}}, {{end}}{displayName: "{{$a.DisplayName}}", email: "{{$a.Email}}", phoneNumber: "{{$a.PhoneNumber}}"}{{end}}]}) {
-        id
+    uploadAudio(input: {url: "{{.URL}}", title: "{{.Title}}", attendees: [{{range $i, $a := .Attendees}}{{if $i}}, {{end}}{displayName: "{{$a.DisplayName}}", email: "{{$a.Email}}", phoneNumber: "{{$a.PhoneNumber}}"}{{end}}], custom_language: "{{.custom_language}}", client_reference_id: "{{.client_reference_id}}", save_video: {{.save_video}}}) {
+        success
         title
-        status
+        message
     }
 }

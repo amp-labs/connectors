@@ -16,12 +16,12 @@ const (
 	usersObjectName              = "users"
 	transcriptsObjectName        = "transcripts"
 	bitesObjectName              = "bites"
-	objectNameLiveMeeting        = "addToLiveMeeting"
-	objectNameCreateBite         = "createBite"
-	objectNameSetUserRole        = "setUserRole"
-	objectNameUploadAudio        = "uploadAudio"
-	objectNameUpdateMeetingTitle = "updateMeetingTitle"
-	objectNamedeleteTranscript   = "deleteTranscript"
+	objectNameLiveMeeting        = "liveMeeting"
+	objectNameCreateBite         = "bite"
+	objectNameSetUserRole        = "userRole"
+	objectNameUploadAudio        = "audio"
+	objectNameUpdateMeetingTitle = "meetingTitle"
+	objectNamedeleteTranscript   = "transcript"
 )
 
 var supportLimitAndSkip = datautils.NewSet( //nolint:gochecknoglobals

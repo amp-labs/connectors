@@ -268,19 +268,19 @@ func (c *Connector) buildWriteRequest(
 	switch params.ObjectName {
 	case objectNameLiveMeeting:
 		if params.RecordId == "" {
-			mutation = getMutation("graphql/mutation_meeting.graphql", "addToLiveMeeting", recordData)
+			mutation = getMutation("graphql/mutation_meeting.graphql", "liveMeeting", recordData)
 		} else {
 			return nil, ErrUpdateMeetingLinkNotSupported
 		}
 	case objectNameCreateBite:
 		if params.RecordId == "" {
-			mutation = getMutation("graphql/mutation_bite.graphql", "createBite", recordData)
+			mutation = getMutation("graphql/mutation_bite.graphql", "bite", recordData)
 		} else {
 			return nil, ErrUpdateBiteNotSupported
 		}
 	case objectNameSetUserRole:
 		if params.RecordId == "" {
-			mutation = getMutation("graphql/mutation_user_role.graphql", "setUserRole", recordData)
+			mutation = getMutation("graphql/mutation_user_role.graphql", "userRole", recordData)
 		} else {
 			return nil, ErrUpdateRoleNotSupported
 		}
@@ -291,7 +291,7 @@ func (c *Connector) buildWriteRequest(
 				return nil, err
 			}
 
-			mutation = getMutation("graphql/mutation_audio.graphql", "uploadAudio", mutationInput)
+			mutation = getMutation("graphql/mutation_audio.graphql", "audio", mutationInput)
 		} else {
 			return nil, ErrUpdateAudioSupported
 		}
@@ -307,7 +307,7 @@ func (c *Connector) buildWriteRequest(
 				return nil, ErrTitleRequired
 			}
 
-			mutation = getMutation("graphql/mutation_meeting_type.graphql", "updateMeetingTitle", map[string]string{
+			mutation = getMutation("graphql/mutation_meeting_title.graphql", "meetingTitle", map[string]string{
 				"id":    params.RecordId,
 				"title": title,
 			})
@@ -348,9 +348,7 @@ func getMutation(filePath, queryName string, data any) string {
 		return ""
 	}
 
-	var (
-		queryBuf bytes.Buffer
-	)
+	var queryBuf bytes.Buffer
 
 	err = tmpl.Execute(&queryBuf, data)
 	if err != nil {
@@ -381,7 +379,7 @@ func (c *Connector) parseWriteResponse(
 		return nil, err
 	}
 
-	if params.ObjectName == "createBite" {
+	if params.ObjectName == "bite" {
 		recordID, err = jsonquery.New(objectResponse, params.ObjectName).StrWithDefault("id", "")
 		if err != nil {
 			return nil, err
@@ -414,11 +412,23 @@ func ExtractAudioFields(RecordData any) (map[string]any, error) {
 
 	// below fields are not required , so handle the error
 	title, _ := input["title"].(string)
+	customLanguage, _ := input["cusotm_language"].(string)
+	clientReferenceId, _ := input["client_reference_id"].(string)
+	saveVideo, _ := input["save_video"].(bool)
 	attendees, _ := input["attendees"].([]any)
 
 	var attendeeStrings []string
 	if attendees != nil {
 		for _, attendee := range attendees {
+			// attendees is one of the arguments in the uploadAudio object; it contains details of attendees.
+			// Here, type assertion is used to extract the attendee value and convert it into the expected below format.
+			// attendees": [
+			//   {
+			//     displayName: "Fireflies Notetaker",
+			//     email: "notetaker@fireflies.ai",
+			//     phoneNumber: "xxxxxxxxxxxxxxxx"
+			//   }
+			// ]
 			attMap, ok := attendee.(map[string]string)
 			if !ok {
 				return nil, errors.New("invalid attendee format")
@@ -430,9 +440,12 @@ func ExtractAudioFields(RecordData any) (map[string]any, error) {
 	}
 
 	inputParts := map[string]any{
-		"URL":       url,
-		"title":     title,
-		"attendees": fmt.Sprintf(`[%s]`, strings.Join(attendeeStrings, ", ")),
+		"URL":                 url,
+		"title":               title,
+		"attendees":           fmt.Sprintf(`[%s]`, strings.Join(attendeeStrings, ", ")),
+		"custom_language":     customLanguage,
+		"client_reference_id": clientReferenceId,
+		"save_video":          saveVideo,
 	}
 
 	return inputParts, nil
@@ -449,14 +462,9 @@ func (c *Connector) buildDeleteRequest(ctx context.Context, params common.Delete
 	switch params.ObjectName {
 	case objectNamedeleteTranscript:
 		if params.RecordId != "" {
-			mutation = fmt.Sprintf(`mutation {
-				deleteTranscript(id:"%s") {
-					title
-					date
-					duration
-					organizer_email
-				}
-			}`, params.RecordId)
+			mutation = getMutation("graphql/mutation_transcript.graphql", "transcript", map[string]string{
+				"transcript_id": params.RecordId,
+			})
 		} else {
 			return nil, ErrUpdateMeetingLinkNotSupported
 		}

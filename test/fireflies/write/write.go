@@ -53,7 +53,7 @@ func testAddToLiveMeeting(ctx context.Context) error {
 	slog.Info("Add Live meeting")
 
 	writeParams := common.WriteParams{
-		ObjectName: "addToLiveMeeting",
+		ObjectName: "liveMeeting",
 		RecordData: map[string]any{
 			"meeting_link": "https://meet.google.com/qdt-vccw-nzt",
 		},
@@ -80,7 +80,7 @@ func testCreateBite(ctx context.Context) error {
 	slog.Info("Creating the bite")
 
 	writeParams := common.WriteParams{
-		ObjectName: "createBite",
+		ObjectName: "bite",
 		RecordData: map[string]any{
 			"transcriptId": "01JSXJ9T9DCS3PH46ACCRSCAX2",
 			"startTime":    float64(3),
@@ -109,7 +109,7 @@ func testSetUserRole(ctx context.Context) error {
 	slog.Info("Set user role")
 
 	writeParams := common.WriteParams{
-		ObjectName: "setUserRole",
+		ObjectName: "userRole",
 		RecordData: map[string]any{
 			"user_id": "01JSH43RZP1W6GAWQ2B87EAK7X",
 			"role":    "user",
@@ -137,7 +137,7 @@ func testUploadAudio(ctx context.Context) error {
 	slog.Info("Upload the audio file")
 
 	writeParams := common.WriteParams{
-		ObjectName: "uploadAudio",
+		ObjectName: "audio",
 		RecordData: map[string]any{
 			"input": map[string]any{
 				"url":   "https://www.nch.com.au/scribe/practice/audio-sample-4.mp3",
@@ -174,13 +174,13 @@ func testUpdateMeetingTitle(ctx context.Context) error {
 	slog.Info("Updating the meeting title")
 
 	writeParams := common.WriteParams{
-		ObjectName: "updateMeetingTitle",
+		ObjectName: "meetingTitle",
 		RecordData: map[string]any{
 			"input": map[string]any{
 				"title": "Daily Standup",
 			},
 		},
-		RecordId: "01JT00NM23BP79VRPKP6868712",
+		RecordId: "01JW6CPYTHM5DEFKH9X739BDPS",
 	}
 
 	writeRes, err := Write(ctx, conn, writeParams)
