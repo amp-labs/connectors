@@ -19,7 +19,7 @@ const (
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, objectName)
 	if err != nil {
-		return nil, fmt.Errorf("failed to build URL: '%ew", err)
+		return nil, fmt.Errorf("failed to build URL: '%w", err)
 	}
 
 	url.WithQueryParam(limitQuery, metadataPageSize)
@@ -42,6 +42,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		FieldsMap:   make(map[string]string),
 		DisplayName: naming.CapitalizeFirstLetterEveryWord(objectName),
 	}
+
 	data, err := common.UnmarshalJSON[map[string]any](response)
 	if err != nil {
 		return nil, common.ErrFailedToUnmarshalBody
@@ -70,5 +71,4 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	}
 
 	return &objectMetadata, nil
-
 }
