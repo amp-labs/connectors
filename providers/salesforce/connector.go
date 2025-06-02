@@ -61,7 +61,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 
 	conn.moduleInfo = conn.providerInfo.ReadModuleInfo(conn.moduleID)
 
-	conn.setCRMBaseURL(conn.providerInfo.BaseURL)
+	conn.setBaseURL(conn.providerInfo.BaseURL)
 	conn.Client.HTTPClient.ErrorHandler = interpreter.ErrorHandler{
 		JSON: &interpreter.DirectFaultyResponder{Callback: conn.interpretJSONError},
 		XML:  &interpreter.DirectFaultyResponder{Callback: conn.interpretXMLError},
@@ -72,15 +72,10 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	// Read/Write/ListObjectMetadata will delegate to this adapter.
 	moduleID := params.Module.Selection.ID
 	if isPardotModule(moduleID) {
-		conn.pardotAdapter, err = pardot.NewAdapter(conn.Client, conn.moduleInfo,
-			params.Value(pardot.MetadataKeyBusinessUnitID),
-		)
+		conn.pardotAdapter, err = pardot.NewAdapter(conn.Client, conn.moduleInfo, params.Metadata.Map)
 		if err != nil {
 			return nil, err
 		}
-
-		// Override error handler. Pardot has different format from Standard Salesforce.
-		conn.Client.HTTPClient.ErrorHandler = pardot.ErrorHandlerFunc
 	}
 
 	return conn, nil
@@ -122,20 +117,9 @@ func (c *Connector) getURIPartSobjectsDescribe(objectName string) (*urlbuilder.U
 	return urlbuilder.New(uriSobjects, objectName, "describe")
 }
 
-func (c *Connector) setCRMBaseURL(newURL string) {
-	c.BaseURL = newURL
-	c.Client.HTTPClient.Base = newURL
-}
-
-// Warning: this method is to be used by mock tests.
-// The code is in the intermediate state and improved URL storage and handling is anticipated.
 func (c *Connector) setBaseURL(newURL string) {
 	c.BaseURL = newURL
 	c.Client.HTTPClient.Base = newURL
-
-	if c.pardotAdapter != nil {
-		c.pardotAdapter.BaseURL = newURL
-	}
 }
 
 func (c *Connector) isPardotModule() bool {
