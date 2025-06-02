@@ -20,7 +20,7 @@ func (conn *Connector) Read(ctx context.Context, config common.ReadParams) (*com
 
 	if !config.Since.IsZero() && config.ObjectName == meetings {
 		url.WithQueryParam("start", config.Since.Format(time.RFC3339))
-		url.WithQueryParam("end", time.Now().Format(time.RFC3339))
+		url.WithQueryParam("end", config.Since.Add(167*time.Hour).Format(time.RFC3339)) // Adds 7 days from the since given time.
 	}
 
 	// Check if we're reading Next Page of Records.
@@ -39,7 +39,7 @@ func (conn *Connector) Read(ctx context.Context, config common.ReadParams) (*com
 	return common.ParseResult(
 		resp,
 		extractRecords(config.ObjectName),
-		nextRecordsURL(url.String()),
+		nextRecordsURL(url, config.ObjectName),
 		common.GetMarshaledData,
 		config.Fields,
 	)
