@@ -60,3 +60,7 @@ func (m *Metadata) GetCatalogVars() []catalogreplacer.CustomCatalogVariable {
 
 	return result
 }
+
+func (m *Metadata) Value(key string) string {
+	return m.Map[key]
+}
