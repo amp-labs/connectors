@@ -16,7 +16,9 @@ import (
 func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
-	requestContacts := testutils.DataFromFile(t, "read/objects-api/contacts-req-payload.json")
+	requestContactsSince := testutils.DataFromFile(t, "read/objects-api/contacts-req-payload-since.json")
+	requestContactsUntil := testutils.DataFromFile(t, "read/objects-api/contacts-req-payload-until.json")
+	requestContactsSinceUntil := testutils.DataFromFile(t, "read/objects-api/contacts-req-payload-since-until.json")
 	responseContacts := testutils.DataFromFile(t, "read/objects-api/contacts-response.json")
 	responseListsFirst := testutils.DataFromFile(t, "read-lists-1-first-page.json")
 	responseListsLast := testutils.DataFromFile(t, "read-lists-2-second-page.json")
@@ -105,7 +107,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Contacts scoped by time",
+			Name: "Contacts records since time",
 			Input: common.ReadParams{
 				ObjectName: "contacts",
 				Fields:     connectors.Fields("email"),
@@ -116,7 +118,55 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path("/crm/v3/objects/contacts/search"),
-					mockcond.BodyBytes(requestContacts),
+					mockcond.BodyBytes(requestContactsSince),
+				},
+				Then: mockserver.Response(http.StatusOK, responseContacts),
+			}.Server(),
+			Comparator: testroutines.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     3,
+				NextPage: "394",
+				Done:     false,
+			},
+		},
+		{
+			Name: "Contacts records until time",
+			Input: common.ReadParams{
+				ObjectName: "contacts",
+				Fields:     connectors.Fields("email"),
+				Until: time.Date(2025, 1, 1, 0, 0, 0, 0,
+					time.FixedZone("UTC-8", -8*60*60)),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/crm/v3/objects/contacts/search"),
+					mockcond.BodyBytes(requestContactsUntil),
+				},
+				Then: mockserver.Response(http.StatusOK, responseContacts),
+			}.Server(),
+			Comparator: testroutines.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     3,
+				NextPage: "394",
+				Done:     false,
+			},
+		},
+		{
+			Name: "Contacts records from 'since' till 'until'",
+			Input: common.ReadParams{
+				ObjectName: "contacts",
+				Fields:     connectors.Fields("email"),
+				Since: time.Date(2024, 9, 19, 4, 30, 45, 600,
+					time.FixedZone("UTC-8", -8*60*60)),
+				Until: time.Date(2025, 1, 1, 0, 0, 0, 0,
+					time.FixedZone("UTC-8", -8*60*60)),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/crm/v3/objects/contacts/search"),
+					mockcond.BodyBytes(requestContactsSinceUntil),
 				},
 				Then: mockserver.Response(http.StatusOK, responseContacts),
 			}.Server(),

@@ -79,6 +79,8 @@ type FilterGroup struct {
 	Filters []Filter `json:"filters,omitempty"`
 }
 
+type Filters []Filter
+
 type Filter struct {
 	FieldName string             `json:"propertyName,omitempty"`
 	Operator  FilterOperatorType `json:"operator,omitempty"`

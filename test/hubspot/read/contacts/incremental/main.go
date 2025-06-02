@@ -27,7 +27,8 @@ func main() {
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "contacts",
 		Fields:     connectors.Fields("email", "company", "website", "lastname", "firstname", "lastmodifieddate"),
-		Since:      time.Now().Add(-4 * time.Hour * 24),
+		Since:      timestamp("2025-03-01T05:43:30.157Z"),
+		Until:      timestamp("2025-03-01T05:43:33.157Z"),
 	})
 	if err != nil {
 		utils.Fail("error reading from Hubspot", "error", err)
@@ -35,4 +36,13 @@ func main() {
 
 	slog.Info("Reading contacts..")
 	utils.DumpJSON(res, os.Stdout)
+}
+
+func timestamp(timeText string) time.Time {
+	result, err := time.Parse("2006-01-02T15:04:05.000Z", timeText)
+	if err != nil {
+		utils.Fail("bad timestamp", "error", err)
+	}
+
+	return result
 }
