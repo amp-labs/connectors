@@ -20,3 +20,12 @@ func CapitalizeFirstLetterEveryWord(text string) string {
 
 	return text
 }
+
+func PluralityAndCaseIgnoreEqual(a, b string) bool {
+	singularA := pluralizer.Singular(a)
+	singularB := pluralizer.Singular(b)
+	pluralA := pluralizer.Plural(a)
+	pluralB := pluralizer.Plural(b)
+
+	return strings.EqualFold(singularA, singularB) && strings.EqualFold(pluralA, pluralB)
+}

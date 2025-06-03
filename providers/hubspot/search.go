@@ -6,6 +6,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
+	"github.com/amp-labs/connectors/common/naming"
 )
 
 // Search uses the POST /search endpoint to filter object records and return the result.
@@ -102,7 +103,7 @@ func BuildLastModifiedFilterGroup(params *common.ReadParams) Filter {
 
 	// Use the lastmodifieddate field for contacts, and hs_lastmodifieddate for other objects.
 	lastModifiedField := ObjectFieldHsLastModifiedDate
-	if params.ObjectName == string(ObjectTypeContact) {
+	if naming.PluralityAndCaseIgnoreEqual(params.ObjectName, string(ObjectTypeContact)) {
 		lastModifiedField = ObjectFieldLastModifiedDate
 	}
 
