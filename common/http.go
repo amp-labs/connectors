@@ -542,7 +542,7 @@ func GetResponseBodyOnce(response *http.Response) []byte {
 	return body
 }
 
-func getResponseHeaders(response *http.Response) Headers {
+func GetResponseHeaders(response *http.Response) Headers {
 	if response == nil {
 		return nil
 	}

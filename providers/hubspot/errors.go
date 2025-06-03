@@ -75,18 +75,20 @@ func (c *Connector) interpretJSONError(res *http.Response, body []byte) error {
 		return fmt.Errorf("json.Unmarshal failed: %w", err)
 	}
 
+	headers := common.GetResponseHeaders(res)
+
 	switch res.StatusCode {
 	// Hubspot sends us a 400 when the search endpoint returns over 10K records.
 	case http.StatusBadRequest:
-		return createError(common.ErrBadRequest, apiError)
+		return common.NewHTTPError(res.StatusCode, body, headers, createError(common.ErrBadRequest, apiError))
 	case http.StatusUnauthorized:
-		return createError(common.ErrAccessToken, apiError)
+		return common.NewHTTPError(res.StatusCode, body, headers, createError(common.ErrAccessToken, apiError))
 	case http.StatusForbidden:
-		return createError(common.ErrForbidden, apiError)
+		return common.NewHTTPError(res.StatusCode, body, headers, createError(common.ErrForbidden, apiError))
 	case http.StatusTooManyRequests, http.StatusBadGateway, http.StatusGatewayTimeout:
-		return createError(common.ErrLimitExceeded, apiError)
+		return common.NewHTTPError(res.StatusCode, body, headers, createError(common.ErrLimitExceeded, apiError))
 	case http.StatusServiceUnavailable:
-		return createError(common.ErrApiDisabled, apiError)
+		return common.NewHTTPError(res.StatusCode, body, headers, createError(common.ErrApiDisabled, apiError))
 	default:
 		return common.InterpretError(res, body)
 	}
