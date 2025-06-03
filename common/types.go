@@ -136,8 +136,13 @@ type ReadParams struct {
 	// NextPage is an opaque token that can be used to get the next page of results.
 	NextPage NextPageToken // optional, only set this if you want to read the next page of results
 
-	// Since is a timestamp that can be used to get only records that have changed since that time.
-	Since time.Time // optional, omit this to fetch all records
+	// Since is an optional timestamp to fetch only records updated **after** this time.
+	// Used for incremental reads.
+	Since time.Time
+
+	// Until is an optional timestamp to fetch only records updated **up to and including** this time.
+	// Pagination stops when records exceed this timestamp.
+	Until time.Time
 
 	// Deleted is true if we want to read deleted records instead of active records.
 	Deleted bool // optional, defaults to false
