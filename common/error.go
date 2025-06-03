@@ -21,7 +21,7 @@ func InterpretError(res *http.Response, body []byte) error {
 		}
 	}
 
-	headers := getResponseHeaders(res)
+	headers := GetResponseHeaders(res)
 
 	switch res.StatusCode {
 	case http.StatusUnauthorized:
