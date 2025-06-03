@@ -9,6 +9,20 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
+/*
+Pagination format:
+
+{
+  "results": [...],
+  "paging": {
+    "next": {
+      "after": "394",
+      "link": "https://api.hubapi.com/crm/v3/objects/contacts?limit=100&properties=listId%2Cname&after=394"
+    }
+  }
+}
+*/
+
 // getNextRecordsAfter returns the "after" value for the next page of results.
 func getNextRecordsAfter(node *ajson.Node) (string, error) {
 	var nextPage string
